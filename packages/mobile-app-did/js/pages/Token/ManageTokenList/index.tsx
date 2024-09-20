@@ -1,5 +1,5 @@
 import PageContainer from 'components/PageContainer';
-import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
+import { IUserTokenItemResponse, TokenItemShowType, IUserTokenItem } from '@portkey-wallet/types/types-ca/token';
 import CommonInput from 'components/CommonInput';
 import { StyleSheet, View } from 'react-native';
 import gStyles from 'assets/theme/GStyles';
@@ -14,6 +14,7 @@ import { useCaAddressInfoList, useChainIdList } from '@portkey-wallet/hooks/hook
 import Loading from 'components/Loading';
 import FilterTokenSection from '../components/FilterToken';
 import PopularTokenSection from '../components/PopularToken';
+import { showManageToken } from '../components/ManageToken';
 import { pTd } from 'utils/unit';
 import navigationService from 'utils/navigationService';
 import Svg from 'components/Svg';
@@ -67,7 +68,7 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
     try {
       setIsSearching(true);
 
-      const res = await request.token.fetchTokenListBySearch({
+      const res = await request.token.fetchTokenListBySearchV2({
         params: {
           symbol: keyword,
           chainIds: chainIdArray,
@@ -76,7 +77,7 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
           maxResultCount: PAGE_SIZE_DEFAULT,
         },
       });
-      const _target = (res || []).map((item: any) => ({
+      const _target = (res.data || []).map((item: any) => ({
         ...item,
         isAdded: item.isDisplay,
         userTokenId: item.id,
@@ -90,15 +91,15 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
     }
   }, [chainIdArray, debounceWord, keyword]);
 
-  const onHandleTokenItem = useCallback(
-    async (item: TokenItemShowType, isDisplay: boolean) => {
+  const onSwitchTokenDisplay = useCallback(
+    async (ids: string[], isDisplay: boolean) => {
       Loading.showOnce();
 
       try {
-        await request.token.displayUserToken({
-          resourceUrl: `${item.userTokenId}/display`,
+        await request.token.userTokensDisplaySwitch({
           params: {
-            isDisplay,
+            isDisplay: !isDisplay,
+            ids,
           },
         });
         timerRef.current = setTimeout(async () => {
@@ -122,6 +123,27 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
       }
     },
     [caAddressInfos, debounceWord, fetchAccountTokenInfoList, getTokenList, searchToken],
+  );
+
+  const onHandleToken = useCallback(
+    (item: IUserTokenItemResponse, isDisplay: boolean) => {
+      onSwitchTokenDisplay(item.tokens?.map((token: any) => token.id) ?? [], isDisplay);
+    },
+    [onSwitchTokenDisplay],
+  );
+
+  const onHandleTokenItem = useCallback(
+    (item: IUserTokenItem, isDisplay: boolean) => {
+      item.id && onSwitchTokenDisplay([item.id], isDisplay);
+    },
+    [onSwitchTokenDisplay],
+  );
+
+  const onEditToken = useCallback(
+    (item: IUserTokenItemResponse) => {
+      showManageToken({ item, onHandleTokenItem });
+    },
+    [onHandleTokenItem],
   );
 
   // search token with keyword
@@ -178,12 +200,13 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
       </View>
 
       {debounceWord ? (
-        <FilterTokenSection tokenList={filterTokenList} onHandleTokenItem={onHandleTokenItem} />
+        <FilterTokenSection tokenList={filterTokenList} onHandleTokenItem={onHandleToken} onEditToken={onEditToken} />
       ) : (
         <PopularTokenSection
           tokenDataShowInMarket={tokenDataShowInMarket}
           getTokenList={getTokenList}
-          onHandleTokenItem={onHandleTokenItem}
+          onHandleTokenItem={onHandleToken}
+          onEditToken={onEditToken}
         />
       )}
     </PageContainer>

@@ -1,7 +1,7 @@
-import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
+import { ITokenItemResponse, ITokenSectionResponse } from '@portkey-wallet/types/types-ca/token';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
 import { formatAmountUSDShow, formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 import TokenImageDisplay from 'pages/components/TokenImageDisplay';
@@ -14,6 +14,8 @@ import './index.less';
 import { useEffectOnce } from 'react-use';
 import useGAReport from 'hooks/useGAReport';
 import clsx from 'clsx';
+import { Row, Col, Collapse } from 'antd';
+import CustomSvg from 'components/CustomSvg';
 
 export default function TokenList() {
   const { t } = useTranslation();
@@ -26,6 +28,7 @@ export default function TokenList() {
     () => accountTokenList.length < totalRecordCount,
     [accountTokenList.length, totalRecordCount],
   );
+  const [openPanel, setOpenPanel] = useState<string[]>([]);
 
   const { startReport, endReport } = useGAReport();
 
@@ -40,7 +43,7 @@ export default function TokenList() {
   }, [caAddressInfos, endReport, fetchAccountTokenInfoList]);
 
   const onNavigate = useCallback(
-    (tokenInfo: TokenItemShowType) => {
+    (tokenInfo: ITokenItemResponse) => {
       navigate('/token-detail', { state: tokenInfo });
     },
     [navigate],
@@ -62,13 +65,13 @@ export default function TokenList() {
   }, [navigate]);
 
   const getTokenAmount = useCallback(
-    (item: TokenItemShowType) =>
+    (item: { balance?: string; decimals?: number }) =>
       userInfo.hideAssets ? '****' : formatTokenAmountShowWithDecimals(item.balance, item.decimals),
     [userInfo.hideAssets],
   );
 
   const getAmountUSDShow = useCallback(
-    (item: TokenItemShowType) => {
+    (item: ITokenSectionResponse) => {
       const formatAmount = formatAmountUSDShow(item?.balanceInUsd);
       let text = '';
       if (isMainnet && formatAmount) {
@@ -83,29 +86,89 @@ export default function TokenList() {
     },
     [isMainnet, userInfo.hideAssets],
   );
+  const handleChange = useCallback(
+    (arr: string[] | string) => {
+      console.log('arr is:', arr);
+      const openArr = typeof arr === 'string' ? [arr] : arr;
+      setOpenPanel(openArr);
+    },
+    [setOpenPanel],
+  );
+  const renderItem = useCallback(
+    (item: ITokenSectionResponse, index: number) => {
+      return (
+        <Collapse.Panel
+          key=""
+          header={
+            <li
+              className="token-list-item flex-row-center"
+              key={`${item.label}_${item.symbol}`}
+              // onClick={() => onNavigate(item)}
+            >
+              <TokenImageDisplay width={36} className="token-icon" symbol={item.symbol} src={item.imageUrl} />
+              <div className="token-desc">
+                <div className="info flex-between">
+                  <span>{item.label ?? item.symbol}</span>
+                  <span>{getTokenAmount(item)}</span>
+                </div>
+                <div className="amount flex-between">
+                  {!!item.price && isMainnet && <span>${item.price}</span>}
+                  {getAmountUSDShow(item)}
+                </div>
+              </div>
+              <div
+                className={
+                  openPanel.includes(index.toString()) ? 'more-wrapper' : 'more-wrapper more-wrapper-transparent'
+                }>
+                <CustomSvg
+                  // className={openPanel.includes(index.toString()) ? 'is-active' : ''}
+                  type={openPanel.includes(index.toString()) ? 'ActiveMore' : 'InteractiveMore'}
+                />
+              </div>
+            </li>
+          }>
+          {/* <span>{transNetworkText(item.chainId, !isMainnet)}</span> */}
 
+          <div className="item-wrapper">
+            {/* {item.tokens.map((tokenItem) => {
+             return (<div className="container">
+              <Row className="row">
+                <Col className="text" span={12}>
+                  MainChain AELF
+                </Col>
+                <Col className="amount-container" span={12}>
+                  <div className="amount">2,000</div>
+                  <CustomSvg type="NewRightArrow" />
+                </Col>
+              </Row>
+            </div>);
+            }} */}
+            {item?.tokens?.map((tokenItem, index) => (
+              <div
+                className="container"
+                style={{ marginTop: index !== 0 ? 4 : 0 }}
+                key={`${tokenItem.symbol}_${index}`}
+                onClick={() => onNavigate(tokenItem)}>
+                <Row className="row">
+                  <Col className="text" span={12}>
+                    {transNetworkText(tokenItem.chainId, !isMainnet)}
+                  </Col>
+                  <Col className="amount-container" span={12}>
+                    <div className="amount">{getTokenAmount(tokenItem)}</div>
+                    <CustomSvg type="NewRightArrow" />
+                  </Col>
+                </Row>
+              </div>
+            ))}
+          </div>
+        </Collapse.Panel>
+      );
+    },
+    [getAmountUSDShow, getTokenAmount, isMainnet, onNavigate, openPanel],
+  );
   return (
     <div className={clsx('tab-token', !hasMoreTokenList && 'hidden-loading-more')}>
-      <ul className="token-list">
-        {accountTokenList.map((item) => (
-          <li
-            className="token-list-item flex-row-center"
-            key={`${item.chainId}_${item.symbol}`}
-            onClick={() => onNavigate(item)}>
-            <TokenImageDisplay width={36} className="token-icon" symbol={item.symbol} src={item.imageUrl} />
-            <div className="token-desc">
-              <div className="info flex-between">
-                <span>{item.label ?? item.symbol}</span>
-                <span>{getTokenAmount(item)}</span>
-              </div>
-              <div className="amount flex-between">
-                <span>{transNetworkText(item.chainId, !isMainnet)}</span>
-                {getAmountUSDShow(item)}
-              </div>
-            </div>
-          </li>
-        ))}
-      </ul>
+      <Collapse onChange={handleChange}>{accountTokenList.map((item, index) => renderItem(item, index))}</Collapse>
       <LoadingMore hasMore={hasMoreTokenList} loadMore={getMoreTokenList} className="load-more" />
 
       <div className="add-token-wrapper flex-center" onClick={handleAddToken}>

@@ -48,7 +48,7 @@ const TokenListUnionItem: React.FC<TokenListItemType> = props => {
             <TextL numberOfLines={1} ellipsizeMode={'tail'} style={itemStyle.tokenName}>
               {item?.label || item?.symbol}
             </TextL>
-            {isMainnet && (
+            {isMainnet && typeof item.price === 'number' && item.price > 0 && (
               <TextS numberOfLines={1} style={[FontStyles.font11, itemStyle.chainInfo]}>
                 {'$' + item.price}
               </TextS>

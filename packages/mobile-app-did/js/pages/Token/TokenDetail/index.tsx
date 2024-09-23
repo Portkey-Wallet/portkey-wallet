@@ -34,7 +34,6 @@ import ActivityItem from 'components/ActivityItem';
 import { FlatListFooterLoading } from 'components/FlatListFooterLoading';
 import { ListLoadingEnum } from 'constants/misc';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
-import { useBalance } from '@portkey-wallet/hooks/hooks-ca/balances';
 import { stringifyETrans } from '@portkey-wallet/utils/dapp/url';
 import { pTd } from 'utils/unit';
 import { useAppRampEntryShow } from 'hooks/ramp';
@@ -62,7 +61,6 @@ const INIT_PAGE_INFO = {
 const TokenDetail: React.FC = () => {
   const { t } = useLanguage();
   const { tokenInfo } = useRouterParams<RouterParams>();
-  const { getAndUpdateTargetBalance } = useBalance();
   const currentTokenInfo = useTokenInfoFromStore(tokenInfo.symbol, tokenInfo.chainId) || tokenInfo;
   const isMainnet = useIsMainnet();
   const caAddressInfos = useCaAddressInfoList();

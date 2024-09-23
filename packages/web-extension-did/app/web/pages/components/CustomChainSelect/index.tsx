@@ -41,7 +41,7 @@ export default function CustomChainSelect({ onChange, onClose, item }: ICustomCh
       <div className="header">
         <TokenImageDisplay className="custom-logo" width={32} symbol={item?.symbol} src={item?.imageUrl} />
         <div className="text-container">
-          <div className="main-text">{item?.symbol}</div>
+          <span className="main-text">{item?.label ?? item?.symbol}</span>
           <div className="sub-text">{calDisplayStatusText(item)}</div>
         </div>
         <CustomSvg type="CloseNew" onClick={onClose} />

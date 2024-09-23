@@ -10,6 +10,7 @@ import fonts from 'assets/theme/fonts';
 import { IUserTokenItemResponse, IUserTokenItem } from '@portkey-wallet/types/types-ca/token';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
+import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 
 interface IManageTokenProps {
   onHandleTokenItem?: (item: IUserTokenItem, added: boolean) => void;
@@ -17,6 +18,7 @@ interface IManageTokenProps {
 }
 
 const ManageToken: React.FC<IManageTokenProps> = ({ item, onHandleTokenItem }) => {
+  const { currentNetwork } = useWallet();
   const displayStatus = useMemo(() => {
     if (item.displayStatus === 'All') {
       return 'All Networks';
@@ -25,12 +27,12 @@ const ManageToken: React.FC<IManageTokenProps> = ({ item, onHandleTokenItem }) =
     } else {
       const chainId = item.tokens?.find(token => token.isDisplay)?.chainId;
       if (chainId) {
-        return formatChainInfoToShow(chainId);
+        return formatChainInfoToShow(chainId, currentNetwork);
       } else {
         return '';
       }
     }
-  }, [item.displayStatus, item.tokens]);
+  }, [currentNetwork, item.displayStatus, item.tokens]);
   return (
     <View style={styles.container}>
       <View style={styles.titleWrap}>
@@ -43,7 +45,7 @@ const ManageToken: React.FC<IManageTokenProps> = ({ item, onHandleTokenItem }) =
             avatarSize={pTd(32)}
           />
           <View style={styles.titleTextWrap}>
-            <Text style={styles.symbolText}>{item.symbol || item.label}</Text>
+            <Text style={styles.symbolText}>{item.label || item.symbol}</Text>
             <Text style={styles.networkText}>{displayStatus}</Text>
           </View>
         </View>
@@ -58,7 +60,7 @@ const ManageToken: React.FC<IManageTokenProps> = ({ item, onHandleTokenItem }) =
       {item.tokens?.map((token, _) => {
         return (
           <View key={token.chainId} style={styles.itemWrap}>
-            <Text style={styles.chainText}>{formatChainInfoToShow(token.chainId)}</Text>
+            <Text style={styles.chainText}>{formatChainInfoToShow(token.chainId, currentNetwork)}</Text>
             <CommonSwitch
               value={token.isDisplay}
               onValueChange={() => {

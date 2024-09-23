@@ -12,6 +12,47 @@ export function fetchAllTokenList({
   skipCount?: number;
   maxResultCount?: number;
 }): Promise<{
+  data: {
+    symbol: string;
+    imageUrl?: string;
+    label?: string;
+    displayStatus?: 'All' | 'Partial' | 'None';
+    isDefault?: boolean;
+    tokens?: {
+      id: string;
+      chainId: ChainId;
+      symbol: string;
+      imageUrl?: string;
+      address?: string;
+      decimals: number;
+      isDefault: boolean;
+      isDisplay: boolean;
+      label?: string;
+    }[];
+  }[];
+  totalRecordCount: number;
+}> {
+  return request.token.fetchPopularTokenV2({
+    params: {
+      chainIds: chainIdArray,
+      keyword,
+      skipCount,
+      maxResultCount,
+    },
+  });
+}
+
+export function fetchAllTokenListLegacy({
+  keyword,
+  chainIdArray,
+  skipCount = 0,
+  maxResultCount = 1000,
+}: {
+  keyword: string;
+  chainIdArray: string[];
+  skipCount?: number;
+  maxResultCount?: number;
+}): Promise<{
   items: {
     id: string;
     chainId: ChainId;

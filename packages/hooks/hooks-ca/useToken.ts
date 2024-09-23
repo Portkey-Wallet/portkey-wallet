@@ -1,11 +1,39 @@
 import { useAppCASelector, useAppCommonDispatch } from '../index';
-import { fetchAllTokenListAsync, getSymbolImagesAsync } from '@portkey-wallet/store/store-ca/tokenManagement/action';
+import {
+  fetchAllTokenListAsync,
+  fetchAllTokenListV2Async,
+  getSymbolImagesAsync,
+} from '@portkey-wallet/store/store-ca/tokenManagement/action';
 import { useMemo, useCallback, useEffect } from 'react';
 import { useCurrentNetworkInfo } from './network';
 import { INITIAL_TOKEN_INFO } from '@portkey-wallet/store/store-ca/tokenManagement/slice';
 import { useAccountTokenInfo } from './assets';
 
 export const useToken = () => {
+  const dispatch = useAppCommonDispatch();
+  const currentNetworkInfo = useCurrentNetworkInfo();
+
+  const tokenState = useAppCASelector(state => state.tokenManagement);
+
+  const tokenInfo = useMemo(
+    () => tokenState?.tokenInfoV2?.[currentNetworkInfo.networkType] || INITIAL_TOKEN_INFO,
+    [currentNetworkInfo.networkType, tokenState?.tokenInfoV2],
+  );
+
+  const fetchTokenInfoList = useCallback(
+    (params: { keyword: string; chainIdArray: string[]; skipCount?: number; maxResultCount?: number }) => {
+      return dispatch(
+        fetchAllTokenListV2Async({
+          ...params,
+          currentNetwork: currentNetworkInfo.networkType,
+        }),
+      );
+    },
+    [currentNetworkInfo.networkType, dispatch],
+  );
+  return { ...tokenInfo, fetchTokenInfoList, isFetching: tokenState.isFetching };
+};
+export const useTokenLegacy = () => {
   const dispatch = useAppCommonDispatch();
   const currentNetworkInfo = useCurrentNetworkInfo();
 
@@ -30,7 +58,6 @@ export const useToken = () => {
 
   return { ...tokenInfo, fetchTokenInfoList, isFetching: tokenState.isFetching };
 };
-
 export const useFetchSymbolImages = () => {
   const dispatch = useAppCommonDispatch();
 

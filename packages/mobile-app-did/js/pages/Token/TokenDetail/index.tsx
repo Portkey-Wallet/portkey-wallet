@@ -38,6 +38,7 @@ import { useBalance } from '@portkey-wallet/hooks/hooks-ca/balances';
 import { stringifyETrans } from '@portkey-wallet/utils/dapp/url';
 import { pTd } from 'utils/unit';
 import { useAppRampEntryShow } from 'hooks/ramp';
+import { useGetAccountTokenList } from 'hooks/account';
 import { SHOW_RAMP_SYMBOL_LIST } from '@portkey-wallet/constants/constants-ca/ramp';
 import { useAppETransShow, useAppSwapButtonShow } from 'hooks/cms';
 import { DepositModalMap, useOnDisclaimerModalPress } from 'hooks/deposit';
@@ -77,6 +78,7 @@ const TokenDetail: React.FC = () => {
   const { isRampShow } = useAppRampEntryShow();
   const getS3ImageUrl = useGetS3ImageUrl();
   const { getTokenDetailBannerList } = useCmsBanner();
+  const getAccountTokenList = useGetAccountTokenList();
   const isBuyButtonShow = useMemo(
     () =>
       SHOW_RAMP_SYMBOL_LIST.includes(tokenInfo.symbol) &&
@@ -142,9 +144,9 @@ const TokenDetail: React.FC = () => {
     pageInfoRef.current = {
       ...INIT_PAGE_INFO,
     };
-    getAndUpdateTargetBalance(tokenInfo.chainId, tokenInfo.symbol);
+    getAccountTokenList(); // refresh all token list and balance
     await getActivityList(true);
-  }, [getActivityList, getAndUpdateTargetBalance, tokenInfo.chainId, tokenInfo.symbol]);
+  }, [getAccountTokenList, getActivityList]);
 
   const isInitRef = useRef(false);
   const init = useCallback(async () => {

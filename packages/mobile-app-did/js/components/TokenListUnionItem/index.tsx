@@ -59,9 +59,9 @@ const TokenListUnionItem: React.FC<TokenListItemType> = props => {
             <TextL style={itemStyle.token} numberOfLines={1} ellipsizeMode={'tail'}>
               {hideBalance ? '****' : formatTokenAmountShowWithDecimals(item.balance, item.decimals)}
             </TextL>
-            {isMainnet && (
+            {isMainnet && item.balanceInUsd && (
               <TextS numberOfLines={1} ellipsizeMode={'tail'} style={itemStyle.dollar}>
-                {hideBalance && item.balanceInUsd ? '****' : formatAmountUSDShow(item.balanceInUsd)}
+                {hideBalance ? '****' : formatAmountUSDShow(item.balanceInUsd)}
               </TextS>
             )}
           </View>

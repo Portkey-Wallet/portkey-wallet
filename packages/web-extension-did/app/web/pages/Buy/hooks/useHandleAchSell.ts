@@ -21,10 +21,11 @@ export const useHandleAchSell = () => {
   const { setLoading } = useLoading();
 
   const { accountTokenList } = useAccountTokenInfo();
-  const aelfToken = useMemo(
-    () => accountTokenList.find((item) => item.symbol === ELF_SYMBOL && item.chainId === MAIN_CHAIN_ID),
-    [accountTokenList],
-  );
+  const aelfToken = useMemo(() => {
+    const _target = accountTokenList.find((item) => item.symbol === ELF_SYMBOL);
+    const _token = _target?.tokens?.find((ele) => ele.chainId === MAIN_CHAIN_ID);
+    return { ..._target, ..._token };
+  }, [accountTokenList]);
   const chainInfo = useCurrentChain(MAIN_CHAIN_ID);
   const wallet = useCurrentWalletInfo();
   const currentNetwork = useCurrentNetworkInfo();

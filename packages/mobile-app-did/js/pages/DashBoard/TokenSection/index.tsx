@@ -1,13 +1,13 @@
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import navigationService from 'utils/navigationService';
 import { View, FlatList } from 'react-native';
 // import Svg from 'components/Svg';
-import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
+import { TokenItemShowType, ITokenSectionResponse } from '@portkey-wallet/types/types-ca/token';
 import { TextM } from 'components/CommonText';
 import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
-import TokenListItem from 'components/TokenListItem';
+import TokenListUnionItem from 'components/TokenListUnionItem';
 import { useLanguage } from 'i18n/hooks';
 import { PAGE_SIZE_IN_ACCOUNT_TOKEN, REFRESH_TIME } from '@portkey-wallet/constants/constants-ca/assets';
 import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
@@ -31,23 +31,39 @@ export default function TokenSection({ getAccountBalance }: TokenSectionProps) {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const caAddressInfos = useCaAddressInfoList();
   const caAddressInfosList = useLatestRef(caAddressInfos);
+  const [extraIndex, setExtraIndex] = useState<number>(0);
+  const [selectedItem] = useState(new Map<string, boolean>());
 
   const onNavigate = useCallback((tokenItem: TokenItemShowType) => {
     navigationService.navigate('TokenDetail', { tokenInfo: tokenItem });
   }, []);
 
+  const reload = useCallback(() => {
+    setExtraIndex(extraIndex + 1);
+  }, [extraIndex]);
+
+  const onExpand = useCallback(
+    (tokenItem: ITokenSectionResponse) => {
+      selectedItem.set(tokenItem.symbol, !selectedItem.get(tokenItem.symbol));
+      reload();
+    },
+    [reload, selectedItem],
+  );
+
   const renderItem = useCallback(
-    ({ item }: { item: TokenItemShowType }) => {
+    ({ item }: { item: ITokenSectionResponse }) => {
       return (
-        <TokenListItem
+        <TokenListUnionItem
           key={item.symbol}
           item={item}
-          onPress={() => onNavigate(item)}
+          onPress={onNavigate}
+          onExpand={onExpand}
           hideBalance={userInfo.hideAssets}
+          selected={selectedItem.get(item.symbol) ?? false}
         />
       );
     },
-    [onNavigate, userInfo.hideAssets],
+    [onExpand, onNavigate, selectedItem, userInfo.hideAssets],
   );
 
   const getAccountTokenList = useLockCallback(
@@ -87,9 +103,10 @@ export default function TokenSection({ getAccountBalance }: TokenSectionProps) {
       <FlatList
         nestedScrollEnabled
         refreshing={false}
+        extraData={extraIndex}
         data={accountTokenList || []}
         renderItem={renderItem}
-        keyExtractor={(item: TokenItemShowType) => item.symbol + item.chainId}
+        keyExtractor={(item: ITokenSectionResponse) => item.symbol}
         onEndReached={() => getAccountTokenList()}
         onRefresh={() => {
           getAccountBalance?.();

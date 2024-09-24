@@ -1,6 +1,6 @@
 {
   "name": "web-extension-did",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "description": "web-extension-did",
   "private": true,
   "dependencies": {
@@ -147,7 +147,8 @@
     "dev:watch": "webpack watch --mode development && yarn copy-lib",
     "pro": "rm -rf app/public && webpack --mode production && yarn copy-lib",
     "pro:watch": "webpack watch --mode production && yarn copy-lib",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "svg-handle": "node ./app/web/assets/getSvg1.js"
   },
   "ci": {
     "version": "8"

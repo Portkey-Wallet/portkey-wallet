@@ -1,5 +1,6 @@
 export default {
   fetchAccountTokenList: '/api/app/user/assets/token',
+  fetchAccountTokenListV2: '/api/app/v2/user/assets/token',
   fetchAccountNftCollectionList: '/api/app/user/assets/nftCollections',
   fetchAccountNftCollectionItemList: '/api/app/user/assets/nftItems',
   fetchAccountNftCollectionItem: {

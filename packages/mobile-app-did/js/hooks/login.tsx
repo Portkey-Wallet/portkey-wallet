@@ -347,7 +347,7 @@ export function useGoGuardianApproval(isLogin?: boolean) {
             await Promise.all(
               list.map(async guardianItem => {
                 const req = await onVerifierAuth({ guardianItem, originChainId, authenticationInfo });
-                if (req?.signature) {
+                if (req?.signature || req?.zkLoginInfo) {
                   const status = VerifyStatus.Verified as any;
                   const verifierInfo = { ...req, verifierId: guardianItem?.verifier?.id };
                   initGuardiansStatus[guardianItem.key] = { verifierInfo, status };

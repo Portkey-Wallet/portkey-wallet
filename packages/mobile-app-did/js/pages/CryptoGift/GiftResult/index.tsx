@@ -76,14 +76,15 @@ export default function GiftResult() {
         </View>
       </CommonButton>
       <CommonButton
-        containerStyle={styles.buttonContainer}
-        type="primary"
+        containerStyle={[styles.buttonContainer, GStyles.paddingTop(pTd(16))]}
+        buttonStyle={styles.shareButtonStyle}
+        type="outline"
         disabled={false}
         radius={pTd(6)}
         onPress={onCopyTgLinkPress}>
         <View style={styles.buttonContentWrapper}>
-          <Svg icon="copy" size={pTd(20)} color={defaultColors.neutralDefaultBG} />
-          <TextL style={styles.buttonText}>{t('Copy Tg Link')}</TextL>
+          <Svg icon="telegram-mono" size={pTd(20)} color={defaultColors.neutralDefaultBG} />
+          <TextL style={[styles.buttonText, FontStyles.brandNormal]}>{t('Copy Telegram Link')}</TextL>
         </View>
       </CommonButton>
       <CommonButton

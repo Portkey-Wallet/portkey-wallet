@@ -447,6 +447,7 @@ const SendHome: React.FC = () => {
       // check is security safe
       const securitySafeResult = await securitySafeCheckAndToast(assetInfo.chainId);
       if (!securitySafeResult) {
+        Loading.hide();
         return { status: false };
       }
     } catch (err) {

@@ -19,7 +19,7 @@ import NoData from 'components/NoData';
 import { useGStyles } from 'assets/theme/useGStyles';
 import myEvents from '../../utils/deviceEvent';
 import { ChainId } from '@portkey-wallet/types';
-import useToken from '@portkey-wallet/hooks/hooks-ca/useToken';
+import { useTokenLegacy } from '@portkey-wallet/hooks/hooks-ca/useToken';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { PAGE_SIZE_DEFAULT, PAGE_SIZE_IN_ACCOUNT_ASSETS } from '@portkey-wallet/constants/constants-ca/assets';
 
@@ -34,7 +34,7 @@ type TokenListProps = {
 
 const TokenList = ({ title = 'Select Token', onFinishSelectToken, currentSymbol, currentChainId }: TokenListProps) => {
   const { t } = useLanguage();
-  const { tokenDataShowInMarket = [], totalRecordCount, fetchTokenInfoList } = useToken();
+  const { tokenDataShowInMarket = [], totalRecordCount, fetchTokenInfoList } = useTokenLegacy();
 
   const dispatch = useAppCommonDispatch();
   const chainIdList = useChainIdList();

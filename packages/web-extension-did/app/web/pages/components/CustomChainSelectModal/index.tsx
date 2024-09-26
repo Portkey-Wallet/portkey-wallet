@@ -9,7 +9,7 @@ export default function CustomChainSelectModal({ onChange, onClose, ...props }: 
     <Modal
       destroyOnClose
       {...props}
-      wrapClassName="custom-token-modal"
+      wrapClassName="custom-chain-select-modal"
       maskClosable={true}
       closable={false}
       centered={true}

@@ -2,14 +2,14 @@ import { LoginMethod, TAllLoginKey } from '@portkey-wallet/types/types-ca/wallet
 import { getWalletState } from 'utils/lib/SWGetReduxStore';
 import { TGAPageKey } from './types';
 
-const GA_ENDPOINT = 'https://www.google-analytics.com/mp/collect';
-const GA_DEBUG_ENDPOINT = 'https://www.google-analytics.com/debug/mp/collect';
+// const GA_ENDPOINT = 'https://www.google-analytics.com/mp/collect';
+// const GA_DEBUG_ENDPOINT = 'https://www.google-analytics.com/debug/mp/collect';
 
-// Get via https://developers.google.com/analytics/devguides/collection/protocol/ga4/sending-events?client_type=gtag#recommended_parameters_for_reports
-const MEASUREMENT_ID = 'G-CH7VZD8PZD';
-// TODO
-const GA_API_SECRET = process.env.GA_API_SECRET;
-const DEFAULT_ENGAGEMENT_TIME_MSEC = 100;
+// // Get via https://developers.google.com/analytics/devguides/collection/protocol/ga4/sending-events?client_type=gtag#recommended_parameters_for_reports
+// const MEASUREMENT_ID = 'G-CH7VZD8PZD';
+// // TODO
+// const GA_API_SECRET = process.env.GA_API_SECRET;
+// const DEFAULT_ENGAGEMENT_TIME_MSEC = 100;
 
 // Duration of inactivity after which a new session is created
 const SESSION_EXPIRATION_IN_MIN = 30;
@@ -65,39 +65,41 @@ class Analytics {
   }
 
   // Fires an event with optional params. Event names must only include letters and underscores.
-  async fireEvent(name: string, params: any = {}) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async fireEvent(_name: string, _params: any = {}) {
+    return; // TODO: Implement
     // Configure session id and engagement time if not present, for more details see:
     // https://developers.google.com/analytics/devguides/collection/protocol/ga4/sending-events?client_type=gtag#recommended_parameters_for_reports
-    if (!params.session_id) {
-      params.session_id = await this.getOrCreateSessionId();
-    }
-    if (!params.engagement_time_msec) {
-      params.engagement_time_msec = DEFAULT_ENGAGEMENT_TIME_MSEC;
-    }
-    if (!GA_API_SECRET) return;
-    try {
-      const response = await fetch(
-        `${this.debug ? GA_DEBUG_ENDPOINT : GA_ENDPOINT}?measurement_id=${MEASUREMENT_ID}&api_secret=${GA_API_SECRET}`,
-        {
-          method: 'POST',
-          body: JSON.stringify({
-            client_id: await this.getOrCreateClientId(),
-            events: [
-              {
-                name,
-                params,
-              },
-            ],
-          }),
-        },
-      );
-      if (!this.debug) {
-        return;
-      }
-      console.log(await response.text());
-    } catch (e) {
-      console.error('Google Analytics request failed with an exception', e);
-    }
+    // if (!params.session_id) {
+    //   params.session_id = await this.getOrCreateSessionId();
+    // }
+    // if (!params.engagement_time_msec) {
+    //   params.engagement_time_msec = DEFAULT_ENGAGEMENT_TIME_MSEC;
+    // }
+    // if (!GA_API_SECRET) return;
+    // try {
+    //   const response = await fetch(
+    //     `${this.debug ? GA_DEBUG_ENDPOINT : GA_ENDPOINT}?measurement_id=${MEASUREMENT_ID}&api_secret=${GA_API_SECRET}`,
+    //     {
+    //       method: 'POST',
+    //       body: JSON.stringify({
+    //         client_id: await this.getOrCreateClientId(),
+    //         events: [
+    //           {
+    //             name,
+    //             params,
+    //           },
+    //         ],
+    //       }),
+    //     },
+    //   );
+    //   if (!this.debug) {
+    //     return;
+    //   }
+    //   console.log(await response.text());
+    // } catch (e) {
+    //   console.error('Google Analytics request failed with an exception', e);
+    // }
   }
 
   // Fire a page view event.

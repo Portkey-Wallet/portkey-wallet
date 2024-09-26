@@ -13,7 +13,8 @@ import clsx from 'clsx';
 import { useIsImputation } from '@portkey-wallet/hooks/hooks-ca/contact';
 import UnReadBadge from 'pages/components/UnReadBadge';
 import { useReferral } from '@portkey-wallet/hooks/hooks-ca/referral';
-import { useClickReferral } from 'hooks/referral';
+import { hideReferral } from '@portkey-wallet/constants/referral';
+// import { useClickReferral } from 'hooks/referral';
 
 interface MyMenuItemInfo {
   label: string;
@@ -27,7 +28,7 @@ export default function PromptMy() {
   const navigate = useNavigate();
   const isImputation = useIsImputation();
   const { viewReferralStatus } = useReferral();
-  const clickReferral = useClickReferral();
+  // const clickReferral = useClickReferral();
   const { pathname } = useLocation();
 
   const settingList: MyMenuItemInfo[] = useMemo(
@@ -83,7 +84,7 @@ export default function PromptMy() {
 
   return (
     <div className="prompt-my-page flex-column">
-      <PortKeyHeader unReadShow={isImputation || !viewReferralStatus} onUserClick={backCb} />
+      <PortKeyHeader unReadShow={isImputation || (!hideReferral && !viewReferralStatus)} onUserClick={backCb} />
 
       <div className="prompt-my-frame">
         <CommonHeader title={t('My')} onLeftBack={backCb} />
@@ -104,7 +105,7 @@ export default function PromptMy() {
                 {t(item.label)}
               </MenuItem>
             ))}
-            <MenuItem
+            {/* <MenuItem
               className="menu-item-common"
               key="referral"
               height={56}
@@ -115,7 +116,7 @@ export default function PromptMy() {
                 <div>Referral</div>
                 <div className="referral-tag flex-center">New</div>
               </div>
-            </MenuItem>
+            </MenuItem> */}
             <div className="lock-row flex-center" onClick={lockWallet}>
               {/* eslint-disable-next-line no-inline-styles/no-inline-styles */}
               <CustomSvg type={'Lock'} style={{ width: 16, height: 16 }} />

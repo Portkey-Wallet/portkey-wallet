@@ -5588,22 +5588,13 @@
     "@portkey/utils" "^2.9.6-alpha.6"
     "@portkey/validator" "^2.9.6-alpha.6"
 
-"@portkey/chain@^2.2.1":
-  version "2.2.1"
-  resolved "https://registry.yarnpkg.com/@portkey/chain/-/chain-2.2.1.tgz#fea884b61acdeebc496665a2e2eb24864ccaf07a"
-  integrity sha512-C6KjhZ2CuOZ0X5bsnw0cdEtCvPqViJD312d9ojvjy7IeXuLN70TYbNYuK8C0HsmQFv7xrvN8YIHa1HWYvFwr1g==
+"@portkey/chain@^2.2.4":
+  version "2.2.4"
+  resolved "https://registry.yarnpkg.com/@portkey/chain/-/chain-2.2.4.tgz#1713926f5781b74b2dda955fed389b5275ae3031"
+  integrity sha512-r3rz8+57srLVU458w9qclwdwExjxSQ3lPNRT+BajoRd7c81VzB27JiutrjP3Zlhly5E4nHBgLFs2jzOU96Cppg==
   dependencies:
     "@portkey/contracts" "^2.0.4"
-    "@portkey/provider-types" "^2.2.1"
-    aelf-sdk "^3.2.45-beta.0"
-
-"@portkey/chain@^2.2.3":
-  version "2.2.3"
-  resolved "https://registry.yarnpkg.com/@portkey/chain/-/chain-2.2.3.tgz#444b4d144274405b4a62a967a66bb69808c400e1"
-  integrity sha512-jmuZ23P62e16SAmMFztIkSwAEaQvX9KUtViCBzUchcpmqFYsXz9e4id9FNV4THBC4jMWfKM4Atd4aMiS6zMJ2Q==
-  dependencies:
-    "@portkey/contracts" "^2.0.4"
-    "@portkey/provider-types" "^2.2.3"
+    "@portkey/provider-types" "^2.2.4"
     aelf-sdk "^3.2.45-beta.0"
 
 "@portkey/contracts@^2.0.4":
@@ -5672,13 +5663,13 @@
     "@portkey/types" "^2.9.6-alpha.6"
     "@portkey/utils" "^2.9.6-alpha.6"
 
-"@portkey/extension-provider@2.2.3":
-  version "2.2.3"
-  resolved "https://registry.yarnpkg.com/@portkey/extension-provider/-/extension-provider-2.2.3.tgz#37fbd5c24fa275dc0fe58b784198bb6c4d9c8053"
-  integrity sha512-z1cybfd3jRXPr60S1PbZEdZpFwAtslrJSTLvCLapyEO/+u+c0O0Atn3yQG8mJMag7PpOlNzblcmGegFnqAAr8A==
+"@portkey/extension-provider@2.2.4":
+  version "2.2.4"
+  resolved "https://registry.yarnpkg.com/@portkey/extension-provider/-/extension-provider-2.2.4.tgz#1b7d0f33c81d76f729d0b40609e646303e4f0378"
+  integrity sha512-mya+WXo5Gnl+pNGHlA+WhVUSXwJIAQSE6dWuHj1YmMA9Zjy+CCTYFMZKFZKEDFcxvJFzhHvtpVzFPIYZBtlBtQ==
   dependencies:
-    "@portkey/provider-types" "^2.2.3"
-    "@portkey/providers" "^2.2.3"
+    "@portkey/provider-types" "^2.2.4"
+    "@portkey/providers" "^2.2.4"
     "@types/elliptic" "^6.4.14"
     readable-stream "^4.4.0"
 
@@ -5692,10 +5683,10 @@
     graphql "^16.6.0"
     subscriptions-transport-ws "^0.11.0"
 
-"@portkey/mobile-provider@2.2.1":
-  version "2.2.1"
-  resolved "https://registry.yarnpkg.com/@portkey/mobile-provider/-/mobile-provider-2.2.1.tgz#933cda309874e70e0e54081bc52f690ac18de18b"
-  integrity sha512-EPYYP5Ho1TZ0hMr1ZOFNYSArR2PUdZEmxZcTHFEB7vL54mGChGmFXbSQik1jn6ls45gOXN3iNrcVHXtW1dnc8A==
+"@portkey/mobile-provider@2.2.4":
+  version "2.2.4"
+  resolved "https://registry.yarnpkg.com/@portkey/mobile-provider/-/mobile-provider-2.2.4.tgz#7060bf34d5a54262443bf95c58d03a873f652b0c"
+  integrity sha512-oBEw44yGldifuZ414ePMAJMHQPpBUcgQKJD/F6hyUmNVPiULHo5uU9lD3NcAxMGIVYSPCB/l1ifY1AiLrMXpFg==
 
 "@portkey/onboarding@^2.9.6-alpha.6":
   version "2.9.6-alpha.6"
@@ -5708,26 +5699,10 @@
     bowser "^2.11.0"
     query-string "^7.1.1"
 
-"@portkey/provider-types@2.0.0-alpha.4":
-  version "2.0.0-alpha.4"
-  resolved "https://registry.yarnpkg.com/@portkey/provider-types/-/provider-types-2.0.0-alpha.4.tgz#3cbbd85dbfe89913c5c912cc17f34203304bf03e"
-  integrity sha512-51ntP1gT77C2/nJTalSGWXAAE3u5pNLgkLQbRtT7tKYnz6H1nCwY/wdDOtnfmvBaot70IjWqA3BKzBQ4UclqXQ==
-  dependencies:
-    "@portkey/types" "^2.0.0-alpha.0"
-    "@types/readable-stream" "^2.3.15"
-
-"@portkey/provider-types@2.2.1", "@portkey/provider-types@^2.2.1":
-  version "2.2.1"
-  resolved "https://registry.yarnpkg.com/@portkey/provider-types/-/provider-types-2.2.1.tgz#19e5e4ecaefb88cac76f2ee7d7f7db2d3a16f772"
-  integrity sha512-RkYqg0jjfOICJxkcq6IxpeZwMB+RSHyTCr3GOlRgpbc4td5i6HKd3zV+hRy5WlmghJq1YohcveiilegWkkrV2A==
-  dependencies:
-    "@portkey/types" "^2.0.0-alpha.0"
-    "@types/readable-stream" "^2.3.15"
-
-"@portkey/provider-types@2.2.3", "@portkey/provider-types@^2.1.0", "@portkey/provider-types@^2.2.3":
-  version "2.2.3"
-  resolved "https://registry.yarnpkg.com/@portkey/provider-types/-/provider-types-2.2.3.tgz#6b7ae410f176fe910a50a2dc6b9f7a42b34d53ae"
-  integrity sha512-T+pCzHKTBbRnowwYlxE1TbhcxIXZ+fTGHNLkRbIrKCD21fCNBhDtiwc8fFf4zFUpFYtbGjT3aRndFc7M/9R/dw==
+"@portkey/provider-types@2.2.4", "@portkey/provider-types@^2.2.4":
+  version "2.2.4"
+  resolved "https://registry.yarnpkg.com/@portkey/provider-types/-/provider-types-2.2.4.tgz#e9ca584db2877068036631988af86dd95034d4fb"
+  integrity sha512-80ebarxVJXfOPdIPkyoL4j2Qomga+MMgc2k99vwUOtmniKEl+QYxgly348cfY7JdaSjAU04RAf3p7vlxKlclxg==
   dependencies:
     "@portkey/types" "^2.0.0-alpha.0"
     "@types/readable-stream" "^2.3.15"
@@ -5740,40 +5715,44 @@
     "@portkey/types" "^2.0.0-alpha.0"
     "@types/readable-stream" "^2.3.15"
 
-"@portkey/provider-utils@2.2.1", "@portkey/provider-utils@^2.2.1":
+"@portkey/provider-types@^2.1.0":
+  version "2.2.3"
+  resolved "https://registry.yarnpkg.com/@portkey/provider-types/-/provider-types-2.2.3.tgz#6b7ae410f176fe910a50a2dc6b9f7a42b34d53ae"
+  integrity sha512-T+pCzHKTBbRnowwYlxE1TbhcxIXZ+fTGHNLkRbIrKCD21fCNBhDtiwc8fFf4zFUpFYtbGjT3aRndFc7M/9R/dw==
+  dependencies:
+    "@portkey/types" "^2.0.0-alpha.0"
+    "@types/readable-stream" "^2.3.15"
+
+"@portkey/provider-types@^2.2.1":
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/@portkey/provider-types/-/provider-types-2.2.1.tgz#19e5e4ecaefb88cac76f2ee7d7f7db2d3a16f772"
+  integrity sha512-RkYqg0jjfOICJxkcq6IxpeZwMB+RSHyTCr3GOlRgpbc4td5i6HKd3zV+hRy5WlmghJq1YohcveiilegWkkrV2A==
+  dependencies:
+    "@portkey/types" "^2.0.0-alpha.0"
+    "@types/readable-stream" "^2.3.15"
+
+"@portkey/provider-utils@2.2.1":
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/@portkey/provider-utils/-/provider-utils-2.2.1.tgz#fb34d09f95fbdb2704ee1477296ab2404721f3d4"
   integrity sha512-aW1bcNAv5V8p/vG7I3+KfhuteJjc0k/b+t6ycJC31puFu0pUXDuseu0Tt96DDBVAx94s8p5aiIBckKUrxCIFLQ==
   dependencies:
     "@portkey/provider-types" "^2.2.1"
 
-"@portkey/provider-utils@2.2.3", "@portkey/provider-utils@^2.2.3":
-  version "2.2.3"
-  resolved "https://registry.yarnpkg.com/@portkey/provider-utils/-/provider-utils-2.2.3.tgz#46a5d1369c440d4ecf9b129d6c8676c66aa703d5"
-  integrity sha512-NqtmkesihPFMEbDZzVgMOyTvpZMzqstmysns9lLgnbCg2oyKmK8VAlvS07dPGt2DYm48jariqSJATffZYplEwQ==
+"@portkey/provider-utils@2.2.4", "@portkey/provider-utils@^2.2.4":
+  version "2.2.4"
+  resolved "https://registry.yarnpkg.com/@portkey/provider-utils/-/provider-utils-2.2.4.tgz#12171f76d5f250eb85522f3aec1b14065f7f1eb0"
+  integrity sha512-fa+lmp5Tcn2unLcefa+XnyiPOeY3rsbUBb5cDb+/yiWvuRtStGkUm/34ovUGTEjGO9NhYysjwB2RTd7neUbJkw==
   dependencies:
-    "@portkey/provider-types" "^2.2.3"
+    "@portkey/provider-types" "^2.2.4"
 
-"@portkey/providers@2.2.1":
-  version "2.2.1"
-  resolved "https://registry.yarnpkg.com/@portkey/providers/-/providers-2.2.1.tgz#27b170d4663de5865057c3228e0793673e8fac0d"
-  integrity sha512-j89EVgwURbzmIy38Ktv5NhQCdaXbmLq5LLXu7zYwO38CFJ5l+sYm9T9CrE5OBdUDRtBWqolrxynu0KBK3N2B3A==
+"@portkey/providers@2.2.4", "@portkey/providers@^2.2.4":
+  version "2.2.4"
+  resolved "https://registry.yarnpkg.com/@portkey/providers/-/providers-2.2.4.tgz#3fbf4dd2e6fb510287ee632f0e7b9803264eeaf4"
+  integrity sha512-+SEwo3vsypwAJhF+Tl87LeCCdazbUB4UcWycex0pKm/Lh6OC5dsyfFR7uXb0bJLRthDIDWf0BtZo3jTfjrjKMg==
   dependencies:
-    "@portkey/chain" "^2.2.1"
-    "@portkey/provider-types" "^2.2.1"
-    "@portkey/provider-utils" "^2.2.1"
-    "@types/readable-stream" "^2.3.15"
-    lodash "^4.17.21"
-    readable-stream "^4.4.0"
-
-"@portkey/providers@2.2.3", "@portkey/providers@^2.2.3":
-  version "2.2.3"
-  resolved "https://registry.yarnpkg.com/@portkey/providers/-/providers-2.2.3.tgz#4cb0e8d8f8493316e7db59ffe843adbb1e0ac254"
-  integrity sha512-otNL5SsTDM/w6Ow8dY3F+Eb2ihfkRiZuWEaxtWkEPvRk6jjRmf7Whwiruvb8A2QN6LmR4bZyY/C3qOhMN+dv1Q==
-  dependencies:
-    "@portkey/chain" "^2.2.3"
-    "@portkey/provider-types" "^2.2.3"
-    "@portkey/provider-utils" "^2.2.3"
+    "@portkey/chain" "^2.2.4"
+    "@portkey/provider-types" "^2.2.4"
+    "@portkey/provider-utils" "^2.2.4"
     "@types/readable-stream" "^2.3.15"
     lodash "^4.17.21"
     readable-stream "^4.4.0"

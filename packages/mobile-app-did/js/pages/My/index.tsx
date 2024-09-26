@@ -10,11 +10,13 @@ import { RootStackName } from 'navigation';
 import { IconName } from 'components/Svg';
 import { pTd } from 'utils/unit';
 import { useIsImputation } from '@portkey-wallet/hooks/hooks-ca/contact';
+/*
 import { useReferral } from '@portkey-wallet/hooks/hooks-ca/referral';
 import { reportReferralClick } from 'utils/analysisiReport';
 import useEffectOnce from 'hooks/useEffectOnce';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+*/
 
 interface MenuItemType {
   name: RootStackName;
@@ -27,6 +29,7 @@ interface MenuItemType {
 export default function MyMenu() {
   const { t } = useLanguage();
   const isImputation = useIsImputation();
+  /*
   const currentNetworkInfo = useCurrentNetworkInfo();
 
   const { setViewReferralStatusStatus, getReferralLink, referralLink = '' } = useReferral();
@@ -42,6 +45,7 @@ export default function MyMenu() {
   useEffectOnce(() => {
     getLink();
   });
+  */
 
   const MenuList: Array<MenuItemType> = useMemo(
     () => [
@@ -70,6 +74,8 @@ export default function MyMenu() {
         label: 'Wallet Security',
         icon: 'wallet-security',
       },
+      /*
+      // remove referral temporarily
       {
         name: 'UserReferral',
         label: 'Referral',
@@ -84,8 +90,9 @@ export default function MyMenu() {
           });
         },
       },
+      */
     ],
-    [currentNetworkInfo.referralUrl, referralLink, setViewReferralStatusStatus],
+    [],
   );
 
   return (

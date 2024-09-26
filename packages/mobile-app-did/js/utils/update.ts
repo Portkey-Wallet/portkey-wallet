@@ -150,7 +150,7 @@ export class CodePushOperator extends EventEmitter implements ICodePushOperator 
           messageStyle: { textAlign: 'left' },
           title: info.updatedTitle || '',
           message: info.updatedContent,
-          buttons: [{ title: 'I Know' }],
+          buttons: [{ title: 'OK' }],
         });
       }
     } catch (error) {

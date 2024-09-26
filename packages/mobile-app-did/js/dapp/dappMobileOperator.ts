@@ -47,6 +47,7 @@ const SEND_METHOD: { [key: string]: true } = {
   [MethodsBase.SET_WALLET_CONFIG_OPTIONS]: true,
   [MethodsWallet.GET_WALLET_SIGNATURE]: true,
   [MethodsWallet.GET_WALLET_TRANSACTION_SIGNATURE]: true,
+  [MethodsWallet.GET_WALLET_MANAGER_SIGNATURE]: true,
 };
 
 const ACTIVE_VIEW_METHOD: { [key: string]: true } = {
@@ -114,9 +115,9 @@ export default class DappMobileOperator extends Operator {
     eventName: string;
     params: any;
     method: keyof IDappOverlay;
-    isCipherText: boolean;
+    isCipherText?: boolean;
   }): Promise<IResponseType | undefined> => {
-    const authorized = await this.dappOverlay[method](this.dapp, params, isCipherText);
+    const authorized = await this.dappOverlay[method](this.dapp, params, isCipherText || false);
     if (!authorized) return this.userDenied(eventName);
   };
   protected isActive = async () => {
@@ -353,6 +354,26 @@ export default class DappMobileOperator extends Operator {
       });
     }
   };
+  protected handleManagerSignature: SendRequest<GetSignatureParams> = async (eventName, params) => {
+    try {
+      if (!params.data) return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS });
+      const manager = getManager();
+      if (!manager?.keyPair) return generateErrorResponse({ eventName, code: ResponseCode.INTERNAL_ERROR });
+      const data = manager.keyPair.sign(AElf.utils.sha256(params.data), {
+        canonical: true,
+      });
+      return generateNormalResponse({
+        eventName,
+        data,
+      });
+    } catch (error) {
+      return generateErrorResponse({
+        eventName,
+        code: ResponseCode.CONTRACT_ERROR,
+        msg: handleErrorMessage(error),
+      });
+    }
+  };
   protected async sendRequest({
     eventName,
     params,
@@ -524,6 +545,17 @@ export default class DappMobileOperator extends Operator {
         isCipherText = true;
         if (!isActive) return this.unauthenticated(eventName);
         callBack = this.handleTransactionSignature;
+        payload = { data: request.payload.data };
+        if (!payload || (typeof payload.data !== 'string' && typeof payload.data !== 'number'))
+          return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS });
+        break;
+      }
+      case MethodsWallet.GET_WALLET_MANAGER_SIGNATURE: {
+        if (request.payload.hexData && !request.payload.data) request.payload.data = request.payload.hexData;
+        method = MethodsWallet.GET_WALLET_SIGNATURE;
+        isCipherText = false;
+        if (!isActive) return this.unauthenticated(eventName);
+        callBack = this.handleManagerSignature;
         payload = { data: request.payload.data };
         if (!payload || (typeof payload.data !== 'string' && typeof payload.data !== 'number'))
           return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS });

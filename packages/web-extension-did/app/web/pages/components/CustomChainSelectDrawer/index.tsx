@@ -12,7 +12,7 @@ interface CustomChainSelectProps extends DrawerProps {
 
 export default function CustomChainSelectDrawer({ onChange, onClose, item, ...props }: CustomChainSelectProps) {
   return (
-    <BaseDrawer {...props} destroyOnClose onClose={onClose} className="custom-token-drawer">
+    <BaseDrawer {...props} destroyOnClose onClose={onClose} className="custom-chain-select-drawer">
       <CustomChainSelect onClose={onClose} onChange={onChange} item={item} />
     </BaseDrawer>
   );

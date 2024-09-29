@@ -13,28 +13,35 @@ import { useLocation } from 'react-router';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import googleAnalytics from 'utils/googleAnalytics';
 import './index.less';
+import { useGetCryptoGiftTgLink } from '@portkey-wallet/hooks/hooks-ca/cryptogift';
 
 export default function SuccessPage() {
   const navigate = useNavigateState<TCryptoGiftDetailLocationState>();
   const { state } = useLocationState<TCryptoGiftDetailLocationState>();
   const { cryptoGiftUrl } = useCurrentNetworkInfo();
   const location = useLocation();
+  const getCryptoGiftTgLink = useGetCryptoGiftTgLink();
 
   useEffectOnce(() => {
     googleAnalytics.firePageViewEvent('CryptoGift-Success', location.pathname);
   });
 
   useEffect(() => {
-    if (!state.id) {
+    if (!state?.id) {
       navigate('/crypto-gifts');
     }
-  }, [navigate, state.id]);
+  }, [navigate, state?.id]);
   const { isPrompt } = useCommonState();
   const [, setCopied] = useCopyToClipboard();
   const onClickShare = useCallback(() => {
-    setCopied(`${cryptoGiftUrl}/cryptoGift?id=${state.id}`);
+    setCopied(`${cryptoGiftUrl}/cryptoGift?id=${state?.id}`);
     singleMessage.success('Copy Success');
-  }, [cryptoGiftUrl, setCopied, state.id]);
+  }, [cryptoGiftUrl, setCopied, state?.id]);
+
+  const onClickTgShare = useCallback(() => {
+    setCopied(getCryptoGiftTgLink(state?.id));
+    singleMessage.success('Copy Telegram Link Success');
+  }, [getCryptoGiftTgLink, setCopied, state?.id]);
 
   const mainContent = useMemo(
     () => (
@@ -52,7 +59,7 @@ export default function SuccessPage() {
             <div
               className="view-details"
               onClick={() =>
-                navigate('/crypto-gifts/detail', { state: { id: state.id, fromPage: FromPageEnum.cryptoGiftSuccess } })
+                navigate('/crypto-gifts/detail', { state: { id: state?.id, fromPage: FromPageEnum.cryptoGiftSuccess } })
               }>
               View Details
             </div>
@@ -61,13 +68,17 @@ export default function SuccessPage() {
         <div className="tip-msg">Share the surprise with your friends NOW!</div>
         <div className="share-btn">
           <Button type="primary" className="flex-center" onClick={onClickShare}>
-            <CustomSvg type="CopyInteractive" />
+            <CustomSvg type="CopyInteractive" className="btn-svg" />
             Copy Link
+          </Button>
+          <Button type="text" className="flex-center tg-link-btn" onClick={onClickTgShare}>
+            <CustomSvg type="TelegramMono" className="btn-svg" />
+            Copy Telegram Link
           </Button>
         </div>
       </div>
     ),
-    [isPrompt, navigate, onClickShare, state],
+    [isPrompt, navigate, onClickShare, onClickTgShare, state?.id],
   );
   return <>{isPrompt ? <PromptFrame content={mainContent} /> : mainContent}</>;
 }

@@ -191,6 +191,7 @@ export const BackEndNetWorkMap: {
     tomorrowDAOUrl: 'https://test.tmrwdao.com',
     hamsterUrl: 'https://test-hamster.beangotown.com',
     zkLoginVerifyUrl: 'https://zklogin-prover-test.portkey.finance/v1/prove',
+    cryptoGiftTgUrl: 'https://t.me/PortkeyTestnet_Bot/crypto_gift',
   },
   'back-end-testnet': {
     name: 'aelf Testnet',
@@ -291,5 +292,6 @@ export const BackEndNetWorkMap: {
     tomorrowDAOUrl: 'https://tmrwdao.com',
     hamsterUrl: 'https://hamster.beangotown.com',
     zkLoginVerifyUrl: 'https://zklogin-prover.portkey.finance/v1/prove',
+    cryptoGiftTgUrl: 'https://t.me/PortkeyMainnet_Bot/crypto_gift',
   },
 };

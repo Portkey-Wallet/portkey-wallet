@@ -34,7 +34,7 @@ import { initNotifications } from 'utils/notifee';
 import { logBoxTextColorSaver } from 'utils/textColor';
 import { CODE_PUSH_OPTIONS } from 'constants/codePush';
 import { useEffectOnce } from '@portkey-wallet/hooks';
-import { init as initCustom } from './js/utils/amplitude';
+import { init, track } from './js/utils/amplitude';
 
 if (__DEV__) {
   logBoxTextColorSaver();
@@ -67,8 +67,8 @@ const App = () => {
   useEffectOnce(() => {
     initRequest();
     (async () => {
-      await initCustom();
-      // trackCustom('appc');
+      await init();
+      track('open portkey');
     })();
   });
   return (

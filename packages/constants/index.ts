@@ -4,7 +4,3 @@ export const SECOND = 1000;
 export const MINUTE = SECOND * 60;
 export const HOUR = MINUTE * 60;
 export const DAY = HOUR * 24;
-
-export const AMPLITUDE_WEB_API_KEY = 'b17a15fe88975962c9fdd64fe1de4642';
-export const AMPLITUDE_IOS_API_KEY = '9cde4a3928a35d2a7ebbcd5fc6daffe5';
-export const AMPLITUDE_ANDROID_API_KEY = 'b7e80a2454ba57b9af73c5bbc6d12de6';

@@ -36,6 +36,7 @@ import { deleteFCMToken } from 'utils/FCM';
 import { resetBadge } from 'utils/notifee';
 import { useLatestRef } from '@portkey-wallet/hooks';
 import { useMiscSetting } from '@portkey-wallet/hooks/hooks-ca/misc';
+import { reset } from 'utils/amplitude';
 
 export default function useLogOut() {
   const dispatch = useAppDispatch();
@@ -47,6 +48,7 @@ export default function useLogOut() {
 
   return useCallback(() => {
     try {
+      reset();
       resetStore();
       dispatch(resetDappList(currentNetwork));
       dispatch(resetDiscover(currentNetwork));

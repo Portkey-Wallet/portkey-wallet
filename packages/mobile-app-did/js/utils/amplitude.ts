@@ -1,10 +1,10 @@
 import * as amplitude from '@amplitude/analytics-react-native';
 import { Identify } from '@amplitude/analytics-react-native';
-import { AMPLITUDE_ANDROID_API_KEY, AMPLITUDE_IOS_API_KEY } from '@portkey-wallet/constants';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import { BaseEvent, EventOptions } from '@amplitude/analytics-types';
 import DeviceInfo from 'react-native-device-info';
 import * as Application from 'expo-application';
+import Config from 'react-native-config';
 
 class AmplitudeData {
   private instance: amplitude.Types.ReactNativeClient | undefined;
@@ -14,7 +14,7 @@ class AmplitudeData {
   }
   async init() {
     this.instance = amplitude.createInstance();
-    this.instance.init(this.isIOS ? AMPLITUDE_IOS_API_KEY : AMPLITUDE_ANDROID_API_KEY, '', {
+    this.instance.init(this.isIOS ? Config.AMPLITUDE_IOS_API_KEY : Config.AMPLITUDE_ANDROID_API_KEY, '', {
       trackingOptions: {
         platform: false,
         app_version: true,

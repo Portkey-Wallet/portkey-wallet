@@ -34,11 +34,7 @@ import { initNotifications } from 'utils/notifee';
 import { logBoxTextColorSaver } from 'utils/textColor';
 import { CODE_PUSH_OPTIONS } from 'constants/codePush';
 import { useEffectOnce } from '@portkey-wallet/hooks';
-import { init, track } from '@amplitude/analytics-react-native';
-import { LogLevel } from '@amplitude/analytics-types';
-import DeviceInfo from 'react-native-device-info';
-import { AMPLITUDE_API_KEY, AMPLITUDE_IOS_API_KEY } from '@portkey-wallet/constants';
-import { init as initCustom, track as trackCustom } from './js/utils/amplitude';
+import { init as initCustom } from './js/utils/amplitude';
 
 if (__DEV__) {
   logBoxTextColorSaver();
@@ -72,12 +68,7 @@ const App = () => {
     initRequest();
     (async () => {
       await initCustom();
-      trackCustom('appc');
-      // const id = await DeviceInfo.getUniqueId();
-      // await init(AMPLITUDE_IOS_API_KEY, id, {
-      //   logLevel: LogLevel.Debug,
-      // });
-      // track('open-app');
+      // trackCustom('appc');
     })();
   });
   return (

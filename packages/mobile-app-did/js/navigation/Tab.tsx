@@ -45,7 +45,7 @@ export const tabMenuTypeMap: Record<TabRouteNameEnum, IRenderTabMenuItem> = {
     name: TabRouteNameEnum.WALLET,
     index: 0,
     label: 'Wallet',
-    icon: 'logo-icon',
+    icon: 'home',
     isDefault: true,
     component: DashBoard,
   },
@@ -175,8 +175,9 @@ export default function TabRoot() {
       <Tab.Navigator
         initialRouteName="Wallet"
         screenOptions={({ route }) => ({
-          tabBarStyle: { paddingTop: 6 },
-          tabBarLabelStyle: styles.tabBarLabelStyle,
+          tabBarShowLabel: false,
+          tabBarStyle: { paddingTop: 6, backgroundColor: defaultColors.bg43 },
+          // tabBarLabelStyle: styles.tabBarLabelStyle,
           tabBarAllowFontScaling: false,
           header: () => null,
           tabBarIcon: ({ focused }) => {
@@ -188,7 +189,7 @@ export default function TabRoot() {
                   <Svg
                     icon={tabMenu?.icon || 'my'}
                     size={pTd(24)}
-                    color={focused ? defaultColors.font17 : defaultColors.font11}
+                    color={focused ? defaultColors.primaryColorV2 : defaultColors.font26}
                   />
                 </View>
               );
@@ -201,7 +202,7 @@ export default function TabRoot() {
                   <Svg
                     icon={tabMenu?.icon || 'my'}
                     size={pTd(24)}
-                    color={focused ? defaultColors.font17 : defaultColors.font11}
+                    color={focused ? defaultColors.primaryColorV2 : defaultColors.font26}
                   />
                 </View>
               );
@@ -219,7 +220,7 @@ export default function TabRoot() {
               <Svg
                 icon={tabMenu?.icon || 'my'}
                 size={pTd(24)}
-                color={focused ? defaultColors.font17 : defaultColors.font11}
+                color={focused ? defaultColors.primaryColorV2 : defaultColors.font26}
               />
             );
           },
@@ -250,7 +251,7 @@ export default function TabRoot() {
             component={ele.component}
             options={{
               title: t(ele.label),
-              tabBarActiveTintColor: defaultColors.font4,
+              tabBarActiveTintColor: 'red',
             }}
           />
         ))}
@@ -261,7 +262,8 @@ export default function TabRoot() {
     <Tab.Navigator
       initialRouteName="Wallet"
       screenOptions={({ route }) => ({
-        tabBarLabelStyle: styles.tabBarLabelStyle,
+        tabBarStyle: { paddingTop: 6, backgroundColor: defaultColors.bg43 },
+        // tabBarLabelStyle: styles.tabBarLabelStyle,
         tabBarAllowFontScaling: false,
         header: () => null,
         tabBarIcon: ({ focused }) => {
@@ -273,7 +275,7 @@ export default function TabRoot() {
                 <Svg
                   icon={tabMenu?.icon || 'my'}
                   size={pTd(24)}
-                  color={focused ? defaultColors.font4 : defaultColors.font7}
+                  color={focused ? defaultColors.primaryColorV2 : defaultColors.font26}
                 />
               </View>
             );
@@ -286,7 +288,7 @@ export default function TabRoot() {
                 <Svg
                   icon={tabMenu?.icon || 'my'}
                   size={pTd(24)}
-                  color={focused ? defaultColors.font4 : defaultColors.font7}
+                  color={focused ? defaultColors.primaryColorV2 : defaultColors.font26}
                 />
               </View>
             );
@@ -296,7 +298,7 @@ export default function TabRoot() {
             <Svg
               icon={tabMenu?.icon || 'my'}
               size={pTd(24)}
-              color={focused ? defaultColors.font4 : defaultColors.font7}
+              color={focused ? defaultColors.primaryColorV2 : defaultColors.font26}
             />
           );
         },
@@ -307,8 +309,8 @@ export default function TabRoot() {
           name={ele.name}
           component={ele.component}
           options={{
-            title: t(ele.label),
-            tabBarActiveTintColor: defaultColors.font4,
+            tabBarShowLabel: false,
+            tabBarActiveTintColor: defaultColors.primaryColorV2,
           }}
         />
       ))}

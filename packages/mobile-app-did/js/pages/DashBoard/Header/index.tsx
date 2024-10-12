@@ -142,11 +142,11 @@ const DashBoardHeader: React.FC<DashBoardHeaderProps> = ({ title, scrollY }) => 
   const rightDom = useMemo(() => {
     return (
       <View style={styles.rightDomWrap}>
-        {isMainnet && (
+        {
           <Touchable style={styles.svgWrap} onPress={onGiftClick}>
             <Svg icon="crypto-gift" size={pTd(20)} />
           </Touchable>
-        )}
+        }
         <Touchable style={styles.svgWrap} onPress={onCopyAddress}>
           <Svg icon="copy" size={pTd(22)} color={defaultColors.font8} />
         </Touchable>

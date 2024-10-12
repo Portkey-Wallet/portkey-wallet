@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Animated, View } from 'react-native';
+import { Animated, StatusBar, View } from 'react-native';
 import { NestedScrollView, NestedScrollViewHeader } from '@sdcx/nested-scroll';
 import Card from './Card';
 import DashBoardTab from './DashBoardTab';
@@ -62,7 +62,8 @@ const DashBoard: React.FC<any> = ({ navigation }) => {
   );
 
   return (
-    <SafeAreaBox edges={['top', 'right', 'left']} style={[BGStyles.white]}>
+    <SafeAreaBox edges={['top', 'right', 'left']} style={[BGStyles.bg43]}>
+      <StatusBar animated={true} barStyle={'light-content'} />
       <DashBoardHeader scrollY={scrollY} title={title} />
       <SetNewWalletNamePopup />
       <NestedScrollView>

@@ -9,7 +9,6 @@ import CustomModal from 'pages/components/CustomModal';
 import {
   REFRESH_DELAY_TIME,
   useAddStrangerContact,
-  useContactInfo,
   useIndexAndName,
   useIsMyContact,
   useReadImputation,
@@ -43,27 +42,25 @@ export default function ViewContact() {
     () => state?.portkeyId || state?.imInfo?.portkeyId,
     [state?.imInfo?.portkeyId, state?.portkeyId],
   );
-  const contactInfo = useContactInfo({ contactId: state?.id, relationId: relationId });
 
-  const { name, index } = useIndexAndName(state);
+  const { index } = useIndexAndName(state);
 
   // bind: api response
   const [profileData, setProfileData] = useState<IProfileDetailDataProps>();
   // bind: location state
   const stateTransform = useMemo(
     () => ({
-      ...contactInfo,
-      id: contactInfo?.id,
+      ...state,
+      id: state?.id,
       index: index,
-      name: name,
       imInfo: {
-        portkeyId: contactInfo?.imInfo?.portkeyId,
-        relationId: contactInfo?.imInfo?.relationId,
+        portkeyId: portkeyId,
+        relationId: relationId,
       },
     }),
-    [contactInfo, index, name],
+    [index, portkeyId, relationId, state],
   );
-  const mergeData = useMemo(() => ({ ...profileData, ...stateTransform }), [profileData, stateTransform]);
+  const mergeData = useMemo(() => ({ ...stateTransform, ...profileData }), [profileData, stateTransform]);
 
   const title = t('Details');
   const editText = t('Edit');
@@ -105,6 +102,11 @@ export default function ViewContact() {
   }, []);
 
   useEffect(() => {
+    if (!showChat) return;
+
+    // clear api data
+    setProfileData({});
+
     im.service
       .getProfile({
         id: state.id || undefined,
@@ -115,7 +117,7 @@ export default function ViewContact() {
         const loginAccountMap = genLoginAccountMap(res.data.loginAccounts || []);
         setProfileData((v) => ({ ...v, ...res?.data, loginAccountMap }));
       });
-  }, [genLoginAccountMap, isMyContactFn, portkeyId, relationId, state.id]);
+  }, [genLoginAccountMap, isMyContactFn, portkeyId, relationId, showChat, state.id]);
 
   const goBack = useCallback(() => {
     switch (state?.from) {

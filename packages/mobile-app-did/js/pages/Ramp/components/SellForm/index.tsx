@@ -205,7 +205,7 @@ export default function SellForm() {
     setAmount(text);
   }, []);
 
-  const defaultToken = useDefaultToken();
+  const defaultToken = useDefaultToken(MAIN_CHAIN_ID);
   const getCurrentCAContract = useGetCurrentCAContract(MAIN_CHAIN_ID);
   const checkTransferLimitWithJump = useCheckTransferLimitWithJump();
   const securitySafeCheckAndToast = useSecuritySafeCheckAndToast();

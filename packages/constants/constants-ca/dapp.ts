@@ -16,7 +16,10 @@ export const SessionKeyArray = Object.entries(SessionKeyMap).map(([k, v]) => ({
   children: v,
 }));
 
-export const REMEMBER_ME_ACTION_WHITELIST: string[] = [MethodsBase.SEND_TRANSACTION];
+export const REMEMBER_ME_ACTION_WHITELIST: string[] = [
+  MethodsBase.SEND_TRANSACTION,
+  MethodsBase.SEND_MULTI_TRANSACTION,
+];
 
 export const DefaultDapp = {
   origin: 'default',
@@ -32,6 +35,7 @@ export const CA_METHOD_WHITELIST = ['ManagerForwardCall', 'ManagerTransfer', App
 export const DAPP_WHITELIST_ACTION_WHITELIST: string[] = [
   MethodsBase.REQUEST_ACCOUNTS,
   MethodsBase.SEND_TRANSACTION,
+  MethodsBase.SEND_MULTI_TRANSACTION,
   MethodsWallet.GET_WALLET_SIGNATURE,
 ];
 

@@ -20,9 +20,9 @@
     "query-string": "^7.1.1"
   },
   "devDependencies": {
-    "@portkey/provider-types": "2.2.4",
-    "@portkey/provider-utils": "2.2.1",
-    "@portkey/providers": "2.2.4",
+    "@portkey/provider-types": "2.3.5-alpha.5",
+    "@portkey/provider-utils": "2.3.5-alpha.5",
+    "@portkey/providers": "2.3.5-alpha.5",
     "@react-native-async-storage/async-storage": "^1.17.6",
     "@types/is-url": "^1.2.30",
     "@types/react-native": "^0.69.7",

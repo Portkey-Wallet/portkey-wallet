@@ -37,6 +37,7 @@ const aelfMethodList = [
   MethodsBase.CHAINS_INFO,
   MethodsBase.REQUEST_ACCOUNTS,
   MethodsBase.SEND_TRANSACTION,
+  MethodsBase.SEND_MULTI_TRANSACTION,
   MethodsBase.SET_WALLET_CONFIG_OPTIONS,
   MethodsWallet.GET_WALLET_MANAGER_SIGNATURE,
   MethodsWallet.GET_WALLET_SIGNATURE,
@@ -111,6 +112,9 @@ export default class AELFMethodController {
         break;
       case MethodsBase.SEND_TRANSACTION:
         this.sendTransaction(sendResponse, message.payload);
+        break;
+      case MethodsBase.SEND_MULTI_TRANSACTION:
+        this.sendMultiTransaction(sendResponse, message.payload);
         break;
       case MethodsBase.REQUEST_ACCOUNTS:
         this.requestAccounts(sendResponse, message.payload);
@@ -593,6 +597,79 @@ export default class AELFMethodController {
         // TODO Only support open a window
         removeLocalStorage('txPayload');
       }
+
+      if (result.error === 200003)
+        return sendResponse({
+          ...errorHandler(200003),
+          data: {
+            code: ResponseCode.USER_DENIED,
+          },
+        });
+      if (result.error) {
+        console.log('error', result);
+
+        return sendResponse({
+          ...errorHandler(700002),
+          data: {
+            code: ResponseCode.CONTRACT_ERROR,
+          },
+        });
+      }
+      sendResponse(result);
+    } catch (error) {
+      console.log('sendTransaction===', error);
+      sendResponse({
+        ...errorHandler(100001),
+        data: {
+          code: ResponseCode.INTERNAL_ERROR,
+        },
+      });
+    }
+  };
+
+  sendMultiTransaction: RequestCommonHandler = async (sendResponse, message) => {
+    try {
+      if (!message?.payload?.params)
+        return sendResponse({ ...errorHandler(400001), data: { code: ResponseCode.ERROR_IN_PARAMS } });
+
+      if (!(await this.dappManager.isActive(message.origin)))
+        return sendResponse({
+          ...errorHandler(200004),
+          data: {
+            code: ResponseCode.UNAUTHENTICATED,
+          },
+        });
+      const { payload, origin } = message;
+      console.log(message, 'message====sendMultiTransaction');
+
+      if (!payload?.contractAddress)
+        return sendResponse({
+          ...errorHandler(200005),
+          data: {
+            code: ResponseCode.ERROR_IN_PARAMS,
+            msg: 'Invalid contractAddress',
+          },
+        });
+
+      const key = randomId();
+
+      if (payload.params.paramsOption.symbol == '*') {
+        return sendResponse({ ...errorHandler(400001), data: { code: ResponseCode.ERROR_IN_PARAMS } });
+      }
+
+      setLocalStorage({ txPayload: { [key]: JSON.stringify(payload) } });
+      delete message.payload?.params;
+      const _config = this.config?.[origin];
+      const result = await this.approvalController.authorizedToAllowanceApprove({
+        origin,
+        transactionInfoId: key,
+        icon: message.icon,
+        method: payload?.method,
+        chainId: payload.chainId,
+        batchApproveNFT: _config?.batchApproveNFT,
+      });
+
+      removeLocalStorage('txPayload');
 
       if (result.error === 200003)
         return sendResponse({

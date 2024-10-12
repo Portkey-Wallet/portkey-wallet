@@ -116,6 +116,13 @@ export default class ApprovalController {
     });
   }
 
+  async authorizedToSendMultiTransactions(params: { payload: any }): Promise<SendResponseParams> {
+    return this.notificationService.openPrompt({
+      method: PromptRouteTypes.SEND_MULTI_TRANSACTION,
+      search: JSON.stringify(params),
+    });
+  }
+
   /**
    * Obtain authorization to get signature
    *

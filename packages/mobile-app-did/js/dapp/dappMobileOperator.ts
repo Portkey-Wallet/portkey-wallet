@@ -7,10 +7,12 @@ import {
   MethodsBase,
   MethodsWallet,
   SendTransactionParams,
+  SendMultiTransactionParams,
   NotificationEvents,
   WalletState,
   GetSignatureParams,
   MethodsType,
+  ChainIdMap,
 } from '@portkey/provider-types';
 import DappEventBus from './dappEventBus';
 import { generateNormalResponse, generateErrorResponse } from '@portkey/provider-utils';
@@ -36,6 +38,7 @@ import { ChainId } from '@portkey-wallet/types';
 import { checkSecuritySafe } from 'utils/security';
 import AElf from 'aelf-sdk';
 import { getApproveSymbol } from '@portkey-wallet/utils/token';
+import { getAelfInstance } from '@portkey-wallet/utils/aelf';
 import { Share } from 'react-native';
 const NATIVE_METHOD: MethodsType[] = ['Share'];
 const NATIVE_METHOD_MAP = {
@@ -43,6 +46,7 @@ const NATIVE_METHOD_MAP = {
 };
 const SEND_METHOD: { [key: string]: true } = {
   [MethodsBase.SEND_TRANSACTION]: true,
+  [MethodsBase.SEND_MULTI_TRANSACTION]: true,
   [MethodsBase.REQUEST_ACCOUNTS]: true,
   [MethodsBase.SET_WALLET_CONFIG_OPTIONS]: true,
   [MethodsWallet.GET_WALLET_SIGNATURE]: true,
@@ -316,6 +320,33 @@ export default class DappMobileOperator extends Operator {
       });
     }
   };
+  protected handleMultiSendTransaction: SendRequest<SendMultiTransactionParams> = async (eventName, params) => {
+    const { multiChainInfo, gatewayUrl, chainId, params: multiTransactionParamInfo } = params;
+    const chainInfo = await this.dappManager.getChainInfo(chainId);
+    if (!chainInfo) throw new Error(`${chainId} chainInfo does not exist`);
+    const transformedMultiChainInfo = Object.entries(multiChainInfo).reduce((acc, [key, value]) => {
+      const chain = ChainIdMap[key as ChainId];
+      if (chain) {
+        (acc as { [key: string]: any })[chain] = value;
+      }
+      return acc;
+    }, {});
+    const aelfInstance = getAelfInstance(chainInfo.endPoint);
+    const wallet = getManager();
+    const contractOption = {
+      multi: transformedMultiChainInfo,
+      gatewayUrl,
+    };
+    const caContract = await aelfInstance.chain.contractAt(chainInfo.caContractAddress, wallet, contractOption);
+    const transformedParams = Object.entries(multiTransactionParamInfo).reduce((acc, [key, value]) => {
+      const chain = ChainIdMap[key as ChainId];
+      if (chain) {
+        (acc as { [key: string]: any })[chain] = value;
+      }
+      return acc;
+    }, {});
+    return await caContract.sendMultiTransactionToGateway(transformedParams);
+  };
   protected handleSignature: SendRequest<GetSignatureParams> = async (eventName, params) => {
     try {
       if (!params.data) return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS });
@@ -528,6 +559,27 @@ export default class DappMobileOperator extends Operator {
         if (isApprove) return this.handleApprove(request);
 
         callBack = this.handleSendTransaction;
+        break;
+      }
+      case MethodsBase.SEND_MULTI_TRANSACTION: {
+        if (!isActive) return this.unauthenticated(eventName);
+
+        payload = request.payload;
+        if (
+          !payload ||
+          typeof payload.params !== 'object' ||
+          !payload.rpcUrl ||
+          !payload.tokenAddress ||
+          !payload.multiChainInfo ||
+          !payload.gatewayUrl
+        )
+          return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS });
+        // todo_wade: confirm whether the approve check is needed
+        // // is approve
+        // const isApprove = await this.isApprove(request);
+        // if (isApprove) return this.handleApprove(request);
+
+        callBack = this.handleMultiSendTransaction;
         break;
       }
       case MethodsWallet.GET_WALLET_SIGNATURE: {

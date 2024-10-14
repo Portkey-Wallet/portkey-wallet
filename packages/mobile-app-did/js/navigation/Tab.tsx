@@ -11,6 +11,8 @@ import useInitData from 'hooks/useInitData';
 import DiscoverHome from 'pages/Discover/DiscoverHome';
 import ChatHome from 'pages/Chat/ChatHomePage';
 import TradeHomePage from 'pages/Trade/TradeHomePage';
+import ActivityListPage from 'pages/Activity/ActivityListPage';
+
 import { formatMessageCountToStr } from '@portkey-wallet/utils/chat';
 import { StyleSheet, Animated, View } from 'react-native';
 import { pTd } from 'utils/unit';
@@ -56,13 +58,21 @@ export const tabMenuTypeMap: Record<TabRouteNameEnum, IRenderTabMenuItem> = {
     icon: 'discover',
     component: DiscoverHome,
   },
-  [TabRouteNameEnum.TRADE]: {
-    name: TabRouteNameEnum.TRADE,
+  // [TabRouteNameEnum.TRADE]: {
+  //   name: TabRouteNameEnum.TRADE,
+  //   index: 2,
+  //   label: 'Trade',
+  //   largeIcon: 'trade',
+  //   icon: 'trade-small',
+  //   component: TradeHomePage,
+  // },
+  [TabRouteNameEnum.ACTIVITY]: {
+    name: TabRouteNameEnum.ACTIVITY,
     index: 2,
-    label: 'Trade',
-    largeIcon: 'trade',
-    icon: 'trade-small',
-    component: TradeHomePage,
+    label: 'Activity',
+    largeIcon: 'clock',
+    icon: 'clock',
+    component: ActivityListPage,
   },
   [TabRouteNameEnum.CHAT]: {
     name: TabRouteNameEnum.CHAT,
@@ -142,19 +152,19 @@ export default function TabRoot() {
     [rotateAnimate],
   );
 
-  const rotateStyle = useMemo(
-    () => ({
-      transform: [
-        {
-          rotate: rotateAnimate.interpolate({
-            inputRange: [0, 360],
-            outputRange: ['0deg', '180deg'],
-          }),
-        },
-      ],
-    }),
-    [rotateAnimate],
-  );
+  // const rotateStyle = useMemo(
+  //   () => ({
+  //     transform: [
+  //       {
+  //         rotate: rotateAnimate.interpolate({
+  //           inputRange: [0, 360],
+  //           outputRange: ['0deg', '180deg'],
+  //         }),
+  //       },
+  //     ],
+  //   }),
+  //   [rotateAnimate],
+  // );
 
   // init data
   useInitData();
@@ -206,14 +216,6 @@ export default function TabRoot() {
                   />
                 </View>
               );
-            } else if (tabMenu?.name === TabRouteNameEnum.TRADE) {
-              return (
-                <View style={styles.tradeWrap}>
-                  <Animated.View style={rotateStyle}>
-                    <SvgXml xml={svgs.trade} width={pTd(40)} height={pTd(40)} />
-                  </Animated.View>
-                </View>
-              );
             }
 
             return (
@@ -227,25 +229,6 @@ export default function TabRoot() {
         })}>
         {tabMenuList.map(ele => (
           <Tab.Screen
-            listeners={({ navigation }) => ({
-              tabPress: e => {
-                // rotate trade btn
-                const historyArr = navigation.getState()?.history;
-                const previousRoute = historyArr[historyArr.length - 1];
-
-                if (
-                  e.target?.startsWith(TabRouteNameEnum.TRADE) &&
-                  !previousRoute?.key?.startsWith(TabRouteNameEnum.TRADE)
-                ) {
-                  rotateButton(false);
-                } else if (
-                  !e.target?.startsWith(TabRouteNameEnum.TRADE) &&
-                  previousRoute?.key?.startsWith(TabRouteNameEnum.TRADE)
-                ) {
-                  rotateButton(true);
-                }
-              },
-            })}
             key={ele.name}
             name={ele.name}
             component={ele.component}

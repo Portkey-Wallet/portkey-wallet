@@ -344,7 +344,6 @@ const ActivityDetail = () => {
       safeAreaColor={['white']}
       containerStyles={styles.containerStyle}
       scrollViewProps={{ disabled: true }}>
-      <StatusBar barStyle={'dark-content'} />
       <Touchable style={styles.closeWrap} onPress={() => navigationService.goBack()}>
         <Svg icon="close" size={pTd(16)} />
       </Touchable>

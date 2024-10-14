@@ -51,9 +51,17 @@ export const tabMenuTypeMap: Record<TabRouteNameEnum, IRenderTabMenuItem> = {
     isDefault: true,
     component: DashBoard,
   },
+  [TabRouteNameEnum.ACTIVITY]: {
+    name: TabRouteNameEnum.ACTIVITY,
+    index: 1,
+    label: 'Activity',
+    largeIcon: 'clock',
+    icon: 'clock',
+    component: ActivityListPage,
+  },
   [TabRouteNameEnum.DISCOVER]: {
     name: TabRouteNameEnum.DISCOVER,
-    index: 1,
+    index: 2,
     label: 'Discover',
     icon: 'discover',
     component: DiscoverHome,
@@ -66,14 +74,7 @@ export const tabMenuTypeMap: Record<TabRouteNameEnum, IRenderTabMenuItem> = {
   //   icon: 'trade-small',
   //   component: TradeHomePage,
   // },
-  [TabRouteNameEnum.ACTIVITY]: {
-    name: TabRouteNameEnum.ACTIVITY,
-    index: 2,
-    label: 'Activity',
-    largeIcon: 'clock',
-    icon: 'clock',
-    component: ActivityListPage,
-  },
+
   [TabRouteNameEnum.CHAT]: {
     name: TabRouteNameEnum.CHAT,
     index: 3,
@@ -81,14 +82,14 @@ export const tabMenuTypeMap: Record<TabRouteNameEnum, IRenderTabMenuItem> = {
     icon: 'chat-tab',
     component: ChatHome,
   },
-  [TabRouteNameEnum.SETTINGS]: {
-    name: TabRouteNameEnum.SETTINGS,
-    isDefault: true,
-    index: 4,
-    label: 'My',
-    icon: 'my',
-    component: MyMenu,
-  },
+  // [TabRouteNameEnum.SETTINGS]: {
+  //   name: TabRouteNameEnum.SETTINGS,
+  //   isDefault: true,
+  //   index: 4,
+  //   label: 'My',
+  //   icon: 'my',
+  //   component: MyMenu,
+  // },
 };
 
 export const defaultTabMenuList = Object.values(tabMenuTypeMap).filter(item => item.isDefault);

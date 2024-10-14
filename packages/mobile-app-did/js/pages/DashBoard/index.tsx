@@ -63,7 +63,6 @@ const DashBoard: React.FC<any> = ({ navigation }) => {
 
   return (
     <SafeAreaBox edges={['top', 'right', 'left']} style={[BGStyles.bg43]}>
-      <StatusBar animated={true} barStyle={'light-content'} />
       <DashBoardHeader scrollY={scrollY} title={title} />
       <SetNewWalletNamePopup />
       <NestedScrollView>

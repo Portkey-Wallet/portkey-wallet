@@ -181,7 +181,7 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
   return (
     <PageContainer
       titleDom={t('Add Tokens')}
-      safeAreaColor={['white', 'white']}
+      safeAreaColor={['black', 'black']}
       rightDom={RightDom}
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}>

@@ -147,7 +147,6 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
 
   return (
     <SafeAreaBox style={styles.pageWrap}>
-      <StatusBar barStyle={'default'} />
       <View style={[GStyles.flexRow, GStyles.spaceBetween, GStyles.itemCenter]}>
         <Touchable style={styles.iconWrap} onPress={() => navigationService.goBack()}>
           <Svg icon="left-arrow" size={pTd(22)} />

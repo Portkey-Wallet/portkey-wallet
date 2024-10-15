@@ -51,7 +51,7 @@ export default function PageContainer({
         pageSafeBottomPadding={pageSafeBottomPadding}
         style={[{ backgroundColor: SafeAreaColorMap[safeAreaColor[1]] }, safeAreaProps?.[1]?.style]}>
         {!hideHeader && <CustomHeader themeType={themeType} {...props} />}
-        {themeType === 'white' && <StatusBar barStyle="dark-content" />}
+        {/* {themeType === 'white' && <StatusBar barStyle="dark-content" />} */}
         {scrollViewProps?.disabled ? (
           hideTouchable ? (
             <View style={[gStyles.container, containerStyles]}>{children}</View>

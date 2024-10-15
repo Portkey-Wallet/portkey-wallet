@@ -262,7 +262,7 @@ export const BackEndNetWorkMap: {
     networkType: 'MAINNET',
     isActive: true,
     apiUrl: 'https://aa-portkey.portkey.finance',
-    graphqlUrl: 'https://dapp-aa-portkey.portkey.finance/Portkey_V2_DID/PortKeyIndexerCASchema/graphql',
+    graphqlUrl: 'https://dapp-aa-portkey.portkey.finance/aefinder-v2/api/app/graphql/portkey',
     connectUrl: 'https://auth-aa-portkey.portkey.finance',
     cmsUrl: 'https://cms-aa.portkey.finance/graphql',
     s3Url: 'https://portkey-cms-mainnet.s3.ap-northeast-1.amazonaws.com',

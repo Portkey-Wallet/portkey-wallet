@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Animated, StatusBar, View } from 'react-native';
+import { Animated, StatusBar } from 'react-native';
 import { NestedScrollView, NestedScrollViewHeader } from '@sdcx/nested-scroll';
+import { PullToRefresh } from '@sdcx/pull-to-refresh';
+import CustomPullToRefreshHeader from './PullToRefresh';
 import Card from './Card';
 import DashBoardTab from './DashBoardTab';
 import { SetNewWalletNamePopup } from './SetNewWalletName/Popup';
@@ -31,6 +33,7 @@ const DashBoard: React.FC<any> = ({ navigation }) => {
   useReportingSignalR();
 
   const [scrollY, setScrollY] = useState(new Animated.Value(0));
+  const [refreshing, setRefreshing] = useState(false);
 
   const navToBottomTab = useCallback(
     (tabName: RootStackName, params: any) => {
@@ -66,21 +69,33 @@ const DashBoard: React.FC<any> = ({ navigation }) => {
       <StatusBar animated={true} barStyle={'light-content'} />
       <DashBoardHeader scrollY={scrollY} title={title} />
       <SetNewWalletNamePopup />
-      <NestedScrollView>
-        {React.cloneElement(
-          <NestedScrollViewHeader
-            stickyHeaderBeginIndex={1}
-            onScroll={({ nativeEvent }) => {
-              const {
-                contentOffset: { y },
-              } = nativeEvent;
-              setScrollY(new Animated.Value(y));
+      <PullToRefresh
+        header={
+          <CustomPullToRefreshHeader
+            refreshing={refreshing}
+            onRefresh={() => {
+              setRefreshing(true);
+              setTimeout(() => {
+                setRefreshing(false);
+              }, 2000);
             }}
-          />,
-          { children: <Card title={title} /> },
-        )}
-        <DashBoardTab />
-      </NestedScrollView>
+          />
+        }>
+        <NestedScrollView>
+          {React.cloneElement(
+            <NestedScrollViewHeader
+              onScroll={({ nativeEvent }) => {
+                const {
+                  contentOffset: { y },
+                } = nativeEvent;
+                setScrollY(new Animated.Value(y));
+              }}
+            />,
+            { children: <Card title={title} /> },
+          )}
+          <DashBoardTab />
+        </NestedScrollView>
+      </PullToRefresh>
       {/* <View style={{ position: 'absolute', bottom: pTd(40) }}>
         <MintStatusLine />
       </View> */}

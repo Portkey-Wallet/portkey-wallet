@@ -6393,6 +6393,11 @@
   resolved "https://registry.yarnpkg.com/@sdcx/nested-scroll/-/nested-scroll-0.14.0.tgz#d0f6f07f50eff64eb22aa2da6967e29494c00a97"
   integrity sha512-sSjZ8apHCLZto3VQUHcOnV+dVq0hdQOcPWjmBNoe/0W1VxoDhujgW7OiRexTpsTUc3m7PfRzhPIx8IO8og7JjQ==
 
+"@sdcx/pull-to-refresh@^0.23.0":
+  version "0.23.0"
+  resolved "https://registry.yarnpkg.com/@sdcx/pull-to-refresh/-/pull-to-refresh-0.23.0.tgz#5de116ecc61e3bbae185d0a0a9d21e329a66cea0"
+  integrity sha512-o97rZwpNNqaWRceAHYSwBEyCJLtcl+m3+wONoqLaKbKYbNR2KTitGR9discnQCpwAp2IpAbKNeKx9P9zu0ogqg==
+
 "@segment/loosely-validate-event@^2.0.0":
   version "2.0.0"
   resolved "https://registry.npmmirror.com/@segment/loosely-validate-event/-/loosely-validate-event-2.0.0.tgz#87dfc979e5b4e7b82c5f1d8b722dfd5d77644681"

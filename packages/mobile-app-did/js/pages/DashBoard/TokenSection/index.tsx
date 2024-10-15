@@ -108,11 +108,11 @@ export default function TokenSection({ getAccountBalance }: TokenSectionProps) {
         renderItem={renderItem}
         keyExtractor={(item: ITokenSectionResponse) => item.symbol}
         onEndReached={() => getAccountTokenList()}
-        onRefresh={() => {
-          getAccountBalance?.();
-          getTokenPrice();
-          getAccountTokenList(true);
-        }}
+        // onRefresh={() => {
+        //   getAccountBalance?.();
+        //   getTokenPrice();
+        //   getAccountTokenList(true);
+        // }}
         ListFooterComponent={
           <Touchable
             style={styles.addWrap}

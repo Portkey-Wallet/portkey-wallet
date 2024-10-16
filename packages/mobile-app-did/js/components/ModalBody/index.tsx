@@ -54,6 +54,8 @@ export const ModalBody: React.FC<ModalBodyProps> = props => {
     return (
       <View onTouchStart={onTouchStart} style={[styles.commonBox, gStyles.overlayStyle, styles.wrapStyle, style]}>
         <View style={styles.topWrap}>
+          <View style={styles.slot} />
+
           {isShowLeftBackIcon && (
             <View
               style={styles.leftIcon}
@@ -101,12 +103,12 @@ export const ModalBody: React.FC<ModalBodyProps> = props => {
 export const styles = StyleSheet.create({
   commonBox: {
     overflow: 'hidden',
-    borderRadius: 10,
     backgroundColor: darkColors.bgBase1,
   },
   wrapStyle: {
     width: screenWidth,
   },
+
   centerBox: {
     width: screenWidth * 0.85,
   },
@@ -114,6 +116,15 @@ export const styles = StyleSheet.create({
     position: 'relative',
     paddingTop: pTd(16),
     paddingBottom: pTd(16),
+  },
+  slot: {
+    width: pTd(32),
+    height: pTd(3),
+    position: 'absolute',
+    top: pTd(6),
+    left: pTd(180.5),
+    backgroundColor: darkColors.bgBase3,
+    borderRadius: pTd(1),
   },
   leftIcon: {
     ...GStyles.paddingArg(17, 20),

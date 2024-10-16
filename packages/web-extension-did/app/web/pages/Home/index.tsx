@@ -14,7 +14,6 @@ import { useIsImputation } from '@portkey-wallet/hooks/hooks-ca/contact';
 import initIm from 'hooks/im';
 import { sleep } from '@portkey-wallet/utils';
 import { useDiscoverGroupList } from '@portkey-wallet/hooks/hooks-ca/cms';
-import { useManagerExceedTipModal } from 'hooks/useManagerExceedTip';
 import { useReferral } from '@portkey-wallet/hooks/hooks-ca/referral';
 import HomeHeader from 'pages/components/HomeHeader';
 import BottomBar from 'pages/components/BottomBar';
@@ -32,7 +31,6 @@ export default function Home() {
     navigate(url);
   }, [isNotLessThan768, navigate]);
   useDiscoverGroupList();
-  const managerExceedTip = useManagerExceedTipModal();
   const { search } = useLocation();
   const isSell = useRef(0); // guaranteed to make only one transfer
   const handleAchSell = useHandleAchSell();
@@ -56,7 +54,6 @@ export default function Home() {
 
   useEffectOnce(() => {
     checkAchSell();
-    managerExceedTip();
     getViewReferralStatusStatus();
     getReferralLink();
     fetchAndSetBlockList();

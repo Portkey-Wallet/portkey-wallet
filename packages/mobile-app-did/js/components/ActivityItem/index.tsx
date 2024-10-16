@@ -1,4 +1,4 @@
-import { defaultColors } from 'assets/theme';
+import { darkColors, defaultColors } from 'assets/theme';
 import React, { memo, useEffect, useMemo, useState } from 'react';
 import { Animated, StyleSheet, Text, View } from 'react-native';
 import { formatStr2EllipsisStr } from '@portkey-wallet/utils';
@@ -72,7 +72,10 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
     const suffix = nftInfo?.alias || symbol || '';
 
     return (
-      <Text numberOfLines={1} ellipsizeMode="tail" style={[itemStyle.tokenBalance, isReceived && FontStyles.font10]}>
+      <Text
+        numberOfLines={1}
+        ellipsizeMode="tail"
+        style={[itemStyle.tokenBalance, { color: isReceived ? darkColors.textSuccess1 : darkColors.textBase1 }]}>
         {`${prefix}${formatTokenAmountShowWithDecimals(item?.amount, decimals)} ${suffix}`}
       </Text>
     );
@@ -206,7 +209,10 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
           <View style={itemStyle.right}>
             <TextM
               numberOfLines={1}
-              style={[!sameDirection && GStyles.fontSize(16), tokenTop.isReceived && FontStyles.font10]}>
+              style={[
+                !sameDirection && GStyles.fontSize(16),
+                { color: tokenTop.isReceived ? darkColors.textSuccess1 : darkColors.textBase1 },
+              ]}>
               {`${formatWithCommas({
                 sign: tokenTop.isReceived ? AmountSign.PLUS : AmountSign.MINUS,
                 amount: tokenTop.amount,
@@ -365,7 +371,6 @@ export default memo(ActivityItem);
 const itemStyle = StyleSheet.create({
   itemWrap: {
     flex: 1,
-    backgroundColor: defaultColors.bg1,
     marginHorizontal: pTd(16),
   },
   itemBorder: {
@@ -375,8 +380,8 @@ const itemStyle = StyleSheet.create({
     borderTopColor: defaultColors.bg7,
   },
   time: {
-    fontSize: pTd(12),
-    color: defaultColors.font11,
+    fontSize: pTd(14),
+    color: darkColors.textBase1,
     lineHeight: pTd(18),
     marginTop: pTd(16),
     marginBottom: pTd(4),
@@ -410,12 +415,12 @@ const itemStyle = StyleSheet.create({
     flex: 1,
   },
   centerType: {
-    color: defaultColors.font5,
+    color: darkColors.textBase1,
     fontSize: pTd(16),
     lineHeight: pTd(24),
   },
   centerStatus: {
-    color: defaultColors.font11,
+    color: darkColors.textBase2,
     marginTop: StyleSheet.hairlineWidth,
     fontSize: pTd(10),
     lineHeight: pTd(16),

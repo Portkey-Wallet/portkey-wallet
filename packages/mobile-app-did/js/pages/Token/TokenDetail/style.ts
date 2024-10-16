@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { defaultColors } from 'assets/theme';
+import { defaultColors, darkColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
 import GStyles from 'assets/theme/GStyles';
 import fonts from 'assets/theme/fonts';
@@ -8,11 +8,10 @@ const { white, font11, font5, font7 } = defaultColors;
 
 export const styles = StyleSheet.create({
   pageWrap: {
-    backgroundColor: white,
+    backgroundColor: darkColors.bgBase1,
     ...GStyles.paddingArg(0),
   },
   card: {
-    backgroundColor: white,
     flexDirection: 'column',
     alignItems: 'center',
   },
@@ -57,7 +56,6 @@ export const styles = StyleSheet.create({
     paddingVertical: pTd(8),
   },
   buttonGroupWrap: {
-    backgroundColor: white,
     marginTop: pTd(32),
     marginBottom: pTd(32),
     display: 'flex',

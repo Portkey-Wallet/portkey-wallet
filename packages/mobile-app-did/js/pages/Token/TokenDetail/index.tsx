@@ -48,6 +48,7 @@ import FaucetButton from 'components/FaucetButton';
 import { TokenTitle } from 'components/TokenTitle';
 import { ReceivePageTabType } from 'pages/Receive/types';
 import { parseLink } from '@portkey-wallet/hooks/hooks-ca/cms/util';
+import { darkColors } from 'assets/theme';
 
 interface RouterParams {
   tokenInfo: TokenItemShowType;
@@ -283,7 +284,9 @@ const TokenDetail: React.FC = () => {
         onEndReachedThreshold={ON_END_REACHED_THRESHOLD}
         ListHeaderComponent={
           <View>
-            <TextL style={[FontStyles.font16, styles.listFront, fonts.mediumFont]}>{'Activity'}</TextL>
+            <TextL style={[{ color: darkColors.textBase1, fontSize: pTd(20) }, styles.listFront, fonts.mediumFont]}>
+              {'Activity'}
+            </TextL>
           </View>
         }
         ListFooterComponent={

@@ -163,22 +163,20 @@ const CustomToken: React.FC<CustomTokenProps> = () => {
           onChainPress={onChainChange}
         />
       </FormItem>
-      <FormItem title={'Token Symbol'}>
+      <FormItem title={'Token symbol'}>
         <CommonInput
           type="general"
           spellCheck={false}
           autoCorrect={false}
           value={keyword}
           theme={'white-bg'}
-          placeholder={t('Enter Symbol')}
+          placeholder={t('Enter token symbol')}
           onChangeText={onKeywordChange}
           errorMessage={errorMessage}
         />
       </FormItem>
-      <FormItem title={'Decimal'} titleStyle={pageStyles.disableText}>
-        <TextM style={[pageStyles.tokenDecimal, tokenItem.decimals !== '--' && FontStyles.font5]}>
-          {tokenItem.decimals}
-        </TextM>
+      <FormItem title={'Decimals'} titleStyle={pageStyles.disableText}>
+        <TextM style={[pageStyles.tokenDecimal, FontStyles.fontDisabled1]}>{tokenItem.decimals}</TextM>
       </FormItem>
 
       <View style={pageStyles.btnContainer}>
@@ -244,6 +242,8 @@ export const pageStyles = StyleSheet.create({
     overflow: 'hidden',
     borderRadius: pTd(6),
     paddingLeft: pTd(16),
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: darkColors.borderBase1,
   },
   disableText: {
     color: darkColors.textDisabled1,

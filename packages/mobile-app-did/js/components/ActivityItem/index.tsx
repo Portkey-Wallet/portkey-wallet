@@ -1,4 +1,4 @@
-import { defaultColors } from 'assets/theme';
+import { darkColors, defaultColors } from 'assets/theme';
 import React, { memo, useEffect, useMemo, useState } from 'react';
 import { Animated, StyleSheet, Text, View } from 'react-native';
 import { formatStr2EllipsisStr } from '@portkey-wallet/utils';
@@ -365,7 +365,7 @@ export default memo(ActivityItem);
 const itemStyle = StyleSheet.create({
   itemWrap: {
     flex: 1,
-    backgroundColor: defaultColors.bg1,
+    backgroundColor: darkColors.bgBase1,
     marginHorizontal: pTd(16),
   },
   itemBorder: {

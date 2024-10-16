@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import fonts from 'assets/theme/fonts';
@@ -11,27 +11,38 @@ import Touchable from 'components/Touchable';
 import Collapsible from 'components/Collapsible';
 import { showValueToStr } from '@portkey-wallet/utils/byteConversion';
 type TransactionDataSectionType = {
-  topTitle?: string;
+  methodName?: string;
   dataInfo: { [key: string]: any } | string;
   style?: ViewStyle;
 };
 
-export const TransactionDataSection = (props: TransactionDataSectionType) => {
-  const { topTitle, dataInfo, style = {} } = props;
+export const TransactionDataSectionWrapper = (props: TransactionDataSectionType) => {
+  const { methodName, dataInfo, style = {} } = props;
 
   const [collapsed, setCollapsed] = useState<boolean>(false);
 
-  const TopSection = useMemo(
-    () => (
+  const TopMethodSection = useCallback(
+    (name: string, value?: string) => (
+      <Touchable style={[styles.topSection, GStyles.flexCol]} onPress={() => setCollapsed(pre => !pre)}>
+        <TextM style={[FontStyles.font5, fonts.mediumFont]}>{name}</TextM>
+        <TextS style={[FontStyles.font3, fonts.regularFont, GStyles.marginTop(4), GStyles.alignStart]}>
+          {value || 'unknown'}
+        </TextS>
+      </Touchable>
+    ),
+    [],
+  );
+  const TopMessageSection = useCallback(
+    (topTitle?: string) => (
       <Touchable style={styles.topSection} onPress={() => setCollapsed(pre => !pre)}>
         <TextM style={[FontStyles.font5, fonts.mediumFont]}>{topTitle ?? 'Message'}</TextM>
         <Svg size={pTd(20)} icon={collapsed ? 'down-arrow' : 'up-arrow'} />
       </Touchable>
     ),
-    [collapsed, topTitle],
+    [collapsed],
   );
-
   const DataSection = useMemo(() => {
+    console.log('dataInfodataInfodataInfo', dataInfo);
     if (typeof dataInfo === 'string') {
       return (
         <View style={styles.dataInfoGroup}>
@@ -39,12 +50,17 @@ export const TransactionDataSection = (props: TransactionDataSectionType) => {
         </View>
       );
     } else if (typeof dataInfo === 'object') {
-      return Object.entries(dataInfo).map(([key, value], index) => (
-        <View key={index} style={styles.dataInfoGroup}>
-          <TextM style={FontStyles.font5}>{key}</TextM>
-          <TextS style={[FontStyles.font3, styles.dataValue]}>{showValueToStr(value)}</TextS>
-        </View>
-      ));
+      return Object.entries(dataInfo).map(([key, value], index) => {
+        if (!value) {
+          return null;
+        }
+        return (
+          <View key={index} style={styles.dataInfoGroup}>
+            <TextM style={FontStyles.font5}>{key}</TextM>
+            <TextS style={[FontStyles.font3, styles.dataValue]}>{showValueToStr(value)}</TextS>
+          </View>
+        );
+      });
     } else {
       return (
         <View style={styles.dataInfoGroup}>
@@ -55,14 +71,17 @@ export const TransactionDataSection = (props: TransactionDataSectionType) => {
   }, [dataInfo]);
 
   return (
-    <View style={[styles.card, style]}>
-      {TopSection}
-      <Collapsible collapsed={collapsed}>{DataSection}</Collapsible>
+    <View>
+      {TopMethodSection('Method', methodName)}
+      <View style={[styles.card, style]}>
+        {TopMessageSection()}
+        <Collapsible collapsed={collapsed}>{DataSection}</Collapsible>
+      </View>
     </View>
   );
 };
 
-export default TransactionDataSection;
+export default TransactionDataSectionWrapper;
 
 const styles = StyleSheet.create({
   card: {

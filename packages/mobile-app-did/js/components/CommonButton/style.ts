@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { defaultColors } from 'assets/theme/index';
+import { darkColors, defaultColors } from 'assets/theme/index';
 import { pTd } from 'utils/unit';
 
 const { font4, font2, primaryColor, bg5, bg6, bg14 } = defaultColors;
@@ -10,7 +10,7 @@ export const styles = StyleSheet.create({
     backgroundColor: bg6,
   },
   titleStyle: {
-    color: font4,
+    color: darkColors.textBase1,
     fontSize: pTd(16),
   },
   solidButtonStyle: {
@@ -27,20 +27,22 @@ export const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   primaryButtonStyle: {
-    backgroundColor: primaryColor,
+    backgroundColor: darkColors.bgBrand1,
   },
   primaryTitleStyle: {
-    color: font2,
+    color: darkColors.textBrand4,
   },
   disabledStyle: {
     opacity: 0.4,
+    color: darkColors.textDisabled2,
   },
   disabledPrimaryStyle: {
     opacity: 1,
-    backgroundColor: bg14,
+    backgroundColor: darkColors.bgBase2,
+    color: darkColors.textDisabled2,
   },
   disabledTitleStyle: {
-    color: font2,
+    color: darkColors.textDisabled2,
   },
   clearButtonStyle: {
     borderWidth: 0,

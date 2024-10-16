@@ -10,7 +10,7 @@ import Lottie from 'lottie-react-native';
 
 export type CommonInputProps = InputProps & {
   type?: 'search' | 'general';
-  theme?: 'white-bg' | 'gray-bg';
+  theme?: 'white-bg' | 'gray-bg' | 'black-bg';
   allowClear?: boolean;
   loading?: boolean;
   grayBorder?: boolean;
@@ -24,7 +24,7 @@ const CommonInput = forwardRef(function CommonInput(props: CommonInputProps, for
     allowClear,
     placeholder,
     type = 'search',
-    theme = 'gray-bg',
+    theme = 'black-bg',
     inputStyle,
     containerStyle,
     inputContainerStyle,
@@ -56,7 +56,6 @@ const CommonInput = forwardRef(function CommonInput(props: CommonInputProps, for
         containerStyle={[searchStyles.containerStyle, containerStyle]}
         inputContainerStyle={[
           searchStyles.inputContainerStyle,
-          theme === 'white-bg' && bgWhiteStyles.inputContainerStyle,
           grayBorder && commonStyles.inputContainerGrayBorderStyle,
           inputContainerStyle,
         ]}
@@ -78,7 +77,6 @@ const CommonInput = forwardRef(function CommonInput(props: CommonInputProps, for
       containerStyle={[generalStyles.containerStyle, containerStyle]}
       inputContainerStyle={[
         generalStyles.inputContainerStyle,
-        theme === 'white-bg' && bgWhiteStyles.inputContainerStyle,
         grayBorder && commonStyles.inputContainerGrayBorderStyle,
         inputContainerStyle,
       ]}

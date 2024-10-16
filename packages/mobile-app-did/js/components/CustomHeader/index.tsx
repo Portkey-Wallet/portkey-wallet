@@ -61,7 +61,7 @@ const CustomHeader: React.FC<CustomHeaderProps> = props => {
     return (
       <Svg
         color={styles.leftBackTitle.color}
-        icon={isClose ? 'close2' : 'left-arrow'}
+        icon={isClose ? 'close2' : 'left-arrow-v2'}
         size={pTd(20)}
         iconStyle={GStyles.marginRight(4)}
       />

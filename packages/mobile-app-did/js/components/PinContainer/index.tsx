@@ -8,6 +8,7 @@ import { pTd } from 'utils/unit';
 import { headerHeight } from 'components/CustomHeader/style/index.style';
 import Keypad, { KeypadPropsType } from 'components/Keypad';
 import DigitText, { DigitTextProps } from 'components/DigitText';
+import { darkColors } from 'assets/theme';
 
 type PinContainerProps = {
   title: string;
@@ -72,6 +73,7 @@ const styles = StyleSheet.create({
     paddingTop: windowHeight * 0.25,
     justifyContent: 'space-between',
     paddingBottom: pTd(40),
+    backgroundColor: darkColors.bgBase1,
   },
   pinStyle: {
     marginTop: 24,

@@ -1,12 +1,14 @@
 import { formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
-import { defaultColors } from 'assets/theme';
+import { darkColors } from 'assets/theme';
 import { TextM } from 'components/CommonText';
+import CommonAvatar from 'components/CommonAvatar';
 import Touchable from 'components/Touchable';
 import React, { memo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { pTd } from 'utils/unit';
+import { FontStyles } from 'assets/theme/styles';
+import GStyles from 'assets/theme/GStyles';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
-import Svg from 'components/Svg';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 
@@ -23,12 +25,21 @@ const TokenItem: React.FC<TokenListItemType> = props => {
 
   return (
     <Touchable style={[itemStyle.wrap, showTopSeparator && { marginTop: pTd(4) }]} onPress={() => onPress?.(item)}>
-      <TextM style={itemStyle.chainText}>{formatChainInfoToShow(item.chainId, currentNetwork)}</TextM>
+      <View style={itemStyle.left}>
+        <CommonAvatar
+          hasBorder
+          title={item?.symbol}
+          avatarSize={pTd(36)}
+          imageUrl={item?.imageUrl}
+          titleStyle={FontStyles.font11}
+          borderStyle={GStyles.hairlineBorder}
+        />
+        <TextM style={itemStyle.chainText}>{formatChainInfoToShow(item.chainId, currentNetwork)}</TextM>
+      </View>
       <View style={itemStyle.right}>
         <TextM style={itemStyle.balanceText}>
           {hideBalance ? '****' : formatTokenAmountShowWithDecimals(item.balance, item.decimals)}
         </TextM>
-        <Svg icon="token_list_item_right" size={pTd(16)} />
       </View>
     </Touchable>
   );
@@ -43,13 +54,17 @@ const itemStyle = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: defaultColors.neutralContainerBG,
     borderRadius: pTd(8),
     marginHorizontal: pTd(16),
     paddingHorizontal: pTd(12),
   },
+  left: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   chainText: {
-    color: defaultColors.font18,
+    marginLeft: pTd(8),
+    color: darkColors.textBase2,
   },
   right: {
     height: pTd(72),
@@ -59,6 +74,6 @@ const itemStyle = StyleSheet.create({
     alignItems: 'center',
   },
   balanceText: {
-    color: defaultColors.primaryTextColor,
+    color: darkColors.textBase1,
   },
 });

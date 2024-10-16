@@ -1,7 +1,7 @@
 import React, { useMemo, useCallback } from 'react';
 import { View, StyleSheet, Animated, TouchableOpacity, GestureResponderEvent } from 'react-native';
 import { pTd } from 'utils/unit';
-import { TextL, TextM } from 'components/CommonText';
+import { TextM } from 'components/CommonText';
 import CommonAvatar from 'components/CommonAvatar';
 import { PortkeyLinearGradient } from 'components/PortkeyLinearGradient';
 import Touchable from 'components/Touchable';
@@ -18,18 +18,11 @@ import { useQrScanPermissionAndToast } from 'hooks/useQrScan';
 import navigationService from 'utils/navigationService';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { Skeleton } from '@rneui/base';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 
-interface DashBoardHeaderProps {
-  title: string;
-  scrollY: Animated.Value;
-}
-
-const DashBoardHeader: React.FC<DashBoardHeaderProps> = ({ title, scrollY }) => {
+const DashBoardHeader: React.FC = () => {
   const userInfo = useCurrentUserInfo();
   const qrScanPermissionAndToast = useQrScanPermissionAndToast();
   const { shouldShowSetNewWalletNameIcon, handleSetNewWalletName } = useSetNewWalletName();
-  const isMainnet = useIsMainnet();
   const onGiftClick = useCallback(() => {
     navigationService.navigate('CryptoGift');
   }, []);
@@ -72,16 +65,7 @@ const DashBoardHeader: React.FC<DashBoardHeaderProps> = ({ title, scrollY }) => 
 
   const leftDom = useMemo(() => {
     return (
-      <Animated.View
-        style={[
-          {
-            opacity: scrollY.interpolate({
-              inputRange: [0, pTd(40), pTd(60)],
-              outputRange: [1, 1, 0],
-            }),
-          },
-          styles.leftDomWrap,
-        ]}>
+      <Animated.View style={styles.leftDomWrap}>
         {userInfo?.nickName ? (
           <>
             <CommonAvatar
@@ -117,27 +101,10 @@ const DashBoardHeader: React.FC<DashBoardHeaderProps> = ({ title, scrollY }) => 
   }, [
     nickNameMaxWidth,
     onShowSetNewWalletNamePopover,
-    scrollY,
     shouldShowSetNewWalletNameIcon,
     userInfo?.avatar,
     userInfo.nickName,
   ]);
-
-  const titleDom = useMemo(() => {
-    return (
-      <Animated.View
-        style={{
-          opacity: scrollY.interpolate({
-            inputRange: [0, pTd(60), pTd(80)],
-            outputRange: [0, 0, 1],
-          }),
-        }}>
-        <TextL numberOfLines={1} style={styles.title}>
-          {userInfo.hideAssets ? '******' : title}
-        </TextL>
-      </Animated.View>
-    );
-  }, [scrollY, title, userInfo.hideAssets]);
 
   const rightDom = useMemo(() => {
     return (
@@ -164,7 +131,6 @@ const DashBoardHeader: React.FC<DashBoardHeaderProps> = ({ title, scrollY }) => 
 
   return (
     <View style={styles.container}>
-      <View style={styles.titleWrap}>{titleDom}</View>
       {leftDom}
       {rightDom}
     </View>
@@ -174,7 +140,6 @@ const DashBoardHeader: React.FC<DashBoardHeaderProps> = ({ title, scrollY }) => 
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    backgroundColor: defaultColors.white,
     height: pTd(44),
     flexDirection: 'row',
     alignItems: 'center',
@@ -191,7 +156,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   accountName: {
-    color: defaultColors.neutralTertiaryText,
+    color: defaultColors.white,
     fontSize: pTd(14),
     lineHeight: pTd(20),
     height: pTd(20),
@@ -206,13 +171,6 @@ const styles = StyleSheet.create({
   skeletonStyle: {
     backgroundColor: defaultColors.bg4,
   },
-  titleWrap: {
-    position: 'absolute',
-    width: '100%',
-    height: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   rightDomWrap: {
     flexDirection: 'row',
     marginRight: pTd(8),
@@ -225,7 +183,7 @@ const styles = StyleSheet.create({
   title: {
     height: pTd(44),
     lineHeight: pTd(44),
-    color: defaultColors.bg31,
+    color: defaultColors.white,
     fontWeight: 'bold',
     ...fonts.mediumFont,
   },

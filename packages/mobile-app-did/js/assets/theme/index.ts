@@ -52,7 +52,6 @@ export const defaultColors = {
   bg41: 'rgba(255, 255, 255, 0.60)',
   bg42: 'rgba(255, 255, 255, 0.90)',
   bg43: '#1F1F21',
-  bg44: '#151318',
 
   font1: '#464B53',
   font2: 'white',
@@ -166,7 +165,7 @@ export const darkColors = {
 
   textBase1: '#ffffff',
   textBase2: '#FFFFFFB2',
-  textBase3: '##FFFFFF66',
+  textBase3: '#FFFFFF66',
   textDisabled1: '#626264',
   textDisabled2: '#848485',
   textBrand1: '#68C3FF',
@@ -211,6 +210,7 @@ export const darkColors = {
   iconBrand3: '#DFF0FF',
   iconBrand4: '#0A4370',
   iconBrand5: '#DFF0FF',
+  iconBrand6: '#0076CC',
 
   iconNeutral1: '#E3E3E3',
   iconNeutral2: '#CDCDCD',

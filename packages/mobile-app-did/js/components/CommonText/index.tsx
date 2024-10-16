@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
     ...fonts.mediumFont,
   },
   PrimaryText: {
-    color: defaultColors.primaryColor,
+    color: darkColors.textBrand1,
     fontSize: pTd(16),
   },
 } as const);

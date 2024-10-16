@@ -48,6 +48,7 @@ import FaucetButton from 'components/FaucetButton';
 import { TokenTitle } from 'components/TokenTitle';
 import { ReceivePageTabType } from 'pages/Receive/types';
 import { parseLink } from '@portkey-wallet/hooks/hooks-ca/cms/util';
+import { showActivityDetail } from 'components/ActivityOverlay';
 
 interface RouterParams {
   tokenInfo: TokenItemShowType;
@@ -182,14 +183,7 @@ const TokenDetail: React.FC = () => {
 
   const renderItem = useCallback(({ item, index }: { item: ActivityItemType; index: number }) => {
     const preItem = currentActivityRef.current?.data[index - 1];
-    return (
-      <ActivityItem
-        preItem={preItem}
-        item={item}
-        index={index}
-        onPress={() => navigationService.navigate('ActivityDetail', item)}
-      />
-    );
+    return <ActivityItem preItem={preItem} item={item} index={index} onPress={() => showActivityDetail(item)} />;
   }, []);
 
   const isEmpty = useMemo(() => (currentActivity?.data || []).length === 0, [currentActivity?.data]);

@@ -166,7 +166,7 @@ export const BackEndNetWorkMap: {
     networkType: 'TESTNET',
     isActive: true,
     apiUrl: 'https://aa-portkey-test.portkey.finance',
-    graphqlUrl: 'https://dapp-aa-portkey-test.portkey.finance/Portkey_V2_DID/PortKeyIndexerCASchema/graphql',
+    graphqlUrl: 'https://dapp-aa-portkey-test.portkey.finance/aefinder-v2/api/app/graphql/portkey',
     connectUrl: 'https://auth-aa-portkey-test.portkey.finance',
     tokenClaimContractAddress: '233wFn5JbyD4i8R5Me4cW4z6edfFGRn5bpWnGuY8fjR7b2kRsD',
     cmsUrl: 'https://cms-test-aa.portkey.finance/graphql',
@@ -191,6 +191,7 @@ export const BackEndNetWorkMap: {
     tomorrowDAOUrl: 'https://test.tmrwdao.com',
     hamsterUrl: 'https://test-hamster.beangotown.com',
     zkLoginVerifyUrl: 'https://zklogin-prover-test.portkey.finance/v1/prove',
+    cryptoGiftTgUrl: 'https://t.me/PortkeyTestnet_Bot/crypto_gift',
   },
   'back-end-testnet': {
     name: 'aelf Testnet',
@@ -261,7 +262,7 @@ export const BackEndNetWorkMap: {
     networkType: 'MAINNET',
     isActive: true,
     apiUrl: 'https://aa-portkey.portkey.finance',
-    graphqlUrl: 'https://dapp-aa-portkey.portkey.finance/Portkey_V2_DID/PortKeyIndexerCASchema/graphql',
+    graphqlUrl: 'https://dapp-aa-portkey.portkey.finance/aefinder-v2/api/app/graphql/portkey',
     connectUrl: 'https://auth-aa-portkey.portkey.finance',
     cmsUrl: 'https://cms-aa.portkey.finance/graphql',
     s3Url: 'https://portkey-cms-mainnet.s3.ap-northeast-1.amazonaws.com',
@@ -291,5 +292,6 @@ export const BackEndNetWorkMap: {
     tomorrowDAOUrl: 'https://tmrwdao.com',
     hamsterUrl: 'https://hamster.beangotown.com',
     zkLoginVerifyUrl: 'https://zklogin-prover.portkey.finance/v1/prove',
+    cryptoGiftTgUrl: 'https://t.me/PortkeyMainnet_Bot/crypto_gift',
   },
 };

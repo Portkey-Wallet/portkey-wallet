@@ -26,7 +26,7 @@ import BuyButton from 'components/BuyButton';
 import Carousel from 'components/Carousel';
 import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
-import CommonToolButton from 'components/CommonToolButton';
+import OutlinedButton from 'components/OutlinedButton';
 import { checkEnabledFunctionalTypes } from '@portkey-wallet/utils/compass';
 import { useTokenInfoFromStore } from '@portkey-wallet/hooks/hooks-ca/assets';
 import ActivityItem from 'components/ActivityItem';
@@ -215,9 +215,9 @@ const TokenDetail: React.FC = () => {
         {isBuyButtonShow && <BuyButton themeType="innerPage" wrapStyle={buttonWrapStyle} tokenInfo={tokenInfo} />}
         {isFaucetButtonShow && <FaucetButton themeType="innerPage" wrapStyle={buttonWrapStyle} />}
         {isSwapShow && swap && (
-          <CommonToolButton
+          <OutlinedButton
             title="Swap"
-            icon="swap"
+            iconName="swap"
             onPress={() => {
               onDisclaimerModalPress(
                 DepositModalMap.AwakenSwap,
@@ -226,22 +226,18 @@ const TokenDetail: React.FC = () => {
                 }),
               );
             }}
-            themeType="innerPage"
-            wrapStyle={buttonWrapStyle}
           />
         )}
         {deposit && (
-          <CommonToolButton
+          <OutlinedButton
             title="Deposit"
-            icon="deposit"
+            iconName="deposit"
             onPress={() =>
               navigationService.navigate(
                 'Receive',
                 Object.assign({}, tokenInfo, { targetScene: ReceivePageTabType.DEPOSIT }),
               )
             }
-            themeType="innerPage"
-            wrapStyle={buttonWrapStyle}
           />
         )}
       </View>

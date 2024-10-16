@@ -1,12 +1,12 @@
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
-import { formatChainInfoToShow } from '@portkey-wallet/utils';
+import { darkColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import fonts from 'assets/theme/fonts';
 import { FontStyles } from 'assets/theme/styles';
 import CommonAvatar from 'components/CommonAvatar';
-import { TextL, TextS } from 'components/CommonText';
+import { TextL } from 'components/CommonText';
 import React, { useMemo } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { pTd } from 'utils/unit';
@@ -29,19 +29,16 @@ export const TokenTitle: React.FC<TokenTitleProps> = ({ tokenInfo }) => {
           hasBorder
           style={styles.mainTitleIcon}
           title={tokenInfo.symbol}
-          avatarSize={pTd(18)}
+          avatarSize={pTd(24)}
           svgName={tokenInfo?.symbol === defaultToken.symbol ? 'testnet' : undefined}
           imageUrl={iconImg}
           titleStyle={Object.assign({}, FontStyles.font11, { fontSize: pTd(12) })}
           borderStyle={GStyles.hairlineBorder}
         />
-        <TextL style={[GStyles.textAlignCenter, FontStyles.font16, fonts.mediumFont]}>
+        <TextL style={[GStyles.textAlignCenter, styles.titleText, fonts.mediumFont]}>
           {tokenInfo.label || tokenInfo.symbol}
         </TextL>
       </View>
-      <TextS style={[GStyles.textAlignCenter, FontStyles.font11, styles.subTitle]}>
-        {formatChainInfoToShow(tokenInfo.chainId)}
-      </TextS>
     </View>
   );
 };
@@ -54,11 +51,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   mainTitleIcon: {
-    height: pTd(18),
-    width: pTd(18),
-    marginRight: 4,
+    height: pTd(24),
+    width: pTd(24),
+    marginRight: pTd(8),
   },
-  subTitle: {
-    fontSize: pTd(12),
+  titleText: {
+    color: darkColors.textBase1,
   },
 });

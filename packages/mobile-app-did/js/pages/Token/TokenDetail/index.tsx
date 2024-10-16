@@ -10,7 +10,6 @@ import NoData from 'components/NoData';
 import { useLanguage } from 'i18n/hooks';
 import { FlashList } from '@shopify/flash-list';
 import GStyles from 'assets/theme/GStyles';
-import { FontStyles } from 'assets/theme/styles';
 import { TextL, TextS } from 'components/CommonText';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
@@ -313,7 +312,6 @@ const TokenDetail: React.FC = () => {
       type="leftBack"
       backTitle={t('')}
       titleDom={<TokenTitle tokenInfo={tokenInfo} />}
-      safeAreaColor={['white']}
       leftCallback={() => navigation.goBack()}
       containerStyles={styles.pageWrap}
       scrollViewProps={{ disabled: true }}>
@@ -324,7 +322,7 @@ const TokenDetail: React.FC = () => {
         )}
         {renderButtonItems()}
       </View>
-      {renderBanner()}
+      {/* {renderBanner()} */}
       {renderActivityList()}
     </PageContainer>
   );

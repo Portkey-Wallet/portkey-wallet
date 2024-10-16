@@ -32,13 +32,13 @@ export const styles = StyleSheet.create({
   tokenBalance: {
     ...fonts.mediumFont,
     paddingTop: pTd(32),
-    color: font5,
+    color: darkColors.textBase1,
     fontSize: pTd(32),
     lineHeight: pTd(40),
   },
   dollarBalance: {
     marginTop: pTd(4),
-    color: font11,
+    color: darkColors.textBase1,
     fontSize: pTd(14),
     lineHeight: pTd(20),
     height: pTd(20),

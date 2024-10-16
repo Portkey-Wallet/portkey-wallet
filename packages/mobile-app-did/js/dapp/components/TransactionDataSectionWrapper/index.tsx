@@ -9,7 +9,7 @@ import { FontStyles } from 'assets/theme/styles';
 import GStyles from 'assets/theme/GStyles';
 import Touchable from 'components/Touchable';
 import Collapsible from 'components/Collapsible';
-import { showValueToStr } from '@portkey-wallet/utils/byteConversion';
+import { isHexStr, showValueToStr } from '@portkey-wallet/utils/byteConversion';
 type TransactionDataSectionType = {
   methodName?: string;
   dataInfo: { [key: string]: any } | string;
@@ -42,7 +42,6 @@ export const TransactionDataSectionWrapper = (props: TransactionDataSectionType)
     [collapsed],
   );
   const DataSection = useMemo(() => {
-    console.log('dataInfodataInfodataInfo', dataInfo);
     if (typeof dataInfo === 'string') {
       return (
         <View style={styles.dataInfoGroup}>
@@ -54,10 +53,17 @@ export const TransactionDataSectionWrapper = (props: TransactionDataSectionType)
         if (!value) {
           return null;
         }
+        let formattedDate = value;
+        if (key === 'expirationTime') {
+          const date = new Date(value * 1000);
+          formattedDate = date.toLocaleString();
+        }
         return (
           <View key={index} style={styles.dataInfoGroup}>
             <TextM style={FontStyles.font5}>{key}</TextM>
-            <TextS style={[FontStyles.font3, styles.dataValue]}>{showValueToStr(value)}</TextS>
+            <TextS style={[FontStyles.font3, styles.dataValue]}>
+              {key === 'expirationTime' ? formattedDate : showValueToStr(value)}
+            </TextS>
           </View>
         );
       });

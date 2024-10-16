@@ -101,7 +101,7 @@ const SignModal = (props: SignModalPropsType) => {
         <ScrollView contentContainerStyle={GStyles.paddingBottom(100)}>
           {clearText ? (
             isManagerForwardCall ? (
-              <TransactionDataSectionWrapper methodName={'Claim'} dataInfo={clearText.params} />
+              <TransactionDataSectionWrapper methodName={clearText.methodName} dataInfo={clearText.params} />
             ) : (
               <TransactionDataSection dataInfo={clearText} />
             )

@@ -9,8 +9,6 @@ import { pTd } from 'utils/unit';
 import { useLanguage } from 'i18n/hooks';
 import { useGStyles } from 'assets/theme/useGStyles';
 import { ModalBody } from 'components/ModalBody';
-import { useCurrentNetwork } from '@portkey-wallet/hooks/hooks-ca/network';
-import { defaultColors } from 'assets/theme';
 
 type ValueType = string | number;
 type DefaultValueType = string;
@@ -35,7 +33,6 @@ const SelectList = <ItemType extends ItemTypeBase<ItemValueType>, ItemValueType 
 }: SelectListProps<ItemType, ItemValueType>) => {
   const { t } = useLanguage();
   const gStyle = useGStyles();
-  const networkType = useCurrentNetwork();
 
   return (
     <ModalBody style={gStyle.overlayStyle} title={t('Select Network')} modalBodyType="bottom">
@@ -50,20 +47,15 @@ const SelectList = <ItemType extends ItemTypeBase<ItemValueType>, ItemValueType 
                   callBack(item);
                 }}>
                 <View style={styles.itemRow}>
-                  {networkType === 'MAINNET' ? (
-                    <Svg icon="mainnet" size={pTd(40)} />
+                  {item.chainId === 'AELF' ? (
+                    <Svg icon="mainnet" size={pTd(24)} />
                   ) : (
-                    <Svg icon="testnet" size={pTd(40)} />
+                    <Svg icon="sideChain" size={pTd(24)} />
                   )}
                   <View style={styles.itemContent}>
-                    <TextL>{item[labelAttrName]}</TextL>
+                    <TextL style={styles.chainTitle}>{item[labelAttrName]}</TextL>
                     {value !== undefined && value === item.chainId && (
-                      <Svg
-                        iconStyle={styles.itemIcon}
-                        icon="selected"
-                        size={pTd(24)}
-                        color={defaultColors.primaryColor}
-                      />
+                      <Svg iconStyle={styles.itemIcon} icon="selected" size={pTd(24)} />
                     )}
                   </View>
                 </View>

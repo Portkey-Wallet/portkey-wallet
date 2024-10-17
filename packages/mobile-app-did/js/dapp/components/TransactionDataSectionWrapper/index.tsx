@@ -23,7 +23,9 @@ export const TransactionDataSectionWrapper = (props: TransactionDataSectionType)
 
   const TopMethodSection = useCallback(
     (name: string, value?: string) => (
-      <Touchable style={[styles.topSection, GStyles.flexCol]} onPress={() => setCollapsed(pre => !pre)}>
+      <Touchable
+        style={[styles.topSection, GStyles.flexCol, GStyles.itemStart]}
+        onPress={() => setCollapsed(pre => !pre)}>
         <TextM style={[FontStyles.font5, fonts.mediumFont]}>{name}</TextM>
         <TextS style={[FontStyles.font3, fonts.regularFont, GStyles.marginTop(4), GStyles.alignStart]}>
           {value || 'unknown'}

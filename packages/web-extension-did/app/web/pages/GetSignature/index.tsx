@@ -151,10 +151,15 @@ export default function GetSignature() {
             if (!value) {
               return null;
             }
+            let formattedDate = value;
+            if (key === 'expirationTime') {
+              const date = new Date(value * 1000);
+              formattedDate = date.toLocaleString();
+            }
             return (
               <div key={index} style={{ marginTop: index !== 0 ? 8 : 0 }}>
                 <div className="method-name">{key}</div>
-                <div>{showValueToStr(value)}</div>
+                <div>{key === 'expirationTime' ? formattedDate : showValueToStr(value)}</div>
               </div>
             );
           })}

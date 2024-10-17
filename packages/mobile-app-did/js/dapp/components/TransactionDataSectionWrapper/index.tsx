@@ -64,7 +64,7 @@ export const TransactionDataSectionWrapper = (props: TransactionDataSectionType)
           <View key={index} style={styles.dataInfoGroup}>
             <TextM style={FontStyles.font5}>{key}</TextM>
             <TextS style={[FontStyles.font3, styles.dataValue]}>
-              {key === 'expirationTime' ? formattedDate : showValueToStr(value)}
+              {key === 'expirationTime' ? formattedDate : value}
             </TextS>
           </View>
         );

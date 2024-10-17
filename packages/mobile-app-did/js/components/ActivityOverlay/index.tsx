@@ -1,7 +1,9 @@
+import React, { useState, useCallback, useMemo } from 'react';
+import OverlayModal from 'components/OverlayModal';
+import { ModalBody } from 'components/ModalBody';
 import { ELF_DECIMAL, TransactionTypes } from '@portkey-wallet/constants/constants-ca/activity';
 import { useCurrentChain, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useCurrentWallet, useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { fetchActivity } from '@portkey-wallet/store/store-ca/activity/api';
 import { ActivityItemType, TransactionStatus } from '@portkey-wallet/types/types-ca/activity';
 import { addressFormat, formatChainInfoToShow, getExploreLink, handleLoopFetch } from '@portkey-wallet/utils';
@@ -10,19 +12,16 @@ import {
   formatAmountUSDShow,
   formatTokenAmountShowWithDecimals,
 } from '@portkey-wallet/utils/converter';
-import { defaultColors } from 'assets/theme';
+import { defaultColors, darkColors } from 'assets/theme';
 import fonts from 'assets/theme/fonts';
 import GStyles from 'assets/theme/GStyles';
 import { FontStyles } from 'assets/theme/styles';
 import CommonButton from 'components/CommonButton';
-import { TextL, TextM, TextS } from 'components/CommonText';
+import { TextL, TextM, TextS, TextXXL } from 'components/CommonText';
 import CommonToast from 'components/CommonToast';
 import PageContainer from 'components/PageContainer';
 import Svg from 'components/Svg';
 import * as Clipboard from 'expo-clipboard';
-import useEffectOnce from 'hooks/useEffectOnce';
-import { useLanguage } from 'i18n/hooks';
-import React, { useCallback, useMemo, useState } from 'react';
 import { StatusBar, StyleSheet, Text, View } from 'react-native';
 import { formatTransferTime } from '@portkey-wallet/utils/time';
 import { formatStr2EllipsisStr } from '@portkey-wallet/utils';
@@ -35,24 +34,26 @@ import { IActivityApiParams } from '@portkey-wallet/store/store-ca/activity/type
 import Lottie from 'lottie-react-native';
 import Touchable from 'components/Touchable';
 import NFTAvatar from 'components/NFTAvatar';
+import { useLanguage } from 'i18n/hooks';
+import { useEffectOnce } from '@portkey-wallet/hooks';
 
-const ActivityDetail = () => {
+const ActivityDetail = (props: ActivityItemType & IActivityApiParams) => {
+  const { transactionId = '', blockHash = '', isReceived: isReceivedParams, activityType } = props;
   const { t } = useLanguage();
   const defaultToken = useDefaultToken();
   const isMainnet = useIsMainnet();
-  const activityItemFromRoute = useRouterParams<ActivityItemType & IActivityApiParams>();
-  const { transactionId = '', blockHash = '', isReceived: isReceivedParams, activityType } = activityItemFromRoute;
+
   const caAddressesInfoList = useCaAddressInfoList();
   const caAddressInfos = useMemo(() => {
-    const result = caAddressesInfoList.filter(item => item.chainId === activityItemFromRoute?.fromChainId);
+    const result = caAddressesInfoList.filter(item => item.chainId === props?.fromChainId);
     return result?.length > 0 ? result : caAddressesInfoList;
-  }, [activityItemFromRoute?.fromChainId, caAddressesInfoList]);
+  }, [caAddressesInfoList, props?.fromChainId]);
 
   const [, getTokenPrice] = useGetCurrentAccountTokenPrice();
   const { currentNetwork } = useCurrentWallet();
-  const [initializing, setInitializing] = useState(true);
+  const [initializing, setInitializing] = useState(false);
 
-  const [activityItem, setActivityItem] = useState<ActivityItemType>();
+  const [activityItem, setActivityItem] = useState<ActivityItemType>(props);
 
   const { explorerUrl } = useCurrentChain(activityItem?.fromChainId) ?? {};
 
@@ -118,37 +119,27 @@ const ActivityDetail = () => {
   );
 
   const networkUI = useMemo(() => {
-    const { transactionType, fromChainId, toChainId, transactionId: _transactionId = '' } = activityItem || {};
+    const { transactionType, fromChainId, toChainId } = activityItem || {};
 
     const isNetworkShow = transactionType && SHOW_FROM_TRANSACTION_TYPES.includes(transactionType);
+
+    if (!isNetworkShow) return null;
+
     return (
       <>
-        <View style={styles.section}>
-          {isNetworkShow && (
-            <View style={[styles.flexSpaceBetween]}>
-              <TextM style={[styles.lightGrayFontColor]}>{t('Network')}</TextM>
-              <View style={styles.networkInfoContent}>
-                <TextM style={[styles.blackFontColor]}>{formatChainInfoToShow(fromChainId, currentNetwork)}</TextM>
-                <View style={GStyles.flexRowWrap}>
-                  <TextM style={[styles.lightGrayFontColor]}>{` → `}</TextM>
-                  <TextM style={[styles.blackFontColor]}>{formatChainInfoToShow(toChainId, currentNetwork)}</TextM>
-                </View>
-              </View>
+        <View style={styles.flexSpaceBetween}>
+          <TextL>{t('Network')}</TextL>
+          <View style={styles.networkInfoContent}>
+            <TextL>{formatChainInfoToShow(fromChainId, currentNetwork)}</TextL>
+            <View style={GStyles.flexRowWrap}>
+              <TextL>{` → `}</TextL>
+              <TextL>{formatChainInfoToShow(toChainId, currentNetwork)}</TextL>
             </View>
-          )}
-          <View style={[styles.flexSpaceBetween, isNetworkShow && styles.marginTop16]}>
-            <TextM style={[styles.lightGrayFontColor]}>{t('Transaction ID')}</TextM>
-            <View style={GStyles.flex1} />
-            <View style={[GStyles.flexRowWrap, styles.alignItemsEnd]}>
-              <TextM>{formatStr2EllipsisStr(_transactionId, 10, 'tail')}</TextM>
-            </View>
-            {CopyIconUI(transactionId)}
           </View>
         </View>
-        <Text style={[styles.divider, styles.marginTop0]} />
       </>
     );
-  }, [CopyIconUI, activityItem, currentNetwork, t, transactionId]);
+  }, [activityItem, currentNetwork, t]);
 
   const feeUI = useMemo(() => {
     if (activityItem?.isReceived) return null;
@@ -159,32 +150,23 @@ const ActivityDetail = () => {
         : activityItem?.transactionFees || [];
 
     return (
-      <View style={styles.section}>
-        <View style={[styles.flexSpaceBetween]}>
-          <TextM style={[styles.blackFontColor, styles.fontBold]}>{t('Transaction Fee')}</TextM>
-          {activityItem?.isDelegated ? (
-            <View style={[styles.transactionFeeItemWrap]}>
-              <TextM style={[styles.blackFontColor, styles.fontBold]}>{`0 ${defaultToken.symbol}`}</TextM>
-              {isMainnet && <TextS style={[styles.lightGrayFontColor, styles.marginTop4]}>{`$ 0`}</TextS>}
-            </View>
-          ) : (
-            <View>
-              {transactionFees.map((item, index) => (
-                <View key={index} style={[styles.transactionFeeItemWrap, index > 0 && styles.marginTop8]}>
-                  <TextM style={[styles.blackFontColor, styles.fontBold]}>{`${divDecimalsStr(
-                    item?.fee ?? 0,
-                    ELF_DECIMAL,
-                  )} ${item.symbol}`}</TextM>
-                  {isMainnet && (
-                    <TextS style={[styles.lightGrayFontColor, styles.marginTop4]}>
-                      {formatAmountUSDShow(item?.feeInUsd)}
-                    </TextS>
-                  )}
-                </View>
-              ))}
-            </View>
-          )}
-        </View>
+      <View style={[styles.flexSpaceBetween]}>
+        <TextL>{t('Network fee')}</TextL>
+        {activityItem?.isDelegated ? (
+          <View>
+            <TextL>{`0 ${defaultToken.symbol}`}</TextL>
+            {isMainnet && <TextM>{`$ 0`}</TextM>}
+          </View>
+        ) : (
+          <View>
+            {transactionFees.map((item, index) => (
+              <View key={index} style={[styles.transactionFeeItemWrap, index > 0 && styles.marginTop8]}>
+                <TextL>{`${divDecimalsStr(item?.fee ?? 0, ELF_DECIMAL)} ${item.symbol}`}</TextL>
+                {isMainnet && <TextM>{formatAmountUSDShow(item?.feeInUsd)}</TextM>}
+              </View>
+            ))}
+          </View>
+        )}
       </View>
     );
   }, [
@@ -219,8 +201,6 @@ const ActivityDetail = () => {
   const activityDom = useMemo(
     () => (
       <>
-        <Text style={[styles.typeTitle]}>{activityItem?.transactionName}</Text>
-
         {activityItem?.transactionType &&
           SHOW_FROM_TRANSACTION_TYPES.includes(activityItem?.transactionType) &&
           (isNft ? (
@@ -247,81 +227,64 @@ const ActivityDetail = () => {
                   )}`}</TextS>
                 </View>
               </View>
-              <View style={styles.divider} />
             </>
           ) : (
-            <>
-              <Text style={[styles.tokenCount, styles.fontBold]}>
+            <View style={[GStyles.center]}>
+              <TextXXL style={[styles.tokenCount]}>
                 {SHOW_FROM_TRANSACTION_TYPES.includes(activityItem?.transactionType as TransactionTypes) && amountShow}
-              </Text>
+              </TextXXL>
               {isMainnet && (
-                <Text style={styles.usdtCount}>{formatAmountUSDShow(activityItem?.currentTxPriceInUsd)}</Text>
+                <TextM style={styles.usdtCount}>{formatAmountUSDShow(activityItem?.currentTxPriceInUsd)}</TextM>
               )}
-            </>
+            </View>
           ))}
-        <View style={[styles.flexSpaceBetween, styles.titles1]}>
-          <TextM style={styles.lightGrayFontColor}>{t('Status')}</TextM>
-          <TextM style={styles.lightGrayFontColor}>{t('Date')}</TextM>
+        <View style={[styles.flexSpaceBetween]}>
+          <TextL>Date</TextL>
+          <TextL>{activityItem && activityItem.timestamp ? formatTransferTime(activityItem?.timestamp) : ''}</TextL>
         </View>
-        <View style={[styles.flexSpaceBetween, styles.values1]}>
-          <TextM style={styles.greenFontColor}>{t(status.text)}</TextM>
-          <TextM style={styles.blackFontColor}>
-            {activityItem && activityItem.timestamp ? formatTransferTime(activityItem?.timestamp) : ''}
-          </TextM>
+        <View style={[styles.flexSpaceBetween]}>
+          <TextL>Status</TextL>
+          <TextL style={styles.greenFontColor}>{t(status.text)}</TextL>
         </View>
-        <View style={styles.card}>
-          {/* From */}
-          {activityItem?.transactionType && SHOW_FROM_TRANSACTION_TYPES.includes(activityItem?.transactionType) && (
-            <>
-              <View style={styles.section}>
-                <View style={[GStyles.flexRowWrap]}>
-                  <TextM style={styles.lightGrayFontColor}>{t('From')}</TextM>
-                  <View style={GStyles.flex1} />
-                  <View style={[styles.alignItemsEnd, styles.justifyContentCenter]}>
-                    {activityItem?.from && <TextM style={styles.blackFontColor}>{activityItem.from}</TextM>}
-                    <TextS style={styles.lightGrayFontColor}>
-                      {formatStr2EllipsisStr(addressFormat(activityItem?.fromAddress, activityItem?.fromChainId))}
-                    </TextS>
-                  </View>
-                  {CopyIconUI(addressFormat(activityItem?.fromAddress, activityItem?.fromChainId) || '')}
-                </View>
-              </View>
-              <Text style={[styles.divider, styles.marginTop0]} />
-            </>
-          )}
-          {/* To */}
-          {activityItem?.transactionType && SHOW_FROM_TRANSACTION_TYPES.includes(activityItem?.transactionType) && (
-            <>
-              <View style={styles.section}>
-                <View style={[GStyles.flexRowWrap]}>
-                  <TextM style={[styles.lightGrayFontColor]}>{t('To')}</TextM>
-                  <View style={GStyles.flex1} />
-                  <View style={[styles.alignItemsEnd, styles.justifyContentCenter]}>
-                    {activityItem?.to && <TextM style={[styles.blackFontColor]}>{activityItem?.to}</TextM>}
-                    <TextS style={[styles.lightGrayFontColor]}>
-                      {formatStr2EllipsisStr(addressFormat(activityItem?.toAddress, activityItem?.toChainId))}
-                    </TextS>
-                  </View>
-                  {CopyIconUI(addressFormat(activityItem?.toAddress, activityItem?.toChainId) || '')}
-                </View>
-              </View>
-              <Text style={[styles.divider, styles.marginTop0]} />
-            </>
-          )}
+        {/* from */}
+        {activityItem?.transactionType && SHOW_FROM_TRANSACTION_TYPES.includes(activityItem?.transactionType) && (
+          <View style={[styles.flexSpaceBetween]}>
+            <TextL>From</TextL>
+            <View style={styles.fromWrap}>
+              {activityItem?.from && <TextL>{activityItem?.from}</TextL>}
+              <TextL>
+                {formatStr2EllipsisStr(addressFormat(activityItem?.fromAddress, activityItem?.fromChainId))}
+              </TextL>
+            </View>
+          </View>
+        )}
+        {/* to */}
+        {activityItem?.transactionType && SHOW_FROM_TRANSACTION_TYPES.includes(activityItem?.transactionType) && (
+          <View style={[styles.flexSpaceBetween]}>
+            <TextL>To</TextL>
+            <View style={styles.fromWrap}>
+              {activityItem?.to && <TextL>{activityItem?.to}</TextL>}
+              <TextL>{formatStr2EllipsisStr(addressFormat(activityItem?.toAddress, activityItem?.toChainId))}</TextL>
+            </View>
+          </View>
+        )}
+        {networkUI}
+        {feeUI}
+        {/* TXn */}
+        <View style={[styles.flexSpaceBetween]}>
+          <TextL>Txn ID</TextL>
+          <View style={GStyles.flex1} />
+          <TextL>{formatStr2EllipsisStr(transactionId, 10, 'tail')}</TextL>
+          {CopyIconUI(transactionId)}
+        </View>
 
-          {/* more Info */}
-
-          {networkUI}
-          {/* transaction Fee */}
-          {feeUI}
-        </View>
-        <View style={styles.space} />
         {explorerUrl && (
           <CommonButton
-            containerStyle={[GStyles.marginTop(8)]}
+            containerStyle={GStyles.marginTop(8)}
             onPress={() => {
               if (!activityItem?.transactionId) return;
 
+              OverlayModal.hide();
               navigationService.navigate('ViewOnWebView', {
                 title: t('View on Explorer'),
                 url: getExploreLink(explorerUrl, activityItem?.transactionId || '', 'transaction'),
@@ -329,29 +292,41 @@ const ActivityDetail = () => {
             }}
             title={t('View on Explorer')}
             type="primary"
-            style={styles.button}
           />
         )}
       </>
     ),
-    [CopyIconUI, activityItem, amountShow, explorerUrl, feeUI, isMainnet, isNft, networkUI, status.text, t],
+    [
+      CopyIconUI,
+      activityItem,
+      amountShow,
+      explorerUrl,
+      feeUI,
+      isMainnet,
+      isNft,
+      networkUI,
+      status.text,
+      t,
+      transactionId,
+    ],
   );
 
   return (
-    <PageContainer
-      hideHeader
-      safeAreaColor={['white']}
-      containerStyles={styles.containerStyle}
-      scrollViewProps={{ disabled: true }}>
-      <Touchable style={styles.closeWrap} onPress={() => navigationService.goBack()}>
-        <Svg icon="close" size={pTd(16)} />
-      </Touchable>
+    <ModalBody modalBodyType="bottom" title={props.transactionName}>
       {initializing ? loadingDom : activityDom}
-    </PageContainer>
+    </ModalBody>
   );
 };
 
-export default ActivityDetail;
+export const showActivityDetail = (props: ActivityItemType & IActivityApiParams) => {
+  OverlayModal.show(<ActivityDetail {...props} />, {
+    position: 'bottom',
+  });
+};
+
+export default {
+  showActivityDetail,
+};
 
 export const styles = StyleSheet.create({
   containerStyle: {
@@ -378,13 +353,10 @@ export const styles = StyleSheet.create({
     lineHeight: pTd(24),
   },
   tokenCount: {
-    fontSize: pTd(28),
     ...fonts.mediumFont,
-    color: defaultColors.font5,
   },
   usdtCount: {
-    marginTop: pTd(4),
-    fontSize: pTd(14),
+    color: darkColors.textBase2,
   },
   topWrap: {
     width: '100%',
@@ -431,26 +403,10 @@ export const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    minHeight: pTd(20),
+    alignItems: 'center',
+    minHeight: pTd(54),
+    padding: pTd(16),
     width: '100%',
-  },
-  titles1: {
-    marginTop: pTd(24),
-  },
-  values1: {
-    marginTop: pTd(4),
-  },
-  divider: {
-    marginTop: pTd(24),
-    width: '100%',
-    height: StyleSheet.hairlineWidth,
-    backgroundColor: defaultColors.border1,
-  },
-  titles2: {
-    marginTop: pTd(25),
-  },
-  values2: {
-    marginTop: pTd(4),
   },
   card: {
     marginTop: pTd(24),
@@ -480,9 +436,9 @@ export const styles = StyleSheet.create({
   space: {
     flex: 1,
   },
-  button: {
-    marginBottom: pTd(30),
-  },
+  // button: {
+  //   marginBottom: pTd(30),
+  // },
   lightGrayFontColor: {
     color: defaultColors.font3,
   },
@@ -504,6 +460,9 @@ export const styles = StyleSheet.create({
   justifyContentCenter: {
     justifyContent: 'center',
   },
+  bottomButton: {
+    backgroundColor: defaultColors.bg1,
+  },
   networkInfoContent: {
     flexDirection: 'row',
     flexShrink: 1,
@@ -522,5 +481,9 @@ export const styles = StyleSheet.create({
   loadingIcon: {
     width: pTd(24),
     height: pTd(24),
+  },
+  fromWrap: {
+    display: 'flex',
+    alignItems: 'flex-end',
   },
 });

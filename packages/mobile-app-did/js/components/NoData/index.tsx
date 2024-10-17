@@ -2,7 +2,7 @@ import React, { memo } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import { pTd } from 'utils/unit';
 import { TextM } from 'components/CommonText';
-import { defaultColors } from 'assets/theme';
+import { darkColors, defaultColors } from 'assets/theme';
 import Svg, { IconName } from 'components/Svg';
 
 export type NoDataPropsType = {
@@ -49,6 +49,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: darkColors.bgBase1,
   },
   img: {
     marginBottom: pTd(8),

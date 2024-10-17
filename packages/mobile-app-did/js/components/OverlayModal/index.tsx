@@ -7,6 +7,7 @@ import GStyles from 'assets/theme/GStyles';
 import TransformView from 'components/TransformView';
 import { ViewStyleType } from 'types/styles';
 import { sleep } from '@portkey-wallet/utils';
+import { pTd } from 'utils/unit';
 
 export type OverlayInterface = {
   close?: (animated?: boolean) => void;
@@ -184,8 +185,10 @@ const styles = StyleSheet.create({
   bottomContainerStyle: {
     paddingBottom: bottomBarHeight,
     backgroundColor: darkColors.bgBase1,
-    ...GStyles.radiusArg(10, 10, 0, 0),
+    ...GStyles.radiusArg(0, 0, 0, 0),
     overflow: 'hidden',
+    borderTopWidth: pTd(1),
+    borderTopColor: darkColors.bgBase3,
   },
   transformViewContainer: {
     justifyContent: 'flex-start',

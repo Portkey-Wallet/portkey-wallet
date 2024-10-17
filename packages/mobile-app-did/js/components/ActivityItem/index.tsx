@@ -371,6 +371,7 @@ export default memo(ActivityItem);
 const itemStyle = StyleSheet.create({
   itemWrap: {
     flex: 1,
+    backgroundColor: darkColors.bgBase1,
     marginHorizontal: pTd(16),
   },
   itemBorder: {

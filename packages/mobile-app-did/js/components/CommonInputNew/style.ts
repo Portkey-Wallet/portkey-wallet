@@ -3,7 +3,7 @@ import { darkColors, defaultColors } from 'assets/theme/index';
 import GStyles from 'assets/theme/GStyles';
 import { pTd } from 'utils/unit';
 
-const { border1, font5 } = defaultColors;
+const { border1, font5, font2 } = defaultColors;
 
 export const commonStyles = StyleSheet.create({
   rightIconContainerStyle: {
@@ -14,7 +14,7 @@ export const commonStyles = StyleSheet.create({
   },
   inputContainerGrayBorderStyle: {
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: darkColors.borderBase1,
+    borderColor: defaultColors.border8,
     borderBottomColor: defaultColors.border8,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
@@ -27,16 +27,18 @@ export const searchStyles = StyleSheet.create({
     paddingRight: 0,
   },
   inputContainerStyle: {
-    borderBottomWidth: 0,
     backgroundColor: darkColors.bgBase1,
     height: pTd(36),
-    borderRadius: pTd(6),
+    borderRadius: pTd(20),
+    borderColor: darkColors.borderBase1,
+    borderWidth: pTd(1),
   },
   inputStyle: {
     fontSize: pTd(14),
     // ...GStyles.marginArg(14, 16),
     // height: pTd(50),
-    marginLeft: pTd(4),
+    color: defaultColors.font2,
+    marginLeft: pTd(16),
     marginRight: pTd(14),
   },
   labelStyle: {},
@@ -54,21 +56,20 @@ export const generalStyles = StyleSheet.create({
     ...GStyles.marginArg(0),
   },
   inputContainerStyle: {
-    borderColor: darkColors.borderBase1,
+    borderColor: border1,
     borderWidth: StyleSheet.hairlineWidth,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    height: pTd(40),
+    height: pTd(56),
     borderRadius: pTd(6),
   },
   inputStyle: {
     fontSize: pTd(14),
-    color: darkColors.textBase1,
+    color: font2,
     ...GStyles.marginArg(18, 16),
     minHeight: pTd(60),
     height: pTd(60),
   },
   labelStyle: {
-    color: darkColors.textDisabled1,
     fontSize: pTd(14),
     lineHeight: pTd(20),
     marginBottom: pTd(8),

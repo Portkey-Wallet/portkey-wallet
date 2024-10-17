@@ -13,7 +13,9 @@ export const styles = StyleSheet.create({
   },
   card: {
     flexDirection: 'column',
-    alignItems: 'center',
+    marginTop: pTd(16),
+    marginLeft: pTd(16),
+    marginRight: pTd(16),
   },
   tokenImage: {
     marginTop: pTd(40),
@@ -31,7 +33,6 @@ export const styles = StyleSheet.create({
   },
   tokenBalance: {
     ...fonts.mediumFont,
-    paddingTop: pTd(32),
     color: darkColors.textBase1,
     fontSize: pTd(32),
     lineHeight: pTd(40),
@@ -58,9 +59,8 @@ export const styles = StyleSheet.create({
   buttonGroupWrap: {
     marginTop: pTd(32),
     marginBottom: pTd(32),
-    display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'space-evenly',
     alignItems: 'center',
   },
   spacerStyle: {

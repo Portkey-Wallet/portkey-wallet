@@ -34,12 +34,18 @@ const TokenItem: React.FC<TokenListItemType> = props => {
           titleStyle={FontStyles.font11}
           borderStyle={GStyles.hairlineBorder}
         />
-        <TextM style={itemStyle.chainText}>{formatChainInfoToShow(item.chainId, currentNetwork)}</TextM>
+        <View>
+          <TextM style={itemStyle.symbolText}>{item.label || item.symbol}</TextM>
+          <TextM style={itemStyle.chainText}>{formatChainInfoToShow(item.chainId, currentNetwork)}</TextM>
+        </View>
       </View>
       <View style={itemStyle.right}>
         <TextM style={itemStyle.balanceText}>
           {hideBalance ? '****' : formatTokenAmountShowWithDecimals(item.balance, item.decimals)}
         </TextM>
+        {item.balanceInUsd && (
+          <TextM style={itemStyle.balanceInUseText}>{hideBalance ? '****' : item.balanceInUsd}</TextM>
+        )}
       </View>
     </Touchable>
   );
@@ -56,24 +62,32 @@ const itemStyle = StyleSheet.create({
     alignItems: 'center',
     borderRadius: pTd(8),
     marginHorizontal: pTd(16),
-    paddingHorizontal: pTd(12),
+    paddingLeft: pTd(16),
   },
   left: {
     flexDirection: 'row',
     alignItems: 'center',
   },
+  symbolText: {
+    fontSize: pTd(16),
+    marginLeft: pTd(8),
+    color: darkColors.textBase1,
+  },
   chainText: {
+    fontSize: pTd(14),
     marginLeft: pTd(8),
     color: darkColors.textBase2,
   },
   right: {
-    height: pTd(72),
     marginLeft: pTd(10),
     display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: 'column',
+    alignItems: 'flex-end',
   },
   balanceText: {
     color: darkColors.textBase1,
+  },
+  balanceInUseText: {
+    color: darkColors.textBase2,
   },
 });

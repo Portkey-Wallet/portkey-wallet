@@ -34,13 +34,12 @@ import { pTd } from 'utils/unit';
 import { useAppRampEntryShow } from 'hooks/ramp';
 import { useGetAccountTokenList } from 'hooks/account';
 import { SHOW_RAMP_SYMBOL_LIST } from '@portkey-wallet/constants/constants-ca/ramp';
-import { useAppETransShow, useAppSwapButtonShow } from 'hooks/cms';
+import { useAppSwapButtonShow } from 'hooks/cms';
 import { DepositModalMap, useOnDisclaimerModalPress } from 'hooks/deposit';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useCmsBanner } from '@portkey-wallet/hooks/hooks-ca/cms/banner';
 import { useGetS3ImageUrl } from '@portkey-wallet/hooks/hooks-ca/cms';
 import FaucetButton from 'components/FaucetButton';
-import { ReceivePageTabType } from 'pages/Receive/types';
 import { parseLink } from '@portkey-wallet/hooks/hooks-ca/cms/util';
 import { darkColors } from 'assets/theme';
 
@@ -62,10 +61,9 @@ const TokenDetailPage: React.FC<TokenDetailParams> = ({ tokenInfo }: TokenDetail
   const activity = useAppCASelector(state => state.activity);
   const defaultToken = useDefaultToken(tokenInfo.chainId);
   const { awakenUrl = 'https://app.awaken.finance/' } = useCurrentNetworkInfo();
-  const { isETransDepositShow } = useAppETransShow();
   const { isSwapShow } = useAppSwapButtonShow();
   const onDisclaimerModalPress = useOnDisclaimerModalPress();
-  const { buy, swap, deposit } = checkEnabledFunctionalTypes(tokenInfo.symbol, tokenInfo.chainId === 'AELF');
+  const { buy, swap } = checkEnabledFunctionalTypes(tokenInfo.symbol, tokenInfo.chainId === 'AELF');
   const { isRampShow } = useAppRampEntryShow();
   const getS3ImageUrl = useGetS3ImageUrl();
   const { getTokenDetailBannerList } = useCmsBanner();
@@ -80,16 +78,17 @@ const TokenDetailPage: React.FC<TokenDetailParams> = ({ tokenInfo }: TokenDetail
     [buy, isMainnet, isRampShow, tokenInfo.chainId, tokenInfo.symbol],
   );
 
-  const isDepositShow = useMemo(() => isETransDepositShow && deposit, [isETransDepositShow, deposit]);
-
   const isFaucetButtonShow = useMemo(
     () => !isMainnet && tokenInfo.symbol === defaultToken.symbol && tokenInfo.chainId === 'AELF',
     [defaultToken.symbol, isMainnet, tokenInfo.chainId, tokenInfo.symbol],
   );
 
   const balanceShow = useMemo(
-    () => `${formatTokenAmountShowWithDecimals(currentTokenInfo?.balance || '0', currentTokenInfo?.decimals)}`,
-    [currentTokenInfo?.balance, currentTokenInfo?.decimals],
+    () =>
+      `${formatTokenAmountShowWithDecimals(currentTokenInfo?.balance || '0', currentTokenInfo?.decimals)} ${
+        currentTokenInfo.label || currentTokenInfo.symbol
+      }`,
+    [currentTokenInfo],
   );
 
   const currentActivity = useMemo(
@@ -149,12 +148,11 @@ const TokenDetailPage: React.FC<TokenDetailParams> = ({ tokenInfo }: TokenDetail
   const buttonCount = useMemo(() => {
     let count = 3;
     if (isBuyButtonShow) count++;
-    if (isDepositShow) count++;
     if (isSwapShow && swap) count++;
     // FaucetButton
     if (isFaucetButtonShow) count++;
     return count;
-  }, [isBuyButtonShow, isDepositShow, isFaucetButtonShow, isSwapShow, swap]);
+  }, [isBuyButtonShow, isFaucetButtonShow, isSwapShow, swap]);
 
   const buttonGroupWrapStyle = useMemo(() => {
     if (buttonCount >= 5) {
@@ -202,7 +200,7 @@ const TokenDetailPage: React.FC<TokenDetailParams> = ({ tokenInfo }: TokenDetail
 
   const renderButtonItems = useCallback(() => {
     return (
-      <View style={[styles.buttonGroupWrap, buttonGroupWrapStyle]}>
+      <View style={[styles.buttonGroupWrap]}>
         <SendButton themeType="innerPage" sentToken={currentTokenInfo} wrapStyle={buttonWrapStyle} />
         <ReceiveButton currentTokenInfo={currentTokenInfo} themeType="innerPage" wrapStyle={buttonWrapStyle} />
         {isBuyButtonShow && <BuyButton themeType="innerPage" wrapStyle={buttonWrapStyle} tokenInfo={tokenInfo} />}
@@ -221,26 +219,12 @@ const TokenDetailPage: React.FC<TokenDetailParams> = ({ tokenInfo }: TokenDetail
             }}
           />
         )}
-        {deposit && (
-          <OutlinedButton
-            title="Deposit"
-            iconName="deposit"
-            onPress={() =>
-              navigationService.navigate(
-                'Receive',
-                Object.assign({}, tokenInfo, { targetScene: ReceivePageTabType.DEPOSIT }),
-              )
-            }
-          />
-        )}
       </View>
     );
   }, [
     awakenUrl,
-    buttonGroupWrapStyle,
     buttonWrapStyle,
     currentTokenInfo,
-    deposit,
     isBuyButtonShow,
     isFaucetButtonShow,
     isSwapShow,
@@ -292,7 +276,7 @@ const TokenDetailPage: React.FC<TokenDetailParams> = ({ tokenInfo }: TokenDetail
     <View style={styles.pageWrap}>
       <View style={styles.card}>
         <Text style={[styles.tokenBalance, amountTextOverflow ? styles.textOverflow : {}]}>{`${balanceShow}`}</Text>
-        {isMainnet && (
+        {isMainnet && currentTokenInfo?.balanceInUsd && (
           <TextS style={[styles.dollarBalance]}>{formatAmountUSDShow(currentTokenInfo?.balanceInUsd)}</TextS>
         )}
         {renderButtonItems()}

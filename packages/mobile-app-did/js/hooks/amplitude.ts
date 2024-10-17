@@ -55,15 +55,6 @@ export const useLoginSuccessTrack = () => {
 
   return useCallback(
     ({ loginType, type, isPinNeeded }: TLoginSuccessTrackParams) => {
-      console.log('loginSuccessTrack', {
-        event_type: 'LoginSuccess',
-        event_properties: {
-          loginType: loginType ? LoginType[loginType] : '',
-          type,
-          isPinNeeded,
-        },
-      });
-
       amplitudeTrack({
         event_type: 'LoginSuccess',
         event_properties: {

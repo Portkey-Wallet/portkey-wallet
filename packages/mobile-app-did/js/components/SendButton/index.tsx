@@ -43,7 +43,7 @@ const SendButton = (props: SendButtonType) => {
           address: '',
         },
       } as unknown as IToSendHomeParamsType);
-    AssetsOverlay.showAssetList();
+    navigationService.navigate('SelectAsset');
   }, [sentToken, themeType]);
   return (
     <View style={[commonButtonStyle.buttonWrap, wrapStyle]}>

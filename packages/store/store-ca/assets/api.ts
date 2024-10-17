@@ -1,6 +1,6 @@
 import { request } from '@portkey-wallet/api/api-did';
 import { ITokenSectionResponse } from '@portkey-wallet/types/types-ca/token';
-import { IAssetItemType } from './type';
+import { IAssetItemType, IAssetNftCollection, IAssetToken } from './type';
 import { NFT_SMALL_SIZE, NFT_MIDDLE_SIZE, NFT_LARGE_SIZE } from '@portkey-wallet/constants/constants-ca/assets';
 import { ICryptoBoxAssetItemType } from '@portkey-wallet/types/types-ca/crypto';
 import { NFTItemBaseType } from '@portkey-wallet/types/types-ca/assets';
@@ -44,6 +44,30 @@ export function fetchAssetList({
   caAddressInfos: { chainId: string; caAddress: string }[];
 }): Promise<{ data: IAssetItemType[]; totalRecordCount: number }> {
   return request.assets.fetchAccountAssetsByKeywords({
+    params: {
+      caAddressInfos,
+      skipCount,
+      maxResultCount,
+      keyword,
+      width: NFT_SMALL_SIZE,
+      height: -1,
+    },
+  });
+}
+
+export function fetchAssetListV2({
+  caAddressInfos,
+  maxResultCount = 1000,
+  skipCount = 0,
+  keyword = '',
+}: {
+  maxResultCount?: number;
+  skipCount?: number;
+  keyword: string;
+  caAddressInfos: { chainId: string; caAddress: string }[];
+}): Promise<{ nftInfos: IAssetNftCollection[]; tokenInfos: IAssetToken[]; totalRecordCount: number }> {
+  console.log('fetchAccountAssetsByKeywordsV2');
+  return request.assets.fetchAccountAssetsByKeywordsV2({
     params: {
       caAddressInfos,
       skipCount,

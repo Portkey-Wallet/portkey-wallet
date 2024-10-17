@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { defaultColors } from '.';
+import { darkColors, defaultColors } from '.';
 import fonts from './fonts';
 import { pTd } from 'utils/unit';
 
@@ -90,6 +90,12 @@ export const FontStyles = StyleSheet.create({
   size12: { fontSize: pTd(12) },
   size18: { fontSize: pTd(18) },
   size30: { fontSize: pTd(30) },
+});
+
+export const DarkFontStyles = StyleSheet.create({
+  textBase1: { color: darkColors.textBase1 },
+  textBase2: { color: darkColors.textBase2 },
+  textBase3: { color: darkColors.textBase3 },
 });
 
 export const BorderStyles = StyleSheet.create({

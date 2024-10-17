@@ -159,7 +159,7 @@ export default function GetSignature() {
             return (
               <div key={index} style={{ marginTop: index !== 0 ? 8 : 0 }}>
                 <div className="method-name">{key}</div>
-                <div>{key === 'expirationTime' ? formattedDate : showValueToStr(value)}</div>
+                <div>{key === 'expirationTime' ? formattedDate : value}</div>
               </div>
             );
           })}

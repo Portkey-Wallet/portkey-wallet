@@ -21,6 +21,8 @@ import socket from '@portkey-wallet/socket/socket-did';
 import { request } from '@portkey-wallet/api/api-did';
 import { checkQRCodeExist } from '@portkey-wallet/api/api-did/message/utils';
 import { managerSpeed } from 'utils/manager';
+import useEffectOnce from 'hooks/useEffectOnce';
+import { LoginTrackTypeEnum, useLoginTrack } from 'hooks/amplitude';
 
 const ScrollViewProps = { disabled: true };
 
@@ -33,6 +35,13 @@ export default function ScanLogin() {
   const getCurrentCAContract = useGetCurrentCAContract();
 
   const targetClientId = useMemo(() => (id ? `${managerAddress}_${id}` : undefined), [managerAddress, id]);
+
+  const loginTrack = useLoginTrack();
+  useEffectOnce(() => {
+    loginTrack({
+      type: LoginTrackTypeEnum.Scan,
+    });
+  });
 
   const onLogin = useCallback(async () => {
     if (!caHash || loading || !managerAddress) return;

@@ -97,6 +97,12 @@ export const FontStyles = StyleSheet.create({
   size30: { fontSize: pTd(30) },
 });
 
+export const DarkFontStyles = StyleSheet.create({
+  textBase1: { color: darkColors.textBase1 },
+  textBase2: { color: darkColors.textBase2 },
+  textBase3: { color: darkColors.textBase3 },
+});
+
 export const BorderStyles = StyleSheet.create({
   border1: { borderColor: defaultColors.border1 },
   border2: { borderColor: defaultColors.border2 },

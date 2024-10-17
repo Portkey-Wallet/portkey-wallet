@@ -41,7 +41,7 @@ const SendButton = (props: SendButtonType) => {
           address: '',
         },
       } as unknown as IToSendHomeParamsType);
-    AssetsOverlay.showAssetList();
+    navigationService.navigate('SelectAsset');
   }, [sentToken, themeType]);
   return <OutlinedButton iconName="send" title={t('Send')} onPress={onPressButton} />;
 };

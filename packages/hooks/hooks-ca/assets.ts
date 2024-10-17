@@ -7,10 +7,12 @@ import { useAppCommonDispatch } from '../index';
 import { useCurrentNetworkInfo } from './network';
 import {
   fetchAssetAsync,
+  fetchAssetV2Async,
   fetchNFTAsync,
   fetchNFTCollectionsAsync,
   fetchTokenListAsync,
   INIT_ACCOUNT_ASSETS_INFO,
+  INIT_ACCOUNT_ASSETS_INFO_V2,
   INIT_ACCOUNT_NFT_INFO,
   INIT_ACCOUNT_TOKEN_INFO,
 } from '@portkey-wallet/store/store-ca/assets/slice';
@@ -56,6 +58,36 @@ export const useAccountAssetsInfo = () => {
   );
 
   return { ...accountAssetsInfo, fetchAccountAssetsInfoList, isFetching: assetsState.accountAssets.isFetching };
+};
+
+export const useAccountAssetsInfoV2 = () => {
+  const dispatch = useAppCommonDispatch();
+  const currentNetworkInfo = useCurrentNetworkInfo();
+  const assetsState = useAssets();
+  const accountAssetsInfo = useMemo(
+    () =>
+      assetsState.accountAssetsV2?.accountAssetsInfo?.[currentNetworkInfo.networkType] || INIT_ACCOUNT_ASSETS_INFO_V2,
+    [assetsState.accountAssetsV2?.accountAssetsInfo, currentNetworkInfo.networkType],
+  );
+
+  const fetchAccountAssetsInfoList = useCallback(
+    (params: {
+      keyword: string;
+      caAddressInfos: { chainId: ChainId; caAddress: string }[];
+      skipCount?: number;
+      maxResultCount?: number;
+    }) => {
+      return dispatch(
+        fetchAssetV2Async({
+          ...params,
+          currentNetwork: currentNetworkInfo.networkType,
+        }),
+      );
+    },
+    [currentNetworkInfo.networkType, dispatch],
+  );
+
+  return { ...accountAssetsInfo, fetchAccountAssetsInfoList, isFetching: assetsState.accountAssetsV2?.isFetching };
 };
 
 export const useAccountTokenInfo = () => {

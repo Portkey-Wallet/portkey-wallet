@@ -3,7 +3,6 @@ import { View, Text, StyleProp, ViewProps, TouchableOpacity } from 'react-native
 import { styles } from './style';
 import SendButton from 'components/SendButton';
 import ReceiveButton from 'components/ReceiveButton';
-import ActivityButton from 'pages/DashBoard/ActivityButton';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCurrentUserInfo, useSetHideAssets } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import FaucetButton from 'components/FaucetButton';
@@ -16,7 +15,7 @@ import { PortkeyLinearGradient } from 'components/PortkeyLinearGradient';
 import { pTd } from 'utils/unit';
 import { Skeleton } from '@rneui/base';
 import Svg from 'components/Svg';
-import { DashBoardBanner } from '../Banner';
+// import { DashBoardBanner } from '../Banner'; // todo_wade: confirm banner
 
 const Card: React.FC<{ title: string }> = ({ title }) => {
   const isMainnet = useIsMainnet();
@@ -75,9 +74,8 @@ const Card: React.FC<{ title: string }> = ({ title }) => {
         {isRampShow && <BuyButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />}
         {isETransDepositShow && <DepositButton wrapStyle={buttonWrapStyle} />}
         {!isMainnet && <FaucetButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />}
-        <ActivityButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />
       </View>
-      <DashBoardBanner />
+      {/* <DashBoardBanner /> */}
     </View>
   );
 };

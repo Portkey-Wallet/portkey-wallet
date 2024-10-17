@@ -1,6 +1,6 @@
 import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
 import { formatAmountUSDShow, formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
-import { defaultColors } from 'assets/theme';
+import { darkColors } from 'assets/theme';
 import { FontStyles } from 'assets/theme/styles';
 import CommonAvatar from 'components/CommonAvatar';
 import { TextL, TextS } from 'components/CommonText';
@@ -10,14 +10,13 @@ import { StyleSheet, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
-import Svg from 'components/Svg';
-import { TokenItemShowType, ITokenSectionResponse } from '@portkey-wallet/types/types-ca/token';
+import { ITokenSectionResponse } from '@portkey-wallet/types/types-ca/token';
 import Touchable from 'components/Touchable';
 import GStyles from 'assets/theme/GStyles';
 interface TokenListItemType {
   item: ITokenSectionResponse;
   onExpand?: (item: ITokenSectionResponse) => void;
-  onPress?: (item: TokenItemShowType) => void;
+  onPress?: (item: ITokenSectionResponse, index: number) => void;
   selected?: boolean;
   hideBalance?: boolean;
 }
@@ -66,18 +65,15 @@ const TokenListUnionItem: React.FC<TokenListItemType> = props => {
             )}
           </View>
         </View>
-        <View style={itemStyle.right}>
-          <View style={itemStyle.moreButton}>
-            {selected ? <Svg icon="more_selected" size={pTd(20)} /> : <Svg icon="more_normal" size={pTd(20)} />}
-          </View>
-        </View>
       </Touchable>
       {selected &&
         item.tokens?.map((token, index) => (
           <TokenItem
             key={index}
             item={token}
-            onPress={onPress}
+            onPress={() => {
+              onPress && onPress(item, index);
+            }}
             showTopSeparator={index > 0}
             hideBalance={hideBalance}
           />
@@ -99,17 +95,10 @@ const itemStyle = StyleSheet.create({
   left: {
     marginLeft: pTd(16),
   },
-  right: {
-    marginRight: pTd(14),
-    marginLeft: pTd(12),
-  },
-  moreButton: {
-    borderRadius: pTd(4),
-    overflow: 'hidden',
-  },
   middle: {
     height: pTd(72),
     marginLeft: pTd(10),
+    marginRight: pTd(16),
     flex: 1,
     display: 'flex',
     flexDirection: 'row',
@@ -124,6 +113,7 @@ const itemStyle = StyleSheet.create({
     alignItems: 'flex-start',
   },
   tokenName: {
+    color: darkColors.textBase1,
     lineHeight: pTd(24),
   },
   chainInfo: {
@@ -131,6 +121,7 @@ const itemStyle = StyleSheet.create({
     marginTop: pTd(2),
     height: pTd(20),
     width: pTd(150),
+    color: darkColors.textBase2,
   },
   balanceWrap: {
     flex: 1,
@@ -140,7 +131,7 @@ const itemStyle = StyleSheet.create({
     alignItems: 'flex-end',
   },
   token: {
-    color: defaultColors.font5,
+    color: darkColors.textBase1,
     lineHeight: pTd(24),
     overflow: 'hidden',
   },
@@ -148,6 +139,6 @@ const itemStyle = StyleSheet.create({
     marginTop: pTd(2),
     lineHeight: pTd(16),
     height: pTd(20),
-    color: defaultColors.font11,
+    color: darkColors.textBase2,
   },
 });

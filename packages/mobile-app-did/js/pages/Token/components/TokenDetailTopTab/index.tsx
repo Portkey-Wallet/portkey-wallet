@@ -1,11 +1,9 @@
-/* eslint-disable react-native/no-inline-styles */
 import React, { memo, ReactElement } from 'react';
-import { StyleSheet, TouchableOpacity, Text, View, StyleProp, ViewStyle } from 'react-native';
+import { StyleSheet, TouchableOpacity, Text, View } from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { pTd } from 'utils/unit';
 import { defaultColors, darkColors } from 'assets/theme';
-import fonts from 'assets/theme/fonts';
 import { useThrottleCallback } from '@portkey-wallet/hooks';
 
 export interface TabItemTypes {
@@ -13,42 +11,24 @@ export interface TabItemTypes {
   tabItemDom: ReactElement;
 }
 
-export type CommonTopTabProps = {
-  swipeEnabled?: boolean;
-  hasTabBarBorderRadius?: boolean;
-  hasBottomBorder?: boolean;
+export type TokenDetailTopTabProps = {
   initialRouteName?: string;
   tabItemStyleProps?: any;
   tabList: TabItemTypes[];
-  tabContainerStyle?: StyleProp<ViewStyle>;
 };
 
 const Tab = createMaterialTopTabNavigator();
 
-const CommonTopTab: React.FC<CommonTopTabProps> = props => {
-  const {
-    tabList,
-    initialRouteName,
-    hasTabBarBorderRadius,
-    swipeEnabled = false,
-    hasBottomBorder = true,
-    tabContainerStyle = {},
-  } = props;
+const TokenDetailTopTab: React.FC<TokenDetailTopTabProps> = props => {
+  const { tabList, initialRouteName } = props;
 
   return (
     <Tab.Navigator
       initialRouteName={initialRouteName}
       initialLayout={{ width: screenWidth }}
-      tabBar={prop => (
-        <CustomizedTopTabBar
-          {...prop}
-          hasTabBarBorderRadius={hasTabBarBorderRadius}
-          hasBottomBorder={hasBottomBorder}
-          containerStyle={tabContainerStyle}
-        />
-      )}
+      tabBar={prop => <TopTabBar {...prop} />}
       screenOptions={{
-        swipeEnabled,
+        swipeEnabled: false,
         tabBarScrollEnabled: false,
       }}>
       {tabList.map(ele => (
@@ -60,20 +40,14 @@ const CommonTopTab: React.FC<CommonTopTabProps> = props => {
   );
 };
 
-const CustomizedTopTabBar = ({
+const TopTabBar = ({
   state,
   descriptors,
   navigation,
-  hasTabBarBorderRadius = false,
-  hasBottomBorder = false,
-  containerStyle = {},
 }: {
   state: { routes: any[]; index: number };
   descriptors: any;
   navigation: any;
-  hasTabBarBorderRadius?: boolean;
-  hasBottomBorder?: boolean;
-  containerStyle?: StyleProp<ViewStyle>;
 }) => {
   const onPress = useThrottleCallback(
     (name, params) => {
@@ -84,13 +58,7 @@ const CustomizedTopTabBar = ({
   );
 
   return (
-    <View
-      style={[
-        toolBarStyle.container,
-        containerStyle,
-        hasBottomBorder ? styles.bottomBorder : {},
-        hasTabBarBorderRadius ? styles.radiusTarBarStyle : {},
-      ]}>
+    <View style={[toolBarStyle.container]}>
       {state.routes.map((route, index) => {
         const { options } = descriptors[route.key];
         const label =
@@ -108,7 +76,8 @@ const CustomizedTopTabBar = ({
             onPress={() => onPress(route.name, route.params)}
             disabled={isFocused}
             key={label}
-            style={[toolBarStyle.label, { paddingRight: index !== state.routes.length - 1 ? pTd(32) : 0 }]}>
+            // eslint-disable-next-line react-native/no-inline-styles
+            style={{ paddingRight: index !== state.routes.length - 1 ? pTd(32) : 0 }}>
             <Text
               style={[
                 toolBarStyle.labelText,
@@ -125,37 +94,16 @@ const CustomizedTopTabBar = ({
   );
 };
 
-export default memo(CommonTopTab);
-
-const styles = StyleSheet.create({
-  tabBarStyle: {
-    elevation: 1,
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-  },
-  bottomBorder: {
-    borderBottomColor: defaultColors.border6,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-  },
-  radiusTarBarStyle: {
-    borderTopLeftRadius: pTd(8),
-    borderTopRightRadius: pTd(8),
-  },
-  tabBarLabelStyle: {
-    textTransform: 'none',
-    fontSize: pTd(14),
-  },
-});
+export default memo(TokenDetailTopTab);
 
 const toolBarStyle = StyleSheet.create({
   container: {
+    backgroundColor: darkColors.bgBase1,
     flexDirection: 'row',
     paddingHorizontal: pTd(16),
     height: pTd(54),
     alignItems: 'center',
   },
-  label: {},
   labelText: {
     fontSize: pTd(16),
     lineHeight: pTd(24),

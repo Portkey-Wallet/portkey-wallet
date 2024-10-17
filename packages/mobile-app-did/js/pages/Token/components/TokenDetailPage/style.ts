@@ -1,18 +1,17 @@
 import { StyleSheet } from 'react-native';
-import { defaultColors } from 'assets/theme';
+import { defaultColors, darkColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
-import GStyles from 'assets/theme/GStyles';
 import fonts from 'assets/theme/fonts';
 
-const { white, font11, font5, font7 } = defaultColors;
+const { white, font7 } = defaultColors;
 
 export const styles = StyleSheet.create({
   pageWrap: {
-    backgroundColor: white,
-    ...GStyles.paddingArg(0),
+    width: '100%',
+    flex: 1,
+    backgroundColor: darkColors.bgBase1,
   },
   card: {
-    backgroundColor: white,
     flexDirection: 'column',
     alignItems: 'center',
   },
@@ -33,13 +32,13 @@ export const styles = StyleSheet.create({
   tokenBalance: {
     ...fonts.mediumFont,
     paddingTop: pTd(32),
-    color: font5,
+    color: darkColors.textBase1,
     fontSize: pTd(32),
     lineHeight: pTd(40),
   },
   dollarBalance: {
     marginTop: pTd(4),
-    color: font11,
+    color: darkColors.textBase1,
     fontSize: pTd(14),
     lineHeight: pTd(20),
     height: pTd(20),
@@ -57,7 +56,6 @@ export const styles = StyleSheet.create({
     paddingVertical: pTd(8),
   },
   buttonGroupWrap: {
-    backgroundColor: white,
     marginTop: pTd(32),
     marginBottom: pTd(32),
     display: 'flex',

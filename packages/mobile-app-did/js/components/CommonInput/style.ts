@@ -14,7 +14,7 @@ export const commonStyles = StyleSheet.create({
   },
   inputContainerGrayBorderStyle: {
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: defaultColors.border8,
+    borderColor: darkColors.borderBase1,
     borderBottomColor: defaultColors.border8,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
@@ -54,7 +54,7 @@ export const generalStyles = StyleSheet.create({
     ...GStyles.marginArg(0),
   },
   inputContainerStyle: {
-    borderColor: border1,
+    borderColor: darkColors.borderBase1,
     borderWidth: StyleSheet.hairlineWidth,
     borderBottomWidth: StyleSheet.hairlineWidth,
     height: pTd(40),

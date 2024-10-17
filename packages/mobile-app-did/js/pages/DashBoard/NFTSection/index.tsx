@@ -204,10 +204,10 @@ export default function NFTSection() {
           />
         )}
         keyExtractor={(item: NFTCollectionItemShowType) => item?.symbol + item.chainId}
-        onRefresh={() => {
-          setOpenCollectionObj({});
-          getNFTCollectionsAsync(true);
-        }}
+        // onRefresh={() => {
+        //   setOpenCollectionObj({});
+        //   getNFTCollectionsAsync(true);
+        // }}
         onEndReached={() => getNFTCollectionsAsync()}
         ListFooterComponent={() => (
           <View

@@ -50,6 +50,11 @@ export const FontStyles = StyleSheet.create({
   primaryTextColor: { color: defaultColors.primaryTextColor },
   secondaryTextColor: { color: defaultColors.secondaryTextColor },
 
+  fontBase1: { color: darkColors.textBase1 },
+  fontBase2: { color: darkColors.textBase2 },
+  fontBase3: { color: darkColors.textBase3 },
+  fontDisabled1: { color: darkColors.textDisabled1 },
+  fontDisabled2: { color: darkColors.textDisabled1 },
   font1: { color: defaultColors.font1 },
   font2: { color: defaultColors.font2 },
   font3: { color: defaultColors.font3 },

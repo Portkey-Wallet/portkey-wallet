@@ -22,7 +22,7 @@ import { useAppETransShow } from 'hooks/cms';
 import { SHOW_RAMP_SYMBOL_LIST } from '@portkey-wallet/constants/constants-ca/ramp';
 import { useAppRampEntryShow } from 'hooks/ramp';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
-import { TokenTitle } from 'components/TokenTitle';
+// import { TokenTitle } from 'components/TokenTitle';
 import navigationService from 'utils/navigationService';
 import { ReceivePageTabType } from './types';
 import { CopyButton } from 'components/CopyButton';
@@ -101,7 +101,7 @@ export default function Receive() {
 
   return (
     <PageContainer
-      titleDom={<TokenTitle tokenInfo={tokenItem} />}
+      // titleDom={<TokenTitle tokenInfo={tokenItem} />} //todo_wade
       safeAreaColor={['white']}
       containerStyles={styles.containerStyles}
       scrollViewProps={{ disabled: true }}>

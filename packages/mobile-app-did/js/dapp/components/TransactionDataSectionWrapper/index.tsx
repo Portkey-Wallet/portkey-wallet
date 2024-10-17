@@ -9,7 +9,7 @@ import { FontStyles } from 'assets/theme/styles';
 import GStyles from 'assets/theme/GStyles';
 import Touchable from 'components/Touchable';
 import Collapsible from 'components/Collapsible';
-import { isHexStr, showValueToStr } from '@portkey-wallet/utils/byteConversion';
+import { valueToString, showValueToStr } from '@portkey-wallet/utils/byteConversion';
 type TransactionDataSectionType = {
   methodName?: string;
   dataInfo: { [key: string]: any } | string;
@@ -64,7 +64,7 @@ export const TransactionDataSectionWrapper = (props: TransactionDataSectionType)
           <View key={index} style={styles.dataInfoGroup}>
             <TextM style={FontStyles.font5}>{key}</TextM>
             <TextS style={[FontStyles.font3, styles.dataValue]}>
-              {key === 'expirationTime' ? formattedDate : value}
+              {key === 'expirationTime' ? formattedDate : valueToString(value)}
             </TextS>
           </View>
         );

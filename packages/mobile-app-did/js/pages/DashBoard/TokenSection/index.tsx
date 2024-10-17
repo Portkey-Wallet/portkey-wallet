@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import navigationService from 'utils/navigationService';
 import { View, FlatList } from 'react-native';
-import { TokenItemShowType, ITokenSectionResponse } from '@portkey-wallet/types/types-ca/token';
+import { ITokenSectionResponse } from '@portkey-wallet/types/types-ca/token';
 import { TextM } from 'components/CommonText';
 import { darkColors } from 'assets/theme';
 import fonts from 'assets/theme/fonts';
@@ -28,8 +28,8 @@ export default function TokenSection() {
   const [extraIndex, setExtraIndex] = useState<number>(0);
   const [selectedItem] = useState(new Map<string, boolean>());
 
-  const onNavigate = useCallback((tokenItem: TokenItemShowType) => {
-    navigationService.navigate('TokenDetail', { tokenInfo: tokenItem });
+  const onNavigate = useCallback((tokenItem: ITokenSectionResponse, index: number) => {
+    navigationService.navigate('TokenDetail', { tokenSection: tokenItem, index });
   }, []);
 
   const reload = useCallback(() => {

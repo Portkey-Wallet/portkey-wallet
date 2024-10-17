@@ -10,13 +10,13 @@ import { StyleSheet, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
-import { TokenItemShowType, ITokenSectionResponse } from '@portkey-wallet/types/types-ca/token';
+import { ITokenSectionResponse } from '@portkey-wallet/types/types-ca/token';
 import Touchable from 'components/Touchable';
 import GStyles from 'assets/theme/GStyles';
 interface TokenListItemType {
   item: ITokenSectionResponse;
   onExpand?: (item: ITokenSectionResponse) => void;
-  onPress?: (item: TokenItemShowType) => void;
+  onPress?: (item: ITokenSectionResponse, index: number) => void;
   selected?: boolean;
   hideBalance?: boolean;
 }
@@ -71,7 +71,9 @@ const TokenListUnionItem: React.FC<TokenListItemType> = props => {
           <TokenItem
             key={index}
             item={token}
-            onPress={onPress}
+            onPress={() => {
+              onPress && onPress(item, index);
+            }}
             showTopSeparator={index > 0}
             hideBalance={hideBalance}
           />

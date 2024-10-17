@@ -1,15 +1,15 @@
 import { StyleSheet } from 'react-native';
 import { defaultColors, darkColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
-import GStyles from 'assets/theme/GStyles';
 import fonts from 'assets/theme/fonts';
 
-const { white, font11, font5, font7 } = defaultColors;
+const { white, font7 } = defaultColors;
 
 export const styles = StyleSheet.create({
   pageWrap: {
+    width: '100%',
+    flex: 1,
     backgroundColor: darkColors.bgBase1,
-    ...GStyles.paddingArg(0),
   },
   card: {
     flexDirection: 'column',

@@ -49,7 +49,6 @@ const styles = StyleSheet.create({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: defaultColors.bg1,
   },
   img: {
     marginBottom: pTd(8),

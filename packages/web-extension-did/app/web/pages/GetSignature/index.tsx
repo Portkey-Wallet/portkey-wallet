@@ -9,7 +9,7 @@ import { closePrompt } from 'utils/lib/serviceWorkerAction';
 import { ResponseCode } from '@portkey/provider-types';
 import { getWallet } from '@portkey-wallet/utils/aelf';
 import ImageDisplay from 'pages/components/ImageDisplay';
-import { showValueToStr } from '@portkey-wallet/utils/byteConversion';
+import { showValueToStr, valueToString } from '@portkey-wallet/utils/byteConversion';
 import getSeed from 'utils/getSeed';
 import singleMessage from 'utils/singleMessage';
 import AsyncButton from 'components/AsyncButton';
@@ -159,7 +159,7 @@ export default function GetSignature() {
             return (
               <div key={index} style={{ marginTop: index !== 0 ? 8 : 0 }}>
                 <div className="method-name">{key}</div>
-                <div>{key === 'expirationTime' ? formattedDate : value}</div>
+                <div>{key === 'expirationTime' ? formattedDate : valueToString(value)}</div>
               </div>
             );
           })}

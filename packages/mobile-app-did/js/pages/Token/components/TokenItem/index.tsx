@@ -22,12 +22,11 @@ const TokenItem = ({ item, onHandleToken }: TokenItemProps) => {
   const symbolImages = useSymbolImages();
   const defaultToken = useDefaultToken();
   const { currentNetwork } = useWallet();
-  console.log('🌹🌹🌹item', item);
 
   return (
     // if not touchable, can not scroll
 
-    <Touchable style={itemStyle.wrap} key={`${item.symbol}${item.address}${item.chainId}}`}>
+    <Touchable style={itemStyle.wrap}>
       <CommonAvatar
         hasBorder
         shapeType="circular"

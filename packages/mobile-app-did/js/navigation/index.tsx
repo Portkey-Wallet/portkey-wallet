@@ -12,13 +12,13 @@ import LoginNav from 'pages/Login';
 import PinNav from 'pages/Pin';
 import TokenNav from 'pages/Token';
 import SendNav from 'pages/Send';
+import ReceiveNav from 'pages/Receive';
 import ActivityNav from 'pages/Activity';
 import Home from 'pages/Home';
 import GuardianNav from 'pages/Guardian';
 
 import Referral from 'pages/Referral';
 import SecurityLock from 'pages/SecurityLock';
-import Receive from 'pages/Receive';
 import NFTDetail from 'pages/NFT/NFTDetail';
 import QrCodeNav from 'pages/QrCode';
 import MyNav from 'pages/My/router';
@@ -46,7 +46,6 @@ export const productionNav = [
   { name: 'Referral', component: Referral },
   { name: 'Tab', component: Tab },
   { name: 'SecurityLock', component: SecurityLock, options: { gestureEnabled: false } },
-  { name: 'Receive', component: Receive },
   { name: 'NFTDetail', component: NFTDetail },
   { name: 'ProviderWebPage', component: ProviderWebPage },
   { name: 'Deposit', component: Deposit },
@@ -61,6 +60,7 @@ export const productionNav = [
   ...LoginNav,
   ...TokenNav,
   ...SendNav,
+  ...ReceiveNav,
   ...PinNav,
   ...MyNav,
   ...RampNav,

@@ -3,7 +3,6 @@ import { StyleProp, ViewProps } from 'react-native';
 import navigationService from 'utils/navigationService';
 import OutlinedButton from 'components/OutlinedButton';
 import { useLanguage } from 'i18n/hooks';
-import TokenOverlay from 'components/TokenOverlay';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 
 interface SendButtonType {
@@ -18,12 +17,7 @@ export default function ReceiveButton(props: SendButtonType) {
 
   const onPressButton = useCallback(() => {
     if (themeType === 'innerPage') return navigationService.navigate('Receive', currentTokenInfo);
-
-    TokenOverlay.showTokenList({
-      onFinishSelectToken: (tokenInfo: TokenItemShowType) => {
-        navigationService.navigate('Receive', tokenInfo);
-      },
-    });
+    navigationService.navigate('ReceiveSelectToken');
   }, [currentTokenInfo, themeType]);
 
   return <OutlinedButton iconName="receive" title={t('Receive')} onPress={onPressButton} />;

@@ -64,6 +64,7 @@ import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type'
 import { useLatestRef } from '@portkey-wallet/hooks';
 import { getOperationDetails } from '@portkey-wallet/utils/operation.util';
 import { TVerifierAuthParams } from 'types/authentication';
+import { LoginTrackTypeEnum, useLoginSuccessTrack, useLoginTrack } from './amplitude';
 
 export function useOnResultFail() {
   const dispatch = useAppDispatch();
@@ -121,6 +122,7 @@ export function useOnManagerAddressAndQueryResult() {
     },
     [latestStoreTmpWalletInfo],
   );
+  const loginSuccessTrack = useLoginSuccessTrack();
 
   return useCallback(
     async ({
@@ -148,6 +150,7 @@ export function useOnManagerAddressAndQueryResult() {
 
       await sleep(500);
       const requestId = randomId();
+
       try {
         const tmpWalletInfo = createTmpWalletInfo(walletInfo);
 
@@ -196,6 +199,11 @@ export function useOnManagerAddressAndQueryResult() {
           );
         }
         console.log(_managerInfo, '=======_managerInfo');
+        loginSuccessTrack({
+          type: isRecovery ? LoginTrackTypeEnum.Login : LoginTrackTypeEnum.SignUp,
+          isPinNeeded: !!pinRef,
+          loginType: managerInfo.type,
+        });
 
         dispatch(setCredentials({ pin: confirmPin }));
 
@@ -231,15 +239,16 @@ export function useOnManagerAddressAndQueryResult() {
       }
     },
     [
-      biometrics,
-      biometricsReady,
-      dispatch,
-      getDeviceInfo,
-      latestOriginChainId,
-      onIntervalGetResult,
-      onResultFail,
       t,
       createTmpWalletInfo,
+      getDeviceInfo,
+      latestOriginChainId,
+      loginSuccessTrack,
+      dispatch,
+      biometricsReady,
+      biometrics,
+      onIntervalGetResult,
+      onResultFail,
     ],
   );
 }
@@ -347,7 +356,7 @@ export function useGoGuardianApproval(isLogin?: boolean) {
             await Promise.all(
               list.map(async guardianItem => {
                 const req = await onVerifierAuth({ guardianItem, originChainId, authenticationInfo });
-                if (req?.signature) {
+                if (req?.signature || req?.zkLoginInfo) {
                   const status = VerifyStatus.Verified as any;
                   const verifierInfo = { ...req, verifierId: guardianItem?.verifier?.id };
                   initGuardiansStatus[guardianItem.key] = { verifierInfo, status };
@@ -584,6 +593,7 @@ export function useOnLogin(isLogin?: boolean) {
   const getChainInfo = useGetChainInfo();
   const goGuardianApproval = useGoGuardianApproval(isLogin);
   const goSelectVerifier = useGoSelectVerifier(isLogin);
+  const loginTrack = useLoginTrack();
 
   return useCallback(
     async (params: LoginParams) => {
@@ -592,16 +602,17 @@ export function useOnLogin(isLogin?: boolean) {
         await sleep(500);
         let chainInfo = await getChainInfo(DefaultChainId);
         let verifierServers = await getVerifierServers(chainInfo);
-
         const { originChainId } = await getRegisterInfo({ loginGuardianIdentifier: loginAccount });
-
         if (originChainId !== DefaultChainId) {
           chainInfo = await getChainInfo(originChainId);
           verifierServers = await getVerifierServers(chainInfo);
         }
-
         const holderInfo = await getGuardiansInfo({ guardianIdentifier: loginAccount }, chainInfo);
         const { guardianList, guardianAccounts } = holderInfo || {};
+
+        const _isLogin = !!(guardianAccounts || guardianList);
+        loginTrack({ loginType, type: _isLogin ? LoginTrackTypeEnum.Login : LoginTrackTypeEnum.SignUp });
+
         if (guardianAccounts || guardianList) {
           await goGuardianApproval({
             originChainId,
@@ -620,6 +631,8 @@ export function useOnLogin(isLogin?: boolean) {
       } catch (error) {
         console.log(error, '=======error');
         if (handleErrorCode(error) === '3002') {
+          // sign up
+          loginTrack({ loginType, type: LoginTrackTypeEnum.SignUp });
           await goSelectVerifier({
             showLoginAccount: showLoginAccount || loginAccount,
             loginAccount,
@@ -631,7 +644,15 @@ export function useOnLogin(isLogin?: boolean) {
         }
       }
     },
-    [getChainInfo, getGuardiansInfo, getRegisterInfo, getVerifierServers, goGuardianApproval, goSelectVerifier],
+    [
+      getChainInfo,
+      getGuardiansInfo,
+      getRegisterInfo,
+      getVerifierServers,
+      goGuardianApproval,
+      goSelectVerifier,
+      loginTrack,
+    ],
   );
 }
 

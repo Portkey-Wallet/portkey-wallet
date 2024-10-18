@@ -11,6 +11,7 @@ import CommonAvatar from 'components/CommonAvatar';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import { FontStyles } from 'assets/theme/styles';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import Touchable from 'components/Touchable';
 import GStyles from 'assets/theme/GStyles';
 
@@ -23,6 +24,7 @@ type TokenItemProps = {
 const TokenItem = ({ item, onHandleToken, onEditToken }: TokenItemProps) => {
   const symbolImages = useSymbolImages();
   const defaultToken = useDefaultToken();
+  const { currentNetwork } = useWallet();
 
   const displayStatus = useMemo(() => {
     if (item.displayStatus === 'All') {
@@ -32,12 +34,12 @@ const TokenItem = ({ item, onHandleToken, onEditToken }: TokenItemProps) => {
     } else {
       const chainId = item.tokens?.find(token => token.isDisplay)?.chainId;
       if (chainId) {
-        return formatChainInfoToShow(chainId);
+        return formatChainInfoToShow(chainId, currentNetwork);
       } else {
         return '';
       }
     }
-  }, [item.displayStatus, item.tokens]);
+  }, [currentNetwork, item.displayStatus, item.tokens]);
 
   const isAdded = useMemo(() => {
     return item.displayStatus === 'All' || item.displayStatus === 'Partial';

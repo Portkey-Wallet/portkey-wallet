@@ -9,7 +9,7 @@ import {
   fetchTokenPrices,
   fetchTokenBalance,
 } from './api';
-import { ITokenSectionResponse } from '@portkey-wallet/types/types-ca/token';
+import { ITokenSectionResponse, TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import { TAssetsState } from './type';
 import { ChainId, NetworkType } from '@portkey-wallet/types';
 import { NEW_CLIENT_MOCK_ELF_LIST, PAGE_SIZE_IN_NFT_ITEM } from '@portkey-wallet/constants/constants-ca/assets';
@@ -488,16 +488,39 @@ export const assetsSlice = createSlice({
         state.accountToken.isFetching = false;
       })
       .addCase(fetchTargetTokenBalanceAsync.fulfilled, (state, action) => {
-        const { symbol, response, currentNetwork = 'MAINNET' } = action.payload;
+        const { chainId, symbol, response, currentNetwork = 'MAINNET' } = action.payload;
 
-        // todo_wade: confirm the logic
-        // const tmpList = state.accountToken?.accountTokenInfo?.[currentNetwork]?.accountTokenList?.map(ele =>
-        //   ele.chainId === chainId && ele.symbol === symbol
-        //     ? { ...ele, balance: response.balance, balanceInUsd: response.balanceInUsd }
-        //     : ele,
-        // );
+        const newTokens = ({
+          tokens,
+          chainId,
+          balance,
+          balanceInUsd,
+        }: {
+          tokens?: TokenItemShowType[];
+          chainId: ChainId;
+          balance: string;
+          balanceInUsd: string;
+        }) => {
+          if (!tokens) return [];
+          return tokens.map(ele => {
+            if (ele.chainId === chainId && ele.symbol === symbol) {
+              return { ...ele, balance, balanceInUsd };
+            }
+            return ele;
+          });
+        };
         const tmpList = state.accountToken?.accountTokenInfoV2?.[currentNetwork]?.accountTokenList?.map(ele =>
-          ele.symbol === symbol ? { ...ele, balance: response.balance, balanceInUsd: response.balanceInUsd } : ele,
+          ele.symbol === symbol
+            ? {
+                ...ele,
+                tokens: newTokens({
+                  tokens: ele.tokens,
+                  chainId,
+                  balance: response.balance,
+                  balanceInUsd: response.balanceInUsd,
+                }),
+              }
+            : ele,
         );
 
         state.accountToken.accountTokenInfoV2 = {

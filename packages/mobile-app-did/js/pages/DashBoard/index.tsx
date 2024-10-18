@@ -12,7 +12,6 @@ import myEvents from 'utils/deviceEvent';
 import useReportAnalyticsEvent from 'hooks/userExceptionMessage';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { useReportingSignalR } from 'hooks/FCM';
-import { useManagerExceedTipModal } from 'hooks/managerCheck';
 import { useReferral } from '@portkey-wallet/hooks/hooks-ca/referral';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useAccountBalanceUSD } from '@portkey-wallet/hooks/hooks-ca/balances';
@@ -24,7 +23,6 @@ const DashBoard: React.FC<any> = ({ navigation }) => {
   const isMainnet = useIsMainnet();
   const reportAnalyticsEvent = useReportAnalyticsEvent();
   const { getViewReferralStatusStatus, getReferralLink } = useReferral();
-  const managerExceedTipModalCheck = useManagerExceedTipModal();
   const accountBalanceUSD = useAccountBalanceUSD();
   const { fetchDiscoverTabAsync } = useDiscoverData();
   useInitCmsBanner();
@@ -43,7 +41,6 @@ const DashBoard: React.FC<any> = ({ navigation }) => {
 
   useEffectOnce(() => {
     reportAnalyticsEvent({ message: 'DashBoard' });
-    managerExceedTipModalCheck();
     getViewReferralStatusStatus();
     getReferralLink();
     fetchDiscoverTabAsync();

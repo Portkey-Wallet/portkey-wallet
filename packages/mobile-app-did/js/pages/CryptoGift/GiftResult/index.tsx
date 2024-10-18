@@ -18,7 +18,7 @@ import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { DeviceEventEmitter } from 'react-native';
-import { CryptoGiftCreateSuccess } from '@portkey-wallet/hooks/hooks-ca/cryptogift';
+import { CryptoGiftCreateSuccess, useGetCryptoGiftTgLink } from '@portkey-wallet/hooks/hooks-ca/cryptogift';
 import { isIOS } from '@rneui/base';
 
 export interface IGiftResultProps {
@@ -28,17 +28,17 @@ export interface IGiftResultProps {
 export default function GiftResult() {
   const { giftId } = useRouterParams<IGiftResultProps>();
   const { t } = useLanguage();
+  const getCryptoGiftTgLink = useGetCryptoGiftTgLink();
   const currentNetworkInfo = useCurrentNetworkInfo();
   const shareUrl = useMemo(() => {
     return `${currentNetworkInfo.cryptoGiftUrl}/cryptoGift?id=${giftId}`;
   }, [currentNetworkInfo.cryptoGiftUrl, giftId]);
-  const onDone = useCallback(() => {
-    console.log('onDone clicked!!');
-    navigationService.navigate('CryptoGift');
-  }, []);
-  const onCopyPress = useCallback(async () => {
-    await copyText(shareUrl || '');
-  }, [shareUrl]);
+  const onDone = useCallback(() => navigationService.navigate('CryptoGift'), []);
+  const onCopyPress = useCallback(async () => await copyText(shareUrl || ''), [shareUrl]);
+  const onCopyTgLinkPress = useCallback(
+    async () => await copyText(getCryptoGiftTgLink(giftId || '')),
+    [getCryptoGiftTgLink, giftId],
+  );
   const onSharePress = useCallback(async () => {
     await Share.share({
       message: isIOS ? '' : shareUrl,
@@ -73,6 +73,18 @@ export default function GiftResult() {
         <View style={styles.buttonContentWrapper}>
           <Svg icon="copy" size={pTd(20)} color={defaultColors.neutralDefaultBG} />
           <TextL style={styles.buttonText}>{t('Copy Link')}</TextL>
+        </View>
+      </CommonButton>
+      <CommonButton
+        containerStyle={[styles.buttonContainer, GStyles.paddingTop(pTd(16))]}
+        buttonStyle={styles.shareButtonStyle}
+        type="outline"
+        disabled={false}
+        radius={pTd(6)}
+        onPress={onCopyTgLinkPress}>
+        <View style={styles.buttonContentWrapper}>
+          <Svg icon="telegram-mono" size={pTd(20)} color={defaultColors.neutralDefaultBG} />
+          <TextL style={[styles.buttonText, FontStyles.brandNormal]}>{t('Copy Telegram Link')}</TextL>
         </View>
       </CommonButton>
       <CommonButton

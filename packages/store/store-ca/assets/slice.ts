@@ -2,6 +2,7 @@ import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
 import { NFTCollectionItemShowType } from '@portkey-wallet/types/types-ca/assets';
 import {
   fetchAssetList,
+  fetchAssetListV2,
   fetchCryptoBoxAssetList,
   fetchNFTSeriesList,
   fetchNFTList,
@@ -36,6 +37,16 @@ export const INIT_ACCOUNT_ASSETS_INFO = {
   totalRecordCount: 0,
 };
 
+export const INIT_ACCOUNT_ASSETS_INFO_V2 = {
+  skipCount: 0,
+  maxResultCount: 1000,
+  accountAssetsList: {
+    nftInfos: [],
+    tokenInfos: [],
+  },
+  totalRecordCount: 0,
+};
+
 const initialState: TAssetsState = {
   accountToken: {
     ...INIT_ACCOUNT_TOKEN_INFO,
@@ -47,6 +58,10 @@ const initialState: TAssetsState = {
   },
   accountAssets: {
     ...INIT_ACCOUNT_ASSETS_INFO,
+    isFetching: false,
+  },
+  accountAssetsV2: {
+    ...INIT_ACCOUNT_ASSETS_INFO_V2,
     isFetching: false,
   },
   accountCryptoBoxAssets: {
@@ -224,6 +239,38 @@ export const fetchAssetAsync = createAsyncThunk(
   },
 );
 
+export const fetchAssetV2Async = createAsyncThunk(
+  'fetchAssetV2Async',
+  async (
+    {
+      keyword,
+      caAddressInfos,
+      skipCount = 0,
+      maxResultCount = 1000,
+      currentNetwork,
+    }: {
+      keyword: string;
+      caAddressInfos: { chainId: ChainId; caAddress: string }[];
+      skipCount?: number;
+      maxResultCount?: number;
+      currentNetwork?: NetworkType;
+    },
+    { getState },
+  ) => {
+    const { wallet } = getState() as { wallet: WalletState };
+    currentNetwork = currentNetwork || wallet.currentNetwork || 'MAINNET';
+    const response = await fetchAssetListV2({ caAddressInfos, keyword, skipCount, maxResultCount });
+
+    return {
+      ...response,
+      keyword,
+      skipCount,
+      maxResultCount,
+      currentNetwork,
+    };
+  },
+);
+
 // fetch current cryptoBox assets when add sent button
 export const fetchCryptoBoxAssetAsync = createAsyncThunk(
   'fetchCryptoBoxAssetAsync',
@@ -323,6 +370,9 @@ export const assetsSlice = createSlice({
       const assetsInfo = state.accountAssets.accountAssetsInfo;
       if (assetsInfo?.[action.payload]) delete assetsInfo[action.payload];
       state.accountAssets.accountAssetsInfo = assetsInfo;
+      const assetsInfoV2 = state.accountAssetsV2.accountAssetsInfo;
+      if (assetsInfoV2?.[action.payload]) delete assetsInfoV2[action.payload];
+      state.accountAssetsV2.accountAssetsInfo = assetsInfoV2;
     },
   },
   extraReducers: builder => {
@@ -455,7 +505,31 @@ export const assetsSlice = createSlice({
         state.accountAssets.isFetching = false;
       })
       .addCase(fetchAssetAsync.rejected, state => {
-        state.accountToken.isFetching = false;
+        state.accountAssets.isFetching = false;
+      })
+      .addCase(fetchAssetV2Async.pending, state => {
+        if (!state.accountAssetsV2) {
+          state.accountAssetsV2 = {
+            ...INIT_ACCOUNT_ASSETS_INFO_V2,
+            isFetching: false,
+          };
+        }
+        state.accountAssetsV2.isFetching = true;
+      })
+      .addCase(fetchAssetV2Async.fulfilled, (state, action) => {
+        const { nftInfos, tokenInfos, totalRecordCount, skipCount, maxResultCount, currentNetwork } = action.payload;
+        if (!state.accountAssetsV2.accountAssetsInfo) state.accountAssetsV2.accountAssetsInfo = {};
+
+        state.accountAssetsV2.accountAssetsInfo[currentNetwork] = {
+          accountAssetsList: { nftInfos, tokenInfos },
+          skipCount,
+          totalRecordCount,
+          maxResultCount,
+        };
+        state.accountAssetsV2.isFetching = false;
+      })
+      .addCase(fetchAssetV2Async.rejected, state => {
+        state.accountAssetsV2.isFetching = false;
       })
       .addCase(fetchCryptoBoxAssetAsync.fulfilled, (state, action) => {
         const { list, totalRecordCount } = action.payload;

@@ -76,8 +76,14 @@ const TopTabBar = ({
             onPress={() => onPress(route.name, route.params)}
             disabled={isFocused}
             key={label}
-            // eslint-disable-next-line react-native/no-inline-styles
-            style={{ paddingRight: index !== state.routes.length - 1 ? pTd(32) : 0 }}>
+            style={[
+              toolBarStyle.button,
+              // eslint-disable-next-line react-native/no-inline-styles
+              {
+                marginRight: index !== state.routes.length - 1 ? pTd(8) : 0,
+                backgroundColor: isFocused ? darkColors.bgBase2 : darkColors.bgBase1,
+              },
+            ]}>
             <Text
               style={[
                 toolBarStyle.labelText,
@@ -101,8 +107,14 @@ const toolBarStyle = StyleSheet.create({
     backgroundColor: darkColors.bgBase1,
     flexDirection: 'row',
     paddingHorizontal: pTd(16),
-    height: pTd(54),
     alignItems: 'center',
+  },
+  button: {
+    height: pTd(32),
+    paddingHorizontal: pTd(8),
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: pTd(8),
   },
   labelText: {
     fontSize: pTd(16),

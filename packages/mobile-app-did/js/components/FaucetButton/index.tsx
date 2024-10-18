@@ -8,6 +8,7 @@ import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useGetCurrentCAContract } from 'hooks/contract';
 import { timesDecimals } from '@portkey-wallet/utils/converter';
 import CommonToast from 'components/CommonToast';
+import OutlinedButton from 'components/OutlinedButton';
 import { commonButtonStyle } from 'components/SendButton/style';
 import Touchable from 'components/Touchable';
 import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
@@ -65,19 +66,12 @@ const FaucetButton = (props: SendButtonType) => {
     isLoading.current = false;
   }, [currentNetworkInfo.tokenClaimContractAddress, currentWallet.address, currentWallet.caHash, getCurrentCAContract]);
 
-  return (
-    <View style={[commonButtonStyle.buttonWrap, wrapStyle]}>
-      <Touchable
-        style={[commonButtonStyle.iconWrapStyle, GStyles.alignCenter]}
-        onPress={async () => {
-          if (isMainnet) return;
-          claimToken();
-        }}>
-        <Svg icon={'faucet'} size={pTd(48)} />
-      </Touchable>
-      <TextM style={[commonButtonStyle.commonTitleStyle, buttonTitleStyle]}>{t('Faucet')}</TextM>
-    </View>
-  );
+  const onPressButton = useCallback(() => {
+    if (isMainnet) return;
+    claimToken();
+  }, [claimToken, isMainnet]);
+
+  return <OutlinedButton iconName="faucet" title={t('Faucet')} onPress={onPressButton} />;
 };
 
 export default memo(FaucetButton);

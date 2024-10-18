@@ -4,12 +4,13 @@ import SafeAreaBox, { SafeAreaBoxProps } from 'components/SafeAreaBox';
 import { useGStyles } from 'assets/theme/useGStyles';
 import { KeyboardAwareScrollView, KeyboardAwareScrollViewProps } from 'react-native-keyboard-aware-scroll-view';
 import { TouchableWithoutFeedback, View, Keyboard, StatusBar } from 'react-native';
-import { defaultColors } from 'assets/theme';
+import { defaultColors, darkColors } from 'assets/theme';
 import { ViewStyleType } from 'types/styles';
 
 export const SafeAreaColorMap = {
   white: defaultColors.bg1,
   blue: defaultColors.bg5,
+  black: darkColors.bgBase1,
   red: defaultColors.bg17,
   gray: defaultColors.bg4,
   transparent: 'transparent',
@@ -18,7 +19,7 @@ export const SafeAreaColorMap = {
 export type SafeAreaColorMapKeyUnit = keyof typeof SafeAreaColorMap;
 
 export default function PageContainer({
-  safeAreaColor = ['white', 'white'],
+  safeAreaColor = ['black', 'black'],
   children,
   safeAreaProps,
   containerStyles,
@@ -51,7 +52,7 @@ export default function PageContainer({
         pageSafeBottomPadding={pageSafeBottomPadding}
         style={[{ backgroundColor: SafeAreaColorMap[safeAreaColor[1]] }, safeAreaProps?.[1]?.style]}>
         {!hideHeader && <CustomHeader themeType={themeType} {...props} />}
-        {themeType === 'white' && <StatusBar barStyle="dark-content" />}
+        {/* {themeType === 'white' && <StatusBar barStyle="dark-content" />} */}
         {scrollViewProps?.disabled ? (
           hideTouchable ? (
             <View style={[gStyles.container, containerStyles]}>{children}</View>

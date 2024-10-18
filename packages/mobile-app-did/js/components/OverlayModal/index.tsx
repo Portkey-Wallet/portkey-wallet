@@ -2,11 +2,12 @@ import React, { ReactNode } from 'react';
 import { StyleProp, StyleSheet, ViewStyle } from 'react-native';
 import Overlay from 'rn-teaset/components/Overlay/Overlay';
 import { bottomBarHeight, screenHeight, screenWidth, statusBarHeight } from '@portkey-wallet/utils/mobile/device';
-import { defaultColors } from 'assets/theme';
+import { darkColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import TransformView from 'components/TransformView';
 import { ViewStyleType } from 'types/styles';
 import { sleep } from '@portkey-wallet/utils';
+import { pTd } from 'utils/unit';
 
 export type OverlayInterface = {
   close?: (animated?: boolean) => void;
@@ -166,7 +167,7 @@ export default class OverlayModal extends React.Component {
 }
 const styles = StyleSheet.create({
   bgStyle: {
-    backgroundColor: 'white',
+    backgroundColor: darkColors.bgBase1,
   },
   containerStyle: {
     flex: 1,
@@ -183,9 +184,11 @@ const styles = StyleSheet.create({
   bottomStyle: { flexDirection: 'column-reverse' },
   bottomContainerStyle: {
     paddingBottom: bottomBarHeight,
-    backgroundColor: defaultColors.bg1,
-    ...GStyles.radiusArg(10, 10, 0, 0),
+    backgroundColor: darkColors.bgBase1,
+    ...GStyles.radiusArg(0, 0, 0, 0),
     overflow: 'hidden',
+    borderTopWidth: pTd(1),
+    borderTopColor: darkColors.bgBase3,
   },
   transformViewContainer: {
     justifyContent: 'flex-start',

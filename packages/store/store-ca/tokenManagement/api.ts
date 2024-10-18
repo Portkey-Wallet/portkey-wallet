@@ -64,6 +64,8 @@ export function fetchAllTokenListLegacy({
     imageUrl?: string;
     name?: string;
     label?: string;
+    displayChainName?: string;
+    chainImageUrl?: string;
   }[];
   totalCount: number;
 }> {

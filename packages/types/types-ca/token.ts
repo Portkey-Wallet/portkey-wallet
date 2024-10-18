@@ -19,6 +19,8 @@ export interface BaseToken {
   expires?: string;
   seedOwnedSymbol?: string;
   label?: string;
+  chainImageUrl?: string;
+  displayChainName?: string;
 }
 
 export interface TokenItemType extends BaseToken {
@@ -59,6 +61,8 @@ export type IUserTokenItemResponse = {
   isDefault?: boolean;
   displayStatus?: 'All' | 'Partial' | 'None';
   tokens?: IUserTokenItem[];
+  chainImageUrl?: string;
+  displayChainName?: string;
 };
 
 export type UserTokenItemTokenType = Omit<BaseToken, 'name'> & { chainId: string };

@@ -1,9 +1,9 @@
 import { StyleSheet } from 'react-native';
-import { defaultColors } from 'assets/theme/index';
+import { darkColors, defaultColors } from 'assets/theme/index';
 import GStyles from 'assets/theme/GStyles';
 import { pTd } from 'utils/unit';
 
-const { border1, font3, font5, bg4 } = defaultColors;
+const { border1, font5 } = defaultColors;
 
 export const commonStyles = StyleSheet.create({
   rightIconContainerStyle: {
@@ -14,7 +14,7 @@ export const commonStyles = StyleSheet.create({
   },
   inputContainerGrayBorderStyle: {
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: defaultColors.border8,
+    borderColor: darkColors.borderBase1,
     borderBottomColor: defaultColors.border8,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
@@ -28,7 +28,7 @@ export const searchStyles = StyleSheet.create({
   },
   inputContainerStyle: {
     borderBottomWidth: 0,
-    backgroundColor: bg4,
+    backgroundColor: darkColors.bgBase1,
     height: pTd(36),
     borderRadius: pTd(6),
   },
@@ -54,21 +54,21 @@ export const generalStyles = StyleSheet.create({
     ...GStyles.marginArg(0),
   },
   inputContainerStyle: {
-    borderColor: border1,
+    borderColor: darkColors.borderBase1,
     borderWidth: StyleSheet.hairlineWidth,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    height: pTd(56),
+    height: pTd(40),
     borderRadius: pTd(6),
   },
   inputStyle: {
     fontSize: pTd(14),
-    color: font5,
+    color: darkColors.textBase1,
     ...GStyles.marginArg(18, 16),
     minHeight: pTd(60),
     height: pTd(60),
   },
   labelStyle: {
-    color: font3,
+    color: darkColors.textDisabled1,
     fontSize: pTd(14),
     lineHeight: pTd(20),
     marginBottom: pTd(8),

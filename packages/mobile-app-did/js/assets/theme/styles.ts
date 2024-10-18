@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { defaultColors } from '.';
+import { darkColors, defaultColors } from '.';
 import fonts from './fonts';
 import { pTd } from 'utils/unit';
 
@@ -28,7 +28,10 @@ export const BGStyles = StyleSheet.create({
   bg22: { backgroundColor: defaultColors.bg22 },
   bg23: { backgroundColor: defaultColors.bg23 },
   bg24: { backgroundColor: defaultColors.bg24 },
+  bg43: { backgroundColor: defaultColors.bg43 },
+
   white: { backgroundColor: defaultColors.white },
+
   transparent: { backgroundColor: 'transparent' },
   brandNormal: { backgroundColor: defaultColors.brandNormal },
   neutralPrimaryTextColor: { backgroundColor: defaultColors.neutralPrimaryTextColor },
@@ -47,6 +50,11 @@ export const FontStyles = StyleSheet.create({
   primaryTextColor: { color: defaultColors.primaryTextColor },
   secondaryTextColor: { color: defaultColors.secondaryTextColor },
 
+  fontBase1: { color: darkColors.textBase1 },
+  fontBase2: { color: darkColors.textBase2 },
+  fontBase3: { color: darkColors.textBase3 },
+  fontDisabled1: { color: darkColors.textDisabled1 },
+  fontDisabled2: { color: darkColors.textDisabled1 },
   font1: { color: defaultColors.font1 },
   font2: { color: defaultColors.font2 },
   font3: { color: defaultColors.font3 },
@@ -87,6 +95,12 @@ export const FontStyles = StyleSheet.create({
   size12: { fontSize: pTd(12) },
   size18: { fontSize: pTd(18) },
   size30: { fontSize: pTd(30) },
+});
+
+export const DarkFontStyles = StyleSheet.create({
+  textBase1: { color: darkColors.textBase1 },
+  textBase2: { color: darkColors.textBase2 },
+  textBase3: { color: darkColors.textBase3 },
 });
 
 export const BorderStyles = StyleSheet.create({

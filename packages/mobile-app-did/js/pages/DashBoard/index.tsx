@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Animated, View } from 'react-native';
 import { NestedScrollView, NestedScrollViewHeader } from '@sdcx/nested-scroll';
+import { PullToRefresh } from '@sdcx/pull-to-refresh';
+import CustomPullToRefreshHeader from './PullToRefresh';
 import Card from './Card';
 import DashBoardTab from './DashBoardTab';
 import { SetNewWalletNamePopup } from './SetNewWalletName/Popup';
@@ -15,20 +16,51 @@ import { useReportingSignalR } from 'hooks/FCM';
 import { useReferral } from '@portkey-wallet/hooks/hooks-ca/referral';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useAccountBalanceUSD } from '@portkey-wallet/hooks/hooks-ca/balances';
+import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
+import { useAccountTokenInfo, useAccountNFTCollectionInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
+import { useLatestRef } from '@portkey-wallet/hooks';
+import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { formatAmountUSDShow } from '@portkey-wallet/utils/converter';
 import { useInitCmsBanner } from '@portkey-wallet/hooks/hooks-ca/cms/banner';
 import { useDiscoverData } from '@portkey-wallet/hooks/hooks-ca/cms/discover';
+import {
+  PAGE_SIZE_IN_ACCOUNT_TOKEN,
+  PAGE_SIZE_IN_ACCOUNT_NFT_COLLECTION,
+} from '@portkey-wallet/constants/constants-ca/assets';
 
 const DashBoard: React.FC<any> = ({ navigation }) => {
   const isMainnet = useIsMainnet();
   const reportAnalyticsEvent = useReportAnalyticsEvent();
   const { getViewReferralStatusStatus, getReferralLink } = useReferral();
+  const [, getTokenPrice] = useGetCurrentAccountTokenPrice();
+  const { fetchAccountTokenInfoList } = useAccountTokenInfo();
+  const { fetchAccountNFTCollectionInfoList } = useAccountNFTCollectionInfo();
+  const caAddressInfos = useCaAddressInfoList();
+  const caAddressInfosList = useLatestRef(caAddressInfos);
   const accountBalanceUSD = useAccountBalanceUSD();
   const { fetchDiscoverTabAsync } = useDiscoverData();
   useInitCmsBanner();
   useReportingSignalR();
 
-  const [scrollY, setScrollY] = useState(new Animated.Value(0));
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    getTokenPrice();
+    await Promise.all([
+      fetchAccountTokenInfoList({
+        caAddressInfos: caAddressInfosList.current || [],
+        skipCount: 0,
+        maxResultCount: PAGE_SIZE_IN_ACCOUNT_TOKEN,
+      }),
+      fetchAccountNFTCollectionInfoList({
+        caAddressInfos,
+        skipCount: 0,
+        maxResultCount: PAGE_SIZE_IN_ACCOUNT_NFT_COLLECTION,
+      }),
+    ]);
+    setRefreshing(false);
+  }, [caAddressInfos, caAddressInfosList, fetchAccountNFTCollectionInfoList, fetchAccountTokenInfoList, getTokenPrice]);
 
   const navToBottomTab = useCallback(
     (tabName: RootStackName, params: any) => {
@@ -59,27 +91,17 @@ const DashBoard: React.FC<any> = ({ navigation }) => {
   );
 
   return (
-    <SafeAreaBox edges={['top', 'right', 'left']} style={[BGStyles.white]}>
-      <DashBoardHeader scrollY={scrollY} title={title} />
+    <SafeAreaBox edges={['top', 'right', 'left']} style={[BGStyles.bg43]}>
+      <DashBoardHeader />
       <SetNewWalletNamePopup />
-      <NestedScrollView>
-        {React.cloneElement(
-          <NestedScrollViewHeader
-            stickyHeaderBeginIndex={1}
-            onScroll={({ nativeEvent }) => {
-              const {
-                contentOffset: { y },
-              } = nativeEvent;
-              setScrollY(new Animated.Value(y));
-            }}
-          />,
-          { children: <Card title={title} /> },
-        )}
-        <DashBoardTab />
-      </NestedScrollView>
-      {/* <View style={{ position: 'absolute', bottom: pTd(40) }}>
-        <MintStatusLine />
-      </View> */}
+      <PullToRefresh header={<CustomPullToRefreshHeader refreshing={refreshing} onRefresh={onRefresh} />}>
+        <NestedScrollView>
+          {React.cloneElement(<NestedScrollViewHeader />, {
+            children: <Card title={title} />,
+          })}
+          <DashBoardTab />
+        </NestedScrollView>
+      </PullToRefresh>
     </SafeAreaBox>
   );
 };

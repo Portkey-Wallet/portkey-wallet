@@ -29,7 +29,7 @@ const stylesMap: any = {
     buttonStyle: styles.primaryButtonStyle,
     titleStyle: styles.primaryTitleStyle,
     disabledStyle: [styles.primaryButtonStyle, styles.disabledStyle, styles.disabledPrimaryStyle],
-    disabledTitleStyle: styles.primaryTitleStyle,
+    disabledTitleStyle: styles.disabledPrimaryStyle,
   },
   transparent: {
     buttonStyle: styles.transparentButtonStyle,
@@ -56,7 +56,7 @@ const CommonButton: React.FC<CommonButtonProps> = props => {
 
   return (
     <Button
-      radius={radius || pTd(8)}
+      radius={radius || pTd(24)}
       iconPosition="left"
       size="md"
       buttonStyle={[styles.buttonStyle, mapStyles?.buttonStyle, buttonStyle]}

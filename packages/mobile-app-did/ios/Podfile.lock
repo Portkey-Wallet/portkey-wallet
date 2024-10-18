@@ -750,6 +750,8 @@ PODS:
     - React-Core
   - RNPermissions (3.10.1):
     - React-Core
+  - RNPullToRefresh (0.23.0):
+    - React-Core
   - RNReanimated (2.17.0):
     - DoubleConversion
     - FBLazyVector
@@ -937,6 +939,7 @@ DEPENDENCIES:
   - "RNNestedScrollView (from `../../../node_modules/@sdcx/nested-scroll`)"
   - "RNNotifee (from `../node_modules/@notifee/react-native`)"
   - RNPermissions (from `../node_modules/react-native-permissions`)
+  - "RNPullToRefresh (from `../../../node_modules/@sdcx/pull-to-refresh`)"
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
   - "RNSentry (from `../node_modules/@sentry/react-native`)"
@@ -1186,6 +1189,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@notifee/react-native"
   RNPermissions:
     :path: "../node_modules/react-native-permissions"
+  RNPullToRefresh:
+    :path: "../../../node_modules/@sdcx/pull-to-refresh"
   RNReanimated:
     :path: "../node_modules/react-native-reanimated"
   RNScreens:
@@ -1340,6 +1345,7 @@ SPEC CHECKSUMS:
   RNNestedScrollView: b9a2ac8588c89dd671d571b1184a0af007e1bea3
   RNNotifee: 5155e0a5e0a97d0c839030d8192783cd63053999
   RNPermissions: 4e3714e18afe7141d000beae3755e5b5fb2f5e05
+  RNPullToRefresh: cc6d153a0b4dac79e4bbaa5c81d177aee92c9fdf
   RNReanimated: c6f8f70e96dd6ca21b65aef9b3e4efe4965db905
   RNScreens: f3230dd008a7d0ce5c0a8bc78ff12cf2315bda24
   RNSentry: acebe4104a6f5915ae871eb59dc73f13dcc92ef7

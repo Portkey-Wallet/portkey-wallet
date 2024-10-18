@@ -7,6 +7,8 @@ export const defaultColors = {
   bgColor1: 'rgba(242, 244, 246, 1)',
   primaryColor: '#5D42FF',
 
+  primaryColorV2: '#68C3FF',
+
   bg1: '#ffffff',
   bg2: '#FEF6E7',
   bg3: '#F3E4E4',
@@ -49,6 +51,7 @@ export const defaultColors = {
   bg40: '#E4E0FF',
   bg41: 'rgba(255, 255, 255, 0.60)',
   bg42: 'rgba(255, 255, 255, 0.90)',
+  bg43: '#1F1F21',
 
   font1: '#464B53',
   font2: 'white',
@@ -75,6 +78,7 @@ export const defaultColors = {
   font23: '#808080',
   font24: '#1A1A1A',
   font25: '#5D42FF',
+  font26: '#CDCDCD',
 
   white: '#ffffff',
   black: '#000000',
@@ -130,6 +134,131 @@ export const defaultColors = {
   neutralDefaultBG: '#FFFFFF',
   neutralMaskBG: 'rgba(0, 0, 0, 0.6)',
   neutralTooltipBG: 'rgba(0, 0, 0, 0.8)',
+};
+export const darkColors = {
+  bgBase1: '#151318',
+  bgBase2: '#1F1F21',
+  bgBase3: '#414142',
+  bgBase4: '#626264',
+  bgBrand1: '#B8E1FF',
+  bgBrand2: '#0996EE',
+  bgBrand3: '#DFF0FF',
+  bgBrand4: '#33B0FD',
+  bgNeutral1: '#B2B2B2',
+  bgNeutral2: '#303030',
+  bgNeutral3: '#949494',
+  bgNeutral4: '#242424',
+  bgSuccess1: '#23850E',
+  bgSuccess2: '#13340D',
+  bgSuccess3: '#0F1F0D',
+  bgSuccess4: '#1B5C0E',
+  bgWarning1: '#CDA90E',
+  bgWarning2: '#6C5A0D',
+  bgWarning3: '#231F0D',
+  bgWarning4: '#FDD10E',
+  bgWarning5: '#3B330D',
+  bgDanger1: '#B73907',
+  bgDanger2: '#36170B',
+  bgDanger3: '#20110C',
+  bgDanger4: '#8C2E08',
+  bgDanger5: '#61220A',
+
+  textBase1: '#ffffff',
+  textBase2: '#FFFFFFB2',
+  textBase3: '#FFFFFF66',
+  textDisabled1: '#626264',
+  textDisabled2: '#848485',
+  textBrand1: '#68C3FF',
+  textBrand2: '#B8E1FF',
+  textBrand3: '#33B0FD',
+  textBrand4: '#0A4370',
+  textBrand5: '#DFF0FF',
+
+  textNeutral1: '#E3E3E3',
+  textNeutral2: '#CDCDCD',
+  textNeutral3: '#B2B2B2',
+  textNeutral4: '#242424',
+  textNeutral5: '#F3F3F3',
+
+  textSuccess1: '#33D60F',
+  textSuccess2: '#70E257',
+  textSuccess3: '#2BAD0F',
+  textSuccess4: '#EBFBE7',
+  textSuccess5: '#C2F3B7',
+  textSuccess6: '#99EB87',
+
+  textWarning1: '#FEDF56',
+  textWarning2: '#FFF388',
+  textWarning3: '#FDD10E',
+  textWarning4: '#3B330D',
+
+  textDanger1: '#E24505',
+  textDanger2: '#EB7D50',
+  textDanger3: '#B73907',
+  textDanger4: '#FCECE6',
+  textDanger5: '#F6C7B4',
+  textDanger6: '#F1A282',
+
+  iconBase1: '#FFFFFF',
+  iconBase2: '#FFFFFFB2',
+  iconBase3: '##FFFFFF66',
+
+  iconDisabled: '#626264',
+
+  iconBrand1: '#68C3FF',
+  iconBrand2: '#B8E1FF',
+  iconBrand3: '#DFF0FF',
+  iconBrand4: '#0A4370',
+  iconBrand5: '#DFF0FF',
+  iconBrand6: '#0076CC',
+
+  iconNeutral1: '#E3E3E3',
+  iconNeutral2: '#CDCDCD',
+  iconNeutral3: '#B2B2B2',
+  iconNeutral4: '#242424',
+  iconNeutral5: '#F3F3F3',
+
+  iconSuccess1: '#99EB87',
+  iconSuccess2: '#70E257',
+  iconSuccess3: '#33D60F',
+  iconSuccess4: '#EBFBE7',
+  iconSuccess5: '#99EB87',
+
+  iconWarning1: '#FFFBC2',
+  iconWarning2: '#FFF388',
+  iconWarning3: '#FEDF56',
+  iconWarning4: '#3B330D',
+  iconWarning5: '#FDD10E',
+
+  iconDanger1: '#F1A282',
+  iconDanger2: '#EB7D50',
+  iconDanger3: '#E24505',
+  iconDanger4: '#FCECE6',
+
+  borderBase1: '#414142',
+  borderBase2: '#626264',
+  borderBase3: '#848485',
+
+  borderBrand1: '#DFF0FF',
+  borderBrand2: '#68C3FF',
+  borderBrand3: '#33B0FD',
+
+  borderNeutral1: '#E3E3E3',
+  borderNeutral2: '#5A5A5A',
+  borderNeutral3: '#434343',
+
+  borderSuccessDefault: '#23850E',
+  borderSuccessSecondary: '#13340D',
+  borderSuccessTertiary: '#0F1F0D',
+  borderSuccessHover1: '#1B5C0E',
+
+  borderWarning1: '#FEDF56',
+  borderWarning2: '#9C820E',
+  borderWarning3: '#6C5A0D',
+
+  borderDanger1: '#EB7D50',
+  borderDanger2: '#8C2E08',
+  borderDanger3: '#61220A',
 };
 
 export const AELFColors = {

@@ -1,4 +1,3 @@
-import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import { StyleSheet, View } from 'react-native';
 import React from 'react';
@@ -7,11 +6,10 @@ import { pTd } from 'utils/unit';
 import Svg from 'components/Svg';
 import CommonSwitch from 'components/CommonSwitch';
 import CommonAvatar from 'components/CommonAvatar';
-import { FontStyles } from 'assets/theme/styles';
-import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import Touchable from 'components/Touchable';
 import GStyles from 'assets/theme/GStyles';
 import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { darkColors } from 'assets/theme';
 
 type TokenItemProps = {
   item: TokenItemShowType;
@@ -19,25 +17,30 @@ type TokenItemProps = {
 };
 
 const TokenItem = ({ item, onHandleToken }: TokenItemProps) => {
-  const symbolImages = useSymbolImages();
-  const defaultToken = useDefaultToken();
   const { currentNetwork } = useWallet();
 
   return (
     // if not touchable, can not scroll
 
     <Touchable style={itemStyle.wrap}>
-      <CommonAvatar
-        hasBorder
-        shapeType="circular"
-        title={item.symbol}
-        svgName={item.symbol === defaultToken.symbol ? 'testnet' : undefined}
-        imageUrl={item.imageUrl || symbolImages[item.symbol]}
-        avatarSize={pTd(40)}
-        style={itemStyle.left}
-        titleStyle={FontStyles.font11}
-        borderStyle={GStyles.hairlineBorder}
-      />
+      <View style={itemStyle.iconWrap}>
+        <CommonAvatar
+          hasBorder
+          style={itemStyle.tokenIcon}
+          title={item?.symbol}
+          avatarSize={pTd(40)}
+          imageUrl={item?.imageUrl}
+          borderStyle={GStyles.hairlineBorder}
+        />
+        <CommonAvatar
+          hasBorder={true}
+          style={itemStyle.chainIcon}
+          title={item?.displayChainName}
+          avatarSize={pTd(20)}
+          imageUrl={item?.chainImageUrl}
+          borderStyle={itemStyle.tokenIconBorder}
+        />
+      </View>
 
       <View style={itemStyle.right}>
         <View>
@@ -80,6 +83,25 @@ const itemStyle = StyleSheet.create({
   },
   left: {
     marginLeft: pTd(16),
+  },
+  iconWrap: {
+    width: pTd(45),
+    height: pTd(42),
+    position: 'relative',
+  },
+  tokenIcon: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+  },
+  tokenIconBorder: {
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: darkColors.borderBase1,
+  },
+  chainIcon: {
+    position: 'absolute',
+    right: 0,
+    bottom: 0,
   },
   right: {
     height: pTd(72),

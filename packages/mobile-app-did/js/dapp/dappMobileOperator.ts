@@ -111,13 +111,15 @@ export default class DappMobileOperator extends Operator {
     params,
     method,
     isCipherText,
+    realMethod,
   }: {
     eventName: string;
     params: any;
     method: keyof IDappOverlay;
     isCipherText?: boolean;
+    realMethod: string;
   }): Promise<IResponseType | undefined> => {
-    const authorized = await this.dappOverlay[method](this.dapp, params, isCipherText || false);
+    const authorized = await this.dappOverlay[method](this.dapp, params, realMethod, isCipherText || false);
     if (!authorized) return this.userDenied(eventName);
   };
   protected isActive = async () => {
@@ -380,12 +382,14 @@ export default class DappMobileOperator extends Operator {
     method,
     callBack,
     isCipherText,
+    realMethod,
   }: {
     eventName: string;
     params: any;
     method: keyof IDappOverlay;
     callBack: SendRequest;
     isCipherText?: boolean;
+    realMethod: string;
   }) {
     // is whitelist && is whitelist actions
     if (this.dappWhiteList.includes(this.dapp.origin) && DAPP_WHITELIST_ACTION_WHITELIST.includes(method))
@@ -397,7 +401,7 @@ export default class DappMobileOperator extends Operator {
     if (validSession && REMEMBER_ME_ACTION_WHITELIST.includes(method)) return callBack(eventName, params);
 
     // user confirm
-    const response = await this.userConfirmation({ eventName, method, params, isCipherText });
+    const response = await this.userConfirmation({ eventName, method, params, isCipherText, realMethod });
     if (response) return response;
     return callBack(eventName, params);
   }
@@ -466,6 +470,7 @@ export default class DappMobileOperator extends Operator {
 
   protected handleSendRequest = async (request: IRequestParams): Promise<IResponseType> => {
     const { eventName, origin } = request;
+    const realMethod = request.method;
     let method = request.method;
     let isCipherText = true;
     if (this.dapp.origin !== origin)
@@ -568,6 +573,7 @@ export default class DappMobileOperator extends Operator {
       method: method as any,
       callBack: callBack!,
       isCipherText,
+      realMethod,
     });
   };
   protected handleNativeDeviceRequest = async (request: IRequestParams): Promise<IResponseType> => {
@@ -609,6 +615,7 @@ export default class DappMobileOperator extends Operator {
       params: payload,
       method: method as any,
       callBack: callBack!,
+      realMethod: method,
     });
   };
   public autoApprove = () => {

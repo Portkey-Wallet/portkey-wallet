@@ -95,6 +95,7 @@ export default function SelectToken({ tokenInfos, noDataMessage }: SelectTokenPr
         // extraData={extraIndex}
         data={tokenInfos || []}
         renderItem={renderItem}
+        keyExtractor={item => item.symbol}
         ListEmptyComponent={() => <NoData noPic message={t(noDataMessage)} />}
       />
     </View>

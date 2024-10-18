@@ -83,6 +83,7 @@ export default function SelectNFT({ nftInfos, noDataMessage }: SelectNFTProps) {
             // extraData={extraIndex}
             data={item.items || []}
             renderItem={renderNFTItem}
+            keyExtractor={nft => `${nft.alias}_${nft.tokenId}`}
             ListEmptyComponent={() => <NoData noPic message={t(noDataMessage)} />}
           />
         </View>
@@ -99,6 +100,7 @@ export default function SelectNFT({ nftInfos, noDataMessage }: SelectNFTProps) {
         // extraData={extraIndex}
         data={nftInfos || []}
         renderItem={renderItem}
+        keyExtractor={item => item.collectionName}
         ListEmptyComponent={() => <NoData noPic message={t(noDataMessage)} />}
       />
     </View>

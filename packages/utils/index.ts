@@ -174,10 +174,10 @@ export const formatChainInfoToShow = (
   chainType: ChainType = 'aelf',
 ): string => {
   if (chainType !== 'aelf') return chainType;
-  if (typeof networkType === 'string')
-    return `${chainId === 'AELF' ? 'MainChain' : 'SideChain'} ${chainId} ${networkType === 'MAINNET' ? '' : 'Testnet'}`;
+  // if (typeof networkType === 'string')
+  //   return `${chainId === 'AELF' ? 'MainChain' : 'SideChain'} ${chainId} ${networkType === 'MAINNET' ? '' : 'Testnet'}`;
 
-  return `${chainId === 'AELF' ? 'MainChain' : 'SideChain'} ${chainId}`;
+  return `${chainId === 'AELF' ? 'aelf MainChain' : 'aelf dAppChain'}`;
 };
 
 /**

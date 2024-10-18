@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
   },
   buttonWrap: {
     backgroundColor: '#B8E1FF',
-    width: pTd(84),
+    width: pTd(81),
     height: pTd(58),
     alignItems: 'center',
     justifyContent: 'center',

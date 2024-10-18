@@ -7,10 +7,9 @@ import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCurrentUserInfo, useSetHideAssets } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import FaucetButton from 'components/FaucetButton';
 import GStyles from 'assets/theme/GStyles';
-import DepositButton from 'components/DepositButton';
+import SwapButton from 'components/SwapButton';
 import BuyButton from 'components/BuyButton';
 import { useAppRampEntryShow } from 'hooks/ramp';
-import { useAppETransShow } from 'hooks/cms';
 import { PortkeyLinearGradient } from 'components/PortkeyLinearGradient';
 import { pTd } from 'utils/unit';
 import { Skeleton } from '@rneui/base';
@@ -21,20 +20,16 @@ const Card: React.FC<{ title: string }> = ({ title }) => {
   const isMainnet = useIsMainnet();
   const userInfo = useCurrentUserInfo();
   const setHideAssets = useSetHideAssets();
-  const { isETransDepositShow } = useAppETransShow();
   const { isRampShow } = useAppRampEntryShow();
+  const isSwapShow = true; // todo_wade: fix this
   const buttonCount = useMemo(() => {
-    let count = 3;
-    if (isETransDepositShow) count++;
+    let count = 2;
+    if (isSwapShow) count++;
     if (isRampShow) count++;
     if (!isMainnet) count++; // faucet
     return count;
-  }, [isETransDepositShow, isMainnet, isRampShow]);
+  }, [isMainnet, isRampShow, isSwapShow]);
 
-  const buttonGroupWrapStyle = useMemo(
-    () => (buttonCount < 5 ? (GStyles.flexCenter as StyleProp<ViewProps>) : undefined),
-    [buttonCount],
-  );
   const buttonWrapStyle = useMemo(
     () => (buttonCount < 5 ? (styles.buttonWrapStyle1 as StyleProp<ViewProps>) : undefined),
     [buttonCount],
@@ -54,7 +49,7 @@ const Card: React.FC<{ title: string }> = ({ title }) => {
             </Text>
             {isMainnet && (
               <TouchableOpacity onPress={onHideAssets}>
-                <Svg icon={userInfo.hideAssets ? 'eyeClosed' : 'eye'} size={pTd(16)} iconStyle={styles.eyeIcon} />
+                <Svg icon={userInfo.hideAssets ? 'eyeClosed' : 'eye'} size={pTd(24)} iconStyle={styles.eyeIcon} />
               </TouchableOpacity>
             )}
           </View>
@@ -68,11 +63,11 @@ const Card: React.FC<{ title: string }> = ({ title }) => {
           />
         )}
       </View>
-      <View style={[GStyles.flexRow, GStyles.spaceBetween, styles.buttonGroupWrap, buttonGroupWrapStyle]}>
+      <View style={[GStyles.flexRow, GStyles.spaceBetween, styles.buttonGroupWrap]}>
         <SendButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />
         <ReceiveButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />
         {isRampShow && <BuyButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />}
-        {isETransDepositShow && <DepositButton wrapStyle={buttonWrapStyle} />}
+        {isSwapShow && <SwapButton />}
         {!isMainnet && <FaucetButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />}
       </View>
       {/* <DashBoardBanner /> */}

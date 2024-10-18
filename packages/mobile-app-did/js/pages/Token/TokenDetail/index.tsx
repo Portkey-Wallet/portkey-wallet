@@ -1,5 +1,5 @@
-import React, { useState, useCallback, useMemo } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useMemo } from 'react';
+import { StyleSheet } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { useNavigation } from '@react-navigation/native';
 import { useLanguage } from 'i18n/hooks';
@@ -29,13 +29,14 @@ const TokenDetail: React.FC = () => {
     } else {
       return (
         <TokenDetailTopTab
+          initialRouteName={tokenSection.tokens[index].displayChainName}
           tabList={tokenSection.tokens.map(token => {
-            return { name: token.chainId, tabItemDom: <TokenDetailPage tokenInfo={token} /> };
+            return { name: token.displayChainName ?? '', tabItemDom: <TokenDetailPage tokenInfo={token} /> };
           })}
         />
       );
     }
-  }, [t, tokenSection.tokens]);
+  }, [index, t, tokenSection.tokens]);
 
   return (
     <PageContainer

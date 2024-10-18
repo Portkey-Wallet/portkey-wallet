@@ -9,7 +9,7 @@ import CommonToast from 'components/CommonToast';
 import Svg from 'components/Svg';
 import fonts from 'assets/theme/fonts';
 import GStyles from 'assets/theme/GStyles';
-import { defaultColors } from 'assets/theme';
+import { darkColors, defaultColors } from 'assets/theme';
 import { measureLocation } from 'utils/measure';
 import { showCopyUserAddress } from '../CopyUserAddress';
 import { showSetNewWalletNamePopover } from '../SetNewWalletName/Popover';
@@ -109,13 +109,13 @@ const DashBoardHeader: React.FC = () => {
   const rightDom = useMemo(() => {
     return (
       <View style={styles.rightDomWrap}>
-        {
+        {/* {
           <Touchable style={styles.svgWrap} onPress={onGiftClick}>
             <Svg icon="crypto-gift" size={pTd(20)} />
           </Touchable>
-        }
+        } */}
         <Touchable style={styles.svgWrap} onPress={onCopyAddress}>
-          <Svg icon="copy" size={pTd(22)} color={defaultColors.font8} />
+          <Svg icon="copy" size={pTd(24)} color={darkColors.iconBase2} />
         </Touchable>
         <Touchable
           style={styles.svgWrap}
@@ -123,11 +123,11 @@ const DashBoardHeader: React.FC = () => {
             if (!(await qrScanPermissionAndToast())) return;
             navigationService.navigate('QrScanner');
           }}>
-          <Svg icon="scan" size={pTd(22)} color={defaultColors.font8} />
+          <Svg icon="scan" size={pTd(24)} color={darkColors.iconBase2} />
         </Touchable>
       </View>
     );
-  }, [onCopyAddress, onGiftClick, qrScanPermissionAndToast]);
+  }, [onCopyAddress, qrScanPermissionAndToast]);
 
   return (
     <View style={styles.container}>
@@ -173,12 +173,12 @@ const styles = StyleSheet.create({
   },
   rightDomWrap: {
     flexDirection: 'row',
-    marginRight: pTd(8),
+    marginRight: pTd(4),
     marginLeft: pTd(8),
     alignItems: 'center',
   },
   svgWrap: {
-    padding: pTd(8),
+    padding: pTd(12),
   },
   title: {
     height: pTd(44),

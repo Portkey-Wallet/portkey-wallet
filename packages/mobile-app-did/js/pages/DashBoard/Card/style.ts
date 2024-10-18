@@ -3,7 +3,6 @@ import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import fonts from 'assets/theme/fonts';
-import { ScreenWidth } from '@rneui/base';
 
 const { white } = defaultColors;
 
@@ -46,6 +45,7 @@ export const styles = StyleSheet.create({
   },
   usdtBalanceWrap: {
     flexDirection: 'row',
+    alignItems: 'center',
   },
   usdtBalance: {
     ...fonts.mediumFont,
@@ -55,12 +55,12 @@ export const styles = StyleSheet.create({
     color: white,
   },
   eyeIcon: {
-    marginTop: pTd(6),
     marginLeft: pTd(4),
   },
   buttonGroupWrap: {
-    marginTop: 32,
-    width: ScreenWidth,
+    marginTop: pTd(32),
+    marginBottom: pTd(24),
+    width: '100%',
     paddingHorizontal: pTd(16),
   },
   spacerStyle: {

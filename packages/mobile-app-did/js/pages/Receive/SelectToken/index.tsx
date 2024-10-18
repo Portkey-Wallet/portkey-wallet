@@ -147,7 +147,7 @@ const SelectToken = () => {
         data={debounceKeyword ? filteredShowList : tokenDataShowInMarket}
         renderItem={renderItem}
         ListEmptyComponent={noData}
-        keyExtractor={(item: any) => item.id || ''}
+        keyExtractor={(item: any) => item.symbol || ''}
         onEndReached={() => getTokenListLatest.current()}
       />
     </PageContainer>

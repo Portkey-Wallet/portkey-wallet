@@ -37,4 +37,5 @@ export type NetworkItem = {
   };
   hamsterUrl?: string;
   zkLoginVerifyUrl?: string;
+  cryptoGiftTgUrl?: string;
 };

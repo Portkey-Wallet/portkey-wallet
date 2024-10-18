@@ -46,7 +46,7 @@ const CustomToken: React.FC<CustomTokenProps> = () => {
   }>({
     symbol: '',
     chainId: originChainId,
-    decimals: '--',
+    decimals: '-',
     id: '',
   });
   const [btnDisable, setBtnDisable] = useState(true);
@@ -135,7 +135,7 @@ const CustomToken: React.FC<CustomTokenProps> = () => {
       safeAreaColor={['black', 'black']}
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}>
-      <View style={pageStyles.tipsSection}>
+      {/* <View style={pageStyles.tipsSection}>
         <Svg icon="warning" size={pTd(18)} iconStyle={GStyles.marginRight(pTd(12))} />
         <RichText
           wrapperStyle={pageStyles.richTextWrap}
@@ -153,8 +153,7 @@ const CustomToken: React.FC<CustomTokenProps> = () => {
             },
           ]}
         />
-      </View>
-
+      </View> */}
       <FormItem title={'Network'} style={pageStyles.networkWrap}>
         <SelectChain
           currentNetwork={currentNetwork}

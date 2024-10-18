@@ -17,7 +17,7 @@ let elements: OverlayInterface[] = [];
 const DefaultOverlayProps = {
   modal: false,
   type: 'custom',
-  overlayOpacity: 0.3,
+  overlayOpacity: 0.8,
   customBounds: {
     x: 0,
     y: screenHeight,

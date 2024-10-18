@@ -8,9 +8,7 @@ import { StyleSheet, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import { FontStyles } from 'assets/theme/styles';
 import GStyles from 'assets/theme/GStyles';
-import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
-import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 
 interface TokenListItemType {
   item: TokenItemShowType;
@@ -21,22 +19,32 @@ interface TokenListItemType {
 
 const TokenItem: React.FC<TokenListItemType> = props => {
   const { onPress, item, hideBalance = false, showTopSeparator } = props;
-  const { currentNetwork } = useWallet();
 
   return (
     <Touchable style={[itemStyle.wrap, showTopSeparator && { marginTop: pTd(4) }]} onPress={() => onPress?.(item)}>
       <View style={itemStyle.left}>
-        <CommonAvatar
-          hasBorder
-          title={item?.symbol}
-          avatarSize={pTd(36)}
-          imageUrl={item?.imageUrl}
-          titleStyle={FontStyles.font11}
-          borderStyle={GStyles.hairlineBorder}
-        />
+        <View style={itemStyle.iconWrap}>
+          <CommonAvatar
+            hasBorder
+            style={itemStyle.tokenIcon}
+            title={item?.symbol}
+            avatarSize={pTd(40)}
+            imageUrl={item?.imageUrl}
+            titleStyle={FontStyles.font11}
+            borderStyle={GStyles.hairlineBorder}
+          />
+          <CommonAvatar
+            hasBorder={true}
+            style={itemStyle.chainIcon}
+            title={item?.displayChainName}
+            avatarSize={pTd(20)}
+            imageUrl={item?.chainImageUrl}
+            borderStyle={itemStyle.tokenIconBorder}
+          />
+        </View>
         <View>
           <TextM style={itemStyle.symbolText}>{item.label || item.symbol}</TextM>
-          <TextM style={itemStyle.chainText}>{formatChainInfoToShow(item.chainId, currentNetwork)}</TextM>
+          <TextM style={itemStyle.chainText}>{item.displayChainName}</TextM>
         </View>
       </View>
       <View style={itemStyle.right}>
@@ -67,6 +75,25 @@ const itemStyle = StyleSheet.create({
   left: {
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  iconWrap: {
+    width: pTd(45),
+    height: pTd(42),
+    position: 'relative',
+  },
+  tokenIcon: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+  },
+  tokenIconBorder: {
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: darkColors.borderBase1,
+  },
+  chainIcon: {
+    position: 'absolute',
+    right: 0,
+    bottom: 0,
   },
   symbolText: {
     fontSize: pTd(16),

@@ -5,7 +5,7 @@ import { FontStyles } from 'assets/theme/styles';
 import CommonAvatar from 'components/CommonAvatar';
 import { TextL, TextS } from 'components/CommonText';
 import TokenItem from './TokenItem';
-import React, { memo } from 'react';
+import React, { memo, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
@@ -28,20 +28,40 @@ const TokenListUnionItem: React.FC<TokenListItemType> = props => {
   const isMainnet = useIsMainnet();
   const symbolImages = useSymbolImages();
 
+  const chainIcon = useMemo(() => {
+    if (!item.tokens || item.tokens.length === 0) {
+      return undefined;
+    } else if (item.tokens?.length === 1) {
+      return item.tokens[0].chainImageUrl;
+    } else {
+      return undefined;
+    }
+  }, [item.tokens]);
+
   return (
     <View>
       <Touchable style={itemStyle.wrap} onPress={() => onExpand?.(item)}>
-        <CommonAvatar
-          hasBorder
-          style={itemStyle.left}
-          title={item?.symbol}
-          avatarSize={pTd(36)}
-          // elf token icon is fixed , only use white background color
-          svgName={item?.symbol === defaultToken.symbol ? 'testnet' : undefined}
-          imageUrl={item?.imageUrl || symbolImages[item?.symbol]}
-          titleStyle={FontStyles.font11}
-          borderStyle={GStyles.hairlineBorder}
-        />
+        <View style={itemStyle.iconWrap}>
+          <CommonAvatar
+            hasBorder
+            style={itemStyle.tokenIcon}
+            title={item?.symbol}
+            avatarSize={pTd(40)}
+            svgName={item?.symbol === defaultToken.symbol ? 'testnet' : undefined}
+            imageUrl={item?.imageUrl || symbolImages[item?.symbol]}
+            titleStyle={FontStyles.font11}
+            borderStyle={GStyles.hairlineBorder}
+          />
+          <CommonAvatar
+            hasBorder
+            style={itemStyle.chainIcon}
+            title={item.tokens?.length + ''}
+            avatarSize={pTd(20)}
+            imageUrl={chainIcon}
+            titleStyle={itemStyle.tokenIconTitle}
+            borderStyle={itemStyle.iconBorder}
+          />
+        </View>
         <View style={itemStyle.middle}>
           <View style={itemStyle.infoWrap}>
             <TextL numberOfLines={1} ellipsizeMode={'tail'} style={itemStyle.tokenName}>
@@ -92,8 +112,27 @@ const itemStyle = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  left: {
+  iconWrap: {
     marginLeft: pTd(16),
+    width: pTd(45),
+    height: pTd(42),
+    position: 'relative',
+  },
+  tokenIcon: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+  },
+  iconBorder: {
+    borderColor: darkColors.borderBase1,
+  },
+  tokenIconTitle: {
+    fontSize: pTd(10),
+  },
+  chainIcon: {
+    position: 'absolute',
+    right: 0,
+    bottom: 0,
   },
   middle: {
     height: pTd(72),

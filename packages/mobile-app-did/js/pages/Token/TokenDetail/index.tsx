@@ -29,9 +29,9 @@ const TokenDetail: React.FC = () => {
     } else {
       return (
         <TokenDetailTopTab
-          initialRouteName={tokenSection.tokens[index].chainId}
+          initialRouteName={tokenSection.tokens[index].displayChainName}
           tabList={tokenSection.tokens.map(token => {
-            return { name: token.chainId, tabItemDom: <TokenDetailPage tokenInfo={token} /> };
+            return { name: token.displayChainName ?? '', tabItemDom: <TokenDetailPage tokenInfo={token} /> };
           })}
         />
       );

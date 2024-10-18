@@ -82,14 +82,14 @@ export const tabMenuTypeMap: Record<TabRouteNameEnum, IRenderTabMenuItem> = {
     icon: 'chat-tab',
     component: ChatHome,
   },
-  // [TabRouteNameEnum.SETTINGS]: {
-  //   name: TabRouteNameEnum.SETTINGS,
-  //   isDefault: true,
-  //   index: 4,
-  //   label: 'My',
-  //   icon: 'my',
-  //   component: MyMenu,
-  // },
+  [TabRouteNameEnum.SETTINGS]: {
+    name: TabRouteNameEnum.SETTINGS,
+    isDefault: true,
+    index: 4,
+    label: 'My',
+    icon: 'my',
+    component: MyMenu,
+  },
 };
 
 export const defaultTabMenuList = Object.values(tabMenuTypeMap).filter(item => item.isDefault);

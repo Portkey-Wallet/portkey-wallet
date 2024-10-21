@@ -1,7 +1,7 @@
 import { useCallback, useState, useMemo } from 'react';
 import BigNumber from 'bignumber.js';
 import useInterval from '../useInterval';
-import { useAppEOASelector } from '.';
+import { useAppEOASelector } from './index';
 import AElf from 'aelf-sdk';
 import { TokenItemType } from '@portkey-wallet/types/types-eoa/token';
 import { getELFChainBalance } from '@portkey-wallet/utils/balance';

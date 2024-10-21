@@ -24,6 +24,7 @@ interface DepositAddressProps {
 }
 
 const DepositAddress: React.FC<DepositAddressProps> = ({ fromNetwork, fromToken, depositInfo, contractAddress }) => {
+  console.log('wfs gStyle 11 start');
   const gStyles = useGStyles();
   const { lastRecord } = useDepositRecord({ fromSymbol: fromToken.symbol, address: depositInfo.depositAddress });
 

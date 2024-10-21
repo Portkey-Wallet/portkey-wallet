@@ -2,7 +2,7 @@ import * as Sentry from '@sentry/react-native';
 import Config from 'react-native-config';
 
 // Sentry init
-const routingInstrumentation = new Sentry.ReactNavigationInstrumentation();
+const routingInstrumentation = Sentry.reactNavigationIntegration();
 
 if (!__DEV__) {
   Sentry.init({
@@ -12,13 +12,6 @@ if (!__DEV__) {
     tracesSampleRate: 1.0,
     environment: Config.SENTRY_ENVIRONMENT,
 
-    integrations: [
-      new Sentry.ReactNativeTracing({
-        // Pass instrumentation to be used as `routingInstrumentation`
-        routingInstrumentation,
-        tracingOrigins: ['localhost', 'my-site-url.com', /^\//],
-        // ...
-      }),
-    ],
+    integrations: [Sentry.reactNativeTracingIntegration(), routingInstrumentation],
   });
 }

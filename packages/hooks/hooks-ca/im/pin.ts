@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useRef } from 'react';
-import { useIMLastPinNetMapState, useIMPinListNetMapState } from '.';
+import { useIMLastPinNetMapState, useIMPinListNetMapState } from './index';
 import { useCurrentNetworkInfo } from '../network';
 import im, { Message, MessageTypeEnum, ParsedPinSys, SocketMessage } from '@portkey-wallet/im';
 import { PIN_MESSAGE_LIST_LIMIT } from '@portkey-wallet/constants/constants-ca/im';

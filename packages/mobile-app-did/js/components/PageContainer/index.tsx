@@ -39,7 +39,9 @@ export default function PageContainer({
   hideTouchable?: boolean;
   pageSafeBottomPadding?: boolean;
 }) {
+  console.log('wfs gStyle 4 start');
   const gStyles = useGStyles();
+  console.log('wfs gStyle 4 end');
   const themeType = useMemo(() => safeAreaColor[0], [safeAreaColor]);
   return (
     <SafeAreaBox

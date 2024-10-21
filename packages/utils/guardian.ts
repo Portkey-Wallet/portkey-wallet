@@ -10,7 +10,7 @@ import {
   ZKLoginInfoNoncePayload,
 } from '@portkey-wallet/types/verifier';
 import BigNumber from 'bignumber.js';
-import { handleErrorMessage } from '.';
+import { handleErrorMessage } from './index';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
 import { SendOptions } from '@portkey-wallet/contracts/types';
 import { parseJWTToken, parseZKProof } from './authentication';

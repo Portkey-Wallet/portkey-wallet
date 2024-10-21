@@ -25,6 +25,7 @@ type SelectListProps = {
 };
 
 const SelectList = ({ list, callBack, value }: SelectListProps) => {
+  console.log('wfs gStyle 14 start');
   const gStyle = useGStyles();
   const [keyWord, setKeyWord] = useState<string>('');
 

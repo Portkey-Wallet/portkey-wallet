@@ -1,4 +1,4 @@
-import type { ChainType, NetworkType, UpdateType } from '.';
+import type { ChainType, NetworkType, UpdateType } from './index';
 import { BaseToken as EOABaseToken } from './types-eoa/token';
 import { BaseToken as CABaseToken } from './types-ca/token';
 

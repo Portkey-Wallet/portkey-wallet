@@ -3,7 +3,7 @@ import { useCallback } from 'react';
 import { GestureResponderEvent } from 'react-native';
 import { measurePageY } from 'utils/measure';
 import { pTd } from 'utils/unit';
-import FloatOverlay from '.';
+import FloatOverlay from './index';
 import { ShowChatPopoverParams } from './Popover';
 
 export const useOnTouchAndPopUp = (params: Pick<ShowChatPopoverParams, 'list'>) => {

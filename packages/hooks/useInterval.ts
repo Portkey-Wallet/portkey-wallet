@@ -1,6 +1,6 @@
 import { DependencyList, useRef, useCallback, useMemo } from 'react';
 import { useDeepCompareEffect } from 'react-use';
-import { useLatestRef } from '.';
+import { useLatestRef } from './index';
 
 const useInterval = (callback: () => void, deps?: DependencyList, delay?: number | null) => {
   const intervalRef = useRef<NodeJS.Timer | number>();

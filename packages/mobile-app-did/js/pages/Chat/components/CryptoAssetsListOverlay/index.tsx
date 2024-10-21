@@ -57,7 +57,7 @@ const AssetItem = (props: {
   const { currentSymbol, currentChainId, onPress, item } = props;
   const { address, assetType, chainId, symbol, alias, tokenId, isSeed, seedType } = item;
 
-  if (assetType === AssetType.ft)
+  if (assetType === AssetType.ft) {
     return (
       <TokenListItem
         noBalanceShow
@@ -67,6 +67,7 @@ const AssetItem = (props: {
         onPress={() => onPress(item)}
       />
     );
+  }
 
   if (assetType === AssetType.nft) {
     return (
@@ -110,6 +111,7 @@ const CryptoAssetsList = ({
   const { t } = useLanguage();
   const caAddressInfos = useCaAddressInfoList();
   const [keyword, setKeyword] = useState('');
+  console.log('wfs gStyle 8 start');
   const gStyles = useGStyles();
   const dispatch = useAppDispatch();
   const { accountCryptoBoxAssets } = useAssets();
@@ -133,7 +135,9 @@ const CryptoAssetsList = ({
 
   const filterList = useCallback(
     (list: IAssetItemType[]) => {
-      if (!chainIds || chainIds?.length === 0) return list;
+      if (!chainIds || chainIds?.length === 0) {
+        return list;
+      }
       return list.filter(item => chainIds?.includes(item?.chainId as ChainId));
     },
     [chainIds],
@@ -141,7 +145,9 @@ const CryptoAssetsList = ({
 
   const getList = useCallback(
     async (_keyword = '', isInit = false) => {
-      if (!isInit && listShow.length > 0) return;
+      if (!isInit && listShow.length > 0) {
+        return;
+      }
       try {
         const response = await fetchCryptoBoxAssetList({
           caAddressInfos,

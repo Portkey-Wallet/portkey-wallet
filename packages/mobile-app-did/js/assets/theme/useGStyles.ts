@@ -5,6 +5,7 @@ import { pTd } from 'utils/unit';
 import gSTyles from './GStyles';
 
 export const useGStyles = makeStyles(theme => {
+  console.log('themethemethemeis', theme);
   return {
     container: {
       flex: 1,

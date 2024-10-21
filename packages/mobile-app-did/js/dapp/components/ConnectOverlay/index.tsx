@@ -45,6 +45,7 @@ const ConnectModal = (props: ConnectModalType) => {
   const caInfo = useCurrentCaInfo();
   const { currentNetwork } = useWallet();
   const { nickName = '' } = useCurrentUserInfo();
+  console.log('wfs gStyle 7 start');
   const gStyles = useGStyles();
   const updateSessionInfo = useUpdateSessionInfo();
 
@@ -88,7 +89,9 @@ const ConnectModal = (props: ConnectModalType) => {
           OverlayModal.hide();
 
           await sleep(500);
-          if (!pin) return;
+          if (!pin) {
+            return;
+          }
           if (rememberInfo.isRemember) {
             updateSessionInfo({
               manager: getManagerAccount(pin),

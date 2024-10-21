@@ -13,6 +13,7 @@ import { useGStyles } from 'assets/theme/useGStyles';
 import ButtonRow from 'components/ButtonRow';
 import { CommonButtonProps } from 'components/CommonButton';
 import { ViewStyleType } from 'types/styles';
+import { useTheme } from '@rneui/themed';
 
 export interface ModalBodyProps extends ViewProps {
   title?: string;
@@ -47,9 +48,9 @@ export const ModalBody: React.FC<ModalBodyProps> = props => {
     bottomButtonGroup,
     onTouchStart,
   } = props;
-
+  const { theme } = useTheme();
+  console.log('wfs gStyle 2', theme);
   const gStyles = useGStyles();
-
   if (modalBodyType === 'bottom') {
     return (
       <View onTouchStart={onTouchStart} style={[styles.commonBox, gStyles.overlayStyle, styles.wrapStyle, style]}>

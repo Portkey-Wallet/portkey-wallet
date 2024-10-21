@@ -12,7 +12,7 @@ import {
   setHasNext,
   updateChannelAttribute,
 } from '@portkey-wallet/store/store-ca/im/actions';
-import { useIMChannelListNetMapState, useIMHasNextNetMapState } from '.';
+import { useIMChannelListNetMapState, useIMHasNextNetMapState } from './index';
 import useLockCallback from '../../useLockCallback';
 import { messageContentParser } from '@portkey-wallet/im/utils';
 

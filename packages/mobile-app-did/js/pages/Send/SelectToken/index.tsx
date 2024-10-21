@@ -42,17 +42,24 @@ export default function SelectToken({ tokenInfos, noDataMessage }: SelectTokenPr
     ({ item }: { item: IAssetToken }) => {
       return (
         <Touchable style={itemStyle.wrap} onPress={() => onNavigate(item)}>
-          <CommonAvatar
-            hasBorder
-            shapeType="circular"
-            title={item.symbol}
-            // svgName={item.symbol === defaultToken.symbol ? 'testnet' : undefined}
-            imageUrl={item.imageUrl}
-            avatarSize={pTd(40)}
-            style={itemStyle.left}
-            // titleStyle={FontStyles.font11}
-            borderStyle={GStyles.hairlineBorder}
-          />
+          <View style={itemStyle.iconWrap}>
+            <CommonAvatar
+              hasBorder
+              style={itemStyle.tokenIcon}
+              title={item?.symbol}
+              avatarSize={pTd(40)}
+              imageUrl={item?.imageUrl}
+              borderStyle={GStyles.hairlineBorder}
+            />
+            <CommonAvatar
+              hasBorder={true}
+              style={itemStyle.chainIcon}
+              title={item?.displayChainName}
+              avatarSize={pTd(20)}
+              imageUrl={item?.chainImageUrl}
+              borderStyle={itemStyle.tokenIconBorder}
+            />
+          </View>
 
           <View style={itemStyle.right}>
             <View>
@@ -88,6 +95,7 @@ export default function SelectToken({ tokenInfos, noDataMessage }: SelectTokenPr
         // extraData={extraIndex}
         data={tokenInfos || []}
         renderItem={renderItem}
+        keyExtractor={item => item.symbol}
         ListEmptyComponent={() => <NoData noPic message={t(noDataMessage)} />}
       />
     </View>
@@ -108,6 +116,25 @@ const itemStyle = StyleSheet.create({
   },
   left: {
     marginLeft: pTd(16),
+  },
+  iconWrap: {
+    width: pTd(45),
+    height: pTd(42),
+    position: 'relative',
+  },
+  tokenIcon: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+  },
+  tokenIconBorder: {
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: darkColors.borderBase1,
+  },
+  chainIcon: {
+    position: 'absolute',
+    right: 0,
+    bottom: 0,
   },
   right: {
     height: pTd(72),

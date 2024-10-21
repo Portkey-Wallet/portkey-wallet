@@ -20,6 +20,7 @@ export function fetchTokenList({
 }): Promise<{
   data: ITokenSectionResponse[];
   totalRecordCount: number;
+  totalDisplayCount: number;
   totalBalanceInUsd?: string;
 }> {
   return request.assets.fetchAccountTokenListV2({

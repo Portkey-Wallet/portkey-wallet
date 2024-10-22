@@ -31,6 +31,12 @@ const styles = StyleSheet.create({
     fontSize: pTd(24),
     ...fonts.mediumFont,
   },
+  TextH1: {
+    color: darkColors.textBase1,
+    fontSize: pTd(32),
+    lineHeight: pTd(38),
+    ...fonts.mediumFont,
+  },
   TextTitle: {
     color: darkColors.textBase1,
     fontSize: pTd(18),
@@ -81,4 +87,4 @@ const breakWordTextStyles = StyleSheet.create({
   },
 });
 
-export const { TextS, TextM, TextL, TextXL, TextXXL, TextXXXL, TextTitle, PrimaryText } = obj as CommonText;
+export const { TextS, TextM, TextL, TextXL, TextXXL, TextXXXL, TextTitle, PrimaryText, TextH1 } = obj as CommonText;

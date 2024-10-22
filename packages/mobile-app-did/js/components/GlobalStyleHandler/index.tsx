@@ -9,8 +9,8 @@ import { changeFonts } from 'assets/theme/fonts';
 import usePrevious from 'hooks/usePrevious';
 import { defaultColors } from 'assets/theme';
 
-setDefaultProps(TextInput, { allowFontScaling: false, style: { color: defaultColors.font5 } });
-setDefaultProps(Text, { allowFontScaling: false, style: { color: defaultColors.font5 } });
+// setDefaultProps(TextInput, { allowFontScaling: false, style: { color: defaultColors.font5 } });
+// setDefaultProps(Text, { allowFontScaling: false, style: { color: defaultColors.font5 } });
 interface GlobalStyleHandlerType {
   children: ReactElement;
 }
@@ -20,8 +20,11 @@ const GlobalStyleHandler: React.FC<GlobalStyleHandlerType> = ({ children }) => {
   const { language } = useLanguage();
   const prevLanguage = usePrevious(language);
   const [fontsLoaded] = useFonts({
-    'Roboto-Regular': require('../../assets/fonts/Roboto-Regular.ttf'),
-    'Roboto-Medium': require('../../assets/fonts/Roboto-Medium.ttf'),
+    'BricolageGrotesque-Bold': require('../../assets/fonts/BricolageGrotesque-Bold.ttf'),
+    'BricolageGrotesque-Regular': require('../../assets/fonts/BricolageGrotesque-Regular.ttf'),
+    'SchibstedGrotesk-Italic': require('../../assets/fonts/SchibstedGrotesk-Italic.ttf'),
+    'SchibstedGrotesk-Regular': require('../../assets/fonts/SchibstedGrotesk-Regular.ttf'),
+    'SchibstedGrotesk-SemiBold': require('../../assets/fonts/SchibstedGrotesk-SemiBold.ttf'),
   });
 
   useEffect(() => {
@@ -30,13 +33,13 @@ const GlobalStyleHandler: React.FC<GlobalStyleHandlerType> = ({ children }) => {
     // if english , android and ios use Roboto font-family
     switch (language as LanguageValue) {
       case 'en':
-        setDefaultProps(Text, { style: { fontFamily: 'Roboto-Regular' } });
-        setDefaultProps(TextInput, { style: { fontFamily: 'Roboto-Regular' } });
+        setDefaultProps(Text, { style: { fontFamily: 'SchibstedGrotesk-Regular' } });
+        setDefaultProps(TextInput, { style: { fontFamily: 'SchibstedGrotesk-Regular' } });
         break;
 
       case 'zh':
-        setDefaultProps(Text, { style: { fontFamily: null } });
-        setDefaultProps(TextInput, { style: { fontFamily: null } });
+        setDefaultProps(Text, { style: { fontFamily: 'SchibstedGrotesk-Regular' } });
+        setDefaultProps(TextInput, { style: { fontFamily: 'SchibstedGrotesk-Regular' } });
         break;
 
       default:

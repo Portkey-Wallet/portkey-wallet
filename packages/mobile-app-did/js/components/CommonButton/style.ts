@@ -1,6 +1,7 @@
 import { StyleSheet } from 'react-native';
 import { darkColors, defaultColors } from 'assets/theme/index';
 import { pTd } from 'utils/unit';
+import fonts from 'assets/theme/fonts';
 
 const { font4, font2, primaryColor, bg5, bg6, bg14 } = defaultColors;
 
@@ -12,6 +13,7 @@ export const styles = StyleSheet.create({
   titleStyle: {
     color: darkColors.textBase1,
     fontSize: pTd(16),
+    ...fonts.mediumFont,
   },
   solidButtonStyle: {
     backgroundColor: bg5,
@@ -25,6 +27,8 @@ export const styles = StyleSheet.create({
   },
   outlineButtonStyle: {
     backgroundColor: 'transparent',
+    borderWidth: pTd(1.5),
+    borderColor: darkColors.borderNeutral2,
   },
   primaryButtonStyle: {
     backgroundColor: darkColors.bgBrand1,

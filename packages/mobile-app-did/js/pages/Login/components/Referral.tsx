@@ -31,6 +31,8 @@ import { LOGIN_GUARDIAN_TYPE_ICON } from 'constants/misc';
 import { createNewTmpWallet } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { useAppDispatch } from 'store/hooks';
 import useEffectOnce from 'hooks/useEffectOnce';
+import { darkColors } from 'assets/theme';
+import fonts from 'assets/theme/fonts';
 
 const TitlePrefix = {
   [PageType.login]: 'Login with',
@@ -204,58 +206,64 @@ export default function Referral({
   );
 
   return (
-    <View style={[BGStyles.bg1, styles.card, GStyles.itemCenter, GStyles.spaceBetween]}>
-      {type === PageType.login && (
-        <Touchable style={styles.iconBox} onPress={() => setLoginType(PageLoginType.qrCode)}>
-          <Image source={qrCode} style={styles.iconStyle} />
-        </Touchable>
-      )}
-      <View style={GStyles.width100}>
-        {loginModeListToRecommend.map((ele, index) => {
-          if (!ele?.type?.value) return null;
-          const item = loginModeMap[ele.type.value];
-          if (!item) return null;
-          return (
-            <OblongButton
-              key={index}
-              {...item}
-              title={`${TitlePrefix[type]} ${item.title}`}
-              style={GStyles.marginTop(index === 0 ? 40 : 16)}
-            />
-          );
-        })}
-        <Divider title="OR" inset={true} style={pageStyles.dividerStyle} />
-        <View style={[GStyles.flexRow, GStyles.flexCenter]}>
-          {loginModeListToOther.map((ele, index) => {
+    <View style={[GStyles.flex1, GStyles.itemCenter, GStyles.spaceBetween]}>
+      <View>
+        <Text style={pageStyles.title}>{`Let’s set up your wallet`}</Text>
+      </View>
+      <View>
+        <View style={GStyles.width100}>
+          {loginModeListToRecommend.map((ele, index) => {
             if (!ele?.type?.value) return null;
             const item = loginModeMap[ele.type.value];
             if (!item) return null;
             return (
-              <Fragment key={index}>
-                {index !== 0 && <View style={pageStyles.blank} />}
-                <RoundButton {...item} key={index} />
-              </Fragment>
+              <OblongButton
+                key={index}
+                {...item}
+                title={`${TitlePrefix[type]} ${item.title}`}
+                style={GStyles.marginTop(index === 0 ? 40 : 16)}
+              />
             );
           })}
+          <Divider title="OR" inset={true} style={pageStyles.dividerStyle} />
+          <View style={[GStyles.flexRow, GStyles.flexCenter]}>
+            {loginModeListToOther.map((ele, index) => {
+              if (!ele?.type?.value) return null;
+              const item = loginModeMap[ele.type.value];
+              if (!item) return null;
+              return (
+                <Fragment key={index}>
+                  {index !== 0 && <View style={pageStyles.blank} />}
+                  <RoundButton {...item} key={index} />
+                </Fragment>
+              );
+            })}
+          </View>
         </View>
-      </View>
-      {type === PageType.login && (
-        <Touchable
-          style={[GStyles.flexRowWrap, GStyles.itemCenter, GStyles.flexCenter, styles.signUpTip]}
-          onPress={() => navigationService.navigate('SignupPortkey')}>
-          <TextM style={FontStyles.font3}>
-            No account? <Text style={FontStyles.font4}>Sign up </Text>
-          </TextM>
-          <Svg size={pTd(20)} color={FontStyles.font4.color} icon="right-arrow2" />
-        </Touchable>
-      )}
+        {type === PageType.login && (
+          <Touchable
+            style={[GStyles.flexRowWrap, GStyles.itemCenter, GStyles.flexCenter, styles.signUpTip]}
+            onPress={() => navigationService.navigate('SignupPortkey')}>
+            <TextM style={FontStyles.font3}>
+              No account? <Text style={FontStyles.font4}>Sign up </Text>
+            </TextM>
+            <Svg size={pTd(20)} color={FontStyles.font4.color} icon="right-arrow2" />
+          </Touchable>
+        )}
 
-      <TermsServiceButton />
+        <TermsServiceButton />
+      </View>
     </View>
   );
 }
 
 const pageStyles = StyleSheet.create({
+  title: {
+    fontSize: pTd(32),
+    lineHeight: pTd(38),
+    color: darkColors.textBase1,
+    ...fonts.mediumFont,
+  },
   dividerStyle: {
     marginVertical: 16,
   },

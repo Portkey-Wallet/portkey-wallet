@@ -30,8 +30,7 @@ export function useChangeNetwork(route: RouteProp<ParamListBase>) {
       dispatch(changeNetworkType(network.networkType));
       signalrFCM.switchNetwork();
 
-      if (routeName !== route.name && !(routeName === 'LoginPortkey' && route.name === 'SignupPortkey'))
-        navigationService.reset(routeName);
+      if (routeName !== route.name) navigationService.reset(routeName);
     },
     [dispatch, resetStore, route.name],
   );

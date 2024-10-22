@@ -66,6 +66,7 @@ import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { getAssetsEstimation } from '@portkey-wallet/store/store-ca/assets/api';
 import { getChainIdByAddress } from '@portkey-wallet/utils';
 import { ChainId } from '@portkey-wallet/types';
+import TokenBalanceShow from '../components/TokenBalanceShow';
 
 const SendHome: React.FC = () => {
   const {
@@ -713,7 +714,7 @@ const SendHome: React.FC = () => {
 
   return (
     <PageContainer
-      safeAreaColor={['white']}
+      safeAreaColor={['black']}
       titleDom={`${t('Send')}${sendType === 'token' ? ' ' + (assetInfo.label || assetInfo.symbol) : ''}`}
       rightDom={
         sendType === 'token' && !isFixedToContact ? (
@@ -739,6 +740,13 @@ const SendHome: React.FC = () => {
           setErrorMessage={setErrorMessage}
           selectedToContact={selectedToContact}
           setSelectedToContact={setSelectedToContact}
+        />
+        <TokenBalanceShow
+          symbol={'ELF'}
+          balanceShow={'1000'}
+          onPressMax={function (): void {
+            throw new Error('Function not implemented.');
+          }}
         />
       </View>
       {AddressErrorArray.filter(ele => errorMessage.includes(ele)).map(err => (

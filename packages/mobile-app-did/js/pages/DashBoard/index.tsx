@@ -94,14 +94,19 @@ const DashBoard: React.FC<any> = ({ navigation }) => {
     <SafeAreaBox edges={['top', 'right', 'left']} style={[BGStyles.bg43]}>
       <DashBoardHeader />
       <SetNewWalletNamePopup />
-      <PullToRefresh header={<CustomPullToRefreshHeader refreshing={refreshing} onRefresh={onRefresh} />}>
-        <NestedScrollView>
-          {React.cloneElement(<NestedScrollViewHeader />, {
-            children: <Card title={title} />,
-          })}
-          <DashBoardTab />
-        </NestedScrollView>
-      </PullToRefresh>
+      {React.cloneElement(
+        <PullToRefresh header={<CustomPullToRefreshHeader refreshing={refreshing} onRefresh={onRefresh} />} />,
+        {
+          children: (
+            <NestedScrollView>
+              {React.cloneElement(<NestedScrollViewHeader />, {
+                children: <Card title={title} />,
+              })}
+              <DashBoardTab />
+            </NestedScrollView>
+          ),
+        },
+      )}
     </SafeAreaBox>
   );
 };

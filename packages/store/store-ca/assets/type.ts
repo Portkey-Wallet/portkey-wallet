@@ -71,6 +71,7 @@ export type TAccountTokenInfo = {
   maxResultCount: number;
   accountTokenList: ITokenSectionResponse[];
   totalRecordCount: number;
+  totalDisplayCount: number;
 };
 
 export type TAccountNFTInfo = {

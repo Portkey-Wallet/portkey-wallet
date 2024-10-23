@@ -2223,6 +2223,7 @@ DEPENDENCIES:
   - EXSplashScreen (from `../node_modules/expo-splash-screen/ios`)
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
   - Firebase
+  - FirebaseABTesting
   - FirebaseAppCheck
   - FirebaseCore
   - FirebaseCoreExtension
@@ -2230,6 +2231,7 @@ DEPENDENCIES:
   - FirebaseCrashlytics
   - FirebaseInstallations
   - FirebaseMessaging
+  - FirebaseRemoteConfig
   - fmt (from `../node_modules/react-native/third-party-podspecs/fmt.podspec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
   - GoogleDataTransport
@@ -2807,6 +2809,6 @@ SPEC CHECKSUMS:
   Yoga: 055f92ad73f8c8600a93f0e25ac0b2344c3b07e6
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
-PODFILE CHECKSUM: b2b2fc3b064f7b5efd79f53bbc99c28b01b8ba61
+PODFILE CHECKSUM: 4cf6a75d60f13af582d5514bf34ca7ab81cf111e
 
 COCOAPODS: 1.15.2

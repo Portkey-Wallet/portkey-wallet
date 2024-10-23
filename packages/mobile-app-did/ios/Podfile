@@ -15,8 +15,6 @@ prepare_react_native_project!
 production = ENV["PRODUCTION"] == "1"
 includeFlipper = ENV["INCLUDE_FLIPPER"] == "true"
 
-use_modular_headers!
-
 target 'Portkey' do
 
   use_expo_modules!
@@ -45,6 +43,8 @@ target 'Portkey' do
   pod 'FirebaseAppCheck', :modular_headers => true
   pod 'FirebaseCrashlytics', :modular_headers => true
   pod 'FirebaseMessaging', :modular_headers => true
+  pod 'FirebaseRemoteConfig', :modular_headers => true
+  pod 'FirebaseABTesting', :modular_headers => true
   pod 'GTMSessionFetcher', :modular_headers => true
   pod 'GoogleUtilities', :modular_headers => true
 

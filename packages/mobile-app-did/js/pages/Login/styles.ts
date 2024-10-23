@@ -1,8 +1,8 @@
 import { screenHeight, screenWidth, windowHeight } from '@portkey-wallet/utils/mobile/device';
-import { StyleSheet } from 'react-native';
+import { makeStyles } from '@rneui/themed';
 import { pTd } from 'utils/unit';
 
-const styles = StyleSheet.create({
+const styles = makeStyles(theme => ({
   backgroundContainer: {
     height: screenHeight,
   },
@@ -18,19 +18,28 @@ const styles = StyleSheet.create({
   },
   card: {
     flex: 1,
-    width: screenWidth - 32,
-    borderRadius: 16,
-    marginTop: pTd(24),
-    paddingHorizontal: 20,
-    paddingVertical: 24,
+    width: '100%',
+    marginTop: pTd(16),
+    marginBottom: pTd(40),
+    paddingVertical: pTd(24),
     minHeight: Math.min(screenHeight * 0.58, 494),
+  },
+  cardContent: {
+    height: '100%',
+  },
+  emailTitle: {
+    marginBottom: pTd(48),
   },
   qrCodeCard: {
     paddingBottom: 0,
   },
-  inputContainerStyle: {
-    marginTop: 8,
-    flex: 1,
+  emailInputContainerStyle: {
+    width: '100%',
+  },
+  emailInputInputContainerStyle: {
+    borderWidth: pTd(1),
+    borderRadius: pTd(8),
+    borderColor: theme.colors.borderBase1,
   },
   viewContainer: {
     minHeight: windowHeight - pTd(160),
@@ -41,35 +50,40 @@ const styles = StyleSheet.create({
     right: 0,
   },
   iconStyle: {
-    width: 60,
-    height: 60,
+    width: pTd(60),
+    height: pTd(60),
   },
   signUpTip: {
-    position: 'absolute',
-    bottom: pTd(84),
+    // height: pTd(48),
+    // position: 'absolute',
+    // bottom: pTd(84),
   },
   termsServiceTip: {
     position: 'absolute',
-    bottom: pTd(20),
+    bottom: 0,
     textAlign: 'center',
   },
   textWrap: {
     width: '100%',
     textAlign: 'center',
-    lineHeight: pTd(16),
+    lineHeight: pTd(20),
+  },
+  link: {
+    color: theme.colors.textBrand1,
+    lineHeight: pTd(20),
   },
   qrCodeTitle: {
-    marginTop: 18,
-    marginBottom: 8,
+    marginTop: pTd(18),
+    marginBottom: pTd(8),
   },
   qrCodeBox: {
-    marginTop: 36,
+    marginTop: pTd(36),
   },
   loading: {
     top: 0,
     left: 0,
     position: 'absolute',
-    width: screenWidth - 32 - 40 - 32,
+    width: screenWidth - pTd(32) - pTd(40) - pTd(32),
     height: '100%',
     backgroundColor: '#ffffff',
     opacity: 0.96,
@@ -78,7 +92,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   networkRow: {
-    marginTop: 24,
+    marginTop: pTd(24),
   },
   networkTip: {
     marginRight: pTd(8),
@@ -95,5 +109,5 @@ const styles = StyleSheet.create({
     height: pTd(18),
     marginRight: pTd(8),
   },
-});
+}));
 export default styles;

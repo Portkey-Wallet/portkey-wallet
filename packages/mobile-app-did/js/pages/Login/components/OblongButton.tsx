@@ -1,11 +1,11 @@
+import { makeStyles } from '@rneui/themed';
 import { defaultColors } from 'assets/theme';
 import fonts from 'assets/theme/fonts';
-import { FontStyles } from 'assets/theme/styles';
 import { TextL } from 'components/CommonText';
 import Svg, { IconName } from 'components/Svg';
 import Touchable from 'components/Touchable';
 import React, { useMemo } from 'react';
-import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
+import { StyleProp, StyleSheet, ViewStyle } from 'react-native';
 import { pTd } from 'utils/unit';
 
 export interface IOblongButton {
@@ -17,6 +17,7 @@ export interface IOblongButton {
 
 export default function OblongButton(props: IOblongButton) {
   const { title, icon, onPress, style = {} } = props;
+  const styles = getStyles();
 
   const outerStyle = useMemo(() => {
     if (Array.isArray(style)) {
@@ -34,46 +35,35 @@ export default function OblongButton(props: IOblongButton) {
 
   return (
     <Touchable style={[styles.wrap, outerStyle]} onPress={onPress}>
-      {icon && (
-        <View style={styles.iconWrap}>
-          <Svg icon={icon} size={pTd(20)} />
-        </View>
-      )}
-      <TextL style={[fonts.mediumFont, FontStyles.font5]}>{title}</TextL>
+      {icon && <Svg icon={icon} size={pTd(16)} />}
+      <TextL style={[fonts.mediumFont, styles.text]}>{title}</TextL>
     </Touchable>
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = makeStyles(theme => ({
   wrap: {
     width: '100%',
     height: pTd(48),
-    borderRadius: pTd(6),
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: defaultColors.border1,
+    borderRadius: pTd(24),
+    borderWidth: pTd(1.5),
+    borderColor: theme.colors.borderNeutral2,
     display: 'flex',
+    flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
   },
-  iconWrap: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    top: 0,
-    bottom: 0,
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    paddingLeft: pTd(12),
-  },
   container: {
-    paddingVertical: 6,
+    paddingVertical: pTd(6),
     paddingHorizontal: pTd(12),
-    borderRadius: 6,
-    minHeight: 32,
+    borderRadius: pTd(24),
+    minHeight: pTd(32),
   },
   titleStyle: {
     lineHeight: pTd(18),
   },
-});
+  text: {
+    color: theme.colors.textBase1,
+    marginLeft: pTd(8),
+  },
+}));

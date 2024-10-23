@@ -1,5 +1,5 @@
 import { TextProps } from '@rneui/base';
-import { defaultColors, darkColors } from 'assets/theme';
+import { darkColors } from 'assets/theme';
 import fonts from 'assets/theme/fonts';
 import React from 'react';
 import { Text, StyleSheet, View } from 'react-native';

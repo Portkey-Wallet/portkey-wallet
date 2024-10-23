@@ -3,27 +3,29 @@ import React, { useCallback, useEffect, useState } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
 import navigationService from 'utils/navigationService';
 import { RootStackParamList } from 'navigation';
-import SafeAreaBox from 'components/SafeAreaBox';
 import { useCredentials } from 'hooks/store';
 import CommonButton from 'components/CommonButton';
 import { useLanguage } from 'i18n/hooks';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import Welcome from './components/Welcome';
-import { ImageBackground, StyleSheet, View } from 'react-native';
-import { isIOS, screenHeight } from '@portkey-wallet/utils/mobile/device';
+import { ImageBackground, View } from 'react-native';
+import { screenHeight } from '@portkey-wallet/utils/mobile/device';
 import splashScreen from './img/splashScreen.png';
-import background from '../Login/img/background.png';
+import background from './img/getStartedBg.png';
 import * as Application from 'expo-application';
 
-import { BGStyles, FontStyles } from 'assets/theme/styles';
+import { FontStyles } from 'assets/theme/styles';
 import { sleep } from '@portkey-wallet/utils';
 import GStyles from 'assets/theme/GStyles';
 import { TextM } from 'components/CommonText';
 import { pTd } from 'utils/unit';
 import useLatestIsFocusedRef from 'hooks/useLatestIsFocusedRef';
 import { useGetLoginControlListAsync } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { makeStyles } from '@rneui/themed';
+import PageContainer from 'components/PageContainer';
 
 export default function Referral() {
+  const styles = getStyles();
   const credentials = useCredentials();
   const { address, caHash } = useCurrentWalletInfo();
   const gStyles = useGStyles();
@@ -53,42 +55,78 @@ export default function Referral() {
     init();
   }, [init]);
   return (
-    <ImageBackground
-      style={styles.backgroundContainer}
-      resizeMode="cover"
-      source={isSplashScreen ? splashScreen : background}>
-      <SafeAreaBox pageSafeBottomPadding={!isIOS} style={[gStyles.container, BGStyles.transparent]}>
-        {isSplashScreen && (
-          <View style={[GStyles.flex1, GStyles.flexEnd, GStyles.itemCenter]}>
-            <TextM style={[FontStyles.font22, styles.versionStyle]}>{`V${Application.nativeApplicationVersion}`}</TextM>
-          </View>
-        )}
-        {!isSplashScreen && !address ? (
-          <>
-            <Welcome />
+    <PageContainer
+      scrollViewProps={{ disabled: true }}
+      containerStyles={[styles.referralContainer, GStyles.paddingArg(0, 0)]}
+      leftIconType="close"
+      leftCallback={undefined}
+      rightDom={undefined}
+      titleDom
+      hideTouchable
+      hideHeader>
+      <ImageBackground
+        style={isSplashScreen ? styles.backgroundSplashContainer : styles.backgroundContainer}
+        resizeMode="cover"
+        source={isSplashScreen ? splashScreen : background}
+      />
+
+      {/* TODO: login */}
+      {isSplashScreen && (
+        <View style={[GStyles.flex1, GStyles.flexEnd, GStyles.itemCenter]}>
+          <TextM style={[FontStyles.font22, styles.versionStyle]}>{`V${Application.nativeApplicationVersion}`}</TextM>
+        </View>
+      )}
+      {!isSplashScreen && !address ? (
+        <>
+          <Welcome />
+          <View style={styles.buttonContainer}>
             <CommonButton
-              buttonStyle={[styles.buttonStyle, BGStyles.bg1]}
-              titleStyle={FontStyles.primaryColor}
+              buttonStyle={[styles.buttonStyle]}
+              titleStyle={styles.buttonText}
               type="primary"
               title={t('Get Started')}
               onPress={() => navigationService.reset('LoginPortkey')}
             />
-          </>
-        ) : null}
-      </SafeAreaBox>
-    </ImageBackground>
+          </View>
+        </>
+      ) : null}
+    </PageContainer>
   );
 }
 
-const styles = StyleSheet.create({
-  backgroundContainer: {
+const getStyles = makeStyles(theme => ({
+  referralContainer: {
     height: screenHeight,
+    backgroundColor: theme.colors.bgBase1,
+    justifyContent: 'flex-start',
+    gap: 0,
+  },
+  backgroundSplashContainer: {
+    // height: screenHeight,
+  },
+  backgroundContainer: {
+    width: '100%',
+    height: pTd(407),
+    padding: 0,
+    margin: 0,
+  },
+  buttonContainer: {
+    marginHorizontal: pTd(16),
+    height: pTd(48),
+    marginBottom: pTd(16),
+    borderColor: theme.colors.borderBrand2,
+    borderWidth: pTd(1.5),
+    borderRadius: pTd(24),
+    padding: pTd(3.5),
   },
   buttonStyle: {
-    height: 56,
-    marginBottom: 40,
+    height: pTd(39),
+    backgroundColor: theme.colors.bgBrand1,
+  },
+  buttonText: {
+    color: theme.colors.textNeutral4,
   },
   versionStyle: {
     marginBottom: pTd(32),
   },
-});
+}));

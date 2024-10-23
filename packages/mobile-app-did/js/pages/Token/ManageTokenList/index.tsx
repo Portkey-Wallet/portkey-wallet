@@ -26,6 +26,7 @@ import {
 import { useTokenLegacy } from '@portkey-wallet/hooks/hooks-ca/useToken';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { useAccountTokenInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
+import { makeStyles } from '@rneui/themed';
 
 interface ManageTokenListProps {
   route?: any;
@@ -45,6 +46,7 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
   const [filterTokenList, setFilterTokenList] = useState<TokenItemShowType[]>([]);
 
   const debounceWord = useDebounce(keyword, 800);
+  const pageStyles = getStyles();
 
   const getTokenList = useLockCallback(
     async (isInit?: boolean) => {
@@ -197,14 +199,14 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
 
 export default ManageTokenList;
 
-export const pageStyles = StyleSheet.create({
+export const getStyles = makeStyles(theme => ({
   pageWrap: {
     flex: 1,
-    backgroundColor: darkColors.bgBase1,
+    backgroundColor: theme.colors.bgBase1,
     ...gStyles.paddingArg(0),
   },
   inputWrap: {
-    backgroundColor: darkColors.bgBase1,
+    backgroundColor: theme.colors.bgBase1,
     ...gStyles.paddingArg(0, 16, 0, 16),
   },
   list: {
@@ -216,4 +218,4 @@ export const pageStyles = StyleSheet.create({
   rightIconStyle: {
     padding: pTd(16),
   },
-});
+}));

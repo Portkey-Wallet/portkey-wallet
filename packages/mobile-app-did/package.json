@@ -151,19 +151,20 @@
     "react-native-swipeable-item": "^2.0.9",
     "react-native-switch-toggle": "^2.2.1",
     "react-native-tab-view": "^3.2.1",
-    "react-native-vector-icons": "^9.1.0",
+    "react-native-vector-icons": "^10.2.0",
     "react-native-view-shot": "^3.6.0",
     "react-native-webview": "^13.10.5",
     "react-redux": "^8.0.2",
     "redux-persist": "^6.0.0",
     "rn-minimizer": "1.0.0",
     "rn-nodeify": "^10.3.0",
-    "rn-teaset": "^0.1.1",
+    "rn-teaset": "0.2.0-alpha.1",
     "seamless-immutable": "^7.1.4",
     "stream": "^0.0.2",
     "url-parse": "^1.5.10",
     "uuid": "^8.3.2",
-    "web3-utils": "^1.8.0"
+    "web3-utils": "^1.8.0",
+    "micro-ftch": "0.4.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
@@ -212,7 +213,8 @@
   },
   "resolutions": {
     "@types/react": "^18.0.20",
-    "expo-crypto": "13.0.2"
+    "expo-crypto": "13.0.2",
+    "micro-ftch": "0.4.0"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": "eslint --cache --fix"

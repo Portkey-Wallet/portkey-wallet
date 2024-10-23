@@ -20094,9 +20094,14 @@ metro@0.80.12, metro@^0.80.3:
     ws "^7.5.10"
     yargs "^17.6.2"
 
+micro-ftch@0.4.0:
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/micro-ftch/-/micro-ftch-0.4.0.tgz#b2c5320b5db934dcb9678eaa5461c24e992d97d6"
+  integrity sha512-1SEH+syTsMQMQByZGJeMAiBxJIRu/3gG1z1+tHexgtXtXgwQy1C5JVBtXRdMZOIx9flerUBCJtmtVl7szwWgxQ==
+
 micro-ftch@^0.3.1:
   version "0.3.1"
-  resolved "https://registry.npmjs.org/micro-ftch/-/micro-ftch-0.3.1.tgz#6cb83388de4c1f279a034fb0cf96dfc050853c5f"
+  resolved "https://registry.yarnpkg.com/micro-ftch/-/micro-ftch-0.3.1.tgz#6cb83388de4c1f279a034fb0cf96dfc050853c5f"
   integrity sha512-/0LLxhzP0tfiR5hcQebtudP56gUurs2CLkGarnCiB/OqEyUFQ6U3paQi/tgLv0hBJYt2rnr9MNpxz4fiiugstg==
 
 micromatch@^4.0.0, micromatch@^4.0.2, micromatch@^4.0.4, micromatch@^4.0.5, micromatch@~4.0.8:
@@ -23707,10 +23712,10 @@ react-native-tab-view@^3.2.1:
   dependencies:
     use-latest-callback "^0.1.5"
 
-react-native-vector-icons@^9.1.0:
-  version "9.2.0"
-  resolved "https://registry.npmjs.org/react-native-vector-icons/-/react-native-vector-icons-9.2.0.tgz#3c0c82e95defd274d56363cbe8fead8d53167ebd"
-  integrity sha512-wKYLaFuQST/chH3AJRjmOLoLy3JEs1JR6zMNgTaemFpNoXs0ztRnTxcxFD9xhX7cJe1/zoN5BpQYe7kL0m5yyA==
+react-native-vector-icons@^10.2.0:
+  version "10.2.0"
+  resolved "https://registry.yarnpkg.com/react-native-vector-icons/-/react-native-vector-icons-10.2.0.tgz#f438f2ca16f7d6be658fd6ec8f0d2b7e2132b91c"
+  integrity sha512-n5HGcxUuVaTf9QJPs/W22xQpC2Z9u0nb0KgLPnVltP8vdUvOp6+R26gF55kilP/fV4eL4vsAHUqUjewppJMBOQ==
   dependencies:
     prop-types "^15.7.2"
     yargs "^16.1.1"
@@ -24648,10 +24653,10 @@ rn-nodeify@^10.3.0:
     semver "^5.0.1"
     xtend "^4.0.0"
 
-rn-teaset@^0.1.1:
-  version "0.1.1"
-  resolved "https://registry.npmjs.org/rn-teaset/-/rn-teaset-0.1.1.tgz#41bd1a8d526459bafb0177f494da3eda1ec78525"
-  integrity sha512-R+g0EK5RLeMFEnh4NQT7v68x9QzZFzJnbmdF2lMlWQpRL0Gh841waSYNWnr1lxwevH67axAU7J87B7xB6YJiqw==
+rn-teaset@0.2.0-alpha.1:
+  version "0.2.0-alpha.1"
+  resolved "https://registry.yarnpkg.com/rn-teaset/-/rn-teaset-0.2.0-alpha.1.tgz#e3a7528b2ec2fdefdb04bc99582251887f340583"
+  integrity sha512-bWqlqswd0NL1916GGpeXpVqgCI30IrEnu3+AMxeJn68lBuJRxkzIEfJvDioF5DiVPtTerO3mfCQYketPWTiuyg==
   dependencies:
     prop-types "^15.7.2"
     react-native-legacy-components "^0.1.3"

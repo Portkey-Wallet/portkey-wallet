@@ -4,7 +4,7 @@
  * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
  * directory of this source tree.
  */
-package com.portkey.finance;
+package com.walletappnew;
 
 public class ReactNativeFlipper {
 //  public static void initializeFlipper(Context context, ReactInstanceManager reactInstanceManager) {

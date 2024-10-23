@@ -3,12 +3,13 @@ import { makeStyles } from '@rneui/themed';
 import { pTd } from 'utils/unit';
 
 const styles = makeStyles(theme => ({
-  backgroundContainer: {
-    height: screenHeight,
-  },
   containerStyles: {
-    backgroundColor: 'transparent',
+    height: screenHeight,
+    backgroundColor: theme.colors.bgBase1,
     alignItems: 'center',
+  },
+  mainContainer: {
+    backgroundColor: theme.colors.bgBase1,
   },
   logoIconStyle: {
     marginTop: 0,

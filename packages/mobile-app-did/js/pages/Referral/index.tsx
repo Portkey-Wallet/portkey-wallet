@@ -1,5 +1,4 @@
-import { useGStyles } from 'assets/theme/useGStyles';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
 import navigationService from 'utils/navigationService';
 import { RootStackParamList } from 'navigation';
@@ -10,14 +9,9 @@ import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import Welcome from './components/Welcome';
 import { ImageBackground, View } from 'react-native';
 import { screenHeight } from '@portkey-wallet/utils/mobile/device';
-import splashScreen from './img/splashScreen.png';
 import background from './img/getStartedBg.png';
-import * as Application from 'expo-application';
-
-import { FontStyles } from 'assets/theme/styles';
 import { sleep } from '@portkey-wallet/utils';
 import GStyles from 'assets/theme/GStyles';
-import { TextM } from 'components/CommonText';
 import { pTd } from 'utils/unit';
 import useLatestIsFocusedRef from 'hooks/useLatestIsFocusedRef';
 import { useGetLoginControlListAsync } from '@portkey-wallet/hooks/hooks-ca/cms';
@@ -28,11 +22,11 @@ export default function Referral() {
   const styles = getStyles();
   const credentials = useCredentials();
   const { address, caHash } = useCurrentWalletInfo();
-  const gStyles = useGStyles();
+
   const { t } = useLanguage();
   const getLoginControlListAsync = useGetLoginControlListAsync();
   const isFocusedRef = useLatestIsFocusedRef();
-  const [isSplashScreen, setIsSplashScreen] = useState(true);
+  // const [isSplashScreen, setIsSplashScreen] = useState(true);
 
   const init = useCallback(async () => {
     if (!isFocusedRef.current) return;
@@ -48,12 +42,14 @@ export default function Referral() {
       if (credentials && caHash) name = 'Tab';
       navigationService.reset(name);
     }
-    await sleep(500);
-    setIsSplashScreen(false);
+    // await sleep(500);
+    // setIsSplashScreen(false);
   }, [isFocusedRef, address, getLoginControlListAsync, credentials, caHash]);
+
   useEffect(() => {
     init();
   }, [init]);
+
   return (
     <PageContainer
       scrollViewProps={{ disabled: true }}
@@ -64,19 +60,19 @@ export default function Referral() {
       titleDom
       hideTouchable
       hideHeader>
-      <ImageBackground
+      {/* <ImageBackground
         style={isSplashScreen ? styles.backgroundSplashContainer : styles.backgroundContainer}
         resizeMode="cover"
         source={isSplashScreen ? splashScreen : background}
-      />
+      /> */}
+      <ImageBackground style={styles.backgroundContainer} resizeMode="cover" source={background} />
 
-      {/* TODO: login */}
-      {isSplashScreen && (
+      {/* {isSplashScreen && (
         <View style={[GStyles.flex1, GStyles.flexEnd, GStyles.itemCenter]}>
           <TextM style={[FontStyles.font22, styles.versionStyle]}>{`V${Application.nativeApplicationVersion}`}</TextM>
         </View>
-      )}
-      {!isSplashScreen && !address ? (
+      )} */}
+      {!address ? (
         <>
           <Welcome />
           <View style={styles.buttonContainer}>

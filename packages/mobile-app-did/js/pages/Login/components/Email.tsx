@@ -74,7 +74,9 @@ export default function Email({
           <TextH1 style={emailStyles.emailTitle}>
             {type === PageType.login ? 'Log in via email' : 'Create your account'}
           </TextH1>
-          <TextL style={[GStyles.marginBottom(8)]}>Email</TextL>
+          <TextL style={[GStyles.marginBottom(8)]} onPress={() => setLoginType(PageLoginType.email)}>
+            Email
+          </TextL>
           {/* <View style={[GStyles.flexRowWrap, GStyles.marginBottom(8)]}>
             <TabButton title="Phone" style={GStyles.marginRight(8)} onPress={() => setLoginType(PageLoginType.phone)} />
             <TabButton isActive title="Email" onPress={() => setLoginType(PageLoginType.email)} />
@@ -85,6 +87,8 @@ export default function Email({
             value={loginAccount}
             type="general"
             autoCorrect={false}
+            allowClear
+            clearIcon="clear4"
             onChangeText={setLoginAccount}
             errorMessage={errorMessage}
             keyboardType="email-address"

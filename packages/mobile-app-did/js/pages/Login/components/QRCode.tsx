@@ -52,6 +52,7 @@ export default function QRCode({ setLoginType }: { setLoginType: (type: PageLogi
   const caWalletInfo = useIntervalQueryCAInfoByAddress(currentNetwork, newWallet?.address, checkManager);
   const isFocused = useIsFocused();
   usePreventScreenCapture('LoginQRCode');
+  const comStyles = styles();
 
   useEffect(() => {
     if (!isFocused) return;
@@ -130,16 +131,16 @@ export default function QRCode({ setLoginType }: { setLoginType: (type: PageLogi
   // const isScanQRCode = useIsScanQRCode(clientId);
 
   return (
-    <View style={[BGStyles.bg1, styles.card, styles.qrCodeCard]}>
-      <Touchable style={styles.iconBox} onPress={() => setLoginType(PageLoginType.referral)}>
-        <Image source={phone} style={styles.iconStyle} />
+    <View style={[BGStyles.bg1, comStyles.card, comStyles.qrCodeCard]}>
+      <Touchable style={comStyles.iconBox} onPress={() => setLoginType(PageLoginType.referral)}>
+        <Image source={phone} style={comStyles.iconStyle} />
       </Touchable>
       <View style={[GStyles.flex1]}>
-        <TextXXXL style={[styles.qrCodeTitle, GStyles.textAlignCenter]}>Scan code to log in</TextXXXL>
+        <TextXXXL style={[comStyles.qrCodeTitle, GStyles.textAlignCenter]}>Scan code to log in</TextXXXL>
         <TextS style={[GStyles.textAlignCenter, FontStyles.font3]}>
           Please use the Portkey DApp to scan the QR code
         </TextS>
-        <View style={[GStyles.alignCenter, styles.qrCodeBox, GStyles.flex1]}>
+        <View style={[GStyles.alignCenter, comStyles.qrCodeBox, GStyles.flex1]}>
           <CommonQRCodeStyled qrData={qrDataStr} hasMask={!newWallet} width={pTd(290)} />
         </View>
       </View>

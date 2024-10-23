@@ -1628,7 +1628,7 @@ PODS:
     - FBSDKGamingServicesKit (~> 16.3.1)
     - FBSDKShareKit (~> 16.3.1)
     - React-Core
-  - react-native-get-random-values (1.11.0):
+  - react-native-get-random-values (1.8.0):
     - React-Core
   - react-native-minimizer (1.0.0):
     - React
@@ -2171,8 +2171,27 @@ PODS:
     - React
   - RNSVG (15.8.0):
     - React-Core
-  - RNVectorIcons (9.2.0):
+  - RNVectorIcons (10.2.0):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.01.01.00)
+    - RCTRequired
+    - RCTTypeSafety
     - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
   - SDWebImage (5.11.1):
     - SDWebImage/Core (= 5.11.1)
   - SDWebImage/Core (5.11.1)
@@ -2743,7 +2762,7 @@ SPEC CHECKSUMS:
   react-native-background-timer: 17ea5e06803401a379ebf1f20505b793ac44d0fe
   react-native-config: 8f7283449bbb048902f4e764affbbf24504454af
   react-native-fbsdk-next: fcecfa33c37ce63bcda9cd24766ee9d345463230
-  react-native-get-random-values: 21325b2244dfa6b58878f51f9aa42821e7ba3d06
+  react-native-get-random-values: a6ea6a8a65dc93e96e24a11105b1a9c8cfe1d72a
   react-native-minimizer: 48a715600fd432ef1d182cfd1858f92f0afa022f
   react-native-pager-view: c476f76d54f946df5147645e902d3d7173688187
   react-native-randombytes: 421f1c7d48c0af8dbcd471b0324393ebf8fe7846
@@ -2800,7 +2819,7 @@ SPEC CHECKSUMS:
   RNSentry: a7660b72556d6574867d488e60c4b4b0be7422d8
   RNSpringScrollView: e354167d96f2c3d2f20b186990b2c3946987cb3c
   RNSVG: 8b1a777d54096b8c2a0fd38fc9d5a454332bbb4d
-  RNVectorIcons: fcc2f6cb32f5735b586e66d14103a74ce6ad61f8
+  RNVectorIcons: 6382277afab3c54658e9d555ee0faa7a37827136
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
   SDWebImageWebPCoder: 908b83b6adda48effe7667cd2b7f78c897e5111d
   Sentry: ee060c09b2f7ec1240e95c766ab44c04c7bdb052
@@ -2809,6 +2828,6 @@ SPEC CHECKSUMS:
   Yoga: 055f92ad73f8c8600a93f0e25ac0b2344c3b07e6
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
-PODFILE CHECKSUM: 4cf6a75d60f13af582d5514bf34ca7ab81cf111e
+PODFILE CHECKSUM: 6a6365f1d84687bfb191f5c34dc7bbcd32508528
 
 COCOAPODS: 1.15.2

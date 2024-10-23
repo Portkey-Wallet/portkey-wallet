@@ -335,7 +335,16 @@ export default function VerifierDetails() {
     digitInput.current?.unLockInput();
     digitInput.current?.reset();
     Loading.hide();
-  }, [guardianItem, operationType, originChainId, setGuardianStatus, targetChainId]);
+  }, [
+    guardianItem?.guardianAccount,
+    guardianItem?.guardianType,
+    guardianItem?.verifier?.id,
+    operationDetails,
+    operationType,
+    originChainId,
+    setGuardianStatus,
+    targetChainId,
+  ]);
 
   return (
     <PageContainer type="leftBack" titleDom containerStyles={styles.containerStyles}>

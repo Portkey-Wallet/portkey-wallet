@@ -120,7 +120,7 @@ export default function ConfirmPin() {
 
       if (confirmPin !== pin) {
         pinRef.current?.reset();
-        setTextError('Pins do not match', VERIFY_INVALID_TIME);
+        setTextError('Incorrect PIN, please try again.', VERIFY_INVALID_TIME);
         return;
       }
 

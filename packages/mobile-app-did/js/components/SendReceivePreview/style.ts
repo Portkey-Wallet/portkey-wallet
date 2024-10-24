@@ -46,7 +46,7 @@ export const getStyles = makeStyles(theme => ({
     marginRight: pTd(6),
   },
   amountBelow: {
-    color: 'rgba(255, 255, 255, 0.7)',
+    color: theme.colors.textBase2,
     fontSize: pTd(16),
     lineHeight: pTd(22),
   },
@@ -105,7 +105,7 @@ export const getStyles = makeStyles(theme => ({
   },
   infoValueAbove: {
     ...fonts.SGRegularFont,
-    color: 'rgba(255, 255, 255, 0.7)',
+    color: theme.colors.textBase2,
     fontSize: pTd(14),
     lineHeight: pTd(20),
   },
@@ -125,7 +125,7 @@ export const getStyles = makeStyles(theme => ({
   },
   footerText: {
     ...fonts.SGRegularFont,
-    color: 'rgba(255, 255, 255, 0.4)',
+    color: theme.colors.textBase3,
     fontSize: pTd(12),
     lineHeight: pTd(12),
     marginRight: pTd(4),

@@ -104,6 +104,7 @@ export const fetchTokenListAsync = createAsyncThunk(
       return {
         list: NEW_CLIENT_MOCK_ELF_LIST,
         totalRecordCount: NEW_CLIENT_MOCK_ELF_LIST.length,
+        totalDisplayCount: NEW_CLIENT_MOCK_ELF_LIST[0].tokens?.length || 0,
         skipCount,
         maxResultCount,
         currentNetwork,
@@ -114,6 +115,7 @@ export const fetchTokenListAsync = createAsyncThunk(
     return {
       list: response.data,
       totalRecordCount: response.totalRecordCount,
+      totalDisplayCount: response.totalDisplayCount,
       skipCount,
       maxResultCount,
       currentNetwork,
@@ -384,6 +386,7 @@ export const assetsSlice = createSlice({
         const {
           list,
           totalRecordCount,
+          totalDisplayCount,
           skipCount,
           maxResultCount,
           currentNetwork = 'MAINNET',
@@ -415,6 +418,7 @@ export const assetsSlice = createSlice({
           accountTokenList: newTokenList as ITokenSectionResponse[],
           skipCount,
           totalRecordCount,
+          totalDisplayCount,
           maxResultCount,
         };
         state.accountToken.isFetching = false;

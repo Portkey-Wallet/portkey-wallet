@@ -9,11 +9,12 @@ import { PinErrorMessage } from '@portkey-wallet/utils/wallet/types';
 import myEvents from 'utils/deviceEvent';
 import { useFocusEffect } from '@react-navigation/native';
 import PinContainer from 'components/PinContainer';
-import { StyleSheet } from 'react-native';
+import { makeStyles } from '@rneui/themed';
 import { VERIFY_INVALID_TIME } from '@portkey-wallet/constants/constants-ca/wallet';
 import { useErrorMessage } from '@portkey-wallet/hooks/hooks-ca/misc';
 
 export default function CheckPin() {
+  const styles = getStyles();
   const { openBiometrics } = useRouterParams<{ openBiometrics?: boolean }>();
   const pinRef = useRef<DigitInputInterface>();
   useFocusEffect(
@@ -61,8 +62,8 @@ export default function CheckPin() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = makeStyles(_theme => ({
   container: {
     flex: 1,
   },
-});
+}));

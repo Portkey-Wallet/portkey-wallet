@@ -1,10 +1,9 @@
 import { makeStyles } from '@rneui/themed';
-import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import Svg, { IconName } from 'components/Svg';
 import Touchable from 'components/Touchable';
 import React from 'react';
-import { StyleSheet, TouchableOpacityProps } from 'react-native';
+import { TouchableOpacityProps } from 'react-native';
 import { ViewStyleType } from 'types/styles';
 import { pTd } from 'utils/unit';
 

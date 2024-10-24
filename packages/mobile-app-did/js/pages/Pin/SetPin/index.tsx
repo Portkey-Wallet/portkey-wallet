@@ -11,7 +11,7 @@ import myEvents from 'utils/deviceEvent';
 import { AElfWallet } from '@portkey-wallet/types/aelf';
 import PinContainer from 'components/PinContainer';
 import { GuardiansApproved } from 'pages/Guardian/types';
-import { StyleSheet } from 'react-native';
+import { makeStyles } from '@rneui/themed';
 
 type RouterParams = {
   oldPin?: string;
@@ -38,6 +38,7 @@ const RouterMap: any = {
   [VerificationType.addManager]: 'LoginPortkey',
 };
 export default function SetPin() {
+  const styles = getStyles();
   const { oldPin, managerInfo, caInfo, walletInfo, verifierInfo, guardiansApproved, autoLogin } =
     useRouterParams<RouterParams>();
   const digitInput = useRef<DigitInputInterface>();
@@ -77,13 +78,13 @@ export default function SetPin() {
       scrollViewProps={scrollViewProps}
       titleDom
       type="leftBack"
-      backTitle={oldPin ? 'Change Pin' : undefined}
+      backTitle={oldPin ? 'Change PIN' : undefined}
       leftCallback={leftCallback}
       containerStyles={styles.container}>
       <PinContainer
         showHeader
         ref={digitInput}
-        title={oldPin ? 'Please enter a new pin' : 'Enter pin to protect your device'}
+        title={oldPin ? 'Please enter a new PIN' : 'Create a PIN to protect your wallet'}
         onFinish={pin => {
           navigationService.navigate('ConfirmPin', {
             oldPin,
@@ -100,8 +101,8 @@ export default function SetPin() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = makeStyles(_theme => ({
   container: {
     flex: 1,
   },
-});
+}));

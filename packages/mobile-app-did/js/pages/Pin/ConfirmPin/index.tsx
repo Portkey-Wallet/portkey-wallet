@@ -19,12 +19,13 @@ import { VerificationType, VerifierInfo } from '@portkey-wallet/types/verifier';
 import useBiometricsReady from 'hooks/useBiometrics';
 import PinContainer from 'components/PinContainer';
 import { GuardiansApproved } from 'pages/Guardian/types';
-import { StyleSheet } from 'react-native';
+import { makeStyles } from '@rneui/themed';
 import { useLanguage } from 'i18n/hooks';
 import { sendScanLoginSuccess } from '@portkey-wallet/api/api-did/message/utils';
 import { changeCanLock } from 'utils/LockManager';
 import { VERIFY_INVALID_TIME } from '@portkey-wallet/constants/constants-ca/wallet';
 import { useErrorMessage } from '@portkey-wallet/hooks/hooks-ca/misc';
+
 type RouterParams = {
   oldPin?: string;
   pin?: string;
@@ -36,6 +37,7 @@ type RouterParams = {
 };
 
 export default function ConfirmPin() {
+  const styles = getStyles();
   const { t } = useLanguage();
   const { walletInfo } = useCurrentWallet();
   const {
@@ -132,7 +134,7 @@ export default function ConfirmPin() {
     <PageContainer
       titleDom
       type="leftBack"
-      backTitle={oldPin ? 'Change Pin' : undefined}
+      backTitle={oldPin ? 'Change PIN' : undefined}
       onGestureStartCallback={() => {
         myEvents.clearSetPin.emit('clearSetPin');
       }}
@@ -145,7 +147,7 @@ export default function ConfirmPin() {
       <PinContainer
         showHeader
         ref={pinRef}
-        title="Confirm Pin"
+        title="Confirm your PIN"
         errorMessage={textError.errorMsg}
         onChangeText={onChangeText}
       />
@@ -153,8 +155,8 @@ export default function ConfirmPin() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = makeStyles(_theme => ({
   container: {
     flex: 1,
   },
-});
+}));

@@ -4,9 +4,9 @@ import PageContainer from 'components/PageContainer';
 import CommonButton from 'components/CommonButton';
 import { setSecureStoreItem } from '@portkey-wallet/utils/mobile/biometric';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
-import { Image, StyleSheet } from 'react-native';
+import { Image } from 'react-native';
+import { makeStyles } from '@rneui/themed';
 import GStyles from 'assets/theme/GStyles';
-import { defaultColors } from 'assets/theme';
 import { BGStyles } from 'assets/theme/styles';
 import navigationService from 'utils/navigationService';
 import Touchable from 'components/Touchable';
@@ -28,8 +28,10 @@ import { useSetBiometrics } from 'hooks/useBiometrics';
 import { useLanguage } from 'i18n/hooks';
 import { changeCanLock } from 'utils/LockManager';
 import { CreateAddressLoading } from '@portkey-wallet/constants/constants-ca/wallet';
+
 const ScrollViewProps = { disabled: true };
 export default function SetBiometrics() {
+  const styles = getStyles();
   const { t } = useLanguage();
   usePreventHardwareBack();
   const dispatch = useAppDispatch();
@@ -132,10 +134,10 @@ export default function SetBiometrics() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = makeStyles(theme => ({
   containerStyles: {
     justifyContent: 'space-between',
-    paddingBottom: 52,
+    paddingBottom: pTd(52),
     paddingTop: '25%',
     alignItems: 'center',
   },
@@ -144,9 +146,9 @@ const styles = StyleSheet.create({
   },
   errorText: {
     marginTop: 16,
-    color: defaultColors.error,
+    color: theme.colors.error,
   },
   biometricIcon: {
     width: pTd(124),
   },
-});
+}));

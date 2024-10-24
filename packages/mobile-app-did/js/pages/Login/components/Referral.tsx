@@ -257,7 +257,7 @@ export default function Referral({
   );
 }
 
-const getStyles = makeStyles(theme => ({
+const getStyles = makeStyles(_theme => ({
   bottomContainer: {
     paddingBottom: pTd(72),
   },

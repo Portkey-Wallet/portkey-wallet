@@ -1,11 +1,10 @@
 import { makeStyles } from '@rneui/themed';
-import { defaultColors } from 'assets/theme';
 import fonts from 'assets/theme/fonts';
 import { TextL } from 'components/CommonText';
 import Svg, { IconName } from 'components/Svg';
 import Touchable from 'components/Touchable';
 import React, { useMemo } from 'react';
-import { StyleProp, StyleSheet, ViewStyle } from 'react-native';
+import { StyleProp, ViewStyle } from 'react-native';
 import { pTd } from 'utils/unit';
 
 export interface IOblongButton {

@@ -1,14 +1,11 @@
 import React, { forwardRef, useState } from 'react';
-import { View, StyleSheet } from 'react-native';
-import { windowHeight } from '@portkey-wallet/utils/mobile/device';
-import GStyles from 'assets/theme/GStyles';
-import { TextL } from 'components/CommonText';
-
+import { View } from 'react-native';
+import { TextH1 } from 'components/CommonText';
 import { pTd } from 'utils/unit';
 import { headerHeight } from 'components/CustomHeader/style/index.style';
 import Keypad, { KeypadPropsType } from 'components/Keypad';
 import DigitText, { DigitTextProps } from 'components/DigitText';
-import { darkColors } from 'assets/theme';
+import { makeStyles } from '@rneui/themed';
 
 type PinContainerProps = {
   title: string;
@@ -31,12 +28,14 @@ const PinContainer = forwardRef(function PinContainer(
   }: PinContainerProps,
   forwardedRef,
 ) {
+  const styles = getStyles();
   const [value, setValue] = useState('');
 
   return (
-    <View style={[styles.container, showHeader && { paddingTop: styles.container.paddingTop - headerHeight }]}>
+    // showHeader && { paddingTop: styles.container.paddingTop - headerHeight }
+    <View style={[styles.container, showHeader && { paddingTop: styles.container.paddingTop + headerHeight }]}>
       <View>
-        <TextL style={GStyles.textAlignCenter}>{title}</TextL>
+        <TextH1>{title}</TextH1>
         <DigitText
           type="pin"
           secureTextEntry
@@ -67,17 +66,17 @@ const PinContainer = forwardRef(function PinContainer(
 
 export default PinContainer;
 
-const styles = StyleSheet.create({
+const getStyles = makeStyles(theme => ({
   container: {
     height: '100%',
-    paddingTop: windowHeight * 0.25,
+    paddingTop: pTd(24),
     justifyContent: 'space-between',
     paddingBottom: pTd(40),
-    backgroundColor: darkColors.bgBase1,
+    backgroundColor: theme.colors.bgBase1,
   },
   pinStyle: {
-    marginTop: 24,
-    width: pTd(216),
+    marginTop: pTd(64),
+    width: pTd(204),
     alignSelf: 'center',
   },
-});
+}));

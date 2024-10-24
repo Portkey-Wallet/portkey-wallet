@@ -1,4 +1,4 @@
-import Receive from './ReceiveHome';
+import Receive from './Receive';
 import SelectToken from './SelectToken';
 
 const stackNav = [

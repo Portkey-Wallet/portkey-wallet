@@ -21,6 +21,7 @@ type RouterParams = {
   verifierInfo?: VerifierInfo;
   guardiansApproved?: GuardiansApproved;
   autoLogin?: boolean;
+  isBackHide?: boolean;
 };
 
 const scrollViewProps = {
@@ -39,7 +40,7 @@ const RouterMap: any = {
 };
 export default function SetPin() {
   const styles = getStyles();
-  const { oldPin, managerInfo, caInfo, walletInfo, verifierInfo, guardiansApproved, autoLogin } =
+  const { oldPin, managerInfo, caInfo, walletInfo, verifierInfo, guardiansApproved, autoLogin, isBackHide } =
     useRouterParams<RouterParams>();
   const digitInput = useRef<DigitInputInterface>();
 
@@ -77,6 +78,7 @@ export default function SetPin() {
     <PageContainer
       scrollViewProps={scrollViewProps}
       titleDom
+      noLeftDom={isBackHide}
       type="leftBack"
       backTitle={oldPin ? 'Change PIN' : undefined}
       leftCallback={leftCallback}

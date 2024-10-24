@@ -1,25 +1,21 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { TextL, TextS } from 'components/CommonText';
+import { TextH1 } from 'components/CommonText';
 import PageContainer from 'components/PageContainer';
 import CommonButton from 'components/CommonButton';
 import { setSecureStoreItem } from '@portkey-wallet/utils/mobile/biometric';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
-import { Image } from 'react-native';
+import { View } from 'react-native';
 import { makeStyles } from '@rneui/themed';
 import GStyles from 'assets/theme/GStyles';
-import { BGStyles } from 'assets/theme/styles';
 import navigationService from 'utils/navigationService';
-import Touchable from 'components/Touchable';
 import { useAppDispatch } from 'store/hooks';
 import { usePreventHardwareBack } from '@portkey-wallet/hooks/mobile';
-import biometric from 'assets/image/pngs/biometric.png';
 import { pTd } from 'utils/unit';
 import { useCurrentWalletInfo, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { TimerResult } from 'utils/wallet';
 import { CAInfo } from '@portkey-wallet/types/types-ca/wallet';
 import Loading from 'components/Loading';
 import { setCAInfo } from '@portkey-wallet/store/store-ca/wallet/actions';
-import { handleErrorMessage } from '@portkey-wallet/utils';
 import { VerificationType } from '@portkey-wallet/types/verifier';
 import CommonToast from 'components/CommonToast';
 import { useIntervalGetResult, useOnResultFail } from 'hooks/login';
@@ -28,6 +24,8 @@ import { useSetBiometrics } from 'hooks/useBiometrics';
 import { useLanguage } from 'i18n/hooks';
 import { changeCanLock } from 'utils/LockManager';
 import { CreateAddressLoading } from '@portkey-wallet/constants/constants-ca/wallet';
+import fonts from 'assets/theme/fonts';
+import Svg from 'components/Svg';
 
 const ScrollViewProps = { disabled: true };
 export default function SetBiometrics() {
@@ -37,7 +35,6 @@ export default function SetBiometrics() {
   const dispatch = useAppDispatch();
   const timer = useRef<TimerResult>();
   const { pin, caInfo: paramsCAInfo } = useRouterParams<{ pin?: string; caInfo?: CAInfo }>();
-  const [errorMessage, setErrorMessage] = useState<string>();
   const { address, managerInfo, caHash } = useCurrentWalletInfo();
   const [caInfo, setStateCAInfo] = useState<CAInfo | undefined>(paramsCAInfo);
   const setBiometrics = useSetBiometrics();
@@ -105,7 +102,7 @@ export default function SetBiometrics() {
       await setBiometrics(true);
       await getResult();
     } catch (error) {
-      setErrorMessage(handleErrorMessage(error, 'Failed To Verify'));
+      CommonToast.failError(error, 'Failed To Verify');
     }
     changeCanLock(true);
   }, [getResult, pin, setBiometrics]);
@@ -124,12 +121,16 @@ export default function SetBiometrics() {
   });
   return (
     <PageContainer scrollViewProps={ScrollViewProps} leftDom titleDom containerStyles={styles.containerStyles}>
-      <Touchable style={GStyles.itemCenter} onPress={openBiometrics}>
-        <Image resizeMode="contain" source={biometric} style={styles.biometricIcon} />
-        <TextL style={styles.tipText}>Enable biometric authentication</TextL>
-        {errorMessage ? <TextS style={styles.errorText}>{errorMessage}</TextS> : null}
-      </Touchable>
-      <CommonButton type="clear" title="Skip" buttonStyle={BGStyles.transparent} onPress={onSkip} />
+      <View>
+        <TextH1 style={styles.headerTitle}>{'Enable biometrics authentication'}</TextH1>
+        <Svg iconStyle={GStyles.alignCenter} icon="face-id" size={pTd(64)} />
+      </View>
+      <View>
+        <CommonButton buttonStyle={styles.buttonWrap} type="primary" onPress={openBiometrics}>
+          {'Set up now'}
+        </CommonButton>
+        <CommonButton type="outline" title="Do it later" onPress={onSkip} />
+      </View>
     </PageContainer>
   );
 }
@@ -137,18 +138,13 @@ export default function SetBiometrics() {
 const getStyles = makeStyles(theme => ({
   containerStyles: {
     justifyContent: 'space-between',
-    paddingBottom: pTd(52),
-    paddingTop: '25%',
-    alignItems: 'center',
+    paddingTop: pTd(24),
   },
-  tipText: {
-    marginTop: -38,
+  headerTitle: {
+    marginBottom: pTd(120),
+    ...fonts.BGMediumFont,
   },
-  errorText: {
-    marginTop: 16,
-    color: theme.colors.error,
-  },
-  biometricIcon: {
-    width: pTd(124),
+  buttonWrap: {
+    marginBottom: pTd(24),
   },
 }));

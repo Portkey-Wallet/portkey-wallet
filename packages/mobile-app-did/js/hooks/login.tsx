@@ -669,6 +669,7 @@ export function useOnRequestOrSetPin() {
           guardiansApproved,
           verifierInfo,
           autoLogin,
+          isBackHide: true,
         });
       }
     },

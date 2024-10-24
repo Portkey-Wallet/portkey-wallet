@@ -47,9 +47,7 @@ export const ModalBody: React.FC<ModalBodyProps> = props => {
     bottomButtonGroup,
     onTouchStart,
   } = props;
-
   const gStyles = useGStyles();
-
   if (modalBodyType === 'bottom') {
     return (
       <View onTouchStart={onTouchStart} style={[styles.commonBox, gStyles.overlayStyle, styles.wrapStyle, style]}>

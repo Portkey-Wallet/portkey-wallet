@@ -3,7 +3,7 @@ import utc from 'dayjs/plugin/utc.js';
 import { dateToDayjs } from './time';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
 import { MessageType, ParsedPinSys, RedPackageTypeEnum } from '@portkey-wallet/im';
-import { randomId } from '.';
+import { randomId } from './index';
 import { PIN_OPERATION_TYPE_ENUM } from '@portkey-wallet/im/types/pin';
 dayjs.extend(utc);
 

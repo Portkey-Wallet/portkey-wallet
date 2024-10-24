@@ -56,7 +56,9 @@ export default function QRCode({ setLoginType }: { setLoginType: (type: PageLogi
 
   const loginSuccessTrack = useLoginSuccessTrack();
   useEffect(() => {
-    if (!isFocused) return;
+    if (!isFocused) {
+      return;
+    }
     const { caInfo, originChainId } = caWalletInfo || {};
     if (caInfo && newWallet && originChainId) {
       if (pin) {

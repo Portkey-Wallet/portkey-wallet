@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react';
-import { useImBlockedMapState } from '.';
+import { useImBlockedMapState } from './index';
 import im, { TReportMessageParams } from '@portkey-wallet/im';
 import { useCaAddressInfoList, useCurrentUserInfo } from '../wallet';
 import { useCurrentNetworkInfo } from '../network';

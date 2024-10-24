@@ -1,5 +1,5 @@
 import { AssetType } from '@portkey-wallet/constants/constants-ca/assets';
-import { ChainId } from '.';
+import { ChainId } from './index';
 import { SeedTypeEnum } from '@portkey-wallet/types/types-ca/assets';
 import { CryptoGiftOriginalStatus, CryptoGiftStatus } from '@portkey-wallet/types/types-ca/cryptogift';
 

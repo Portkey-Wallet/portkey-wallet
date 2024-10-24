@@ -1,6 +1,6 @@
 import { ISignalr, IListen } from '@portkey/socket';
 import { DefaultRampListenList } from '../constants';
-import { IOrderInfo } from '.';
+import { IOrderInfo } from './index';
 
 export type DefaultRampListenListType = typeof DefaultRampListenList;
 

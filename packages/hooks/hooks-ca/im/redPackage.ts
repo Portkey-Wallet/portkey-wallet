@@ -11,7 +11,7 @@ import im, {
 import { ChainId } from '@portkey-wallet/types';
 import { ICryptoBoxAssetItemType } from '@portkey-wallet/types/types-ca/crypto';
 import { handleLoopFetch } from '@portkey-wallet/utils';
-import { useRedPackageConfigMapState, useRelationId } from '.';
+import { useRedPackageConfigMapState, useRelationId } from './index';
 import { RedPackageCreationStatusEnum } from '@portkey-wallet/im/types';
 import { messageParser } from '@portkey-wallet/im/utils';
 import { useCurrentWalletInfo, useCurrentUserInfo } from '../wallet';

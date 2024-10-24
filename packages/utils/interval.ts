@@ -1,4 +1,4 @@
-import { randomId } from '.';
+import { randomId } from './index';
 
 const timeWorker: { [key: string]: NodeJS.Timeout } = {};
 

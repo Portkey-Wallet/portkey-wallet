@@ -53,7 +53,9 @@ export const SelectNetworkModal = (
   }, [networkList]);
   const topTwoNetworks = useMemo(() => {
     const arr: TNetworkItem[] = [];
-    if (!isPay) return networkList.slice(0, 2);
+    if (!isPay) {
+      return networkList.slice(0, 2);
+    }
     if (lastTimeTargetNetwork) {
       if (isNetworkItemEqual(lastTimeTargetNetwork, currentNetwork)) {
         arr.push(currentNetwork);
@@ -81,7 +83,9 @@ export const SelectNetworkModal = (
     return <NoData noPic message={t('No Data')} />;
   }, [t]);
   useEffect(() => {
-    if (!networkList) return;
+    if (!networkList) {
+      return;
+    }
     const type = isPay ? 'from' : 'to';
     const isShowAll = focusedOn === FocusedOnType.All;
     const prep: RequestNetworkTokenDataProps = { type };
@@ -295,7 +299,9 @@ const NetworkTopBtn = (props: {
   const isAll = type === FocusedOnType.All;
 
   const text = useMemo(() => {
-    if (isAll) return 'All';
+    if (isAll) {
+      return 'All';
+    }
     if (isTopTwo) {
       const name = formatNameWithRules(networkItem?.name || 'ETH', [FormatNameRuleList.NO_BRACKETS]);
       return isPay ? name : formatChainInfoToShow(name as ChainId); // in this case, name is chainId

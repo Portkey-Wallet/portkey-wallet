@@ -1,4 +1,4 @@
-import { RpcUrlNetworkName } from '.';
+import { RpcUrlNetworkName } from './index';
 export interface AddressBookItem {
   name: string;
   address: string;

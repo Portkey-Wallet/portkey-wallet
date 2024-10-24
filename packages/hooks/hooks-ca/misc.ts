@@ -1,4 +1,4 @@
-import { useAppCASelector } from '.';
+import { useAppCASelector } from './index';
 import { getPhoneCountryCode, setLocalPhoneCountryCodeAction } from '@portkey-wallet/store/store-ca/misc/actions';
 import { useEffect, useMemo, useCallback, useState, useRef } from 'react';
 import { useCurrentNetworkInfo, useNetworkList } from '@portkey-wallet/hooks/hooks-ca/network';

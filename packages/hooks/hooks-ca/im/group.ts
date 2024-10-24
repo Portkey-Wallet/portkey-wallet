@@ -5,7 +5,7 @@ import {
   useIMChannelListNetMapState,
   useIMGroupInfoMapNetMapState,
   useRelationId,
-} from '.';
+} from './index';
 import im, {
   ChannelInfo,
   ChannelItem,

@@ -54,7 +54,9 @@ const AssetItem = (props: { symbol: string; onPress: (item: any) => void; item: 
     [item?.nftInfo?.alias, item?.nftInfo?.tokenId],
   );
 
-  if (item.tokenInfo) return <TokenListItem item={{ ...item, ...item?.tokenInfo }} onPress={() => onPress?.(item)} />;
+  if (item.tokenInfo) {
+    return <TokenListItem item={{ ...item, ...item?.tokenInfo }} onPress={() => onPress?.(item)} />;
+  }
 
   if (item.nftInfo) {
     return (
@@ -113,7 +115,9 @@ const AssetList = ({ imTransferInfo, toAddress = '' }: ShowAssetListParamsType) 
 
   const filterList = useCallback(
     (list: IAssetItemType[]) => {
-      if (!chainIds || chainIds?.length === 0) return list;
+      if (!chainIds || chainIds?.length === 0) {
+        return list;
+      }
       return list.filter(item => chainIds?.includes(item?.chainId as ChainId));
     },
     [chainIds],
@@ -129,9 +133,13 @@ const AssetList = ({ imTransferInfo, toAddress = '' }: ShowAssetListParamsType) 
 
   const getAssetsList = useLockCallback(
     async (isInit: boolean) => {
-      if (debounceKeyword.trim()) return;
+      if (debounceKeyword.trim()) {
+        return;
+      }
 
-      if (totalRecordCount && accountAssetsList.length >= totalRecordCount && !isInit) return;
+      if (totalRecordCount && accountAssetsList.length >= totalRecordCount && !isInit) {
+        return;
+      }
 
       try {
         await fetchAccountAssetsInfoList({
@@ -148,7 +156,9 @@ const AssetList = ({ imTransferInfo, toAddress = '' }: ShowAssetListParamsType) 
   );
 
   const getFilteredAssetsList = useLockCallback(async () => {
-    if (!debounceKeyword.trim()) return;
+    if (!debounceKeyword.trim()) {
+      return;
+    }
 
     try {
       const response = await fetchAssetList({

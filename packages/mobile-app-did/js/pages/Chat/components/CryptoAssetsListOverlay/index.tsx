@@ -111,7 +111,6 @@ const CryptoAssetsList = ({
   const { t } = useLanguage();
   const caAddressInfos = useCaAddressInfoList();
   const [keyword, setKeyword] = useState('');
-  console.log('wfs gStyle 8 start');
   const gStyles = useGStyles();
   const dispatch = useAppDispatch();
   const { accountCryptoBoxAssets } = useAssets();

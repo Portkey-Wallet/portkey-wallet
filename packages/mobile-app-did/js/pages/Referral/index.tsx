@@ -26,7 +26,6 @@ import { useGetLoginControlListAsync } from '@portkey-wallet/hooks/hooks-ca/cms'
 export default function Referral() {
   const credentials = useCredentials();
   const { address, caHash } = useCurrentWalletInfo();
-  console.log('wfs gStyle 15 start');
   const gStyles = useGStyles();
   const { t } = useLanguage();
   const getLoginControlListAsync = useGetLoginControlListAsync();

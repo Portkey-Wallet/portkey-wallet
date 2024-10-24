@@ -8374,6 +8374,28 @@ aelf-sdk-cross-chain@^1.0.14:
   dependencies:
     chalk "^2.4.2"
 
+aelf-sdk@3.2.40:
+  version "3.2.40"
+  resolved "https://registry.yarnpkg.com/aelf-sdk/-/aelf-sdk-3.2.40.tgz#57064ffe31590f8c7d615224eb664b4c723c87bf"
+  integrity sha512-VhiwX9am5gS1mMnImdwaPuFo/sdABrX1gL1ojCM3ohKN/L4qE+egxGBYHEcVxHbCFo1t54pUB2/w7pA4QMJY2w==
+  dependencies:
+    "@aelfqueen/protobufjs" "^6.8.9"
+    "@babel/runtime" "^7.4.5"
+    assert "^2.0.0"
+    bignumber.js "^9.0.0"
+    bip39 "^3.0.2"
+    browserify-cipher "^1.0.1"
+    bs58 "^4.0.1"
+    buffer "^5.2.1"
+    crypto-js "^3.1.9-1"
+    elliptic "^6.4.1"
+    hdkey "^1.1.1"
+    js-sha256 "^0.9.0"
+    query-string "5.1.1"
+    randombytes "^2.1.0"
+    scryptsy "^2.1.0"
+    xmlhttprequest "^1.8.0"
+
 aelf-sdk@3.2.45-beta.1:
   version "3.2.45-beta.1"
   resolved "https://registry.npmjs.org/aelf-sdk/-/aelf-sdk-3.2.45-beta.1.tgz#dfa3ee44b40a6c3e86cb29b45eed36b039907d01"
@@ -8404,7 +8426,7 @@ aelf-sdk@3.2.45-beta.1:
     typescript "^4.9.5"
     xmlhttprequest "^1.8.0"
 
-aelf-sdk@^3.2.40, aelf-sdk@^3.2.45-beta.0:
+aelf-sdk@^3.2.45-beta.0:
   version "3.4.15"
   resolved "https://registry.npmjs.org/aelf-sdk/-/aelf-sdk-3.4.15.tgz#dd507db52cc69b1cced325a9c939ffaadaebab8f"
   integrity sha512-pWtuTNkv5HSQsFskqPXcvp4NsUOt3Trfl1n/g3mFGjkP5MrqvPBO9D7AULRSqF7fxZmFNyDyTPGV7kM4rCtTbg==
@@ -23595,12 +23617,13 @@ react-native-progress@^5.0.1:
   dependencies:
     prop-types "^15.7.2"
 
-react-native-qrcode-styled@^0.2.1:
-  version "0.2.2"
-  resolved "https://registry.npmjs.org/react-native-qrcode-styled/-/react-native-qrcode-styled-0.2.2.tgz#6e920d59a7b945289318bd047a58cf80dee5a416"
-  integrity sha512-FrmaBGMPvjlFMXFLFPoJJ5Er3TmpYDV62WBtO/FmI5lStLFN1KjO++PkM8cKy2NAe2QabG44jobto9IrQVTFdg==
+react-native-qrcode-styled@^0.3.2:
+  version "0.3.2"
+  resolved "https://registry.yarnpkg.com/react-native-qrcode-styled/-/react-native-qrcode-styled-0.3.2.tgz#395ebc37ea558acdd082f55755af4ebce707f4db"
+  integrity sha512-JY1ipJbel98GKGNSBZDEZbx37vB33HyBh6/LvFjL0FTQtjt0jcN1t+gaHtDCRI2u+rhfRkSv1IDnl9V89V7dtQ==
   dependencies:
     qrcode "^1.5.1"
+    react-fast-compare "^3.2.2"
 
 react-native-randombytes@^3.6.1:
   version "3.6.1"

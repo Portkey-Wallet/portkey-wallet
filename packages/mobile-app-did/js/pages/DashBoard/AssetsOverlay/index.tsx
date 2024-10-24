@@ -101,7 +101,6 @@ const AssetList = ({ imTransferInfo, toAddress = '' }: ShowAssetListParamsType) 
   const { addresses, isGroupChat, toUserId } = imTransferInfo || {};
 
   const { t } = useLanguage();
-  console.log('wfs gStyle 10 start');
   const gStyles = useGStyles();
   const caAddressInfos = useCaAddressInfoList();
   const [keyword, setKeyword] = useState('');

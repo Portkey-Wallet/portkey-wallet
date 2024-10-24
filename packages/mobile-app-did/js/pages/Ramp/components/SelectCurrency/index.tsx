@@ -55,7 +55,6 @@ export const Item: React.FC<TItemProps> = ({ value = '', item, callBack }) => {
 
 const SelectCurrency = ({ list, callBack, value }: SelectListProps) => {
   const { t } = useLanguage();
-  console.log('wfs gStyle 13 start');
   const gStyle = useGStyles();
   const [keyWord, setKeyWord] = useState<string>('');
 

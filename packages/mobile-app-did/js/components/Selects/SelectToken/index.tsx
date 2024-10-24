@@ -46,7 +46,6 @@ export const SelectNetworkModal = (
   const { symbol } = currentToken;
   const [currentChoosingNetwork, setCurrentChoosingNetwork] = useState(currentNetwork);
   const [lastTimeTargetNetwork, setLastTimeTargetNetwork] = useState<TNetworkItem | undefined>();
-  console.log('wfs gStyle 5 start');
   const gStyle = useGStyles();
   const [focusedOn, setFocusedOn] = useState(FocusedOnType.TopTwo);
   const networkOverflowNum = useMemo(() => {

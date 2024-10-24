@@ -57,7 +57,6 @@ function PinnedListOverlay() {
   const currentChannelId = useCurrentChannelId();
   const dispatch = useChatsDispatch();
   const messageContainerRef = useRef<FlatList>();
-  console.log('wfs gStyle 9 start');
   const gStyles = useGStyles();
 
   const { isAdmin } = useGroupChannelInfo(currentChannelId || '', false);

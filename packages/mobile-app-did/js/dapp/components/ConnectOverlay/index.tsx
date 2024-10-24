@@ -45,7 +45,6 @@ const ConnectModal = (props: ConnectModalType) => {
   const caInfo = useCurrentCaInfo();
   const { currentNetwork } = useWallet();
   const { nickName = '' } = useCurrentUserInfo();
-  console.log('wfs gStyle 7 start');
   const gStyles = useGStyles();
   const updateSessionInfo = useUpdateSessionInfo();
 

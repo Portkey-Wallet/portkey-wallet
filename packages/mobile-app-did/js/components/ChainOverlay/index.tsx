@@ -34,9 +34,7 @@ const SelectList = <ItemType extends ItemTypeBase<ItemValueType>, ItemValueType 
   labelAttrName = 'chainId',
 }: SelectListProps<ItemType, ItemValueType>) => {
   const { t } = useLanguage();
-  console.log('wfs gStyle 1 start');
   const gStyle = useGStyles();
-  console.log('wfs gStyle 1 end');
   const networkType = useCurrentNetwork();
 
   return (

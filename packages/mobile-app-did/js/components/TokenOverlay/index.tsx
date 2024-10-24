@@ -38,7 +38,6 @@ const TokenList = ({ title = 'Select Token', onFinishSelectToken, currentSymbol,
 
   const dispatch = useAppCommonDispatch();
   const chainIdList = useChainIdList();
-  console.log('wfs gStyle 6 start');
   const gStyles = useGStyles();
 
   const [keyword, setKeyword] = useState('');

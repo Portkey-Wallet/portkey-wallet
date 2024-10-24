@@ -19,6 +19,7 @@ export interface IWithdrawPreviewParams {
   chainId: ChainId;
   address: string;
   symbol: string;
+  network: string;
   amount?: string;
 }
 
@@ -27,6 +28,7 @@ export interface IWithdrawParams {
   tokenContract: ContractBasic;
   portkeyContract: ContractBasic;
   toAddress: string;
+  network: string;
   amount: string;
   tokenInfo: {
     address: string;

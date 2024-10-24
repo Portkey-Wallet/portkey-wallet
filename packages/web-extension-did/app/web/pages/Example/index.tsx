@@ -1,13 +1,16 @@
 import { addDapp, removeDapp } from '@portkey-wallet/store/store-ca/dapp/actions';
-import { LoginMethod, SocialLoginEnum } from '@portkey-wallet/types/types-ca/wallet';
+import { SocialLoginEnum } from '@portkey-wallet/types/types-ca/wallet';
 import { Button } from 'antd';
+import { useCrossTransferByEtransfer } from 'hooks/useCrossTransferByEtransfer';
 import { useAppDispatch } from 'store/Provider/hooks';
 import { setCountryModal } from 'store/reducers/modal/slice';
 import googleAnalytics from 'utils/googleAnalytics';
+import { setPinAction } from 'utils/lib/serviceWorkerAction';
 import { clearLocalStorage } from 'utils/storage/chromeStorage';
 
 export default function Example() {
   const dispatch = useAppDispatch();
+  const { withdraw, withdrawPreview } = useCrossTransferByEtransfer();
 
   return (
     <div>
@@ -77,10 +80,37 @@ export default function Example() {
         </Button>
         <Button
           onClick={() => {
-            // googleAnalytics.loginEvent('login_tesetttt', { date: Date.now() });
-            googleAnalytics.loginEndEvent(LoginMethod.Signup, { extra: Date.now() });
+            setPinAction('111111');
           }}>
-          Analytics
+          setPinAction
+        </Button>
+        <Button
+          onClick={async () => {
+            const withdrawPreviewResult = await withdrawPreview({
+              chainId: 'tDVW',
+              address: '0x76a7e856E90d1eeA61A74Dbfc1311A966e743929',
+              symbol: 'ELF',
+              network: 'TBSC',
+
+              amount: '5',
+            });
+
+            console.log(withdrawPreviewResult, 'withdrawPreviewResult=withdraw');
+
+            const result = await withdraw({
+              chainId: 'tDVW',
+              toAddress: '0x76a7e856E90d1eeA61A74Dbfc1311A966e743929',
+              amount: '5',
+              tokenInfo: {
+                symbol: 'ELF',
+                decimals: 8,
+                address: 'ASh2Wt7nSEmYqnGxPPzp4pnVDU4uhj1XW9Se5VeZcX2UDdyjx',
+              },
+              network: 'TBSC',
+            });
+            console.log(result, 'result==withdraw');
+          }}>
+          withdraw
         </Button>
       </div>
     </div>

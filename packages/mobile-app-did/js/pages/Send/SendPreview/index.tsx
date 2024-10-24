@@ -228,12 +228,16 @@ const SendPreview: React.FC = () => {
       const tokenContract = tokenContractRef.current;
 
       if (isSupportEtransferCross) {
+        const arr = toInfo.address.split('_');
+        const network = arr[arr.length - 1];
+
         const crossTransferByEtransferResult = await crossTransferByEtransfer.withdraw({
           chainId: chainInfo.chainId,
           tokenContract,
           portkeyContract: contract,
           toAddress: toInfo.address,
           amount: String(sendNumber),
+          network,
           tokenInfo: {
             symbol: assetInfo.symbol,
             decimals: Number(assetInfo.decimals),

@@ -74,6 +74,7 @@ import FreeMint from 'pages/FreeMint';
 import SecondaryMailbox from 'pages/WalletSecurity/SecondaryMailbox';
 import SecondaryMailboxEdit from 'pages/WalletSecurity/SecondaryMailbox/Edit';
 import SecondaryMailboxVerify from 'pages/WalletSecurity/SecondaryMailbox/Verify';
+// import Example from 'pages/Example';
 // import TokenNetworkList from 'pages/DepositHome/components/TokenNetworkList';
 
 export const PageRouter = () => {

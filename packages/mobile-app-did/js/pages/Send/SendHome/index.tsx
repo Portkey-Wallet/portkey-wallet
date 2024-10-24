@@ -509,11 +509,14 @@ const SendHome: React.FC = () => {
     let isEtransferCrossInLimit = false;
     try {
       if (isCross && isSupportCross) {
+        const arr = toInfo.address.split('_');
+        const network = arr[arr.length - 1];
         const { withdrawInfo } = await crossTransferByEtransfer.withdrawPreview({
           symbol: assetInfo.symbol,
           address: selectedToContact.address,
           chainId: assetInfo.chainId,
           amount: sendNumber,
+          network,
         });
         fee = withdrawInfo?.aelfTransactionFee;
         const maxAmount = Number(withdrawInfo?.maxAmount);
@@ -570,6 +573,7 @@ const SendHome: React.FC = () => {
     checkTransferLimitWithJump,
     previewParamsWithoutFee,
     isSupportCross,
+    toInfo.address,
     crossTransferByEtransfer,
     getTransactionFee,
   ]);

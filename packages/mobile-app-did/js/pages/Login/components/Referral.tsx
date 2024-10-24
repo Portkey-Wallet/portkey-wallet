@@ -239,6 +239,10 @@ export default function Referral({
                 </Fragment>
               );
             })}
+            <Fragment>
+              {loginModeListToOther.length > 0 && <View style={pageStyles.blank} />}
+              <RoundButton icon="qrCode-white" onPress={() => setLoginType(PageLoginType.qrCode)} />
+            </Fragment>
           </View>
         </View>
         {/* {type === PageType.login && (

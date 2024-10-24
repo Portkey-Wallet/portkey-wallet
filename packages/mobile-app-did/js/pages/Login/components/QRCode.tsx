@@ -1,16 +1,14 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { View, Image } from 'react-native';
+import { View } from 'react-native';
 import AElf from 'aelf-sdk';
 import { setCAInfoType, setOriginChainId } from '@portkey-wallet/store/store-ca/wallet/actions';
-import { BGStyles, FontStyles } from 'assets/theme/styles';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { useAppDispatch } from 'store/hooks';
 import myEvents from 'utils/deviceEvent';
 import navigationService from 'utils/navigationService';
 import styles from '../styles';
-import Touchable from 'components/Touchable';
 import GStyles from 'assets/theme/GStyles';
-import { TextS, TextXXXL } from 'components/CommonText';
+import { TextH1, TextM } from 'components/CommonText';
 import { PageLoginType } from '../types';
 import { useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { WalletInfoType } from '@portkey-wallet/types/wallet';
@@ -19,7 +17,6 @@ import { useIntervalQueryCAInfoByAddress } from '@portkey-wallet/hooks/hooks-ca/
 import CommonToast from 'components/CommonToast';
 import { handleWalletInfo } from '@portkey-wallet/utils/wallet';
 import { LoginQRData } from '@portkey-wallet/types/types-ca/qrcode';
-import phone from 'assets/image/pngs/phone.png';
 import { useIsFocused } from '@react-navigation/native';
 import { useGetDeviceInfo } from 'hooks/device';
 import { DEVICE_INFO_VERSION } from '@portkey-wallet/constants/constants-ca/device';
@@ -131,18 +128,15 @@ export default function QRCode({ setLoginType }: { setLoginType: (type: PageLogi
   // const isScanQRCode = useIsScanQRCode(clientId);
 
   return (
-    <View style={[BGStyles.bg1, comStyles.card, comStyles.qrCodeCard]}>
-      <Touchable style={comStyles.iconBox} onPress={() => setLoginType(PageLoginType.referral)}>
+    <View style={[comStyles.card, comStyles.qrCodeCard]}>
+      {/* <Touchable style={comStyles.iconBox} onPress={() => setLoginType(PageLoginType.referral)}>
         <Image source={phone} style={comStyles.iconStyle} />
-      </Touchable>
-      <View style={[GStyles.flex1]}>
-        <TextXXXL style={[comStyles.qrCodeTitle, GStyles.textAlignCenter]}>Scan code to log in</TextXXXL>
-        <TextS style={[GStyles.textAlignCenter, FontStyles.font3]}>
-          Please use the Portkey DApp to scan the QR code
-        </TextS>
-        <View style={[GStyles.alignCenter, comStyles.qrCodeBox, GStyles.flex1]}>
-          <CommonQRCodeStyled qrData={qrDataStr} hasMask={!newWallet} width={pTd(290)} />
-        </View>
+      </Touchable> */}
+      <TextH1 style={[comStyles.qrCodeTitle]}>Log in with QR code</TextH1>
+      <TextM style={[comStyles.qrCodeDesc]}>Use the Portkey Wallet app on another device to scan the QR code.</TextM>
+
+      <View style={[GStyles.alignCenter, comStyles.qrCodeBox]}>
+        <CommonQRCodeStyled qrData={qrDataStr} hasMask={!newWallet} width={pTd(216)} />
       </View>
     </View>
   );

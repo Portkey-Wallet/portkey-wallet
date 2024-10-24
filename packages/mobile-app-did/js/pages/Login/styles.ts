@@ -32,7 +32,9 @@ const styles = makeStyles(theme => ({
     marginBottom: pTd(48),
   },
   qrCodeCard: {
+    backgroundColor: theme.colors.bgBase1,
     paddingBottom: 0,
+    marginTop: 0,
   },
   emailInputContainerStyle: {
     width: '100%',
@@ -74,11 +76,19 @@ const styles = makeStyles(theme => ({
     lineHeight: pTd(20),
   },
   qrCodeTitle: {
-    marginTop: pTd(18),
-    marginBottom: pTd(8),
+    marginTop: 0,
+    marginBottom: pTd(16),
+  },
+  qrCodeDesc: {
+    color: theme.colors.textBase2,
   },
   qrCodeBox: {
-    marginTop: pTd(36),
+    marginTop: pTd(80),
+    backgroundColor: theme.colors.iconBase1,
+    padding: pTd(12),
+    borderRadius: pTd(16),
+    height: pTd(240),
+    width: pTd(240),
   },
   loading: {
     top: 0,

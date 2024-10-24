@@ -13,6 +13,7 @@ import SwitchNetwork from '../components/SwitchNetwork';
 const BackType: any = {
   [PageLoginType.email]: true,
   [PageLoginType.phone]: true,
+  [PageLoginType.qrCode]: true,
 };
 
 export default function LoginPortkey() {

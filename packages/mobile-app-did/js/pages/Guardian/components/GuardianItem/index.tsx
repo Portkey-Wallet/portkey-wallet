@@ -20,7 +20,7 @@ import {
   zkLoginVerifierItem,
 } from '@portkey-wallet/types/verifier';
 import { BGStyles, FontStyles } from 'assets/theme/styles';
-import { LOGIN_GUARDIAN_TYPE_ICON } from 'constants/misc';
+import { GUARDIAN_ITEM_TYPE_ICON } from 'constants/misc';
 import { LoginType, isZKLoginSupported } from '@portkey-wallet/types/types-ca/wallet';
 import { VerifierImage } from '../VerifierImage';
 import { GuardiansStatus, GuardiansStatusItem } from 'pages/Guardian/types';
@@ -336,9 +336,12 @@ export default function GuardianItem({
       <View style={[GStyles.flexRowWrap, GStyles.itemCenter, GStyles.flex1, styles.itemContent]}>
         <View style={[GStyles.flexRowWrap, GStyles.itemCenter]}>
           <VerifierImage size={pTd(42)} label={verifierName} uri={verifierImageUrl} />
-          <View style={[GStyles.center, styles.loginTypeIconWrap]}>
-            <Svg icon={LOGIN_GUARDIAN_TYPE_ICON[guardianItem.guardianType]} size={pTd(18)} />
-          </View>
+          <Svg
+            iconStyle={styles.loginTypeIconWrap}
+            icon={GUARDIAN_ITEM_TYPE_ICON[guardianItem.guardianType]}
+            size={pTd(42)}
+          />
+
           {isVerifierReplacedByZk && (
             <View style={styles.zkLoginWaterMarkWrap}>
               <Image source={require('assets/image/pngs/zklogin_verifier.png')} style={styles.zkLoginWaterMarkIcon} />
@@ -376,10 +379,6 @@ const getStyles = makeStyles(theme => ({
     paddingRight: pTd(8),
   },
   loginTypeIconWrap: {
-    backgroundColor: theme.colors.iconBrand2,
-    width: pTd(42),
-    height: pTd(42),
-    borderRadius: pTd(21),
     marginLeft: pTd(-8),
   },
   zkLoginWaterMarkWrap: {

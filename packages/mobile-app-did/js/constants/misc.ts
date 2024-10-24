@@ -12,6 +12,16 @@ export const LOGIN_GUARDIAN_TYPE_ICON: any = {
   [LoginType.Facebook]: 'facebook',
 };
 
+export const GUARDIAN_ITEM_TYPE_ICON: any = {
+  [LoginType.Email]: 'guardian-email',
+  [LoginType.Phone]: 'guardian-phone',
+  [LoginType.Google]: 'guardian-google',
+  [LoginType.Apple]: 'guardian-apple',
+  [LoginType.Telegram]: 'guardians-telegram',
+  [LoginType.Twitter]: 'guardians-x',
+  [LoginType.Facebook]: 'guardian-facebook',
+};
+
 export type T_LOGIN_TYPE_LIST_ITEM = {
   value: LoginType;
   name: string;

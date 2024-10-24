@@ -1,6 +1,6 @@
 import { PIN_SIZE } from '@portkey-wallet/constants/misc';
 import { Text } from '@rneui/base';
-import { TextM } from 'components/CommonText';
+import { TextL, TextM } from 'components/CommonText';
 import React, { useCallback, memo, useMemo } from 'react';
 import { View, StyleProp, ViewStyle } from 'react-native';
 import { makeStyles } from '@rneui/themed';
@@ -53,8 +53,8 @@ const DigitText = ({
   const styleProps = useMemo(() => {
     return {
       inputItem: {
-        width: screenWidth / (maxLength + 2.5435),
-        height: screenWidth / (maxLength + 2),
+        width: screenWidth / (maxLength + 1.5),
+        height: pTd(40),
       },
     };
   }, [maxLength]);
@@ -106,7 +106,9 @@ const DigitText = ({
   return (
     <View>
       <View style={[styles.container, type === 'pin' ? styles.pinContainer : undefined, style]}>{getInputItem()}</View>
-      {errorMessage ? <TextM style={styles.errorText}>{errorMessage}</TextM> : null}
+      {errorMessage ? (
+        <TextL style={[styles.errorText, type === 'default' && styles.errorTextLeft]}>{errorMessage}</TextL>
+      ) : null}
     </View>
   );
 };
@@ -142,16 +144,22 @@ const getStyles = makeStyles(theme => ({
   errorText: {
     marginTop: pTd(24),
     textAlign: 'center',
-    color: theme.colors.borderDanger1,
+    color: theme.colors.textDanger1,
+  },
+  errorTextLeft: {
+    marginTop: pTd(8),
+    textAlign: 'left',
+    color: theme.colors.textDanger2,
   },
   textStyles: {
-    fontSize: pTd(24),
-    color: theme.colors.textBrand2,
+    fontSize: pTd(16),
+    color: theme.colors.textBase1,
     fontWeight: 'bold',
   },
   pinPlaceholder: {
-    height: pTd(4),
-    width: pTd(16),
+    height: pTd(14),
+    width: pTd(14),
+    borderRadius: pTd(7),
     backgroundColor: theme.colors.bgNeutral2,
   },
   pinPlaceholderError: {
@@ -159,8 +167,8 @@ const getStyles = makeStyles(theme => ({
   },
   pinSecureText: {
     backgroundColor: theme.colors.textBrand2,
-    height: pTd(16),
-    width: pTd(16),
-    borderRadius: pTd(9),
+    height: pTd(14),
+    width: pTd(14),
+    borderRadius: pTd(7),
   },
 }));

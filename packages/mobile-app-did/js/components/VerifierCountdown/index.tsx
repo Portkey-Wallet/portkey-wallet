@@ -1,7 +1,8 @@
+import { makeStyles } from '@rneui/themed';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import { FontStyles } from 'assets/theme/styles';
-import { TextM } from 'components/CommonText';
+import { TextL, TextM } from 'components/CommonText';
 import Touchable from 'components/Touchable';
 import useEffectOnce from 'hooks/useEffectOnce';
 import React, { useCallback, useRef, useState, forwardRef, useImperativeHandle, useMemo } from 'react';
@@ -22,6 +23,7 @@ const VerifierCountdown = forwardRef(function VerifierCountdown(
   { style, onResend, isInvalidCode = false }: VerifierCountdownProps,
   ref,
 ) {
+  const styles = getStyles();
   const [time, setTime] = useState<number>(0);
   const timer = useRef<NodeJS.Timer>();
   const startTimer = useCallback(() => {
@@ -56,13 +58,13 @@ const VerifierCountdown = forwardRef(function VerifierCountdown(
   const timeSection = useMemo(
     () =>
       time > 0 ? (
-        <TextM style={styles.resendTip}>Resend after {time}s</TextM>
+        <TextL style={styles.resendTip}>Resend in {time}s</TextL>
       ) : (
         <Touchable onPress={onResend}>
-          <TextM style={styles.resendText}>Resend</TextM>
+          <TextL style={styles.resendText}>Resend verification code</TextL>
         </Touchable>
       ),
-    [onResend, time],
+    [onResend, styles.resendText, styles.resendTip, time],
   );
 
   return (
@@ -74,11 +76,11 @@ const VerifierCountdown = forwardRef(function VerifierCountdown(
 
 export default VerifierCountdown;
 
-const styles = StyleSheet.create({
+const getStyles = makeStyles(theme => ({
   resendTip: {
-    color: defaultColors.font7,
+    color: theme.colors.textDisabled1,
   },
   resendText: {
-    color: defaultColors.font4,
+    color: theme.colors.textBrand1,
   },
-});
+}));

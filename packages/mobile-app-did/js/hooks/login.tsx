@@ -361,12 +361,12 @@ export function useGoGuardianApproval(isLogin?: boolean) {
       };
       if (!isLogin) {
         ActionSheet.alert({
-          title: 'Continue with this account?',
-          message: `This account already exists. Click "Confirm" to log in.`,
+          title: 'You already have an account',
+          message: `Do you want to log in with ${loginAccount || ''} instead?`,
           buttons: [
             { title: 'Cancel', type: 'outline' },
             {
-              title: 'Confirm',
+              title: 'Log in',
               onPress: () => onConfirm(),
             },
           ],
@@ -552,12 +552,12 @@ export function useGoSelectVerifier(isLogin?: boolean) {
     async (params: LoginConfirmParams) => {
       if (isLogin) {
         ActionSheet.alert({
-          title: 'Continue with this account?',
-          message: `This account has not been registered yet. Click "Confirm" to complete the registration.`,
+          title: 'You don’t have an account',
+          message: `Would you like to create one with ${params.loginAccount || ''} ?`,
           buttons: [
             { title: 'Cancel', type: 'outline' },
             {
-              title: 'Confirm',
+              title: 'Sign up',
               onPress: () => onConfirmRef.current(params),
             },
           ],

@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { defaultColors } from 'assets/theme';
+import { darkColors } from 'assets/theme';
 import { TextStyleType, ViewStyleType } from 'types/styles';
 import GStyles from 'assets/theme/GStyles';
 import { TextM } from 'components/CommonText';
@@ -23,7 +23,7 @@ const Divider: React.FC<DividerProps> = ({
   width = StyleSheet.hairlineWidth,
   insetType = 'middle',
   title,
-  color = defaultColors.border6,
+  color = darkColors.borderBase1,
   titleStyle,
   inset,
   lineStyle,

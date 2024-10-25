@@ -12,6 +12,7 @@ import { AElfWallet } from '@portkey-wallet/types/aelf';
 import PinContainer from 'components/PinContainer';
 import { GuardiansApproved } from 'pages/Guardian/types';
 import { makeStyles } from '@rneui/themed';
+import { useCheckRouteExistInRouteStack } from 'hooks/route';
 
 type RouterParams = {
   oldPin?: string;
@@ -43,6 +44,7 @@ export default function SetPin() {
   const { oldPin, managerInfo, caInfo, walletInfo, verifierInfo, guardiansApproved, autoLogin, isBackHide } =
     useRouterParams<RouterParams>();
   const digitInput = useRef<DigitInputInterface>();
+  const checkRouteExistInRouteStack = useCheckRouteExistInRouteStack();
 
   useEffectOnce(() => {
     const listener = myEvents.clearSetPin.addListener(() => digitInput.current?.reset());
@@ -60,7 +62,12 @@ export default function SetPin() {
             onPress: () => {
               if (managerInfo.verificationType === VerificationType.addManager) myEvents.clearQRWallet.emit();
               if (managerInfo.verificationType === VerificationType.register) {
-                navigationService.navigate('LoginPortkey');
+                const isLoginPageExist = checkRouteExistInRouteStack('LoginEmail');
+                if (isLoginPageExist) {
+                  navigationService.navigate('LoginEmail');
+                } else {
+                  navigationService.navigate('LoginPortkey');
+                }
                 return;
               }
               navigationService.navigate(RouterMap[managerInfo.verificationType]);
@@ -73,7 +80,8 @@ export default function SetPin() {
       return navigationService.navigate(RouterMap[managerInfo.verificationType]);
 
     navigationService.goBack();
-  }, [autoLogin, managerInfo, oldPin]);
+  }, [autoLogin, checkRouteExistInRouteStack, managerInfo, oldPin]);
+
   return (
     <PageContainer
       scrollViewProps={scrollViewProps}

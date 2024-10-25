@@ -170,7 +170,7 @@ export const handleErrorCode = (error: any) => {
  */
 export const formatChainInfoToShow = (
   chainId: ChainId = 'AELF',
-  networkType?: NetworkType,
+  _networkType?: NetworkType,
   chainType: ChainType = 'aelf',
 ): string => {
   if (chainType !== 'aelf') return chainType;

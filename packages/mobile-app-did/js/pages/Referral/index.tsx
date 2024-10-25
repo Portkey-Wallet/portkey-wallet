@@ -114,9 +114,10 @@ const getStyles = makeStyles(theme => ({
     borderWidth: pTd(1.5),
     borderRadius: pTd(24),
     padding: pTd(3.5),
+    justifyContent: 'center',
   },
   buttonStyle: {
-    height: pTd(39),
+    height: '100%',
     backgroundColor: theme.colors.bgBrand1,
   },
   buttonText: {

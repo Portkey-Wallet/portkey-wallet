@@ -112,7 +112,7 @@ export default function Email({
       {type === PageType.login ? (
         <Touchable
           style={[GStyles.flexRowWrap, GStyles.itemCenter, GStyles.flexCenter, emailStyles.signUpTip]}
-          onPress={() => navigationService.navigate('SignupPortkey')}>
+          onPress={() => navigationService.navigate('LoginPortkey')}>
           <TextL style={{ color: theme.colors.textBase2 }}>
             Don’t have an account? <TextL style={{ color: theme.colors.textBrand1 }}>Sign up</TextL>
           </TextL>
@@ -120,7 +120,7 @@ export default function Email({
       ) : (
         <Touchable
           style={[GStyles.flexRowWrap, GStyles.itemCenter, GStyles.flexCenter, emailStyles.signUpTip]}
-          onPress={() => navigationService.navigate('LoginPortkey')}>
+          onPress={() => navigationService.navigate('LoginEmail')}>
           <TextL style={{ color: theme.colors.textBase2 }}>
             Already have an account? <TextL style={{ color: theme.colors.textBrand1 }}>Log in</TextL>
           </TextL>

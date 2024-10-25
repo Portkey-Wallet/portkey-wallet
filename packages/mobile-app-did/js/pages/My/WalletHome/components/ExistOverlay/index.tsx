@@ -37,7 +37,7 @@ const ExistOverlay = ({ callBack }: ExistOverlayProps) => {
         type="outline"
         containerStyle={styles.btnContainer}
         buttonStyle={[styles.btnStyle, styles.cancelButtonStyle]}
-        titleStyle={[FontStyles.font5, styles.btnTitle]}
+        titleStyle={[FontStyles.font2, styles.btnTitle]}
         onPress={() => {
           OverlayModal.hide();
           callBack(false);

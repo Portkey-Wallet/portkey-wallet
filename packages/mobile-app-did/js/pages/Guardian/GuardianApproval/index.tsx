@@ -1,14 +1,11 @@
-import { TextM, TextXXXL } from 'components/CommonText';
+import { TextH1, TextM } from 'components/CommonText';
 import PageContainer from 'components/PageContainer';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { useLanguage } from 'i18n/hooks';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { GUARDIAN_EXPIRED_TIME, VERIFIER_EXPIRATION } from '@portkey-wallet/constants/misc';
-import { DeviceEventEmitter, ScrollView, StyleSheet, View } from 'react-native';
+import { GUARDIAN_EXPIRED_TIME } from '@portkey-wallet/constants/misc';
+import { DeviceEventEmitter, ScrollView, View } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
-import CommonButton from 'components/CommonButton';
-import { BorderStyles, FontStyles } from 'assets/theme/styles';
-import Svg from 'components/Svg';
 import { pTd } from 'utils/unit';
 import { getApprovalCount } from '@portkey-wallet/utils/guardian';
 import {
@@ -23,8 +20,6 @@ import useEffectOnce from 'hooks/useEffectOnce';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 import navigationService from 'utils/navigationService';
 import { LoginType, ManagerInfo } from '@portkey-wallet/types/types-ca/wallet';
-import Touchable from 'components/Touchable';
-import ActionSheet from 'components/ActionSheet';
 import myEvents from 'utils/deviceEvent';
 import Loading from 'components/Loading';
 import { useGuardiansInfo } from 'hooks/store';
@@ -62,6 +57,11 @@ import { isCrossChain } from '@portkey-wallet/utils/aelf';
 import { useGetTransferFee } from 'hooks/transfer';
 import { useReportUnsetLoginGuardian } from 'hooks/authentication';
 import { timesDecimals } from '@portkey-wallet/utils/converter';
+import { GuardianApproveTip } from './components/GuardianApproveTip';
+import { GuardianExpired } from './components/GuardianExpired';
+import { makeStyles } from '@rneui/themed';
+import fonts from 'assets/theme/fonts';
+import { GuardianApproveProgress } from './components/GuardianApproveProgress';
 
 export type RouterParams = {
   loginAccount?: string;
@@ -113,10 +113,12 @@ export default function GuardianApproval() {
     sendTransferPreviewApprove,
     setLoginAccountNavigate,
   } = useRouterParams<RouterParams & MultiLevelParams>();
-  console.log(
-    'useRouterParams<RouterParams & MultiLevelParams>()',
-    JSON.stringify(useRouterParams<RouterParams & MultiLevelParams>()),
-  );
+  // console.log(
+  //   'useRouterParams<RouterParams & MultiLevelParams>()',
+  //   JSON.stringify(useRouterParams<RouterParams & MultiLevelParams>()),
+  // );
+
+  const styles = getStyles();
   const dispatch = useAppDispatch();
   const checkRouteExistInRouteStack = useCheckRouteExistInRouteStack();
   const reportUnsetLoginAccount = useReportUnsetLoginGuardian();
@@ -172,6 +174,14 @@ export default function GuardianApproval() {
     }
     return storeUserGuardiansList;
   }, [approvalType, guardianItem?.key, paramUserGuardiansList, storeUserGuardiansList]);
+  const loginGuardians = useMemo(
+    () => (userGuardiansList || []).filter(item => item.isLoginAccount),
+    [userGuardiansList],
+  );
+  const otherGuardians = useMemo(
+    () => (userGuardiansList || []).filter(item => !item.isLoginAccount),
+    [userGuardiansList],
+  );
 
   const { t } = useLanguage();
   const { caHash, address: managerAddress } = useCurrentWalletInfo();
@@ -197,43 +207,40 @@ export default function GuardianApproval() {
   const [guardiansStatus, setApproved] = useState<GuardiansStatus | undefined>(initGuardiansStatus);
   const [isExpired, setIsExpired] = useState<boolean>();
 
-  const guardianExpiredTime = useRef<number>();
-  const approvedList = useMemo(() => {
-    return Object.values(guardiansStatus || {}).filter(guardian => guardian.status === VerifyStatus.Verified);
+  const guardianExpiredTimeRef = useRef<number>();
+  const approvedAmount = useMemo(() => {
+    return Object.values(guardiansStatus || {}).filter(guardian => guardian.status === VerifyStatus.Verified).length;
   }, [guardiansStatus]);
 
-  const setGuardianStatus = useCallback((key: string, status: GuardiansStatusItem) => {
-    if (key === 'resetGuardianApproval') {
-      setApproved(undefined);
-      guardianExpiredTime.current = undefined;
-    } else {
-      setApproved(preGuardiansStatus => ({ ...preGuardiansStatus, [key]: status }));
-    }
-  }, []);
-
   const guardianCount = useMemo(() => getApprovalCount(userGuardiansList?.length || 0), [userGuardiansList?.length]);
-  const isSuccess = useMemo(() => guardianCount <= approvedList.length, [guardianCount, approvedList.length]);
+  const isSuccess = useMemo(() => guardianCount <= approvedAmount, [guardianCount, approvedAmount]);
   const hasAutoConfirmed = useRef<boolean>(false);
 
-  const onSetGuardianStatus = useCallback(
-    (data: { key: string; status: GuardiansStatusItem }) => {
-      setGuardianStatus(data.key, data.status);
-      if (!guardianExpiredTime.current && data.status?.status === VerifyStatus.Verified)
-        guardianExpiredTime.current = Date.now() + GUARDIAN_EXPIRED_TIME;
-    },
-    [setGuardianStatus],
-  );
+  const onSetGuardianStatus = useCallback((data: { key: string; status: GuardiansStatusItem }) => {
+    if (data.key === 'resetGuardianApproval') {
+      setIsExpired(false);
+      setApproved(undefined);
+      guardianExpiredTimeRef.current = undefined;
+    } else {
+      setApproved(preGuardiansStatus => ({ ...preGuardiansStatus, [data.key]: data.status }));
+    }
+
+    if (!guardianExpiredTimeRef.current && data.status?.status === VerifyStatus.Verified)
+      guardianExpiredTimeRef.current = Date.now() + GUARDIAN_EXPIRED_TIME;
+  }, []);
+
   useEffectOnce(() => {
     const listener = myEvents.setGuardianStatus.addListener(onSetGuardianStatus);
     const expiredTimer = setInterval(() => {
-      if (guardianExpiredTime.current && Date.now() > guardianExpiredTime.current) setIsExpired(true);
+      if (guardianExpiredTimeRef.current && Date.now() > guardianExpiredTimeRef.current) setIsExpired(true);
     }, 1000);
-    if (verifiedTime) guardianExpiredTime.current = verifiedTime + GUARDIAN_EXPIRED_TIME;
+    if (verifiedTime) guardianExpiredTimeRef.current = verifiedTime + GUARDIAN_EXPIRED_TIME;
     return () => {
       listener.remove();
       expiredTimer && clearInterval(expiredTimer);
     };
   });
+
   const isFocused = useIsFocused();
   const latestIsFocused = useLatestRef(isFocused);
   useEffect(() => {
@@ -243,6 +250,7 @@ export default function GuardianApproval() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSuccess, isExpired, latestIsFocused.current]);
+
   const onBack = useCallback(() => {
     lastOnEmitDapp.current();
     switch (approvalType) {
@@ -776,42 +784,57 @@ export default function GuardianApproval() {
     transferLimitDetail?.singleLimit,
     transferLimitDetail?.symbol,
   ]);
+
+  const onTryAgain = useCallback(() => {
+    setIsExpired(false);
+    guardianExpiredTimeRef.current = undefined;
+    setApproved({});
+  }, []);
+
   return (
     <PageContainer
       scrollViewProps={{ disabled: true }}
       containerStyles={styles.containerStyle}
       leftIconType="close"
       leftCallback={onBack}
-      backTitle={approvalType === ApprovalType.communityRecovery ? 'Wallet Login' : undefined}
-      type="leftBack"
+      rightDom={<GuardianApproveTip />}
       titleDom
       hideTouchable>
-      <View style={GStyles.flex1}>
-        <TextXXXL style={GStyles.alignCenter}>{t(`Guardians' approval`)}</TextXXXL>
-        <TextM style={[styles.expireText, GStyles.alignCenter, FontStyles.font3]}>
-          {isExpired ? 'Expired. Please initiate social recovery again.' : `Expire after ${VERIFIER_EXPIRATION} hour`}
-        </TextM>
-        <View style={[styles.verifierBody, GStyles.flex1]}>
-          <View style={[GStyles.itemCenter, GStyles.flexRowWrap, BorderStyles.border6, styles.approvalTitleRow]}>
-            <View style={[GStyles.itemCenter, GStyles.flexRowWrap, styles.approvalRow]}>
-              <TextM style={[FontStyles.font3, styles.approvalTitle]}>{`Guardians' approval`}</TextM>
-              <Touchable
-                onPress={() =>
-                  ActionSheet.alert({
-                    title2: `You will need a certain number of guardians to confirm your action. The requirements differ depending on your guardian counts. If the total number is less than or equal to 3, approval from all is needed. If that figure is greater than 3, approval from a minimum of 60% is needed.`,
-                    buttons: [{ title: 'OK' }],
-                  })
-                }>
-                <Svg color={FontStyles.font3.color} size={pTd(16)} icon="question-mark" />
-              </Touchable>
-            </View>
-            <TextM style={styles.approvalRow}>
-              <TextM style={FontStyles.font4}>{approvedList.length ?? 0}</TextM>/{guardianCount}
-            </TextM>
-          </View>
+      {isExpired ? (
+        <GuardianExpired onTryAgain={onTryAgain} />
+      ) : (
+        <View style={GStyles.flex1}>
+          <TextH1 style={styles.headerTitle}>Guardian approval</TextH1>
+          <TextM style={styles.headerContent}>
+            {'Complete the required guardian approvals below. Note: approvals expire after 1 hour.'}
+          </TextM>
+          <GuardianApproveProgress style={styles.progressWrap} amount={approvedAmount} length={guardianCount} />
+
           <View style={GStyles.flex1}>
             <ScrollView>
-              {userGuardiansList?.map(item => {
+              <View style={styles.guardiansTitleWrap}>
+                <TextM style={styles.guardiansTitle}>{'Login account(s)'}</TextM>
+              </View>
+              {loginGuardians?.map(item => {
+                return (
+                  <GuardianItem
+                    key={item.key}
+                    guardianItem={item}
+                    setGuardianStatus={onSetGuardianStatus}
+                    guardiansStatus={guardiansStatus}
+                    isExpired={isExpired}
+                    isSuccess={isSuccess}
+                    approvalType={approvalType}
+                    authenticationInfo={authenticationInfo}
+                    targetChainId={targetChainId}
+                    extra={extra}
+                  />
+                );
+              })}
+              <View style={styles.guardiansTitleWrap}>
+                <TextM style={styles.guardiansTitle}>{'Other guardian(s)'}</TextM>
+              </View>
+              {otherGuardians?.map(item => {
                 return (
                   <GuardianItem
                     key={item.key}
@@ -830,39 +853,35 @@ export default function GuardianApproval() {
             </ScrollView>
           </View>
         </View>
-      </View>
-      {!isExpired && (
-        <CommonButton
-          onPress={onFinish}
-          disabled={!isSuccess || guardianCount === 0}
-          type="primary"
-          title={'Confirm'}
-        />
       )}
     </PageContainer>
   );
 }
-const styles = StyleSheet.create({
+
+const getStyles = makeStyles(theme => ({
   containerStyle: {
-    paddingTop: 8,
-    paddingBottom: 16,
+    paddingTop: pTd(24),
+    paddingBottom: pTd(16),
     justifyContent: 'space-between',
-    paddingHorizontal: pTd(20),
+    paddingHorizontal: pTd(16),
   },
-  expireText: {
-    marginTop: 8,
+  headerTitle: {
+    ...fonts.BGMediumFont,
   },
-  verifierBody: {
-    marginTop: 40,
+  headerContent: {
+    marginTop: pTd(16),
+    lineHeight: pTd(20),
+    color: theme.colors.textBase2,
+    marginBottom: pTd(24),
   },
-  approvalTitleRow: {
-    justifyContent: 'space-between',
-    borderBottomWidth: StyleSheet.hairlineWidth,
+  progressWrap: {
+    marginBottom: pTd(16),
   },
-  approvalRow: {
-    paddingBottom: 12,
+  guardiansTitleWrap: {
+    height: pTd(44),
+    justifyContent: 'center',
   },
-  approvalTitle: {
-    marginRight: pTd(7),
+  guardiansTitle: {
+    color: theme.colors.textBase2,
   },
-});
+}));

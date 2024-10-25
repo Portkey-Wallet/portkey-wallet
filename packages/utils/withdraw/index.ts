@@ -97,9 +97,7 @@ class CrossTransfer implements ICrossTransfer {
 
   withdraw: ICrossTransfer['withdraw'] = async (params: IWithdrawParams) => {
     try {
-      const { tokenContract, chainId, toAddress, amount, tokenInfo, portkeyContract } = params;
-      const arr = toAddress.split('_');
-      const toChainId = arr[arr.length - 1];
+      const { tokenContract, chainId, toAddress, amount, tokenInfo, portkeyContract, network } = params;
       const { pin, walletInfo, chainList, eTransferCA } = this.options;
       const chainInfo = chainList.find(item => item.chainId === chainId);
       if (!pin) throw new Error('No Pin');
@@ -140,7 +138,7 @@ class CrossTransfer implements ICrossTransfer {
         caContractAddress: chainInfo.caContractAddress,
         eTransferContractAddress,
         caHash,
-        network: toChainId,
+        network,
         chainId,
         managerAddress,
         getSignature: async ser => {
@@ -171,15 +169,13 @@ class CrossTransfer implements ICrossTransfer {
 
   withdrawPreview: ICrossTransfer['withdrawPreview'] = async (params: IWithdrawPreviewParams) => {
     try {
-      const { chainId, address, symbol, amount } = params;
-      const arr = address.split('_');
-      const toChainId = arr[arr.length - 1];
+      const { chainId, address, symbol, amount, network } = params;
 
       const authParams = this.formatAuthTokenParams();
       await eTransferCore.getAuthToken({ chainId, ...authParams });
       const result = await eTransferCore.services.getWithdrawInfo({
         chainId: chainId,
-        network: toChainId,
+        network,
         symbol,
         amount,
         address: removeDIDAddressSuffix(address) || undefined,

@@ -3,7 +3,7 @@ import { darkColors, defaultColors } from 'assets/theme/index';
 import GStyles from 'assets/theme/GStyles';
 import { pTd } from 'utils/unit';
 
-const { border1, font5 } = defaultColors;
+const { font5 } = defaultColors;
 
 export const commonStyles = StyleSheet.create({
   rightIconContainerStyle: {
@@ -17,6 +17,9 @@ export const commonStyles = StyleSheet.create({
     borderColor: darkColors.borderBase1,
     borderBottomColor: defaultColors.border8,
     borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+  inputContainerErrorBorderStyle: {
+    borderColor: darkColors.textDanger2,
   },
 });
 
@@ -80,9 +83,10 @@ export const generalStyles = StyleSheet.create({
   },
   errorStyle: {
     marginLeft: 0,
-    paddingLeft: pTd(8),
-    fontSize: pTd(12),
-    lineHeight: pTd(16),
+    paddingLeft: 0,
+    fontSize: pTd(16),
+    lineHeight: pTd(23),
+    color: darkColors.textDanger2,
   },
   disabledInputStyle: {
     color: font5,

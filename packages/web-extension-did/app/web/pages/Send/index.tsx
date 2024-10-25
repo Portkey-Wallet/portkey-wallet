@@ -284,9 +284,13 @@ export default function Send() {
         const amountAllowed = withdrawInfo ? isGTMax && isLTMin : false;
 
         if (CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL.includes(crossParams.tokenInfo.symbol) && amountAllowed) {
+          const arr = toAccount.address.split('_');
+          const network = arr[arr.length - 1];
+
           await withdraw({
             chainId,
             toAddress: crossParams.toAddress,
+            network,
             amount,
             tokenInfo,
           });
@@ -369,11 +373,14 @@ export default function Send() {
     async ({ amount }: { amount: string }) => {
       const token = tokenInfo;
       try {
+        const arr = toAccount.address.split('_');
+        const network = arr[arr.length - 1];
         const [{ withdrawInfo }, allowance] = await Promise.all([
           withdrawPreview({
             chainId: token.chainId,
             address: toAccount.address,
             symbol: token.symbol,
+            network,
           }),
           getEtransferCAAllowance(token),
         ]);
@@ -548,12 +555,15 @@ export default function Send() {
         CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL.includes(tokenSymbol)
       ) {
         try {
+          const arr = toAccount.address.split('_');
+          const network = arr[arr.length - 1];
           const [{ withdrawInfo }, allowance] = await Promise.all([
             withdrawPreview({
               chainId,
               address: toAccount.address,
               symbol: tokenSymbol,
               amount,
+              network,
             }),
             getEtransferCAAllowance(tokenInfo),
           ]);

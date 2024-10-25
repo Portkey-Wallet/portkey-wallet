@@ -44,11 +44,14 @@ export const useEtransferFee = (chainId: ChainId) => {
     async ({ amount, toInfo, tokenInfo }: { amount: string; toInfo: TToInfo; tokenInfo: IToSendAssetParamsType }) => {
       const token = tokenInfo;
       try {
+        const arr = toInfo.address.split('_');
+        const network = arr[arr.length - 1];
         const [{ withdrawInfo }, allowance] = await Promise.all([
           withdrawPreview({
             chainId: token.chainId,
             address: toInfo.address,
             symbol: token.symbol,
+            network,
           }),
           getEtransferCAAllowance(tokenInfo),
         ]);

@@ -1,14 +1,9 @@
 import React, { useMemo, Fragment, useCallback } from 'react';
-import { View, Text, Image, StyleSheet } from 'react-native';
-import { BGStyles, FontStyles } from 'assets/theme/styles';
-import navigationService from 'utils/navigationService';
-import styles from '../styles';
-import Touchable from 'components/Touchable';
+import { View } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
-import { TextM } from 'components/CommonText';
-import Svg, { IconName } from 'components/Svg';
+import { TextH1 } from 'components/CommonText';
+import { IconName } from 'components/Svg';
 import { pTd } from 'utils/unit';
-import qrCode from 'assets/image/pngs/QR-code.png';
 import { PageLoginType, PageType } from '../types';
 import TermsServiceButton from './TermsServiceButton';
 import Divider from 'components/Divider';
@@ -31,10 +26,11 @@ import { LOGIN_GUARDIAN_TYPE_ICON } from 'constants/misc';
 import { createNewTmpWallet } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { useAppDispatch } from 'store/hooks';
 import useEffectOnce from 'hooks/useEffectOnce';
+import { makeStyles } from '@rneui/themed';
 
 const TitlePrefix = {
-  [PageType.login]: 'Login with',
-  [PageType.signup]: 'Signup with',
+  [PageType.login]: 'Continue with',
+  [PageType.signup]: 'Continue with',
 };
 
 export function useLoginModeMap(
@@ -188,6 +184,7 @@ export default function Referral({
   setLoginType: (type: PageLoginType) => void;
   type?: PageType;
 }) {
+  const pageStyles = getStyles();
   const onLogin = useOnLogin(type === PageType.login);
 
   const config = useEntranceConfig();
@@ -204,62 +201,84 @@ export default function Referral({
   );
 
   return (
-    <View style={[BGStyles.bg1, styles.card, GStyles.itemCenter, GStyles.spaceBetween]}>
-      {type === PageType.login && (
-        <Touchable style={styles.iconBox} onPress={() => setLoginType(PageLoginType.qrCode)}>
-          <Image source={qrCode} style={styles.iconStyle} />
-        </Touchable>
-      )}
-      <View style={GStyles.width100}>
-        {loginModeListToRecommend.map((ele, index) => {
-          if (!ele?.type?.value) return null;
-          const item = loginModeMap[ele.type.value];
-          if (!item) return null;
-          return (
-            <OblongButton
-              key={index}
-              {...item}
-              title={`${TitlePrefix[type]} ${item.title}`}
-              style={GStyles.marginTop(index === 0 ? 40 : 16)}
-            />
-          );
-        })}
-        <Divider title="OR" inset={true} style={pageStyles.dividerStyle} />
-        <View style={[GStyles.flexRow, GStyles.flexCenter]}>
-          {loginModeListToOther.map((ele, index) => {
+    <View style={[GStyles.flex1, GStyles.spaceBetween]}>
+      <View style={pageStyles.titleContainer}>
+        <TextH1>{`Let's set up your wallet`}</TextH1>
+      </View>
+      <View style={pageStyles.bottomContainer}>
+        <View style={GStyles.width100}>
+          {loginModeListToRecommend.map((ele, index) => {
             if (!ele?.type?.value) return null;
             const item = loginModeMap[ele.type.value];
             if (!item) return null;
             return (
-              <Fragment key={index}>
-                {index !== 0 && <View style={pageStyles.blank} />}
-                <RoundButton {...item} key={index} />
-              </Fragment>
+              <OblongButton
+                key={index}
+                {...item}
+                title={`${TitlePrefix[type]} ${item.title}`}
+                style={GStyles.marginTop(index === 0 ? 40 : 16)}
+              />
             );
           })}
+          <Divider
+            title="OR"
+            inset={true}
+            width={pTd(0.5)}
+            style={pageStyles.dividerStyle}
+            titleStyle={pageStyles.dividerTextStyle}
+          />
+          <View style={[GStyles.flexRow, GStyles.flexCenter]}>
+            {loginModeListToOther.map((ele, index) => {
+              if (!ele?.type?.value) return null;
+              const item = loginModeMap[ele.type.value];
+              if (!item) return null;
+              return (
+                <Fragment key={index}>
+                  {index !== 0 && <View style={pageStyles.blank} />}
+                  <RoundButton {...item} key={index} />
+                </Fragment>
+              );
+            })}
+            <Fragment>
+              {loginModeListToOther.length > 0 && <View style={pageStyles.blank} />}
+              <RoundButton icon="qrCode-white" onPress={() => setLoginType(PageLoginType.qrCode)} />
+            </Fragment>
+          </View>
         </View>
-      </View>
-      {type === PageType.login && (
-        <Touchable
-          style={[GStyles.flexRowWrap, GStyles.itemCenter, GStyles.flexCenter, styles.signUpTip]}
-          onPress={() => navigationService.navigate('SignupPortkey')}>
-          <TextM style={FontStyles.font3}>
-            No account? <Text style={FontStyles.font4}>Sign up </Text>
-          </TextM>
-          <Svg size={pTd(20)} color={FontStyles.font4.color} icon="right-arrow2" />
-        </Touchable>
-      )}
+        {/* {type === PageType.login && (
+          <Touchable
+            style={[GStyles.flexRowWrap, GStyles.itemCenter, GStyles.flexCenter, styles.signUpTip]}
+            onPress={() => navigationService.navigate('SignupPortkey')}>
+            <TextM style={FontStyles.font3}>
+              No account? <Text style={FontStyles.font4}>Sign up </Text>
+            </TextM>
+          </Touchable>
+        )} */}
 
-      <TermsServiceButton />
+        <TermsServiceButton />
+      </View>
     </View>
   );
 }
 
-const pageStyles = StyleSheet.create({
-  dividerStyle: {
-    marginVertical: 16,
+const getStyles = makeStyles(_theme => ({
+  bottomContainer: {
+    paddingBottom: pTd(72),
   },
+  titleContainer: {
+    marginTop: pTd(24),
+  },
+  dividerStyle: {
+    marginVertical: pTd(32),
+  },
+  dividerTextStyle: {
+    fontSize: pTd(12),
+    opacity: 0.4,
+  },
+  // dividerLineStyle: {
+  //   color: theme.colors.borderBase1,
+  // },
   blank: {
     width: pTd(15),
   },
-});
+}));

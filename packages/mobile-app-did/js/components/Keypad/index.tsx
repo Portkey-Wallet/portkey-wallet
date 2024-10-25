@@ -2,7 +2,7 @@ import React, { forwardRef, useCallback, useImperativeHandle, useRef } from 'rea
 import { View, StyleSheet, TouchableOpacity, StyleProp, ViewStyle } from 'react-native';
 
 import GStyles from 'assets/theme/GStyles';
-import { TextXXXL } from 'components/CommonText';
+import { TextH1 } from 'components/CommonText';
 import { pTd } from 'utils/unit';
 import Svg from 'components/Svg';
 import { PIN_SIZE } from '@portkey-wallet/constants/misc';
@@ -71,21 +71,21 @@ const Keypad = forwardRef(function Keypad(
           onPress={() => {
             handleValueChange('1');
           }}>
-          <TextXXXL>1</TextXXXL>
+          <TextH1>1</TextH1>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.padBtn}
           onPress={() => {
             handleValueChange('2');
           }}>
-          <TextXXXL>2</TextXXXL>
+          <TextH1>2</TextH1>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.padBtn, styles.noMarginRight]}
           onPress={() => {
             handleValueChange('3');
           }}>
-          <TextXXXL>3</TextXXXL>
+          <TextH1>3</TextH1>
         </TouchableOpacity>
       </View>
       <View style={styles.padRow}>
@@ -94,21 +94,21 @@ const Keypad = forwardRef(function Keypad(
           onPress={() => {
             handleValueChange('4');
           }}>
-          <TextXXXL>4</TextXXXL>
+          <TextH1>4</TextH1>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.padBtn}
           onPress={() => {
             handleValueChange('5');
           }}>
-          <TextXXXL>5</TextXXXL>
+          <TextH1>5</TextH1>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.padBtn, styles.noMarginRight]}
           onPress={() => {
             handleValueChange('6');
           }}>
-          <TextXXXL>6</TextXXXL>
+          <TextH1>6</TextH1>
         </TouchableOpacity>
       </View>
       <View style={styles.padRow}>
@@ -117,21 +117,21 @@ const Keypad = forwardRef(function Keypad(
           onPress={() => {
             handleValueChange('7');
           }}>
-          <TextXXXL>7</TextXXXL>
+          <TextH1>7</TextH1>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.padBtn}
           onPress={() => {
             handleValueChange('8');
           }}>
-          <TextXXXL>8</TextXXXL>
+          <TextH1>8</TextH1>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.padBtn, styles.noMarginRight]}
           onPress={() => {
             handleValueChange('9');
           }}>
-          <TextXXXL>9</TextXXXL>
+          <TextH1>9</TextH1>
         </TouchableOpacity>
       </View>
       <View style={styles.padRow}>
@@ -147,7 +147,7 @@ const Keypad = forwardRef(function Keypad(
           onPress={() => {
             handleValueChange('0');
           }}>
-          <TextXXXL>0</TextXXXL>
+          <TextH1>0</TextH1>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.padBtn, styles.noMarginRight]}
@@ -166,22 +166,17 @@ export default Keypad;
 const styles = StyleSheet.create({
   container: {},
   padRow: {
-    marginTop: pTd(24),
+    marginTop: pTd(20),
     flexDirection: 'row',
   },
   padBtn: {
-    height: pTd(44),
+    height: pTd(80),
     flex: 1,
-    marginRight: pTd(8),
+    marginRight: pTd(36),
     justifyContent: 'center',
     alignItems: 'center',
   },
   noMarginRight: {
     marginRight: 0,
-  },
-  pinStyle: {
-    marginTop: 24,
-    width: pTd(230),
-    alignSelf: 'center',
   },
 });

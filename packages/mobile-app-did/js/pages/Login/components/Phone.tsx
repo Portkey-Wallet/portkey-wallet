@@ -40,6 +40,7 @@ export default function Phone({
   const [errorMessage, setErrorMessage] = useState<string>();
   const { localPhoneCountryCode: country } = usePhoneCountryCode();
   const onLogin = useOnLogin(type === PageType.login);
+  const phoneStyles = styles();
 
   const onPageLogin = useLockCallback(async () => {
     const loadingKey = Loading.show();
@@ -65,7 +66,7 @@ export default function Phone({
     };
   });
   return (
-    <View style={[BGStyles.bg1, styles.card, GStyles.itemCenter]}>
+    <View style={[BGStyles.bg1, phoneStyles.card, GStyles.itemCenter]}>
       <View style={GStyles.width100}>
         <View style={[GStyles.flexRowWrap, GStyles.marginBottom(20)]}>
           {/* <TabButton
@@ -80,7 +81,7 @@ export default function Phone({
         <PhoneInput
           value={loginAccount}
           errorMessage={errorMessage}
-          containerStyle={styles.inputContainerStyle}
+          containerStyle={phoneStyles.emailInputContainerStyle}
           onChangeText={setLoginAccount}
           selectCountry={country}
         />

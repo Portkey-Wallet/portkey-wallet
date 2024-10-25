@@ -62,12 +62,14 @@ const DashBoardHeader: React.FC = () => {
     }
     return screenWidth - nickNameLeft - nickNameMinRight;
   }, [shouldShowSetNewWalletNameIcon]);
-
+  const onShowAccountSetting = useCallback(() => {
+    navigationService.navigate('ProfileSettings');
+  }, []);
   const leftDom = useMemo(() => {
     return (
       <Animated.View style={styles.leftDomWrap}>
         {userInfo?.nickName ? (
-          <>
+          <TouchableOpacity onPress={onShowAccountSetting} style={styles.leftTouchableDomWrap}>
             <CommonAvatar
               hasBorder={!userInfo?.avatar}
               title={userInfo?.nickName}
@@ -86,7 +88,7 @@ const DashBoardHeader: React.FC = () => {
                 </TouchableOpacity>
               )}
             </View>
-          </>
+          </TouchableOpacity>
         ) : (
           <Skeleton
             animation="wave"
@@ -100,6 +102,7 @@ const DashBoardHeader: React.FC = () => {
     );
   }, [
     nickNameMaxWidth,
+    onShowAccountSetting,
     onShowSetNewWalletNamePopover,
     shouldShowSetNewWalletNameIcon,
     userInfo?.avatar,
@@ -147,6 +150,11 @@ const styles = StyleSheet.create({
   leftDomWrap: {
     flex: 1,
     marginLeft: pTd(16),
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  leftTouchableDomWrap: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
   },

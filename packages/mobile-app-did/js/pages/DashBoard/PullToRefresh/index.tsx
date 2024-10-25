@@ -13,7 +13,7 @@ import { pTd } from 'utils/unit';
 export default function CustomPullToRefreshHeader(props: PullToRefreshHeaderProps) {
   const { onRefresh, refreshing } = props;
 
-  const [text, setText] = useState('下拉刷新');
+  const [text, setText] = useState('pull to refresh');
 
   const onStateChanged = useCallback((event: PullToRefreshStateChangedEvent) => {
     const state = event.nativeEvent.state;

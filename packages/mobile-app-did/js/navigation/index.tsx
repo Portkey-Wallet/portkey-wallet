@@ -99,7 +99,7 @@ export default function NavigationRoot() {
     reportPageShow({ page_name: currentRouteName });
     PageShowMap.set(currentRouteKey, true);
   }, []);
-
+  console.log('stackNav', stackNav);
   return (
     <NavigationContainer ref={refHandler} onStateChange={onNavigationStateChange}>
       <TabsDrawer>

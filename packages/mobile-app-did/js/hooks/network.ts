@@ -13,6 +13,8 @@ import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
 import im from '@portkey-wallet/im';
 import { request } from '@portkey-wallet/api/api-did';
 import signalrFCM from '@portkey-wallet/socket/socket-fcm';
+import { useCurrentNetworkInfo, useNetworkList } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCallback } from 'react';
 
 export function useChangeNetwork(route: RouteProp<ParamListBase>) {
   const dispatch = useAppDispatch();
@@ -63,4 +65,15 @@ export function useChangeNetwork(route: RouteProp<ParamListBase>) {
     },
     [wallet, onConfirm, t],
   );
+}
+
+export function useChangeNetworkDirectly(route: RouteProp<ParamListBase>) {
+  const currentNetworkInfo = useCurrentNetworkInfo();
+  const networkList = useNetworkList();
+  const changeNetwork = useChangeNetwork(route);
+
+  return useCallback(() => {
+    const targetNetwork = networkList.find(network => network.name !== currentNetworkInfo.name);
+    changeNetwork(targetNetwork, false);
+  }, [changeNetwork, currentNetworkInfo.name, networkList]);
 }

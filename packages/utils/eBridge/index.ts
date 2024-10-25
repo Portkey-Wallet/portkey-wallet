@@ -1,5 +1,6 @@
 import { IEBridgeChainInfo, TokenInfo } from './types';
 import { IBridgeOperator, IEBridge } from './types/bridge';
+import { getChainIdByMap } from './utils';
 import { ELFBridgeOperator, EVMBridgeOperator } from './utils/operator';
 
 export type TEBridgeOptions = {
@@ -26,23 +27,25 @@ export class EBridge implements IEBridge {
 
   getLimit = async () => {
     const fromTokenInfo = this.options.tokenInfo[this.options.fromChainInfo.chainId];
+    const toBridgeChainId = getChainIdByMap(this.options.toChainInfo.chainId);
     const fromLimit = await this.fromOperator.getFromLimit(
-      this.options.toChainInfo.contractChainId as any,
+      toBridgeChainId,
       this.options.fromChainInfo.chainType == 'aelf' ? fromTokenInfo.symbol : fromTokenInfo.address,
     );
     return fromLimit;
   };
 
   getELFFee = async () => {
-    console.log(this.options.toChainInfo.contractChainId, '===this.options.toChainInfo.contractChainId');
+    const toBridgeChainId = getChainIdByMap(this.options.toChainInfo.chainId);
     if (this.fromOperator instanceof ELFBridgeOperator) {
-      return this.fromOperator.getELFFee(this.options.toChainInfo.contractChainId);
+      return this.fromOperator.getELFFee(toBridgeChainId);
     } else {
       return '0';
     }
   };
 
   createReceipt = (amount: string, targetAddress: string) => {
+    // this.fromOperator.createReceipt
     // this.fromOperator.
     // CreateReceipt
     /**

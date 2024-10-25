@@ -3,7 +3,6 @@ export type TChainType = 'aelf' | 'evm';
 export interface IBaseEBridgeChainInfo {
   rpcUrl: string;
   bridgeContract: string;
-  contractChainId: string;
 }
 
 export interface IEBridgeELFChainInfo extends IBaseEBridgeChainInfo {

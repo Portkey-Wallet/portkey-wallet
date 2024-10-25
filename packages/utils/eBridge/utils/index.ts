@@ -2,6 +2,7 @@ import Web3 from 'web3';
 import { AbiItem } from 'web3-utils/types';
 import { TChainType, TLimitData } from '../types';
 import { IContract } from '@portkey/types';
+import { CHAIN_ID_MAP } from '../constants';
 
 export const getHttpProvider = (rpcUrl: string) => {
   return new Web3.providers.HttpProvider(rpcUrl);
@@ -12,6 +13,12 @@ export const getEVMContract = (rpcUrl: string, ABI: AbiItem, address: string) =>
   const contract = new web3.eth.Contract(ABI, address);
   return contract;
 };
+
+export function getChainIdByMap(chainId?: any) {
+  const id = (CHAIN_ID_MAP as any)[chainId as any];
+  if (id) return id;
+  return chainId;
+}
 
 export async function getReceiptLimit({
   limitContract,

@@ -1,4 +1,4 @@
-import WalletSecurity from '.';
+import WalletSecurity from './index';
 import DeviceNav from './Device/router';
 import DappNav from './Dapp/router';
 import PaymentSecurityNav from './PaymentSecurity/router';

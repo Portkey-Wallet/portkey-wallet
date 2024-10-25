@@ -64,8 +64,12 @@ const TokenList = ({ title = 'Select Token', onFinishSelectToken, currentSymbol,
 
   const getTokenList = useLockCallback(
     async (init?: boolean) => {
-      if (debounceKeyword.trim()) return;
-      if (totalRecordCount && tokenDataShowInMarket?.length >= totalRecordCount && !init) return;
+      if (debounceKeyword.trim()) {
+        return;
+      }
+      if (totalRecordCount && tokenDataShowInMarket?.length >= totalRecordCount && !init) {
+        return;
+      }
 
       await fetchTokenInfoList({
         keyword: '',
@@ -79,7 +83,9 @@ const TokenList = ({ title = 'Select Token', onFinishSelectToken, currentSymbol,
   const getTokenListLatest = useLatestRef(getTokenList);
 
   const getTokenListWithKeyword = useLockCallback(async () => {
-    if (!debounceKeyword) return;
+    if (!debounceKeyword) {
+      return;
+    }
     try {
       const result = await fetchAllTokenList({
         keyword: debounceKeyword,
@@ -95,7 +101,9 @@ const TokenList = ({ title = 'Select Token', onFinishSelectToken, currentSymbol,
   }, [chainIdList, debounceKeyword]);
 
   useEffect(() => {
-    if (!debounceKeyword) setFilteredShowList([]);
+    if (!debounceKeyword) {
+      setFilteredShowList([]);
+    }
     getTokenListWithKeyword();
   }, [chainIdList, debounceKeyword, dispatch, getTokenListWithKeyword]);
 

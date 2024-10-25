@@ -1,4 +1,4 @@
-import AccountSettings from '.';
+import AccountSettings from './index';
 import Biometric from './Biometric';
 import ChatPrivacyNav from './ChatPrivacy/router';
 

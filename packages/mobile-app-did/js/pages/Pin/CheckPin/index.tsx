@@ -54,7 +54,7 @@ export default function CheckPin() {
       <PinContainer
         showHeader
         ref={pinRef}
-        title="Enter Pin"
+        title="Enter PIN"
         errorMessage={textError.errorMsg}
         onChangeText={onChangeText}
       />

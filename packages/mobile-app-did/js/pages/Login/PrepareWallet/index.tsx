@@ -1,0 +1,98 @@
+import { Image } from 'react-native';
+import React, { useCallback, useEffect, useRef } from 'react';
+import { makeStyles } from '@rneui/themed';
+import PageContainer from 'components/PageContainer';
+import { pTd } from 'utils/unit';
+import { PrepareWalletProgress, PrepareWalletProgressInterface } from './components/PrepareWalletProgress';
+import { CAInfo, ManagerInfo } from '@portkey-wallet/types/types-ca/wallet';
+import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
+import { useIntervalGetResult, useOnResultFail } from 'hooks/login';
+import { useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { TimerResult } from 'utils/wallet';
+import CommonToast from 'components/CommonToast';
+import { useAppDispatch } from 'store/hooks';
+import { setCAInfo } from '@portkey-wallet/store/store-ca/wallet/actions';
+import { useLatestRef } from '@portkey-wallet/hooks';
+import navigationService from 'utils/navigationService';
+import { sleep } from '@portkey-wallet/utils';
+
+type RouterParams = {
+  managerInfo: ManagerInfo;
+  isRecovery?: boolean;
+  confirmPin: string;
+};
+
+export default function PrepareWallet() {
+  const styles = getStyles();
+  const prepareWalletProgressRef = useRef<PrepareWalletProgressInterface>();
+  const { managerInfo, isRecovery, confirmPin } = useRouterParams<RouterParams>();
+  const timer = useRef<TimerResult>();
+  const dispatch = useAppDispatch();
+  const originChainId = useOriginChainId();
+  const latestOriginChainId = useLatestRef(originChainId);
+  const onResultFail = useOnResultFail();
+
+  const onIntervalGetResult = useIntervalGetResult();
+
+  const init = useCallback(() => {
+    timer.current = onIntervalGetResult({
+      managerInfo: managerInfo,
+      onPass: async (caInfo: CAInfo) => {
+        prepareWalletProgressRef.current?.complete();
+        await sleep(700);
+
+        if (isRecovery) CommonToast.success('Wallet Recovered Successfully!');
+
+        try {
+          dispatch(
+            setCAInfo({
+              caInfo,
+              pin: confirmPin,
+              chainId: latestOriginChainId.current,
+            }),
+          );
+          navigationService.reset('Tab');
+        } catch (error) {
+          console.log(error, '=======error');
+        }
+      },
+      onFail: (message: string) => onResultFail(message, isRecovery, true),
+    });
+  }, [confirmPin, dispatch, isRecovery, latestOriginChainId, managerInfo, onIntervalGetResult, onResultFail]);
+  const initRef = useRef(init);
+  initRef.current = init;
+
+  useEffect(() => {
+    initRef.current();
+    return () => {
+      timer.current?.remove();
+    };
+  }, []);
+
+  return (
+    <PageContainer
+      scrollViewProps={{ disabled: true }}
+      containerStyles={styles.containerStyle}
+      leftIconType="close"
+      noLeftDom
+      titleDom
+      hideTouchable>
+      <Image source={require('assets/image/pngs/prepare-wallet.png')} style={styles.imageStyle} />
+      <PrepareWalletProgress ref={prepareWalletProgressRef} />
+    </PageContainer>
+  );
+}
+
+const getStyles = makeStyles(_theme => ({
+  containerStyle: {
+    paddingTop: pTd(36),
+    paddingBottom: pTd(16),
+    paddingHorizontal: pTd(16),
+    alignItems: 'center',
+  },
+  imageStyle: {
+    width: pTd(291),
+    height: pTd(286),
+    marginBottom: pTd(100),
+  },
+}));

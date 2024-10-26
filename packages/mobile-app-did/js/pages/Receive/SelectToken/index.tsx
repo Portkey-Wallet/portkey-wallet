@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
-import { FlatList, StyleSheet } from 'react-native';
+import { FlatList } from 'react-native';
 import { IUserTokenItemResponse } from '@portkey-wallet/types/types-ca/token';
-import { darkColors, defaultColors } from 'assets/theme';
+import { defaultColors } from 'assets/theme';
 import fonts from 'assets/theme/fonts';
 import { pTd } from 'utils/unit';
 import { useLanguage } from 'i18n/hooks';
@@ -23,6 +23,7 @@ import CommonAvatar from 'components/CommonAvatar';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { request } from '@portkey-wallet/api/api-did';
 import { TextL } from 'components/CommonText';
+import { makeStyles } from '@rneui/themed';
 
 const SelectToken = () => {
   const { t } = useLanguage();
@@ -34,6 +35,7 @@ const SelectToken = () => {
   const [filteredShowList, setFilteredShowList] = useState<IUserTokenItemResponse[]>([]);
   const defaultToken = useDefaultToken();
   const [isSearch, setIsSearch] = useState(false);
+  const styles = getStyles();
 
   const renderItem = useCallback(
     ({ item }: { item: IUserTokenItemResponse }) => (
@@ -57,7 +59,7 @@ const SelectToken = () => {
         </TextL>
       </Touchable>
     ),
-    [defaultToken.symbol],
+    [defaultToken.symbol, styles],
   );
 
   const getTokenList = useLockCallback(
@@ -156,10 +158,10 @@ const SelectToken = () => {
 
 export default SelectToken;
 
-export const styles = StyleSheet.create({
+export const getStyles = makeStyles(theme => ({
   pageWrap: {
     flex: 1,
-    backgroundColor: darkColors.bgBase1,
+    backgroundColor: theme.colors.bgBase1,
     ...gStyles.paddingArg(0),
   },
   title: {
@@ -194,4 +196,4 @@ export const styles = StyleSheet.create({
   leftIcon: {
     marginRight: pTd(8),
   },
-});
+}));

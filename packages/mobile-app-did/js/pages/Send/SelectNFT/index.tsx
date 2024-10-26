@@ -1,9 +1,7 @@
 import React, { useCallback } from 'react';
-import { StyleSheet } from 'react-native';
 import navigationService from 'utils/navigationService';
 import { View, FlatList } from 'react-native';
 import { TextL, TextM } from 'components/CommonText';
-import { darkColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
 import { useLanguage } from 'i18n/hooks';
 import Touchable from 'components/Touchable';
@@ -15,6 +13,7 @@ import { DarkFontStyles } from 'assets/theme/styles';
 import NFTAvatar from 'components/NFTAvatar';
 import { IToSendHomeParamsType } from '@portkey-wallet/types/types-ca/routeParams';
 import { formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
+import { makeStyles } from '@rneui/themed';
 
 export interface SelectNFTProps {
   nftInfos: IAssetNftCollection[];
@@ -24,6 +23,7 @@ export interface SelectNFTProps {
 export default function SelectNFT({ nftInfos, noDataMessage }: SelectNFTProps) {
   const { t } = useLanguage();
   const isMainnet = useIsMainnet();
+  const itemStyle = getStyles();
 
   const onNavigate = useCallback((nft: INftInfoType) => {
     navigationService.navigate('SendHome', {
@@ -60,7 +60,7 @@ export default function SelectNFT({ nftInfos, noDataMessage }: SelectNFTProps) {
         </Touchable>
       );
     },
-    [isMainnet, onNavigate],
+    [isMainnet, itemStyle, onNavigate],
   );
 
   const renderItem = useCallback(
@@ -89,7 +89,7 @@ export default function SelectNFT({ nftInfos, noDataMessage }: SelectNFTProps) {
         </View>
       );
     },
-    [noDataMessage, renderNFTItem, t],
+    [itemStyle, noDataMessage, renderNFTItem, t],
   );
 
   return (
@@ -107,10 +107,10 @@ export default function SelectNFT({ nftInfos, noDataMessage }: SelectNFTProps) {
   );
 }
 
-const itemStyle = StyleSheet.create({
+const getStyles = makeStyles(theme => ({
   nftListPageWrap: {
     flex: 1,
-    backgroundColor: darkColors.bgBase1,
+    backgroundColor: theme.colors.bgBase1,
   },
   collectionWrap: {
     display: 'flex',
@@ -119,11 +119,11 @@ const itemStyle = StyleSheet.create({
     ...GStyles.marginArg(16, 8, 8, 8),
     ...GStyles.paddingArg(8),
     height: pTd(40),
-    backgroundColor: darkColors.bgBase2,
+    backgroundColor: theme.colors.bgBase2,
     borderRadius: pTd(8),
   },
   collectionName: {
-    color: darkColors.textBase2,
+    color: theme.colors.textBase2,
     marginLeft: pTd(8),
   },
   nftItemWrap: {
@@ -143,4 +143,4 @@ const itemStyle = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-});
+}));

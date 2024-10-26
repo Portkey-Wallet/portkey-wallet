@@ -7,7 +7,7 @@ import Email from '../components/Email';
 import QRCode from '../components/QRCode';
 import Phone from '../components/Phone';
 import Referral from '../components/Referral';
-import { PageLoginType } from '../types';
+import { PageLoginType, PageType } from '../types';
 import SwitchNetwork from '../components/SwitchNetwork';
 
 const BackType: any = {
@@ -20,7 +20,7 @@ export default function LoginPortkey() {
   const [loginType, setLoginType] = useState<PageLoginType>(PageLoginType.referral);
   const loginMap = useMemo(
     () => ({
-      [PageLoginType.email]: <Email setLoginType={setLoginType} />,
+      [PageLoginType.email]: <Email setLoginType={setLoginType} type={PageType.signup} />,
       [PageLoginType.qrCode]: <QRCode setLoginType={setLoginType} />,
       [PageLoginType.phone]: <Phone setLoginType={setLoginType} />,
       [PageLoginType.referral]: <Referral setLoginType={setLoginType} />,

@@ -6,6 +6,7 @@ import { IChainItemType } from '@portkey-wallet/types/types-ca/chain';
 import { makeStyles } from '@rneui/themed';
 import CommonAvatar from 'components/CommonAvatar';
 import Svg from 'components/Svg';
+import { formatChainInfoToShow } from '@portkey-wallet/utils';
 
 function SourceDestinationItem({
   title,
@@ -50,14 +51,14 @@ export default function SourceDestinationPicker({
       <SourceDestinationItem
         title="Source"
         icon={sourceChain.imageUrl}
-        chainName={sourceChain.network}
+        chainName={sourceChain.name}
         onPress={onSourcePress}
       />
       <View style={styles.divider} />
       <SourceDestinationItem
         title="Destination"
         icon={''}
-        chainName={destinationChain.chainName}
+        chainName={formatChainInfoToShow(destinationChain.chainId)}
         onPress={onDestinationPress}
       />
     </View>

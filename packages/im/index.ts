@@ -180,11 +180,11 @@ export class IM {
   };
 
   onConnectErr = (e: any) => {
-    console.log('CONNECT_ERR', e);
+    // console.log('CONNECT_ERR', e);
   };
 
   onConnectClose = async (e: any) => {
-    console.log('CONNECT_CLOSE msg', e);
+    // console.log('CONNECT_CLOSE msg', e);
     if (this.status === IMStatusEnum.DESTROY) {
       console.log('CONNECT_CLOSE DESTROY');
       return;
@@ -371,7 +371,7 @@ export class IM {
 
   refreshMessageCount = async () => {
     const { data: messageCount } = await im.service.getUnreadCount();
-    console.log('refreshMessageCount', messageCount);
+    // console.log('refreshMessageCount', messageCount);
 
     im.updateMessageCount(messageCount);
     return messageCount;

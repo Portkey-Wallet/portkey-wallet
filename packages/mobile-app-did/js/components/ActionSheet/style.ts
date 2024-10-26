@@ -2,11 +2,9 @@ import { StyleSheet } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
 import { screenHeight, screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { makeStyles } from '@rneui/themed';
 
 export const styles = StyleSheet.create({
-  wrapStyle: {
-    padding: 0,
-  },
   sheetBox: {
     overflow: 'hidden',
     borderRadius: 5,
@@ -15,10 +13,6 @@ export const styles = StyleSheet.create({
   itemText: {
     color: defaultColors.primaryColor,
     fontSize: 16,
-  },
-  headerBackgroundBg: {
-    width: '100%',
-    height: pTd(160),
   },
   itemBox: {
     width: '100%',
@@ -32,12 +26,6 @@ export const styles = StyleSheet.create({
   cancelText: {
     fontSize: 16,
   },
-  contentSection: {
-    overflow: 'hidden',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: pTd(24),
-  },
   cancelBox: {
     width: '100%',
     paddingVertical: 15,
@@ -48,36 +36,56 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: 'white',
   },
-  alertBox: {
+});
+
+export const getStyles = makeStyles(theme => ({
+  wrapStyle: {
+    width: screenWidth,
+    backgroundColor: theme.colors.bgBase1,
     overflow: 'hidden',
-    borderRadius: 8,
+  },
+  headerBackgroundBg: {
+    width: '100%',
+    height: pTd(160),
+  },
+  alertBox: {
+    width: '100%',
+    position: 'relative',
+    paddingHorizontal: pTd(16),
+  },
+  alertHeader: {
+    height: pTd(15),
+    width: '100%',
     alignItems: 'center',
-    width: screenWidth - 48,
-    backgroundColor: 'white',
-    padding: pTd(24),
+    justifyContent: 'center',
+  },
+  alertHeaderBlock: {
+    width: pTd(32),
+    height: pTd(3),
+    borderRadius: pTd(1.5),
+    backgroundColor: theme.colors.iconBase3,
   },
   alertTitle: {
-    textAlign: 'center',
-    marginBottom: pTd(16),
+    marginBottom: pTd(12),
   },
   alertMessage: {
-    color: defaultColors.font3,
+    color: theme.colors.textBase1,
     marginBottom: pTd(12),
-    textAlign: 'center',
   },
   alertTitle2: {
-    color: defaultColors.font5,
-    marginBottom: pTd(16),
-    textAlign: 'center',
+    marginBottom: pTd(12),
+  },
+  buttonRowWrap: {
+    marginTop: pTd(12),
   },
   closeWrap: {
+    position: 'absolute',
     width: pTd(20),
     height: pTd(20),
     justifyContent: 'center',
     alignItems: 'center',
-    position: 'absolute',
-    right: pTd(12),
-    top: pTd(12),
+    right: pTd(18),
+    top: pTd(18),
   },
   scrollViewStyle: {
     maxHeight: screenHeight * 0.45,
@@ -85,7 +93,4 @@ export const styles = StyleSheet.create({
   scrollViewContainerStyle: {
     minHeight: 0,
   },
-  buttonBox: {
-    marginTop: pTd(20),
-  },
-});
+}));

@@ -41,6 +41,7 @@ const styles = makeStyles(theme => ({
   },
   emailInputInputContainerStyle: {
     borderWidth: pTd(1),
+    borderBottomWidth: pTd(1),
     borderRadius: pTd(8),
     borderColor: theme.colors.borderBase1,
   },

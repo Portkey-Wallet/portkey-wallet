@@ -11,11 +11,10 @@ import {
   createWallet,
   resetCaInfo,
   resetWallet,
-  setCAInfo,
   setManagerInfo,
   setOriginChainId,
 } from '@portkey-wallet/store/store-ca/wallet/actions';
-import { CAInfo, LoginType, ManagerInfo } from '@portkey-wallet/types/types-ca/wallet';
+import { LoginType, ManagerInfo } from '@portkey-wallet/types/types-ca/wallet';
 import {
   AuthenticationInfo,
   OperationTypeEnum,
@@ -100,7 +99,6 @@ export function useOnManagerAddressAndQueryResult() {
   const biometricsReady = useBiometricsReady();
   const { biometrics } = useUser();
   const getDeviceInfo = useGetDeviceInfo();
-  const onResultFail = useOnResultFail();
   const timer = useRef<TimerResult>();
   useEffectOnce(() => {
     return () => {
@@ -109,7 +107,6 @@ export function useOnManagerAddressAndQueryResult() {
   });
   const originChainId = useOriginChainId();
   const latestOriginChainId = useLatestRef(originChainId);
-  const onIntervalGetResult = useIntervalGetResult();
   const storeTmpWalletInfo = useTmpWalletInfo();
   const latestStoreTmpWalletInfo = useLatestRef(storeTmpWalletInfo);
 
@@ -199,30 +196,36 @@ export function useOnManagerAddressAndQueryResult() {
 
         dispatch(setCredentials({ pin: confirmPin }));
 
+        Loading.hide();
         if (biometricsReady && biometrics === undefined) {
-          Loading.hide();
           navigationService.navigate('SetBiometrics', { pin: confirmPin });
         } else {
-          timer.current = onIntervalGetResult({
+          navigationService.navigate('PrepareWallet', {
             managerInfo: _managerInfo,
-            onPass: (caInfo: CAInfo) => {
-              if (isRecovery) CommonToast.success('Wallet Recovered Successfully!');
-              Loading.hide();
-              try {
-                dispatch(
-                  setCAInfo({
-                    caInfo,
-                    pin: confirmPin,
-                    chainId: latestOriginChainId.current,
-                  }),
-                );
-                navigationService.reset('Tab');
-              } catch (error) {
-                console.log(error, '=======error');
-              }
-            },
-            onFail: (message: string) => onResultFail(message, isRecovery, true),
+            isRecovery,
+            confirmPin,
           });
+          // TODO: login remove
+          // timer.current = onIntervalGetResult({
+          //   managerInfo: _managerInfo,
+          //   onPass: (caInfo: CAInfo) => {
+          //     if (isRecovery) CommonToast.success('Wallet Recovered Successfully!');
+          //     Loading.hide();
+          //     try {
+          //       dispatch(
+          //         setCAInfo({
+          //           caInfo,
+          //           pin: confirmPin,
+          //           chainId: latestOriginChainId.current,
+          //         }),
+          //       );
+          //       navigationService.reset('Tab');
+          //     } catch (error) {
+          //       console.log(error, '=======error');
+          //     }
+          //   },
+          //   onFail: (message: string) => onResultFail(message, isRecovery, true),
+          // });
         }
       } catch (error) {
         Loading.hide();
@@ -230,17 +233,7 @@ export function useOnManagerAddressAndQueryResult() {
         pinRef?.current?.reset();
       }
     },
-    [
-      biometrics,
-      biometricsReady,
-      dispatch,
-      getDeviceInfo,
-      latestOriginChainId,
-      onIntervalGetResult,
-      onResultFail,
-      t,
-      createTmpWalletInfo,
-    ],
+    [biometrics, biometricsReady, dispatch, getDeviceInfo, latestOriginChainId, t, createTmpWalletInfo],
   );
 }
 
@@ -368,12 +361,12 @@ export function useGoGuardianApproval(isLogin?: boolean) {
       };
       if (!isLogin) {
         ActionSheet.alert({
-          title: 'Continue with this account?',
-          message: `This account already exists. Click "Confirm" to log in.`,
+          title: 'You already have an account',
+          message: `Do you want to log in with ${loginAccount || ''} instead?`,
           buttons: [
             { title: 'Cancel', type: 'outline' },
             {
-              title: 'Confirm',
+              title: 'Log in',
               onPress: () => onConfirm(),
             },
           ],
@@ -559,12 +552,12 @@ export function useGoSelectVerifier(isLogin?: boolean) {
     async (params: LoginConfirmParams) => {
       if (isLogin) {
         ActionSheet.alert({
-          title: 'Continue with this account?',
-          message: `This account has not been registered yet. Click "Confirm" to complete the registration.`,
+          title: 'You don’t have an account',
+          message: `Would you like to create one with ${params.loginAccount || ''} ?`,
           buttons: [
             { title: 'Cancel', type: 'outline' },
             {
-              title: 'Confirm',
+              title: 'Sign up',
               onPress: () => onConfirmRef.current(params),
             },
           ],

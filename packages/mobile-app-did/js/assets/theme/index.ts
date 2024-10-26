@@ -326,7 +326,7 @@ export const darkColors = {
 
   iconBase1: '#FFFFFF',
   iconBase2: '#FFFFFFB2',
-  iconBase3: '##FFFFFF66',
+  iconBase3: '#FFFFFF66',
 
   iconDisabled: '#626264',
 

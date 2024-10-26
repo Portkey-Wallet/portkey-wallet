@@ -95,7 +95,6 @@ export default function Email({
             placeholder={t('Enter your Email')}
             containerStyle={emailStyles.emailInputContainerStyle}
             inputContainerStyle={emailStyles.emailInputInputContainerStyle}
-            // inputContainerStyle={[emailStyles.emailInputInputContainerStyle, GStyles.hairlineBorder]}
             placeholderTextColor={darkColors.textBase3}
           />
         </View>

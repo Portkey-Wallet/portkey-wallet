@@ -32,7 +32,7 @@ import { useAppDispatch } from 'store/hooks';
 import useBiometricsReady from './useBiometrics';
 import navigationService from 'utils/navigationService';
 import { TimerResult, IntervalGetResultParams, intervalGetResult } from 'utils/wallet';
-import CommonToast from 'components/CommonToast';
+import CommonPrompt from 'components/CommonPromptCard';
 import useEffectOnce from './useEffectOnce';
 import { resetUser, setCredentials } from 'store/user/actions';
 import { DigitInputInterface } from 'components/DigitInput';
@@ -73,7 +73,7 @@ export function useOnResultFail() {
   return useCallback(
     (message: string, isRecovery?: boolean, isReset?: boolean) => {
       Loading.hide();
-      CommonToast.fail(message);
+      CommonPrompt.error(message);
       queryFailAlert(
         () => {
           resetStore();
@@ -229,7 +229,7 @@ export function useOnManagerAddressAndQueryResult() {
         }
       } catch (error) {
         Loading.hide();
-        CommonToast.failError(error);
+        CommonPrompt.failError(error);
         pinRef?.current?.reset();
       }
     },
@@ -428,7 +428,7 @@ export function useGoSelectVerifier(isLogin?: boolean) {
         });
       } catch (error) {
         Loading.hide(loadingKey);
-        CommonToast.failError(error);
+        CommonPrompt.failError(error);
       }
       !isRequestResult && Loading.hide(loadingKey);
     },
@@ -466,11 +466,11 @@ export function useGoSelectVerifier(isLogin?: boolean) {
           throw new Error('send fail');
         }
       } catch (error) {
-        CommonToast.failError(error);
+        CommonPrompt.failError(error);
       }
       Loading.hide(loadingKey);
     },
-    [],
+    [latestVerifyManagerAddress],
   );
 
   const onConfirm = useCallback(
@@ -540,7 +540,7 @@ export function useGoSelectVerifier(isLogin?: boolean) {
         }
       } catch (error) {
         Loading.hide(loadingKey);
-        CommonToast.failError(error);
+        CommonPrompt.failError(error);
       }
     },
     [dispatch, onConfirmAuth, onDefaultConfirm],

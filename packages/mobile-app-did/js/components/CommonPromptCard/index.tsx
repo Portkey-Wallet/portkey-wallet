@@ -6,6 +6,7 @@ import fonts from 'assets/theme/fonts';
 import { pTd } from 'utils/unit';
 import Overlay from 'rn-teaset/components/Overlay/Overlay';
 import { statusBarHeight } from '@portkey-wallet/utils/mobile/device';
+import { handleErrorMessage } from '@portkey-wallet/utils';
 
 export enum PromptCardType {
   INFO = 'info',
@@ -155,9 +156,15 @@ const CommonPrompt = {
     element = show(...args);
   },
   error(...args: TostProps) {
+    args[0] = handleErrorMessage(args[0]);
     if (!args[3]) args[3] = PromptCardType.ERROR;
     Overlay.hide(element);
     element = show(...args);
+  },
+  failError(error: any, errorText?: string, duration?: number) {
+    Overlay.hide(element);
+    const text = handleErrorMessage(error, errorText);
+    if (text) element = show(text, undefined, duration, PromptCardType.ERROR);
   },
   info(...args: TostProps) {
     if (!args[3]) args[3] = PromptCardType.INFO;

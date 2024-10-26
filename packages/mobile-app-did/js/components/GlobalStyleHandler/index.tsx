@@ -7,10 +7,10 @@ import { LanguageValue } from 'i18n/config';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { changeFonts } from 'assets/theme/fonts';
 import usePrevious from 'hooks/usePrevious';
-import { defaultColors } from 'assets/theme';
+import { darkColors } from 'assets/theme';
 
-// setDefaultProps(TextInput, { allowFontScaling: false, style: { color: defaultColors.font5 } });
-// setDefaultProps(Text, { allowFontScaling: false, style: { color: defaultColors.font5 } });
+setDefaultProps(TextInput, { allowFontScaling: false, style: { color: darkColors.textBase1 } });
+setDefaultProps(Text, { allowFontScaling: false, style: { color: darkColors.textBase1 } });
 interface GlobalStyleHandlerType {
   children: ReactElement;
 }

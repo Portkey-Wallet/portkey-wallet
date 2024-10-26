@@ -9,7 +9,7 @@ import { makeStyles, useThemeMode } from '@rneui/themed';
 import { parseInputNumberChange } from '@portkey-wallet/utils/input';
 import fonts from 'assets/theme/fonts';
 import Touchable from 'components/Touchable';
-import { formatAmountUSDShow } from '@portkey-wallet/utils/converter';
+import { formatAmount, formatAmountUSDShow } from '@portkey-wallet/utils/converter';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 
@@ -34,7 +34,9 @@ const TokenAmountInput: React.FC<ITokenAmountInput> = props => {
   const onValueInputChange = useCallback(
     (v: string) => {
       const _v = parseInputNumberChange(v, Infinity, Number(decimals));
-      const _usdV = formatAmountUSDShow(ZERO.plus(_v).multipliedBy(tokenPriceObject[symbol]));
+      const _usdV = ZERO.plus(_v || 0)
+        .multipliedBy(tokenPriceObject[symbol])
+        .toFixed(2);
       setValue(_v);
       setUsdValue(_usdV);
     },
@@ -44,7 +46,9 @@ const TokenAmountInput: React.FC<ITokenAmountInput> = props => {
     (v: string) => {
       const _usdV = parseInputNumberChange(v, Infinity, 2);
       const _v = parseInputNumberChange(
-        ZERO.plus(_usdV).div(tokenPriceObject[symbol]).valueOf(),
+        ZERO.plus(_usdV || 0)
+          .div(tokenPriceObject[symbol])
+          .valueOf(),
         Infinity,
         Number(decimals),
       );
@@ -100,6 +104,8 @@ export default memo(TokenAmountInput);
 export const getStyles = makeStyles(theme => ({
   wrap: {
     backgroundColor: theme.colors.bgBase1,
+    paddingVertical: pTd(24),
+    paddingHorizontal: pTd(16),
   },
   topSection: {
     width: '100%',

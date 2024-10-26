@@ -37,7 +37,7 @@ const CommonPromptCard: React.FC<ICommonPromptCardProps> = ({ type = PromptCardT
     <View style={[styles.container, styles[`${type}Container`]]}>
       <Svg iconStyle={styles.icon} color={iconColor} icon="info" size={pTd(22)} />
       <View style={styles.content}>
-        <Text style={[styles.title, styles[`${type}Title`]]}>{title}</Text>
+        {title && <Text style={[styles.title, styles[`${type}Title`]]}>{title}</Text>}
         <Text style={[styles.description, styles[`${type}Description`]]}>{description}</Text>
       </View>
     </View>

@@ -3,6 +3,7 @@ import { Button, ButtonProps } from '@rneui/themed';
 import { styles } from './style';
 import { pTd } from 'utils/unit';
 import { useThrottleCallback } from '@portkey-wallet/hooks';
+import Lottie from 'lottie-react-native';
 
 export type CommonButtonProps = {
   buttonType?: 'send' | 'receive';
@@ -67,7 +68,11 @@ const CommonButton: React.FC<CommonButtonProps> = props => {
       onPress={onPress ? handleOnPress : undefined}
       onPressIn={onPressIn ? handleOnPressIn : undefined}
       type={type === 'primary' || type === 'transparent' ? undefined : type}
-    />
+      loading={false}>
+      {buttonProps?.loading && (
+        <Lottie style={styles.loadingIcon} source={require('assets/lottieFiles/spinnerDark.json')} autoPlay loop />
+      )}
+    </Button>
   );
 };
 

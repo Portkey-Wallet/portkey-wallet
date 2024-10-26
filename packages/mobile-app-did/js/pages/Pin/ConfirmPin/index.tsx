@@ -7,6 +7,7 @@ import navigationService from 'utils/navigationService';
 import { useAppDispatch } from 'store/hooks';
 import { changePin, createWallet } from '@portkey-wallet/store/store-ca/wallet/actions';
 import CommonToast from 'components/CommonToast';
+import CommonPrompt from 'components/CommonPromptCard';
 import { setCredentials } from 'store/user/actions';
 import { useUser } from 'hooks/store';
 import { setSecureStoreItem } from '@portkey-wallet/utils/mobile/biometric';
@@ -66,7 +67,7 @@ export default function ConfirmPin() {
         dispatch(setCredentials({ pin: newPin }));
         CommonToast.success(t('Modified Successfully'));
       } catch (error) {
-        CommonToast.failError(error);
+        CommonPrompt.failError(error);
       }
       changeCanLock(true);
       navigationService.navigate('AccountSettings');

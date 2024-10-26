@@ -1,9 +1,12 @@
 import React, { useMemo } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, StyleSheet, ViewStyle } from 'react-native';
 import { makeStyles, useTheme } from '@rneui/themed';
 import Svg from 'components/Svg';
 import fonts from 'assets/theme/fonts';
 import { pTd } from 'utils/unit';
+import Overlay from 'rn-teaset/components/Overlay/Overlay';
+import { statusBarHeight } from '@portkey-wallet/utils/mobile/device';
+import { handleErrorMessage } from '@portkey-wallet/utils';
 
 export enum PromptCardType {
   INFO = 'info',
@@ -12,12 +15,18 @@ export enum PromptCardType {
 }
 
 interface ICommonPromptCardProps {
-  type: PromptCardType;
+  type?: PromptCardType;
   title?: string;
   description: React.ReactNode;
+  style?: ViewStyle;
 }
 
-const CommonPromptCard: React.FC<ICommonPromptCardProps> = ({ type = PromptCardType.ERROR, title, description }) => {
+export const CommonPromptCard: React.FC<ICommonPromptCardProps> = ({
+  type = PromptCardType.ERROR,
+  title,
+  description,
+  style,
+}) => {
   const styles = getStyles();
   const {
     theme: { colors },
@@ -34,17 +43,15 @@ const CommonPromptCard: React.FC<ICommonPromptCardProps> = ({ type = PromptCardT
     }
   }, [colors.bgBrand4, colors.iconDanger3, colors.iconWarning5, type]);
   return (
-    <View style={[styles.container, styles[`${type}Container`]]}>
+    <View style={[styles.container, styles[`${type}Container`], style]}>
       <Svg iconStyle={styles.icon} color={iconColor} icon="info" size={pTd(22)} />
       <View style={styles.content}>
-        <Text style={[styles.title, styles[`${type}Title`]]}>{title}</Text>
+        {title && <Text style={[styles.title, styles[`${type}Title`]]}>{title}</Text>}
         <Text style={[styles.description, styles[`${type}Description`]]}>{description}</Text>
       </View>
     </View>
   );
 };
-
-export default CommonPromptCard;
 
 const getStyles = makeStyles(theme => ({
   container: {
@@ -104,4 +111,66 @@ const getStyles = makeStyles(theme => ({
   errorDescription: {
     color: theme.colors.textDanger6,
   },
+  top: {
+    paddingTop: statusBarHeight + 50,
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    maxWidth: pTd(300),
+  },
 }));
+
+type TostProps = [text: string, title?: string, duration?: number, icon?: PromptCardType];
+const tostProps = {
+  overlayOpacity: 0,
+  overlayPointerEvents: 'none',
+  closeOnHardwareBackPress: false,
+  position: 'center',
+};
+
+const overlayStyles = StyleSheet.create({
+  top: {
+    paddingTop: statusBarHeight + 50,
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+  },
+});
+
+const show = (...args: TostProps) => {
+  const [text, title, duration = 2000, icon] = args;
+
+  const key = Overlay.show(
+    <Overlay.View {...tostProps} style={overlayStyles.top}>
+      <CommonPromptCard type={icon} title={title} description={text} style={{ width: pTd(300) }} />
+    </Overlay.View>,
+  );
+  setTimeout(() => Overlay.hide(key), duration);
+  return key;
+};
+
+let element: any;
+
+const CommonPrompt = {
+  warn(...args: TostProps) {
+    if (!args[3]) args[3] = PromptCardType.WARNING;
+    Overlay.hide(element);
+    element = show(...args);
+  },
+  error(...args: TostProps) {
+    args[0] = handleErrorMessage(args[0]);
+    if (!args[3]) args[3] = PromptCardType.ERROR;
+    Overlay.hide(element);
+    element = show(...args);
+  },
+  failError(error: any, errorText?: string, duration?: number) {
+    Overlay.hide(element);
+    const text = handleErrorMessage(error, errorText);
+    if (text) element = show(text, undefined, duration, PromptCardType.ERROR);
+  },
+  info(...args: TostProps) {
+    if (!args[3]) args[3] = PromptCardType.INFO;
+    Overlay.hide(element);
+    element = show(...args);
+  },
+};
+
+export default CommonPrompt;

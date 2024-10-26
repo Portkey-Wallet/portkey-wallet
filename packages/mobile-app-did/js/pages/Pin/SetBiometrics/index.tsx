@@ -13,7 +13,7 @@ import { pTd } from 'utils/unit';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { CAInfo } from '@portkey-wallet/types/types-ca/wallet';
 import { VerificationType } from '@portkey-wallet/types/verifier';
-import CommonToast from 'components/CommonToast';
+import CommonPrompt from 'components/CommonPromptCard';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { useSetBiometrics } from 'hooks/useBiometrics';
 import { changeCanLock } from 'utils/LockManager';
@@ -99,7 +99,7 @@ export default function SetBiometrics() {
       await setBiometrics(true);
       await getResult();
     } catch (error) {
-      CommonToast.failError(error, 'Failed To Verify');
+      CommonPrompt.failError(error, 'Failed To Verify');
     }
     changeCanLock(true);
   }, [getResult, pin, setBiometrics]);
@@ -108,7 +108,7 @@ export default function SetBiometrics() {
       await setBiometrics(false);
       await getResult();
     } catch (error) {
-      CommonToast.failError(error);
+      CommonPrompt.failError(error);
     }
   }, [setBiometrics, getResult]);
   useEffectOnce(() => {
@@ -132,7 +132,7 @@ export default function SetBiometrics() {
   );
 }
 
-const getStyles = makeStyles(theme => ({
+const getStyles = makeStyles(_theme => ({
   containerStyles: {
     justifyContent: 'space-between',
     paddingTop: pTd(24),

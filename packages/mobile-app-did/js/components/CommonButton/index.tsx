@@ -37,7 +37,7 @@ const stylesMap: any = {
   },
 };
 
-const CommonButton: React.FC<CommonButtonProps> = props => {
+const CommonButton: React.FC<Omit<CommonButtonProps, 'loading'> & { isLoading?: boolean }> = props => {
   const {
     radius,
     type,
@@ -48,6 +48,7 @@ const CommonButton: React.FC<CommonButtonProps> = props => {
     onPress,
     onPressIn,
     onPressWithSecond,
+    isLoading,
     ...buttonProps
   } = props;
   const mapStyles = type ? stylesMap[type] : undefined;
@@ -69,8 +70,10 @@ const CommonButton: React.FC<CommonButtonProps> = props => {
       onPressIn={onPressIn ? handleOnPressIn : undefined}
       type={type === 'primary' || type === 'transparent' ? undefined : type}
       loading={false}>
-      {buttonProps?.loading && (
+      {isLoading ? (
         <Lottie style={styles.loadingIcon} source={require('assets/lottieFiles/spinnerDark.json')} autoPlay loop />
+      ) : (
+        buttonProps.children
       )}
     </Button>
   );

@@ -68,6 +68,11 @@ export const getStyles = makeStyles(theme => ({
   alertTitle: {
     marginBottom: pTd(12),
   },
+  titlePlaceholder: {
+    height: pTd(24),
+    width: '100%',
+    marginBottom: pTd(12),
+  },
   alertMessage: {
     color: theme.colors.textBase1,
     marginBottom: pTd(12),

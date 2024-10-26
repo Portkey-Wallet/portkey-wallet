@@ -25,7 +25,7 @@ import {
   VERIFICATION_TO_OPERATION_MAP,
 } from '@portkey-wallet/constants/constants-ca/verifier';
 import { ChainId } from '@portkey-wallet/types';
-import { CreateAddressLoading, VERIFY_INVALID_TIME } from '@portkey-wallet/constants/constants-ca/wallet';
+import { VERIFY_INVALID_TIME } from '@portkey-wallet/constants/constants-ca/wallet';
 import { handleGuardiansApproved } from 'utils/login';
 import {
   checkVerifierIsInvalidCode,
@@ -38,7 +38,6 @@ import { deleteLoginAccount } from '@portkey-wallet/utils/deleteAccount';
 import { useGetCurrentCAContract } from 'hooks/contract';
 import useLogOut from 'hooks/useLogOut';
 import { makeStyles } from '@rneui/themed';
-import fonts from 'assets/theme/fonts';
 
 type RouterParams = {
   guardianItem?: UserGuardianItem;
@@ -372,7 +371,6 @@ const getStyles = makeStyles(theme => ({
   },
   headerTitle: {
     marginBottom: pTd(16),
-    ...fonts.BGMediumFont,
   },
   headerContent: {
     lineHeight: pTd(20),

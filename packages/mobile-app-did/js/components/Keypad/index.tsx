@@ -7,6 +7,7 @@ import { pTd } from 'utils/unit';
 import Svg from 'components/Svg';
 import { PIN_SIZE } from '@portkey-wallet/constants/misc';
 import { defaultColors } from 'assets/theme';
+import fonts from 'assets/theme/fonts';
 
 export interface KeypadPropsType {
   onChange?: (value: string) => void;
@@ -71,21 +72,21 @@ const Keypad = forwardRef(function Keypad(
           onPress={() => {
             handleValueChange('1');
           }}>
-          <TextH1>1</TextH1>
+          <TextH1 style={fonts.mediumFont}>1</TextH1>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.padBtn}
           onPress={() => {
             handleValueChange('2');
           }}>
-          <TextH1>2</TextH1>
+          <TextH1 style={fonts.mediumFont}>2</TextH1>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.padBtn, styles.noMarginRight]}
           onPress={() => {
             handleValueChange('3');
           }}>
-          <TextH1>3</TextH1>
+          <TextH1 style={fonts.mediumFont}>3</TextH1>
         </TouchableOpacity>
       </View>
       <View style={styles.padRow}>
@@ -94,21 +95,21 @@ const Keypad = forwardRef(function Keypad(
           onPress={() => {
             handleValueChange('4');
           }}>
-          <TextH1>4</TextH1>
+          <TextH1 style={fonts.mediumFont}>4</TextH1>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.padBtn}
           onPress={() => {
             handleValueChange('5');
           }}>
-          <TextH1>5</TextH1>
+          <TextH1 style={fonts.mediumFont}>5</TextH1>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.padBtn, styles.noMarginRight]}
           onPress={() => {
             handleValueChange('6');
           }}>
-          <TextH1>6</TextH1>
+          <TextH1 style={fonts.mediumFont}>6</TextH1>
         </TouchableOpacity>
       </View>
       <View style={styles.padRow}>
@@ -117,21 +118,21 @@ const Keypad = forwardRef(function Keypad(
           onPress={() => {
             handleValueChange('7');
           }}>
-          <TextH1>7</TextH1>
+          <TextH1 style={fonts.mediumFont}>7</TextH1>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.padBtn}
           onPress={() => {
             handleValueChange('8');
           }}>
-          <TextH1>8</TextH1>
+          <TextH1 style={fonts.mediumFont}>8</TextH1>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.padBtn, styles.noMarginRight]}
           onPress={() => {
             handleValueChange('9');
           }}>
-          <TextH1>9</TextH1>
+          <TextH1 style={fonts.mediumFont}>9</TextH1>
         </TouchableOpacity>
       </View>
       <View style={styles.padRow}>
@@ -147,7 +148,7 @@ const Keypad = forwardRef(function Keypad(
           onPress={() => {
             handleValueChange('0');
           }}>
-          <TextH1>0</TextH1>
+          <TextH1 style={fonts.mediumFont}>0</TextH1>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.padBtn, styles.noMarginRight]}

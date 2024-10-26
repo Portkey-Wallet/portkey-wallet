@@ -16,7 +16,6 @@ import { VerificationType } from '@portkey-wallet/types/verifier';
 import CommonPrompt from 'components/CommonPromptCard';
 import { useSetBiometrics } from 'hooks/useBiometrics';
 import { changeCanLock } from 'utils/LockManager';
-import fonts from 'assets/theme/fonts';
 import Svg from 'components/Svg';
 
 const ScrollViewProps = { disabled: true };
@@ -138,7 +137,6 @@ const getStyles = makeStyles(_theme => ({
   },
   headerTitle: {
     marginBottom: pTd(120),
-    ...fonts.BGMediumFont,
   },
   buttonWrap: {
     marginBottom: pTd(24),

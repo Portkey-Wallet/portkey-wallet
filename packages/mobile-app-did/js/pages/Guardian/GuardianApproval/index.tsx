@@ -60,7 +60,6 @@ import { timesDecimals } from '@portkey-wallet/utils/converter';
 import { GuardianApproveTip } from './components/GuardianApproveTip';
 import { GuardianExpired } from './components/GuardianExpired';
 import { makeStyles } from '@rneui/themed';
-import fonts from 'assets/theme/fonts';
 import { GuardianApproveProgress } from './components/GuardianApproveProgress';
 
 export type RouterParams = {
@@ -805,7 +804,7 @@ export default function GuardianApproval() {
         <GuardianExpired onTryAgain={onTryAgain} />
       ) : (
         <View style={GStyles.flex1}>
-          <TextH1 style={styles.headerTitle}>Guardian approval</TextH1>
+          <TextH1>Guardian approval</TextH1>
           <TextM style={styles.headerContent}>
             {'Complete the required guardian approvals below. Note: approvals expire after 1 hour.'}
           </TextM>
@@ -865,9 +864,6 @@ const getStyles = makeStyles(theme => ({
     paddingBottom: pTd(16),
     justifyContent: 'space-between',
     paddingHorizontal: pTd(16),
-  },
-  headerTitle: {
-    ...fonts.BGMediumFont,
   },
   headerContent: {
     marginTop: pTd(16),

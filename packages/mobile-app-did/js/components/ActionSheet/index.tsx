@@ -110,7 +110,15 @@ function AlertBody({
           </View>
         )}
         {title ? <TextTitle style={[styles.alertTitle, titleStyle]}>{title}</TextTitle> : null}
-        {typeof title2 === 'string' ? <TextTitle style={styles.alertTitle2}>{title2}</TextTitle> : title2}
+        {typeof title2 === 'string' ? (
+          title2 ? (
+            <TextTitle style={styles.alertTitle2}>{title2}</TextTitle>
+          ) : null
+        ) : (
+          title2
+        )}
+        {!title && !title2 && <View style={styles.titlePlaceholder} />}
+
         <ScrollView
           showsVerticalScrollIndicator={false}
           style={styles.scrollViewStyle}
@@ -129,6 +137,7 @@ function AlertBody({
           ) : (
             message2
           )}
+
           {messageList?.map((item, index) => {
             return typeof item === 'string' ? (
               item ? (

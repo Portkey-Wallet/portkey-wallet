@@ -6,7 +6,6 @@ import { headerHeight } from 'components/CustomHeader/style/index.style';
 import Keypad, { KeypadPropsType } from 'components/Keypad';
 import DigitText, { DigitTextProps } from 'components/DigitText';
 import { makeStyles } from '@rneui/themed';
-import fonts from 'assets/theme/fonts';
 
 type PinContainerProps = {
   title: string;
@@ -38,7 +37,7 @@ const PinContainer = forwardRef(function PinContainer(
     // showHeader && { paddingTop: styles.container.paddingTop - headerHeight }
     <View style={[styles.container, showHeader && { paddingTop: styles.container.paddingTop - headerHeight }]}>
       <View>
-        <TextH1 style={fonts.BGMediumFont}>{title}</TextH1>
+        <TextH1>{title}</TextH1>
         <DigitText
           type="pin"
           secureTextEntry

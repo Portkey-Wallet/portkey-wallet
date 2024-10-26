@@ -5,7 +5,6 @@ import { View } from 'react-native';
 import { pTd } from 'utils/unit';
 import { makeStyles } from '@rneui/themed';
 import { TextH1, TextM } from 'components/CommonText';
-import fonts from 'assets/theme/fonts';
 import CommonButton from 'components/CommonButton';
 import navigationService from 'utils/navigationService';
 
@@ -46,7 +45,6 @@ const getStyles = makeStyles(theme => ({
   },
   headerTitle: {
     marginTop: pTd(16),
-    ...fonts.BGMediumFont,
   },
   headerContent: {
     marginTop: pTd(16),

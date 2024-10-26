@@ -125,5 +125,140 @@ declare module '@rneui/themed' {
     borderDanger1: string;
     borderDanger2: string;
     borderDanger3: string;
+
+    //TODO: abandon color delete it
+    primary: string;
+    primaryLight: string;
+    bgColor: string;
+    bgColor1: string;
+    primaryColor: string;
+
+    primaryColorV2: string;
+
+    bg1: string;
+    bg2: string;
+    bg3: string;
+    bg4: string;
+    bg5: string;
+    bg6: string;
+    bg7: string;
+    bg8: string;
+    bg9: string;
+    bg10: string;
+    bg11: string;
+    bg12: string;
+    bg13: string;
+    bg14: string;
+    bg15: string;
+    bg16: string;
+    bg17: string;
+    bg18: string;
+    bg19: string;
+    bg20: string;
+    bg21: string;
+    bg22: string;
+    bg23: string;
+    bg24: string;
+    bg25: string;
+    bg26: string;
+    bg27: string;
+    bg28: string;
+    bg29: string;
+    bg30: string;
+    bg31: string;
+    bg32: string;
+    bg33: string;
+    bg34: string;
+    bg35: string;
+    bg36: string;
+    bg37: string;
+    bg38: string;
+    bg39: string;
+    bg40: string;
+    bg41: string;
+    bg42: string;
+    bg43: string;
+
+    font1: string;
+    font2: string;
+    font3: string;
+    font4: string;
+    font5: string;
+    font6: string;
+    font7: string;
+    font8: string;
+    font9: string;
+    font10: string;
+    font11: string;
+    font12: string;
+    font13: string;
+    font14: string;
+    font15: string;
+    font16: string;
+    font17: string;
+    font18: string;
+    font19: string;
+    font20: string;
+    font21: string;
+    font22: string;
+    font23: string;
+    font24: string;
+    font25: string;
+    font26: string;
+
+    white: string;
+    black: string;
+
+    icon1: string;
+    icon2: string;
+    icon3: string;
+    icon4: string;
+    icon5: string;
+
+    border1: string;
+    border2: string;
+    border3: string;
+    border4: string;
+    border5: string;
+    border6: string;
+    border7: string;
+    border8: string;
+    border9: string;
+    border10: string;
+
+    error: string;
+    error1: string;
+
+    shadow1: string;
+    brandTouched: string;
+    brandNormal: string;
+    brandDisable: string;
+    brandLight: string;
+
+    functionalGreenDefault: string;
+    functionalGreenDisable: string;
+    functionalGreenLight: string;
+
+    functionalYellowDefault: string;
+    functionalYellowDisable: string;
+    functionalYellowLight: string;
+
+    functionalRedDefault: string;
+    functionalRedDisable: string;
+    functionalRedLight: string;
+
+    primaryTextColor: string;
+    secondaryTextColor: string;
+    neutralPrimaryTextColor: string;
+    neutralSecondaryTextColor: string;
+    neutralTertiaryText: string;
+    neutralDisableText: string;
+    neutralBorder: string;
+    neutralDivider: string;
+    neutralContainerBG: string;
+    neutralHoverBG: string;
+    neutralDefaultBG: string;
+    neutralMaskBG: string;
+    neutralTooltipBG: string;
   }
 }

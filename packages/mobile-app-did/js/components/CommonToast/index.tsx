@@ -7,7 +7,6 @@ import Svg from 'components/Svg';
 import { TextL } from 'components/CommonText';
 import { pTd } from 'utils/unit';
 import { statusBarHeight } from '@portkey-wallet/utils/mobile/device';
-import { handleErrorMessage } from '@portkey-wallet/utils';
 import Lottie from 'lottie-react-native';
 import CommonPrompt from 'components/CommonPromptCard';
 

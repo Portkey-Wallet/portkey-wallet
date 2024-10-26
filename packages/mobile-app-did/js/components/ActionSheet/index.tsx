@@ -1,13 +1,12 @@
 import React, { ReactNode } from 'react';
 import OverlayModal from '../OverlayModal';
-import { View, Text, Keyboard, ImageBackground, ImageSourcePropType, ScrollView } from 'react-native';
+import { View, Text, Keyboard, ImageSourcePropType, ScrollView } from 'react-native';
 import { getStyles, styles as showStyles } from './style';
 import { TextL, TextM, TextTitle } from 'components/CommonText';
 import ButtonRow, { ButtonRowProps } from 'components/ButtonRow';
 import ButtonCol from 'components/ButtonCol';
 import { pTd } from 'utils/unit';
 import Svg from 'components/Svg';
-import { defaultColors } from 'assets/theme';
 import { TextStyleType } from 'types/styles';
 import Touchable from 'components/Touchable';
 import { useTheme } from '@rneui/themed';

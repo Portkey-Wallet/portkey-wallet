@@ -507,33 +507,10 @@ export function useGoSelectVerifier(isLogin?: boolean) {
             });
             break;
           default: {
-            ActionSheet.alert({
-              title2: (
-                <Text>
-                  <TextL>{`${allotVerifier?.name} will send a verification code to `}</TextL>
-                  <TextL style={fonts.mediumFont}>{confirmParams.showLoginAccount || ''}</TextL>
-                  <TextL>{` to verify your ${
-                    loginType === LoginType.Phone ? 'phone number' : 'email address'
-                  }.`}</TextL>
-                </Text>
-              ),
-              buttons: [
-                {
-                  title: 'Cancel',
-                  // type: 'solid',
-                  type: 'outline',
-                },
-                {
-                  title: 'Confirm',
-                  onPress: () => {
-                    onDefaultConfirm({
-                      ...confirmParams,
-                      selectedVerifier: allotVerifier,
-                      chainId: DefaultChainId,
-                    });
-                  },
-                },
-              ],
+            onDefaultConfirm({
+              ...confirmParams,
+              selectedVerifier: allotVerifier,
+              chainId: DefaultChainId,
             });
             break;
           }

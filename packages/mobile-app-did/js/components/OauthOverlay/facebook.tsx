@@ -61,7 +61,7 @@ function FacebookSign({ onConfirm, onReject }: FacebookProps) {
     [onConfirm, onReject],
   );
   return (
-    <ModalBody title="Continue with Facebook" modalBodyType="bottom">
+    <ModalBody title="Continue with Facebook" modalBodyType="bottom" style={{ height: pTd(550) }}>
       <KeyboardAwareScrollView enableOnAndroid={true} contentContainerStyle={styles.container}>
         {loading && (
           <View style={styles.loadingBox}>

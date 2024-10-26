@@ -1,11 +1,15 @@
 import { useCallback, useEffect, useState, useMemo } from 'react';
-import { TReceiveTokenMap, TReceiveFromNetworkItem } from '@portkey-wallet/types/types-ca/receive';
+import {
+  TReceiveTokenMap,
+  TReceiveFromNetworkItem,
+  ReceiveType,
+  ReceiveFromNetworkServiceType,
+} from '@portkey-wallet/types/types-ca/receive';
 import { ChainId } from '@portkey-wallet/types';
 import { request } from '@portkey-wallet/api/api-did';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import { useCurrentChainList } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { IChainItemType } from '@portkey-wallet/types/types-ca/chain';
-import { set } from 'react-native-reanimated';
 
 export const useReceive = (token: TokenItemShowType, initToChainId?: ChainId) => {
   const [loading, setLoading] = useState(true);
@@ -16,9 +20,9 @@ export const useReceive = (token: TokenItemShowType, initToChainId?: ChainId) =>
   const currentChainList = useCurrentChainList();
 
   const getChainInfoByChainId = useCallback(
-    (chaidId: ChainId) => {
+    (chainId: ChainId) => {
       if (!currentChainList) return undefined;
-      return currentChainList.find(chain => chain.chainId === chaidId);
+      return currentChainList.find(chain => chain.chainId === chainId);
     },
     [currentChainList],
   );
@@ -34,6 +38,28 @@ export const useReceive = (token: TokenItemShowType, initToChainId?: ChainId) =>
     return destinationMap[destinationChain.chainId];
   }, [destinationChain, destinationMap]);
 
+  const isAelfChain = useCallback((chainName?: string) => {
+    if (!chainName) return false;
+    const chainIdList: ChainId[] = ['AELF', 'tDVV', 'tDVW'];
+    return chainIdList.find(item => {
+      return item === chainName;
+    });
+  }, []);
+
+  const receiveType = useMemo(() => {
+    if (isAelfChain(sourceChain?.network)) {
+      return ReceiveType.Portkey;
+    } else if (sourceChain?.serviceList && sourceChain?.serviceList.length > 0) {
+      const serviceName = sourceChain?.serviceList[0].serviceName;
+      if (serviceName == ReceiveFromNetworkServiceType.ETransfer) {
+        return ReceiveType.ETransfer;
+      } else if (serviceName == ReceiveFromNetworkServiceType.EBridge) {
+        return ReceiveType.EBridge;
+      }
+    }
+    return ReceiveType.Portkey;
+  }, [isAelfChain, sourceChain?.network, sourceChain?.serviceList]);
+
   // request date and set loading status
   useEffect(() => {
     setErrorMsg('');
@@ -45,7 +71,7 @@ export const useReceive = (token: TokenItemShowType, initToChainId?: ChainId) =>
         },
       })
       .then(data => {
-        console.log('destinationMap : ', data);
+        console.log('destinationMap : ', JSON.stringify(data.data));
         if (data && data.data && data.data.destinationMap) {
           setDestinationMap(data.data.destinationMap);
         } else {
@@ -94,5 +120,6 @@ export const useReceive = (token: TokenItemShowType, initToChainId?: ChainId) =>
     setSourceChain,
     sourceChainList,
     destinationMap,
+    receiveType,
   };
 };

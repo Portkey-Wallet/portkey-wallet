@@ -1,24 +1,25 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import PageContainer from 'components/PageContainer';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { pTd } from 'utils/unit';
-import { useLanguage } from 'i18n/hooks';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { useReceive } from '@portkey-wallet/hooks/hooks-ca/receive';
 import SourceDestinationPicker from '../components/SourceDestinationPicker';
 import SourceDestinationSelector from '../components/SourceDestinationSelector';
+import ReceiveByPortkey from '../components/ReceiveByPortkey';
 import Loading from 'components/Loading';
 import CommonToast from 'components/CommonToast';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
+import { ReceiveType } from '@portkey-wallet/types/types-ca/receive';
 
 export default function Receive() {
-  const { t } = useLanguage();
   const tokenItem = useRouterParams<TokenItemShowType>();
   const { chainId, symbol } = tokenItem;
   const {
     loading,
     errorMsg,
+    receiveType,
     destinationChain,
     destinationChainList,
     updateDestinationChain,
@@ -78,12 +79,17 @@ export default function Receive() {
       containerStyles={styles.containerStyles}
       scrollViewProps={{ disabled: true }}>
       {sourceChain && destinationChain && (
-        <SourceDestinationPicker
-          sourceChain={sourceChain}
-          destinationChain={destinationChain}
-          onSourcePress={showSourceList}
-          onDestinationPress={showDestinationList}
-        />
+        <>
+          <SourceDestinationPicker
+            sourceChain={sourceChain}
+            destinationChain={destinationChain}
+            onSourcePress={showSourceList}
+            onDestinationPress={showDestinationList}
+          />
+          {receiveType === ReceiveType.Portkey && (
+            <ReceiveByPortkey sourceChain={sourceChain} destinationChain={destinationChain} />
+          )}
+        </>
       )}
     </PageContainer>
   );

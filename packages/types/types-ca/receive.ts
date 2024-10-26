@@ -1,5 +1,11 @@
 import { ChainId } from '@portkey/provider-types';
 
+export enum ReceiveType {
+  Portkey = 'Portkey',
+  ETransfer = 'ETransfer',
+  EBridge = 'EBridge',
+}
+
 export enum ReceiveFromNetworkServiceType {
   ETransfer = 'ETransfer',
   EBridge = 'EBridge',

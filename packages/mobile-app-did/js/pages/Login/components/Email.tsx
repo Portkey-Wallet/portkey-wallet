@@ -101,7 +101,7 @@ export default function Email({
           containerStyle={GStyles.paddingBottom(32)}
           disabled={!loginAccount}
           type="primary"
-          isLoading={loading}
+          loading={loading}
           onPress={onPageLogin}>
           {t(TitleMap[type].button)}
         </CommonButton>

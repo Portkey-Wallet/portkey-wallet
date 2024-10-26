@@ -86,6 +86,7 @@ export const getStyles = makeStyles(theme => ({
     alignItems: 'center',
     right: pTd(18),
     top: pTd(18),
+    zIndex: 1,
   },
   scrollViewStyle: {
     maxHeight: screenHeight * 0.45,

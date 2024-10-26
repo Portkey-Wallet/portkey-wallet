@@ -14,7 +14,6 @@ import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { CAInfo } from '@portkey-wallet/types/types-ca/wallet';
 import { VerificationType } from '@portkey-wallet/types/verifier';
 import CommonPrompt from 'components/CommonPromptCard';
-import useEffectOnce from 'hooks/useEffectOnce';
 import { useSetBiometrics } from 'hooks/useBiometrics';
 import { changeCanLock } from 'utils/LockManager';
 import fonts from 'assets/theme/fonts';
@@ -111,11 +110,11 @@ export default function SetBiometrics() {
       CommonPrompt.failError(error);
     }
   }, [setBiometrics, getResult]);
-  useEffectOnce(() => {
-    setTimeout(() => {
-      openBiometrics();
-    }, 100);
-  });
+  // useEffectOnce(() => {
+  //   setTimeout(() => {
+  //     openBiometrics();
+  //   }, 100);
+  // });
   return (
     <PageContainer scrollViewProps={ScrollViewProps} leftDom titleDom containerStyles={styles.containerStyles}>
       <View>

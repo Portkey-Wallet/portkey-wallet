@@ -1,9 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { StyleSheet } from 'react-native';
 import { pTd } from 'utils/unit';
 import { useLanguage } from 'i18n/hooks';
 import useDebounce from 'hooks/useDebounce';
-import { darkColors } from 'assets/theme';
 import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { fetchAssetListV2 } from '@portkey-wallet/store/store-ca/assets/api';
 import { IAssetItemV2 } from '@portkey-wallet/store/store-ca/assets/type';
@@ -15,12 +13,14 @@ import GStyles from 'assets/theme/GStyles';
 import CommonInputNew from 'components/CommonInputNew';
 import PageContainer from 'components/PageContainer';
 import SelectAssetTab from '../SelectAssetTab';
+import { makeStyles } from '@rneui/themed';
 
 const AssetList = () => {
   const { t } = useLanguage();
   const caAddressInfos = useCaAddressInfoList();
   const [keyword, setKeyword] = useState('');
   const { accountAssetsList, fetchAccountAssetsInfoList } = useAccountAssetsInfoV2();
+  const styles = getStyles();
 
   const debounceKeyword = useDebounce(keyword, 800);
 
@@ -96,10 +96,10 @@ const AssetList = () => {
 
 export default AssetList;
 
-export const styles = StyleSheet.create({
+export const getStyles = makeStyles(theme => ({
   pageWrap: {
     flex: 1,
-    backgroundColor: darkColors.bgBase1,
+    backgroundColor: theme.colors.bgBase1,
     ...GStyles.paddingArg(0),
   },
   title: {
@@ -123,4 +123,4 @@ export const styles = StyleSheet.create({
   flatList: {
     marginTop: pTd(8),
   },
-});
+}));

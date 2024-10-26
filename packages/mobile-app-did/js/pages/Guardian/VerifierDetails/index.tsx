@@ -132,7 +132,8 @@ export default function VerifierDetails() {
       if (!requestCodeResult || !guardianItem || !code) return;
       const isRequestResult = pin && verificationType === VerificationType.register && managerAddress;
       digitInput.current?.lockInput();
-      const loadingKey = Loading.show(isRequestResult ? { text: CreateAddressLoading } : undefined, true);
+      // const loadingKey = Loading.show(isRequestResult ? { text: CreateAddressLoading } : undefined, true);
+      const loadingKey = Loading.show();
       try {
         const rst = await verification.checkVerificationCode({
           params: {

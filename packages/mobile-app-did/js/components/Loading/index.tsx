@@ -32,7 +32,7 @@ function LoadingBody({ text }: { text?: string; position?: LoadingPositionType; 
 
 export default class Loading extends React.Component {
   static show(options?: ShowOptionsType, isKeyboardShow?: boolean): number {
-    const { text = '', iconType = 'loading', isMaskTransparent = true, overlayProps = {} } = options || {};
+    const { iconType = 'loading', isMaskTransparent = true, overlayProps = {} } = options || {};
     !isKeyboardShow && Keyboard.dismiss();
     Loading.hide();
     const overlayView = (
@@ -42,7 +42,7 @@ export default class Loading extends React.Component {
         style={[styles.container, isMaskTransparent && styles.maskTransparent]}
         overlayOpacity={0}
         {...overlayProps}>
-        <LoadingBody text={text} iconType={iconType} />
+        <LoadingBody text={''} iconType={iconType} />
       </Overlay.PopView>
     );
     const key = Overlay.show(overlayView);

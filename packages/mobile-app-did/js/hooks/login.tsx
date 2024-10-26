@@ -280,19 +280,26 @@ export function useGoGuardianApproval(isLogin?: boolean) {
 
   const goVerifierDetails = useCallback(
     async ({ guardianItem, originChainId }: TVerifierAuthParams) => {
-      const req = await verification.sendVerificationCode({
-        params: {
-          type: LoginType[guardianItem.guardianType],
-          guardianIdentifier: guardianItem.guardianAccount,
-          verifierId: guardianItem.verifier?.id,
-          chainId: originChainId,
-          operationType: OperationTypeEnum.communityRecovery,
-          operationDetails: getOperationDetails(OperationTypeEnum.communityRecovery, {
-            verifyManagerAddress: latestVerifyManagerAddress.current,
-          }),
-        },
-      });
-      if (!req?.verifierSessionId) throw new Error('verifierSessionId does not exist');
+      let req: any;
+      try {
+        req = await verification.sendVerificationCode({
+          params: {
+            type: LoginType[guardianItem.guardianType],
+            guardianIdentifier: guardianItem.guardianAccount,
+            verifierId: guardianItem.verifier?.id,
+            chainId: originChainId,
+            operationType: OperationTypeEnum.communityRecovery,
+            operationDetails: getOperationDetails(OperationTypeEnum.communityRecovery, {
+              verifyManagerAddress: latestVerifyManagerAddress.current,
+            }),
+          },
+        });
+        if (!req?.verifierSessionId) throw new Error('verifierSessionId does not exist');
+      } catch (error) {
+        Loading.hide();
+        throw error;
+      }
+
       Loading.hide();
       await sleep(200);
       dispatch(setOriginChainId(originChainId));
@@ -404,7 +411,8 @@ export function useGoSelectVerifier(isLogin?: boolean) {
     async ({ loginAccount, loginType, authenticationInfo, selectedVerifier, chainId }: LoginAuthParams) => {
       const isRequestResult = !!(pin && address);
 
-      const loadingKey = Loading.show(isRequestResult ? { text: CreateAddressLoading } : undefined);
+      // const loadingKey = Loading.show(isRequestResult ? { text: CreateAddressLoading } : undefined);
+      const loadingKey = Loading.show();
 
       try {
         const rst = await verifyToken(loginType, {

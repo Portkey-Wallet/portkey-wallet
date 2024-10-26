@@ -12,6 +12,7 @@ type PinContainerProps = {
   title: string;
   showHeader?: boolean;
   onChangeText?: (text: string) => void;
+  isKeypadShow?: boolean;
 } & DigitTextProps &
   KeypadPropsType;
 
@@ -25,6 +26,7 @@ const PinContainer = forwardRef(function PinContainer(
     maxLength,
     isBiometrics,
     onBiometricsPress,
+    isKeypadShow = true,
     ...textProps
   }: PinContainerProps,
   forwardedRef,
@@ -47,20 +49,22 @@ const PinContainer = forwardRef(function PinContainer(
         />
       </View>
 
-      <Keypad
-        ref={forwardedRef}
-        maxLength={maxLength}
-        onChange={_value => {
-          setValue(_value);
-          onChangeText && onChangeText(_value);
-        }}
-        onFinish={onFinish}
-        onRest={() => {
-          setValue('');
-        }}
-        onBiometricsPress={onBiometricsPress}
-        isBiometrics={isBiometrics}
-      />
+      {isKeypadShow && (
+        <Keypad
+          ref={forwardedRef}
+          maxLength={maxLength}
+          onChange={_value => {
+            setValue(_value);
+            onChangeText && onChangeText(_value);
+          }}
+          onFinish={onFinish}
+          onRest={() => {
+            setValue('');
+          }}
+          onBiometricsPress={onBiometricsPress}
+          isBiometrics={isBiometrics}
+        />
+      )}
     </View>
   );
 });

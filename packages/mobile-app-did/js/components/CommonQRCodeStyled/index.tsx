@@ -33,7 +33,7 @@ export default function CommonQRCodeStyled(props: CommonQRCodeStyledPropsType) {
     <View>
       {hasMask && (
         <View style={styles.mask}>
-          <TextL>Updating...</TextL>
+          <TextL style={styles.maskText}>Updating...</TextL>
         </View>
       )}
       <QRCodeStyled
@@ -76,5 +76,8 @@ const getStyles = makeStyles(theme => ({
     opacity: 0.96,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  maskText: {
+    color: theme.colors.bgBase1,
   },
 }));

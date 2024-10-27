@@ -32,7 +32,7 @@ import { useAppDispatch } from 'store/hooks';
 import useBiometricsReady from './useBiometrics';
 import navigationService from 'utils/navigationService';
 import { TimerResult, IntervalGetResultParams, intervalGetResult } from 'utils/wallet';
-import CommonToast from 'components/CommonToast';
+import CommonPrompt from 'components/CommonPromptCard';
 import useEffectOnce from './useEffectOnce';
 import { resetUser, setCredentials } from 'store/user/actions';
 import { DigitInputInterface } from 'components/DigitInput';
@@ -73,7 +73,7 @@ export function useOnResultFail() {
   return useCallback(
     (message: string, isRecovery?: boolean, isReset?: boolean) => {
       Loading.hide();
-      CommonToast.fail(message);
+      CommonPrompt.error(message);
       queryFailAlert(
         () => {
           resetStore();
@@ -229,7 +229,7 @@ export function useOnManagerAddressAndQueryResult() {
         }
       } catch (error) {
         Loading.hide();
-        CommonToast.failError(error);
+        CommonPrompt.failError(error);
         pinRef?.current?.reset();
       }
     },
@@ -280,19 +280,26 @@ export function useGoGuardianApproval(isLogin?: boolean) {
 
   const goVerifierDetails = useCallback(
     async ({ guardianItem, originChainId }: TVerifierAuthParams) => {
-      const req = await verification.sendVerificationCode({
-        params: {
-          type: LoginType[guardianItem.guardianType],
-          guardianIdentifier: guardianItem.guardianAccount,
-          verifierId: guardianItem.verifier?.id,
-          chainId: originChainId,
-          operationType: OperationTypeEnum.communityRecovery,
-          operationDetails: getOperationDetails(OperationTypeEnum.communityRecovery, {
-            verifyManagerAddress: latestVerifyManagerAddress.current,
-          }),
-        },
-      });
-      if (!req?.verifierSessionId) throw new Error('verifierSessionId does not exist');
+      let req: any;
+      try {
+        req = await verification.sendVerificationCode({
+          params: {
+            type: LoginType[guardianItem.guardianType],
+            guardianIdentifier: guardianItem.guardianAccount,
+            verifierId: guardianItem.verifier?.id,
+            chainId: originChainId,
+            operationType: OperationTypeEnum.communityRecovery,
+            operationDetails: getOperationDetails(OperationTypeEnum.communityRecovery, {
+              verifyManagerAddress: latestVerifyManagerAddress.current,
+            }),
+          },
+        });
+        if (!req?.verifierSessionId) throw new Error('verifierSessionId does not exist');
+      } catch (error) {
+        Loading.hide();
+        throw error;
+      }
+
       Loading.hide();
       await sleep(200);
       dispatch(setOriginChainId(originChainId));
@@ -404,7 +411,8 @@ export function useGoSelectVerifier(isLogin?: boolean) {
     async ({ loginAccount, loginType, authenticationInfo, selectedVerifier, chainId }: LoginAuthParams) => {
       const isRequestResult = !!(pin && address);
 
-      const loadingKey = Loading.show(isRequestResult ? { text: CreateAddressLoading } : undefined);
+      // const loadingKey = Loading.show(isRequestResult ? { text: CreateAddressLoading } : undefined);
+      const loadingKey = Loading.show();
 
       try {
         const rst = await verifyToken(loginType, {
@@ -428,7 +436,7 @@ export function useGoSelectVerifier(isLogin?: boolean) {
         });
       } catch (error) {
         Loading.hide(loadingKey);
-        CommonToast.failError(error);
+        CommonPrompt.failError(error);
       }
       !isRequestResult && Loading.hide(loadingKey);
     },
@@ -466,11 +474,11 @@ export function useGoSelectVerifier(isLogin?: boolean) {
           throw new Error('send fail');
         }
       } catch (error) {
-        CommonToast.failError(error);
+        CommonPrompt.failError(error);
       }
       Loading.hide(loadingKey);
     },
-    [],
+    [latestVerifyManagerAddress],
   );
 
   const onConfirm = useCallback(
@@ -507,40 +515,17 @@ export function useGoSelectVerifier(isLogin?: boolean) {
             });
             break;
           default: {
-            ActionSheet.alert({
-              title2: (
-                <Text>
-                  <TextL>{`${allotVerifier?.name} will send a verification code to `}</TextL>
-                  <TextL style={fonts.mediumFont}>{confirmParams.showLoginAccount || ''}</TextL>
-                  <TextL>{` to verify your ${
-                    loginType === LoginType.Phone ? 'phone number' : 'email address'
-                  }.`}</TextL>
-                </Text>
-              ),
-              buttons: [
-                {
-                  title: 'Cancel',
-                  // type: 'solid',
-                  type: 'outline',
-                },
-                {
-                  title: 'Confirm',
-                  onPress: () => {
-                    onDefaultConfirm({
-                      ...confirmParams,
-                      selectedVerifier: allotVerifier,
-                      chainId: DefaultChainId,
-                    });
-                  },
-                },
-              ],
+            onDefaultConfirm({
+              ...confirmParams,
+              selectedVerifier: allotVerifier,
+              chainId: DefaultChainId,
             });
             break;
           }
         }
       } catch (error) {
         Loading.hide(loadingKey);
-        CommonToast.failError(error);
+        CommonPrompt.failError(error);
       }
     },
     [dispatch, onConfirmAuth, onDefaultConfirm],

@@ -1,6 +1,6 @@
 import { LoginQRData, QRData, SendTokenQRDataType } from '@portkey-wallet/types/types-ca/qrcode';
 import { isAddress } from '@portkey-wallet/utils';
-import CommonToast from 'components/CommonToast';
+import CommonPrompt from 'components/CommonPromptCard';
 import navigationService from './navigationService';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import AssetsOverlay from 'pages/DashBoard/AssetsOverlay';
@@ -17,7 +17,7 @@ export enum InvalidQRCodeText {
 }
 
 export function invalidQRCode(text: InvalidQRCodeText, isBack?: boolean) {
-  CommonToast.fail(text);
+  CommonPrompt.error(text);
   isBack && navigationService.goBack();
 }
 
@@ -32,7 +32,7 @@ export function handlePortkeyQRCodeData(data: QRData, previousRouteInfo: RouteIn
   if (previousRouteInfo.name === 'SendHome') {
     if (previousRouteInfo.params.assetInfo.symbol !== newData.assetInfo.symbol) {
       // different symbol
-      CommonToast.fail(
+      CommonPrompt.error(
         'The selected token for the transfer is incorrect. Please make sure you select the token that matches the recipient address.',
       );
     } else {

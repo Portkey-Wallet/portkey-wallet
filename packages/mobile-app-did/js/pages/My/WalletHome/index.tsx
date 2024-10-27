@@ -46,7 +46,8 @@ const WalletHome: React.FC<WalletHomeProps> = () => {
   const onExitClick = useCallback(
     async (isConfirm: boolean) => {
       if (!isConfirm || !managerAddress || !caHash) return;
-      Loading.show({ text: t('Signing out of Portkey...') });
+      // Loading.show({ text: t('Signing out of Portkey...') });
+      Loading.show();
       try {
         const { deviceId } = await getDeviceInfo();
         await request.wallet.reportExitWallet({ params: { deviceId } });
@@ -67,7 +68,7 @@ const WalletHome: React.FC<WalletHomeProps> = () => {
       }
       Loading.hide();
     },
-    [caHash, getCurrentCAContract, logout, managerAddress, t],
+    [caHash, getCurrentCAContract, logout, managerAddress],
   );
 
   return (

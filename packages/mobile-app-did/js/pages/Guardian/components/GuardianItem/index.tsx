@@ -384,12 +384,12 @@ const getStyles = makeStyles(theme => ({
   zkLoginWaterMarkWrap: {
     position: 'absolute',
     width: '100%',
-    bottom: pTd(-6),
+    bottom: pTd(-7),
     alignItems: 'center',
   },
   zkLoginWaterMarkIcon: {
-    width: pTd(46),
-    height: pTd(14),
+    width: pTd(48),
+    height: pTd(16),
   },
 
   nameStyle: {

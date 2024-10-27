@@ -13,11 +13,9 @@ import { pTd } from 'utils/unit';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { CAInfo } from '@portkey-wallet/types/types-ca/wallet';
 import { VerificationType } from '@portkey-wallet/types/verifier';
-import CommonToast from 'components/CommonToast';
-import useEffectOnce from 'hooks/useEffectOnce';
+import CommonPrompt from 'components/CommonPromptCard';
 import { useSetBiometrics } from 'hooks/useBiometrics';
 import { changeCanLock } from 'utils/LockManager';
-import fonts from 'assets/theme/fonts';
 import Svg from 'components/Svg';
 
 const ScrollViewProps = { disabled: true };
@@ -99,7 +97,7 @@ export default function SetBiometrics() {
       await setBiometrics(true);
       await getResult();
     } catch (error) {
-      CommonToast.failError(error, 'Failed To Verify');
+      CommonPrompt.failError(error, 'Failed To Verify');
     }
     changeCanLock(true);
   }, [getResult, pin, setBiometrics]);
@@ -108,14 +106,14 @@ export default function SetBiometrics() {
       await setBiometrics(false);
       await getResult();
     } catch (error) {
-      CommonToast.failError(error);
+      CommonPrompt.failError(error);
     }
   }, [setBiometrics, getResult]);
-  useEffectOnce(() => {
-    setTimeout(() => {
-      openBiometrics();
-    }, 100);
-  });
+  // useEffectOnce(() => {
+  //   setTimeout(() => {
+  //     openBiometrics();
+  //   }, 100);
+  // });
   return (
     <PageContainer scrollViewProps={ScrollViewProps} leftDom titleDom containerStyles={styles.containerStyles}>
       <View>
@@ -132,14 +130,13 @@ export default function SetBiometrics() {
   );
 }
 
-const getStyles = makeStyles(theme => ({
+const getStyles = makeStyles(_theme => ({
   containerStyles: {
     justifyContent: 'space-between',
     paddingTop: pTd(24),
   },
   headerTitle: {
     marginBottom: pTd(120),
-    ...fonts.BGMediumFont,
   },
   buttonWrap: {
     marginBottom: pTd(24),

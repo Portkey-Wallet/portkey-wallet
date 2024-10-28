@@ -190,6 +190,7 @@ export const useReceiveByETransfer = ({
         setLoading(true);
         await fetchTransferToken();
         const info = await fetchDepositInfo();
+        console.log('depositInfo: ', info);
         setDepositInfo(info);
       } finally {
         setLoading(false);

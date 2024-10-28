@@ -133,7 +133,11 @@ export default function ReceiveByPortkey({
           <ExchangeIcons />
         </View>
       )}
-      <ReceiveQRCode data={qrcodeData ?? ''} address={qrcodeAddress ?? ''} style={styles.qrcode} />
+      <ReceiveQRCode
+        data={qrcodeData ?? ''}
+        address={qrcodeAddress ?? ''}
+        style={isSupportExchange ? styles.qrcode : {}}
+      />
       {reminderUI}
     </View>
   );
@@ -160,6 +164,7 @@ const getStyles = makeStyles(theme => ({
   },
   reminderText: {
     marginLeft: pTd(12),
+    marginRight: pTd(12),
     fontSize: pTd(16),
     color: theme.colors.textBase2,
   },

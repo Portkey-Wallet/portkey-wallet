@@ -19,8 +19,8 @@ export default function TermsServiceButton() {
 
   return (
     <View style={[GStyles.flexRowWrap, GStyles.itemCenter, buttonStyles.termsServiceTip]}>
-      <TextM style={[FontStyles.font7, buttonStyles.textWrap]}>By continuing, you agree to the</TextM>
       <TextM style={[FontStyles.font7, buttonStyles.textWrap]}>
+        {'By continuing, you agree to the '}
         <TextM onPress={() => onJump('Terms of Service')} style={buttonStyles.link} suppressHighlighting>
           Terms of Service
         </TextM>

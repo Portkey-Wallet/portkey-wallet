@@ -96,9 +96,9 @@ export default function Receive() {
           {receiveType === ReceiveType.ETransfer && (
             <ReceiveByETransfer tokenItem={tokenItem} sourceChain={sourceChain} destinationChain={destinationChain} />
           )}
+          {receiveType === ReceiveType.EBridge && <EBridgeCard tokenInfo={tokenItem} isConnectWallet={false} />}
         </>
       )}
-      <EBridgeCard tokenInfo={tokenItem} isConnectWallet={false} />
     </PageContainer>
   );
 }

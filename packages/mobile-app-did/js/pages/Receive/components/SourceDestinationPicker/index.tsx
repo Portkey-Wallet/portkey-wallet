@@ -26,7 +26,9 @@ function SourceDestinationItem({
       <View style={styles.itemChianWrapper}>
         <View style={styles.iconAndName}>
           <CommonAvatar avatarSize={pTd(24)} imageUrl={icon} />
-          <Text style={styles.chainName}>{chainName}</Text>
+          <Text style={styles.chainName} numberOfLines={1}>
+            {chainName}
+          </Text>
         </View>
         <Svg icon="down-arrow" size={pTd(16)} iconStyle={styles.arrowIcon} />
       </View>
@@ -97,6 +99,7 @@ const getStyles = makeStyles(theme => ({
   chainName: {
     marginLeft: pTd(6),
     fontSize: pTd(14),
+    width: pTd(116),
     color: theme.colors.textBase1,
   },
   arrowIcon: {

@@ -8,6 +8,7 @@ import { useReceive } from '@portkey-wallet/hooks/hooks-ca/receive';
 import SourceDestinationPicker from '../components/SourceDestinationPicker';
 import SourceDestinationSelector from '../components/SourceDestinationSelector';
 import ReceiveByPortkey from '../components/ReceiveByPortkey';
+import ReceiveByETransfer from '../components/ReceiveByETransfer';
 import Loading from 'components/Loading';
 import CommonToast from 'components/CommonToast';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
@@ -87,7 +88,10 @@ export default function Receive() {
             onDestinationPress={showDestinationList}
           />
           {receiveType === ReceiveType.Portkey && (
-            <ReceiveByPortkey sourceChain={sourceChain} destinationChain={destinationChain} />
+            <ReceiveByPortkey tokenItem={tokenItem} sourceChain={sourceChain} destinationChain={destinationChain} />
+          )}
+          {receiveType === ReceiveType.ETransfer && (
+            <ReceiveByETransfer tokenItem={tokenItem} sourceChain={sourceChain} destinationChain={destinationChain} />
           )}
         </>
       )}

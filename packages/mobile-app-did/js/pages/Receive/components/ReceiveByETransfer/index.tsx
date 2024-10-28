@@ -36,10 +36,10 @@ export default function ReceiveByETransfer({
   );
 
   const qrcodeData = useMemo(() => {
-    return '';
+    return 'aaa';
   }, []);
   const qrcodeAddress = useMemo(() => {
-    return '';
+    return 'aaa';
   }, []);
 
   const reminderUI = useMemo(() => {

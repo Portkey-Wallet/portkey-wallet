@@ -54,7 +54,7 @@ const GOOGLE_AUTH_REDIRECT_URI = 'https://aa-portkey-test.portkey.finance/api/ap
 
 export function useGoogleAuthentication() {
   const subscriptionRef = useRef<any>();
-  const [androidResponse, setResponse] = useState<any>();
+  // const [androidResponse, setResponse] = useState<any>();
   const iosPromptAsync: (managerAddress: string) => Promise<TGoogleAuthResponse> = useCallback(async managerAddress => {
     const { nonce, timestamp } = generateNonceAndTimestamp(managerAddress);
     const googleRequest = new AuthRequest({
@@ -68,7 +68,9 @@ export function useGoogleAuthentication() {
       },
     });
     await sleep(2000);
-    if (AppState.currentState !== 'active') throw { message: '' };
+    if (AppState.currentState !== 'active') {
+      throw { message: '' };
+    }
     const discovery = {
       authorizationEndpoint: 'https://accounts.google.com/o/oauth2/v2/auth',
       tokenEndpoint: 'https://oauth2.googleapis.com/token',
@@ -151,8 +153,8 @@ export function useGoogleAuthentication() {
       if (info.type === 'success') {
         const authToken = await getGoogleAuthToken({
           authCode: info.params.code,
-          clientId: Config.GOOGLE_WEB_CLIENT_ID,
-          clientSecret: Config.GOOGLE_WEB_CLIENT_SECRET,
+          clientId: Config.GOOGLE_WEB_CLIENT_ID || '',
+          clientSecret: Config.GOOGLE_WEB_CLIENT_SECRET || '',
           redirectUri: GOOGLE_AUTH_REDIRECT_URI,
         });
         const userInfo = await getGoogleUserInfo(authToken.access_token);
@@ -339,7 +341,9 @@ const onFacebookAuthentication = async () => {
   try {
     return await (isIOS ? FacebookOverlay.sign : onAndroidFacebookAuthentication)();
   } catch (error) {
-    if (checkIsUserCancel(error)) throw new Error('');
+    if (checkIsUserCancel(error)) {
+      throw new Error('');
+    }
     throw error;
   }
 };
@@ -460,7 +464,9 @@ export function useVerifyGoogleToken() {
       if (accessToken) {
         try {
           const { id } = await getGoogleUserInfo(accessToken);
-          if (!id || id !== params.id) isRequest = true;
+          if (!id || id !== params.id) {
+            isRequest = true;
+          }
         } catch (error) {
           isRequest = true;
         }
@@ -471,7 +477,9 @@ export function useVerifyGoogleToken() {
         idToken = userInfo?.idToken;
         nonce = userInfo?.nonce;
         timestamp = userInfo?.timestamp;
-        if (userInfo.user.id !== params.id) throw new Error('Account does not match your guardian');
+        if (userInfo.user.id !== params.id) {
+          throw new Error('Account does not match your guardian');
+        }
       }
       if (!idToken) {
         throw new Error('Invalid idToken');
@@ -523,7 +531,9 @@ export function useVerifyAppleToken() {
         timestamp = info.timestamp;
       }
       const { userId } = parseAppleIdentityToken(accessToken) || {};
-      if (userId !== params.id) throw new Error('Account does not match your guardian');
+      if (userId !== params.id) {
+        throw new Error('Account does not match your guardian');
+      }
 
       if (!idToken) {
         throw new Error('Invalid idToken');
@@ -566,7 +576,9 @@ export function useVerifyTelegramToken() {
         accessToken = info.accessToken || undefined;
       }
       const { userId } = parseTelegramToken(accessToken) || {};
-      if (userId !== params.id) throw new Error('Account does not match your guardian');
+      if (userId !== params.id) {
+        throw new Error('Account does not match your guardian');
+      }
 
       const rst = await request.verify.verifyTelegramToken({
         params: { ...params, accessToken },
@@ -593,7 +605,9 @@ export function useVerifyTwitterToken() {
       }
       const { userId, accessToken: accessTwitterToken } = parseTwitterToken(accessToken) || {};
 
-      if (userId !== params.id) throw new Error('Account does not match your guardian');
+      if (userId !== params.id) {
+        throw new Error('Account does not match your guardian');
+      }
 
       const rst = await request.verify.verifyTwitterToken({
         params: { ...params, accessToken: accessTwitterToken },
@@ -620,7 +634,9 @@ export function useVerifyFacebookToken() {
       }
       const { userId, accessToken: accessFacebookToken } = (await parseFacebookToken(accessToken)) || {};
 
-      if (userId !== params.id) throw new Error('Account does not match your guardian');
+      if (userId !== params.id) {
+        throw new Error('Account does not match your guardian');
+      }
 
       const rst = await request.verify.verifyFacebookToken({
         params: { ...params, accessToken: accessFacebookToken },

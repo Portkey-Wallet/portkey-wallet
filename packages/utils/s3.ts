@@ -87,10 +87,10 @@ export const formatRNImage = (
     uri: string;
     width: number;
     height: number;
-    type?: 'image' | 'video';
-    fileName?: string | null;
-    fileSize?: number;
-    exif?: Record<string, any>;
+    // type?: 'image' | 'video';
+    // fileName?: string | null;
+    // fileSize?: number;
+    // exif?: Record<string, any>;
   },
   fileBase64: string,
 ) => {

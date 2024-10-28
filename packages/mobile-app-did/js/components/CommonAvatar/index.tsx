@@ -5,7 +5,7 @@ import { Text, TextStyle, View, ViewStyle } from 'react-native';
 import { StyleSheet } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import { checkIsSvgUrl } from 'utils';
-import { SvgCssUri } from 'react-native-svg';
+import { SvgCssUri } from 'react-native-svg/css';
 import FastImage from 'components/FastImage';
 import { ResizeMode } from 'react-native-fast-image';
 
@@ -78,7 +78,7 @@ export default function CommonAvatar(props: CommonAvatarProps) {
   // when change url ,reset loading error state
   useEffect(() => setLoadError(false), [imageUrl]);
 
-  if (svgName)
+  if (svgName) {
     return (
       <Svg
         oblongSize={[width || avatarSize, height || avatarSize]}
@@ -92,6 +92,7 @@ export default function CommonAvatar(props: CommonAvatarProps) {
         }}
       />
     );
+  }
 
   if (imageUrl && !loadError) {
     return checkIsSvgUrl(imageUrl) ? (

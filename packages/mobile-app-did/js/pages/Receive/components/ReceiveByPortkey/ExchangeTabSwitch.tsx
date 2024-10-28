@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { pTd } from 'utils/unit';
 import { makeStyles } from '@rneui/themed';
@@ -11,29 +11,26 @@ export default function ExchangeTabSwitch({
   onSelected: (isExchangeSelected: boolean) => void;
 }) {
   const styles = getStyles();
-  const [exchangeSelected, setExchangeSelected] = useState(isExchangeSelected);
 
   return (
     <View style={styles.container}>
       <TouchableOpacity
-        style={[styles.button, exchangeSelected && styles.buttonSelected]}
+        style={[styles.button, isExchangeSelected && styles.buttonSelected]}
         onPress={() => {
-          if (!exchangeSelected) {
-            setExchangeSelected(true);
+          if (!isExchangeSelected) {
             onSelected(true);
           }
         }}>
-        <Text style={[styles.buttonText, exchangeSelected && styles.buttonTextSelected]}>Exchange</Text>
+        <Text style={[styles.buttonText, isExchangeSelected && styles.buttonTextSelected]}>Exchange</Text>
       </TouchableOpacity>
       <TouchableOpacity
-        style={[styles.button, !exchangeSelected && styles.buttonSelected]}
+        style={[styles.button, !isExchangeSelected && styles.buttonSelected]}
         onPress={() => {
-          if (exchangeSelected) {
-            setExchangeSelected(false);
+          if (isExchangeSelected) {
             onSelected(false);
           }
         }}>
-        <Text style={[styles.buttonText, !exchangeSelected && styles.buttonTextSelected]}>Non-exchange</Text>
+        <Text style={[styles.buttonText, !isExchangeSelected && styles.buttonTextSelected]}>Non-exchange</Text>
       </TouchableOpacity>
     </View>
   );

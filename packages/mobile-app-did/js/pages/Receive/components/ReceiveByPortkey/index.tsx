@@ -125,7 +125,9 @@ export default function ReceiveByPortkey({
 
   return (
     <View style={styles.container}>
-      {isSupportExchange && <ExchangeTabSwitch isExchangeSelected={true} onSelected={onExchangeTabSelected} />}
+      {isSupportExchange && (
+        <ExchangeTabSwitch isExchangeSelected={isExchangeSelected} onSelected={onExchangeTabSelected} />
+      )}
       {isSupportExchange && isExchangeSelected && (
         <View style={styles.exchangeIcons}>
           <ExchangeIcons />
@@ -146,7 +148,7 @@ const getStyles = makeStyles(theme => ({
     alignItems: 'center',
   },
   qrcode: {
-    marginTop: pTd(24),
+    marginTop: pTd(16),
   },
   reminderWrap: {
     marginTop: pTd(24),

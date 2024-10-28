@@ -63,7 +63,7 @@ const getStyles = makeStyles(theme => ({
     alignItems: 'center',
   },
   qrcode: {
-    marginTop: pTd(24),
+    marginTop: pTd(16),
   },
   reminderWrap: {
     marginTop: pTd(24),

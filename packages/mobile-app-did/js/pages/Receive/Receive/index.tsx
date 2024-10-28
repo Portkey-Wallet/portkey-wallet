@@ -11,6 +11,8 @@ import SourceDestinationPicker from '../components/SourceDestinationPicker';
 import WalletConnect from '../components/WalletConnect';
 import Loading from 'components/Loading';
 import CommonToast from 'components/CommonToast';
+import { makeStyles } from '@rneui/themed';
+import EBridgeCard from '../components/EBridgeCard';
 
 export default function Receive() {
   const { t } = useLanguage();
@@ -20,6 +22,7 @@ export default function Receive() {
     tokenItem,
     chainId,
   );
+  const styles = getStyles();
 
   useEffect(() => {
     if (loading) {
@@ -56,16 +59,17 @@ export default function Receive() {
           onDestinationPress={showDestinationList}
         />
       )}
+      <EBridgeCard tokenInfo={tokenItem} isConnectWallet={false} />
       <WalletConnect />
     </PageContainer>
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = makeStyles(theme => ({
   containerStyles: {
     flex: 1,
     display: 'flex',
     flexDirection: 'column',
     paddingBottom: pTd(16),
   },
-});
+}));

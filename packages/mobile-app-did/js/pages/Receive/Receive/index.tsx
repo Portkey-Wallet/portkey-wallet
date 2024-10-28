@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import PageContainer from 'components/PageContainer';
-import { StyleSheet } from 'react-native';
 import { pTd } from 'utils/unit';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
@@ -96,7 +95,7 @@ export default function Receive() {
           {receiveType === ReceiveType.ETransfer && (
             <ReceiveByETransfer tokenItem={tokenItem} sourceChain={sourceChain} destinationChain={destinationChain} />
           )}
-          {receiveType === ReceiveType.EBridge && <EBridgeCard tokenInfo={tokenItem} isConnectWallet={false} />}
+          {receiveType === ReceiveType.EBridge && <EBridgeCard tokenInfo={tokenItem} />}
         </>
       )}
     </PageContainer>

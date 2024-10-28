@@ -11,28 +11,29 @@ import CommonButton from 'components/CommonButton';
 import { TextL } from 'components/CommonText';
 import GStyles from 'assets/theme/GStyles';
 import navigationService from 'utils/navigationService';
+import WalletConnect from '../WalletConnect';
+import { useWalletConnectModal } from '@walletconnect/modal-react-native';
 
 export interface IEBridgeCardProps {
   styleProps?: ViewStyle;
   tokenInfo: TokenItemShowType;
-  isConnectWallet: boolean;
 }
 
 export default function EBridgeCard(props: IEBridgeCardProps) {
-  const { styleProps, tokenInfo, isConnectWallet } = props;
+  const { styleProps, tokenInfo } = props;
   const { t } = useLanguage();
   const [value, setValue] = useState('');
   const [usdValue, setUsdValue] = useState('');
   const [isExceed, setIsExceed] = useState(false);
   const styles = getStyles();
+  const { isConnected } = useWalletConnectModal();
   const btnDisabled = useMemo(() => {
-    return isConnectWallet && (!(value || usdValue) || isExceed);
-  }, [isConnectWallet, isExceed, usdValue, value]);
+    return !(value || usdValue) || isExceed;
+  }, [isExceed, usdValue, value]);
   const btnTitleText = useMemo(() => {
-    if (!isConnectWallet) return 'Connect external wallet';
     if (isExceed) return `Insufficient ${tokenInfo.label || tokenInfo.symbol} balance`;
     return 'Preview';
-  }, [isConnectWallet, isExceed, tokenInfo]);
+  }, [isExceed, tokenInfo]);
   const onPressBtn = useCallback(() => {
     navigationService.navigate('ReceivePreview');
   }, []);
@@ -57,7 +58,7 @@ export default function EBridgeCard(props: IEBridgeCardProps) {
           label={tokenInfo.label}
           decimals={tokenInfo.decimals}
           warningTip={isExceed ? 'Exceeds available balance' : undefined}
-          editable={isConnectWallet}
+          editable={isConnected}
           setUsdValue={v => {
             setUsdValue(v);
             // TODO exceed value
@@ -69,28 +70,24 @@ export default function EBridgeCard(props: IEBridgeCardProps) {
         />
       </View>
       <View style={styles.footerContainer}>
-        {!isConnectWallet && (
-          <View style={styles.tipContainer}>
-            <Svg icon="info" iconStyle={{ marginRight: pTd(12) }} />
-            <TextL style={styles.tipInfoMessage}>
-              {t(
-                `To receive this token from the Ethereum network, connect to an external wallet and bridge the assets to your destination network.`,
-              )}
-            </TextL>
-          </View>
-        )}
-        <CommonButton
-          style={styles.commonButton}
-          disabled={btnDisabled}
-          type="primary"
-          title={t(btnTitleText)}
-          onPress={onPressBtn}
-        />
-        {!isConnectWallet && (
-          <View style={styles.poweredWrap}>
-            <Text style={styles.poweredText}>Powered by</Text>
-            <Svg icon="eBridgeLogo" oblongSize={[pTd(47), pTd(12)]} />
-          </View>
+        {isConnected ? (
+          <CommonButton disabled={btnDisabled} type="primary" title={t(btnTitleText)} onPress={onPressBtn} />
+        ) : (
+          <>
+            <View style={styles.tipContainer}>
+              <Svg icon="info" iconStyle={{ marginRight: pTd(12) }} />
+              <TextL style={styles.tipInfoMessage}>
+                {t(
+                  `To receive this token from the Ethereum network, connect to an external wallet and bridge the assets to your destination network.`,
+                )}
+              </TextL>
+            </View>
+            <WalletConnect />
+            <View style={styles.poweredWrap}>
+              <Text style={styles.poweredText}>Powered by</Text>
+              <Svg icon="eBridgeLogo" oblongSize={[pTd(47), pTd(12)]} />
+            </View>
+          </>
         )}
       </View>
     </View>
@@ -107,9 +104,6 @@ const getStyles = makeStyles(theme => ({
   },
   footerContainer: {
     width: '100%',
-  },
-  commonButton: {
-    marginTop: pTd(16),
   },
   tipContainer: {
     ...GStyles.paddingArg(pTd(16)),

@@ -1,9 +1,10 @@
 import React, { useCallback } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { View } from 'react-native';
 import { pTd } from 'utils/unit';
 import { makeStyles } from '@rneui/themed';
 import '@walletconnect/react-native-compat';
 import { WalletConnectModal, useWalletConnectModal } from '@walletconnect/modal-react-native';
+import CommonButton from 'components/CommonButton';
 
 const projectId = '6733595637fa2afd8bb831ac36a906af'; // todo_wade: move to env
 
@@ -35,9 +36,11 @@ export default function WalletConnect() {
   }, [isConnected, open, provider]);
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={onPress}>
-        <Text>{isConnected ? 'Disconnect' : 'Connect'}</Text>
-      </TouchableOpacity>
+      <CommonButton
+        type="primary"
+        title={isConnected ? 'Disconnect external wallet' : 'Connect external wallet'}
+        onPress={onPress}
+      />
       <WalletConnectModal projectId={projectId} providerMetadata={providerMetadata} />
     </View>
   );
@@ -45,12 +48,7 @@ export default function WalletConnect() {
 
 const getStyles = makeStyles(theme => ({
   container: {
-    marginTop: pTd(80),
+    marginTop: pTd(16),
     width: '100%',
-    height: pTd(60),
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: theme.colors.borderBase1,
-    borderRadius: pTd(8),
-    flexDirection: 'row',
   },
 }));

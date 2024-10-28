@@ -5,11 +5,8 @@ import VerifierCountdown, { VerifierCountdownInterface } from 'components/Verifi
 import PageContainer from 'components/PageContainer';
 import DigitInput, { DigitInputInterface } from 'components/DigitInput';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { StyleSheet, Text } from 'react-native';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { VerificationType, OperationTypeEnum, VerifierInfo, VerifyStatus } from '@portkey-wallet/types/verifier';
-import GuardianItem from '../components/GuardianItem';
-import { FontStyles } from 'assets/theme/styles';
 import Loading from 'components/Loading';
 import navigationService from 'utils/navigationService';
 import CommonToast from 'components/CommonToast';
@@ -28,16 +25,19 @@ import {
   VERIFICATION_TO_OPERATION_MAP,
 } from '@portkey-wallet/constants/constants-ca/verifier';
 import { ChainId } from '@portkey-wallet/types';
-import { CreateAddressLoading, VERIFY_INVALID_TIME } from '@portkey-wallet/constants/constants-ca/wallet';
+import { VERIFY_INVALID_TIME } from '@portkey-wallet/constants/constants-ca/wallet';
 import { handleGuardiansApproved } from 'utils/login';
-import { checkVerifierIsInvalidCode, checkVerifierIsTimeout } from '@portkey-wallet/utils/guardian';
+import {
+  checkVerifierIsInvalidCode,
+  checkVerifierIsTimeout,
+  checkVerifierIsTooManyRetries,
+} from '@portkey-wallet/utils/guardian';
 import { pTd } from 'utils/unit';
 import { useErrorMessage } from '@portkey-wallet/hooks/hooks-ca/misc';
 import { deleteLoginAccount } from '@portkey-wallet/utils/deleteAccount';
 import { useGetCurrentCAContract } from 'hooks/contract';
 import useLogOut from 'hooks/useLogOut';
 import { makeStyles } from '@rneui/themed';
-import fonts from 'assets/theme/fonts';
 
 type RouterParams = {
   guardianItem?: UserGuardianItem;
@@ -131,7 +131,8 @@ export default function VerifierDetails() {
       if (!requestCodeResult || !guardianItem || !code) return;
       const isRequestResult = pin && verificationType === VerificationType.register && managerAddress;
       digitInput.current?.lockInput();
-      const loadingKey = Loading.show(isRequestResult ? { text: CreateAddressLoading } : undefined, true);
+      // const loadingKey = Loading.show(isRequestResult ? { text: CreateAddressLoading } : undefined, true);
+      const loadingKey = Loading.show();
       try {
         const rst = await verification.checkVerificationCode({
           params: {
@@ -204,6 +205,8 @@ export default function VerifierDetails() {
           setCodeError('Incorrect code, please try again.', VERIFY_INVALID_TIME);
         } else if (checkVerifierIsTimeout(error)) {
           setCodeError('Verification code expired. Please request a new one to continue.', VERIFY_INVALID_TIME);
+        } else if (checkVerifierIsTooManyRetries(error)) {
+          setCodeError('Too many retries. Please request a new verification code to continue.', VERIFY_INVALID_TIME);
         } else {
           CommonToast.failError(error, 'Verify Fail');
         }
@@ -264,6 +267,8 @@ export default function VerifierDetails() {
           setCodeError('Incorrect code, please try again.', VERIFY_INVALID_TIME);
         } else if (checkVerifierIsTimeout(error)) {
           setCodeError('Verification code expired. Please request a new one to continue.', VERIFY_INVALID_TIME);
+        } else if (checkVerifierIsTooManyRetries(error)) {
+          setCodeError('Too many retries. Please request a new verification code to continue.', VERIFY_INVALID_TIME);
         } else {
           CommonToast.failError(error, 'Verify Fail');
         }
@@ -366,7 +371,6 @@ const getStyles = makeStyles(theme => ({
   },
   headerTitle: {
     marginBottom: pTd(16),
-    ...fonts.BGMediumFont,
   },
   headerContent: {
     lineHeight: pTd(20),

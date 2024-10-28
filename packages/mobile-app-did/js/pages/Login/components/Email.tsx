@@ -2,7 +2,6 @@ import React, { useState, useRef } from 'react';
 import { TextInput, View } from 'react-native';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { checkEmail } from '@portkey-wallet/utils/check';
-import Loading from 'components/Loading';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { useLanguage } from 'i18n/hooks';
 import myEvents from 'utils/deviceEvent';
@@ -41,7 +40,7 @@ export default function Email({
   const { t } = useLanguage();
   const iptRef = useRef<TextInput>();
   useInputFocus(iptRef);
-  const [loading] = useState<boolean>();
+  const [loading, setLoading] = useState<boolean>(false);
   const [loginAccount, setLoginAccount] = useState<string>();
   const [errorMessage, setErrorMessage] = useState<string>();
   const onLogin = useOnLogin(type === PageType.login);
@@ -50,13 +49,13 @@ export default function Email({
     const message = checkEmail(loginAccount) || undefined;
     setErrorMessage(message);
     if (message) return;
-    const loadingKey = Loading.show();
+    setLoading(true);
     try {
       await onLogin({ loginAccount: loginAccount as string });
     } catch (error) {
       setErrorMessage(handleErrorMessage(error));
     }
-    Loading.hide(loadingKey);
+    setLoading(false);
   }, [loginAccount, onLogin]);
 
   useEffectOnce(() => {
@@ -95,7 +94,6 @@ export default function Email({
             placeholder={t('Enter your Email')}
             containerStyle={emailStyles.emailInputContainerStyle}
             inputContainerStyle={emailStyles.emailInputInputContainerStyle}
-            // inputContainerStyle={[emailStyles.emailInputInputContainerStyle, GStyles.hairlineBorder]}
             placeholderTextColor={darkColors.textBase3}
           />
         </View>
@@ -112,7 +110,7 @@ export default function Email({
       {type === PageType.login ? (
         <Touchable
           style={[GStyles.flexRowWrap, GStyles.itemCenter, GStyles.flexCenter, emailStyles.signUpTip]}
-          onPress={() => navigationService.navigate('SignupPortkey')}>
+          onPress={() => navigationService.navigate('LoginPortkey')}>
           <TextL style={{ color: theme.colors.textBase2 }}>
             Don’t have an account? <TextL style={{ color: theme.colors.textBrand1 }}>Sign up</TextL>
           </TextL>
@@ -120,7 +118,7 @@ export default function Email({
       ) : (
         <Touchable
           style={[GStyles.flexRowWrap, GStyles.itemCenter, GStyles.flexCenter, emailStyles.signUpTip]}
-          onPress={() => navigationService.navigate('LoginPortkey')}>
+          onPress={() => navigationService.navigate('LoginEmail')}>
           <TextL style={{ color: theme.colors.textBase2 }}>
             Already have an account? <TextL style={{ color: theme.colors.textBrand1 }}>Log in</TextL>
           </TextL>

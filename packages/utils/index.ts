@@ -219,12 +219,13 @@ export const formatAddress2NoPrefix = (address: string): string => {
  */
 export const isMainNet = (network: NetworkType): boolean => network === 'MAINNET';
 
-export const getAddressChainId = (toAddress: string, defaultChainId: ChainId) => {
+export const getAddressChainId = (toAddress: string, defaultChainId?: ChainId) => {
   if (!toAddress.includes('_')) return defaultChainId;
   const arr = toAddress.split('_');
+
   const addressChainId = arr[arr.length - 1];
   // no suffix
-  if (isAelfAddress(addressChainId)) {
+  if (isAelfAddress(addressChainId) && defaultChainId) {
     return defaultChainId;
   }
   return addressChainId;

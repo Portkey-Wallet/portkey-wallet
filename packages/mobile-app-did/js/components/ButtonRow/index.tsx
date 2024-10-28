@@ -1,8 +1,9 @@
+import { makeStyles } from '@rneui/themed';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import CommonButton, { CommonButtonProps } from 'components/CommonButton';
 import React from 'react';
-import { StyleProp, StyleSheet, TextStyle, View, ViewStyle } from 'react-native';
+import { StyleProp, TextStyle, View, ViewStyle } from 'react-native';
 import { pTd } from 'utils/unit';
 
 export type ButtonRowProps = {
@@ -21,6 +22,8 @@ export default function ButtonRow({
   buttons,
   style,
 }: ButtonRowProps) {
+  const styles = getStyles();
+
   return (
     <View style={[styles.buttonsBox, style]}>
       {Array.isArray(buttons) &&
@@ -55,21 +58,21 @@ export default function ButtonRow({
   );
 }
 
-export const styles = StyleSheet.create({
+export const getStyles = makeStyles(theme => ({
   buttonStyle: {
     width: '100%',
-    height: pTd(40),
+    height: pTd(48),
     paddingHorizontal: 0,
   },
   outlineButtonStyle: {
     borderWidth: 1,
-    borderColor: defaultColors.border1,
+    borderColor: theme.colors.borderNeutral2,
   },
   containerStyle: {
     flex: 1,
   },
   outlineTitleStyle: {
-    color: defaultColors.font5,
+    color: theme.colors.textBase1,
   },
   buttonItem: {
     flex: 1,
@@ -80,11 +83,11 @@ export const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   buttonsBox: {
-    marginTop: pTd(20),
+    marginTop: pTd(24),
     flexDirection: 'row',
   },
   titleStyle: {
     width: '100%',
     fontSize: pTd(14),
   },
-});
+}));

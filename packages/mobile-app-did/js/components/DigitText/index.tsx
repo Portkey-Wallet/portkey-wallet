@@ -163,7 +163,7 @@ const getStyles = makeStyles(theme => ({
     backgroundColor: theme.colors.bgNeutral2,
   },
   pinPlaceholderError: {
-    backgroundColor: theme.colors.borderDanger1,
+    backgroundColor: theme.colors.bgDanger1,
   },
   pinSecureText: {
     backgroundColor: theme.colors.textBrand2,

@@ -14,7 +14,7 @@ import { parseTelegramToken } from '@portkey-wallet/utils/authentication';
 import { OpenLogin } from '@portkey-wallet/constants/constants-ca/network';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 
-import { TelegramAuthentication } from 'hooks/authentication';
+import { TelegramAuthentication } from 'types/authentication';
 import { WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTypes';
 import { WebViewMessageEvent } from 'react-native-webview';
 import {
@@ -95,8 +95,9 @@ function TelegramSign({ onConfirm, onReject }: TelegramSignProps) {
     },
     [onReject],
   );
+
   return (
-    <ModalBody title="Telegram Login" modalBodyType="bottom">
+    <ModalBody title="Continue with Telegram" modalBodyType="bottom" style={{ height: pTd(550) }}>
       <KeyboardAwareScrollView enableOnAndroid={true} contentContainerStyle={styles.container}>
         {loading && (
           <View style={styles.loadingBox}>

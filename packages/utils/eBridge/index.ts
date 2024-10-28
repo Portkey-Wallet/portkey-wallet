@@ -1,6 +1,6 @@
 import { IEBridgeChainInfo, TokenInfo } from './types';
-import { IBridgeOperator, IEBridge } from './types/bridge';
 import { getChainIdByMap } from './utils';
+import { IBridgeOperator, ICreateReceiptParams, IEBridge } from './types/bridge';
 import { ELFBridgeOperator, EVMBridgeOperator } from './utils/operator';
 
 export type TEBridgeOptions = {
@@ -44,28 +44,13 @@ export class EBridge implements IEBridge {
     }
   };
 
-  createReceipt = (amount: string, targetAddress: string) => {
-    // this.fromOperator.createReceipt
-    // this.fromOperator.
-    // CreateReceipt
-    /**
-     * message CreateReceiptInput{
-    string symbol = 1;
-    aelf.Address owner = 2; //sender
-    string targetAddress = 3;// evm address
-    int64 amount = 4;
-    string target_chain_id = 5; //ex. Ethereum BSC BaseSepolia
-}
-     */
+  createReceipt(params: ICreateReceiptParams): Promise<any> {
+    const fromTokenInfo = this.options.tokenInfo[this.options.fromChainInfo.chainId];
 
-    if (this.options.tokenInfo[this.options.fromChainInfo.chainId].symbol === 'ELF') {
-      // allowance ELFFee + amount
-      // approve ELF
-    } else {
-      // allowance
-      // approve ELF
-      // approve c symbol
-    }
-    throw new Error('Method not implemented.');
-  };
+    return this.fromOperator.createReceipt({
+      ...params,
+      tokenInfo: fromTokenInfo,
+      targetChainId: this.options.toChainInfo.chainId,
+    });
+  }
 }

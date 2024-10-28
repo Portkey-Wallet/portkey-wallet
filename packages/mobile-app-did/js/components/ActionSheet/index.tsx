@@ -1,13 +1,12 @@
 import React, { ReactNode } from 'react';
 import OverlayModal from '../OverlayModal';
-import { View, Text, Keyboard, ImageBackground, ImageSourcePropType, ScrollView } from 'react-native';
+import { View, Text, Keyboard, ImageSourcePropType, ScrollView } from 'react-native';
 import { getStyles, styles as showStyles } from './style';
 import { TextL, TextM, TextTitle } from 'components/CommonText';
 import ButtonRow, { ButtonRowProps } from 'components/ButtonRow';
 import ButtonCol from 'components/ButtonCol';
 import { pTd } from 'utils/unit';
 import Svg from 'components/Svg';
-import { defaultColors } from 'assets/theme';
 import { TextStyleType } from 'types/styles';
 import Touchable from 'components/Touchable';
 import { useTheme } from '@rneui/themed';
@@ -111,7 +110,15 @@ function AlertBody({
           </View>
         )}
         {title ? <TextTitle style={[styles.alertTitle, titleStyle]}>{title}</TextTitle> : null}
-        {typeof title2 === 'string' ? <TextTitle style={styles.alertTitle2}>{title2}</TextTitle> : title2}
+        {typeof title2 === 'string' ? (
+          title2 ? (
+            <TextTitle style={styles.alertTitle2}>{title2}</TextTitle>
+          ) : null
+        ) : (
+          title2
+        )}
+        {!title && !title2 && <View style={styles.titlePlaceholder} />}
+
         <ScrollView
           showsVerticalScrollIndicator={false}
           style={styles.scrollViewStyle}
@@ -130,6 +137,7 @@ function AlertBody({
           ) : (
             message2
           )}
+
           {messageList?.map((item, index) => {
             return typeof item === 'string' ? (
               item ? (

@@ -6,12 +6,12 @@ import { headerHeight } from 'components/CustomHeader/style/index.style';
 import Keypad, { KeypadPropsType } from 'components/Keypad';
 import DigitText, { DigitTextProps } from 'components/DigitText';
 import { makeStyles } from '@rneui/themed';
-import fonts from 'assets/theme/fonts';
 
 type PinContainerProps = {
   title: string;
   showHeader?: boolean;
   onChangeText?: (text: string) => void;
+  isKeypadShow?: boolean;
 } & DigitTextProps &
   KeypadPropsType;
 
@@ -25,6 +25,7 @@ const PinContainer = forwardRef(function PinContainer(
     maxLength,
     isBiometrics,
     onBiometricsPress,
+    isKeypadShow = true,
     ...textProps
   }: PinContainerProps,
   forwardedRef,
@@ -36,7 +37,7 @@ const PinContainer = forwardRef(function PinContainer(
     // showHeader && { paddingTop: styles.container.paddingTop - headerHeight }
     <View style={[styles.container, showHeader && { paddingTop: styles.container.paddingTop - headerHeight }]}>
       <View>
-        <TextH1 style={fonts.BGMediumFont}>{title}</TextH1>
+        <TextH1>{title}</TextH1>
         <DigitText
           type="pin"
           secureTextEntry
@@ -47,20 +48,22 @@ const PinContainer = forwardRef(function PinContainer(
         />
       </View>
 
-      <Keypad
-        ref={forwardedRef}
-        maxLength={maxLength}
-        onChange={_value => {
-          setValue(_value);
-          onChangeText && onChangeText(_value);
-        }}
-        onFinish={onFinish}
-        onRest={() => {
-          setValue('');
-        }}
-        onBiometricsPress={onBiometricsPress}
-        isBiometrics={isBiometrics}
-      />
+      {isKeypadShow && (
+        <Keypad
+          ref={forwardedRef}
+          maxLength={maxLength}
+          onChange={_value => {
+            setValue(_value);
+            onChangeText && onChangeText(_value);
+          }}
+          onFinish={onFinish}
+          onRest={() => {
+            setValue('');
+          }}
+          onBiometricsPress={onBiometricsPress}
+          isBiometrics={isBiometrics}
+        />
+      )}
     </View>
   );
 });

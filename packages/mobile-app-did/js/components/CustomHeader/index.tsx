@@ -38,7 +38,7 @@ const CustomHeader: React.FC<CustomHeaderProps> = props => {
     leftDom = null,
     titleDom = 'title',
     rightDom = null,
-    backTitle = 'Back',
+    backTitle = '',
     leftCallback,
     type = 'default',
     themeType = 'white',

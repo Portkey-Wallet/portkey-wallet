@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
     color: darkColors.textBase1,
     fontSize: pTd(32),
     lineHeight: pTd(38),
-    ...fonts.mediumFont,
+    ...fonts.BGMediumFont,
   },
   TextTitle: {
     color: darkColors.textBase1,

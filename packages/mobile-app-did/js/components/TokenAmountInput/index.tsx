@@ -2,8 +2,8 @@ import { darkColors, defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import { TextL, TextXXXL } from 'components/CommonText';
 import Svg from 'components/Svg';
-import React, { memo, useCallback, useState } from 'react';
-import { View, TextInput } from 'react-native';
+import React, { memo, useCallback, useRef, useState } from 'react';
+import { View, TextInput, TouchableOpacity, LayoutChangeEvent } from 'react-native';
 import { pTd } from 'utils/unit';
 import { makeStyles, useThemeMode } from '@rneui/themed';
 import { parseInputNumberChange } from '@portkey-wallet/utils/input';
@@ -12,24 +12,42 @@ import Touchable from 'components/Touchable';
 import { formatAmount, formatAmountUSDShow } from '@portkey-wallet/utils/converter';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
+import { FloatTip } from 'components/FloatTip';
 
 export interface ITokenAmountInput {
-  value: string;
-  usdValue: string;
+  value?: string;
+  usdValue?: string;
   label?: string;
   symbol: string;
   decimals: string | number;
+  warningTip?: string;
+  editable?: boolean;
   setValue: (v: string) => void;
   setUsdValue: (v: string) => void;
 }
 
 const TokenAmountInput: React.FC<ITokenAmountInput> = props => {
-  const { value = '', usdValue = '', label, symbol, decimals, setValue, setUsdValue } = props;
+  const {
+    value = '',
+    usdValue = '',
+    label,
+    symbol,
+    decimals,
+    warningTip = '',
+    editable = true,
+    setValue,
+    setUsdValue,
+  } = props;
   const [isRevert, setIsRevert] = useState(false);
   const { mode } = useThemeMode();
   const [tokenPriceObject] = useGetCurrentAccountTokenPrice();
   const styles = getStyles();
-
+  const warningRef = useRef<NodeJS.Timeout | null>(null);
+  const [warningClick, setWarningClick] = useState(false);
+  const [wrapperLayoutProps, setWrapperLayoutProps] = useState<{ width: number; height: number }>({
+    width: 0,
+    height: 0,
+  });
   const onPressRevert = useCallback(() => setIsRevert(pre => !pre), []);
   const onValueInputChange = useCallback(
     (v: string) => {
@@ -58,34 +76,67 @@ const TokenAmountInput: React.FC<ITokenAmountInput> = props => {
     [decimals, setUsdValue, setValue, symbol, tokenPriceObject],
   );
 
+  const onLayout = useCallback(
+    (event: LayoutChangeEvent) => {
+      const { width, height } = event.nativeEvent.layout;
+      if (wrapperLayoutProps.width === width && wrapperLayoutProps.height === height) return;
+      setWrapperLayoutProps({ width, height });
+    },
+    [wrapperLayoutProps],
+  );
+  const clickWarning = useCallback(() => {
+    setWarningClick(true);
+    warningRef.current = setTimeout(() => {
+      setWarningClick(false);
+      warningRef.current = null;
+    }, 2000);
+  }, []);
+
   return (
     <View style={styles.wrap}>
       <View style={[GStyles.flexRow, styles.topSection]}>
-        {isRevert ? (
-          <>
-            <TextXXXL style={styles.unit}>{`$ `}</TextXXXL>
-            <TextInput
-              value={usdValue}
-              onChangeText={onUsdValueInputChange}
-              style={styles.input}
-              placeholder="0"
-              placeholderTextColor={darkColors.textBase3}
-              keyboardType="numeric"
-            />
-          </>
-        ) : (
-          <>
-            <TextInput
-              value={value}
-              style={styles.input}
-              placeholder="0"
-              placeholderTextColor={darkColors.textBase3}
-              keyboardType="numeric"
-              onChangeText={onValueInputChange}
-            />
-            <TextXXXL style={styles.unit}>{` ${label || symbol}`}</TextXXXL>
-          </>
-        )}
+        <>
+          {isRevert ? (
+            <>
+              <TextXXXL style={styles.unit}>{`$ `}</TextXXXL>
+              <TextInput
+                value={usdValue}
+                onChangeText={onUsdValueInputChange}
+                style={styles.input}
+                placeholder="0"
+                placeholderTextColor={darkColors.textBase3}
+                keyboardType="numeric"
+                editable={editable}
+              />
+            </>
+          ) : (
+            <>
+              <TextInput
+                value={value}
+                style={styles.input}
+                placeholder="0"
+                placeholderTextColor={darkColors.textBase3}
+                keyboardType="numeric"
+                onChangeText={onValueInputChange}
+                editable={editable}
+              />
+              <TextXXXL style={styles.unit}>{` ${label || symbol}`}</TextXXXL>
+            </>
+          )}
+          {warningTip && (
+            <TouchableOpacity onPress={clickWarning} onLayout={onLayout} disabled={warningClick}>
+              <FloatTip
+                wrapperLayoutProps={wrapperLayoutProps}
+                textStyle={{
+                  color: defaultColors.textBase2,
+                }}
+                content={warningTip}
+                display={warningClick}
+              />
+              <Svg icon="warning" iconStyle={{ marginLeft: pTd(6) }} color={defaultColors.iconDanger1} size={pTd(24)} />
+            </TouchableOpacity>
+          )}
+        </>
       </View>
       <Touchable onPress={onPressRevert} style={[GStyles.flexRow, styles.bottomSection]}>
         {isRevert ? (

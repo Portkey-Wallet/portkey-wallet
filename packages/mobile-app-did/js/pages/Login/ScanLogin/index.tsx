@@ -4,7 +4,6 @@ import Svg from 'components/Svg';
 import { pTd } from 'utils/unit';
 import { StyleSheet, View } from 'react-native';
 import { defaultColors } from 'assets/theme';
-import { FontStyles } from 'assets/theme/styles';
 import Touchable from 'components/Touchable';
 import navigationService from 'utils/navigationService';
 import { TextXXXL } from 'components/CommonText';
@@ -13,7 +12,7 @@ import CommonButton from 'components/CommonButton';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { LoginQRData } from '@portkey-wallet/types/types-ca/qrcode';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import CommonToast from 'components/CommonToast';
+import CommonPrompt from 'components/CommonPromptCard';
 import { useGetCurrentCAContract } from 'hooks/contract';
 import { addManager } from 'utils/wallet';
 import { extraDataEncode, getDeviceInfoFromQR } from '@portkey-wallet/utils/device';
@@ -41,7 +40,7 @@ export default function ScanLogin() {
       if (targetClientId) {
         const isQRCodeExist = await checkQRCodeExist(targetClientId);
         if (isQRCodeExist === false) {
-          CommonToast.warn('The QR code has already been scanned by another device.');
+          CommonPrompt.warn('The QR code has already been scanned by another device.');
           setLoading(false);
           return;
         }
@@ -63,7 +62,7 @@ export default function ScanLogin() {
       });
       navigationService.navigate('Tab');
     } catch (error) {
-      CommonToast.failError(error);
+      CommonPrompt.failError(error);
     }
     setLoading(false);
   }, [caHash, loading, managerAddress, targetClientId, qrExtraData, deviceType, getCurrentCAContract, address]);
@@ -76,7 +75,7 @@ export default function ScanLogin() {
       leftCallback={() => navigationService.navigate('Tab')}
       rightDom={
         <Touchable onPress={() => navigationService.navigate('Tab')}>
-          <Svg size={pTd(14)} color={FontStyles.font3.color} icon="close" iconStyle={styles.svgStyle} />
+          <Svg size={pTd(14)} color={defaultColors.font3} icon="close" iconStyle={styles.svgStyle} />
         </Touchable>
       }>
       <View style={GStyles.itemCenter}>

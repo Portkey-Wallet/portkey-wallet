@@ -60,7 +60,6 @@ import { timesDecimals } from '@portkey-wallet/utils/converter';
 import { GuardianApproveTip } from './components/GuardianApproveTip';
 import { GuardianExpired } from './components/GuardianExpired';
 import { makeStyles } from '@rneui/themed';
-import fonts from 'assets/theme/fonts';
 import { GuardianApproveProgress } from './components/GuardianApproveProgress';
 
 export type RouterParams = {
@@ -306,7 +305,8 @@ export default function GuardianApproval() {
   const onAddGuardian = useCallback(async () => {
     if (!managerAddress || !caHash || !verifierInfo || !guardianItem || !guardiansStatus || !userGuardiansList) return;
 
-    Loading.show({ text: t('Processing on the chain...') });
+    // Loading.show({ text: t('Processing on the chain...') });
+    Loading.show();
     let req: SendResult | undefined;
     try {
       // o != origin
@@ -370,7 +370,6 @@ export default function GuardianApproval() {
     guardiansStatus,
     managerAddress,
     originChainId,
-    t,
     userGuardiansList,
     verifierInfo,
     randomVerifierId,
@@ -378,7 +377,8 @@ export default function GuardianApproval() {
 
   const onDeleteGuardian = useCallback(async () => {
     if (!managerAddress || !caHash || !guardianItem || !userGuardiansList || !guardiansStatus) return;
-    Loading.show({ text: t('Processing on the chain...') });
+    // Loading.show({ text: t('Processing on the chain...') });
+    Loading.show();
     try {
       const caContract = await getCurrentCAContract();
       const req = await deleteGuardian(
@@ -399,11 +399,12 @@ export default function GuardianApproval() {
       CommonToast.failError(error);
     }
     Loading.hide();
-  }, [caHash, getCurrentCAContract, guardianItem, guardiansStatus, managerAddress, t, userGuardiansList]);
+  }, [caHash, getCurrentCAContract, guardianItem, guardiansStatus, managerAddress, userGuardiansList]);
 
   const onEditGuardian = useCallback(async () => {
     if (!managerAddress || !caHash || !preGuardian || !guardianItem || !userGuardiansList || !guardiansStatus) return;
-    Loading.show({ text: t('Processing on the chain...') });
+    // Loading.show({ text: t('Processing on the chain...') });
+    Loading.show();
     try {
       const caContract = await getCurrentCAContract();
       const req = await editGuardian(
@@ -434,7 +435,6 @@ export default function GuardianApproval() {
     guardiansStatus,
     managerAddress,
     preGuardian,
-    t,
     userGuardiansList,
   ]);
 
@@ -558,7 +558,8 @@ export default function GuardianApproval() {
   }, [getCAContract, getTransferFee, guardiansStatus, sendTransferPreviewApprove, successNavigate, userGuardiansList]);
   const onSetLoginAccount = useCallback(async () => {
     if (!managerAddress || !caHash || !verifierInfo || !guardianItem || !guardiansStatus || !userGuardiansList) return;
-    Loading.show({ text: t('Processing on the chain...') });
+    // Loading.show({ text: t('Processing on the chain...') });
+    Loading.show();
     try {
       const caContract = await getCurrentCAContract();
       const req = await setLoginAccount(
@@ -599,14 +600,14 @@ export default function GuardianApproval() {
     guardiansStatus,
     managerAddress,
     setLoginAccountNavigate,
-    t,
     userGuardiansList,
     verifierInfo,
   ]);
 
   const onUnsetLoginAccount = useCallback(async () => {
     if (!managerAddress || !caHash || !verifierInfo || !guardianItem || !guardiansStatus || !userGuardiansList) return;
-    Loading.show({ text: t('Processing on the chain...') });
+    // Loading.show({ text: t('Processing on the chain...') });
+    Loading.show();
     try {
       const caContract = await getCurrentCAContract();
       const req = await unsetLoginAccount(
@@ -656,7 +657,6 @@ export default function GuardianApproval() {
     originChainId,
     reportUnsetLoginAccount,
     setLoginAccountNavigate,
-    t,
     userGuardiansList,
     verifierInfo,
   ]);
@@ -804,7 +804,7 @@ export default function GuardianApproval() {
         <GuardianExpired onTryAgain={onTryAgain} />
       ) : (
         <View style={GStyles.flex1}>
-          <TextH1 style={styles.headerTitle}>Guardian approval</TextH1>
+          <TextH1>Guardian approval</TextH1>
           <TextM style={styles.headerContent}>
             {'Complete the required guardian approvals below. Note: approvals expire after 1 hour.'}
           </TextM>
@@ -864,9 +864,6 @@ const getStyles = makeStyles(theme => ({
     paddingBottom: pTd(16),
     justifyContent: 'space-between',
     paddingHorizontal: pTd(16),
-  },
-  headerTitle: {
-    ...fonts.BGMediumFont,
   },
   headerContent: {
     marginTop: pTd(16),

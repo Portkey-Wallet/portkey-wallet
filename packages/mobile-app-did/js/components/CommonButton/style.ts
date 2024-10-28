@@ -58,4 +58,7 @@ export const styles = StyleSheet.create({
   outlineDisabledTitleStyle: {
     color: defaultColors.font3,
   },
+  loadingIcon: {
+    width: pTd(16),
+  },
 });

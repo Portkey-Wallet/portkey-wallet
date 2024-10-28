@@ -68,6 +68,11 @@ export const getStyles = makeStyles(theme => ({
   alertTitle: {
     marginBottom: pTd(12),
   },
+  titlePlaceholder: {
+    height: pTd(24),
+    width: '100%',
+    marginBottom: pTd(12),
+  },
   alertMessage: {
     color: theme.colors.textBase1,
     marginBottom: pTd(12),
@@ -86,6 +91,7 @@ export const getStyles = makeStyles(theme => ({
     alignItems: 'center',
     right: pTd(18),
     top: pTd(18),
+    zIndex: 1,
   },
   scrollViewStyle: {
     maxHeight: screenHeight * 0.45,

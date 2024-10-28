@@ -13,6 +13,8 @@ import Loading from 'components/Loading';
 import CommonToast from 'components/CommonToast';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import { ReceiveType } from '@portkey-wallet/types/types-ca/receive';
+import { makeStyles } from '@rneui/themed';
+import EBridgeCard from '../components/EBridgeCard';
 
 export default function Receive() {
   const tokenItem = useRouterParams<TokenItemShowType>();
@@ -28,6 +30,7 @@ export default function Receive() {
     sourceChainList,
     setSourceChain,
   } = useReceive(tokenItem, chainId);
+  const styles = getStyles();
 
   useEffect(() => {
     if (loading) {
@@ -95,15 +98,16 @@ export default function Receive() {
           )}
         </>
       )}
+      <EBridgeCard tokenInfo={tokenItem} isConnectWallet={false} />
     </PageContainer>
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = makeStyles(theme => ({
   containerStyles: {
     flex: 1,
     display: 'flex',
     flexDirection: 'column',
     paddingBottom: pTd(16),
   },
-});
+}));

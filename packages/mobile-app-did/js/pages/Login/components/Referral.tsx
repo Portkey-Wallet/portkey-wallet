@@ -7,7 +7,7 @@ import { pTd } from 'utils/unit';
 import { PageLoginType, PageType } from '../types';
 import TermsServiceButton from './TermsServiceButton';
 import Divider from 'components/Divider';
-import CommonToast from 'components/CommonToast';
+import CommonPrompt from 'components/CommonPromptCard';
 import { useAuthenticationSign } from 'hooks/authentication';
 import { LoginParams, useOnLogin } from 'hooks/login';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
@@ -60,7 +60,7 @@ export function useLoginModeMap(
         },
       });
     } catch (error) {
-      CommonToast.failError(error);
+      CommonPrompt.failError(error);
     }
     Loading.hide(loadingKey);
   }, [authenticationSign, onLogin]);
@@ -80,7 +80,7 @@ export function useLoginModeMap(
         },
       });
     } catch (error) {
-      CommonToast.failError(error);
+      CommonPrompt.failError(error);
     }
     Loading.hide();
   }, [authenticationSign, onLogin]);
@@ -95,7 +95,7 @@ export function useLoginModeMap(
         authenticationInfo: { [userInfo.user.id]: userInfo.accessToken },
       });
     } catch (error) {
-      if (!checkIsUserCancel(error)) CommonToast.failError(error);
+      if (!checkIsUserCancel(error)) CommonPrompt.failError(error);
     }
     Loading.hide(loadingKey);
   }, [authenticationSign, onLogin]);
@@ -110,7 +110,7 @@ export function useLoginModeMap(
         authenticationInfo: { [userInfo.user.id]: userInfo.accessToken },
       });
     } catch (error) {
-      if (!checkIsUserCancel(error)) CommonToast.failError(error);
+      if (!checkIsUserCancel(error)) CommonPrompt.failError(error);
     }
     Loading.hide(loadingKey);
   }, [authenticationSign, onLogin]);
@@ -125,7 +125,7 @@ export function useLoginModeMap(
         authenticationInfo: { [userInfo.user.userId]: userInfo.accessToken },
       });
     } catch (error) {
-      if (!checkIsUserCancel(error)) CommonToast.failError(error);
+      if (!checkIsUserCancel(error)) CommonPrompt.failError(error);
     }
     Loading.hide(loadingKey);
   }, [authenticationSign, onLogin]);

@@ -7,8 +7,8 @@ import Svg from 'components/Svg';
 import { TextL } from 'components/CommonText';
 import { pTd } from 'utils/unit';
 import { statusBarHeight } from '@portkey-wallet/utils/mobile/device';
-import { handleErrorMessage } from '@portkey-wallet/utils';
 import Lottie from 'lottie-react-native';
+import CommonPrompt from 'components/CommonPromptCard';
 
 type TostProps = [
   text: string,
@@ -84,10 +84,10 @@ const show = (...args: TostProps) => {
 let element: any;
 
 export default {
-  text(text: string) {
-    Overlay.hide(element);
-    element = show(text);
-  },
+  // text(text: string) {
+  //   Overlay.hide(element);
+  //   element = show(text);
+  // },
   message(...args: TostProps) {
     Toast.hide(element);
     element = Toast.message(...args);
@@ -103,36 +103,40 @@ export default {
     element = show(...args);
   },
   warn(...args: TostProps) {
-    if (!args[3]) args[3] = 'warning';
-    Overlay.hide(element);
-    element = show(...args);
+    CommonPrompt.warn(args[0], undefined, args[1]);
+    // if (!args[3]) args[3] = 'warning';
+    // Overlay.hide(element);
+    // element = show(...args);
   },
   fail(...args: TostProps) {
-    if (!args.length) return;
-    if (!args[3]) args[3] = 'fail';
-    Overlay.hide(element);
-    args[0] = handleErrorMessage(args[0]);
-    element = show(...args);
+    CommonPrompt.error(args[0], undefined, args[1]);
+    // if (!args.length) return;
+    // if (!args[3]) args[3] = 'fail';
+    // Overlay.hide(element);
+    // args[0] = handleErrorMessage(args[0]);
+    // element = show(...args);
   },
   failError(error: any, errorText?: string) {
-    Overlay.hide(element);
-    const text = handleErrorMessage(error, errorText);
-    if (text) element = show(text, undefined, 'top', 'fail');
+    CommonPrompt.failError(error, errorText);
+    // Overlay.hide(element);
+    // const text = handleErrorMessage(error, errorText);
+    // if (text) element = show(text, undefined, 'top', 'fail');
   },
-  smile(...args: TostProps) {
-    Toast.hide(element);
-    element = Toast.smile(...args);
-  },
-  sad(...args: TostProps) {
-    Toast.hide(element);
-    element = Toast.sad(...args);
-  },
+  // smile(...args: TostProps) {
+  //   Toast.hide(element);
+  //   element = Toast.smile(...args);
+  // },
+  // sad(...args: TostProps) {
+  //   Toast.hide(element);
+  //   element = Toast.sad(...args);
+  // },
   info(...args: TostProps) {
-    Toast.hide(element);
-    element = Toast.info(...args);
+    CommonPrompt.info(args[0], undefined, args[1]);
+    // Toast.hide(element);
+    // element = Toast.info(...args);
   },
-  stop(...args: TostProps) {
-    Toast.hide(element);
-    element = Toast.stop(...args);
-  },
+  // stop(...args: TostProps) {
+  //   Toast.hide(element);
+  //   element = Toast.stop(...args);
+  // },
 };

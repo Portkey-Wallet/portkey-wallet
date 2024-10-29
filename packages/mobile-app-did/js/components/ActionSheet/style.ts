@@ -65,6 +65,9 @@ export const getStyles = makeStyles(theme => ({
     borderRadius: pTd(1.5),
     backgroundColor: theme.colors.iconBase3,
   },
+  infoIcon: {
+    marginBottom: pTd(12),
+  },
   alertTitle: {
     marginBottom: pTd(12),
   },

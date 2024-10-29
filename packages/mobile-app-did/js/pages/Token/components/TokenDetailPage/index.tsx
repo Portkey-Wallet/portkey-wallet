@@ -210,28 +210,18 @@ const TokenDetailPage: React.FC<TokenDetailParams> = ({ tokenInfo }: TokenDetail
             title="Swap"
             iconName="swap"
             onPress={() => {
-              onDisclaimerModalPress(
-                DepositModalMap.AwakenSwap,
-                stringifyETrans({
-                  url: `${awakenUrl}/trading/ELF_USDT_0.05` || '',
-                }),
-              );
+              // onDisclaimerModalPress(
+              //   DepositModalMap.AwakenSwap,
+              //   stringifyETrans({
+              //     url: `${awakenUrl}/trading/ELF_USDT_0.05` || '',
+              //   }),
+              // );
             }}
           />
         )}
       </View>
     );
-  }, [
-    awakenUrl,
-    buttonWrapStyle,
-    currentTokenInfo,
-    isBuyButtonShow,
-    isFaucetButtonShow,
-    isSwapShow,
-    onDisclaimerModalPress,
-    swap,
-    tokenInfo,
-  ]);
+  }, [buttonWrapStyle, currentTokenInfo, isBuyButtonShow, isFaucetButtonShow, isSwapShow, swap, tokenInfo]);
 
   const renderActivityList = useCallback(() => {
     return (

@@ -23,7 +23,6 @@ interface TokenListItemType {
 
 const TokenListUnionItem: React.FC<TokenListItemType> = props => {
   const { onPress, onExpand, selected, item, hideBalance = false } = props;
-  const defaultToken = useDefaultToken();
 
   const isMainnet = useIsMainnet();
   const symbolImages = useSymbolImages();
@@ -47,7 +46,6 @@ const TokenListUnionItem: React.FC<TokenListItemType> = props => {
             style={itemStyle.tokenIcon}
             title={item?.symbol}
             avatarSize={pTd(40)}
-            svgName={item?.symbol === defaultToken.symbol ? 'testnet' : undefined}
             imageUrl={item?.imageUrl || symbolImages[item?.symbol]}
             titleStyle={FontStyles.font11}
             borderStyle={GStyles.hairlineBorder}
@@ -76,11 +74,11 @@ const TokenListUnionItem: React.FC<TokenListItemType> = props => {
 
           <View style={itemStyle.balanceWrap}>
             <TextL style={itemStyle.token} numberOfLines={1} ellipsizeMode={'tail'}>
-              {hideBalance ? '****' : formatTokenAmountShowWithDecimals(item.balance, item.decimals)}
+              {hideBalance ? '******' : formatTokenAmountShowWithDecimals(item.balance, item.decimals)}
             </TextL>
             {isMainnet && item.balanceInUsd && (
               <TextS numberOfLines={1} ellipsizeMode={'tail'} style={itemStyle.dollar}>
-                {hideBalance ? '****' : formatAmountUSDShow(item.balanceInUsd)}
+                {hideBalance ? '******' : formatAmountUSDShow(item.balanceInUsd)}
               </TextS>
             )}
           </View>

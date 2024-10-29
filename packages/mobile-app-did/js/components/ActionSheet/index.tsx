@@ -65,6 +65,7 @@ type AlertBodyProps = {
   messageStyle?: TextStyleType;
   titleStyle?: TextStyleType;
   bgImage?: ImageSourcePropType;
+  showInfoIcon?: boolean;
 };
 
 function AlertBody({
@@ -80,6 +81,7 @@ function AlertBody({
   messageStyle,
   titleStyle,
   bgImage,
+  showInfoIcon = false,
 }: AlertBodyProps) {
   const styles = getStyles();
   const { theme } = useTheme();
@@ -109,6 +111,7 @@ function AlertBody({
             <Svg icon={'suggest-close'} size={pTd(20)} color={theme.colors.iconBase1} />
           </View>
         )}
+        {showInfoIcon && <Svg iconStyle={styles.infoIcon} icon="info" size={pTd(32)} color={theme.colors.iconBase1} />}
         {title ? <TextTitle style={[styles.alertTitle, titleStyle]}>{title}</TextTitle> : null}
         {typeof title2 === 'string' ? (
           title2 ? (

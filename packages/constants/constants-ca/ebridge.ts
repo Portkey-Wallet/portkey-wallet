@@ -136,7 +136,7 @@ export const EBRIDGE_DISCLAIMER_TEXT = EBRIDGE_DISCLAIMER_ARRAY.map(ele => ele.c
 export const EBRIDGE_DISCLAIMER_TEXT_SHARE256_POLICY_ID = AElf.utils.sha256(EBRIDGE_DISCLAIMER_TEXT);
 
 // aelf mainnet
-export const BRIDGE_INFO_AELF_MAINNET = {
+export const BRIDGE_INFO_AELF_MAINNET: { [key: string]: any } = {
   AELF: {
     BRIDGE_CONTRACT: '2dKF3svqDXrYtA5mYwKfADiHajo37mLZHPHVVuGbEDoD9jSgE8',
   },
@@ -146,7 +146,14 @@ export const BRIDGE_INFO_AELF_MAINNET = {
 };
 
 // evm mainnet
-export const BRIDGE_INFO_EVM_MAINNET = {
+export const BRIDGE_INFO_EVM_MAINNET: {
+  [key: string]: {
+    chainInfo: any;
+    bridgeContractAddress?: string;
+    bridgeContractOutAddress?: string;
+    limitContractAddress?: string;
+  };
+} = {
   BASE: {
     chainInfo: {
       chainId: 8453,
@@ -177,10 +184,10 @@ export const BRIDGE_INFO_EVM_MAINNET = {
     bridgeContractOutAddress: '0xE383261ABc2A32bdd54dC9cFB5C77407C5E660ef',
     limitContractAddress: '0xAA8a4d12F7272fFA2e67F82c88D628f0E629299B',
   },
-};
+} as const;
 
 // aelf testnet
-export const BRIDGE_INFO_AELF_TESTNET = {
+export const BRIDGE_INFO_AELF_TESTNET: { [key: string]: any } = {
   AELF: {
     BRIDGE_CONTRACT: 'foDLAM2Up3xLjg43SvCy5Ed6zaY5CKG8uczj6yUVZUweqQUmz',
   },
@@ -190,7 +197,14 @@ export const BRIDGE_INFO_AELF_TESTNET = {
 };
 
 // evm testnet
-export const BRIDGE_INFO_EVM_TESTNET = {
+export const BRIDGE_INFO_EVM_TESTNET: {
+  [key: string]: {
+    chainInfo: any;
+    bridgeContractAddress?: string;
+    bridgeContractOutAddress?: string;
+    limitContractAddress?: string;
+  };
+} = {
   ETH: {
     chainInfo: {
       chainId: 11155111,
@@ -223,7 +237,7 @@ export const BRIDGE_INFO_EVM_TESTNET = {
   },
 };
 
-export const BRIDGE_TOKEN_WHITE_LIST_MAINNET = {
+export const BRIDGE_TOKEN_WHITE_LIST_MAINNET: { [key: string]: any } = {
   ELF: {
     AELF: { name: 'Native Token', decimals: 8, symbol: 'ELF', address: '', issueChainId: 9992731 },
     tDVV: { name: 'Native Token', decimals: 8, symbol: 'ELF', address: '', issueChainId: 9992731 },
@@ -392,9 +406,9 @@ export const BRIDGE_TOKEN_WHITE_LIST_MAINNET = {
       issueChainId: 9992731,
     },
   },
-};
+} as const;
 
-export const BRIDGE_TOKEN_WHITE_LIST_TESTNET = {
+export const BRIDGE_TOKEN_WHITE_LIST_TESTNET: { [key: string]: any } = {
   ELF: {
     AELF: { name: 'Native Token', decimals: 8, symbol: 'ELF', address: '', issueChainId: 9992731 },
     tDVV: { name: 'Native Token', decimals: 8, symbol: 'ELF', address: '', issueChainId: 9992731 },

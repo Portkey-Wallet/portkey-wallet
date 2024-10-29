@@ -35,13 +35,13 @@ export default function Referral() {
     } catch (error) {
       console.log(error, '=====error-getLoginControlListAsync');
     }
-    SplashScreen.hideAsync();
-    await sleep(500);
     if (address) {
       let name: keyof RootStackParamList = 'SecurityLock';
       if (credentials && caHash) name = 'Tab';
       navigationService.reset(name);
     }
+    await sleep(500);
+    SplashScreen.hideAsync();
     // await sleep(500);
     // setIsSplashScreen(false);
   }, [isFocusedRef, address, getLoginControlListAsync, credentials, caHash]);

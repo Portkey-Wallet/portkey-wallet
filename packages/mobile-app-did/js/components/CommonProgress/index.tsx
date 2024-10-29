@@ -1,6 +1,6 @@
 import { makeStyles } from '@rneui/themed';
-import React, { useMemo } from 'react';
-import { View, ViewStyle } from 'react-native';
+import React, { useEffect, useMemo } from 'react';
+import { Animated, Easing, View, ViewStyle } from 'react-native';
 import { pTd } from 'utils/unit';
 
 export type TCommonProgressProps = {
@@ -9,11 +9,31 @@ export type TCommonProgressProps = {
 };
 export const CommonProgress = ({ percent, styles: wrapStyles }: TCommonProgressProps) => {
   const styles = getStyles();
-  const positionRight = useMemo(() => ({ right: percent >= 1 ? 0 : `${(1 - percent) * 100}%` }), [percent]);
+  const progressValue = useMemo(() => new Animated.Value(0), []);
+  useEffect(() => {
+    Animated.timing(progressValue, {
+      toValue: percent,
+      duration: 600,
+      useNativeDriver: false,
+      easing: Easing.linear,
+    }).start();
+  }, [percent, progressValue]);
+
+  const positionRight = useMemo(
+    () => ({
+      right: progressValue.interpolate({
+        inputRange: [0, 1],
+        outputRange: ['100%', '0%'],
+      }),
+    }),
+    [progressValue],
+  );
+
+  // const positionRight = useMemo(() => ({ right: percent >= 1 ? 0 : `${(1 - percent) * 100}%` }), [percent]);
 
   return (
     <View style={[styles.progressWrap, wrapStyles]}>
-      <View style={[styles.progressFill, positionRight]} />
+      <Animated.View style={[styles.progressFill, positionRight]} />
     </View>
   );
 };

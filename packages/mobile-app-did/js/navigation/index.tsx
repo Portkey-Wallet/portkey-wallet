@@ -37,6 +37,7 @@ import GiftHistory from 'pages/CryptoGift/GiftHistory';
 import GiftDetail from 'pages/CryptoGift/GiftDetail';
 import GiftResult from 'pages/CryptoGift/GiftResult';
 import EbridgeExample from 'pages/EbridgeExample';
+import Settings from 'pages/My/Profile';
 
 // key: page route key, value: is page show
 const PageShowMap = new Map<string, boolean>();
@@ -54,7 +55,7 @@ export const productionNav = [
   { name: 'GiftHistory', component: GiftHistory },
   { name: 'GiftDetail', component: GiftDetail },
   { name: 'GiftResult', component: GiftResult },
-
+  { name: 'ProfileSettings', component: Settings },
   ...QrCodeNav,
   ...GuardianNav,
   ...ActivityNav,

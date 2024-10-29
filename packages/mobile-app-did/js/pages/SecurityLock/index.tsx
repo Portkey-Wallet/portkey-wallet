@@ -190,7 +190,7 @@ export default function SecurityLock() {
     <PageContainer hideHeader containerStyles={GStyles.flex1} scrollViewProps={{ disabled: true }}>
       <PinContainer
         ref={digitInput}
-        title="Enter Pin"
+        title="Enter PIN"
         onChangeText={onChangeText}
         errorMessage={textError.errorMsg}
         isBiometrics={biometrics && biometricsReady}

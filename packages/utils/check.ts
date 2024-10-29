@@ -1,7 +1,7 @@
 import { isValidEmail } from './reg';
 export enum EmailError {
   noEmail = 'Please enter email address',
-  invalidEmail = 'Invalid email address',
+  invalidEmail = 'Please enter a valid email address.',
   alreadyRegistered = 'This address is already registered',
   noAccount = 'Failed to log in with this email. Please use your login account.',
 }

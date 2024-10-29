@@ -321,11 +321,13 @@ export function useGoGuardianApproval(isLogin?: boolean) {
       loginAccount,
       userGuardiansList,
       authenticationInfo,
+      loginType,
     }: {
       originChainId: ChainId;
       loginAccount: string;
       userGuardiansList?: UserGuardianItem[];
       authenticationInfo?: AuthenticationInfo;
+      loginType: LoginType;
     }) => {
       const onConfirm = async () => {
         Loading.showOnce();
@@ -366,7 +368,7 @@ export function useGoGuardianApproval(isLogin?: boolean) {
           initGuardiansStatus,
         });
       };
-      if (!isLogin) {
+      if (!isLogin && loginType === LoginType.Email) {
         ActionSheet.alert({
           title: 'You already have an account',
           message: `Do you want to log in with ${loginAccount || ''} instead?`,
@@ -535,7 +537,7 @@ export function useGoSelectVerifier(isLogin?: boolean) {
 
   return useCallback(
     async (params: LoginConfirmParams) => {
-      if (isLogin) {
+      if (isLogin && params.loginType === LoginType.Email) {
         ActionSheet.alert({
           title: 'You don’t have an account',
           message: `Would you like to create one with ${params.loginAccount || ''} ?`,
@@ -586,6 +588,7 @@ export function useOnLogin(isLogin?: boolean) {
             loginAccount,
             userGuardiansList: handleUserGuardiansList(holderInfo, verifierServers),
             authenticationInfo,
+            loginType,
           });
         } else {
           await goSelectVerifier({

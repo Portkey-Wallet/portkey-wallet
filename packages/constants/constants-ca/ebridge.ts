@@ -136,7 +136,7 @@ export const EBRIDGE_DISCLAIMER_TEXT = EBRIDGE_DISCLAIMER_ARRAY.map(ele => ele.c
 export const EBRIDGE_DISCLAIMER_TEXT_SHARE256_POLICY_ID = AElf.utils.sha256(EBRIDGE_DISCLAIMER_TEXT);
 
 // aelf mainnet
-export const BRIDGE_INFO_AELF_MAINNET: { [key: string]: any } = {
+export const BRIDGE_INFO_AELF_MAINNET: { [key: string]: { BRIDGE_CONTRACT: string } } = {
   AELF: {
     BRIDGE_CONTRACT: '2dKF3svqDXrYtA5mYwKfADiHajo37mLZHPHVVuGbEDoD9jSgE8',
   },
@@ -187,7 +187,7 @@ export const BRIDGE_INFO_EVM_MAINNET: {
 } as const;
 
 // aelf testnet
-export const BRIDGE_INFO_AELF_TESTNET: { [key: string]: any } = {
+export const BRIDGE_INFO_AELF_TESTNET: { [key: string]: { BRIDGE_CONTRACT: string } } = {
   AELF: {
     BRIDGE_CONTRACT: 'foDLAM2Up3xLjg43SvCy5Ed6zaY5CKG8uczj6yUVZUweqQUmz',
   },
@@ -205,7 +205,7 @@ export const BRIDGE_INFO_EVM_TESTNET: {
     limitContractAddress?: string;
   };
 } = {
-  ETH: {
+  SETH: {
     chainInfo: {
       chainId: 11155111,
       exploreUrl: 'https://sepolia.etherscan.io/',

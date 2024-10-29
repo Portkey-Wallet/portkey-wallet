@@ -21,8 +21,8 @@ const styles = makeStyles(theme => ({
     flex: 1,
     width: '100%',
     marginTop: pTd(16),
-    marginBottom: pTd(40),
     paddingVertical: pTd(24),
+    paddingBottom: 0,
     minHeight: Math.min(screenHeight * 0.58, 494),
   },
   cardContent: {
@@ -57,10 +57,14 @@ const styles = makeStyles(theme => ({
     width: pTd(60),
     height: pTd(60),
   },
+  signUpWrap: {
+    paddingBottom: pTd(24),
+  },
   signUpTip: {
-    // height: pTd(48),
-    // position: 'absolute',
-    // bottom: pTd(84),
+    marginTop: pTd(16),
+    height: pTd(48),
+    alignContent: 'center',
+    justifyContent: 'center',
   },
   termsServiceTip: {
     position: 'absolute',

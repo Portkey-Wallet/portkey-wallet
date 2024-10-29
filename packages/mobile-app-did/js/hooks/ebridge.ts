@@ -10,6 +10,7 @@ import {
 } from '@portkey-wallet/constants/constants-ca/ebridge';
 import { useCurrentChainList } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { ChainId } from '@portkey-wallet/types';
+import { IEBridgeChainInfo } from '@portkey-wallet/utils/eBridge/types';
 
 BRIDGE_TOKEN_WHITE_LIST_MAINNET;
 
@@ -27,21 +28,22 @@ export default function useGetEBridgeConfig() {
   );
 
   const getAELFChainInfoConfig = useCallback(
-    (chainId: ChainId | string) => {
+    (chainId: ChainId | string): IEBridgeChainInfo => {
       const targetItem = currentChainList?.find(ele => ele.chainId === chainId);
       return {
         chainType: 'aelf',
         chainId,
-        rpcUrl: targetItem?.endPoint,
-        bridgeContract:
-          currentNetwork === 'MAINNET' ? BRIDGE_INFO_AELF_MAINNET[chainId] : BRIDGE_INFO_AELF_TESTNET[chainId],
+        rpcUrl: targetItem?.endPoint || '',
+        bridgeContract: (currentNetwork === 'MAINNET'
+          ? BRIDGE_INFO_AELF_MAINNET[chainId]
+          : BRIDGE_INFO_AELF_TESTNET[chainId]) as string,
       };
     },
     [currentChainList, currentNetwork],
   );
 
   const getEVMChainInfoConfig = useCallback(
-    (network: string) => {
+    (network: string): IEBridgeChainInfo => {
       const targetEvmInfo = (currentNetwork === 'MAINNET' ? BRIDGE_INFO_EVM_MAINNET : BRIDGE_INFO_EVM_TESTNET)[network];
 
       return {

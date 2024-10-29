@@ -279,6 +279,6 @@ const getStyles = makeStyles(_theme => ({
   //   color: theme.colors.borderBase1,
   // },
   blank: {
-    width: pTd(15),
+    width: pTd(32),
   },
 }));

@@ -21,6 +21,7 @@ export type CommonTopTabProps = {
   tabItemStyleProps?: any;
   tabList: TabItemTypes[];
   tabContainerStyle?: StyleProp<ViewStyle>;
+  isBlockTab?: boolean;
 };
 
 const Tab = createMaterialTopTabNavigator();
@@ -66,6 +67,7 @@ const CustomizedTopTabBar = ({
   navigation,
   hasTabBarBorderRadius = false,
   hasBottomBorder = false,
+  isBlockTab = false,
   containerStyle = {},
 }: {
   state: { routes: any[]; index: number };
@@ -73,6 +75,7 @@ const CustomizedTopTabBar = ({
   navigation: any;
   hasTabBarBorderRadius?: boolean;
   hasBottomBorder?: boolean;
+  isBlockTab?: boolean;
   containerStyle?: StyleProp<ViewStyle>;
 }) => {
   const onPress = useThrottleCallback(
@@ -108,7 +111,14 @@ const CustomizedTopTabBar = ({
             onPress={() => onPress(route.name, route.params)}
             disabled={isFocused}
             key={label}
-            style={[toolBarStyle.label, { paddingRight: index !== state.routes.length - 1 ? pTd(32) : 0 }]}>
+            style={[
+              toolBarStyle.label,
+              isBlockTab && toolBarStyle.blockTab,
+              isBlockTab && isFocused && toolBarStyle.selectedBlockTab,
+              isBlockTab
+                ? { marginRight: index !== state.routes.length - 1 ? pTd(10) : 0 }
+                : { paddingRight: index !== state.routes.length - 1 ? pTd(32) : 0 },
+            ]}>
             <Text
               style={[
                 toolBarStyle.labelText,
@@ -156,6 +166,13 @@ const toolBarStyle = StyleSheet.create({
     alignItems: 'center',
   },
   label: {},
+  blockTab: {
+    padding: pTd(8),
+    borderRadius: pTd(8),
+  },
+  selectedBlockTab: {
+    backgroundColor: darkColors.bgBase2,
+  },
   labelText: {
     fontSize: pTd(16),
     lineHeight: pTd(24),

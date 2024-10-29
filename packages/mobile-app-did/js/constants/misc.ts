@@ -8,8 +8,8 @@ export const LOGIN_GUARDIAN_TYPE_ICON: any = {
   [LoginType.Google]: 'google',
   [LoginType.Apple]: 'apple-white',
   [LoginType.Telegram]: 'telegram-white',
-  [LoginType.Twitter]: 'twitter',
-  [LoginType.Facebook]: 'facebook',
+  [LoginType.Twitter]: 'twitter-white',
+  [LoginType.Facebook]: 'facebook-white',
 };
 
 export const GUARDIAN_ITEM_TYPE_ICON: any = {

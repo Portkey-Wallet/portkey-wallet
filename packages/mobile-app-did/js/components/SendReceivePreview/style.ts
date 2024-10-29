@@ -42,9 +42,6 @@ export const getStyles = makeStyles(theme => ({
     color: theme.colors.textBase1,
     fontSize: pTd(32),
   },
-  amountAboveFirst: {
-    marginRight: pTd(6),
-  },
   amountBelow: {
     color: theme.colors.textBase2,
     fontSize: pTd(16),
@@ -54,13 +51,44 @@ export const getStyles = makeStyles(theme => ({
     marginTop: pTd(16),
     marginBottom: pTd(16),
   },
+  nftInfoRow: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: pTd(24),
+  },
+  nftInfoLeft: {
+    flex: 1,
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+  },
+  nftInfoName: {
+    ...fonts.SGRegularFont,
+    color: theme.colors.textBase1,
+    fontSize: pTd(16),
+    lineHeight: pTd(22),
+  },
+  nftInfoCollection: {
+    ...fonts.SGRegularFont,
+    color: theme.colors.textBase2,
+    fontSize: pTd(14),
+    lineHeight: pTd(20),
+  },
+  nftInfoRight: {
+    flexShrink: 0,
+    width: pTd(42),
+    height: pTd(42),
+    marginLeft: pTd(8),
+    borderRadius: pTd(8),
+  },
   infoRow: {
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingTop: pTd(16),
-    paddingBottom: pTd(16),
+    paddingVertical: pTd(16),
   },
   infoLabelColumnWrap: {
     display: 'flex',

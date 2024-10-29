@@ -590,7 +590,7 @@ PODS:
     - glog
   - react-native-background-timer (2.4.1):
     - React-Core
-  - react-native-compat (2.11.0):
+  - react-native-compat (2.17.1):
     - React-Core
   - react-native-config (1.4.6):
     - react-native-config/App (= 1.4.6)
@@ -617,7 +617,7 @@ PODS:
     - React-Core
   - react-native-minimizer (1.0.0):
     - React
-  - react-native-netinfo (9.4.1):
+  - react-native-netinfo (11.4.1):
     - React-Core
   - react-native-pager-view (6.0.2):
     - React-Core
@@ -1320,13 +1320,13 @@ SPEC CHECKSUMS:
   React-jsinspector: 8134ee22182b8dd98dc0973db6266c398103ce6c
   React-logger: 1e7ac909607ee65fd5c4d8bea8c6e644f66b8843
   react-native-background-timer: 17ea5e06803401a379ebf1f20505b793ac44d0fe
-  react-native-compat: d9195ea36efd9333b5f8370042086c34ae299fce
+  react-native-compat: bb63afbbadb7d9203f29bea1f449959288a98702
   react-native-config: 7cd105e71d903104e8919261480858940a6b9c0e
   react-native-fbsdk-next: 42229cf278a44c0f7249179c9b2d084109d8e2bd
   react-native-flipper: ea555c5b21d9d15814999327aecf31b98ac87079
   react-native-get-random-values: a6ea6a8a65dc93e96e24a11105b1a9c8cfe1d72a
   react-native-minimizer: 48a715600fd432ef1d182cfd1858f92f0afa022f
-  react-native-netinfo: fefd4e98d75cbdd6e85fc530f7111a8afdf2b0c5
+  react-native-netinfo: f0a9899081c185db1de5bb2fdc1c88c202a059ac
   react-native-pager-view: 592421df0259bf7a7a4fe85b74c24f3f39905605
   react-native-randombytes: 421f1c7d48c0af8dbcd471b0324393ebf8fe7846
   react-native-safe-area-context: 99b24a0c5acd0d5dcac2b1a7f18c49ea317be99a

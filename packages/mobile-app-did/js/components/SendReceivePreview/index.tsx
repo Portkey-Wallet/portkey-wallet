@@ -1,12 +1,12 @@
 import React, { memo, useCallback, useState } from 'react';
-import { Text, View, Image, TouchableWithoutFeedback, ImageSourcePropType } from 'react-native';
+import { Text, View, TouchableWithoutFeedback, ImageSourcePropType } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useLanguage } from 'i18n/hooks';
 import PageContainer from 'components/PageContainer';
 import Svg from 'components/Svg';
 import NFTAvatar from 'components/NFTAvatar';
 import CommonButton from 'components/CommonButton';
-import CommonTooltip, { ITooltipContentProps } from 'components/CommonTooltip';
+import CommonInfoRow from 'components/CommonInfoRow';
 import { ActionType } from 'types/common';
 import { SeedTypeEnum } from '@portkey-wallet/types/types-ca/assets';
 import { formatStr2EllipsisStr } from '@portkey-wallet/utils';
@@ -88,42 +88,6 @@ const SendReceivePreview: React.FC<ISendReceivePreviewProps> = ({
     onPress?.();
   }, [onPress]);
 
-  const renderInfoRow = useCallback(
-    (
-      label: { text: string; tooltipProps?: ITooltipContentProps; errorText?: string },
-      value: { text?: string; leftIcon?: ImageSourcePropType; textAbove?: string },
-    ) => {
-      const showError = isError && label.errorText;
-      return (
-        <View style={styles.infoRow}>
-          <View style={styles.infoLabelColumnWrap}>
-            <View style={styles.infoLabelWrap}>
-              <Text style={styles.infoLabel}>{t(label.text)}</Text>
-              {label.tooltipProps && (
-                <CommonTooltip iconStyle={styles.infoLabelHelpIcon} tooltipProps={label.tooltipProps} />
-              )}
-            </View>
-            {showError && <Text style={[styles.infoLabelAbove, styles.infoErrorText]}>{t(label.errorText || '')}</Text>}
-          </View>
-          <View style={styles.infoValueColumnWrap}>
-            <View style={styles.infoValueWrap}>
-              {value.leftIcon && <Image style={styles.infoValueLeftIcon} source={value.leftIcon} />}
-              <Text style={[styles.infoValue, showError ? styles.infoErrorText : undefined]}>
-                {t(value.text || '--')}
-              </Text>
-            </View>
-            {value.textAbove && (
-              <Text style={[styles.infoValueAbove, showError ? styles.infoErrorText : undefined]}>
-                {value.textAbove}
-              </Text>
-            )}
-          </View>
-        </View>
-      );
-    },
-    [styles, isError, t],
-  );
-
   return (
     <PageContainer
       titleDom={t(`Preview`)}
@@ -134,7 +98,7 @@ const SendReceivePreview: React.FC<ISendReceivePreviewProps> = ({
       <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>
         <TouchableWithoutFeedback>
           <View>
-            <View style={styles.sendIconWrap}>{topIcon}</View>
+            <View style={styles.topIconWrap}>{topIcon}</View>
             {NFTInfo ? (
               <View style={styles.nftInfoRow}>
                 <View style={styles.nftInfoLeft}>
@@ -163,41 +127,57 @@ const SendReceivePreview: React.FC<ISendReceivePreviewProps> = ({
               </View>
             )}
             <View style={styles.infoWrap}>
-              {fromAddress && renderInfoRow({ text: 'From' }, { text: formatStr2EllipsisStr(fromAddress) })}
-              {toAddress && renderInfoRow({ text: 'To' }, { text: formatStr2EllipsisStr(toAddress) })}
-              {sourceNetwork &&
-                renderInfoRow({ text: 'Source network' }, { text: sourceNetwork, leftIcon: sourceNetworkIcon })}
-              {destinationNetwork &&
-                renderInfoRow(
-                  { text: 'Destination network' },
-                  { text: destinationNetwork, leftIcon: destinationNetworkIcon },
-                )}
-              {!!transactionFee &&
-                renderInfoRow(
-                  {
+              {fromAddress && (
+                <CommonInfoRow label={{ text: 'From' }} value={{ text: formatStr2EllipsisStr(fromAddress) }} />
+              )}
+              {toAddress && <CommonInfoRow label={{ text: 'To' }} value={{ text: formatStr2EllipsisStr(toAddress) }} />}
+              {sourceNetwork && (
+                <CommonInfoRow
+                  label={{ text: 'Source network' }}
+                  value={{ text: sourceNetwork, leftIcon: sourceNetworkIcon }}
+                />
+              )}
+              {destinationNetwork && (
+                <CommonInfoRow
+                  label={{ text: 'Destination network' }}
+                  value={{ text: destinationNetwork, leftIcon: destinationNetworkIcon }}
+                />
+              )}
+              {!!transactionFee && (
+                <CommonInfoRow
+                  label={{
                     text: 'Transaction fee',
                     tooltipProps: {
                       title: 'Transaction fee',
                       description: 'Fee applied by the cross-chain bridge to process your transaction on blockchains.',
                     },
-                    errorText: 'Not enough ELF',
-                  },
-                  { text: transactionFee, textAbove: transactionFeeUSD },
-                )}
-              {!!estimatedNetworkFee &&
-                renderInfoRow(
-                  {
+                    textBelow: isError ? 'Not enough ELF' : '',
+                  }}
+                  value={{ text: transactionFee, textBelow: transactionFeeUSD }}
+                  isError={isError}
+                />
+              )}
+              {!!estimatedNetworkFee && (
+                <CommonInfoRow
+                  label={{
                     text: 'Estimated gas fee',
                     tooltipProps: {
                       title: 'Estimated network fee',
                       description: 'Fee applied by the blockchain to process your transaction, also known as gas fee.',
                     },
-                  },
-                  { text: estimatedNetworkFee, textAbove: estimatedNetworkFeeUSD },
-                )}
-              {!!amountToReceive &&
-                renderInfoRow({ text: 'Amount to receive' }, { text: amountToReceive, textAbove: amountToReceiveUSD })}
-              {!!estimatedDuration && renderInfoRow({ text: 'Estimated duration' }, { text: `~${estimatedDuration}` })}
+                  }}
+                  value={{ text: estimatedNetworkFee, textBelow: estimatedNetworkFeeUSD }}
+                />
+              )}
+              {!!amountToReceive && (
+                <CommonInfoRow
+                  label={{ text: 'Amount to receive' }}
+                  value={{ text: amountToReceive, textBelow: amountToReceiveUSD }}
+                />
+              )}
+              {!!estimatedDuration && (
+                <CommonInfoRow label={{ text: 'Estimated duration' }} value={{ text: `~${estimatedDuration}` }} />
+              )}
             </View>
             {!NFTInfo && (
               <View style={styles.footerWrap}>

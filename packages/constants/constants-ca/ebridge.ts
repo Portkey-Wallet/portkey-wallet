@@ -147,7 +147,7 @@ export const BRIDGE_INFO_AELF_MAINNET = {
 
 // evm mainnet
 export const BRIDGE_INFO_EVM_MAINNET = {
-  base: {
+  BASE: {
     chainInfo: {
       chainId: 8453,
       exploreUrl: 'https://basescan.org/',
@@ -157,7 +157,7 @@ export const BRIDGE_INFO_EVM_MAINNET = {
     bridgeContractOutAddress: '0xE30382636E09a94aAF7b7e8e03a948624AbdE284',
     limitContractAddress: '0x01A2EA8D36283F2dc93F31EB8378c1E737938ef4',
   },
-  eth: {
+  ETH: {
     chainInfo: {
       chainId: 1,
       exploreUrl: 'https://etherscan.io/',
@@ -167,7 +167,7 @@ export const BRIDGE_INFO_EVM_MAINNET = {
     bridgeContractOutAddress: '0x648C372668Fb65f46DB478AF0302330d06B16b8B',
     limitContractAddress: '0xBDDfac1151A307e1bF7A8cEA4fd7999eF67bdb41',
   },
-  bsc: {
+  BSC: {
     chainInfo: {
       chainId: 56,
       exploreUrl: 'https://bscscan.com/',
@@ -191,7 +191,7 @@ export const BRIDGE_INFO_AELF_TESTNET = {
 
 // evm testnet
 export const BRIDGE_INFO_EVM_TESTNET = {
-  sepolia: {
+  ETH: {
     chainInfo: {
       chainId: 11155111,
       exploreUrl: 'https://sepolia.etherscan.io/',
@@ -201,7 +201,7 @@ export const BRIDGE_INFO_EVM_TESTNET = {
     bridgeContractOutAddress: '0x276A12Bd934cb9753AdB89DFe88CA1442c5B1B47',
     limitContractAddress: '0x82a0951a93f51ce67dE3F45A1381C48050762B8d',
   },
-  baseSepolia: {
+  BASE: {
     chainInfo: {
       chainId: 84532,
       exploreUrl: 'https://sepolia.basescan.org/',
@@ -211,7 +211,7 @@ export const BRIDGE_INFO_EVM_TESTNET = {
     bridgeContractOutAddress: '0x801790e7318eeE92087dD8DFA091f8FE16d93ba8',
     limitContractAddress: '0x8E0cF442690a9395C42623F6503Ab926c739f59E',
   },
-  bscTest: {
+  TBSC: {
     chainInfo: {
       chainId: 97,
       exploreUrl: 'https://testnet.bscscan.com/',

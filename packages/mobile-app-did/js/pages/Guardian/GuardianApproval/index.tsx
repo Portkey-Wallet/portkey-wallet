@@ -1,7 +1,6 @@
 import { TextH1, TextM } from 'components/CommonText';
 import PageContainer from 'components/PageContainer';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
-import { useLanguage } from 'i18n/hooks';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { GUARDIAN_EXPIRED_TIME } from '@portkey-wallet/constants/misc';
 import { DeviceEventEmitter, ScrollView, View } from 'react-native';
@@ -182,7 +181,6 @@ export default function GuardianApproval() {
     [userGuardiansList],
   );
 
-  const { t } = useLanguage();
   const { caHash, address: managerAddress } = useCurrentWalletInfo();
   const updateTransferLimit = useUpdateTransferLimit();
 
@@ -207,6 +205,14 @@ export default function GuardianApproval() {
   const [isExpired, setIsExpired] = useState<boolean>();
 
   const guardianExpiredTimeRef = useRef<number>();
+  useEffect(() => {
+    // init guardianExpiredTimeRef
+    if (!_authenticationInfo) return;
+    if (Object.keys(_authenticationInfo).length) {
+      guardianExpiredTimeRef.current = Date.now() + GUARDIAN_EXPIRED_TIME;
+    }
+  }, [_authenticationInfo, approvalType, loginType]);
+
   const approvedAmount = useMemo(() => {
     return Object.values(guardiansStatus || {}).filter(guardian => guardian.status === VerifyStatus.Verified).length;
   }, [guardiansStatus]);

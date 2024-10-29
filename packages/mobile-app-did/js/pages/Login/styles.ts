@@ -22,6 +22,7 @@ const styles = makeStyles(theme => ({
     width: '100%',
     marginTop: pTd(16),
     paddingVertical: pTd(24),
+    paddingBottom: 0,
     minHeight: Math.min(screenHeight * 0.58, 494),
   },
   cardContent: {

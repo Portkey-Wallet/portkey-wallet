@@ -21,7 +21,7 @@ type ShowOptionsType = {
 
 type LoadingPositionType = 'center' | 'bottom';
 
-function LoadingBody({ text }: { text?: string; position?: LoadingPositionType; iconType: IconType }) {
+export function LoadingBody({ text }: { text?: string; position?: LoadingPositionType; iconType: IconType }) {
   return (
     <View style={[GStyles.center, styles.loadingWrap]}>
       <LottieView source={require('assets/lottieFiles/globalLoading.json')} style={styles.loadingStyle} autoPlay loop />

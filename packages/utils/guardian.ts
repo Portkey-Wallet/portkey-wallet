@@ -120,6 +120,11 @@ export function checkVerifierIsTimeout(error: any) {
   return !!text?.includes('Timeout');
 }
 
+export function checkVerifierIsTooManyRetries(error: any) {
+  const text = handleErrorMessage(error);
+  return !!text?.includes('Too Many Retries');
+}
+
 export function removeManager(contract: ContractBasic, address: string, caHash: string, sendOptions?: SendOptions) {
   return contract?.callSendMethod(
     'RemoveManagerInfo',

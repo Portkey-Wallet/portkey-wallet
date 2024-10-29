@@ -14,7 +14,7 @@ import { useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { WalletInfoType } from '@portkey-wallet/types/wallet';
 import { usePin } from 'hooks/store';
 import { useIntervalQueryCAInfoByAddress } from '@portkey-wallet/hooks/hooks-ca/graphql';
-import CommonToast from 'components/CommonToast';
+import CommonPrompt from 'components/CommonPromptCard';
 import { handleWalletInfo } from '@portkey-wallet/utils/wallet';
 import { LoginQRData } from '@portkey-wallet/types/types-ca/qrcode';
 import { useIsFocused } from '@react-navigation/native';
@@ -60,7 +60,7 @@ export default function QRCode({ setLoginType }: { setLoginType: (type: PageLogi
           dispatch(setCAInfoType({ caInfo, pin }));
           navigationService.reset('Tab');
         } catch (error) {
-          CommonToast.failError(error);
+          CommonPrompt.failError(error);
         }
       } else {
         dispatch(setOriginChainId(originChainId));

@@ -2,11 +2,12 @@ import { PIN_SIZE } from '@portkey-wallet/constants/misc';
 import PageContainer from 'components/PageContainer';
 import { DigitInputInterface } from 'components/DigitInput';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import navigationService from 'utils/navigationService';
 import { useAppDispatch } from 'store/hooks';
 import { changePin, createWallet } from '@portkey-wallet/store/store-ca/wallet/actions';
 import CommonToast from 'components/CommonToast';
+import CommonPrompt from 'components/CommonPromptCard';
 import { setCredentials } from 'store/user/actions';
 import { useUser } from 'hooks/store';
 import { setSecureStoreItem } from '@portkey-wallet/utils/mobile/biometric';
@@ -66,13 +67,15 @@ export default function ConfirmPin() {
         dispatch(setCredentials({ pin: newPin }));
         CommonToast.success(t('Modified Successfully'));
       } catch (error) {
-        CommonToast.failError(error);
+        CommonPrompt.failError(error);
       }
       changeCanLock(true);
       navigationService.navigate('AccountSettings');
     },
     [biometrics, dispatch, oldPin, t],
   );
+
+  const [isKeypadShow, setIsKeypadShow] = useState(true);
   const onFinish = useCallback(
     async (confirmPin: string) => {
       if (managerInfo?.verificationType === VerificationType.addManager) {
@@ -85,6 +88,7 @@ export default function ConfirmPin() {
           navigationService.reset('Tab');
         }
       } else {
+        setIsKeypadShow(false);
         onManagerAddressAndQueryResult({
           managerInfo: managerInfo as ManagerInfo,
           confirmPin,
@@ -150,6 +154,7 @@ export default function ConfirmPin() {
         title="Confirm your PIN"
         errorMessage={textError.errorMsg}
         onChangeText={onChangeText}
+        isKeypadShow={isKeypadShow}
       />
     </PageContainer>
   );

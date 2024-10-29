@@ -14,6 +14,7 @@ import { PortkeyLinearGradient } from 'components/PortkeyLinearGradient';
 import { pTd } from 'utils/unit';
 import { Skeleton } from '@rneui/base';
 import Svg from 'components/Svg';
+import { useAppSwapButtonShow } from 'hooks/cms';
 // import { DashBoardBanner } from '../Banner'; // todo_wade: confirm banner
 
 const Card: React.FC<{ title: string }> = ({ title }) => {
@@ -21,7 +22,8 @@ const Card: React.FC<{ title: string }> = ({ title }) => {
   const userInfo = useCurrentUserInfo();
   const setHideAssets = useSetHideAssets();
   const { isRampShow } = useAppRampEntryShow();
-  const isSwapShow = true; // todo_wade: fix this
+  // const isSwapShow = true; // todo_wade: fix this
+  const { isSwapShow } = useAppSwapButtonShow();
   const buttonCount = useMemo(() => {
     let count = 2;
     if (isSwapShow) count++;

@@ -62,19 +62,18 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 0,
   },
   outlineButtonStyle: {
-    borderWidth: 1,
-    borderColor: defaultColors.border1,
+    borderWidth: pTd(1.5),
+    borderColor: defaultColors.borderNeutral2,
   },
   containerStyle: {
-    // TODO: change margin
     width: '100%',
-    marginBottom: pTd(8),
+    marginBottom: pTd(16),
   },
   lastContainerStyle: {
     marginBottom: 0,
   },
   outlineTitleStyle: {
-    color: defaultColors.font5,
+    color: defaultColors.font2,
   },
   buttonItem: {
     flex: 1,

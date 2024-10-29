@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import { TextInput, View } from 'react-native';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { checkEmail } from '@portkey-wallet/utils/check';
@@ -18,6 +18,7 @@ import { darkColors } from 'assets/theme';
 import Touchable from 'components/Touchable';
 import navigationService from 'utils/navigationService';
 import { useTheme } from '@rneui/themed';
+import { KeyboardSafeArea } from 'components/KeyboardSafeArea';
 
 const TitleMap = {
   [PageType.login]: {
@@ -66,6 +67,11 @@ export default function Email({
     return () => listener.remove();
   });
 
+  const onChangeText = useCallback((val: string) => {
+    setLoginAccount(val);
+    setErrorMessage(undefined);
+  }, []);
+
   return (
     <View style={[GStyles.itemCenter, emailStyles.card]}>
       <View style={[GStyles.width100, GStyles.flexCol, GStyles.spaceBetween, emailStyles.cardContent]}>
@@ -88,7 +94,7 @@ export default function Email({
             autoCorrect={false}
             allowClear
             clearIcon="clear4"
-            onChangeText={setLoginAccount}
+            onChangeText={onChangeText}
             errorMessage={errorMessage}
             keyboardType="email-address"
             placeholder={t('Enter your Email')}
@@ -97,33 +103,33 @@ export default function Email({
             placeholderTextColor={darkColors.textBase3}
           />
         </View>
-        <CommonButton
-          containerStyle={GStyles.paddingBottom(32)}
-          disabled={!loginAccount}
-          type="primary"
-          loading={loading}
-          onPress={onPageLogin}>
-          {t(TitleMap[type].button)}
-        </CommonButton>
-      </View>
 
-      {type === PageType.login ? (
-        <Touchable
-          style={[GStyles.flexRowWrap, GStyles.itemCenter, GStyles.flexCenter, emailStyles.signUpTip]}
-          onPress={() => navigationService.navigate('LoginPortkey')}>
-          <TextL style={{ color: theme.colors.textBase2 }}>
-            Don’t have an account? <TextL style={{ color: theme.colors.textBrand1 }}>Sign up</TextL>
-          </TextL>
-        </Touchable>
-      ) : (
-        <Touchable
-          style={[GStyles.flexRowWrap, GStyles.itemCenter, GStyles.flexCenter, emailStyles.signUpTip]}
-          onPress={() => navigationService.navigate('LoginEmail')}>
-          <TextL style={{ color: theme.colors.textBase2 }}>
-            Already have an account? <TextL style={{ color: theme.colors.textBrand1 }}>Log in</TextL>
-          </TextL>
-        </Touchable>
-      )}
+        <KeyboardSafeArea>
+          <View style={emailStyles.signUpWrap}>
+            <CommonButton disabled={!loginAccount} type="primary" loading={loading} onPress={onPageLogin}>
+              {t(TitleMap[type].button)}
+            </CommonButton>
+
+            {type === PageType.login ? (
+              <Touchable
+                style={[GStyles.flexRowWrap, GStyles.itemCenter, GStyles.flexCenter, emailStyles.signUpTip]}
+                onPress={() => navigationService.navigate('LoginPortkey')}>
+                <TextL style={{ color: theme.colors.textBase2 }}>
+                  Don’t have an account? <TextL style={{ color: theme.colors.textBrand1 }}>Sign up</TextL>
+                </TextL>
+              </Touchable>
+            ) : (
+              <Touchable
+                style={[GStyles.flexRowWrap, GStyles.itemCenter, GStyles.flexCenter, emailStyles.signUpTip]}
+                onPress={() => navigationService.navigate('LoginEmail')}>
+                <TextL style={{ color: theme.colors.textBase2 }}>
+                  Already have an account? <TextL style={{ color: theme.colors.textBrand1 }}>Log in</TextL>
+                </TextL>
+              </Touchable>
+            )}
+          </View>
+        </KeyboardSafeArea>
+      </View>
     </View>
   );
 }

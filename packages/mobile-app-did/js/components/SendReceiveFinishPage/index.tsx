@@ -13,7 +13,7 @@ import { ActionType } from 'types/common';
 const SendReceiveFinishPage: React.FC = () => {
   const {
     params: { actionType, address, onClose },
-  } = useRoute<RouteProp<{ params: { actionType: ActionType; address: string; onClose?(): void } }>>();
+  } = useRoute<RouteProp<{ params: { actionType: ActionType; address?: string; onClose?(): void } }>>();
   const styles = getStyles();
 
   const config = useMemo(() => {

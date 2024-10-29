@@ -265,7 +265,7 @@ export default function DepositHome() {
                   <div className="network-info-wrapper">
                     <NetworkLogo network={'AELF'} />
                     <span className="network-info-name">
-                      {toChainId === 'AELF' ? `MainChain ${toChainId}` : `SideChain ${toChainId}`}
+                      {toChainId === 'AELF' ? `aelf MainChain` : `aelf dAppChain`}
                     </span>
                   </div>
                 </div>

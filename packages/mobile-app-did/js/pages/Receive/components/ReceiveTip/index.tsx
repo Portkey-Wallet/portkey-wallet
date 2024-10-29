@@ -26,7 +26,7 @@ export function TipView({ chainId, style, textStyle }: TTopViewProps) {
   return (
     <View style={style}>
       <TextM style={[FontStyles.font3, textStyle]}>
-        If you wish to receive assets from exchanges, please note that they will not be credited to your SideChain
+        If you wish to receive assets from exchanges, please note that they will not be credited to your dAppChain
         address, and you cannot make the transfer through QR code scanning.
       </TextM>
       <TextM style={[styles.topSpacing, FontStyles.font3, textStyle]}>To receive, please follow these steps:</TextM>

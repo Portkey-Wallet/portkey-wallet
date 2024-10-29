@@ -68,7 +68,7 @@ type AlertBodyProps = {
   showInfoIcon?: boolean;
 };
 
-function AlertBody({
+export function AlertBody({
   title,
   message,
   buttons,

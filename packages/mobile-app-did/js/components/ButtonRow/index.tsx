@@ -65,7 +65,7 @@ export const getStyles = makeStyles(theme => ({
     paddingHorizontal: 0,
   },
   outlineButtonStyle: {
-    borderWidth: 1,
+    borderWidth: pTd(1.5),
     borderColor: theme.colors.borderNeutral2,
   },
   containerStyle: {

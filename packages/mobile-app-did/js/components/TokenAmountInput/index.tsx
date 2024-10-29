@@ -13,6 +13,7 @@ import { formatAmount, formatAmountUSDShow } from '@portkey-wallet/utils/convert
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { FloatTip } from 'components/FloatTip';
+import { useEffectOnce } from '@portkey-wallet/hooks';
 
 export interface ITokenAmountInput {
   value?: string;
@@ -40,13 +41,16 @@ const TokenAmountInput: React.FC<ITokenAmountInput> = props => {
   } = props;
   const [isRevert, setIsRevert] = useState(false);
   const { mode } = useThemeMode();
-  const [tokenPriceObject] = useGetCurrentAccountTokenPrice();
+  const [tokenPriceObject, getTokenPrice] = useGetCurrentAccountTokenPrice();
   const styles = getStyles();
   const warningRef = useRef<NodeJS.Timeout | null>(null);
   const [warningClick, setWarningClick] = useState(false);
   const [wrapperLayoutProps, setWrapperLayoutProps] = useState<{ width: number; height: number }>({
     width: 0,
     height: 0,
+  });
+  useEffectOnce(() => {
+    getTokenPrice(symbol);
   });
   const onPressRevert = useCallback(() => setIsRevert(pre => !pre), []);
   const onValueInputChange = useCallback(

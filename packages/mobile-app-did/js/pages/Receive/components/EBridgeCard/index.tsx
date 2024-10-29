@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, Text, View, ViewStyle } from 'react-native';
 import { pTd } from 'utils/unit';
 import Svg from 'components/Svg';
@@ -13,19 +13,31 @@ import GStyles from 'assets/theme/GStyles';
 import navigationService from 'utils/navigationService';
 import WalletConnect from '../WalletConnect';
 import { useWalletConnectModal } from '@walletconnect/modal-react-native';
+import { IChainItemType } from '@portkey-wallet/types/types-ca/chain';
+import { TReceiveFromNetworkItem } from '@portkey-wallet/types/types-ca/receive';
+import { EBridge } from '@portkey-wallet/utils/eBridge';
+import useGetEBridgeConfig from 'hooks/ebridge';
+import { TLimitData } from '@portkey-wallet/utils/eBridge/types';
+import { ActionType } from 'types/common';
 
 export interface IEBridgeCardProps {
   styleProps?: ViewStyle;
   tokenInfo: TokenItemShowType;
+  destinationChain: IChainItemType;
+  sourceChain: TReceiveFromNetworkItem;
 }
 
 export default function EBridgeCard(props: IEBridgeCardProps) {
-  const { styleProps, tokenInfo } = props;
+  const { styleProps, tokenInfo, destinationChain, sourceChain } = props;
   const { t } = useLanguage();
   const [value, setValue] = useState('');
   const [usdValue, setUsdValue] = useState('');
   const [isExceed, setIsExceed] = useState(false);
   const styles = getStyles();
+  const { getTokenConfig, getAELFChainInfoConfig, getEVMChainInfoConfig } = useGetEBridgeConfig();
+  const [fee, setFee] = useState('');
+  const [limit, setLimit] = useState<TLimitData>();
+  const eBridgeInstanceRef = useRef<EBridge>();
   const { isConnected } = useWalletConnectModal();
   const btnDisabled = useMemo(() => {
     return !(value || usdValue) || isExceed;
@@ -35,8 +47,41 @@ export default function EBridgeCard(props: IEBridgeCardProps) {
     return 'Preview';
   }, [isExceed, tokenInfo]);
   const onPressBtn = useCallback(() => {
-    navigationService.navigate('ReceivePreview');
+    navigationService.navigate('ReceivePreview', {
+      onPress: async () => {
+        // await eBridgeInstanceRef.current?.createReceipt({
+        // TODO
+        // });
+        navigationService.navigate('ReceiveFinishPage', {
+          actionType: ActionType.RECEIVE,
+        });
+      },
+    });
   }, []);
+
+  const initEBridgeInstance = useCallback(async () => {
+    const bridge = new EBridge({
+      fromChainInfo: getEVMChainInfoConfig(sourceChain.network),
+      toChainInfo: getAELFChainInfoConfig(destinationChain.chainId),
+      tokenInfo: getTokenConfig(tokenInfo.symbol),
+    });
+    eBridgeInstanceRef.current = bridge;
+    setFee(await bridge.getELFFee());
+    setLimit(await bridge.getLimit());
+  }, [
+    destinationChain.chainId,
+    getAELFChainInfoConfig,
+    getEVMChainInfoConfig,
+    getTokenConfig,
+    sourceChain.network,
+    tokenInfo.symbol,
+  ]);
+
+  useEffect(() => {
+    if (isConnected && !eBridgeInstanceRef.current) {
+      initEBridgeInstance();
+    }
+  }, [initEBridgeInstance, isConnected]);
 
   return (
     <View style={[styleProps, styles.eBridgeCardContainer]}>
@@ -61,11 +106,11 @@ export default function EBridgeCard(props: IEBridgeCardProps) {
           editable={isConnected}
           setUsdValue={v => {
             setUsdValue(v);
-            // TODO exceed value
+            // TODO exceed
           }}
           setValue={v => {
             setValue(v);
-            // TODO exceed usdValue
+            // TODO exceed
           }}
         />
       </View>

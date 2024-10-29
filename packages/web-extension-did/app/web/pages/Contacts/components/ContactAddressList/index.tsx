@@ -30,7 +30,9 @@ export default function ContactAddressList({ list }: { list: AddressItem[] }) {
                 <CustomSvg type="elf-icon" className="chain-elf" />
               )}
 
-              <span className="chain-text">{transNetworkTextWithAllChain(ads.chainId, !isMainnet, ads.chainName)}</span>
+              <span className="chain-text">
+                {transNetworkTextWithAllChain(ads.chainId, !isMainnet, ads.chainName, ads.displayChainName)}
+              </span>
             </div>
           </div>
         );

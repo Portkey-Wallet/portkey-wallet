@@ -276,7 +276,7 @@ const SendHome: React.FC = () => {
           ActionSheet.alert({
             title: t('Send to exchange account?'),
             message: t(
-              "Please note that assets on the SideChain can't be sent directly to exchanges. You can transfer your SideChain assets to the MainChain before sending them to your exchange account.",
+              "Please note that assets on the dAppChain can't be sent directly to exchanges. You can transfer your dAppChain assets to the MainChain before sending them to your exchange account.",
             ),
             buttons: [
               {

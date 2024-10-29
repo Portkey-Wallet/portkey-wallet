@@ -157,7 +157,7 @@ export const handleErrorMessage = (error: any, errorText?: string) => {
   return textProcessor.format(errorText || '') || '';
 };
 
-export const chainShowText = (chain: ChainId) => (chain === 'AELF' ? 'MainChain' : 'SideChain');
+export const chainShowText = (chain: ChainId) => (chain === 'AELF' ? 'MainChain' : 'dAppChain');
 export const handleErrorCode = (error: any) => {
   return handleError(error)?.code;
 };
@@ -168,18 +168,32 @@ export const handleErrorCode = (error: any) => {
  * @param isMainChain
  * @returns
  */
+// export const formatChainInfoToShow = (
+//   chainId: ChainId = 'AELF',
+//   networkType?: NetworkType,
+//   chainType: ChainType = 'aelf',
+// ): string => {
+//   if (chainType !== 'aelf') return chainType;
+//   if (typeof networkType === 'string')
+//     return `${chainId === 'AELF' ? 'MainChain' : 'dAppChain'} ${chainId} ${networkType === 'MAINNET' ? '' : 'Testnet'}`;
+
+//   return `${chainId === 'AELF' ? 'MainChain' : 'dAppChain'} ${chainId}`;
+// };
 export const formatChainInfoToShow = (
   chainId: ChainId = 'AELF',
   networkType?: NetworkType,
+  displayChainName?: string,
   chainType: ChainType = 'aelf',
 ): string => {
   if (chainType !== 'aelf') return chainType;
+  if (displayChainName) {
+    return `${displayChainName} ${networkType === 'MAINNET' ? '' : 'Testnet'}`;
+  }
   if (typeof networkType === 'string')
-    return `${chainId === 'AELF' ? 'MainChain' : 'SideChain'} ${chainId} ${networkType === 'MAINNET' ? '' : 'Testnet'}`;
+    return `aelf ${chainId === 'AELF' ? 'MainChain' : 'dAppChain'} ${networkType === 'MAINNET' ? '' : 'Testnet'}`;
 
   return `${chainId === 'AELF' ? 'MainChain' : 'SideChain'} ${chainId}`;
 };
-
 /**
  * this function is to format address,just like "formatStr2EllipsisStr" ---> "for...ess"
  * @param address

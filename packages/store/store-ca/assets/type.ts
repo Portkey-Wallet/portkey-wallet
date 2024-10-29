@@ -22,6 +22,8 @@ export interface INftInfoType {
   seedType?: SeedTypeEnum;
   isSeed?: boolean;
   tokenContractAddress?: string;
+  displayChainName?: string;
+  chainImageUrl?: string;
 }
 
 export interface IAssetItemType {
@@ -31,6 +33,8 @@ export interface IAssetItemType {
   tokenInfo?: ITokenInfoType;
   nftInfo?: INftInfoType;
   label?: string;
+  displayChainName?: string;
+  chainImageUrl?: string;
 }
 
 export enum AddressCheckError {

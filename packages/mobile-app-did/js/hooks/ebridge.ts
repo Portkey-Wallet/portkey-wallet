@@ -35,8 +35,8 @@ export default function useGetEBridgeConfig() {
         chainId,
         rpcUrl: targetItem?.endPoint || '',
         bridgeContract: (currentNetwork === 'MAINNET'
-          ? BRIDGE_INFO_AELF_MAINNET[chainId]
-          : BRIDGE_INFO_AELF_TESTNET[chainId]) as string,
+          ? BRIDGE_INFO_AELF_MAINNET[chainId].BRIDGE_CONTRACT
+          : BRIDGE_INFO_AELF_TESTNET[chainId].BRIDGE_CONTRACT) as string,
       };
     },
     [currentChainList, currentNetwork],

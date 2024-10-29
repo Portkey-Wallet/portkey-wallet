@@ -40,6 +40,7 @@ export default function SelectToken({ tokenInfos, noDataMessage }: SelectTokenPr
 
   const renderItem = useCallback(
     ({ item }: { item: IAssetToken }) => {
+      console.log('item is:', item);
       return (
         <Touchable style={itemStyle.wrap} onPress={() => onNavigate(item)}>
           <View style={itemStyle.iconWrap}>
@@ -72,11 +73,11 @@ export default function SelectToken({ tokenInfos, noDataMessage }: SelectTokenPr
             </View>
             <View>
               <TextL numberOfLines={1} ellipsizeMode={'tail'}>
-                {userInfo.hideAssets ? '****' : formatTokenAmountShowWithDecimals(item.balance, item.decimals)}
+                {userInfo.hideAssets ? '******' : formatTokenAmountShowWithDecimals(item.balance, item.decimals)}
               </TextL>
               {isMainnet && item.balanceInUsd && (
                 <TextM numberOfLines={1} style={DarkFontStyles.textBase2} ellipsizeMode={'tail'}>
-                  {userInfo.hideAssets ? '****' : formatAmountUSDShow(item.balanceInUsd)}
+                  {userInfo.hideAssets ? '******' : formatAmountUSDShow(item.balanceInUsd)}
                 </TextM>
               )}
             </View>

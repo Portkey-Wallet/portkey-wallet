@@ -9,6 +9,7 @@ import { pTd } from 'utils/unit';
 import { FontStyles } from 'assets/theme/styles';
 import GStyles from 'assets/theme/GStyles';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 
 interface TokenListItemType {
   item: TokenItemShowType;
@@ -19,7 +20,7 @@ interface TokenListItemType {
 
 const TokenItem: React.FC<TokenListItemType> = props => {
   const { onPress, item, hideBalance = false, showTopSeparator } = props;
-
+  const isMainnet = useIsMainnet();
   return (
     <Touchable style={[itemStyle.wrap, showTopSeparator && { marginTop: pTd(4) }]} onPress={() => onPress?.(item)}>
       <View style={itemStyle.left}>
@@ -49,10 +50,10 @@ const TokenItem: React.FC<TokenListItemType> = props => {
       </View>
       <View style={itemStyle.right}>
         <TextM style={itemStyle.balanceText}>
-          {hideBalance ? '****' : formatTokenAmountShowWithDecimals(item.balance, item.decimals)}
+          {hideBalance ? '******' : formatTokenAmountShowWithDecimals(item.balance, item.decimals)}
         </TextM>
-        {item.balanceInUsd && (
-          <TextM style={itemStyle.balanceInUseText}>{hideBalance ? '****' : item.balanceInUsd}</TextM>
+        {item.balanceInUsd && isMainnet && (
+          <TextM style={itemStyle.balanceInUseText}>{hideBalance ? '******' : item.balanceInUsd}</TextM>
         )}
       </View>
     </Touchable>

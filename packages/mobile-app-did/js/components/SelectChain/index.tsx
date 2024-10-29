@@ -23,10 +23,12 @@ const SelectChain: React.FC<SelectChainProps> = ({ currentNetwork, chainId, chai
 
   const _chainList = useMemo(
     () =>
-      chainList.map(ele => ({
-        ...ele,
-        customChainName: formatChainInfoToShow(ele.chainId, currentNetwork),
-      })),
+      chainList
+        .map(ele => ({
+          ...ele,
+          customChainName: formatChainInfoToShow(ele.chainId, currentNetwork),
+        }))
+        .reverse(),
     [chainList, currentNetwork],
   );
   const onPressItem = useCallback(() => {

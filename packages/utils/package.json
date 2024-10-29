@@ -17,7 +17,10 @@
     "dayjs": "^1.11.9",
     "is-url": "^1.2.4",
     "expo-random": "^12.3.0",
-    "query-string": "^7.1.1"
+    "query-string": "^7.1.1",
+    "web3-utils": "^1.8.0",
+    "web3": "^1.8.0",
+    "web3-eth-contract": "^1.8.0"
   },
   "devDependencies": {
     "@portkey/provider-types": "2.2.4",

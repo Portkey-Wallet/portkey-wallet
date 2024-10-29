@@ -31,7 +31,9 @@ export default function WalletConnect() {
       provider?.disconnect();
     } else {
       console.log('open');
-      open();
+      open()
+        .then(data => console.log('open data: ', data))
+        .catch(e => console.log('open error: ', e));
     }
   }, [isConnected, open, provider]);
   return (
@@ -40,6 +42,13 @@ export default function WalletConnect() {
         type="primary"
         title={isConnected ? 'Disconnect external wallet' : 'Connect external wallet'}
         onPress={onPress}
+      />
+      <CommonButton
+        type="primary"
+        title={'projectId'}
+        onPress={() => {
+          console.log('projectId : ', projectId);
+        }}
       />
       <WalletConnectModal projectId={projectId} providerMetadata={providerMetadata} />
     </View>

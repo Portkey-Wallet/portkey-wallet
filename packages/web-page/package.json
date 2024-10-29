@@ -29,7 +29,6 @@
     "@react-oauth/google": "^0.8.0",
     "@reduxjs/toolkit": "^1.8.5",
     "@sentry/nextjs": "^7.19.0",
-    "@walletconnect/ethereum-provider": "^1.7.8",
     "@web3-react/coinbase-wallet": "^8.0.34-beta.0",
     "@web3-react/core": "^8.0.35-beta.0",
     "@web3-react/metamask": "^8.0.28-beta.0",

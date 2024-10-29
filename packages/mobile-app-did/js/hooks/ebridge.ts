@@ -13,7 +13,7 @@ import { ChainId } from '@portkey-wallet/types';
 
 BRIDGE_TOKEN_WHITE_LIST_MAINNET;
 
-export default function useGetConfig() {
+export default function useGetEBridgeConfig() {
   const currentNetwork = useCurrentNetwork();
   const currentChainList = useCurrentChainList();
 

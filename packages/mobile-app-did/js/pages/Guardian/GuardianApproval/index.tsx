@@ -812,44 +812,53 @@ export default function GuardianApproval() {
 
           <View style={GStyles.flex1}>
             <ScrollView>
-              <View style={styles.guardiansTitleWrap}>
-                <TextM style={styles.guardiansTitle}>{'Login account(s)'}</TextM>
-              </View>
-              {loginGuardians?.map(item => {
-                return (
-                  <GuardianItem
-                    key={item.key}
-                    guardianItem={item}
-                    setGuardianStatus={onSetGuardianStatus}
-                    guardiansStatus={guardiansStatus}
-                    isExpired={isExpired}
-                    isSuccess={isSuccess}
-                    approvalType={approvalType}
-                    authenticationInfo={authenticationInfo}
-                    targetChainId={targetChainId}
-                    extra={extra}
-                  />
-                );
-              })}
-              <View style={styles.guardiansTitleWrap}>
-                <TextM style={styles.guardiansTitle}>{'Other guardian(s)'}</TextM>
-              </View>
-              {otherGuardians?.map(item => {
-                return (
-                  <GuardianItem
-                    key={item.key}
-                    guardianItem={item}
-                    setGuardianStatus={onSetGuardianStatus}
-                    guardiansStatus={guardiansStatus}
-                    isExpired={isExpired}
-                    isSuccess={isSuccess}
-                    approvalType={approvalType}
-                    authenticationInfo={authenticationInfo}
-                    targetChainId={targetChainId}
-                    extra={extra}
-                  />
-                );
-              })}
+              {loginGuardians.length && (
+                <>
+                  <View style={styles.guardiansTitleWrap}>
+                    <TextM style={styles.guardiansTitle}>{'Login account(s)'}</TextM>
+                  </View>
+                  {loginGuardians.map(item => {
+                    return (
+                      <GuardianItem
+                        key={item.key}
+                        guardianItem={item}
+                        setGuardianStatus={onSetGuardianStatus}
+                        guardiansStatus={guardiansStatus}
+                        isExpired={isExpired}
+                        isSuccess={isSuccess}
+                        approvalType={approvalType}
+                        authenticationInfo={authenticationInfo}
+                        targetChainId={targetChainId}
+                        extra={extra}
+                      />
+                    );
+                  })}
+                </>
+              )}
+
+              {otherGuardians.length && (
+                <>
+                  <View style={styles.guardiansTitleWrap}>
+                    <TextM style={styles.guardiansTitle}>{'Other guardian(s)'}</TextM>
+                  </View>
+                  {otherGuardians.map(item => {
+                    return (
+                      <GuardianItem
+                        key={item.key}
+                        guardianItem={item}
+                        setGuardianStatus={onSetGuardianStatus}
+                        guardiansStatus={guardiansStatus}
+                        isExpired={isExpired}
+                        isSuccess={isSuccess}
+                        approvalType={approvalType}
+                        authenticationInfo={authenticationInfo}
+                        targetChainId={targetChainId}
+                        extra={extra}
+                      />
+                    );
+                  })}
+                </>
+              )}
             </ScrollView>
           </View>
         </View>

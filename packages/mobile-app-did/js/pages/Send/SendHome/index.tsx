@@ -22,6 +22,7 @@ import {
 import {
   divDecimals,
   formatAmountShow,
+  formatAmountUSDShow,
   formatTokenAmountShowWithDecimals,
   timesDecimals,
 } from '@portkey-wallet/utils/converter';
@@ -53,10 +54,8 @@ import { useAppETransShow } from 'hooks/cms';
 import { usePin } from 'hooks/store';
 import GStyles from 'assets/theme/GStyles';
 import { TextXXL } from 'components/CommonText';
-import { checkIsValidEtransferAddress } from '@portkey-wallet/utils/check';
 import { useOnDisclaimerModalPress } from 'hooks/deposit';
 import { stringifyETrans } from '@portkey-wallet/utils/dapp/url';
-import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useEtransferFee } from 'hooks/etransfer';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { getAssetsEstimation } from '@portkey-wallet/store/store-ca/assets/api';
@@ -79,6 +78,7 @@ import { EBridge } from '@portkey-wallet/utils/eBridge';
 import ActionSheet from 'components/ActionSheet';
 import OverlayModal from 'components/OverlayModal';
 import { getLimitTips, getSmallerValue, openOutLink } from '../utils';
+import CommonInfoRow from 'components/CommonInfoRow';
 
 const SendHome: React.FC = () => {
   const {
@@ -124,7 +124,7 @@ const SendHome: React.FC = () => {
   const { getTokenConfig, getAELFChainInfoConfig, getEVMChainInfoConfig } = useGetEBridgeConfig();
 
   const [warning, setWarning] = useState<WarningKey[]>([]);
-  const showDialog = useShowDialog();
+  const [bottomFeeShow, setBottomFeeShow] = useState('-');
 
   const [selectedToContact, setSelectedToContact] = useState(toInfo); // to
   const [balance, setBalance] = useState<string>(assetInfo?.balance || '');
@@ -147,7 +147,6 @@ const SendHome: React.FC = () => {
   const getCAContract = useGetCAContract();
   const { isETransDepositShow } = useAppETransShow();
   const onDisclaimerModalPress = useOnDisclaimerModalPress();
-  const { eTransferUrl = '' } = useCurrentNetworkInfo();
 
   useEffect(() => {
     setSelectedToContact(toInfo);
@@ -200,10 +199,10 @@ const SendHome: React.FC = () => {
     if (divDecimals(balance, assetInfo.decimals).isLessThanOrEqualTo(maxFee))
       return setMaxAmountSend(divDecimals(balance, assetInfo.decimals || '0').toString());
 
-    const isCross = isCrossChain(selectedToContact.address, assetInfo.chainId || 'AELF');
+    const isAELFCross = !!(selectedToContact.chainId && selectedToContact.chainId !== assetInfo.chainId);
     let fee;
     try {
-      fee = await getTransactionFee(isCross, divDecimals(balance, assetInfo.decimals).toFixed());
+      fee = await getTransactionFee(isAELFCross, divDecimals(balance, assetInfo.decimals).toFixed());
     } catch (error) {
       fee = '0';
       console.log('FEE ERROR');
@@ -219,10 +218,10 @@ const SendHome: React.FC = () => {
     assetInfo,
     defaultToken.symbol,
     maxFee,
-    getTransactionFee,
+    selectedToContact.chainId,
     getEtransferMaxFee,
     toInfo,
-    selectedToContact.address,
+    getTransactionFee,
   ]);
 
   const onPressMax = useCallback(async () => {
@@ -391,9 +390,10 @@ const SendHome: React.FC = () => {
   }, [selectedToContact?.address, sendNumber]);
 
   const dappChainToNoAffixAddressAction = useCallback(() => {
-    if (isSendToExchange) {
+    if (isSendToExchange && defaultToken.symbol === assetInfo.symbol) {
       // TODO: change style
       ActionSheet.alert({
+        showInfoIcon: true,
         buttonGroupDirection: 'column',
         title: 'Unsupported: Direct Transfer from dAppChain to Exchange',
         message: t(
@@ -404,6 +404,7 @@ const SendHome: React.FC = () => {
             title: t('Send to my aelf MainChain'),
             type: 'primary',
             onPress: () => {
+              setSelectedToContact(pre => ({ ...pre, chainId: DefaultChainId }));
               OverlayModal.hide();
               setStep(2);
             },
@@ -419,7 +420,7 @@ const SendHome: React.FC = () => {
     // to dappChain Address
     setStep(2);
     setSelectedToContact(pre => ({ ...pre, chainId: assetInfo.chainId }));
-  }, [assetInfo.chainId, isSendToExchange, t]);
+  }, [assetInfo.chainId, assetInfo.symbol, defaultToken.symbol, isSendToExchange, t]);
 
   const mainChainToNoAffixAddressAction = useCallback(() => {
     setSelectedToContact(pre => ({ ...pre, chainId: DefaultChainId }));
@@ -499,8 +500,8 @@ const SendHome: React.FC = () => {
           type: sendType,
         });
         if (!interceptResult) {
-          // TODO: change style
           ActionSheet.alert({
+            showInfoIcon: true,
             title: 'Unsupported asset',
             message: t(
               'The asset does not exist on the target chain, so the transfer cannot be completed. Please check the asset and try again with a supported chain.',
@@ -587,6 +588,7 @@ const SendHome: React.FC = () => {
           amount: sendNumber,
           network: targetNetwork?.network || '',
         });
+        console.log('withdrawInfo result', withdrawInfo);
         transactionFee = withdrawInfo?.aelfTransactionFee;
         const maxAmount = Number(withdrawInfo?.maxAmount);
         const minAmount = Number(withdrawInfo?.minAmount);
@@ -594,6 +596,7 @@ const SendHome: React.FC = () => {
         transactionUnit = withdrawInfo.transactionUnit;
         const isEtransferCrossInLimit = Number(sendNumber) >= minAmount && Number(sendNumber) <= maxAmount;
         // TODO: change it
+
         if (isEtransferCrossInLimit) {
           transferType = TransferType.E_TRANSFER;
           Loading.hide();
@@ -627,6 +630,7 @@ const SendHome: React.FC = () => {
           tokenInfo,
         });
         const f = await bridge.getELFFee();
+        setBottomFeeShow(f);
         if (assetInfo.symbol === defaultToken.symbol) {
           // ELF
           if (sendBigNumber.plus(f).isGreaterThan(ELFBalance)) {
@@ -635,7 +639,6 @@ const SendHome: React.FC = () => {
           }
         } else {
           if (ZERO.plus(f).isGreaterThan(ELFBalance)) {
-            setErrorMessage(TransferErrorMessage.FEE_NOT_ENOUGH);
             return { status: false };
           }
         }
@@ -644,11 +647,10 @@ const SendHome: React.FC = () => {
         // TODO： change it
         const targetLimit = getSmallerValue(limit.remain, limit.currentCapacity);
         if (limit.isEnable && sendBigNumber.isGreaterThan(targetLimit)) {
-          setErrorMessage(getLimitTips(assetInfo.symbol, '0', formatAmountShow(targetLimit)));
+          return setErrorMessage(getLimitTips(assetInfo.symbol, '0', formatAmountShow(targetLimit)));
         }
         transactionFee = divDecimals(f?.result, defaultToken.decimals).toString();
         transactionUnit = 'ELF';
-        console.log('MAKE_SURE_SUPPORT_PLATFORM fee', f);
         transferType = TransferType.E_BRIDGE;
 
         return {
@@ -757,6 +759,18 @@ const SendHome: React.FC = () => {
     const result = await checkCanPreview();
     if (!result?.status) return;
 
+    console.log('nav params', {
+      ...previewParamsWithoutFee,
+      transactionFee: result?.transactionFee || '0',
+      transactionFeeUnit: result?.transactionUnit || '',
+      networkFee: result?.networkFee || '0',
+      networkFeeUnit: result?.networkFeeUnit || '',
+      receiveAmount: result?.receiveAmount,
+      receiveAmountUsd: result?.receiveAmountUsd,
+      transferType: result?.transferType || TransferType.GENERAL_SAME_CHAIN,
+      targetNetwork: result?.targetNetwork,
+    });
+
     navigationService.navigate('SendPreview', {
       ...previewParamsWithoutFee,
       transactionFee: result?.transactionFee || '0',
@@ -765,8 +779,6 @@ const SendHome: React.FC = () => {
       networkFeeUnit: result?.networkFeeUnit || '',
       receiveAmount: result?.receiveAmount,
       receiveAmountUsd: result?.receiveAmountUsd,
-      // crossChainFee: result?.transactionFee || crossFee,
-      // crossChainFeeUnit: result?.transactionUnit || '',
       transferType: result?.transferType || TransferType.GENERAL_SAME_CHAIN,
       targetNetwork: result?.targetNetwork,
     });
@@ -776,6 +788,38 @@ const SendHome: React.FC = () => {
     if (step === 2) return `Enter Amount`;
     return `${t('Send')}${sendType === 'token' ? ' ' + (assetInfo.label || assetInfo.symbol) : ''}`;
   }, [assetInfo.label, assetInfo.symbol, sendType, step, t]);
+
+  const renderFeeErrDom = useCallback(() => {
+    if (step === 1) return null;
+    const feeShow = formatTokenAmountShowWithDecimals(bottomFeeShow, defaultToken.decimals);
+
+    TransferErrorMessage.FEE_NOT_ENOUGH;
+    return (
+      <View style={GStyles.paddingArg(pTd(16))}>
+        <CommonInfoRow
+          isError={errorMessage === TransferErrorMessage.FEE_NOT_ENOUGH}
+          label={{
+            text: 'Transaction fee',
+            tooltipProps: {
+              title: 'Transaction fee',
+              description: 'Fee applied by the cross-chain bridge to process your transaction on blockchains.',
+            },
+            textBelow: errorMessage === TransferErrorMessage.FEE_NOT_ENOUGH ? 'Not enough ELF' : '',
+          }}
+          value={{
+            text: `${feeShow} ${defaultToken.symbol} `,
+            textBelow: `${
+              bottomFeeShow
+                ? formatAmountUSDShow(
+                    divDecimals(bottomFeeShow, defaultToken.decimals).times(tokenPriceObject[defaultToken.symbol]),
+                  )
+                : '-'
+            }`,
+          }}
+        />
+      </View>
+    );
+  }, [bottomFeeShow, defaultToken.decimals, defaultToken.symbol, errorMessage, step, tokenPriceObject]);
 
   const renderButtonUI = useCallback(() => {
     // hide token
@@ -798,21 +842,20 @@ const SendHome: React.FC = () => {
     const action = step === 1 ? nextStep : preview;
 
     return (
-      <View style={styles.buttonWrapStyle}>
+      <View style={GStyles.paddingArg(0, pTd(16))}>
         <CommonButton loading={isLoading} disabled={disable} title={btnText} type="primary" onPress={action} />
       </View>
     );
-  }, [
-    isCheckAddressFinish,
-    isLoading,
-    nextStep,
-    preview,
-    previewDisable,
-    selectedToContact.address,
-    step,
-    styles.buttonWrapStyle,
-    warning,
-  ]);
+  }, [isCheckAddressFinish, isLoading, nextStep, preview, previewDisable, selectedToContact.address, step, warning]);
+
+  const renderBottomSection = useCallback(() => {
+    return (
+      <View style={styles.bottomWrapStyle}>
+        {renderFeeErrDom()}
+        {renderButtonUI()}
+      </View>
+    );
+  }, [renderButtonUI, renderFeeErrDom, styles.bottomWrapStyle]);
 
   useEffect(() => {
     onGetMaxAmount();
@@ -846,6 +889,8 @@ const SendHome: React.FC = () => {
         setSelectedToContact={setSelectedToContact}
         setChainList={setChainList}
         setCheckFinish={setIsCheckAddressFinish}
+        setSendNumber={setSendNumber}
+        setSendUSDNumber={setSendUsdNumber}
       />
       {Step1Dom}
 
@@ -890,7 +935,8 @@ const SendHome: React.FC = () => {
           }}
         />
       )} */}
-      {renderButtonUI()}
+
+      {renderBottomSection()}
     </PageContainer>
   );
 };

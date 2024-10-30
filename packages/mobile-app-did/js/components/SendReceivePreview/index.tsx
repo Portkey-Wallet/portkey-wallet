@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useState } from 'react';
-import { Text, View, TouchableWithoutFeedback, ImageSourcePropType } from 'react-native';
+import { Text, View, TouchableWithoutFeedback } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useLanguage } from 'i18n/hooks';
 import PageContainer from 'components/PageContainer';
@@ -10,26 +10,38 @@ import CommonInfoRow from 'components/CommonInfoRow';
 import { ActionType } from 'types/common';
 import { SeedTypeEnum } from '@portkey-wallet/types/types-ca/assets';
 import { formatStr2EllipsisStr } from '@portkey-wallet/utils';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { pTd } from 'utils/unit';
 import { getStyles } from './style';
+import { ChainId } from '@portkey-wallet/types';
+
+export enum FooterType {
+  'E_BRIDGE' = 'eBridge',
+  'E_TRANSFER' = 'eTransfer',
+}
 
 interface INFTInfo {
   isSeed?: boolean;
   seedType?: SeedTypeEnum;
   imageUrl: string;
   alias?: string;
+  collectionName: string;
+  tokenId: string;
 }
 
 interface ISendReceivePreviewProps {
   actionType: ActionType;
+  footerType?: FooterType;
   amount: string;
   amountUSD?: string;
   toAddress?: string;
+  toInfoChainId?: ChainId;
   fromAddress?: string;
+  fromInfoChainId?: ChainId;
   sourceNetwork?: string;
-  sourceNetworkIcon?: ImageSourcePropType;
+  sourceNetworkImageUrl?: string;
   destinationNetwork?: string;
-  destinationNetworkIcon?: ImageSourcePropType;
+  destinationNetworkImageUrl?: string;
   transactionFee?: string;
   transactionFeeUSD?: string;
   estimatedNetworkFee?: string;
@@ -45,26 +57,32 @@ interface ISendReceivePreviewProps {
 const ACTION_CONFIG = {
   [ActionType.SEND]: {
     topIcon: <Svg icon="send-thin" size={pTd(44)} />,
-    footerIcon: <Svg icon="ETransferLogo" oblongSize={[pTd(70), pTd(12)]} />,
     buttonText: 'Send',
   },
   [ActionType.RECEIVE]: {
     topIcon: <Svg icon="arrow-down-thin" size={pTd(44)} />,
-    footerIcon: <Svg icon="eBridgeLogo" oblongSize={[pTd(47), pTd(12)]} />,
     buttonText: 'Bridge to aelf',
   },
 } as const;
 
+const FOOTER_CONFIG = {
+  [FooterType.E_TRANSFER]: <Svg icon="ETransferLogo" oblongSize={[pTd(70), pTd(12)]} />,
+  [FooterType.E_BRIDGE]: <Svg icon="eBridgeLogo" oblongSize={[pTd(47), pTd(12)]} />,
+};
+
 const SendReceivePreview: React.FC<ISendReceivePreviewProps> = ({
   actionType,
+  footerType,
   amount,
   amountUSD,
   toAddress,
+  toInfoChainId,
   fromAddress,
+  fromInfoChainId,
   sourceNetwork,
-  sourceNetworkIcon,
+  sourceNetworkImageUrl,
   destinationNetwork,
-  destinationNetworkIcon,
+  destinationNetworkImageUrl,
   transactionFee,
   transactionFeeUSD,
   estimatedNetworkFee,
@@ -79,9 +97,16 @@ const SendReceivePreview: React.FC<ISendReceivePreviewProps> = ({
   const { t } = useLanguage();
   const styles = getStyles();
 
-  const { topIcon, footerIcon, buttonText } = ACTION_CONFIG[actionType] || {};
+  const isMainnet = useIsMainnet();
+
+  const { topIcon, buttonText } = ACTION_CONFIG[actionType] || {};
 
   const [isLoading, setIsLoading] = useState(false);
+
+  const getChainSvgName = (chainId?: ChainId) => {
+    if (!chainId) return undefined;
+    return chainId === 'AELF' ? 'mainnet' : 'sideChain';
+  };
 
   const handlePress = useCallback(() => {
     setIsLoading(true);
@@ -102,8 +127,8 @@ const SendReceivePreview: React.FC<ISendReceivePreviewProps> = ({
             {NFTInfo ? (
               <View style={styles.nftInfoRow}>
                 <View style={styles.nftInfoLeft}>
-                  <Text style={styles.nftInfoName}>NFT Name #1234</Text>
-                  <Text style={styles.nftInfoCollection}>Collection name</Text>
+                  <Text style={styles.nftInfoName}>{`${NFTInfo.alias} #${NFTInfo.tokenId}`}</Text>
+                  <Text style={styles.nftInfoCollection}>{NFTInfo.collectionName}</Text>
                 </View>
                 <NFTAvatar
                   disabled
@@ -123,7 +148,7 @@ const SendReceivePreview: React.FC<ISendReceivePreviewProps> = ({
                 <View style={styles.amountAboveWrap}>
                   <Text style={styles.amountAbove}>{amount}</Text>
                 </View>
-                {!!amountUSD && <Text style={styles.amountBelow}>{amountUSD}</Text>}
+                {!!amountUSD && isMainnet && <Text style={styles.amountBelow}>{amountUSD}</Text>}
               </View>
             )}
             <View style={styles.infoWrap}>
@@ -134,13 +159,21 @@ const SendReceivePreview: React.FC<ISendReceivePreviewProps> = ({
               {sourceNetwork && (
                 <CommonInfoRow
                   label={{ text: 'Source network' }}
-                  value={{ text: sourceNetwork, leftIcon: sourceNetworkIcon }}
+                  value={{
+                    text: sourceNetwork,
+                    leftImageUrl: sourceNetworkImageUrl,
+                    leftSvgName: getChainSvgName(fromInfoChainId),
+                  }}
                 />
               )}
               {destinationNetwork && (
                 <CommonInfoRow
                   label={{ text: 'Destination network' }}
-                  value={{ text: destinationNetwork, leftIcon: destinationNetworkIcon }}
+                  value={{
+                    text: destinationNetwork,
+                    leftImageUrl: destinationNetworkImageUrl,
+                    leftSvgName: getChainSvgName(toInfoChainId),
+                  }}
                 />
               )}
               {!!transactionFee && (
@@ -153,36 +186,36 @@ const SendReceivePreview: React.FC<ISendReceivePreviewProps> = ({
                     },
                     textBelow: isError ? 'Not enough ELF' : '',
                   }}
-                  value={{ text: transactionFee, textBelow: transactionFeeUSD }}
+                  value={{ text: transactionFee, textBelow: isMainnet ? transactionFeeUSD : '' }}
                   isError={isError}
                 />
               )}
               {!!estimatedNetworkFee && (
                 <CommonInfoRow
                   label={{
-                    text: 'Estimated gas fee',
+                    text: 'Estimated network fee',
                     tooltipProps: {
                       title: 'Estimated network fee',
                       description: 'Fee applied by the blockchain to process your transaction, also known as gas fee.',
                     },
                   }}
-                  value={{ text: estimatedNetworkFee, textBelow: estimatedNetworkFeeUSD }}
+                  value={{ text: estimatedNetworkFee, textBelow: isMainnet ? estimatedNetworkFeeUSD : '' }}
                 />
               )}
               {!!amountToReceive && (
                 <CommonInfoRow
                   label={{ text: 'Amount to receive' }}
-                  value={{ text: amountToReceive, textBelow: amountToReceiveUSD }}
+                  value={{ text: amountToReceive, textBelow: isMainnet ? amountToReceiveUSD : '' }}
                 />
               )}
               {!!estimatedDuration && (
                 <CommonInfoRow label={{ text: 'Estimated duration' }} value={{ text: `~${estimatedDuration}` }} />
               )}
             </View>
-            {!NFTInfo && (
+            {footerType && (
               <View style={styles.footerWrap}>
                 <Text style={styles.footerText}>Powered by</Text>
-                {footerIcon}
+                {FOOTER_CONFIG[footerType]}
               </View>
             )}
           </View>

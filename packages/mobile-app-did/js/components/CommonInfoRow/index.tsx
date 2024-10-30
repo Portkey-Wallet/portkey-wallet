@@ -1,7 +1,8 @@
 import React from 'react';
-import { Text, View, Image, ImageSourcePropType } from 'react-native';
+import { Text, View, Image } from 'react-native';
 import { useLanguage } from 'i18n/hooks';
 import CommonTooltip, { ITooltipContentProps } from 'components/CommonTooltip';
+import Svg, { SvgProps } from 'components/Svg';
 import { pTd } from 'utils/unit';
 import { makeStyles } from '@rneui/themed';
 import fonts from 'assets/theme/fonts';
@@ -14,7 +15,8 @@ interface ILabel {
 
 interface IValue {
   text?: string;
-  leftIcon?: ImageSourcePropType;
+  leftImageUrl?: string;
+  leftSvgName?: SvgProps['icon'];
   textBelow?: string;
 }
 
@@ -43,7 +45,11 @@ const CommonInfoRow = ({ label, value, isError }: ICommonInfoRowProps) => {
       </View>
       <View style={styles.infoValueColumnWrap}>
         <View style={styles.infoValueWrap}>
-          {value.leftIcon && <Image style={styles.infoValueLeftIcon} source={value.leftIcon} />}
+          {value.leftImageUrl ? (
+            <Image style={styles.infoValueLeftIcon} source={{ uri: value.leftImageUrl }} />
+          ) : (
+            value.leftSvgName && <Svg iconStyle={styles.infoValueLeftSvg} icon={value.leftSvgName} size={pTd(18)} />
+          )}
           <Text style={[styles.infoValue, isError ? styles.infoErrorText : undefined]}>{t(value.text || '--')}</Text>
         </View>
         {value.textBelow && (
@@ -114,6 +120,9 @@ export const getStyles = makeStyles(theme => ({
   infoValueLeftIcon: {
     width: pTd(18),
     height: pTd(18),
+    marginRight: pTd(4),
+  },
+  infoValueLeftSvg: {
     marginRight: pTd(4),
   },
   infoErrorText: {

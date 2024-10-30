@@ -1,17 +1,9 @@
 import React, { memo, useCallback, useMemo, useRef, useState } from 'react';
-import { Text, View, StyleSheet, ScrollView } from 'react-native';
-import PageContainer from 'components/PageContainer';
-import { defaultColors } from 'assets/theme';
-import { pTd } from 'utils/unit';
-import { TextM, TextS, TextL } from 'components/CommonText';
-import CommonButton from 'components/CommonButton';
 import ActionSheet from 'components/ActionSheet';
-import { addressFormat, formatChainInfoToShow, formatStr2EllipsisStr, handleErrorMessage } from '@portkey-wallet/utils';
+import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import { isCrossChain } from '@portkey-wallet/utils/aelf';
 import { useLanguage } from 'i18n/hooks';
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
-import GStyles from 'assets/theme/GStyles';
-import fonts from 'assets/theme/fonts';
 import { getContractBasic } from '@portkey-wallet/contracts/utils';
 import { useCurrentChain, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { usePin } from 'hooks/store';
@@ -36,7 +28,6 @@ import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
 import { getAelfTxResult } from '@portkey-wallet/utils/aelf';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { sleep } from '@portkey-wallet/utils';
-import { FontStyles } from 'assets/theme/styles';
 import { ChainId } from '@portkey-wallet/types';
 import {
   useAmountInUsdShow,
@@ -51,7 +42,6 @@ import {
   useCrossTransferByEtransfer,
 } from '@portkey-wallet/hooks/hooks-ca/useWithdrawByETransfer';
 import { useFocusEffect } from '@react-navigation/native';
-import NFTAvatar from 'components/NFTAvatar';
 import { useAccountNFTCollectionInfo, useAccountTokenInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
 import {
   PAGE_SIZE_IN_ACCOUNT_NFT_COLLECTION,
@@ -60,12 +50,15 @@ import {
 import useGetEBridgeConfig from 'hooks/ebridge';
 import { EBridge } from '@portkey-wallet/utils/eBridge';
 import { ContractBasic as BaseContractBasic } from '@portkey/contracts';
+import SendReceivePreview, { FooterType } from 'components/SendReceivePreview';
+import { ActionType } from 'types/common';
 
 const SendPreview: React.FC = () => {
   const { t } = useLanguage();
   const isMainnet = useIsMainnet();
   const defaultToken = useDefaultToken();
   const routerParams = useRouterEffectParams<IToSendPreviewParamsType>();
+
   const {
     sendType,
     assetInfo,
@@ -102,7 +95,6 @@ const SendPreview: React.FC = () => {
   const { fetchAccountTokenInfoList } = useAccountTokenInfo();
   const currentWallet = useCurrentWalletInfo();
 
-  const [isLoading] = useState(false);
   const currentNetwork = useCurrentNetworkInfo();
   const caAddressInfos = useCaAddressInfoList();
   const wallet = useCurrentWalletInfo();
@@ -529,358 +521,60 @@ const SendPreview: React.FC = () => {
     getTokenPrice(defaultToken.symbol);
   });
 
+  const isETransferOrEBridge = useMemo(() => {
+    return transferType === TransferType.E_TRANSFER || transferType === TransferType.E_BRIDGE;
+  }, [transferType]);
+
+  const footerType = useMemo(() => {
+    switch (transferType) {
+      case TransferType.E_TRANSFER:
+        return FooterType.E_TRANSFER;
+      case TransferType.E_BRIDGE:
+        return FooterType.E_BRIDGE;
+      default:
+        return undefined;
+    }
+  }, [transferType]);
+
   return (
-    <PageContainer
-      safeAreaColor={['white', 'white']}
-      titleDom={`${t('Send')}${sendType === 'token' ? ' ' + (assetInfo?.label || assetInfo?.symbol) : ''}`}
-      containerStyles={styles.pageWrap}
-      scrollViewProps={{ disabled: true }}>
-      {sendType === 'nft' ? (
-        <View style={styles.topWrap}>
-          {
-            <NFTAvatar
-              disabled
-              isSeed={assetInfo.isSeed}
-              seedType={assetInfo.seedType}
-              nftSize={pTd(64)}
-              badgeSizeType="normal"
-              data={{
-                imageUrl: assetInfo.imageUrl,
-                alias: assetInfo.alias,
-              }}
-              style={styles.img}
-            />
-          }
-          <View style={styles.topLeft}>
-            <TextL numberOfLines={1} style={[styles.nftTitle, fonts.mediumFont]}>
-              {`${assetInfo.alias} #${assetInfo?.tokenId}  `}
-            </TextL>
-            <TextS style={[FontStyles.font3]}>{`Amount: ${formatAmountShow(sendNumber, assetInfo.decimals)}`}</TextS>
-          </View>
-        </View>
-      ) : (
-        <>
-          <Text style={[styles.tokenCount, FontStyles.font5, fonts.mediumFont]}>
-            {`- ${formatAmountShow(sendNumber, assetInfo.decimals)} ${assetInfo.label || assetInfo?.symbol}`}
-          </Text>
-          {isMainnet && isTokenHasPrice && (
-            <TextM style={styles.tokenUSD}>{`- ${formatAmountUSDShow(
-              ZERO.plus(sendNumber).multipliedBy(tokenPriceObject[assetInfo.symbol]),
-            )}`}</TextM>
-          )}
-        </>
-      )}
-      <ScrollView>
-        <View style={styles.card}>
-          {/* From */}
-          <View style={styles.section}>
-            <View style={[styles.flexSpaceBetween]}>
-              <TextM style={styles.lightGrayFontColor}>{t('From')}</TextM>
-              <TextM style={styles.blackFontColor}>{userInfo?.nickName}</TextM>
-            </View>
-            <View style={[styles.flexSpaceBetween]}>
-              <TextM style={styles.lightGrayFontColor} />
-              <TextS style={styles.lightGrayFontColor}>
-                {formatStr2EllipsisStr(addressFormat(wallet?.[assetInfo?.chainId]?.caAddress, assetInfo.chainId))}
-              </TextS>
-            </View>
-          </View>
-          <Text style={[styles.divider, styles.marginTop0]} />
-          {/* To */}
-          <View style={styles.section}>
-            <View style={[styles.flexSpaceBetween]}>
-              <TextM style={[styles.lightGrayFontColor]}>{t('To')}</TextM>
-              <View style={styles.alignItemsEnd}>
-                {toInfo?.name && <TextM style={[styles.blackFontColor]}>{toInfo?.name}</TextM>}
-                <TextS style={styles.lightGrayFontColor}>{formatStr2EllipsisStr(toInfo?.address)}</TextS>
-              </View>
-            </View>
-          </View>
-          <Text style={[styles.divider, styles.marginTop0]} />
-          {/* more Info */}
-          <View style={styles.section}>
-            <View style={[styles.flexSpaceBetween]}>
-              <TextM style={[styles.lightGrayFontColor]}>{t('Network')}</TextM>
-              <TextM style={[styles.blackFontColor, GStyles.alignEnd]}>
-                {formatChainInfoToShow(assetInfo.chainId)}
-              </TextM>
-            </View>
-            <View style={[styles.flexSpaceBetween]}>
-              <TextM style={styles.blackFontColor} />
-              <TextM style={[styles.blackFontColor, GStyles.alignEnd]}>{`→${networkInfoShow(toInfo?.address)}`}</TextM>
-            </View>
-          </View>
-
-          <Text style={[styles.divider, styles.marginTop0]} />
-          {/* transaction Fee */}
-          <View style={styles.section}>
-            <View style={[styles.flexSpaceBetween]}>
-              <TextM style={[styles.blackFontColor, styles.fontBold]}>{t('Transaction Fee')}</TextM>
-              <TextM
-                style={[styles.blackFontColor, styles.fontBold]}>{`${transactionFee} ${defaultToken.symbol}`}</TextM>
-            </View>
-            {isMainnet && (
-              <View>
-                <TextM />
-                <TextS style={[styles.blackFontColor, styles.lightGrayFontColor, GStyles.alignEnd]}>{`$ ${unitConverter(
-                  ZERO.plus(transactionFee || '').multipliedBy(tokenPriceObject[defaultToken.symbol]),
-                )}`}</TextS>
-              </View>
-            )}
-          </View>
-
-          {isCrossChainTransfer && (
-            <>
-              <Text style={[styles.divider, styles.marginTop0]} />
-              <View style={styles.section}>
-                <View style={[styles.flexSpaceBetween]}>
-                  <TextM style={[styles.blackFontColor, styles.fontBold, styles.leftEstimatedTitle]}>
-                    {t('Estimated CrossChain Transfer')}
-                  </TextM>
-                  <View>
-                    <TextM style={[styles.blackFontColor, styles.fontBold, GStyles.alignEnd]}>
-                      {isSupportEtransferCross
-                        ? `${crossChainFee} ${crossChainFeeUnit}`
-                        : `${unitConverter(crossDefaultFee)} ${defaultToken.symbol}`}
-                    </TextM>
-                    {isMainnet ? (
-                      <TextS
-                        style={[
-                          styles.blackFontColor,
-                          styles.lightGrayFontColor,
-                          GStyles.alignEnd,
-                        ]}>{`$ ${unitConverter(
-                        ZERO.plus(crossDefaultFee).multipliedBy(tokenPriceObject[defaultToken.symbol]),
-                      )}`}</TextS>
-                    ) : (
-                      <TextM />
-                    )}
-                  </View>
-                </View>
-              </View>
-              <Text style={[styles.divider, styles.marginTop0]} />
-            </>
-          )}
-          {isCrossChainTransfer && (isSupportEtransferCross || assetInfo.symbol === defaultToken.symbol) && (
-            <View style={styles.section}>
-              <View style={[styles.flexSpaceBetween]}>
-                <TextM style={[styles.blackFontColor, styles.fontBold, styles.leftTitle, GStyles.alignEnd]}>
-                  {t('Estimated amount received')}
-                </TextM>
-                <View>
-                  <TextM style={[styles.blackFontColor, styles.fontBold, GStyles.alignEnd]}>
-                    {EstimateAmount.estimateAmount}
-                  </TextM>
-                  {isMainnet ? (
-                    <TextS style={[styles.blackFontColor, styles.lightGrayFontColor, GStyles.alignEnd]}>
-                      {EstimateAmount.estimateAmountUsd}
-                    </TextS>
-                  ) : (
-                    <TextM />
-                  )}
-                </View>
-              </View>
-            </View>
-          )}
-        </View>
-      </ScrollView>
-
-      <View style={styles.buttonWrapStyle}>
-        <CommonButton loading={isLoading} title={t('Send')} type="primary" onPress={onSend} />
-      </View>
-    </PageContainer>
+    <SendReceivePreview
+      actionType={ActionType.SEND}
+      footerType={footerType}
+      NFTInfo={
+        sendType === 'nft'
+          ? {
+              isSeed: assetInfo.isSeed,
+              seedType: assetInfo.seedType,
+              imageUrl: assetInfo.imageUrl,
+              alias: assetInfo.alias,
+              collectionName: assetInfo.collectionName,
+              tokenId: assetInfo.tokenId,
+            }
+          : undefined
+      }
+      amount={`${formatAmountShow(sendNumber, assetInfo.decimals)} ${assetInfo.label || assetInfo?.symbol}`}
+      amountUSD={`${formatAmountUSDShow(ZERO.plus(sendNumber).multipliedBy(tokenPriceObject[assetInfo.symbol]))}`}
+      toAddress={toInfo?.address}
+      toInfoChainId={toInfo?.chainId}
+      destinationNetwork={networkInfoShow(toInfo?.address)}
+      destinationNetworkImageUrl={targetNetwork?.imageUrl}
+      transactionFee={!isETransferOrEBridge ? `${transactionFee} ${defaultToken.symbol}` : ''}
+      transactionFeeUSD={
+        !isETransferOrEBridge
+          ? `$ ${unitConverter(ZERO.plus(transactionFee || '').multipliedBy(tokenPriceObject[defaultToken.symbol]))}`
+          : ''
+      }
+      estimatedNetworkFee={isETransferOrEBridge ? `${networkFee} ${networkFeeUnit}` : ''}
+      estimatedNetworkFeeUSD={
+        isETransferOrEBridge
+          ? `$ ${unitConverter(ZERO.plus(networkFee || '').multipliedBy(tokenPriceObject[networkFeeUnit || '']))}`
+          : ''
+      }
+      amountToReceive={EstimateAmount.estimateAmount}
+      amountToReceiveUSD={EstimateAmount.estimateAmountUsd}
+      estimatedDuration={getEstimatedTime()}
+    />
   );
 };
 
 export default memo(SendPreview);
-
-export const styles = StyleSheet.create({
-  pageWrap: {
-    backgroundColor: defaultColors.bg1,
-    flex: 1,
-  },
-  topWrap: {
-    width: '100%',
-    marginTop: pTd(40),
-    ...GStyles.flexRowWrap,
-  },
-  img: {
-    width: pTd(64),
-    height: pTd(64),
-    borderRadius: pTd(6),
-    marginRight: pTd(16),
-  },
-  noImg: {
-    overflow: 'hidden',
-    width: pTd(64),
-    height: pTd(64),
-    borderRadius: pTd(6),
-    backgroundColor: defaultColors.bg7,
-    fontSize: pTd(54),
-    lineHeight: pTd(64),
-    textAlign: 'center',
-    color: defaultColors.font7,
-    marginRight: pTd(16),
-  },
-  topLeft: {
-    ...GStyles.flexCol,
-    justifyContent: 'center',
-  },
-  nftTitle: {
-    color: defaultColors.font5,
-    marginBottom: pTd(4),
-    paddingRight: pTd(8),
-    maxWidth: pTd(230),
-  },
-  tokenCount: {
-    marginTop: pTd(40),
-    fontSize: pTd(28),
-    width: '100%',
-    textAlign: 'center',
-  },
-  tokenUSD: {
-    color: defaultColors.font3,
-    width: '100%',
-    textAlign: 'center',
-    marginTop: pTd(4),
-  },
-  group: {
-    backgroundColor: defaultColors.bg1,
-    marginTop: pTd(24),
-    paddingLeft: pTd(16),
-    paddingRight: pTd(16),
-    borderRadius: pTd(6),
-  },
-  buttonWrapStyle: {
-    justifyContent: 'flex-end',
-    paddingBottom: pTd(12),
-    paddingTop: pTd(12),
-  },
-  errorMessage: {
-    lineHeight: pTd(16),
-    color: defaultColors.error,
-    marginTop: pTd(4),
-    paddingLeft: pTd(8),
-  },
-  wrap: {
-    height: pTd(56),
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  borderTop: {
-    borderTopColor: defaultColors.border6,
-    borderTopWidth: StyleSheet.hairlineWidth,
-  },
-  title: {
-    flex: 1,
-    color: defaultColors.font3,
-  },
-  tokenNum: {
-    textAlign: 'right',
-    color: defaultColors.font5,
-  },
-  usdtNum: {
-    marginLeft: pTd(6),
-    marginTop: pTd(4),
-    color: defaultColors.font3,
-    textAlign: 'right',
-  },
-  notELFWrap: {
-    height: pTd(84),
-    alignItems: 'flex-start',
-    paddingTop: pTd(18),
-    paddingBottom: pTd(18),
-  },
-  totalWithUSD: {
-    marginTop: pTd(12),
-    display: 'flex',
-    justifyContent: 'flex-end',
-    flexDirection: 'row',
-  },
-  flexSpaceBetween: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    width: '100%',
-    lineHeight: pTd(20),
-  },
-  titles1: {
-    marginTop: pTd(56),
-  },
-  values1: {
-    marginTop: pTd(4),
-  },
-  divider: {
-    marginTop: pTd(24),
-    width: '100%',
-    height: StyleSheet.hairlineWidth,
-    backgroundColor: defaultColors.border6,
-  },
-  titles2: {
-    marginTop: pTd(25),
-  },
-  values2: {
-    marginTop: pTd(4),
-  },
-  card: {
-    marginTop: pTd(40),
-    borderRadius: pTd(6),
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: defaultColors.border1,
-    width: '100%',
-  },
-  section: {
-    ...GStyles.paddingArg(16, 12),
-  },
-  marginTop16: {
-    marginTop: pTd(16),
-  },
-  marginTop4: {
-    marginTop: pTd(4),
-  },
-  marginTop0: {
-    marginTop: 0,
-  },
-  marginLeft8: {
-    marginLeft: pTd(8),
-  },
-  space: {
-    flex: 1,
-  },
-  button: {
-    marginBottom: pTd(30),
-  },
-  lightGrayFontColor: {
-    color: defaultColors.font3,
-  },
-  blackFontColor: {
-    color: defaultColors.font5,
-  },
-  fontBold: {
-    ...fonts.mediumFont,
-  },
-  greenFontColor: {
-    color: defaultColors.font10,
-  },
-  alignItemsCenter: {
-    alignItems: 'center',
-  },
-  alignItemsEnd: {
-    alignItems: 'flex-end',
-  },
-  leftTitle: {
-    width: pTd(120),
-    lineHeight: pTd(20),
-  },
-  leftEstimatedTitle: {
-    width: pTd(180),
-  },
-  alertMessage: {
-    color: defaultColors.font3,
-    marginBottom: pTd(12),
-    textAlign: 'center',
-  },
-});

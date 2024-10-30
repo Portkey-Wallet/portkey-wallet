@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useState } from 'react';
-import { Text, View, TouchableWithoutFeedback } from 'react-native';
+import { Text, View, TouchableWithoutFeedback, Linking } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useLanguage } from 'i18n/hooks';
 import PageContainer from 'components/PageContainer';
@@ -7,13 +7,16 @@ import Svg from 'components/Svg';
 import NFTAvatar from 'components/NFTAvatar';
 import CommonButton from 'components/CommonButton';
 import CommonInfoRow from 'components/CommonInfoRow';
+import Touchable from 'components/Touchable';
 import { ActionType } from 'types/common';
 import { SeedTypeEnum } from '@portkey-wallet/types/types-ca/assets';
 import { formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
-import { pTd } from 'utils/unit';
-import { getStyles } from './style';
 import { ChainId } from '@portkey-wallet/types';
+import { pTd } from 'utils/unit';
+import { openOutLink } from 'utils/link';
+import { SEND_RECEIVE_HELP_URL } from 'constants/common';
+import { getStyles } from './style';
 
 export enum FooterType {
   'E_BRIDGE' = 'eBridge',
@@ -118,7 +121,14 @@ const SendReceivePreview: React.FC<ISendReceivePreviewProps> = ({
       titleDom={t(`Preview`)}
       safeAreaColor={['black', 'black']}
       containerStyles={styles.pageWrap}
-      rightDom={<Svg iconStyle={styles.headerHelpIcon} icon={isLoading ? 'help-gray' : 'help-white'} size={pTd(24)} />}
+      rightDom={
+        <Touchable
+          onPress={async () => {
+            await openOutLink(SEND_RECEIVE_HELP_URL);
+          }}>
+          <Svg iconStyle={styles.headerHelpIcon} icon={isLoading ? 'help-gray' : 'help-white'} size={pTd(24)} />
+        </Touchable>
+      }
       scrollViewProps={{ disabled: true }}>
       <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>
         <TouchableWithoutFeedback>

@@ -24,3 +24,5 @@ export const RAMP_BUY_URL = 'https://thirdparty.portkey.finance/buy?from=app';
 export const RAMP_SELL_URL = 'https://thirdparty.portkey.finance/sell?from=app';
 
 export const DISCOVER_BOOKMARK_MAX_COUNT = 30;
+
+export const SEND_RECEIVE_HELP_URL = 'https://doc.portkey.finance/docs/How-to-send-and-receive-assets';

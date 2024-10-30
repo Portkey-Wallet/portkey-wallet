@@ -85,6 +85,7 @@ export const getStyles = makeStyles(theme => ({
   },
   buttonRowWrap: {
     marginTop: pTd(12),
+    marginBottom: pTd(14),
   },
   closeWrap: {
     position: 'absolute',

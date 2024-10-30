@@ -127,7 +127,11 @@ const TokenAmountInput: React.FC<ITokenAmountInput> = props => {
             </>
           )}
           {warningTip && (
-            <TouchableOpacity onPress={clickWarning} onLayout={onLayout} disabled={warningClick}>
+            <TouchableOpacity
+              onPress={clickWarning}
+              onLayout={onLayout}
+              disabled={warningClick}
+              style={styles.warningIconWrap}>
               <FloatTip
                 wrapperLayoutProps={wrapperLayoutProps}
                 textStyle={{
@@ -147,7 +151,7 @@ const TokenAmountInput: React.FC<ITokenAmountInput> = props => {
         ) : (
           <TextL style={styles.bottomText}>{`$${usdValue || 0}`}</TextL>
         )}
-        <Svg icon="switch" color={mode === 'dark' ? darkColors.iconBase2 : defaultColors.iconBase2} />
+        <Svg icon="switch" color={mode === 'dark' ? darkColors.iconBase2 : defaultColors.iconBase2} size={pTd(16)} />
       </Touchable>
     </View>
   );
@@ -172,6 +176,7 @@ export const getStyles = makeStyles(theme => ({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    marginTop: pTd(8),
   },
   input: {
     color: theme.colors.textBase1,
@@ -186,5 +191,8 @@ export const getStyles = makeStyles(theme => ({
   },
   bottomText: {
     color: theme.colors.textBase2,
+  },
+  warningIconWrap: {
+    flexDirection: 'row',
   },
 }));

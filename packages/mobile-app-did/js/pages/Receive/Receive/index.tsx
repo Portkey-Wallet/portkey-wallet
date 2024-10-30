@@ -1,7 +1,7 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import PageContainer from 'components/PageContainer';
 import { pTd } from 'utils/unit';
-import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
+import { IUserTokenItemResponse, TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { useReceive } from '@portkey-wallet/hooks/hooks-ca/receive';
 import SourceDestinationPicker from '../components/SourceDestinationPicker';
@@ -14,10 +14,26 @@ import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import { ReceiveType } from '@portkey-wallet/types/types-ca/receive';
 import { makeStyles } from '@rneui/themed';
 import EBridgeCard from '../components/EBridgeCard';
+import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
+import { ChainId } from '@portkey-wallet/types';
 
 export default function Receive() {
-  const tokenItem = useRouterParams<TokenItemShowType>();
-  const { chainId, symbol } = tokenItem;
+  const tokenInfo = useRouterParams<TokenItemShowType & IUserTokenItemResponse>();
+  const getTokenItem = useCallback(
+    (_chainId: ChainId = MAIN_CHAIN_ID) => {
+      if (tokenInfo?.tokens?.length) {
+        const mainChainTokenInfo = tokenInfo?.tokens.find(item => item.chainId === _chainId);
+        return {
+          ...tokenInfo,
+          ...mainChainTokenInfo,
+        };
+      }
+      return tokenInfo;
+    },
+    [tokenInfo],
+  );
+  const [tokenItem, setTokenItem] = useState(getTokenItem());
+  const { chainId } = tokenItem;
   const {
     loading,
     errorMsg,
@@ -30,6 +46,12 @@ export default function Receive() {
     setSourceChain,
   } = useReceive(tokenItem, chainId);
   const styles = getStyles();
+
+  useEffect(() => {
+    if (sourceChain?.network !== tokenItem.chainId) {
+      setTokenItem(getTokenItem(sourceChain?.network as ChainId));
+    }
+  }, [getTokenItem, sourceChain?.network, tokenItem.chainId]);
 
   useEffect(() => {
     if (loading) {
@@ -62,7 +84,7 @@ export default function Receive() {
 
   const showDestinationList = useCallback(() => {
     const destinationList = destinationChainList.map(item => {
-      return { name: formatChainInfoToShow(item?.chainId), icon: '' };
+      return { name: formatChainInfoToShow(item?.chainId), icon: item?.chainImageUrl || '' };
     });
     const selectedIndex = destinationChainList.findIndex(item => item?.chainId === destinationChain?.chainId);
     SourceDestinationSelector.showList({

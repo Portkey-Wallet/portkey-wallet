@@ -5,7 +5,7 @@ import CommonButton from 'components/CommonButton';
 import { setSecureStoreItem } from '@portkey-wallet/utils/mobile/biometric';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { View } from 'react-native';
-import { makeStyles } from '@rneui/themed';
+import { makeStyles, useTheme } from '@rneui/themed';
 import GStyles from 'assets/theme/GStyles';
 import navigationService from 'utils/navigationService';
 import { usePreventHardwareBack } from '@portkey-wallet/hooks/mobile';
@@ -21,6 +21,7 @@ import Svg from 'components/Svg';
 const ScrollViewProps = { disabled: true };
 export default function SetBiometrics() {
   const styles = getStyles();
+  const { theme } = useTheme();
   usePreventHardwareBack();
   // const dispatch = useAppDispatch();
   // const timer = useRef<TimerResult>();
@@ -115,13 +116,19 @@ export default function SetBiometrics() {
   //   }, 100);
   // });
   return (
-    <PageContainer scrollViewProps={ScrollViewProps} leftDom titleDom containerStyles={styles.containerStyles}>
+    <PageContainer
+      hideHeader
+      scrollViewProps={ScrollViewProps}
+      leftDom
+      titleDom
+      containerStyles={styles.containerStyles}>
       <View>
         <TextH1 style={styles.headerTitle}>{'Enable biometrics authentication'}</TextH1>
         <Svg iconStyle={GStyles.alignCenter} icon="face-id" size={pTd(64)} />
       </View>
       <View>
         <CommonButton buttonStyle={styles.buttonWrap} type="primary" onPress={openBiometrics}>
+          <Svg icon="face-id" iconStyle={styles.buttonIcon} size={pTd(16)} color={theme.colors.iconBrand4} />
           {'Set up now'}
         </CommonButton>
         <CommonButton type="outline" title="Do it later" onPress={onSkip} />
@@ -133,7 +140,11 @@ export default function SetBiometrics() {
 const getStyles = makeStyles(_theme => ({
   containerStyles: {
     justifyContent: 'space-between',
-    paddingTop: pTd(24),
+    paddingTop: pTd(58),
+    paddingBottom: pTd(32),
+  },
+  buttonIcon: {
+    marginRight: pTd(8),
   },
   headerTitle: {
     marginBottom: pTd(120),

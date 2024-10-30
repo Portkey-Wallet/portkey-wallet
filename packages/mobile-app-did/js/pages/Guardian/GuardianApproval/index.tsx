@@ -221,18 +221,25 @@ export default function GuardianApproval() {
   const isSuccess = useMemo(() => guardianCount <= approvedAmount, [guardianCount, approvedAmount]);
   const hasAutoConfirmed = useRef<boolean>(false);
 
-  const onSetGuardianStatus = useCallback((data: { key: string; status: GuardiansStatusItem }) => {
-    if (data.key === 'resetGuardianApproval') {
-      setIsExpired(false);
-      setApproved(undefined);
-      guardianExpiredTimeRef.current = undefined;
-    } else {
-      setApproved(preGuardiansStatus => ({ ...preGuardiansStatus, [data.key]: data.status }));
-    }
-
-    if (!guardianExpiredTimeRef.current && data.status?.status === VerifyStatus.Verified)
-      guardianExpiredTimeRef.current = Date.now() + GUARDIAN_EXPIRED_TIME;
+  const onTryAgain = useCallback(() => {
+    setIsExpired(false);
+    guardianExpiredTimeRef.current = undefined;
+    setApproved({});
+    setAuthenticationInfo({});
   }, []);
+  const onSetGuardianStatus = useCallback(
+    (data: { key: string; status: GuardiansStatusItem }) => {
+      if (data.key === 'resetGuardianApproval') {
+        onTryAgain();
+      } else {
+        setApproved(preGuardiansStatus => ({ ...preGuardiansStatus, [data.key]: data.status }));
+      }
+
+      if (!guardianExpiredTimeRef.current && data.status?.status === VerifyStatus.Verified)
+        guardianExpiredTimeRef.current = Date.now() + GUARDIAN_EXPIRED_TIME;
+    },
+    [onTryAgain],
+  );
 
   useEffectOnce(() => {
     const listener = myEvents.setGuardianStatus.addListener(onSetGuardianStatus);
@@ -791,12 +798,6 @@ export default function GuardianApproval() {
     transferLimitDetail?.symbol,
   ]);
 
-  const onTryAgain = useCallback(() => {
-    setIsExpired(false);
-    guardianExpiredTimeRef.current = undefined;
-    setApproved({});
-  }, []);
-
   return (
     <PageContainer
       scrollViewProps={{ disabled: true }}
@@ -818,7 +819,7 @@ export default function GuardianApproval() {
 
           <View style={GStyles.flex1}>
             <ScrollView>
-              {loginGuardians.length && (
+              {!!loginGuardians.length && (
                 <>
                   <View style={styles.guardiansTitleWrap}>
                     <TextM style={styles.guardiansTitle}>{'Login account(s)'}</TextM>
@@ -842,7 +843,7 @@ export default function GuardianApproval() {
                 </>
               )}
 
-              {otherGuardians.length && (
+              {!!otherGuardians.length && (
                 <>
                   <View style={styles.guardiansTitleWrap}>
                     <TextM style={styles.guardiansTitle}>{'Other guardian(s)'}</TextM>

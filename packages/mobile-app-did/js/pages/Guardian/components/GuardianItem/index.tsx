@@ -167,7 +167,7 @@ function GuardianItemButton({
         });
       }
 
-      CommonToast.success('Verified Successfully');
+      // CommonToast.success('Verified Successfully');
       const verifierInfo: VerifierInfo = { ...rst, verifierId: guardianItem?.verifier?.id };
       onSetGuardianStatus({
         status: VerifyStatus.Verified,
@@ -335,7 +335,7 @@ export default function GuardianItem({
     <View style={[styles.itemRow, disabled && styles.disabledStyle]}>
       <View style={[GStyles.flexRowWrap, GStyles.itemCenter, GStyles.flex1, styles.itemContent]}>
         <View style={[GStyles.flexRowWrap, GStyles.itemCenter]}>
-          <VerifierImage size={pTd(42)} label={verifierName} uri={verifierImageUrl} />
+          <VerifierImage size={pTd(42)} label={verifierName} uri={verifierImageUrl} style={styles.verifierImage} />
           <Svg
             iconStyle={styles.loginTypeIconWrap}
             icon={GUARDIAN_ITEM_TYPE_ICON[guardianItem.guardianType]}
@@ -377,6 +377,9 @@ const getStyles = makeStyles(theme => ({
   },
   itemContent: {
     paddingRight: pTd(8),
+  },
+  verifierImage: {
+    borderWidth: 0,
   },
   loginTypeIconWrap: {
     marginLeft: pTd(-8),

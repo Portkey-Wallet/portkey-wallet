@@ -27,6 +27,7 @@ import { createNewTmpWallet } from '@portkey-wallet/store/store-ca/wallet/action
 import { useAppDispatch } from 'store/hooks';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { makeStyles } from '@rneui/themed';
+import navigationService from 'utils/navigationService';
 
 const TitlePrefix = {
   [PageType.login]: 'Continue with',
@@ -196,7 +197,7 @@ export default function Referral({
 
   const loginModeMap = useLoginModeMap(
     onLogin,
-    useCallback(() => setLoginType(PageLoginType.email), [setLoginType]),
+    useCallback(() => navigationService.navigate('SignUpEmail'), []),
     useCallback(() => setLoginType(PageLoginType.phone), [setLoginType]),
   );
 
@@ -241,7 +242,7 @@ export default function Referral({
             })}
             <Fragment>
               {loginModeListToOther.length > 0 && <View style={pageStyles.blank} />}
-              <RoundButton icon="qrCode-white" onPress={() => setLoginType(PageLoginType.qrCode)} />
+              <RoundButton icon="qrCode-white" onPress={() => navigationService.navigate('LoginQRCode')} />
             </Fragment>
           </View>
         </View>
@@ -273,7 +274,6 @@ const getStyles = makeStyles(_theme => ({
   },
   dividerTextStyle: {
     fontSize: pTd(12),
-    opacity: 0.4,
   },
   // dividerLineStyle: {
   //   color: theme.colors.borderBase1,

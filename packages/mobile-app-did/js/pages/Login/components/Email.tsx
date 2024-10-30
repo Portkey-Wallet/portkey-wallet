@@ -5,11 +5,10 @@ import { checkEmail } from '@portkey-wallet/utils/check';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { useLanguage } from 'i18n/hooks';
 import myEvents from 'utils/deviceEvent';
-import styles from '../styles';
 import CommonInput from 'components/CommonInput';
 import CommonButton from 'components/CommonButton';
 import GStyles from 'assets/theme/GStyles';
-import { PageLoginType, PageType } from '../types';
+import { PageType } from '../types';
 import { useOnLogin } from 'hooks/login';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { useInputFocus } from 'hooks/useInputFocus';
@@ -17,8 +16,11 @@ import { TextH1, TextL } from 'components/CommonText';
 import { darkColors } from 'assets/theme';
 import Touchable from 'components/Touchable';
 import navigationService from 'utils/navigationService';
-import { useTheme } from '@rneui/themed';
 import { KeyboardSafeArea } from 'components/KeyboardSafeArea';
+import { makeStyles } from '@rneui/themed';
+import { pTd } from 'utils/unit';
+import { screenHeight } from '@portkey-wallet/utils/mobile/device';
+import fonts from 'assets/theme/fonts';
 
 const TitleMap = {
   [PageType.login]: {
@@ -29,15 +31,8 @@ const TitleMap = {
   },
 };
 
-export default function Email({
-  setLoginType,
-  type = PageType.login,
-}: {
-  setLoginType: (type: PageLoginType) => void;
-  type?: PageType;
-}) {
+export default function Email({ type = PageType.login }: { type?: PageType }) {
   const emailStyles = styles();
-  const { theme } = useTheme();
   const { t } = useLanguage();
   const iptRef = useRef<TextInput>();
   useInputFocus(iptRef);
@@ -79,13 +74,7 @@ export default function Email({
           <TextH1 style={emailStyles.emailTitle}>
             {type === PageType.login ? 'Log in via email' : 'Create your account'}
           </TextH1>
-          <TextL style={[GStyles.marginBottom(8)]} onPress={() => setLoginType(PageLoginType.email)}>
-            Email
-          </TextL>
-          {/* <View style={[GStyles.flexRowWrap, GStyles.marginBottom(8)]}>
-            <TabButton title="Phone" style={GStyles.marginRight(8)} onPress={() => setLoginType(PageLoginType.phone)} />
-            <TabButton isActive title="Email" onPress={() => setLoginType(PageLoginType.email)} />
-          </View> */}
+          <TextL style={[GStyles.marginBottom(8)]}>Email</TextL>
 
           <CommonInput
             ref={iptRef}
@@ -97,7 +86,7 @@ export default function Email({
             onChangeText={onChangeText}
             errorMessage={errorMessage}
             keyboardType="email-address"
-            placeholder={t('Enter your Email')}
+            placeholder={t('Enter your email')}
             containerStyle={emailStyles.emailInputContainerStyle}
             inputContainerStyle={emailStyles.emailInputInputContainerStyle}
             placeholderTextColor={darkColors.textBase3}
@@ -113,17 +102,17 @@ export default function Email({
             {type === PageType.login ? (
               <Touchable
                 style={[GStyles.flexRowWrap, GStyles.itemCenter, GStyles.flexCenter, emailStyles.signUpTip]}
-                onPress={() => navigationService.navigate('LoginPortkey')}>
-                <TextL style={{ color: theme.colors.textBase2 }}>
-                  Don’t have an account? <TextL style={{ color: theme.colors.textBrand1 }}>Sign up</TextL>
+                onPress={() => navigationService.navigate('SignUpEmail')}>
+                <TextL style={emailStyles.signUpTipContent}>
+                  Don’t have an account? <TextL style={emailStyles.signUpTipContentBold}>Sign up</TextL>
                 </TextL>
               </Touchable>
             ) : (
               <Touchable
                 style={[GStyles.flexRowWrap, GStyles.itemCenter, GStyles.flexCenter, emailStyles.signUpTip]}
                 onPress={() => navigationService.navigate('LoginEmail')}>
-                <TextL style={{ color: theme.colors.textBase2 }}>
-                  Already have an account? <TextL style={{ color: theme.colors.textBrand1 }}>Log in</TextL>
+                <TextL style={emailStyles.signUpTipContent}>
+                  Already have an account? <TextL style={emailStyles.signUpTipContentBold}>Log in</TextL>
                 </TextL>
               </Touchable>
             )}
@@ -133,3 +122,44 @@ export default function Email({
     </View>
   );
 }
+
+const styles = makeStyles(theme => ({
+  card: {
+    flex: 1,
+    width: '100%',
+    paddingTop: pTd(24),
+    paddingBottom: 0,
+    minHeight: Math.min(screenHeight * 0.58, 494),
+  },
+  cardContent: {
+    height: '100%',
+  },
+  emailTitle: {
+    marginBottom: pTd(48),
+  },
+  emailInputContainerStyle: {
+    width: '100%',
+  },
+  emailInputInputContainerStyle: {
+    borderWidth: pTd(1),
+    borderBottomWidth: pTd(1),
+    borderRadius: pTd(8),
+    borderColor: theme.colors.borderBase1,
+  },
+  signUpWrap: {
+    paddingBottom: pTd(24),
+  },
+  signUpTip: {
+    marginTop: pTd(16),
+    height: pTd(48),
+    alignContent: 'center',
+    justifyContent: 'center',
+  },
+  signUpTipContent: {
+    color: theme.colors.textBase2,
+  },
+  signUpTipContentBold: {
+    color: theme.colors.textBrand1,
+    ...fonts.mediumFont,
+  },
+}));

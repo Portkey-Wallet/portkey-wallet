@@ -9,12 +9,12 @@ import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { useIntervalGetResult, useOnResultFail } from 'hooks/login';
 import { useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { TimerResult } from 'utils/wallet';
-import CommonToast from 'components/CommonToast';
 import { useAppDispatch } from 'store/hooks';
 import { setCAInfo } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { useLatestRef } from '@portkey-wallet/hooks';
 import navigationService from 'utils/navigationService';
 import { sleep } from '@portkey-wallet/utils';
+import { usePreventHardwareBack } from '@portkey-wallet/hooks/mobile';
 
 type RouterParams = {
   managerInfo: ManagerInfo;
@@ -31,6 +31,7 @@ export default function PrepareWallet() {
   const originChainId = useOriginChainId();
   const latestOriginChainId = useLatestRef(originChainId);
   const onResultFail = useOnResultFail();
+  usePreventHardwareBack();
 
   const onIntervalGetResult = useIntervalGetResult();
 
@@ -41,7 +42,7 @@ export default function PrepareWallet() {
         prepareWalletProgressRef.current?.complete();
         await sleep(700);
 
-        if (isRecovery) CommonToast.success('Wallet Recovered Successfully!');
+        // if (isRecovery) CommonToast.success('Wallet Recovered Successfully!');
 
         try {
           dispatch(
@@ -76,6 +77,7 @@ export default function PrepareWallet() {
       leftIconType="close"
       noLeftDom
       titleDom
+      notHandleHardwareBackPress
       hideTouchable>
       <Image source={require('assets/image/pngs/prepare-wallet.png')} style={styles.imageStyle} />
       <PrepareWalletProgress ref={prepareWalletProgressRef} />

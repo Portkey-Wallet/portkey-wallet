@@ -27,8 +27,8 @@ export const FloatTip = (props: FloatTipProps) => {
   );
   const baseTextStyle: TextStyle = {
     color: defaultColors.white,
-    fontSize: 12,
-    lineHeight: 16,
+    fontSize: 14,
+    lineHeight: 20,
     textAlign: 'center',
   };
   const textWrapStyle: ViewStyle = {
@@ -36,8 +36,8 @@ export const FloatTip = (props: FloatTipProps) => {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 8,
-    paddingVertical: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
     alignSelf: 'flex-start',
     minWidth: 64,
     overflow: 'visible',

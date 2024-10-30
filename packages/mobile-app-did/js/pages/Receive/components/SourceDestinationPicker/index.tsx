@@ -59,7 +59,7 @@ export default function SourceDestinationPicker({
       <View style={styles.divider} />
       <SourceDestinationItem
         title="Destination"
-        icon={''}
+        icon={destinationChain.chainImageUrl || ''}
         chainName={formatChainInfoToShow(destinationChain.chainId)}
         onPress={onDestinationPress}
       />

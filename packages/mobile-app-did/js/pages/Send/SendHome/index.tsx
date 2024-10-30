@@ -77,8 +77,10 @@ import useGetEBridgeConfig from 'hooks/ebridge';
 import { EBridge } from '@portkey-wallet/utils/eBridge';
 import ActionSheet from 'components/ActionSheet';
 import OverlayModal from 'components/OverlayModal';
-import { getLimitTips, getSmallerValue, openOutLink } from '../utils';
+import { getLimitTips, getSmallerValue } from '../utils';
 import CommonInfoRow from 'components/CommonInfoRow';
+import { SEND_RECEIVE_HELP_URL } from 'constants/common';
+import { openOutLink } from 'utils/link';
 
 const SendHome: React.FC = () => {
   const {
@@ -869,7 +871,7 @@ const SendHome: React.FC = () => {
         step === 2 ? (
           <Touchable
             onPress={async () => {
-              await openOutLink(HELP_URL);
+              await openOutLink(SEND_RECEIVE_HELP_URL);
             }}>
             <Svg icon="question" size={pTd(24)} color={defaultColors.font2} iconStyle={styles.iconStyle} />
           </Touchable>

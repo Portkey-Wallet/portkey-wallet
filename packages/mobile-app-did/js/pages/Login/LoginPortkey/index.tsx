@@ -2,26 +2,21 @@ import React, { useMemo, useState } from 'react';
 import PageContainer from 'components/PageContainer';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
 
-import styles from './styles';
-import Email from '../components/Email';
-import QRCode from '../components/QRCode';
 import Phone from '../components/Phone';
 import Referral from '../components/Referral';
-import { PageLoginType, PageType } from '../types';
+import { PageLoginType } from '../types';
 import SwitchNetwork from '../components/SwitchNetwork';
+import { makeStyles } from '@rneui/themed';
 
 const BackType: any = {
-  [PageLoginType.email]: true,
   [PageLoginType.phone]: true,
-  [PageLoginType.qrCode]: true,
 };
 
 export default function LoginPortkey() {
+  const styles = getStyles();
   const [loginType, setLoginType] = useState<PageLoginType>(PageLoginType.referral);
   const loginMap = useMemo(
     () => ({
-      [PageLoginType.email]: <Email setLoginType={setLoginType} type={PageType.signup} />,
-      [PageLoginType.qrCode]: <QRCode setLoginType={setLoginType} />,
       [PageLoginType.phone]: <Phone setLoginType={setLoginType} />,
       [PageLoginType.referral]: <Referral setLoginType={setLoginType} />,
     }),
@@ -41,3 +36,9 @@ export default function LoginPortkey() {
     </PageContainer>
   );
 }
+
+const getStyles = makeStyles(theme => ({
+  containerStyles: {
+    backgroundColor: theme.colors.bgBase1,
+  },
+}));

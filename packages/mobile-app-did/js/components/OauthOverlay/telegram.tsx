@@ -101,12 +101,7 @@ function TelegramSign({ onConfirm, onReject }: TelegramSignProps) {
       <KeyboardAwareScrollView enableOnAndroid={true} contentContainerStyle={styles.container}>
         {loading && (
           <View style={styles.loadingBox}>
-            <Lottie
-              source={require('assets/lottieFiles/globalLoading.json')}
-              style={styles.loadingStyle}
-              autoPlay
-              loop
-            />
+            <Lottie source={require('assets/lottieFiles/spinnerDark.json')} style={styles.loadingStyle} autoPlay loop />
           </View>
         )}
         <WebView
@@ -148,7 +143,7 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   loadingStyle: {
-    width: pTd(50),
+    width: pTd(32),
   },
   loadingBox: {
     ...GStyles.center,

@@ -1,11 +1,10 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { darkColors } from 'assets/theme';
 import { TextStyleType, ViewStyleType } from 'types/styles';
 import GStyles from 'assets/theme/GStyles';
 import { TextM } from 'components/CommonText';
-import { FontStyles } from 'assets/theme/styles';
 import { pTd } from 'utils/unit';
+import { useTheme } from '@rneui/themed';
 
 export interface DividerProps {
   style?: ViewStyleType;
@@ -23,13 +22,15 @@ const Divider: React.FC<DividerProps> = ({
   width = StyleSheet.hairlineWidth,
   insetType = 'middle',
   title,
-  color = darkColors.borderBase1,
+  color,
   titleStyle,
   inset,
   lineStyle,
 }) => {
-  const linStyle = [{ height: width, backgroundColor: color }, lineStyle];
-  const textStyle = [FontStyles.font7, styles[`${insetType}Title`], titleStyle];
+  const { theme } = useTheme();
+
+  const linStyle = [{ height: width, backgroundColor: color || theme.colors.borderBase1 }, lineStyle];
+  const textStyle = [{ color: theme.colors.textBase3 }, styles[`${insetType}Title`], titleStyle];
   if (title && inset)
     return (
       <View style={[GStyles.flexRowWrap, GStyles.itemCenter, style]}>

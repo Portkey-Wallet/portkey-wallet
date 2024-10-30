@@ -2,10 +2,11 @@ import React, { useCallback } from 'react';
 import { View } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
 import navigationService from 'utils/navigationService';
-import styles from '../styles';
 import { OfficialWebsite } from '@portkey-wallet/constants/constants-ca/network';
 import { FontStyles } from 'assets/theme/styles';
 import { TextM } from 'components/CommonText';
+import { makeStyles } from '@rneui/themed';
+import { pTd } from 'utils/unit';
 
 export default function TermsServiceButton() {
   const buttonStyles = styles();
@@ -33,3 +34,20 @@ export default function TermsServiceButton() {
     </View>
   );
 }
+
+const styles = makeStyles(theme => ({
+  termsServiceTip: {
+    position: 'absolute',
+    bottom: 0,
+    textAlign: 'center',
+  },
+  textWrap: {
+    width: '100%',
+    textAlign: 'center',
+    lineHeight: pTd(20),
+  },
+  link: {
+    color: theme.colors.textBrand1,
+    lineHeight: pTd(20),
+  },
+}));

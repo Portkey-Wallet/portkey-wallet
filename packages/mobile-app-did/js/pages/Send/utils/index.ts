@@ -1,7 +1,6 @@
 import { request } from '@portkey-wallet/api/api-did';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { ChainId } from '@portkey-wallet/types';
-import { Linking } from 'react-native';
 import { INetworkItem } from '../components/SelectNetwork';
 import { TransferType } from '@portkey-wallet/types/types-ca/routeParams';
 
@@ -15,14 +14,6 @@ export function getSendNetworkList(params: IGetSendNetworkListParams) {
   return request.sendApi.getSendNetworkList({
     params,
   });
-}
-
-export async function openOutLink(url: string) {
-  try {
-    await Linking.openURL(url);
-  } catch (error) {
-    console.log('open error');
-  }
 }
 
 export function getSmallerValue(v1: string, v2: string) {

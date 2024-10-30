@@ -192,7 +192,7 @@ export const formatChainInfoToShow = (
   if (typeof networkType === 'string')
     return `aelf ${chainId === 'AELF' ? 'MainChain' : 'dAppChain'} ${networkType === 'MAINNET' ? '' : 'Testnet'}`;
 
-  return `${chainId === 'AELF' ? 'MainChain' : 'SideChain'} ${chainId}`;
+  return `aelf ${chainId === 'AELF' ? 'MainChain' : 'dAppChain'}`;
 };
 /**
  * this function is to format address,just like "formatStr2EllipsisStr" ---> "for...ess"

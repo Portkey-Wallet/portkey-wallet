@@ -1,6 +1,6 @@
 {
   "name": "web-extension-did",
-  "version": "2.3.3",
+  "version": "2.5.0",
   "description": "web-extension-did",
   "private": true,
   "dependencies": {
@@ -129,7 +129,8 @@
     "webpack-bundle-analyzer": "^4.6.1",
     "webpack-cli": "^4.10.0",
     "webpack-dev-server": "^4.11.0",
-    "webpack-livereload-plugin": "^3.0.2"
+    "webpack-livereload-plugin": "^3.0.2",
+    "zip-folder": "1.0.0"
   },
   "engines": {
     "node": ">=15.9.0"
@@ -145,7 +146,7 @@
     "none:watch": "webpack watch --mode none",
     "dev": "webpack --mode development && yarn copy-lib",
     "dev:watch": "webpack watch --mode development && yarn copy-lib",
-    "pro": "rm -rf app/public && webpack --mode production && yarn copy-lib",
+    "pro": "rm -rf app/public && webpack --mode production && yarn copy-lib && node app/compressPublicFolder.js",
     "pro:watch": "webpack watch --mode production && yarn copy-lib",
     "prepare": "husky install",
     "svg-handle": "node ./app/web/assets/getSvg1.js"

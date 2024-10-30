@@ -26,6 +26,7 @@ import referralApi from './referral';
 import depositApi from './deposit';
 import redPackageApi from './red-package';
 import freeMintApi from './freeMint';
+import receiveApi from './receive';
 
 export const DEFAULT_METHOD = 'POST';
 
@@ -69,6 +70,7 @@ export const EXPAND_APIS = {
   deposit: depositApi,
   redPackage: redPackageApi,
   freeMintApi: freeMintApi,
+  receive: receiveApi,
   sendApi: sendApi,
 };
 

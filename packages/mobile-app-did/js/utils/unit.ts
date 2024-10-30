@@ -4,7 +4,7 @@ import { Dimensions } from 'react-native';
 const deviceWidthDp = Dimensions.get('window').width;
 
 // Design draft width (750px here), unit px
-const uiWidthPx = 375;
+const uiWidthPx = 393;
 
 // px to dp (px in the design draft to dp in rn)
 export const pTd = (uiElePx: number) => {

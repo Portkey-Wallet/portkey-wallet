@@ -2,7 +2,7 @@ import { FontStyles } from 'assets/theme/styles';
 import GStyles from 'assets/theme/GStyles';
 import { TextL, TextM } from 'components/CommonText';
 import React, { memo } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, ViewStyle } from 'react-native';
 import { pTd } from 'utils/unit';
 import CommonAvatar from 'components/CommonAvatar';
 import { makeStyles } from '@rneui/themed';
@@ -18,32 +18,30 @@ export interface ITokenBalanceShow {
   imageUrl?: string;
   balanceShow: string;
   onPressMax: () => void;
+  styleProps?: ViewStyle;
 }
 
 const TokenBalanceShow: React.FC<ITokenBalanceShow> = props => {
-  const { label, symbol, decimals, imageUrl, balanceShow, onPressMax } = props;
+  const { symbol, imageUrl, label, balanceShow, onPressMax, styleProps = {} } = props;
   const styles = getStyles();
   const defaultToken = useDefaultToken();
   const symbolImages = useSymbolImages();
 
   return (
-    <View style={[GStyles.flexRow, GStyles.alignCenter, styles.wrap]}>
+    <View style={[GStyles.flexRow, GStyles.alignCenter, styles.wrap, styleProps]}>
       <CommonAvatar
         hasBorder
         title={label || symbol}
         avatarSize={pTd(42)}
         // elf token icon is fixed , only use white background color
         svgName={symbol === defaultToken.symbol ? 'elf-icon' : undefined}
-        imageUrl={imageUrl || symbolImages[symbol]}
+        imageUrl={imageUrl || symbolImages[label || symbol]}
         titleStyle={FontStyles.font11}
         borderStyle={GStyles.hairlineBorder}
       />
       <View style={[GStyles.flex1, styles.center]}>
-        <TextL style={styles.symbolName}>{symbol}</TextL>
-        <TextM style={styles.balanceNumber}>{`${formatTokenAmountShowWithDecimals(
-          balanceShow,
-          decimals,
-        )} available`}</TextM>
+        <TextL style={styles.symbolName}>{label || symbol}</TextL>
+        <TextM style={styles.balanceNumber}>{`${balanceShow} available`}</TextM>
       </View>
       <Touchable onPress={onPressMax}>
         <TextL style={styles.max}>Max</TextL>
@@ -58,8 +56,6 @@ export const getStyles = makeStyles(theme => ({
   wrap: {
     width: '100%',
     backgroundColor: theme.colors.bgBase1,
-    padding: pTd(16),
-    height: pTd(74),
   },
   center: {
     marginHorizontal: pTd(8),

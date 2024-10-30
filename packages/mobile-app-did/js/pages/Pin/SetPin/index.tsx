@@ -13,6 +13,7 @@ import PinContainer from 'components/PinContainer';
 import { GuardiansApproved } from 'pages/Guardian/types';
 import { makeStyles } from '@rneui/themed';
 import { useCheckRouteExistInRouteStack } from 'hooks/route';
+import { usePreventHardwareBack } from '@portkey-wallet/hooks/mobile';
 
 type RouterParams = {
   oldPin?: string;
@@ -45,6 +46,7 @@ export default function SetPin() {
     useRouterParams<RouterParams>();
   const digitInput = useRef<DigitInputInterface>();
   const checkRouteExistInRouteStack = useCheckRouteExistInRouteStack();
+  usePreventHardwareBack();
 
   useEffectOnce(() => {
     const listener = myEvents.clearSetPin.addListener(() => digitInput.current?.reset());

@@ -10,7 +10,7 @@ export const getStyles = makeStyles(theme => ({
   headerHelpIcon: {
     marginRight: pTd(16),
   },
-  sendIconWrap: {
+  topIconWrap: {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -82,68 +82,6 @@ export const getStyles = makeStyles(theme => ({
     height: pTd(42),
     marginLeft: pTd(8),
     borderRadius: pTd(8),
-  },
-  infoRow: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: pTd(16),
-  },
-  infoLabelColumnWrap: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-  },
-  infoLabelWrap: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  infoLabel: {
-    ...fonts.SGRegularFont,
-    color: theme.colors.textBase1,
-    fontSize: pTd(16),
-    lineHeight: pTd(22),
-  },
-  infoLabelHelpIcon: {
-    marginLeft: pTd(4),
-  },
-  infoLabelAbove: {
-    ...fonts.SGRegularFont,
-    color: theme.colors.textBase1,
-    fontSize: pTd(14),
-    lineHeight: pTd(20),
-  },
-  infoValueColumnWrap: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'flex-end',
-  },
-  infoValueWrap: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  infoValue: {
-    ...fonts.SGMediumFont,
-    color: theme.colors.textBase1,
-    fontSize: pTd(16),
-    lineHeight: pTd(22),
-  },
-  infoValueAbove: {
-    ...fonts.SGRegularFont,
-    color: theme.colors.textBase2,
-    fontSize: pTd(14),
-    lineHeight: pTd(20),
-  },
-  infoValueLeftIcon: {
-    width: pTd(18),
-    height: pTd(18),
-    marginRight: pTd(4),
-  },
-  infoErrorText: {
-    color: theme.colors.textDanger2,
   },
   footerWrap: {
     display: 'flex',

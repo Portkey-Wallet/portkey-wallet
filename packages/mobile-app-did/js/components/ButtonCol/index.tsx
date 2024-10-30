@@ -62,7 +62,7 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 0,
   },
   outlineButtonStyle: {
-    borderWidth: 1,
+    borderWidth: pTd(1.5),
     borderColor: defaultColors.borderNeutral2,
   },
   containerStyle: {

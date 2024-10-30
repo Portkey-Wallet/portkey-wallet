@@ -3,7 +3,6 @@ import { StyleSheet } from 'react-native';
 import navigationService from 'utils/navigationService';
 import { View, FlatList } from 'react-native';
 import { TextL, TextM } from 'components/CommonText';
-import { darkColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
 import { useLanguage } from 'i18n/hooks';
 import Touchable from 'components/Touchable';
@@ -16,6 +15,7 @@ import { formatAmountUSDShow, formatTokenAmountShowWithDecimals } from '@portkey
 import GStyles from 'assets/theme/GStyles';
 import { DarkFontStyles } from 'assets/theme/styles';
 import { IToSendHomeParamsType } from '@portkey-wallet/types/types-ca/routeParams';
+import { makeStyles } from '@rneui/themed';
 
 export interface SelectTokenProps {
   tokenInfos: IAssetToken[];
@@ -26,6 +26,7 @@ export default function SelectToken({ tokenInfos, noDataMessage }: SelectTokenPr
   const { t } = useLanguage();
   const userInfo = useCurrentUserInfo();
   const isMainnet = useIsMainnet();
+  const itemStyle = getStyles();
 
   const onNavigate = useCallback((tokenItem: IAssetToken) => {
     navigationService.navigate('SendHome', {
@@ -84,7 +85,7 @@ export default function SelectToken({ tokenInfos, noDataMessage }: SelectTokenPr
         </Touchable>
       );
     },
-    [isMainnet, onNavigate, userInfo.hideAssets],
+    [isMainnet, itemStyle, onNavigate, userInfo.hideAssets],
   );
 
   return (
@@ -102,10 +103,10 @@ export default function SelectToken({ tokenInfos, noDataMessage }: SelectTokenPr
   );
 }
 
-const itemStyle = StyleSheet.create({
+const getStyles = makeStyles(theme => ({
   tokenListPageWrap: {
     flex: 1,
-    backgroundColor: darkColors.bgBase1,
+    backgroundColor: theme.colors.bgBase1,
   },
   wrap: {
     height: pTd(74),
@@ -129,7 +130,7 @@ const itemStyle = StyleSheet.create({
   },
   tokenIconBorder: {
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: darkColors.borderBase1,
+    borderColor: theme.colors.borderBase1,
   },
   chainIcon: {
     position: 'absolute',
@@ -146,4 +147,4 @@ const itemStyle = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-});
+}));

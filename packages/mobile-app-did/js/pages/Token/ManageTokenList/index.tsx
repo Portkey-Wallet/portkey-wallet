@@ -1,9 +1,8 @@
 import PageContainer from 'components/PageContainer';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import CommonInputNew from 'components/CommonInputNew';
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 import gStyles from 'assets/theme/GStyles';
-import { darkColors } from 'assets/theme';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import CommonToast from 'components/CommonToast';
 import { useLanguage } from 'i18n/hooks';
@@ -162,7 +161,7 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
         <Svg icon="add4" size={pTd(24)} />
       </Touchable>
     ),
-    [],
+    [pageStyles],
   );
 
   return (

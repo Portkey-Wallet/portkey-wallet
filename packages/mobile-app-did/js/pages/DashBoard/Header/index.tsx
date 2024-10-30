@@ -18,7 +18,6 @@ import { useQrScanPermissionAndToast } from 'hooks/useQrScan';
 import navigationService from 'utils/navigationService';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { Skeleton } from '@rneui/base';
-import CommonButton from 'components/CommonButton';
 
 const DashBoardHeader: React.FC = () => {
   const userInfo = useCurrentUserInfo();
@@ -118,12 +117,6 @@ const DashBoardHeader: React.FC = () => {
             <Svg icon="crypto-gift" size={pTd(20)} />
           </Touchable>
         } */}
-        <CommonButton
-          onPress={() => {
-            navigationService.navigate('EbridgeExample');
-          }}>
-          goTo EbridgeExample
-        </CommonButton>
         <Touchable style={styles.svgWrap} onPress={onCopyAddress}>
           <Svg icon="copy" size={pTd(24)} color={darkColors.iconBase2} />
         </Touchable>

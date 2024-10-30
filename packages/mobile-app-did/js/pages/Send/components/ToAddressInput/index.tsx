@@ -21,7 +21,7 @@ import { useIsValidSuffix } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { warning1Arr, WarningKey } from 'pages/Send/constant';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { INetworkItem } from '../SelectNetwork';
-
+import { getStringAsync } from 'expo-clipboard';
 interface IToAddressInput {
   isFixedToContact?: boolean;
   selectedToken?: IToSendAssetParamsType;
@@ -172,8 +172,14 @@ export default function ToAddressInput({
   );
 
   const pasteAddress = useCallback(async () => {
-    // todo: add paste str when press btn
-  }, []);
+    try {
+      const str = await getStringAsync();
+      console.log('str', str);
+      onInput(str);
+    } catch (error) {
+      console.log('pasteAddress', error);
+    }
+  }, [onInput]);
 
   return (
     <View style={styles.wrap}>

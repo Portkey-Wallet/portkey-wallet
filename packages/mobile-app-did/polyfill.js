@@ -4,6 +4,8 @@ import { Buffer } from 'buffer';
 import allSettled from 'promise.allsettled';
 import './shim';
 
+if (typeof BigInt === 'undefined') global.BigInt = require('big-integer');
+
 if (!global.btoa) {
   global.btoa = encode;
 }

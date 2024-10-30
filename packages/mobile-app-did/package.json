@@ -169,12 +169,14 @@
     "url-parse": "^1.5.10",
     "uuid": "^8.3.2",
     "web3-utils": "^1.8.0",
-    "@walletconnect/modal-react-native": "^1.1.0",
+    "@walletconnect/modal-react-native": "1.1.0",
     "react-native-modal": "^13.0.1",
     "@react-native-community/netinfo": "^11.0.0",
-    "@walletconnect/react-native-compat": "^2.17.0",
+    "@walletconnect/react-native-compat": "2.11.0",
     "@walletconnect/types": "^2.17.0",
-    "@walletconnect/utils": "^2.17.0"
+    "@walletconnect/utils": "^2.17.0",
+    "@walletconnect/encoding": "1.0.2",
+    "ethers": "5.7.2"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",

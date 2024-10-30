@@ -18,6 +18,8 @@ const SendButton = (props: SendButtonType) => {
   const { themeType = 'dashBoard', sentToken } = props;
 
   const onPressButton = useCallback(() => {
+    navigationService.navigate('WalletConnectExample');
+    return;
     if (themeType === 'innerPage')
       return navigationService.navigate('SendHome', {
         sendType: 'token',

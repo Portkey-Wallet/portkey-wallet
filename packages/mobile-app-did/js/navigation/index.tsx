@@ -37,6 +37,7 @@ import GiftHistory from 'pages/CryptoGift/GiftHistory';
 import GiftDetail from 'pages/CryptoGift/GiftDetail';
 import GiftResult from 'pages/CryptoGift/GiftResult';
 import EbridgeExample from 'pages/EbridgeExample';
+import WalletConnectExample from 'pages/WalletConnectExample';
 import Settings from 'pages/My/Profile';
 
 // key: page route key, value: is page show
@@ -77,6 +78,7 @@ export const devNav = [
   ...productionNav,
   { name: 'Home', component: Home },
   { name: 'EbridgeExample', component: EbridgeExample },
+  { name: 'WalletConnectExample', component: WalletConnectExample },
 ] as const;
 
 const stackNav = __DEV__ ? devNav : productionNav;

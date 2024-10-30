@@ -590,7 +590,7 @@ PODS:
     - glog
   - react-native-background-timer (2.4.1):
     - React-Core
-  - react-native-compat (2.17.1):
+  - react-native-compat (2.11.0):
     - React-Core
   - react-native-config (1.4.6):
     - react-native-config/App (= 1.4.6)
@@ -1320,7 +1320,7 @@ SPEC CHECKSUMS:
   React-jsinspector: 8134ee22182b8dd98dc0973db6266c398103ce6c
   React-logger: 1e7ac909607ee65fd5c4d8bea8c6e644f66b8843
   react-native-background-timer: 17ea5e06803401a379ebf1f20505b793ac44d0fe
-  react-native-compat: bb63afbbadb7d9203f29bea1f449959288a98702
+  react-native-compat: d9195ea36efd9333b5f8370042086c34ae299fce
   react-native-config: 7cd105e71d903104e8919261480858940a6b9c0e
   react-native-fbsdk-next: 42229cf278a44c0f7249179c9b2d084109d8e2bd
   react-native-flipper: ea555c5b21d9d15814999327aecf31b98ac87079

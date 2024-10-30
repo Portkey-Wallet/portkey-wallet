@@ -6,17 +6,18 @@ import Loading from 'components/Loading';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { useLanguage } from 'i18n/hooks';
 import myEvents from 'utils/deviceEvent';
-import styles from '../styles';
 import CommonButton from 'components/CommonButton';
 import GStyles from 'assets/theme/GStyles';
 import { PageLoginType, PageType } from '../types';
 import TermsServiceButton from './TermsServiceButton';
-import TabButton from './TabButton';
 import { useOnLogin } from 'hooks/login';
 import PhoneInput from 'components/PhoneInput';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { usePhoneCountryCode } from '@portkey-wallet/hooks/hooks-ca/misc';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import { makeStyles } from '@rneui/themed';
+import { pTd } from 'utils/unit';
+import { screenHeight } from '@portkey-wallet/utils/mobile/device';
 
 const TitleMap = {
   [PageType.login]: {
@@ -75,7 +76,7 @@ export default function Phone({
             style={GStyles.marginRight(8)}
             onPress={() => setLoginType(PageLoginType.phone)}
           /> */}
-          <TabButton title="Email" onPress={() => setLoginType(PageLoginType.email)} />
+          {/* <TabButton title="Email" onPress={() => setLoginType(PageLoginType.email)} /> */}
         </View>
 
         <PhoneInput
@@ -99,3 +100,16 @@ export default function Phone({
     </View>
   );
 }
+
+const styles = makeStyles(theme => ({
+  card: {
+    flex: 1,
+    width: '100%',
+    paddingTop: pTd(24),
+    paddingBottom: 0,
+    minHeight: Math.min(screenHeight * 0.58, 494),
+  },
+  emailInputContainerStyle: {
+    width: '100%',
+  },
+}));

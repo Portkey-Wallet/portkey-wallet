@@ -17,6 +17,8 @@ import useLatestIsFocusedRef from 'hooks/useLatestIsFocusedRef';
 import { useGetLoginControlListAsync } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { makeStyles } from '@rneui/themed';
 import PageContainer from 'components/PageContainer';
+import { TextL } from 'components/CommonText';
+import fonts from 'assets/theme/fonts';
 
 export default function Referral() {
   const styles = getStyles();
@@ -75,15 +77,15 @@ export default function Referral() {
       {!address ? (
         <>
           <Welcome />
-          <View style={styles.buttonContainer}>
-            <CommonButton
-              buttonStyle={[styles.buttonStyle]}
-              titleStyle={styles.buttonText}
-              type="primary"
-              title={t('Get Started')}
-              onPress={() => navigationService.reset('LoginPortkey')}
-            />
-          </View>
+
+          <CommonButton
+            buttonStyle={[styles.buttonStyle]}
+            type="transparent"
+            onPress={() => navigationService.reset('LoginPortkey')}>
+            <View style={styles.buttonContainer}>
+              <TextL style={styles.buttonText}>{'Get Started'}</TextL>
+            </View>
+          </CommonButton>
         </>
       ) : null}
     </PageContainer>
@@ -107,21 +109,24 @@ const getStyles = makeStyles(theme => ({
     margin: 0,
   },
   buttonContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: theme.colors.bgBrand1,
+    width: '100%',
+    height: '100%',
+    borderRadius: pTd(38),
+  },
+  buttonStyle: {
     marginHorizontal: pTd(16),
     height: pTd(48),
     marginBottom: pTd(16),
-    borderColor: theme.colors.borderBrand2,
     borderWidth: pTd(1.5),
-    borderRadius: pTd(24),
-    padding: pTd(3.5),
-    justifyContent: 'center',
-  },
-  buttonStyle: {
-    height: '100%',
-    backgroundColor: theme.colors.bgBrand1,
+    paddingVertical: pTd(3.5),
+    paddingHorizontal: pTd(3.5),
   },
   buttonText: {
     color: theme.colors.textNeutral4,
+    ...fonts.mediumFont,
   },
   versionStyle: {
     marginBottom: pTd(32),

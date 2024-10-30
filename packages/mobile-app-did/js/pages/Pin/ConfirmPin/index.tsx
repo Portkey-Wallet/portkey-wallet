@@ -26,6 +26,7 @@ import { sendScanLoginSuccess } from '@portkey-wallet/api/api-did/message/utils'
 import { changeCanLock } from 'utils/LockManager';
 import { VERIFY_INVALID_TIME } from '@portkey-wallet/constants/constants-ca/wallet';
 import { useErrorMessage } from '@portkey-wallet/hooks/hooks-ca/misc';
+import { usePreventHardwareBack } from '@portkey-wallet/hooks/mobile';
 
 type RouterParams = {
   oldPin?: string;
@@ -51,6 +52,7 @@ export default function ConfirmPin() {
     guardiansApproved,
   } = useRouterParams<RouterParams>();
 
+  usePreventHardwareBack();
   const biometricsReady = useBiometricsReady();
 
   const pinRef = useRef<DigitInputInterface>();
@@ -138,6 +140,7 @@ export default function ConfirmPin() {
     <PageContainer
       titleDom
       type="leftBack"
+      notHandleHardwareBackPress={true}
       backTitle={oldPin ? 'Change PIN' : undefined}
       onGestureStartCallback={() => {
         myEvents.clearSetPin.emit('clearSetPin');

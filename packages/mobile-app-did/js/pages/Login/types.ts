@@ -1,6 +1,4 @@
 export enum PageLoginType {
-  email,
-  qrCode,
   phone,
   referral,
 }

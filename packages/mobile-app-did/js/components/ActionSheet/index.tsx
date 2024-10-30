@@ -184,8 +184,10 @@ const alert = (props: AlertBodyProps) => {
   Keyboard.dismiss();
   OverlayModal.show(<AlertBody {...props} />, {
     modal: true,
-    type: 'zoomOut',
     position: 'bottom',
+    onCloseRequest: () => {
+      OverlayModal.hide();
+    },
   });
 };
 export default {

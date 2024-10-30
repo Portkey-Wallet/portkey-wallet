@@ -144,7 +144,7 @@ const getStyles = makeStyles(theme => ({
   errorText: {
     marginTop: pTd(24),
     textAlign: 'center',
-    color: theme.colors.textDanger1,
+    color: theme.colors.textDanger2,
   },
   errorTextLeft: {
     marginTop: pTd(8),

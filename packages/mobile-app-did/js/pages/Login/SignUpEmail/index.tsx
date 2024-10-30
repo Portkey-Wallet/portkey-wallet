@@ -2,11 +2,13 @@ import React from 'react';
 import PageContainer from 'components/PageContainer';
 import navigationService from 'utils/navigationService';
 import { isIOS, screenHeight } from '@portkey-wallet/utils/mobile/device';
+
 import Email from '../components/Email';
+import { PageType } from '../types';
 import SwitchNetwork from '../components/SwitchNetwork';
 import { makeStyles } from '@rneui/themed';
 
-export default function LoginEmail() {
+export default function SignUpEmail() {
   const signupStyles = styles();
 
   return (
@@ -19,7 +21,7 @@ export default function LoginEmail() {
       style={signupStyles.mainContainer}
       leftCallback={() => navigationService.goBack()}
       rightDom={<SwitchNetwork />}>
-      <Email />
+      <Email type={PageType.signup} />
     </PageContainer>
   );
 }

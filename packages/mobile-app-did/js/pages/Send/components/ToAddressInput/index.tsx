@@ -35,6 +35,8 @@ interface IToAddressInput {
   setChainList: React.Dispatch<React.SetStateAction<INetworkItem[]>>;
   checkFinish: boolean;
   setCheckFinish: React.Dispatch<React.SetStateAction<boolean>>;
+  setSendNumber: React.Dispatch<React.SetStateAction<string>>;
+  setSendUSDNumber: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export default function ToAddressInput({
@@ -49,6 +51,8 @@ export default function ToAddressInput({
   setWarning,
   checkFinish,
   setCheckFinish,
+  setSendNumber,
+  setSendUSDNumber,
 }: IToAddressInput) {
   const { t } = useLanguage();
   const styles = getStyles();
@@ -64,8 +68,10 @@ export default function ToAddressInput({
   const clearInput = useCallback(() => {
     setStep(1);
     setWarning([]);
+    setSendNumber('');
+    setSendUSDNumber('');
     setSelectedToContact({ address: '', name: '' });
-  }, [setSelectedToContact, setStep, setWarning]);
+  }, [setSelectedToContact, setSendNumber, setSendUSDNumber, setStep, setWarning]);
 
   const checkAddressByFE = useCallback(
     (v: string) => {

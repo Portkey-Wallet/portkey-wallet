@@ -3,6 +3,7 @@ import { pTd } from 'utils/unit';
 import { ScreenHeight } from '@rneui/base';
 import GStyles from 'assets/theme/GStyles';
 import { makeStyles } from '@rneui/themed';
+import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 
 export const getStyles = makeStyles(theme => ({
   pageWrap: {
@@ -16,19 +17,16 @@ export const getStyles = makeStyles(theme => ({
   },
   group: {
     backgroundColor: theme.colors.bg1,
-    marginTop: pTd(24),
+    marginTop: pTd(16),
     marginHorizontal: pTd(16),
-    paddingLeft: pTd(16),
-    paddingRight: pTd(16),
     borderRadius: pTd(6),
   },
-  buttonWrapStyle: {
+  bottomWrapStyle: {
     backgroundColor: theme.colors.bgBase1,
     position: 'absolute',
     bottom: 0,
     justifyContent: 'flex-end',
-    width: pTd(375),
-    ...GStyles.paddingArg(12, 20),
+    width: screenWidth,
   },
   errorMessage: {
     lineHeight: pTd(16),

@@ -19,7 +19,7 @@ import {
   CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL,
   useCrossTransferByEtransfer,
 } from '@portkey-wallet/hooks/hooks-ca/useWithdrawByETransfer';
-import { divDecimals, timesDecimals } from '@portkey-wallet/utils/converter';
+import { divDecimals, formatTokenAmountShowWithDecimals, timesDecimals } from '@portkey-wallet/utils/converter';
 import {
   IToSendHomeParamsType,
   IToSendPreviewParamsType,
@@ -71,6 +71,8 @@ import { useShowDialog } from '../hooks';
 import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network-mainnet-v2';
 import useGetEBridgeConfig from 'hooks/ebridge';
 import { EBridge } from '@portkey-wallet/utils/eBridge';
+import ActionSheet from 'components/ActionSheet';
+import OverlayModal from 'components/OverlayModal';
 
 const SendHome: React.FC = () => {
   const {
@@ -371,12 +373,33 @@ const SendHome: React.FC = () => {
   const dappChainToNoAffixAddressAction = useCallback(() => {
     if (isSendToExchange) {
       // TODO: add modal Unsupported: Direct Transfer from dAppChain to Exchange
+      ActionSheet.alert({
+        buttonGroupDirection: 'column',
+        title: 'Unsupported: Direct Transfer from dAppChain to Exchange',
+        message: t(
+          'Currently, ELF tokens can only be transferred to an exchange via the aelf MainChain. Please transfer them to your MainChain address first before sending them to the exchange.',
+        ),
+        buttons: [
+          {
+            title: t('Send to my aelf MainChain'),
+            type: 'primary',
+            onPress: () => {
+              OverlayModal.hide();
+              setStep(2);
+            },
+          },
+          {
+            title: t('Cancel'),
+            type: 'outline',
+          },
+        ],
+      });
       return setSelectedToContact(pre => ({ ...pre, chainId: DefaultChainId }));
     }
     // to dappChain Address
     setStep(2);
     setSelectedToContact(pre => ({ ...pre, chainId: assetInfo.chainId }));
-  }, [assetInfo.chainId, isSendToExchange]);
+  }, [assetInfo.chainId, isSendToExchange, t]);
 
   const mainChainToNoAffixAddressAction = useCallback(() => {
     setSelectedToContact(pre => ({ ...pre, chainId: DefaultChainId }));
@@ -669,6 +692,8 @@ const SendHome: React.FC = () => {
     sendType,
     checkManagerSyncState,
     warning,
+    recommendETransfer,
+    recommendEBridge,
     defaultToken.symbol,
     defaultToken.decimals,
     crossFee,
@@ -825,12 +850,11 @@ const SendHome: React.FC = () => {
 
       {/* Group 2 token */}
       {sendType === 'token' && step === 2 && (
-        <>
+        <View style={styles.group}>
           <TokenBalanceShow
             label={assetInfo?.label}
             symbol={assetInfo.symbol}
-            decimals={assetInfo.decimals}
-            balanceShow={balance}
+            balanceShow={formatTokenAmountShowWithDecimals(balance, assetInfo.decimals)}
             onPressMax={onPressMax}
           />
           <TokenAmountInput
@@ -841,7 +865,7 @@ const SendHome: React.FC = () => {
             setValue={setSendNumber}
             setUsdValue={setSendUsdNumber}
           />
-        </>
+        </View>
       )}
 
       {/* TODO: nft section */}

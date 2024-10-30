@@ -9,12 +9,10 @@ import { makeStyles } from '@rneui/themed';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
 import Touchable from 'components/Touchable';
-import { formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 
 export interface ITokenBalanceShow {
   label?: string;
   symbol: string;
-  decimals: string;
   imageUrl?: string;
   balanceShow: string;
   onPressMax: () => void;

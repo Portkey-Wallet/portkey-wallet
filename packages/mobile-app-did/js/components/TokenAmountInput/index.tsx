@@ -127,7 +127,11 @@ const TokenAmountInput: React.FC<ITokenAmountInput> = props => {
             </>
           )}
           {warningTip && (
-            <TouchableOpacity onPress={clickWarning} onLayout={onLayout} disabled={warningClick}>
+            <TouchableOpacity
+              onPress={clickWarning}
+              onLayout={onLayout}
+              disabled={warningClick}
+              style={styles.warningIconWrap}>
               <FloatTip
                 wrapperLayoutProps={wrapperLayoutProps}
                 textStyle={{
@@ -186,5 +190,8 @@ export const getStyles = makeStyles(theme => ({
   },
   bottomText: {
     color: theme.colors.textBase2,
+  },
+  warningIconWrap: {
+    flexDirection: 'row',
   },
 }));

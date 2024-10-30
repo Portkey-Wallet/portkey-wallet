@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useState } from 'react';
-import { Text, View, TouchableWithoutFeedback } from 'react-native';
+import { Text, View, TouchableWithoutFeedback, Linking } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useLanguage } from 'i18n/hooks';
 import PageContainer from 'components/PageContainer';
@@ -7,14 +7,14 @@ import Svg from 'components/Svg';
 import NFTAvatar from 'components/NFTAvatar';
 import CommonButton from 'components/CommonButton';
 import CommonInfoRow from 'components/CommonInfoRow';
+import Touchable from 'components/Touchable';
 import { ActionType } from 'types/common';
 import { SeedTypeEnum } from '@portkey-wallet/types/types-ca/assets';
 import { formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { ChainId } from '@portkey-wallet/types';
 import { pTd } from 'utils/unit';
 import { getStyles } from './style';
-import { ChainId } from '@portkey-wallet/types';
-
 export enum FooterType {
   'E_BRIDGE' = 'eBridge',
   'E_TRANSFER' = 'eTransfer',
@@ -30,6 +30,7 @@ interface INFTInfo {
 }
 
 interface ISendReceivePreviewProps {
+  helpUrl?: string;
   actionType: ActionType;
   footerType?: FooterType;
   amount: string;
@@ -71,6 +72,7 @@ const FOOTER_CONFIG = {
 };
 
 const SendReceivePreview: React.FC<ISendReceivePreviewProps> = ({
+  helpUrl,
   actionType,
   footerType,
   amount,
@@ -118,7 +120,19 @@ const SendReceivePreview: React.FC<ISendReceivePreviewProps> = ({
       titleDom={t(`Preview`)}
       safeAreaColor={['black', 'black']}
       containerStyles={styles.pageWrap}
-      rightDom={<Svg iconStyle={styles.headerHelpIcon} icon={isLoading ? 'help-gray' : 'help-white'} size={pTd(24)} />}
+      rightDom={
+        <Touchable
+          onPress={async () => {
+            if (!helpUrl) return;
+            try {
+              await Linking.openURL(helpUrl);
+            } catch (error) {
+              console.log('open error');
+            }
+          }}>
+          <Svg iconStyle={styles.headerHelpIcon} icon={isLoading ? 'help-gray' : 'help-white'} size={pTd(24)} />
+        </Touchable>
+      }
       scrollViewProps={{ disabled: true }}>
       <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>
         <TouchableWithoutFeedback>

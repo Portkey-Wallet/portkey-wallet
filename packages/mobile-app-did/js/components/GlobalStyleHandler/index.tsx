@@ -9,7 +9,11 @@ import { changeFonts } from 'assets/theme/fonts';
 import usePrevious from 'hooks/usePrevious';
 import { darkColors } from 'assets/theme';
 
-setDefaultProps(TextInput, { allowFontScaling: false, style: { color: darkColors.textBase1 } });
+setDefaultProps(TextInput, {
+  allowFontScaling: false,
+  keyboardAppearance: 'dark',
+  style: { color: darkColors.textBase1 },
+});
 setDefaultProps(Text, { allowFontScaling: false, style: { color: darkColors.textBase1 } });
 interface GlobalStyleHandlerType {
   children: ReactElement;

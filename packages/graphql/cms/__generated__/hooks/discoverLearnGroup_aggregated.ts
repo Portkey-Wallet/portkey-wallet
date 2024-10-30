@@ -24,8 +24,8 @@ export type DiscoverLearnGroup_AggregatedQuery = {
     count?: {
       __typename?: 'discoverLearnGroup_aggregated_count';
       id?: number | null;
-      status?: number | null;
       index?: number | null;
+      status?: number | null;
       title?: number | null;
       value?: number | null;
       items?: number | null;
@@ -33,8 +33,8 @@ export type DiscoverLearnGroup_AggregatedQuery = {
     countDistinct?: {
       __typename?: 'discoverLearnGroup_aggregated_count';
       id?: number | null;
-      status?: number | null;
       index?: number | null;
+      status?: number | null;
       title?: number | null;
       value?: number | null;
       items?: number | null;
@@ -79,16 +79,16 @@ export const DiscoverLearnGroup_AggregatedDocument = gql`
       countAll
       count {
         id
-        status
         index
+        status
         title
         value
         items
       }
       countDistinct {
         id
-        status
         index
+        status
         title
         value
         items

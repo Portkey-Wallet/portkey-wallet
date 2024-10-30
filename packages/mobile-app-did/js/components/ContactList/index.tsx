@@ -7,7 +7,7 @@ import { styles as contactListStyles } from './style';
 import CommonButton from 'components/CommonButton';
 import { pTd } from 'utils/unit';
 import { useLanguage } from 'i18n/hooks';
-import { ContactIndexType, ContactItemType } from '@portkey-wallet/types/types-ca/contact';
+import { ContactIndexType, ContactItemType, ContactType } from '@portkey-wallet/types/types-ca/contact';
 import ContactItem, { styles as contactItemStyles } from 'components/ContactItem';
 import ContactFlashList from './ContactFlashList';
 import { TextL } from 'components/CommonText';
@@ -31,6 +31,7 @@ interface ContactsListProps {
   itemHeight?: number;
   style?: ViewStyleType;
   ListFooterComponent?: JSX.Element;
+  isTransaction?: boolean;
 }
 type FlashItemType = ContactIndexType | ContactItemType;
 
@@ -44,6 +45,7 @@ const ContactsList: React.FC<ContactsListProps> = ({
   itemHeight,
   style,
   ListFooterComponent,
+  isTransaction,
 }) => {
   const { t } = useLanguage();
   const { contactIndexList, contactMap } = useContact(!justChatContact);
@@ -89,8 +91,23 @@ const ContactsList: React.FC<ContactsListProps> = ({
         _flashListData = _flashListData.concat(contactIndex.contacts);
       }
     });
+    if (isTransaction) {
+      _flashListData = _flashListData.filter(item => {
+        let shouldFilter = false;
+        if ('contacts' in item) {
+          const originItem = item as ContactIndexType;
+          shouldFilter =
+            !!originItem.contacts &&
+            originItem.contacts.length === 1 &&
+            originItem.contacts[0].contactType === ContactType.ChatGptBot;
+        } else {
+          shouldFilter = (item as ContactItemType).contactType === ContactType.ChatGptBot;
+        }
+        return !shouldFilter;
+      });
+    }
     return _flashListData;
-  }, [justChatContact, list]);
+  }, [isTransaction, justChatContact, list]);
 
   const [keyWord, setKeyWord] = useState<string>('');
 

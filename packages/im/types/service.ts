@@ -88,6 +88,7 @@ export type CreateChannelParams = {
 
 export type CreateChannelResult = {
   channelUuid: string;
+  botChannel: boolean;
 };
 
 export type GetChannelInfoParams = {
@@ -284,6 +285,8 @@ export type GetRedPackageDetailParams = {
 export type GetRedPackageDetailResult = RedPackageDetail & {
   items: RedPackageGrabInfoItem[];
 };
+
+export type GetCryptoGiftHistoriesResult = RedPackageDetail[];
 
 export type GrabRedPackageParams = {
   id: string;

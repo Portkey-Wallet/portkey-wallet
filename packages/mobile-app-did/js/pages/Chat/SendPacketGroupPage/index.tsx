@@ -28,11 +28,18 @@ import useReportAnalyticsEvent from 'hooks/userExceptionMessage';
 import { createTimeRecorder } from '@portkey-wallet/utils/timeRecorder';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { TabRouteNameEnum } from 'types/navigate';
-
+import { useGetCryptoGiftConfig, useSendCryptoGift } from '@portkey-wallet/hooks/hooks-ca/cryptogift';
+import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
+import { reportEnterSendCryptoGiftPage, reportSendCryptoGiftSuccess } from 'utils/analysisiReport';
+import { useEffectOnce } from '@portkey-wallet/hooks';
+export interface ISendPacketGroupPageProps {
+  isCryptoGift?: boolean;
+}
 export default function SendPacketGroupPage() {
+  const { isCryptoGift } = useRouterParams<ISendPacketGroupPageProps>();
   const currentChannelId = useCurrentChannelId();
   const calculateRedPacketFee = useCalculateRedPacketFee();
-  const { groupInfo } = useGroupChannelInfo(currentChannelId || '', true);
+  const { groupInfo } = useGroupChannelInfo(isCryptoGift ? '' : currentChannelId || '', true);
   const [selectTab, setSelectTab] = useState<GroupRedPacketTabEnum>(GroupRedPacketTabEnum.Random);
   const sendRedPackage = useSendRedPackage();
   const getCAContract = useGetCAContract();
@@ -40,7 +47,14 @@ export default function SendPacketGroupPage() {
   const checkAllowanceAndApprove = useCheckAllowanceAndApprove();
   const checkManagerSyncState = useCheckManagerSyncState();
   const { getContractAddress } = useGetRedPackageConfig(true);
+  const { getCryptoGiftContractAddress } = useGetCryptoGiftConfig();
   const reportAnalyticsEvent = useReportAnalyticsEvent();
+  const sendCryptoGift = useSendCryptoGift();
+
+  useEffectOnce(() => {
+    if (isCryptoGift) reportEnterSendCryptoGiftPage();
+  });
+
   const onPressBtn = useLockCallback(
     async (values: CryptoValuesType) => {
       const { token } = values;
@@ -65,20 +79,39 @@ export default function SendPacketGroupPage() {
       let caContract: ContractBasic;
 
       try {
-        await PaymentOverlay.showRedPacket({
-          assetInfo: token,
-          amount: values.count,
-          chainId: token.chainId,
-          calculateTransactionFee: () =>
-            calculateRedPacketFee({
-              symbol: token.symbol,
-              chainId: token.chainId,
-              decimals: token.decimals,
-              count: values.count,
-            }),
-        });
-
-        const redPacketContractAddress = getContractAddress(token.chainId);
+        if (isCryptoGift) {
+          await PaymentOverlay.showCryptoGift({
+            assetInfo: token,
+            amount: values.count,
+            chainId: token.chainId,
+            calculateTransactionFee: () =>
+              calculateRedPacketFee({
+                symbol: token.symbol,
+                chainId: token.chainId,
+                decimals: token.decimals,
+                count: values.count,
+              }),
+          });
+        } else {
+          await PaymentOverlay.showRedPacket({
+            assetInfo: token,
+            amount: values.count,
+            chainId: token.chainId,
+            calculateTransactionFee: () =>
+              calculateRedPacketFee({
+                symbol: token.symbol,
+                chainId: token.chainId,
+                decimals: token.decimals,
+                count: values.count,
+              }),
+          });
+        }
+        let redPacketContractAddress;
+        if (isCryptoGift) {
+          redPacketContractAddress = getCryptoGiftContractAddress(token.chainId);
+        } else {
+          redPacketContractAddress = getContractAddress(token.chainId);
+        }
         if (!redPacketContractAddress) {
           throw new Error('redPacketContractAddress is not exist');
         }
@@ -107,31 +140,52 @@ export default function SendPacketGroupPage() {
       Loading.showOnce();
       const timeRecorder = createTimeRecorder();
       try {
-        await sendRedPackage({
-          totalAmount: totalAmount.toFixed(0),
-          memo: values.memo,
-          caContract: caContract,
-          type: selectTab === GroupRedPacketTabEnum.Fixed ? RedPackageTypeEnum.FIXED : RedPackageTypeEnum.RANDOM,
-          count: Number(values.packetNum || 1),
-          channelId: currentChannelId || '',
-          token,
-        });
-        CommonToast.success('Sent successfully!');
-        navigationService.goBack();
-        reportAnalyticsEvent({ page: 'SendPacketGroupPage', time: timeRecorder.endBySecond() }, 'RecordMessage');
-      } catch (error) {
-        const errorMessage = handleErrorMessage(error);
-        if (errorMessage === 'fetch exceed limit') {
-          CommonToast.warn('You can view the crypto box you sent later in the chat window.');
-          navigationService.navigate('Tab');
-          navigationService.navToBottomTab(TabRouteNameEnum.CHAT);
+        if (isCryptoGift) {
+          const giftId = await sendCryptoGift({
+            totalAmount: totalAmount.toFixed(0),
+            memo: values.memo,
+            caContract: caContract,
+            type: selectTab === GroupRedPacketTabEnum.Fixed ? RedPackageTypeEnum.FIXED : RedPackageTypeEnum.RANDOM,
+            count: Number(values.packetNum || 1),
+            // channelId: currentChannelId || '',
+            token,
+            isNewUsersOnly: values.isNewUserOnly,
+          });
+          reportSendCryptoGiftSuccess();
+          navigationService.navigate('GiftResult', {
+            giftId,
+          });
         } else {
-          CommonToast.failError('Crypto box failed to be sent. Please try again.');
+          await sendRedPackage({
+            totalAmount: totalAmount.toFixed(0),
+            memo: values.memo,
+            caContract: caContract,
+            type: selectTab === GroupRedPacketTabEnum.Fixed ? RedPackageTypeEnum.FIXED : RedPackageTypeEnum.RANDOM,
+            count: Number(values.packetNum || 1),
+            channelId: currentChannelId || '',
+            token,
+          });
+          CommonToast.success('Sent successfully!');
+          navigationService.goBack();
+          reportAnalyticsEvent({ page: 'SendPacketGroupPage', time: timeRecorder.endBySecond() }, 'RecordMessage');
         }
-        reportAnalyticsEvent(
-          { page: 'SendPacketGroupPage', time: timeRecorder.endBySecond(), errorMessage },
-          'RecordMessage',
-        );
+      } catch (error) {
+        if (isCryptoGift) {
+          CommonToast.failError('Create failed. Please click the button below and try again.');
+        } else {
+          const errorMessage = handleErrorMessage(error);
+          if (errorMessage === 'fetch exceed limit') {
+            CommonToast.warn('You can view the crypto box you sent later in the chat window.');
+            navigationService.navigate('Tab');
+            navigationService.navToBottomTab(TabRouteNameEnum.CHAT);
+          } else {
+            CommonToast.failError('Crypto box failed to be sent. Please try again.');
+          }
+          reportAnalyticsEvent(
+            { page: 'SendPacketGroupPage', time: timeRecorder.endBySecond(), errorMessage },
+            'RecordMessage',
+          );
+        }
       } finally {
         Loading.hide();
       }
@@ -143,9 +197,12 @@ export default function SendPacketGroupPage() {
       currentChannelId,
       getCAContract,
       getContractAddress,
+      getCryptoGiftContractAddress,
+      isCryptoGift,
       reportAnalyticsEvent,
       securitySafeCheckAndToast,
       selectTab,
+      sendCryptoGift,
       sendRedPackage,
     ],
   );
@@ -161,6 +218,7 @@ export default function SendPacketGroupPage() {
             type={RedPackageTypeEnum.RANDOM}
             onPressButton={onPressBtn}
             groupMemberCount={groupInfo?.totalCount}
+            isCryptoGift={isCryptoGift}
           />
         ),
       },
@@ -173,11 +231,12 @@ export default function SendPacketGroupPage() {
             type={RedPackageTypeEnum.FIXED}
             onPressButton={onPressBtn}
             groupMemberCount={groupInfo?.totalCount}
+            isCryptoGift={isCryptoGift}
           />
         ),
       },
     ],
-    [groupInfo?.totalCount, onPressBtn],
+    [groupInfo?.totalCount, isCryptoGift, onPressBtn],
   );
 
   const onTabPress = useCallback((tabType: GroupRedPacketTabEnum) => {
@@ -186,7 +245,7 @@ export default function SendPacketGroupPage() {
 
   return (
     <PageContainer
-      titleDom="Send Crypto Box"
+      titleDom={isCryptoGift ? 'Create Crypto Gift' : 'Send Crypto Box'}
       hideTouchable
       safeAreaColor={['white', 'gray']}
       scrollViewProps={{ disabled: true }}
@@ -200,9 +259,11 @@ export default function SendPacketGroupPage() {
             tabHeaderStyle={styles.tabHeaderStyle}
           />
         </View>
-        <View style={GStyles.flex1}>{tabList.find(item => item.type === selectTab)?.component}</View>
+        <View>{tabList.find(item => item.type === selectTab)?.component}</View>
         <TextM style={styles.tips}>
-          {`A crypto box is valid for 24 hours. Unclaimed tokens/NFTs will be automatically returned to you upon expiration.`}
+          {`A crypto ${
+            isCryptoGift ? 'gift' : 'box'
+          } is valid for 24 hours. Unclaimed tokens/NFTs will be automatically returned to you upon expiration.`}
         </TextM>
       </KeyboardAwareScrollView>
     </PageContainer>
@@ -213,21 +274,21 @@ const styles = StyleSheet.create({
   containerStyles: {
     position: 'relative',
     flex: 1,
-    backgroundColor: defaultColors.bg4,
+    backgroundColor: defaultColors.neutralDefaultBG,
     ...GStyles.paddingArg(0, 0),
   },
   scrollStyle: {
     minHeight: '100%',
-    ...GStyles.paddingArg(16, 20),
+    ...GStyles.paddingArg(16, 16),
   },
   tips: {
-    marginTop: pTd(40),
+    marginTop: pTd(24),
     textAlign: 'center',
     color: defaultColors.font3,
     marginBottom: isIOS ? 0 : pTd(16),
   },
   tabHeaderStyle: {
     width: pTd(190),
-    marginBottom: pTd(32),
+    marginBottom: pTd(24),
   },
 });

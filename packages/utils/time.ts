@@ -56,3 +56,8 @@ export const formatActivityTime = (date?: dayjs.ConfigType): string => {
   if (activityTimeTime.isSame(now, 'day')) return 'Today';
   return activityTimeTime.format('YYYY-MM-DD');
 };
+
+export function formatTimeToHmStr(time?: number): string {
+  if (time === undefined || time === null) return '--';
+  return dayjs(time).format('HH:mm');
+}

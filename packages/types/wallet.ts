@@ -1,3 +1,5 @@
+import { CAInfoType } from './types-ca/wallet';
+
 export type CreateType = 'Import' | 'Create';
 
 export type Password = string;
@@ -32,4 +34,10 @@ export interface AccountType {
   accountName: string;
   publicKey?: PublicKey;
   accountType: CreateType;
+}
+
+export interface CurrentWalletType extends WalletInfoType, CAInfoType {
+  caHash?: string;
+  caAddressList?: string[];
+  caAddress?: string;
 }

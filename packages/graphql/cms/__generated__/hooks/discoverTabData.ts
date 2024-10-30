@@ -17,9 +17,9 @@ export type DiscoverTabDataQuery = {
   discoverTabData: Array<{
     __typename?: 'discoverTabData';
     id: string;
-    status?: string | null;
     index?: any | null;
     name?: string | null;
+    status?: string | null;
     value?: string | null;
   }>;
 };
@@ -35,9 +35,9 @@ export const DiscoverTabDataDocument = gql`
   ) {
     discoverTabData(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search) {
       id
-      status
       index
       name
+      status
       value
     }
   }

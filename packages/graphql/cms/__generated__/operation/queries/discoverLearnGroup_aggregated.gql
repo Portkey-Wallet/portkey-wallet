@@ -4,16 +4,16 @@ query discoverLearnGroup_aggregated($groupBy: [String], $filter: discoverLearnGr
         countAll
         count{
             id
-            status
             index
+            status
             title
             value
             items
         }
         countDistinct{
             id
-            status
             index
+            status
             title
             value
             items

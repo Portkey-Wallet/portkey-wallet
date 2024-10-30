@@ -1,3 +1,4 @@
+import { INetworkItem } from 'pages/Send/components/SelectNetwork';
 import { ChainId, ChainType } from '..';
 import { SeedTypeEnum } from './assets';
 import { GuardiansApprovedType } from './guardian';
@@ -36,22 +37,41 @@ export type ImTransferInfoType = {
   name?: string;
   addresses?: { address: string; chainId: ChainId; chainName?: string }[];
 };
+
+export interface TToInfo {
+  name: string;
+  address: string;
+  network: string;
+  chainId?: ChainId;
+  chainType?: ChainType;
+}
+
 export interface IToSendHomeParamsType {
   sendType: SendType;
-  toInfo: {
-    address: string;
-    name: string;
-    chainId?: ChainId;
-    chainType?: ChainType;
-  };
+  toInfo: TToInfo;
   assetInfo: IToSendAssetParamsType;
   imTransferInfo?: ImTransferInfoType;
 }
 
+export enum TransferType {
+  'GENERAL_SAME_CHAIN' = 'generalSameChain',
+  'GENERAL_CROSS_CHAIN' = 'generalCrossChain',
+  'E_BRIDGE' = 'eBridge',
+  'E_TRANSFER' = 'eTransfer',
+}
 export interface IToSendPreviewParamsType extends IToSendHomeParamsType {
-  transactionFee: string | number;
   sendNumber: string | number;
   successNavigateName?: any;
   guardiansApproved?: GuardiansApprovedType[];
   isAutoSend?: boolean;
+  transactionFee?: string | number;
+  transactionFeeUnit?: string | number;
+  networkFee?: string | number;
+  networkFeeUnit?: string | number;
+  receiveAmount?: string;
+  receiveAmountUsd?: string;
+  crossChainFee: number | string;
+  crossChainFeeUnit?: string;
+  transferType: TransferType;
+  targetNetwork: INetworkItem;
 }

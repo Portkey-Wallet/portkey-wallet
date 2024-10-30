@@ -2,11 +2,22 @@
 @import '../../../../assets/theme/constants.less';
 
 .tab-token {
-  .token-list {
     .token-list-item {
       gap: 10px;
       cursor: pointer;
       padding: 12px 16px;
+      .more-wrapper {
+        background-color: @brand-light;
+        border-radius: 4px;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .more-wrapper-transparent {
+        background-color: transparent;
+      }
       &:hover {
         background-color: @neutral-hover-bg;
       }
@@ -42,7 +53,6 @@
         }
       }
     }
-  }
   .add-token-wrapper {
     height: 64px;
     margin-bottom: 24px;
@@ -60,6 +70,99 @@
   &.hidden-loading-more {
     .adm-infinite-scroll {
       display: none;
+    }
+  }
+  .item-wrapper{
+    padding-left: 16px;
+    margin-right: 16px;
+    .container {
+      width: 100%;
+      height: 48px;
+      padding-left: 12px;
+      padding-right: 12px;
+      background: #f5f6f7;
+      border-radius: 8px;
+      display: inline-flex;
+      justify-content: flex-start;
+      align-items: center;
+      gap: 12px;
+    }
+    .margin-top-4px{
+      margin-top: 4px;
+    }
+    .row {
+      width: 100%;
+      .amount-container {
+        flex: 1 1 0;
+        height: 22px;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 2px;
+        .amount {
+          flex: 1 1 0;
+          text-align: right;
+          color: #101114;
+          font-size: 14px;
+          font-family: Roboto-Regular;
+          font-weight: 400;
+          line-height: 22px;
+          word-wrap: break-word;
+        }
+      }
+    }
+    
+    .text {
+      flex: 1 1 0;
+      color: #55585e;
+      font-size: 14px;
+      font-family: Roboto-Regular;
+      font-weight: 400;
+      line-height: 22px;
+      word-wrap: break-word;
+    }
+  }
+  .@{app-prefix}-collapse {
+    background-color: @neutral-default-bg;
+    border: none;
+    .@{app-prefix}-collapse-item {
+      border: none;
+      .@{app-prefix}-collapse-header {
+        gap: 8px;
+        align-items: center;
+        padding: 0;
+        &:hover {
+          background-color: @neutral-hover-bg;
+        }
+        .@{app-prefix}-collapse-expand-icon {
+          display: none;
+          width: 16px;
+          height: 16px;
+         
+        }
+        .@{app-prefix}-collapse-header-text {
+          overflow: hidden;
+        }
+      }
+      .@{app-prefix}-collapse-content {
+        border: none;
+        .@{app-prefix}-collapse-content-box {
+          padding: 0;
+        }
+      }
+    }
+  }
+}
+
+@media screen and (min-width: 768px) {
+  .tab-token {
+    padding-bottom: 18px;
+  }
+  .@{app-prefix}-collapse{
+    .@{app-prefix}-collapse-item{
+      .@{app-prefix}-collapse-header {
+        padding: 0;
+      }
     }
   }
 }

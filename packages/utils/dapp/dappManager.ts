@@ -1,6 +1,5 @@
 import { addDapp, updateDapp } from '@portkey-wallet/store/store-ca/dapp/actions';
 import { DappStoreItem } from '@portkey-wallet/store/store-ca/dapp/type';
-import { ChainItemType } from '@portkey-wallet/store/store-ca/wallet/type';
 import { DappManagerOptions, IDappManager, IDappManagerStore } from '@portkey-wallet/types/types-ca/dapp';
 import { CACommonState } from '@portkey-wallet/types/types-ca/store';
 import { CAInfo, CAWalletInfoType } from '@portkey-wallet/types/types-ca/wallet';
@@ -11,6 +10,7 @@ import { NetworkType } from '@portkey-wallet/types';
 import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
 import { SessionInfo } from '@portkey-wallet/types/session';
 import { updateCASyncState } from '@portkey-wallet/store/store-ca/wallet/actions';
+import { IChainItemType } from '@portkey-wallet/types/types-ca/chain';
 
 export abstract class BaseDappManager<T extends IDappManagerStore> {
   protected store: T;
@@ -67,7 +67,7 @@ export abstract class DappManager<T extends CACommonState = CACommonState>
     const { chainInfo, currentNetwork } = await this.getWallet();
     return chainInfo?.[currentNetwork];
   }
-  async getChainInfo(chainId: ChainId): Promise<ChainItemType | undefined> {
+  async getChainInfo(chainId: ChainId): Promise<IChainItemType | undefined> {
     return (await this.getCurrentChainList())?.find(info => info.chainId === chainId);
   }
   async addDapp(dapp: DappStoreItem) {

@@ -1,22 +1,21 @@
 import { StyleSheet } from 'react-native';
-import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
 import { ScreenHeight } from '@rneui/base';
 import GStyles from 'assets/theme/GStyles';
+import { makeStyles } from '@rneui/themed';
 
-export const styles = StyleSheet.create({
+export const getStyles = makeStyles(theme => ({
   pageWrap: {
-    backgroundColor: defaultColors.bg4,
+    backgroundColor: theme.colors.bg4,
     height: ScreenHeight - pTd(130),
     paddingLeft: 0,
     paddingRight: 0,
   },
   iconStyle: {
-    paddingRight: pTd(24),
-    paddingLeft: pTd(24),
+    paddingHorizontal: pTd(16),
   },
   group: {
-    backgroundColor: defaultColors.bg1,
+    backgroundColor: theme.colors.bg1,
     marginTop: pTd(24),
     marginHorizontal: pTd(16),
     paddingLeft: pTd(16),
@@ -24,6 +23,7 @@ export const styles = StyleSheet.create({
     borderRadius: pTd(6),
   },
   buttonWrapStyle: {
+    backgroundColor: theme.colors.bgBase1,
     position: 'absolute',
     bottom: 0,
     justifyContent: 'flex-end',
@@ -32,13 +32,13 @@ export const styles = StyleSheet.create({
   },
   errorMessage: {
     lineHeight: pTd(16),
-    color: defaultColors.error,
+    color: theme.colors.error,
     marginTop: pTd(4),
     marginLeft: pTd(26),
     paddingLeft: pTd(8),
   },
   warnMessage: {
-    color: defaultColors.font6,
+    color: theme.colors.font6,
   },
   nftErrorMessage: {
     marginLeft: 0,
@@ -54,11 +54,16 @@ export const styles = StyleSheet.create({
     padding: pTd(12),
     marginHorizontal: pTd(20),
     borderRadius: pTd(6),
-    backgroundColor: defaultColors.bg18,
+    backgroundColor: theme.colors.bg18,
   },
-});
+  alertMessage: {
+    color: theme.colors.font3,
+    marginBottom: pTd(12),
+    textAlign: 'center',
+  },
+}));
 
-export const thirdGroupStyle = StyleSheet.create({
+export const getThirdGroupStyle = makeStyles(theme => ({
   wrap: {
     height: pTd(56),
     display: 'flex',
@@ -67,21 +72,21 @@ export const thirdGroupStyle = StyleSheet.create({
     justifyContent: 'space-between',
   },
   borderTop: {
-    borderTopColor: defaultColors.border6,
+    borderTopColor: theme.colors.border6,
     borderTopWidth: StyleSheet.hairlineWidth,
   },
   title: {
     flex: 1,
-    color: defaultColors.font3,
+    color: theme.colors.font3,
   },
   tokenNum: {
     textAlign: 'right',
-    color: defaultColors.font5,
+    color: theme.colors.font5,
   },
   usdtNum: {
     marginLeft: pTd(6),
     marginTop: pTd(4),
-    color: defaultColors.font3,
+    color: theme.colors.font3,
     textAlign: 'right',
   },
   notELFWrap: {
@@ -96,18 +101,18 @@ export const thirdGroupStyle = StyleSheet.create({
     justifyContent: 'flex-end',
     flexDirection: 'row',
   },
-});
+}));
 
-export const otherChainWarningStyle = StyleSheet.create({
+export const getOtherChainWarningStyle = makeStyles(theme => ({
   wrap: {
-    backgroundColor: defaultColors.bg35,
+    backgroundColor: theme.colors.bg35,
     paddingHorizontal: pTd(12),
     paddingVertical: pTd(8),
     marginHorizontal: pTd(16),
     marginTop: pTd(12),
     borderRadius: pTd(6),
     borderWidth: pTd(0.5),
-    borderColor: defaultColors.border9,
+    borderColor: theme.colors.border9,
   },
   flex: {
     display: 'flex',
@@ -122,16 +127,16 @@ export const otherChainWarningStyle = StyleSheet.create({
   commonText: {
     fontSize: pTd(14),
     lineHeight: pTd(22),
-    color: defaultColors.font18,
+    color: theme.colors.font18,
   },
   linkText: {
     fontSize: pTd(14),
     lineHeight: pTd(22),
-    color: defaultColors.primaryColor,
+    color: theme.colors.primaryColor,
     textDecorationLine: 'underline',
-    textDecorationColor: defaultColors.primaryColor,
+    textDecorationColor: theme.colors.primaryColor,
   },
   icon: {
     marginTop: pTd(4),
   },
-});
+}));

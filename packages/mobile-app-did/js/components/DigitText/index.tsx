@@ -1,9 +1,9 @@
 import { PIN_SIZE } from '@portkey-wallet/constants/misc';
 import { Text } from '@rneui/base';
-import { defaultColors } from 'assets/theme';
-import { TextM } from 'components/CommonText';
+import { TextL, TextM } from 'components/CommonText';
 import React, { useCallback, memo, useMemo } from 'react';
-import { StyleSheet, View, StyleProp, ViewStyle } from 'react-native';
+import { View, StyleProp, ViewStyle } from 'react-native';
+import { makeStyles } from '@rneui/themed';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { pTd } from 'utils/unit';
 
@@ -33,6 +33,7 @@ function InputItem({
   text?: string;
   iconStyle?: StyleProp<ViewStyle>;
 }) {
+  const styles = getStyles();
   if (secureTextEntry) return <View style={[styles.iconStyle, iconStyle]} />;
   return <Text style={styles.textStyles}>{text}</Text>;
 }
@@ -48,11 +49,12 @@ const DigitText = ({
   text: textLabel = '',
   isError: isErrorProp = false,
 }: DigitTextProps) => {
+  const styles = getStyles();
   const styleProps = useMemo(() => {
     return {
       inputItem: {
-        width: screenWidth / (maxLength + 2.5435),
-        height: screenWidth / (maxLength + 2),
+        width: screenWidth / (maxLength + 1.5),
+        height: pTd(40),
       },
     };
   }, [maxLength]);
@@ -85,23 +87,40 @@ const DigitText = ({
       }
     }
     return inputItem;
-  }, [iconStyle, inputItemStyle, isError, maxLength, secureTextEntry, styleProps.inputItem, textLabel, type]);
+  }, [
+    iconStyle,
+    inputItemStyle,
+    isError,
+    maxLength,
+    secureTextEntry,
+    styleProps.inputItem,
+    styles.inputItem,
+    styles.inputItemError,
+    styles.pinPlaceholder,
+    styles.pinPlaceholderError,
+    styles.pinSecureText,
+    textLabel,
+    type,
+  ]);
 
   return (
     <View>
       <View style={[styles.container, type === 'pin' ? styles.pinContainer : undefined, style]}>{getInputItem()}</View>
-      {errorMessage ? <TextM style={styles.errorText}>{errorMessage}</TextM> : null}
+      {errorMessage ? (
+        <TextL style={[styles.errorText, type === 'default' && styles.errorTextLeft]}>{errorMessage}</TextL>
+      ) : null}
     </View>
   );
 };
 
 export default memo(DigitText);
-const styles = StyleSheet.create({
+
+const getStyles = makeStyles(theme => ({
   container: {
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    backgroundColor: 'white',
+    backgroundColor: theme.colors.bgBase1,
   },
   pinContainer: {
     height: pTd(16),
@@ -111,39 +130,45 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 1,
     borderRadius: pTd(6),
-    borderColor: defaultColors.border6,
+    borderColor: theme.colors.borderBase1,
   },
   inputItemError: {
-    borderColor: defaultColors.error,
+    borderColor: theme.colors.borderDanger1,
   },
   iconStyle: {
     width: pTd(16),
     height: pTd(16),
-    backgroundColor: defaultColors.font5,
+    backgroundColor: theme.colors.bgNeutral2,
     borderRadius: pTd(9),
   },
   errorText: {
     marginTop: pTd(24),
     textAlign: 'center',
-    color: defaultColors.error,
+    color: theme.colors.textDanger1,
+  },
+  errorTextLeft: {
+    marginTop: pTd(8),
+    textAlign: 'left',
+    color: theme.colors.textDanger2,
   },
   textStyles: {
-    fontSize: pTd(24),
-    color: defaultColors.font5,
+    fontSize: pTd(16),
+    color: theme.colors.textBase1,
     fontWeight: 'bold',
   },
   pinPlaceholder: {
-    height: pTd(4),
-    width: pTd(16),
-    backgroundColor: defaultColors.font5,
+    height: pTd(14),
+    width: pTd(14),
+    borderRadius: pTd(7),
+    backgroundColor: theme.colors.bgNeutral2,
   },
   pinPlaceholderError: {
-    backgroundColor: defaultColors.error,
+    backgroundColor: theme.colors.bgDanger1,
   },
   pinSecureText: {
-    backgroundColor: defaultColors.font5,
-    height: pTd(16),
-    width: pTd(16),
-    borderRadius: pTd(9),
+    backgroundColor: theme.colors.textBrand2,
+    height: pTd(14),
+    width: pTd(14),
+    borderRadius: pTd(7),
   },
-});
+}));

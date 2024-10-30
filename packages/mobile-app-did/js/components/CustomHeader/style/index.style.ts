@@ -1,9 +1,9 @@
 import { StyleSheet } from 'react-native';
-import { defaultColors } from 'assets/theme';
+import { defaultColors, darkColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
 import fonts from 'assets/theme/fonts';
 
-const { bg1, bg5, font5, icon5 } = defaultColors;
+const { bg1, bg5 } = defaultColors;
 
 export const headerHeight = pTd(52);
 
@@ -63,7 +63,7 @@ export const whitStyles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-    backgroundColor: bg1,
+    backgroundColor: darkColors.bgBase1,
   },
   leftDomWrap: {
     display: 'flex',
@@ -78,7 +78,7 @@ export const whitStyles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    color: font5,
+    color: darkColors.textBase1,
     fontWeight: 'bold',
     ...fonts.mediumFont,
   },
@@ -89,7 +89,7 @@ export const whitStyles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   leftBackTitle: {
-    color: icon5,
+    color: darkColors.iconBase1,
   },
 });
 

@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import { TextL, TextM, TextS } from 'components/CommonText';
 import Touchable from 'components/Touchable';
-import { defaultColors } from 'assets/theme';
+import { darkColors, defaultColors } from 'assets/theme';
 import CommonSwitch from 'components/CommonSwitch';
 import Svg from 'components/Svg';
 import { TextStyleType, ViewStyleType } from 'types/styles';
@@ -79,12 +79,14 @@ export default memo(ListItem);
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    minHeight: pTd(56),
-    backgroundColor: 'white',
+    minHeight: pTd(40),
+    backgroundColor: darkColors.bgBase1,
     alignItems: 'center',
     flexDirection: 'row',
     paddingHorizontal: pTd(16),
     borderRadius: pTd(6),
+    borderColor: darkColors.borderBase1,
+    borderWidth: StyleSheet.hairlineWidth,
   },
   titleTextStyle: {
     flex: 1,

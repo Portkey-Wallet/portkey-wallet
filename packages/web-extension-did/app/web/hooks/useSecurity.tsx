@@ -29,6 +29,7 @@ import { ChainId } from '@portkey/provider-types';
 import { ICheckLimitBusiness, ITransferLimitRouteState } from '@portkey-wallet/types/types-ca/paymentSecurity';
 import { handleGuardianByContract } from 'utils/sandboxUtil/handleGuardianByContract';
 import { getAelfTxResult } from '@portkey-wallet/utils/aelf';
+import { fixedGuardianParams, fixedGuardianApprovedParams } from '@portkey-wallet/utils/guardian';
 import { CheckSecurityResult, getAccelerateGuardianTxId } from '@portkey-wallet/utils/securityTest';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { getCurrentChainInfo } from 'utils/lib/SWGetReduxStore';
@@ -123,8 +124,8 @@ export function useSynchronizingModal() {
             method: 'AddGuardian',
             params: {
               caHash: walletInfo?.caHash,
-              guardianToAdd: params.guardianToAdd,
-              guardiansApproved: params.guardiansApproved,
+              guardianToAdd: fixedGuardianParams(params.guardianToAdd),
+              guardiansApproved: fixedGuardianApprovedParams(params.guardiansApproved),
             },
           },
         });

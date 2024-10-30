@@ -1,6 +1,6 @@
 import { ChainId, NetworkType } from '@portkey-wallet/types';
 import { NFTCollectionItemShowType, SeedTypeEnum } from '@portkey-wallet/types/types-ca/assets';
-import { IAccountCryptoBoxAssetItem, TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
+import { IAccountCryptoBoxAssetItem, ITokenSectionResponse } from '@portkey-wallet/types/types-ca/token';
 
 export interface ITokenInfoType {
   balance: string;
@@ -22,6 +22,8 @@ export interface INftInfoType {
   seedType?: SeedTypeEnum;
   isSeed?: boolean;
   tokenContractAddress?: string;
+  displayChainName?: string;
+  chainImageUrl?: string;
 }
 
 export interface IAssetItemType {
@@ -33,6 +35,31 @@ export interface IAssetItemType {
   label?: string;
 }
 
+export interface IAssetToken {
+  address: string; // user chain address
+  balance: string;
+  balanceInUsd: string;
+  chainId: ChainId;
+  chainImageUrl: string;
+  decimals: string;
+  displayChainName: string;
+  imageUrl: string;
+  symbol: string;
+  tokenContractAddress: string;
+  label?: string;
+}
+
+export interface IAssetNftCollection {
+  collectionName: string;
+  imageUrl: string;
+  items: INftInfoType[];
+}
+
+export interface IAssetItemV2 {
+  nftInfos: IAssetNftCollection[];
+  tokenInfos: IAssetToken[];
+}
+
 export enum AddressCheckError {
   invalidAddress = 'Invalid Address',
   recipientAddressIsInvalid = 'Recipient address is invalid',
@@ -42,8 +69,9 @@ export enum AddressCheckError {
 export type TAccountTokenInfo = {
   skipCount: number;
   maxResultCount: number;
-  accountTokenList: TokenItemShowType[];
+  accountTokenList: ITokenSectionResponse[];
   totalRecordCount: number;
+  totalDisplayCount: number;
 };
 
 export type TAccountNFTInfo = {
@@ -60,11 +88,18 @@ export type TAccountAssetsInfo = {
   totalRecordCount: number;
 };
 
+export type TAccountAssetsInfoV2 = {
+  skipCount: number;
+  maxResultCount: number;
+  accountAssetsList: IAssetItemV2;
+  totalRecordCount: number;
+};
+
 // asset = token + nft
 export type TAssetsState = {
   accountToken: TAccountTokenInfo & {
     isFetching: boolean;
-    accountTokenInfo?: {
+    accountTokenInfoV2?: {
       [key in NetworkType]?: TAccountTokenInfo;
     };
   };
@@ -84,6 +119,12 @@ export type TAssetsState = {
     isFetching: boolean;
     accountAssetsInfo?: {
       [key in NetworkType]?: TAccountAssetsInfo;
+    };
+  };
+  accountAssetsV2: TAccountAssetsInfoV2 & {
+    isFetching: boolean;
+    accountAssetsInfo?: {
+      [key in NetworkType]?: TAccountAssetsInfoV2;
     };
   };
   accountBalance: {

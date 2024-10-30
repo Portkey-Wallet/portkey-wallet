@@ -24,15 +24,15 @@ export type LoginType_AggregatedQuery = {
     count?: {
       __typename?: 'loginType_aggregated_count';
       id?: number | null;
-      status?: number | null;
       label?: number | null;
+      status?: number | null;
       value?: number | null;
     } | null;
     countDistinct?: {
       __typename?: 'loginType_aggregated_count';
       id?: number | null;
-      status?: number | null;
       label?: number | null;
+      status?: number | null;
       value?: number | null;
     } | null;
     avg?: { __typename?: 'loginType_aggregated_fields'; id?: number | null } | null;
@@ -67,14 +67,14 @@ export const LoginType_AggregatedDocument = gql`
       countAll
       count {
         id
-        status
         label
+        status
         value
       }
       countDistinct {
         id
-        status
         label
+        status
         value
       }
       avg {

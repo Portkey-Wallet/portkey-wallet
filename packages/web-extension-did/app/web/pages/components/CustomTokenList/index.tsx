@@ -15,7 +15,7 @@ import { IAssetItemType } from '@portkey-wallet/store/store-ca/assets/type';
 import LoadingMore from 'components/LoadingMore/LoadingMore';
 import { PAGE_SIZE_IN_ACCOUNT_ASSETS } from '@portkey-wallet/constants/constants-ca/assets';
 import { useDebounceCallback, useEffectOnce } from '@portkey-wallet/hooks';
-import useToken from '@portkey-wallet/hooks/hooks-ca/useToken';
+import { useTokenLegacy } from '@portkey-wallet/hooks/hooks-ca/useToken';
 import { useAccountAssetsInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
 import { fetchAssetsListByFilter, fetchTokenListByFilter } from './utils';
 import { useCommonState } from 'store/Provider/hooks';
@@ -41,7 +41,7 @@ export default function CustomTokenList({
 }: ICustomTokenListProps) {
   const { t } = useTranslation();
   const isMainnet = useIsMainnet();
-  const { tokenDataShowInMarket, totalRecordCount: tokenTotalRecordCount, fetchTokenInfoList } = useToken();
+  const { tokenDataShowInMarket, totalRecordCount: tokenTotalRecordCount, fetchTokenInfoList } = useTokenLegacy();
   const {
     accountAssetsList,
     totalRecordCount: assetsTotalRecordCount,

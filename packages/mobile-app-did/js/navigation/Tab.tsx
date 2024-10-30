@@ -11,6 +11,8 @@ import useInitData from 'hooks/useInitData';
 import DiscoverHome from 'pages/Discover/DiscoverHome';
 import ChatHome from 'pages/Chat/ChatHomePage';
 import TradeHomePage from 'pages/Trade/TradeHomePage';
+import ActivityListPage from 'pages/Activity/ActivityListPage';
+
 import { formatMessageCountToStr } from '@portkey-wallet/utils/chat';
 import { StyleSheet, Animated, View } from 'react-native';
 import { pTd } from 'utils/unit';
@@ -25,6 +27,8 @@ import { ReferralStatusEnum } from '@portkey-wallet/store/store-ca/referral/type
 import { SvgXml } from 'react-native-svg';
 import svgs from 'assets/image/svgs';
 import { TabRouteNameEnum } from 'types/navigate';
+import myEvents from 'utils/deviceEvent';
+import { hideReferral } from '@portkey-wallet/constants/referral';
 
 const Tab = createBottomTabNavigator();
 
@@ -43,25 +47,34 @@ export const tabMenuTypeMap: Record<TabRouteNameEnum, IRenderTabMenuItem> = {
     name: TabRouteNameEnum.WALLET,
     index: 0,
     label: 'Wallet',
-    icon: 'logo-icon',
+    icon: 'home',
     isDefault: true,
     component: DashBoard,
   },
+  [TabRouteNameEnum.ACTIVITY]: {
+    name: TabRouteNameEnum.ACTIVITY,
+    index: 1,
+    label: 'Activity',
+    largeIcon: 'clock',
+    icon: 'clock',
+    component: ActivityListPage,
+  },
   [TabRouteNameEnum.DISCOVER]: {
     name: TabRouteNameEnum.DISCOVER,
-    index: 1,
+    index: 2,
     label: 'Discover',
     icon: 'discover',
     component: DiscoverHome,
   },
-  [TabRouteNameEnum.TRADE]: {
-    name: TabRouteNameEnum.TRADE,
-    index: 2,
-    label: 'Trade',
-    largeIcon: 'trade',
-    icon: 'trade-small',
-    component: TradeHomePage,
-  },
+  // [TabRouteNameEnum.TRADE]: {
+  //   name: TabRouteNameEnum.TRADE,
+  //   index: 2,
+  //   label: 'Trade',
+  //   largeIcon: 'trade',
+  //   icon: 'trade-small',
+  //   component: TradeHomePage,
+  // },
+
   [TabRouteNameEnum.CHAT]: {
     name: TabRouteNameEnum.CHAT,
     index: 3,
@@ -92,7 +105,15 @@ export default function TabRoot() {
   const rotateAnimate = useRef(new Animated.Value(0)).current;
   const rotatedActiveRef = useRef(false);
   const logOut = useLogOut();
-
+  useEffect(() => {
+    const listener = myEvents.navToBottomTab.addListener(({ tabName }) => {
+      if (tabName === 'Trade') {
+        rotateButton(false);
+      }
+    });
+    return () => listener.remove();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const tabMenuList = useMemo(() => {
     if (__DEV__) return Object.values(tabMenuTypeMap);
 
@@ -132,19 +153,19 @@ export default function TabRoot() {
     [rotateAnimate],
   );
 
-  const rotateStyle = useMemo(
-    () => ({
-      transform: [
-        {
-          rotate: rotateAnimate.interpolate({
-            inputRange: [0, 360],
-            outputRange: ['0deg', '180deg'],
-          }),
-        },
-      ],
-    }),
-    [rotateAnimate],
-  );
+  // const rotateStyle = useMemo(
+  //   () => ({
+  //     transform: [
+  //       {
+  //         rotate: rotateAnimate.interpolate({
+  //           inputRange: [0, 360],
+  //           outputRange: ['0deg', '180deg'],
+  //         }),
+  //       },
+  //     ],
+  //   }),
+  //   [rotateAnimate],
+  // );
 
   // init data
   useInitData();
@@ -165,8 +186,9 @@ export default function TabRoot() {
       <Tab.Navigator
         initialRouteName="Wallet"
         screenOptions={({ route }) => ({
-          tabBarStyle: { paddingTop: 6 },
-          tabBarLabelStyle: styles.tabBarLabelStyle,
+          tabBarShowLabel: false,
+          tabBarStyle: { paddingTop: 6, backgroundColor: defaultColors.bg43 },
+          // tabBarLabelStyle: styles.tabBarLabelStyle,
           tabBarAllowFontScaling: false,
           header: () => null,
           tabBarIcon: ({ focused }) => {
@@ -178,29 +200,21 @@ export default function TabRoot() {
                   <Svg
                     icon={tabMenu?.icon || 'my'}
                     size={pTd(24)}
-                    color={focused ? defaultColors.font17 : defaultColors.font11}
+                    color={focused ? defaultColors.primaryColorV2 : defaultColors.font26}
                   />
                 </View>
               );
             } else if (tabMenu?.name === TabRouteNameEnum.SETTINGS) {
               return (
                 <View style={styles.chatWrap}>
-                  {(isImputation || viewReferralStatus === ReferralStatusEnum.UN_VIEWED) && (
+                  {(isImputation || (!hideReferral && viewReferralStatus === ReferralStatusEnum.UN_VIEWED)) && (
                     <TextS style={styles.warningCycle} />
                   )}
                   <Svg
                     icon={tabMenu?.icon || 'my'}
                     size={pTd(24)}
-                    color={focused ? defaultColors.font17 : defaultColors.font11}
+                    color={focused ? defaultColors.primaryColorV2 : defaultColors.font26}
                   />
-                </View>
-              );
-            } else if (tabMenu?.name === TabRouteNameEnum.TRADE) {
-              return (
-                <View style={styles.tradeWrap}>
-                  <Animated.View style={rotateStyle}>
-                    <SvgXml xml={svgs.trade} width={pTd(40)} height={pTd(40)} />
-                  </Animated.View>
                 </View>
               );
             }
@@ -209,38 +223,19 @@ export default function TabRoot() {
               <Svg
                 icon={tabMenu?.icon || 'my'}
                 size={pTd(24)}
-                color={focused ? defaultColors.font17 : defaultColors.font11}
+                color={focused ? defaultColors.primaryColorV2 : defaultColors.font26}
               />
             );
           },
         })}>
         {tabMenuList.map(ele => (
           <Tab.Screen
-            listeners={({ navigation }) => ({
-              tabPress: e => {
-                // rotate trade btn
-                const historyArr = navigation.getState()?.history;
-                const previousRoute = historyArr[historyArr.length - 1];
-
-                if (
-                  e.target?.startsWith(TabRouteNameEnum.TRADE) &&
-                  !previousRoute?.key?.startsWith(TabRouteNameEnum.TRADE)
-                ) {
-                  rotateButton(false);
-                } else if (
-                  !e.target?.startsWith(TabRouteNameEnum.TRADE) &&
-                  previousRoute?.key?.startsWith(TabRouteNameEnum.TRADE)
-                ) {
-                  rotateButton(true);
-                }
-              },
-            })}
             key={ele.name}
             name={ele.name}
             component={ele.component}
             options={{
               title: t(ele.label),
-              tabBarActiveTintColor: defaultColors.font4,
+              tabBarActiveTintColor: 'red',
             }}
           />
         ))}
@@ -251,7 +246,8 @@ export default function TabRoot() {
     <Tab.Navigator
       initialRouteName="Wallet"
       screenOptions={({ route }) => ({
-        tabBarLabelStyle: styles.tabBarLabelStyle,
+        tabBarStyle: { paddingTop: 6, backgroundColor: defaultColors.bg43 },
+        // tabBarLabelStyle: styles.tabBarLabelStyle,
         tabBarAllowFontScaling: false,
         header: () => null,
         tabBarIcon: ({ focused }) => {
@@ -263,7 +259,7 @@ export default function TabRoot() {
                 <Svg
                   icon={tabMenu?.icon || 'my'}
                   size={pTd(24)}
-                  color={focused ? defaultColors.font4 : defaultColors.font7}
+                  color={focused ? defaultColors.primaryColorV2 : defaultColors.font26}
                 />
               </View>
             );
@@ -276,7 +272,7 @@ export default function TabRoot() {
                 <Svg
                   icon={tabMenu?.icon || 'my'}
                   size={pTd(24)}
-                  color={focused ? defaultColors.font4 : defaultColors.font7}
+                  color={focused ? defaultColors.primaryColorV2 : defaultColors.font26}
                 />
               </View>
             );
@@ -286,7 +282,7 @@ export default function TabRoot() {
             <Svg
               icon={tabMenu?.icon || 'my'}
               size={pTd(24)}
-              color={focused ? defaultColors.font4 : defaultColors.font7}
+              color={focused ? defaultColors.primaryColorV2 : defaultColors.font26}
             />
           );
         },
@@ -297,8 +293,8 @@ export default function TabRoot() {
           name={ele.name}
           component={ele.component}
           options={{
-            title: t(ele.label),
-            tabBarActiveTintColor: defaultColors.font4,
+            tabBarShowLabel: false,
+            tabBarActiveTintColor: defaultColors.primaryColorV2,
           }}
         />
       ))}

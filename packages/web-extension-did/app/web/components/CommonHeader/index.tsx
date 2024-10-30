@@ -36,6 +36,7 @@ export default function CommonHeader({
   onLeftBack,
 }: ICommonHeaderProps) {
   const renderRightElement = (element: TRightElement, index: number) => {
+    if (!element) return;
     if (React.isValidElement(element)) {
       return <React.Fragment key={index}>{element}</React.Fragment>;
     }

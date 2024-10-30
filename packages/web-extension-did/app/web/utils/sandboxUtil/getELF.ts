@@ -1,6 +1,6 @@
-import { ChainItemType } from '@portkey-wallet/store/store-ca/wallet/type';
 import { ChainType } from '@portkey-wallet/types';
 import { managerForwardCall } from './managerForwardCall';
+import { IChainItemType } from '@portkey-wallet/types/types-ca/chain';
 
 const getELF = async ({
   chainInfo,
@@ -10,7 +10,7 @@ const getELF = async ({
   amount,
   address,
 }: {
-  chainInfo: ChainItemType;
+  chainInfo: IChainItemType;
   chainType: ChainType;
   privateKey: string;
   caHash: string;

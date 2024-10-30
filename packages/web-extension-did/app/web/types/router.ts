@@ -12,6 +12,7 @@ import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
 import { GuardianItem } from './guardians';
 import { NFTItemBaseType } from '@portkey-wallet/types/types-ca/assets';
 import { ReceiveTabEnum } from '@portkey-wallet/constants/constants-ca/send';
+import { FreeMintStatus } from '@portkey-wallet/types/types-ca/freeMint';
 
 export enum FromPageEnum {
   register = 'register',
@@ -29,6 +30,9 @@ export enum FromPageEnum {
   chatGroupInfo = 'chat-group-info',
   chatMemberList = 'chat-member-list',
   accountCancelation = 'accountCancelation',
+  cryptoGiftHome = 'cryptoGiftHome',
+  cryptoGiftHistory = 'cryptoGiftHistory',
+  cryptoGiftSuccess = 'cryptoGiftSuccess',
 }
 
 // Guardians
@@ -57,11 +61,12 @@ export type TGuardianApprovalFromPage =
   | FromPageEnum.setTransferLimit;
 
 export type TGuardianApprovalLocationState = {
-  previousPage: TGuardianApprovalFromPage;
+  previousPage?: TGuardianApprovalFromPage;
   targetChainId?: ChainId;
   accelerateChainId?: ChainId;
   extra?: string;
   manageAddress?: string;
+  operationDetails?: string;
 };
 
 export type TGuardianApprovalLocationSearch = TGuardianApprovalLocationState;
@@ -90,6 +95,7 @@ export type TGuardianItemFromPage =
 
 export type TGuardianItemLocationState = {
   previousPage: TGuardianItemFromPage;
+  operationDetails?: string;
 };
 
 export type TGuardianItemLocationSearch = TGuardianItemLocationState;
@@ -106,10 +112,11 @@ export type TVerifierAccountFromPage =
   | FromPageEnum.setTransferLimit;
 
 export type TVerifierAccountLocationState = {
-  previousPage: TVerifierAccountFromPage;
+  previousPage?: TVerifierAccountFromPage;
   targetChainId?: ChainId;
   accelerateChainId?: ChainId;
   extra?: string;
+  operationDetails?: string;
 };
 
 // Account Cancelation Verify Code
@@ -290,4 +297,36 @@ export type TWalletNameLocationState = {
 // HomePage
 export type THomePageLocationState = {
   key: BalanceTab;
+};
+
+// CryptoGift history detail
+
+export type TCryptoGiftDetailFromPage =
+  | FromPageEnum.cryptoGiftHome
+  | FromPageEnum.cryptoGiftHistory
+  | FromPageEnum.cryptoGiftSuccess;
+
+export type TCryptoGiftDetailLocationState = {
+  id: string;
+  fromPage: TCryptoGiftDetailFromPage;
+};
+
+// CryptoGift create success
+export type TCryptoGiftSuccessLocationState = {
+  id: string;
+};
+
+export type TFreeMintLocationState = {
+  itemId: string;
+  status: FreeMintStatus;
+};
+
+// SecondaryMailbox verify
+export type TSecondaryMailboxVerifyState = {
+  email: string;
+  sessionid: string;
+};
+
+export type TSecondaryMailboxEditState = {
+  email?: string;
 };

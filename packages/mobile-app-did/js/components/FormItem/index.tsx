@@ -1,4 +1,4 @@
-import { defaultColors } from 'assets/theme';
+import { defaultColors, darkColors } from 'assets/theme';
 import { TextM } from 'components/CommonText';
 import React, { ReactNode } from 'react';
 import { View, StyleSheet } from 'react-native';
@@ -8,14 +8,15 @@ export type FormItemType = {
   title: string;
   children: ReactNode;
   style?: any;
+  titleStyle?: any;
 };
 
 export default function FormItem(props: FormItemType) {
-  const { title, children, style = {} } = props;
+  const { title, children, style = {}, titleStyle = {} } = props;
 
   return (
     <View style={style}>
-      <TextM style={styles.titleStyle}>{title}</TextM>
+      <TextM style={[styles.titleStyle, titleStyle]}>{title}</TextM>
       <View style={styles.childrenWrap}>{children}</View>
     </View>
   );
@@ -23,9 +24,8 @@ export default function FormItem(props: FormItemType) {
 
 const styles = StyleSheet.create({
   titleStyle: {
-    paddingLeft: pTd(8),
     marginBottom: pTd(8),
-    color: defaultColors.font3,
+    color: darkColors.textBase1,
   },
   childrenWrap: {
     width: '100%',

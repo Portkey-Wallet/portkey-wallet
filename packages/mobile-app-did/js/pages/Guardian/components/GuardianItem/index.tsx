@@ -1,13 +1,11 @@
-import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import CommonButton, { CommonButtonProps } from 'components/CommonButton';
-import { TextM, TextS } from 'components/CommonText';
+import { TextL, TextM } from 'components/CommonText';
 import Svg from 'components/Svg';
 import React, { useCallback, useMemo } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Image, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import navigationService from 'utils/navigationService';
-import fonts from 'assets/theme/fonts';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 import Loading from 'components/Loading';
 import CommonToast from 'components/CommonToast';
@@ -19,10 +17,11 @@ import {
   OperationTypeEnum,
   VerifierInfo,
   VerifyStatus,
+  zkLoginVerifierItem,
 } from '@portkey-wallet/types/verifier';
 import { BGStyles, FontStyles } from 'assets/theme/styles';
-import { LOGIN_GUARDIAN_TYPE_ICON } from 'constants/misc';
-import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
+import { GUARDIAN_ITEM_TYPE_ICON } from 'constants/misc';
+import { LoginType, isZKLoginSupported } from '@portkey-wallet/types/types-ca/wallet';
 import { VerifierImage } from '../VerifierImage';
 import { GuardiansStatus, GuardiansStatusItem } from 'pages/Guardian/types';
 import { useThrottleCallback } from '@portkey-wallet/hooks';
@@ -37,6 +36,7 @@ import {
 } from '@portkey-wallet/constants/constants-ca/verifier';
 import { ChainId } from '@portkey-wallet/types';
 import { AuthTypes } from 'constants/guardian';
+import { makeStyles } from '@rneui/themed';
 
 interface GuardianAccountItemProps {
   guardianItem: UserGuardianItem;
@@ -50,6 +50,20 @@ interface GuardianAccountItemProps {
   approvalType?: ApprovalType;
   authenticationInfo?: AuthenticationInfo;
   targetChainId?: ChainId;
+  extra?: {
+    identifierHash?: string;
+    guardianType?: string;
+    verifierId?: string;
+    preVerifierId?: string;
+    newVerifierId?: string;
+    symbol?: string;
+    amount?: string | number;
+    toAddress?: string;
+    singleLimit?: string;
+    dailyLimit?: string;
+    spender?: string;
+    verifyManagerAddress?: string;
+  };
 }
 
 function GuardianItemButton({
@@ -61,9 +75,12 @@ function GuardianItemButton({
   disabled,
   authenticationInfo,
   targetChainId,
+  extra,
 }: GuardianAccountItemProps & {
   disabled?: boolean;
 }) {
+  const styles = getStyles();
+
   const itemStatus = useMemo(() => guardiansStatus?.[guardianItem.key], [guardianItem.key, guardiansStatus]);
 
   const { status, requestCodeResult } = itemStatus || {};
@@ -100,6 +117,7 @@ function GuardianItemButton({
           chainId: originChainId,
           operationType,
           targetChainId,
+          operationDetails: JSON.stringify({ ...extra }),
         },
       });
       if (req.verifierSessionId) {
@@ -113,6 +131,7 @@ function GuardianItemButton({
           ...guardianInfo,
           requestCodeResult: req,
           targetChainId,
+          operationDetails: JSON.stringify({ ...extra }),
         });
       } else {
         throw new Error('send fail');
@@ -123,19 +142,23 @@ function GuardianItemButton({
       CommonToast.failError(error);
     }
     Loading.hide();
-  }, [guardianInfo, originChainId, operationType, targetChainId, onSetGuardianStatus]);
+  }, [guardianInfo, originChainId, operationType, targetChainId, onSetGuardianStatus, extra]);
 
   const onVerifierAuth = useCallback(async () => {
     try {
       Loading.show();
-
       const rst = await verifyToken(guardianItem.guardianType, {
-        accessToken: authenticationInfo?.[guardianItem.guardianAccount],
+        accessToken: authenticationInfo?.[guardianItem.guardianAccount] as string,
+        idToken: authenticationInfo?.idToken as string,
+        timestamp: authenticationInfo?.timestamp as number,
+        nonce: authenticationInfo?.nonce as string,
+        salt: guardianItem.salt,
         id: guardianItem.guardianAccount,
         verifierId: guardianItem.verifier?.id,
         chainId: originChainId,
         operationType,
         targetChainId,
+        operationDetails: JSON.stringify({ ...extra }),
       });
 
       if (rst.accessToken) {
@@ -156,8 +179,10 @@ function GuardianItemButton({
     Loading.hide();
   }, [
     authenticationInfo,
+    extra,
     guardianItem.guardianAccount,
     guardianItem.guardianType,
+    guardianItem.salt,
     guardianItem.verifier?.id,
     onSetGuardianStatus,
     operationType,
@@ -180,11 +205,12 @@ function GuardianItemButton({
           requestCodeResult,
           targetChainId,
           startResend: true,
+          operationDetails: JSON.stringify({ ...extra }),
         });
         break;
       }
     }
-  }, [guardianItem.guardianType, onVerifierAuth, guardianInfo, requestCodeResult, targetChainId]);
+  }, [guardianItem.guardianType, onVerifierAuth, guardianInfo, requestCodeResult, targetChainId, extra]);
   const buttonProps: CommonButtonProps = useMemo(() => {
     // expired
     if (isExpired && status !== VerifyStatus.Verified) {
@@ -212,22 +238,28 @@ function GuardianItemButton({
       };
     }
     return {
-      title: 'Confirmed',
-      type: 'clear',
-      disabledTitleStyle: FontStyles.font10,
+      title: 'Approved',
+      type: 'transparent',
+      disabledTitleStyle: styles.approvedTitleStyles,
       disabledStyle: styles.confirmedButtonStyle,
       disabled: true,
     };
-  }, [guardianItem.guardianType, isExpired, onSendCode, onVerifier, status]);
+  }, [
+    guardianItem.guardianType,
+    isExpired,
+    onSendCode,
+    onVerifier,
+    status,
+    styles.approvedTitleStyles,
+    styles.confirmedButtonStyle,
+  ]);
   return (
     <CommonButton
       type="primary"
-      radius={pTd(6)}
       disabled={disabled}
       disabledTitleStyle={styles.disabledTitleStyle}
       disabledStyle={styles.disabledItemStyle}
       {...buttonProps}
-      titleStyle={[styles.titleStyle, fonts.mediumFont, buttonProps.titleStyle]}
       buttonStyle={[styles.buttonStyle, buttonProps.buttonStyle]}
     />
   );
@@ -245,7 +277,9 @@ export default function GuardianItem({
   approvalType = ApprovalType.communityRecovery,
   authenticationInfo,
   targetChainId,
+  extra,
 }: GuardianAccountItemProps) {
+  const styles = getStyles();
   const itemStatus = useMemo(() => guardiansStatus?.[guardianItem.key], [guardianItem.key, guardiansStatus]);
   const disabled = isSuccess && itemStatus?.status !== VerifyStatus.Verified;
 
@@ -257,46 +291,63 @@ export default function GuardianItem({
     return guardianItem.thirdPartyEmail || '';
   }, [guardianItem]);
 
+  const isVerifierReplacedByZk = useMemo(() => {
+    return (
+      isZKLoginSupported(guardianItem.guardianType) && !guardianItem.verifiedByZk && !guardianItem.manuallySupportForZk
+    );
+  }, [guardianItem]);
+
   const renderGuardianAccount = useCallback(() => {
     if (!guardianItem.firstName) {
       return (
-        <TextM
+        <TextL
           numberOfLines={AuthTypes.includes(guardianItem.guardianType) ? 1 : 2}
           style={[styles.nameStyle, GStyles.flex1]}>
           {guardianAccount}
-        </TextM>
+        </TextL>
       );
     }
     return (
       <View style={[styles.nameStyle, GStyles.flex1]}>
-        <TextM style={styles.firstNameStyle} numberOfLines={1}>
-          {guardianItem.firstName}
-        </TextM>
-        <TextS style={FontStyles.font3} numberOfLines={1}>
+        <TextL numberOfLines={1}>{guardianItem.firstName}</TextL>
+        <TextM style={styles.subNameText} numberOfLines={1}>
           {guardianAccount}
-        </TextS>
+        </TextM>
       </View>
     );
-  }, [guardianAccount, guardianItem.firstName, guardianItem.guardianType]);
+  }, [guardianAccount, guardianItem.firstName, guardianItem.guardianType, styles.nameStyle, styles.subNameText]);
+
+  const verifierName = useMemo(() => {
+    return isZKLoginSupported(guardianItem.guardianType) &&
+      (guardianItem.verifiedByZk || guardianItem.manuallySupportForZk)
+      ? zkLoginVerifierItem.name
+      : guardianItem.verifier?.name || '';
+  }, [guardianItem]);
+
+  const verifierImageUrl = useMemo(() => {
+    return isZKLoginSupported(guardianItem.guardianType) &&
+      (guardianItem.verifiedByZk || guardianItem.manuallySupportForZk)
+      ? zkLoginVerifierItem.imageUrl
+      : guardianItem.verifier?.imageUrl || '';
+  }, [guardianItem]);
 
   return (
-    <View style={[styles.itemRow, isBorderHide && styles.itemWithoutBorder, disabled && styles.disabledStyle]}>
-      {guardianItem.isLoginAccount && (
-        <View style={styles.typeTextRow}>
-          <Text style={styles.typeText}>Login Account</Text>
-        </View>
-      )}
-      <View style={[GStyles.flexRowWrap, GStyles.itemCenter, GStyles.flex1]}>
-        <View style={[GStyles.center, styles.loginTypeIconWrap]}>
-          <Svg icon={LOGIN_GUARDIAN_TYPE_ICON[guardianItem.guardianType]} size={pTd(18)} />
-        </View>
+    <View style={[styles.itemRow, disabled && styles.disabledStyle]}>
+      <View style={[GStyles.flexRowWrap, GStyles.itemCenter, GStyles.flex1, styles.itemContent]}>
+        <View style={[GStyles.flexRowWrap, GStyles.itemCenter]}>
+          <VerifierImage size={pTd(42)} label={verifierName} uri={verifierImageUrl} />
+          <Svg
+            iconStyle={styles.loginTypeIconWrap}
+            icon={GUARDIAN_ITEM_TYPE_ICON[guardianItem.guardianType]}
+            size={pTd(42)}
+          />
 
-        <VerifierImage
-          size={pTd(32)}
-          label={guardianItem?.verifier?.name}
-          uri={guardianItem.verifier?.imageUrl}
-          style={styles.iconStyle}
-        />
+          {isVerifierReplacedByZk && (
+            <View style={styles.zkLoginWaterMarkWrap}>
+              <Image source={require('assets/image/pngs/zklogin_verifier.png')} style={styles.zkLoginWaterMarkIcon} />
+            </View>
+          )}
+        </View>
         {renderGuardianAccount()}
       </View>
       {!isButtonHide && (
@@ -309,6 +360,7 @@ export default function GuardianItem({
           approvalType={approvalType}
           authenticationInfo={authenticationInfo}
           targetChainId={targetChainId}
+          extra={extra}
         />
       )}
       {renderBtn && renderBtn(guardianItem)}
@@ -316,53 +368,44 @@ export default function GuardianItem({
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = makeStyles(theme => ({
   itemRow: {
-    height: pTd(88),
-    marginTop: pTd(8),
-    paddingBottom: pTd(8),
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: defaultColors.border6,
+    height: pTd(74),
     justifyContent: 'space-between',
     flexDirection: 'row',
     alignItems: 'center',
   },
-  itemWithoutBorder: {
-    borderBottomColor: 'transparent',
+  itemContent: {
+    paddingRight: pTd(8),
   },
-  typeText: {
-    color: defaultColors.font6,
-    fontSize: pTd(10),
-    lineHeight: pTd(16),
+  loginTypeIconWrap: {
+    marginLeft: pTd(-8),
   },
-  typeTextRow: {
-    left: 0,
-    top: 0,
-    height: pTd(16),
+  zkLoginWaterMarkWrap: {
     position: 'absolute',
-    width: 'auto',
-    paddingHorizontal: pTd(6),
-    backgroundColor: defaultColors.bg11,
-    borderTopLeftRadius: pTd(6),
-    borderBottomRightRadius: pTd(6),
+    width: '100%',
+    bottom: pTd(-7),
+    alignItems: 'center',
   },
-  iconStyle: {
-    marginLeft: pTd(-6),
+  zkLoginWaterMarkIcon: {
+    width: pTd(48),
+    height: pTd(16),
   },
+
   nameStyle: {
-    marginLeft: pTd(12),
+    marginLeft: pTd(8),
   },
-  firstNameStyle: {
-    marginBottom: pTd(2),
+  subNameText: {
+    color: theme.colors.textBase2,
   },
+
   buttonStyle: {
-    height: pTd(24),
-    minWidth: pTd(54),
+    height: pTd(40),
+    minWidth: pTd(84),
+    borderRadius: pTd(20),
   },
-  titleStyle: {
-    lineHeight: pTd(22),
-    height: pTd(24),
-    fontSize: pTd(12),
+  approvedTitleStyles: {
+    color: theme.colors.textBase3,
   },
   confirmedButtonStyle: {
     opacity: 1,
@@ -380,12 +423,4 @@ const styles = StyleSheet.create({
   disabledItemStyle: {
     opacity: 1,
   },
-  loginTypeIconWrap: {
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: defaultColors.border6,
-    backgroundColor: defaultColors.bg6,
-    width: pTd(32),
-    height: pTd(32),
-    borderRadius: pTd(16),
-  },
-});
+}));

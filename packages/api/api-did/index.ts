@@ -12,6 +12,7 @@ import discoverApi from './discover';
 import txFeeApi from './txFee';
 import imApi from './im';
 import privacyApi from './privacy';
+import sendApi from './send';
 
 import esApi from './es';
 import myServer, { DidService } from './server';
@@ -23,6 +24,9 @@ import guideApi from './guide';
 import managerApi from './manager';
 import referralApi from './referral';
 import depositApi from './deposit';
+import redPackageApi from './red-package';
+import freeMintApi from './freeMint';
+import receiveApi from './receive';
 
 export const DEFAULT_METHOD = 'POST';
 
@@ -64,6 +68,10 @@ export const EXPAND_APIS = {
   manager: managerApi,
   referral: referralApi,
   deposit: depositApi,
+  redPackage: redPackageApi,
+  freeMintApi: freeMintApi,
+  receive: receiveApi,
+  sendApi: sendApi,
 };
 
 export type BASE_REQ_TYPES = {

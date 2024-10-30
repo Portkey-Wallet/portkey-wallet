@@ -20,6 +20,8 @@ import { useThrottleCallback } from '@portkey-wallet/hooks';
 import { ICheckLimitBusiness } from '@portkey-wallet/types/types-ca/paymentSecurity';
 import { useLocationState, useNavigateState } from 'hooks/router';
 import { FromPageEnum, TTransferSettingEditLocationState } from 'types/router';
+import { getOperationDetails } from '@portkey-wallet/utils/operation.util';
+import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
 
 export default function TransferSettingsEdit() {
   const { isPrompt, isNotLessThan768 } = useCommonState();
@@ -141,10 +143,16 @@ export default function TransferSettingsEdit() {
         extra: state.extra,
       };
       setLoading(false);
+      const operationDetails = getOperationDetails(OperationTypeEnum.modifyTransferLimit, {
+        symbol: state.symbol,
+        singleLimit: restrictedTextRef.current ? timesDecimals(singleLimit, state.decimals).toFixed() : '-1',
+        dailyLimit: restrictedTextRef.current ? timesDecimals(dailyLimit, state.decimals).toFixed() : '-1',
+      });
       isPrompt
         ? navigate('/setting/wallet-security/payment-security/guardian-approval', {
             state: {
               previousPage: FromPageEnum.setTransferLimit,
+              operationDetails,
               ...params,
             },
           })
@@ -152,6 +160,7 @@ export default function TransferSettingsEdit() {
             PortkeyMessageTypes.GUARDIANS_APPROVAL_PAYMENT_SECURITY,
             JSON.stringify({
               previousPage: FromPageEnum.setTransferLimit,
+              operationDetails,
               ...params,
             }),
           ).send();

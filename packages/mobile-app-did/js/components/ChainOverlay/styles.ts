@@ -1,4 +1,4 @@
-import { defaultColors } from 'assets/theme';
+import { darkColors, defaultColors } from 'assets/theme';
 import { StyleSheet } from 'react-native';
 import { pTd } from 'utils/unit';
 
@@ -7,20 +7,23 @@ const styles = StyleSheet.create({
     marginTop: pTd(8),
   },
   itemRow: {
-    height: pTd(72),
+    height: pTd(48),
     flexDirection: 'row',
     alignItems: 'center',
-    marginLeft: pTd(20),
-    marginRight: pTd(20),
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: defaultColors.border6,
+    marginLeft: pTd(16),
+    marginRight: pTd(16),
+    // borderBottomWidth: StyleSheet.hairlineWidth,
+    // borderBottomColor: defaultColors.border6,
   },
   itemContent: {
     flex: 1,
     marginLeft: pTd(12),
-    height: pTd(72),
+    height: pTd(48),
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  chainTitle: {
+    color: darkColors.textBase1,
   },
   itemIcon: {
     position: 'absolute',

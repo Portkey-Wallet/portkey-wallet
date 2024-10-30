@@ -15,6 +15,7 @@ import { getFaviconUrl } from '@portkey-wallet/utils/dapp/browser';
 import Touchable from 'components/Touchable';
 import { useCmsBanner } from '@portkey-wallet/hooks/hooks-ca/cms/banner';
 import CarouselComponent, { CarouselItemProps } from 'components/Carousel';
+import { parseLink } from '@portkey-wallet/hooks/hooks-ca/cms/util';
 
 export function DiscoverCmsListSection() {
   const GroupList = useDiscoverGroupList();
@@ -39,7 +40,7 @@ export function DiscoverCmsListSection() {
     return dappBannerList.map(it => {
       return {
         imgUrl: getS3ImgUrl(it.imgUrl.filename_disk),
-        url: it.url,
+        appLink: parseLink(it.appLink, it.url),
       };
     });
   }, [dappBannerList, getS3ImgUrl]);

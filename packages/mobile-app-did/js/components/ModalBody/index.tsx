@@ -4,7 +4,7 @@ import { Keyboard, View, ViewProps } from 'react-native';
 import { StyleSheet } from 'react-native';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { pTd } from 'utils/unit';
-import { defaultColors } from 'assets/theme';
+import { darkColors, defaultColors } from 'assets/theme';
 import { TextXL } from 'components/CommonText';
 import Svg from 'components/Svg';
 import GStyles from 'assets/theme/GStyles';
@@ -16,8 +16,9 @@ import { ViewStyleType } from 'types/styles';
 
 export interface ModalBodyProps extends ViewProps {
   title?: string;
-  isShowLeftBackIcon?: boolean;
+  leftTitleDom?: React.ReactNode;
   preventBack?: boolean;
+  isShowLeftBackIcon?: boolean;
   isShowRightCloseIcon?: boolean;
   modalBodyType?: 'center' | 'bottom';
   style?: ViewStyleType;
@@ -37,12 +38,10 @@ export const ModalBody: React.FC<ModalBodyProps> = props => {
   const {
     modalBodyType,
     isShowRightCloseIcon = true,
-    isShowLeftBackIcon = false,
-    preventBack = false,
     title = '',
+    leftTitleDom,
     children,
     style = {},
-    onBack,
     onClose,
     bottomButtonGroup,
     onTouchStart,
@@ -54,7 +53,8 @@ export const ModalBody: React.FC<ModalBodyProps> = props => {
     return (
       <View onTouchStart={onTouchStart} style={[styles.commonBox, gStyles.overlayStyle, styles.wrapStyle, style]}>
         <View style={styles.topWrap}>
-          {isShowLeftBackIcon && (
+          <View style={styles.slot} />
+          {/* {isShowLeftBackIcon && (
             <View
               style={styles.leftIcon}
               pointerEvents="box-only"
@@ -65,10 +65,18 @@ export const ModalBody: React.FC<ModalBodyProps> = props => {
               }}>
               <Svg icon="left-arrow" size={pTd(20)} />
             </View>
+          )} */}
+          {leftTitleDom ? (
+            leftTitleDom
+          ) : (
+            <TextXL
+              suppressHighlighting={true}
+              style={[styles.titleStyle, fonts.mediumFont]}
+              onPress={Keyboard.dismiss}>
+              {title}
+            </TextXL>
           )}
-          <TextXL suppressHighlighting={true} style={[styles.titleStyle, fonts.mediumFont]} onPress={Keyboard.dismiss}>
-            {title}
-          </TextXL>
+
           {isShowRightCloseIcon && (
             <View
               style={styles.closeIcon}
@@ -78,7 +86,7 @@ export const ModalBody: React.FC<ModalBodyProps> = props => {
                 Keyboard.dismiss();
                 OverlayModal.hide();
               }}>
-              <Svg icon="close" size={pTd(12)} />
+              <Svg icon="close3" size={pTd(20)} color={darkColors.iconBase1} />
             </View>
           )}
         </View>
@@ -101,12 +109,12 @@ export const ModalBody: React.FC<ModalBodyProps> = props => {
 export const styles = StyleSheet.create({
   commonBox: {
     overflow: 'hidden',
-    borderRadius: 10,
-    backgroundColor: 'white',
+    backgroundColor: darkColors.bgBase1,
   },
   wrapStyle: {
     width: screenWidth,
   },
+
   centerBox: {
     width: screenWidth * 0.85,
   },
@@ -114,6 +122,15 @@ export const styles = StyleSheet.create({
     position: 'relative',
     paddingTop: pTd(16),
     paddingBottom: pTd(16),
+  },
+  slot: {
+    width: pTd(32),
+    height: pTd(3),
+    position: 'absolute',
+    top: pTd(6),
+    left: pTd(180.5),
+    backgroundColor: darkColors.bgBase3,
+    borderRadius: pTd(1),
   },
   leftIcon: {
     ...GStyles.paddingArg(17, 20),
@@ -123,8 +140,9 @@ export const styles = StyleSheet.create({
   },
   titleStyle: {
     lineHeight: pTd(22),
+    paddingLeft: pTd(16),
     width: '100%',
-    textAlign: 'center',
+    color: darkColors.textBase1,
   },
   closeIcon: {
     position: 'absolute',
@@ -136,6 +154,7 @@ export const styles = StyleSheet.create({
     padding: pTd(8),
     justifyContent: 'center',
     alignItems: 'center',
+    color: darkColors.iconBase1,
   },
   headerRow: {
     paddingTop: pTd(14),

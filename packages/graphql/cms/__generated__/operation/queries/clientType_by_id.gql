@@ -1,0 +1,6 @@
+query clientType_by_id($id: ID!){
+    clientType_by_id(id: $id){
+        id
+        name
+    }
+}

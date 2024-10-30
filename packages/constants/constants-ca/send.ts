@@ -38,7 +38,7 @@ export const RECEIVE_SIDE_CHAIN_TOKEN_TIP_MODAL_REMEMBER_TEXT = `Don't show this
 export const RECEIVE_SIDE_CHAIN_TOKEN_TIP_MODAL_BUTTON_TEXT = `I Know`;
 
 export const RECEIVE_MAIN_CHAIN_ELF_TIP = `If you wish to receive assets from exchanges, please switch to the "Exchanges" tab on the right.`;
-
+export const CROSS_CHAIN_INTERCEPTED_CONTENT = `The asset does not exist on the target chain, so the transfer cannot be completed.`;
 export enum ReceiveTabEnum {
   QRCode = 'QRCode',
   Exchanges = 'Exchanges',

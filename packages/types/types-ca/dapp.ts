@@ -2,10 +2,10 @@ import { CACommonState } from './store';
 import { Accounts, ChainIds, ChainsInfo, WalletName } from '@portkey/provider-types';
 import { DappStoreItem } from '@portkey-wallet/store/store-ca/dapp/type';
 import { ChainId, NetworkType } from '../index';
-import { ChainItemType } from '@portkey-wallet/store/store-ca/wallet/type';
 import { CAInfo } from './wallet';
 import { SessionInfo } from '../session';
 import { Address } from '../wallet';
+import { IChainItemType } from './chain';
 export interface IDappManager<T = CACommonState> {
   getState(): Promise<T>;
   isLogged(): Promise<boolean>;
@@ -15,7 +15,7 @@ export interface IDappManager<T = CACommonState> {
   chainId(): Promise<ChainIds>;
   chainIds(): Promise<ChainIds>;
   chainsInfo(): Promise<ChainsInfo>;
-  getChainInfo(chainId: ChainId): Promise<ChainItemType | undefined>;
+  getChainInfo(chainId: ChainId): Promise<IChainItemType | undefined>;
   addDapp(dapp: DappStoreItem): Promise<void>;
   updateDapp(dapp: DappStoreItem): Promise<void>;
   isLocked(): Promise<boolean>;

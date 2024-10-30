@@ -1,22 +1,19 @@
 import { DIGIT_CODE } from '@portkey-wallet/constants/misc';
 import GStyles from 'assets/theme/GStyles';
-import { TextM } from 'components/CommonText';
+import { TextH1, TextM } from 'components/CommonText';
 import VerifierCountdown, { VerifierCountdownInterface } from 'components/VerifierCountdown';
 import PageContainer from 'components/PageContainer';
 import DigitInput, { DigitInputInterface } from 'components/DigitInput';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { StyleSheet, Text } from 'react-native';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { VerificationType, OperationTypeEnum, VerifierInfo, VerifyStatus } from '@portkey-wallet/types/verifier';
-import GuardianItem from '../components/GuardianItem';
-import { FontStyles } from 'assets/theme/styles';
 import Loading from 'components/Loading';
 import navigationService from 'utils/navigationService';
 import CommonToast from 'components/CommonToast';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 import myEvents from 'utils/deviceEvent';
-import { useCurrentWalletInfo, useOriginChainId, useVerifyManagerAddress } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentWalletInfo, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { LoginType, ManagerInfo } from '@portkey-wallet/types/types-ca/wallet';
 import { GuardiansApproved, GuardiansStatusItem } from '../types';
 import { verification } from 'utils/api';
@@ -28,15 +25,19 @@ import {
   VERIFICATION_TO_OPERATION_MAP,
 } from '@portkey-wallet/constants/constants-ca/verifier';
 import { ChainId } from '@portkey-wallet/types';
-import { CreateAddressLoading, VERIFY_INVALID_TIME } from '@portkey-wallet/constants/constants-ca/wallet';
+import { VERIFY_INVALID_TIME } from '@portkey-wallet/constants/constants-ca/wallet';
 import { handleGuardiansApproved } from 'utils/login';
-import { checkVerifierIsInvalidCode } from '@portkey-wallet/utils/guardian';
+import {
+  checkVerifierIsInvalidCode,
+  checkVerifierIsTimeout,
+  checkVerifierIsTooManyRetries,
+} from '@portkey-wallet/utils/guardian';
 import { pTd } from 'utils/unit';
 import { useErrorMessage } from '@portkey-wallet/hooks/hooks-ca/misc';
-import { useLatestRef } from '@portkey-wallet/hooks';
 import { deleteLoginAccount } from '@portkey-wallet/utils/deleteAccount';
 import { useGetCurrentCAContract } from 'hooks/contract';
 import useLogOut from 'hooks/useLogOut';
+import { makeStyles } from '@rneui/themed';
 
 type RouterParams = {
   guardianItem?: UserGuardianItem;
@@ -46,26 +47,12 @@ type RouterParams = {
   targetChainId?: ChainId;
   accelerateChainId?: ChainId;
   autoLogin?: boolean;
+  operationDetails: string;
 };
-function TipText({ guardianAccount, isRegister }: { guardianAccount?: string; isRegister?: boolean }) {
-  const [first, last] = useMemo(() => {
-    if (!isRegister)
-      return [
-        `Please contact your guardians, and enter the ${DIGIT_CODE.length}-digit code sent to `,
-        ` within ${DIGIT_CODE.expiration} minutes.`,
-      ];
-    return [`A ${DIGIT_CODE.length}-digit code was sent to `, ` Enter it within ${DIGIT_CODE.expiration} minutes`];
-  }, [isRegister]);
-  return (
-    <TextM style={[FontStyles.font3, GStyles.marginTop(16), GStyles.marginBottom(50)]}>
-      {first}
-      <Text style={FontStyles.font4}>{guardianAccount}</Text>
-      {last}
-    </TextM>
-  );
-}
 
 export default function VerifierDetails() {
+  const styles = getStyles();
+
   const {
     guardianItem,
     requestCodeResult: paramsRequestCodeResult,
@@ -74,6 +61,7 @@ export default function VerifierDetails() {
     targetChainId,
     accelerateChainId,
     autoLogin,
+    operationDetails,
   } = useRouterParams<RouterParams>();
 
   const originChainId = useOriginChainId();
@@ -135,15 +123,16 @@ export default function VerifierDetails() {
   );
 
   const { error: codeError, setError: setCodeError } = useErrorMessage();
-  const verifyManagerAddress = useVerifyManagerAddress();
-  const latestVerifyManagerAddress = useLatestRef(verifyManagerAddress);
+  // const verifyManagerAddress = useVerifyManagerAddress();
+  // const latestVerifyManagerAddress = useLatestRef(verifyManagerAddress);
 
   const onGeneralVerify = useLockCallback(
     async (code: string) => {
       if (!requestCodeResult || !guardianItem || !code) return;
       const isRequestResult = pin && verificationType === VerificationType.register && managerAddress;
       digitInput.current?.lockInput();
-      const loadingKey = Loading.show(isRequestResult ? { text: CreateAddressLoading } : undefined, true);
+      // const loadingKey = Loading.show(isRequestResult ? { text: CreateAddressLoading } : undefined, true);
+      const loadingKey = Loading.show();
       try {
         const rst = await verification.checkVerificationCode({
           params: {
@@ -155,7 +144,8 @@ export default function VerifierDetails() {
             chainId: originChainId,
             operationType,
             targetChainId,
-            operationDetails: JSON.stringify({ manager: latestVerifyManagerAddress.current }),
+            caHash,
+            operationDetails: operationDetails,
           },
         });
         !isRequestResult && CommonToast.success('Verified Successfully');
@@ -211,9 +201,12 @@ export default function VerifierDetails() {
             break;
         }
       } catch (error) {
-        const _isInvalidCode = checkVerifierIsInvalidCode(error);
-        if (_isInvalidCode) {
-          setCodeError('', VERIFY_INVALID_TIME);
+        if (checkVerifierIsInvalidCode(error)) {
+          setCodeError('Incorrect code, please try again.', VERIFY_INVALID_TIME);
+        } else if (checkVerifierIsTimeout(error)) {
+          setCodeError('Verification code expired. Please request a new one to continue.', VERIFY_INVALID_TIME);
+        } else if (checkVerifierIsTooManyRetries(error)) {
+          setCodeError('Too many retries. Please request a new verification code to continue.', VERIFY_INVALID_TIME);
         } else {
           CommonToast.failError(error, 'Verify Fail');
         }
@@ -233,7 +226,8 @@ export default function VerifierDetails() {
       originChainId,
       operationType,
       targetChainId,
-      latestVerifyManagerAddress,
+      caHash,
+      operationDetails,
       onRequestOrSetPin,
       setGuardianStatus,
       accelerateChainId,
@@ -269,9 +263,12 @@ export default function VerifierDetails() {
         });
         await logout();
       } catch (error) {
-        const _isInvalidCode = checkVerifierIsInvalidCode(error);
-        if (_isInvalidCode) {
-          setCodeError('', VERIFY_INVALID_TIME);
+        if (checkVerifierIsInvalidCode(error)) {
+          setCodeError('Incorrect code, please try again.', VERIFY_INVALID_TIME);
+        } else if (checkVerifierIsTimeout(error)) {
+          setCodeError('Verification code expired. Please request a new one to continue.', VERIFY_INVALID_TIME);
+        } else if (checkVerifierIsTooManyRetries(error)) {
+          setCodeError('Too many retries. Please request a new verification code to continue.', VERIFY_INVALID_TIME);
         } else {
           CommonToast.failError(error, 'Verify Fail');
         }
@@ -314,6 +311,7 @@ export default function VerifierDetails() {
           chainId: originChainId,
           operationType,
           targetChainId,
+          operationDetails,
         },
       });
       if (req.verifierSessionId) {
@@ -330,15 +328,27 @@ export default function VerifierDetails() {
     digitInput.current?.unLockInput();
     digitInput.current?.reset();
     Loading.hide();
-  }, [guardianItem, operationType, originChainId, setGuardianStatus, targetChainId]);
+  }, [
+    guardianItem?.guardianAccount,
+    guardianItem?.guardianType,
+    guardianItem?.verifier?.id,
+    operationDetails,
+    operationType,
+    originChainId,
+    setGuardianStatus,
+    targetChainId,
+  ]);
 
   return (
     <PageContainer type="leftBack" titleDom containerStyles={styles.containerStyles}>
-      {guardianItem ? <GuardianItem guardianItem={guardianItem} isButtonHide /> : null}
-      <TipText
-        isRegister={!verificationType || (verificationType as VerificationType) === VerificationType.register}
-        guardianAccount={guardianItem?.guardianAccount}
-      />
+      <TextH1 style={styles.headerTitle}>{'Verify your email'}</TextH1>
+
+      <TextM style={styles.headerContent}>
+        {`${guardianItem?.verifier?.name || ''}, your assigned Guardian Verifier, has sent a verification email to `}
+        <TextM style={styles.headerContentAccount}>{`${guardianItem?.guardianAccount || ''}`}</TextM>
+        {`. Please enter the 6-digit code from the email to continue.`}
+      </TextM>
+
       <DigitInput
         ref={digitInput}
         onChangeText={() => {
@@ -347,20 +357,27 @@ export default function VerifierDetails() {
         onFinish={onFinish}
         maxLength={DIGIT_CODE.length}
         isError={codeError.isError}
+        errorMessage={codeError.errorMsg}
       />
-      <VerifierCountdown
-        isInvalidCode={codeError.isError}
-        style={GStyles.marginTop(24)}
-        onResend={resendCode}
-        ref={countdown}
-      />
+      <VerifierCountdown style={GStyles.marginTop(40)} onResend={resendCode} ref={countdown} />
     </PageContainer>
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = makeStyles(theme => ({
   containerStyles: {
-    paddingTop: pTd(8),
-    paddingHorizontal: pTd(20),
+    paddingTop: pTd(24),
+    paddingHorizontal: pTd(16),
   },
-});
+  headerTitle: {
+    marginBottom: pTd(16),
+  },
+  headerContent: {
+    lineHeight: pTd(20),
+    color: theme.colors.textBase2,
+    marginBottom: pTd(32),
+  },
+  headerContentAccount: {
+    color: theme.colors.iconBrand1,
+  },
+}));

@@ -1,17 +1,9 @@
 import React, { memo, useCallback, useMemo, useRef, useState } from 'react';
-import { Text, View, StyleSheet, ScrollView } from 'react-native';
-import PageContainer from 'components/PageContainer';
-import { defaultColors } from 'assets/theme';
-import { pTd } from 'utils/unit';
-import { TextM, TextS, TextL } from 'components/CommonText';
-import CommonButton from 'components/CommonButton';
 import ActionSheet from 'components/ActionSheet';
-import { addressFormat, formatChainInfoToShow, formatStr2EllipsisStr, handleErrorMessage } from '@portkey-wallet/utils';
+import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import { isCrossChain } from '@portkey-wallet/utils/aelf';
 import { useLanguage } from 'i18n/hooks';
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
-import GStyles from 'assets/theme/GStyles';
-import fonts from 'assets/theme/fonts';
 import { getContractBasic } from '@portkey-wallet/contracts/utils';
 import { useCurrentChain, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { usePin } from 'hooks/store';
@@ -30,51 +22,70 @@ import { useRouterEffectParams } from '@portkey-wallet/hooks/useRouterParams';
 import CommonToast from 'components/CommonToast';
 import navigationService from 'utils/navigationService';
 import Loading from 'components/Loading';
-import { IToSendPreviewParamsType } from '@portkey-wallet/types/types-ca/routeParams';
+import { IToSendPreviewParamsType, TransferType } from '@portkey-wallet/types/types-ca/routeParams';
 import { BaseToken } from '@portkey-wallet/types/types-ca/token';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
+import { getAelfTxResult } from '@portkey-wallet/utils/aelf';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { sleep } from '@portkey-wallet/utils';
-import { FontStyles } from 'assets/theme/styles';
 import { ChainId } from '@portkey-wallet/types';
-import { useGetCurrentAccountTokenPrice, useIsTokenHasPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
+import {
+  useAmountInUsdShow,
+  useGetCurrentAccountTokenPrice,
+  useIsTokenHasPrice,
+} from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { useFetchTxFee, useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
 import { useCheckTransferLimitWithJump } from 'hooks/security';
-import { useSendIMTransfer } from '@portkey-wallet/hooks/hooks-ca/im/transfer';
-import { TransferTypeEnum } from '@portkey-wallet/im';
-import { useJumpToChatDetails, useJumpToChatGroupDetails } from 'hooks/chat';
+import {
+  CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL,
+  useCrossTransferByEtransfer,
+} from '@portkey-wallet/hooks/hooks-ca/useWithdrawByETransfer';
 import { useFocusEffect } from '@react-navigation/native';
-import NFTAvatar from 'components/NFTAvatar';
-import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
 import { useAccountNFTCollectionInfo, useAccountTokenInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
 import {
   PAGE_SIZE_IN_ACCOUNT_NFT_COLLECTION,
   PAGE_SIZE_IN_ACCOUNT_TOKEN,
 } from '@portkey-wallet/constants/constants-ca/assets';
+import useGetEBridgeConfig from 'hooks/ebridge';
+import { EBridge } from '@portkey-wallet/utils/eBridge';
+import { ContractBasic as BaseContractBasic } from '@portkey/contracts';
+import SendReceivePreview, { FooterType } from 'components/SendReceivePreview';
+import { ActionType } from 'types/common';
 
 const SendPreview: React.FC = () => {
   const { t } = useLanguage();
   const isMainnet = useIsMainnet();
   const defaultToken = useDefaultToken();
-
   const routerParams = useRouterEffectParams<IToSendPreviewParamsType>();
+
   const {
     sendType,
     assetInfo,
     toInfo,
     transactionFee,
+    transactionFeeUnit,
+    networkFee,
+    networkFeeUnit,
     sendNumber,
     successNavigateName,
     guardiansApproved,
     isAutoSend = false,
-    imTransferInfo,
+    receiveAmount,
+    receiveAmountUsd,
+    crossChainFee,
+    crossChainFeeUnit,
+    transferType = TransferType.GENERAL_SAME_CHAIN,
+    targetNetwork,
   } = routerParams;
+
+  const { getAELFChainInfoConfig, getEVMChainInfoConfig, getTokenConfig } = useGetEBridgeConfig();
 
   const isApproved = useMemo(() => guardiansApproved && guardiansApproved.length > 0, [guardiansApproved]);
 
   useFetchTxFee();
   const { crossChain: crossDefaultFee } = useGetTxFee(assetInfo.chainId);
+  const amountInUsdShow = useAmountInUsdShow();
 
   const dispatch = useAppCommonDispatch();
   const pin = usePin();
@@ -82,20 +93,22 @@ const SendPreview: React.FC = () => {
 
   const { fetchAccountNFTCollectionInfoList } = useAccountNFTCollectionInfo();
   const { fetchAccountTokenInfoList } = useAccountTokenInfo();
+  const currentWallet = useCurrentWalletInfo();
 
-  const sendIMTransfer = useSendIMTransfer();
-  const jumpToChatDetails = useJumpToChatDetails();
-  const jumpToChatGroupDetails = useJumpToChatGroupDetails();
-
-  const [isLoading] = useState(false);
   const currentNetwork = useCurrentNetworkInfo();
   const caAddressInfos = useCaAddressInfoList();
   const wallet = useCurrentWalletInfo();
   const userInfo = useCurrentUserInfo();
-  const contractRef = useRef<ContractBasic>();
+  const portkeyContractRef = useRef<ContractBasic>();
   const tokenContractRef = useRef<ContractBasic>();
   const [tokenPriceObject, getTokenPrice] = useGetCurrentAccountTokenPrice();
   const isTokenHasPrice = useIsTokenHasPrice(assetInfo.symbol);
+
+  const crossTransferByEtransfer = useCrossTransferByEtransfer(pin);
+  const isSupportEtransferCross = useMemo(
+    () => CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL.includes(assetInfo.symbol),
+    [assetInfo.symbol],
+  );
 
   const isCrossChainTransfer = isCrossChain(toInfo.address, assetInfo.chainId);
   const checkTransferLimitWithJump = useCheckTransferLimitWithJump();
@@ -104,6 +117,51 @@ const SendPreview: React.FC = () => {
     () => timesDecimals(sendNumber, assetInfo.decimals).toFixed(),
     [assetInfo.decimals, sendNumber],
   );
+
+  const EstimateAmount = useMemo(() => {
+    if (ZERO.plus(sendNumber).isLessThanOrEqualTo(crossChainFee) && assetInfo.symbol === defaultToken.symbol)
+      return {
+        estimateAmount: `0 ${assetInfo?.label || assetInfo?.symbol}`,
+        estimateAmountUsd: isMainnet ? '$ 0' : '',
+      };
+
+    let _amount = sendNumber;
+    let amountUsd;
+    if (receiveAmount) _amount = receiveAmount;
+    else _amount = formatAmountShow(ZERO.plus(_amount).minus(crossChainFee), Number(defaultToken.decimals));
+
+    if (receiveAmountUsd) amountUsd = formatAmountUSDShow(receiveAmountUsd);
+    else amountUsd = amountInUsdShow(ZERO.plus(_amount).minus(crossChainFee).toFixed(), 0, assetInfo.symbol);
+
+    return {
+      estimateAmount: `${_amount} ${assetInfo.label || assetInfo.symbol}`,
+      estimateAmountUsd: isMainnet ? amountUsd : '',
+    };
+  }, [
+    amountInUsdShow,
+    assetInfo.label,
+    assetInfo.symbol,
+    crossChainFee,
+    defaultToken.decimals,
+    defaultToken.symbol,
+    isMainnet,
+    receiveAmount,
+    receiveAmountUsd,
+    sendNumber,
+  ]);
+
+  const getEstimatedTime = useCallback(() => {
+    const transferItem = targetNetwork?.serviceList?.find(ele =>
+      ele?.serviceName?.toLocaleLowerCase()?.includes('transfer'),
+    );
+    const bridgeItem = targetNetwork?.serviceList?.find(ele =>
+      ele?.serviceName?.toLocaleLowerCase()?.includes('bridge'),
+    );
+
+    if (transferType === TransferType.E_TRANSFER) return transferItem?.multiConfirmTime;
+    if (transferType === TransferType.E_BRIDGE) return bridgeItem?.multiConfirmTime;
+    return '';
+  }, [targetNetwork?.serviceList, transferType]);
 
   const showRetry = useCallback(
     (retryFunc: () => void) => {
@@ -134,19 +192,26 @@ const SendPreview: React.FC = () => {
     const account = getManagerAccount(pin);
     if (!account) return;
 
-    if (!contractRef.current) {
-      contractRef.current = await getContractBasic({
+    if (!portkeyContractRef.current) {
+      portkeyContractRef.current = await getContractBasic({
         contractAddress: chainInfo.caContractAddress,
         rpcUrl: chainInfo.endPoint,
         account,
       });
     }
 
-    const contract = contractRef.current;
+    if (!tokenContractRef.current) {
+      tokenContractRef.current = await getContractBasic({
+        contractAddress: tokenInfo.address,
+        rpcUrl: chainInfo.endPoint,
+        account,
+      });
+    }
 
+    // transfer limit check
     if (!isApproved) {
       const checkTransferLimitResult = await checkTransferLimitWithJump({
-        caContract: contract,
+        caContract: portkeyContractRef.current,
         symbol: tokenInfo.symbol,
         decimals: tokenInfo.decimals,
         amount: String(sendNumber),
@@ -164,34 +229,11 @@ const SendPreview: React.FC = () => {
       if (!checkTransferLimitResult) return;
     }
 
-    if (isCrossChainTransfer) {
-      if (!tokenContractRef.current) {
-        tokenContractRef.current = await getContractBasic({
-          contractAddress: tokenInfo.address,
-          rpcUrl: chainInfo.endPoint,
-          account,
-        });
-      }
-      const tokenContract = tokenContractRef.current;
-
-      const crossChainTransferResult = await crossChainTransfer({
-        tokenContract,
-        contract,
-        chainType: currentNetwork.walletType ?? 'aelf',
-        managerAddress: wallet.address,
-        tokenInfo: { ...assetInfo, address: assetInfo.tokenContractAddress } as unknown as BaseToken,
-        caHash: wallet.caHash || '',
-        amount,
-        crossDefaultFee,
-        toAddress: toInfo.address,
-        guardiansApproved,
-      });
-
-      console.log('crossChainTransferResult', crossChainTransferResult);
-    } else {
+    // TODO:change it
+    if (transferType === TransferType.GENERAL_SAME_CHAIN) {
       console.log('sameChainTransfers==sendHandler', tokenInfo);
       const sameTransferResult = await sameChainTransfer({
-        contract,
+        contract: portkeyContractRef.current,
         tokenInfo: {
           ...assetInfo,
           address: assetInfo?.tokenContractAddress || assetInfo?.address,
@@ -206,6 +248,71 @@ const SendPreview: React.FC = () => {
         return CommonToast.fail(sameTransferResult?.error?.message || '');
       }
       console.log('sameTransferResult', sameTransferResult);
+    } else if (transferType === TransferType.GENERAL_CROSS_CHAIN) {
+      const crossChainTransferResult = await crossChainTransfer({
+        tokenContract: tokenContractRef.current,
+        contract: portkeyContractRef.current,
+        chainType: currentNetwork.walletType ?? 'aelf',
+        managerAddress: wallet.address,
+        tokenInfo: { ...assetInfo, address: assetInfo.tokenContractAddress } as unknown as BaseToken,
+        caHash: wallet.caHash || '',
+        amount,
+        crossDefaultFee,
+        toAddress: toInfo.address,
+        guardiansApproved,
+      });
+
+      console.log('crossChainTransferResult', crossChainTransferResult);
+    } else if (transferType === TransferType.E_TRANSFER) {
+      let network = '';
+      if (toInfo.address.includes('_')) {
+        const arr = toInfo.address.split('_');
+        network = arr[arr.length - 1];
+      } else {
+        network = targetNetwork?.network || toInfo?.network || String(toInfo?.chainId);
+      }
+
+      const crossTransferByEtransferResult = await crossTransferByEtransfer.withdraw({
+        chainId: chainInfo.chainId,
+        tokenContract: tokenContractRef.current,
+        portkeyContract: portkeyContractRef.current,
+        toAddress: toInfo.address,
+        amount: String(sendNumber),
+        network,
+        tokenInfo: {
+          symbol: assetInfo.symbol,
+          decimals: Number(assetInfo.decimals),
+          address: assetInfo.tokenContractAddress,
+        },
+      });
+      console.log('crossTransferByEtransferResult', crossTransferByEtransferResult);
+      if (!crossTransferByEtransferResult?.transactionId) throw 'Transfer error';
+      const txResult = await getAelfTxResult(chainInfo.endPoint, crossTransferByEtransferResult.transactionId);
+      console.log(txResult, 'txResult===etransferCrossTransfer');
+    } else if (transferType === TransferType.E_BRIDGE) {
+      const fromChainInfo = getAELFChainInfoConfig(assetInfo.chainId);
+      const toChainInfo = getEVMChainInfoConfig(toInfo.network);
+      const tokenEBridgeInfo = getTokenConfig(assetInfo.symbol);
+      const bridge = new EBridge({
+        fromChainInfo,
+        toChainInfo,
+        tokenInfo: tokenEBridgeInfo,
+      });
+
+      if (!currentWallet.caAddress || !currentWallet.caHash) throw 'currentWallet is null';
+      const fee = bridge.getELFFee();
+      const limit = bridge.getLimit();
+      console.log('fee,limit', fee, limit);
+
+      const createReceiptResult = await bridge.createReceipt({
+        tokenContract: tokenContractRef.current as unknown as BaseContractBasic,
+        portkeyContract: portkeyContractRef.current as unknown as BaseContractBasic,
+        targetAddress: toInfo.address,
+        amount: String(sendNumber),
+        owner: currentWallet.caAddress,
+        caHash: currentWallet.caHash,
+      });
+      console.log(createReceiptResult, 'createReceiptResult===EBridge');
     }
 
     await sleep(1500);
@@ -236,18 +343,27 @@ const SendPreview: React.FC = () => {
     chainInfo,
     checkTransferLimitWithJump,
     crossDefaultFee,
+    crossTransferByEtransfer,
     currentNetwork.walletType,
+    currentWallet.caAddress,
+    currentWallet.caHash,
     fetchAccountNFTCollectionInfoList,
     fetchAccountTokenInfoList,
+    getAELFChainInfoConfig,
+    getEVMChainInfoConfig,
+    getTokenConfig,
     guardiansApproved,
     isApproved,
-    isCrossChainTransfer,
     pin,
     routerParams,
     sendNumber,
     sendType,
     successNavigateName,
+    targetNetwork?.network,
     toInfo.address,
+    toInfo.chainId,
+    toInfo.network,
+    transferType,
     wallet.address,
     wallet.caHash,
   ]);
@@ -288,73 +404,73 @@ const SendPreview: React.FC = () => {
     [assetInfo.decimals, assetInfo.symbol, assetInfo.tokenContractAddress, chainInfo, dispatch, pin, showRetry],
   );
 
-  const imSend = useCallback(async () => {
-    if (!chainInfo || !pin) return;
-    const account = getManagerAccount(pin);
-    if (!account) return;
+  // const imSend = useCallback(async () => {
+  //   if (!chainInfo || !pin) return;
+  //   const account = getManagerAccount(pin);
+  //   if (!account) return;
 
-    if (!contractRef.current) {
-      contractRef.current = await getContractBasic({
-        contractAddress: chainInfo.caContractAddress,
-        rpcUrl: chainInfo.endPoint,
-        account,
-      });
-    }
+  //   if (!contractRef.current) {
+  //     contractRef.current = await getContractBasic({
+  //       contractAddress: chainInfo.caContractAddress,
+  //       rpcUrl: chainInfo.endPoint,
+  //       account,
+  //     });
+  //   }
 
-    if (!contractRef.current || !imTransferInfo?.channelId || !imTransferInfo?.toUserId) return;
-    Loading.show();
-    try {
-      const params = {
-        channelId: imTransferInfo?.channelId || '',
-        toUserId: imTransferInfo?.toUserId || '',
-        chainId: assetInfo.chainId,
-        symbol: assetInfo.symbol,
-        amount,
-        image: '',
-        memo: '',
-        type: imTransferInfo.isGroupChat ? TransferTypeEnum.GROUP : TransferTypeEnum.P2P,
-        caContract: contractRef.current,
-        tokenContractAddress: assetInfo.tokenContractAddress,
-        toCAAddress: toInfo.address,
-        guardiansApproved,
-      };
+  //   if (!contractRef.current || !imTransferInfo?.channelId || !imTransferInfo?.toUserId) return;
+  //   Loading.show();
+  //   try {
+  //     const params = {
+  //       channelId: imTransferInfo?.channelId || '',
+  //       toUserId: imTransferInfo?.toUserId || '',
+  //       chainId: assetInfo.chainId,
+  //       symbol: assetInfo.symbol,
+  //       amount,
+  //       image: '',
+  //       memo: '',
+  //       type: imTransferInfo.isGroupChat ? TransferTypeEnum.GROUP : TransferTypeEnum.P2P,
+  //       caContract: contractRef.current,
+  //       tokenContractAddress: assetInfo.tokenContractAddress,
+  //       toCAAddress: toInfo.address,
+  //       guardiansApproved,
+  //     };
 
-      await sendIMTransfer(params);
-      CommonToast.success('Successfully sent');
-    } catch (error: any) {
-      const errorMessage = handleErrorMessage(error);
-      if (errorMessage === 'fetch exceed limit') {
-        CommonToast.warn('You can view the transfer later in the chat window.');
-      } else {
-        CommonToast.failError('Transferred failed');
-      }
-      console.log('IM send error', error);
-    } finally {
-      if (imTransferInfo.isGroupChat) {
-        await jumpToChatGroupDetails({ channelUuid: imTransferInfo.channelId });
-      } else {
-        await jumpToChatDetails({ channelUuid: imTransferInfo.channelId });
-      }
-      Loading.hide();
-    }
-  }, [
-    amount,
-    assetInfo.chainId,
-    assetInfo.symbol,
-    assetInfo.tokenContractAddress,
-    chainInfo,
-    guardiansApproved,
-    imTransferInfo?.channelId,
-    imTransferInfo?.isGroupChat,
-    imTransferInfo?.toUserId,
-    jumpToChatDetails,
-    jumpToChatGroupDetails,
-    pin,
-    sendIMTransfer,
-    toInfo.address,
-  ]);
+  //     await sendIMTransfer(params);
+  //     CommonToast.success('Successfully sent');
+  //   } catch (error: any) {
+  //     const errorMessage = handleErrorMessage(error);
+  //     if (errorMessage === 'fetch exceed limit') {
+  //       CommonToast.warn('You can view the transfer later in the chat window.');
+  //     } else {
+  //       CommonToast.failError('Transferred failed');
+  //     }
+  //     console.log('IM send error', error);
+  //   } finally {
+  //     if (imTransferInfo.isGroupChat) {
+  //       await jumpToChatGroupDetails({ channelUuid: imTransferInfo.channelId });
+  //     } else {
+  //       await jumpToChatDetails({ channelUuid: imTransferInfo.channelId });
+  //     }
+  //     Loading.hide();
+  //   }
+  // }, [
+  //   amount,
+  //   assetInfo.chainId,
+  //   assetInfo.symbol,
+  //   assetInfo.tokenContractAddress,
+  //   chainInfo,
+  //   guardiansApproved,
+  //   imTransferInfo?.channelId,
+  //   imTransferInfo?.isGroupChat,
+  //   imTransferInfo?.toUserId,
+  //   jumpToChatDetails,
+  //   jumpToChatGroupDetails,
+  //   pin,
+  //   sendIMTransfer,
+  //   toInfo.address,
+  // ]);
 
-  const GeneralSend = useCallback(async () => {
+  const send = useCallback(async () => {
     Loading.show();
     try {
       await transfer();
@@ -378,34 +494,15 @@ const SendPreview: React.FC = () => {
       } else {
         CommonToast.failError(error);
       }
+    } finally {
+      Loading.hide();
     }
-    Loading.hide();
   }, [dispatch, retryCrossChain, showRetry, transfer]);
 
-  const checkAndSend = useCallback(() => {
-    if (assetInfo.chainId !== DefaultChainId)
-      return ActionSheet.alert({
-        title: t('Send to exchange account?'),
-        message: t(
-          `Please note that assets on the SideChain can't be sent directly to exchanges. You can transfer your SideChain assets to the MainChain before sending them to your exchange account.`,
-        ),
-        buttons: [
-          {
-            type: 'outline',
-            title: 'Cancel',
-          },
-          {
-            title: t('Confirm'),
-            type: 'primary',
-            onPress: GeneralSend,
-          },
-        ],
-      });
-    GeneralSend();
-  }, [GeneralSend, assetInfo.chainId, t]);
   const onSend = useCallback(() => {
-    imTransferInfo ? imSend() : checkAndSend();
-  }, [checkAndSend, imSend, imTransferInfo]);
+    send();
+    // imTransferInfo ? imSend() : Send();
+  }, [send]);
 
   useFocusEffect(
     useCallback(() => {
@@ -424,363 +521,60 @@ const SendPreview: React.FC = () => {
     getTokenPrice(defaultToken.symbol);
   });
 
+  const isETransferOrEBridge = useMemo(() => {
+    return transferType === TransferType.E_TRANSFER || transferType === TransferType.E_BRIDGE;
+  }, [transferType]);
+
+  const footerType = useMemo(() => {
+    switch (transferType) {
+      case TransferType.E_TRANSFER:
+        return FooterType.E_TRANSFER;
+      case TransferType.E_BRIDGE:
+        return FooterType.E_BRIDGE;
+      default:
+        return undefined;
+    }
+  }, [transferType]);
+
   return (
-    <PageContainer
-      safeAreaColor={['white', 'white']}
-      titleDom={`${t('Send')}${sendType === 'token' ? ' ' + (assetInfo?.label || assetInfo?.symbol) : ''}`}
-      containerStyles={styles.pageWrap}
-      scrollViewProps={{ disabled: true }}>
-      {sendType === 'nft' ? (
-        <View style={styles.topWrap}>
-          {
-            <NFTAvatar
-              disabled
-              isSeed={assetInfo.isSeed}
-              seedType={assetInfo.seedType}
-              nftSize={pTd(64)}
-              badgeSizeType="normal"
-              data={{
-                imageUrl: assetInfo.imageUrl,
-                alias: assetInfo.alias,
-              }}
-              style={styles.img}
-            />
-          }
-          <View style={styles.topLeft}>
-            <TextL numberOfLines={1} style={[styles.nftTitle, fonts.mediumFont]}>
-              {`${assetInfo.alias} #${assetInfo?.tokenId}  `}
-            </TextL>
-            <TextS style={[FontStyles.font3]}>{`Amount: ${formatAmountShow(sendNumber, assetInfo.decimals)}`}</TextS>
-          </View>
-        </View>
-      ) : (
-        <>
-          <Text style={[styles.tokenCount, FontStyles.font5, fonts.mediumFont]}>
-            {`- ${formatAmountShow(sendNumber, assetInfo.decimals)} ${assetInfo.label || assetInfo?.symbol}`}
-          </Text>
-          {isMainnet && isTokenHasPrice && (
-            <TextM style={styles.tokenUSD}>{`- ${formatAmountUSDShow(
-              ZERO.plus(sendNumber).multipliedBy(tokenPriceObject[assetInfo.symbol]),
-            )}`}</TextM>
-          )}
-        </>
-      )}
-      <ScrollView>
-        <View style={styles.card}>
-          {/* From */}
-          <View style={styles.section}>
-            <View style={[styles.flexSpaceBetween]}>
-              <TextM style={styles.lightGrayFontColor}>{t('From')}</TextM>
-              <TextM style={styles.blackFontColor}>{userInfo?.nickName}</TextM>
-            </View>
-            <View style={[styles.flexSpaceBetween]}>
-              <TextM style={styles.lightGrayFontColor} />
-              <TextS style={styles.lightGrayFontColor}>
-                {formatStr2EllipsisStr(addressFormat(wallet?.[assetInfo?.chainId]?.caAddress, assetInfo.chainId))}
-              </TextS>
-            </View>
-          </View>
-          <Text style={[styles.divider, styles.marginTop0]} />
-          {/* To */}
-          <View style={styles.section}>
-            <View style={[styles.flexSpaceBetween]}>
-              <TextM style={[styles.lightGrayFontColor]}>{t('To')}</TextM>
-              <View style={styles.alignItemsEnd}>
-                {toInfo?.name && <TextM style={[styles.blackFontColor]}>{toInfo?.name}</TextM>}
-                <TextS style={styles.lightGrayFontColor}>{formatStr2EllipsisStr(toInfo?.address)}</TextS>
-              </View>
-            </View>
-          </View>
-          <Text style={[styles.divider, styles.marginTop0]} />
-          {/* more Info */}
-          <View style={styles.section}>
-            <View style={[styles.flexSpaceBetween]}>
-              <TextM style={[styles.lightGrayFontColor]}>{t('Network')}</TextM>
-              <TextM style={[styles.blackFontColor, GStyles.alignEnd]}>
-                {formatChainInfoToShow(assetInfo.chainId)}
-              </TextM>
-            </View>
-            <View style={[styles.flexSpaceBetween]}>
-              <TextM style={styles.blackFontColor} />
-              <TextM style={[styles.blackFontColor, GStyles.alignEnd]}>{`→${networkInfoShow(toInfo?.address)}`}</TextM>
-            </View>
-          </View>
-
-          <Text style={[styles.divider, styles.marginTop0]} />
-          {/* transaction Fee */}
-          <View style={styles.section}>
-            <View style={[styles.flexSpaceBetween]}>
-              <TextM style={[styles.blackFontColor, styles.fontBold]}>{t('Transaction Fee')}</TextM>
-              <TextM
-                style={[styles.blackFontColor, styles.fontBold]}>{`${transactionFee} ${defaultToken.symbol}`}</TextM>
-            </View>
-            {isMainnet && (
-              <View>
-                <TextM />
-                <TextS style={[styles.blackFontColor, styles.lightGrayFontColor, GStyles.alignEnd]}>{`$ ${unitConverter(
-                  ZERO.plus(transactionFee).multipliedBy(tokenPriceObject[defaultToken.symbol]),
-                )}`}</TextS>
-              </View>
-            )}
-          </View>
-
-          {isCrossChainTransfer && (
-            <>
-              <Text style={[styles.divider, styles.marginTop0]} />
-              <View style={styles.section}>
-                <View style={[styles.flexSpaceBetween]}>
-                  <TextM style={[styles.blackFontColor, styles.fontBold, styles.leftEstimatedTitle]}>
-                    {t('Estimated CrossChain Transfer')}
-                  </TextM>
-                  <View>
-                    <TextM style={[styles.blackFontColor, styles.fontBold, GStyles.alignEnd]}>{`${unitConverter(
-                      crossDefaultFee,
-                    )} ${defaultToken.symbol}`}</TextM>
-                    {isMainnet ? (
-                      <TextS
-                        style={[
-                          styles.blackFontColor,
-                          styles.lightGrayFontColor,
-                          GStyles.alignEnd,
-                        ]}>{`$ ${unitConverter(
-                        ZERO.plus(crossDefaultFee).multipliedBy(tokenPriceObject[defaultToken.symbol]),
-                      )}`}</TextS>
-                    ) : (
-                      <TextM />
-                    )}
-                  </View>
-                </View>
-              </View>
-              <Text style={[styles.divider, styles.marginTop0]} />
-            </>
-          )}
-          {isCrossChainTransfer && assetInfo.symbol === defaultToken.symbol && (
-            <View style={styles.section}>
-              <View style={[styles.flexSpaceBetween]}>
-                <TextM style={[styles.blackFontColor, styles.fontBold, styles.leftTitle, GStyles.alignEnd]}>
-                  {t('Estimated amount received')}
-                </TextM>
-                <View>
-                  <TextM style={[styles.blackFontColor, styles.fontBold, GStyles.alignEnd]}>
-                    {ZERO.plus(sendNumber).isLessThanOrEqualTo(ZERO.plus(crossDefaultFee))
-                      ? '0'
-                      : formatAmountShow(
-                          ZERO.plus(sendNumber).minus(ZERO.plus(crossDefaultFee)),
-                          defaultToken.decimals,
-                        )}{' '}
-                    {defaultToken.symbol}
-                  </TextM>
-                  {isMainnet ? (
-                    <TextS style={[styles.blackFontColor, styles.lightGrayFontColor, GStyles.alignEnd]}>{`${
-                      ZERO.plus(sendNumber).isLessThanOrEqualTo(ZERO.plus(crossDefaultFee))
-                        ? '$ 0'
-                        : formatAmountUSDShow(
-                            ZERO.plus(sendNumber)
-                              .minus(ZERO.plus(crossDefaultFee))
-                              .times(tokenPriceObject[defaultToken.symbol]),
-                          )
-                    }`}</TextS>
-                  ) : (
-                    <TextM />
-                  )}
-                </View>
-              </View>
-            </View>
-          )}
-        </View>
-      </ScrollView>
-
-      <View style={styles.buttonWrapStyle}>
-        <CommonButton loading={isLoading} title={t('Send')} type="primary" onPress={onSend} />
-      </View>
-    </PageContainer>
+    <SendReceivePreview
+      actionType={ActionType.SEND}
+      footerType={footerType}
+      NFTInfo={
+        sendType === 'nft'
+          ? {
+              isSeed: assetInfo.isSeed,
+              seedType: assetInfo.seedType,
+              imageUrl: assetInfo.imageUrl,
+              alias: assetInfo.alias,
+              collectionName: assetInfo.collectionName,
+              tokenId: assetInfo.tokenId,
+            }
+          : undefined
+      }
+      amount={`${formatAmountShow(sendNumber, assetInfo.decimals)} ${assetInfo.label || assetInfo?.symbol}`}
+      amountUSD={`${formatAmountUSDShow(ZERO.plus(sendNumber).multipliedBy(tokenPriceObject[assetInfo.symbol]))}`}
+      toAddress={toInfo?.address}
+      toInfoChainId={toInfo?.chainId}
+      destinationNetwork={networkInfoShow(toInfo?.address)}
+      destinationNetworkImageUrl={targetNetwork?.imageUrl}
+      transactionFee={!isETransferOrEBridge ? `${transactionFee} ${defaultToken.symbol}` : ''}
+      transactionFeeUSD={
+        !isETransferOrEBridge
+          ? `$ ${unitConverter(ZERO.plus(transactionFee || '').multipliedBy(tokenPriceObject[defaultToken.symbol]))}`
+          : ''
+      }
+      estimatedNetworkFee={isETransferOrEBridge ? `${networkFee} ${networkFeeUnit}` : ''}
+      estimatedNetworkFeeUSD={
+        isETransferOrEBridge
+          ? `$ ${unitConverter(ZERO.plus(networkFee || '').multipliedBy(tokenPriceObject[networkFeeUnit || '']))}`
+          : ''
+      }
+      amountToReceive={EstimateAmount.estimateAmount}
+      amountToReceiveUSD={EstimateAmount.estimateAmountUsd}
+      estimatedDuration={getEstimatedTime()}
+    />
   );
 };
 
 export default memo(SendPreview);
-
-export const styles = StyleSheet.create({
-  pageWrap: {
-    backgroundColor: defaultColors.bg1,
-    flex: 1,
-  },
-  topWrap: {
-    width: '100%',
-    marginTop: pTd(40),
-    ...GStyles.flexRowWrap,
-  },
-  img: {
-    width: pTd(64),
-    height: pTd(64),
-    borderRadius: pTd(6),
-    marginRight: pTd(16),
-  },
-  noImg: {
-    overflow: 'hidden',
-    width: pTd(64),
-    height: pTd(64),
-    borderRadius: pTd(6),
-    backgroundColor: defaultColors.bg7,
-    fontSize: pTd(54),
-    lineHeight: pTd(64),
-    textAlign: 'center',
-    color: defaultColors.font7,
-    marginRight: pTd(16),
-  },
-  topLeft: {
-    ...GStyles.flexCol,
-    justifyContent: 'center',
-  },
-  nftTitle: {
-    color: defaultColors.font5,
-    marginBottom: pTd(4),
-    paddingRight: pTd(8),
-    maxWidth: pTd(230),
-  },
-  tokenCount: {
-    marginTop: pTd(40),
-    fontSize: pTd(28),
-    width: '100%',
-    textAlign: 'center',
-  },
-  tokenUSD: {
-    color: defaultColors.font3,
-    width: '100%',
-    textAlign: 'center',
-    marginTop: pTd(4),
-  },
-  group: {
-    backgroundColor: defaultColors.bg1,
-    marginTop: pTd(24),
-    paddingLeft: pTd(16),
-    paddingRight: pTd(16),
-    borderRadius: pTd(6),
-  },
-  buttonWrapStyle: {
-    justifyContent: 'flex-end',
-    paddingBottom: pTd(12),
-    paddingTop: pTd(12),
-  },
-  errorMessage: {
-    lineHeight: pTd(16),
-    color: defaultColors.error,
-    marginTop: pTd(4),
-    paddingLeft: pTd(8),
-  },
-  wrap: {
-    height: pTd(56),
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  borderTop: {
-    borderTopColor: defaultColors.border6,
-    borderTopWidth: StyleSheet.hairlineWidth,
-  },
-  title: {
-    flex: 1,
-    color: defaultColors.font3,
-  },
-  tokenNum: {
-    textAlign: 'right',
-    color: defaultColors.font5,
-  },
-  usdtNum: {
-    marginLeft: pTd(6),
-    marginTop: pTd(4),
-    color: defaultColors.font3,
-    textAlign: 'right',
-  },
-  notELFWrap: {
-    height: pTd(84),
-    alignItems: 'flex-start',
-    paddingTop: pTd(18),
-    paddingBottom: pTd(18),
-  },
-  totalWithUSD: {
-    marginTop: pTd(12),
-    display: 'flex',
-    justifyContent: 'flex-end',
-    flexDirection: 'row',
-  },
-  flexSpaceBetween: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    width: '100%',
-    lineHeight: pTd(20),
-  },
-  titles1: {
-    marginTop: pTd(56),
-  },
-  values1: {
-    marginTop: pTd(4),
-  },
-  divider: {
-    marginTop: pTd(24),
-    width: '100%',
-    height: StyleSheet.hairlineWidth,
-    backgroundColor: defaultColors.border6,
-  },
-  titles2: {
-    marginTop: pTd(25),
-  },
-  values2: {
-    marginTop: pTd(4),
-  },
-  card: {
-    marginTop: pTd(40),
-    borderRadius: pTd(6),
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: defaultColors.border1,
-    width: '100%',
-  },
-  section: {
-    ...GStyles.paddingArg(16, 12),
-  },
-  marginTop16: {
-    marginTop: pTd(16),
-  },
-  marginTop4: {
-    marginTop: pTd(4),
-  },
-  marginTop0: {
-    marginTop: 0,
-  },
-  marginLeft8: {
-    marginLeft: pTd(8),
-  },
-  space: {
-    flex: 1,
-  },
-  button: {
-    marginBottom: pTd(30),
-  },
-  lightGrayFontColor: {
-    color: defaultColors.font3,
-  },
-  blackFontColor: {
-    color: defaultColors.font5,
-  },
-  fontBold: {
-    ...fonts.mediumFont,
-  },
-  greenFontColor: {
-    color: defaultColors.font10,
-  },
-  alignItemsCenter: {
-    alignItems: 'center',
-  },
-  alignItemsEnd: {
-    alignItems: 'flex-end',
-  },
-  leftTitle: {
-    width: pTd(120),
-    lineHeight: pTd(20),
-  },
-  leftEstimatedTitle: {
-    width: pTd(180),
-  },
-});

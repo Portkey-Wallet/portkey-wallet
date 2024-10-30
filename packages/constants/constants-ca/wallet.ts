@@ -10,7 +10,7 @@ export const InitLoginLoading = 'Initiating social recovery';
 export const DEFAULT_TOKEN = {
   address: 'JRmBduh4nXWi1aXgdUsj5gJrzeZb2LxmrAbf7W99faZSvoAaE',
   decimals: '8',
-  imageUrl: 'https://portkey-did.s3.ap-northeast-1.amazonaws.com/img/aelf_token_logo.png',
+  imageUrl: 'https://portkey-did.s3.ap-northeast-1.amazonaws.com/img/aelf/Coin-ELF.png',
   name: 'AELF',
   symbol: 'ELF',
 };
@@ -18,6 +18,8 @@ export const DEFAULT_TOKEN = {
 export const InitialTxFee = {
   ach: 0.0041,
   crossChain: 0.0041,
+
+  etransfer: 0.01,
   max: 0.0041,
   redPackage: 0.009,
 };

@@ -14,6 +14,7 @@ import {
   getDiscoverTabList,
   getDiscoverEarnList,
   getDiscoverLearnGroupList,
+  getDappWhiteListCustom,
 } from '@portkey-wallet/graphql/cms/queries';
 import {
   IEntrance,
@@ -23,6 +24,7 @@ import {
   TDiscoverLearnGroupList,
   TDiscoverTabList,
   TTokenDetailBannerItemType,
+  TWhiteListDappList,
 } from '@portkey-wallet/types/types-ca/cms';
 
 export const getSocialMediaAsync = createAsyncThunk<Required<Pick<CMSState, 'socialMediaListNetMap'>>, NetworkType>(
@@ -176,6 +178,8 @@ export const getHomeBannerListAsync = createAsyncThunk<Required<Pick<CMSState, '
             imgUrl: ele?.portkeyCard_id?.imgUrl,
             index: ele?.portkeyCard_id?.index,
             url: ele?.portkeyCard_id?.url,
+            appLink: ele?.portkeyCard_id?.appLink,
+            extensionLink: ele?.portkeyCard_id?.extensionLink,
           }))
           ?.sort((a, b) => Number(a.index) - Number(b.index)) as TBaseCardItemType[];
       }
@@ -206,6 +210,8 @@ export const getDiscoverDappBannerAsync = createAsyncThunk<
         ?.map(ele => ({
           index: ele?.portkeyCard_id?.index,
           url: ele?.portkeyCard_id?.url,
+          appLink: ele?.portkeyCard_id?.appLink,
+          extensionLink: ele?.portkeyCard_id?.extensionLink,
           imgUrl: {
             filename_disk: ele?.portkeyCard_id?.imgUrl?.filename_disk,
           },
@@ -238,6 +244,8 @@ export const getDiscoverLearnBannerAsync = createAsyncThunk<
         ?.map(ele => ({
           index: ele?.portkeyCard_id?.index,
           url: ele?.portkeyCard_id?.url,
+          appLink: ele?.portkeyCard_id?.appLink,
+          extensionLink: ele?.portkeyCard_id?.extensionLink,
           imgUrl: {
             filename_disk: ele?.portkeyCard_id?.imgUrl?.filename_disk,
           },
@@ -276,6 +284,8 @@ export const getTokenDetailBannerAsync = createAsyncThunk<
           ?.map(ele => ({
             index: ele?.portkeyCard_id?.index,
             url: ele?.portkeyCard_id?.url,
+            appLink: ele?.portkeyCard_id?.appLink,
+            extensionLink: ele?.portkeyCard_id?.extensionLink,
             imgUrl: {
               filename_disk: ele?.portkeyCard_id?.imgUrl?.filename_disk,
             },
@@ -388,6 +398,28 @@ export const getDiscoverLearnAsync = createAsyncThunk<
     throw new Error('getDiscoverLearnAsync error');
   }
 });
+
+export const getDappWhiteListAsync = createAsyncThunk<Required<Pick<CMSState, 'dappWhiteListMap'>>, NetworkType>(
+  'cms/getDappWhiteListAsync',
+  async (network: NetworkType) => {
+    let returnList: TWhiteListDappList = [];
+
+    try {
+      const result = await getDappWhiteListCustom(network, {});
+      returnList = result?.data?.dappList.map(item => item.domainName || '') || [];
+
+      console.log('getDappWhiteListAsync list ', returnList);
+
+      return {
+        dappWhiteListMap: {
+          [network]: returnList,
+        },
+      };
+    } catch (error) {
+      throw new Error('getDiscoverLearnAsync error');
+    }
+  },
+);
 
 export const setEntrance = createAction<{
   network: NetworkType;

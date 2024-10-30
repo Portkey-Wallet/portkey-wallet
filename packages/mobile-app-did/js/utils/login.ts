@@ -14,13 +14,8 @@ export function queryFailAlert(callBack: () => void, isRecovery?: boolean, isRes
         title: isRecovery ? 'Re-login' : 'Re-register',
         onPress: () => {
           callBack();
-          if (isRecovery) {
-            if (isReset) navigationService.reset('LoginPortkey');
-            else navigationService.navigate('LoginPortkey');
-          } else {
-            if (isReset) navigationService.reset([{ name: 'LoginPortkey' }, { name: 'SignupPortkey' }]);
-            else navigationService.navigate('SignupPortkey');
-          }
+          if (isReset) navigationService.reset('LoginPortkey');
+          else navigationService.navigate('LoginPortkey');
         },
       },
     ],
@@ -39,5 +34,5 @@ export function handleGuardiansApproved(guardiansStatus: GuardiansStatus, userGu
         type: LoginType[guardian?.guardianType as LoginType],
       };
     })
-    .filter(item => item.signature && item.verificationDoc);
+    .filter(item => (item.signature && item.verificationDoc) || item.zkLoginInfo);
 }

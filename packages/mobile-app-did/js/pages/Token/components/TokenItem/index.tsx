@@ -1,68 +1,71 @@
-import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import { StyleSheet, View } from 'react-native';
-import { defaultColors } from 'assets/theme';
 import React from 'react';
 import { TextL, TextS } from 'components/CommonText';
 import { pTd } from 'utils/unit';
 import Svg from 'components/Svg';
 import CommonSwitch from 'components/CommonSwitch';
 import CommonAvatar from 'components/CommonAvatar';
-import { formatChainInfoToShow } from '@portkey-wallet/utils';
-import { FontStyles } from 'assets/theme/styles';
-import { NetworkType } from '@portkey-wallet/types';
-import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import Touchable from 'components/Touchable';
 import GStyles from 'assets/theme/GStyles';
+import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { darkColors } from 'assets/theme';
 
 type TokenItemProps = {
-  networkType: NetworkType;
   item: TokenItemShowType;
   onHandleToken: (item: TokenItemShowType, isDisplay: boolean) => void;
 };
 
-const TokenItem = ({ networkType, item, onHandleToken }: TokenItemProps) => {
-  const symbolImages = useSymbolImages();
-  const defaultToken = useDefaultToken();
+const TokenItem = ({ item, onHandleToken }: TokenItemProps) => {
+  const { currentNetwork } = useWallet();
 
   return (
     // if not touchable, can not scroll
 
-    <Touchable style={itemStyle.wrap} key={`${item.symbol}${item.address}${item.chainId}}`}>
-      <CommonAvatar
-        hasBorder
-        shapeType="circular"
-        title={item.symbol}
-        svgName={item.symbol === defaultToken.symbol ? 'testnet' : undefined}
-        imageUrl={item.imageUrl || symbolImages[item.symbol]}
-        avatarSize={pTd(48)}
-        style={itemStyle.left}
-        titleStyle={FontStyles.font11}
-        borderStyle={GStyles.hairlineBorder}
-      />
+    <Touchable style={itemStyle.wrap}>
+      <View style={itemStyle.iconWrap}>
+        <CommonAvatar
+          hasBorder
+          style={itemStyle.tokenIcon}
+          title={item?.symbol}
+          avatarSize={pTd(40)}
+          imageUrl={item?.imageUrl}
+          borderStyle={GStyles.hairlineBorder}
+        />
+        <CommonAvatar
+          hasBorder={true}
+          style={itemStyle.chainIcon}
+          title={item?.displayChainName}
+          avatarSize={pTd(20)}
+          imageUrl={item?.chainImageUrl}
+          borderStyle={itemStyle.tokenIconBorder}
+        />
+      </View>
 
       <View style={itemStyle.right}>
         <View>
           <TextL numberOfLines={1} ellipsizeMode={'tail'}>
             {item.label || item.symbol}
           </TextL>
-          <TextS numberOfLines={1} ellipsizeMode={'tail'} style={[FontStyles.font3]}>
-            {`${formatChainInfoToShow(item.chainId, networkType)}`}
+          <TextS numberOfLines={1} ellipsizeMode={'tail'}>
+            {`${item.displayChainName || ''} ${currentNetwork === 'TESTNET' && 'Testnet'}`}
           </TextS>
         </View>
 
-        {item.isDefault ? (
-          <Svg icon="lock" size={pTd(20)} iconStyle={itemStyle.addedStyle} />
-        ) : (
-          <Touchable
-            onPress={() => {
-              onHandleToken(item, !!item.isAdded);
-            }}>
-            <View pointerEvents="none">
-              <CommonSwitch value={!!item.isAdded} />
-            </View>
-          </Touchable>
-        )}
+        <View style={itemStyle.rightIcon}>
+          {item.isDefault ? (
+            <Svg icon="lock" size={pTd(20)} />
+          ) : (
+            <Touchable
+              onPress={() => {
+                onHandleToken(item, !!item.isAdded);
+              }}>
+              <View pointerEvents="none">
+                <CommonSwitch value={!!item.isAdded} />
+              </View>
+            </Touchable>
+          )}
+        </View>
       </View>
     </Touchable>
   );
@@ -72,7 +75,7 @@ export default TokenItem;
 
 const itemStyle = StyleSheet.create({
   wrap: {
-    height: pTd(72),
+    height: pTd(74),
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -80,6 +83,25 @@ const itemStyle = StyleSheet.create({
   },
   left: {
     marginLeft: pTd(16),
+  },
+  iconWrap: {
+    width: pTd(45),
+    height: pTd(42),
+    position: 'relative',
+  },
+  tokenIcon: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+  },
+  tokenIconBorder: {
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: darkColors.borderBase1,
+  },
+  chainIcon: {
+    position: 'absolute',
+    right: 0,
+    bottom: 0,
   },
   right: {
     height: pTd(72),
@@ -90,10 +112,9 @@ const itemStyle = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    borderBottomColor: defaultColors.border6,
-    borderBottomWidth: StyleSheet.hairlineWidth,
   },
-  addedStyle: {
-    marginRight: pTd(14),
+  rightIcon: {
+    marginTop: pTd(16),
+    alignSelf: 'flex-start',
   },
 });

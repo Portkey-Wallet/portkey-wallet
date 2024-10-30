@@ -1,26 +1,25 @@
-import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
-import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
-import { formatChainInfoToShow } from '@portkey-wallet/utils';
+import { darkColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import fonts from 'assets/theme/fonts';
 import { FontStyles } from 'assets/theme/styles';
 import CommonAvatar from 'components/CommonAvatar';
-import { TextL, TextS } from 'components/CommonText';
+import { TextL } from 'components/CommonText';
 import React, { useMemo } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { pTd } from 'utils/unit';
 
 export interface TokenTitleProps {
-  tokenInfo: TokenItemShowType;
+  imageUrl?: string;
+  symbol: string;
+  label?: string;
 }
 
-export const TokenTitle: React.FC<TokenTitleProps> = ({ tokenInfo }) => {
+export const TokenTitle: React.FC<TokenTitleProps> = ({ imageUrl, symbol, label }) => {
   const symbolImages = useSymbolImages();
-  const defaultToken = useDefaultToken(tokenInfo.chainId);
   const iconImg = useMemo(() => {
-    return tokenInfo?.imageUrl ?? symbolImages[tokenInfo?.symbol] ?? '';
-  }, [symbolImages, tokenInfo?.imageUrl, tokenInfo?.symbol]);
+    return imageUrl ?? symbolImages[symbol] ?? '';
+  }, [imageUrl, symbol, symbolImages]);
 
   return (
     <View>
@@ -28,20 +27,14 @@ export const TokenTitle: React.FC<TokenTitleProps> = ({ tokenInfo }) => {
         <CommonAvatar
           hasBorder
           style={styles.mainTitleIcon}
-          title={tokenInfo.symbol}
-          avatarSize={pTd(18)}
-          svgName={tokenInfo?.symbol === defaultToken.symbol ? 'testnet' : undefined}
+          title={symbol}
+          avatarSize={pTd(24)}
           imageUrl={iconImg}
           titleStyle={Object.assign({}, FontStyles.font11, { fontSize: pTd(12) })}
           borderStyle={GStyles.hairlineBorder}
         />
-        <TextL style={[GStyles.textAlignCenter, FontStyles.font16, fonts.mediumFont]}>
-          {tokenInfo.label || tokenInfo.symbol}
-        </TextL>
+        <TextL style={[GStyles.textAlignCenter, styles.titleText, fonts.mediumFont]}>{label || symbol}</TextL>
       </View>
-      <TextS style={[GStyles.textAlignCenter, FontStyles.font11, styles.subTitle]}>
-        {formatChainInfoToShow(tokenInfo.chainId)}
-      </TextS>
     </View>
   );
 };
@@ -54,11 +47,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   mainTitleIcon: {
-    height: pTd(18),
-    width: pTd(18),
-    marginRight: 4,
+    height: pTd(24),
+    width: pTd(24),
+    marginRight: pTd(8),
   },
-  subTitle: {
-    fontSize: pTd(12),
+  titleText: {
+    color: darkColors.textBase1,
   },
 });

@@ -20,6 +20,8 @@ import { FlatListFooterLoading } from 'components/FlatListFooterLoading';
 import { ListLoadingEnum } from 'constants/misc';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { FlashList } from '@shopify/flash-list';
+import { showActivityDetail } from 'components/ActivityOverlay';
+import { darkColors } from 'assets/theme';
 
 interface RouterParams {
   chainId?: string;
@@ -72,22 +74,16 @@ const ActivityListPage = () => {
 
   const renderItem = useCallback(({ item, index }: { item: ActivityItemType; index: number }) => {
     const preItem = currentActivityRef.current?.data[index - 1];
-    return (
-      <ActivityItem
-        preItem={preItem}
-        item={item}
-        index={index}
-        onPress={() => navigationService.navigate('ActivityDetail', item)}
-      />
-    );
+    return <ActivityItem preItem={preItem} item={item} index={index} onPress={() => showActivityDetail(item)} />;
   }, []);
 
   const isEmpty = useMemo(() => (currentActivity?.data || []).length === 0, [currentActivity?.data]);
 
   return (
     <PageContainer
+      hideHeader
       titleDom={t('Activity')}
-      safeAreaColor={['white', 'white']}
+      safeAreaColor={['black', 'black']}
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}>
       <FlashList
@@ -122,6 +118,7 @@ export const pageStyles = StyleSheet.create({
   pageWrap: {
     paddingLeft: 0,
     paddingRight: 0,
+    backgroundColor: darkColors.bgBase1,
   },
   noResult: {},
 });

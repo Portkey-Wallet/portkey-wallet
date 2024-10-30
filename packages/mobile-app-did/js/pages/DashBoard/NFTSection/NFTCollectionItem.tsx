@@ -77,7 +77,7 @@ export default function NFTItem(props: NFTItemPropsType) {
     if (!isFetching) return [];
 
     const count = itemCount - showChildren?.length >= 9 ? 9 : itemCount - showChildren?.length;
-    return new Array(count).fill('-');
+    return count > 0 ? new Array(count).fill('-') : [];
   }, [isFetching, itemCount, showChildren?.length]);
 
   return (

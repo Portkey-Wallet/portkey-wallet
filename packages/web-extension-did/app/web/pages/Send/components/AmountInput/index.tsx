@@ -11,6 +11,7 @@ export default function AmountInput({
   errorMsg,
   onChange,
   getTranslationInfo,
+  getEtransferwithdrawInfo,
   setErrorMsg,
 }: {
   fromAccount: { address: string; AESEncryptPrivateKey: string };
@@ -20,7 +21,8 @@ export default function AmountInput({
   token: BaseToken;
   errorMsg: string;
   onChange: (params: { amount: string; balance: string }) => void;
-  getTranslationInfo: (v: string) => void;
+  getTranslationInfo: (num: string) => any;
+  getEtransferwithdrawInfo: (params: { amount: string }) => Promise<string>;
   setErrorMsg: (v: string) => void;
 }) {
   return type === 'token' ? (
@@ -32,6 +34,7 @@ export default function AmountInput({
       errorMsg={errorMsg}
       onChange={onChange}
       getTranslationInfo={getTranslationInfo}
+      getEtransferwithdrawInfo={getEtransferwithdrawInfo}
       setErrorMsg={setErrorMsg}
     />
   ) : (

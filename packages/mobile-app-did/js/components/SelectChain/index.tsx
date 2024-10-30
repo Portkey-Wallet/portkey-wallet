@@ -4,17 +4,17 @@ import Svg from 'components/Svg';
 import { pTd } from 'utils/unit';
 import ListItem from 'components/ListItem';
 import GStyles from 'assets/theme/GStyles';
-import { defaultColors } from 'assets/theme';
+import { darkColors, defaultColors } from 'assets/theme';
 import { ChainId, NetworkType } from '@portkey-wallet/types';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import ChainOverlay from 'components/ChainOverlay';
-import { ChainItemType } from '@portkey-wallet/store/store-ca/wallet/type';
 import { useCurrentNetwork } from '@portkey-wallet/hooks/hooks-ca/network';
+import { IChainItemType } from '@portkey-wallet/types/types-ca/chain';
 
 interface SelectChainProps {
   currentNetwork: NetworkType;
   chainId: ChainId;
-  chainList: ChainItemType[];
+  chainList: IChainItemType[];
   onChainPress: (chainId: ChainId) => void;
 }
 
@@ -23,10 +23,12 @@ const SelectChain: React.FC<SelectChainProps> = ({ currentNetwork, chainId, chai
 
   const _chainList = useMemo(
     () =>
-      chainList.map(ele => ({
-        ...ele,
-        customChainName: formatChainInfoToShow(ele.chainId, currentNetwork),
-      })),
+      chainList
+        .map(ele => ({
+          ...ele,
+          customChainName: formatChainInfoToShow(ele.chainId, currentNetwork),
+        }))
+        .reverse(),
     [chainList, currentNetwork],
   );
   const onPressItem = useCallback(() => {
@@ -43,14 +45,11 @@ const SelectChain: React.FC<SelectChainProps> = ({ currentNetwork, chainId, chai
   return (
     <ListItem
       onPress={onPressItem}
-      titleLeftElement={
-        networkType === 'MAINNET' ? <Svg icon="mainnet" size={pTd(28)} /> : <Svg icon="testnet" size={pTd(28)} />
-      }
       titleStyle={[GStyles.flexRowWrap, GStyles.itemCenter]}
       titleTextStyle={styles.chainSelectTitleStyle}
       style={styles.selectedItem}
       title={formatChainInfoToShow(chainId, currentNetwork)}
-      rightElement={<Svg size={pTd(16)} icon="right-arrow" color={defaultColors.icon1} />}
+      rightElement={<Svg size={pTd(16)} icon="down-arrow" color={darkColors.iconBase1} />}
     />
   );
 };
@@ -69,11 +68,11 @@ const styles = StyleSheet.create({
     lineHeight: pTd(20),
   },
   chainSelectTitleStyle: {
-    marginLeft: pTd(8),
     fontSize: pTd(14),
+    color: darkColors.textBase1,
   },
   selectedItem: {
     borderRadius: pTd(6),
-    height: pTd(56),
+    height: pTd(40),
   },
 });

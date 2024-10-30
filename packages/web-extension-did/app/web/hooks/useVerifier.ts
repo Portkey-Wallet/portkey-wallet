@@ -16,6 +16,7 @@ import { LoginInfo } from 'store/reducers/loginCache/type';
 import singleMessage from 'utils/singleMessage';
 import { useNavigateState } from './router';
 import { FromPageEnum, TVerifierAccountLocationState } from 'types/router';
+import { getOperationDetails } from '@portkey-wallet/utils/operation.util';
 
 /**
  * Provides two verification processes
@@ -50,6 +51,9 @@ const useCheckVerifier = () => {
             verifierId: verifierItem.id,
             chainId: DefaultChainId,
             operationType: OperationTypeEnum.register,
+            operationDetails: getOperationDetails(OperationTypeEnum.register, {
+              verifyManagerAddress: managerAddress,
+            }),
           },
         });
         setLoading(false);
@@ -83,7 +87,7 @@ const useCheckVerifier = () => {
         singleMessage.error(_error);
       }
     },
-    [dispatch, navigate, setLoading],
+    [dispatch, managerAddress, navigate, setLoading],
   );
 
   const verifyToken = useVerifyToken();
@@ -96,7 +100,10 @@ const useCheckVerifier = () => {
         if (!verifierItem?.id || !verifierItem?.name) return singleMessage.error('Can not get verification');
 
         const rst = await verifyToken(loginAccount.loginType, {
-          accessToken: loginAccount.authenticationInfo?.[loginAccount.guardianAccount || ''],
+          accessToken: loginAccount.authenticationInfo?.[loginAccount.guardianAccount || ''] as string,
+          idToken: loginAccount?.authenticationInfo?.idToken as string,
+          nonce: loginAccount?.authenticationInfo?.nonce as string,
+          timestamp: loginAccount?.authenticationInfo?.timestamp as number,
           id: loginAccount.guardianAccount,
           verifierId: verifierItem.id,
           chainId: originChainId,
@@ -107,6 +114,7 @@ const useCheckVerifier = () => {
             verifierId: verifierItem.id as string,
             verificationDoc: rst.verificationDoc,
             signature: rst.signature,
+            zkLoginInfo: rst.zkLoginInfo,
           }),
         );
         const res = await InternalMessage.payload(PortkeyMessageTypes.CHECK_WALLET_STATUS).send();

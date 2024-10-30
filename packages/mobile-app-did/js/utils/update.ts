@@ -150,7 +150,7 @@ export class CodePushOperator extends EventEmitter implements ICodePushOperator 
           messageStyle: { textAlign: 'left' },
           title: info.updatedTitle || '',
           message: info.updatedContent,
-          buttons: [{ title: 'I Know' }],
+          buttons: [{ title: 'OK' }],
         });
       }
     } catch (error) {
@@ -210,7 +210,7 @@ export class CodePushOperator extends EventEmitter implements ICodePushOperator 
       },
     });
     ActionSheet.alert({
-      title: 'The download is complete. Is the update immediate?',
+      title: 'The latest version is downloaded. You can update Portkey now.',
       buttons,
     });
   }

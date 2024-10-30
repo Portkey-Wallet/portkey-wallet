@@ -1,9 +1,15 @@
 .base-drawer {
-  .@{app-prefix}-drawer-header {
-    padding: 0;
-    border: none;
-  }
-  .@{app-prefix}-drawer-body {
-    padding: 0;
+  .@{app-prefix}-drawer-content { 
+    min-width: 360px;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    .@{app-prefix}-drawer-header {
+      padding: 0;
+      border: none;
+    }
+    .@{app-prefix}-drawer-body {
+      height: 100%;
+      padding: 0;
+    }
   }
 }

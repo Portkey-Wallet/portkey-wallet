@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
   },
   suffixWrap: {
     marginRight: pTd(4),
-    color: defaultColors.font3,
+    color: defaultColors.neutralTertiaryText,
   },
   svgWrap: {
     position: 'relative',

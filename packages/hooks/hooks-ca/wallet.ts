@@ -16,6 +16,7 @@ import {
   fetchShouldShowSetNewWalletNameIcon,
   setNewWalletName,
   cancelSetNewWalletNameModal,
+  setAvatarAction,
 } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { DeviceInfoType } from '@portkey-wallet/types/types-ca/device';
 import { extraDataListDecode } from '@portkey-wallet/utils/device';
@@ -218,6 +219,23 @@ export const useSetUserInfo = () => {
       dispatch(setNickNameAndAvatarAction({ ...params, networkType: networkInfo.networkType }));
     },
     [dispatch, networkInfo],
+  );
+};
+
+export const useSetUserAvatar = () => {
+  const dispatch = useAppCommonDispatch();
+  const networkInfo = useCurrentNetworkInfo();
+  return useCallback(
+    async (avatar: string) => {
+      await request.wallet.editHolderInfo({
+        baseURL: networkInfo.apiUrl,
+        params: {
+          avatar,
+        },
+      });
+      dispatch(setAvatarAction({ avatar, networkType: networkInfo.networkType }));
+    },
+    [dispatch, networkInfo.apiUrl, networkInfo.networkType],
   );
 };
 

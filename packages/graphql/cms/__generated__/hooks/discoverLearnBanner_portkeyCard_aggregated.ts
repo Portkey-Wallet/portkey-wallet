@@ -23,50 +23,50 @@ export type DiscoverLearnBanner_PortkeyCard_AggregatedQuery = {
     countAll?: number | null;
     count?: {
       __typename?: 'discoverLearnBanner_portkeyCard_aggregated_count';
-      id?: number | null;
       discoverLearnBanner_id?: number | null;
+      id?: number | null;
       portkeyCard_id?: number | null;
     } | null;
     countDistinct?: {
       __typename?: 'discoverLearnBanner_portkeyCard_aggregated_count';
-      id?: number | null;
       discoverLearnBanner_id?: number | null;
+      id?: number | null;
       portkeyCard_id?: number | null;
     } | null;
     avg?: {
       __typename?: 'discoverLearnBanner_portkeyCard_aggregated_fields';
-      id?: number | null;
       discoverLearnBanner_id?: number | null;
+      id?: number | null;
       portkeyCard_id?: number | null;
     } | null;
     sum?: {
       __typename?: 'discoverLearnBanner_portkeyCard_aggregated_fields';
-      id?: number | null;
       discoverLearnBanner_id?: number | null;
+      id?: number | null;
       portkeyCard_id?: number | null;
     } | null;
     avgDistinct?: {
       __typename?: 'discoverLearnBanner_portkeyCard_aggregated_fields';
-      id?: number | null;
       discoverLearnBanner_id?: number | null;
+      id?: number | null;
       portkeyCard_id?: number | null;
     } | null;
     sumDistinct?: {
       __typename?: 'discoverLearnBanner_portkeyCard_aggregated_fields';
-      id?: number | null;
       discoverLearnBanner_id?: number | null;
+      id?: number | null;
       portkeyCard_id?: number | null;
     } | null;
     min?: {
       __typename?: 'discoverLearnBanner_portkeyCard_aggregated_fields';
-      id?: number | null;
       discoverLearnBanner_id?: number | null;
+      id?: number | null;
       portkeyCard_id?: number | null;
     } | null;
     max?: {
       __typename?: 'discoverLearnBanner_portkeyCard_aggregated_fields';
-      id?: number | null;
       discoverLearnBanner_id?: number | null;
+      id?: number | null;
       portkeyCard_id?: number | null;
     } | null;
   }>;
@@ -94,43 +94,43 @@ export const DiscoverLearnBanner_PortkeyCard_AggregatedDocument = gql`
       group
       countAll
       count {
-        id
         discoverLearnBanner_id
+        id
         portkeyCard_id
       }
       countDistinct {
-        id
         discoverLearnBanner_id
+        id
         portkeyCard_id
       }
       avg {
-        id
         discoverLearnBanner_id
+        id
         portkeyCard_id
       }
       sum {
-        id
         discoverLearnBanner_id
+        id
         portkeyCard_id
       }
       avgDistinct {
-        id
         discoverLearnBanner_id
+        id
         portkeyCard_id
       }
       sumDistinct {
-        id
         discoverLearnBanner_id
+        id
         portkeyCard_id
       }
       min {
-        id
         discoverLearnBanner_id
+        id
         portkeyCard_id
       }
       max {
-        id
         discoverLearnBanner_id
+        id
         portkeyCard_id
       }
     }

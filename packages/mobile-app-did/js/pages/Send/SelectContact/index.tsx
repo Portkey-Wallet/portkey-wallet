@@ -122,6 +122,7 @@ export default function SelectContact(props: SelectContactProps) {
         ) : (
           <ContactsList
             isReadOnly
+            isTransaction
             style={styles.contactWrap}
             isIndexBarShow={false}
             isSearchShow={false}

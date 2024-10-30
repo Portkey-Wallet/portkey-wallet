@@ -7,6 +7,7 @@ import { parseInputNumberChange } from '@portkey-wallet/utils/input';
 import ThrottleButton from 'components/ThrottleButton';
 import { ALLOWANCE_HEADER_NO_NAME, SET_ALLOWANCE_MULTIPLY_TIP } from '@portkey-wallet/constants/constants-ca/allowance';
 import { isNFT } from '@portkey-wallet/utils/token';
+import CustomSvg, { SvgType } from 'components/CustomSvg';
 import './index.less';
 
 export interface IBaseSetAllowanceProps {
@@ -17,6 +18,7 @@ export interface IBaseSetAllowanceProps {
   max?: string | number;
   batchApproveNFT?: boolean;
   dappInfo?: { icon?: string; href?: string; name?: string };
+  defaultIcon?: SvgType;
 }
 
 export interface IAllowanceConfirmProps {
@@ -38,6 +40,7 @@ export default function SetAllowance({
   amount,
   decimals,
   dappInfo,
+  defaultIcon,
   symbol,
   className,
   recommendedAmount = 0,
@@ -71,12 +74,14 @@ export default function SetAllowance({
   return (
     <div className={clsx('set-allowance-page-wrapper', className)}>
       <div className="flex-center set-allowance-dapp-info">
-        {(dappInfo?.href || dappInfo?.icon) && (
+        {dappInfo?.href || dappInfo?.icon ? (
           <div className="set-allowance-dapp-info-inner">
             {dappInfo.icon && <img className="set-allowance-dapp-icon" src={dappInfo.icon} />}
             {dappInfo.href && <span className="set-allowance-dapp-href">{dappInfo.href}</span>}
           </div>
-        )}
+        ) : defaultIcon ? (
+          <CustomSvg type={defaultIcon} className="dapp-default-icon" />
+        ) : null}
       </div>
       <div className="set-allowance-header flex-column">
         <div className="text-center set-allowance-title">

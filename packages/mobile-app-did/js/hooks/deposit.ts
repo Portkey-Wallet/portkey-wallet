@@ -87,6 +87,11 @@ const DepositModalMapRaw = {
     description: 'You will be directed to a third-party DApp: AwakenSwap',
     icon: 'awaken-swap-round',
   },
+  eForest: {
+    title: 'Forest',
+    description: 'You will be directed to a third-party DApp: Forest',
+    icon: 'forest',
+  },
 };
 
 export type DepositModalMapType = { [key in keyof typeof DepositModalMapRaw]: ModalDescribe };

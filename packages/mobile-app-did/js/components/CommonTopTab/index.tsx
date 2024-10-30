@@ -1,10 +1,10 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, { memo, ReactElement } from 'react';
-import { StyleSheet, TouchableOpacity, Text, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, Text, View, StyleProp, ViewStyle } from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { pTd } from 'utils/unit';
-import { defaultColors } from 'assets/theme';
+import { defaultColors, darkColors } from 'assets/theme';
 import fonts from 'assets/theme/fonts';
 import { useThrottleCallback } from '@portkey-wallet/hooks';
 
@@ -20,12 +20,21 @@ export type CommonTopTabProps = {
   initialRouteName?: string;
   tabItemStyleProps?: any;
   tabList: TabItemTypes[];
+  tabContainerStyle?: StyleProp<ViewStyle>;
+  isBlockTab?: boolean;
 };
 
 const Tab = createMaterialTopTabNavigator();
 
 const CommonTopTab: React.FC<CommonTopTabProps> = props => {
-  const { tabList, initialRouteName, hasTabBarBorderRadius, swipeEnabled = false, hasBottomBorder = true } = props;
+  const {
+    tabList,
+    initialRouteName,
+    hasTabBarBorderRadius,
+    swipeEnabled = false,
+    hasBottomBorder = true,
+    tabContainerStyle = {},
+  } = props;
 
   return (
     <Tab.Navigator
@@ -36,6 +45,7 @@ const CommonTopTab: React.FC<CommonTopTabProps> = props => {
           {...prop}
           hasTabBarBorderRadius={hasTabBarBorderRadius}
           hasBottomBorder={hasBottomBorder}
+          containerStyle={tabContainerStyle}
         />
       )}
       screenOptions={{
@@ -57,12 +67,16 @@ const CustomizedTopTabBar = ({
   navigation,
   hasTabBarBorderRadius = false,
   hasBottomBorder = false,
+  isBlockTab = false,
+  containerStyle = {},
 }: {
   state: { routes: any[]; index: number };
   descriptors: any;
   navigation: any;
   hasTabBarBorderRadius?: boolean;
   hasBottomBorder?: boolean;
+  isBlockTab?: boolean;
+  containerStyle?: StyleProp<ViewStyle>;
 }) => {
   const onPress = useThrottleCallback(
     (name, params) => {
@@ -76,6 +90,7 @@ const CustomizedTopTabBar = ({
     <View
       style={[
         toolBarStyle.container,
+        containerStyle,
         hasBottomBorder ? styles.bottomBorder : {},
         hasTabBarBorderRadius ? styles.radiusTarBarStyle : {},
       ]}>
@@ -96,19 +111,23 @@ const CustomizedTopTabBar = ({
             onPress={() => onPress(route.name, route.params)}
             disabled={isFocused}
             key={label}
-            style={[toolBarStyle.label, { paddingRight: index !== state.routes.length - 1 ? pTd(32) : 0 }]}>
-            <View
-              style={isFocused ? { borderBottomColor: defaultColors.primaryColor, borderBottomWidth: pTd(2.5) } : {}}>
-              <Text
-                style={[
-                  toolBarStyle.labelText,
-                  {
-                    color: isFocused ? defaultColors.font16 : defaultColors.font11,
-                  },
-                ]}>
-                {label}
-              </Text>
-            </View>
+            style={[
+              toolBarStyle.label,
+              isBlockTab && toolBarStyle.blockTab,
+              isBlockTab && isFocused && toolBarStyle.selectedBlockTab,
+              isBlockTab
+                ? { marginRight: index !== state.routes.length - 1 ? pTd(10) : 0 }
+                : { paddingRight: index !== state.routes.length - 1 ? pTd(32) : 0 },
+            ]}>
+            <Text
+              style={[
+                toolBarStyle.labelText,
+                {
+                  color: isFocused ? defaultColors.white : darkColors.textBase2,
+                },
+              ]}>
+              {label}
+            </Text>
           </TouchableOpacity>
         );
       })}
@@ -143,12 +162,19 @@ const toolBarStyle = StyleSheet.create({
   container: {
     flexDirection: 'row',
     paddingHorizontal: pTd(16),
+    height: pTd(54),
+    alignItems: 'center',
   },
   label: {},
+  blockTab: {
+    padding: pTd(8),
+    borderRadius: pTd(8),
+  },
+  selectedBlockTab: {
+    backgroundColor: darkColors.bgBase2,
+  },
   labelText: {
     fontSize: pTd(16),
     lineHeight: pTd(24),
-    paddingVertical: pTd(8),
-    ...fonts.mediumFont,
   },
 });

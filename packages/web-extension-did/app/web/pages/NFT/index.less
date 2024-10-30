@@ -9,6 +9,9 @@
 
   .nft-detail-body {
     background: @neutral-default-bg;
+    .more-icon {
+      transform: rotate(90deg);
+    }
   }
 
   .collection {
@@ -204,3 +207,25 @@
     }
   }
 }
+
+.nft-detail-popover {
+  top: 35px !important;
+  left: 250px !important;
+  &.nft-detail-popover-popup {
+    left: 180px !important;
+  }
+  .portkey-popover-inner {
+    min-width: 170px;
+    border-radius: 6px;
+    box-shadow: 0 2px 12px 0 @shadow-1;
+    .portkey-popover-inner-content {
+      padding: 6px 16px;
+      .popover-menu-list .menu-item {
+        .menu-item-container {
+          min-width: 130px;
+        }
+      }
+    }
+  }
+}
+

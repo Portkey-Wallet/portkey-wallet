@@ -3,8 +3,7 @@ import { useCallback } from 'react';
 import { GestureResponderEvent } from 'react-native';
 import { measurePageY } from 'utils/measure';
 import { pTd } from 'utils/unit';
-import FloatOverlay from '.';
-import { ShowChatPopoverParams } from './Popover';
+import { ShowChatPopoverParams, showFloatPopover } from './Popover';
 
 export const useOnTouchAndPopUp = (params: Pick<ShowChatPopoverParams, 'list'>) => {
   const onTouchAndPopUp = useCallback(
@@ -12,7 +11,7 @@ export const useOnTouchAndPopUp = (params: Pick<ShowChatPopoverParams, 'list'>) 
       const { list } = params;
       const { pageY } = event.nativeEvent;
       const top = await measurePageY(event.target);
-      FloatOverlay.showFloatPopover({
+      showFloatPopover({
         list,
         formatType: 'dynamicWidth',
         customPosition: { right: pTd(8), top: (top || pageY) + 30 },

@@ -1,0 +1,128 @@
+@import '../../../assets/theme/constants.less';
+
+.crypto-gifts-detail {
+  width: 100%;
+  height: 100%;
+  min-width: 360px;
+  max-width: 440px;
+  .common-header {
+    .common-header-right-icon-wrap {
+      .custom-svg.sharecopy-icon {
+        width: 28px;
+        height: 28px;
+      }
+    }
+  }
+  .crypto-gifts-detail-container {
+    overflow: auto;
+    background-color: @neutral-default-bg;
+    .crypto-gifts-info {
+      .custom-svg {
+        width: 172px;
+        height: 120px;
+        svg {
+          width: 100%;
+          height: 100%;
+        }
+      }
+      .blessing {
+        margin: 8px 24px 32px;
+        font-size: 16px;
+        line-height: 24px;
+        font-weight: 500;
+        word-break: break-all;
+        color: @neutral-primary-text;
+      }
+    }
+    .divide {
+      width: 100%;
+      height: 8px;
+      background-color: @neutral-container-bg;
+    }
+    .crypto-gifts-claimed-info {
+      gap: 16px;
+      padding: 16px 12px;
+      min-height: 302px;
+      .claimed-status {
+        padding-bottom: 8px;
+        font-size: 14px;
+        line-height: 20px;
+        color: @neutral-tertiary-text;
+        border-bottom: 1px solid @neutral-divider;
+      }
+      .claimed-info {
+        gap: 12px;
+        .claimed-info-icon {
+          flex-shrink: 0;
+          width: 48px;
+          height: 48px;
+          border-radius: 50%;
+          background-color: @neutral-divider;
+          .lockfilledicon-icon {
+            width: 20px;
+            height: 20px;
+            svg {
+              width: 100%;
+              height: 100%;
+            }
+          }
+        }
+        .claimed-info-detail {
+          gap: 4px;
+          .claimed-info-top {
+            gap: 12px;
+            font-size: 16px;
+            line-height: 22px;
+            font-weight: 500;
+            color: @neutral-primary-text;
+            .top-left {
+              gap: 2px;
+              min-width: 140px;
+              .claimed-name {
+                word-break: break-all;
+                .text-overflow(1)
+              }
+              .claimed-flag {
+                flex-shrink: 0;
+                padding: 1px 4px;
+                font-size: 10px;
+                line-height: 12px;
+                font-weight: 500;
+                border-radius: 3px;
+                color: @neutral-white-text;
+                background-color: @brand-normal;
+              }
+            }
+            .top-right {
+              text-align: right;
+              word-break: break-all;
+              .text-overflow(1)
+            }
+          }
+          .claimed-info-bottom {
+            gap: 12px;
+            font-size: 14px;
+            line-height: 20px;
+            color: @neutral-tertiary-text;
+            .luckiest-status {
+              gap: 2px;
+              color: @functional-warning-default;
+              .luckiest-icon {
+                flex-shrink: 0;
+              }
+            }
+          }
+        }
+      }
+      .load-more-hidden {
+        .adm-infinite-scroll {
+          display: none;
+        }
+      }
+    }
+  }
+  &.prompt-page {
+    height: calc(100vh - 72px - 24px);
+    background-color: @neutral-default-bg;
+  }
+}

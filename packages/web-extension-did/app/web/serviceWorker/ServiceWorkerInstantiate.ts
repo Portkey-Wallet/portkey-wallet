@@ -179,6 +179,9 @@ export default class ServiceWorkerInstantiate {
       case PortkeyMessageTypes.ADD_GUARDIANS:
         ServiceWorkerInstantiate.expandAddGuardians(message.payload);
         break;
+      case PortkeyMessageTypes.CRYPTO_GIFT:
+        ServiceWorkerInstantiate.expandCryptoGift();
+        break;
       case PortkeyMessageTypes.GUARDIANS_VIEW:
         ServiceWorkerInstantiate.expandGuardiansView();
         break;
@@ -341,6 +344,15 @@ export default class ServiceWorkerInstantiate {
       {
         method: PromptRouteTypes.ADD_GUARDIANS,
         search: payload,
+      },
+      'tabs',
+    );
+  }
+
+  static expandCryptoGift() {
+    notificationService.openPrompt(
+      {
+        method: PromptRouteTypes.CRYPTO_GIFT,
       },
       'tabs',
     );

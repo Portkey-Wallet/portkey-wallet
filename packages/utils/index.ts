@@ -170,14 +170,14 @@ export const handleErrorCode = (error: any) => {
  */
 export const formatChainInfoToShow = (
   chainId: ChainId = 'AELF',
-  networkType?: NetworkType,
+  _networkType?: NetworkType,
   chainType: ChainType = 'aelf',
 ): string => {
   if (chainType !== 'aelf') return chainType;
-  if (typeof networkType === 'string')
-    return `${chainId === 'AELF' ? 'MainChain' : 'SideChain'} ${chainId} ${networkType === 'MAINNET' ? '' : 'Testnet'}`;
+  // if (typeof networkType === 'string')
+  //   return `${chainId === 'AELF' ? 'MainChain' : 'SideChain'} ${chainId} ${networkType === 'MAINNET' ? '' : 'Testnet'}`;
 
-  return `${chainId === 'AELF' ? 'MainChain' : 'SideChain'} ${chainId}`;
+  return `${chainId === 'AELF' ? 'aelf MainChain' : 'aelf dAppChain'}`;
 };
 
 /**
@@ -219,12 +219,13 @@ export const formatAddress2NoPrefix = (address: string): string => {
  */
 export const isMainNet = (network: NetworkType): boolean => network === 'MAINNET';
 
-export const getAddressChainId = (toAddress: string, defaultChainId: ChainId) => {
+export const getAddressChainId = (toAddress: string, defaultChainId?: ChainId) => {
   if (!toAddress.includes('_')) return defaultChainId;
   const arr = toAddress.split('_');
+
   const addressChainId = arr[arr.length - 1];
   // no suffix
-  if (isAelfAddress(addressChainId)) {
+  if (isAelfAddress(addressChainId) && defaultChainId) {
     return defaultChainId;
   }
   return addressChainId;
@@ -261,6 +262,7 @@ export const handleLoopFetch = async <T>({
 }): Promise<T> => {
   try {
     const result = await fetch();
+    console.log('wfs=== handleLoopFetch result', result);
     if (checkIsContinue) {
       const isContinue = checkIsContinue(result);
       if (!isContinue) return result;
@@ -310,7 +312,17 @@ export const formatNameWithRules = (
   });
   return result;
 };
-
+const DEFAULT_USER_ID = '00000000-0000-0000-0000-000000000000';
+export function isValidUserId(id?: string): boolean {
+  if (!id) {
+    return false;
+  }
+  return id !== DEFAULT_USER_ID;
+}
+export function checkIsCipherText(input: string): boolean {
+  const sha256Regex = /^[a-zA-Z0-9=]+$/;
+  return sha256Regex.test(input);
+}
 export enum FormatNameRuleList {
   NO_BRACKETS = 'NO_BRACKETS',
   NO_UNDERLINE = 'NO_UNDERLINE',

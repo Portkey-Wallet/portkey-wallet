@@ -80,10 +80,11 @@ export default memo(
 
     const bookmarkInfo = useMemo(() => {
       return {
-        title: getCmsWebsiteInfoName(item.url || ''),
         imageUrl: getCmsWebsiteInfoImageUrl(item.url || ''),
+        title: getCmsWebsiteInfoName(item.url || '') || item?.name || '',
+        url: item.url || '',
       };
-    }, [getCmsWebsiteInfoImageUrl, getCmsWebsiteInfoName, item.url]);
+    }, [getCmsWebsiteInfoImageUrl, getCmsWebsiteInfoName, item.name, item.url]);
 
     return (
       <ScaleDecorator activeScale={1.05}>
@@ -99,7 +100,7 @@ export default memo(
               {EditDom}
               <DiscoverWebsiteImage imageUrl={bookmarkInfo.imageUrl} size={pTd(40)} style={styles.websiteIconStyle} />
               <View style={styles.infoWrap}>
-                <TextWithProtocolIcon title={bookmarkInfo?.title} url={bookmarkInfo?.imageUrl} textFontSize={pTd(16)} />
+                <TextWithProtocolIcon title={bookmarkInfo?.title} url={bookmarkInfo?.url} textFontSize={pTd(16)} />
                 <TextS style={[FontStyles.font7]} numberOfLines={1} ellipsizeMode="tail">
                   {item?.url}
                 </TextS>

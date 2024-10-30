@@ -17,7 +17,6 @@ import MarketItemSkeleton from './components/MarketItemSkeleton';
 export default function MarketSection() {
   const { marketInfo, refreshing, refreshList, handleType, handleSort } = useMarket();
   const flatListRef = useRef<FlatList>(null);
-  console.log('wfs marketInfo===', marketInfo);
   const renderItem = useCallback(({ item }: { item: ICryptoCurrencyItem; index: number }) => {
     return <MarketItem isLoading={false} item={item} />;
   }, []);

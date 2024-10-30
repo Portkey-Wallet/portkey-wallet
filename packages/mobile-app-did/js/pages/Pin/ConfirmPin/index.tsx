@@ -2,11 +2,12 @@ import { PIN_SIZE } from '@portkey-wallet/constants/misc';
 import PageContainer from 'components/PageContainer';
 import { DigitInputInterface } from 'components/DigitInput';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import navigationService from 'utils/navigationService';
 import { useAppDispatch } from 'store/hooks';
 import { changePin, createWallet } from '@portkey-wallet/store/store-ca/wallet/actions';
 import CommonToast from 'components/CommonToast';
+import CommonPrompt from 'components/CommonPromptCard';
 import { setCredentials } from 'store/user/actions';
 import { useUser } from 'hooks/store';
 import { setSecureStoreItem } from '@portkey-wallet/utils/mobile/biometric';
@@ -19,12 +20,13 @@ import { VerificationType, VerifierInfo } from '@portkey-wallet/types/verifier';
 import useBiometricsReady from 'hooks/useBiometrics';
 import PinContainer from 'components/PinContainer';
 import { GuardiansApproved } from 'pages/Guardian/types';
-import { StyleSheet } from 'react-native';
+import { makeStyles } from '@rneui/themed';
 import { useLanguage } from 'i18n/hooks';
 import { sendScanLoginSuccess } from '@portkey-wallet/api/api-did/message/utils';
 import { changeCanLock } from 'utils/LockManager';
 import { VERIFY_INVALID_TIME } from '@portkey-wallet/constants/constants-ca/wallet';
 import { useErrorMessage } from '@portkey-wallet/hooks/hooks-ca/misc';
+
 type RouterParams = {
   oldPin?: string;
   pin?: string;
@@ -36,6 +38,7 @@ type RouterParams = {
 };
 
 export default function ConfirmPin() {
+  const styles = getStyles();
   const { t } = useLanguage();
   const { walletInfo } = useCurrentWallet();
   const {
@@ -64,13 +67,15 @@ export default function ConfirmPin() {
         dispatch(setCredentials({ pin: newPin }));
         CommonToast.success(t('Modified Successfully'));
       } catch (error) {
-        CommonToast.failError(error);
+        CommonPrompt.failError(error);
       }
       changeCanLock(true);
       navigationService.navigate('AccountSettings');
     },
     [biometrics, dispatch, oldPin, t],
   );
+
+  const [isKeypadShow, setIsKeypadShow] = useState(true);
   const onFinish = useCallback(
     async (confirmPin: string) => {
       if (managerInfo?.verificationType === VerificationType.addManager) {
@@ -83,6 +88,7 @@ export default function ConfirmPin() {
           navigationService.reset('Tab');
         }
       } else {
+        setIsKeypadShow(false);
         onManagerAddressAndQueryResult({
           managerInfo: managerInfo as ManagerInfo,
           confirmPin,
@@ -118,7 +124,7 @@ export default function ConfirmPin() {
 
       if (confirmPin !== pin) {
         pinRef.current?.reset();
-        setTextError('Pins do not match', VERIFY_INVALID_TIME);
+        setTextError('Incorrect PIN, please try again.', VERIFY_INVALID_TIME);
         return;
       }
 
@@ -132,7 +138,7 @@ export default function ConfirmPin() {
     <PageContainer
       titleDom
       type="leftBack"
-      backTitle={oldPin ? 'Change Pin' : undefined}
+      backTitle={oldPin ? 'Change PIN' : undefined}
       onGestureStartCallback={() => {
         myEvents.clearSetPin.emit('clearSetPin');
       }}
@@ -145,16 +151,17 @@ export default function ConfirmPin() {
       <PinContainer
         showHeader
         ref={pinRef}
-        title="Confirm Pin"
+        title="Confirm your PIN"
         errorMessage={textError.errorMsg}
         onChangeText={onChangeText}
+        isKeypadShow={isKeypadShow}
       />
     </PageContainer>
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = makeStyles(_theme => ({
   container: {
     flex: 1,
   },
-});
+}));

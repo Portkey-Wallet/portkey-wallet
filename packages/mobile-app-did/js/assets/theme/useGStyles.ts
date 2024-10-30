@@ -19,7 +19,7 @@ export const useGStyles = makeStyles(theme => {
       paddingBottom: !isIOS ? 20 : undefined,
     },
     overlayStyle: {
-      height: windowHeight - pTd(isIOS ? 68 : 100),
+      maxHeight: windowHeight - pTd(isIOS ? 68 : 100),
     },
   };
 });

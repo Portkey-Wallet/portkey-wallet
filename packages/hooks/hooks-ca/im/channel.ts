@@ -33,6 +33,7 @@ import useLockCallback from '../../useLockCallback';
 import { useIMPin } from './pin';
 import { getSendUuid } from '@portkey-wallet/utils/chat';
 import { PIN_OPERATION_TYPE_ENUM } from '@portkey-wallet/im/types/pin';
+import useBotSendingStatus from './useBotSendingStatus';
 
 export type ImageMessageFileType = {
   body: string | File;
@@ -500,7 +501,7 @@ export const useChannelMessageList = (channelId: string) => {
   };
 };
 
-export const useChannel = (channelId: string, channelType?: ChannelTypeEnum) => {
+export const useChannel = (channelId: string, channelType?: ChannelTypeEnum, isBot?: boolean) => {
   const { networkType } = useCurrentNetworkInfo();
   const dispatch = useAppCommonDispatch();
 
@@ -517,6 +518,8 @@ export const useChannel = (channelId: string, channelType?: ChannelTypeEnum) => 
   const { list, next, hasNext, init, loading } = useChannelMessageList(channelId);
   const listRef = useRef(list);
   listRef.current = list;
+
+  const { changeToRepliedStatus } = useBotSendingStatus(info?.toRelationId || '');
 
   const connectHandler = useCallback(
     async (e: any) => {
@@ -579,6 +582,9 @@ export const useChannel = (channelId: string, channelType?: ChannelTypeEnum) => 
   useEffectOnce(() => {
     const { remove: removeMsgObserver } = im.registerChannelMsgObserver(channelId, e => {
       updateListRef.current(e);
+      if (isBot) {
+        changeToRepliedStatus();
+      }
     });
     const { remove: removeConnectObserver } = im.registerConnectObserver(e => {
       connectHandlerRef.current(e);

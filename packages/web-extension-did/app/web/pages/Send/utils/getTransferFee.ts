@@ -1,5 +1,4 @@
 import { DEFAULT_TOKEN } from '@portkey-wallet/constants/constants-ca/wallet';
-import { ChainItemType } from '@portkey-wallet/store/store-ca/wallet/type';
 import { ChainType } from '@portkey-wallet/types';
 import { BaseToken } from '@portkey-wallet/types/types-ca/token';
 import { isCrossChain } from '@portkey-wallet/utils/aelf';
@@ -7,6 +6,7 @@ import { divDecimalsStr } from '@portkey-wallet/utils/converter';
 import getTransactionFee from 'utils/sandboxUtil/getTransactionFee';
 import { isEqAddress } from '@portkey-wallet/utils/aelf';
 import { ZERO } from '@portkey-wallet/constants/misc';
+import { IChainItemType } from '@portkey-wallet/types/types-ca/chain';
 
 const getTransferFee = async ({
   caAddress,
@@ -22,7 +22,7 @@ const getTransferFee = async ({
 }: {
   caAddress: string;
   managerAddress: string;
-  chainInfo: ChainItemType;
+  chainInfo: IChainItemType;
   chainType: ChainType;
   privateKey: string;
   toAddress: string;

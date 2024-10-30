@@ -35,6 +35,8 @@ import { InsufficientTransactionFee } from 'hooks/useCalculateRedPacketFee';
 import { useAppRampEntryShow } from 'hooks/ramp';
 import { AssetType } from '@portkey-wallet/constants/constants-ca/assets';
 import NFTAvatar from 'components/NFTAvatar';
+import { checkEnabledFunctionalTypes } from '@portkey-wallet/utils/compass';
+import { useUpdateAssetInfo } from 'hooks/useGetSymbolBalance';
 
 export type PaymentAssetInfo = {
   symbol: string;
@@ -103,12 +105,11 @@ const PaymentModal = ({
     if (assetMap?.[chainId]) return assetMap?.[chainId];
     return accountAssetList.find(ele => ele.symbol === assetInfo.symbol);
   }, [accountAssetList, assetInfo.symbol, assetMap, chainId]);
+  const updateAssetInfo = useUpdateAssetInfo(chainId, assetInfo, currentAssetInfo);
 
   const { isBuySectionShow } = useAppRampEntryShow();
-  const isCanBuy = useMemo(
-    () => assetInfo.symbol === defaultToken.symbol && isBuySectionShow,
-    [assetInfo.symbol, defaultToken.symbol, isBuySectionShow],
-  );
+  const { buy } = checkEnabledFunctionalTypes(assetInfo.symbol, chainId === 'AELF');
+  const isCanBuy = useMemo(() => buy && isBuySectionShow, [buy, isBuySectionShow]);
 
   // update AccountTokenList
   useEffectOnce(() => {
@@ -153,7 +154,7 @@ const PaymentModal = ({
             </View>
             <View style={GStyles.alignEnd}>
               {!!defaultTokenPrice && (
-                <TextS style={FontStyles.font3}>
+                <TextS style={FontStyles.neutralTertiaryText}>
                   {convertAmountUSDShow(divDecimals(fee.value, defaultToken.decimals), defaultTokenPrice)}
                 </TextS>
               )}
@@ -299,7 +300,7 @@ const PaymentModal = ({
     if (assetInfo.assetType === AssetType.nft)
       return (
         <Text style={styles.marginTop4}>
-          <TextS style={FontStyles.font3}>
+          <TextS style={FontStyles.neutralTertiaryText}>
             {formatTokenAmountShowWithDecimals(currentNft?.balance, currentNft?.decimals)}
           </TextS>
         </Text>
@@ -307,15 +308,17 @@ const PaymentModal = ({
 
     return (
       <Text style={styles.marginTop4}>
-        <TextS style={FontStyles.font3}>
-          {formatTokenAmountShowWithDecimals(currentAssetInfo?.balance, currentAssetInfo?.decimals)}
+        <TextS style={FontStyles.neutralTertiaryText}>
+          {formatTokenAmountShowWithDecimals(updateAssetInfo?.balance, updateAssetInfo?.decimals)}
         </TextS>
-        <TextS style={FontStyles.font3}>{` ${currentAssetInfo?.label || currentAssetInfo?.symbol || ''}`}</TextS>
-        {!!tokenPriceObject[currentAssetInfo?.symbol || ''] && (
-          <TextS style={FontStyles.font3}>
+        <TextS style={FontStyles.neutralTertiaryText}>{` ${
+          updateAssetInfo?.label || updateAssetInfo?.symbol || ''
+        }`}</TextS>
+        {!!tokenPriceObject[updateAssetInfo?.symbol || ''] && (
+          <TextS style={FontStyles.neutralTertiaryText}>
             {`  ${convertAmountUSDShow(
-              divDecimals(currentAssetInfo?.balance, currentAssetInfo?.decimals),
-              tokenPriceObject[currentAssetInfo?.symbol || ''],
+              divDecimals(updateAssetInfo?.balance, updateAssetInfo?.decimals),
+              tokenPriceObject[updateAssetInfo?.symbol || ''],
             )}`}
           </TextS>
         )}
@@ -323,10 +326,10 @@ const PaymentModal = ({
     );
   }, [
     assetInfo.assetType,
-    currentAssetInfo?.balance,
-    currentAssetInfo?.decimals,
-    currentAssetInfo?.label,
-    currentAssetInfo?.symbol,
+    updateAssetInfo?.balance,
+    updateAssetInfo?.decimals,
+    updateAssetInfo?.label,
+    updateAssetInfo?.symbol,
     currentNft?.balance,
     currentNft?.decimals,
     isInsufficientTransactionFee,
@@ -350,9 +353,9 @@ const PaymentModal = ({
             symbol={assetInfo.assetType === AssetType.nft ? '' : assetInfo.symbol}
             label={assetInfo.label}
           />
-          {!!tokenPriceObject[currentAssetInfo?.symbol || ''] && assetInfo.assetType === AssetType.ft && (
+          {!!tokenPriceObject[updateAssetInfo?.symbol || ''] && assetInfo.assetType === AssetType.ft && (
             <TextM style={GStyles.marginTop(pTd(2))}>
-              {convertAmountUSDShow(amount, tokenPriceObject[currentAssetInfo?.symbol || ''])}
+              {convertAmountUSDShow(amount, tokenPriceObject[updateAssetInfo?.symbol || ''])}
             </TextM>
           )}
           {assetInfo.assetType === AssetType.nft && (
@@ -393,7 +396,7 @@ const PaymentModal = ({
                 {!!(crossSufficientItem && fee.error) && (
                   <TextS style={[FontStyles.font6, styles.marginTop4]}>
                     {`You can transfer some ${
-                      assetInfo.assetType === AssetType.ft ? assetInfo.symbol : assetInfo.alias
+                      assetInfo.assetType === AssetType.ft ? assetInfo.label || assetInfo.symbol : assetInfo.alias
                     } from your ${formatChainInfoToShow(crossSufficientItem?.chainId, currentNetwork)} address`}
                   </TextS>
                 )}
@@ -430,17 +433,20 @@ export const show = (props: Omit<PaymentOverlayProps, 'onConfirm'>) => {
 export const showRedPacket = (props: Omit<PaymentOverlayProps, 'onConfirm' | 'title'>) => {
   return show({ ...props, title: 'Portkey Crypto Box' });
 };
-
+export const showCryptoGift = (props: Omit<PaymentOverlayProps, 'onConfirm' | 'title'>) => {
+  return show({ ...props, title: 'Crypto Gift' });
+};
 export default {
   show,
   showRedPacket,
+  showCryptoGift,
 };
 
 export const styles = StyleSheet.create({
   containerStyle: {
     paddingTop: pTd(16),
     paddingBottom: pTd(16),
-    paddingHorizontal: pTd(20),
+    paddingHorizontal: pTd(16),
     flex: 1,
   },
   titleStyle: {
@@ -448,7 +454,7 @@ export const styles = StyleSheet.create({
     marginBottom: pTd(12),
   },
   balanceLabelStyle: {
-    color: defaultColors.font3,
+    color: defaultColors.secondaryTextColor,
     marginLeft: pTd(8),
   },
   lottieStyle: {

@@ -32,7 +32,8 @@ export type NavigateMultiLevelParams = {
 export enum TabRouteNameEnum {
   WALLET = 'Wallet',
   DISCOVER = 'Discover',
-  TRADE = 'Trade',
-  CHAT = ChatTabName,
+  ACTIVITY = 'Activity',
+  // TRADE = 'Trade',
+  CHAT = 'Chat',
   SETTINGS = 'Settings',
 }

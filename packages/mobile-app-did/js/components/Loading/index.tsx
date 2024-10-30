@@ -21,10 +21,10 @@ type ShowOptionsType = {
 
 type LoadingPositionType = 'center' | 'bottom';
 
-function LoadingBody({ text }: { text?: string; position?: LoadingPositionType; iconType: IconType }) {
+export function LoadingBody({ text }: { text?: string; position?: LoadingPositionType; iconType: IconType }) {
   return (
     <View style={[GStyles.center, styles.loadingWrap]}>
-      <LottieView source={require('assets/lottieFiles/globalLoading.json')} style={styles.loadingStyle} autoPlay loop />
+      <LottieView source={require('assets/lottieFiles/loading.json')} style={styles.loadingStyle} autoPlay loop />
       <TextM style={styles.textStyles}>{text}</TextM>
     </View>
   );
@@ -32,7 +32,7 @@ function LoadingBody({ text }: { text?: string; position?: LoadingPositionType; 
 
 export default class Loading extends React.Component {
   static show(options?: ShowOptionsType, isKeyboardShow?: boolean): number {
-    const { text = 'Loading...', iconType = 'loading', isMaskTransparent = true, overlayProps = {} } = options || {};
+    const { iconType = 'loading', isMaskTransparent = true, overlayProps = {} } = options || {};
     !isKeyboardShow && Keyboard.dismiss();
     Loading.hide();
     const overlayView = (
@@ -42,7 +42,7 @@ export default class Loading extends React.Component {
         style={[styles.container, isMaskTransparent && styles.maskTransparent]}
         overlayOpacity={0}
         {...overlayProps}>
-        <LoadingBody text={text} iconType={iconType} />
+        <LoadingBody text={''} iconType={iconType} />
       </Overlay.PopView>
     );
     const key = Overlay.show(overlayView);
@@ -88,7 +88,6 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: defaultColors.bg1,
   },
   maskTransparent: {
     backgroundColor: '#00000030',
@@ -97,11 +96,10 @@ const styles = StyleSheet.create({
     width: pTd(224),
     minHeight: pTd(120),
     padding: pTd(16),
-    backgroundColor: defaultColors.bg1,
     borderRadius: pTd(6),
   },
   loadingStyle: {
-    width: pTd(50),
+    width: pTd(32),
   },
   textStyles: {
     color: defaultColors.font5,

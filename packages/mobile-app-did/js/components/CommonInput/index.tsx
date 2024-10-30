@@ -1,7 +1,7 @@
 import React, { forwardRef, useMemo } from 'react';
 import { Input, InputProps } from '@rneui/themed';
-import Svg from 'components/Svg';
-import { commonStyles, generalStyles, searchStyles, bgWhiteStyles } from './style';
+import Svg, { IconName } from 'components/Svg';
+import { commonStyles, generalStyles, searchStyles } from './style';
 import { pTd } from 'utils/unit';
 import { useLanguage } from 'i18n/hooks';
 import { defaultColors } from 'assets/theme';
@@ -10,8 +10,9 @@ import Lottie from 'lottie-react-native';
 
 export type CommonInputProps = InputProps & {
   type?: 'search' | 'general';
-  theme?: 'white-bg' | 'gray-bg';
+  theme?: 'white-bg' | 'gray-bg' | 'black-bg';
   allowClear?: boolean;
+  clearIcon?: IconName;
   loading?: boolean;
   grayBorder?: boolean;
 };
@@ -22,9 +23,10 @@ const CommonInput = forwardRef(function CommonInput(props: CommonInputProps, for
     loading,
     grayBorder,
     allowClear,
+    clearIcon = 'clear3',
     placeholder,
     type = 'search',
-    theme = 'gray-bg',
+    theme = 'black-bg',
     inputStyle,
     containerStyle,
     inputContainerStyle,
@@ -32,6 +34,7 @@ const CommonInput = forwardRef(function CommonInput(props: CommonInputProps, for
     rightIconContainerStyle,
     leftIconContainerStyle,
     errorStyle,
+    errorMessage,
     ...inputProps
   } = props;
 
@@ -43,11 +46,11 @@ const CommonInput = forwardRef(function CommonInput(props: CommonInputProps, for
     } else {
       return props.value && allowClear ? (
         <Touchable onPress={() => props.onChangeText?.('')}>
-          <Svg icon="clear3" size={pTd(16)} />
+          <Svg icon={clearIcon} size={pTd(16)} />
         </Touchable>
       ) : undefined;
     }
-  }, [allowClear, loading, props]);
+  }, [allowClear, clearIcon, loading, props]);
 
   if (type === 'search')
     return (
@@ -56,9 +59,9 @@ const CommonInput = forwardRef(function CommonInput(props: CommonInputProps, for
         containerStyle={[searchStyles.containerStyle, containerStyle]}
         inputContainerStyle={[
           searchStyles.inputContainerStyle,
-          theme === 'white-bg' && bgWhiteStyles.inputContainerStyle,
           grayBorder && commonStyles.inputContainerGrayBorderStyle,
           inputContainerStyle,
+          !!errorMessage && commonStyles.inputContainerErrorBorderStyle,
         ]}
         inputStyle={[searchStyles.inputStyle, inputStyle]}
         labelStyle={[searchStyles.labelStyle, labelStyle]}
@@ -68,6 +71,7 @@ const CommonInput = forwardRef(function CommonInput(props: CommonInputProps, for
         placeholderTextColor={defaultColors.font7}
         leftIcon={<Svg icon="search" size={pTd(16)} />}
         rightIcon={rightIconDom}
+        errorMessage={errorMessage}
         {...inputProps}
         ref={forwardedRef}
       />
@@ -78,9 +82,9 @@ const CommonInput = forwardRef(function CommonInput(props: CommonInputProps, for
       containerStyle={[generalStyles.containerStyle, containerStyle]}
       inputContainerStyle={[
         generalStyles.inputContainerStyle,
-        theme === 'white-bg' && bgWhiteStyles.inputContainerStyle,
         grayBorder && commonStyles.inputContainerGrayBorderStyle,
         inputContainerStyle,
+        !!errorMessage && commonStyles.inputContainerErrorBorderStyle,
       ]}
       selectionColor={defaultColors.bg13}
       inputStyle={[generalStyles.inputStyle, inputStyle]}
@@ -92,6 +96,7 @@ const CommonInput = forwardRef(function CommonInput(props: CommonInputProps, for
       placeholderTextColor={defaultColors.font7}
       disabledInputStyle={[generalStyles.disabledInputStyle]}
       rightIcon={rightIconDom}
+      errorMessage={errorMessage}
       {...inputProps}
       ref={forwardedRef}
     />

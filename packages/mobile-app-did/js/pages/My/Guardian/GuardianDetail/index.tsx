@@ -1,6 +1,6 @@
 import CommonButton from 'components/CommonButton';
 import { TextL, TextM } from 'components/CommonText';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { pTd } from 'utils/unit';
 import navigationService from 'utils/navigationService';
@@ -20,6 +20,8 @@ import Divider from 'components/Divider';
 import { checkIsLastLoginAccount } from '@portkey-wallet/utils/guardian';
 import { useSetLoginAccount } from '../hooks/useSetLoginAccount';
 import myEvents from 'utils/deviceEvent';
+import { zkLoginVerifierItem } from '@portkey-wallet/types/verifier';
+import { isZKLoginSupported } from '@portkey-wallet/types/types-ca/wallet';
 
 type RouterParams = {
   guardian?: UserGuardianItem;
@@ -116,6 +118,28 @@ export default function GuardianDetail() {
     [getGuardiansInfo, guardian, setLoginAccount, userGuardiansList],
   );
 
+  const verifierName = useMemo(() => {
+    if (
+      guardian &&
+      isZKLoginSupported(guardian.guardianType) &&
+      (guardian?.verifiedByZk || guardian?.manuallySupportForZk)
+    ) {
+      return zkLoginVerifierItem.name;
+    }
+    return guardian?.verifier?.name;
+  }, [guardian]);
+
+  const verifierImage = useMemo(() => {
+    if (
+      guardian &&
+      isZKLoginSupported(guardian.guardianType) &&
+      (guardian?.verifiedByZk || guardian?.manuallySupportForZk)
+    ) {
+      return zkLoginVerifierItem.imageUrl;
+    }
+    return guardian?.verifier?.imageUrl;
+  }, [guardian]);
+
   return (
     <PageContainer
       safeAreaColor={['white', 'gray']}
@@ -130,10 +154,10 @@ export default function GuardianDetail() {
             <VerifierImage
               style={pageStyles.verifierImageStyle}
               size={pTd(28)}
-              label={guardian?.verifier?.name}
-              uri={guardian?.verifier?.imageUrl}
+              label={verifierName}
+              uri={verifierImage}
             />
-            <TextL>{guardian?.verifier?.name || ''}</TextL>
+            <TextL>{verifierName || ''}</TextL>
           </View>
         </View>
 

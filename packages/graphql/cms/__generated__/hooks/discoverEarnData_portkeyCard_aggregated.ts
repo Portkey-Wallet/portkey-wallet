@@ -23,50 +23,50 @@ export type DiscoverEarnData_PortkeyCard_AggregatedQuery = {
     countAll?: number | null;
     count?: {
       __typename?: 'discoverEarnData_portkeyCard_aggregated_count';
-      id?: number | null;
       discoverEarnData_id?: number | null;
+      id?: number | null;
       portkeyCard_id?: number | null;
     } | null;
     countDistinct?: {
       __typename?: 'discoverEarnData_portkeyCard_aggregated_count';
-      id?: number | null;
       discoverEarnData_id?: number | null;
+      id?: number | null;
       portkeyCard_id?: number | null;
     } | null;
     avg?: {
       __typename?: 'discoverEarnData_portkeyCard_aggregated_fields';
-      id?: number | null;
       discoverEarnData_id?: number | null;
+      id?: number | null;
       portkeyCard_id?: number | null;
     } | null;
     sum?: {
       __typename?: 'discoverEarnData_portkeyCard_aggregated_fields';
-      id?: number | null;
       discoverEarnData_id?: number | null;
+      id?: number | null;
       portkeyCard_id?: number | null;
     } | null;
     avgDistinct?: {
       __typename?: 'discoverEarnData_portkeyCard_aggregated_fields';
-      id?: number | null;
       discoverEarnData_id?: number | null;
+      id?: number | null;
       portkeyCard_id?: number | null;
     } | null;
     sumDistinct?: {
       __typename?: 'discoverEarnData_portkeyCard_aggregated_fields';
-      id?: number | null;
       discoverEarnData_id?: number | null;
+      id?: number | null;
       portkeyCard_id?: number | null;
     } | null;
     min?: {
       __typename?: 'discoverEarnData_portkeyCard_aggregated_fields';
-      id?: number | null;
       discoverEarnData_id?: number | null;
+      id?: number | null;
       portkeyCard_id?: number | null;
     } | null;
     max?: {
       __typename?: 'discoverEarnData_portkeyCard_aggregated_fields';
-      id?: number | null;
       discoverEarnData_id?: number | null;
+      id?: number | null;
       portkeyCard_id?: number | null;
     } | null;
   }>;
@@ -94,43 +94,43 @@ export const DiscoverEarnData_PortkeyCard_AggregatedDocument = gql`
       group
       countAll
       count {
-        id
         discoverEarnData_id
+        id
         portkeyCard_id
       }
       countDistinct {
-        id
         discoverEarnData_id
+        id
         portkeyCard_id
       }
       avg {
-        id
         discoverEarnData_id
+        id
         portkeyCard_id
       }
       sum {
-        id
         discoverEarnData_id
+        id
         portkeyCard_id
       }
       avgDistinct {
-        id
         discoverEarnData_id
+        id
         portkeyCard_id
       }
       sumDistinct {
-        id
         discoverEarnData_id
+        id
         portkeyCard_id
       }
       min {
-        id
         discoverEarnData_id
+        id
         portkeyCard_id
       }
       max {
-        id
         discoverEarnData_id
+        id
         portkeyCard_id
       }
     }

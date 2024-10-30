@@ -19,6 +19,8 @@ export interface BaseToken {
   expires?: string;
   seedOwnedSymbol?: string;
   label?: string;
+  chainImageUrl?: string;
+  displayChainName?: string;
 }
 
 export interface TokenItemType extends BaseToken {
@@ -35,6 +37,33 @@ export interface TokenItemShowType extends TokenItemType {
   price?: string | number;
   userTokenId?: string;
 }
+export type IUserTokenItem = Omit<TokenItemShowType, 'name' | 'address'> & { isDisplay?: boolean; address?: string };
+
+export type ITokenSectionResponse = {
+  symbol: string;
+  price?: number;
+  balance?: string;
+  decimals?: number;
+  balanceInUsd?: string;
+  label?: string;
+  imageUrl?: string;
+  displayStatus?: 'All' | 'Partial' | 'None';
+  tokens?: TokenItemShowType[];
+};
+export type IUserTokenItemResponse = {
+  symbol: string;
+  price?: number;
+  balance?: string;
+  decimals?: number;
+  balanceInUsd?: string;
+  label?: string;
+  imageUrl?: string;
+  isDefault?: boolean;
+  displayStatus?: 'All' | 'Partial' | 'None';
+  tokens?: IUserTokenItem[];
+  chainImageUrl?: string;
+  displayChainName?: string;
+};
 
 export type UserTokenItemTokenType = Omit<BaseToken, 'name'> & { chainId: string };
 
@@ -88,11 +117,21 @@ export interface ITokenInfo {
   maxResultCount: number;
   totalRecordCount: number;
 }
+export interface ITokenInfoV2 {
+  isFetching: boolean;
+  tokenDataShowInMarket: IUserTokenItemResponse[];
+  skipCount: number;
+  maxResultCount: number;
+  totalRecordCount: number;
+}
 
 export interface TokenState extends ITokenInfo {
   symbolImages: Record<string, string>;
   tokenInfo?: {
     [key in NetworkType]?: ITokenInfo;
+  };
+  tokenInfoV2?: {
+    [key in NetworkType]?: ITokenInfoV2;
   };
 }
 

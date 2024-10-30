@@ -24,6 +24,8 @@ query discoverGroupCustom(
       title
       description
       url
+      appLink
+      extensionLink
       imgUrl {
         filename_disk
       }

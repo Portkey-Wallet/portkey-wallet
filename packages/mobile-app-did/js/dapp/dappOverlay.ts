@@ -50,7 +50,12 @@ export async function requestManagerApprove(
 export interface IDappOverlay {
   requestAccounts(dapp: DappStoreItem): Promise<boolean>;
   sendTransaction(dapp: DappStoreItem, params: SendTransactionParams): Promise<boolean>;
-  wallet_getSignature(dapp: DappStoreItem, params: GetSignatureParams): Promise<boolean>;
+  wallet_getSignature(
+    dapp: DappStoreItem,
+    params: GetSignatureParams,
+    realMethod: string,
+    isCipherText?: boolean,
+  ): Promise<boolean>;
   approve(
     dapp: DappStoreItem,
     params: ApproveParams,
@@ -77,11 +82,18 @@ export class DappOverlay implements IDappOverlay {
       });
     });
   }
-  async wallet_getSignature(dappInfo: DappStoreItem, signInfo: GetSignatureParams): Promise<boolean> {
+  async wallet_getSignature(
+    dappInfo: DappStoreItem,
+    signInfo: GetSignatureParams,
+    realMethod: string,
+    isCipherText: boolean,
+  ): Promise<boolean> {
     return new Promise(resolve => {
       SignOverlay.showSignModal({
         dappInfo,
         signInfo,
+        realMethod,
+        isCipherText,
         onSign: () => resolve(true),
         onReject: () => resolve(false),
       });

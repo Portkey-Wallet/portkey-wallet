@@ -3,16 +3,16 @@ query tokenDetailBanner_aggregated($groupBy: [String], $filter: tokenDetailBanne
         group
         countAll
         count{
+            chainId
             id
             status
-            chainId
             symbol
             items
         }
         countDistinct{
+            chainId
             id
             status
-            chainId
             symbol
             items
         }

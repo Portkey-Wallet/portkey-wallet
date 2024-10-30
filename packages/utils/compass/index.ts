@@ -12,12 +12,17 @@ export const checkEnabledFunctionalTypes = (symbol: string, isOnMainChain: boole
   const USDTSymbol = 'USDT';
   const ELFSymbol = 'ELF';
   const SGRSymbol = 'SGR-';
+  const ACORNSSymbol = 'ACORNS';
   return {
     send: true,
     receive: true,
     buy: (symbol === USDTSymbol || symbol === ELFSymbol) && isOnMainChain,
     swap: (symbol === USDTSymbol || symbol === ELFSymbol) && !isOnMainChain,
-    deposit: symbol === USDTSymbol || symbol === ELFSymbol || (symbol.startsWith(SGRSymbol) && !isOnMainChain),
+    deposit:
+      symbol === USDTSymbol ||
+      symbol === ELFSymbol ||
+      (symbol.startsWith(SGRSymbol) && !isOnMainChain) ||
+      (symbol === ACORNSSymbol && !isOnMainChain),
     withdraw: symbol === USDTSymbol || symbol.startsWith(SGRSymbol),
     exchange: symbol === ELFSymbol && isOnMainChain,
   };

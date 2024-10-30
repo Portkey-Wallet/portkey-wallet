@@ -29,3 +29,4 @@ export const useLoading = () => {
   );
   return useMemo(() => ({ setLoading: _setLoading }), [_setLoading]);
 };
+export const useTxFee = () => useAppSelector((state) => state.txFee);

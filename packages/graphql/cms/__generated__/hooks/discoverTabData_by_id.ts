@@ -12,9 +12,9 @@ export type DiscoverTabData_By_IdQuery = {
   discoverTabData_by_id?: {
     __typename?: 'discoverTabData';
     id: string;
-    status?: string | null;
     index?: any | null;
     name?: string | null;
+    status?: string | null;
     value?: string | null;
   } | null;
 };
@@ -23,9 +23,9 @@ export const DiscoverTabData_By_IdDocument = gql`
   query discoverTabData_by_id($id: ID!) {
     discoverTabData_by_id(id: $id) {
       id
-      status
       index
       name
+      status
       value
     }
   }

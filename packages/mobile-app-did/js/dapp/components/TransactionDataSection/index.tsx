@@ -11,23 +11,24 @@ import Touchable from 'components/Touchable';
 import Collapsible from 'components/Collapsible';
 import { showValueToStr } from '@portkey-wallet/utils/byteConversion';
 type TransactionDataSectionType = {
+  topTitle?: string;
   dataInfo: { [key: string]: any } | string;
   style?: ViewStyle;
 };
 
 export const TransactionDataSection = (props: TransactionDataSectionType) => {
-  const { dataInfo, style = {} } = props;
+  const { topTitle, dataInfo, style = {} } = props;
 
   const [collapsed, setCollapsed] = useState<boolean>(false);
 
   const TopSection = useMemo(
     () => (
       <Touchable style={styles.topSection} onPress={() => setCollapsed(pre => !pre)}>
-        <TextM style={[FontStyles.font5, fonts.mediumFont]}>Message</TextM>
+        <TextM style={[FontStyles.font5, fonts.mediumFont]}>{topTitle ?? 'Message'}</TextM>
         <Svg size={pTd(20)} icon={collapsed ? 'down-arrow' : 'up-arrow'} />
       </Touchable>
     ),
-    [collapsed],
+    [collapsed, topTitle],
   );
 
   const DataSection = useMemo(() => {

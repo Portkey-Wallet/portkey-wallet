@@ -40,6 +40,9 @@ export default {
   alignEnd: {
     alignSelf: 'flex-end',
   },
+  alignStart: {
+    alignSelf: 'flex-start',
+  },
   flexCenter: {
     justifyContent: 'center',
   },
@@ -205,5 +208,8 @@ export default {
   },
   fontSize: function (n: number) {
     return { fontSize: n };
+  },
+  lineHeight: function (n: number) {
+    return { lineHeight: n };
   },
 } as const;

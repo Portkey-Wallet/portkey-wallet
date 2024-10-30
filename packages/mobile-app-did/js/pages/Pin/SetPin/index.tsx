@@ -11,8 +11,9 @@ import myEvents from 'utils/deviceEvent';
 import { AElfWallet } from '@portkey-wallet/types/aelf';
 import PinContainer from 'components/PinContainer';
 import { GuardiansApproved } from 'pages/Guardian/types';
-import { StyleSheet } from 'react-native';
+import { makeStyles } from '@rneui/themed';
 import { useCheckRouteExistInRouteStack } from 'hooks/route';
+import { usePreventHardwareBack } from '@portkey-wallet/hooks/mobile';
 
 type RouterParams = {
   oldPin?: string;
@@ -22,6 +23,7 @@ type RouterParams = {
   verifierInfo?: VerifierInfo;
   guardiansApproved?: GuardiansApproved;
   autoLogin?: boolean;
+  isBackHide?: boolean;
 };
 
 const scrollViewProps = {
@@ -39,11 +41,12 @@ const RouterMap: any = {
   [VerificationType.addManager]: 'LoginPortkey',
 };
 export default function SetPin() {
-  const { oldPin, managerInfo, caInfo, walletInfo, verifierInfo, guardiansApproved, autoLogin } =
+  const styles = getStyles();
+  const { oldPin, managerInfo, caInfo, walletInfo, verifierInfo, guardiansApproved, autoLogin, isBackHide } =
     useRouterParams<RouterParams>();
   const digitInput = useRef<DigitInputInterface>();
-
   const checkRouteExistInRouteStack = useCheckRouteExistInRouteStack();
+  usePreventHardwareBack();
 
   useEffectOnce(() => {
     const listener = myEvents.clearSetPin.addListener(() => digitInput.current?.reset());
@@ -61,9 +64,9 @@ export default function SetPin() {
             onPress: () => {
               if (managerInfo.verificationType === VerificationType.addManager) myEvents.clearQRWallet.emit();
               if (managerInfo.verificationType === VerificationType.register) {
-                const isSignUpPageExist = checkRouteExistInRouteStack('SignupPortkey');
-                if (isSignUpPageExist) {
-                  navigationService.navigate('SignupPortkey');
+                const isLoginPageExist = checkRouteExistInRouteStack('LoginEmail');
+                if (isLoginPageExist) {
+                  navigationService.navigate('LoginEmail');
                 } else {
                   navigationService.navigate('LoginPortkey');
                 }
@@ -80,18 +83,20 @@ export default function SetPin() {
 
     navigationService.goBack();
   }, [autoLogin, checkRouteExistInRouteStack, managerInfo, oldPin]);
+
   return (
     <PageContainer
       scrollViewProps={scrollViewProps}
       titleDom
+      noLeftDom={isBackHide}
       type="leftBack"
-      backTitle={oldPin ? 'Change Pin' : undefined}
+      backTitle={oldPin ? 'Change PIN' : undefined}
       leftCallback={leftCallback}
       containerStyles={styles.container}>
       <PinContainer
         showHeader
         ref={digitInput}
-        title={oldPin ? 'Please enter a new pin' : 'Enter pin to protect your device'}
+        title={oldPin ? 'Please enter a new PIN' : 'Create a PIN to protect your wallet'}
         onFinish={pin => {
           navigationService.navigate('ConfirmPin', {
             oldPin,
@@ -108,8 +113,8 @@ export default function SetPin() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = makeStyles(_theme => ({
   container: {
     flex: 1,
   },
-});
+}));

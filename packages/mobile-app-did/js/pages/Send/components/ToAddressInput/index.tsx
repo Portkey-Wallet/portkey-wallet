@@ -224,7 +224,7 @@ export default function ToAddressInput({
               <Svg
                 icon={'checked'}
                 size={pTd(20)}
-                color={defaultColors.iconWarning3}
+                color={defaultColors.iconSuccess1}
                 iconStyle={GStyles.marginLeft(16)}
               />
             )}

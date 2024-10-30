@@ -104,6 +104,10 @@ const SendPreview: React.FC = () => {
   const [tokenPriceObject, getTokenPrice] = useGetCurrentAccountTokenPrice();
   const isTokenHasPrice = useIsTokenHasPrice(assetInfo.symbol);
 
+  const isETransferOrEBridge = useMemo(() => {
+    return transferType === TransferType.E_TRANSFER || transferType === TransferType.E_BRIDGE;
+  }, [transferType]);
+
   const crossTransferByEtransfer = useCrossTransferByEtransfer(pin);
   const isSupportEtransferCross = useMemo(
     () => CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL.includes(assetInfo.symbol),
@@ -119,7 +123,8 @@ const SendPreview: React.FC = () => {
   );
 
   const EstimateAmount = useMemo(() => {
-    if (ZERO.plus(sendNumber).isLessThanOrEqualTo(crossChainFee) && assetInfo.symbol === defaultToken.symbol)
+    const fee = (isETransferOrEBridge ? transactionFee : networkFee) || 0;
+    if (ZERO.plus(sendNumber).isLessThanOrEqualTo(fee))
       return {
         estimateAmount: `0 ${assetInfo?.label || assetInfo?.symbol}`,
         estimateAmountUsd: isMainnet ? '$ 0' : '',
@@ -128,10 +133,10 @@ const SendPreview: React.FC = () => {
     let _amount = sendNumber;
     let amountUsd;
     if (receiveAmount) _amount = receiveAmount;
-    else _amount = formatAmountShow(ZERO.plus(_amount).minus(crossChainFee), Number(defaultToken.decimals));
+    else _amount = formatAmountShow(ZERO.plus(_amount).minus(fee), Number(assetInfo.decimals));
 
     if (receiveAmountUsd) amountUsd = formatAmountUSDShow(receiveAmountUsd);
-    else amountUsd = amountInUsdShow(ZERO.plus(_amount).minus(crossChainFee).toFixed(), 0, assetInfo.symbol);
+    else amountUsd = amountInUsdShow(ZERO.plus(_amount).minus(fee).toFixed(), 0, assetInfo.symbol);
 
     return {
       estimateAmount: `${_amount} ${assetInfo.label || assetInfo.symbol}`,
@@ -139,15 +144,16 @@ const SendPreview: React.FC = () => {
     };
   }, [
     amountInUsdShow,
+    assetInfo.decimals,
     assetInfo.label,
     assetInfo.symbol,
-    crossChainFee,
-    defaultToken.decimals,
-    defaultToken.symbol,
+    isETransferOrEBridge,
     isMainnet,
+    networkFee,
     receiveAmount,
     receiveAmountUsd,
     sendNumber,
+    transactionFee,
   ]);
 
   const getEstimatedTime = useCallback(() => {
@@ -330,12 +336,10 @@ const SendPreview: React.FC = () => {
         maxResultCount: PAGE_SIZE_IN_ACCOUNT_TOKEN,
       });
     }
-    if (successNavigateName) {
-      navigationService.navigate(successNavigateName);
-    } else {
-      navigationService.navigate('Tab', { clearType: sendType + Math.random() });
-    }
-    CommonToast.success('success');
+    navigationService.navigate('SendFinishPage', {
+      actionType: ActionType.SEND,
+      address: toInfo.address,
+    });
   }, [
     amount,
     assetInfo,
@@ -358,10 +362,9 @@ const SendPreview: React.FC = () => {
     routerParams,
     sendNumber,
     sendType,
-    successNavigateName,
     targetNetwork?.network,
     toInfo.address,
-    toInfo.chainId,
+    toInfo?.chainId,
     toInfo.network,
     transferType,
     wallet.address,
@@ -391,8 +394,10 @@ const SendPreview: React.FC = () => {
         const tokenContract = tokenContractRef.current;
         await intervalCrossChainTransfer(tokenContract, data);
         dispatch(removeFailedActivity(managerTransferTxId));
-        navigationService.navigate('Tab');
-        CommonToast.success('success');
+        navigationService.navigate('SendFinishPage', {
+          actionType: ActionType.SEND,
+          address: toInfo.address,
+        });
       } catch (error) {
         showRetry(() => {
           retryCrossChain(managerTransferTxId, data);
@@ -401,7 +406,16 @@ const SendPreview: React.FC = () => {
         Loading.hide();
       }
     },
-    [assetInfo.decimals, assetInfo.symbol, assetInfo.tokenContractAddress, chainInfo, dispatch, pin, showRetry],
+    [
+      assetInfo.decimals,
+      assetInfo.symbol,
+      assetInfo.tokenContractAddress,
+      chainInfo,
+      dispatch,
+      pin,
+      showRetry,
+      toInfo.address,
+    ],
   );
 
   // const imSend = useCallback(async () => {
@@ -521,10 +535,6 @@ const SendPreview: React.FC = () => {
     getTokenPrice(defaultToken.symbol);
   });
 
-  const isETransferOrEBridge = useMemo(() => {
-    return transferType === TransferType.E_TRANSFER || transferType === TransferType.E_BRIDGE;
-  }, [transferType]);
-
   const footerType = useMemo(() => {
     switch (transferType) {
       case TransferType.E_TRANSFER:
@@ -558,21 +568,24 @@ const SendPreview: React.FC = () => {
       toInfoChainId={toInfo?.chainId}
       destinationNetwork={networkInfoShow(toInfo?.address)}
       destinationNetworkImageUrl={targetNetwork?.imageUrl}
-      transactionFee={!isETransferOrEBridge ? `${transactionFee} ${defaultToken.symbol}` : ''}
+      transactionFee={isETransferOrEBridge ? `${transactionFee} ${transactionFeeUnit}` : ''}
       transactionFeeUSD={
-        !isETransferOrEBridge
-          ? `$ ${unitConverter(ZERO.plus(transactionFee || '').multipliedBy(tokenPriceObject[defaultToken.symbol]))}`
+        isETransferOrEBridge
+          ? `$ ${unitConverter(
+              ZERO.plus(transactionFee || '').multipliedBy(tokenPriceObject[transactionFeeUnit || '']),
+            )}`
           : ''
       }
-      estimatedNetworkFee={isETransferOrEBridge ? `${networkFee} ${networkFeeUnit}` : ''}
+      estimatedNetworkFee={!isETransferOrEBridge ? `${networkFee} ${networkFeeUnit}` : ''}
       estimatedNetworkFeeUSD={
-        isETransferOrEBridge
+        !isETransferOrEBridge
           ? `$ ${unitConverter(ZERO.plus(networkFee || '').multipliedBy(tokenPriceObject[networkFeeUnit || '']))}`
           : ''
       }
       amountToReceive={EstimateAmount.estimateAmount}
       amountToReceiveUSD={EstimateAmount.estimateAmountUsd}
       estimatedDuration={getEstimatedTime()}
+      onPress={onSend}
     />
   );
 };

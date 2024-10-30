@@ -7,12 +7,13 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 import { makeStyles } from '@rneui/themed';
 import fonts from 'assets/theme/fonts';
 import { pTd } from 'utils/unit';
+import navigationService from 'utils/navigationService';
 import CommonButton from 'components/CommonButton';
 import { ActionType } from 'types/common';
 
 const SendReceiveFinishPage: React.FC = () => {
   const {
-    params: { actionType, address, onClose },
+    params: { actionType, address },
   } = useRoute<RouteProp<{ params: { actionType: ActionType; address?: string; onClose?(): void } }>>();
   const styles = getStyles();
 
@@ -55,7 +56,11 @@ const SendReceiveFinishPage: React.FC = () => {
             ))}
           </View>
         </View>
-        <CommonButton type="primary" onPress={onClose}>
+        <CommonButton
+          type="primary"
+          onPress={() => {
+            navigationService.navigate('Tab');
+          }}>
           Close
         </CommonButton>
       </View>

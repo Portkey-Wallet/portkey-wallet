@@ -694,6 +694,7 @@ const SendHome: React.FC = () => {
         } else {
           transferType = TransferType.GENERAL_CROSS_CHAIN;
           networkFee = await getTransactionFee(isAELFCross);
+          networkFeeUnit = 'ELF';
         }
       } else {
         networkFee = await getTransactionFee(isAELFCross);

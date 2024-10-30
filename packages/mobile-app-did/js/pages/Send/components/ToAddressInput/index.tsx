@@ -79,13 +79,11 @@ export default function ToAddressInput({
 
       // include chainId
       if (v.includes('_')) {
-        // same address
         const suffix = getAddressChainId(v);
+
+        // same address
         if (
-          isSameAddresses(
-            wallet?.[selectedToken?.chainId || 'AELF']?.caAddress || '',
-            getAelfAddress(selectedToContact.address),
-          ) &&
+          isSameAddresses(wallet?.[selectedToken?.chainId || 'AELF']?.caAddress || '', getAelfAddress(v)) &&
           suffix === selectedToken?.chainId
         ) {
           console.log('isDIDAelfAddress333');

@@ -9,7 +9,6 @@ import { makeStyles, useThemeMode } from '@rneui/themed';
 import { parseInputNumberChange } from '@portkey-wallet/utils/input';
 import fonts from 'assets/theme/fonts';
 import Touchable from 'components/Touchable';
-import { formatAmount, formatAmountUSDShow } from '@portkey-wallet/utils/converter';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { FloatTip } from 'components/FloatTip';

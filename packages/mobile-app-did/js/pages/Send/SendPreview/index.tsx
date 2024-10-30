@@ -71,6 +71,9 @@ const SendPreview: React.FC = () => {
     assetInfo,
     toInfo,
     transactionFee,
+    transactionFeeUnit,
+    networkFee,
+    networkFeeUnit,
     sendNumber,
     successNavigateName,
     guardiansApproved,
@@ -97,13 +100,7 @@ const SendPreview: React.FC = () => {
 
   const { fetchAccountNFTCollectionInfoList } = useAccountNFTCollectionInfo();
   const { fetchAccountTokenInfoList } = useAccountTokenInfo();
-  // const getTokenContract = useGetTokenContract();
-  // const getCAContract = useGetCAContract();
   const currentWallet = useCurrentWalletInfo();
-
-  // const sendIMTransfer = useSendIMTransfer();
-  // const jumpToChatDetails = useJumpToChatDetails();
-  // const jumpToChatGroupDetails = useJumpToChatGroupDetails();
 
   const [isLoading] = useState(false);
   const currentNetwork = useCurrentNetworkInfo();
@@ -160,6 +157,19 @@ const SendPreview: React.FC = () => {
     receiveAmountUsd,
     sendNumber,
   ]);
+
+  const getEstimatedTime = useCallback(() => {
+    const transferItem = targetNetwork?.serviceList?.find(ele =>
+      ele?.serviceName?.toLocaleLowerCase()?.includes('transfer'),
+    );
+    const bridgeItem = targetNetwork?.serviceList?.find(ele =>
+      ele?.serviceName?.toLocaleLowerCase()?.includes('bridge'),
+    );
+
+    if (transferType === TransferType.E_TRANSFER) return transferItem?.multiConfirmTime;
+    if (transferType === TransferType.E_BRIDGE) return bridgeItem?.multiConfirmTime;
+    return '';
+  }, [targetNetwork?.serviceList, transferType]);
 
   const showRetry = useCallback(
     (retryFunc: () => void) => {
@@ -613,7 +623,7 @@ const SendPreview: React.FC = () => {
               <View>
                 <TextM />
                 <TextS style={[styles.blackFontColor, styles.lightGrayFontColor, GStyles.alignEnd]}>{`$ ${unitConverter(
-                  ZERO.plus(transactionFee).multipliedBy(tokenPriceObject[defaultToken.symbol]),
+                  ZERO.plus(transactionFee || '').multipliedBy(tokenPriceObject[defaultToken.symbol]),
                 )}`}</TextS>
               </View>
             )}

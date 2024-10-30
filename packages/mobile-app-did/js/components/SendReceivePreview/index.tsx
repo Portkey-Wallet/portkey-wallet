@@ -14,7 +14,10 @@ import { formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { ChainId } from '@portkey-wallet/types';
 import { pTd } from 'utils/unit';
+import { openOutLink } from 'utils/link';
+import { SEND_RECEIVE_HELP_URL } from 'constants/common';
 import { getStyles } from './style';
+
 export enum FooterType {
   'E_BRIDGE' = 'eBridge',
   'E_TRANSFER' = 'eTransfer',
@@ -30,7 +33,6 @@ interface INFTInfo {
 }
 
 interface ISendReceivePreviewProps {
-  helpUrl?: string;
   actionType: ActionType;
   footerType?: FooterType;
   amount: string;
@@ -72,7 +74,6 @@ const FOOTER_CONFIG = {
 };
 
 const SendReceivePreview: React.FC<ISendReceivePreviewProps> = ({
-  helpUrl,
   actionType,
   footerType,
   amount,
@@ -123,12 +124,7 @@ const SendReceivePreview: React.FC<ISendReceivePreviewProps> = ({
       rightDom={
         <Touchable
           onPress={async () => {
-            if (!helpUrl) return;
-            try {
-              await Linking.openURL(helpUrl);
-            } catch (error) {
-              console.log('open error');
-            }
+            await openOutLink(SEND_RECEIVE_HELP_URL);
           }}>
           <Svg iconStyle={styles.headerHelpIcon} icon={isLoading ? 'help-gray' : 'help-white'} size={pTd(24)} />
         </Touchable>

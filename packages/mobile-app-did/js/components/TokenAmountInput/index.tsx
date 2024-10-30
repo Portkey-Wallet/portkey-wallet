@@ -151,7 +151,7 @@ const TokenAmountInput: React.FC<ITokenAmountInput> = props => {
         ) : (
           <TextL style={styles.bottomText}>{`$${usdValue || 0}`}</TextL>
         )}
-        <Svg icon="switch" color={mode === 'dark' ? darkColors.iconBase2 : defaultColors.iconBase2} />
+        <Svg icon="switch" color={mode === 'dark' ? darkColors.iconBase2 : defaultColors.iconBase2} size={pTd(16)} />
       </Touchable>
     </View>
   );
@@ -176,6 +176,7 @@ export const getStyles = makeStyles(theme => ({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    marginTop: pTd(8),
   },
   input: {
     color: theme.colors.textBase1,

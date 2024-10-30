@@ -40,7 +40,6 @@ export default function SelectToken({ tokenInfos, noDataMessage }: SelectTokenPr
 
   const renderItem = useCallback(
     ({ item }: { item: IAssetToken }) => {
-      console.log('item is:', item);
       return (
         <Touchable style={itemStyle.wrap} onPress={() => onNavigate(item)}>
           <View style={itemStyle.iconWrap}>

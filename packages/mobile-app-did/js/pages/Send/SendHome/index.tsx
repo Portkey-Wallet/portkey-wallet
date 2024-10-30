@@ -1,21 +1,15 @@
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { Keyboard, Text, View } from 'react-native';
+import { Keyboard, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import navigationService from 'utils/navigationService';
 import Svg from 'components/Svg';
-import From from '../From';
-import To from '../To';
-import { otherChainWarningStyle, styles } from './style';
+import { getOtherChainWarningStyle, getStyles } from './style';
 import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
-import ActionSheet from 'components/ActionSheet';
-import { useQrScanPermissionAndToast } from 'hooks/useQrScan';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { getAelfAddress, getEntireDIDAelfAddress, isCrossChain, isDIDAelfAddress } from '@portkey-wallet/utils/aelf';
 import useDebounce from 'hooks/useDebounce';
 import { useLanguage } from 'i18n/hooks';
-import SelectContact from '../SelectContact';
-import AmountToken from '../AmountToken';
 import AmountNFT from '../AmountNFT';
 import NFTInfo from '../NFTInfo';
 import CommonButton from 'components/CommonButton';
@@ -26,21 +20,19 @@ import {
   useCrossTransferByEtransfer,
 } from '@portkey-wallet/hooks/hooks-ca/useWithdrawByETransfer';
 import { divDecimals, timesDecimals } from '@portkey-wallet/utils/converter';
-import { IToSendHomeParamsType, IToSendPreviewParamsType } from '@portkey-wallet/types/types-ca/routeParams';
+import {
+  IToSendHomeParamsType,
+  IToSendPreviewParamsType,
+  TransferType,
+} from '@portkey-wallet/types/types-ca/routeParams';
 
 import { getELFChainBalance } from '@portkey-wallet/utils/balance';
-import { BGStyles, FontStyles } from 'assets/theme/styles';
+import { FontStyles } from 'assets/theme/styles';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import Loading from 'components/Loading';
 import { useFetchTxFee, useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
 
-import {
-  TransactionError,
-  TransactionErrorArray,
-  AddressError,
-  AddressErrorArray,
-  CROSS_CHAIN_INTERCEPTED_CONTENT,
-} from '@portkey-wallet/constants/constants-ca/send';
+import { TransactionError, AddressError } from '@portkey-wallet/constants/constants-ca/send';
 import { getAddressChainId, isSameAddresses } from '@portkey-wallet/utils';
 import { useCheckManagerSyncState } from 'hooks/wallet';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
@@ -55,10 +47,9 @@ import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import { useAppETransShow } from 'hooks/cms';
 import { usePin } from 'hooks/store';
 import GStyles from 'assets/theme/GStyles';
-import { TextM } from 'components/CommonText';
+import { TextXXL } from 'components/CommonText';
 import { checkIsValidEtransferAddress } from '@portkey-wallet/utils/check';
-import { RichText } from 'components/RichText';
-import { DepositModalMap, useOnDisclaimerModalPress } from 'hooks/deposit';
+import { useOnDisclaimerModalPress } from 'hooks/deposit';
 import { stringifyETrans } from '@portkey-wallet/utils/dapp/url';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useEtransferFee } from 'hooks/etransfer';
@@ -66,12 +57,28 @@ import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { getAssetsEstimation } from '@portkey-wallet/store/store-ca/assets/api';
 import { getChainIdByAddress } from '@portkey-wallet/utils';
 import { ChainId } from '@portkey-wallet/types';
+import ToAddressInput from '../components/ToAddressInput';
+import TokenBalanceShow from 'components/TokenBalanceShow';
+import TokenAmountInput from 'components/TokenAmountInput';
+import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
+import { warning1Arr, WarningKey, WarningTips } from '../constant';
+import { CommonPromptCard, PromptCardType } from 'components/CommonPromptCard';
+import SupportedExchangesCard from '../components/SupportedExchangesCard';
+import GeneralTips from '../components/GeneralTips';
+import SelectExchangeCard from '../components/SelectExchangeCard';
+import SelectNetwork, { INetworkItem, INetworkServiceItem } from '../components/SelectNetwork';
+import { useShowDialog } from '../hooks';
+import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network-mainnet-v2';
+import useGetEBridgeConfig from 'hooks/ebridge';
+import { EBridge } from '@portkey-wallet/utils/eBridge';
 
 const SendHome: React.FC = () => {
   const {
     params: { sendType = 'token', toInfo, assetInfo, imTransferInfo },
   } = useRoute<RouteProp<{ params: IToSendHomeParamsType }>>();
   const { t } = useLanguage();
+  const styles = getStyles();
+  const otherChainWarningStyle = getOtherChainWarningStyle();
   useFetchTxFee();
   const isValidChainId = useIsValidSuffix();
   const defaultToken = useDefaultToken();
@@ -79,6 +86,21 @@ const SendHome: React.FC = () => {
   const wallet = useCurrentWalletInfo();
   const chainInfo = useCurrentChain(assetInfo?.chainId);
   const securitySafeCheckAndToast = useSecuritySafeCheckAndToast();
+  const [tokenPriceObject] = useGetCurrentAccountTokenPrice();
+  const [chainList, setChainList] = useState<INetworkItem[]>([]);
+  const [targetNetwork, setTargetNetwork] = useState<INetworkItem>();
+  const recommendETransfer = useMemo(
+    () => targetNetwork?.serviceList?.find(ele => ele?.serviceName?.toLocaleLowerCase()?.includes('transfer')),
+    [targetNetwork?.serviceList],
+  );
+
+  const recommendEBridge = useMemo(
+    () => targetNetwork?.serviceList?.find(ele => ele?.serviceName?.toLocaleLowerCase()?.includes('bridge')),
+    [targetNetwork?.serviceList],
+  );
+
+  const [isSendToExchange, setIsSendToExchange] = useState(true);
+  const [isCheckAddressFinish, setIsCheckAddressFinish] = useState(false);
 
   const isFixedToContact = useMemo(() => !!imTransferInfo?.channelId, [imTransferInfo?.channelId]);
   const { max: maxFee, crossChain: crossFee } = useGetTxFee(assetInfo?.chainId);
@@ -91,17 +113,22 @@ const SendHome: React.FC = () => {
     () => CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL.includes(assetInfo.symbol),
     [assetInfo.symbol],
   );
+  const { getTokenConfig, getAELFChainInfoConfig, getEVMChainInfoConfig } = useGetEBridgeConfig();
 
-  const qrScanPermissionAndToast = useQrScanPermissionAndToast();
+  const [warning, setWarning] = useState<WarningKey[]>([]);
+  const showDialog = useShowDialog();
 
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const [selectedFromAccount] = useState({ name: '', address: '' }); // from
   const [selectedToContact, setSelectedToContact] = useState(toInfo); // to
   const [balance, setBalance] = useState<string>(assetInfo?.balance || '');
 
   const [sendNumber, setSendNumber] = useState<string>(''); // tokenNumber  like 100
+  const [sendUsdNumber, setSendUsdNumber] = useState<string>(''); // tokenNumber  like 100
   const debounceSendNumber = useDebounce(sendNumber, 500);
   const [maxAmountSend, setMaxAmountSend] = useState<string>('0');
+  const maxAmountSendUsd = useMemo(
+    () => ZERO.plus(maxAmountSend).times(tokenPriceObject[assetInfo.symbol]).toFixed(2),
+    [assetInfo.symbol, maxAmountSend, tokenPriceObject],
+  );
 
   const [step, setStep] = useState<1 | 2>(isFixedToContact ? 2 : 1);
   const [isLoading] = useState(false);
@@ -160,7 +187,7 @@ const SendHome: React.FC = () => {
     if (assetInfo.symbol !== defaultToken.symbol)
       return setMaxAmountSend(divDecimals(balance, assetInfo.decimals || '0').toString());
 
-    // elf <= maxFee
+    // elf <= maxFee proxy fee
     if (divDecimals(balance, assetInfo.decimals).isLessThanOrEqualTo(maxFee))
       return setMaxAmountSend(divDecimals(balance, assetInfo.decimals || '0').toString());
 
@@ -195,14 +222,16 @@ const SendHome: React.FC = () => {
       // check is SYNCHRONIZING
       const _isManagerSynced = await checkManagerSyncState(chainInfo?.chainId || 'AELF');
       if (!_isManagerSynced) return setErrorMessage([TransactionError.SYNCHRONIZING]);
+
       setSendNumber(maxAmountSend);
+      setSendUsdNumber(maxAmountSendUsd);
       setErrorMessage([]);
     } catch (err) {
       console.log('max err!!', err);
     } finally {
       Loading.hide();
     }
-  }, [checkManagerSyncState, chainInfo?.chainId, maxAmountSend]);
+  }, [checkManagerSyncState, chainInfo?.chainId, maxAmountSend, maxAmountSendUsd]);
 
   const getTokenViewContract = useGetTokenViewContract();
   const initBalance = useCallback(async () => {
@@ -211,6 +240,7 @@ const SendHome: React.FC = () => {
     try {
       const tokenContract = await getTokenViewContract(assetInfo.chainId);
       const _balance = await getELFChainBalance(tokenContract, assetInfo.symbol, caAddress);
+
       setBalance(_balance);
     } catch (error) {
       console.log('initBalance', error);
@@ -221,98 +251,116 @@ const SendHome: React.FC = () => {
     initBalance();
   });
 
+  const selectTargetNetwork = useCallback((n: INetworkItem) => {
+    setSelectedToContact(pre => ({ ...pre, network: n.network }));
+    setTargetNetwork(n);
+    setStep(2);
+  }, []);
+
+  const MainChainToNoAffixDom = useMemo(() => {
+    return (
+      <View style={GStyles.paddingArg(pTd(24), pTd(16))}>
+        <CommonPromptCard
+          type={PromptCardType.WARNING}
+          description={WarningTips[WarningKey.MAIN_CHAIN_TO_NO_AFFIX_ADDRESS_ELF]}
+        />
+        <View style={GStyles.height(24)} />
+        <SupportedExchangesCard />
+        <View style={GStyles.height(24)} />
+        <GeneralTips
+          content={`If you're not sending to an exchange, no worries! You can continue, and we'll send your assets through the aelf MainChain.`}
+        />
+      </View>
+    );
+  }, []);
+
+  const DappChainToNoAffixDom = useMemo(() => {
+    return (
+      <View style={GStyles.paddingArg(pTd(24), pTd(16))}>
+        <TextXXL style={GStyles.marginBottom(pTd(16))}>Send to an exchange?</TextXXL>
+        <CommonPromptCard
+          type={PromptCardType.WARNING}
+          description={WarningTips[WarningKey.DAPP_CHAIN_TO_NO_AFFIX_ADDRESS_ELF]}
+        />
+        <View style={GStyles.height(24)} />
+        <SelectExchangeCard isSendToExchange={isSendToExchange} setIsSendToExchange={setIsSendToExchange} />
+      </View>
+    );
+  }, [isSendToExchange]);
+
+  const JustWarningOrErrorDom = useMemo(() => {
+    return (
+      <View style={GStyles.paddingArg(pTd(24), pTd(16))}>
+        <CommonPromptCard
+          type={warning1Arr.includes(warning[0]) ? PromptCardType.ERROR : PromptCardType.WARNING}
+          description={WarningTips[warning[0]]}
+        />
+      </View>
+    );
+  }, [warning]);
+
+  const ETransferOrEBridgeDom = useMemo(() => {
+    return (
+      <View style={GStyles.paddingArg(pTd(24), pTd(16))}>
+        <CommonPromptCard type={PromptCardType.INFO} description={WarningTips[WarningKey.MAKE_SURE_SUPPORT_PLATFORM]} />
+        <View style={GStyles.height(16)} />
+        <SelectNetwork networkList={chainList} onSelect={selectTargetNetwork} />
+      </View>
+    );
+  }, [chainList, selectTargetNetwork]);
+
+  const Step1Dom = useMemo(() => {
+    if (step === 2) return null;
+    if (!warning[0]) return null;
+    if (
+      warning[0] === WarningKey.CROSS_CHAIN ||
+      warning[0] === WarningKey.INVALID_ADDRESS ||
+      warning[0] === WarningKey.SAME_ADDRESS
+    )
+      return JustWarningOrErrorDom;
+
+    if (warning[0] === WarningKey.DAPP_CHAIN_TO_NO_AFFIX_ADDRESS_ELF && assetInfo.symbol === defaultToken.symbol)
+      return DappChainToNoAffixDom;
+
+    if (warning[0] === WarningKey.MAIN_CHAIN_TO_NO_AFFIX_ADDRESS_ELF && assetInfo.symbol === defaultToken.symbol)
+      return MainChainToNoAffixDom;
+
+    if (warning[0] === WarningKey.MAKE_SURE_SUPPORT_PLATFORM) return ETransferOrEBridgeDom;
+
+    return null;
+  }, [
+    DappChainToNoAffixDom,
+    ETransferOrEBridgeDom,
+    JustWarningOrErrorDom,
+    MainChainToNoAffixDom,
+    assetInfo.symbol,
+    defaultToken.symbol,
+    step,
+    warning,
+  ]);
+
   const enableEtransfer = useMemo(() => {
     const { symbol, chainId } = assetInfo;
     const { withdraw } = checkEnabledFunctionalTypes(symbol, chainId === MAIN_CHAIN_ID);
     return isETransDepositShow && withdraw;
   }, [assetInfo, isETransDepositShow]);
 
-  const isValidOtherChainAddress = useMemo(() => {
-    const { address } = selectedToContact || {};
-    return (
-      checkIsValidEtransferAddress(address) &&
-      !(isDIDAelfAddress(address) && isValidChainId(getAddressChainId(selectedToContact.address, assetInfo.chainId)))
-    );
-  }, [assetInfo.chainId, isValidChainId, selectedToContact]);
+  // const isValidOtherChainAddress = useMemo(() => {
+  //   const { address } = selectedToContact || {};
+  //   return (
+  //     checkIsValidEtransferAddress(address) &&
+  //     !(isDIDAelfAddress(address) && isValidChainId(getAddressChainId(selectedToContact.address, assetInfo.chainId)))
+  //   );
+  // }, [assetInfo.chainId, isValidChainId, selectedToContact]);
 
-  // warning dialog
-  const showDialog = useCallback(
-    (type: 'clearAddress' | 'crossChain' | 'exchange' | 'crossChainInterception', confirmCallBack?: () => void) => {
-      switch (type) {
-        case 'clearAddress':
-          ActionSheet.alert({
-            title: t('Clear Address First'),
-            message: t('Only after clearing the receiving address can the new address be scanned'),
-            buttons: [
-              {
-                title: t('Close'),
-                type: 'solid',
-              },
-            ],
-          });
-
-          break;
-
-        case 'crossChain':
-          ActionSheet.alert({
-            title: t('This is a cross-chain transaction'),
-            buttons: [
-              {
-                title: t('Cancel'),
-                type: 'outline',
-              },
-              {
-                title: t('Confirm'),
-                type: 'primary',
-                onPress: () => {
-                  confirmCallBack?.();
-                },
-              },
-            ],
-          });
-          break;
-
-        case 'exchange':
-          ActionSheet.alert({
-            title: t('Send to exchange account?'),
-            message: t(
-              "Please note that assets on the SideChain can't be sent directly to exchanges. You can transfer your SideChain assets to the MainChain before sending them to your exchange account.",
-            ),
-            buttons: [
-              {
-                title: t('Got it'),
-                type: 'primary',
-              },
-            ],
-          });
-          break;
-        case 'crossChainInterception':
-          ActionSheet.alert({
-            title: t('Notice'),
-            message: <TextM style={styles.alertMessage}>{t(CROSS_CHAIN_INTERCEPTED_CONTENT)}</TextM>,
-            buttons: [
-              {
-                title: t('OK'),
-                type: 'primary',
-              },
-            ],
-          });
-          break;
-        default:
-          break;
-      }
-    },
-    [t],
-  );
-
-  const nextDisable = useMemo(() => {
-    if (!selectedToContact?.address) return true;
-    if (isValidOtherChainAddress && enableEtransfer) {
-      setErrorMessage([]);
-      return true;
-    }
-    return false;
-  }, [enableEtransfer, isValidOtherChainAddress, selectedToContact?.address]);
+  // const nextDisable = useMemo(() => {
+  //   if (!selectedToContact?.address) return true;
+  //   if (isValidOtherChainAddress && enableEtransfer) {
+  //     setErrorMessage([]);
+  //     return true;
+  //   }
+  //   return false;
+  // }, [enableEtransfer, isValidOtherChainAddress, selectedToContact?.address]);
 
   const previewDisable = useMemo(() => {
     if (!selectedToContact?.address) return true;
@@ -320,59 +368,33 @@ const SendHome: React.FC = () => {
     return false;
   }, [selectedToContact?.address, sendNumber]);
 
-  const checkCanNext = useCallback(() => {
-    const suffix = getAddressChainId(selectedToContact.address, chainInfo?.chainId || 'AELF');
-    if (
-      isSameAddresses(wallet?.[assetInfo?.chainId]?.caAddress || '', getAelfAddress(selectedToContact.address)) &&
-      suffix === assetInfo?.chainId
-    ) {
-      setErrorMessage([AddressError.SAME_ADDRESS]);
-      return false;
+  const dappChainToNoAffixAddressAction = useCallback(() => {
+    if (isSendToExchange) {
+      // TODO: add modal Unsupported: Direct Transfer from dAppChain to Exchange
+      return setSelectedToContact(pre => ({ ...pre, chainId: DefaultChainId }));
     }
+    // to dappChain Address
+    setStep(2);
+    setSelectedToContact(pre => ({ ...pre, chainId: assetInfo.chainId }));
+  }, [assetInfo.chainId, isSendToExchange]);
 
-    if (!isValidChainId(getAddressChainId(selectedToContact.address, assetInfo.chainId))) {
-      setErrorMessage([AddressError.INVALID_ADDRESS]);
-      return false;
-    }
-
-    if (isCrossChain(selectedToContact.address, assetInfo.chainId)) {
-      showDialog('crossChain', () => {
-        setErrorMessage([]);
-        setStep(2);
-      });
-      return false;
-    }
-
-    if (!isDIDAelfAddress(selectedToContact.address)) {
-      if (enableEtransfer && checkIsValidEtransferAddress(selectedToContact.address)) {
-        setErrorMessage([]);
-      } else {
-        setErrorMessage([AddressError.INVALID_ADDRESS]);
-      }
-      return false;
-    }
-
-    return true;
-  }, [
-    selectedToContact.address,
-    chainInfo?.chainId,
-    wallet,
-    assetInfo.chainId,
-    isValidChainId,
-    showDialog,
-    enableEtransfer,
-  ]);
+  const mainChainToNoAffixAddressAction = useCallback(() => {
+    setSelectedToContact(pre => ({ ...pre, chainId: DefaultChainId }));
+    setStep(2);
+  }, []);
 
   const nextStep = useCallback(() => {
-    if (checkCanNext()) {
-      setErrorMessage([]);
-      return setStep(2);
+    if (warning[0] === WarningKey.DAPP_CHAIN_TO_NO_AFFIX_ADDRESS_ELF) {
+      return dappChainToNoAffixAddressAction();
+    } else if (warning[0] === WarningKey.MAIN_CHAIN_TO_NO_AFFIX_ADDRESS_ELF) {
+      return mainChainToNoAffixAddressAction();
+    } else if (warning[0] === WarningKey.CROSS_CHAIN) {
+      // TODO
+    } else if (warning[0] === WarningKey.MAKE_SURE_SUPPORT_PLATFORM) {
+      // eBridge or eTransfer
     }
-  }, [checkCanNext]);
-
-  const ensureKeyboardClosed = useCallback(() => {
-    Keyboard.dismiss();
-  }, []);
+    setStep(2);
+  }, [dappChainToNoAffixAddressAction, mainChainToNoAffixAddressAction, warning]);
 
   //when finish send  upDate balance
   const previewParamsWithoutFee = useMemo(
@@ -380,10 +402,7 @@ const SendHome: React.FC = () => {
       ({
         sendType,
         assetInfo,
-        toInfo: {
-          ...selectedToContact,
-          address: getEntireDIDAelfAddress(selectedToContact.address, undefined, assetInfo.chainId),
-        },
+        toInfo: selectedToContact,
         transactionFee: '0',
         sendNumber,
       } as IToSendPreviewParamsType),
@@ -391,6 +410,7 @@ const SendHome: React.FC = () => {
   );
 
   const checkTransferLimitWithJump = useCheckTransferLimitWithJump();
+
   const checkCanPreview = useCallback(async () => {
     setErrorMessage([]);
 
@@ -399,7 +419,7 @@ const SendHome: React.FC = () => {
     }
 
     const assetBalanceBigNumber = ZERO.plus(balance);
-    const isCross = isCrossChain(selectedToContact.address, assetInfo.chainId);
+    const isAELFCross = !!(selectedToContact.chainId && selectedToContact.chainId !== assetInfo.chainId);
     const sendBigNumber = timesDecimals(sendNumber, assetInfo.decimals || '0');
     // input check
     if (sendType === 'token') {
@@ -411,7 +431,7 @@ const SendHome: React.FC = () => {
           return { status: false };
         }
 
-        if (isCross && sendBigNumber.isLessThanOrEqualTo(timesDecimals(crossFee, defaultToken.decimals))) {
+        if (isAELFCross && sendBigNumber.isLessThanOrEqualTo(timesDecimals(crossFee, defaultToken.decimals))) {
           setErrorMessage([TransactionError.CROSS_NOT_ENOUGH]);
           return { status: false };
         }
@@ -457,7 +477,6 @@ const SendHome: React.FC = () => {
     }
 
     // checkTransferLimitResult
-
     let caContract: ContractBasic;
     try {
       caContract = await getCAContract(chainInfo.chainId);
@@ -500,17 +519,98 @@ const SendHome: React.FC = () => {
       return { status: false };
     }
 
-    // transaction fee check
     let fee;
     let receiveAmount: string | undefined;
     let receiveAmountUsd: string | undefined;
     let transactionFee: string | undefined;
     let transactionUnit: string | undefined;
     let isEtransferCrossInLimit = false;
+    let transferType = TransferType.GENERAL_SAME_CHAIN;
+
+    // isRecommendEtransfer(to evm) fee check
+    if (warning[0] === WarningKey.MAKE_SURE_SUPPORT_PLATFORM && recommendETransfer) {
+      try {
+        const { withdrawInfo } = await crossTransferByEtransfer.withdrawPreview({
+          symbol: assetInfo.symbol,
+          address: selectedToContact.address,
+          chainId: assetInfo.chainId,
+          amount: sendNumber,
+          network: targetNetwork?.network || '',
+        });
+        fee = withdrawInfo?.aelfTransactionFee;
+        const maxAmount = Number(withdrawInfo?.maxAmount);
+        const minAmount = Number(withdrawInfo?.minAmount);
+        transactionFee = withdrawInfo.transactionFee;
+        transactionUnit = withdrawInfo.transactionUnit;
+        isEtransferCrossInLimit = Number(sendNumber) >= minAmount && Number(sendNumber) <= maxAmount;
+        // TODO: change it
+        if (isEtransferCrossInLimit) {
+          transferType = TransferType.E_TRANSFER;
+          Loading.hide();
+          return {
+            status: true,
+            fee,
+            receiveAmount,
+            receiveAmountUsd,
+            transactionFee,
+            transactionUnit,
+            transferType,
+            targetNetwork: targetNetwork,
+          };
+        }
+      } catch (error) {
+        console.log('err', error);
+        return { status: false };
+      }
+    }
+
+    // isRecommendEBridge(to evm) fee check
+    if (warning[0] === WarningKey.MAKE_SURE_SUPPORT_PLATFORM && recommendEBridge) {
+      try {
+        const fromChainInfo = getAELFChainInfoConfig(assetInfo.chainId);
+        const toChainInfo = getEVMChainInfoConfig(targetNetwork?.network || '');
+        const tokenInfo = getTokenConfig(assetInfo.symbol);
+        const bridge = new EBridge({
+          fromChainInfo,
+          toChainInfo,
+          tokenInfo,
+        });
+
+        const limit = await bridge.getLimit();
+        const f = await bridge.getELFFee();
+
+        // TODO： change it
+        // if(limit.isEnable){
+        // }else{
+        // }
+
+        console.log('MAKE_SURE_SUPPORT_PLATFORM limit', limit);
+        transactionFee = divDecimals(f?.result, defaultToken.decimals).toString();
+        transactionUnit = 'ELF';
+        console.log('MAKE_SURE_SUPPORT_PLATFORM fee', f);
+        transferType = TransferType.E_BRIDGE;
+
+        return {
+          status: true,
+          receiveAmount,
+          receiveAmountUsd,
+          transactionFee,
+          transactionUnit,
+          transferType,
+          targetNetwork,
+        };
+      } catch (error) {
+        console.log('err', error);
+      } finally {
+        Loading.hide();
+      }
+    }
+
+    // transaction fee check
     try {
-      if (isCross && isSupportCross) {
-        const arr = toInfo.address.split('_');
-        const network = arr[arr.length - 1];
+      console.log('isAELFCross isSupportCross', isAELFCross, isSupportCross);
+      if (isAELFCross && isSupportCross) {
+        const network = selectedToContact.chainId || 'AELF';
         const { withdrawInfo } = await crossTransferByEtransfer.withdrawPreview({
           symbol: assetInfo.symbol,
           address: selectedToContact.address,
@@ -518,6 +618,7 @@ const SendHome: React.FC = () => {
           amount: sendNumber,
           network,
         });
+        console.log('withdrawInfo', withdrawInfo);
         fee = withdrawInfo?.aelfTransactionFee;
         const maxAmount = Number(withdrawInfo?.maxAmount);
         const minAmount = Number(withdrawInfo?.minAmount);
@@ -527,11 +628,14 @@ const SendHome: React.FC = () => {
         if (isEtransferCrossInLimit) {
           receiveAmount = withdrawInfo?.receiveAmount;
           receiveAmountUsd = withdrawInfo?.receiveAmountUsd;
+          transferType = TransferType.E_TRANSFER;
         } else {
-          fee = await getTransactionFee(isCross);
+          transferType = TransferType.GENERAL_CROSS_CHAIN;
+          fee = await getTransactionFee(isAELFCross);
         }
       } else {
-        fee = await getTransactionFee(isCross);
+        fee = await getTransactionFee(isAELFCross);
+        transferType = TransferType.GENERAL_SAME_CHAIN;
       }
       console.log('fee', fee);
     } catch (err: any) {
@@ -549,21 +653,22 @@ const SendHome: React.FC = () => {
       fee,
       receiveAmount,
       receiveAmountUsd,
-      isEtransferCrossInLimit,
       transactionFee,
       transactionUnit,
+      transferType,
     };
   }, [
     chainInfo,
     balance,
-    selectedToContact.address,
     selectedToContact.chainId,
+    selectedToContact.address,
     assetInfo.chainId,
     assetInfo.decimals,
     assetInfo.symbol,
     sendNumber,
     sendType,
     checkManagerSyncState,
+    warning,
     defaultToken.symbol,
     defaultToken.decimals,
     crossFee,
@@ -572,143 +677,117 @@ const SendHome: React.FC = () => {
     getCAContract,
     checkTransferLimitWithJump,
     previewParamsWithoutFee,
-    isSupportCross,
-    toInfo.address,
     crossTransferByEtransfer,
+    targetNetwork,
+    getAELFChainInfoConfig,
+    getEVMChainInfoConfig,
+    getTokenConfig,
+    isSupportCross,
     getTransactionFee,
   ]);
 
   const preview = useCallback(async () => {
     const result = await checkCanPreview();
     if (!result?.status) return;
-    if (sendType === 'token' && assetInfo.chainId === 'AELF' && assetInfo.symbol !== 'ELF') {
-      ActionSheet.alert({
-        title: 'Send to exchange account?',
-        message: (
-          <TextM style={[styles.alertMessage]}>
-            {`Please note that `}
-            <TextM
-              style={[
-                styles.alertMessage,
-                FontStyles.functionalRedDefault,
-              ]}>{`only MainChain ELF can be sent directly to exchanges`}</TextM>
-            {`. If you are sending another asset, please swap it to ELF first or try the withdrawal function in ETransfer.`}
-          </TextM>
-        ),
-        buttons: [
-          { title: 'Cancel', type: 'outline' },
-          {
-            title: 'OK',
-            onPress: () => {
-              navigationService.navigate('SendPreview', {
-                ...previewParamsWithoutFee,
-                transactionFee: result?.fee || '0',
-                receiveAmount: result?.receiveAmount,
-                receiveAmountUsd: result?.receiveAmountUsd,
-                isEtransferCrossInLimit: result?.isEtransferCrossInLimit,
-                crossChainFee: result?.transactionFee || crossFee,
-                crossChainFeeUnit: result?.transactionUnit || '',
-              });
-            },
-          },
-        ],
-      });
-    } else {
-      navigationService.navigate('SendPreview', {
-        ...previewParamsWithoutFee,
-        transactionFee: result?.fee || '0',
-        receiveAmount: result?.receiveAmount,
-        receiveAmountUsd: result?.receiveAmountUsd,
-        isEtransferCrossInLimit: result?.isEtransferCrossInLimit,
-        crossChainFee: result?.transactionFee || crossFee,
-        crossChainFeeUnit: result?.transactionUnit || '',
-      });
-    }
-  }, [assetInfo.chainId, assetInfo.symbol, checkCanPreview, crossFee, previewParamsWithoutFee, sendType]);
+    // if (sendType === 'token' && assetInfo.chainId === 'AELF' && assetInfo.symbol !== 'ELF') {
+    // ActionSheet.alert({
+    //   title: 'Send to exchange account?',
+    //   message: (
+    //     <TextM style={[styles.alertMessage]}>
+    //       {`Please note that `}
+    //       <TextM
+    //         style={[
+    //           styles.alertMessage,
+    //           FontStyles.functionalRedDefault,
+    //         ]}>{`only MainChain ELF can be sent directly to exchanges`}</TextM>
+    //       {`. If you are sending another asset, please swap it to ELF first or try the withdrawal function in ETransfer.`}
+    //     </TextM>
+    //   ),
+    //   buttons: [
+    //     { title: 'Cancel', type: 'outline' },
+    //     {
+    //       title: 'OK',
+    //       onPress: () => {
+    //         navigationService.navigate('SendPreview', {
+    //           ...previewParamsWithoutFee,
+    //           transactionFee: result?.fee || '0',
+    //           receiveAmount: result?.receiveAmount,
+    //           receiveAmountUsd: result?.receiveAmountUsd,
+    //           isEtransferCrossInLimit: result?.isEtransferCrossInLimit,
+    //           crossChainFee: result?.transactionFee || crossFee,
+    //           crossChainFeeUnit: result?.transactionUnit || '',
+    //         });
+    //       },
+    //     },
+    //   ],
+    // });
+    // }
 
-  const ButtonUI = useMemo(() => {
+    console.log('navigationService!!!!', {
+      ...previewParamsWithoutFee,
+      transactionFee: result?.fee || '0',
+      networkFee: result?.fee || '0',
+      receiveAmount: result?.receiveAmount,
+      receiveAmountUsd: result?.receiveAmountUsd,
+      crossChainFee: result?.transactionFee || crossFee,
+      crossChainFeeUnit: result?.transactionUnit || '',
+      transferType: result?.transferType || TransferType.GENERAL_SAME_CHAIN,
+      targetNetwork: result?.targetNetwork,
+    });
+    navigationService.navigate('SendPreview', {
+      ...previewParamsWithoutFee,
+      transactionFee: result?.fee || '0',
+      networkFee: result?.fee || '0',
+      receiveAmount: result?.receiveAmount,
+      receiveAmountUsd: result?.receiveAmountUsd,
+      crossChainFee: result?.transactionFee || crossFee,
+      crossChainFeeUnit: result?.transactionUnit || '',
+      transferType: result?.transferType || TransferType.GENERAL_SAME_CHAIN,
+      targetNetwork: result?.targetNetwork,
+    });
+    // }
+  }, [checkCanPreview, crossFee, previewParamsWithoutFee]);
+
+  const titleText = useMemo(() => {
+    if (step === 2) return `Enter Amount`;
+    return `${t('Send')}${sendType === 'token' ? ' ' + (assetInfo.label || assetInfo.symbol) : ''}`;
+  }, [assetInfo.label, assetInfo.symbol, sendType, step, t]);
+
+  const renderButtonUI = useCallback(() => {
+    // hide token
+    if (
+      (!selectedToContact.address || !isCheckAddressFinish || warning[0] === WarningKey.MAKE_SURE_SUPPORT_PLATFORM) &&
+      step === 1
+    )
+      return null;
+
+    // text
+    let btnText = 'Next';
+    if (step === 1 && warning[0] === WarningKey.MAIN_CHAIN_TO_NO_AFFIX_ADDRESS_ELF) btnText = 'Confirm and continue';
+    if (step === 2) btnText = 'Preview';
+
+    // disable
+    const disable =
+      step === 1 ? warning[0] === WarningKey.INVALID_ADDRESS || warning[0] === WarningKey.SAME_ADDRESS : previewDisable;
+
+    // action
+    const action = step === 1 ? nextStep : preview;
+
     return (
-      <View style={[styles.buttonWrapStyle, step === 1 && BGStyles.bg1]}>
-        {step === 2 && (
-          <CommonButton
-            disabled={previewDisable}
-            loading={isLoading}
-            title={t('Preview')}
-            type="primary"
-            onPress={preview}
-          />
-        )}
-        {step === 1 && (
-          <CommonButton
-            loading={isLoading}
-            disabled={nextDisable}
-            title={t('Next')}
-            type="primary"
-            onPress={nextStep}
-          />
-        )}
+      <View style={styles.buttonWrapStyle}>
+        <CommonButton loading={isLoading} disabled={disable} title={btnText} type="primary" onPress={action} />
       </View>
     );
-  }, [isLoading, nextDisable, nextStep, preview, previewDisable, step, t]);
-
-  const WarningUI = useMemo(() => {
-    if (enableEtransfer && isValidOtherChainAddress) {
-      return (
-        <View style={[otherChainWarningStyle.wrap, otherChainWarningStyle.flex]}>
-          <Svg icon="warning" size={pTd(16)} iconStyle={otherChainWarningStyle.icon} />
-          <RichText
-            text={AddressError.OTHER_CHAIN_ADDRESS}
-            commonTextStyle={otherChainWarningStyle.commonText}
-            links={[
-              {
-                linkSyntax: 'ETransfer',
-                linkStyle: otherChainWarningStyle.linkText,
-                linkPress: () => {
-                  ensureKeyboardClosed();
-                  if (!eTransferUrl) return;
-                  onDisclaimerModalPress(
-                    DepositModalMap.eTransfer,
-                    stringifyETrans({
-                      url: eTransferUrl,
-                      query: {
-                        tokenSymbol: assetInfo?.symbol,
-                        type: 'Withdraw',
-                        chainId: assetInfo?.chainId,
-                        withdrawAddress: selectedToContact.address,
-                      },
-                    }),
-                  );
-                },
-              },
-            ]}
-            wrapperStyle={otherChainWarningStyle.text}
-            textDivider={'$'}
-          />
-        </View>
-      );
-    } else if (assetInfo?.chainId !== MAIN_CHAIN_ID) {
-      return (
-        <Touchable
-          style={[GStyles.flexRow, GStyles.itemCenter, styles.warningWrap]}
-          onPress={() => showDialog('exchange')}>
-          <Svg icon="warning1" size={pTd(16)} />
-          <TextM style={[GStyles.marginLeft(pTd(8)), GStyles.flex1, FontStyles.font3]}>Send to exchange account?</TextM>
-          <Svg icon="down-arrow" size={pTd(16)} />
-        </Touchable>
-      );
-    } else {
-      return null;
-    }
   }, [
-    assetInfo?.chainId,
-    assetInfo?.symbol,
-    eTransferUrl,
-    enableEtransfer,
-    ensureKeyboardClosed,
-    isValidOtherChainAddress,
-    onDisclaimerModalPress,
+    isCheckAddressFinish,
+    isLoading,
+    nextStep,
+    preview,
+    previewDisable,
     selectedToContact.address,
-    showDialog,
+    step,
+    styles.buttonWrapStyle,
+    warning,
   ]);
 
   useEffect(() => {
@@ -718,56 +797,54 @@ const SendHome: React.FC = () => {
   return (
     <PageContainer
       safeAreaColor={['black']}
-      titleDom={`${t('Send')}${sendType === 'token' ? ' ' + (assetInfo.label || assetInfo.symbol) : ''}`}
+      titleDom={titleText}
       rightDom={
-        sendType === 'token' && !isFixedToContact ? (
-          <Touchable
-            onPress={async () => {
-              if (selectedToContact?.address) return showDialog('clearAddress');
-              if (!(await qrScanPermissionAndToast())) return;
-              navigationService.navigate('QrScanner', { fromSendPage: true });
-            }}>
-            <Svg icon="scan" size={pTd(17.5)} color={defaultColors.font2} iconStyle={styles.iconStyle} />
+        step === 2 ? (
+          // TODO: click jump
+          <Touchable>
+            <Svg icon="question" size={pTd(24)} color={defaultColors.font2} iconStyle={styles.iconStyle} />
           </Touchable>
-        ) : undefined
+        ) : null
       }
       containerStyles={styles.pageWrap}
       scrollViewProps={{ disabled: true }}>
-      {/* Group 1 */}
-      <View style={styles.group}>
-        <From />
-        <To
-          isFixedToContact={isFixedToContact}
-          step={step}
-          setStep={setStep}
-          setErrorMessage={setErrorMessage}
-          selectedToContact={selectedToContact}
-          setSelectedToContact={setSelectedToContact}
-        />
-      </View>
-      {AddressErrorArray.filter(ele => errorMessage.includes(ele)).map(err => (
-        <Text key={err} style={[styles.errorMessage]}>
-          {t(err)}
-        </Text>
-      ))}
-
-      {WarningUI}
+      <ToAddressInput
+        step={step}
+        warning={warning}
+        checkFinish={isCheckAddressFinish}
+        selectedToken={assetInfo}
+        selectedToContact={selectedToContact}
+        isFixedToContact={isFixedToContact}
+        setStep={setStep}
+        setWarning={setWarning}
+        setSelectedToContact={setSelectedToContact}
+        setChainList={setChainList}
+        setCheckFinish={setIsCheckAddressFinish}
+      />
+      {Step1Dom}
 
       {/* Group 2 token */}
       {sendType === 'token' && step === 2 && (
-        <View style={styles.group}>
-          <AmountToken
-            onPressMax={onPressMax}
+        <>
+          <TokenBalanceShow
+            label={assetInfo?.label}
+            symbol={assetInfo.symbol}
+            decimals={assetInfo.decimals}
             balanceShow={balance}
-            sendTokenNumber={sendNumber}
-            setSendTokenNumber={setSendNumber}
-            selectedToken={assetInfo}
-            selectedAccount={selectedFromAccount}
+            onPressMax={onPressMax}
           />
-        </View>
+          <TokenAmountInput
+            value={sendNumber}
+            usdValue={sendUsdNumber}
+            symbol={assetInfo.symbol}
+            decimals={assetInfo.decimals}
+            setValue={setSendNumber}
+            setUsdValue={setSendUsdNumber}
+          />
+        </>
       )}
 
-      {/* Group 2 nft */}
+      {/* TODO: nft section */}
       {sendType === 'nft' && step === 2 && (
         <>
           <View style={styles.group}>
@@ -778,21 +855,7 @@ const SendHome: React.FC = () => {
           </View>
         </>
       )}
-
-      {TransactionErrorArray.filter(ele => errorMessage.includes(ele)).map(err => (
-        <Text
-          key={err}
-          style={[
-            styles.errorMessage,
-            sendType === 'nft' && styles.nftErrorMessage,
-            err === TransactionError.SYNCHRONIZING && styles.warnMessage,
-          ]}>
-          {t(err)}
-        </Text>
-      ))}
-
-      {/* Group 3 contact */}
-      <View style={styles.space} />
+      {/* <View style={styles.space} />
       {step === 1 && (
         <SelectContact
           chainId={assetInfo.chainId}
@@ -800,9 +863,8 @@ const SendHome: React.FC = () => {
             setSelectedToContact(item);
           }}
         />
-      )}
-
-      {ButtonUI}
+      )} */}
+      {renderButtonUI()}
     </PageContainer>
   );
 };

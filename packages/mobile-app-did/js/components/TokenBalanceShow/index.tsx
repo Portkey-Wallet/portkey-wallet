@@ -9,16 +9,19 @@ import { makeStyles } from '@rneui/themed';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
 import Touchable from 'components/Touchable';
+import { formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 
 export interface ITokenBalanceShow {
+  label?: string;
   symbol: string;
+  decimals: string;
   imageUrl?: string;
   balanceShow: string;
   onPressMax: () => void;
 }
 
 const TokenBalanceShow: React.FC<ITokenBalanceShow> = props => {
-  const { symbol, imageUrl, balanceShow, onPressMax } = props;
+  const { label, symbol, decimals, imageUrl, balanceShow, onPressMax } = props;
   const styles = getStyles();
   const defaultToken = useDefaultToken();
   const symbolImages = useSymbolImages();
@@ -27,7 +30,7 @@ const TokenBalanceShow: React.FC<ITokenBalanceShow> = props => {
     <View style={[GStyles.flexRow, GStyles.alignCenter, styles.wrap]}>
       <CommonAvatar
         hasBorder
-        title={symbol}
+        title={label || symbol}
         avatarSize={pTd(42)}
         // elf token icon is fixed , only use white background color
         svgName={symbol === defaultToken.symbol ? 'elf-icon' : undefined}
@@ -37,7 +40,10 @@ const TokenBalanceShow: React.FC<ITokenBalanceShow> = props => {
       />
       <View style={[GStyles.flex1, styles.center]}>
         <TextL style={styles.symbolName}>{symbol}</TextL>
-        <TextM style={styles.balanceNumber}>{`${balanceShow} available`}</TextM>
+        <TextM style={styles.balanceNumber}>{`${formatTokenAmountShowWithDecimals(
+          balanceShow,
+          decimals,
+        )} available`}</TextM>
       </View>
       <Touchable onPress={onPressMax}>
         <TextL style={styles.max}>Max</TextL>

@@ -34,22 +34,25 @@ const Card = ({
   );
 };
 
-const SelectExchangeCard: React.FC = () => {
-  const [isSelectedExchange, setIsSelectedExchange] = useState(true);
+const SelectExchangeCard: React.FC<{
+  isSendToExchange: boolean;
+  setIsSendToExchange: React.Dispatch<React.SetStateAction<boolean>>;
+}> = props => {
+  const { isSendToExchange, setIsSendToExchange } = props;
 
   return (
     <View>
       <Card
         title="Yes, send to an exchange"
         content={<ExchangeIcons />}
-        isSelected={isSelectedExchange}
-        onPress={() => setIsSelectedExchange(true)}
+        isSelected={isSendToExchange}
+        onPress={() => setIsSendToExchange(true)}
       />
       <Card
         title="No, it’s a non-exchange address"
-        isSelected={!isSelectedExchange}
+        isSelected={!isSendToExchange}
         showCardMargin
-        onPress={() => setIsSelectedExchange(false)}
+        onPress={() => setIsSendToExchange(false)}
       />
     </View>
   );

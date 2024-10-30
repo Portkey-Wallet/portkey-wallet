@@ -34,7 +34,8 @@ export function useIsValidSuffix() {
   const currentChainList = useCurrentChainList();
   const chainIdArr = useMemo(() => currentChainList?.map(chain => chain.chainId as string) || [], [currentChainList]);
   return useCallback(
-    (suffix: string) => {
+    (suffix?: string) => {
+      if (!suffix) return false;
       return chainIdArr.includes(suffix);
     },
     [chainIdArr],

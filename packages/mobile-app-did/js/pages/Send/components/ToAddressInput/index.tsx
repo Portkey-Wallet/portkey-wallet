@@ -3,9 +3,9 @@ import GStyles from 'assets/theme/GStyles';
 import { TextL, TextM } from 'components/CommonText';
 import Svg from 'components/Svg';
 import { useLanguage } from 'i18n/hooks';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { View, TextInput } from 'react-native';
-import { formatStr2EllipsisStr, getAddressChainId, isSameAddresses } from '@portkey-wallet/utils';
+import { formatStr2EllipsisStr, getAddressChainId, getChainIdByAddress, isSameAddresses } from '@portkey-wallet/utils';
 import LottieLoading from 'components/LottieLoading';
 import { pTd } from 'utils/unit';
 import Touchable from 'components/Touchable';
@@ -20,6 +20,7 @@ import { getAelfAddress, isCrossChain, isDIDAelfAddress } from '@portkey-wallet/
 import { useIsValidSuffix } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { warning1Arr, WarningKey } from 'pages/Send/constant';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { INetworkItem } from '../SelectNetwork';
 
 interface IToAddressInput {
   isFixedToContact?: boolean;
@@ -28,15 +29,15 @@ interface IToAddressInput {
   setSelectedToContact: (contact: any) => void;
   step: 1 | 2;
   setStep: (step: 1 | 2) => void;
-  err: WarningKey[];
-  setErrorMessage: React.Dispatch<React.SetStateAction<WarningKey[]>>;
+  warning: WarningKey[];
+  setWarning: React.Dispatch<React.SetStateAction<WarningKey[]>>;
   // TODO： change it
-  setChainList: React.Dispatch<React.SetStateAction<any>>;
+  setChainList: React.Dispatch<React.SetStateAction<INetworkItem[]>>;
+  checkFinish: boolean;
+  setCheckFinish: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function ToAddressInput({
-  // isChecking,
-  // checkedPass,
   isFixedToContact,
   selectedToken,
   selectedToContact,
@@ -44,25 +45,27 @@ export default function ToAddressInput({
   step,
   setStep,
   setChainList,
-  err,
-  setErrorMessage,
+  warning,
+  setWarning,
+  checkFinish,
+  setCheckFinish,
 }: IToAddressInput) {
   const { t } = useLanguage();
   const styles = getStyles();
   const qrScanPermissionAndToast = useQrScanPermissionAndToast();
   const [isChecking, setIsChecking] = useState(false);
-  const [checkFinish, setCheckFinish] = useState(false);
   const [checkedPass, setCheckedPass] = useState(false);
 
   const isValidChainId = useIsValidSuffix();
   const wallet = useCurrentWalletInfo();
 
-  const isDangerWarning = warning1Arr.includes(err?.[0]);
+  const isDangerWarning = useMemo(() => warning1Arr.includes(warning?.[0]), [warning]);
 
   const clearInput = useCallback(() => {
     setStep(1);
+    setWarning([]);
     setSelectedToContact({ address: '', name: '' });
-  }, [setSelectedToContact, setStep]);
+  }, [setSelectedToContact, setStep, setWarning]);
 
   const checkAddressByFE = useCallback(
     (v: string) => {
@@ -71,66 +74,100 @@ export default function ToAddressInput({
       // include chainId
       if (v.includes('_')) {
         // same address
-        const suffix = getAddressChainId(selectedToContact.address);
+        const suffix = getAddressChainId(v);
         if (
           isSameAddresses(
             wallet?.[selectedToken?.chainId || 'AELF']?.caAddress || '',
             getAelfAddress(selectedToContact.address),
           ) &&
           suffix === selectedToken?.chainId
-        )
-          setErrorMessage([WarningKey.SAME_ADDRESS]);
+        ) {
+          console.log('isDIDAelfAddress333');
 
-        // invalid chainId
-        if (!isValidChainId(getAddressChainId(selectedToContact?.address || '') || ''))
-          setErrorMessage([WarningKey.INVALID_ADDRESS]);
-
-        // cross chain
-        if (isCrossChain(selectedToContact.address, selectedToken?.chainId || 'AELF'))
-          setErrorMessage([WarningKey.CROSS_CHAIN]);
+          setCheckedPass(false);
+          setWarning([WarningKey.SAME_ADDRESS]);
+        } else if (!isValidChainId(suffix)) {
+          // invalid chainId
+          setCheckedPass(false);
+          setWarning([WarningKey.INVALID_ADDRESS]);
+        } else if (isCrossChain(v, selectedToken?.chainId || 'AELF')) {
+          // cross chain
+          setCheckedPass(false);
+          setWarning([WarningKey.CROSS_CHAIN]);
+        } else {
+          console.log('isDIDAelfAddress222');
+          setWarning([]);
+          setCheckedPass(true);
+        }
       } else {
         // TODO: change it
         // same address
+        if (selectedToken?.chainId === 'AELF') {
+          setCheckedPass(false);
+          setWarning([WarningKey.MAIN_CHAIN_TO_NO_AFFIX_ADDRESS_ELF]);
+        } else {
+          setCheckedPass(false);
+          setWarning([WarningKey.DAPP_CHAIN_TO_NO_AFFIX_ADDRESS_ELF]);
+        }
       }
-
+      setCheckFinish(true);
       return true;
     },
-    [isValidChainId, selectedToContact.address, selectedToken?.chainId, setErrorMessage, wallet],
+    [isValidChainId, selectedToContact.address, selectedToken?.chainId, setCheckFinish, setWarning, wallet],
   );
 
   const getNetworkList = useDebounceCallback(
     async (toAddress: string) => {
+      if (!toAddress) {
+        setWarning([]);
+        setIsChecking(false);
+        setCheckFinish(true);
+        return;
+      }
+
       try {
         setIsChecking(true);
-        const list = await getSendNetworkList({
+        const { data } = await getSendNetworkList({
           symbol: selectedToken?.symbol || '',
           chainId: selectedToken?.chainId || 'AELF',
           toAddress,
         });
-        setChainList(list);
-        setCheckedPass(true);
+
+        const chainListLen = data.networkList.length;
+        setChainList(data.networkList);
+        setCheckedPass(!!chainListLen);
+        chainListLen ? setWarning([WarningKey.MAKE_SURE_SUPPORT_PLATFORM]) : setWarning([WarningKey.INVALID_ADDRESS]);
       } catch (error) {
         console.log('getNetworkList err', error);
-        setErrorMessage([WarningKey.INVALID_ADDRESS]);
+        setWarning([WarningKey.INVALID_ADDRESS]);
       } finally {
         setIsChecking(false);
         setCheckFinish(true);
       }
     },
-    [selectedToken?.chainId, selectedToken?.symbol, setChainList, setErrorMessage],
+    [selectedToken?.chainId, selectedToken?.symbol, setChainList, setCheckFinish, setWarning],
   );
 
   const onInput = useCallback(
     async (v: string) => {
       const _v = v.trim();
-      setSelectedToContact({ name: '', address: _v });
       setCheckFinish(false);
-      if (!checkAddressByFE(_v)) {
-        getNetworkList(_v);
-      }
+      setSelectedToContact(() => {
+        let chainId = '';
+        if (_v.includes('_') && isDIDAelfAddress(_v)) chainId = getChainIdByAddress(_v);
+        return { name: '', address: _v, chainId };
+      });
+
+      const FEPass = checkAddressByFE(_v);
+      if (!FEPass) getNetworkList(_v);
+      // getNetworkList(_v);
     },
-    [checkAddressByFE, getNetworkList, setSelectedToContact],
+    [checkAddressByFE, getNetworkList, setCheckFinish, setSelectedToContact],
   );
+
+  const pasteAddress = useCallback(async () => {
+    // todo: add paste str when press btn
+  }, []);
 
   return (
     <View style={styles.wrap}>
@@ -146,7 +183,7 @@ export default function ToAddressInput({
                 })`}</TextM>
               </>
             ) : (
-              <TextM>{formatStr2EllipsisStr(selectedToContact?.address, 15)}</TextM>
+              <TextM>{formatStr2EllipsisStr(selectedToContact?.address, 8)}</TextM>
             )}
             {!isFixedToContact && (
               <Touchable onPress={() => setStep(1)}>
@@ -169,17 +206,25 @@ export default function ToAddressInput({
               onChangeText={onInput}
             />
 
-            {selectedToContact.address && (
+            {selectedToContact.address && !isChecking && (
               <Touchable onPress={clearInput}>
                 <Svg icon="clear4" size={pTd(16)} />
               </Touchable>
             )}
             {isChecking && <LottieLoading lottieWrapStyle={[GStyles.paddingArg(0), GStyles.marginLeft(pTd(16))]} />}
-            {selectedToContact.address && !isChecking && checkFinish && (
+            {selectedToContact.address && !isChecking && checkFinish && !checkedPass && (
               <Svg
-                icon={checkedPass ? 'checked' : 'warning'}
+                icon={'warning'}
                 size={pTd(20)}
                 color={isDangerWarning ? defaultColors.iconDanger3 : defaultColors.iconWarning3}
+                iconStyle={GStyles.marginLeft(16)}
+              />
+            )}
+            {selectedToContact.address && !isChecking && checkFinish && checkedPass && (
+              <Svg
+                icon={'checked'}
+                size={pTd(20)}
+                color={defaultColors.iconWarning3}
                 iconStyle={GStyles.marginLeft(16)}
               />
             )}
@@ -199,10 +244,14 @@ export default function ToAddressInput({
       </View>
 
       <Divider />
-      <View style={[GStyles.flexRow, GStyles.paddingArg(pTd(8), pTd(16))]}>
-        <TextM>Enter or </TextM>
-        <TextM style={styles.brand2Color}>paste a wallet address</TextM>
-      </View>
+      {!selectedToContact.address && (
+        <View style={[GStyles.flexRow, GStyles.paddingArg(pTd(8), pTd(16))]}>
+          <TextM>Enter or </TextM>
+          <TextM style={styles.brand2Color} onPress={pasteAddress}>
+            paste a wallet address
+          </TextM>
+        </View>
+      )}
     </View>
   );
 }

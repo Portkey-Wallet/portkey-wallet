@@ -9,10 +9,12 @@ import { makeStyles } from '@rneui/themed';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
 import Touchable from 'components/Touchable';
+import { formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 
 export interface ITokenBalanceShow {
-  symbol: string;
   label?: string;
+  symbol: string;
+  decimals: string;
   imageUrl?: string;
   balanceShow: string;
   onPressMax: () => void;
@@ -29,7 +31,7 @@ const TokenBalanceShow: React.FC<ITokenBalanceShow> = props => {
     <View style={[GStyles.flexRow, GStyles.alignCenter, styles.wrap, styleProps]}>
       <CommonAvatar
         hasBorder
-        title={symbol}
+        title={label || symbol}
         avatarSize={pTd(42)}
         // elf token icon is fixed , only use white background color
         svgName={symbol === defaultToken.symbol ? 'elf-icon' : undefined}

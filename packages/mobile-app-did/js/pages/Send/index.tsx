@@ -1,5 +1,5 @@
 import SendHome from './SendHome';
-import SendPreviewPage from './SendPreviewPage';
+import SendPreviewPage from './SendPreview';
 import SelectContact from './SelectContact';
 import SelectAsset from './SelectAsset';
 import SendReceiveFinishPage from '../../components/SendReceiveFinishPage';

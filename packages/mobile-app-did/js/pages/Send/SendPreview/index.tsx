@@ -267,7 +267,7 @@ const SendPreview: React.FC = () => {
         const arr = toInfo.address.split('_');
         network = arr[arr.length - 1];
       } else {
-        network = targetNetwork.network || toInfo.network || String(toInfo.chainId);
+        network = targetNetwork?.network || toInfo?.network || String(toInfo?.chainId);
       }
 
       const crossTransferByEtransferResult = await crossTransferByEtransfer.withdraw({
@@ -357,7 +357,7 @@ const SendPreview: React.FC = () => {
     sendNumber,
     sendType,
     successNavigateName,
-    targetNetwork.network,
+    targetNetwork?.network,
     toInfo.address,
     toInfo.chainId,
     toInfo.network,

@@ -31,7 +31,9 @@ export const warning2Arr: WarningKey[] = [
 // info style
 export const warning3Arr: WarningKey[] = [WarningKey.MAKE_SURE_SUPPORT_PLATFORM];
 
-// export const previewMessage = {
-//    "": "Exceeds available balance"
+export const TransferErrorMessage = {
+  BALANCE_NOT_ENOUGH: 'Exceeds available balance',
+  FEE_NOT_ENOUGH: 'Fee not enough',
+};
 
-// }
+export const HELP_URL = 'https://doc.portkey.finance/docs/How-to-send-and-receive-assets';

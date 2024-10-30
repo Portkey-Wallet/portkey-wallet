@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { Keyboard, View } from 'react-native';
+import { Keyboard, Linking, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import navigationService from 'utils/navigationService';
 import Svg from 'components/Svg';
@@ -19,7 +19,12 @@ import {
   CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL,
   useCrossTransferByEtransfer,
 } from '@portkey-wallet/hooks/hooks-ca/useWithdrawByETransfer';
-import { divDecimals, formatTokenAmountShowWithDecimals, timesDecimals } from '@portkey-wallet/utils/converter';
+import {
+  divDecimals,
+  formatAmountShow,
+  formatTokenAmountShowWithDecimals,
+  timesDecimals,
+} from '@portkey-wallet/utils/converter';
 import {
   IToSendHomeParamsType,
   IToSendPreviewParamsType,
@@ -61,7 +66,7 @@ import ToAddressInput from '../components/ToAddressInput';
 import TokenBalanceShow from 'components/TokenBalanceShow';
 import TokenAmountInput from 'components/TokenAmountInput';
 import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
-import { warning1Arr, WarningKey, WarningTips } from '../constant';
+import { HELP_URL, TransferErrorMessage, warning1Arr, WarningKey, WarningTips } from '../constant';
 import { CommonPromptCard, PromptCardType } from 'components/CommonPromptCard';
 import SupportedExchangesCard from '../components/SupportedExchangesCard';
 import GeneralTips from '../components/GeneralTips';
@@ -73,6 +78,7 @@ import useGetEBridgeConfig from 'hooks/ebridge';
 import { EBridge } from '@portkey-wallet/utils/eBridge';
 import ActionSheet from 'components/ActionSheet';
 import OverlayModal from 'components/OverlayModal';
+import { getLimitTips, getSmallerValue, openOutLink } from '../utils';
 
 const SendHome: React.FC = () => {
   const {
@@ -122,6 +128,7 @@ const SendHome: React.FC = () => {
 
   const [selectedToContact, setSelectedToContact] = useState(toInfo); // to
   const [balance, setBalance] = useState<string>(assetInfo?.balance || '');
+  const [ELFBalance, setELFBalance] = useState<string>('');
 
   const [sendNumber, setSendNumber] = useState<string>(''); // tokenNumber  like 100
   const [sendUsdNumber, setSendUsdNumber] = useState<string>(''); // tokenNumber  like 100
@@ -134,7 +141,7 @@ const SendHome: React.FC = () => {
 
   const [step, setStep] = useState<1 | 2>(isFixedToContact ? 2 : 1);
   const [isLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<any[]>([]);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const checkManagerSyncState = useCheckManagerSyncState();
   const getCAContract = useGetCAContract();
@@ -223,11 +230,11 @@ const SendHome: React.FC = () => {
       Loading.hide();
       // check is SYNCHRONIZING
       const _isManagerSynced = await checkManagerSyncState(chainInfo?.chainId || 'AELF');
-      if (!_isManagerSynced) return setErrorMessage([TransactionError.SYNCHRONIZING]);
+      if (!_isManagerSynced) return CommonToast.warn(TransactionError.SYNCHRONIZING);
 
       setSendNumber(maxAmountSend);
       setSendUsdNumber(maxAmountSendUsd);
-      setErrorMessage([]);
+      setErrorMessage('');
     } catch (err) {
       console.log('max err!!', err);
     } finally {
@@ -249,8 +256,21 @@ const SendHome: React.FC = () => {
     }
   }, [assetInfo, getTokenViewContract, wallet]);
 
+  const initELFBalance = useCallback(async () => {
+    const caAddress = wallet?.[assetInfo.chainId]?.caAddress;
+    if (!assetInfo || !caAddress) return;
+    try {
+      const tokenContract = await getTokenViewContract(assetInfo.chainId);
+      const _balance = await getELFChainBalance(tokenContract, defaultToken.symbol, caAddress);
+      setELFBalance(_balance);
+    } catch (error) {
+      console.log('init ELF Balance', error);
+    }
+  }, [assetInfo, defaultToken.symbol, getTokenViewContract, wallet]);
+
   useEffectOnce(() => {
     initBalance();
+    initELFBalance();
   });
 
   const selectTargetNetwork = useCallback((n: INetworkItem) => {
@@ -372,7 +392,7 @@ const SendHome: React.FC = () => {
 
   const dappChainToNoAffixAddressAction = useCallback(() => {
     if (isSendToExchange) {
-      // TODO: add modal Unsupported: Direct Transfer from dAppChain to Exchange
+      // TODO: change style
       ActionSheet.alert({
         buttonGroupDirection: 'column',
         title: 'Unsupported: Direct Transfer from dAppChain to Exchange',
@@ -411,10 +431,6 @@ const SendHome: React.FC = () => {
       return dappChainToNoAffixAddressAction();
     } else if (warning[0] === WarningKey.MAIN_CHAIN_TO_NO_AFFIX_ADDRESS_ELF) {
       return mainChainToNoAffixAddressAction();
-    } else if (warning[0] === WarningKey.CROSS_CHAIN) {
-      // TODO
-    } else if (warning[0] === WarningKey.MAKE_SURE_SUPPORT_PLATFORM) {
-      // eBridge or eTransfer
     }
     setStep(2);
   }, [dappChainToNoAffixAddressAction, mainChainToNoAffixAddressAction, warning]);
@@ -435,7 +451,7 @@ const SendHome: React.FC = () => {
   const checkTransferLimitWithJump = useCheckTransferLimitWithJump();
 
   const checkCanPreview = useCallback(async () => {
-    setErrorMessage([]);
+    setErrorMessage('');
 
     if (!chainInfo) {
       return { status: false };
@@ -450,25 +466,25 @@ const SendHome: React.FC = () => {
       if (assetInfo.symbol === defaultToken.symbol) {
         // ELF
         if (sendBigNumber.isGreaterThan(assetBalanceBigNumber)) {
-          setErrorMessage([TransactionError.TOKEN_NOT_ENOUGH]);
+          setErrorMessage(TransactionError.TOKEN_NOT_ENOUGH);
           return { status: false };
         }
 
         if (isAELFCross && sendBigNumber.isLessThanOrEqualTo(timesDecimals(crossFee, defaultToken.decimals))) {
-          setErrorMessage([TransactionError.CROSS_NOT_ENOUGH]);
+          setErrorMessage(TransactionError.CROSS_NOT_ENOUGH);
           return { status: false };
         }
       } else {
-        // nft
+        // other token
         if (sendBigNumber.isGreaterThan(assetBalanceBigNumber)) {
-          setErrorMessage([TransactionError.TOKEN_NOT_ENOUGH]);
+          setErrorMessage(TransferErrorMessage.BALANCE_NOT_ENOUGH);
           return { status: false };
         }
       }
     } else {
       // nft
       if (sendBigNumber.isGreaterThan(assetBalanceBigNumber)) {
-        setErrorMessage([TransactionError.NFT_NOT_ENOUGH]);
+        setErrorMessage(TransactionError.NFT_NOT_ENOUGH);
         return { status: false };
       }
     }
@@ -483,7 +499,19 @@ const SendHome: React.FC = () => {
           type: sendType,
         });
         if (!interceptResult) {
-          showDialog('crossChainInterception');
+          // TODO: change style
+          ActionSheet.alert({
+            title: 'Unsupported asset',
+            message: t(
+              'The asset does not exist on the target chain, so the transfer cannot be completed. Please check the asset and try again with a supported chain.',
+            ),
+            buttons: [
+              {
+                title: t('OK'),
+                type: 'primary',
+              },
+            ],
+          });
           return;
         }
       }
@@ -507,7 +535,6 @@ const SendHome: React.FC = () => {
       Loading.hide();
       return { status: false };
     }
-
     try {
       const checkTransferLimitResult = await checkTransferLimitWithJump({
         caContract,
@@ -538,16 +565,16 @@ const SendHome: React.FC = () => {
     const _isManagerSynced = await checkManagerSyncState(chainInfo?.chainId || 'AELF');
     if (!_isManagerSynced) {
       Loading.hide();
-      setErrorMessage([TransactionError.SYNCHRONIZING]);
+      setErrorMessage(TransactionError.SYNCHRONIZING);
       return { status: false };
     }
 
-    let fee;
-    let receiveAmount: string | undefined;
-    let receiveAmountUsd: string | undefined;
+    let networkFee: string | undefined;
+    let networkFeeUnit: string | undefined;
     let transactionFee: string | undefined;
     let transactionUnit: string | undefined;
-    let isEtransferCrossInLimit = false;
+    let receiveAmount: string | undefined;
+    let receiveAmountUsd: string | undefined;
     let transferType = TransferType.GENERAL_SAME_CHAIN;
 
     // isRecommendEtransfer(to evm) fee check
@@ -560,19 +587,20 @@ const SendHome: React.FC = () => {
           amount: sendNumber,
           network: targetNetwork?.network || '',
         });
-        fee = withdrawInfo?.aelfTransactionFee;
+        transactionFee = withdrawInfo?.aelfTransactionFee;
         const maxAmount = Number(withdrawInfo?.maxAmount);
         const minAmount = Number(withdrawInfo?.minAmount);
         transactionFee = withdrawInfo.transactionFee;
         transactionUnit = withdrawInfo.transactionUnit;
-        isEtransferCrossInLimit = Number(sendNumber) >= minAmount && Number(sendNumber) <= maxAmount;
+        const isEtransferCrossInLimit = Number(sendNumber) >= minAmount && Number(sendNumber) <= maxAmount;
         // TODO: change it
         if (isEtransferCrossInLimit) {
           transferType = TransferType.E_TRANSFER;
           Loading.hide();
           return {
             status: true,
-            fee,
+            networkFee,
+            networkFeeUnit,
             receiveAmount,
             receiveAmountUsd,
             transactionFee,
@@ -598,16 +626,26 @@ const SendHome: React.FC = () => {
           toChainInfo,
           tokenInfo,
         });
+        const f = await bridge.getELFFee();
+        if (assetInfo.symbol === defaultToken.symbol) {
+          // ELF
+          if (sendBigNumber.plus(f).isGreaterThan(ELFBalance)) {
+            setErrorMessage(TransferErrorMessage.FEE_NOT_ENOUGH);
+            return { status: false };
+          }
+        } else {
+          if (ZERO.plus(f).isGreaterThan(ELFBalance)) {
+            setErrorMessage(TransferErrorMessage.FEE_NOT_ENOUGH);
+            return { status: false };
+          }
+        }
 
         const limit = await bridge.getLimit();
-        const f = await bridge.getELFFee();
-
         // TODO： change it
-        // if(limit.isEnable){
-        // }else{
-        // }
-
-        console.log('MAKE_SURE_SUPPORT_PLATFORM limit', limit);
+        const targetLimit = getSmallerValue(limit.remain, limit.currentCapacity);
+        if (limit.isEnable && sendBigNumber.isGreaterThan(targetLimit)) {
+          setErrorMessage(getLimitTips(assetInfo.symbol, '0', formatAmountShow(targetLimit)));
+        }
         transactionFee = divDecimals(f?.result, defaultToken.decimals).toString();
         transactionUnit = 'ELF';
         console.log('MAKE_SURE_SUPPORT_PLATFORM fee', f);
@@ -615,10 +653,12 @@ const SendHome: React.FC = () => {
 
         return {
           status: true,
-          receiveAmount,
-          receiveAmountUsd,
+          networkFee,
+          networkFeeUnit,
           transactionFee,
           transactionUnit,
+          receiveAmount,
+          receiveAmountUsd,
           transferType,
           targetNetwork,
         };
@@ -629,9 +669,8 @@ const SendHome: React.FC = () => {
       }
     }
 
-    // transaction fee check
+    // SameChain or CrossChain in aelf
     try {
-      console.log('isAELFCross isSupportCross', isAELFCross, isSupportCross);
       if (isAELFCross && isSupportCross) {
         const network = selectedToContact.chainId || 'AELF';
         const { withdrawInfo } = await crossTransferByEtransfer.withdrawPreview({
@@ -642,28 +681,28 @@ const SendHome: React.FC = () => {
           network,
         });
         console.log('withdrawInfo', withdrawInfo);
-        fee = withdrawInfo?.aelfTransactionFee;
+        transactionFee = withdrawInfo?.aelfTransactionFee;
         const maxAmount = Number(withdrawInfo?.maxAmount);
         const minAmount = Number(withdrawInfo?.minAmount);
         transactionFee = withdrawInfo.transactionFee;
         transactionUnit = withdrawInfo.transactionUnit;
-        isEtransferCrossInLimit = Number(sendNumber) >= minAmount && Number(sendNumber) <= maxAmount;
+        const isEtransferCrossInLimit = Number(sendNumber) >= minAmount && Number(sendNumber) <= maxAmount;
         if (isEtransferCrossInLimit) {
           receiveAmount = withdrawInfo?.receiveAmount;
           receiveAmountUsd = withdrawInfo?.receiveAmountUsd;
           transferType = TransferType.E_TRANSFER;
         } else {
           transferType = TransferType.GENERAL_CROSS_CHAIN;
-          fee = await getTransactionFee(isAELFCross);
+          networkFee = await getTransactionFee(isAELFCross);
         }
       } else {
-        fee = await getTransactionFee(isAELFCross);
+        networkFee = await getTransactionFee(isAELFCross);
+        networkFeeUnit = 'ELF';
         transferType = TransferType.GENERAL_SAME_CHAIN;
       }
-      console.log('fee', fee);
     } catch (err: any) {
       if (err?.code === 500) {
-        setErrorMessage([TransactionError.FEE_NOT_ENOUGH]);
+        setErrorMessage(TransactionError.FEE_NOT_ENOUGH);
         Loading.hide();
         return { status: false };
       }
@@ -673,7 +712,8 @@ const SendHome: React.FC = () => {
 
     return {
       status: true,
-      fee,
+      networkFee,
+      networkFeeUnit,
       receiveAmount,
       receiveAmountUsd,
       transactionFee,
@@ -698,7 +738,7 @@ const SendHome: React.FC = () => {
     defaultToken.decimals,
     crossFee,
     securitySafeCheckAndToast,
-    showDialog,
+    t,
     getCAContract,
     checkTransferLimitWithJump,
     previewParamsWithoutFee,
@@ -707,6 +747,7 @@ const SendHome: React.FC = () => {
     getAELFChainInfoConfig,
     getEVMChainInfoConfig,
     getTokenConfig,
+    ELFBalance,
     isSupportCross,
     getTransactionFee,
   ]);
@@ -714,64 +755,21 @@ const SendHome: React.FC = () => {
   const preview = useCallback(async () => {
     const result = await checkCanPreview();
     if (!result?.status) return;
-    // if (sendType === 'token' && assetInfo.chainId === 'AELF' && assetInfo.symbol !== 'ELF') {
-    // ActionSheet.alert({
-    //   title: 'Send to exchange account?',
-    //   message: (
-    //     <TextM style={[styles.alertMessage]}>
-    //       {`Please note that `}
-    //       <TextM
-    //         style={[
-    //           styles.alertMessage,
-    //           FontStyles.functionalRedDefault,
-    //         ]}>{`only MainChain ELF can be sent directly to exchanges`}</TextM>
-    //       {`. If you are sending another asset, please swap it to ELF first or try the withdrawal function in ETransfer.`}
-    //     </TextM>
-    //   ),
-    //   buttons: [
-    //     { title: 'Cancel', type: 'outline' },
-    //     {
-    //       title: 'OK',
-    //       onPress: () => {
-    //         navigationService.navigate('SendPreview', {
-    //           ...previewParamsWithoutFee,
-    //           transactionFee: result?.fee || '0',
-    //           receiveAmount: result?.receiveAmount,
-    //           receiveAmountUsd: result?.receiveAmountUsd,
-    //           isEtransferCrossInLimit: result?.isEtransferCrossInLimit,
-    //           crossChainFee: result?.transactionFee || crossFee,
-    //           crossChainFeeUnit: result?.transactionUnit || '',
-    //         });
-    //       },
-    //     },
-    //   ],
-    // });
-    // }
 
-    console.log('navigationService!!!!', {
-      ...previewParamsWithoutFee,
-      transactionFee: result?.fee || '0',
-      networkFee: result?.fee || '0',
-      receiveAmount: result?.receiveAmount,
-      receiveAmountUsd: result?.receiveAmountUsd,
-      crossChainFee: result?.transactionFee || crossFee,
-      crossChainFeeUnit: result?.transactionUnit || '',
-      transferType: result?.transferType || TransferType.GENERAL_SAME_CHAIN,
-      targetNetwork: result?.targetNetwork,
-    });
     navigationService.navigate('SendPreview', {
       ...previewParamsWithoutFee,
-      transactionFee: result?.fee || '0',
-      networkFee: result?.fee || '0',
+      transactionFee: result?.transactionFee || '0',
+      transactionFeeUnit: result?.transactionUnit || '',
+      networkFee: result?.networkFee || '0',
+      networkFeeUnit: result?.networkFeeUnit || '',
       receiveAmount: result?.receiveAmount,
       receiveAmountUsd: result?.receiveAmountUsd,
-      crossChainFee: result?.transactionFee || crossFee,
-      crossChainFeeUnit: result?.transactionUnit || '',
+      // crossChainFee: result?.transactionFee || crossFee,
+      // crossChainFeeUnit: result?.transactionUnit || '',
       transferType: result?.transferType || TransferType.GENERAL_SAME_CHAIN,
       targetNetwork: result?.targetNetwork,
     });
-    // }
-  }, [checkCanPreview, crossFee, previewParamsWithoutFee]);
+  }, [checkCanPreview, previewParamsWithoutFee]);
 
   const titleText = useMemo(() => {
     if (step === 2) return `Enter Amount`;
@@ -825,8 +823,10 @@ const SendHome: React.FC = () => {
       titleDom={titleText}
       rightDom={
         step === 2 ? (
-          // TODO: click jump
-          <Touchable>
+          <Touchable
+            onPress={async () => {
+              await openOutLink(HELP_URL);
+            }}>
             <Svg icon="question" size={pTd(24)} color={defaultColors.font2} iconStyle={styles.iconStyle} />
           </Touchable>
         ) : null
@@ -858,6 +858,7 @@ const SendHome: React.FC = () => {
             onPressMax={onPressMax}
           />
           <TokenAmountInput
+            warningTip={errorMessage}
             value={sendNumber}
             usdValue={sendUsdNumber}
             symbol={assetInfo.symbol}

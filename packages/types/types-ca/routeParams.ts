@@ -60,14 +60,16 @@ export enum TransferType {
   'E_TRANSFER' = 'eTransfer',
 }
 export interface IToSendPreviewParamsType extends IToSendHomeParamsType {
-  transactionFee: string | number;
   sendNumber: string | number;
   successNavigateName?: any;
   guardiansApproved?: GuardiansApprovedType[];
   isAutoSend?: boolean;
+  transactionFee?: string | number;
+  transactionFeeUnit?: string | number;
+  networkFee?: string | number;
+  networkFeeUnit?: string | number;
   receiveAmount?: string;
   receiveAmountUsd?: string;
-  isEtransferCrossInLimit?: boolean;
   crossChainFee: number | string;
   crossChainFeeUnit?: string;
   transferType: TransferType;

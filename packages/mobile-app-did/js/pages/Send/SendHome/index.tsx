@@ -459,6 +459,7 @@ const SendHome: React.FC = () => {
         });
         if (!interceptResult) {
           showDialog('crossChainInterception');
+          Loading.hide();
           return;
         }
       }

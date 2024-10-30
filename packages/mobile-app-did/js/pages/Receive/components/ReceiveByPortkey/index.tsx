@@ -28,8 +28,8 @@ export default function ReceiveByPortkey({
   const styles = getStyles();
   const [isExchangeSelected, setExchangeSelected] = useState(true);
   const isSupportExchange = useMemo(() => {
-    return sourceChain.network === 'AELF' && destinationChain.chainId === 'AELF';
-  }, [destinationChain.chainId, sourceChain.network]);
+    return tokenItem.symbol === 'ELF';
+  }, [tokenItem.symbol]);
 
   const onExchangeTabSelected = useCallback((selected: boolean) => {
     setExchangeSelected(selected);

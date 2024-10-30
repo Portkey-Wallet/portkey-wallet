@@ -106,7 +106,7 @@ const getStyles = makeStyles(theme => ({
     alignItems: 'center',
   },
   reminderWrap: {
-    marginTop: pTd(24),
+    marginTop: pTd(16),
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: theme.colors.borderBase1,
     borderRadius: pTd(16),

@@ -70,7 +70,7 @@ import useGetEBridgeConfig from 'hooks/ebridge';
 import { EBridge } from '@portkey-wallet/utils/eBridge';
 import ActionSheet from 'components/ActionSheet';
 import OverlayModal from 'components/OverlayModal';
-import { eBridgeActionSheet, getLimitTips, getSmallerValue } from '../utils';
+import { eBridgeActionSheet, getLimitTips, getSmallerValue, isValidAmount } from '../utils';
 import CommonInfoRow from 'components/CommonInfoRow';
 import { SEND_RECEIVE_HELP_URL } from 'constants/common';
 import { openOutLink } from 'utils/link';
@@ -366,7 +366,7 @@ const SendHome: React.FC = () => {
 
   const previewDisable = useMemo(() => {
     if (!selectedToContact?.address) return true;
-    if (sendNumber === '0' || !sendNumber) return true;
+    if (!isValidAmount(sendNumber)) return true;
     return false;
   }, [selectedToContact?.address, sendNumber]);
 

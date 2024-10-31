@@ -67,7 +67,7 @@ export default function ConfirmPin() {
         if (biometrics) await setSecureStoreItem('Pin', newPin);
         dispatch(changePin({ pin: oldPin, newPin }));
         dispatch(setCredentials({ pin: newPin }));
-        CommonToast.success(t('Modified Successfully'));
+        // CommonToast.success(t('Modified Successfully'));
       } catch (error) {
         CommonPrompt.failError(error);
       }

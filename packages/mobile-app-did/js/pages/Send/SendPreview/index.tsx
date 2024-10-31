@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useMemo, useRef } from 'react';
+import React, { memo, useCallback, useMemo, useRef, useState } from 'react';
 import ActionSheet from 'components/ActionSheet';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import { useLanguage } from 'i18n/hooks';
@@ -45,13 +45,15 @@ import { ContractBasic as BaseContractBasic } from '@portkey/contracts';
 import SendReceivePreview, { FooterType } from 'components/SendReceivePreview';
 import { ActionType } from 'types/common';
 import { getEstimatedTime } from '../utils';
-import { TransactionTypes } from '@portkey-wallet/constants/constants-ca/activity';
+import { useGetTokenViewContract } from 'hooks/contract';
+import { getELFChainBalance } from '@portkey-wallet/utils/balance';
 
 const SendPreview: React.FC = () => {
   const { t } = useLanguage();
   const isMainnet = useIsMainnet();
   const defaultToken = useDefaultToken();
   const routerParams = useRouterEffectParams<IToSendPreviewParamsType>();
+  const getTokenViewContract = useGetTokenViewContract();
 
   const {
     sendType,
@@ -96,6 +98,7 @@ const SendPreview: React.FC = () => {
   );
 
   const checkTransferLimitWithJump = useCheckTransferLimitWithJump();
+  const [isError, setIsError] = useState(false);
 
   const amount = useMemo(
     () => timesDecimals(sendNumber, assetInfo.decimals).toFixed(),
@@ -160,6 +163,19 @@ const SendPreview: React.FC = () => {
 
   const estimatedTime = useMemo(() => getEstimatedTime(targetNetwork, transferType), [targetNetwork, transferType]);
 
+  const getElfBalance = useCallback(async () => {
+    const caAddress = wallet?.[assetInfo.chainId]?.caAddress;
+    if (!assetInfo || !caAddress) return;
+    try {
+      const tokenContract = await getTokenViewContract(assetInfo.chainId);
+      const _balance = await getELFChainBalance(tokenContract, defaultToken.symbol, caAddress);
+      return _balance;
+    } catch (error) {
+      throw 'fail';
+      console.log('init ELF Balance', error);
+    }
+  }, [assetInfo, defaultToken.symbol, getTokenViewContract, wallet]);
+
   const showRetry = useCallback(
     (retryFunc: () => void) => {
       ActionSheet.alert({
@@ -199,6 +215,8 @@ const SendPreview: React.FC = () => {
   }, [caAddressInfos, fetchAccountNFTCollectionInfoList, fetchAccountTokenInfoList, sendType, toInfo.address]);
 
   const transfer = useCallback(async () => {
+    setIsError(false);
+
     const tokenInfo = {
       symbol: assetInfo.symbol,
       decimals: assetInfo.decimals ?? 0,
@@ -317,7 +335,17 @@ const SendPreview: React.FC = () => {
       });
 
       if (!currentWallet.caAddress || !currentWallet.caHash) throw 'currentWallet is null';
-      const fee = bridge.getELFFee();
+      const fee = await bridge.getELFFee();
+      const needElfBalance =
+        assetInfo.symbol === defaultToken.symbol
+          ? timesDecimals(sendNumber, defaultToken.decimals).plus(fee).toString()
+          : fee;
+      const elfBalance = (await getElfBalance()) || '';
+      if (ZERO.plus(needElfBalance).isGreaterThan(elfBalance)) {
+        setIsError(true);
+        throw 'No enough fee';
+      }
+
       const limit = bridge.getLimit();
       console.log('fee,limit', fee, limit);
 
@@ -341,15 +369,18 @@ const SendPreview: React.FC = () => {
     currentNetwork.walletType,
     currentWallet.caAddress,
     currentWallet.caHash,
+    defaultToken.decimals,
+    defaultToken.symbol,
     getAELFChainInfoConfig,
     getEVMChainInfoConfig,
+    getElfBalance,
     getTokenConfig,
     guardiansApproved,
     isApproved,
     pin,
     routerParams,
     sendNumber,
-    targetNetwork?.network,
+    targetNetwork.network,
     toInfo.address,
     toInfo?.chainId,
     toInfo.network,
@@ -466,6 +497,7 @@ const SendPreview: React.FC = () => {
 
   return (
     <SendReceivePreview
+      isError={isError}
       actionType={ActionType.SEND}
       footerType={footerType}
       NFTInfo={

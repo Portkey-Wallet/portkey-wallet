@@ -45,6 +45,7 @@ import { ContractBasic as BaseContractBasic } from '@portkey/contracts';
 import SendReceivePreview, { FooterType } from 'components/SendReceivePreview';
 import { ActionType } from 'types/common';
 import { getEstimatedTime } from '../utils';
+import { TransactionTypes } from '@portkey-wallet/constants/constants-ca/activity';
 
 const SendPreview: React.FC = () => {
   const { t } = useLanguage();
@@ -102,6 +103,24 @@ const SendPreview: React.FC = () => {
   );
 
   const EstimateAmount = useMemo(() => {
+    // adjust etransfer
+    if (
+      ZERO.plus(sendNumber).isLessThanOrEqualTo(transactionFee || '') &&
+      assetInfo.symbol === defaultToken.symbol &&
+      transferType === TransferType.E_TRANSFER
+    )
+      return {
+        estimateAmount: `0 ${assetInfo?.label || assetInfo?.symbol}`,
+        estimateAmountUsd: isMainnet ? '$ 0' : '',
+      };
+
+    // adjust etransfer & ebridge
+    if (transferType === TransferType.E_BRIDGE || transferType === TransferType.E_TRANSFER)
+      return {
+        estimateAmount: `${receiveAmount} ${assetInfo.label || assetInfo.symbol}`,
+        estimateAmountUsd: isMainnet ? receiveAmountUsd : '',
+      };
+
     const fee = (isETransferOrEBridge ? transactionFee : networkFee) || 0;
     if (ZERO.plus(sendNumber).isLessThanOrEqualTo(fee))
       return {
@@ -110,22 +129,25 @@ const SendPreview: React.FC = () => {
       };
 
     let _amount = sendNumber;
-    let amountUsd;
-    if (receiveAmount) _amount = receiveAmount;
-    else _amount = formatAmountShow(ZERO.plus(_amount).minus(fee), Number(assetInfo.decimals));
+    _amount = formatAmountShow(ZERO.plus(_amount).minus(networkFee || ''), Number(defaultToken.decimals));
 
-    if (receiveAmountUsd) amountUsd = formatAmountUSDShow(receiveAmountUsd);
-    else amountUsd = amountInUsdShow(ZERO.plus(_amount).minus(fee).toFixed(), 0, assetInfo.symbol);
-
+    const amountUsd = amountInUsdShow(
+      ZERO.plus(_amount)
+        .minus(networkFee || '')
+        .toFixed(),
+      0,
+      assetInfo.symbol,
+    );
     return {
       estimateAmount: `${_amount} ${assetInfo.label || assetInfo.symbol}`,
       estimateAmountUsd: isMainnet ? amountUsd : '',
     };
   }, [
     amountInUsdShow,
-    assetInfo.decimals,
     assetInfo.label,
     assetInfo.symbol,
+    defaultToken.decimals,
+    defaultToken.symbol,
     isETransferOrEBridge,
     isMainnet,
     networkFee,
@@ -133,6 +155,7 @@ const SendPreview: React.FC = () => {
     receiveAmountUsd,
     sendNumber,
     transactionFee,
+    transferType,
   ]);
 
   const estimatedTime = useMemo(() => getEstimatedTime(targetNetwork, transferType), [targetNetwork, transferType]);
@@ -471,12 +494,10 @@ const SendPreview: React.FC = () => {
             )}`
           : ''
       }
-      estimatedNetworkFee={!isETransferOrEBridge ? `${networkFee} ${networkFeeUnit}` : ''}
-      estimatedNetworkFeeUSD={
-        !isETransferOrEBridge
-          ? `$ ${unitConverter(ZERO.plus(networkFee || '').multipliedBy(tokenPriceObject[networkFeeUnit || '']))}`
-          : ''
-      }
+      estimatedNetworkFee={`${networkFee} ${networkFeeUnit}`}
+      estimatedNetworkFeeUSD={`$ ${unitConverter(
+        ZERO.plus(networkFee || '').multipliedBy(tokenPriceObject[networkFeeUnit || '']),
+      )}`}
       amountToReceive={EstimateAmount.estimateAmount}
       amountToReceiveUSD={EstimateAmount.estimateAmountUsd}
       estimatedDuration={estimatedTime}

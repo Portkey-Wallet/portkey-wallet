@@ -584,7 +584,7 @@ const SendHome: React.FC = () => {
           network: targetNetwork?.network || '',
         });
         console.log('withdrawInfo result', withdrawInfo);
-        transactionFee = withdrawInfo?.aelfTransactionFee;
+        networkFee = withdrawInfo?.aelfTransactionFee;
         const maxAmount = Number(withdrawInfo?.maxAmount);
         const minAmount = Number(withdrawInfo?.minAmount);
         transactionFee = withdrawInfo.transactionFee;
@@ -624,6 +624,8 @@ const SendHome: React.FC = () => {
           toChainInfo,
           tokenInfo,
         });
+
+        // fee
         const f = await bridge.getELFFee();
         console.log('f', f);
         setBottomFeeShow(f);
@@ -639,11 +641,12 @@ const SendHome: React.FC = () => {
             return { status: false };
           }
         }
+        receiveAmount = sendNumber;
+        receiveAmountUsd = ZERO.plus(sendNumber).times(tokenPriceObject[assetInfo.symbol]).toString();
 
+        // limit
         const limit = await bridge.getLimit();
         console.log('limit', f);
-
-        // TODO： change it
         const targetLimit = getSmallerValue(limit.remain, limit.currentCapacity);
         if (limit.isEnable && sendBigNumber.isGreaterThan(targetLimit)) {
           return setErrorMessage(getLimitTips(assetInfo.symbol, '0', formatAmountShow(targetLimit)));

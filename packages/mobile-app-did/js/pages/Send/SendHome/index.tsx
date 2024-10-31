@@ -76,7 +76,7 @@ import useGetEBridgeConfig from 'hooks/ebridge';
 import { EBridge } from '@portkey-wallet/utils/eBridge';
 import ActionSheet from 'components/ActionSheet';
 import OverlayModal from 'components/OverlayModal';
-import { getLimitTips, getSmallerValue } from '../utils';
+import { eBridgeActionSheet, getLimitTips, getSmallerValue } from '../utils';
 import CommonInfoRow from 'components/CommonInfoRow';
 import { SEND_RECEIVE_HELP_URL } from 'constants/common';
 import { openOutLink } from 'utils/link';
@@ -574,7 +574,11 @@ const SendHome: React.FC = () => {
     let transferType = TransferType.GENERAL_SAME_CHAIN;
 
     // isRecommendEtransfer(to evm) fee check
-    if (warning[0] === WarningKey.MAKE_SURE_SUPPORT_PLATFORM && recommendETransfer) {
+    if (
+      warning[0] === WarningKey.MAKE_SURE_SUPPORT_PLATFORM &&
+      recommendETransfer &&
+      ZERO.plus(recommendETransfer?.maxAmount).isGreaterThan(sendNumber)
+    ) {
       try {
         const { withdrawInfo } = await crossTransferByEtransfer.withdrawPreview({
           symbol: assetInfo.symbol,
@@ -596,7 +600,6 @@ const SendHome: React.FC = () => {
           receiveAmount = withdrawInfo?.receiveAmount;
           receiveAmountUsd = withdrawInfo?.receiveAmountUsd;
           transferType = TransferType.E_TRANSFER;
-          Loading.hide();
           return {
             status: true,
             networkFee,
@@ -608,9 +611,15 @@ const SendHome: React.FC = () => {
             transferType,
             targetNetwork: targetNetwork,
           };
+        } else {
+          setErrorMessage(getLimitTips(assetInfo.symbol, minAmount, maxAmount));
+          throw 'etansfer err';
         }
       } catch (error) {
+        console.log('etansfer err', error);
         return { status: false };
+      } finally {
+        Loading.hide();
       }
     }
 
@@ -655,6 +664,8 @@ const SendHome: React.FC = () => {
         transactionUnit = 'ELF';
         transferType = TransferType.E_BRIDGE;
 
+        await eBridgeActionSheet();
+
         return {
           status: true,
           networkFee,
@@ -668,6 +679,7 @@ const SendHome: React.FC = () => {
         };
       } catch (error) {
         console.log('err', error);
+        return { status: false };
       } finally {
         Loading.hide();
       }

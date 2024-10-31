@@ -225,7 +225,7 @@ export const BRIDGE_INFO_EVM_TESTNET: {
     bridgeContractOutAddress: '0x801790e7318eeE92087dD8DFA091f8FE16d93ba8',
     limitContractAddress: '0x8E0cF442690a9395C42623F6503Ab926c739f59E',
   },
-  BSC: {
+  TBSC: {
     chainInfo: {
       chainId: 97,
       exploreUrl: 'https://testnet.bscscan.com/',

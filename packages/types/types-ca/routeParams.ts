@@ -41,7 +41,7 @@ export type ImTransferInfoType = {
 export interface TToInfo {
   name: string;
   address: string;
-  network: string;
+  network?: string;
   chainId?: ChainId;
   chainType?: ChainType;
 }

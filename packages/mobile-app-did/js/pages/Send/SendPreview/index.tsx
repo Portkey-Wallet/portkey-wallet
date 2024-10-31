@@ -308,7 +308,7 @@ const SendPreview: React.FC = () => {
       console.log(txResult, 'txResult===etransferCrossTransfer');
     } else if (transferType === TransferType.E_BRIDGE) {
       const fromChainInfo = getAELFChainInfoConfig(assetInfo.chainId);
-      const toChainInfo = getEVMChainInfoConfig(toInfo.network);
+      const toChainInfo = getEVMChainInfoConfig(targetNetwork.network || toInfo.network || '');
       const tokenEBridgeInfo = getTokenConfig(assetInfo.symbol);
       const bridge = new EBridge({
         fromChainInfo,

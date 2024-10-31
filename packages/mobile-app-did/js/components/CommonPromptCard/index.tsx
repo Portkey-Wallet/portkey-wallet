@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, ViewStyle } from 'react-native';
 import { makeStyles, useTheme } from '@rneui/themed';
 import Svg from 'components/Svg';
+import Lottie from 'lottie-react-native';
 import fonts from 'assets/theme/fonts';
 import { pTd } from 'utils/unit';
 import Overlay from 'rn-teaset/components/Overlay/Overlay';
@@ -12,6 +13,8 @@ export enum PromptCardType {
   INFO = 'info',
   WARNING = 'warning',
   ERROR = 'error',
+  SUCCESS = 'success',
+  LOADING = 'loading',
 }
 
 interface ICommonPromptCardProps {
@@ -31,20 +34,26 @@ export const CommonPromptCard: React.FC<ICommonPromptCardProps> = ({
   const {
     theme: { colors },
   } = useTheme();
-  const iconColor = useMemo(() => {
+
+  const icon = useMemo(() => {
     switch (type) {
+      case PromptCardType.LOADING:
+        return <Lottie style={styles.icon} source={require('assets/lottieFiles/spinnerWhite.json')} autoPlay loop />;
+      case PromptCardType.SUCCESS:
+        return <Svg iconStyle={styles.icon} color={colors.iconSuccess1} icon="check-circle" />;
       case PromptCardType.WARNING:
-        return colors.iconWarning5;
+        return <Svg iconStyle={styles.icon} color={colors.iconWarning5} icon="info" />;
       case PromptCardType.ERROR:
-        return colors.iconDanger3;
+        return <Svg iconStyle={styles.icon} color={colors.iconDanger3} icon="info" />;
       case PromptCardType.INFO:
       default:
-        return colors.bgBrand4;
+        return <Svg iconStyle={styles.icon} color={colors.bgBrand4} icon="info" />;
     }
-  }, [colors.bgBrand4, colors.iconDanger3, colors.iconWarning5, type]);
+  }, [colors.bgBrand4, colors.iconDanger3, colors.iconSuccess1, colors.iconWarning5, styles.icon, type]);
+
   return (
     <View style={[styles.container, styles[`${type}Container`], style]}>
-      <Svg iconStyle={styles.icon} color={iconColor} icon="info" size={pTd(22)} />
+      {icon}
       <View style={styles.content}>
         {title && <Text style={[styles.title, styles[`${type}Title`]]}>{title}</Text>}
         <Text style={[styles.description, styles[`${type}Description`]]}>{description}</Text>
@@ -63,6 +72,14 @@ const getStyles = makeStyles(theme => ({
     borderWidth: pTd(1),
     borderStyle: 'solid',
   },
+  loadingContainer: {
+    backgroundColor: theme.colors.bgBase2,
+    borderColor: theme.colors.borderBase2,
+  },
+  successContainer: {
+    backgroundColor: theme.colors.bgSuccess3,
+    borderColor: theme.colors.borderSuccessHover1,
+  },
   infoContainer: {
     backgroundColor: theme.colors.bgBase1,
     borderColor: theme.colors.borderBase1,
@@ -77,16 +94,24 @@ const getStyles = makeStyles(theme => ({
   },
   icon: {
     flexShrink: 0,
+    width: pTd(22),
+    height: pTd(22),
     marginRight: pTd(12),
   },
   content: {
-    flex: 1,
+    flexShrink: 1,
   },
   title: {
     marginBottom: pTd(4),
     ...fonts.SGMediumFont,
     fontSize: pTd(16),
     lineHeight: pTd(22),
+  },
+  loadingTitle: {
+    color: theme.colors.textBase1,
+  },
+  successTitle: {
+    color: theme.colors.textSuccess6,
   },
   infoTitle: {
     color: theme.colors.textBase1,
@@ -99,8 +124,14 @@ const getStyles = makeStyles(theme => ({
   },
   description: {
     ...fonts.SGRegularFont,
-    fontSize: pTd(16),
-    lineHeight: pTd(22),
+    fontSize: pTd(14),
+    lineHeight: pTd(20),
+  },
+  loadingDescription: {
+    color: theme.colors.textBase2,
+  },
+  successDescription: {
+    color: theme.colors.textSuccess6,
   },
   infoDescription: {
     color: theme.colors.textBase2,
@@ -110,12 +141,6 @@ const getStyles = makeStyles(theme => ({
   },
   errorDescription: {
     color: theme.colors.textDanger6,
-  },
-  top: {
-    paddingTop: statusBarHeight + 50,
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    maxWidth: pTd(300),
   },
 }));
 
@@ -129,7 +154,7 @@ const tostProps = {
 
 const overlayStyles = StyleSheet.create({
   top: {
-    paddingTop: statusBarHeight + 50,
+    paddingTop: statusBarHeight,
     justifyContent: 'flex-start',
     alignItems: 'center',
   },
@@ -140,7 +165,7 @@ const show = (...args: TostProps) => {
 
   const key = Overlay.show(
     <Overlay.View {...tostProps} style={overlayStyles.top}>
-      <CommonPromptCard type={icon} title={title} description={text} style={{ width: pTd(300) }} />
+      <CommonPromptCard type={icon} title={title} description={text} style={{ maxWidth: pTd(300) }} />
     </Overlay.View>,
   );
   setTimeout(() => Overlay.hide(key), duration);
@@ -150,6 +175,16 @@ const show = (...args: TostProps) => {
 let element: any;
 
 const CommonPrompt = {
+  loading(...args: TostProps) {
+    if (!args[3]) args[3] = PromptCardType.LOADING;
+    Overlay.hide(element);
+    element = show(...args);
+  },
+  success(...args: TostProps) {
+    if (!args[3]) args[3] = PromptCardType.SUCCESS;
+    Overlay.hide(element);
+    element = show(...args);
+  },
   warn(...args: TostProps) {
     if (!args[3]) args[3] = PromptCardType.WARNING;
     Overlay.hide(element);

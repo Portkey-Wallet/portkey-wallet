@@ -13,6 +13,7 @@ import { ZERO } from '@portkey-wallet/constants/misc';
 import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { FloatTip } from 'components/FloatTip';
 import { useEffectOnce } from '@portkey-wallet/hooks';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 
 export interface ITokenAmountInput {
   value?: string;
@@ -41,6 +42,7 @@ const TokenAmountInput: React.FC<ITokenAmountInput> = props => {
   const [isRevert, setIsRevert] = useState(false);
   const { mode } = useThemeMode();
   const [tokenPriceObject, getTokenPrice] = useGetCurrentAccountTokenPrice();
+  const isMainnet = useIsMainnet();
   const styles = getStyles();
   const warningRef = useRef<NodeJS.Timeout | null>(null);
   const [warningClick, setWarningClick] = useState(false);
@@ -145,14 +147,16 @@ const TokenAmountInput: React.FC<ITokenAmountInput> = props => {
           )}
         </>
       </View>
-      <Touchable onPress={onPressRevert} style={[GStyles.flexRow, styles.bottomSection]}>
-        {isRevert ? (
-          <TextL style={styles.bottomText}>{`${value || 0} ${label || symbol}`}</TextL>
-        ) : (
-          <TextL style={styles.bottomText}>{`$${usdValue || 0}`}</TextL>
-        )}
-        <Svg icon="switch" color={mode === 'dark' ? darkColors.iconBase2 : defaultColors.iconBase2} size={pTd(16)} />
-      </Touchable>
+      {isMainnet && (
+        <Touchable onPress={onPressRevert} style={[GStyles.flexRow, styles.bottomSection]}>
+          {isRevert ? (
+            <TextL style={styles.bottomText}>{`${value || 0} ${label || symbol}`}</TextL>
+          ) : (
+            <TextL style={styles.bottomText}>{`$${usdValue || 0}`}</TextL>
+          )}
+          <Svg icon="switch" color={mode === 'dark' ? darkColors.iconBase2 : defaultColors.iconBase2} size={pTd(16)} />
+        </Touchable>
+      )}
     </View>
   );
 };

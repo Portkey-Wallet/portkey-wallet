@@ -207,6 +207,7 @@ export const getStyles = makeStyles(theme => ({
   inputWrap: {
     backgroundColor: theme.colors.bgBase1,
     ...gStyles.paddingArg(0, 16, 0, 16),
+    marginBottom: pTd(8),
   },
   list: {
     flex: 1,

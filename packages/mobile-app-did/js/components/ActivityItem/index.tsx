@@ -99,7 +99,7 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
     if (item?.status === contractStatusEnum.FAILED)
       return (
         <View style={GStyles.marginLeft(pTd(8))}>
-          <Svg icon="activity-fail" size={pTd(16)} />;
+          <Svg icon="activity-fail" size={pTd(16)} />
         </View>
       );
     if (item?.status === contractStatusEnum.MINED)
@@ -127,7 +127,7 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
         <Svg icon="activity-pending" size={pTd(16)} />
       </Animated.View>
     );
-  }, [rotation]);
+  }, [item?.status, rotation]);
 
   const ExtraDom = useMemo(() => {
     if (!item?.currentTxPriceInUsd) return null;

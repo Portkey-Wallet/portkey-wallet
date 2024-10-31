@@ -37,8 +37,11 @@ export default function ReceiveByPortkey({
     return tokenItem?.symbol === 'ELF' && destinationChain.chainId === MAIN_CHAIN_ID;
   }, [destinationChain.chainId, tokenItem?.symbol]);
   const showExchangeTip = useMemo(
-    () => tokenItem?.symbol === 'ELF' && destinationChain.chainId !== MAIN_CHAIN_ID,
-    [destinationChain.chainId, tokenItem?.symbol],
+    () =>
+      tokenItem?.symbol === 'ELF' &&
+      sourceChain.network === MAIN_CHAIN_ID &&
+      destinationChain.chainId !== MAIN_CHAIN_ID,
+    [destinationChain.chainId, sourceChain.network, tokenItem?.symbol],
   );
 
   const onExchangeTabSelected = useCallback((selected: boolean) => {

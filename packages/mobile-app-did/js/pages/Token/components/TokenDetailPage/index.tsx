@@ -4,7 +4,6 @@ import SendButton from 'components/SendButton';
 import ReceiveButton from 'components/ReceiveButton';
 import { styles } from './style';
 import navigationService from 'utils/navigationService';
-import NoData from 'components/NoData';
 import { useLanguage } from 'i18n/hooks';
 import { FlashList } from '@shopify/flash-list';
 import GStyles from 'assets/theme/GStyles';
@@ -236,12 +235,9 @@ const TokenDetailPage: React.FC<TokenDetailParams> = ({ tokenInfo, tokenSection 
         data={currentActivity?.data || []}
         keyExtractor={(_item, index) => `${index}`}
         ListEmptyComponent={
-          <NoData
-            icon={'no-data-detail'}
-            message={t('You have no transactions')}
-            topDistance={pTd(40)}
-            oblongSize={[pTd(64), pTd(64)]}
-          />
+          <View style={styles.noData}>
+            <TextL>{t('No activity')}</TextL>
+          </View>
         }
         renderItem={renderItem}
         onRefresh={onRefreshList}
@@ -251,11 +247,15 @@ const TokenDetailPage: React.FC<TokenDetailParams> = ({ tokenInfo, tokenSection 
         }}
         onEndReachedThreshold={ON_END_REACHED_THRESHOLD}
         ListHeaderComponent={
-          <View>
-            <TextL style={[{ color: darkColors.textBase1, fontSize: pTd(20) }, styles.listFront, fonts.mediumFont]}>
-              {'Activity'}
-            </TextL>
-          </View>
+          currentActivity?.data?.length ? (
+            <View>
+              <TextL style={[{ color: darkColors.textBase1, fontSize: pTd(20) }, styles.listFront, fonts.mediumFont]}>
+                {'Activity'}
+              </TextL>
+            </View>
+          ) : (
+            <></>
+          )
         }
         ListFooterComponent={
           <>{!isEmpty && <FlatListFooterLoading refreshing={isLoading === ListLoadingEnum.footer} />}</>

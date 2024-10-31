@@ -487,7 +487,7 @@ const SendHome: React.FC = () => {
     Loading.show();
     try {
       // cross chain interception
-      if (isCrossChain(selectedToContact.address, assetInfo.chainId)) {
+      if (isAELFCross) {
         const sendChainId = selectedToContact.chainId || (getChainIdByAddress(selectedToContact.address) as ChainId);
         const interceptResult = await getAssetsEstimation({
           symbol: assetInfo.symbol,
@@ -593,6 +593,8 @@ const SendHome: React.FC = () => {
         // TODO: change it
 
         if (isEtransferCrossInLimit) {
+          receiveAmount = withdrawInfo?.receiveAmount;
+          receiveAmountUsd = withdrawInfo?.receiveAmountUsd;
           transferType = TransferType.E_TRANSFER;
           Loading.hide();
           return {
@@ -608,7 +610,6 @@ const SendHome: React.FC = () => {
           };
         }
       } catch (error) {
-        console.log('err', error);
         return { status: false };
       }
     }
@@ -629,18 +630,17 @@ const SendHome: React.FC = () => {
         const f = await bridge.getELFFee();
         console.log('f', f);
         setBottomFeeShow(f);
-        if (assetInfo.symbol === defaultToken.symbol) {
-          // ELF
-          if (sendBigNumber.plus(f).isGreaterThan(ELFBalance)) {
-            setErrorMessage(TransferErrorMessage.FEE_NOT_ENOUGH);
-            return { status: false };
-          }
-        } else {
-          if (ZERO.plus(f).isGreaterThan(ELFBalance)) {
-            setErrorMessage(TransferErrorMessage.FEE_NOT_ENOUGH);
-            return { status: false };
-          }
+
+        const needElfBalance =
+          assetInfo.symbol === defaultToken.symbol
+            ? timesDecimals(sendNumber, defaultToken.decimals).plus(f).toString()
+            : f;
+        const elfBalance = ELFBalance;
+        if (ZERO.plus(needElfBalance).isGreaterThan(elfBalance)) {
+          setErrorMessage(TransferErrorMessage.FEE_NOT_ENOUGH);
+          return { status: false };
         }
+
         receiveAmount = sendNumber;
         receiveAmountUsd = ZERO.plus(sendNumber).times(tokenPriceObject[assetInfo.symbol]).toString();
 
@@ -752,6 +752,7 @@ const SendHome: React.FC = () => {
     getAELFChainInfoConfig,
     getEVMChainInfoConfig,
     getTokenConfig,
+    tokenPriceObject,
     ELFBalance,
     isSupportCross,
     getTransactionFee,

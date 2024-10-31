@@ -911,6 +911,7 @@ const SendHome: React.FC = () => {
             warningTip={errorMessage}
             value={sendNumber}
             usdValue={sendUsdNumber}
+            label={assetInfo.label}
             symbol={assetInfo.symbol}
             decimals={assetInfo.decimals}
             setValue={setSendNumber}

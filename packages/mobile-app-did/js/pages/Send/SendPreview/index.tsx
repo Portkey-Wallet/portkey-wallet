@@ -239,7 +239,7 @@ const SendPreview: React.FC = () => {
       });
 
       if (sameTransferResult.error) {
-        return CommonToast.fail(sameTransferResult?.error?.message || '');
+        throw sameTransferResult?.error?.message;
       }
       console.log('sameTransferResult', sameTransferResult);
     } else if (transferType === TransferType.GENERAL_CROSS_CHAIN) {

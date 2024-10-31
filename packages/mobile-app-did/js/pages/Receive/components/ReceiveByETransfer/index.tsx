@@ -2,7 +2,7 @@ import React, { useEffect, useMemo } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import { pTd } from 'utils/unit';
 import { TReceiveFromNetworkItem } from '@portkey-wallet/types/types-ca/receive';
-import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
+import { IUserTokenItemResponse } from '@portkey-wallet/types/types-ca/token';
 import { IChainItemType } from '@portkey-wallet/types/types-ca/chain';
 import { useReceiveByETransfer } from '@portkey-wallet/hooks/hooks-ca/receive';
 import { makeStyles } from '@rneui/themed';
@@ -16,19 +16,19 @@ import { getManagerAccount, getPin } from 'utils/redux';
 export default function ReceiveByETransfer({
   sourceChain,
   destinationChain,
-  tokenItem,
+  tokenInfo,
 }: {
   sourceChain: TReceiveFromNetworkItem;
   destinationChain: IChainItemType;
-  tokenItem: TokenItemShowType;
+  tokenInfo: IUserTokenItemResponse;
 }) {
   const styles = getStyles();
   const { loading, depositInfo } = useReceiveByETransfer({
     manager: getManagerAccount(getPin() ?? ''),
     fromNetwork: sourceChain.network,
-    fromSymbol: tokenItem.symbol,
+    fromSymbol: tokenInfo.symbol,
     toChainId: destinationChain.chainId,
-    toSymbol: tokenItem.symbol,
+    toSymbol: tokenInfo.symbol,
   });
 
   useEffect(() => {
@@ -52,19 +52,19 @@ export default function ReceiveByETransfer({
       <View style={styles.infoWrap}>
         <Text style={styles.infoTitle}>Minimum deposit</Text>
         <View style={styles.minimumWrap}>
-          <Text style={styles.minimumCount}>{`${depositInfo?.minAmount} ${tokenItem.label ?? tokenItem.symbol}`}</Text>
+          <Text style={styles.minimumCount}>{`${depositInfo?.minAmount} ${tokenInfo.label ?? tokenInfo.symbol}`}</Text>
           <Text style={styles.minimumUsd}>{`$${depositInfo?.minAmountUsd}`}</Text>
         </View>
       </View>
     );
-  }, [depositInfo, styles, tokenItem]);
+  }, [depositInfo, styles, tokenInfo]);
 
   const reminderUI = useMemo(() => {
     return (
       <View style={styles.reminderWrap}>
         <Svg icon="info" size={pTd(22)} />
         <Text style={styles.reminderText}>
-          {`Send ${tokenItem.label || tokenItem.symbol} on `}
+          {`Send ${tokenInfo.label || tokenInfo.symbol} on `}
           <Text style={styles.reminderHighlightText}>{sourceChain.name}</Text>
           {' to this address and receive on the '}
           <Text style={styles.reminderHighlightText}>{formatChainInfoToShow(destinationChain.chainId)}</Text>
@@ -72,7 +72,7 @@ export default function ReceiveByETransfer({
         </Text>
       </View>
     );
-  }, [destinationChain.chainId, sourceChain.name, styles, tokenItem.label, tokenItem.symbol]);
+  }, [destinationChain.chainId, sourceChain.name, styles, tokenInfo.label, tokenInfo.symbol]);
 
   const supportUI = useMemo(() => {
     return (

@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import { pTd } from 'utils/unit';
 import { TReceiveFromNetworkItem } from '@portkey-wallet/types/types-ca/receive';
-import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
+import { IUserTokenItemResponse } from '@portkey-wallet/types/types-ca/token';
 import { IChainItemType } from '@portkey-wallet/types/types-ca/chain';
 import { shrinkSendQrData, QRCodeDataObjType } from '@portkey-wallet/utils/qrCode';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
@@ -19,17 +19,21 @@ import { formatChainInfoToShow } from '@portkey-wallet/utils';
 export default function ReceiveByPortkey({
   sourceChain,
   destinationChain,
-  tokenItem,
+  tokenInfo,
 }: {
   sourceChain: TReceiveFromNetworkItem;
   destinationChain: IChainItemType;
-  tokenItem: TokenItemShowType;
+  tokenInfo: IUserTokenItemResponse;
 }) {
   const styles = getStyles();
   const [isExchangeSelected, setExchangeSelected] = useState(true);
   const isSupportExchange = useMemo(() => {
-    return tokenItem.symbol === 'ELF';
-  }, [tokenItem.symbol]);
+    return tokenInfo.symbol === 'ELF';
+  }, [tokenInfo.symbol]);
+
+  const tokenItem = useMemo(() => {
+    return tokenInfo.tokens?.find(item => item.chainId === destinationChain.chainId);
+  }, []);
 
   const onExchangeTabSelected = useCallback((selected: boolean) => {
     setExchangeSelected(selected);
@@ -68,10 +72,10 @@ export default function ReceiveByPortkey({
           address: toCaAddress,
         },
         assetInfo: {
-          symbol: tokenItem?.symbol,
-          label: tokenItem.label,
-          tokenContractAddress: tokenItem?.tokenContractAddress || tokenItem?.address,
-          chainId: tokenItem?.chainId,
+          symbol: tokenInfo?.symbol,
+          label: tokenInfo.label,
+          tokenContractAddress: tokenItem?.tokenContractAddress || tokenItem?.address || '',
+          chainId: tokenItem?.chainId || destinationChain.chainId,
           decimals: tokenItem?.decimals || 0,
         },
       };
@@ -84,12 +88,7 @@ export default function ReceiveByPortkey({
     isExchangeSelected,
     isSupportExchange,
     toCaAddress,
-    tokenItem?.address,
-    tokenItem?.chainId,
-    tokenItem?.decimals,
-    tokenItem.label,
-    tokenItem?.symbol,
-    tokenItem?.tokenContractAddress,
+    tokenInfo,
   ]);
   const qrcodeAddress = useMemo(() => {
     if (isSupportExchange && isExchangeSelected) {
@@ -104,7 +103,7 @@ export default function ReceiveByPortkey({
       <View style={styles.reminderWrap}>
         <Svg icon="info" size={pTd(22)} />
         <Text style={styles.reminderText}>
-          {`Send ${tokenItem.label || tokenItem.symbol} on `}
+          {`Send ${tokenInfo.label || tokenInfo.symbol} on `}
           <Text style={styles.reminderHighlightText}>{`${sourceChain.name}${
             isSupportExchange && isExchangeSelected ? ' from exchange' : ''
           }`}</Text>
@@ -119,8 +118,8 @@ export default function ReceiveByPortkey({
     isSupportExchange,
     sourceChain.name,
     styles,
-    tokenItem.label,
-    tokenItem.symbol,
+    tokenInfo.label,
+    tokenInfo.symbol,
   ]);
 
   return (

@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, ViewStyle } from 'react-native';
 import { pTd } from 'utils/unit';
 import Svg from 'components/Svg';
 import { useLanguage } from 'i18n/hooks';
-import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
+import { IUserTokenItemResponse } from '@portkey-wallet/types/types-ca/token';
 import { makeStyles } from '@rneui/themed';
 import TokenBalanceShow from 'components/TokenBalanceShow';
 import TokenAmountInput from 'components/TokenAmountInput';
@@ -22,7 +22,7 @@ import { ActionType } from 'types/common';
 
 export interface IEBridgeCardProps {
   styleProps?: ViewStyle;
-  tokenInfo: TokenItemShowType;
+  tokenInfo: IUserTokenItemResponse;
   destinationChain: IChainItemType;
   sourceChain: TReceiveFromNetworkItem;
 }
@@ -101,7 +101,7 @@ export default function EBridgeCard(props: IEBridgeCardProps) {
           usdValue={usdValue}
           symbol={tokenInfo.symbol}
           label={tokenInfo.label}
-          decimals={tokenInfo.decimals}
+          decimals={tokenInfo.decimals ?? ''}
           warningTip={isExceed ? 'Exceeds available balance' : undefined}
           editable={isConnected}
           setUsdValue={v => {

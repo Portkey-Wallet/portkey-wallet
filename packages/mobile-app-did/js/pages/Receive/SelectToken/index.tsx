@@ -42,7 +42,7 @@ const SelectToken = () => {
       <Touchable
         style={styles.tokenItemWrap}
         onPress={() => {
-          navigationService.navigate('Receive', item);
+          navigationService.navigate('Receive', { tokenInfo: item });
         }}>
         <CommonAvatar
           hasBorder

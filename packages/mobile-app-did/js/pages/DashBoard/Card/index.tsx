@@ -15,6 +15,7 @@ import { pTd } from 'utils/unit';
 import { Skeleton } from '@rneui/base';
 import Svg from 'components/Svg';
 import { useAppSwapButtonShow } from 'hooks/cms';
+import navigationService from 'utils/navigationService';
 // import { DashBoardBanner } from '../Banner'; // todo_wade: confirm banner
 
 const Card: React.FC<{ title: string }> = ({ title }) => {
@@ -40,6 +41,10 @@ const Card: React.FC<{ title: string }> = ({ title }) => {
   const onHideAssets = useCallback(() => {
     setHideAssets(!userInfo.hideAssets);
   }, [setHideAssets, userInfo.hideAssets]);
+
+  const onReceivePress = useCallback(() => {
+    navigationService.navigate('ReceiveSelectToken');
+  }, []);
 
   return (
     <View style={[styles.cardWrap]}>
@@ -67,7 +72,7 @@ const Card: React.FC<{ title: string }> = ({ title }) => {
       </View>
       <View style={[GStyles.flexRow, GStyles.spaceBetween, styles.buttonGroupWrap]}>
         <SendButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />
-        <ReceiveButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />
+        <ReceiveButton onPress={onReceivePress} />
         {isRampShow && <BuyButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />}
         {isSwapShow && <SwapButton />}
         {!isMainnet && <FaucetButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />}

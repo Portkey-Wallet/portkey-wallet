@@ -7,7 +7,7 @@ import {
 } from '@portkey-wallet/types/types-ca/receive';
 import { ChainId } from '@portkey-wallet/types';
 import { request } from '@portkey-wallet/api/api-did';
-import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
+import { IUserTokenItemResponse } from '@portkey-wallet/types/types-ca/token';
 import { TQueryTransferAuthTokenRequest } from '@portkey-wallet/types/types-ca/deposit';
 import { useCurrentChainList } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { IChainItemType } from '@portkey-wallet/types/types-ca/chain';
@@ -18,7 +18,7 @@ import { AElfWallet } from '@portkey-wallet/types/aelf';
 import depositService from '@portkey-wallet/utils/deposit';
 import { TDepositInfo } from '@portkey-wallet/types/types-ca/deposit';
 
-export const useReceive = (token: TokenItemShowType, initToChainId?: ChainId) => {
+export const useReceive = (token: IUserTokenItemResponse, initToChainId?: ChainId) => {
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState('');
   const [destinationChain, setDestinationChain] = useState<IChainItemType | undefined>();

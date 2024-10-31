@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import PageContainer from 'components/PageContainer';
 import { pTd } from 'utils/unit';
-import { IUserTokenItemResponse, TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
+import { IUserTokenItemResponse } from '@portkey-wallet/types/types-ca/token';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { useReceive } from '@portkey-wallet/hooks/hooks-ca/receive';
 import SourceDestinationPicker from '../components/SourceDestinationPicker';
@@ -18,22 +18,7 @@ import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import { ChainId } from '@portkey-wallet/types';
 
 export default function Receive() {
-  const tokenInfo = useRouterParams<TokenItemShowType & IUserTokenItemResponse>();
-  const getTokenItem = useCallback(
-    (_chainId: ChainId = MAIN_CHAIN_ID) => {
-      if (tokenInfo?.tokens?.length) {
-        const mainChainTokenInfo = tokenInfo?.tokens.find(item => item.chainId === _chainId);
-        return {
-          ...tokenInfo,
-          ...mainChainTokenInfo,
-        };
-      }
-      return tokenInfo;
-    },
-    [tokenInfo],
-  );
-  const [tokenItem, setTokenItem] = useState(getTokenItem());
-  const { chainId } = tokenItem;
+  const { tokenInfo, chainId } = useRouterParams<{ tokenInfo: IUserTokenItemResponse; chainId?: ChainId }>();
   const {
     loading,
     errorMsg,
@@ -44,14 +29,8 @@ export default function Receive() {
     sourceChain,
     sourceChainList,
     setSourceChain,
-  } = useReceive(tokenItem, chainId);
+  } = useReceive(tokenInfo, chainId);
   const styles = getStyles();
-
-  useEffect(() => {
-    if (sourceChain?.network !== tokenItem.chainId) {
-      setTokenItem(getTokenItem(sourceChain?.network as ChainId));
-    }
-  }, [getTokenItem, sourceChain?.network, tokenItem.chainId]);
 
   useEffect(() => {
     if (loading) {
@@ -99,7 +78,7 @@ export default function Receive() {
 
   return (
     <PageContainer
-      titleDom={'Receive ' + (tokenItem.label ?? tokenItem.symbol)}
+      titleDom={'Receive ' + (tokenInfo.label ?? tokenInfo.symbol)}
       safeAreaColor={['black']}
       containerStyles={styles.containerStyles}
       scrollViewProps={{ disabled: true }}>
@@ -112,13 +91,13 @@ export default function Receive() {
             onDestinationPress={showDestinationList}
           />
           {receiveType === ReceiveType.Portkey && (
-            <ReceiveByPortkey tokenItem={tokenItem} sourceChain={sourceChain} destinationChain={destinationChain} />
+            <ReceiveByPortkey tokenInfo={tokenInfo} sourceChain={sourceChain} destinationChain={destinationChain} />
           )}
           {receiveType === ReceiveType.ETransfer && (
-            <ReceiveByETransfer tokenItem={tokenItem} sourceChain={sourceChain} destinationChain={destinationChain} />
+            <ReceiveByETransfer tokenInfo={tokenInfo} sourceChain={sourceChain} destinationChain={destinationChain} />
           )}
           {receiveType === ReceiveType.EBridge && (
-            <EBridgeCard tokenInfo={tokenItem} destinationChain={destinationChain} sourceChain={sourceChain} />
+            <EBridgeCard tokenInfo={tokenInfo} destinationChain={destinationChain} sourceChain={sourceChain} />
           )}
         </>
       )}

@@ -10,12 +10,16 @@ import ReceiveByPortkey from '../components/ReceiveByPortkey';
 import ReceiveByETransfer from '../components/ReceiveByETransfer';
 import Loading from 'components/Loading';
 import CommonToast from 'components/CommonToast';
+import Touchable from 'components/Touchable';
+import Svg from 'components/Svg';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import { ReceiveType } from '@portkey-wallet/types/types-ca/receive';
 import { makeStyles } from '@rneui/themed';
 import EBridgeCard from '../components/EBridgeCard';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import { ChainId } from '@portkey-wallet/types';
+import { SEND_RECEIVE_HELP_URL } from 'constants/common';
+import { openOutLink } from 'utils/link';
 
 export default function Receive() {
   const { tokenInfo, chainId } = useRouterParams<{ tokenInfo: IUserTokenItemResponse; chainId?: ChainId }>();
@@ -80,6 +84,14 @@ export default function Receive() {
     <PageContainer
       titleDom={'Receive ' + (tokenInfo.label ?? tokenInfo.symbol)}
       safeAreaColor={['black']}
+      rightDom={
+        <Touchable
+          onPress={async () => {
+            await openOutLink(SEND_RECEIVE_HELP_URL);
+          }}>
+          <Svg icon="question" size={pTd(24)} iconStyle={styles.rightIcon} />
+        </Touchable>
+      }
       containerStyles={styles.containerStyles}
       scrollViewProps={{ disabled: true }}>
       {sourceChain && destinationChain && (
@@ -111,5 +123,8 @@ const getStyles = makeStyles(theme => ({
     display: 'flex',
     flexDirection: 'column',
     paddingBottom: pTd(16),
+  },
+  rightIcon: {
+    marginRight: pTd(16),
   },
 }));

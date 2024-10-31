@@ -7,9 +7,9 @@ import TokenItem from '../TokenItem';
 import fonts from 'assets/theme/fonts';
 
 interface IPopularTokenSectionProps {
-  tokenDataShowInMarket: any[];
+  tokenDataShowInMarket: TokenItemShowType[];
   getTokenList: () => Promise<void>;
-  onHandleTokenItem: (item: any, added: boolean) => void;
+  onHandleTokenItem: (item: TokenItemShowType, added: boolean) => void;
 }
 
 const PopularTokenSection: React.FC<IPopularTokenSectionProps> = (props: IPopularTokenSectionProps) => {
@@ -23,7 +23,7 @@ const PopularTokenSection: React.FC<IPopularTokenSectionProps> = (props: IPopula
         <TokenItem item={item} onHandleToken={() => onHandleTokenItem(item, !item?.isAdded)} />
       )}
       onEndReached={() => getTokenList()}
-      keyExtractor={(item: TokenItemShowType) => item?.id || item?.symbol}
+      keyExtractor={(item: TokenItemShowType) => `${item?.symbol}_${item?.chainId}`}
     />
   );
 };

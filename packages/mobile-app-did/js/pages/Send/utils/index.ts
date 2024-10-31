@@ -21,7 +21,7 @@ export function getSmallerValue(v1: string, v2: string) {
   return ZERO.plus(v1).isGreaterThan(v2) ? v2 : v1;
 }
 
-export function getLimitTips(symbol: string, from: string, to: string) {
+export function getLimitTips(symbol: string, from: string | number, to: string | number) {
   return `Transfer limit: ${from} to ${to} ${symbol}`;
 }
 

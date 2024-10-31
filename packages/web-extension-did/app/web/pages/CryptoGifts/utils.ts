@@ -48,5 +48,5 @@ export const getPrice = async (symbol: string) => {
 };
 
 export const chianInfoShow = (chainId: ChainId) => {
-  return `${chainId === MAIN_CHAIN_ID ? MAIN_CHAIN : SIDE_CHAIN} ${chainId}`;
+  return `aelf ${chainId === MAIN_CHAIN_ID ? MAIN_CHAIN : SIDE_CHAIN}`;
 };

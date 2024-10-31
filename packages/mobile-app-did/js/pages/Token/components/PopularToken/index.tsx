@@ -22,7 +22,6 @@ const PopularTokenSection: React.FC<IPopularTokenSectionProps> = (props: IPopula
 
   const { getTokenList, onHandleTokenItem, onEditToken } = props;
   const { tokenDataShowInMarket } = useToken();
-
   return (
     <FlatList
       style={pageStyles.list}

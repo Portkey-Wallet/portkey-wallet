@@ -500,18 +500,16 @@ const SendPreview: React.FC = () => {
   }, [dispatch, etransferCrossFinishTrack, isSupportEtransferCross, retryCrossChain, showRetry, transfer]);
 
   const checkAndSend = useCallback(() => {
-    if (assetInfo.chainId !== DefaultChainId)
+    if (assetInfo.chainId !== DefaultChainId) {
       return ActionSheet.alert({
         title: 'Send to exchange account?',
         message: (
           <TextM style={[styles.alertMessage]}>
-            {`Please note that `}
-            <TextM
-              style={[
-                styles.alertMessage,
-                FontStyles.functionalRedDefault,
-              ]}>{`only MainChain ELF can be sent directly to exchanges.`}</TextM>
-            {`If you are sending SideChain ELF, please transfer ELF to the MainChain before sending them to your exchange account.
+            {'Please note that '}
+            <TextM style={[styles.alertMessage, FontStyles.functionalRedDefault]}>
+              {'only MainChain ELF can be sent directly to exchanges.'}
+            </TextM>
+            {`If you are sending dAppChain ELF, please transfer ELF to the MainChain before sending them to your exchange account.
   If you are sending another asset, please swap it to ELF first or try the withdrawal function in ETransfer.`}
           </TextM>
         ),
@@ -524,6 +522,7 @@ const SendPreview: React.FC = () => {
           },
         ],
       });
+    }
     GeneralSend();
   }, [GeneralSend, assetInfo.chainId, t]);
   const onSend = useCallback(() => {

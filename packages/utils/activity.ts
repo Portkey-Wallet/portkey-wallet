@@ -1,13 +1,21 @@
 import { MAIN_CHAIN, MAIN_CHAIN_ID, SIDE_CHAIN, TEST_NET } from '@portkey-wallet/constants/constants-ca/activity';
 
-export function transNetworkText(chainId: string, isTestnet: boolean): string {
-  return `${chainId === MAIN_CHAIN_ID ? MAIN_CHAIN : SIDE_CHAIN} ${chainId}${isTestnet ? ' ' + TEST_NET : ''}`;
+export function transNetworkText(chainId: string, isTestnet: boolean, displayChainName?: string): string {
+  if (displayChainName) {
+    return `${displayChainName} ${isTestnet ? ' ' + TEST_NET : ''}`;
+  }
+  return `aelf ${chainId === MAIN_CHAIN_ID ? MAIN_CHAIN : SIDE_CHAIN} ${isTestnet ? ' ' + TEST_NET : ''}`;
 }
 
-export function transNetworkTextWithAllChain(chainId: string, isTestnet: boolean, chainName?: string): string {
+export function transNetworkTextWithAllChain(
+  chainId: string,
+  isTestnet: boolean,
+  chainName?: string,
+  displayChainName?: string,
+): string {
   if (chainName?.toLocaleLowerCase() === 'aelf') {
     // aelf chain
-    return transNetworkText(chainId, isTestnet);
+    return transNetworkText(chainId, isTestnet, displayChainName);
   }
   // other chain
   return chainName || '';

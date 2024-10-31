@@ -5,6 +5,8 @@ import navigationService from './navigationService';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import AssetsOverlay from 'pages/DashBoard/AssetsOverlay';
 import { IToSendHomeParamsType } from '@portkey-wallet/types/types-ca/routeParams';
+import { request } from '@portkey-wallet/api/api-did';
+import Loading from 'components/Loading';
 
 export interface RouteInfoType {
   name: 'SendHome' | 'Tab';
@@ -62,5 +64,27 @@ export function handleAelfQrCode(data: string, previousRouteInfo: RouteInfoType)
   } else {
     navigationService.goBack();
     AssetsOverlay.showAssetList({ toAddress: data });
+  }
+}
+
+export async function isWeb3Address(str: string) {
+  try {
+    Loading.show();
+    const { data } = await request.sendApi.getSendNetworkList({
+      params: {
+        symbol: 'ELF',
+        chainId: 'AELF',
+        toAddress: str,
+      },
+    });
+
+    const chainListLen = data?.networkList?.length;
+    if (chainListLen === 0) return false;
+    return true;
+  } catch (error) {
+    console.log('error', error);
+    return false;
+  } finally {
+    Loading.hide();
   }
 }

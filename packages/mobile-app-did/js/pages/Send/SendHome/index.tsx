@@ -905,6 +905,7 @@ const SendHome: React.FC = () => {
             symbol={assetInfo.symbol}
             balanceShow={formatTokenAmountShowWithDecimals(balance, assetInfo.decimals)}
             onPressMax={onPressMax}
+            imageUrl={assetInfo.imageUrl}
           />
           <TokenAmountInput
             warningTip={errorMessage}

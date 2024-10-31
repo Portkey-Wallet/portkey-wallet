@@ -55,7 +55,6 @@ import { usePin } from 'hooks/store';
 import GStyles from 'assets/theme/GStyles';
 import { TextXXL } from 'components/CommonText';
 import { useOnDisclaimerModalPress } from 'hooks/deposit';
-import { stringifyETrans } from '@portkey-wallet/utils/dapp/url';
 import { useEtransferFee } from 'hooks/etransfer';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { getAssetsEstimation } from '@portkey-wallet/store/store-ca/assets/api';
@@ -65,7 +64,7 @@ import ToAddressInput from '../components/ToAddressInput';
 import TokenBalanceShow from 'components/TokenBalanceShow';
 import TokenAmountInput from 'components/TokenAmountInput';
 import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
-import { HELP_URL, TransferErrorMessage, warning1Arr, WarningKey, WarningTips } from '../constant';
+import { TransferErrorMessage, warning1Arr, WarningKey, WarningTips } from '../constant';
 import { CommonPromptCard, PromptCardType } from 'components/CommonPromptCard';
 import SupportedExchangesCard from '../components/SupportedExchangesCard';
 import GeneralTips from '../components/GeneralTips';
@@ -88,9 +87,7 @@ const SendHome: React.FC = () => {
   } = useRoute<RouteProp<{ params: IToSendHomeParamsType }>>();
   const { t } = useLanguage();
   const styles = getStyles();
-  const otherChainWarningStyle = getOtherChainWarningStyle();
   useFetchTxFee();
-  const isValidChainId = useIsValidSuffix();
   const defaultToken = useDefaultToken();
 
   const wallet = useCurrentWalletInfo();
@@ -149,10 +146,6 @@ const SendHome: React.FC = () => {
   const getCAContract = useGetCAContract();
   const { isETransDepositShow } = useAppETransShow();
   const onDisclaimerModalPress = useOnDisclaimerModalPress();
-
-  useEffect(() => {
-    setSelectedToContact(toInfo);
-  }, [toInfo]);
 
   // get transfer fee
   const getTransferFee = useGetTransferFee();
@@ -703,7 +696,7 @@ const SendHome: React.FC = () => {
       } else {
         networkFee = await getTransactionFee(isAELFCross);
         networkFeeUnit = 'ELF';
-        transferType = TransferType.GENERAL_SAME_CHAIN;
+        transferType = isAELFCross ? TransferType.GENERAL_CROSS_CHAIN : TransferType.GENERAL_SAME_CHAIN;
       }
     } catch (err: any) {
       if (err?.code === 500) {

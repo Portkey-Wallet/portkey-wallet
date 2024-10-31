@@ -625,6 +625,7 @@ const SendHome: React.FC = () => {
           tokenInfo,
         });
         const f = await bridge.getELFFee();
+        console.log('f', f);
         setBottomFeeShow(f);
         if (assetInfo.symbol === defaultToken.symbol) {
           // ELF
@@ -634,17 +635,20 @@ const SendHome: React.FC = () => {
           }
         } else {
           if (ZERO.plus(f).isGreaterThan(ELFBalance)) {
+            setErrorMessage(TransferErrorMessage.FEE_NOT_ENOUGH);
             return { status: false };
           }
         }
 
         const limit = await bridge.getLimit();
+        console.log('limit', f);
+
         // TODO： change it
         const targetLimit = getSmallerValue(limit.remain, limit.currentCapacity);
         if (limit.isEnable && sendBigNumber.isGreaterThan(targetLimit)) {
           return setErrorMessage(getLimitTips(assetInfo.symbol, '0', formatAmountShow(targetLimit)));
         }
-        transactionFee = divDecimals(f?.result, defaultToken.decimals).toString();
+        transactionFee = divDecimals(f, defaultToken.decimals).toString();
         transactionUnit = 'ELF';
         transferType = TransferType.E_BRIDGE;
 

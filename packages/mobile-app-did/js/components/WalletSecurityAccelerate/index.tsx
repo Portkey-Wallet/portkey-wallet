@@ -101,7 +101,7 @@ function WalletSecurityAccelerateAlertBody({
         },
       },
     ];
-  }, [accelerate, dispatch, isDrawerOpen]);
+  }, [accelerate]);
 
   return (
     <AlertBody

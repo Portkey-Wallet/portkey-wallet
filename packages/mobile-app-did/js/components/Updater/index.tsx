@@ -97,9 +97,10 @@ export default function Updater() {
     EntryScriptWeb3.init();
     // init MatchValueMap
     MatchValueMap.init();
-    socket.onScanLoginSuccess(data => {
-      CommonToast.success(data.body);
-    });
+
+    // socket.onScanLoginSuccess(data => {
+    //   CommonToast.success(data.body);
+    // });
   });
   useInterval(
     () => {

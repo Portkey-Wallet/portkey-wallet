@@ -148,7 +148,7 @@ export default function VerifierDetails() {
             operationDetails: operationDetails,
           },
         });
-        !isRequestResult && CommonToast.success('Verified Successfully');
+        // !isRequestResult && CommonToast.success('Verified Successfully');
 
         const verifierInfo: VerifierInfo = {
           ...rst,

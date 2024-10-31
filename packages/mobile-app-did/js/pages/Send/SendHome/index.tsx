@@ -1,20 +1,20 @@
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { Keyboard, Linking, View } from 'react-native';
+import { View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import navigationService from 'utils/navigationService';
 import Svg from 'components/Svg';
-import { getOtherChainWarningStyle, getStyles } from './style';
+import { getStyles } from './style';
 import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
 import { ZERO } from '@portkey-wallet/constants/misc';
-import { getAelfAddress, getEntireDIDAelfAddress, isCrossChain, isDIDAelfAddress } from '@portkey-wallet/utils/aelf';
+import { getEntireDIDAelfAddress } from '@portkey-wallet/utils/aelf';
 import useDebounce from 'hooks/useDebounce';
 import { useLanguage } from 'i18n/hooks';
 import AmountNFT from '../AmountNFT';
 import NFTInfo from '../NFTInfo';
 import CommonButton from 'components/CommonButton';
-import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { useCurrentChain, useDefaultToken, useIsValidSuffix } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { useCurrentWalletInfo, useMainChainCaInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentChain, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import {
   CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL,
   useCrossTransferByEtransfer,
@@ -38,8 +38,7 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 import Loading from 'components/Loading';
 import { useFetchTxFee, useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
 
-import { TransactionError, AddressError } from '@portkey-wallet/constants/constants-ca/send';
-import { getAddressChainId, isSameAddresses } from '@portkey-wallet/utils';
+import { TransactionError } from '@portkey-wallet/constants/constants-ca/send';
 import { useCheckManagerSyncState } from 'hooks/wallet';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
 import { useCheckTransferLimitWithJump, useSecuritySafeCheckAndToast } from 'hooks/security';
@@ -48,17 +47,13 @@ import Touchable from 'components/Touchable';
 import { useGetCAContract, useGetTokenViewContract } from 'hooks/contract';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { useGetTransferFee } from 'hooks/transfer';
-import { checkEnabledFunctionalTypes } from '@portkey-wallet/utils/compass';
-import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
-import { useAppETransShow } from 'hooks/cms';
 import { usePin } from 'hooks/store';
 import GStyles from 'assets/theme/GStyles';
 import { TextXXL } from 'components/CommonText';
-import { useOnDisclaimerModalPress } from 'hooks/deposit';
 import { useEtransferFee } from 'hooks/etransfer';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { getAssetsEstimation } from '@portkey-wallet/store/store-ca/assets/api';
-import { getChainIdByAddress } from '@portkey-wallet/utils';
+import { addressFormat, getChainIdByAddress } from '@portkey-wallet/utils';
 import { ChainId } from '@portkey-wallet/types';
 import ToAddressInput from '../components/ToAddressInput';
 import TokenBalanceShow from 'components/TokenBalanceShow';
@@ -69,8 +64,7 @@ import { CommonPromptCard, PromptCardType } from 'components/CommonPromptCard';
 import SupportedExchangesCard from '../components/SupportedExchangesCard';
 import GeneralTips from '../components/GeneralTips';
 import SelectExchangeCard from '../components/SelectExchangeCard';
-import SelectNetwork, { INetworkItem, INetworkServiceItem } from '../components/SelectNetwork';
-import { useShowDialog } from '../hooks';
+import SelectNetwork, { INetworkItem } from '../components/SelectNetwork';
 import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network-mainnet-v2';
 import useGetEBridgeConfig from 'hooks/ebridge';
 import { EBridge } from '@portkey-wallet/utils/eBridge';
@@ -89,7 +83,7 @@ const SendHome: React.FC = () => {
   const styles = getStyles();
   useFetchTxFee();
   const defaultToken = useDefaultToken();
-
+  const mainChainCaInfo = useMainChainCaInfo();
   const wallet = useCurrentWalletInfo();
   const chainInfo = useCurrentChain(assetInfo?.chainId);
   const securitySafeCheckAndToast = useSecuritySafeCheckAndToast();
@@ -144,8 +138,6 @@ const SendHome: React.FC = () => {
 
   const checkManagerSyncState = useCheckManagerSyncState();
   const getCAContract = useGetCAContract();
-  const { isETransDepositShow } = useAppETransShow();
-  const onDisclaimerModalPress = useOnDisclaimerModalPress();
 
   // get transfer fee
   const getTransferFee = useGetTransferFee();
@@ -355,12 +347,6 @@ const SendHome: React.FC = () => {
     warning,
   ]);
 
-  const enableEtransfer = useMemo(() => {
-    const { symbol, chainId } = assetInfo;
-    const { withdraw } = checkEnabledFunctionalTypes(symbol, chainId === MAIN_CHAIN_ID);
-    return isETransDepositShow && withdraw;
-  }, [assetInfo, isETransDepositShow]);
-
   // const isValidOtherChainAddress = useMemo(() => {
   //   const { address } = selectedToContact || {};
   //   return (
@@ -399,7 +385,11 @@ const SendHome: React.FC = () => {
             title: t('Send to my aelf MainChain'),
             type: 'primary',
             onPress: () => {
-              setSelectedToContact(pre => ({ ...pre, chainId: DefaultChainId }));
+              setSelectedToContact(pre => ({
+                ...pre,
+                address: addressFormat(mainChainCaInfo?.caAddress || '', DefaultChainId),
+                chainId: DefaultChainId,
+              }));
               OverlayModal.hide();
               setStep(2);
             },
@@ -414,8 +404,8 @@ const SendHome: React.FC = () => {
     }
     // to dappChain Address
     setStep(2);
-    setSelectedToContact(pre => ({ ...pre, chainId: assetInfo.chainId }));
-  }, [assetInfo.chainId, assetInfo.symbol, defaultToken.symbol, isSendToExchange, t]);
+    setSelectedToContact(pre => ({ ...pre, chainId: DefaultChainId }));
+  }, [assetInfo.symbol, defaultToken.symbol, isSendToExchange, mainChainCaInfo?.caAddress, t]);
 
   const mainChainToNoAffixAddressAction = useCallback(() => {
     setSelectedToContact(pre => ({ ...pre, chainId: DefaultChainId }));
@@ -688,7 +678,8 @@ const SendHome: React.FC = () => {
     // SameChain or CrossChain in aelf
     try {
       if (isAELFCross && isSupportCross) {
-        const network = selectedToContact.chainId || 'AELF';
+        const network = selectedToContact?.chainId || 'AELF';
+
         const { withdrawInfo } = await crossTransferByEtransfer.withdrawPreview({
           symbol: assetInfo.symbol,
           address: selectedToContact.address,
@@ -696,7 +687,7 @@ const SendHome: React.FC = () => {
           amount: sendNumber,
           network,
         });
-        console.log('withdrawInfo', withdrawInfo);
+
         transactionFee = withdrawInfo?.aelfTransactionFee;
         const maxAmount = Number(withdrawInfo?.maxAmount);
         const minAmount = Number(withdrawInfo?.minAmount);

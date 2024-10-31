@@ -299,6 +299,11 @@ export const useCurrentCaInfo = () => {
   return useMemo(() => walletInfo?.caInfo?.[currentNetwork], [walletInfo, currentNetwork]);
 };
 
+export const useMainChainCaInfo = () => {
+  const { walletInfo, currentNetwork } = useWallet();
+  return useMemo(() => walletInfo?.caInfo?.[currentNetwork].AELF, [walletInfo, currentNetwork]);
+};
+
 export const useOriginChainId = () => {
   const { originChainId } = useWallet();
   const caInfo = useCurrentCaInfo();

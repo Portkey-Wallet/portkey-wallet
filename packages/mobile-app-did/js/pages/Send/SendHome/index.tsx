@@ -76,7 +76,7 @@ import useGetEBridgeConfig from 'hooks/ebridge';
 import { EBridge } from '@portkey-wallet/utils/eBridge';
 import ActionSheet from 'components/ActionSheet';
 import OverlayModal from 'components/OverlayModal';
-import { getLimitTips, getSmallerValue } from '../utils';
+import { eBridgeActionSheet, getLimitTips, getSmallerValue } from '../utils';
 import CommonInfoRow from 'components/CommonInfoRow';
 import { SEND_RECEIVE_HELP_URL } from 'constants/common';
 import { openOutLink } from 'utils/link';
@@ -664,6 +664,8 @@ const SendHome: React.FC = () => {
         transactionUnit = 'ELF';
         transferType = TransferType.E_BRIDGE;
 
+        await eBridgeActionSheet();
+
         return {
           status: true,
           networkFee,
@@ -677,6 +679,7 @@ const SendHome: React.FC = () => {
         };
       } catch (error) {
         console.log('err', error);
+        return { status: false };
       } finally {
         Loading.hide();
       }

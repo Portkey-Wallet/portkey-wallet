@@ -3,6 +3,7 @@ import { ZERO } from '@portkey-wallet/constants/misc';
 import { ChainId } from '@portkey-wallet/types';
 import { INetworkItem } from '../components/SelectNetwork';
 import { TransferType } from '@portkey-wallet/types/types-ca/routeParams';
+import { eBridgeWaringShow } from '../components/WarningActionSheet';
 
 export interface IGetSendNetworkListParams {
   symbol: string;
@@ -34,4 +35,17 @@ export const getEstimatedTime = (targetNetwork: INetworkItem, transferType: Tran
   if (transferType === TransferType.E_TRANSFER) return transferItem?.multiConfirmTime;
   if (transferType === TransferType.E_BRIDGE) return bridgeItem?.multiConfirmTime;
   return '';
+};
+
+export const eBridgeActionSheet = () => {
+  return new Promise((resolve, reject) => {
+    eBridgeWaringShow({
+      confirm: () => {
+        resolve(true);
+      },
+      cancel: () => {
+        reject(false);
+      },
+    });
+  });
 };

@@ -20,24 +20,27 @@ import { makeStyles } from '@rneui/themed';
 export interface SelectTokenProps {
   tokenInfos: IAssetToken[];
   noDataMessage: string;
+  toAddress?: string;
 }
 
-export default function SelectToken({ tokenInfos, noDataMessage }: SelectTokenProps) {
+export default function SelectToken({ tokenInfos, noDataMessage, toAddress }: SelectTokenProps) {
   const { t } = useLanguage();
   const userInfo = useCurrentUserInfo();
   const isMainnet = useIsMainnet();
   const itemStyle = getStyles();
-
-  const onNavigate = useCallback((tokenItem: IAssetToken) => {
-    navigationService.navigate('SendHome', {
-      sendType: 'token',
-      assetInfo: tokenItem,
-      toInfo: {
-        name: '',
-        address: '',
-      },
-    } as unknown as IToSendHomeParamsType);
-  }, []);
+  const onNavigate = useCallback(
+    (tokenItem: IAssetToken) => {
+      navigationService.navigate('SendHome', {
+        sendType: 'token',
+        assetInfo: tokenItem,
+        toInfo: {
+          name: '',
+          address: toAddress || '',
+        },
+      } as unknown as IToSendHomeParamsType);
+    },
+    [toAddress],
+  );
 
   const renderItem = useCallback(
     ({ item }: { item: IAssetToken }) => {
@@ -96,7 +99,7 @@ export default function SelectToken({ tokenInfos, noDataMessage }: SelectTokenPr
         // extraData={extraIndex}
         data={tokenInfos || []}
         renderItem={renderItem}
-        keyExtractor={item => item.symbol}
+        keyExtractor={item => `${item.symbol}${item.chainId}`}
         ListEmptyComponent={() => <NoData noPic message={t(noDataMessage)} />}
       />
     </View>

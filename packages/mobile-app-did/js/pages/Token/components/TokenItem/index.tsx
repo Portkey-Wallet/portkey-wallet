@@ -1,7 +1,7 @@
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import { StyleSheet, View } from 'react-native';
 import React from 'react';
-import { TextL, TextS } from 'components/CommonText';
+import { TextL, TextM } from 'components/CommonText';
 import { pTd } from 'utils/unit';
 import Svg from 'components/Svg';
 import CommonSwitch from 'components/CommonSwitch';
@@ -38,7 +38,7 @@ const TokenItem = ({ item, onHandleToken }: TokenItemProps) => {
           title={item?.displayChainName}
           avatarSize={pTd(20)}
           imageUrl={item?.chainImageUrl}
-          borderStyle={itemStyle.tokenIconBorder}
+          borderStyle={itemStyle.chainIconBorder}
         />
       </View>
 
@@ -47,9 +47,9 @@ const TokenItem = ({ item, onHandleToken }: TokenItemProps) => {
           <TextL numberOfLines={1} ellipsizeMode={'tail'}>
             {item.label || item.symbol}
           </TextL>
-          <TextS numberOfLines={1} ellipsizeMode={'tail'}>
+          <TextM numberOfLines={1} ellipsizeMode={'tail'} style={{ color: darkColors.textBase2 }}>
             {`${item.displayChainName || ''} ${currentNetwork === 'TESTNET' && 'Testnet'}`}
-          </TextS>
+          </TextM>
         </View>
 
         <View style={itemStyle.rightIcon}>
@@ -81,10 +81,8 @@ const itemStyle = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  left: {
-    marginLeft: pTd(16),
-  },
   iconWrap: {
+    marginLeft: pTd(16),
     width: pTd(45),
     height: pTd(42),
     position: 'relative',
@@ -94,7 +92,7 @@ const itemStyle = StyleSheet.create({
     left: 0,
     top: 0,
   },
-  tokenIconBorder: {
+  chainIconBorder: {
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: darkColors.borderBase1,
   },
@@ -105,7 +103,7 @@ const itemStyle = StyleSheet.create({
   },
   right: {
     height: pTd(72),
-    marginLeft: pTd(16),
+    marginLeft: pTd(8),
     paddingRight: pTd(16),
     flex: 1,
     display: 'flex',

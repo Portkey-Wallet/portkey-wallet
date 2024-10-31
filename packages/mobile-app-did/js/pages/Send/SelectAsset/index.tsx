@@ -14,8 +14,12 @@ import CommonInputNew from 'components/CommonInputNew';
 import PageContainer from 'components/PageContainer';
 import SelectAssetTab from '../SelectAssetTab';
 import { makeStyles } from '@rneui/themed';
+import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 
 const AssetList = () => {
+  // when scan qrcode should add toAddress
+  const { toAddress = '' } = useRouterParams<{ toAddress?: string }>();
+
   const { t } = useLanguage();
   const caAddressInfos = useCaAddressInfoList();
   const [keyword, setKeyword] = useState('');
@@ -89,7 +93,7 @@ const AssetList = () => {
           setKeyword(v.trim());
         }}
       />
-      <SelectAssetTab {...assetListShow} noDataMessage={noDataMessage} />
+      <SelectAssetTab toAddress={toAddress} {...assetListShow} noDataMessage={noDataMessage} />
     </PageContainer>
   );
 };

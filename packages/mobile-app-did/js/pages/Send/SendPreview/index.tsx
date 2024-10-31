@@ -326,7 +326,7 @@ const SendPreview: React.FC = () => {
       console.log(txResult, 'txResult===etransferCrossTransfer');
     } else if (transferType === TransferType.E_BRIDGE) {
       const fromChainInfo = getAELFChainInfoConfig(assetInfo.chainId);
-      const toChainInfo = getEVMChainInfoConfig(targetNetwork.network || toInfo.network || '');
+      const toChainInfo = getEVMChainInfoConfig(targetNetwork?.network || toInfo?.network || '');
       const tokenEBridgeInfo = getTokenConfig(assetInfo.symbol);
       const bridge = new EBridge({
         fromChainInfo,
@@ -380,10 +380,10 @@ const SendPreview: React.FC = () => {
     pin,
     routerParams,
     sendNumber,
-    targetNetwork.network,
+    targetNetwork?.network,
     toInfo.address,
     toInfo?.chainId,
-    toInfo.network,
+    toInfo?.network,
     transferType,
     wallet.address,
     wallet.caHash,
@@ -516,7 +516,7 @@ const SendPreview: React.FC = () => {
       amountUSD={`${formatAmountUSDShow(ZERO.plus(sendNumber).multipliedBy(tokenPriceObject[assetInfo.symbol]))}`}
       toAddress={toInfo?.address}
       toInfoChainId={toInfo?.chainId}
-      destinationNetwork={networkInfoShow(toInfo?.address)}
+      destinationNetwork={isETransferOrEBridge ? targetNetwork?.name : networkInfoShow(toInfo?.address)}
       destinationNetworkImageUrl={targetNetwork?.imageUrl}
       transactionFee={isETransferOrEBridge ? `${transactionFee} ${transactionFeeUnit}` : ''}
       transactionFeeUSD={

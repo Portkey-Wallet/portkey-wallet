@@ -49,3 +49,10 @@ export const eBridgeActionSheet = () => {
     });
   });
 };
+
+export const isValidAmount = (input: string) => {
+  if (input === '0' || !input) return false;
+
+  const regex = /^(0|[1-9]\d*)(\.\d+)?$/;
+  return regex.test(input);
+};

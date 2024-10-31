@@ -63,7 +63,11 @@ export function handleAelfQrCode(data: string, previousRouteInfo: RouteInfoType)
     navigationService.navigate('SendHome', params);
   } else {
     navigationService.goBack();
-    AssetsOverlay.showAssetList({ toAddress: data });
+    navigationService.navigateByMultiLevelParams('SelectAsset', {
+      multiLevelParams: {
+        toAddress: data,
+      },
+    });
   }
 }
 

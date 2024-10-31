@@ -23,6 +23,7 @@ import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { INetworkItem } from '../SelectNetwork';
 import { getStringAsync } from 'expo-clipboard';
 import { RouteProp, useRoute } from '@react-navigation/native';
+import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network-mainnet-v2';
 interface IToAddressInput {
   isFixedToContact?: boolean;
   selectedToken?: IToSendAssetParamsType;
@@ -162,7 +163,7 @@ export default function ToAddressInput({
       const _v = v.trim();
       setCheckFinish(false);
       setSelectedToContact(() => {
-        let chainId = '';
+        let chainId = DefaultChainId;
         if (_v.includes('_') && isDIDAelfAddress(_v)) chainId = getChainIdByAddress(_v);
         return { name: '', address: _v, chainId };
       });

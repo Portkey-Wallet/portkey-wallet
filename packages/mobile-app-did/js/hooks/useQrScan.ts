@@ -17,6 +17,7 @@ import {
   handleAelfQrCode,
   handlePortkeyQRCodeData,
   invalidQRCode,
+  isWeb3Address,
 } from 'utils/qrcode';
 import { useNavigation } from '@react-navigation/native';
 import { parseLinkPortkeyUrl } from 'utils/scheme';
@@ -215,10 +216,12 @@ export const useHandleDataFromQrCode = () => {
     async (data: string) => {
       const dataString = data.replace(/("|'|\s)*/g, '');
 
-      if (isDIDAelfAddress(dataString) && !dataString.includes(',')) {
-        handleAelfAddress(dataString);
-      } else if (checkIsUrl(dataString)) {
+      if (checkIsUrl(dataString)) {
         await handleUrl(dataString);
+      } else if (isDIDAelfAddress(dataString) && !dataString.includes(',')) {
+        handleAelfAddress(dataString);
+      } else if ((await isWeb3Address(dataString)) && !dataString.includes(',')) {
+        handleAelfAddress(dataString);
       } else {
         handleObjectData(data);
       }

@@ -1,4 +1,4 @@
-import { Dimensions, Platform, StatusBar } from "react-native";
+import { Dimensions, Platform, StatusBar } from 'react-native';
 
 const STATUSBAR_DEFAULT_HEIGHT = 20;
 const STATUSBAR_X_HEIGHT = 44;
@@ -24,7 +24,7 @@ const IP14PRO_HEIGHT = 852;
 const IP14PROMAX_WIDTH = 430;
 const IP14PROMAX_HEIGHT = 932;
 
-const { height: W_HEIGHT, width: W_WIDTH } = Dimensions.get("window");
+const { height: W_HEIGHT, width: W_WIDTH } = Dimensions.get('window');
 
 let statusBarHeight = STATUSBAR_DEFAULT_HEIGHT;
 let isIPhoneX_v = false;
@@ -34,7 +34,7 @@ let isIPhone12Max_v = false;
 let isIPhoneWithMonobrow_v = false;
 let isIPhoneWithDynamicIsland_v = false;
 
-if (Platform.OS === "ios" && !Platform.isPad && !Platform.isTVOS) {
+if (Platform.OS === 'ios' && !Platform.isPad && !Platform.isTVOS) {
   if (W_WIDTH === X_WIDTH && W_HEIGHT === X_HEIGHT) {
     isIPhoneWithMonobrow_v = true;
     isIPhoneX_v = true;

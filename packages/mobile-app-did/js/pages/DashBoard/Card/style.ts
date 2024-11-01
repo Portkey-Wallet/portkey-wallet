@@ -1,12 +1,12 @@
-import { StyleSheet } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import fonts from 'assets/theme/fonts';
+import { makeStyles } from '@rneui/themed';
 
 const { white } = defaultColors;
 
-export const styles = StyleSheet.create({
+export const getStyles = makeStyles(theme => ({
   cardWrap: {
     display: 'flex',
     flexDirection: 'column',
@@ -23,9 +23,6 @@ export const styles = StyleSheet.create({
   block: {
     flex: 1,
   },
-  skeletonStyle: {
-    backgroundColor: defaultColors.bg4,
-  },
   svgWrap: {
     display: 'flex',
     flexDirection: 'row',
@@ -33,6 +30,12 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: pTd(16),
     height: pTd(44),
+  },
+  titleLoading: {
+    width: pTd(205),
+    height: pTd(38),
+    backgroundColor: theme.colors.bgBase3,
+    borderRadius: pTd(4),
   },
   textColumn: {
     marginTop: pTd(16),
@@ -69,4 +72,4 @@ export const styles = StyleSheet.create({
   buttonWrapStyle1: {
     marginHorizontal: screenWidth * 0.03,
   },
-});
+}));

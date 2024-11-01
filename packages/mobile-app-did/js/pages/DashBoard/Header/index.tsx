@@ -1,9 +1,8 @@
 import React, { useMemo, useCallback } from 'react';
-import { View, StyleSheet, Animated, TouchableOpacity, GestureResponderEvent } from 'react-native';
+import { View, Animated, TouchableOpacity, GestureResponderEvent } from 'react-native';
 import { pTd } from 'utils/unit';
 import { TextM } from 'components/CommonText';
 import CommonAvatar from 'components/CommonAvatar';
-import { PortkeyLinearGradient } from 'components/PortkeyLinearGradient';
 import Touchable from 'components/Touchable';
 import CommonToast from 'components/CommonToast';
 import Svg from 'components/Svg';
@@ -17,12 +16,13 @@ import { useCurrentUserInfo, useSetNewWalletName } from '@portkey-wallet/hooks/h
 import { useQrScanPermissionAndToast } from 'hooks/useQrScan';
 import navigationService from 'utils/navigationService';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
-import { Skeleton } from '@rneui/base';
+import { makeStyles } from '@rneui/themed';
 
 const DashBoardHeader: React.FC = () => {
   const userInfo = useCurrentUserInfo();
   const qrScanPermissionAndToast = useQrScanPermissionAndToast();
   const { shouldShowSetNewWalletNameIcon, handleSetNewWalletName } = useSetNewWalletName();
+  const styles = getStyles();
   const onGiftClick = useCallback(() => {
     navigationService.navigate('CryptoGift');
   }, []);
@@ -90,13 +90,10 @@ const DashBoardHeader: React.FC = () => {
             </View>
           </TouchableOpacity>
         ) : (
-          <Skeleton
-            animation="wave"
-            LinearGradientComponent={() => <PortkeyLinearGradient />}
-            style={[styles.skeletonStyle, GStyles.marginBottom(pTd(4))]}
-            height={pTd(20)}
-            width={pTd(100)}
-          />
+          <View style={styles.skeletonWrap}>
+            <View style={styles.skeletonIcon} />
+            <View style={styles.skeletonText} />
+          </View>
         )}
       </Animated.View>
     );
@@ -107,6 +104,7 @@ const DashBoardHeader: React.FC = () => {
     shouldShowSetNewWalletNameIcon,
     userInfo?.avatar,
     userInfo.nickName,
+    styles,
   ]);
 
   const rightDom = useMemo(() => {
@@ -130,7 +128,7 @@ const DashBoardHeader: React.FC = () => {
         </Touchable>
       </View>
     );
-  }, [onCopyAddress, qrScanPermissionAndToast]);
+  }, [onCopyAddress, qrScanPermissionAndToast, styles]);
 
   return (
     <View style={styles.container}>
@@ -140,7 +138,7 @@ const DashBoardHeader: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
+const getStyles = makeStyles(theme => ({
   container: {
     width: '100%',
     height: pTd(44),
@@ -176,8 +174,22 @@ const styles = StyleSheet.create({
     width: pTd(16),
     height: pTd(16),
   },
-  skeletonStyle: {
-    backgroundColor: defaultColors.bg4,
+  skeletonWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  skeletonText: {
+    marginLeft: pTd(6),
+    width: pTd(126),
+    height: pTd(14),
+    borderRadius: pTd(4),
+    backgroundColor: theme.colors.bgBase3,
+  },
+  skeletonIcon: {
+    width: pTd(24),
+    height: pTd(24),
+    borderRadius: pTd(12),
+    backgroundColor: theme.colors.bgBase3,
   },
   rightDomWrap: {
     flexDirection: 'row',
@@ -195,6 +207,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     ...fonts.mediumFont,
   },
-});
+}));
 
 export default DashBoardHeader;

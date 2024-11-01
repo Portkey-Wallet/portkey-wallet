@@ -15,7 +15,7 @@ import { useGetRedPackageConfig, useInitIM } from '@portkey-wallet/hooks/hooks-c
 import { useBookmarkList } from '@portkey-wallet/hooks/hooks-ca/discover';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import im from '@portkey-wallet/im';
-import { useInitRamp } from '@portkey-wallet/hooks/hooks-ca/ramp';
+import { useInitRampV2 } from '@portkey-wallet/hooks/hooks-ca/ramp';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import { codePushOperator } from 'utils/update';
 import { useGetCryptoGiftConfig } from '@portkey-wallet/hooks/hooks-ca/cryptogift';
@@ -35,7 +35,7 @@ export default function useInitData() {
   const { refresh: loadBookmarkList } = useBookmarkList();
   const initIM = useInitIM();
   const { init: initCryptoGiftConfig } = useGetCryptoGiftConfig();
-  const initRamp = useInitRamp({
+  const initRamp = useInitRampV2({
     clientType: isIOS ? 'iOS' : 'Android',
   });
   const { init: initGuardianList } = useRefreshGuardianList(true);

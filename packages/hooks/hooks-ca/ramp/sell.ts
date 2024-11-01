@@ -60,3 +60,19 @@ export const useSellCrypto = () => {
     refreshSellCrypto,
   };
 };
+
+export const useSellCryptoList = () => {
+  const dispatch = useAppCommonDispatch();
+  const sellCryptoList = useSellCryptoListState();
+
+  const refresh = useCallback(async () => {
+    const { cryptoList } = await getSellCrypto();
+    dispatch(setSellCryptoList({ list: cryptoList }));
+    return cryptoList;
+  }, [dispatch]);
+
+  return {
+    sellCryptoList,
+    refresh,
+  };
+};

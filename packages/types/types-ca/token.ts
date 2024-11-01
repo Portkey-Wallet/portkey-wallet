@@ -19,6 +19,8 @@ export interface BaseToken {
   expires?: string;
   seedOwnedSymbol?: string;
   label?: string;
+  displayChainName?: string;
+  chainImageUrl?: string;
 }
 
 export interface TokenItemType extends BaseToken {

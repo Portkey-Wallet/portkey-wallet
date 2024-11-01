@@ -28,6 +28,8 @@ export type IRampCryptoItem = {
   network: string;
   chainId: ChainId;
   address: string;
+  displayChainName: string;
+  chainImageUrl: string;
 };
 
 export type IRampCryptoDefault = {

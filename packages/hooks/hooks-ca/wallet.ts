@@ -44,6 +44,8 @@ export interface ICaAddressInfoListItemType {
   chainId: ChainId;
   chainName: string;
   caAddress: string;
+  displayChainName?: string;
+  chainImageUrl?: string;
 }
 
 export function getCurrentWalletInfo(

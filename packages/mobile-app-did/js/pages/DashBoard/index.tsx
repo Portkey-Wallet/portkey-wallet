@@ -23,6 +23,7 @@ import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { formatAmountUSDShow } from '@portkey-wallet/utils/converter';
 import { useInitCmsBanner } from '@portkey-wallet/hooks/hooks-ca/cms/banner';
 import { useDiscoverData } from '@portkey-wallet/hooks/hooks-ca/cms/discover';
+import { useTheme } from '@rneui/themed';
 import {
   PAGE_SIZE_IN_ACCOUNT_TOKEN,
   PAGE_SIZE_IN_ACCOUNT_NFT_COLLECTION,
@@ -39,6 +40,7 @@ const DashBoard: React.FC<any> = ({ navigation }) => {
   const caAddressInfosList = useLatestRef(caAddressInfos);
   const accountBalanceUSD = useAccountBalanceUSD();
   const { fetchDiscoverTabAsync } = useDiscoverData();
+  const { theme } = useTheme();
   useInitCmsBanner();
   useReportingSignalR();
 
@@ -91,7 +93,7 @@ const DashBoard: React.FC<any> = ({ navigation }) => {
   );
 
   return (
-    <SafeAreaBox edges={['top', 'right', 'left']} style={[BGStyles.bg43]}>
+    <SafeAreaBox edges={['top', 'right', 'left']} style={{ backgroundColor: theme.colors.bgBase1 }}>
       <DashBoardHeader />
       <SetNewWalletNamePopup />
       {React.cloneElement(

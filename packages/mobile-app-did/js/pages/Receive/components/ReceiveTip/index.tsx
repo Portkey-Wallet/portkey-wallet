@@ -26,7 +26,7 @@ export function TipView({ chainId, style, textStyle }: TTopViewProps) {
   return (
     <View style={style}>
       <TextM style={[FontStyles.font3, textStyle]}>
-        If you wish to receive assets from exchanges, please note that they will not be credited to your SideChain
+        If you wish to receive assets from exchanges, please note that they will not be credited to your dAppChain
         address, and you cannot make the transfer through QR code scanning.
       </TextM>
       <TextM style={[styles.topSpacing, FontStyles.font3, textStyle]}>To receive, please follow these steps:</TextM>
@@ -53,7 +53,9 @@ function ReceiveTip({ chainId, style }: TTopViewProps) {
   const latestSelected = useLatestRef(selected);
   useEffectOnce(() => {
     return () => {
-      if (latestSelected.current) cancelSideChainTokenReceiveTip();
+      if (latestSelected.current) {
+        cancelSideChainTokenReceiveTip();
+      }
     };
   });
   return (
@@ -67,7 +69,7 @@ function ReceiveTip({ chainId, style }: TTopViewProps) {
             color={selected ? defaultColors.primaryColor : undefined}
           />
         </Touchable>
-        <TextM style={GStyles.flex1}>{`Don't show this again`}</TextM>
+        <TextM style={GStyles.flex1}>{"Don't show this again"}</TextM>
       </View>
     </View>
   );

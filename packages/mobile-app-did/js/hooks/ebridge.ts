@@ -44,7 +44,10 @@ export default function useGetEBridgeConfig() {
 
   const getEVMChainInfoConfig = useCallback(
     (network: string): IEBridgeChainInfo => {
-      const targetEvmInfo = (currentNetwork === 'MAINNET' ? BRIDGE_INFO_EVM_MAINNET : BRIDGE_INFO_EVM_TESTNET)[network];
+      const _network = network.toUpperCase();
+      const targetEvmInfo = (currentNetwork === 'MAINNET' ? BRIDGE_INFO_EVM_MAINNET : BRIDGE_INFO_EVM_TESTNET)[
+        _network
+      ];
 
       return {
         chainType: 'evm',

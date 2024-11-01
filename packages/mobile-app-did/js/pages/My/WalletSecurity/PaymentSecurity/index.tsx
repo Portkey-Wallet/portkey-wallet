@@ -1,12 +1,12 @@
-import React, { memo, useState } from 'react';
+import React,{ memo,useState } from 'react';
 import PageContainer from 'components/PageContainer';
-import { StyleSheet, FlatList, View } from 'react-native';
+import { StyleSheet,FlatList,View } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
-import { TextL, TextM } from 'components/CommonText';
+import { TextL,TextM } from 'components/CommonText';
 
 import navigationService from 'utils/navigationService';
-import { BGStyles, FontStyles } from 'assets/theme/styles';
+import { BGStyles,FontStyles } from 'assets/theme/styles';
 import { pTd } from 'utils/unit';
 import useEffectOnce from 'hooks/useEffectOnce';
 import CommonToast from 'components/CommonToast';
@@ -31,7 +31,7 @@ const _renderPaymentSecurityItem = ({ item }: { item: ITransferLimitItem }) => {
   return (
     <Touchable
       onPress={() => {
-        navigationService.navigate('PaymentSecurityDetail', { transferLimitDetail: item });
+        navigationService.navigate('PaymentSecurityDetail',{ transferLimitDetail: item });
       }}>
       <View style={ItemStyles.wrap}>
         <CommonAvatar
@@ -46,24 +46,23 @@ const _renderPaymentSecurityItem = ({ item }: { item: ITransferLimitItem }) => {
         />
         <View style={ItemStyles.content}>
           <TextL style={ItemStyles.symbolLabel}>{item.symbol || ''}</TextL>
-          <TextM style={FontStyles.font7}>{formatChainInfoToShow(item.chainId, networkType)}</TextM>
+          <TextM style={FontStyles.font7}>{formatChainInfoToShow(item.chainId,networkType)}</TextM>
         </View>
         <Svg icon="right-arrow" size={pTd(20)} color={defaultColors.icon1} />
       </View>
     </Touchable>
   );
 };
-const PaymentSecurityItem = memo(_renderPaymentSecurityItem, (prevProps, nextProps) =>
-  isEqual(prevProps.item, nextProps.item),
+const PaymentSecurityItem = memo(_renderPaymentSecurityItem,(prevProps,nextProps) =>
+  isEqual(prevProps.item,nextProps.item),
 );
 
 const ItemStyles = StyleSheet.create({
   wrap: {
     flexDirection: 'row',
     paddingHorizontal: pTd(16),
-    backgroundColor: defaultColors.bg1,
-    marginBottom: pTd(24),
-    height: pTd(72),
+    paddingVertical: pTd(16),
+    height: pTd(74),
     borderRadius: pTd(6),
     alignItems: 'center',
   },
@@ -77,8 +76,8 @@ const ItemStyles = StyleSheet.create({
 });
 
 const PaymentSecurityList: React.FC = () => {
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const { list, isNext, next, init } = useTransferLimitList();
+  const [isRefreshing,setIsRefreshing] = useState(false);
+  const { list,isNext,next,init } = useTransferLimitList();
 
   const getList = useLockCallback(async () => {
     if (!isNext) return;
@@ -86,17 +85,17 @@ const PaymentSecurityList: React.FC = () => {
     try {
       await next();
     } catch (error) {
-      console.log('PaymentSecurityList: error', error);
+      console.log('PaymentSecurityList: error',error);
       CommonToast.failError('Failed to fetch data');
     }
 
     setIsRefreshing(false);
-  }, [isNext, next]);
+  },[isNext,next]);
 
   useEffectOnce(() => {
     const timer = setTimeout(() => {
       init();
-    }, 100);
+    },100);
     return () => {
       clearTimeout(timer);
     };
@@ -104,13 +103,12 @@ const PaymentSecurityList: React.FC = () => {
 
   return (
     <PageContainer
-      titleDom={'Payment Security'}
-      safeAreaColor={['white', 'gray']}
+      titleDom={'Transaction Limits'}
+      safeAreaColor={['black']}
       containerStyles={pageStyles.pageWrap}
       hideTouchable={true}
       scrollViewProps={{ disabled: true }}>
       <FlatList
-        style={pageStyles.listWrap}
         refreshing={isRefreshing}
         data={list || []}
         keyExtractor={(item: ITransferLimitItem) => `${item.chainId}_${item.symbol}`}
@@ -125,11 +123,8 @@ const PaymentSecurityList: React.FC = () => {
 
 const pageStyles = StyleSheet.create({
   pageWrap: {
-    backgroundColor: defaultColors.bg4,
+    backgroundColor: defaultColors.bg19,
     paddingHorizontal: 0,
-  },
-  listWrap: {
-    ...GStyles.paddingArg(24, 20, 18),
   },
   tipsWrap: {
     lineHeight: pTd(20),

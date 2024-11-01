@@ -1,6 +1,6 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React,{ useCallback,useMemo,useState } from 'react';
 import PageContainer from 'components/PageContainer';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet,View } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
@@ -14,10 +14,10 @@ import { pTd } from 'utils/unit';
 import useEffectOnce from 'hooks/useEffectOnce';
 import CommonInput from 'components/CommonInput';
 import CommonSwitch from 'components/CommonSwitch';
-import { INIT_HAS_ERROR, INIT_NONE_ERROR, ErrorType } from '@portkey-wallet/constants/constants-ca/common';
+import { INIT_HAS_ERROR,INIT_NONE_ERROR,ErrorType } from '@portkey-wallet/constants/constants-ca/common';
 import { isValidInteger } from '@portkey-wallet/utils/reg';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
-import { divDecimals, timesDecimals } from '@portkey-wallet/utils/converter';
+import { divDecimals,timesDecimals } from '@portkey-wallet/utils/converter';
 
 interface RouterParams {
   transferLimitDetail?: ITransferLimitItem;
@@ -32,30 +32,30 @@ const MAX_LENGTH = 18;
 
 const PaymentSecurityEdit: React.FC = () => {
   const { transferLimitDetail: detail } = useRouterParams<RouterParams>();
-  const [editInfo, setEditInfo] = useState<EditInfoType>();
-  const [singleLimitError, setSingleLimitError] = useState<ErrorType>({ ...INIT_NONE_ERROR });
-  const [dailyLimitError, setDailyLimitError] = useState<ErrorType>({ ...INIT_NONE_ERROR });
+  const [editInfo,setEditInfo] = useState<EditInfoType>();
+  const [singleLimitError,setSingleLimitError] = useState<ErrorType>({ ...INIT_NONE_ERROR });
+  const [dailyLimitError,setDailyLimitError] = useState<ErrorType>({ ...INIT_NONE_ERROR });
 
   const isButtonDisabled = useMemo(() => {
     if (!editInfo?.restricted) return false;
     return !editInfo?.dailyLimit || !editInfo?.singleLimit;
-  }, [editInfo?.dailyLimit, editInfo?.restricted, editInfo?.singleLimit]);
+  },[editInfo?.dailyLimit,editInfo?.restricted,editInfo?.singleLimit]);
 
   useEffectOnce(() => {
     if (detail) {
       setEditInfo({
         singleLimit: detail.restricted
-          ? divDecimals(detail.singleLimit, detail.decimals).toFixed()
-          : divDecimals(detail.defaultSingleLimit, detail.decimals).toFixed(),
+          ? divDecimals(detail.singleLimit,detail.decimals).toFixed()
+          : divDecimals(detail.defaultSingleLimit,detail.decimals).toFixed(),
         dailyLimit: detail.restricted
-          ? divDecimals(detail.dailyLimit, detail.decimals).toFixed()
-          : divDecimals(detail.defaultDailyLimit, detail.decimals).toFixed(),
+          ? divDecimals(detail.dailyLimit,detail.decimals).toFixed()
+          : divDecimals(detail.defaultDailyLimit,detail.decimals).toFixed(),
         restricted: detail.restricted,
       });
     }
   });
 
-  const maxLength = useMemo(() => MAX_LENGTH - (Number(detail?.decimals) || 0), [detail?.decimals]);
+  const maxLength = useMemo(() => MAX_LENGTH - (Number(detail?.decimals) || 0),[detail?.decimals]);
 
   const onRestrictedChange = useCallback((value: boolean) => {
     setEditInfo(pre => {
@@ -65,7 +65,7 @@ const PaymentSecurityEdit: React.FC = () => {
         restricted: value,
       };
     });
-  }, []);
+  },[]);
   const onSingleLimitInput = useCallback((value: string) => {
     setSingleLimitError({
       ...INIT_NONE_ERROR,
@@ -77,7 +77,7 @@ const PaymentSecurityEdit: React.FC = () => {
         singleLimit: value,
       };
     });
-  }, []);
+  },[]);
   const onDailyLimitInput = useCallback((value: string) => {
     setDailyLimitError({
       ...INIT_NONE_ERROR,
@@ -89,7 +89,7 @@ const PaymentSecurityEdit: React.FC = () => {
         dailyLimit: value,
       };
     });
-  }, []);
+  },[]);
 
   const save = useCallback(() => {
     if (!editInfo) return;
@@ -122,24 +122,24 @@ const PaymentSecurityEdit: React.FC = () => {
 
     if (isError) return;
 
-    navigationService.navigate('GuardianApproval', {
+    navigationService.navigate('GuardianApproval',{
       approvalType: ApprovalType.modifyTransferLimit,
       transferLimitDetail: {
         chainId: detail?.chainId,
         symbol: detail?.symbol,
-        singleLimit: editInfo.restricted ? timesDecimals(editInfo.singleLimit, detail?.decimals).toFixed(0) : '-1',
-        dailyLimit: editInfo.restricted ? timesDecimals(editInfo.dailyLimit, detail?.decimals).toFixed(0) : '-1',
+        singleLimit: editInfo.restricted ? timesDecimals(editInfo.singleLimit,detail?.decimals).toFixed(0) : '-1',
+        dailyLimit: editInfo.restricted ? timesDecimals(editInfo.dailyLimit,detail?.decimals).toFixed(0) : '-1',
         restricted: editInfo.restricted,
         decimals: detail?.decimals,
       },
       targetChainId: detail?.chainId,
     });
-  }, [detail, editInfo]);
+  },[detail,editInfo]);
 
   return (
     <PageContainer
-      titleDom={'Transfer Settings'}
-      safeAreaColor={['white', 'gray']}
+      titleDom={'Transaction Limits'}
+      safeAreaColor={['black']}
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}>
       <View>
@@ -192,15 +192,15 @@ const PaymentSecurityEdit: React.FC = () => {
 const pageStyles = StyleSheet.create({
   pageWrap: {
     flex: 1,
-    backgroundColor: defaultColors.bg4,
+    backgroundColor: defaultColors.bg19,
     justifyContent: 'space-between',
-    ...GStyles.paddingArg(24, 20, 18),
+    // ...GStyles.paddingArg(24, 20, 18),
   },
   switchWrap: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: pTd(16),
-    backgroundColor: defaultColors.bg1,
+    backgroundColor: defaultColors.bg19,
     marginBottom: pTd(24),
     height: pTd(56),
     alignItems: 'center',

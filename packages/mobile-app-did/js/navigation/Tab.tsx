@@ -245,7 +245,12 @@ export default function TabRoot() {
     <Tab.Navigator
       initialRouteName="Wallet"
       screenOptions={({ route }) => ({
-        tabBarStyle: { paddingTop: 6, backgroundColor: defaultColors.bg43 },
+        tabBarStyle: {
+          paddingTop: 6,
+          backgroundColor: defaultColors.bgBase2,
+          borderTopColor: defaultColors.borderBase1,
+          borderTopWidth: pTd(1),
+        },
         // tabBarLabelStyle: styles.tabBarLabelStyle,
         tabBarAllowFontScaling: false,
         header: () => null,

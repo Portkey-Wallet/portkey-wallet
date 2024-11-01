@@ -51,7 +51,7 @@ export const getStyles = makeStyles(theme => ({
     alignItems: 'center',
   },
   usdtBalance: {
-    ...fonts.mediumFont,
+    ...fonts.BGMediumFont,
     fontSize: pTd(32),
     lineHeight: pTd(38),
     height: pTd(38),

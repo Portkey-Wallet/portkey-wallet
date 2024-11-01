@@ -35,5 +35,3 @@ export const TransferErrorMessage = {
   BALANCE_NOT_ENOUGH: 'Exceeds available balance',
   FEE_NOT_ENOUGH: 'Fee not enough',
 };
-
-export const HELP_URL = 'https://doc.portkey.finance/docs/How-to-send-and-receive-assets';

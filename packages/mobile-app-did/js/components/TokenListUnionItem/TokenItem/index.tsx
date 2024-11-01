@@ -10,19 +10,19 @@ import { FontStyles } from 'assets/theme/styles';
 import GStyles from 'assets/theme/GStyles';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import fonts from 'assets/theme/fonts';
 
 interface TokenListItemType {
   item: TokenItemShowType;
   onPress?: (item: TokenItemShowType) => void;
   hideBalance?: boolean;
-  showTopSeparator?: boolean;
 }
 
 const TokenItem: React.FC<TokenListItemType> = props => {
-  const { onPress, item, hideBalance = false, showTopSeparator } = props;
+  const { onPress, item, hideBalance = false } = props;
   const isMainnet = useIsMainnet();
   return (
-    <Touchable style={[itemStyle.wrap, showTopSeparator && { marginTop: pTd(4) }]} onPress={() => onPress?.(item)}>
+    <Touchable style={itemStyle.wrap} onPress={() => onPress?.(item)}>
       <View style={itemStyle.left}>
         <View style={itemStyle.iconWrap}>
           <CommonAvatar
@@ -64,7 +64,7 @@ export default memo(TokenItem);
 
 const itemStyle = StyleSheet.create({
   wrap: {
-    height: pTd(48),
+    height: pTd(74),
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -113,7 +113,9 @@ const itemStyle = StyleSheet.create({
     alignItems: 'flex-end',
   },
   balanceText: {
+    fontSize: pTd(16),
     color: darkColors.textBase1,
+    ...fonts.BGMediumFont,
   },
   balanceInUseText: {
     color: darkColors.textBase2,

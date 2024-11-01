@@ -3,7 +3,7 @@ import GStyles from 'assets/theme/GStyles';
 import { TextL, TextM } from 'components/CommonText';
 import Svg from 'components/Svg';
 import { useLanguage } from 'i18n/hooks';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { View, TextInput } from 'react-native';
 import { formatStr2EllipsisStr, getAddressChainId, getChainIdByAddress, isSameAddresses } from '@portkey-wallet/utils';
 import LottieLoading from 'components/LottieLoading';
@@ -14,14 +14,16 @@ import Divider from 'components/Divider';
 import navigationService from 'utils/navigationService';
 import { useQrScanPermissionAndToast } from 'hooks/useQrScan';
 import { getSendNetworkList } from 'pages/Send/utils';
-import { IToSendAssetParamsType } from '@portkey-wallet/types/types-ca/routeParams';
+import { IToSendAssetParamsType, IToSendHomeParamsType } from '@portkey-wallet/types/types-ca/routeParams';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
 import { getAelfAddress, isCrossChain, isDIDAelfAddress } from '@portkey-wallet/utils/aelf';
 import { useIsValidSuffix } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { warning1Arr, WarningKey } from 'pages/Send/constant';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { INetworkItem } from '../SelectNetwork';
-
+import { getStringAsync } from 'expo-clipboard';
+import { RouteProp, useRoute } from '@react-navigation/native';
+import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network-mainnet-v2';
 interface IToAddressInput {
   isFixedToContact?: boolean;
   selectedToken?: IToSendAssetParamsType;
@@ -35,6 +37,8 @@ interface IToAddressInput {
   setChainList: React.Dispatch<React.SetStateAction<INetworkItem[]>>;
   checkFinish: boolean;
   setCheckFinish: React.Dispatch<React.SetStateAction<boolean>>;
+  setSendNumber: React.Dispatch<React.SetStateAction<string>>;
+  setSendUSDNumber: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export default function ToAddressInput({
@@ -49,7 +53,13 @@ export default function ToAddressInput({
   setWarning,
   checkFinish,
   setCheckFinish,
+  setSendNumber,
+  setSendUSDNumber,
 }: IToAddressInput) {
+  const {
+    params: { toInfo },
+  } = useRoute<RouteProp<{ params: IToSendHomeParamsType }>>();
+
   const { t } = useLanguage();
   const styles = getStyles();
   const qrScanPermissionAndToast = useQrScanPermissionAndToast();
@@ -64,8 +74,10 @@ export default function ToAddressInput({
   const clearInput = useCallback(() => {
     setStep(1);
     setWarning([]);
+    setSendNumber('');
+    setSendUSDNumber('');
     setSelectedToContact({ address: '', name: '' });
-  }, [setSelectedToContact, setStep, setWarning]);
+  }, [setSelectedToContact, setSendNumber, setSendUSDNumber, setStep, setWarning]);
 
   const checkAddressByFE = useCallback(
     (v: string) => {
@@ -73,13 +85,11 @@ export default function ToAddressInput({
 
       // include chainId
       if (v.includes('_')) {
-        // same address
         const suffix = getAddressChainId(v);
+
+        // same address
         if (
-          isSameAddresses(
-            wallet?.[selectedToken?.chainId || 'AELF']?.caAddress || '',
-            getAelfAddress(selectedToContact.address),
-          ) &&
+          isSameAddresses(wallet?.[selectedToken?.chainId || 'AELF']?.caAddress || '', getAelfAddress(v)) &&
           suffix === selectedToken?.chainId
         ) {
           console.log('isDIDAelfAddress333');
@@ -113,7 +123,7 @@ export default function ToAddressInput({
       setCheckFinish(true);
       return true;
     },
-    [isValidChainId, selectedToContact.address, selectedToken?.chainId, setCheckFinish, setWarning, wallet],
+    [isValidChainId, selectedToken?.chainId, setCheckFinish, setWarning, wallet],
   );
 
   const getNetworkList = useDebounceCallback(
@@ -153,7 +163,7 @@ export default function ToAddressInput({
       const _v = v.trim();
       setCheckFinish(false);
       setSelectedToContact(() => {
-        let chainId = '';
+        let chainId = DefaultChainId;
         if (_v.includes('_') && isDIDAelfAddress(_v)) chainId = getChainIdByAddress(_v);
         return { name: '', address: _v, chainId };
       });
@@ -166,8 +176,19 @@ export default function ToAddressInput({
   );
 
   const pasteAddress = useCallback(async () => {
-    // todo: add paste str when press btn
-  }, []);
+    try {
+      const str = await getStringAsync();
+      console.log('str', str);
+      onInput(str);
+    } catch (error) {
+      console.log('pasteAddress', error);
+    }
+  }, [onInput]);
+
+  useEffect(() => {
+    onInput(toInfo.address);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [toInfo]);
 
   return (
     <View style={styles.wrap}>
@@ -224,7 +245,7 @@ export default function ToAddressInput({
               <Svg
                 icon={'checked'}
                 size={pTd(20)}
-                color={defaultColors.iconWarning3}
+                color={defaultColors.iconSuccess1}
                 iconStyle={GStyles.marginLeft(16)}
               />
             )}

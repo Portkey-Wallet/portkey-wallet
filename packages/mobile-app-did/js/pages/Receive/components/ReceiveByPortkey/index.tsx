@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import { pTd } from 'utils/unit';
 import { TReceiveFromNetworkItem } from '@portkey-wallet/types/types-ca/receive';
-import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
+import { IUserTokenItemResponse } from '@portkey-wallet/types/types-ca/token';
 import { IChainItemType } from '@portkey-wallet/types/types-ca/chain';
 import { shrinkSendQrData, QRCodeDataObjType } from '@portkey-wallet/utils/qrCode';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
@@ -15,21 +15,34 @@ import ExchangeTabSwitch from './ExchangeTabSwitch';
 import ReceiveFromExchangeModal from '../ReceiveFromExchangeModal';
 import ReceiveQRCode from '../ReceiveQRCode';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
+import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
+import { TextL } from 'components/CommonText';
+import { defaultColors } from 'assets/theme';
 
 export default function ReceiveByPortkey({
   sourceChain,
   destinationChain,
-  tokenItem,
+  tokenInfo,
 }: {
   sourceChain: TReceiveFromNetworkItem;
   destinationChain: IChainItemType;
-  tokenItem: TokenItemShowType;
+  tokenInfo: IUserTokenItemResponse;
 }) {
   const styles = getStyles();
   const [isExchangeSelected, setExchangeSelected] = useState(true);
+  const tokenItem = useMemo(() => {
+    return tokenInfo.tokens?.find(item => item.chainId === destinationChain.chainId);
+  }, [destinationChain.chainId, tokenInfo.tokens]);
   const isSupportExchange = useMemo(() => {
-    return sourceChain.network === 'AELF' && destinationChain.chainId === 'AELF';
-  }, [destinationChain.chainId, sourceChain.network]);
+    return tokenItem?.symbol === 'ELF' && destinationChain.chainId === MAIN_CHAIN_ID;
+  }, [destinationChain.chainId, tokenItem?.symbol]);
+  const showExchangeTip = useMemo(
+    () =>
+      tokenItem?.symbol === 'ELF' &&
+      sourceChain.network === MAIN_CHAIN_ID &&
+      destinationChain.chainId !== MAIN_CHAIN_ID,
+    [destinationChain.chainId, sourceChain.network, tokenItem?.symbol],
+  );
 
   const onExchangeTabSelected = useCallback((selected: boolean) => {
     setExchangeSelected(selected);
@@ -68,10 +81,10 @@ export default function ReceiveByPortkey({
           address: toCaAddress,
         },
         assetInfo: {
-          symbol: tokenItem?.symbol,
-          label: tokenItem.label,
-          tokenContractAddress: tokenItem?.tokenContractAddress || tokenItem?.address,
-          chainId: tokenItem?.chainId,
+          symbol: tokenInfo?.symbol,
+          label: tokenInfo.label,
+          tokenContractAddress: tokenItem?.tokenContractAddress || tokenItem?.address || '',
+          chainId: tokenItem?.chainId || destinationChain.chainId,
           decimals: tokenItem?.decimals || 0,
         },
       };
@@ -81,15 +94,12 @@ export default function ReceiveByPortkey({
     chainType,
     currentCaAddress,
     currentNetWork.networkType,
+    destinationChain.chainId,
     isExchangeSelected,
     isSupportExchange,
     toCaAddress,
-    tokenItem?.address,
-    tokenItem?.chainId,
-    tokenItem?.decimals,
-    tokenItem.label,
-    tokenItem?.symbol,
-    tokenItem?.tokenContractAddress,
+    tokenInfo,
+    tokenItem,
   ]);
   const qrcodeAddress = useMemo(() => {
     if (isSupportExchange && isExchangeSelected) {
@@ -104,7 +114,7 @@ export default function ReceiveByPortkey({
       <View style={styles.reminderWrap}>
         <Svg icon="info" size={pTd(22)} />
         <Text style={styles.reminderText}>
-          {`Send ${tokenItem.label || tokenItem.symbol} on `}
+          {`Send ${tokenInfo.label || tokenInfo.symbol} on `}
           <Text style={styles.reminderHighlightText}>{`${sourceChain.name}${
             isSupportExchange && isExchangeSelected ? ' from exchange' : ''
           }`}</Text>
@@ -119,9 +129,21 @@ export default function ReceiveByPortkey({
     isSupportExchange,
     sourceChain.name,
     styles,
-    tokenItem.label,
-    tokenItem.symbol,
+    tokenInfo.label,
+    tokenInfo.symbol,
   ]);
+
+  const receiveELFFromExchangeTip = useMemo(() => {
+    return (
+      <View style={styles.fromExchangeTipWrap}>
+        <Svg icon="warning" size={pTd(22)} color={defaultColors.iconWarning5} />
+        <TextL
+          style={
+            styles.fromExchangeTipText
+          }>{`If you're transferring from an exchange, set the destination to “aelf MainChain”.`}</TextL>
+      </View>
+    );
+  }, [styles]);
 
   return (
     <View style={styles.container}>
@@ -139,6 +161,7 @@ export default function ReceiveByPortkey({
         style={isSupportExchange ? styles.qrcode : {}}
       />
       {reminderUI}
+      {showExchangeTip && receiveELFFromExchangeTip}
     </View>
   );
 }
@@ -170,5 +193,19 @@ const getStyles = makeStyles(theme => ({
   },
   reminderHighlightText: {
     color: theme.colors.textBase1,
+  },
+  fromExchangeTipWrap: {
+    marginTop: pTd(24),
+    backgroundColor: theme.colors.bgWarning3,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: theme.colors.borderWarning3,
+    borderRadius: pTd(16),
+    padding: pTd(16),
+    flexDirection: 'row',
+  },
+  fromExchangeTipText: {
+    flex: 1,
+    marginLeft: pTd(12),
+    color: defaultColors.textWarning3,
   },
 }));

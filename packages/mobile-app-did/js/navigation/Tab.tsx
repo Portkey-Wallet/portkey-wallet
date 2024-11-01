@@ -59,13 +59,13 @@ export const tabMenuTypeMap: Record<TabRouteNameEnum, IRenderTabMenuItem> = {
     icon: 'clock',
     component: ActivityListPage,
   },
-  [TabRouteNameEnum.DISCOVER]: {
-    name: TabRouteNameEnum.DISCOVER,
-    index: 2,
-    label: 'Discover',
-    icon: 'discover',
-    component: DiscoverHome,
-  },
+  // [TabRouteNameEnum.DISCOVER]: {
+  //   name: TabRouteNameEnum.DISCOVER,
+  //   index: 2,
+  //   label: 'Discover',
+  //   icon: 'discover',
+  //   component: DiscoverHome,
+  // },
   // [TabRouteNameEnum.TRADE]: {
   //   name: TabRouteNameEnum.TRADE,
   //   index: 2,
@@ -74,14 +74,13 @@ export const tabMenuTypeMap: Record<TabRouteNameEnum, IRenderTabMenuItem> = {
   //   icon: 'trade-small',
   //   component: TradeHomePage,
   // },
-
-  [TabRouteNameEnum.CHAT]: {
-    name: TabRouteNameEnum.CHAT,
-    index: 3,
-    label: 'Chat',
-    icon: 'chat-tab',
-    component: ChatHome,
-  },
+  // [TabRouteNameEnum.CHAT]: {
+  //   name: TabRouteNameEnum.CHAT,
+  //   index: 3,
+  //   label: 'Chat',
+  //   icon: 'chat-tab',
+  //   component: ChatHome,
+  // },
   [TabRouteNameEnum.SETTINGS]: {
     name: TabRouteNameEnum.SETTINGS,
     isDefault: true,
@@ -246,7 +245,12 @@ export default function TabRoot() {
     <Tab.Navigator
       initialRouteName="Wallet"
       screenOptions={({ route }) => ({
-        tabBarStyle: { paddingTop: 6, backgroundColor: defaultColors.bg43 },
+        tabBarStyle: {
+          paddingTop: 6,
+          backgroundColor: defaultColors.bgBase2,
+          borderTopColor: defaultColors.borderBase1,
+          borderTopWidth: pTd(1),
+        },
         // tabBarLabelStyle: styles.tabBarLabelStyle,
         tabBarAllowFontScaling: false,
         header: () => null,

@@ -28,7 +28,10 @@ import GStyles from 'assets/theme/GStyles';
 import useLatestIsFocusedRef from 'hooks/useLatestIsFocusedRef';
 import { VERIFY_INVALID_TIME } from '@portkey-wallet/constants/constants-ca/wallet';
 import { useErrorMessage } from '@portkey-wallet/hooks/hooks-ca/misc';
+import { makeStyles } from '@rneui/themed';
+import { pTd } from 'utils/unit';
 export default function SecurityLock() {
+  const styles = getStyles();
   const { biometrics } = useUser();
   const biometricsReady = useBiometricsReady();
   const [caInfo, setStateCAInfo] = useState<CAInfo>();
@@ -191,6 +194,7 @@ export default function SecurityLock() {
       <PinContainer
         ref={digitInput}
         title="Enter PIN"
+        titleStyle={styles.pinTitle}
         onChangeText={onChangeText}
         errorMessage={textError.errorMsg}
         isBiometrics={biometrics && biometricsReady}
@@ -199,3 +203,10 @@ export default function SecurityLock() {
     </PageContainer>
   );
 }
+
+const getStyles = makeStyles(theme => ({
+  pinTitle: {
+    textAlign: 'center',
+    marginBottom: pTd(36),
+  },
+}));

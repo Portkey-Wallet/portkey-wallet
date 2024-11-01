@@ -1,4 +1,4 @@
-import { IUserTokenItemResponse } from '@portkey-wallet/types/types-ca/token';
+import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import { StyleSheet } from 'react-native';
 import gStyles from 'assets/theme/GStyles';
 import { darkColors, defaultColors } from 'assets/theme';
@@ -18,9 +18,9 @@ enum TipsEnum {
 }
 
 interface IFilterTokenSectionProps {
-  tokenList: any[];
+  tokenList: TokenItemShowType[];
   isSearch?: boolean;
-  onHandleTokenItem: (item: any, added: boolean) => void;
+  onHandleTokenItem: (item: TokenItemShowType, added: boolean) => void;
 }
 
 const FilterTokenSection: React.FC<IFilterTokenSectionProps> = (props: IFilterTokenSectionProps) => {
@@ -51,10 +51,10 @@ const FilterTokenSection: React.FC<IFilterTokenSectionProps> = (props: IFilterTo
       data={tokenList || []}
       ListEmptyComponent={() => (isSearch ? <></> : CustomTokenTips(TipsEnum.NO_RESULT))}
       ListFooterComponent={() => (tokenList?.length > 0 ? CustomTokenTips(TipsEnum.TRY) : null)}
-      renderItem={({ item }: { item: any }) => (
+      renderItem={({ item }: { item: TokenItemShowType }) => (
         <TokenItem item={item} onHandleToken={() => onHandleTokenItem(item, !item?.isAdded)} />
       )}
-      keyExtractor={(item: IUserTokenItemResponse) => item?.symbol}
+      keyExtractor={(item: TokenItemShowType) => `${item?.symbol}_${item?.chainId}`}
     />
   );
 };
@@ -78,7 +78,7 @@ export const pageStyles = StyleSheet.create({
 export const customTokenTipsStyle = StyleSheet.create({
   tips: {
     color: darkColors.textBase2,
-    marginTop: pTd(16),
+    marginTop: pTd(24),
     textAlign: 'center',
   },
   addButtonWrap: {
@@ -101,6 +101,6 @@ export const customTokenTipsStyle = StyleSheet.create({
     color: darkColors.textBrand4,
   },
   try: {
-    marginTop: pTd(32),
+    marginTop: pTd(24),
   },
 });

@@ -66,6 +66,7 @@ type AlertBodyProps = {
   titleStyle?: TextStyleType;
   bgImage?: ImageSourcePropType;
   showInfoIcon?: boolean;
+  closeAction?: () => void;
 };
 
 export function AlertBody({
@@ -82,6 +83,7 @@ export function AlertBody({
   titleStyle,
   bgImage,
   showInfoIcon = false,
+  closeAction,
 }: AlertBodyProps) {
   const styles = getStyles();
   const { theme } = useTheme();
@@ -105,6 +107,7 @@ export function AlertBody({
         {isCloseShow && !bgImage && (
           <View
             onTouchEnd={() => {
+              closeAction?.();
               OverlayModal.hide();
             }}
             style={styles.closeWrap}>
@@ -184,8 +187,11 @@ const alert = (props: AlertBodyProps) => {
   Keyboard.dismiss();
   OverlayModal.show(<AlertBody {...props} />, {
     modal: true,
-    type: 'zoomOut',
     position: 'bottom',
+    onCloseRequest: () => {
+      props?.closeAction?.();
+      OverlayModal.hide();
+    },
   });
 };
 export default {

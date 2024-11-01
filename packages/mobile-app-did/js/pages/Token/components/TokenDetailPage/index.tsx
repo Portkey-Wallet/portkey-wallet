@@ -4,12 +4,11 @@ import SendButton from 'components/SendButton';
 import ReceiveButton from 'components/ReceiveButton';
 import { styles } from './style';
 import navigationService from 'utils/navigationService';
-import NoData from 'components/NoData';
 import { useLanguage } from 'i18n/hooks';
 import { FlashList } from '@shopify/flash-list';
 import GStyles from 'assets/theme/GStyles';
 import { TextL, TextS } from 'components/CommonText';
-import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
+import { TokenItemShowType, ITokenSectionResponse } from '@portkey-wallet/types/types-ca/token';
 import { useAppCASelector, useAppCommonDispatch } from '@portkey-wallet/hooks';
 import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { ActivityItemType } from '@portkey-wallet/types/types-ca/activity';
@@ -44,6 +43,7 @@ import { parseLink } from '@portkey-wallet/hooks/hooks-ca/cms/util';
 import { darkColors } from 'assets/theme';
 
 interface TokenDetailParams {
+  tokenSection: ITokenSectionResponse;
   tokenInfo: TokenItemShowType;
 }
 
@@ -52,7 +52,7 @@ const INIT_PAGE_INFO = {
   total: 0,
 };
 
-const TokenDetailPage: React.FC<TokenDetailParams> = ({ tokenInfo }: TokenDetailParams) => {
+const TokenDetailPage: React.FC<TokenDetailParams> = ({ tokenInfo, tokenSection }: TokenDetailParams) => {
   const { t } = useLanguage();
   const currentTokenInfo = useTokenInfoFromStore(tokenInfo.symbol, tokenInfo.chainId) || tokenInfo;
   const isMainnet = useIsMainnet();
@@ -198,11 +198,16 @@ const TokenDetailPage: React.FC<TokenDetailParams> = ({ tokenInfo }: TokenDetail
     });
   }, [getS3ImageUrl, getTokenDetailBannerList, tokenInfo.chainId, tokenInfo.symbol]);
 
+  const onReceivePress = useCallback(() => {
+    console.log('tokenSection : ', tokenSection);
+    navigationService.navigate('Receive', { tokenInfo: tokenSection, chainId: tokenInfo.chainId });
+  }, []);
+
   const renderButtonItems = useCallback(() => {
     return (
       <View style={[styles.buttonGroupWrap]}>
         <SendButton themeType="innerPage" sentToken={currentTokenInfo} wrapStyle={buttonWrapStyle} />
-        <ReceiveButton currentTokenInfo={currentTokenInfo} themeType="innerPage" wrapStyle={buttonWrapStyle} />
+        <ReceiveButton onPress={onReceivePress} />
         {isBuyButtonShow && <BuyButton themeType="innerPage" wrapStyle={buttonWrapStyle} tokenInfo={tokenInfo} />}
         {isFaucetButtonShow && <FaucetButton themeType="innerPage" wrapStyle={buttonWrapStyle} />}
         {isSwapShow && swap && (
@@ -230,12 +235,9 @@ const TokenDetailPage: React.FC<TokenDetailParams> = ({ tokenInfo }: TokenDetail
         data={currentActivity?.data || []}
         keyExtractor={(_item, index) => `${index}`}
         ListEmptyComponent={
-          <NoData
-            icon={'no-data-detail'}
-            message={t('You have no transactions')}
-            topDistance={pTd(40)}
-            oblongSize={[pTd(64), pTd(64)]}
-          />
+          <View style={styles.noData}>
+            <TextL>{t('No activity')}</TextL>
+          </View>
         }
         renderItem={renderItem}
         onRefresh={onRefreshList}
@@ -245,11 +247,15 @@ const TokenDetailPage: React.FC<TokenDetailParams> = ({ tokenInfo }: TokenDetail
         }}
         onEndReachedThreshold={ON_END_REACHED_THRESHOLD}
         ListHeaderComponent={
-          <View>
-            <TextL style={[{ color: darkColors.textBase1, fontSize: pTd(20) }, styles.listFront, fonts.mediumFont]}>
-              {'Activity'}
-            </TextL>
-          </View>
+          currentActivity?.data?.length ? (
+            <View>
+              <TextL style={[{ color: darkColors.textBase1, fontSize: pTd(20) }, styles.listFront, fonts.mediumFont]}>
+                {'Activity'}
+              </TextL>
+            </View>
+          ) : (
+            <></>
+          )
         }
         ListFooterComponent={
           <>{!isEmpty && <FlatListFooterLoading refreshing={isLoading === ListLoadingEnum.footer} />}</>

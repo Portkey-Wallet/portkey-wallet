@@ -1,24 +1,19 @@
-import React, { useCallback } from 'react';
-import { StyleProp, ViewProps } from 'react-native';
-import navigationService from 'utils/navigationService';
+import React from 'react';
 import OutlinedButton from 'components/OutlinedButton';
 import { useLanguage } from 'i18n/hooks';
-import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 
-interface SendButtonType {
-  currentTokenInfo?: TokenItemShowType;
-  themeType?: 'dashBoard' | 'innerPage';
-  wrapStyle?: StyleProp<ViewProps>;
+interface ReceiveButtonType {
+  onPress: () => void;
 }
 
-export default function ReceiveButton(props: SendButtonType) {
-  const { themeType = 'dashBoard', currentTokenInfo = {} } = props;
+export default function ReceiveButton(props: ReceiveButtonType) {
+  const { onPress } = props;
   const { t } = useLanguage();
 
-  const onPressButton = useCallback(() => {
-    if (themeType === 'innerPage') return navigationService.navigate('Receive', currentTokenInfo);
-    navigationService.navigate('ReceiveSelectToken');
-  }, [currentTokenInfo, themeType]);
+  // const onPressButton = useCallback(() => {
+  //   if (themeType === 'innerPage') return navigationService.navigate('Receive', currentTokenInfo);
+  //   navigationService.navigate('ReceiveSelectToken');
+  // }, [currentTokenInfo, themeType]);
 
-  return <OutlinedButton iconName="receive" title={t('Receive')} onPress={onPressButton} />;
+  return <OutlinedButton iconName="receive" title={t('Receive')} onPress={onPress} />;
 }

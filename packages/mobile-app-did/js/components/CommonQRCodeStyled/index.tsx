@@ -4,7 +4,7 @@ import portkeyLogo from 'assets/image/pngs/portkey-v2-new-brand-2.png';
 import { pTd } from 'utils/unit';
 import { View } from 'react-native';
 import { makeStyles } from '@rneui/themed';
-import { TextL } from 'components/CommonText';
+import Lottie from 'lottie-react-native';
 
 type CommonQRCodeStyledPropsType = {
   qrData: string;
@@ -33,7 +33,7 @@ export default function CommonQRCodeStyled(props: CommonQRCodeStyledPropsType) {
     <View>
       {hasMask && (
         <View style={styles.mask}>
-          <TextL style={styles.maskText}>Updating...</TextL>
+          <Lottie style={styles.loadingIcon} source={require('assets/lottieFiles/spinnerDark.json')} autoPlay loop />
         </View>
       )}
       <QRCodeStyled
@@ -79,5 +79,8 @@ const getStyles = makeStyles(theme => ({
   },
   maskText: {
     color: theme.colors.bgBase1,
+  },
+  loadingIcon: {
+    width: pTd(32),
   },
 }));

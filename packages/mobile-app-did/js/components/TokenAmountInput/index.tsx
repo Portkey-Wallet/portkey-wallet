@@ -1,9 +1,9 @@
 import { darkColors, defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
-import { TextL, TextXXXL } from 'components/CommonText';
+import { TextH1, TextL } from 'components/CommonText';
 import Svg from 'components/Svg';
 import React, { memo, useCallback, useRef, useState } from 'react';
-import { View, TextInput, TouchableOpacity, LayoutChangeEvent } from 'react-native';
+import { View, TextInput, TouchableOpacity, LayoutChangeEvent, ViewStyle } from 'react-native';
 import { pTd } from 'utils/unit';
 import { makeStyles, useThemeMode } from '@rneui/themed';
 import { parseInputNumberChange } from '@portkey-wallet/utils/input';
@@ -13,6 +13,7 @@ import { ZERO } from '@portkey-wallet/constants/misc';
 import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { FloatTip } from 'components/FloatTip';
 import { useEffectOnce } from '@portkey-wallet/hooks';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 
 export interface ITokenAmountInput {
   value?: string;
@@ -24,6 +25,7 @@ export interface ITokenAmountInput {
   editable?: boolean;
   setValue: (v: string) => void;
   setUsdValue: (v: string) => void;
+  styleProps?: ViewStyle;
 }
 
 const TokenAmountInput: React.FC<ITokenAmountInput> = props => {
@@ -37,10 +39,12 @@ const TokenAmountInput: React.FC<ITokenAmountInput> = props => {
     editable = true,
     setValue,
     setUsdValue,
+    styleProps,
   } = props;
   const [isRevert, setIsRevert] = useState(false);
   const { mode } = useThemeMode();
   const [tokenPriceObject, getTokenPrice] = useGetCurrentAccountTokenPrice();
+  const isMainnet = useIsMainnet();
   const styles = getStyles();
   const warningRef = useRef<NodeJS.Timeout | null>(null);
   const [warningClick, setWarningClick] = useState(false);
@@ -96,12 +100,12 @@ const TokenAmountInput: React.FC<ITokenAmountInput> = props => {
   }, []);
 
   return (
-    <View style={styles.wrap}>
+    <View style={[styles.wrap, styleProps]}>
       <View style={[GStyles.flexRow, styles.topSection]}>
         <>
           {isRevert ? (
             <>
-              <TextXXXL style={styles.unit}>{`$ `}</TextXXXL>
+              <TextH1>{`$ `}</TextH1>
               <TextInput
                 value={usdValue}
                 onChangeText={onUsdValueInputChange}
@@ -123,11 +127,15 @@ const TokenAmountInput: React.FC<ITokenAmountInput> = props => {
                 onChangeText={onValueInputChange}
                 editable={editable}
               />
-              <TextXXXL style={styles.unit}>{` ${label || symbol}`}</TextXXXL>
+              <TextH1>{` ${label || symbol}`}</TextH1>
             </>
           )}
           {warningTip && (
-            <TouchableOpacity onPress={clickWarning} onLayout={onLayout} disabled={warningClick}>
+            <TouchableOpacity
+              onPress={clickWarning}
+              onLayout={onLayout}
+              disabled={warningClick}
+              style={styles.warningIconWrap}>
               <FloatTip
                 wrapperLayoutProps={wrapperLayoutProps}
                 textStyle={{
@@ -141,14 +149,16 @@ const TokenAmountInput: React.FC<ITokenAmountInput> = props => {
           )}
         </>
       </View>
-      <Touchable onPress={onPressRevert} style={[GStyles.flexRow, styles.bottomSection]}>
-        {isRevert ? (
-          <TextL style={styles.bottomText}>{`${value || 0} ${label || symbol}`}</TextL>
-        ) : (
-          <TextL style={styles.bottomText}>{`$${usdValue || 0}`}</TextL>
-        )}
-        <Svg icon="switch" color={mode === 'dark' ? darkColors.iconBase2 : defaultColors.iconBase2} />
-      </Touchable>
+      {isMainnet && (
+        <Touchable onPress={onPressRevert} style={[GStyles.flexRow, styles.bottomSection]}>
+          {isRevert ? (
+            <TextL style={styles.bottomText}>{`${value || 0} ${label || symbol}`}</TextL>
+          ) : (
+            <TextL style={styles.bottomText}>{`$${usdValue || 0}`}</TextL>
+          )}
+          <Svg icon="switch" color={mode === 'dark' ? darkColors.iconBase2 : defaultColors.iconBase2} size={pTd(16)} />
+        </Touchable>
+      )}
     </View>
   );
 };
@@ -172,6 +182,7 @@ export const getStyles = makeStyles(theme => ({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    marginTop: pTd(8),
   },
   input: {
     color: theme.colors.textBase1,
@@ -179,12 +190,12 @@ export const getStyles = makeStyles(theme => ({
     maxWidth: '80%',
     textAlign: 'right',
     fontSize: pTd(32),
-    ...fonts.SGMediumFont,
-  },
-  unit: {
-    fontSize: pTd(32),
+    ...fonts.BGMediumFont,
   },
   bottomText: {
     color: theme.colors.textBase2,
+  },
+  warningIconWrap: {
+    flexDirection: 'row',
   },
 }));

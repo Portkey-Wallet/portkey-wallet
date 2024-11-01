@@ -72,6 +72,7 @@ const CommonInput = forwardRef(function CommonInput(props: CommonInputProps, for
         leftIcon={<Svg icon="search" size={pTd(16)} />}
         rightIcon={rightIconDom}
         errorMessage={errorMessage}
+        keyboardAppearance="dark"
         {...inputProps}
         ref={forwardedRef}
       />
@@ -97,6 +98,7 @@ const CommonInput = forwardRef(function CommonInput(props: CommonInputProps, for
       disabledInputStyle={[generalStyles.disabledInputStyle]}
       rightIcon={rightIconDom}
       errorMessage={errorMessage}
+      keyboardAppearance="dark"
       {...inputProps}
       ref={forwardedRef}
     />

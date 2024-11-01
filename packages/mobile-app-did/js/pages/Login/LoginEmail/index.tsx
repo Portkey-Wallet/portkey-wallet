@@ -1,19 +1,12 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PageContainer from 'components/PageContainer';
 import navigationService from 'utils/navigationService';
-import { isIOS } from '@portkey-wallet/utils/mobile/device';
-import myEvents from 'utils/deviceEvent';
-import styles from '../styles';
+import { isIOS, screenHeight } from '@portkey-wallet/utils/mobile/device';
 import Email from '../components/Email';
-import { PageLoginType } from '../types';
 import SwitchNetwork from '../components/SwitchNetwork';
+import { makeStyles } from '@rneui/themed';
 
-const BackType: any = {
-  [PageLoginType.email]: true,
-  [PageLoginType.phone]: true,
-};
 export default function LoginEmail() {
-  const [loginType, setLoginType] = useState<PageLoginType>(PageLoginType.referral);
   const signupStyles = styles();
 
   return (
@@ -24,16 +17,21 @@ export default function LoginEmail() {
       scrollViewProps={{ disabled: true }}
       containerStyles={signupStyles.containerStyles}
       style={signupStyles.mainContainer}
-      leftCallback={
-        BackType[loginType]
-          ? () => setLoginType(PageLoginType.referral)
-          : () => {
-              myEvents.clearLoginInput.emit();
-              navigationService.goBack();
-            }
-      }
+      leftCallback={() => navigationService.goBack()}
       rightDom={<SwitchNetwork />}>
-      <Email setLoginType={setLoginType} />
+      <Email />
     </PageContainer>
   );
 }
+
+const styles = makeStyles(theme => ({
+  containerStyles: {
+    height: screenHeight,
+    backgroundColor: theme.colors.bgBase1,
+    alignItems: 'center',
+    paddingTop: 0,
+  },
+  mainContainer: {
+    backgroundColor: theme.colors.bgBase1,
+  },
+}));

@@ -64,9 +64,12 @@ export default function SetPin() {
             onPress: () => {
               if (managerInfo.verificationType === VerificationType.addManager) myEvents.clearQRWallet.emit();
               if (managerInfo.verificationType === VerificationType.register) {
-                const isLoginPageExist = checkRouteExistInRouteStack('LoginEmail');
-                if (isLoginPageExist) {
+                const isLoginEmailExist = checkRouteExistInRouteStack('LoginEmail');
+                const isSignUpEmailPageExist = checkRouteExistInRouteStack('SignUpEmail');
+                if (isLoginEmailExist) {
                   navigationService.navigate('LoginEmail');
+                } else if (isSignUpEmailPageExist) {
+                  navigationService.navigate('SignUpEmail');
                 } else {
                   navigationService.navigate('LoginPortkey');
                 }
@@ -92,6 +95,7 @@ export default function SetPin() {
       type="leftBack"
       backTitle={oldPin ? 'Change PIN' : undefined}
       leftCallback={leftCallback}
+      notHandleHardwareBackPress
       containerStyles={styles.container}>
       <PinContainer
         showHeader

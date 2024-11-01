@@ -64,7 +64,7 @@ export const generalStyles = StyleSheet.create({
     borderRadius: pTd(6),
   },
   inputStyle: {
-    fontSize: pTd(14),
+    fontSize: pTd(16),
     color: darkColors.textBase1,
     ...GStyles.marginArg(18, 16),
     minHeight: pTd(60),

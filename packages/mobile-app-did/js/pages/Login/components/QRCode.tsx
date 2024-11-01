@@ -6,10 +6,9 @@ import useEffectOnce from 'hooks/useEffectOnce';
 import { useAppDispatch } from 'store/hooks';
 import myEvents from 'utils/deviceEvent';
 import navigationService from 'utils/navigationService';
-import styles from '../styles';
+
 import GStyles from 'assets/theme/GStyles';
 import { TextH1, TextM } from 'components/CommonText';
-import { PageLoginType } from '../types';
 import { useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { WalletInfoType } from '@portkey-wallet/types/wallet';
 import { usePin } from 'hooks/store';
@@ -24,6 +23,8 @@ import CommonQRCodeStyled from 'components/CommonQRCodeStyled';
 import { useCheckManager } from 'hooks/useLogOut';
 import { usePreventScreenCapture } from 'expo-screen-capture';
 import { pTd } from 'utils/unit';
+import { makeStyles } from '@rneui/themed';
+import { screenHeight } from '@portkey-wallet/utils/mobile/device';
 
 // When wallet does not exist, DEFAULT_WALLET is populated as the default data
 const DEFAULT_WALLET: LoginQRData = {
@@ -40,7 +41,7 @@ const DEFAULT_WALLET: LoginQRData = {
   },
 };
 
-export default function QRCode({ setLoginType }: { setLoginType: (type: PageLoginType) => void }) {
+export default function QRCode() {
   const { walletInfo, currentNetwork } = useCurrentWallet();
   const [newWallet, setNewWallet] = useState<WalletInfoType>();
   const dispatch = useAppDispatch();
@@ -129,15 +130,42 @@ export default function QRCode({ setLoginType }: { setLoginType: (type: PageLogi
 
   return (
     <View style={[comStyles.card, comStyles.qrCodeCard]}>
-      {/* <Touchable style={comStyles.iconBox} onPress={() => setLoginType(PageLoginType.referral)}>
-        <Image source={phone} style={comStyles.iconStyle} />
-      </Touchable> */}
       <TextH1 style={[comStyles.qrCodeTitle]}>Log in with QR code</TextH1>
       <TextM style={[comStyles.qrCodeDesc]}>Use the Portkey Wallet app on another device to scan the QR code.</TextM>
 
       <View style={[GStyles.alignCenter, comStyles.qrCodeBox]}>
-        <CommonQRCodeStyled qrData={qrDataStr} hasMask={!newWallet} width={pTd(216)} />
+        <CommonQRCodeStyled qrData={qrDataStr} hasMask={!newWallet} width={pTd(288)} />
       </View>
     </View>
   );
 }
+
+const styles = makeStyles(theme => ({
+  card: {
+    flex: 1,
+    width: '100%',
+    paddingTop: pTd(24),
+    paddingBottom: 0,
+    minHeight: Math.min(screenHeight * 0.58, 494),
+  },
+  qrCodeCard: {
+    backgroundColor: theme.colors.bgBase1,
+    paddingBottom: 0,
+    marginTop: 0,
+  },
+  qrCodeTitle: {
+    marginTop: 0,
+    marginBottom: pTd(16),
+  },
+  qrCodeDesc: {
+    color: theme.colors.textBase2,
+  },
+  qrCodeBox: {
+    marginTop: pTd(80),
+    backgroundColor: theme.colors.iconBase1,
+    padding: pTd(16),
+    borderRadius: pTd(16),
+    height: pTd(320),
+    width: pTd(320),
+  },
+}));

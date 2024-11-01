@@ -4,7 +4,7 @@ import { changeNetworkType } from '@portkey-wallet/store/store-ca/wallet/actions
 import { ParamListBase, RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from 'navigation';
 import { useAppDispatch } from 'store/hooks';
-import navigationService from 'utils/navigationService';
+import navigationService, { NavigateName } from 'utils/navigationService';
 import { useThrottleCallback } from '@portkey-wallet/hooks';
 import { useResetStore } from '@portkey-wallet/hooks/hooks-ca';
 import { useLanguage } from 'i18n/hooks';
@@ -16,6 +16,7 @@ import signalrFCM from '@portkey-wallet/socket/socket-fcm';
 import { useCurrentNetworkInfo, useNetworkList } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCallback } from 'react';
 
+const STAY_ROUTE_NAMES: NavigateName[] = ['LoginEmail', 'SignUpEmail', 'LoginQRCode'];
 export function useChangeNetwork(route: RouteProp<ParamListBase>) {
   const dispatch = useAppDispatch();
   const wallet = useWallet();
@@ -32,7 +33,10 @@ export function useChangeNetwork(route: RouteProp<ParamListBase>) {
       dispatch(changeNetworkType(network.networkType));
       signalrFCM.switchNetwork();
 
-      if (routeName !== route.name && !(routeName === 'LoginPortkey' && route.name === 'LoginEmail'))
+      if (
+        routeName !== route.name &&
+        !(routeName === 'LoginPortkey' && STAY_ROUTE_NAMES.includes(route.name as NavigateName))
+      )
         navigationService.reset(routeName);
     },
     [dispatch, resetStore, route.name],

@@ -40,17 +40,19 @@ export const createWallet =
   };
 
 export const createNewTmpWallet = () => (dispatch: any) => {
-  const walletInfo = AElf.wallet.createNewWallet();
-  if (!walletInfo?.publicKey) {
-    const publicKey = walletInfo.keyPair.getPublic();
-    walletInfo.publicKey = {
-      x: publicKey.x.toString('hex'),
-      y: publicKey.y.toString('hex'),
-    };
-  }
-  walletInfo.keyPair && delete walletInfo.keyPair;
-  walletInfo.childWallet && delete walletInfo.childWallet;
-  dispatch(createNewTmpWalletAction({ walletInfo }));
+  setTimeout(() => {
+    const walletInfo = AElf.wallet.createNewWallet();
+    if (!walletInfo?.publicKey) {
+      const publicKey = walletInfo.keyPair.getPublic();
+      walletInfo.publicKey = {
+        x: publicKey.x.toString('hex'),
+        y: publicKey.y.toString('hex'),
+      };
+    }
+    walletInfo.keyPair && delete walletInfo.keyPair;
+    walletInfo.childWallet && delete walletInfo.childWallet;
+    dispatch(createNewTmpWalletAction({ walletInfo }));
+  });
 };
 export const createWalletAction = createAction<{
   walletInfo: WalletInfoType;

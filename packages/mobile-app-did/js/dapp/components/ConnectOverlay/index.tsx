@@ -88,7 +88,9 @@ const ConnectModal = (props: ConnectModalType) => {
           OverlayModal.hide();
 
           await sleep(500);
-          if (!pin) return;
+          if (!pin) {
+            return;
+          }
           if (rememberInfo.isRemember) {
             updateSessionInfo({
               manager: getManagerAccount(pin),

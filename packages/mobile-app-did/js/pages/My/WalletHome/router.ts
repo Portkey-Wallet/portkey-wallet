@@ -1,4 +1,4 @@
-import WalletHome from '.';
+import WalletHome from './index';
 import WalletName from './WalletName';
 import EditWalletName from './EditWalletName';
 

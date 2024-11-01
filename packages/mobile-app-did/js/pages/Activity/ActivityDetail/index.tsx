@@ -87,13 +87,16 @@ const ActivityDetail = () => {
 
   const isNft = useMemo(() => !!activityItem?.nftInfo?.nftId, [activityItem?.nftInfo?.nftId]);
   const status = useMemo(() => {
-    if (!activityItem?.status) return { text: '', style: 'confirmed' };
+    if (!activityItem?.status) {
+      return { text: '', style: 'confirmed' };
+    }
 
-    if (activityItem?.status === TransactionStatus.Mined)
+    if (activityItem?.status === TransactionStatus.Mined) {
       return {
         text: 'Confirmed',
         style: 'confirmed',
       };
+    }
     return {
       text: 'Failed',
       style: 'failed',
@@ -139,7 +142,7 @@ const ActivityDetail = () => {
                   {formatChainInfoToShow(fromChainId, currentNetwork, fromChainIdUpdated)}
                 </TextM>
                 <View style={GStyles.flexRowWrap}>
-                  <TextM style={[styles.lightGrayFontColor]}>{` → `}</TextM>
+                  <TextM style={[styles.lightGrayFontColor]}>{' → '}</TextM>
                   <TextM style={[styles.blackFontColor]}>
                     {formatChainInfoToShow(toChainId, currentNetwork, toChainIdUpdated)}
                   </TextM>
@@ -162,7 +165,9 @@ const ActivityDetail = () => {
   }, [CopyIconUI, activityItem, currentNetwork, t, transactionId]);
 
   const feeUI = useMemo(() => {
-    if (activityItem?.isReceived) return null;
+    if (activityItem?.isReceived) {
+      return null;
+    }
 
     const transactionFees =
       activityItem?.transactionFees?.length === 0
@@ -176,7 +181,7 @@ const ActivityDetail = () => {
           {activityItem?.isDelegated ? (
             <View style={[styles.transactionFeeItemWrap]}>
               <TextM style={[styles.blackFontColor, styles.fontBold]}>{`0 ${defaultToken.symbol}`}</TextM>
-              {isMainnet && <TextS style={[styles.lightGrayFontColor, styles.marginTop4]}>{`$ 0`}</TextS>}
+              {isMainnet && <TextS style={[styles.lightGrayFontColor, styles.marginTop4]}>{'$ 0'}</TextS>}
             </View>
           ) : (
             <View>
@@ -331,7 +336,9 @@ const ActivityDetail = () => {
           <CommonButton
             containerStyle={[GStyles.marginTop(8), styles.bottomButton]}
             onPress={() => {
-              if (!activityItem?.transactionId) return;
+              if (!activityItem?.transactionId) {
+                return;
+              }
 
               navigationService.navigate('ViewOnWebView', {
                 title: t('View on Explorer'),

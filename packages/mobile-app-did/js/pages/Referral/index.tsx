@@ -33,7 +33,9 @@ export default function Referral() {
   const [isSplashScreen, setIsSplashScreen] = useState(true);
 
   const init = useCallback(async () => {
-    if (!isFocusedRef.current) return;
+    if (!isFocusedRef.current) {
+      return;
+    }
     try {
       await Promise.race([getLoginControlListAsync(), sleep(3000)]);
     } catch (error) {
@@ -43,7 +45,9 @@ export default function Referral() {
     await sleep(500);
     if (address) {
       let name: keyof RootStackParamList = 'SecurityLock';
-      if (credentials && caHash) name = 'Tab';
+      if (credentials && caHash) {
+        name = 'Tab';
+      }
       navigationService.reset(name);
     }
     await sleep(500);

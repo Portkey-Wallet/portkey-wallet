@@ -153,14 +153,16 @@ const DashBoardHeader: React.FC<DashBoardHeaderProps> = ({ title, scrollY }) => 
         <Touchable
           style={styles.svgWrap}
           onPress={async () => {
-            if (!(await qrScanPermissionAndToast())) return;
+            if (!(await qrScanPermissionAndToast())) {
+              return;
+            }
             navigationService.navigate('QrScanner');
           }}>
           <Svg icon="scan" size={pTd(22)} color={defaultColors.font8} />
         </Touchable>
       </View>
     );
-  }, [onCopyAddress, onGiftClick, qrScanPermissionAndToast]);
+  }, [isMainnet, onCopyAddress, onGiftClick, qrScanPermissionAndToast]);
 
   return (
     <View style={styles.container}>

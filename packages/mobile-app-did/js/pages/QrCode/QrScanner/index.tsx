@@ -1,5 +1,4 @@
 import React, { useCallback, useState } from 'react';
-import { BarCodeScanner } from 'expo-barcode-scanner';
 import { View, Text, SafeAreaView, StyleSheet } from 'react-native';
 import navigationService from 'utils/navigationService';
 import Svg from 'components/Svg';
@@ -14,13 +13,14 @@ import GStyles from 'assets/theme/GStyles';
 import { FontStyles } from 'assets/theme/styles';
 import { isIOS, screenHeight, screenWidth } from '@portkey-wallet/utils/mobile/device';
 
-import { Camera } from 'expo-camera';
+import { CameraView, Camera } from 'expo-camera';
 import Loading from 'components/Loading';
 import { useHandleDataFromQrCode } from 'hooks/useQrScan';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { sleep } from '@portkey-wallet/utils';
 import { useLatestRef } from '@portkey-wallet/hooks';
 import Touchable from 'components/Touchable';
+// import Touchable from 'expo-camera';
 interface QrScannerProps {
   route?: any;
 }
@@ -46,7 +46,9 @@ const QrScanner: React.FC<QrScannerProps> = () => {
 
   const handleBarCodeScanned = useLockCallback(
     async ({ data = '' }) => {
-      if (!latestIsFocused.current) return;
+      if (!latestIsFocused.current) {
+        return;
+      }
       try {
         await handleDataFromQrCode(data);
       } catch {
@@ -65,23 +67,29 @@ const QrScanner: React.FC<QrScannerProps> = () => {
       allowsMultipleSelection: false,
       quality: 1,
     });
+    if (result.canceled || !result.assets || result.assets.length <= 0) {
+      return;
+    }
 
-    if (result.cancelled || !result.uri) return;
+    if (result && result?.assets[0].uri) {
+      const scanResult = await Camera.scanFromURLAsync(result?.assets[0].uri, ['qr']);
 
-    if (result && result?.uri) {
-      const scanResult = await BarCodeScanner.scanFromURLAsync(result?.uri, [BarCodeScanner.Constants.BarCodeType.qr]);
-
-      if (scanResult[0]?.data) handleBarCodeScanned({ data: scanResult[0]?.data || '' });
+      if (scanResult[0]?.data) {
+        handleBarCodeScanned({ data: scanResult[0]?.data || '' });
+      }
     }
   };
 
   return (
     <View style={PageStyle.wrapper}>
       {refresh ? null : (
-        <Camera
+        <CameraView
           ratio={'16:9'}
+          barcodeScannerSettings={{
+            barcodeTypes: ['qr', 'pdf417'],
+          }}
           style={[PageStyle.barCodeScanner, !isIOS && PageStyle.barCodeScannerAndroid]}
-          onBarCodeScanned={handleBarCodeScanned}>
+          onBarcodeScanned={handleBarCodeScanned}>
           <SafeAreaView style={PageStyle.innerView}>
             <View style={PageStyle.iconWrap}>
               <Text style={PageStyle.leftBlock} />
@@ -101,7 +109,7 @@ const QrScanner: React.FC<QrScannerProps> = () => {
               <TextM style={[FontStyles.font2, PageStyle.albumText]}>{t('Album')}</TextM>
             </Touchable>
           </SafeAreaView>
-        </Camera>
+        </CameraView>
       )}
     </View>
   );

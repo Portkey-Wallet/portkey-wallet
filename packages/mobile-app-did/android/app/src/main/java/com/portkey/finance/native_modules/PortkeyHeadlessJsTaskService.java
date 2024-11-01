@@ -5,6 +5,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ServiceInfo;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -39,7 +40,11 @@ public class PortkeyHeadlessJsTaskService extends HeadlessJsTaskService {
             .setPriority(10)
             .setCategory(Notification.CATEGORY_SERVICE)
             .build();
-    startForeground(1, notification);
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+          startForeground(1, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_MANIFEST);
+      } else {
+          startForeground(1, notification);
+      }
   }
   /**
    * create NotificationChannel

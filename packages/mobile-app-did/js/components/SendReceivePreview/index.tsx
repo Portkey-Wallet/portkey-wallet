@@ -1,5 +1,5 @@
-import React, { memo, useCallback, useState } from 'react';
-import { Text, View, TouchableWithoutFeedback, Linking } from 'react-native';
+import React, { memo, useCallback } from 'react';
+import { Text, View, TouchableWithoutFeedback } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useLanguage } from 'i18n/hooks';
 import PageContainer from 'components/PageContainer';
@@ -17,6 +17,7 @@ import { pTd } from 'utils/unit';
 import { openOutLink } from 'utils/link';
 import { SEND_RECEIVE_HELP_URL } from 'constants/common';
 import { getStyles } from './style';
+import { darkColors } from 'assets/theme';
 
 export enum FooterType {
   'E_BRIDGE' = 'eBridge',
@@ -54,6 +55,7 @@ interface ISendReceivePreviewProps {
   estimatedDuration?: string;
   NFTInfo?: INFTInfo;
   isError?: boolean;
+  isLoading?: boolean;
   onPress?: () => void;
 }
 
@@ -95,6 +97,7 @@ const SendReceivePreview: React.FC<ISendReceivePreviewProps> = ({
   estimatedDuration,
   NFTInfo,
   isError = false,
+  isLoading = false,
   onPress,
 }) => {
   const { t } = useLanguage();
@@ -104,29 +107,34 @@ const SendReceivePreview: React.FC<ISendReceivePreviewProps> = ({
 
   const { topIcon, buttonText } = ACTION_CONFIG[actionType] || {};
 
-  const [isLoading, setIsLoading] = useState(false);
-
   const getChainSvgName = (chainId?: ChainId) => {
     if (!chainId) return undefined;
     return chainId === 'AELF' ? 'mainnet' : 'sideChain';
   };
 
   const handlePress = useCallback(() => {
-    setIsLoading(true);
+    if (isLoading) return;
     onPress?.();
-  }, [onPress]);
+  }, [isLoading, onPress]);
 
   return (
     <PageContainer
       titleDom={t(`Preview`)}
       safeAreaColor={['black', 'black']}
       containerStyles={styles.pageWrap}
+      isLeftBackDisabled={isLoading}
       rightDom={
         <Touchable
           onPress={async () => {
+            if (isLoading) return;
             await openOutLink(SEND_RECEIVE_HELP_URL);
           }}>
-          <Svg iconStyle={styles.headerHelpIcon} icon={isLoading ? 'help-gray' : 'help-white'} size={pTd(24)} />
+          <Svg
+            iconStyle={styles.headerHelpIcon}
+            icon="help-white"
+            color={isLoading ? darkColors.iconDisabled : darkColors.iconBase1}
+            size={pTd(24)}
+          />
         </Touchable>
       }
       scrollViewProps={{ disabled: true }}>

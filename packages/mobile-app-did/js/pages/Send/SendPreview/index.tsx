@@ -133,19 +133,26 @@ const SendPreview: React.FC = () => {
   );
 
   const EstimateAmount = useMemo(() => {
-    if (ZERO.plus(sendNumber).isLessThanOrEqualTo(crossChainFee) && assetInfo.symbol === defaultToken.symbol)
+    if (ZERO.plus(sendNumber).isLessThanOrEqualTo(crossChainFee) && assetInfo.symbol === defaultToken.symbol) {
       return {
         estimateAmount: `0 ${assetInfo?.label || assetInfo?.symbol}`,
         estimateAmountUsd: isMainnet ? '$ 0' : '',
       };
+    }
 
     let _amount = sendNumber;
     let amountUsd;
-    if (receiveAmount) _amount = receiveAmount;
-    else _amount = formatAmountShow(ZERO.plus(_amount).minus(crossChainFee), Number(defaultToken.decimals));
+    if (receiveAmount) {
+      _amount = receiveAmount;
+    } else {
+      _amount = formatAmountShow(ZERO.plus(_amount).minus(crossChainFee), Number(defaultToken.decimals));
+    }
 
-    if (receiveAmountUsd) amountUsd = formatAmountUSDShow(receiveAmountUsd);
-    else amountUsd = amountInUsdShow(ZERO.plus(_amount).minus(crossChainFee).toFixed(), 0, assetInfo.symbol);
+    if (receiveAmountUsd) {
+      amountUsd = formatAmountUSDShow(receiveAmountUsd);
+    } else {
+      amountUsd = amountInUsdShow(ZERO.plus(_amount).minus(crossChainFee).toFixed(), 0, assetInfo.symbol);
+    }
 
     return {
       estimateAmount: `${_amount} ${assetInfo.label || assetInfo.symbol}`,
@@ -193,9 +200,13 @@ const SendPreview: React.FC = () => {
       address: assetInfo.tokenContractAddress,
     };
 
-    if (!chainInfo || !pin) return;
+    if (!chainInfo || !pin) {
+      return;
+    }
     const account = getManagerAccount(pin);
-    if (!account) return;
+    if (!account) {
+      return;
+    }
 
     if (!contractRef.current) {
       contractRef.current = await getContractBasic({
@@ -224,7 +235,9 @@ const SendPreview: React.FC = () => {
           },
         },
       });
-      if (!checkTransferLimitResult) return;
+      if (!checkTransferLimitResult) {
+        return;
+      }
     }
 
     if (isCrossChainTransfer) {
@@ -266,7 +279,9 @@ const SendPreview: React.FC = () => {
           },
         });
         console.log('crossTransferByEtransferResult', crossTransferByEtransferResult);
-        if (!crossTransferByEtransferResult?.transactionId) throw 'Transfer error';
+        if (!crossTransferByEtransferResult?.transactionId) {
+          throw 'Transfer error';
+        }
         const txResult = await getAelfTxResult(chainInfo.endPoint, crossTransferByEtransferResult.transactionId);
         console.log(txResult, 'txResult===etransferCrossTransfer');
         etransferCrossFinishTrack({
@@ -369,9 +384,13 @@ const SendPreview: React.FC = () => {
         decimals: assetInfo.decimals ?? 0,
         address: assetInfo.tokenContractAddress,
       };
-      if (!chainInfo || !pin) return;
+      if (!chainInfo || !pin) {
+        return;
+      }
       const account = getManagerAccount(pin);
-      if (!account) return;
+      if (!account) {
+        return;
+      }
 
       Loading.show();
       try {
@@ -399,9 +418,13 @@ const SendPreview: React.FC = () => {
   );
 
   const imSend = useCallback(async () => {
-    if (!chainInfo || !pin) return;
+    if (!chainInfo || !pin) {
+      return;
+    }
     const account = getManagerAccount(pin);
-    if (!account) return;
+    if (!account) {
+      return;
+    }
 
     if (!contractRef.current) {
       contractRef.current = await getContractBasic({
@@ -411,7 +434,9 @@ const SendPreview: React.FC = () => {
       });
     }
 
-    if (!contractRef.current || !imTransferInfo?.channelId || !imTransferInfo?.toUserId) return;
+    if (!contractRef.current || !imTransferInfo?.channelId || !imTransferInfo?.toUserId) {
+      return;
+    }
     Loading.show();
     try {
       const params = {
@@ -531,7 +556,9 @@ const SendPreview: React.FC = () => {
 
   useFocusEffect(
     useCallback(() => {
-      if (!isAutoSend) return;
+      if (!isAutoSend) {
+        return;
+      }
       onSend();
     }, [isAutoSend, onSend]),
   );

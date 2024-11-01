@@ -1,6 +1,6 @@
 import { useCurrentNetworkInfo } from './network';
 import { useMemo, useCallback } from 'react';
-import { useAppCASelector } from '.';
+import { useAppCASelector } from './index';
 import { useAssets } from './assets';
 import { ChainId } from '@portkey-wallet/types';
 import { useAppCommonDispatch } from '../';

@@ -1,6 +1,6 @@
 import S3 from 'aws-sdk/clients/s3';
 import AWS from 'aws-sdk';
-import { randomId } from '.';
+import { randomId } from './index';
 
 export interface IAWSConfig {
   Bucket: string;
@@ -87,10 +87,10 @@ export const formatRNImage = (
     uri: string;
     width: number;
     height: number;
-    type?: 'image' | 'video';
-    fileName?: string | null;
-    fileSize?: number;
-    exif?: Record<string, any>;
+    // type?: 'image' | 'video';
+    // fileName?: string | null;
+    // fileSize?: number;
+    // exif?: Record<string, any>;
   },
   fileBase64: string,
 ) => {

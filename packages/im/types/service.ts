@@ -17,7 +17,7 @@ import {
   TransferStatusEnum,
   TransferTypeEnum,
   TriggerMessageEventActionEnum,
-} from '.';
+} from './index';
 import { RequireAtLeastOne } from '@portkey-wallet/types/common';
 import { IM_PIN_LIST_SORT_TYPE_ENUM } from '../constant';
 import { AssetType } from '@portkey-wallet/constants/constants-ca/assets';

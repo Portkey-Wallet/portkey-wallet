@@ -33,7 +33,6 @@ const TokenItem = ({ item, onHandleToken, onEditToken }: TokenItemProps) => {
       return 'Balance Hidden';
     } else {
       const chainId = item.tokens?.find(token => token.isDisplay)?.chainId;
-      const displayChainName = item.tokens?.find(token => token.isDisplay)?.displayChainName;
       if (chainId) {
         return formatChainInfoToShow(chainId, currentNetwork);
       } else {

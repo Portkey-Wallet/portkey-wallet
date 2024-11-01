@@ -106,7 +106,7 @@ const ChatGroupDetailsPage = () => {
                     await hideChannel(currentChannelId || '');
                     navigationService.navigate('Tab');
                   } catch (error) {
-                    CommonToast.fail(`Failed to delete chat`);
+                    CommonToast.fail('Failed to delete chat');
                   } finally {
                     Loading.hide();
                   }
@@ -118,7 +118,7 @@ const ChatGroupDetailsPage = () => {
       },
     ];
 
-    if (!isAdmin)
+    if (!isAdmin) {
       list.push({
         title: ChatOperationsEnum.LEAVE_GROUP,
         iconName: 'chat-leave-group',
@@ -134,6 +134,7 @@ const ChatGroupDetailsPage = () => {
           }
         },
       });
+    }
 
     return list;
   }, [currentChannelId, hideChannel, isAdmin, leaveGroup, mute, muteChannel, pin, pinChannel]);
@@ -206,7 +207,9 @@ const ChatGroupDetailsPage = () => {
   );
 
   const headerDom = useMemo(() => {
-    if (lastPinMessage) return <HeaderPinSection channelUUid={currentChannelId || ''} />;
+    if (lastPinMessage) {
+      return <HeaderPinSection channelUUid={currentChannelId || ''} />;
+    }
 
     return hasPinWhenInit ? null : (
       <FloatingActionButton title="Add Members" shouldShowFirstTime={isAdmin} onPressButton={addMembers} />
@@ -219,7 +222,9 @@ const ChatGroupDetailsPage = () => {
   });
 
   useEffect(() => {
-    if (!lastPinMessage) return;
+    if (!lastPinMessage) {
+      return;
+    }
     setHasPinWhenInit(!!lastPinMessage);
   }, [lastPinMessage]);
 

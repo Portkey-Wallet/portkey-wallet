@@ -1,6 +1,6 @@
 import { sleep } from '@portkey-wallet/utils';
 import { AElfInterface } from '@portkey-wallet/types/aelf';
-import { getTxResult, handleContractError, handleContractParams, handleFunctionName } from '.';
+import { getTxResult, handleContractError, handleContractParams, handleFunctionName } from './index';
 import { ChainId, ChainType } from '@portkey-wallet/types';
 import { encodedTx } from '@portkey-wallet/utils/aelf';
 import { AElfCallSendMethod, AElfCallViewMethod, CallSendMethod, CallViewMethod, ContractProps } from '../types';

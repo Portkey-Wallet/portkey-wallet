@@ -1,4 +1,4 @@
-import { useAppCASelector } from '.';
+import { useAppCASelector } from './index';
 import { useMemo, useCallback } from 'react';
 import { useCurrentNetwork } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useAppCommonDispatch } from '../index';

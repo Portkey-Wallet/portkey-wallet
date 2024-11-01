@@ -113,6 +113,7 @@
     "expo-web-browser": "^13.0.3",
     "lodash": "^4.17.21",
     "lottie-react-native": "^5.1.5",
+    "micro-ftch": "0.4.0",
     "process": "^0.11.0",
     "promise.allsettled": "^1.0.7",
     "query-string": "^7.1.1",
@@ -131,7 +132,7 @@
     "react-native-fs": "^2.18.0",
     "react-native-gesture-handler": "^2.18.1",
     "react-native-get-random-values": "1.8.0",
-    "react-native-gifted-chat": "^2.4.0",
+    "react-native-gifted-chat": "2.4.0",
     "react-native-keyboard-aware-scroll-view": "^0.9.5",
     "react-native-largelist": "3.1.0-rc.2",
     "react-native-linear-gradient": "^2.8.3",
@@ -151,6 +152,7 @@
     "react-native-swipeable-item": "^2.0.9",
     "react-native-switch-toggle": "^2.2.1",
     "react-native-tab-view": "^3.2.1",
+    "react-native-url-polyfill": "^2.0.0",
     "react-native-vector-icons": "^10.2.0",
     "react-native-view-shot": "^3.6.0",
     "react-native-webview": "^13.10.5",
@@ -163,8 +165,7 @@
     "stream": "^0.0.2",
     "url-parse": "^1.5.10",
     "uuid": "^8.3.2",
-    "web3-utils": "^1.8.0",
-    "micro-ftch": "0.4.0"
+    "web3-utils": "^1.8.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

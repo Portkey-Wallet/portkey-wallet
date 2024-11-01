@@ -6,7 +6,7 @@ import { pTd } from 'utils/unit';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import { isIOS, screenHeight, screenWidth } from '@portkey-wallet/utils/mobile/device';
-import { Camera, CameraCapturedPicture } from 'expo-camera';
+import { Camera, CameraCapturedPicture, CameraView } from 'expo-camera';
 import Touchable from 'components/Touchable';
 import useEffectOnce from 'hooks/useEffectOnce';
 import CommonButton from 'components/CommonButton';
@@ -24,7 +24,7 @@ const ChatCameraPage: React.FC = () => {
   const cameraRef = useRef<Camera>(null);
   const [sending, setSending] = useState(false);
   const [img, setImgUrl] = useState<CameraCapturedPicture>();
-  const [, requestCameraPermission] = Camera.useCameraPermissions();
+  // const [, requestCameraPermission] = Camera.useCameraPermissions();
   const { sendChannelImage } = useSendCurrentChannelMessage();
   const currentChannelId = useCurrentChannelId();
   const currentChannelInfo = useChannelItemInfo(currentChannelId || '');
@@ -59,23 +59,27 @@ const ChatCameraPage: React.FC = () => {
   }, []);
 
   const resetCamera = useCallback(() => {
-    if (!cameraRef?.current) return;
+    if (!cameraRef?.current) {
+      return;
+    }
     cameraRef.current.resumePreview();
     setImgUrl(undefined);
   }, []);
 
   useEffectOnce(() => {
     (async () => {
-      const result = await requestCameraPermission();
+      const result = await Camera.requestCameraPermissionsAsync();
       console.log('=====requestCameraPermission====result', result);
-      if (!result) return showDialog();
+      if (!result) {
+        return showDialog();
+      }
     })();
   });
 
   return (
     <SafeAreaBox edges={['bottom', 'right', 'left']} style={PageStyle.safeAreaBox}>
       <View style={PageStyle.wrapper}>
-        <Camera
+        <CameraView
           ratio={'16:9'}
           ref={cameraRef}
           style={[PageStyle.barCodeScanner, !isIOS && PageStyle.barCodeScannerAndroid]}>
@@ -91,7 +95,7 @@ const ChatCameraPage: React.FC = () => {
               </Touchable>
             )}
           </View>
-        </Camera>
+        </CameraView>
         <View
           style={[
             GStyles.flexRow,

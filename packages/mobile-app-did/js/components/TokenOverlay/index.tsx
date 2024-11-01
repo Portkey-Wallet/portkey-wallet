@@ -14,7 +14,7 @@ import { useAppCommonDispatch, useLatestRef } from '@portkey-wallet/hooks';
 import useDebounce from 'hooks/useDebounce';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { useChainIdList } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { fetchAllTokenList } from '@portkey-wallet/store/store-ca/tokenManagement/api';
+import { fetchAllTokenListLegacy } from '@portkey-wallet/store/store-ca/tokenManagement/api';
 import NoData from 'components/NoData';
 import { useGStyles } from 'assets/theme/useGStyles';
 import myEvents from '../../utils/deviceEvent';
@@ -87,13 +87,12 @@ const TokenList = ({ title = 'Select Token', onFinishSelectToken, currentSymbol,
       return;
     }
     try {
-      const result = await fetchAllTokenList({
+      const result = await fetchAllTokenListLegacy({
         keyword: debounceKeyword,
         chainIdArray: chainIdList,
         skipCount: 0,
         maxResultCount: PAGE_SIZE_DEFAULT,
       });
-
       setFilteredShowList(result?.items);
     } catch (error) {
       console.log('fetchTokenListByFilter error', error);

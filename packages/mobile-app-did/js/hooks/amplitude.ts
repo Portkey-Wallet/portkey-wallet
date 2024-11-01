@@ -9,12 +9,16 @@ export const useAmplitudeTrack = () => {
 
   return useCallback(
     (event: BaseEvent) => {
-      track({
-        user_properties: {
-          network: isMainNet ? 'MAINNET' : 'TESTNET',
-        },
-        ...event,
-      });
+      try {
+        track({
+          user_properties: {
+            network: isMainNet ? 'MAINNET' : 'TESTNET',
+          },
+          ...event,
+        });
+      } catch (error) {
+        console.log('track error', error);
+      }
     },
     [isMainNet],
   );
@@ -101,6 +105,36 @@ export const useEtransferCrossFinishTrack = () => {
           success,
           msg: msg || '',
         },
+      });
+    },
+    [amplitudeTrack],
+  );
+};
+
+export type TCrossChainTransferTrackParams = TEtransferCrossTrackParams & {
+  type: 'EtransferCross' | 'PortkeyCross';
+};
+export const useCrossChainTransferTrack = () => {
+  const amplitudeTrack = useAmplitudeTrack();
+  return useCallback(
+    (params: TCrossChainTransferTrackParams) => {
+      amplitudeTrack({
+        event_type: 'CrossChainTransfer',
+        event_properties: params,
+      });
+    },
+    [amplitudeTrack],
+  );
+};
+
+export type TPortkeyCrossTrackParams = TEtransferCrossTrackParams;
+export const usePortkeyCrossTrack = () => {
+  const amplitudeTrack = useAmplitudeTrack();
+  return useCallback(
+    (params: TPortkeyCrossTrackParams) => {
+      amplitudeTrack({
+        event_type: 'PortkeyCross',
+        event_properties: params,
       });
     },
     [amplitudeTrack],

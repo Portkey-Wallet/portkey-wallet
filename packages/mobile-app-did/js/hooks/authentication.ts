@@ -58,7 +58,7 @@ export function useGoogleAuthentication() {
   const iosPromptAsync: (managerAddress: string) => Promise<TGoogleAuthResponse> = useCallback(async managerAddress => {
     const { nonce, timestamp } = generateNonceAndTimestamp(managerAddress);
     const googleRequest = new AuthRequest({
-      clientId: Config.GOOGLE_IOS_CLIENT_ID,
+      clientId: Config.GOOGLE_IOS_CLIENT_ID || '',
       redirectUri: makeRedirectUri({
         native: `${Application.applicationId}:/oauthredirect`,
       }),
@@ -79,7 +79,7 @@ export function useGoogleAuthentication() {
     const info = await googleRequest.promptAsync(discovery);
     if (info.type === 'success') {
       const exchangeRequest = new AccessTokenRequest({
-        clientId: Config.GOOGLE_IOS_CLIENT_ID,
+        clientId: Config.GOOGLE_IOS_CLIENT_ID || '',
         redirectUri: makeRedirectUri({
           native: `${Application.applicationId}:/oauthredirect`,
         }),

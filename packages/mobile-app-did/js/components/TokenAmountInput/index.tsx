@@ -1,6 +1,6 @@
 import { darkColors, defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
-import { TextL, TextXXXL } from 'components/CommonText';
+import { TextH1, TextL } from 'components/CommonText';
 import Svg from 'components/Svg';
 import React, { memo, useCallback, useRef, useState } from 'react';
 import { View, TextInput, TouchableOpacity, LayoutChangeEvent } from 'react-native';
@@ -103,7 +103,7 @@ const TokenAmountInput: React.FC<ITokenAmountInput> = props => {
         <>
           {isRevert ? (
             <>
-              <TextXXXL style={styles.unit}>{`$ `}</TextXXXL>
+              <TextH1>{`$ `}</TextH1>
               <TextInput
                 value={usdValue}
                 onChangeText={onUsdValueInputChange}
@@ -125,7 +125,7 @@ const TokenAmountInput: React.FC<ITokenAmountInput> = props => {
                 onChangeText={onValueInputChange}
                 editable={editable}
               />
-              <TextXXXL style={styles.unit}>{` ${label || symbol}`}</TextXXXL>
+              <TextH1>{` ${label || symbol}`}</TextH1>
             </>
           )}
           {warningTip && (
@@ -188,10 +188,7 @@ export const getStyles = makeStyles(theme => ({
     maxWidth: '80%',
     textAlign: 'right',
     fontSize: pTd(32),
-    ...fonts.SGMediumFont,
-  },
-  unit: {
-    fontSize: pTd(32),
+    ...fonts.BGMediumFont,
   },
   bottomText: {
     color: theme.colors.textBase2,

@@ -1,10 +1,10 @@
 import React, { forwardRef, useMemo } from 'react';
 import { Input, InputProps } from '@rneui/themed';
 import Svg, { IconName } from 'components/Svg';
-import { commonStyles, generalStyles, searchStyles } from './style';
+import { bgWhiteStyles, commonStyles, generalStyles, searchStyles } from './style';
 import { pTd } from 'utils/unit';
 import { useLanguage } from 'i18n/hooks';
-import { defaultColors } from 'assets/theme';
+import { darkColors, defaultColors } from 'assets/theme';
 import Touchable from 'components/Touchable';
 import Lottie from 'lottie-react-native';
 
@@ -48,9 +48,11 @@ const CommonInput = forwardRef(function CommonInput(props: CommonInputProps, for
         <Touchable onPress={() => props.onChangeText?.('')}>
           <Svg icon={clearIcon} size={pTd(16)} />
         </Touchable>
+      ) : type === 'search' ? (
+        <Svg icon="search" size={pTd(16)} color={darkColors.iconBase1} />
       ) : undefined;
     }
-  }, [allowClear, clearIcon, loading, props]);
+  }, [allowClear, clearIcon, loading, props, type]);
 
   if (type === 'search')
     return (
@@ -59,20 +61,17 @@ const CommonInput = forwardRef(function CommonInput(props: CommonInputProps, for
         containerStyle={[searchStyles.containerStyle, containerStyle]}
         inputContainerStyle={[
           searchStyles.inputContainerStyle,
+          theme === 'white-bg' && bgWhiteStyles.inputContainerStyle,
           grayBorder && commonStyles.inputContainerGrayBorderStyle,
           inputContainerStyle,
-          !!errorMessage && commonStyles.inputContainerErrorBorderStyle,
         ]}
         inputStyle={[searchStyles.inputStyle, inputStyle]}
         labelStyle={[searchStyles.labelStyle, labelStyle]}
         rightIconContainerStyle={[commonStyles.rightIconContainerStyle, rightIconContainerStyle]}
         leftIconContainerStyle={[searchStyles.leftIconContainerStyle, leftIconContainerStyle]}
-        placeholder={placeholder || t('Please enter')}
-        placeholderTextColor={defaultColors.font7}
-        leftIcon={<Svg icon="search" size={pTd(16)} />}
+        placeholder={placeholder || t('Search')}
+        placeholderTextColor={darkColors.textBase3}
         rightIcon={rightIconDom}
-        errorMessage={errorMessage}
-        keyboardAppearance="dark"
         {...inputProps}
         ref={forwardedRef}
       />

@@ -261,9 +261,9 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
             inputContainerStyle={styles.inputWrap}
             maxLength={5}
             errorMessage={packetNumTips}
-            errorStyle={!isGTMax && FontStyles.font7}
+            errorStyle={!isGTMax && { ...FontStyles.font7, marginTop: pTd(4) }}
             inputStyle={isGTMax && FontStyles.error}
-            containerStyle={styles.packetNumWrap}
+            containerStyle={styles.packetQuantityWrap}
           />
         </FormItem>
       )}
@@ -392,6 +392,10 @@ const styles = StyleSheet.create({
   },
   inputContainerStyle: {
     height: pTd(64),
+  },
+  packetQuantityWrap: {
+    marginBottom: pTd(16),
+    height: pTd(68),
   },
   packetNumWrap: {
     marginBottom: pTd(16),

@@ -9,7 +9,7 @@ import { closePrompt } from 'utils/lib/serviceWorkerAction';
 import { ResponseCode } from '@portkey/provider-types';
 import { getWallet } from '@portkey-wallet/utils/aelf';
 import ImageDisplay from 'pages/components/ImageDisplay';
-import { showValueToStr } from '@portkey-wallet/utils/byteConversion';
+import { showValueToStr, valueToString } from '@portkey-wallet/utils/byteConversion';
 import getSeed from 'utils/getSeed';
 import singleMessage from 'utils/singleMessage';
 import AsyncButton from 'components/AsyncButton';
@@ -31,13 +31,14 @@ export default function GetSignature() {
   }>();
   const { t } = useTranslation();
   const { currentNetwork } = useWalletInfo();
-  const [showData, setShowData] = useState<string | object>(payload?.data);
+  const [showData, setShowData] = useState<string | { methodName: string; params: object }>(payload?.data);
   const { dappMap } = useDapp();
   const curDapp = useMemo(
     () => dappMap[currentNetwork]?.find((item) => item.origin === payload?.origin),
     [currentNetwork, dappMap, payload?.origin],
   );
   const [showWarning, setShowWarning] = useState(false);
+  const [isManagerForwardCall, setIsManagerForwardCall] = useState<boolean>(false);
   const getDecodedTxData = useDecodeTx();
 
   useEffect(() => {
@@ -49,10 +50,22 @@ export default function GetSignature() {
           //   '0a220a20a4ed11a0c86847b4c24111526f9e6a9174e142e28d26db8bdae761e6e32adbfd12220a2088881d4350a8c77c59a42fc86bbcd796b129e086da7e61d24fb86a6cbb6b2f3b18be9fe17022040608dfff2a124d616e61676572466f727761726443616c6c327f0a220a2009018c2fbd3ea94c99054cda666d23f1b1f6c90802a8b41c34a275a452f75c4412220a202791e992a57f28e75a11f13af2c0aec8b0eb35d2f048d42eba8901c92e0378dc1a085472616e73666572222b0a220a200c214bac7406d99ff80fc03401147840e7bde64cd85bddd4c3312627f2094be81203454c461801';
           const res = await getDecodedTxData(raw);
           setShowWarning(false);
-          setShowData({
-            methodName: res.result.methodName,
-            params: res.result.params,
-          });
+          if (
+            res.result.methodName &&
+            res.result?.params?.methodName &&
+            res.result?.methodName === 'ManagerForwardCall'
+          ) {
+            setIsManagerForwardCall(true);
+            setShowData({
+              methodName: res.result.params.methodName,
+              params: res.result.params.args,
+            });
+          } else {
+            setShowData({
+              methodName: res.result.methodName,
+              params: res.result.params,
+            });
+          }
         } catch (error) {
           setShowWarning(true);
           console.log('===getDecodedTxData error', error);
@@ -127,7 +140,34 @@ export default function GetSignature() {
     }
     return <div className="data">{showValueToStr(showData)}</div>;
   }, [showData]);
-
+  const renderShowParamsData = useMemo(() => {
+    if (typeof showData !== 'object' || !showData.params) {
+      return null;
+    }
+    if (typeof showData.params === 'object') {
+      return (
+        <div className="data">
+          {Object.entries(showData.params).map(([key, value], index) => {
+            if (!value) {
+              return null;
+            }
+            let formattedDate = value;
+            if (key === 'expirationTime') {
+              const date = new Date(value * 1000);
+              formattedDate = date.toLocaleString();
+            }
+            return (
+              <div key={index} style={{ marginTop: index !== 0 ? 8 : 0 }}>
+                <div className="method-name">{key}</div>
+                <div>{key === 'expirationTime' ? formattedDate : valueToString(value)}</div>
+              </div>
+            );
+          })}
+        </div>
+      );
+    }
+    return <div className="data">{showValueToStr(showData)}</div>;
+  }, [showData]);
   return (
     <div className="get-signature flex">
       {renderSite}
@@ -138,10 +178,32 @@ export default function GetSignature() {
           {`Unrecognized authorization. Please exercise caution and refrain from approving the transaction if you are uncertain.`}
         </div>
       )}
-      <div className="message">
-        <div>Message</div>
-        {renderShowData}
-      </div>
+      {isManagerForwardCall ? (
+        <>
+          <div className="message">
+            <div className="msg-title">Method</div>
+            <div className="method">
+              <div>
+                {typeof showData === 'object' && showData !== null && 'methodName' in showData ? (
+                  <div>{showData.methodName}</div>
+                ) : (
+                  <div>Unknown</div>
+                )}
+              </div>
+            </div>
+          </div>
+          <div className="message">
+            <div className="msg-title">Message</div>
+            {renderShowParamsData}
+          </div>
+        </>
+      ) : (
+        <div className="message">
+          <div>Message</div>
+          {renderShowData}
+        </div>
+      )}
+
       <div className="btn flex-between">
         <Button
           type="text"

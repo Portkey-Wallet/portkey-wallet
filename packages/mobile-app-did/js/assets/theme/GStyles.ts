@@ -40,6 +40,9 @@ export default {
   alignEnd: {
     alignSelf: 'flex-end',
   },
+  alignStart: {
+    alignSelf: 'flex-start',
+  },
   flexCenter: {
     justifyContent: 'center',
   },

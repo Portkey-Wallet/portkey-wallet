@@ -27,6 +27,7 @@ import CommonQRCodeStyled from 'components/CommonQRCodeStyled';
 import { useCheckManager } from 'hooks/useLogOut';
 import { usePreventScreenCapture } from 'expo-screen-capture';
 import { pTd } from 'utils/unit';
+import { LoginTrackTypeEnum, useLoginSuccessTrack } from 'hooks/amplitude';
 
 // When wallet does not exist, DEFAULT_WALLET is populated as the default data
 const DEFAULT_WALLET: LoginQRData = {
@@ -53,6 +54,7 @@ export default function QRCode({ setLoginType }: { setLoginType: (type: PageLogi
   const isFocused = useIsFocused();
   usePreventScreenCapture('LoginQRCode');
 
+  const loginSuccessTrack = useLoginSuccessTrack();
   useEffect(() => {
     if (!isFocused) return;
     const { caInfo, originChainId } = caWalletInfo || {};
@@ -60,6 +62,10 @@ export default function QRCode({ setLoginType }: { setLoginType: (type: PageLogi
       if (pin) {
         try {
           dispatch(setCAInfoType({ caInfo, pin }));
+          loginSuccessTrack({
+            type: LoginTrackTypeEnum.Scan,
+            isPinNeeded: false,
+          });
           navigationService.reset('Tab');
         } catch (error) {
           CommonToast.failError(error);

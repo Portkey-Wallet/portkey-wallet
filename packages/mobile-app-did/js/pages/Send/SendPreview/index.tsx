@@ -61,6 +61,12 @@ import {
   PAGE_SIZE_IN_ACCOUNT_NFT_COLLECTION,
   PAGE_SIZE_IN_ACCOUNT_TOKEN,
 } from '@portkey-wallet/constants/constants-ca/assets';
+import {
+  useEtransferCrossTrack,
+  useEtransferCrossFinishTrack,
+  useCrossChainTransferTrack,
+  usePortkeyCrossTrack,
+} from 'hooks/amplitude';
 
 const SendPreview: React.FC = () => {
   const { t } = useLanguage();
@@ -176,6 +182,10 @@ const SendPreview: React.FC = () => {
     [t],
   );
 
+  const crossChainTransferTrack = useCrossChainTransferTrack();
+  const portkeyCrossTrack = usePortkeyCrossTrack();
+  const etransferCrossTrack = useEtransferCrossTrack();
+  const etransferCrossFinishTrack = useEtransferCrossFinishTrack();
   const transfer = useCallback(async () => {
     const tokenInfo = {
       symbol: assetInfo.symbol,
@@ -218,6 +228,14 @@ const SendPreview: React.FC = () => {
     }
 
     if (isCrossChainTransfer) {
+      crossChainTransferTrack({
+        type: isSupportEtransferCross ? 'EtransferCross' : 'PortkeyCross',
+        chainId: chainInfo.chainId,
+        toAddress: toInfo.address,
+        amount: String(sendNumber),
+        symbol: assetInfo.symbol,
+      });
+
       if (!tokenContractRef.current) {
         tokenContractRef.current = await getContractBasic({
           contractAddress: tokenInfo.address,
@@ -228,6 +246,13 @@ const SendPreview: React.FC = () => {
       const tokenContract = tokenContractRef.current;
 
       if (isSupportEtransferCross) {
+        etransferCrossTrack({
+          chainId: chainInfo.chainId,
+          toAddress: toInfo.address,
+          amount: String(sendNumber),
+          symbol: assetInfo.symbol,
+        });
+
         const crossTransferByEtransferResult = await crossTransferByEtransfer.withdraw({
           chainId: chainInfo.chainId,
           tokenContract,
@@ -244,7 +269,16 @@ const SendPreview: React.FC = () => {
         if (!crossTransferByEtransferResult?.transactionId) throw 'Transfer error';
         const txResult = await getAelfTxResult(chainInfo.endPoint, crossTransferByEtransferResult.transactionId);
         console.log(txResult, 'txResult===etransferCrossTransfer');
+        etransferCrossFinishTrack({
+          success: true,
+        });
       } else {
+        portkeyCrossTrack({
+          chainId: chainInfo.chainId,
+          toAddress: toInfo.address,
+          amount: String(sendNumber),
+          symbol: assetInfo.symbol,
+        });
         const crossChainTransferResult = await crossChainTransfer({
           tokenContract,
           contract,
@@ -310,6 +344,8 @@ const SendPreview: React.FC = () => {
     crossDefaultFee,
     crossTransferByEtransfer,
     currentNetwork.walletType,
+    etransferCrossFinishTrack,
+    etransferCrossTrack,
     fetchAccountNFTCollectionInfoList,
     fetchAccountTokenInfoList,
     guardiansApproved,
@@ -452,10 +488,16 @@ const SendPreview: React.FC = () => {
       } else {
         CommonToast.failError(error);
       }
+      if (isSupportEtransferCross) {
+        etransferCrossFinishTrack({
+          success: false,
+          msg: JSON.stringify(error),
+        });
+      }
     } finally {
       Loading.hide();
     }
-  }, [dispatch, retryCrossChain, showRetry, transfer]);
+  }, [dispatch, etransferCrossFinishTrack, isSupportEtransferCross, retryCrossChain, showRetry, transfer]);
 
   const checkAndSend = useCallback(() => {
     if (assetInfo.chainId !== DefaultChainId) {

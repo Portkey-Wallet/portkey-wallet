@@ -17,7 +17,7 @@ const OutlinedButton: React.FC<OutlinedButtonProps> = ({ iconName, title, onPres
     <View style={styles.container}>
       <TouchableOpacity style={styles.buttonWrap} onPress={onPress}>
         <View style={styles.buttonInnerWrap}>
-          <Svg icon={iconName} size={pTd(24)} iconStyle={styles.icon} color={darkColors.bgBase1} />
+          <Svg icon={iconName} size={iconName === 'buy' ? pTd(28) : pTd(24)} color={darkColors.bgBase1} />
         </View>
       </TouchableOpacity>
       <Text style={styles.title}>{title}</Text>
@@ -48,10 +48,6 @@ const getStyles = makeStyles(theme => ({
     borderRadius: pTd(29),
     borderWidth: pTd(5),
     borderColor: '#062A4B',
-  },
-  icon: {
-    width: pTd(24),
-    height: pTd(24),
   },
   title: {
     marginTop: pTd(6),

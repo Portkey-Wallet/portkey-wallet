@@ -73,11 +73,13 @@ import { eBridgeActionSheet, getLimitTips, getSmallerValue, isValidAmount } from
 import CommonInfoRow from 'components/CommonInfoRow';
 import { SEND_RECEIVE_HELP_URL } from 'constants/common';
 import { openOutLink } from 'utils/link';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 
 const SendHome: React.FC = () => {
   const {
     params: { sendType = 'token', toInfo, assetInfo, imTransferInfo },
   } = useRoute<RouteProp<{ params: IToSendHomeParamsType }>>();
+  const isMainnet = useIsMainnet();
   const { t } = useLanguage();
   const styles = getStyles();
   useFetchTxFee();
@@ -813,18 +815,20 @@ const SendHome: React.FC = () => {
           }}
           value={{
             text: `${feeShow} ${defaultToken.symbol} `,
-            textBelow: `${
-              bottomFeeShow
-                ? formatAmountUSDShow(
-                    divDecimals(bottomFeeShow, defaultToken.decimals).times(tokenPriceObject[defaultToken.symbol]),
-                  )
-                : '-'
-            }`,
+            textBelow: isMainnet
+              ? `${
+                  bottomFeeShow
+                    ? formatAmountUSDShow(
+                        divDecimals(bottomFeeShow, defaultToken.decimals).times(tokenPriceObject[defaultToken.symbol]),
+                      )
+                    : '-'
+                }`
+              : '',
           }}
         />
       </View>
     );
-  }, [bottomFeeShow, defaultToken.decimals, defaultToken.symbol, errorMessage, step, tokenPriceObject]);
+  }, [bottomFeeShow, defaultToken.decimals, defaultToken.symbol, errorMessage, isMainnet, step, tokenPriceObject]);
 
   const renderButtonUI = useCallback(() => {
     // hide token

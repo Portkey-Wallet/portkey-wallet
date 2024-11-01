@@ -46,7 +46,7 @@ export default function SelectToken({ tokenInfos, noDataMessage, toAddress }: Se
     ({ item }: { item: IAssetToken }) => {
       return (
         <Touchable style={itemStyle.wrap} onPress={() => onNavigate(item)}>
-          <View style={itemStyle.iconWrap}>
+          <View style={[itemStyle.iconWrap, itemStyle.left]}>
             <CommonAvatar
               hasBorder
               style={itemStyle.tokenIcon}
@@ -74,7 +74,7 @@ export default function SelectToken({ tokenInfos, noDataMessage, toAddress }: Se
                 {`${item.displayChainName || ''} ${!isMainnet && 'Testnet'}`}
               </TextM>
             </View>
-            <View>
+            <View style={itemStyle.rightAmount}>
               <TextL numberOfLines={1} ellipsizeMode={'tail'}>
                 {userInfo.hideAssets ? '******' : formatTokenAmountShowWithDecimals(item.balance, item.decimals)}
               </TextL>
@@ -149,5 +149,8 @@ const getStyles = makeStyles(theme => ({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+  },
+  rightAmount: {
+    alignItems: 'flex-end',
   },
 }));

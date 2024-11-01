@@ -9,10 +9,11 @@ import React, { memo, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
-import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { ITokenSectionResponse } from '@portkey-wallet/types/types-ca/token';
 import Touchable from 'components/Touchable';
 import GStyles from 'assets/theme/GStyles';
+import fonts from 'assets/theme/fonts';
+
 interface TokenListItemType {
   item: ITokenSectionResponse;
   onExpand?: (item: ITokenSectionResponse) => void;
@@ -92,7 +93,6 @@ const TokenListUnionItem: React.FC<TokenListItemType> = props => {
             onPress={() => {
               onPress && onPress(item, index);
             }}
-            showTopSeparator={index > 0}
             hideBalance={hideBalance}
           />
         ))}
@@ -158,6 +158,7 @@ const itemStyle = StyleSheet.create({
     marginTop: pTd(2),
     height: pTd(20),
     width: pTd(150),
+    fontSize: pTd(14),
     color: darkColors.textBase2,
   },
   balanceWrap: {
@@ -171,11 +172,13 @@ const itemStyle = StyleSheet.create({
     color: darkColors.textBase1,
     lineHeight: pTd(24),
     overflow: 'hidden',
+    ...fonts.BGMediumFont,
   },
   dollar: {
     marginTop: pTd(2),
     lineHeight: pTd(16),
     height: pTd(20),
+    fontSize: pTd(14),
     color: darkColors.textBase2,
   },
 });

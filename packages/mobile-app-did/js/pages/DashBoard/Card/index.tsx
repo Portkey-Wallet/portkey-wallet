@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 import { View, Text, StyleProp, ViewProps, TouchableOpacity } from 'react-native';
-import { styles } from './style';
+import { getStyles } from './style';
 import SendButton from 'components/SendButton';
 import ReceiveButton from 'components/ReceiveButton';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
@@ -10,21 +10,18 @@ import GStyles from 'assets/theme/GStyles';
 import SwapButton from 'components/SwapButton';
 import BuyButton from 'components/BuyButton';
 import { useAppRampEntryShow } from 'hooks/ramp';
-import { PortkeyLinearGradient } from 'components/PortkeyLinearGradient';
 import { pTd } from 'utils/unit';
-import { Skeleton } from '@rneui/base';
 import Svg from 'components/Svg';
 import { useAppSwapButtonShow } from 'hooks/cms';
 import navigationService from 'utils/navigationService';
-// import { DashBoardBanner } from '../Banner'; // todo_wade: confirm banner
 
 const Card: React.FC<{ title: string }> = ({ title }) => {
   const isMainnet = useIsMainnet();
   const userInfo = useCurrentUserInfo();
   const setHideAssets = useSetHideAssets();
   const { isRampShow } = useAppRampEntryShow();
-  // const isSwapShow = true; // todo_wade: fix this
   const { isSwapShow } = useAppSwapButtonShow();
+  const styles = getStyles();
   const buttonCount = useMemo(() => {
     let count = 2;
     if (isSwapShow) count++;
@@ -35,7 +32,7 @@ const Card: React.FC<{ title: string }> = ({ title }) => {
 
   const buttonWrapStyle = useMemo(
     () => (buttonCount < 5 ? (styles.buttonWrapStyle1 as StyleProp<ViewProps>) : undefined),
-    [buttonCount],
+    [buttonCount, styles],
   );
 
   const onHideAssets = useCallback(() => {
@@ -61,13 +58,7 @@ const Card: React.FC<{ title: string }> = ({ title }) => {
             )}
           </View>
         ) : (
-          <Skeleton
-            animation="wave"
-            LinearGradientComponent={() => <PortkeyLinearGradient />}
-            height={pTd(40)}
-            width={pTd(140)}
-            style={styles.skeletonStyle}
-          />
+          <View style={styles.titleLoading} />
         )}
       </View>
       <View style={[GStyles.flexRow, GStyles.spaceBetween, styles.buttonGroupWrap]}>
@@ -77,7 +68,6 @@ const Card: React.FC<{ title: string }> = ({ title }) => {
         {isSwapShow && <SwapButton />}
         {!isMainnet && <FaucetButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />}
       </View>
-      {/* <DashBoardBanner /> */}
     </View>
   );
 };

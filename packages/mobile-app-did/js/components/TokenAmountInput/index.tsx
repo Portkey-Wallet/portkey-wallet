@@ -3,7 +3,7 @@ import GStyles from 'assets/theme/GStyles';
 import { TextH1, TextL } from 'components/CommonText';
 import Svg from 'components/Svg';
 import React, { memo, useCallback, useRef, useState } from 'react';
-import { View, TextInput, TouchableOpacity, LayoutChangeEvent } from 'react-native';
+import { View, TextInput, TouchableOpacity, LayoutChangeEvent, ViewStyle } from 'react-native';
 import { pTd } from 'utils/unit';
 import { makeStyles, useThemeMode } from '@rneui/themed';
 import { parseInputNumberChange } from '@portkey-wallet/utils/input';
@@ -25,6 +25,7 @@ export interface ITokenAmountInput {
   editable?: boolean;
   setValue: (v: string) => void;
   setUsdValue: (v: string) => void;
+  styleProps?: ViewStyle;
 }
 
 const TokenAmountInput: React.FC<ITokenAmountInput> = props => {
@@ -38,6 +39,7 @@ const TokenAmountInput: React.FC<ITokenAmountInput> = props => {
     editable = true,
     setValue,
     setUsdValue,
+    styleProps,
   } = props;
   const [isRevert, setIsRevert] = useState(false);
   const { mode } = useThemeMode();
@@ -98,7 +100,7 @@ const TokenAmountInput: React.FC<ITokenAmountInput> = props => {
   }, []);
 
   return (
-    <View style={styles.wrap}>
+    <View style={[styles.wrap, styleProps]}>
       <View style={[GStyles.flexRow, styles.topSection]}>
         <>
           {isRevert ? (

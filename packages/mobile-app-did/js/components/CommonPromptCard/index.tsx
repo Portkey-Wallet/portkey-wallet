@@ -6,7 +6,7 @@ import Lottie from 'lottie-react-native';
 import fonts from 'assets/theme/fonts';
 import { pTd } from 'utils/unit';
 import Overlay from 'rn-teaset/components/Overlay/Overlay';
-import { statusBarHeight } from '@portkey-wallet/utils/mobile/device';
+import { getStatusBarHeight } from 'utils/statusbar';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 
 export enum PromptCardType {
@@ -154,7 +154,7 @@ const tostProps = {
 
 const overlayStyles = StyleSheet.create({
   top: {
-    paddingTop: statusBarHeight,
+    paddingTop: getStatusBarHeight(),
     justifyContent: 'flex-start',
     alignItems: 'center',
   },

@@ -1,11 +1,11 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import PageContainer from 'components/PageContainer';
 import { pTd } from 'utils/unit';
 import { IUserTokenItemResponse } from '@portkey-wallet/types/types-ca/token';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { useReceive } from '@portkey-wallet/hooks/hooks-ca/receive';
 import SourceDestinationPicker from '../components/SourceDestinationPicker';
-import SourceDestinationSelector from '../components/SourceDestinationSelector';
+import SourceDestinationSelector, { SourceDestinationTypeEnum } from '../components/SourceDestinationSelector';
 import ReceiveByPortkey from '../components/ReceiveByPortkey';
 import ReceiveByETransfer from '../components/ReceiveByETransfer';
 import Loading from 'components/Loading';
@@ -16,7 +16,6 @@ import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import { ReceiveType } from '@portkey-wallet/types/types-ca/receive';
 import { makeStyles } from '@rneui/themed';
 import EBridgeCard from '../components/EBridgeCard';
-import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import { ChainId } from '@portkey-wallet/types';
 import { SEND_RECEIVE_HELP_URL } from 'constants/common';
 import { openOutLink } from 'utils/link';
@@ -52,30 +51,32 @@ export default function Receive() {
 
   const showSourceList = useCallback(() => {
     const sourceList = sourceChainList.map(item => {
-      return { name: item.name, icon: item.imageUrl };
+      return { name: item.name, icon: item.imageUrl, key: item.name };
     });
-    const selectedIndex = sourceChainList.findIndex(item => item.name === sourceChain?.name);
+    const selected = sourceList.find(item => item.name === sourceChain?.name);
     SourceDestinationSelector.showList({
+      type: SourceDestinationTypeEnum.Source,
       title: 'Source network',
       list: sourceList,
-      selectedIndex,
-      onSelected: (_, index) => {
-        setSourceChain(sourceChainList[index]);
+      selectedIndex: selected?.key || '',
+      onSelected: (_, key) => {
+        setSourceChain(sourceChainList.find(item => item.name === key));
       },
     });
   }, [setSourceChain, sourceChain?.name, sourceChainList]);
 
   const showDestinationList = useCallback(() => {
     const destinationList = destinationChainList.map(item => {
-      return { name: formatChainInfoToShow(item?.chainId), icon: item?.chainImageUrl || '' };
+      return { name: formatChainInfoToShow(item?.chainId), icon: item?.chainImageUrl || '', key: item?.chainId || '' };
     });
-    const selectedIndex = destinationChainList.findIndex(item => item?.chainId === destinationChain?.chainId);
+    const selected = destinationList.find(item => item?.key === destinationChain?.chainId);
     SourceDestinationSelector.showList({
+      type: SourceDestinationTypeEnum.Destination,
       title: 'Destination network',
       list: destinationList,
-      selectedIndex,
-      onSelected: (_, index) => {
-        updateDestinationChain(destinationChainList[index]);
+      selectedIndex: selected?.key || '',
+      onSelected: (_, key) => {
+        updateDestinationChain(destinationChainList.find(item => item?.chainId === key));
       },
     });
   }, [destinationChain?.chainId, destinationChainList, updateDestinationChain]);

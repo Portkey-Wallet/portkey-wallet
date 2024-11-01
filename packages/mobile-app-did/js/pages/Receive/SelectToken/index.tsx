@@ -33,7 +33,6 @@ const SelectToken = () => {
   const [keyword, setKeyword] = useState('');
   const debounceKeyword = useDebounce(keyword, 800);
   const [filteredShowList, setFilteredShowList] = useState<IUserTokenItemResponse[]>([]);
-  const defaultToken = useDefaultToken();
   const [isSearch, setIsSearch] = useState(false);
   const styles = getStyles();
 
@@ -48,7 +47,6 @@ const SelectToken = () => {
           hasBorder
           shapeType="circular"
           title={item.symbol}
-          svgName={item.symbol === defaultToken.symbol ? 'testnet' : undefined}
           imageUrl={item.imageUrl}
           avatarSize={pTd(42)}
           style={styles.leftIcon}
@@ -59,7 +57,7 @@ const SelectToken = () => {
         </TextL>
       </Touchable>
     ),
-    [defaultToken.symbol, styles],
+    [styles],
   );
 
   const getTokenList = useLockCallback(

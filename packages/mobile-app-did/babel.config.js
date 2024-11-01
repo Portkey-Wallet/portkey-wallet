@@ -23,7 +23,6 @@ module.exports = {
     [
       'module-resolver',
       {
-        // 合并所有配置项
         extensions: ['.ios.js', '.android.js', '.js', '.ts', '.tsx', '.json'],
         root: ['./js', './'],
         alias: {

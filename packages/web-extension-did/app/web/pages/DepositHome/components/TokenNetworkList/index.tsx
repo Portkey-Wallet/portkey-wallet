@@ -69,7 +69,7 @@ function TokenNetworkList(pros: ITokenNetworkListProps) {
       return copiedNetworkList;
     } else {
       const copiedToChainIdList = toChainIdList?.map((item) => ({
-        name: `${item === 'AELF' ? 'MainChain' : 'SideChain'} ${item}`,
+        name: `aelf ${item === 'AELF' ? 'MainChain' : 'dAppChain'}`,
         network: item as string,
         multiConfirm: '',
         multiConfirmTime: '',
@@ -155,7 +155,7 @@ function TokenNetworkList(pros: ITokenNetworkListProps) {
                 drawerType === 'from'
                   ? { ...network }
                   : {
-                      name: `${toChainId === 'AELF' ? 'MainChain' : 'SideChain'} ${toChainId}`,
+                      name: `aelf ${toChainId === 'AELF' ? 'MainChain' : 'dAppChain'}`,
                       network: toChainId as string,
                       multiConfirm: '',
                       multiConfirmTime: '',
@@ -200,7 +200,7 @@ function TokenNetworkList(pros: ITokenNetworkListProps) {
                   ...item,
                   contractAddress:
                     drawerType === 'to'
-                      ? `${item.network === 'AELF' ? 'MainChain' : 'SideChain'} ${item.network}`
+                      ? `aelf ${item.network === 'AELF' ? 'MainChain' : 'dAppChain'}`
                       : item.contractAddress,
                 },
               })) || [];
@@ -235,7 +235,7 @@ function TokenNetworkList(pros: ITokenNetworkListProps) {
                 drawerType === 'from'
                   ? { ...item }
                   : {
-                      name: `${item.network === 'AELF' ? 'MainChain' : 'SideChain'} ${item.network}`,
+                      name: `aelf ${item.network === 'AELF' ? 'MainChain' : 'dAppChain'}`,
                       network: item.network as string,
                       multiConfirm: '',
                       multiConfirmTime: '',

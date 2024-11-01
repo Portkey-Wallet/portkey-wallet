@@ -8,6 +8,7 @@ import Svg from 'components/Svg';
 import { PIN_SIZE } from '@portkey-wallet/constants/misc';
 import { defaultColors } from 'assets/theme';
 import fonts from 'assets/theme/fonts';
+import { useTheme } from '@rneui/themed';
 
 export interface KeypadPropsType {
   onChange?: (value: string) => void;
@@ -30,6 +31,7 @@ const Keypad = forwardRef(function Keypad(
   ref,
 ) {
   const valueRef = useRef('');
+  const { theme } = useTheme();
 
   const handleValueChange = useCallback(
     (_value = '', type = PadEventType.ADD) => {
@@ -138,7 +140,7 @@ const Keypad = forwardRef(function Keypad(
       <View style={styles.padRow}>
         {isBiometrics ? (
           <TouchableOpacity style={styles.padBtn} onPress={onBiometricsPress}>
-            <Svg icon="touch-id" oblongSize={[pTd(24), pTd(26)]} color={defaultColors.primaryColor} />
+            <Svg icon="face-id" oblongSize={[pTd(22), pTd(22)]} color={theme.colors.iconBase1} />
           </TouchableOpacity>
         ) : (
           <View style={styles.padBtn} />
@@ -167,7 +169,7 @@ export default Keypad;
 const styles = StyleSheet.create({
   container: {},
   padRow: {
-    marginTop: pTd(20),
+    marginTop: pTd(24),
     flexDirection: 'row',
   },
   padBtn: {

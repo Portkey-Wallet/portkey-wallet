@@ -2,7 +2,7 @@ import { FontStyles } from 'assets/theme/styles';
 import GStyles from 'assets/theme/GStyles';
 import { TextL, TextM } from 'components/CommonText';
 import React, { memo } from 'react';
-import { View, StyleSheet, ViewStyle } from 'react-native';
+import { View, ViewStyle } from 'react-native';
 import { pTd } from 'utils/unit';
 import CommonAvatar from 'components/CommonAvatar';
 import { makeStyles } from '@rneui/themed';
@@ -73,7 +73,7 @@ export const getStyles = makeStyles(theme => ({
     lineHeight: pTd(40),
     textAlign: 'center',
     borderRadius: pTd(20),
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: pTd(1),
     borderColor: theme.colors.borderNeutral2,
   },
 }));

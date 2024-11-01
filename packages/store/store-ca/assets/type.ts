@@ -33,6 +33,8 @@ export interface IAssetItemType {
   tokenInfo?: ITokenInfoType;
   nftInfo?: INftInfoType;
   label?: string;
+  displayChainName?: string;
+  chainImageUrl?: string;
 }
 
 export interface IAssetToken {

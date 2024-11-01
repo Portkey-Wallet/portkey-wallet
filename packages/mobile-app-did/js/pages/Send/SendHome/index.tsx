@@ -33,7 +33,6 @@ import {
 } from '@portkey-wallet/types/types-ca/routeParams';
 
 import { getELFChainBalance } from '@portkey-wallet/utils/balance';
-import { FontStyles } from 'assets/theme/styles';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import Loading from 'components/Loading';
 import { useFetchTxFee, useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
@@ -49,7 +48,7 @@ import { useEffectOnce } from '@portkey-wallet/hooks';
 import { useGetTransferFee } from 'hooks/transfer';
 import { usePin } from 'hooks/store';
 import GStyles from 'assets/theme/GStyles';
-import { TextXXL } from 'components/CommonText';
+import { TextTitle } from 'components/CommonText';
 import { useEtransferFee } from 'hooks/etransfer';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { getAssetsEstimation } from '@portkey-wallet/store/store-ca/assets/api';
@@ -285,7 +284,7 @@ const SendHome: React.FC = () => {
   const DappChainToNoAffixDom = useMemo(() => {
     return (
       <View style={GStyles.paddingArg(pTd(24), pTd(16))}>
-        <TextXXL style={GStyles.marginBottom(pTd(16))}>Send to an exchange?</TextXXL>
+        <TextTitle style={GStyles.marginBottom(pTd(16))}>Send to an exchange?</TextTitle>
         <CommonPromptCard
           type={PromptCardType.WARNING}
           description={WarningTips[WarningKey.DAPP_CHAIN_TO_NO_AFFIX_ADDRESS_ELF]}
@@ -298,7 +297,7 @@ const SendHome: React.FC = () => {
 
   const JustWarningOrErrorDom = useMemo(() => {
     return (
-      <View style={GStyles.paddingArg(pTd(24), pTd(16))}>
+      <View style={GStyles.paddingArg(pTd(16), pTd(16))}>
         <CommonPromptCard
           type={warning1Arr.includes(warning[0]) ? PromptCardType.ERROR : PromptCardType.WARNING}
           description={WarningTips[warning[0]]}
@@ -309,7 +308,7 @@ const SendHome: React.FC = () => {
 
   const ETransferOrEBridgeDom = useMemo(() => {
     return (
-      <View style={GStyles.paddingArg(pTd(24), pTd(16))}>
+      <View style={GStyles.paddingArg(pTd(16), pTd(16))}>
         <CommonPromptCard type={PromptCardType.INFO} description={WarningTips[WarningKey.MAKE_SURE_SUPPORT_PLATFORM]} />
         <View style={GStyles.height(16)} />
         <SelectNetwork networkList={chainList} onSelect={selectTargetNetwork} />
@@ -848,7 +847,7 @@ const SendHome: React.FC = () => {
     const action = step === 1 ? nextStep : preview;
 
     return (
-      <View style={GStyles.paddingArg(0, pTd(16))}>
+      <View style={GStyles.paddingArg(pTd(16), pTd(16))}>
         <CommonButton loading={isLoading} disabled={disable} title={btnText} type="primary" onPress={action} />
       </View>
     );

@@ -86,16 +86,18 @@ export default function EBridgeCard(props: IEBridgeCardProps) {
   return (
     <View style={[styleProps, styles.eBridgeCardContainer]}>
       <View>
-        <TokenBalanceShow
-          symbol={tokenInfo.symbol}
-          label={tokenInfo.label}
-          onPressMax={() => {
-            // TODO
-          }}
-          imageUrl={tokenInfo.imageUrl}
-          balanceShow="4.12"
-          styleProps={{ marginTop: pTd(24) }}
-        />
+        {isConnected && (
+          <TokenBalanceShow
+            symbol={tokenInfo.symbol}
+            label={tokenInfo.label}
+            onPressMax={() => {
+              // TODO
+            }}
+            imageUrl={tokenInfo.imageUrl}
+            balanceShow="4.12"
+            styleProps={{ marginTop: pTd(24) }}
+          />
+        )}
         <TokenAmountInput
           value={value}
           usdValue={usdValue}
@@ -112,6 +114,7 @@ export default function EBridgeCard(props: IEBridgeCardProps) {
             setValue(v);
             // TODO exceed
           }}
+          styleProps={{ marginTop: pTd(24) }}
         />
       </View>
       <View style={styles.footerContainer}>

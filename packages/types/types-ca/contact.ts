@@ -6,6 +6,8 @@ export interface AddressItem {
   chainName?: string;
   address: string;
   image?: string;
+  displayChainName?: string;
+  chainImageUrl?: string;
 }
 
 export interface RecentAddressItem extends AddressItem {

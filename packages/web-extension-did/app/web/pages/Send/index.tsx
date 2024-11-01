@@ -681,7 +681,7 @@ export default function Send() {
           <div>
             Please note that &nbsp;
             <span className="strong-text">{`only MainChain ELF can be sent directly to exchanges.`}</span> If you are
-            sending SideChain ELF, please transfer ELF to the MainChain before sending them to your exchange account. If
+            sending dAppChain ELF, please transfer ELF to the MainChain before sending them to your exchange account. If
             you are sending another asset, please swap it to ELF first or try the withdrawal function in ETransfer.
           </div>
         </div>

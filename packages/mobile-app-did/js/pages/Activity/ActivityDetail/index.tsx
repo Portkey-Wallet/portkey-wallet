@@ -118,7 +118,14 @@ const ActivityDetail = () => {
   );
 
   const networkUI = useMemo(() => {
-    const { transactionType, fromChainId, toChainId, transactionId: _transactionId = '' } = activityItem || {};
+    const {
+      transactionType,
+      fromChainId,
+      fromChainIdUpdated,
+      toChainId,
+      toChainIdUpdated,
+      transactionId: _transactionId = '',
+    } = activityItem || {};
 
     const isNetworkShow = transactionType && SHOW_FROM_TRANSACTION_TYPES.includes(transactionType);
     return (
@@ -128,10 +135,14 @@ const ActivityDetail = () => {
             <View style={[styles.flexSpaceBetween]}>
               <TextM style={[styles.lightGrayFontColor]}>{t('Network')}</TextM>
               <View style={styles.networkInfoContent}>
-                <TextM style={[styles.blackFontColor]}>{formatChainInfoToShow(fromChainId, currentNetwork)}</TextM>
+                <TextM style={[styles.blackFontColor]}>
+                  {formatChainInfoToShow(fromChainId, currentNetwork, fromChainIdUpdated)}
+                </TextM>
                 <View style={GStyles.flexRowWrap}>
                   <TextM style={[styles.lightGrayFontColor]}>{` → `}</TextM>
-                  <TextM style={[styles.blackFontColor]}>{formatChainInfoToShow(toChainId, currentNetwork)}</TextM>
+                  <TextM style={[styles.blackFontColor]}>
+                    {formatChainInfoToShow(toChainId, currentNetwork, toChainIdUpdated)}
+                  </TextM>
                 </View>
               </View>
             </View>

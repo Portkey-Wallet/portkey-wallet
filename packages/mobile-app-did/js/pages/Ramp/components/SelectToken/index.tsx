@@ -10,11 +10,12 @@ import { useGStyles } from 'assets/theme/useGStyles';
 import { ModalBody } from 'components/ModalBody';
 import { defaultColors } from 'assets/theme';
 import CommonAvatar from 'components/CommonAvatar';
-import { chainShowText } from '@portkey-wallet/utils';
+import { chainShowText, formatChainInfoToShow } from '@portkey-wallet/utils';
 import { FontStyles } from 'assets/theme/styles';
 import { IRampCryptoItem } from '@portkey-wallet/ramp';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
+import { useCurrentNetwork } from '@portkey-wallet/hooks/hooks-ca/network';
 
 type ItemType = IRampCryptoItem;
 
@@ -29,6 +30,7 @@ const SelectList = ({ list, callBack, value }: SelectListProps) => {
   const [keyWord, setKeyWord] = useState<string>('');
 
   const defaultToken = useDefaultToken(MAIN_CHAIN_ID);
+  const currentNetwork = useCurrentNetwork();
 
   const _list = useMemo(() => {
     const _keyWord = keyWord?.trim();
@@ -70,7 +72,11 @@ const SelectList = ({ list, callBack, value }: SelectListProps) => {
                   <View style={styles.itemContent}>
                     <View>
                       <TextL>{item.symbol}</TextL>
-                      <TextM style={FontStyles.font7}>{`${chainShowText(item.chainId)} ${item.chainId}`}</TextM>
+                      <TextM style={FontStyles.font7}>{`${formatChainInfoToShow(
+                        item.chainId,
+                        currentNetwork,
+                        item.displayChainName,
+                      )}`}</TextM>
                     </View>
 
                     {value !== undefined && value === `${item.network}_${item.symbol}` && (

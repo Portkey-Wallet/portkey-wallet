@@ -11,7 +11,9 @@ export const makeDirectory = FileSystem.makeDirectoryAsync;
 
 export const checkAndMakeDirectory = async (fileUri: string) => {
   const fileInfo = await getInfo(fileUri);
-  if (fileInfo.exists) return true;
+  if (fileInfo.exists) {
+    return true;
+  }
   await makeDirectory(fileUri);
   return true;
 };
@@ -41,8 +43,12 @@ export const formatPath = (path: string) => {
 };
 export const getFilePath = ({ id, name, type }: { id?: string; name: string; type?: FileEnum }) => {
   let path = documentDirectory || '';
-  if (id) path = formatPath(path) + id;
-  if (type) path = formatPath(path) + type;
+  if (id) {
+    path = formatPath(path) + id;
+  }
+  if (type) {
+    path = formatPath(path) + type;
+  }
   const directory = formatPath(path);
   return {
     directory,
@@ -56,7 +62,9 @@ export const urlToLocalName = (url: string) => {
 
 export const formatFilePath = (filePath: string) => {
   if (!isIOS) {
-    if (!filePath.includes('file://')) return 'file://' + filePath;
+    if (!filePath.includes('file://')) {
+      return 'file://' + filePath;
+    }
   }
   return filePath;
 };

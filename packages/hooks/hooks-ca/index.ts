@@ -19,7 +19,6 @@ import { resetTokenManagement } from '@portkey-wallet/store/store-ca/tokenManage
 import { resetCaInfo, resetCurrentUserInfoAction, resetWallet } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { resetNetwork } from '@portkey-wallet/store/network/actions';
 import { resetSettings } from '@portkey-wallet/store/settings/slice';
-
 export const useAppCASelector: TypedUseSelectorHook<CACommonState> = useSelector;
 
 export function useResetStore() {

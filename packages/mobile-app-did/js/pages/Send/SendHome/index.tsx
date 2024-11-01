@@ -121,7 +121,9 @@ const SendHome: React.FC = () => {
   const getTransferFee = useGetTransferFee();
   const getTransactionFee = useCallback(
     async (isCross: boolean, sendAmount?: string) => {
-      if (!chainInfo) return;
+      if (!chainInfo) {
+        return;
+      }
       const caContract = await getCAContract(chainInfo.chainId);
       return getTransferFee({
         isCross,
@@ -148,21 +150,27 @@ const SendHome: React.FC = () => {
   );
 
   const onGetMaxAmount = useLockCallback(async () => {
-    if (!balance) return setMaxAmountSend('0');
+    if (!balance) {
+      return setMaxAmountSend('0');
+    }
 
     const balanceBN = divDecimals(balance, assetInfo.decimals);
     const balanceStr = balanceBN.toString();
 
     // balance 0
-    if (divDecimals(balance, assetInfo.decimals).isEqualTo(0)) return setMaxAmountSend('0');
+    if (divDecimals(balance, assetInfo.decimals).isEqualTo(0)) {
+      return setMaxAmountSend('0');
+    }
 
     // if other tokens
-    if (assetInfo.symbol !== defaultToken.symbol)
+    if (assetInfo.symbol !== defaultToken.symbol) {
       return setMaxAmountSend(divDecimals(balance, assetInfo.decimals || '0').toString());
+    }
 
     // elf <= maxFee
-    if (divDecimals(balance, assetInfo.decimals).isLessThanOrEqualTo(maxFee))
+    if (divDecimals(balance, assetInfo.decimals).isLessThanOrEqualTo(maxFee)) {
       return setMaxAmountSend(divDecimals(balance, assetInfo.decimals || '0').toString());
+    }
 
     const isCross = isCrossChain(selectedToContact.address, assetInfo.chainId || 'AELF');
     let fee;
@@ -194,7 +202,9 @@ const SendHome: React.FC = () => {
       Loading.hide();
       // check is SYNCHRONIZING
       const _isManagerSynced = await checkManagerSyncState(chainInfo?.chainId || 'AELF');
-      if (!_isManagerSynced) return setErrorMessage([TransactionError.SYNCHRONIZING]);
+      if (!_isManagerSynced) {
+        return setErrorMessage([TransactionError.SYNCHRONIZING]);
+      }
       setSendNumber(maxAmountSend);
       setErrorMessage([]);
     } catch (err) {
@@ -207,7 +217,9 @@ const SendHome: React.FC = () => {
   const getTokenViewContract = useGetTokenViewContract();
   const initBalance = useCallback(async () => {
     const caAddress = wallet?.[assetInfo.chainId]?.caAddress;
-    if (!assetInfo || !caAddress) return;
+    if (!assetInfo || !caAddress) {
+      return;
+    }
     try {
       const tokenContract = await getTokenViewContract(assetInfo.chainId);
       const _balance = await getELFChainBalance(tokenContract, assetInfo.symbol, caAddress);
@@ -306,7 +318,9 @@ const SendHome: React.FC = () => {
   );
 
   const nextDisable = useMemo(() => {
-    if (!selectedToContact?.address) return true;
+    if (!selectedToContact?.address) {
+      return true;
+    }
     if (isValidOtherChainAddress && enableEtransfer) {
       setErrorMessage([]);
       return true;
@@ -315,8 +329,12 @@ const SendHome: React.FC = () => {
   }, [enableEtransfer, isValidOtherChainAddress, selectedToContact?.address]);
 
   const previewDisable = useMemo(() => {
-    if (!selectedToContact?.address) return true;
-    if (sendNumber === '0' || !sendNumber) return true;
+    if (!selectedToContact?.address) {
+      return true;
+    }
+    if (sendNumber === '0' || !sendNumber) {
+      return true;
+    }
     return false;
   }, [selectedToContact?.address, sendNumber]);
 
@@ -429,9 +447,9 @@ const SendHome: React.FC = () => {
         return { status: false };
       }
     }
-    Loading.show();
     try {
       // cross chain interception
+      Loading.show();
       if (isCrossChain(selectedToContact.address, assetInfo.chainId)) {
         const sendChainId = selectedToContact.chainId || (getChainIdByAddress(selectedToContact.address) as ChainId);
         const interceptResult = await getAssetsEstimation({
@@ -441,13 +459,13 @@ const SendHome: React.FC = () => {
         });
         if (!interceptResult) {
           showDialog('crossChainInterception');
+          Loading.hide();
           return;
         }
       }
       // check is security safe
       const securitySafeResult = await securitySafeCheckAndToast(assetInfo.chainId);
       if (!securitySafeResult) {
-        Loading.hide();
         return { status: false };
       }
     } catch (err) {
@@ -576,19 +594,21 @@ const SendHome: React.FC = () => {
 
   const preview = useCallback(async () => {
     const result = await checkCanPreview();
-    if (!result?.status) return;
+    if (!result?.status) {
+      return;
+    }
     if (sendType === 'token' && assetInfo.chainId === 'AELF' && assetInfo.symbol !== 'ELF') {
       ActionSheet.alert({
         title: 'Send to exchange account?',
         message: (
           <TextM style={[styles.alertMessage]}>
-            {`Please note that `}
-            <TextM
-              style={[
-                styles.alertMessage,
-                FontStyles.functionalRedDefault,
-              ]}>{`only MainChain ELF can be sent directly to exchanges`}</TextM>
-            {`. If you are sending another asset, please swap it to ELF first or try the withdrawal function in ETransfer.`}
+            {'Please note that '}
+            <TextM style={[styles.alertMessage, FontStyles.functionalRedDefault]}>
+              {'only MainChain ELF can be sent directly to exchanges'}
+            </TextM>
+            {
+              '. If you are sending another asset, please swap it to ELF first or try the withdrawal function in ETransfer.'
+            }
           </TextM>
         ),
         buttons: [
@@ -661,7 +681,9 @@ const SendHome: React.FC = () => {
                 linkStyle: otherChainWarningStyle.linkText,
                 linkPress: () => {
                   ensureKeyboardClosed();
-                  if (!eTransferUrl) return;
+                  if (!eTransferUrl) {
+                    return;
+                  }
                   onDisclaimerModalPress(
                     DepositModalMap.eTransfer,
                     stringifyETrans({
@@ -719,8 +741,12 @@ const SendHome: React.FC = () => {
         sendType === 'token' && !isFixedToContact ? (
           <Touchable
             onPress={async () => {
-              if (selectedToContact?.address) return showDialog('clearAddress');
-              if (!(await qrScanPermissionAndToast())) return;
+              if (selectedToContact?.address) {
+                return showDialog('clearAddress');
+              }
+              if (!(await qrScanPermissionAndToast())) {
+                return;
+              }
               navigationService.navigate('QrScanner', { fromSendPage: true });
             }}>
             <Svg icon="scan" size={pTd(17.5)} color={defaultColors.font2} iconStyle={styles.iconStyle} />

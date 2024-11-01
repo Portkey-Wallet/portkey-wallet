@@ -25,7 +25,7 @@ export type ImageWithUploadFuncInstance = {
 
 const ImageWithUploadFunc = forwardRef(function ImageWithUploadFunc(props: UploadImageType, ref) {
   const { title, imageUrl, avatarSize = pTd(48), onChangeImage } = props;
-  const [localPhotoFile, setLocalPhotoFile] = useState<ImagePicker.ImageInfo>();
+  const [localPhotoFile, setLocalPhotoFile] = useState<ImagePicker.ImagePickerAsset>();
 
   const sizeStyle = useMemo(
     () => ({
@@ -44,17 +44,22 @@ const ImageWithUploadFunc = forwardRef(function ImageWithUploadFunc(props: Uploa
         allowsMultipleSelection: false,
         quality: 0.1,
       });
-      if (result.cancelled || !result.uri) return;
-
-      if (!isValidAvatarFile(result.uri)) return CommonToast.fail('Unsupported format. Please use jpeg, jpg or png.');
-
-      if (!result?.fileSize) {
-        const info = await getInfo(result.uri);
-        result.fileSize = info.size;
+      if (result.canceled || !result.assets || result.assets.length <= 0) {
+        return;
       }
-      if (!result?.fileSize || result.fileSize > MAX_FILE_SIZE_BYTE) return;
-
-      setLocalPhotoFile(result);
+      if (!isValidAvatarFile(result.assets[0].uri)) {
+        return CommonToast.fail('Unsupported format. Please use jpeg, jpg or png.');
+      }
+      if (!result?.assets[0].fileSize) {
+        const info = await getInfo(result.assets[0].uri);
+        if (info.exists) {
+          result.assets[0].fileSize = info.size;
+        }
+      }
+      if (!result?.assets[0].fileSize || result.assets[0].fileSize > MAX_FILE_SIZE_BYTE) {
+        return;
+      }
+      setLocalPhotoFile(result.assets[0]);
       return true;
     } catch (error) {
       console.log('==', error);
@@ -67,7 +72,9 @@ const ImageWithUploadFunc = forwardRef(function ImageWithUploadFunc(props: Uploa
   const uploadPhoto = useCallback(async () => {
     console.log('localPhotoFile', localPhotoFile);
 
-    if (!localPhotoFile) return;
+    if (!localPhotoFile) {
+      return;
+    }
     try {
       const s3Url = await uploadPortkeyImage(localPhotoFile);
 
@@ -92,13 +99,13 @@ const ImageWithUploadFunc = forwardRef(function ImageWithUploadFunc(props: Uploa
     [selectPhoto, uploadPhoto],
   );
 
-  if (localPhotoFile)
+  if (localPhotoFile) {
     return (
       <Touchable onPress={selectPhoto}>
         <FastImage style={[sizeStyle]} resizeMode="cover" source={{ uri: localPhotoFile.uri }} />
       </Touchable>
     );
-
+  }
   return (
     <Touchable onPress={selectPhoto}>
       <CommonAvatar

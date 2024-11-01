@@ -1,4 +1,4 @@
-import { useAppCASelector } from '.';
+import { useAppCASelector } from './index';
 import { useMemo, useCallback, useState, useEffect } from 'react';
 import { WalletInfoType } from '@portkey-wallet/types/wallet';
 import { CAInfoType } from '@portkey-wallet/types/types-ca/wallet';
@@ -26,6 +26,7 @@ import { RequireAtLeastOne } from '@portkey-wallet/types/common';
 import { getCAHolderManagerInfo } from '@portkey-wallet/graphql/contract/queries';
 import { ManagerInfo, Maybe } from '@portkey-wallet/graphql/contract/__generated__/types';
 import { DEFAULT_USER_INFO } from '@portkey-wallet/store/store-ca/wallet/slice';
+import { TypedUseSelectorHook, useSelector } from 'react-redux';
 
 export interface CurrentWalletType extends WalletInfoType, CAInfoType {
   caHash?: string;
@@ -64,7 +65,6 @@ export function getCurrentWalletInfo(
 
   return tmpWalletInfo;
 }
-
 export const useWallet = () => useAppCASelector(state => state.wallet);
 
 export const useCurrentUserInfo = (forceUpdate?: boolean) => {

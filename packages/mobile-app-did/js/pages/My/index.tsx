@@ -47,6 +47,11 @@ export default function MyMenu() {
   const MenuList: Array<MenuItemType> = useMemo(
     () => [
       {
+        name: 'Security',
+        label: 'security',
+        icon: 'wallet-security',
+      },
+      {
         name: 'WalletHome',
         label: 'Wallet',
         icon: 'wallet',

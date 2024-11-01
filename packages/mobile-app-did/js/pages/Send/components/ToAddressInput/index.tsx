@@ -250,7 +250,7 @@ export default function ToAddressInput({
               />
             )}
 
-            {!isFixedToContact && !selectedToContact.address && (
+            {/* {!isFixedToContact && !selectedToContact.address && (
               <Touchable
                 style={[GStyles.marginLeft(16), GStyles.flex1, GStyles.flexRow, GStyles.flexEnd]}
                 onPress={async () => {
@@ -259,7 +259,7 @@ export default function ToAddressInput({
                 }}>
                 <Svg icon="scan" size={pTd(20)} color={darkColors.iconBase1} />
               </Touchable>
-            )}
+            )} */}
           </>
         )}
       </View>

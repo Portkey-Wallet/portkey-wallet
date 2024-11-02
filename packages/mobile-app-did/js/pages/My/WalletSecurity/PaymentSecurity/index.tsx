@@ -1,12 +1,12 @@
-import React,{ memo,useState } from 'react';
+import React, { memo, useState } from 'react';
 import PageContainer from 'components/PageContainer';
-import { StyleSheet,FlatList,View } from 'react-native';
+import { StyleSheet, FlatList, View } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
-import { TextL,TextM } from 'components/CommonText';
-
+import { TextL, TextM } from 'components/CommonText';
+import { makeStyles } from '@rneui/themed';
 import navigationService from 'utils/navigationService';
-import { BGStyles,FontStyles } from 'assets/theme/styles';
+import { BGStyles, FontStyles } from 'assets/theme/styles';
 import { pTd } from 'utils/unit';
 import useEffectOnce from 'hooks/useEffectOnce';
 import CommonToast from 'components/CommonToast';
@@ -31,7 +31,7 @@ const _renderPaymentSecurityItem = ({ item }: { item: ITransferLimitItem }) => {
   return (
     <Touchable
       onPress={() => {
-        navigationService.navigate('PaymentSecurityDetail',{ transferLimitDetail: item });
+        navigationService.navigate('PaymentSecurityDetail', { transferLimitDetail: item });
       }}>
       <View style={ItemStyles.wrap}>
         <CommonAvatar
@@ -46,15 +46,15 @@ const _renderPaymentSecurityItem = ({ item }: { item: ITransferLimitItem }) => {
         />
         <View style={ItemStyles.content}>
           <TextL style={ItemStyles.symbolLabel}>{item.symbol || ''}</TextL>
-          <TextM style={FontStyles.font7}>{formatChainInfoToShow(item.chainId,networkType)}</TextM>
+          <TextM style={FontStyles.font7}>{formatChainInfoToShow(item.chainId, networkType)}</TextM>
         </View>
         <Svg icon="right-arrow" size={pTd(20)} color={defaultColors.icon1} />
       </View>
     </Touchable>
   );
 };
-const PaymentSecurityItem = memo(_renderPaymentSecurityItem,(prevProps,nextProps) =>
-  isEqual(prevProps.item,nextProps.item),
+const PaymentSecurityItem = memo(_renderPaymentSecurityItem, (prevProps, nextProps) =>
+  isEqual(prevProps.item, nextProps.item),
 );
 
 const ItemStyles = StyleSheet.create({
@@ -76,26 +76,26 @@ const ItemStyles = StyleSheet.create({
 });
 
 const PaymentSecurityList: React.FC = () => {
-  const [isRefreshing,setIsRefreshing] = useState(false);
-  const { list,isNext,next,init } = useTransferLimitList();
-
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const { list, isNext, next, init } = useTransferLimitList();
+  const pageStyles = getStyles();
   const getList = useLockCallback(async () => {
     if (!isNext) return;
     setIsRefreshing(true);
     try {
       await next();
     } catch (error) {
-      console.log('PaymentSecurityList: error',error);
+      console.log('PaymentSecurityList: error', error);
       CommonToast.failError('Failed to fetch data');
     }
 
     setIsRefreshing(false);
-  },[isNext,next]);
+  }, [isNext, next]);
 
   useEffectOnce(() => {
     const timer = setTimeout(() => {
       init();
-    },100);
+    }, 100);
     return () => {
       clearTimeout(timer);
     };
@@ -121,7 +121,7 @@ const PaymentSecurityList: React.FC = () => {
   );
 };
 
-const pageStyles = StyleSheet.create({
+const getStyles = makeStyles(theme => ({
   pageWrap: {
     backgroundColor: defaultColors.bg19,
     paddingHorizontal: 0,
@@ -130,6 +130,6 @@ const pageStyles = StyleSheet.create({
     lineHeight: pTd(20),
     marginBottom: pTd(24),
   },
-});
+}));
 
 export default PaymentSecurityList;

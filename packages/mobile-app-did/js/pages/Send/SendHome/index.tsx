@@ -273,9 +273,9 @@ const SendHome: React.FC = () => {
           type={PromptCardType.WARNING}
           description={WarningTips[WarningKey.MAIN_CHAIN_TO_NO_AFFIX_ADDRESS_ELF]}
         />
-        <View style={GStyles.height(24)} />
+        <View style={GStyles.height(pTd(24))} />
         <SupportedExchangesCard />
-        <View style={GStyles.height(24)} />
+        <View style={GStyles.height(pTd(24))} />
         <GeneralTips
           content={`If you're not sending to an exchange, no worries! You can continue, and we'll send your assets through the aelf MainChain.`}
         />

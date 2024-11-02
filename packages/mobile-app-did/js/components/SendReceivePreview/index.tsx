@@ -1,23 +1,17 @@
-import React, { memo, useCallback } from 'react';
-import { Text, View, TouchableWithoutFeedback } from 'react-native';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { useLanguage } from 'i18n/hooks';
-import PageContainer from 'components/PageContainer';
+import React, { memo } from 'react';
+import { Text, View } from 'react-native';
+import CommonPreviewContainer from 'components/CommonPreviewContainer';
 import Svg from 'components/Svg';
 import NFTAvatar from 'components/NFTAvatar';
-import CommonButton from 'components/CommonButton';
 import CommonInfoRow from 'components/CommonInfoRow';
-import Touchable from 'components/Touchable';
 import { ActionType } from 'types/common';
 import { SeedTypeEnum } from '@portkey-wallet/types/types-ca/assets';
 import { formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { ChainId } from '@portkey-wallet/types';
 import { pTd } from 'utils/unit';
-import { openOutLink } from 'utils/link';
 import { SEND_RECEIVE_HELP_URL } from 'constants/common';
 import { getStyles } from './style';
-import { darkColors } from 'assets/theme';
 
 export enum FooterType {
   'E_BRIDGE' = 'eBridge',
@@ -100,7 +94,6 @@ const SendReceivePreview: React.FC<ISendReceivePreviewProps> = ({
   isLoading = false,
   onPress,
 }) => {
-  const { t } = useLanguage();
   const styles = getStyles();
 
   const isMainnet = useIsMainnet();
@@ -112,135 +105,100 @@ const SendReceivePreview: React.FC<ISendReceivePreviewProps> = ({
     return chainId === 'AELF' ? 'mainnet' : 'sideChain';
   };
 
-  const handlePress = useCallback(() => {
-    if (isLoading) return;
-    onPress?.();
-  }, [isLoading, onPress]);
-
   return (
-    <PageContainer
-      titleDom={t(`Preview`)}
-      safeAreaColor={['black', 'black']}
-      containerStyles={styles.pageWrap}
-      isLeftBackDisabled={isLoading}
-      rightDom={
-        <Touchable
-          onPress={async () => {
-            if (isLoading) return;
-            await openOutLink(SEND_RECEIVE_HELP_URL);
-          }}>
-          <Svg
-            iconStyle={styles.headerHelpIcon}
-            icon="help-white"
-            color={isLoading ? darkColors.iconDisabled : darkColors.iconBase1}
-            size={pTd(24)}
-          />
-        </Touchable>
-      }
-      scrollViewProps={{ disabled: true }}>
-      <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>
-        <TouchableWithoutFeedback>
-          <View>
-            <View style={styles.topIconWrap}>{topIcon}</View>
-            {NFTInfo ? (
-              <View style={styles.nftInfoRow}>
-                <View style={styles.nftInfoLeft}>
-                  <Text style={styles.nftInfoName}>{`${NFTInfo.alias} #${NFTInfo.tokenId}`}</Text>
-                  <Text style={styles.nftInfoCollection}>{NFTInfo.collectionName}</Text>
-                </View>
-                <NFTAvatar
-                  disabled
-                  isSeed={NFTInfo.isSeed}
-                  seedType={NFTInfo.seedType}
-                  nftSize={pTd(42)}
-                  badgeSizeType="normal"
-                  data={{
-                    imageUrl: NFTInfo.imageUrl,
-                    alias: NFTInfo.alias,
-                  }}
-                  style={styles.nftInfoRight}
-                />
-              </View>
-            ) : (
-              <View style={styles.amountInfoWrap}>
-                <View style={styles.amountAboveWrap}>
-                  <Text style={styles.amountAbove}>{amount}</Text>
-                </View>
-                {!!amountUSD && isMainnet && <Text style={styles.amountBelow}>{amountUSD}</Text>}
-              </View>
-            )}
-            <View style={styles.infoWrap}>
-              {fromAddress && (
-                <CommonInfoRow label={{ text: 'From' }} value={{ text: formatStr2EllipsisStr(fromAddress) }} />
-              )}
-              {toAddress && <CommonInfoRow label={{ text: 'To' }} value={{ text: formatStr2EllipsisStr(toAddress) }} />}
-              {sourceNetwork && (
-                <CommonInfoRow
-                  label={{ text: 'Source network' }}
-                  value={{
-                    text: sourceNetwork,
-                    leftImageUrl: sourceNetworkImageUrl,
-                    leftSvgName: getChainSvgName(fromInfoChainId),
-                  }}
-                />
-              )}
-              {destinationNetwork && (
-                <CommonInfoRow
-                  label={{ text: 'Destination network' }}
-                  value={{
-                    text: destinationNetwork,
-                    leftImageUrl: destinationNetworkImageUrl,
-                    leftSvgName: getChainSvgName(toInfoChainId),
-                  }}
-                />
-              )}
-              {!!transactionFee && (
-                <CommonInfoRow
-                  label={{
-                    text: 'Transaction fee',
-                    tooltipProps: {
-                      title: 'Transaction fee',
-                      description: 'Fee applied by the cross-chain bridge to process your transaction on blockchains.',
-                    },
-                    textBelow: isError ? 'Not enough ELF' : '',
-                  }}
-                  value={{ text: transactionFee, textBelow: isMainnet ? transactionFeeUSD : '' }}
-                  isError={isError}
-                />
-              )}
-              {!!estimatedNetworkFee && (
-                <CommonInfoRow
-                  label={{
-                    text: 'Estimated network fee',
-                    tooltipProps: {
-                      title: 'Estimated network fee',
-                      description: 'Fee applied by the blockchain to process your transaction, also known as gas fee.',
-                    },
-                  }}
-                  value={{ text: estimatedNetworkFee, textBelow: isMainnet ? estimatedNetworkFeeUSD : '' }}
-                />
-              )}
-              {!!amountToReceive && (
-                <CommonInfoRow
-                  label={{ text: 'Amount to receive' }}
-                  value={{ text: amountToReceive, textBelow: isMainnet ? amountToReceiveUSD : '' }}
-                />
-              )}
-              {!!estimatedDuration && (
-                <CommonInfoRow label={{ text: 'Estimated duration' }} value={{ text: `~${estimatedDuration}` }} />
-              )}
-            </View>
-            {footerType && (
-              <View style={styles.footerWrap}>
-                <Text style={styles.footerText}>Powered by</Text>
-                {FOOTER_CONFIG[footerType]}
-              </View>
-            )}
+    <CommonPreviewContainer
+      helpUrl={SEND_RECEIVE_HELP_URL}
+      poweredIcon={footerType ? FOOTER_CONFIG[footerType] : undefined}
+      buttonProps={{ title: buttonText, disabled: isError, onPress }}
+      isLoading={isLoading}>
+      <View style={styles.topIconWrap}>{topIcon}</View>
+      {NFTInfo ? (
+        <View style={styles.nftInfoRow}>
+          <View style={styles.nftInfoLeft}>
+            <Text style={styles.nftInfoName}>{`${NFTInfo.alias} #${NFTInfo.tokenId}`}</Text>
+            <Text style={styles.nftInfoCollection}>{NFTInfo.collectionName}</Text>
           </View>
-        </TouchableWithoutFeedback>
-      </KeyboardAwareScrollView>
-      <CommonButton title={buttonText} type="primary" loading={isLoading} disabled={isError} onPress={handlePress} />
-    </PageContainer>
+          <NFTAvatar
+            disabled
+            isSeed={NFTInfo.isSeed}
+            seedType={NFTInfo.seedType}
+            nftSize={pTd(42)}
+            badgeSizeType="normal"
+            data={{
+              imageUrl: NFTInfo.imageUrl,
+              alias: NFTInfo.alias,
+            }}
+            style={styles.nftInfoRight}
+          />
+        </View>
+      ) : (
+        <View style={styles.amountInfoWrap}>
+          <View style={styles.amountAboveWrap}>
+            <Text style={styles.amountAbove}>{amount}</Text>
+          </View>
+          {!!amountUSD && isMainnet && <Text style={styles.amountBelow}>{amountUSD}</Text>}
+        </View>
+      )}
+      <View style={styles.infoWrap}>
+        {fromAddress && <CommonInfoRow label={{ text: 'From' }} value={{ text: formatStr2EllipsisStr(fromAddress) }} />}
+        {toAddress && <CommonInfoRow label={{ text: 'To' }} value={{ text: formatStr2EllipsisStr(toAddress) }} />}
+        {sourceNetwork && (
+          <CommonInfoRow
+            label={{ text: 'Source network' }}
+            value={{
+              text: sourceNetwork,
+              leftImageUrl: sourceNetworkImageUrl,
+              leftSvgName: getChainSvgName(fromInfoChainId),
+            }}
+          />
+        )}
+        {destinationNetwork && (
+          <CommonInfoRow
+            label={{ text: 'Destination network' }}
+            value={{
+              text: destinationNetwork,
+              leftImageUrl: destinationNetworkImageUrl,
+              leftSvgName: getChainSvgName(toInfoChainId),
+            }}
+          />
+        )}
+        {!!transactionFee && (
+          <CommonInfoRow
+            label={{
+              text: 'Transaction fee',
+              tooltipProps: {
+                title: 'Transaction fee',
+                description: 'Fee applied by the cross-chain bridge to process your transaction on blockchains.',
+              },
+              textBelow: isError ? 'Not enough ELF' : '',
+            }}
+            value={{ text: transactionFee, textBelow: isMainnet ? transactionFeeUSD : '' }}
+            isError={isError}
+          />
+        )}
+        {!!estimatedNetworkFee && (
+          <CommonInfoRow
+            label={{
+              text: 'Estimated network fee',
+              tooltipProps: {
+                title: 'Estimated network fee',
+                description: 'Fee applied by the blockchain to process your transaction, also known as gas fee.',
+              },
+            }}
+            value={{ text: estimatedNetworkFee, textBelow: isMainnet ? estimatedNetworkFeeUSD : '' }}
+          />
+        )}
+        {!!amountToReceive && (
+          <CommonInfoRow
+            label={{ text: 'Amount to receive' }}
+            value={{ text: amountToReceive, textBelow: isMainnet ? amountToReceiveUSD : '' }}
+          />
+        )}
+        {!!estimatedDuration && (
+          <CommonInfoRow label={{ text: 'Estimated duration' }} value={{ text: `~${estimatedDuration}` }} />
+        )}
+      </View>
+    </CommonPreviewContainer>
   );
 };
 

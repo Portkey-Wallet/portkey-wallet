@@ -7,6 +7,7 @@ import Touchable from 'components/Touchable';
 import Svg, { SvgProps } from 'components/Svg';
 import CommonButton from 'components/CommonButton';
 import fonts from 'assets/theme/fonts';
+import { useLanguage } from 'i18n/hooks';
 import { pTd } from 'utils/unit';
 
 export interface ITooltipContentProps {
@@ -21,6 +22,7 @@ interface ICommonTooltipProps {
 }
 
 const TooltipContent = ({ title, description }: ITooltipContentProps) => {
+  const { t } = useLanguage();
   const {
     theme: { colors },
   } = useTheme();
@@ -28,13 +30,13 @@ const TooltipContent = ({ title, description }: ITooltipContentProps) => {
   return (
     <ModalBody style={styles.modalBody} modalBodyType="center">
       <View style={styles.header}>
-        <Text style={styles.title}>{title}</Text>
+        <Text style={styles.title}>{t(title)}</Text>
         <Touchable onPress={() => OverlayModal.hide()}>
           <Svg icon="close3" size={pTd(20)} color={colors.iconBase1} />
         </Touchable>
       </View>
-      <Text style={styles.description}>{description}</Text>
-      <CommonButton title="OK" type="primary" onPress={() => OverlayModal.hide()} />
+      <Text style={styles.description}>{t(description)}</Text>
+      <CommonButton title={t('OK')} type="primary" onPress={() => OverlayModal.hide()} />
     </ModalBody>
   );
 };

@@ -39,7 +39,7 @@ const TokenDetail: React.FC = () => {
         />
       );
     }
-  }, [index, t, tokenSection.tokens]);
+  }, [index, t, tokenSection]);
 
   return (
     <PageContainer

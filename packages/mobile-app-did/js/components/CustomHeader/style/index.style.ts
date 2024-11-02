@@ -52,6 +52,9 @@ export const blueStyles = StyleSheet.create({
     color: bg1,
     marginLeft: pTd(4),
   },
+  leftBackTitleDisabled: {
+    color: darkColors.iconDisabled,
+  },
 });
 
 export const whitStyles = StyleSheet.create({
@@ -90,6 +93,9 @@ export const whitStyles = StyleSheet.create({
   },
   leftBackTitle: {
     color: darkColors.iconBase1,
+  },
+  leftBackTitleDisabled: {
+    color: darkColors.iconDisabled,
   },
 });
 

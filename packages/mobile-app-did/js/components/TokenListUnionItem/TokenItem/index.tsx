@@ -98,11 +98,13 @@ const itemStyle = StyleSheet.create({
   },
   symbolText: {
     fontSize: pTd(16),
+    lineHeight: pTd(22),
     marginLeft: pTd(8),
     color: darkColors.textBase1,
   },
   chainText: {
     fontSize: pTd(14),
+    lineHeight: pTd(20),
     marginLeft: pTd(8),
     color: darkColors.textBase2,
   },
@@ -114,10 +116,14 @@ const itemStyle = StyleSheet.create({
   },
   balanceText: {
     fontSize: pTd(16),
+    lineHeight: pTd(16),
     color: darkColors.textBase1,
-    ...fonts.BGMediumFont,
+    ...fonts.SGMediumFont,
   },
   balanceInUseText: {
+    fontSize: pTd(14),
+    lineHeight: pTd(20),
     color: darkColors.textBase2,
+    marginTop: pTd(6),
   },
 });

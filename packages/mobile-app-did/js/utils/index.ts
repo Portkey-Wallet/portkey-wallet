@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc.js';
 import * as Network from 'expo-network';
 import { setStringAsync } from 'expo-clipboard';
-import { Timestamp } from '@portkey-wallet/types';
+import { ChainId, Timestamp } from '@portkey-wallet/types';
 import CommonToast from 'components/CommonToast';
 import i18n from 'i18n';
 dayjs.extend(utc);
@@ -74,3 +74,8 @@ export const isExpired = (timestamp: Timestamp): boolean => dayjs().isAfter(time
 
 export const parseVersion = (list: (string | undefined | null)[]) =>
   list.reduce((pre, cv) => (cv ? `${pre}(${cv})` : pre));
+
+export const getChainSvgName = (chainId?: ChainId) => {
+  if (!chainId) return undefined;
+  return chainId === 'AELF' ? 'mainnet' : 'sideChain';
+};

@@ -9,10 +9,12 @@ import CommonButton from 'components/CommonButton';
 import fonts from 'assets/theme/fonts';
 import { useLanguage } from 'i18n/hooks';
 import { pTd } from 'utils/unit';
+import { openOutLink } from 'utils/link';
 
 export interface ITooltipContentProps {
   title: string;
   description: string;
+  learnMoreUrl?: string;
 }
 
 interface ICommonTooltipProps {
@@ -21,7 +23,7 @@ interface ICommonTooltipProps {
   tooltipProps?: ITooltipContentProps;
 }
 
-const TooltipContent = ({ title, description }: ITooltipContentProps) => {
+const TooltipContent = ({ title, description, learnMoreUrl }: ITooltipContentProps) => {
   const { t } = useLanguage();
   const {
     theme: { colors },
@@ -35,7 +37,23 @@ const TooltipContent = ({ title, description }: ITooltipContentProps) => {
           <Svg icon="close3" size={pTd(20)} color={colors.iconBase1} />
         </Touchable>
       </View>
-      <Text style={styles.description}>{t(description)}</Text>
+      <View>
+        <Text style={styles.description}>
+          {t(description)}
+          {learnMoreUrl && (
+            <>
+              {' '}
+              <Touchable
+                onPress={async () => {
+                  await openOutLink(learnMoreUrl);
+                }}>
+                <Text style={styles.learnMore}>{t('Learn more')}</Text>
+              </Touchable>
+              .
+            </>
+          )}
+        </Text>
+      </View>
       <CommonButton title={t('OK')} type="primary" onPress={() => OverlayModal.hide()} />
     </ModalBody>
   );
@@ -85,5 +103,12 @@ const getStyles = makeStyles(theme => ({
     fontSize: pTd(16),
     lineHeight: pTd(22),
     marginBottom: pTd(24),
+  },
+  learnMore: {
+    ...fonts.SGRegularFont,
+    color: theme.colors.textBrand1,
+    fontSize: pTd(16),
+    lineHeight: pTd(22),
+    transform: [{ translateY: pTd(2) }],
   },
 }));

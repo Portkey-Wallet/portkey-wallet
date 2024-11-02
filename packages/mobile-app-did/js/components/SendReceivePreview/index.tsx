@@ -9,6 +9,7 @@ import { SeedTypeEnum } from '@portkey-wallet/types/types-ca/assets';
 import { formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { ChainId } from '@portkey-wallet/types';
+import { getChainSvgName } from 'utils';
 import { pTd } from 'utils/unit';
 import { SEND_RECEIVE_HELP_URL } from 'constants/common';
 import { getStyles } from './style';
@@ -99,11 +100,6 @@ const SendReceivePreview: React.FC<ISendReceivePreviewProps> = ({
   const isMainnet = useIsMainnet();
 
   const { topIcon, buttonText } = ACTION_CONFIG[actionType] || {};
-
-  const getChainSvgName = (chainId?: ChainId) => {
-    if (!chainId) return undefined;
-    return chainId === 'AELF' ? 'mainnet' : 'sideChain';
-  };
 
   return (
     <CommonPreviewContainer

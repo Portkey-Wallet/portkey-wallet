@@ -414,14 +414,37 @@ const SendHome: React.FC = () => {
     setStep(2);
   }, []);
 
+  const crossChainAction = useCallback(() => {
+    if (assetInfo.chainId !== DefaultChainId) {
+      ActionSheet.alert({
+        showInfoIcon: true,
+        title: 'Confirm to proceed',
+        message: 'Direct transfers from dAppChain to Exchange are currently unsupported and could lead to asset loss.',
+        buttons: [
+          {
+            title: 'Cancel',
+            type: 'outline',
+          },
+          {
+            title: 'Proceed',
+            type: 'primary',
+            onPress: () => setStep(2),
+          },
+        ],
+      });
+    }
+  }, [assetInfo.chainId]);
+
   const nextStep = useCallback(() => {
     if (warning[0] === WarningKey.DAPP_CHAIN_TO_NO_AFFIX_ADDRESS_ELF) {
       return dappChainToNoAffixAddressAction();
     } else if (warning[0] === WarningKey.MAIN_CHAIN_TO_NO_AFFIX_ADDRESS_ELF) {
       return mainChainToNoAffixAddressAction();
+    } else if (warning[0] === WarningKey.CROSS_CHAIN) {
+      return crossChainAction();
     }
     setStep(2);
-  }, [dappChainToNoAffixAddressAction, mainChainToNoAffixAddressAction, warning]);
+  }, [crossChainAction, dappChainToNoAffixAddressAction, mainChainToNoAffixAddressAction, warning]);
 
   //when finish send  upDate balance
   const previewParamsWithoutFee = useMemo(

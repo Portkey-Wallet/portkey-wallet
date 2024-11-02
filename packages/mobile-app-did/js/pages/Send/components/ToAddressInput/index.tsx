@@ -110,10 +110,14 @@ export default function ToAddressInput({
         }
       } else {
         // TODO: change it
+        const isSameAddress = isSameAddresses(wallet?.[selectedToken?.chainId || 'AELF']?.caAddress || '', v);
         // same address
-        if (selectedToken?.chainId === 'AELF') {
+        if (selectedToken?.chainId === 'AELF' && !isSameAddress) {
           setCheckedPass(false);
           setWarning([WarningKey.MAIN_CHAIN_TO_NO_AFFIX_ADDRESS_ELF]);
+        } else if (selectedToken?.chainId === 'AELF' && isSameAddress) {
+          setCheckedPass(false);
+          setWarning([WarningKey.SAME_ADDRESS]);
         } else {
           setCheckedPass(false);
           setWarning([WarningKey.DAPP_CHAIN_TO_NO_AFFIX_ADDRESS_ELF]);

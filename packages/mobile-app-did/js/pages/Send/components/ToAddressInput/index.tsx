@@ -11,7 +11,6 @@ import { pTd } from 'utils/unit';
 import Touchable from 'components/Touchable';
 import { makeStyles } from '@rneui/themed';
 import Divider from 'components/Divider';
-import navigationService from 'utils/navigationService';
 import { useQrScanPermissionAndToast } from 'hooks/useQrScan';
 import { getSendNetworkList } from 'pages/Send/utils';
 import { IToSendAssetParamsType, IToSendHomeParamsType } from '@portkey-wallet/types/types-ca/routeParams';

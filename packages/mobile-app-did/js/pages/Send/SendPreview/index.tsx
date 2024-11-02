@@ -516,7 +516,7 @@ const SendPreview: React.FC = () => {
       amountUSD={`${formatAmountUSDShow(ZERO.plus(sendNumber).multipliedBy(tokenPriceObject[assetInfo.symbol]))}`}
       toAddress={toInfo?.address}
       toInfoChainId={toInfo?.chainId}
-      destinationNetwork={isETransferOrEBridge ? targetNetwork?.name : networkInfoShow(toInfo?.address)}
+      destinationNetwork={isETransferOrEBridge ? targetNetwork?.name : formatChainInfoToShow(toInfo?.chainId)}
       destinationNetworkImageUrl={targetNetwork?.imageUrl}
       transactionFee={isETransferOrEBridge ? `${transactionFee} ${transactionFeeUnit}` : ''}
       transactionFeeUSD={

@@ -401,12 +401,13 @@ const SendHome: React.FC = () => {
           },
         ],
       });
-      return setSelectedToContact(pre => ({ ...pre, chainId: DefaultChainId }));
+      return;
     }
+
     // to dappChain Address
     setStep(2);
-    setSelectedToContact(pre => ({ ...pre, chainId: DefaultChainId }));
-  }, [assetInfo.symbol, defaultToken.symbol, isSendToExchange, mainChainCaInfo?.caAddress, t]);
+    setSelectedToContact(pre => ({ ...pre, chainId: assetInfo.chainId }));
+  }, [assetInfo.chainId, assetInfo.symbol, defaultToken.symbol, isSendToExchange, mainChainCaInfo?.caAddress, t]);
 
   const mainChainToNoAffixAddressAction = useCallback(() => {
     setSelectedToContact(pre => ({ ...pre, chainId: DefaultChainId }));

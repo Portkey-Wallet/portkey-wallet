@@ -78,7 +78,7 @@ export const pageStyles = StyleSheet.create({
 export const customTokenTipsStyle = StyleSheet.create({
   tips: {
     color: darkColors.textBase2,
-    marginTop: pTd(16),
+    marginTop: pTd(24),
     textAlign: 'center',
   },
   addButtonWrap: {
@@ -101,6 +101,6 @@ export const customTokenTipsStyle = StyleSheet.create({
     color: darkColors.textBrand4,
   },
   try: {
-    marginTop: pTd(32),
+    marginTop: pTd(24),
   },
 });

@@ -1,5 +1,5 @@
 import React, { forwardRef, useState } from 'react';
-import { View } from 'react-native';
+import { TextStyle, View } from 'react-native';
 import { TextH1 } from 'components/CommonText';
 import { pTd } from 'utils/unit';
 import { headerHeight } from 'components/CustomHeader/style/index.style';
@@ -12,6 +12,7 @@ type PinContainerProps = {
   showHeader?: boolean;
   onChangeText?: (text: string) => void;
   isKeypadShow?: boolean;
+  titleStyle?: TextStyle;
 } & DigitTextProps &
   KeypadPropsType;
 
@@ -26,6 +27,7 @@ const PinContainer = forwardRef(function PinContainer(
     isBiometrics,
     onBiometricsPress,
     isKeypadShow = true,
+    titleStyle,
     ...textProps
   }: PinContainerProps,
   forwardedRef,
@@ -37,7 +39,7 @@ const PinContainer = forwardRef(function PinContainer(
     // showHeader && { paddingTop: styles.container.paddingTop - headerHeight }
     <View style={[styles.container, showHeader && { paddingTop: styles.container.paddingTop - headerHeight }]}>
       <View>
-        <TextH1>{title}</TextH1>
+        <TextH1 style={titleStyle}>{title}</TextH1>
         <DigitText
           type="pin"
           secureTextEntry

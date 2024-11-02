@@ -1,6 +1,6 @@
 import PageContainer from 'components/PageContainer';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
-import CommonInputNew from 'components/CommonInputNew';
+import CommonInput from 'components/CommonInput';
 import { View } from 'react-native';
 import gStyles from 'assets/theme/GStyles';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -172,9 +172,9 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}>
       <View style={pageStyles.inputWrap}>
-        <CommonInputNew
+        <CommonInput
           allowClear
-          grayBorder
+          clearIcon="clear4"
           value={keyword}
           placeholder={t('Search')}
           onChangeText={v => {
@@ -207,6 +207,7 @@ export const getStyles = makeStyles(theme => ({
   inputWrap: {
     backgroundColor: theme.colors.bgBase1,
     ...gStyles.paddingArg(0, 16, 0, 16),
+    marginBottom: pTd(8),
   },
   list: {
     flex: 1,

@@ -9,24 +9,25 @@ type SelectAssetTabProps = {
   nftInfos: IAssetNftCollection[];
   tokenInfos: IAssetToken[];
   noDataMessage: string;
+  toAddress?: string;
 };
 
 const SelectAssetTab: React.FC<SelectAssetTabProps> = (props: SelectAssetTabProps) => {
   const { t } = useLanguage();
-  const { tokenInfos, noDataMessage, nftInfos } = props;
+  const { tokenInfos, noDataMessage, nftInfos, toAddress } = props;
 
   const tabList = useMemo(() => {
     return [
       {
         name: t('Tokens'),
-        tabItemDom: <SelectToken tokenInfos={tokenInfos} noDataMessage={noDataMessage} />,
+        tabItemDom: <SelectToken toAddress={toAddress} tokenInfos={tokenInfos} noDataMessage={noDataMessage} />,
       },
       {
         name: t('NFTs'),
         tabItemDom: <SelectNFT nftInfos={nftInfos} noDataMessage={noDataMessage} />,
       },
     ];
-  }, [nftInfos, noDataMessage, t, tokenInfos]);
+  }, [nftInfos, noDataMessage, t, toAddress, tokenInfos]);
 
   return <CommonTopTab swipeEnabled hasTabBarBorderRadius={false} hasBottomBorder={false} tabList={tabList} />;
 };

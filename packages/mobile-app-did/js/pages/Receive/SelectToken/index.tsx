@@ -16,11 +16,10 @@ import { PAGE_SIZE_DEFAULT, PAGE_SIZE_IN_ACCOUNT_ASSETS } from '@portkey-wallet/
 import myEvents from 'utils/deviceEvent';
 import navigationService from 'utils/navigationService';
 import PageContainer from 'components/PageContainer';
-import CommonInputNew from 'components/CommonInputNew';
+import CommonInput from 'components/CommonInput';
 import gStyles from 'assets/theme/GStyles';
 import Touchable from 'components/Touchable';
 import CommonAvatar from 'components/CommonAvatar';
-import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { request } from '@portkey-wallet/api/api-did';
 import { TextL } from 'components/CommonText';
 import { makeStyles } from '@rneui/themed';
@@ -33,7 +32,6 @@ const SelectToken = () => {
   const [keyword, setKeyword] = useState('');
   const debounceKeyword = useDebounce(keyword, 800);
   const [filteredShowList, setFilteredShowList] = useState<IUserTokenItemResponse[]>([]);
-  const defaultToken = useDefaultToken();
   const [isSearch, setIsSearch] = useState(false);
   const styles = getStyles();
 
@@ -48,7 +46,6 @@ const SelectToken = () => {
           hasBorder
           shapeType="circular"
           title={item.symbol}
-          svgName={item.symbol === defaultToken.symbol ? 'testnet' : undefined}
           imageUrl={item.imageUrl}
           avatarSize={pTd(42)}
           style={styles.leftIcon}
@@ -59,7 +56,7 @@ const SelectToken = () => {
         </TextL>
       </Touchable>
     ),
-    [defaultToken.symbol, styles],
+    [styles],
   );
 
   const getTokenList = useLockCallback(
@@ -122,8 +119,9 @@ const SelectToken = () => {
       safeAreaColor={['black', 'black']}
       containerStyles={styles.pageWrap}
       scrollViewProps={{ disabled: true }}>
-      <CommonInputNew
+      <CommonInput
         allowClear
+        clearIcon="clear4"
         containerStyle={styles.containerStyle}
         inputContainerStyle={styles.inputContainerStyle}
         inputStyle={styles.inputStyle}

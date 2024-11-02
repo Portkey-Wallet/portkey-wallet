@@ -27,6 +27,7 @@ export type NavigateMultiLevelParams = {
     isDiscover?: boolean;
     eventName?: string;
   };
+  toAddress?: string;
 };
 
 export enum TabRouteNameEnum {

@@ -32,7 +32,7 @@ export const FloatTip = (props: FloatTipProps) => {
     textAlign: 'center',
   };
   const textWrapStyle: ViewStyle = {
-    backgroundColor: display ? defaultColors.black : 'transparent',
+    backgroundColor: display ? defaultColors.bgBase3 : 'transparent',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -41,7 +41,7 @@ export const FloatTip = (props: FloatTipProps) => {
     alignSelf: 'flex-start',
     minWidth: 64,
     overflow: 'visible',
-    borderRadius: 6,
+    borderRadius: 8,
   };
   const baseArrowStyle: ViewStyle = {
     borderLeftWidth: 8,
@@ -49,7 +49,7 @@ export const FloatTip = (props: FloatTipProps) => {
     borderTopWidth: 8,
     borderLeftColor: 'transparent',
     borderRightColor: 'transparent',
-    borderTopColor: defaultColors.black,
+    borderTopColor: defaultColors.bgBase3,
   };
 
   const addOnStyle: ViewStyle = useMemo(() => {
@@ -137,6 +137,6 @@ const defaultStyle = StyleSheet.create({
   },
   arrow: {
     zIndex: 999,
-    borderTopColor: defaultColors.black,
+    borderTopColor: defaultColors.bgBase3,
   },
 });

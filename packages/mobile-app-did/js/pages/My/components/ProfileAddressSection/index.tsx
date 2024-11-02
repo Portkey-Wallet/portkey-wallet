@@ -20,6 +20,8 @@ type addressItemType = {
   chainId: ChainId;
   image?: string;
   chainName?: ChainType | string;
+  displayChainName?: string;
+  chainImageUrl?: string;
 };
 
 type ProfileAddressSectionPropsType = {

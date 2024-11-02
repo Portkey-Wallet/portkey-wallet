@@ -1,105 +1,102 @@
 import React, { useCallback } from 'react';
-import { StyleSheet, View, Keyboard, Text, TouchableOpacity } from 'react-native';
+import { View, Keyboard, Text } from 'react-native';
 import OverlayModal from 'components/OverlayModal';
+import { ModalBody } from 'components/ModalBody';
+import Touchable from 'components/Touchable';
 import Svg from 'components/Svg';
-import { CopyButton } from 'components/CopyButton';
 import { pTd } from 'utils/unit';
-import { defaultColors } from 'assets/theme';
 import fonts from 'assets/theme/fonts';
 import { addressFormat, formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentChainList } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { ChainId } from '@portkey-wallet/types';
-import { screenWidth } from '@portkey-wallet/utils/mobile/device';
-import { transNetworkText } from '@portkey-wallet/utils/activity';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { makeStyles } from '@rneui/themed';
+import { formatChainInfoToShow } from '@portkey-wallet/utils';
+import CommonAvatar from 'components/CommonAvatar';
+import { useTheme } from '@rneui/themed';
+import CommonToast from 'components/CommonToast';
+import { setStringAsync } from 'expo-clipboard';
 
 const CopyUserAddress: React.FC = () => {
-  const isMainnet = useIsMainnet();
   const caAddressInfos = useCaAddressInfoList();
+  const styles = getStyles();
+  const currentChainList = useCurrentChainList();
 
-  const copyContent = useCallback(
-    (item: { address: string; chainId: ChainId }) => `ELF_${item.address}_${item.chainId}`,
-    [],
+  const getChainInfoByChainId = useCallback(
+    (chainId: ChainId) => {
+      if (!currentChainList) return undefined;
+      return currentChainList.find(chain => chain.chainId === chainId);
+    },
+    [currentChainList],
   );
 
+  const { theme } = useTheme();
+
+  const onCopyAddress = useCallback(({ address, chainId }: { address: string; chainId: ChainId }) => {
+    setStringAsync(`ELF_${address}_${chainId}`);
+    CommonToast.success('address copied');
+  }, []);
+
   return (
-    <View style={styles.container}>
-      <View style={styles.titleWrap}>
-        <Text style={styles.titleText}>Copy Address</Text>
-        <TouchableOpacity
-          onPress={() => {
-            OverlayModal.hide();
-          }}
-          style={styles.closeImage}>
-          <Svg icon="close2" size={pTd(22)} iconStyle={styles.closeImage} color={defaultColors.bg34} />
-        </TouchableOpacity>
-      </View>
+    <ModalBody title={'Copy Address'} modalBodyType="bottom">
       {caAddressInfos.map((item, index) => {
         return (
           <View key={index} style={styles.itemWrap}>
-            <View>
-              <Text style={styles.chainText}>{transNetworkText(item.chainId, !isMainnet)}</Text>
-              <Text style={styles.addressText}>
-                {formatStr2EllipsisStr(addressFormat(item.caAddress, item?.chainId), 8)}
-              </Text>
+            <View style={styles.leftWrap}>
+              <CommonAvatar imageUrl={getChainInfoByChainId(item.chainId)?.chainImageUrl} style={styles.icon} />
+              <View style={styles.textWrap}>
+                <Text style={styles.chainText}>{formatChainInfoToShow(item.chainId)}</Text>
+                <Text style={styles.addressText}>
+                  {formatStr2EllipsisStr(addressFormat(item.caAddress, item?.chainId), 8)}
+                </Text>
+              </View>
             </View>
-            <CopyButton copyContent={copyContent({ address: item.caAddress, chainId: item.chainId })} />
+            <Touchable
+              style={styles.svgWrap}
+              onPress={() => onCopyAddress({ address: item.caAddress, chainId: item.chainId })}>
+              <Svg icon="copy" size={pTd(24)} color={theme.colors.iconBase2} />
+            </Touchable>
           </View>
         );
       })}
-    </View>
+    </ModalBody>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    width: screenWidth,
-    backgroundColor: defaultColors.white,
-    marginBottom: pTd(8),
-  },
-  titleWrap: {
-    height: pTd(44),
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: pTd(8),
-  },
-  titleText: {
-    fontSize: pTd(16),
-    color: defaultColors.neutralPrimaryTextColor,
-    ...fonts.mediumFont,
-  },
-  closeImage: {
-    position: 'absolute',
-    right: 0,
-    top: 0,
-    padding: pTd(12),
-  },
+const getStyles = makeStyles(theme => ({
   itemWrap: {
     marginHorizontal: pTd(16),
-    marginBottom: pTd(16),
-    paddingHorizontal: pTd(12),
-    paddingVertical: pTd(20),
-    borderWidth: 0.5,
-    borderColor: defaultColors.neutralDivider,
-    borderRadius: pTd(6),
+    marginTop: pTd(12),
+    paddingTop: pTd(12),
+    height: pTd(72),
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+  },
+  leftWrap: {
+    flex: 1,
+    flexDirection: 'row',
+  },
+  icon: {
+    width: pTd(24),
+    height: pTd(24),
+  },
+  textWrap: {
+    marginLeft: pTd(12),
   },
   chainText: {
-    color: defaultColors.neutralPrimaryTextColor,
+    color: theme.colors.textBase1,
     fontSize: pTd(14),
     lineHeight: pTd(22),
     ...fonts.mediumFont,
   },
   addressText: {
     marginTop: pTd(4),
-    color: defaultColors.neutralTertiaryText,
+    color: theme.colors.textBase2,
     fontSize: pTd(12),
     lineHeight: pTd(16),
   },
-});
+  svgWrap: {},
+}));
 
 export const showCopyUserAddress = () => {
   Keyboard.dismiss();

@@ -43,6 +43,8 @@ export interface ICaAddressInfoListItemType {
   chainId: ChainId;
   chainName: string;
   caAddress: string;
+  displayChainName?: string;
+  chainImageUrl?: string;
 }
 
 export function getCurrentWalletInfo(
@@ -297,6 +299,11 @@ export const useCaInfo = () => {
 export const useCurrentCaInfo = () => {
   const { walletInfo, currentNetwork } = useWallet();
   return useMemo(() => walletInfo?.caInfo?.[currentNetwork], [walletInfo, currentNetwork]);
+};
+
+export const useMainChainCaInfo = () => {
+  const { walletInfo, currentNetwork } = useWallet();
+  return useMemo(() => walletInfo?.caInfo?.[currentNetwork].AELF, [walletInfo, currentNetwork]);
 };
 
 export const useOriginChainId = () => {

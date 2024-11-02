@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { StyleSheet } from 'react-native';
 import navigationService from 'utils/navigationService';
 import { View, FlatList } from 'react-native';
 import { ITokenSectionResponse } from '@portkey-wallet/types/types-ca/token';
@@ -16,10 +15,12 @@ import { useLatestRef } from '@portkey-wallet/hooks';
 import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import { makeStyles } from '@rneui/themed';
 
 export default function TokenSection() {
   const { t } = useLanguage();
   const userInfo = useCurrentUserInfo();
+  const styles = getStyles();
 
   const { accountTokenList, totalRecordCount, fetchAccountTokenInfoList } = useAccountTokenInfo();
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -116,10 +117,10 @@ export default function TokenSection() {
   );
 }
 
-const styles = StyleSheet.create({
+export const getStyles = makeStyles(theme => ({
   tokenListPageWrap: {
     flex: 1,
-    backgroundColor: darkColors.bgNeutral2,
+    backgroundColor: theme.colors.bgBase2,
   },
   addWrap: {
     shadowColor: 'red',
@@ -134,7 +135,7 @@ const styles = StyleSheet.create({
     marginLeft: pTd(8),
     marginBottom: pTd(16),
     fontSize: pTd(16),
-    color: darkColors.textBrand1,
+    color: theme.colors.textBrand1,
     ...fonts.mediumFont,
   },
-});
+}));

@@ -95,4 +95,11 @@ export const styles = StyleSheet.create({
   banner: {
     marginBottom: pTd(8),
   },
+  noData: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    color: darkColors.textBase2,
+  },
 });

@@ -93,14 +93,16 @@ export default {
     element = Toast.message(...args);
   },
   success(...args: TostProps) {
-    if (!args[3]) args[3] = 'success';
-    Overlay.hide(element);
-    element = show(...args);
+    CommonPrompt.success(args[0], undefined, args[1]);
+    // if (!args[3]) args[3] = 'success';
+    // Overlay.hide(element);
+    // element = show(...args);
   },
   loading(...args: TostProps) {
-    if (!args[3]) args[3] = 'loading';
-    Overlay.hide(element);
-    element = show(...args);
+    CommonPrompt.loading(args[0], undefined, args[1]);
+    // if (!args[3]) args[3] = 'loading';
+    // Overlay.hide(element);
+    // element = show(...args);
   },
   warn(...args: TostProps) {
     CommonPrompt.warn(args[0], undefined, args[1]);

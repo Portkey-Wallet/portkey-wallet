@@ -20,30 +20,33 @@ import { makeStyles } from '@rneui/themed';
 export interface SelectTokenProps {
   tokenInfos: IAssetToken[];
   noDataMessage: string;
+  toAddress?: string;
 }
 
-export default function SelectToken({ tokenInfos, noDataMessage }: SelectTokenProps) {
+export default function SelectToken({ tokenInfos, noDataMessage, toAddress }: SelectTokenProps) {
   const { t } = useLanguage();
   const userInfo = useCurrentUserInfo();
   const isMainnet = useIsMainnet();
   const itemStyle = getStyles();
-
-  const onNavigate = useCallback((tokenItem: IAssetToken) => {
-    navigationService.navigate('SendHome', {
-      sendType: 'token',
-      assetInfo: tokenItem,
-      toInfo: {
-        name: '',
-        address: '',
-      },
-    } as unknown as IToSendHomeParamsType);
-  }, []);
+  const onNavigate = useCallback(
+    (tokenItem: IAssetToken) => {
+      navigationService.navigate('SendHome', {
+        sendType: 'token',
+        assetInfo: tokenItem,
+        toInfo: {
+          name: '',
+          address: toAddress || '',
+        },
+      } as unknown as IToSendHomeParamsType);
+    },
+    [toAddress],
+  );
 
   const renderItem = useCallback(
     ({ item }: { item: IAssetToken }) => {
       return (
         <Touchable style={itemStyle.wrap} onPress={() => onNavigate(item)}>
-          <View style={itemStyle.iconWrap}>
+          <View style={[itemStyle.iconWrap, itemStyle.left]}>
             <CommonAvatar
               hasBorder
               style={itemStyle.tokenIcon}
@@ -71,7 +74,7 @@ export default function SelectToken({ tokenInfos, noDataMessage }: SelectTokenPr
                 {`${item.displayChainName || ''} ${!isMainnet && 'Testnet'}`}
               </TextM>
             </View>
-            <View>
+            <View style={itemStyle.rightAmount}>
               <TextL numberOfLines={1} ellipsizeMode={'tail'}>
                 {userInfo.hideAssets ? '******' : formatTokenAmountShowWithDecimals(item.balance, item.decimals)}
               </TextL>
@@ -96,7 +99,7 @@ export default function SelectToken({ tokenInfos, noDataMessage }: SelectTokenPr
         // extraData={extraIndex}
         data={tokenInfos || []}
         renderItem={renderItem}
-        keyExtractor={item => item.symbol}
+        keyExtractor={item => `${item.symbol}${item.chainId}`}
         ListEmptyComponent={() => <NoData noPic message={t(noDataMessage)} />}
       />
     </View>
@@ -146,5 +149,8 @@ const getStyles = makeStyles(theme => ({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+  },
+  rightAmount: {
+    alignItems: 'flex-end',
   },
 }));

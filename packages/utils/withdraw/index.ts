@@ -12,7 +12,7 @@ import { isAuthTokenError } from '@etransfer/services';
 import { LocalStorageKey } from '@etransfer/core';
 import { removeDIDAddressSuffix } from '@etransfer/utils';
 
-export const CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL = ['ELF', 'USDT'];
+export const CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL = ['ELF', 'USDT', 'SGR-1', 'ETH'];
 
 class CrossTransfer implements ICrossTransfer {
   options: ICrossTransferInitOption;

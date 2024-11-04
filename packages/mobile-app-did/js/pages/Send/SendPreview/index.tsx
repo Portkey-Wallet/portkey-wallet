@@ -319,6 +319,7 @@ const SendPreview: React.FC = () => {
           decimals: Number(assetInfo.decimals),
           address: assetInfo.tokenContractAddress,
         },
+        isCheckSymbol: false,
       });
       console.log('crossTransferByEtransferResult', crossTransferByEtransferResult);
       if (!crossTransferByEtransferResult?.transactionId) throw 'Transfer error';

@@ -35,6 +35,7 @@ export interface IWithdrawParams {
     symbol: string;
     decimals: number;
   };
+  isCheckSymbol?: boolean;
 }
 
 export interface ICrossTransfer {

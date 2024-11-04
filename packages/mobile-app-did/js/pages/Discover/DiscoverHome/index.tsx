@@ -23,9 +23,12 @@ import { useOnTouchAndPopUp } from 'components/FloatOverlay/touch';
 import { ListItemType } from 'components/FloatOverlay/Popover';
 import { ArchivedTabEnum } from '../types';
 import DiscoverTab from '../components/DiscoverTopTab';
+import { makeStyles, useTheme } from '@rneui/themed';
 
 export default function DiscoverHome() {
   useCheckAndInitNetworkDiscoverMap();
+  const { theme } = useTheme();
+  const styles = getStyles();
   const fetchCurrentRememberMeBlackList = useFetchCurrentRememberMeBlackList();
   const qrScanPermissionAndToast = useQrScanPermissionAndToast();
   const { fetchDiscoverLearnBannerAsync } = useCmsBanner();
@@ -35,6 +38,7 @@ export default function DiscoverHome() {
     (num: ArchivedTabEnum) => navigationService.navigate('Bookmark', { type: num }),
     [],
   );
+
   const popUpList = useMemo<ListItemType[]>(() => {
     return [
       {
@@ -72,7 +76,7 @@ export default function DiscoverHome() {
         <TextM style={[styles.showAllTabsText, fonts.mediumFont]}>{currentTabLength}</TextM>
       </Touchable>
     );
-  }, [currentTabLength, showTabDrawer]);
+  }, [currentTabLength, showTabDrawer, styles.showAllTabsText, styles.showAllTabsWrap]);
 
   const showToolsIcon = useMemo(() => {
     return <TouchableIcon icon="more-vertical" onPress={onTouch} size={22} />;
@@ -91,14 +95,14 @@ export default function DiscoverHome() {
   });
 
   return (
-    <SafeAreaBox edges={['top', 'right', 'left']} style={BGStyles.white}>
+    <SafeAreaBox edges={['top', 'right', 'left']} style={styles.wrap}>
+      <View style={styles.container}>
+        <DiscoverTab />
+      </View>
       <View style={styles.functionalLine}>
         <SimulatedInputBox onClickInput={() => navigationService.navigate('DiscoverSearch')} rightDom={scanQRIcon} />
         {showAllTabsIcon}
         {showToolsIcon}
-      </View>
-      <View style={styles.container}>
-        <DiscoverTab />
       </View>
     </SafeAreaBox>
   );
@@ -113,6 +117,7 @@ function TouchableIcon({
   onPress: (event: GestureResponderEvent) => Promise<any> | void;
   size?: number;
 }) {
+  const styles = getStyles();
   return (
     <Touchable style={styles.svgWrap} onPress={onPress}>
       <Svg icon={icon} size={pTd(size)} color={defaultColors.bg34} />
@@ -120,9 +125,12 @@ function TouchableIcon({
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = makeStyles(theme => ({
+  wrap: {
+    backgroundColor: theme.colors.bgBase1,
+  },
   container: {
-    backgroundColor: defaultColors.white,
+    backgroundColor: theme.colors.bgBase1,
     flex: 1,
   },
   functionalLine: {
@@ -159,4 +167,4 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-});
+}));

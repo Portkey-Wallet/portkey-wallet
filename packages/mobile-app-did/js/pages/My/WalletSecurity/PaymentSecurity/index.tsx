@@ -52,7 +52,7 @@ const _renderPaymentSecurityItem = ({ item }: { item: ITransferLimitItem }) => {
             style={ItemStyles.chainIcon}
             title={item?.chainId}
             avatarSize={pTd(20)}
-            imageUrl={item?.imageUrl}
+            imageUrl={item?.chainImageUrl}
             borderStyle={ItemStyles.tokenIconBorder}
           />
         </View>

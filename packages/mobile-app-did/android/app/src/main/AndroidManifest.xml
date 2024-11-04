@@ -2,8 +2,8 @@
   <uses-permission android:name="android.permission.INTERNET"/>
   <uses-permission android:name="android.permission.CAMERA"/>
   <uses-permission android:name="android.permission.RECORD_AUDIO"/>
-  <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-  <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+<!--  <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />-->
+<!--  <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />-->
   <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
   <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
@@ -109,6 +109,6 @@
     </activity>
 		<meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/FACEBOOK_APP_ID"/>
     <meta-data android:name="com.facebook.sdk.ClientToken" android:value="@string/FACEBOOK_CLIENT_TOKEN"/>
-    <service android:name=".native_modules.PortkeyHeadlessJsTaskService" android:foregroundServiceType="dataSync"/>
+<!--    <service android:name=".native_modules.PortkeyHeadlessJsTaskService" android:foregroundServiceType="dataSync"/>-->
   </application>
 </manifest>

@@ -16,7 +16,7 @@ import Loading from 'components/Loading';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import CommonToast from 'components/CommonToast';
 import useEffectOnce from 'hooks/useEffectOnce';
-import CommonInputNew from 'components/CommonInputNew';
+import CommonInput from 'components/CommonInput';
 import { useBuyCryptoList, useSellCryptoList } from '@portkey-wallet/hooks/hooks-ca/ramp';
 import Touchable from 'components/Touchable';
 import CommonAvatar from 'components/CommonAvatar';
@@ -142,7 +142,7 @@ export default function RampEntry() {
       titleDom={<CommonTouchableTabs tabList={tabList} onTabPress={onTabPress} selectTab={selectTab} />}
       containerStyles={styles.pageWrap}
       scrollViewProps={{ disabled: true }}>
-      <CommonInputNew placeholder={'Search'} value={keyword} onChangeText={onChangeText} />
+      <CommonInput placeholder={'Search'} value={keyword} onChangeText={onChangeText} />
       <View style={[GStyles.flex1, styles.listWrap]}>
         <ScrollView>
           {filterList.map(item => (

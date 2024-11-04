@@ -140,16 +140,19 @@ export default function ToAddressInput({
 
       try {
         setIsChecking(true);
-        const { data } = await getSendNetworkList({
+        const { data, code } = await getSendNetworkList({
           symbol: selectedToken?.symbol || '',
           chainId: selectedToken?.chainId || 'AELF',
           toAddress,
         });
 
-        const chainListLen = data.networkList.length;
-        setChainList(data.networkList);
-        setCheckedPass(!!chainListLen);
-        chainListLen ? setWarning([WarningKey.MAKE_SURE_SUPPORT_PLATFORM]) : setWarning([WarningKey.INVALID_ADDRESS]);
+        if (code === '40001') {
+          setWarning([WarningKey.INVALID_ADDRESS]);
+        } else {
+          setCheckedPass(true);
+          setChainList(data.networkList);
+          setWarning([WarningKey.MAKE_SURE_SUPPORT_PLATFORM]);
+        }
       } catch (error) {
         console.log('getNetworkList err', error);
         setWarning([WarningKey.INVALID_ADDRESS]);

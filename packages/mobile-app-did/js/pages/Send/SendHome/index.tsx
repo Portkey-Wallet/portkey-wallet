@@ -15,14 +15,10 @@ import NFTInfo from '../NFTInfo';
 import CommonButton from 'components/CommonButton';
 import { useCurrentWalletInfo, useMainChainCaInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useCurrentChain, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
-import {
-  CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL,
-  useCrossTransferByEtransfer,
-} from '@portkey-wallet/hooks/hooks-ca/useWithdrawByETransfer';
+import { useCrossTransferByEtransfer } from '@portkey-wallet/hooks/hooks-ca/useWithdrawByETransfer';
 import {
   divDecimals,
   formatAmountShow,
-  formatAmountUSDShow,
   formatTokenAmountShowWithDecimals,
   timesDecimals,
 } from '@portkey-wallet/utils/converter';
@@ -69,8 +65,7 @@ import useGetEBridgeConfig from 'hooks/ebridge';
 import { EBridge } from '@portkey-wallet/utils/eBridge';
 import ActionSheet from 'components/ActionSheet';
 import OverlayModal from 'components/OverlayModal';
-import { eBridgeActionSheet, getLimitTips, getSmallerValue, isValidAmount } from '../utils';
-import CommonInfoRow from 'components/CommonInfoRow';
+import { eBridgeActionSheet, getLimitTips, getSendNetworkList, getSmallerValue, isValidAmount } from '../utils';
 import { SEND_RECEIVE_HELP_URL } from 'constants/common';
 import { openOutLink } from 'utils/link';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
@@ -111,10 +106,6 @@ const SendHome: React.FC = () => {
   const pin = usePin();
   const crossTransferByEtransfer = useCrossTransferByEtransfer(pin);
 
-  const isSupportCross = useMemo(
-    () => CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL.includes(assetInfo.symbol),
-    [assetInfo.symbol],
-  );
   const { getTokenConfig, getAELFChainInfoConfig, getEVMChainInfoConfig } = useGetEBridgeConfig();
 
   const [warning, setWarning] = useState<WarningKey[]>([]);
@@ -672,9 +663,20 @@ const SendHome: React.FC = () => {
       }
     }
 
+    const { data, code } = await getSendNetworkList({
+      symbol: assetInfo?.symbol || '',
+      chainId: assetInfo?.chainId || 'AELF',
+      toAddress: toInfo.address,
+    });
+
+    const isSupportEtransfer =
+      !!data?.networkList?.find((ele: { serviceName: string }) =>
+        ele?.serviceName?.toLocaleLowerCase()?.includes('transfer'),
+      ) && code === '20000';
+
     // SameChain or CrossChain in aelf
     try {
-      if (isAELFCross && isSupportCross) {
+      if (isAELFCross && isSupportEtransfer) {
         const network = selectedToContact?.chainId || 'AELF';
 
         const { withdrawInfo } = await crossTransferByEtransfer.withdrawPreview({
@@ -739,6 +741,7 @@ const SendHome: React.FC = () => {
     warning,
     recommendETransfer,
     recommendEBridge,
+    toInfo?.address,
     defaultToken.symbol,
     defaultToken.decimals,
     crossFee,
@@ -753,7 +756,6 @@ const SendHome: React.FC = () => {
     getEVMChainInfoConfig,
     getTokenConfig,
     tokenPriceObject,
-    isSupportCross,
     getTransactionFee,
   ]);
 

@@ -16,10 +16,10 @@ const DashBoardTab: React.FC = () => {
         name: t('Tokens'),
         tabItemDom: <TokenSection />,
       },
-      {
-        name: t('NFTs'),
-        tabItemDom: <NFTSection />,
-      },
+      // {
+      //   name: t('NFTs'),
+      //   tabItemDom: <NFTSection />,
+      // },
     ];
   }, [t]);
 

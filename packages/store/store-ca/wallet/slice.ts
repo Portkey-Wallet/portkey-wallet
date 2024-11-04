@@ -38,7 +38,8 @@ export const DEFAULT_USER_INFO: UserInfoType = {
 const initialState: WalletState = {
   walletAvatar: `master${(Math.floor(Math.random() * 10000) % 6) + 1}`, // to be scrapped, please use userInfo.avatar
   walletType: 'aelf',
-  currentNetwork: 'MAINNET',
+  // TODO: change it
+  currentNetwork: 'TESTNET',
   chainList: [],
   chainInfo: {},
   userInfo: {},

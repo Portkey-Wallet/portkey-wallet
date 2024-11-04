@@ -85,7 +85,7 @@ export const useCheckTransferLimitWithJump = () => {
                   });
                 },
               },
-              { title: 'Modify transfer limit for all', type: 'outline' },
+              { title: 'Modify transfer limit for all', type: 'outline', onPress: gotoLimitEdit },
             ],
           });
 

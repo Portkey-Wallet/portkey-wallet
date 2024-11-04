@@ -16,6 +16,7 @@ import ReceiveNav from 'pages/Receive';
 import ActivityNav from 'pages/Activity';
 import Home from 'pages/Home';
 import GuardianNav from 'pages/Guardian';
+import SwapNav from 'pages/Swap';
 
 import Referral from 'pages/Referral';
 import SecurityLock from 'pages/SecurityLock';
@@ -69,6 +70,7 @@ export const productionNav = [
   ...ChatNav,
   ...DiscoverNav,
   ...FreeMintNav,
+  ...SwapNav,
 ] as const;
 
 // dev nav

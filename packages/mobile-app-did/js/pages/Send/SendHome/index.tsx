@@ -15,7 +15,10 @@ import NFTInfo from '../NFTInfo';
 import CommonButton from 'components/CommonButton';
 import { useCurrentWalletInfo, useMainChainCaInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useCurrentChain, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
-import { useCrossTransferByEtransfer } from '@portkey-wallet/hooks/hooks-ca/useWithdrawByETransfer';
+import {
+  CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL,
+  useCrossTransferByEtransfer,
+} from '@portkey-wallet/hooks/hooks-ca/useWithdrawByETransfer';
 import {
   divDecimals,
   formatAmountShow,
@@ -65,7 +68,7 @@ import useGetEBridgeConfig from 'hooks/ebridge';
 import { EBridge } from '@portkey-wallet/utils/eBridge';
 import ActionSheet from 'components/ActionSheet';
 import OverlayModal from 'components/OverlayModal';
-import { eBridgeActionSheet, getLimitTips, getSendNetworkList, getSmallerValue, isValidAmount } from '../utils';
+import { eBridgeActionSheet, getLimitTips, getSmallerValue, isValidAmount } from '../utils';
 import { SEND_RECEIVE_HELP_URL } from 'constants/common';
 import { openOutLink } from 'utils/link';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
@@ -94,6 +97,11 @@ const SendHome: React.FC = () => {
   const recommendEBridge = useMemo(
     () => targetNetwork?.serviceList?.find(ele => ele?.serviceName?.toLocaleLowerCase()?.includes('bridge')),
     [targetNetwork?.serviceList],
+  );
+
+  const isSupportCross = useMemo(
+    () => CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL.includes(assetInfo.symbol),
+    [assetInfo.symbol],
   );
 
   const [isSendToExchange, setIsSendToExchange] = useState(true);
@@ -392,7 +400,7 @@ const SendHome: React.FC = () => {
 
   const crossChainAction = useCallback(() => {
     if (assetInfo.chainId !== DefaultChainId) {
-      ActionSheet.alert({
+      return ActionSheet.alert({
         showInfoIcon: true,
         title: 'Confirm to proceed',
         message: 'Direct transfers from dAppChain to Exchange are currently unsupported and could lead to asset loss.',
@@ -409,6 +417,7 @@ const SendHome: React.FC = () => {
         ],
       });
     }
+    setStep(2);
   }, [assetInfo.chainId]);
 
   const nextStep = useCallback(() => {
@@ -663,20 +672,9 @@ const SendHome: React.FC = () => {
       }
     }
 
-    const { data, code } = await getSendNetworkList({
-      symbol: assetInfo?.symbol || '',
-      chainId: assetInfo?.chainId || 'AELF',
-      toAddress: toInfo.address,
-    });
-
-    const isSupportEtransfer =
-      !!data?.networkList?.find((ele: { serviceName: string }) =>
-        ele?.serviceName?.toLocaleLowerCase()?.includes('transfer'),
-      ) && code === '20000';
-
     // SameChain or CrossChain in aelf
     try {
-      if (isAELFCross && isSupportEtransfer) {
+      if (isAELFCross && isSupportCross) {
         const network = selectedToContact?.chainId || 'AELF';
 
         const { withdrawInfo } = await crossTransferByEtransfer.withdrawPreview({
@@ -741,7 +739,6 @@ const SendHome: React.FC = () => {
     warning,
     recommendETransfer,
     recommendEBridge,
-    toInfo?.address,
     defaultToken.symbol,
     defaultToken.decimals,
     crossFee,
@@ -756,6 +753,7 @@ const SendHome: React.FC = () => {
     getEVMChainInfoConfig,
     getTokenConfig,
     tokenPriceObject,
+    isSupportCross,
     getTransactionFee,
   ]);
 

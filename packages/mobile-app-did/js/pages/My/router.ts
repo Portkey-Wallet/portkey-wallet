@@ -8,7 +8,7 @@ import UserReferral from './UserReferral/index';
 import SecurityNav from './Security/router';
 
 const stackNav = [
-  ...SecurityNav,
+  // ...SecurityNav,
   ...WalletSecurityNav,
   ...WalletHomeNav,
   ...accountSettingsNav,

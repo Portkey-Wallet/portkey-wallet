@@ -1,6 +1,7 @@
 import { useLanguage } from 'i18n/hooks';
 import { ModalBody } from 'components/ModalBody';
-import { StyleSheet, View } from 'react-native';
+import OverlayModal from 'components/OverlayModal';
+import { View } from 'react-native';
 import CommonInput from 'components/CommonInput';
 import { pTd } from 'utils/unit';
 import { TextM } from 'components/CommonText';
@@ -114,6 +115,7 @@ const EditModal: React.FC<IProps> = ({ detail }: IProps) => {
       },
       targetChainId: detail?.chainId,
     });
+    OverlayModal.hide();
   }, [detail, editInfo]);
 
   return (
@@ -123,7 +125,7 @@ const EditModal: React.FC<IProps> = ({ detail }: IProps) => {
           <TextM style={pageStyles.title}>{t('Limit per Transaction')}</TextM>
           <CommonInput
             type="general"
-            // keyboardType={isIOS ? 'number-pad' : 'numeric'}
+            keyboardType={isIOS ? 'number-pad' : 'numeric'}
             value={editInfo?.singleLimit || ''}
             rightIcon={
               <View style={pageStyles.rightIconContainer}>
@@ -148,7 +150,7 @@ const EditModal: React.FC<IProps> = ({ detail }: IProps) => {
                 <TextM>{detail?.symbol}</TextM>
               </View>
             }
-            // keyboardType={isIOS ? 'number-pad' : 'numeric'}
+            keyboardType={isIOS ? 'number-pad' : 'numeric'}
             value={editInfo?.dailyLimit || ''}
             onChangeText={onDailyLimitInput}
             maxLength={maxLength}

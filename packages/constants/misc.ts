@@ -10,6 +10,7 @@ export const LANG_MAX = new BigNumber('9223372036854774784');
 
 export const ZERO = new BigNumber(0);
 export const ONE = new BigNumber(1);
+export const TEN_THOUSAND = new BigNumber(10000);
 
 export const isEffectiveNumber = (v: any) => {
   const val = new BigNumber(v);

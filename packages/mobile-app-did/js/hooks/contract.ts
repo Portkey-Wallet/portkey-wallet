@@ -157,3 +157,26 @@ export function useGetTokenViewContract() {
     [getChain],
   );
 }
+
+export type TGetViewContractParams = {
+  chainId: ChainId;
+  contractAddress: string;
+};
+export const useGetViewContract = () => {
+  const getChain = useGetChain();
+
+  return useCallback(
+    async ({ chainId, contractAddress }: TGetViewContractParams) => {
+      const chainInfo = getChain(chainId);
+      if (!chainInfo) throw Error('Could not find chain information');
+
+      const contract = await getContractBasic({
+        contractAddress,
+        rpcUrl: chainInfo.endPoint,
+        account: getDefaultWallet(),
+      });
+      return contract as ContractBasic;
+    },
+    [getChain],
+  );
+};

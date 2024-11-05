@@ -5,7 +5,7 @@ import { StyleSheet } from 'react-native';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { pTd } from 'utils/unit';
 import { darkColors, defaultColors } from 'assets/theme';
-import { TextXL } from 'components/CommonText';
+import { TextXXL } from 'components/CommonText';
 import Svg from 'components/Svg';
 import GStyles from 'assets/theme/GStyles';
 import fonts from 'assets/theme/fonts';
@@ -69,12 +69,12 @@ export const ModalBody: React.FC<ModalBodyProps> = props => {
           {leftTitleDom ? (
             leftTitleDom
           ) : (
-            <TextXL
+            <TextXXL
               suppressHighlighting={true}
-              style={[styles.titleStyle, fonts.mediumFont]}
+              style={[styles.titleStyle, fonts.BGMediumFont]}
               onPress={Keyboard.dismiss}>
               {title}
-            </TextXL>
+            </TextXXL>
           )}
 
           {isShowRightCloseIcon && (
@@ -139,7 +139,7 @@ export const styles = StyleSheet.create({
     zIndex: 10000,
   },
   titleStyle: {
-    lineHeight: pTd(22),
+    lineHeight: pTd(24),
     paddingLeft: pTd(16),
     width: '100%',
     color: darkColors.textBase1,

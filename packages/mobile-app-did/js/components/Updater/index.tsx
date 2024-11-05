@@ -12,8 +12,6 @@ import { useCaInfoOnChain } from 'hooks/useCaInfoOnChain';
 import { useFetchSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
 import { useCheckManager } from '@portkey-wallet/hooks/hooks-ca/graphql';
 import { useCheckManagerOnLogout } from 'hooks/useLogOut';
-import socket from '@portkey-wallet/socket/socket-did';
-import CommonToast from 'components/CommonToast';
 import { usePhoneCountryCode } from '@portkey-wallet/hooks/hooks-ca/misc';
 import {
   useDiscoverGroupList,
@@ -37,6 +35,7 @@ import { useLatestRef } from '@portkey-wallet/hooks';
 import MatchValueMap from 'utils/matchValueMap';
 import { useInitCmsBanner } from '@portkey-wallet/hooks/hooks-ca/cms/banner';
 import { useInitCMSDiscoverNewData, useInitDappWhiteListData } from '@portkey-wallet/hooks/hooks-ca/cms/discover';
+import { useInitAwaken } from '@portkey-wallet/hooks/hooks-ca/awaken';
 
 request.setExceptionManager(exceptionManager);
 
@@ -129,5 +128,6 @@ export default function Updater() {
   useRememberMeBlackList(true);
   useCheckContactMap();
   useInitDappWhiteListData();
+  useInitAwaken();
   return null;
 }

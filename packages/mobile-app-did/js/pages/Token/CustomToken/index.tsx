@@ -193,7 +193,7 @@ export const pageStyles = StyleSheet.create({
   pageWrap: {
     flex: 1,
     backgroundColor: darkColors.bgBase1,
-    ...gStyles.paddingArg(16, 20),
+    ...gStyles.paddingArg(16, 16),
   },
   tipsSection: {
     color: defaultColors.font3,

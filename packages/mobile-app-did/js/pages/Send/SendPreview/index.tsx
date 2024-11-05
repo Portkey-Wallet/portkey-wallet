@@ -20,7 +20,6 @@ import { addFailedActivity, removeFailedActivity } from '@portkey-wallet/store/s
 import { useRouterEffectParams } from '@portkey-wallet/hooks/useRouterParams';
 import CommonToast from 'components/CommonToast';
 import navigationService from 'utils/navigationService';
-import Loading from 'components/Loading';
 import { IToSendPreviewParamsType, TransferType } from '@portkey-wallet/types/types-ca/routeParams';
 import { BaseToken } from '@portkey-wallet/types/types-ca/token';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
@@ -73,6 +72,7 @@ const SendPreview: React.FC = () => {
   } = routerParams;
   useFetchTxFee();
 
+  const [isLoading, setIsLoading] = useState(false);
   const { getAELFChainInfoConfig, getEVMChainInfoConfig, getTokenConfig } = useGetEBridgeConfig();
   const isApproved = useMemo(() => guardiansApproved && guardiansApproved.length > 0, [guardiansApproved]);
   const { crossChain: crossDefaultFee } = useGetTxFee(assetInfo.chainId);
@@ -400,7 +400,7 @@ const SendPreview: React.FC = () => {
       const account = getManagerAccount(pin);
       if (!account) return;
 
-      Loading.show();
+      setIsLoading(true);
       try {
         if (!tokenContractRef.current) {
           tokenContractRef.current = await getContractBasic({
@@ -421,7 +421,7 @@ const SendPreview: React.FC = () => {
           retryCrossChain(managerTransferTxId, data);
         });
       } finally {
-        Loading.hide();
+        setIsLoading(false);
       }
     },
     [
@@ -437,7 +437,7 @@ const SendPreview: React.FC = () => {
   );
 
   const send = useCallback(async () => {
-    Loading.show();
+    setIsLoading(true);
     try {
       await transfer();
       await sleep(1500);
@@ -463,7 +463,7 @@ const SendPreview: React.FC = () => {
         CommonToast.failError(error);
       }
     } finally {
-      Loading.hide();
+      setIsLoading(false);
     }
   }, [actionAfterTransfer, dispatch, retryCrossChain, showRetry, transfer]);
 
@@ -497,6 +497,7 @@ const SendPreview: React.FC = () => {
 
   return (
     <SendReceivePreview
+      isLoading={isLoading}
       isError={isError}
       actionType={ActionType.SEND}
       footerType={footerType}

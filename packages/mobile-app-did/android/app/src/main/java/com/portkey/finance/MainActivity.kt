@@ -8,7 +8,7 @@ import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.fabricEnabled
 import com.facebook.react.defaults.DefaultReactActivityDelegate
-import com.portkey.finance.native_modules.PortkeyHeadlessJsTaskService
+//import com.portkey.finance.native_modules.PortkeyHeadlessJsTaskService
 
 class MainActivity : ReactActivity() {
 
@@ -25,26 +25,26 @@ class MainActivity : ReactActivity() {
     override fun createReactActivityDelegate(): ReactActivityDelegate =
         DefaultReactActivityDelegate(this, mainComponentName, fabricEnabled)
 
-    override fun onStop() {
-        super.onStop()
-        try {
-            val service = Intent(
-                applicationContext,
-                PortkeyHeadlessJsTaskService::class.java
-            )
-            val bundle = Bundle()
-
-            bundle.putString("portkey", "finance")
-            service.putExtras(bundle)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                // start the foreground service
-                ContextCompat.startForegroundService(this, service)
-                //        getApplicationContext().startForegroundService(service);
-            } else {
-                this.startService(service)
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
+//    override fun onStop() {
+//        super.onStop()
+//        try {
+//            val service = Intent(
+//                applicationContext,
+//                PortkeyHeadlessJsTaskService::class.java
+//            )
+//            val bundle = Bundle()
+//
+//            bundle.putString("portkey", "finance")
+//            service.putExtras(bundle)
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//                // start the foreground service
+//                ContextCompat.startForegroundService(this, service)
+//                //        getApplicationContext().startForegroundService(service);
+//            } else {
+//                this.startService(service)
+//            }
+//        } catch (e: Exception) {
+//            e.printStackTrace()
+//        }
+//    }
 }

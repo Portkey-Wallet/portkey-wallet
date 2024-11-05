@@ -5,12 +5,14 @@ import CommonButton from 'components/CommonButton';
 import SelectTokenButton from '../SelectTokenButton';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useInputFocus } from 'hooks/useInputFocus';
+import { ViewStyleType } from 'types/styles';
 import { getStyles } from './style';
 
 interface IAmountCardProps {
+  style?: ViewStyleType;
   title: string;
   isInput?: boolean;
-  showBalance?: boolean;
+  isError?: boolean;
   amount?: string;
   amountUsd?: string;
   balance?: string;
@@ -18,8 +20,10 @@ interface IAmountCardProps {
 }
 
 const AmountCard: React.FC<IAmountCardProps> = ({
+  style,
   title,
   isInput = false,
+  isError = false,
   amount,
   amountUsd,
   balance,
@@ -42,7 +46,7 @@ const AmountCard: React.FC<IAmountCardProps> = ({
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, style]}>
       <Text style={styles.title}>{title}</Text>
       <View style={styles.amountWrap}>
         {isInput ? (
@@ -52,7 +56,7 @@ const AmountCard: React.FC<IAmountCardProps> = ({
             maxLength={18}
             containerStyle={styles.containerStyle}
             inputContainerStyle={styles.inputContainerStyle}
-            inputStyle={styles.inputStyle}
+            inputStyle={[styles.inputStyle, isError && styles.errorInputStyle]}
             placeholderTextColor={theme.colors.textBase3}
             placeholder="0"
             value={amount}

@@ -4,6 +4,7 @@ import fonts from 'assets/theme/fonts';
 
 export const getStyles = makeStyles(theme => ({
   container: {
+    height: pTd(126),
     padding: pTd(16),
     borderRadius: pTd(16),
     backgroundColor: theme.colors.bgBase2,
@@ -45,6 +46,9 @@ export const getStyles = makeStyles(theme => ({
     fontSize: pTd(32),
     lineHeight: pTd(38),
     color: theme.colors.textBase1,
+  },
+  errorInputStyle: {
+    color: theme.colors.textDanger1,
   },
   infoWrap: {
     flexDirection: 'row',

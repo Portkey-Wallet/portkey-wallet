@@ -138,8 +138,8 @@ const PaymentSecurityEdit: React.FC = () => {
 
   return (
     <PageContainer
-      titleDom={'Transfer Settings'}
-      safeAreaColor={['white', 'gray']}
+      titleDom={'Transaction Limits'}
+      safeAreaColor={['black']}
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}>
       <View>
@@ -192,15 +192,15 @@ const PaymentSecurityEdit: React.FC = () => {
 const pageStyles = StyleSheet.create({
   pageWrap: {
     flex: 1,
-    backgroundColor: defaultColors.bg4,
+    backgroundColor: defaultColors.bg19,
     justifyContent: 'space-between',
-    ...GStyles.paddingArg(24, 20, 18),
+    // ...GStyles.paddingArg(24, 20, 18),
   },
   switchWrap: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: pTd(16),
-    backgroundColor: defaultColors.bg1,
+    backgroundColor: defaultColors.bg19,
     marginBottom: pTd(24),
     height: pTd(56),
     alignItems: 'center',

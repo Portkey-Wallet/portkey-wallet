@@ -11,18 +11,20 @@ import GStyles from 'assets/theme/GStyles';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import fonts from 'assets/theme/fonts';
+import { ViewStyleType } from 'types/styles';
 
 interface TokenListItemType {
+  wrapStyle?: ViewStyleType;
   item: TokenItemShowType;
   onPress?: (item: TokenItemShowType) => void;
   hideBalance?: boolean;
 }
 
 const TokenItem: React.FC<TokenListItemType> = props => {
-  const { onPress, item, hideBalance = false } = props;
+  const { onPress, item, hideBalance = false, wrapStyle } = props;
   const isMainnet = useIsMainnet();
   return (
-    <Touchable style={itemStyle.wrap} onPress={() => onPress?.(item)}>
+    <Touchable style={[itemStyle.wrap, wrapStyle]} onPress={() => onPress?.(item)}>
       <View style={itemStyle.left}>
         <View style={itemStyle.iconWrap}>
           <CommonAvatar
@@ -44,16 +46,22 @@ const TokenItem: React.FC<TokenListItemType> = props => {
           />
         </View>
         <View>
-          <TextM style={itemStyle.symbolText}>{item.label || item.symbol}</TextM>
-          <TextM style={itemStyle.chainText}>{item.displayChainName}</TextM>
+          <TextM numberOfLines={1} ellipsizeMode={'tail'} style={itemStyle.symbolText}>
+            {item.label || item.symbol}
+          </TextM>
+          <TextM numberOfLines={1} ellipsizeMode={'tail'} style={itemStyle.chainText}>
+            {item.displayChainName}
+          </TextM>
         </View>
       </View>
       <View style={itemStyle.right}>
-        <TextM style={itemStyle.balanceText}>
+        <TextM numberOfLines={1} ellipsizeMode={'tail'} style={itemStyle.balanceText}>
           {hideBalance ? '******' : formatTokenAmountShowWithDecimals(item.balance, item.decimals)}
         </TextM>
         {item.balanceInUsd && isMainnet && (
-          <TextM style={itemStyle.balanceInUseText}>{hideBalance ? '******' : item.balanceInUsd}</TextM>
+          <TextM numberOfLines={1} ellipsizeMode={'tail'} style={itemStyle.balanceInUseText}>
+            {hideBalance ? '******' : item.balanceInUsd}
+          </TextM>
         )}
       </View>
     </Touchable>

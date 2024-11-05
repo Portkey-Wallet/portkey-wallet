@@ -1,21 +1,13 @@
 import React, { memo, useCallback, useState } from 'react';
-import { Text, View, TouchableWithoutFeedback } from 'react-native';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { View } from 'react-native';
 import { useLanguage } from 'i18n/hooks';
 import CommonPreviewContainer from 'components/CommonPreviewContainer';
-import PageContainer from 'components/PageContainer';
 import Svg from 'components/Svg';
-import CommonButton from 'components/CommonButton';
 import CommonInfoRow from 'components/CommonInfoRow';
-import Touchable from 'components/Touchable';
 import { CommonPromptCard, PromptCardType } from 'components/CommonPromptCard';
-import { formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
-import { ChainId } from '@portkey-wallet/types';
 import { getChainSvgName } from 'utils';
 import { pTd } from 'utils/unit';
-import { openOutLink } from 'utils/link';
-import { SEND_RECEIVE_HELP_URL } from 'constants/common';
 import { getStyles } from './style';
 
 const SwapPreview = () => {

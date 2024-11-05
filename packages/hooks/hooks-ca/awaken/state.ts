@@ -90,7 +90,7 @@ export const useAwakenUserExpiration = () => {
   const dispatch = useAppCommonDispatch();
   const awakenUserExpirationState = useAwakenUserExpirationState();
 
-  const userExpirationState = useMemo(
+  const userExpiration = useMemo(
     () => awakenUserExpirationState[currentNetwork] || DEFAULT_EXPIRATION,
     [awakenUserExpirationState, currentNetwork],
   );
@@ -108,7 +108,7 @@ export const useAwakenUserExpiration = () => {
   );
 
   return {
-    userExpirationState,
+    userExpiration,
     update,
   };
 };

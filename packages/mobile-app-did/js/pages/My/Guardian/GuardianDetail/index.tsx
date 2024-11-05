@@ -5,7 +5,8 @@ import { View } from 'react-native';
 import { pTd } from 'utils/unit';
 import navigationService from 'utils/navigationService';
 import PageContainer from 'components/PageContainer';
-import { pageStyles } from './style';
+import Svg from 'components/Svg';
+import { getPageStyles } from './style';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 import CommonSwitch from 'components/CommonSwitch';
 import ActionSheet from 'components/ActionSheet';
@@ -15,13 +16,13 @@ import Loading from 'components/Loading';
 import CommonToast from 'components/CommonToast';
 import { VerifierImage } from 'pages/Guardian/components/VerifierImage';
 import { RouteProp, useRoute } from '@react-navigation/native';
-import GuardianAccountItem from '../components/GuardianAccountItem';
-import Divider from 'components/Divider';
 import { checkIsLastLoginAccount } from '@portkey-wallet/utils/guardian';
 import { useSetLoginAccount } from '../hooks/useSetLoginAccount';
 import myEvents from 'utils/deviceEvent';
 import { zkLoginVerifierItem } from '@portkey-wallet/types/verifier';
 import { isZKLoginSupported } from '@portkey-wallet/types/types-ca/wallet';
+import { GUARDIAN_ITEM_TYPE_ICON } from 'constants/misc';
+import GuardianAccount from 'pages/Guardian/components/GuardianAccount';
 
 type RouterParams = {
   guardian?: UserGuardianItem;
@@ -34,6 +35,7 @@ export default function GuardianDetail() {
   const getGuardiansInfo = useGetGuardiansInfo();
   const { userGuardiansList } = useGuardiansInfo();
   const setLoginAccount = useSetLoginAccount();
+  const pageStyles = getPageStyles();
 
   const [guardian, setGuardian] = useState(guardianRouter);
   useEffect(() => {
@@ -95,7 +97,9 @@ export default function GuardianDetail() {
           if (error.code === '20004') {
             Loading.hide();
             ActionSheet.alert({
-              title2: 'This account address is already a login account and cannot be used',
+              showInfoIcon: true,
+              title2: 'Already used as login account',
+              message: `This account is already set as a login account for other wallet(s) and can't be used for this purpose.`,
               buttons: [
                 {
                   title: 'Close',
@@ -142,34 +146,50 @@ export default function GuardianDetail() {
 
   return (
     <PageContainer
-      safeAreaColor={['white', 'gray']}
+      safeAreaColor={['black', 'black']}
       titleDom={'Guardians'}
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}>
       <View style={pageStyles.contentWrap}>
-        <View style={pageStyles.guardianInfoWrap}>
-          <GuardianAccountItem guardian={guardian} />
-          <Divider style={pageStyles.dividerStyle} />
-          <View style={pageStyles.verifierInfoWrap}>
-            <VerifierImage
-              style={pageStyles.verifierImageStyle}
-              size={pTd(28)}
-              label={verifierName}
-              uri={verifierImage}
-            />
-            <TextL>{verifierName || ''}</TextL>
-          </View>
-        </View>
-
         <View style={pageStyles.loginSwitchWrap}>
-          <TextM>{'Login account'}</TextM>
-          <CommonSwitch
-            value={guardian === undefined ? false : guardian.isLoginAccount}
-            onValueChange={onLoginAccountChange}
-          />
+          <View style={pageStyles.rowSpaceBetweenItemsCenter}>
+            <TextL style={pageStyles.loginSwitchTitle}>{'Login account'}</TextL>
+            <CommonSwitch
+              value={guardian === undefined ? false : guardian.isLoginAccount}
+              disabled={(userGuardiansList?.length ?? 0) <= 1}
+              onValueChange={onLoginAccountChange}
+            />
+          </View>
+          <TextM style={pageStyles.tips}>
+            {'The login account will be able to log in and control all your assets'}
+          </TextM>
         </View>
-
-        <TextM style={pageStyles.tips}>{'The login account will be able to log in and control all your assets'}</TextM>
+        {guardian && (
+          <View style={pageStyles.guardianInfoWrap}>
+            <View style={[pageStyles.rowSpaceBetweenItemsCenter, pageStyles.guardianInfoItem]}>
+              <TextL>Guardian</TextL>
+              <View style={pageStyles.guardianTypeWrap}>
+                <Svg icon={GUARDIAN_ITEM_TYPE_ICON[guardian.guardianType]} size={pTd(18)} />
+                <TextL style={pageStyles.guardianInfoText}>{guardian.type}</TextL>
+              </View>
+            </View>
+            <View style={[pageStyles.rowSpaceBetweenItemsCenter, pageStyles.guardianInfoItem]}>
+              <TextL>Guardian account</TextL>
+              <GuardianAccount
+                guardianItem={guardian}
+                wrapStyle={pageStyles.guardianAccountWrap}
+                firstNameStyle={pageStyles.textBold}
+              />
+            </View>
+            <View style={[pageStyles.rowSpaceBetweenItemsCenter, pageStyles.guardianInfoItem]}>
+              <TextL>Verifier</TextL>
+              <View style={pageStyles.verifierInfoWrap}>
+                <VerifierImage size={pTd(18)} label={verifierName} uri={verifierImage} />
+                <TextL style={pageStyles.guardianInfoText}>{verifierName || ''}</TextL>
+              </View>
+            </View>
+          </View>
+        )}
       </View>
       {userGuardiansList && userGuardiansList.length > 1 && (
         <CommonButton

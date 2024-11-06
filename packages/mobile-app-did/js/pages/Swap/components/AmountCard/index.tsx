@@ -1,10 +1,10 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { View, Text, TextInput } from 'react-native';
 import { Input, useTheme } from '@rneui/themed';
 import CommonButton from 'components/CommonButton';
+import Touchable from 'components/Touchable';
 import SelectTokenButton from '../SelectTokenButton';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
-import { useInputFocus } from 'hooks/useInputFocus';
 import { ViewStyleType } from 'types/styles';
 import { getStyles } from './style';
 
@@ -15,6 +15,8 @@ interface IAmountCardProps {
   isError?: boolean;
   amount?: string;
   amountUsd?: string;
+  amountUsdPercent?: string;
+  isAmountUsdPercentPositive?: boolean;
   balance?: string;
   onAmountChange?: (value: string) => void;
 }
@@ -26,6 +28,8 @@ const AmountCard: React.FC<IAmountCardProps> = ({
   isError = false,
   amount,
   amountUsd,
+  amountUsdPercent,
+  isAmountUsdPercentPositive = false,
   balance,
   onAmountChange,
 }) => {
@@ -35,7 +39,8 @@ const AmountCard: React.FC<IAmountCardProps> = ({
   const isMainnet = useIsMainnet();
 
   const iptRef = useRef<TextInput>(null);
-  useInputFocus(iptRef);
+
+  const [isInputting, setIsInputting] = useState(false);
 
   const handleAmountChange = (value: string) => {
     onAmountChange?.(value);
@@ -49,7 +54,7 @@ const AmountCard: React.FC<IAmountCardProps> = ({
     <View style={[styles.container, style]}>
       <Text style={styles.title}>{title}</Text>
       <View style={styles.amountWrap}>
-        {isInput ? (
+        {isInput && isInputting ? (
           <Input
             ref={iptRef}
             keyboardType="numeric"
@@ -61,18 +66,52 @@ const AmountCard: React.FC<IAmountCardProps> = ({
             placeholder="0"
             value={amount}
             onChangeText={handleAmountChange}
+            onFocus={() => setIsInputting(true)}
+            onBlur={() => setIsInputting(false)}
           />
         ) : (
-          <Text style={styles.amountText} numberOfLines={1} ellipsizeMode="tail">
-            {amount}
-          </Text>
+          <Touchable
+            style={styles.amountTextWrap}
+            onPress={() => {
+              if (isInput) {
+                setIsInputting(true);
+                setTimeout(() => {
+                  iptRef.current?.focus();
+                }, 100);
+              }
+            }}>
+            <Text
+              style={[styles.amountText, !amount && styles.amountTextPlaceholder]}
+              numberOfLines={1}
+              ellipsizeMode="tail">
+              {amount || '0'}
+            </Text>
+          </Touchable>
         )}
         <SelectTokenButton modalTitle={title} />
       </View>
       <View style={styles.infoWrap}>
-        <Text style={styles.usdAmount} numberOfLines={1} ellipsizeMode="tail">
-          {isMainnet && amountUsd}
-        </Text>
+        <View style={styles.usdAmountWrap}>
+          {isMainnet && (
+            <>
+              <Text style={styles.usdAmount} numberOfLines={1} ellipsizeMode="tail">
+                {amountUsd}
+              </Text>
+              {!isInput && (
+                <Text
+                  style={[
+                    styles.usdAmountPercent,
+                    isAmountUsdPercentPositive ? styles.usdAmountPercentPositive : styles.usdAmountPercentNegative,
+                  ]}
+                  numberOfLines={1}
+                  ellipsizeMode="tail">
+                  {' '}
+                  ({amountUsdPercent})
+                </Text>
+              )}
+            </>
+          )}
+        </View>
         {isInput && (
           <View style={styles.balanceWrap}>
             <Text style={styles.balanceAmount}>{balance}</Text>

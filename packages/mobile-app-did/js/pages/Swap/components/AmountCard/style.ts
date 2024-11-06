@@ -25,12 +25,17 @@ export const getStyles = makeStyles(theme => ({
     alignItems: 'center',
     marginBottom: pTd(8),
   },
-  amountText: {
+  amountTextWrap: {
     flex: 1,
+  },
+  amountText: {
     ...fonts.BGMediumFont,
     fontSize: pTd(32),
     lineHeight: pTd(38),
     color: theme.colors.textBase1,
+  },
+  amountTextPlaceholder: {
+    color: theme.colors.textBase3,
   },
   containerStyle: {
     flex: 1,
@@ -54,12 +59,29 @@ export const getStyles = makeStyles(theme => ({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    height: pTd(26),
+  },
+  usdAmountWrap: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   usdAmount: {
     flex: 1,
     fontSize: pTd(14),
     lineHeight: pTd(14),
     color: theme.colors.textBase2,
+  },
+  usdAmountPercent: {
+    flexShrink: 0,
+    fontSize: pTd(14),
+    lineHeight: pTd(14),
+  },
+  usdAmountPercentPositive: {
+    color: theme.colors.textSuccess1,
+  },
+  usdAmountPercentNegative: {
+    color: theme.colors.textDanger2,
   },
   balanceWrap: {
     flexDirection: 'row',

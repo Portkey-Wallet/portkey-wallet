@@ -16,7 +16,7 @@ export type TGetSwapRoutesParams = {
   amountOut?: string;
 };
 
-export const useGetPairPathApi = () => {
+export const useGetSwapRoutes = () => {
   const baseURL = useAwakenApiUrl();
   const currentDAppChain = useCurrentDAppChain();
 
@@ -33,8 +33,8 @@ export const useGetPairPathApi = () => {
           amountOut,
         },
       });
-      if (!res) throw new Error('no pair path');
-      return res?.data?.items || [];
+      if (!res) throw new Error('no swap route');
+      return res?.data;
     },
     [baseURL, currentDAppChain?.chainId],
   );
@@ -49,4 +49,24 @@ export const useGetAwakenGasFee = () => {
     });
     return res?.data?.transactionFee;
   }, [baseURL]);
+};
+
+export type TGetAwakenTokenPriceParams = {
+  chainId: string;
+  tokenAddress: string;
+  symbol: string;
+};
+export const useGetAwakenTokenPrice = () => {
+  const baseURL = useAwakenApiUrl();
+
+  return useCallback(
+    async (params: TGetAwakenTokenPriceParams): Promise<string | undefined> => {
+      const res = await request.awakenApi.getAwakenTokenPrice({
+        baseURL,
+        params,
+      });
+      return res.data;
+    },
+    [baseURL],
+  );
 };

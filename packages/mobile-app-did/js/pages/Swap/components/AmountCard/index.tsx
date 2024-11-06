@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { ReactNode, useRef, useState } from 'react';
 import { View, Text, TextInput } from 'react-native';
 import { Input, useTheme } from '@rneui/themed';
 import CommonButton from 'components/CommonButton';
@@ -14,7 +14,7 @@ interface IAmountCardProps {
   isInput?: boolean;
   isError?: boolean;
   amount?: string;
-  amountUsd?: string;
+  amountUsd?: ReactNode;
   amountUsdPercent?: string;
   isAmountUsdPercentPositive?: boolean;
   balance?: string;

@@ -15,3 +15,8 @@ export const updateAwakenUserExpiration = createAction<{
   network: NetworkType;
   userExpiration: string;
 }>('awaken/updateAwakenUserExpiration');
+
+export const updateAwakenTokenPrices = createAction<{
+  network: NetworkType;
+  val: Record<string, string>;
+}>('awaken/updateAwakenTokenPrices');

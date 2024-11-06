@@ -10,4 +10,7 @@ export type TAwakenState = {
   userExpiration: {
     [T in NetworkType]?: string;
   };
+  tokenPrices: {
+    [T in NetworkType]?: Record<string, string>;
+  };
 };

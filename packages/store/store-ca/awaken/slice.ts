@@ -1,12 +1,18 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 import { TAwakenState } from './type';
-import { updateAwakenGasFee, updateAwakenUserExpiration, updateAwakenUserSlippageTolerance } from './actions';
+import {
+  updateAwakenGasFee,
+  updateAwakenTokenPrices,
+  updateAwakenUserExpiration,
+  updateAwakenUserSlippageTolerance,
+} from './actions';
 
 const initialState: TAwakenState = {
   gasFee: {},
   userSlippageTolerance: {},
   userExpiration: {},
+  tokenPrices: {},
 };
 export const imSlice = createSlice({
   name: 'awaken',
@@ -41,6 +47,21 @@ export const imSlice = createSlice({
           userExpiration: {
             ...state.userExpiration,
             [network]: userExpiration,
+          },
+        };
+      })
+      .addCase(updateAwakenTokenPrices, (state, action) => {
+        const { network, val } = action.payload;
+        const preVal = state.tokenPrices[network] || {};
+
+        return {
+          ...state,
+          tokenPrices: {
+            ...state.tokenPrices,
+            [network]: {
+              ...preVal,
+              ...val,
+            },
           },
         };
       });

@@ -1,15 +1,17 @@
-import { useCallback, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useAppCASelector } from '../.';
-import { useGetAwakenGasFee } from './request';
+import { useGetAwakenGasFee, useGetAwakenTokenPrice } from './request';
 import { handleLoopFetch } from '@portkey-wallet/utils';
 import { useCurrentNetwork } from '../network';
 import { useAppCommonDispatch, useEffectOnce } from '../../index';
 import {
   updateAwakenGasFee,
+  updateAwakenTokenPrices,
   updateAwakenUserExpiration,
   updateAwakenUserSlippageTolerance,
 } from '@portkey-wallet/store/store-ca/awaken/actions';
 import { DEFAULT_EXPIRATION, DEFAULT_SLIPPAGE_TOLERANCE } from '@portkey-wallet/constants/constants-ca/awaken';
+import { useCurrentDAppChain } from '../chainList';
 
 export const useAwakenState = () => useAppCASelector(state => state.awaken);
 
@@ -110,5 +112,55 @@ export const useAwakenUserExpiration = () => {
   return {
     userExpiration,
     update,
+  };
+};
+
+export const useAwakenTokenPricesState = () => useAppCASelector(state => state.awaken.tokenPrices);
+
+export type TUseAwakenTokenPricesParams = {
+  symbol?: string;
+};
+export const useAwakenTokenPrices = ({ symbol }: TUseAwakenTokenPricesParams) => {
+  const currentNetwork = useCurrentNetwork();
+  const dispatch = useAppCommonDispatch();
+  const awakenTokenPricesState = useAwakenTokenPricesState();
+  const currentDAppChain = useCurrentDAppChain();
+  const key = useMemo(
+    () => `${currentNetwork}_${currentDAppChain?.chainId}_${symbol}`,
+    [currentDAppChain?.chainId, currentNetwork, symbol],
+  );
+  const getAwakenTokenPrice = useGetAwakenTokenPrice();
+
+  const price = useMemo<string>(
+    () => (awakenTokenPricesState[currentNetwork] || {})[key] || '0',
+    [awakenTokenPricesState, currentNetwork, key],
+  );
+
+  const refresh = useCallback(async () => {
+    if (!symbol || !currentDAppChain) return;
+    const rst = await getAwakenTokenPrice({
+      chainId: currentDAppChain.chainId,
+      symbol,
+      tokenAddress: currentDAppChain.defaultToken.address,
+    });
+    if (!rst) return;
+
+    dispatch(
+      updateAwakenTokenPrices({
+        network: currentNetwork,
+        val: {
+          [key]: rst,
+        },
+      }),
+    );
+  }, [currentDAppChain, currentNetwork, dispatch, getAwakenTokenPrice, key, symbol]);
+
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
+
+  return {
+    price,
+    refresh,
   };
 };

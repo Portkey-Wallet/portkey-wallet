@@ -3,6 +3,7 @@ import { useLanguage } from 'i18n/hooks';
 import CommonTopTabWithoutContent from 'components/CommonTopTabWithoutContent';
 import PageContainer from 'components/PageContainer';
 import SwapEnter from '../components/SwapEnter';
+import SwapSettingButton from '../components/SwapSettingButton';
 import { getStyles } from './style';
 
 enum SwapHomeTabType {
@@ -31,6 +32,7 @@ const SwapHome = () => {
   return (
     <PageContainer
       titleDom={<CommonTopTabWithoutContent tabList={tabList} selectTab={selectTab} onTabPress={setSelectTab} />}
+      rightDom={selectTab === SwapHomeTabType.SWAP && <SwapSettingButton style={styles.swapSettingButton} />}
       safeAreaColor={['black', 'black']}
       containerStyles={styles.pageWrap}
       scrollViewProps={{ disabled: true }}>

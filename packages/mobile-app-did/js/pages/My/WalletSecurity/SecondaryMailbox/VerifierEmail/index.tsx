@@ -1,14 +1,13 @@
 import { DIGIT_CODE } from '@portkey-wallet/constants/misc';
 import GStyles from 'assets/theme/GStyles';
-import { TextM } from 'components/CommonText';
+import { TextM, TextH1 } from 'components/CommonText';
 import VerifierCountdown, { VerifierCountdownInterface } from 'components/VerifierCountdown';
 import PageContainer from 'components/PageContainer';
 import DigitInput, { DigitInputInterface } from 'components/DigitInput';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
-import { VerificationType, OperationTypeEnum, VerifierInfo, VerifyStatus } from '@portkey-wallet/types/verifier';
-// import GuardianItem from '../../components/GuardianItem';
+import { makeStyles, useTheme } from '@rneui/themed';
 import { FontStyles } from 'assets/theme/styles';
 import Loading from 'components/Loading';
 import navigationService from 'utils/navigationService';
@@ -51,36 +50,21 @@ type RouterParams = {
 };
 function TipText({ email }: { email?: string }) {
   const [first, last] = useMemo(() => {
-    return [`A ${DIGIT_CODE.length}-digit code was sent to `, ` Enter it within ${DIGIT_CODE.expiration} minutes`];
+    return [
+      `Minerva, your assigned Guardian Verifier, has sent a verification email to `,
+      `. Please enter the ${DIGIT_CODE.length}-digit code from the email to continue.`,
+    ];
   }, []);
   return (
-    <TextM style={[FontStyles.font3, GStyles.marginTop(16), GStyles.marginBottom(50)]}>
+    <TextM style={[FontStyles.font3, GStyles.marginTop(16), GStyles.marginBottom(32)]}>
       {first}
       <Text style={FontStyles.font4}>{email}</Text>
       {last}
     </TextM>
   );
 }
-function EmailTitle({ email }: { email?: string }) {
-  const renderGuardianAccount = useCallback(() => {
-    return (
-      <TextM numberOfLines={2} style={[styles.nameStyle, GStyles.flex1]}>
-        {email}
-      </TextM>
-    );
-  }, [email]);
-  return (
-    <View style={[styles.itemRow]}>
-      <View style={[GStyles.flexRowWrap, GStyles.itemCenter, GStyles.flex1]}>
-        <View style={[GStyles.center, styles.loginTypeIconWrap]}>
-          <Svg icon={LOGIN_GUARDIAN_TYPE_ICON[LoginType.Email]} size={pTd(18)} />
-        </View>
-        {renderGuardianAccount()}
-      </View>
-    </View>
-  );
-}
 export default function VerifierEmail() {
+  const styles = getStyles();
   const { verifierSessionId, email } = useRouterParams<RouterParams>();
   const verifierSessionIdRef = useRef<string>(verifierSessionId);
   const countdown = useRef<VerifierCountdownInterface>();
@@ -151,7 +135,7 @@ export default function VerifierEmail() {
 
   return (
     <PageContainer type="leftBack" titleDom containerStyles={styles.containerStyles}>
-      <EmailTitle email={email} />
+      <TextH1>Verify your email</TextH1>
       <TipText email={email} />
       <DigitInput
         ref={digitInput}
@@ -164,7 +148,7 @@ export default function VerifierEmail() {
       />
       <VerifierCountdown
         isInvalidCode={codeError.isError}
-        style={GStyles.marginTop(24)}
+        style={GStyles.marginTop(40)}
         onResend={resendCode}
         ref={countdown}
       />
@@ -172,30 +156,10 @@ export default function VerifierEmail() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = makeStyles(theme => ({
   containerStyles: {
-    paddingTop: pTd(8),
-    paddingHorizontal: pTd(20),
+    paddingHorizontal: pTd(16),
+    marginTop: pTd(24),
+    backgroundColor: theme.colors.bgBase1,
   },
-  nameStyle: {
-    marginLeft: pTd(12),
-  },
-  itemRow: {
-    height: pTd(88),
-    marginTop: pTd(8),
-    paddingBottom: pTd(8),
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: defaultColors.border6,
-    justifyContent: 'space-between',
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  loginTypeIconWrap: {
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: defaultColors.border6,
-    backgroundColor: defaultColors.bg6,
-    width: pTd(32),
-    height: pTd(32),
-    borderRadius: pTd(16),
-  },
-});
+}));

@@ -1,6 +1,6 @@
 import { TEN_THOUSAND, ZERO } from '@portkey-wallet/constants/misc';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
-import { TSwapRoute } from '@portkey-wallet/types/types-ca/awaken/swap';
+import { TContractSwapToken, TSwapRoute } from '@portkey-wallet/types/types-ca/awaken/swap';
 import BigNumber from 'bignumber.js';
 
 export type TGetContractAmountOutParams = {
@@ -62,4 +62,28 @@ export const getPriceImpactWithBuy = (
   const denominator = reserveA.minus(output);
 
   return numerator.div(denominator).minus(prePro).div(prePro).times(100);
+};
+
+export type TSendSwapParams = {
+  contract: ContractBasic;
+  managerAddress: string;
+  caHash: string;
+  contractAddress: string;
+  args: {
+    swapTokens: TContractSwapToken[];
+    labsFeeRate: number;
+  };
+};
+export const sendSwap = async ({ contract, managerAddress, contractAddress, caHash, args }: TSendSwapParams) => {
+  const methodName = 'SwapExactTokensForTokens';
+  const result = await contract.callSendMethod('ManagerForwardCall', managerAddress, {
+    caHash,
+    contractAddress,
+    methodName,
+    args,
+  });
+  if (result.error) {
+    throw result.error;
+  }
+  return result;
 };

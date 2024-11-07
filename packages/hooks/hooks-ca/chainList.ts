@@ -74,12 +74,12 @@ export function useGetChain() {
   );
 }
 
-export const useCurrentDAppChain = () => {
+export const useDAppChain = () => {
   const currentChainList = useCurrentChainList();
   return useMemo(() => currentChainList?.find(item => item.chainId !== MAIN_CHAIN_ID), [currentChainList]);
 };
 
-export const useCurrentDAppChainId = () => {
-  const currentDAppChain = useCurrentDAppChain();
-  return useMemo(() => currentDAppChain?.chainId || 'tDVV', [currentDAppChain?.chainId]);
+export const useDAppChainId = () => {
+  const dAppChain = useDAppChain();
+  return useMemo(() => dAppChain?.chainId || 'tDVV', [dAppChain?.chainId]);
 };

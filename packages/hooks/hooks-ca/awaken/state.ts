@@ -11,7 +11,7 @@ import {
   updateAwakenUserSlippageTolerance,
 } from '@portkey-wallet/store/store-ca/awaken/actions';
 import { DEFAULT_EXPIRATION, DEFAULT_SLIPPAGE_TOLERANCE } from '@portkey-wallet/constants/constants-ca/awaken';
-import { useCurrentDAppChain } from '../chainList';
+import { useDAppChain } from '../chainList';
 
 export const useAwakenState = () => useAppCASelector(state => state.awaken);
 
@@ -124,10 +124,10 @@ export const useAwakenTokenPrices = ({ symbol }: TUseAwakenTokenPricesParams) =>
   const currentNetwork = useCurrentNetwork();
   const dispatch = useAppCommonDispatch();
   const awakenTokenPricesState = useAwakenTokenPricesState();
-  const currentDAppChain = useCurrentDAppChain();
+  const dAppChain = useDAppChain();
   const key = useMemo(
-    () => `${currentNetwork}_${currentDAppChain?.chainId}_${symbol}`,
-    [currentDAppChain?.chainId, currentNetwork, symbol],
+    () => `${currentNetwork}_${dAppChain?.chainId}_${symbol}`,
+    [dAppChain?.chainId, currentNetwork, symbol],
   );
   const getAwakenTokenPrice = useGetAwakenTokenPrice();
 
@@ -137,11 +137,11 @@ export const useAwakenTokenPrices = ({ symbol }: TUseAwakenTokenPricesParams) =>
   );
 
   const refresh = useCallback(async () => {
-    if (!symbol || !currentDAppChain) return;
+    if (!symbol || !dAppChain) return;
     const rst = await getAwakenTokenPrice({
-      chainId: currentDAppChain.chainId,
+      chainId: dAppChain.chainId,
       symbol,
-      tokenAddress: currentDAppChain.defaultToken.address,
+      tokenAddress: dAppChain.defaultToken.address,
     });
     if (!rst) return;
 
@@ -153,7 +153,7 @@ export const useAwakenTokenPrices = ({ symbol }: TUseAwakenTokenPricesParams) =>
         },
       }),
     );
-  }, [currentDAppChain, currentNetwork, dispatch, getAwakenTokenPrice, key, symbol]);
+  }, [dAppChain, currentNetwork, dispatch, getAwakenTokenPrice, key, symbol]);
 
   useEffect(() => {
     refresh();

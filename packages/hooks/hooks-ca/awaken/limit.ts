@@ -3,7 +3,7 @@ import { useGetPairReserve } from '@portkey-wallet/graphql/awaken/hooks';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { useReturnLastCallback } from '../../index';
 import { LIMIT_TIME_INTERVAL } from '@portkey-wallet/constants/constants-ca/awaken/limit';
-import { useCurrentDAppChainId } from '../chainList';
+import { useDAppChainId } from '../chainList';
 
 export type TReserveInfo = {
   reserveIn: string;
@@ -12,7 +12,7 @@ export type TReserveInfo = {
 
 export const useGetPairMaxReserve = () => {
   const getPairReserve = useGetPairReserve();
-  const defaultChainId = useCurrentDAppChainId();
+  const dAppChainId = useDAppChainId();
 
   return useCallback(
     async (symbolIn: string, symbolOut: string): Promise<TReserveInfo> => {
@@ -22,7 +22,7 @@ export const useGetPairMaxReserve = () => {
         },
       } = await getPairReserve({
         dto: {
-          chainId: defaultChainId,
+          chainId: dAppChainId,
           symbolA: symbolIn,
           symbolB: symbolOut,
         },
@@ -50,7 +50,7 @@ export const useGetPairMaxReserve = () => {
         reserveOut,
       };
     },
-    [defaultChainId, getPairReserve],
+    [dAppChainId, getPairReserve],
   );
 };
 

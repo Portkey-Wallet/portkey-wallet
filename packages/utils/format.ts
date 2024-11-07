@@ -63,3 +63,11 @@ export function formatPrice(price?: BigNumber.Value, digits = 12): string {
 
   return bigNum.precision(4).dp(digits).toString();
 }
+
+export const formatPriceUsd = (price?: BigNumber.Value) => {
+  if (!price) return `0`;
+  const priceBN = ZERO.plus(price);
+  if (priceBN.gte(0.01)) return priceBN.dp(2, BigNumber.ROUND_HALF_CEIL).toFixed();
+  const precisionResult = priceBN.toPrecision(4, BigNumber.ROUND_HALF_CEIL);
+  return ZERO.plus(precisionResult).toFixed();
+};

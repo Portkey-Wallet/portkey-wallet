@@ -45,11 +45,10 @@ export const useBalancesV2 = (
     return { [tokens]: bigNAN };
   }, [tokens]);
   const [balances, setBalances] = useState<TBalancesV2>(deArr);
-  // const { chainId, account } = useActiveWeb3React();
   const chainId = useDAppChainId();
   const getTokenContract = useGetTokenContract();
   const wallet = useCurrentWalletInfo();
-  const account = useMemo(() => wallet[chainId]?.caAddress, []);
+  const account = useMemo(() => wallet[chainId]?.caAddress, [chainId, wallet]);
 
   const onGetBalance = useCallback(async () => {
     const tokensList = Array.isArray(tokens) ? tokens : [tokens];
@@ -79,9 +78,10 @@ export const useBalancesV2 = (
     await Promise.all(promise);
 
     setBalances(bs);
-  }, [tokens, account, getTokenContract, chainId]);
+  }, [account, chainId, getTokenContract, tokens]);
 
   useInterval(onGetBalance, [onGetBalance], delay);
+
   return [balances, onGetBalance];
 };
 

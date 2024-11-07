@@ -65,7 +65,11 @@ const SwapEnter = () => {
   });
   const swapInfoRef = useRef(swapInfo);
   swapInfoRef.current = swapInfo;
-  const currencyBalances = useCurrencyBalancesV2([swapInfo.tokenIn?.symbol || '', swapInfo.tokenOut?.symbol || '']);
+  const symbols = useMemo(
+    () => [swapInfo.tokenIn?.symbol || '', swapInfo.tokenOut?.symbol || ''],
+    [swapInfo.tokenIn?.symbol, swapInfo.tokenOut?.symbol],
+  );
+  const currencyBalances = useCurrencyBalancesV2(symbols);
 
   const refreshTokenValueRef = useRef<typeof refreshTokenValue>();
   // const [swapRoute, setSwapRoute] = useState<TSwapRoute>();

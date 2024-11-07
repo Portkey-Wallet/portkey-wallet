@@ -41,6 +41,7 @@ import { useGetS3ImageUrl } from '@portkey-wallet/hooks/hooks-ca/cms';
 import FaucetButton from 'components/FaucetButton';
 import { parseLink } from '@portkey-wallet/hooks/hooks-ca/cms/util';
 import { darkColors } from 'assets/theme';
+import { showActivityDetail } from 'components/ActivityOverlay';
 
 interface TokenDetailParams {
   tokenSection: ITokenSectionResponse;
@@ -173,14 +174,7 @@ const TokenDetailPage: React.FC<TokenDetailParams> = ({ tokenInfo, tokenSection 
 
   const renderItem = useCallback(({ item, index }: { item: ActivityItemType; index: number }) => {
     const preItem = currentActivityRef.current?.data[index - 1];
-    return (
-      <ActivityItem
-        preItem={preItem}
-        item={item}
-        index={index}
-        onPress={() => navigationService.navigate('ActivityDetail', item)}
-      />
-    );
+    return <ActivityItem preItem={preItem} item={item} index={index} onPress={() => showActivityDetail(item)} />;
   }, []);
 
   const isEmpty = useMemo(() => (currentActivity?.data || []).length === 0, [currentActivity?.data]);
@@ -226,7 +220,16 @@ const TokenDetailPage: React.FC<TokenDetailParams> = ({ tokenInfo, tokenSection 
         )}
       </View>
     );
-  }, [buttonWrapStyle, currentTokenInfo, isBuyButtonShow, isFaucetButtonShow, isSwapShow, swap, tokenInfo]);
+  }, [
+    buttonWrapStyle,
+    currentTokenInfo,
+    isBuyButtonShow,
+    isFaucetButtonShow,
+    isSwapShow,
+    onReceivePress,
+    swap,
+    tokenInfo,
+  ]);
 
   const renderActivityList = useCallback(() => {
     return (

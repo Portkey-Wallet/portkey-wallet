@@ -1,10 +1,10 @@
-import { darkColors, defaultColors } from 'assets/theme';
+import { darkColors } from 'assets/theme';
 import React, { memo, useEffect, useMemo, useState } from 'react';
-import { Animated, StyleSheet, Text, View } from 'react-native';
+import { Animated, StyleSheet, View } from 'react-native';
 import { formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import { pTd } from 'utils/unit';
 import { ActivityItemType } from '@portkey-wallet/types/types-ca/activity';
-import { TransactionTypes } from '@portkey-wallet/constants/constants-ca/activity';
+import { SHOW_FROM_TRANSACTION_TYPES, TransactionTypes } from '@portkey-wallet/constants/constants-ca/activity';
 import {
   AmountSign,
   formatAmountUSDShow,
@@ -236,9 +236,7 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
       );
     }
 
-    const isTransferType =
-      item.transactionType === TransactionTypes.TRANSFER ||
-      item.transactionType === TransactionTypes.CROSS_CHAIN_TRANSFER;
+    const isTransferType = SHOW_FROM_TRANSACTION_TYPES.includes(item.transactionType);
 
     if (item?.dappName)
       return (

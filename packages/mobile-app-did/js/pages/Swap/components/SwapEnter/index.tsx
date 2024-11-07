@@ -7,12 +7,7 @@ import { CommonPromptCard, PromptCardType } from 'components/CommonPromptCard';
 import { getStyles } from './style';
 import { useDebounceCallback, useEffectOnce, useReturnLastCallback } from '@portkey-wallet/hooks';
 import { useGetSwapRoutes } from '@portkey-wallet/hooks/hooks-ca/awaken/request';
-import {
-  useAwakenGasFee,
-  useAwakenTokenPrices,
-  useAwakenUserSlippageTolerance,
-} from '@portkey-wallet/hooks/hooks-ca/awaken/state';
-import { TSwapRoute } from '@portkey-wallet/types/types-ca/awaken/swap';
+import { useAwakenGasFee, useAwakenUserSlippageTolerance } from '@portkey-wallet/hooks/hooks-ca/awaken/state';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { divDecimals, timesDecimals } from '@portkey-wallet/utils/converter';
 import {
@@ -27,6 +22,11 @@ import { parseUserSlippageTolerance } from '@portkey-wallet/utils/awaken';
 import navigationService from 'utils/navigationService';
 import { KeyboardSafeArea } from 'components/KeyboardSafeArea';
 import { pTd } from 'utils/unit';
+import { useGetTokenViewContract } from 'hooks/contract';
+import { useDAppChainId } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { getELFChainBalance } from '@portkey-wallet/utils/balance';
+import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrencyBalancesV2 } from 'hooks/awaken';
 
 type TCurrency = {
   chainId: string;
@@ -65,10 +65,10 @@ const SwapEnter = () => {
   });
   const swapInfoRef = useRef(swapInfo);
   swapInfoRef.current = swapInfo;
-  // const currencyBalances = useCurrencyBalancesV2([swapInfo.tokenIn, swapInfo.tokenOut]);
-  const refreshTokenValueRef = useRef<typeof refreshTokenValue>();
+  const currencyBalances = useCurrencyBalancesV2([swapInfo.tokenIn?.symbol || '', swapInfo.tokenOut?.symbol || '']);
 
-  const [swapRoute, setSwapRoute] = useState<TSwapRoute>();
+  const refreshTokenValueRef = useRef<typeof refreshTokenValue>();
+  // const [swapRoute, setSwapRoute] = useState<TSwapRoute>();
 
   const [isPriceReverse, setIsPriceReverse] = useState(true);
   const resetIsPriceReverse = useCallback(() => {
@@ -100,13 +100,13 @@ const SwapEnter = () => {
           valueIn: '',
           valueOut: '',
         }));
-        setSwapRoute(undefined);
+        // setSwapRoute(undefined);
         return;
       }
 
       if ((isFocusValueIn && ZERO.eq(valueIn)) || (!isFocusValueIn && ZERO.eq(valueOut))) {
         setIsInvalidParis(false);
-        setSwapRoute(undefined);
+        // setSwapRoute(undefined);
         return;
       }
 
@@ -118,6 +118,7 @@ const SwapEnter = () => {
       const _getSwapRoutes = isInstant ? getSwapRoutesInstant : getSwapRoutes;
 
       try {
+        console.log('request _getSwapRoutes');
         const { routes, statusCode } = await _getSwapRoutes({
           symbolIn: tokenIn.symbol,
           symbolOut: tokenOut.symbol,
@@ -127,6 +128,7 @@ const SwapEnter = () => {
             ? undefined
             : timesDecimals(valueOut, tokenOut.decimals).div(SWAP_RECEIVE_RATE).toFixed(0, BigNumber.ROUND_DOWN),
         });
+        console.log('request _getSwapRoutes result:', routes);
 
         const _swapInfo = swapInfoRef.current;
         if (
@@ -157,7 +159,7 @@ const SwapEnter = () => {
           valueIn: result.valueIn,
           valueOut: result.valueOut,
         }));
-        setSwapRoute(route);
+        // setSwapRoute(route);
 
         console.log('refreshTokenValue routes', route);
 
@@ -227,7 +229,7 @@ const SwapEnter = () => {
 
   const onTokenChange = useCallback(async () => {
     resetIsPriceReverse();
-    setSwapRoute(undefined);
+    // setSwapRoute(undefined);
     setIsRouteEmpty(false);
     setIsInvalidParis(false);
     await sleep(100);
@@ -344,16 +346,15 @@ const SwapEnter = () => {
   const isExceedBalance = useMemo(() => {
     const { tokenIn, valueIn } = swapInfo;
     if (!tokenIn) return false;
-    // TODO: swap tokenBalance
-    // const tokenInBalance = currencyBalances?.[swapInfo.tokenIn?.symbol];
-    // if (tokenInBalance === undefined) return true;
-    // const validBalance = tokenIn.symbol === 'ELF' ? ZERO.plus(tokenInBalance).minus(gasFee) : tokenInBalance;
-    // if (ZERO.plus(valueIn).gt(divDecimals(validBalance, tokenIn.decimals))) return true;
-    // return false;
-  }, [gasFee, swapInfo]);
+    const tokenInBalance = currencyBalances?.[swapInfo.tokenIn?.symbol || ''];
+    if (tokenInBalance === undefined) return true;
+    const validBalance = tokenIn.symbol === 'ELF' ? ZERO.plus(tokenInBalance).minus(gasFee) : tokenInBalance;
+    if (ZERO.plus(valueIn).gt(divDecimals(validBalance, tokenIn.decimals))) return true;
+    return false;
+  }, [currencyBalances, gasFee, swapInfo]);
 
   const isBtnDisable = useMemo(() => {
-    const { tokenIn, tokenOut, isFocusValueIn, valueIn, valueOut } = swapInfo;
+    const { tokenIn, tokenOut, valueIn, valueOut } = swapInfo;
     if (!tokenIn || !tokenOut) return true;
     if (isRouteEmpty) return true;
     if (!valueIn || ZERO.eq(valueIn)) return true;
@@ -364,7 +365,6 @@ const SwapEnter = () => {
   }, [isExceedBalance, isInvalidParis, isRouteEmpty, swapInfo]);
 
   const [isSwapping, setIsSwapping] = useState(false);
-  // const modalDispatch = useModalDispatch();
   const onPreviewClick = useCallback(async () => {
     const { tokenIn, tokenOut, valueIn, valueOut } = swapInfo;
     if (!tokenIn || !tokenOut) return;
@@ -394,16 +394,6 @@ const SwapEnter = () => {
         swapRoute: route,
         priceLabel,
       });
-      // TODO: swap goto preview
-      // swapConfirmModalRef.current?.show({
-      //   swapInfo: {
-      //     ...swapInfo,
-      //     valueIn: result.valueIn,
-      //     valueOut: result.valueOut,
-      //   },
-      //   swapRoute: route,
-      //   priceLabel,
-      // });
     } catch (error) {
       console.log('error', error);
     } finally {
@@ -411,16 +401,6 @@ const SwapEnter = () => {
       setIsSwapping(false);
     }
   }, [priceLabel, swapInfo]);
-
-  const onSwapSuccess = useCallback(() => {
-    setSwapInfo(pre => ({
-      ...pre,
-      valueIn: '',
-      valueOut: '',
-    }));
-    setSwapRoute(undefined);
-    registerTimer();
-  }, [registerTimer]);
 
   return (
     <View style={styles.swapEnterWrap}>
@@ -430,6 +410,8 @@ const SwapEnter = () => {
           swapInfo={swapInfo}
           setValueIn={setValueIn}
           setValueOut={setValueOut}
+          isErrorIn={isExceedBalance}
+          balances={currencyBalances}
         />
         <View style={styles.infoWrap}>
           <CommonInfoRow
@@ -454,7 +436,13 @@ const SwapEnter = () => {
           ))}
       </View>
       <KeyboardSafeArea bottomPad={pTd(16)}>
-        <CommonButton title="Preview" type="primary" disabled={isBtnDisable} onPress={onPreviewClick} />
+        <CommonButton
+          loading={isSwapping}
+          title="Preview"
+          type="primary"
+          disabled={isBtnDisable}
+          onPress={onPreviewClick}
+        />
       </KeyboardSafeArea>
     </View>
   );

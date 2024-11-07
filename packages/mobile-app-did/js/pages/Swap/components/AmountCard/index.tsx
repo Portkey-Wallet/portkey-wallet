@@ -1,4 +1,4 @@
-import React, { ReactNode, useRef, useState } from 'react';
+import React, { ReactNode, useCallback, useMemo, useRef, useState } from 'react';
 import { View, Text, TextInput } from 'react-native';
 import { Input, useTheme } from '@rneui/themed';
 import CommonButton from 'components/CommonButton';
@@ -7,6 +7,10 @@ import SelectTokenButton from '../SelectTokenButton';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { ViewStyleType } from 'types/styles';
 import { getStyles } from './style';
+import { useAwakenGasFee } from '@portkey-wallet/hooks/hooks-ca/awaken/state';
+import { ZERO } from '@portkey-wallet/constants/misc';
+import { divDecimals } from '@portkey-wallet/utils/converter';
+import Bignumber from 'bignumber.js';
 
 interface IAmountCardProps {
   style?: ViewStyleType;
@@ -17,7 +21,9 @@ interface IAmountCardProps {
   amountUsd?: ReactNode;
   amountUsdPercent?: string;
   isAmountUsdPercentPositive?: boolean;
-  balance?: string;
+  balance?: Bignumber;
+  symbol?: string;
+  decimals?: number;
   onAmountChange?: (value: string) => void;
 }
 
@@ -31,6 +37,8 @@ const AmountCard: React.FC<IAmountCardProps> = ({
   amountUsdPercent,
   isAmountUsdPercentPositive = false,
   balance,
+  symbol,
+  decimals,
   onAmountChange,
 }) => {
   const { theme } = useTheme();
@@ -46,9 +54,28 @@ const AmountCard: React.FC<IAmountCardProps> = ({
     onAmountChange?.(value);
   };
 
-  const handleMaxPress = () => {
-    onAmountChange?.(balance || '');
-  };
+  const gasFee = useAwakenGasFee();
+  const handleMaxPress = useCallback(() => {
+    if (balance?.isNaN()) {
+      onAmountChange?.('');
+      return;
+    }
+    if (symbol === 'ELF' && gasFee && balance) {
+      const _valueBN = ZERO.plus(balance).minus(gasFee);
+      if (_valueBN.lte(ZERO)) {
+        onAmountChange?.('');
+        return;
+      }
+      onAmountChange?.(divDecimals(_valueBN, decimals).toFixed() || '');
+      return;
+    }
+    onAmountChange?.(divDecimals(balance || ZERO, decimals).toFixed() || '');
+  }, [balance, decimals, gasFee, onAmountChange, symbol]);
+
+  const balanceStr = useMemo(() => {
+    if (!balance || balance.isNaN()) return '';
+    return `${divDecimals(balance, decimals).toFixed()} ${symbol}`;
+  }, [balance, decimals, symbol]);
 
   return (
     <View style={[styles.container, style]}>
@@ -81,7 +108,7 @@ const AmountCard: React.FC<IAmountCardProps> = ({
               }
             }}>
             <Text
-              style={[styles.amountText, !amount && styles.amountTextPlaceholder]}
+              style={[styles.amountText, !amount && styles.amountTextPlaceholder, isError && styles.errorInputStyle]}
               numberOfLines={1}
               ellipsizeMode="tail">
               {amount || '0'}
@@ -114,7 +141,7 @@ const AmountCard: React.FC<IAmountCardProps> = ({
         </View>
         {isInput && (
           <View style={styles.balanceWrap}>
-            <Text style={styles.balanceAmount}>{balance}</Text>
+            <Text style={styles.balanceAmount}>{balanceStr}</Text>
             <CommonButton
               title="Max"
               type="outline"

@@ -119,8 +119,9 @@ export const useAwakenTokenPricesState = () => useAppCASelector(state => state.a
 
 export type TUseAwakenTokenPricesParams = {
   symbol?: string;
+  isInit?: boolean;
 };
-export const useAwakenTokenPrices = ({ symbol }: TUseAwakenTokenPricesParams) => {
+export const useAwakenTokenPrices = ({ symbol, isInit = true }: TUseAwakenTokenPricesParams) => {
   const currentNetwork = useCurrentNetwork();
   const dispatch = useAppCommonDispatch();
   const awakenTokenPricesState = useAwakenTokenPricesState();
@@ -156,8 +157,8 @@ export const useAwakenTokenPrices = ({ symbol }: TUseAwakenTokenPricesParams) =>
   }, [dAppChain, currentNetwork, dispatch, getAwakenTokenPrice, key, symbol]);
 
   useEffect(() => {
-    refresh();
-  }, [refresh]);
+    isInit && refresh();
+  }, [isInit, refresh]);
 
   return {
     price,

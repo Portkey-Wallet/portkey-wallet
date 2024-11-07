@@ -57,7 +57,7 @@ const SwapSettingContent = () => {
   return (
     <ModalBody modalBodyType="bottom" title={t('Settings')}>
       <View style={styles.modalContentWrap}>
-        <KeyboardSafeArea>
+        <KeyboardSafeArea bottomPad={pTd(16)}>
           <View>
             <View style={styles.labelWrap}>
               <Text style={styles.labelText}>{t('Slippage tolerance')}</Text>

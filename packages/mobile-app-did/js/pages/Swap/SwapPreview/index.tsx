@@ -63,8 +63,8 @@ const SwapPreview = () => {
     () => `${ZERO.plus(userSlippageTolerance).times(100).toFixed()}%`,
     [userSlippageTolerance],
   );
-  const { price: tokenOutPrice } = useAwakenTokenPrices({ symbol: swapInfo.tokenOut?.symbol || '' });
-  const { price: tokenInPrice } = useAwakenTokenPrices({ symbol: swapInfo.tokenIn?.symbol || '' });
+  const { price: tokenOutPrice } = useAwakenTokenPrices({ symbol: swapInfo.tokenOut?.symbol || '', isInit: false });
+  const { price: tokenInPrice } = useAwakenTokenPrices({ symbol: swapInfo.tokenIn?.symbol || '', isInit: false });
 
   const amountOutMin = useMemo(() => {
     const { valueOut, tokenOut } = swapInfo;

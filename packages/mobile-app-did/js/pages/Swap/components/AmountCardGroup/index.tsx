@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { View } from 'react-native';
 import Svg from 'components/Svg';
 import Touchable from 'components/Touchable';
@@ -11,15 +11,18 @@ import { useAwakenTokenPrices } from '@portkey-wallet/hooks/hooks-ca/awaken/stat
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { useTheme } from '@rneui/themed';
 import { TextM } from 'components/CommonText';
+import { TBalancesV2 } from 'hooks/awaken';
 
 interface IAmountCardGroupProps {
   style?: ViewStyleType;
   swapInfo: TSwapInfo;
   setValueIn?: (value: string) => Promise<void>;
   setValueOut?: (value: string) => Promise<void>;
+  isErrorIn?: boolean;
+  balances: TBalancesV2;
 }
 
-const AmountCardGroup = ({ style, swapInfo, setValueIn, setValueOut }: IAmountCardGroupProps) => {
+const AmountCardGroup = ({ style, swapInfo, setValueIn, setValueOut, isErrorIn, balances }: IAmountCardGroupProps) => {
   const styles = getStyles();
   const { theme } = useTheme();
   const { price: tokenInPrice } = useAwakenTokenPrices({ symbol: swapInfo.tokenIn?.symbol });
@@ -80,7 +83,11 @@ const AmountCardGroup = ({ style, swapInfo, setValueIn, setValueOut }: IAmountCa
         isInput
         amount={swapInfo.valueIn}
         onAmountChange={setValueIn}
+        balance={balances?.[swapInfo.tokenIn?.symbol || '']}
         amountUsd={amountInUsd}
+        symbol={swapInfo.tokenIn?.symbol || ''}
+        decimals={Number(swapInfo.tokenIn?.decimals || 8)}
+        isError={isErrorIn}
       />
       <AmountCard
         style={styles.amountCardMarginTop}

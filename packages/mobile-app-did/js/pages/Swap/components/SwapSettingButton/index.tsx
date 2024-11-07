@@ -71,7 +71,7 @@ const SwapSettingContent = () => {
             </View>
             <CommonTagToggleGroup
               tagList={slippageToleranceTagList}
-              selectedValue={userSlippageTolerance}
+              selectedValue={slippageTolerance}
               onSelect={setSlippageTolerance}
             />
           </View>

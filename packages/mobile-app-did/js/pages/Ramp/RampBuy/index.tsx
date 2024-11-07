@@ -1,6 +1,7 @@
 import React, { useMemo, useState, useRef, useCallback, useEffect } from 'react';
-import { View, Text, TextInput } from 'react-native';
+import { View, Text, TextInput, LayoutChangeEvent } from 'react-native';
 import { makeStyles } from '@rneui/themed';
+import { useTheme } from '@rneui/themed';
 import isEqual from 'lodash/isEqual';
 import { ErrorType, INIT_HAS_ERROR, INIT_NONE_ERROR } from '@portkey-wallet/constants/constants-ca/common';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
@@ -15,13 +16,17 @@ import { IRampLimit } from '@portkey-wallet/types/types-ca/ramp';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import { useAppRampEntryShow } from 'hooks/ramp';
 import GStyles from 'assets/theme/GStyles';
+import fonts from 'assets/theme/fonts';
 import CommonButton from 'components/CommonButton';
 import CommonToast from 'components/CommonToast';
+import { FloatTip } from 'components/FloatTip';
 import Loading from 'components/Loading';
 import Svg from 'components/Svg';
 import PageContainer from 'components/PageContainer';
+import Touchable from 'components/Touchable';
 import navigationService from 'utils/navigationService';
 import { pTd } from 'utils/unit';
+import CurrencySelector from '../components/CurrencySelector';
 import { useReceive } from '../hooks';
 
 export interface IBuyFormV2Props {
@@ -31,6 +36,7 @@ export interface IBuyFormV2Props {
 
 export default function RampBuy() {
   const styles = getStyles();
+  const { theme }  = useTheme();
   const { symbol, network } = useRouterParams<IBuyFormV2Props>();
 
   const defaultToken = useDefaultToken(MAIN_CHAIN_ID);
@@ -55,11 +61,15 @@ export default function RampBuy() {
   const [amount, setAmount] = useState<string>('');
   const [amountLocalError, setAmountLocalError] = useState<ErrorType>(INIT_NONE_ERROR);
 
+  const [wrapperLayoutProps, setWrapperLayoutProps] = useState<{ width: number; height: number }>({
+    width: 0,
+    height: 0,
+  });
+
   const refreshList = useCallback(async () => {
     Loading.show();
     try {
       const { fiatList: buyFiatList, defaultFiat: buyDefaultFiat } = await getBuyFiat({ crypto: symbol, network });
-
       setFiatList(buyFiatList);
       const _fiat = buyFiatList.find(
         item => item.symbol === buyDefaultFiat.symbol && item.country === buyDefaultFiat.country,
@@ -130,6 +140,11 @@ export default function RampBuy() {
     return amountLocalError;
   }, [amountFetchError, amountLocalError]);
 
+  const receiveAmountText = useMemo(() => {
+    if (receiveAmount === '') return `0 ${crypto?.symbol}`;
+    return `≈ ${receiveAmount} ${crypto?.symbol}`;
+  }, [receiveAmount, crypto]);
+
   const onFiatChange = useCallback(async (_fiat: IRampFiatItem) => {
     setCurrency(pre => ({
       ...pre,
@@ -168,7 +183,7 @@ export default function RampBuy() {
     if (amountNum < minLimit || amountNum > maxLimit) {
       setAmountLocalError({
         ...INIT_HAS_ERROR,
-        errorMsg: `Limit Amount ${formatAmountShow(minLimit, 4)}-${formatAmountShow(maxLimit, 4)} ${
+        errorMsg: `Buy limit: ${formatAmountShow(minLimit, 4)} to ${formatAmountShow(maxLimit, 4)} ${
           fiat?.symbol || ''
         }`,
       });
@@ -208,12 +223,33 @@ export default function RampBuy() {
     });
   }, [amount, fiat, rate, refreshRampShow, crypto]);
 
+  const onChangeCurrency = useCallback(() => {
+    if (!fiatList.length) return;
+    CurrencySelector.showList({
+      list: fiatList,
+      selectedItem: currency.fiat || fiatList[0],
+      onSelected: (item: IRampFiatItem) => {
+        onFiatChange(item);
+      },
+    });
+  }, [fiatList, onFiatChange, currency]);
+
+  const onLayout = useCallback(
+    (event: LayoutChangeEvent) => {
+      const { width, height } = event.nativeEvent.layout;
+      console.log(`width: ${width}, height: ${height}`);
+      if (wrapperLayoutProps.width === width && wrapperLayoutProps.height === height) return;
+      setWrapperLayoutProps({ width, height });
+    },
+    [wrapperLayoutProps],
+  );
+
   const rightDom = useMemo(() => {
     return (
-      <View style={styles.rightDom}>
+      <Touchable style={styles.rightDom} onPress={onChangeCurrency}>
         <Svg icon={'change'} size={pTd(24)} iconStyle={GStyles.marginRight(4)} />
         <Text style={styles.rightDomText}>{currency.fiat?.symbol}</Text>
-      </View>
+      </Touchable>
     );
   }, [currency, styles]);
 
@@ -224,10 +260,28 @@ export default function RampBuy() {
       scrollViewProps={{ disabled: true }}
       rightDom={rightDom}>
       <View style={styles.fiatWrap}>
-        <TextInput placeholder="0" />
-        <Text>{currency.fiat?.symbol}</Text>
+        <TextInput style={styles.fiatInput} placeholder="0" onChangeText={onAmountInput} />
+        <Text style={styles.fiatText}>{currency.fiat?.symbol}</Text>
+        {amountError.isError && (
+          <View onLayout={onLayout} style={styles.warningIconWrap}>
+            <FloatTip
+              wrapperLayoutProps={wrapperLayoutProps}
+              textStyle={{
+                color: theme.colors.textBase2,
+                minWidth: pTd(185),
+                maxHeight: pTd(20), // todo_wade: fix width
+              }}
+              content={amountError.errorMsg}
+              display
+            />
+            <Svg icon="warning" iconStyle={{ marginLeft: pTd(6) }} color={theme.colors.iconDanger1} size={pTd(24)} />
+          </View>
+        )}
       </View>
-      <View style={styles.cryptoWrap} />
+      <Text style={styles.receiveAmount}>{receiveAmountText}</Text>
+      <CommonButton type="primary" buttonStyle={styles.btnStyle} disabled={!isAllowAmount} onPress={onNext}>
+        Next
+      </CommonButton>
     </PageContainer>
   );
 }
@@ -237,7 +291,6 @@ const getStyles = makeStyles(theme => ({
     flex: 1,
     backgroundColor: theme.colors.bgBase1,
     ...GStyles.paddingArg(16, 16),
-    alignItems: 'center',
   },
   rightDom: {
     marginRight: pTd(16),
@@ -247,6 +300,29 @@ const getStyles = makeStyles(theme => ({
   rightDomText: {
     fontSize: pTd(16),
   },
-  fiatWrap: {},
-  cryptoWrap: {},
+  fiatWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  fiatInput: {
+    fontSize: pTd(32),
+    ...fonts.BGMediumFont,
+  },
+  fiatText: {
+    marginLeft: pTd(6),
+    fontSize: pTd(32),
+    ...fonts.BGMediumFont,
+  },
+  warningIconWrap: {},
+  receiveAmount: {
+    marginTop: pTd(8),
+    color: theme.colors.textBase2,
+    fontSize: pTd(16),
+    textAlign: 'center',
+  },
+  btnStyle: {
+    width: '100%',
+    marginTop: pTd(40),
+  },
 }));

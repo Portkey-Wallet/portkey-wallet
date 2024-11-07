@@ -204,7 +204,7 @@ const TokenDetailPage: React.FC<TokenDetailParams> = ({ tokenInfo, tokenSection 
         <ReceiveButton onPress={onReceivePress} />
         {isBuyButtonShow && <BuyButton themeType="innerPage" wrapStyle={buttonWrapStyle} tokenInfo={tokenInfo} />}
         {isFaucetButtonShow && <FaucetButton themeType="innerPage" wrapStyle={buttonWrapStyle} />}
-        {isSwapShow && swap && (
+        {/* {isSwapShow && swap && (
           <OutlinedButton
             title="Swap"
             iconName="swap"
@@ -217,19 +217,10 @@ const TokenDetailPage: React.FC<TokenDetailParams> = ({ tokenInfo, tokenSection 
               // );
             }}
           />
-        )}
+        )} */}
       </View>
     );
-  }, [
-    buttonWrapStyle,
-    currentTokenInfo,
-    isBuyButtonShow,
-    isFaucetButtonShow,
-    isSwapShow,
-    onReceivePress,
-    swap,
-    tokenInfo,
-  ]);
+  }, [buttonWrapStyle, currentTokenInfo, isBuyButtonShow, isFaucetButtonShow, onReceivePress, tokenInfo]);
 
   const renderActivityList = useCallback(() => {
     return (

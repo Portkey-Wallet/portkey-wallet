@@ -32,17 +32,18 @@ export const styles = StyleSheet.create({
     marginRight: 4,
   },
   tokenBalance: {
-    ...fonts.mediumFont,
+    ...fonts.BGMediumFont,
     color: darkColors.textBase1,
     fontSize: pTd(32),
-    lineHeight: pTd(40),
+    lineHeight: pTd(38),
   },
   dollarBalance: {
+    ...fonts.SGRegularFont,
     marginTop: pTd(4),
     color: darkColors.textBase1,
-    fontSize: pTd(14),
-    lineHeight: pTd(20),
-    height: pTd(20),
+    fontSize: pTd(16),
+    lineHeight: pTd(22),
+    height: pTd(22),
   },
   textOverflow: {
     fontSize: pTd(28),

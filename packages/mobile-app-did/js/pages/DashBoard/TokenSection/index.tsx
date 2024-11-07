@@ -1,9 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import navigationService from 'utils/navigationService';
-import { View, FlatList } from 'react-native';
+import { View, FlatList, Text } from 'react-native';
 import { ITokenSectionResponse } from '@portkey-wallet/types/types-ca/token';
-import { TextM } from 'components/CommonText';
-import { darkColors } from 'assets/theme';
 import fonts from 'assets/theme/fonts';
 import { pTd } from 'utils/unit';
 import TokenListUnionItem from 'components/TokenListUnionItem';
@@ -16,6 +14,7 @@ import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { makeStyles } from '@rneui/themed';
+import Svg from 'components/Svg';
 
 export default function TokenSection() {
   const { t } = useLanguage();
@@ -109,7 +108,8 @@ export default function TokenSection() {
             onPress={() => {
               navigationService.navigate('ManageTokenList');
             }}>
-            <TextM style={styles.addTokenText}>{t('Manage token list')}</TextM>
+            <Svg icon="tune" size={pTd(16)} />
+            <Text style={styles.addTokenText}>{t('Manage token list')}</Text>
           </Touchable>
         }
       />
@@ -124,8 +124,8 @@ export const getStyles = makeStyles(theme => ({
   },
   addWrap: {
     shadowColor: 'red',
-    marginTop: pTd(24),
-    marginBottom: pTd(24),
+    marginTop: pTd(20),
+    marginBottom: pTd(20),
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'center',
@@ -133,9 +133,9 @@ export const getStyles = makeStyles(theme => ({
   },
   addTokenText: {
     marginLeft: pTd(8),
-    marginBottom: pTd(16),
     fontSize: pTd(16),
+    lineHeight: pTd(16),
     color: theme.colors.textBrand1,
-    ...fonts.mediumFont,
+    ...fonts.SGMediumFont,
   },
 }));

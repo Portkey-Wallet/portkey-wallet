@@ -11,6 +11,7 @@ export interface ITransferLimitItem {
   defaultDailyLimit?: string;
   defaultSingleLimit?: string;
   imageUrl?: string;
+  chainImageUrl?: string;
 }
 
 export enum ICheckLimitBusiness {

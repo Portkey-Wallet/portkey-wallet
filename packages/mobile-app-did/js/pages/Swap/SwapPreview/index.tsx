@@ -5,6 +5,7 @@ import CommonPreviewContainer from 'components/CommonPreviewContainer';
 import Svg from 'components/Svg';
 import CommonInfoRow from 'components/CommonInfoRow';
 import { CommonPromptCard, PromptCardType } from 'components/CommonPromptCard';
+import PreviewAmountCard from '../components/PreviewAmountCard';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { getChainSvgName } from 'utils';
 import { pTd } from 'utils/unit';
@@ -108,10 +109,12 @@ const SwapPreview = () => {
 
   return (
     <CommonPreviewContainer
+      footerStyle={styles.footerWrap}
       poweredIcon={<Svg icon="awakenLogo" oblongSize={[pTd(45), pTd(12)]} />}
       buttonProps={{ title: t('Swap'), onPress: handlePress }}
       isLoading={isLoading}>
-      <View>
+      <PreviewAmountCard style={styles.previewAmountCard} />
+      <View style={styles.infoRowContainer}>
         <CommonInfoRow
           label={{ text: 'Network' }}
           value={{ text: 'aelf dAppChain', leftSvgName: getChainSvgName('tDVV') }}

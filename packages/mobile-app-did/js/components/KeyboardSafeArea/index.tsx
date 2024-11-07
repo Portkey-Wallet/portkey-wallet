@@ -5,7 +5,7 @@ import React, { ReactNode, useCallback, useEffect, useMemo, useRef, useState } f
 import { View } from 'react-native';
 
 export type TKeyboardSafeAreaProps = {
-  children: ReactNode;
+  children?: ReactNode;
   bottomPad?: number;
 };
 export const KeyboardSafeArea = ({ children, bottomPad = 0 }: TKeyboardSafeAreaProps) => {

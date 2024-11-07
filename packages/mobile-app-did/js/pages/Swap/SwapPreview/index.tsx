@@ -40,6 +40,8 @@ import { getAllowance } from '@portkey-wallet/utils/contract';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useSwapHookContractAddress } from '@portkey-wallet/hooks/hooks-ca/awaken';
 import { AWAKEN_DEFAULT_CID } from '@portkey-wallet/constants/constants-ca/awaken';
+import navigationService from 'utils/navigationService';
+import { ActionType } from 'types/common';
 
 type TRouterParams = {
   swapInfo: TSwapInfo;
@@ -176,7 +178,7 @@ const SwapPreview = () => {
         swapRoute,
       });
 
-      console.log('SwapConfirmModal amountOutValue', amountOutAmount);
+      console.log('SwapPreview amountOutValue', amountOutAmount);
 
       const amountOutValue = divDecimals(
         ZERO.plus(amountOutAmount).times(SWAP_RECEIVE_RATE).dp(0, BigNumber.ROUND_CEIL),
@@ -202,7 +204,7 @@ const SwapPreview = () => {
         swapRoute: _swapRoute,
       };
     } catch (error) {
-      console.log('SwapConfirmModal executeCb error:', error);
+      console.log('SwapPreview executeCb error:', error);
       return;
     }
   }, [getSwapHookViewContract, getValueOut, swapInfo, swapRoute]);
@@ -213,12 +215,12 @@ const SwapPreview = () => {
   const clearTimer = useCallback(() => {
     if (!timerRef.current) return;
     clearInterval(timerRef.current);
-    console.log('SwapConfirmModal: clearTimer');
+    console.log('SwapPreview: clearTimer');
   }, []);
 
   const registerTimer = useCallback(() => {
     clearTimer();
-    console.log('SwapConfirmModal: registerTimer');
+    console.log('SwapPreview: registerTimer');
 
     executeCbRef.current();
     timerRef.current = setInterval(() => {
@@ -312,15 +314,6 @@ const SwapPreview = () => {
         };
       });
 
-      // console.log('onSwap', {
-      //   account: caAddress,
-      //   routerContract: routeContract,
-      //   swapTokens,
-      //   amountIn: valueInAmountBN,
-      //   amountOutMin: amountMinOutAmountBN,
-      //   tokenB: tokenIn,
-      //   tokenA: tokenOut,
-      // });
       const req = await sendSwap({
         contract: caContract,
         managerAddress: wallet.address,
@@ -331,9 +324,14 @@ const SwapPreview = () => {
           labsFeeRate: SWAP_LABS_FEE_RATE,
         },
       });
+      if (req?.error) throw req?.error;
       console.log('req', req);
+
+      navigationService.navigate('SwapFinishPage', {
+        actionType: ActionType.SWAP,
+      });
     } catch (error) {
-      console.log('SwapConfirmModal onSwap error', error);
+      console.log('SwapPreview onSwap error', error);
     } finally {
       console.log('onSwap finally');
       setIsSwapping(false);
@@ -381,7 +379,7 @@ const SwapPreview = () => {
               description: 'The minimum amount you are guaranteed to receive based on your set slippage tolerance.',
             },
           }}
-          value={{ text: amountOutMinValue, textBelow: !isMainnet ? amountOutMinUsd : '' }}
+          value={{ text: amountOutMinValue, textBelow: isMainnet ? amountOutMinUsd : '' }}
         />
         <CommonInfoRow
           label={{
@@ -413,7 +411,7 @@ const SwapPreview = () => {
               learnMoreUrl: 'https://awakenfinance.gitbook.io/en/ii.-trader-faq/what-is-a-swap-trade/what-is-the-fee',
             },
           }}
-          value={{ text: feeValueStr, textBelow: !isMainnet ? feeUsd : '' }}
+          value={{ text: feeValueStr, textBelow: isMainnet ? feeUsd : '' }}
         />
         <CommonInfoRow
           label={{
@@ -423,7 +421,7 @@ const SwapPreview = () => {
               description: 'Fee applied by the blockchain to process your transaction, also known as gas fee.',
             },
           }}
-          value={{ text: gasFeeValue, textBelow: !isMainnet ? gasFeeUsd : '' }}
+          value={{ text: gasFeeValue, textBelow: isMainnet ? gasFeeUsd : '' }}
         />
       </View>
       <CommonPromptCard

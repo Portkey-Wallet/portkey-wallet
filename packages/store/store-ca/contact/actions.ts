@@ -233,12 +233,12 @@ export const resetContact = createAction<void>('contact/resetContact');
 
 export const refreshContactMap = createAction<void>('contact/refreshContactMap');
 
-export const addContactActionNew = createAction<IContactItemType>('contact/addContract');
+export const addContactActionNew = createAction<IContactItemType>('contact/addContractNew');
 
-export const editContactActionNew = createAction<IContactItemType>('contact/editContract');
+export const editContactActionNew = createAction<IContactItemType>('contact/editContractNew');
 
-export const deleteContactActionNew = createAction<IContactItemType>('contact/deleteContract');
+export const deleteContactActionNew = createAction<IContactItemType>('contact/deleteContractNew');
 
-export const resetContactNew = createAction<void>('contact/resetContact');
+export const resetContactNew = createAction<void>('contact/resetContactNew');
 
-export const refreshContactMapNew = createAction<void>('contact/refreshContactMap');
+export const refreshContactMapNew = createAction<void>('contact/refreshContactMapNew');

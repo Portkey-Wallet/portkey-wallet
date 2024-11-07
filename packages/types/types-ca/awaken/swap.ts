@@ -1,4 +1,4 @@
-import { TAwakenTokenInfo, TTradePair } from '.';
+import { PBTimestamp, TAwakenTokenInfo, TTradePair } from '.';
 
 export type TTradePairExtension = {
   valueLocked0: string;
@@ -21,4 +21,16 @@ export type TSwapRoute = {
   amountOut: string;
   splits: number;
   distributions: TSwapRouteDistribution[];
+};
+
+export type TContractSwapToken = {
+  amountIn?: string;
+  amountOutMin?: string;
+  amountOut?: string;
+  amountInMax?: string;
+  channel: string;
+  deadline: number | PBTimestamp;
+  path: string[];
+  to: string;
+  feeRates: number[];
 };

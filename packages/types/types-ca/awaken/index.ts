@@ -15,3 +15,8 @@ export type TTradePair = {
   token1: TAwakenTokenInfo;
   id: string;
 };
+
+export type PBTimestamp = {
+  seconds: number;
+  nanos: number;
+};

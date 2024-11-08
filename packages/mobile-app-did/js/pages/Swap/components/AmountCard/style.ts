@@ -91,7 +91,6 @@ export const getStyles = makeStyles(theme => ({
   balanceAmount: {
     marginRight: pTd(8),
     fontSize: pTd(14),
-    lineHeight: pTd(14),
     color: theme.colors.textBase2,
   },
   maxButton: {

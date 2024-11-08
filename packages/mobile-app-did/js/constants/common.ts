@@ -26,3 +26,5 @@ export const RAMP_SELL_URL = 'https://thirdparty.portkey.finance/sell?from=app';
 export const DISCOVER_BOOKMARK_MAX_COUNT = 30;
 
 export const SEND_RECEIVE_HELP_URL = 'https://doc.portkey.finance/docs/How-to-send-and-receive-assets';
+
+export const AELF_NETWORK_NAME = 'aelf';

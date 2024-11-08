@@ -122,11 +122,11 @@ const ContactActivity: React.FC = () => {
     );
   }, []);
 
-  const navToAddContact = useCallback(() => {
-    navigationService.navigate('NoChatContactProfileEdit', {
-      addressList: [{ address, chainId }],
-    });
-  }, [address, chainId]);
+  // const navToAddContact = useCallback(() => {
+  // navigationService.navigate('NoChatContactProfileEdit', {
+  //   addressList: [{ address, chainId }],
+  // });
+  // }, [address, chainId]);
 
   const navToExplore = useCallback(
     (navAddress: string, navChainId: ChainId) => {

@@ -1,33 +1,29 @@
-import { ContactItemType, ContactType } from '@portkey-wallet/types/types-ca/contact';
-import { defaultColors } from 'assets/theme';
+import { IContactItemType } from '@portkey-wallet/types/types-ca/contactNew';
+import { makeStyles } from '@rneui/themed';
 import GStyles from 'assets/theme/GStyles';
 import { FontStyles } from 'assets/theme/styles';
 import CommonAvatar from 'components/CommonAvatar';
-import { TextL, TextS } from 'components/CommonText';
-import Svg from 'components/Svg';
+import { TextL } from 'components/CommonText';
 import Touchable from 'components/Touchable';
-import AIChatMark from 'pages/Chat/components/AIChatMark';
 import React, { memo } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 import { pTd } from 'utils/unit';
 
 export interface ItemType {
-  isShowWarning?: boolean;
-  isShowChat?: boolean;
-  isShowContactIcon?: boolean;
-  contact: ContactItemType;
+  contact: IContactItemType;
   onPress?: (item: any) => void;
   onPressChat?: (item: any) => void;
+  isShowChat?: boolean;
 }
 
 const ContactItem: React.FC<ItemType> = props => {
-  const { isShowChat = false, isShowWarning, isShowContactIcon = false, contact, onPress, onPressChat } = props;
+  const { contact, onPress } = props;
+  const styles = getStyles();
 
   return (
     <Touchable onPress={() => onPress?.(contact)}>
       <View style={styles.itemWrap}>
         <View style={[styles.itemAvatar, styles.avatarWrap]}>
-          {isShowWarning && <View style={styles.warningCycle} />}
           <CommonAvatar
             hasBorder
             resizeMode="cover"
@@ -39,23 +35,13 @@ const ContactItem: React.FC<ItemType> = props => {
         </View>
         <View style={styles.itemNameWrap}>
           <View style={GStyles.flexRow}>
-            <TextL numberOfLines={1} style={FontStyles.font5}>
+            <TextL numberOfLines={1} style={[FontStyles.font5, styles.itemNameText]}>
               {contact?.name || contact?.caHolderInfo?.walletName || contact.imInfo?.name}
             </TextL>
-            {contact?.contactType === ContactType.ChatGptBot && <AIChatMark containerStyle={styles.aiMark} />}
+            {/* {contact?.contactType === ContactType.ChatGptBot && <AIChatMark containerStyle={styles.aiMark} />} */}
           </View>
-          {isShowContactIcon && (
-            <View style={[GStyles.marginTop(pTd(2)), GStyles.flexRow, styles.contactIconWrap]}>
-              <Svg icon="chat-added" size={pTd(14)} color={defaultColors.primaryColor} />
-              <TextS style={[FontStyles.font4, GStyles.marginLeft(pTd(4))]}>Contact</TextS>
-            </View>
-          )}
+          <TextL style={[FontStyles.font5, styles.itemAddressText]}>address</TextL>
         </View>
-        {isShowChat && (
-          <Touchable style={styles.chatButton} onPress={() => onPressChat?.(contact)}>
-            <TextS style={[FontStyles.font2, styles.chatText]}>Chat</TextS>
-          </Touchable>
-        )}
       </View>
     </Touchable>
   );
@@ -63,59 +49,28 @@ const ContactItem: React.FC<ItemType> = props => {
 
 export default memo(ContactItem);
 
-export const styles = StyleSheet.create({
+export const getStyles = makeStyles(theme => ({
   itemWrap: {
-    backgroundColor: defaultColors.bg1,
-    height: pTd(72),
+    height: pTd(66),
     width: '100%',
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    borderBottomColor: defaultColors.border6,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    marginBottom: StyleSheet.hairlineWidth,
-    ...GStyles.paddingArg(0, 20),
+    ...GStyles.paddingArg(12, 16),
   },
   itemAvatar: {
-    marginRight: pTd(12),
+    marginRight: pTd(8),
   },
   itemNameWrap: {
     flex: 1,
   },
-  chatButton: {
-    backgroundColor: defaultColors.bg5,
-    borderRadius: pTd(6),
-    overflow: 'hidden',
-    paddingHorizontal: pTd(12),
-    height: pTd(24),
+  itemNameText: {
+    color: theme.colors.textBase1,
   },
-  chatText: {
-    lineHeight: pTd(24),
+  itemAddressText: {
+    color: theme.colors.textBase2,
   },
   avatarWrap: {
     position: 'relative',
   },
-  warningCycle: {
-    position: 'absolute',
-    zIndex: 1000,
-    right: 0,
-    top: 0,
-    width: pTd(8),
-    height: pTd(8),
-    borderRadius: pTd(5),
-    backgroundColor: defaultColors.bg17,
-    borderWidth: pTd(1),
-    borderColor: defaultColors.bg1,
-  },
-  contactIconWrap: {
-    width: pTd(76),
-    paddingHorizontal: pTd(8),
-    paddingVertical: pTd(2),
-    borderRadius: pTd(4),
-    backgroundColor: defaultColors.brandLight,
-  },
-  aiMark: {
-    alignSelf: 'flex-end',
-    marginBottom: pTd(2),
-  },
-});
+}));

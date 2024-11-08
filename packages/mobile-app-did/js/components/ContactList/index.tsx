@@ -3,116 +3,87 @@ import { Text, View } from 'react-native';
 import CommonInput from 'components/CommonInput';
 import navigationService from 'utils/navigationService';
 import Svg from 'components/Svg';
-import { styles as contactListStyles } from './style';
+import { getContactListStyles } from './style';
 import CommonButton from 'components/CommonButton';
 import { pTd } from 'utils/unit';
 import { useLanguage } from 'i18n/hooks';
-import { ContactIndexType, ContactItemType, ContactType } from '@portkey-wallet/types/types-ca/contact';
-import ContactItem, { styles as contactItemStyles } from 'components/ContactItem';
+import ContactItem, { getStyles as getContactItemStyles } from 'components/ContactItem';
 import ContactFlashList from './ContactFlashList';
-import { TextL } from 'components/CommonText';
+import { TextL, TextM } from 'components/CommonText';
 import { defaultColors } from 'assets/theme';
-import { BGStyles, FontStyles } from 'assets/theme/styles';
+import { FontStyles } from 'assets/theme/styles';
 import GStyles from 'assets/theme/GStyles';
 import { ViewStyleType } from 'types/styles';
-import { getAddressInfo } from '@portkey-wallet/utils/aelf';
-import { transContactsToIndexes } from '@portkey-wallet/store/store-ca/contact/utils';
-import { useContact } from '@portkey-wallet/hooks/hooks-ca/contact';
+import { useContact, useLocalContactSearch } from '@portkey-wallet/hooks/hooks-ca/contactNew';
 import { useJumpToChatDetails } from 'hooks/chat';
-import ContactUpdateWarning from 'pages/My/components/ContactUpdateWarning';
-import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { IContactIndexType, IContactItemType } from '@portkey-wallet/types/types-ca/contactNew';
 interface ContactsListProps {
-  justChatContact?: boolean;
   isIndexBarShow?: boolean;
   isSearchShow?: boolean;
   isContactUpdateWarningShow?: boolean;
   isReadOnly?: boolean;
-  renderContactItem?: (item: ContactItemType) => JSX.Element;
+  renderContactItem?: (item: IContactItemType) => JSX.Element;
   itemHeight?: number;
   style?: ViewStyleType;
   ListFooterComponent?: JSX.Element;
-  isTransaction?: boolean;
+  // isTransaction?: boolean;
 }
-type FlashItemType = ContactIndexType | ContactItemType;
-
+type FlashItemType = IContactIndexType | IContactItemType;
+const defaultList: IContactIndexType[] = [];
 const ContactsList: React.FC<ContactsListProps> = ({
-  justChatContact = false,
   isIndexBarShow = true,
   isSearchShow = true,
-  isContactUpdateWarningShow = false,
   isReadOnly = false,
   renderContactItem,
   itemHeight,
   style,
   ListFooterComponent,
-  isTransaction,
+  // isTransaction,
 }) => {
   const { t } = useLanguage();
-  const { contactIndexList, contactMap } = useContact(!justChatContact);
-  const [list, setList] = useState<ContactIndexType[]>([]);
-  const navToChatDetails = useJumpToChatDetails();
-  const isShowChat = useIsChatShow();
+  const contactListStyles = getContactListStyles();
+  const contactItemStyles = getContactItemStyles();
+  const { contactIndexListNew: contactIndexList = defaultList } = useContact();
+  // const contactIndexList = contactIndexListNew ?? [];
+  // const contactMap = contactMapNew ?? {};
+  console.log('contactIndexList', contactIndexList);
+  const [list, setList] = useState<IContactIndexType[]>([]);
+  // const navToChatDetails = useJumpToChatDetails();
+  const localContactSearch = useLocalContactSearch();
 
-  const chatContactIndexList = useMemo(() => {
-    const _chatContactIndexList: ContactIndexType[] = [];
+  // const chatContactIndexList = useMemo(() => {
+  //   const _chatContactIndexList: ContactIndexType[] = [];
 
-    contactIndexList.map(ele => {
-      const chatList = ele.contacts.filter(contact => !!contact.imInfo);
-      if (chatList.length > 0) {
-        _chatContactIndexList.push({
-          contacts: chatList,
-          index: ele.index,
-        });
-      }
-    });
+  //   contactIndexList.map(ele => {
+  //     const chatList = ele.contacts.filter(contact => !!contact.imInfo);
+  //     if (chatList.length > 0) {
+  //       _chatContactIndexList.push({
+  //         contacts: chatList,
+  //         index: ele.index,
+  //       });
+  //     }
+  //   });
 
-    return _chatContactIndexList;
-  }, [contactIndexList]);
+  //   return _chatContactIndexList;
+  // }, [contactIndexList]);
 
   const flashListData = useMemo<FlashItemType[]>(() => {
     let _flashListData: FlashItemType[] = [];
     list.forEach(contactIndex => {
       if (!contactIndex.contacts.length) return;
 
-      if (justChatContact) {
-        // just chatContact
-        const indexContactList = contactIndex.contacts.filter(ele => !!ele.imInfo);
-        if (indexContactList.length > 0) {
-          _flashListData.push({
-            contacts: indexContactList,
-            index: contactIndex.index,
-          });
-          _flashListData = _flashListData.concat(indexContactList);
-        }
-      } else {
-        _flashListData.push({
-          ...contactIndex,
-        });
-        _flashListData = _flashListData.concat(contactIndex.contacts);
-      }
-    });
-    if (isTransaction) {
-      _flashListData = _flashListData.filter(item => {
-        let shouldFilter = false;
-        if ('contacts' in item) {
-          const originItem = item as ContactIndexType;
-          shouldFilter =
-            !!originItem.contacts &&
-            originItem.contacts.length === 1 &&
-            originItem.contacts[0].contactType === ContactType.ChatGptBot;
-        } else {
-          shouldFilter = (item as ContactItemType).contactType === ContactType.ChatGptBot;
-        }
-        return !shouldFilter;
+      _flashListData.push({
+        ...contactIndex,
       });
-    }
+      _flashListData = _flashListData.concat(contactIndex.contacts);
+    });
     return _flashListData;
-  }, [isTransaction, justChatContact, list]);
+  }, [list]);
 
   const [keyWord, setKeyWord] = useState<string>('');
 
   useEffect(() => {
-    setList(contactIndexList);
+    setList(contactIndexList ?? []);
     setKeyWord('');
   }, [contactIndexList]);
 
@@ -120,75 +91,35 @@ const ContactsList: React.FC<ContactsListProps> = ({
   const onChangeKeywords = useCallback(
     (value: string) => {
       setKeyWord(value);
-      const _value = value.trim();
-      if (_value === '') {
-        setList(contactIndexList);
-        return;
-      }
-
-      let filterList: ContactIndexType[] = [];
-      if (_value.length <= 16) {
-        // Name Search
-        filterList = contactIndexList.map(({ index, contacts }) => ({
-          index,
-          contacts: contacts.filter(contact => contact.name.toLocaleUpperCase().includes(_value.toLocaleUpperCase())),
-        }));
-      } else {
-        // Address Search
-        const addressInfo = getAddressInfo(_value);
-        let result: ContactItemType[] | undefined;
-        if (addressInfo.address) {
-          if (!addressInfo.suffix) {
-            // no suffix
-            result = contactMap[addressInfo.address];
-          } else {
-            result = contactMap[addressInfo.address]?.filter(item =>
-              item.addresses.find(address => address.chainId === addressInfo.suffix),
-            );
-          }
-        }
-        if (result === undefined) filterList = [];
-        else filterList = transContactsToIndexes(result);
-      }
-
-      setList(filterList);
+      const { contactIndexFilterList } = localContactSearch(value);
+      setList(contactIndexFilterList);
     },
-    [contactIndexList, contactMap],
+    [localContactSearch],
   );
 
-  const _renderSection = (contactIndex: ContactIndexType) => {
+  const _renderSection = (contactIndex: IContactIndexType) => {
     return (
-      <TextL key={contactIndex.index} style={[contactListStyles.sectionIndex, FontStyles.font7]}>
+      <TextM key={contactIndex.index} style={[contactListStyles.sectionIndex]}>
         {contactIndex.index}
-      </TextL>
+      </TextM>
     );
   };
 
-  const _renderItem = (item: ContactItemType) => {
+  const _renderItem = (item: IContactItemType) => {
     if (renderContactItem) return renderContactItem(item);
     return (
       <ContactItem
         key={item.id}
         contact={item}
-        isShowChat={isShowChat && !!item.imInfo?.relationId}
-        isShowWarning={item.isImputation}
         onPress={() => {
-          // adjust no chat func
-          if (!isShowChat)
-            return navigationService.navigate('NoChatContactProfile', {
-              contactId: item.id,
-              isCheckImputation: true,
-            });
-
-          navigationService.navigate(item.imInfo?.relationId ? 'ChatContactProfile' : 'NoChatContactProfile', {
-            contactId: item.id,
-            isCheckImputation: true,
+          return navigationService.navigate('NoChatContactProfile', {
+            editContact: item,
           });
         }}
-        onPressChat={() => {
-          if (!item?.imInfo?.relationId) return;
-          navToChatDetails({ toRelationId: item?.imInfo?.relationId || '' });
-        }}
+        // onPressChat={() => {
+        //   if (!item?.imInfo?.relationId) return;
+        //   navToChatDetails({ toRelationId: item?.imInfo?.relationId || '' });
+        // }}
       />
     );
   };
@@ -196,29 +127,23 @@ const ContactsList: React.FC<ContactsListProps> = ({
   const isExistContact = useMemo<boolean>(() => list.reduce((pv, cv) => pv + cv.contacts.length, 0) > 0, [list]);
 
   const indexList = useMemo(() => {
-    if (justChatContact) {
-      return chatContactIndexList;
-    } else {
-      return contactIndexList.filter(item => item.contacts.length);
-    }
-  }, [chatContactIndexList, contactIndexList, justChatContact]);
+    return contactIndexList.filter(item => item.contacts.length);
+  }, [contactIndexList]);
 
   return (
     <View style={[contactListStyles.listWrap, style]}>
       {isSearchShow && (
-        <View style={[BGStyles.bg1, GStyles.paddingArg(0, 20, 8)]}>
+        <View style={[contactListStyles.bg, GStyles.paddingArg(10, 16, 8, 16)]}>
           <CommonInput
-            grayBorder
-            theme="white-bg"
+            theme="black-bg"
             value={keyWord}
-            placeholder={t('Name/address')}
+            placeholder={'Name, address'}
             onChangeText={value => {
               onChangeKeywords(value);
             }}
           />
         </View>
       )}
-      {isContactUpdateWarningShow && <ContactUpdateWarning />}
       {isExistContact && (
         <ContactFlashList
           dataArray={flashListData}

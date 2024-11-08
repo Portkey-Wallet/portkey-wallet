@@ -29,7 +29,7 @@ import { measurePageY } from 'utils/measure';
 import { useSetUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import Loading from 'components/Loading';
 import CommonToast from 'components/CommonToast';
-import { makeStyles } from '@rneui/themed';
+import { makeStyles, useTheme } from '@rneui/themed';
 import OutlinedTextButton from 'components/OutlinedTextButton';
 import CommonAvatar from 'components/CommonAvatar';
 import Divider from 'components/Divider';
@@ -90,31 +90,8 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
     displayChainName,
     description,
   } = nftDetailInfo;
-  // const description = 'NFT description goes here, NFT description NFT description NFT description NFT description...';
-  // const traitsPercentages = [{
-  //   traitType: 'Background',
-  //   value: 'Desert Mirage Citadel',
-  //   percent: '5%'
-  // }, {
-  //   traitType: 'Background',
-  //   value: 'Desert Mirage Citadel',
-  //   percent: '5%'
-  // },{
-  //   traitType: 'Background',
-  //   value: 'Desert Mirage Citadel',
-  //   percent: '5%'
-  // },{
-  //   traitType: 'Background',
-  //   value: 'Desert Mirage Citadel',
-  //   percent: '5%'
-  // },{
-  //   traitType: 'Background',
-  //   value: 'Desert Mirage Citadel',
-  //   percent: '5%'
-  // }];
-  // const generation = '5';
-  // const inscriptionName = 'ELEPHANT';
-  // const limitPerMint = 11;
+  const { theme } = useTheme();
+
   const isFetchingTraits = useMemo(() => traitsPercentages && traitsPercentages?.length === 0, [traitsPercentages]);
 
   const fetchDetail = useLockCallback(async () => {
@@ -135,7 +112,7 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
       {
         title: 'Set as Profile Photo',
         iconName: 'profile',
-        iconColor: 'white',
+        iconColor: theme.colors.iconBase1,
         onPress: async () => {
           try {
             Loading.show();

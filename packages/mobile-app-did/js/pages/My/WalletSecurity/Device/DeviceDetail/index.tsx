@@ -33,7 +33,7 @@ const DeviceDetail: React.FC = () => {
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}>
       <View>
-        {deviceItem && <DeviceItem deviceItem={deviceItem} isCurrent={isCurrent} isShowArrow={false} />}
+        {deviceItem && <DeviceItem deviceItem={deviceItem} isCurrent={isCurrent} isShow={false} />}
         {!isCurrent && (
           <TextM style={[FontStyles.font3, pageStyles.tipsWrap]}>
             {`Your account is logged in on this device and you can remove it to revoke its access to your account.

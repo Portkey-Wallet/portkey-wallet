@@ -7,6 +7,7 @@ import {
   IContactIndexType,
   IContactItemType,
   IEditContactItemApiType,
+  INetworkItemType,
 } from '@portkey-wallet/types/types-ca/contactNew';
 import { useCallback, useEffect, useMemo } from 'react';
 import {
@@ -113,7 +114,7 @@ export const useContactList = () => {
         result = [...result, ...ele.contacts];
       });
     return result;
-  }, [contact.contactIndexList]);
+  }, [contact?.contactIndexListNew]);
 };
 
 export const useCheckContactMap = () => {
@@ -170,12 +171,12 @@ export const useAllContactList = () => {
 };
 
 export const useLocalContactSearch = () => {
-  const { contactIndexList } = useContact(false, false);
+  const { contactIndexListNew } = useContact(false, false);
 
   return useCallback(
     (value: string) => {
       // STEP 1 > filter - type
-      const filterList: IContactIndexType[] = [];
+      const filterList: IContactIndexType[] = contactIndexListNew ?? [];
 
       // STEP 2 > filter - no data
       const notEmptyFilterList = filterList.filter(item => item?.contacts?.length > 0);
@@ -237,7 +238,7 @@ export const useLocalContactSearch = () => {
       });
       return { contactFilterList, contactIndexFilterList };
     },
-    [contactIndexList],
+    [contactIndexListNew],
   );
 };
 
@@ -248,4 +249,37 @@ export const useIndexAndName = (item: Partial<IContactItemType>) => {
     const index = name?.substring(0, 1).toLocaleUpperCase();
     return { index, name };
   }, [item?.caHolderInfo?.walletName, item?.name]);
+};
+const mockList = [
+  {
+    network: 'aelf',
+    name: 'aelf MainChain',
+    chainId: 'AELF',
+    imageUrl: '',
+  },
+  {
+    network: 'aelf',
+    name: 'dApp chain',
+    chainId: 'tDVW',
+    imageUrl: '',
+  },
+  {
+    network: 'ETH',
+    name: 'Ethereum',
+    imageUrl: '',
+  },
+  {
+    network: 'BSC',
+    name: 'BNB Smart Chain',
+    imageUrl: '',
+  },
+  {
+    network: 'TON',
+    name: 'The Open Network',
+    imageUrl: '',
+  },
+];
+export const useNetworkList = () => {
+  const networkList: INetworkItemType[] = mockList as INetworkItemType[];
+  return networkList;
 };

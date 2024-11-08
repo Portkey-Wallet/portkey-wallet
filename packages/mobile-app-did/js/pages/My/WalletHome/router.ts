@@ -21,10 +21,6 @@ const stackNav = [
     component: EditWalletName,
   },
   {
-    name: 'AutoLock',
-    component: AutoLock,
-  },
-  {
     name: 'SwitchNetworks',
     component: SwitchNetworks,
   },

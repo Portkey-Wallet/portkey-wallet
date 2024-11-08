@@ -8,7 +8,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const crossChainTransfer = new CrossTransfer();
 
-export const CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL = ['ELF', 'USDT'];
+export const CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL = ['ELF', 'USDT', 'SGR-1'];
 
 export const useCrossTransferByEtransfer = (pin?: string) => {
   const wallet = useCurrentWallet();

@@ -161,6 +161,7 @@ export const defaultColors = {
   bgDanger3: '#20110C',
   bgDanger4: '#8C2E08',
   bgDanger5: '#61220A',
+  bgTransparent: 'transparent',
 
   textBase1: '#ffffff',
   textBase2: '#FFFFFFB2',
@@ -287,6 +288,7 @@ export const darkColors = {
   bgDanger3: '#20110C',
   bgDanger4: '#8C2E08',
   bgDanger5: '#61220A',
+  bgTransparent: 'transparent',
 
   textBase1: '#ffffff',
   textBase2: '#FFFFFFB2',

@@ -7,6 +7,8 @@ import Svg, { IconName } from 'components/Svg';
 import { pTd } from 'utils/unit';
 import { defaultColors } from 'assets/theme';
 import { TextL } from 'components/CommonText';
+import fonts from 'assets/theme/fonts';
+import { makeStyles } from '@rneui/themed';
 
 const vertical = 20;
 const horizontal = 20;
@@ -68,6 +70,7 @@ function FloatPopover({
   customPosition: ShowChatPopoverParams['customPosition'];
   onMaskClose?: () => void;
 }) {
+  const styles = getStyles();
   return (
     <TouchableOpacity
       activeOpacity={1}
@@ -142,8 +145,7 @@ const itemStyle = StyleSheet.create({
     alignItems: 'center',
   },
 });
-
-const styles = StyleSheet.create({
+const getStyles = makeStyles(theme => ({
   dynamicWidthItemStyles: {
     minWidth: 100,
     ...itemStyle.item,
@@ -159,15 +161,17 @@ const styles = StyleSheet.create({
     zIndex: 100,
     minWidth: pTd(112),
     shadowOffset: { width: 2, height: 5 },
-    backgroundColor: defaultColors.bg1,
-    shadowColor: defaultColors.shadow1,
+    backgroundColor: theme.colors.bgBase1,
+    borderColor: theme.colors.borderBase1,
+    shadowColor: theme.colors.shadow1,
     shadowOpacity: 0.15,
     shadowRadius: 10,
     elevation: 2,
   },
   textStyles: {
     marginLeft: pTd(12),
-    color: defaultColors.font5,
+    color: theme.colors.textBase1,
+    ...fonts.SGRegularFont,
   },
   leftMargin12: {
     marginLeft: pTd(12),
@@ -175,5 +179,9 @@ const styles = StyleSheet.create({
   leftMargin0: {
     marginLeft: 0,
   },
-  backgroundBox: { height: screenHeight, width: screenWidth, backgroundColor: 'transparent' },
-});
+  backgroundBox: {
+    height: screenHeight,
+    width: screenWidth,
+    backgroundColor: theme.colors.bgTransparent,
+  },
+}));

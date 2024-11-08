@@ -1,5 +1,6 @@
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { View } from 'react-native';
+import { useLanguage } from 'i18n/hooks';
 import AmountCardGroup from '../AmountCardGroup';
 import CommonButton from 'components/CommonButton';
 import CommonInfoRow from 'components/CommonInfoRow';
@@ -35,6 +36,7 @@ export type TSwapInfo = {
 
 const SwapEnter = () => {
   const styles = getStyles();
+  const { t } = useLanguage();
   const getSwapRoutesInstant = useGetSwapRoutes();
   const getSwapRoutes = useReturnLastCallback(getSwapRoutesInstant, [getSwapRoutesInstant]);
   const gasFee = useAwakenGasFee();
@@ -349,6 +351,16 @@ const SwapEnter = () => {
     return false;
   }, [isExceedBalance, isInvalidParis, isRouteEmpty, swapInfo]);
 
+  const bottomButtonTitle = useMemo(() => {
+    if (isInvalidParis) {
+      return 'Swap not available';
+    } else if (isExceedBalance) {
+      return `Insufficient ${swapInfo.tokenIn?.label || swapInfo.tokenIn?.symbol} balance`;
+    } else {
+      return 'Preview';
+    }
+  }, [isExceedBalance, isInvalidParis, swapInfo.tokenIn?.label, swapInfo.tokenIn?.symbol]);
+
   const [isSwapping, setIsSwapping] = useState(false);
   const onPreviewClick = useCallback(async () => {
     const { tokenIn, tokenOut, valueIn, valueOut } = swapInfo;
@@ -426,7 +438,7 @@ const SwapEnter = () => {
       <KeyboardSafeArea bottomPad={pTd(16)}>
         <CommonButton
           loading={isSwapping}
-          title="Preview"
+          title={t(bottomButtonTitle)}
           type="primary"
           disabled={isBtnDisable}
           onPress={onPreviewClick}

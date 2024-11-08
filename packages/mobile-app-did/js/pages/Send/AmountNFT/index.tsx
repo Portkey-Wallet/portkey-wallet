@@ -1,24 +1,33 @@
-import React, { useCallback, useRef } from 'react';
-import { View, StyleSheet, TextInput } from 'react-native';
+import React, { useCallback, useRef, useState } from 'react';
+import { View, StyleSheet, TextInput, TouchableOpacity, LayoutChangeEvent } from 'react-native';
 import { pTd } from 'utils/unit';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
-import { TextM } from 'components/CommonText';
-import { FontStyles } from 'assets/theme/styles';
 import { useInputFocus } from 'hooks/useInputFocus';
 import { IToSendAssetParamsType } from '@portkey-wallet/types/types-ca/routeParams';
 import { parseInputNumberChange } from '@portkey-wallet/utils/input';
+import { makeStyles } from '@rneui/themed';
+import fonts from 'assets/theme/fonts';
+import { FloatTip } from 'components/FloatTip';
+import Svg from 'components/Svg';
 
 interface AmountNFT {
+  warningTip?: string;
   sendNumber: string;
   setSendNumber: any;
   assetInfo: IToSendAssetParamsType;
 }
 
 export default function AmountNFT(props: AmountNFT) {
-  const { sendNumber, setSendNumber, assetInfo } = props;
-
+  const { warningTip, sendNumber, setSendNumber, assetInfo } = props;
+  const styles = getStyles();
   const iptRef = useRef<TextInput>(null);
+  const [warningClick, setWarningClick] = useState(false);
+  const warningRef = useRef<NodeJS.Timeout | null>(null);
+  const [wrapperLayoutProps, setWrapperLayoutProps] = useState<{ width: number; height: number }>({
+    width: 0,
+    height: 0,
+  });
   useInputFocus(iptRef);
 
   const onChangeText = useCallback(
@@ -27,31 +36,62 @@ export default function AmountNFT(props: AmountNFT) {
     },
     [assetInfo?.decimals, setSendNumber],
   );
-
+  const clickWarning = useCallback(() => {
+    setWarningClick(true);
+    warningRef.current = setTimeout(() => {
+      setWarningClick(false);
+      warningRef.current = null;
+    }, 2000);
+  }, []);
+  const onLayout = useCallback(
+    (event: LayoutChangeEvent) => {
+      const { width, height } = event.nativeEvent.layout;
+      if (wrapperLayoutProps.width === width && wrapperLayoutProps.height === height) return;
+      setWrapperLayoutProps({ width, height });
+    },
+    [wrapperLayoutProps],
+  );
   return (
     <View style={styles.wrap}>
-      <TextM style={styles.title}>Amount</TextM>
-      <View style={styles.iptWrap}>
-        <TextInput
-          autoFocus
-          ref={iptRef}
-          style={[styles.inputStyle, sendNumber === '0' && FontStyles.font7]}
-          keyboardType="numeric"
-          maxLength={18}
-          value={sendNumber}
-          onChangeText={onChangeText}
-        />
-      </View>
+      <TextInput
+        autoFocus
+        ref={iptRef}
+        style={[styles.inputStyle, sendNumber === '0' && styles.placeholderTextColor]}
+        keyboardType="numeric"
+        maxLength={18}
+        placeholder="0"
+        placeholderTextColor={styles.placeholderTextColor.color}
+        value={sendNumber}
+        onChangeText={onChangeText}
+      />
+      {warningTip && (
+        <TouchableOpacity
+          onPress={clickWarning}
+          onLayout={onLayout}
+          disabled={warningClick}
+          style={styles.warningIconWrap}>
+          <FloatTip
+            wrapperLayoutProps={wrapperLayoutProps}
+            textStyle={{
+              color: defaultColors.textBase2,
+            }}
+            content={warningTip}
+            display={warningClick}
+          />
+          <Svg icon="warning" iconStyle={{ marginLeft: pTd(6) }} color={defaultColors.iconDanger1} size={pTd(24)} />
+        </TouchableOpacity>
+      )}
     </View>
   );
 }
-
-export const styles = StyleSheet.create({
+export const getStyles = makeStyles(theme => ({
   wrap: {
     paddingTop: pTd(12),
     paddingBottom: pTd(16),
     display: 'flex',
-    justifyContent: 'space-around',
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
   },
   title: {
     width: '100%',
@@ -91,24 +131,22 @@ export const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   iptWrap: {
-    width: '100%',
+    width: 'auto',
     marginTop: pTd(21),
+    backgroundColor: 'blue',
+    maxWidth: '80%',
+    textAlign: 'right',
+    fontSize: pTd(32),
+    ...fonts.BGMediumFont,
   },
   inputStyle: {
-    // paddingTop: 0,
-    // paddingBottom: 0,
-    width: pTd(221),
+    width: 'auto',
     minHeight: pTd(38),
-    borderBottomColor: defaultColors.bg7,
-    borderBottomWidth: StyleSheet.hairlineWidth,
     textAlign: 'center',
-    // backgroundColor: 'green',
-    // lineHeight: pTd(28),
-    // paddingRight: pTd(80),
-    color: defaultColors.font5,
-    fontSize: pTd(24),
-    marginLeft: 'auto',
-    marginRight: 'auto',
+    color: theme.colors.textBase1,
+    fontSize: pTd(32),
+    ...fonts.BGMediumFont,
+    maxWidth: '80%',
   },
   usdtNumSent: {
     position: 'absolute',
@@ -117,4 +155,10 @@ export const styles = StyleSheet.create({
     borderBottomColor: defaultColors.border6,
     color: defaultColors.font3,
   },
-});
+  placeholderTextColor: {
+    color: theme.colors.textBase3,
+  },
+  warningIconWrap: {
+    flexDirection: 'row',
+  },
+}));

@@ -161,7 +161,8 @@ const SendReceivePreview: React.FC<ISendReceivePreviewProps> = ({
                 {!!amountUSD && isMainnet && <Text style={styles.amountBelow}>{amountUSD}</Text>}
               </View>
             )}
-            <View style={styles.infoWrap}>
+            {/* eslint-disable-next-line react-native/no-inline-styles */}
+            <View style={[styles.infoWrap, { marginTop: NFTInfo ? 0 : pTd(16) }]}>
               {fromAddress && (
                 <CommonInfoRow label={{ text: 'From' }} value={{ text: formatStr2EllipsisStr(fromAddress) }} />
               )}

@@ -5,8 +5,9 @@ import Touchable from 'components/Touchable';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import Svg, { IconName } from 'components/Svg';
 import { pTd } from 'utils/unit';
-import { defaultColors } from 'assets/theme';
+import { darkColors, defaultColors } from 'assets/theme';
 import { TextL } from 'components/CommonText';
+import fonts from 'assets/theme/fonts';
 
 const vertical = 20;
 const horizontal = 20;
@@ -159,7 +160,8 @@ const styles = StyleSheet.create({
     zIndex: 100,
     minWidth: pTd(112),
     shadowOffset: { width: 2, height: 5 },
-    backgroundColor: defaultColors.bg1,
+    backgroundColor: darkColors.bgBase1,
+    borderColor: darkColors.borderBase1,
     shadowColor: defaultColors.shadow1,
     shadowOpacity: 0.15,
     shadowRadius: 10,
@@ -167,7 +169,8 @@ const styles = StyleSheet.create({
   },
   textStyles: {
     marginLeft: pTd(12),
-    color: defaultColors.font5,
+    color: defaultColors.textBase1,
+    ...fonts.SGRegularFont,
   },
   leftMargin12: {
     marginLeft: pTd(12),

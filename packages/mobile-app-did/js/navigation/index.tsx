@@ -20,6 +20,7 @@ import GuardianNav from 'pages/Guardian';
 import Referral from 'pages/Referral';
 import SecurityLock from 'pages/SecurityLock';
 import NFTDetail from 'pages/NFT/NFTDetail';
+import CollectionDetail from 'pages/NFT/CollectionDetail';
 import QrCodeNav from 'pages/QrCode';
 import MyNav from 'pages/My/router';
 import RampNav from 'pages/Ramp';
@@ -49,6 +50,7 @@ export const productionNav = [
   { name: 'Tab', component: Tab },
   { name: 'SecurityLock', component: SecurityLock, options: { gestureEnabled: false } },
   { name: 'NFTDetail', component: NFTDetail },
+  { name: 'CollectionDetail', component: CollectionDetail },
   { name: 'ProviderWebPage', component: ProviderWebPage },
   { name: 'Deposit', component: Deposit },
   { name: 'CryptoGift', component: CryptoGift },

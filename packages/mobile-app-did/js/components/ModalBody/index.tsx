@@ -50,44 +50,49 @@ export const ModalBody: React.FC<ModalBodyProps> = props => {
   const gStyles = useGStyles();
 
   if (modalBodyType === 'bottom') {
+    const showTopWrap = !!leftTitleDom || !!title || !!isShowRightCloseIcon;
     return (
       <View onTouchStart={onTouchStart} style={[styles.commonBox, gStyles.overlayStyle, styles.wrapStyle, style]}>
         <View style={styles.topWrap}>
           <View style={styles.slot} />
           {/* {isShowLeftBackIcon && (
-            <View
-              style={styles.leftIcon}
-              pointerEvents="box-only"
-              onTouchStart={() => {
-                onBack?.();
-                Keyboard.dismiss();
-                !preventBack && OverlayModal.hide();
-              }}>
-              <Svg icon="left-arrow" size={pTd(20)} />
-            </View>
-          )} */}
-          {leftTitleDom ? (
-            leftTitleDom
-          ) : (
-            <TextXL
-              suppressHighlighting={true}
-              style={[styles.titleStyle, fonts.mediumFont]}
-              onPress={Keyboard.dismiss}>
-              {title}
-            </TextXL>
-          )}
+              <View
+                style={styles.leftIcon}
+                pointerEvents="box-only"
+                onTouchStart={() => {
+                  onBack?.();
+                  Keyboard.dismiss();
+                  !preventBack && OverlayModal.hide();
+                }}>
+                <Svg icon="left-arrow" size={pTd(20)} />
+              </View>
+            )} */}
+          {showTopWrap && (
+            <>
+              {leftTitleDom ? (
+                leftTitleDom
+              ) : (
+                <TextXL
+                  suppressHighlighting={true}
+                  style={[styles.titleStyle, fonts.mediumFont]}
+                  onPress={Keyboard.dismiss}>
+                  {title}
+                </TextXL>
+              )}
 
-          {isShowRightCloseIcon && (
-            <View
-              style={styles.closeIcon}
-              pointerEvents="box-only"
-              onTouchStart={() => {
-                onClose?.();
-                Keyboard.dismiss();
-                OverlayModal.hide();
-              }}>
-              <Svg icon="close3" size={pTd(20)} color={darkColors.iconBase1} />
-            </View>
+              {isShowRightCloseIcon && (
+                <View
+                  style={styles.closeIcon}
+                  pointerEvents="box-only"
+                  onTouchStart={() => {
+                    onClose?.();
+                    Keyboard.dismiss();
+                    OverlayModal.hide();
+                  }}>
+                  <Svg icon="close3" size={pTd(20)} color={darkColors.iconBase1} />
+                </View>
+              )}
+            </>
           )}
         </View>
         {children}

@@ -61,4 +61,30 @@ export const styles = StyleSheet.create({
   loadingIcon: {
     width: pTd(16),
   },
+  waringButtonStyle: {
+    backgroundColor: darkColors.bgDanger1,
+    borderWidth: 0,
+  },
+  warningTitleStyle: {
+    color: darkColors.textBase1,
+  },
+  waringDisabledStyle: {
+    backgroundColor: darkColors.bgBase2,
+  },
+  waringDisabledTitleStyle: {
+    color: darkColors.textDisabled2,
+  },
+  waringNoBorderButtonStyle: {
+    backgroundColor: 'transparent',
+    borderWidth: 0,
+  },
+  warningNoBorderTitleStyle: {
+    color: darkColors.textDanger1,
+  },
+  waringNoBorderDisabledStyle: {
+    backgroundColor: darkColors.bgBase2,
+  },
+  waringNoBorderDisabledTitleStyle: {
+    color: darkColors.textDisabled1,
+  },
 });

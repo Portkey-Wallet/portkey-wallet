@@ -59,13 +59,13 @@ export const tabMenuTypeMap: Record<TabRouteNameEnum, IRenderTabMenuItem> = {
     icon: 'clock',
     component: ActivityListPage,
   },
-  // [TabRouteNameEnum.DISCOVER]: {
-  //   name: TabRouteNameEnum.DISCOVER,
-  //   index: 2,
-  //   label: 'Discover',
-  //   icon: 'discover',
-  //   component: DiscoverHome,
-  // },
+  [TabRouteNameEnum.DISCOVER]: {
+    name: TabRouteNameEnum.DISCOVER,
+    index: 2,
+    label: 'Discover',
+    icon: 'discover',
+    component: DiscoverHome,
+  },
   // [TabRouteNameEnum.TRADE]: {
   //   name: TabRouteNameEnum.TRADE,
   //   index: 2,

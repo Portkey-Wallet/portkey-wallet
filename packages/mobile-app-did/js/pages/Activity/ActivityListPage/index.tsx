@@ -1,10 +1,7 @@
 import React, { useState, useCallback, useRef, useMemo } from 'react';
-import { StyleSheet } from 'react-native';
-import navigationService from 'utils/navigationService';
-import PageContainer from 'components/PageContainer';
+import { View } from 'react-native';
 import { pTd } from 'utils/unit';
 import { useLanguage } from 'i18n/hooks';
-
 import { getActivityListAsync } from '@portkey-wallet/store/store-ca/activity/action';
 import { useAppCASelector, useAppCommonDispatch } from '@portkey-wallet/hooks';
 import NoData from 'components/NoData';
@@ -21,7 +18,9 @@ import { ListLoadingEnum } from 'constants/misc';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { FlashList } from '@shopify/flash-list';
 import { showActivityDetail } from 'components/ActivityOverlay';
-import { darkColors } from 'assets/theme';
+import { makeStyles } from '@rneui/themed';
+import { TextH1 } from 'components/CommonText';
+import SafeAreaBox from 'components/SafeAreaBox';
 
 interface RouterParams {
   chainId?: string;
@@ -40,7 +39,7 @@ const ActivityListPage = () => {
   );
   const currentActivityRef = useRef(currentActivity);
   currentActivityRef.current = currentActivity;
-
+  const styles = getStyles();
   const [isLoading, setIsLoading] = useState(ListLoadingEnum.hide);
   const getActivityList = useLockCallback(
     async (isInit: boolean) => {
@@ -80,13 +79,13 @@ const ActivityListPage = () => {
   const isEmpty = useMemo(() => (currentActivity?.data || []).length === 0, [currentActivity?.data]);
 
   return (
-    <PageContainer
-      hideHeader
-      titleDom={t('Activity')}
-      safeAreaColor={['black', 'black']}
-      containerStyles={pageStyles.pageWrap}
-      scrollViewProps={{ disabled: true }}>
+    <SafeAreaBox edges={['top', 'right', 'left']} style={styles.pageWrap}>
       <FlashList
+        ListHeaderComponent={
+          <View style={styles.title}>
+            <TextH1>{t('Activity')}</TextH1>
+          </View>
+        }
         refreshing={isLoading === ListLoadingEnum.header}
         data={currentActivity?.data || []}
         keyExtractor={(_item, index) => `${index}`}
@@ -108,17 +107,21 @@ const ActivityListPage = () => {
           init();
         }}
       />
-    </PageContainer>
+    </SafeAreaBox>
   );
 };
 
 export default ActivityListPage;
 
-export const pageStyles = StyleSheet.create({
+export const getStyles = makeStyles(theme => ({
   pageWrap: {
-    paddingLeft: 0,
-    paddingRight: 0,
-    backgroundColor: darkColors.bgBase1,
+    paddingBottom: pTd(15),
+    backgroundColor: theme.colors.bgBase1,
   },
-  noResult: {},
-});
+  title: {
+    height: pTd(40),
+    textAlign: 'center',
+    paddingLeft: pTd(16),
+    marginTop: pTd(8),
+  },
+}));

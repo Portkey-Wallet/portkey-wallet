@@ -107,7 +107,10 @@ const DeviceList: React.FC = () => {
           },
           {
             title: t(`Remove (${removeDevices.length})`),
-            type: 'transparent',
+            type: 'warning',
+            onPress: () => {
+              // todo: remove devices
+            },
           },
         ],
       }),
@@ -132,7 +135,6 @@ const DeviceList: React.FC = () => {
         keyExtractor={(_item: IDeviceItem, index: number) => `${index}`}
         renderItem={renderItem}
         onRefresh={getDeviceList}
-        // onEndReached={getDeviceList}
         ListHeaderComponent={
           <View style={pageStyles.fromExchangeTipWrap}>
             <Svg icon="warning" size={pTd(22)} color={theme.colors.textBrand3} />
@@ -148,7 +150,6 @@ const DeviceList: React.FC = () => {
         buttonStyle={pageStyles.deleteBtn}
         disabled={removeDevices.length === 0}
         onPress={() => {
-          console.log('remove device', removeDevices);
           showDialog();
           // navigationService.navigate('GuardianApproval', {
           //   approvalType: ApprovalType.removeOtherManager,

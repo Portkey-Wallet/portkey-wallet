@@ -31,8 +31,16 @@ const SwapSettingContent = () => {
   const { userSlippageTolerance, update: updateSlippageTolerance } = useAwakenUserSlippageTolerance();
   const { userExpiration, update: updateExpiration } = useAwakenUserExpiration();
 
+  const defaultSlippageToleranceSelectedValue = useMemo(() => {
+    return (
+      priceImpactList.find(item => item.value === userSlippageTolerance)?.value || SLIPPAGE_TOLERANCE_INPUT_TAG_KEY
+    );
+  }, [userSlippageTolerance]);
+
   const [slippageTolerance, setSlippageTolerance] = useState(userSlippageTolerance);
-  const [slippageToleranceSelectedValue, setSlippageToleranceSelectedValue] = useState(priceImpactList[0].value);
+  const [slippageToleranceSelectedValue, setSlippageToleranceSelectedValue] = useState(
+    defaultSlippageToleranceSelectedValue,
+  );
 
   const [expiration, setExpiration] = useState(userExpiration);
 

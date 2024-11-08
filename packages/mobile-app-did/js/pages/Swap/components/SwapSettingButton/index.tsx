@@ -1,5 +1,6 @@
-import React, { memo, useCallback, useMemo, useState } from 'react';
-import { View, Text } from 'react-native';
+import React, { memo, useCallback, useMemo, useState, useRef } from 'react';
+import { View, Text, TextInput } from 'react-native';
+import { Input, useTheme } from '@rneui/themed';
 import Touchable from 'components/Touchable';
 import Svg from 'components/Svg';
 import OverlayModal from 'components/OverlayModal';
@@ -20,30 +21,41 @@ interface ISwapSettingButtonProps {
   style?: ViewStyleType;
 }
 
+const SLIPPAGE_TOLERANCE_INPUT_TAG_KEY = 'Custom';
+
 const SwapSettingContent = () => {
   const { t } = useLanguage();
   const styles = getStyles();
+  const { theme } = useTheme();
 
   const { userSlippageTolerance, update: updateSlippageTolerance } = useAwakenUserSlippageTolerance();
   const { userExpiration, update: updateExpiration } = useAwakenUserExpiration();
 
-  const slippageToleranceTagList = useMemo(
-    () => [
-      ...priceImpactList,
-      {
-        label: userSlippageTolerance === '0' ? '0.0%' : 'Custom',
-        value: '0',
-        hideCheckIcon: true,
-      },
-    ],
-    [userSlippageTolerance],
-  );
-
   const [slippageTolerance, setSlippageTolerance] = useState(userSlippageTolerance);
+  const [slippageToleranceSelectedValue, setSlippageToleranceSelectedValue] = useState(priceImpactList[0].value);
 
   const [expiration, setExpiration] = useState(userExpiration);
 
-  const onExpirationChange = useCallback((text: string) => {
+  const slippageToleranceInputRef = useRef<TextInput>(null);
+
+  const handleSlippageToleranceTagChange = useCallback((value: string) => {
+    setSlippageToleranceSelectedValue(value);
+    if (value === SLIPPAGE_TOLERANCE_INPUT_TAG_KEY) {
+      setSlippageTolerance('0');
+      setTimeout(() => {
+        slippageToleranceInputRef.current?.focus();
+      }, 100);
+    } else {
+      setSlippageTolerance(value);
+    }
+  }, []);
+
+  const handleSlippageToleranceInputChange = useCallback((text: string) => {
+    const newValue = text.replace(/[^0-9.]/g, '');
+    setSlippageTolerance((Number(newValue) / 100).toString());
+  }, []);
+
+  const handleExpirationChange = useCallback((text: string) => {
     const newValue = text.replace(/[^0-9]/g, '');
     setExpiration(newValue);
   }, []);
@@ -53,6 +65,48 @@ const SwapSettingContent = () => {
     updateExpiration(expiration);
     OverlayModal.hide();
   }, [expiration, slippageTolerance, updateExpiration, updateSlippageTolerance]);
+
+  const displaySlippageTolerance = useMemo(() => {
+    if (!slippageTolerance) return '0';
+    const percentage = (Number(slippageTolerance) * 100).toFixed(1);
+    return percentage.endsWith('.0') ? percentage.slice(0, -2) : percentage;
+  }, [slippageTolerance]);
+
+  const slippageToleranceTagList = useMemo(
+    () => [
+      ...priceImpactList,
+      {
+        label:
+          slippageToleranceSelectedValue === SLIPPAGE_TOLERANCE_INPUT_TAG_KEY ? (
+            <Input
+              ref={slippageToleranceInputRef}
+              containerStyle={styles.slippageToleranceInputContainer}
+              inputContainerStyle={styles.slippageToleranceInputContainerStyle}
+              inputStyle={styles.slippageToleranceInputStyle}
+              maxLength={10}
+              autoCorrect={false}
+              keyboardType="number-pad"
+              placeholder="0.0"
+              placeholderTextColor={theme.colors.textBrand4}
+              rightIcon={<Text style={styles.slippageToleranceUnitText}>%</Text>}
+              value={displaySlippageTolerance}
+              onChangeText={handleSlippageToleranceInputChange}
+            />
+          ) : (
+            SLIPPAGE_TOLERANCE_INPUT_TAG_KEY
+          ),
+        value: SLIPPAGE_TOLERANCE_INPUT_TAG_KEY,
+        hideCheckIcon: true,
+      },
+    ],
+    [
+      displaySlippageTolerance,
+      handleSlippageToleranceInputChange,
+      slippageToleranceSelectedValue,
+      styles,
+      theme.colors.textBrand4,
+    ],
+  );
 
   return (
     <ModalBody modalBodyType="bottom" title={t('Settings')}>
@@ -71,8 +125,8 @@ const SwapSettingContent = () => {
             </View>
             <CommonTagToggleGroup
               tagList={slippageToleranceTagList}
-              selectedValue={slippageTolerance}
-              onSelect={setSlippageTolerance}
+              selectedValue={slippageToleranceSelectedValue}
+              onSelect={handleSlippageToleranceTagChange}
             />
           </View>
           <View style={styles.expiresByWrap}>
@@ -95,7 +149,7 @@ const SwapSettingContent = () => {
                 keyboardType="number-pad"
                 placeholder="0"
                 value={expiration}
-                onChangeText={onExpirationChange}
+                onChangeText={handleExpirationChange}
               />
               <Text style={styles.expiresByUnitText}>Minute(s)</Text>
             </View>

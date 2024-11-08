@@ -424,13 +424,13 @@ const SwapPreview = () => {
           value={{ text: gasFeeValue, textBelow: isMainnet ? gasFeeUsd : '' }}
         />
       </View>
-      <CommonPromptCard
+      {/* <CommonPromptCard
         style={styles.promptCard}
         type={PromptCardType.INFO}
         description={t(
           'Keep your wallet balance sufficient and avoid editing the authorization amount, or the transaction may fail.',
         )}
-      />
+      /> */}
     </CommonPreviewContainer>
   );
 };

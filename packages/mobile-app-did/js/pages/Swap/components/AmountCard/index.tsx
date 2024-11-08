@@ -51,7 +51,8 @@ const AmountCard: React.FC<IAmountCardProps> = ({
   const [isInputting, setIsInputting] = useState(false);
 
   const handleAmountChange = (value: string) => {
-    onAmountChange?.(value);
+    const newValue = value.replace(/[^0-9.]/g, '');
+    onAmountChange?.(newValue);
   };
 
   const gasFee = useAwakenGasFee();
@@ -84,7 +85,7 @@ const AmountCard: React.FC<IAmountCardProps> = ({
         {isInput && isInputting ? (
           <Input
             ref={iptRef}
-            keyboardType="numeric"
+            keyboardType="number-pad"
             maxLength={18}
             containerStyle={styles.containerStyle}
             inputContainerStyle={styles.inputContainerStyle}

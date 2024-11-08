@@ -8,7 +8,7 @@ import { useTheme } from '@rneui/themed';
 import { getTagItemStyles, getTagGroupStyles } from './style';
 
 interface ITagItem<T> {
-  label: string;
+  label: React.ReactNode;
   value: T;
   hideCheckIcon?: boolean;
 }
@@ -38,7 +38,11 @@ function TagItem<T extends string>({ style, item, isSelected, onSelect }: ITagIt
       {isSelected && !item.hideCheckIcon && (
         <Svg iconStyle={styles.checkIcon} icon="check" size={pTd(16)} color={theme.colors.iconBrand4} />
       )}
-      <Text style={[styles.label, isSelected && styles.selectedLabel]}>{item.label}</Text>
+      {typeof item.label === 'string' ? (
+        <Text style={[styles.label, isSelected && styles.selectedLabel]}>{item.label}</Text>
+      ) : (
+        item.label
+      )}
     </Touchable>
   );
 }

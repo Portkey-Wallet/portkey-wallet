@@ -1,78 +1,60 @@
 import React, { memo, useMemo } from 'react';
 import { View } from 'react-native';
-import TokenItem from 'components/TokenListUnionItem/TokenItem';
-import Svg, { IconName } from 'components/Svg';
-import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
+import Svg from 'components/Svg';
 import { useTheme } from '@rneui/themed';
 import { pTd } from 'utils/unit';
 import { ViewStyleType } from 'types/styles';
 import { getStyles } from './style';
-
-interface IAmountRowItem {
-  symbol: string;
-  value: string;
-  decimals: string;
-  valueInUsd: string;
-  svgName: IconName;
-}
+import { TSwapInfo } from '../SwapEnter';
+import { TCurrency } from '@portkey-wallet/types/types-ca/awaken';
+import CurrencyItem from '../CurrencyItem';
+import { useAwakenTokenPrices } from '@portkey-wallet/hooks/hooks-ca/awaken/state';
+import { ZERO } from '@portkey-wallet/constants/misc';
+import { formatPriceUsd } from '@portkey-wallet/utils/format';
 
 interface IAmountRowProps {
-  item: IAmountRowItem;
+  item: TCurrency;
+  value?: string;
 }
 
 interface IPreviewAmountCardProps {
   style?: ViewStyleType;
+  swapInfo?: TSwapInfo;
 }
 
-const AmountRow = ({ item }: IAmountRowProps) => {
+const AmountRow = ({ item, value }: IAmountRowProps) => {
   const styles = getStyles();
-
-  const tokenItem = useMemo(() => {
-    return {
-      symbol: item.symbol,
-      balance: item.value,
-      decimals: item.decimals,
-      balanceInUsd: item.valueInUsd,
-      svgName: item.svgName,
-      chainSvgName: 'sideChain',
-    } as unknown as TokenItemShowType;
-  }, [item]);
+  const { price } = useAwakenTokenPrices({
+    symbol: item.symbol,
+  });
+  const balanceInUsd = useMemo(() => {
+    if (!value) return '';
+    return `$${formatPriceUsd(ZERO.plus(value).times(price))}`;
+  }, [price, value]);
 
   return (
-    <TokenItem
+    <CurrencyItem
       wrapStyle={styles.tokenItem}
       balanceTextStyle={styles.balanceTextStyle}
       balanceInUseTextStyle={styles.balanceInUseTextStyle}
-      item={tokenItem}
+      item={item}
+      balance={value}
+      balanceInUsd={balanceInUsd}
     />
   );
 };
 
-const PreviewAmountCard = ({ style }: IPreviewAmountCardProps) => {
+const PreviewAmountCard = ({ style, swapInfo }: IPreviewAmountCardProps) => {
   const styles = getStyles();
   const { theme } = useTheme();
 
-  const payItem = {
-    symbol: 'ELF',
-    value: '7850000000',
-    decimals: '8',
-    valueInUsd: '$25.81865',
-    svgName: 'elf-icon',
-  } as IAmountRowItem;
-
-  const receiveItem = {
-    symbol: 'USDT',
-    value: '7850000000',
-    decimals: '8',
-    valueInUsd: '$25.81865',
-    svgName: 'usdt-icon',
-  } as IAmountRowItem;
+  if (!swapInfo?.tokenIn || !swapInfo?.tokenOut) return null;
 
   return (
     <View style={[styles.container, style]}>
-      <AmountRow item={payItem} />
+      <AmountRow item={swapInfo.tokenIn} value={swapInfo.valueIn} />
       <Svg iconStyle={styles.arrowIcon} icon="arrow-down-thin" color={theme.colors.iconBase3} size={pTd(22)} />
-      <AmountRow item={receiveItem} />
+      <AmountRow item={swapInfo.tokenOut} value={swapInfo.valueOut} />
     </View>
   );
 };

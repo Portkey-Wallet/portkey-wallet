@@ -2,7 +2,9 @@ import { createSlice } from '@reduxjs/toolkit';
 
 import { TAwakenState } from './type';
 import {
+  resetAwaken,
   updateAwakenGasFee,
+  updateAwakenTokenList,
   updateAwakenTokenPrices,
   updateAwakenUserExpiration,
   updateAwakenUserSlippageTolerance,
@@ -13,6 +15,7 @@ const initialState: TAwakenState = {
   userSlippageTolerance: {},
   userExpiration: {},
   tokenPrices: {},
+  tokenList: {},
 };
 export const imSlice = createSlice({
   name: 'awaken',
@@ -62,6 +65,36 @@ export const imSlice = createSlice({
               ...preVal,
               ...val,
             },
+          },
+        };
+      })
+      .addCase(updateAwakenTokenList, (state, action) => {
+        const { network, list } = action.payload;
+
+        return {
+          ...state,
+          tokenList: {
+            ...state.tokenList,
+            [network]: list,
+          },
+        };
+      })
+      .addCase(resetAwaken, (state, action) => {
+        const network = action.payload;
+
+        return {
+          ...state,
+          // userSlippageTolerance: {
+          //   ...state.userSlippageTolerance,
+          //   [network]: undefined
+          // },
+          // userExpiration: {
+          //   ...state.userExpiration,
+          //   [network]: undefined
+          // },
+          tokenList: {
+            ...state.tokenList,
+            [network]: undefined,
           },
         };
       });

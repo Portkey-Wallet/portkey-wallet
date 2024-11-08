@@ -7,7 +7,7 @@ import { CommonPromptCard, PromptCardType } from 'components/CommonPromptCard';
 import { getStyles } from './style';
 import { useDebounceCallback, useEffectOnce, useReturnLastCallback } from '@portkey-wallet/hooks';
 import { useGetSwapRoutes } from '@portkey-wallet/hooks/hooks-ca/awaken/request';
-import { useAwakenGasFee, useAwakenUserSlippageTolerance } from '@portkey-wallet/hooks/hooks-ca/awaken/state';
+import { useAwakenGasFee, useAwakenTokenList } from '@portkey-wallet/hooks/hooks-ca/awaken/state';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { divDecimals, timesDecimals } from '@portkey-wallet/utils/converter';
 import {
@@ -18,21 +18,11 @@ import {
 import BigNumber from 'bignumber.js';
 import { formatNameWithNoUnderline, sleep } from '@portkey-wallet/utils';
 import { formatPrice } from '@portkey-wallet/utils/format';
-import { parseUserSlippageTolerance } from '@portkey-wallet/utils/awaken';
 import navigationService from 'utils/navigationService';
 import { KeyboardSafeArea } from 'components/KeyboardSafeArea';
 import { pTd } from 'utils/unit';
-import { useGetTokenViewContract } from 'hooks/contract';
-import { useDAppChainId } from '@portkey-wallet/hooks/hooks-ca/chainList';
-import { getELFChainBalance } from '@portkey-wallet/utils/balance';
-import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useCurrencyBalancesV2 } from 'hooks/awaken';
-
-type TCurrency = {
-  chainId: string;
-  decimals: string;
-  symbol: string;
-};
+import { TCurrency } from '@portkey-wallet/types/types-ca/awaken';
 
 export type TSwapInfo = {
   tokenIn?: TCurrency;
@@ -48,21 +38,27 @@ const SwapEnter = () => {
   const getSwapRoutesInstant = useGetSwapRoutes();
   const getSwapRoutes = useReturnLastCallback(getSwapRoutesInstant, [getSwapRoutesInstant]);
   const gasFee = useAwakenGasFee();
+  const { list } = useAwakenTokenList();
   const [swapInfo, setSwapInfo] = useState<TSwapInfo>({
-    tokenIn: {
-      symbol: 'ELF',
-      chainId: 'tDVW',
-      decimals: '8',
-    },
-    tokenOut: {
-      symbol: 'USDT',
-      chainId: 'tDVW',
-      decimals: '6',
-    },
     valueIn: '',
     valueOut: '',
     isFocusValueIn: true,
   });
+
+  const isInitRef = useRef(false);
+  useEffect(() => {
+    if (isInitRef.current) return;
+    const defaultTokenIn = list.find(item => item.symbol === 'ELF');
+    const defaultTokenOut = list.find(item => item.symbol === 'USDT');
+    if (!defaultTokenIn || !defaultTokenOut) return;
+    isInitRef.current = true;
+    setSwapInfo(pre => ({
+      ...pre,
+      tokenIn: defaultTokenIn,
+      tokenOut: defaultTokenOut,
+    }));
+  }, [list]);
+
   const swapInfoRef = useRef(swapInfo);
   swapInfoRef.current = swapInfo;
   const symbols = useMemo(
@@ -326,27 +322,6 @@ const SwapEnter = () => {
     }
   }, [isPriceReverse, swapInfo]);
 
-  const onReversePrice = useCallback(() => {
-    setIsPriceReverse(pre => !pre);
-  }, []);
-
-  const [isDetailShow, setIsDetailShow] = useState(false);
-  const switchDetailShow = useCallback(() => {
-    setIsDetailShow(pre => !pre);
-  }, []);
-
-  const { userSlippageTolerance } = useAwakenUserSlippageTolerance();
-  const slippageValue = useMemo(() => {
-    return ZERO.plus(parseUserSlippageTolerance(userSlippageTolerance)).dp(2).toString();
-  }, [userSlippageTolerance]);
-
-  const isExtraInfoShow = useMemo(() => {
-    const { tokenIn, tokenOut } = swapInfo;
-    if (!tokenIn || !tokenOut) return false;
-    // if (!valueIn && !valueOut) return false;
-    return true;
-  }, [swapInfo]);
-
   const isExceedBalance = useMemo(() => {
     const { tokenIn, valueIn } = swapInfo;
     if (!tokenIn) return false;
@@ -356,6 +331,12 @@ const SwapEnter = () => {
     if (ZERO.plus(valueIn).gt(divDecimals(validBalance, tokenIn.decimals))) return true;
     return false;
   }, [currencyBalances, gasFee, swapInfo]);
+  const isInputError = useMemo(() => {
+    if (!currencyBalances) return false;
+    const tokenInBalance = currencyBalances[swapInfo.tokenIn?.symbol || ''];
+    if (!tokenInBalance || tokenInBalance.isNaN()) return false;
+    return isExceedBalance;
+  }, [currencyBalances, isExceedBalance, swapInfo.tokenIn?.symbol]);
 
   const isBtnDisable = useMemo(() => {
     const { tokenIn, tokenOut, valueIn, valueOut } = swapInfo;
@@ -414,8 +395,11 @@ const SwapEnter = () => {
           swapInfo={swapInfo}
           setValueIn={setValueIn}
           setValueOut={setValueOut}
-          isErrorIn={isExceedBalance}
+          isErrorIn={isInputError}
           balances={currencyBalances}
+          setTokenIn={setTokenIn}
+          setTokenOut={setTokenOut}
+          switchToken={switchToken}
         />
         <View style={styles.infoWrap}>
           <CommonInfoRow

@@ -1,4 +1,5 @@
 import { NetworkType } from '@portkey-wallet/types';
+import { TCurrency } from '@portkey-wallet/types/types-ca/awaken';
 import { createAction } from '@reduxjs/toolkit';
 
 export const updateAwakenGasFee = createAction<{
@@ -20,3 +21,10 @@ export const updateAwakenTokenPrices = createAction<{
   network: NetworkType;
   val: Record<string, string>;
 }>('awaken/updateAwakenTokenPrices');
+
+export const updateAwakenTokenList = createAction<{
+  network: NetworkType;
+  list: TCurrency[];
+}>('awaken/updateAwakenTokenList');
+
+export const resetAwaken = createAction<NetworkType>('awaken/updateAwakenTokenList');

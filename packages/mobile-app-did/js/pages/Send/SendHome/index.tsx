@@ -228,12 +228,14 @@ const SendHome: React.FC = () => {
 
   const getTokenViewContract = useGetTokenViewContract();
   const initBalance = useCallback(async () => {
+    console.log('initBalance assetInfo1', assetInfo);
+    console.log('initBalance assetInfo2', assetInfo.symbol || assetInfo.collectionName);
     const caAddress = wallet?.[assetInfo.chainId]?.caAddress;
     if (!assetInfo || !caAddress) return;
     try {
       const tokenContract = await getTokenViewContract(assetInfo.chainId);
       const _balance = await getELFChainBalance(tokenContract, assetInfo.symbol, caAddress);
-
+      console.log('__balance', _balance);
       setBalance(_balance);
     } catch (error) {
       console.log('initBalance', error);
@@ -450,6 +452,7 @@ const SendHome: React.FC = () => {
     setErrorMessage('');
 
     if (!chainInfo) {
+      console.log('checkCanPreview 1');
       return { status: false };
     }
 
@@ -463,24 +466,29 @@ const SendHome: React.FC = () => {
         // ELF
         if (sendBigNumber.isGreaterThan(assetBalanceBigNumber)) {
           setErrorMessage(TransactionError.TOKEN_NOT_ENOUGH);
+          console.log('checkCanPreview 2');
           return { status: false };
         }
 
         if (isAELFCross && sendBigNumber.isLessThanOrEqualTo(timesDecimals(crossFee, defaultToken.decimals))) {
           setErrorMessage(TransactionError.CROSS_NOT_ENOUGH);
+          console.log('checkCanPreview 3');
           return { status: false };
         }
       } else {
         // other token
         if (sendBigNumber.isGreaterThan(assetBalanceBigNumber)) {
           setErrorMessage(TransferErrorMessage.BALANCE_NOT_ENOUGH);
+          console.log('checkCanPreview 4');
           return { status: false };
         }
       }
     } else {
       // nft
+      console.log('sendBigNumber', sendBigNumber, 'assetBalanceBigNumber', assetBalanceBigNumber);
       if (sendBigNumber.isGreaterThan(assetBalanceBigNumber)) {
         setErrorMessage(TransactionError.NFT_NOT_ENOUGH);
+        console.log('checkCanPreview 5');
         return { status: false };
       }
     }
@@ -508,6 +516,7 @@ const SendHome: React.FC = () => {
               },
             ],
           });
+          console.log('checkCanPreview 6');
           return;
         }
       }
@@ -515,11 +524,13 @@ const SendHome: React.FC = () => {
       const securitySafeResult = await securitySafeCheckAndToast(assetInfo.chainId);
       if (!securitySafeResult) {
         Loading.hide();
+        console.log('checkCanPreview 7');
         return { status: false };
       }
     } catch (err) {
       CommonToast.failError(err);
       Loading.hide();
+      console.log('checkCanPreview 8');
       return { status: false };
     }
 
@@ -529,6 +540,7 @@ const SendHome: React.FC = () => {
       caContract = await getCAContract(chainInfo.chainId);
     } catch (error) {
       Loading.hide();
+      console.log('checkCanPreview 9');
       return { status: false };
     }
     try {
@@ -549,11 +561,13 @@ const SendHome: React.FC = () => {
       console.log('checkTransferLimitResult', checkTransferLimitResult);
       if (!checkTransferLimitResult) {
         Loading.hide();
+        console.log('checkCanPreview 10');
         return { status: false };
       }
     } catch (error) {
       CommonToast.failError(error);
       Loading.hide();
+      console.log('checkCanPreview 11');
       return { status: false };
     }
 
@@ -562,6 +576,7 @@ const SendHome: React.FC = () => {
     if (!_isManagerSynced) {
       Loading.hide();
       setErrorMessage(TransactionError.SYNCHRONIZING);
+      console.log('checkCanPreview 12');
       return { status: false };
     }
 
@@ -600,6 +615,7 @@ const SendHome: React.FC = () => {
           receiveAmount = withdrawInfo?.receiveAmount;
           receiveAmountUsd = withdrawInfo?.receiveAmountUsd;
           transferType = TransferType.E_TRANSFER;
+          console.log('checkCanPreview 13');
           return {
             status: true,
             networkFee,
@@ -617,6 +633,7 @@ const SendHome: React.FC = () => {
         }
       } catch (error) {
         console.log('etansfer err', error);
+        console.log('checkCanPreview 14');
         return { status: false };
       } finally {
         Loading.hide();
@@ -645,6 +662,7 @@ const SendHome: React.FC = () => {
         const limit = await bridge.getLimit();
         const targetLimit = getSmallerValue(limit.remain, limit.currentCapacity);
         if (limit.isEnable && sendBigNumber.isGreaterThan(targetLimit)) {
+          console.log('checkCanPreview 16');
           return setErrorMessage(getLimitTips(assetInfo.symbol, '0', formatAmountShow(targetLimit)));
         }
         transactionFee = divDecimals(f, defaultToken.decimals).toString();
@@ -652,7 +670,7 @@ const SendHome: React.FC = () => {
         transferType = TransferType.E_BRIDGE;
 
         await eBridgeActionSheet();
-
+        console.log('checkCanPreview 17');
         return {
           status: true,
           networkFee,
@@ -666,6 +684,7 @@ const SendHome: React.FC = () => {
         };
       } catch (error) {
         console.log('err', error);
+        console.log('checkCanPreview 18');
         return { status: false };
       } finally {
         Loading.hide();
@@ -709,12 +728,13 @@ const SendHome: React.FC = () => {
       if (err?.code === 500) {
         setErrorMessage(TransactionError.FEE_NOT_ENOUGH);
         Loading.hide();
+        console.log('checkCanPreview 19');
         return { status: false };
       }
     } finally {
       Loading.hide();
     }
-
+    console.log('checkCanPreview 20');
     return {
       status: true,
       networkFee,
@@ -759,6 +779,8 @@ const SendHome: React.FC = () => {
 
   const preview = useCallback(async () => {
     const result = await checkCanPreview();
+    console.log('preview preview', result);
+
     if (!result?.status) return;
 
     console.log('nav params', {
@@ -886,10 +908,15 @@ const SendHome: React.FC = () => {
       {sendType === 'nft' && step === 2 && (
         <>
           <View style={styles.group}>
-            <NFTInfo nftItem={assetInfo} />
+            <NFTInfo nftItem={assetInfo} onMaxPress={onPressMax} />
           </View>
           <View style={styles.group}>
-            <AmountNFT sendNumber={sendNumber} setSendNumber={setSendNumber} assetInfo={assetInfo} />
+            <AmountNFT
+              warningTip={errorMessage}
+              sendNumber={sendNumber}
+              setSendNumber={setSendNumber}
+              assetInfo={assetInfo}
+            />
           </View>
         </>
       )}

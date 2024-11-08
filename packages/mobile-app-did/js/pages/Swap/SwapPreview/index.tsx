@@ -76,7 +76,7 @@ const SwapPreview = () => {
   const amountOutMinValue = useMemo(() => {
     const { tokenOut } = swapInfo;
     if (amountOutMin === undefined || !tokenOut) return '-';
-    return `${amountOutMin} ${formatNameWithNoUnderline(tokenOut.symbol)}`;
+    return `${amountOutMin.toFixed()} ${formatNameWithNoUnderline(tokenOut.symbol)}`;
   }, [amountOutMin, swapInfo]);
 
   const amountOutMinUsd = useMemo(() => {

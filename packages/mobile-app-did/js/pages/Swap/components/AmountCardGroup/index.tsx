@@ -12,6 +12,7 @@ import { ZERO } from '@portkey-wallet/constants/misc';
 import { useTheme } from '@rneui/themed';
 import { TextM } from 'components/CommonText';
 import { TBalancesV2 } from 'hooks/awaken';
+import { TCurrency } from '@portkey-wallet/types/types-ca/awaken';
 
 interface IAmountCardGroupProps {
   style?: ViewStyleType;
@@ -20,9 +21,22 @@ interface IAmountCardGroupProps {
   setValueOut?: (value: string) => Promise<void>;
   isErrorIn?: boolean;
   balances: TBalancesV2;
+  setTokenIn?: (token: TCurrency) => void;
+  setTokenOut?: (token: TCurrency) => void;
+  switchToken?: () => void;
 }
 
-const AmountCardGroup = ({ style, swapInfo, setValueIn, setValueOut, isErrorIn, balances }: IAmountCardGroupProps) => {
+const AmountCardGroup = ({
+  style,
+  swapInfo,
+  setValueIn,
+  setValueOut,
+  isErrorIn,
+  balances,
+  setTokenIn,
+  setTokenOut,
+  switchToken,
+}: IAmountCardGroupProps) => {
   const styles = getStyles();
   const { theme } = useTheme();
   const { price: tokenInPrice } = useAwakenTokenPrices({ symbol: swapInfo.tokenIn?.symbol });
@@ -85,9 +99,10 @@ const AmountCardGroup = ({ style, swapInfo, setValueIn, setValueOut, isErrorIn, 
         onAmountChange={setValueIn}
         balance={balances?.[swapInfo.tokenIn?.symbol || '']}
         amountUsd={amountInUsd}
-        symbol={swapInfo.tokenIn?.symbol || ''}
-        decimals={Number(swapInfo.tokenIn?.decimals || 8)}
         isError={isErrorIn}
+        token={swapInfo.tokenIn}
+        onTokenChange={setTokenIn}
+        isMaxShow={true}
       />
       <AmountCard
         style={styles.amountCardMarginTop}
@@ -95,8 +110,11 @@ const AmountCardGroup = ({ style, swapInfo, setValueIn, setValueOut, isErrorIn, 
         amount={swapInfo.valueOut}
         onAmountChange={setValueOut}
         amountUsd={amountOutUsd}
+        token={swapInfo.tokenOut}
+        onTokenChange={setTokenOut}
+        isInput
       />
-      <Touchable style={styles.swapIconWrap}>
+      <Touchable style={styles.swapIconWrap} onPress={switchToken}>
         <Svg icon={'swap-arrow'} size={pTd(20)} />
       </Touchable>
     </View>

@@ -1,27 +1,28 @@
-import React, { memo, useCallback, useState } from 'react';
+import React, { memo, useCallback, useMemo, useState } from 'react';
 import { Text, FlatList, View } from 'react-native';
 import OverlayModal from 'components/OverlayModal';
 import { ModalBody } from 'components/ModalBody';
-import TokenItem from 'components/TokenListUnionItem/TokenItem';
 import CommonInput from 'components/CommonInput';
 import CommonAvatar from 'components/CommonAvatar';
 import Touchable from 'components/Touchable';
-import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import { useLanguage } from 'i18n/hooks';
 import { getContentStyles, getButtonStyles } from './style';
-// import mockData from './mockData.json';
 import Svg from 'components/Svg';
 import { pTd } from 'utils/unit';
-
-const mockData: TokenItemShowType[] = [];
+import { TCurrency } from '@portkey-wallet/types/types-ca/awaken';
+import { useAwakenTokenList } from '@portkey-wallet/hooks/hooks-ca/awaken/state';
+import CurrencyItem from '../CurrencyItem';
+import { formatNameWithNoUnderline } from '@portkey-wallet/utils';
 
 interface ISelectTokenContentProps {
   title: string;
-  onSelect?: (item: TokenItemShowType) => void;
+  onSelect?: (item: TCurrency) => void;
 }
 
 interface ISelectTokenButtonProps {
   modalTitle: string;
+  token?: TCurrency;
+  onTokenChange?: (token: TCurrency) => void;
 }
 
 const SelectTokenContent: React.FC<ISelectTokenContentProps> = ({ title, onSelect }) => {
@@ -29,9 +30,15 @@ const SelectTokenContent: React.FC<ISelectTokenContentProps> = ({ title, onSelec
   const { t } = useLanguage();
 
   const [keyword, setKeyword] = useState('');
+  const { list } = useAwakenTokenList();
+
+  const filterList = useMemo(() => {
+    if (keyword === '') return list;
+    return list.filter(item => item.symbol.toLocaleUpperCase().includes(keyword.toLocaleUpperCase()));
+  }, [keyword, list]);
 
   const handleSelect = useCallback(
-    (item: TokenItemShowType) => {
+    (item: TCurrency) => {
       onSelect?.(item);
       OverlayModal.hide();
     },
@@ -39,8 +46,8 @@ const SelectTokenContent: React.FC<ISelectTokenContentProps> = ({ title, onSelec
   );
 
   const renderItem = useCallback(
-    ({ item }: { item: TokenItemShowType }) => {
-      return <TokenItem wrapStyle={styles.tokenItem} item={item} onPress={() => handleSelect(item)} />;
+    ({ item }: { item: TCurrency }) => {
+      return <CurrencyItem wrapStyle={styles.tokenItem} item={item} onPress={() => handleSelect(item)} />;
     },
     [styles.tokenItem, handleSelect],
   );
@@ -61,7 +68,7 @@ const SelectTokenContent: React.FC<ISelectTokenContentProps> = ({ title, onSelec
       <FlatList
         nestedScrollEnabled
         refreshing={false}
-        data={mockData}
+        data={filterList}
         renderItem={renderItem}
         keyExtractor={item => `${item.symbol}${item.chainId}`}
         ListEmptyComponent={() => <Text style={styles.emptyText}>No tokens available</Text>}
@@ -76,30 +83,29 @@ const showSelectTokenModal = (props: ISelectTokenContentProps) => {
   });
 };
 
-const SelectTokenButton: React.FC<ISelectTokenButtonProps> = ({ modalTitle }) => {
+const SelectTokenButton: React.FC<ISelectTokenButtonProps> = ({ modalTitle, token, onTokenChange }) => {
   const styles = getButtonStyles();
-  const [tokenInfo, setTokenInfo] = useState<TokenItemShowType>(mockData[0]);
 
   return (
     <Touchable
       style={styles.selectTokenButton}
-      onPress={() => showSelectTokenModal({ title: modalTitle, onSelect: setTokenInfo })}>
+      onPress={() =>
+        showSelectTokenModal({
+          title: modalTitle,
+          onSelect: onTokenChange,
+        })
+      }>
       <View style={styles.iconWrap}>
-        <CommonAvatar
-          style={styles.tokenIcon}
-          title={tokenInfo?.symbol}
-          avatarSize={pTd(25)}
-          imageUrl={tokenInfo?.imageUrl}
-        />
+        <CommonAvatar style={styles.tokenIcon} title={token?.symbol} avatarSize={pTd(25)} imageUrl={token?.imageUrl} />
         <CommonAvatar
           hasBorder
           style={styles.chainIcon}
-          title={tokenInfo?.displayChainName}
+          title={token?.displayChainName}
           avatarSize={pTd(16)}
-          imageUrl={tokenInfo?.chainImageUrl}
+          imageUrl={token?.chainImageUrl}
         />
       </View>
-      <Text style={styles.symbolText}>{tokenInfo?.label || tokenInfo?.symbol}</Text>
+      <Text style={styles.symbolText}>{formatNameWithNoUnderline(token?.label || token?.symbol || '')}</Text>
       <Svg icon={'down-arrow'} size={pTd(16)} />
     </Touchable>
   );

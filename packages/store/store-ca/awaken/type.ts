@@ -1,4 +1,5 @@
 import { NetworkType } from '@portkey-wallet/types';
+import { TCurrency } from '@portkey-wallet/types/types-ca/awaken';
 
 export type TAwakenState = {
   gasFee: {
@@ -12,5 +13,8 @@ export type TAwakenState = {
   };
   tokenPrices: {
     [T in NetworkType]?: Record<string, string>;
+  };
+  tokenList: {
+    [T in NetworkType]?: TCurrency[];
   };
 };

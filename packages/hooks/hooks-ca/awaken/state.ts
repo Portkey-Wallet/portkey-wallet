@@ -6,12 +6,15 @@ import { useCurrentNetwork } from '../network';
 import { useAppCommonDispatch, useEffectOnce } from '../../index';
 import {
   updateAwakenGasFee,
+  updateAwakenTokenList,
   updateAwakenTokenPrices,
   updateAwakenUserExpiration,
   updateAwakenUserSlippageTolerance,
 } from '@portkey-wallet/store/store-ca/awaken/actions';
 import { DEFAULT_EXPIRATION, DEFAULT_SLIPPAGE_TOLERANCE } from '@portkey-wallet/constants/constants-ca/awaken';
-import { useDAppChain } from '../chainList';
+import { useDAppChain, useDAppChainId } from '../chainList';
+import { request } from '@portkey-wallet/api/api-did';
+import { useCurrentWalletInfo } from '../wallet';
 
 export const useAwakenState = () => useAppCASelector(state => state.awaken);
 
@@ -164,4 +167,41 @@ export const useAwakenTokenPrices = ({ symbol, isInit = true }: TUseAwakenTokenP
     price,
     refresh,
   };
+};
+
+export const useAwakenTokenListState = () => useAppCASelector(state => state.awaken.tokenList);
+
+export const useAwakenTokenList = (isInit = false) => {
+  const awakenTokenListState = useAwakenTokenListState();
+  const network = useCurrentNetwork();
+  const chainId = useDAppChainId();
+  const dispatch = useAppCommonDispatch();
+
+  const list = useMemo(() => awakenTokenListState[network] || [], [awakenTokenListState, network]);
+  const wallet = useCurrentWalletInfo();
+
+  const refresh = useCallback(async () => {
+    const rst = await request.assets.getAwakenTokenList({
+      params: {
+        skipCount: 0,
+        maxResultCount: 1000,
+        page: 1,
+        chainId,
+        caAddress: wallet[chainId]?.caAddress || '',
+      },
+    });
+    dispatch(
+      updateAwakenTokenList({
+        network,
+        list: rst.data,
+      }),
+    );
+  }, [chainId, dispatch, network]);
+
+  useEffect(() => {
+    if (!isInit) return;
+    refresh();
+  }, [isInit, refresh]);
+
+  return { list, refresh };
 };

@@ -5,6 +5,7 @@ import PageContainer from 'components/PageContainer';
 import SwapEnter from '../components/SwapEnter';
 import SwapSettingButton from '../components/SwapSettingButton';
 import { getStyles } from './style';
+import { useAwakenTokenList } from '@portkey-wallet/hooks/hooks-ca/awaken/state';
 
 enum SwapHomeTabType {
   SWAP = 'Swap',
@@ -14,6 +15,7 @@ enum SwapHomeTabType {
 const SwapHome = () => {
   const { t } = useLanguage();
   const styles = getStyles();
+  useAwakenTokenList(true);
 
   const [selectTab, setSelectTab] = useState<SwapHomeTabType>(SwapHomeTabType.SWAP);
   const tabList = useMemo(() => {

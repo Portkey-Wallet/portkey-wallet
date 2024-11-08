@@ -11,6 +11,8 @@ import { useAwakenGasFee } from '@portkey-wallet/hooks/hooks-ca/awaken/state';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { divDecimals } from '@portkey-wallet/utils/converter';
 import Bignumber from 'bignumber.js';
+import { TCurrency } from '@portkey-wallet/types/types-ca/awaken';
+import { formatNameWithNoUnderline } from '@portkey-wallet/utils';
 
 interface IAmountCardProps {
   style?: ViewStyleType;
@@ -22,9 +24,10 @@ interface IAmountCardProps {
   amountUsdPercent?: string;
   isAmountUsdPercentPositive?: boolean;
   balance?: Bignumber;
-  symbol?: string;
-  decimals?: number;
   onAmountChange?: (value: string) => void;
+  token?: TCurrency;
+  onTokenChange?: (token: TCurrency) => void;
+  isMaxShow?: boolean;
 }
 
 const AmountCard: React.FC<IAmountCardProps> = ({
@@ -37,9 +40,10 @@ const AmountCard: React.FC<IAmountCardProps> = ({
   amountUsdPercent,
   isAmountUsdPercentPositive = false,
   balance,
-  symbol,
-  decimals,
   onAmountChange,
+  token,
+  onTokenChange,
+  isMaxShow = false,
 }) => {
   const { theme } = useTheme();
   const styles = getStyles();
@@ -57,10 +61,11 @@ const AmountCard: React.FC<IAmountCardProps> = ({
 
   const gasFee = useAwakenGasFee();
   const handleMaxPress = useCallback(() => {
-    if (balance?.isNaN()) {
+    if (balance?.isNaN() || !token) {
       onAmountChange?.('');
       return;
     }
+    const { symbol, decimals } = token;
     if (symbol === 'ELF' && gasFee && balance) {
       const _valueBN = ZERO.plus(balance).minus(gasFee);
       if (_valueBN.lte(ZERO)) {
@@ -71,12 +76,13 @@ const AmountCard: React.FC<IAmountCardProps> = ({
       return;
     }
     onAmountChange?.(divDecimals(balance || ZERO, decimals).toFixed() || '');
-  }, [balance, decimals, gasFee, onAmountChange, symbol]);
+  }, [balance, gasFee, onAmountChange, token]);
 
   const balanceStr = useMemo(() => {
-    if (!balance || balance.isNaN()) return '';
-    return `${divDecimals(balance, decimals).toFixed()} ${symbol}`;
-  }, [balance, decimals, symbol]);
+    if (!balance || balance.isNaN() || !token) return '';
+    const { symbol, decimals } = token;
+    return `${divDecimals(balance, decimals).toFixed()} ${formatNameWithNoUnderline(symbol)}`;
+  }, [balance, token]);
 
   return (
     <View style={[styles.container, style]}>
@@ -116,7 +122,7 @@ const AmountCard: React.FC<IAmountCardProps> = ({
             </Text>
           </Touchable>
         )}
-        <SelectTokenButton modalTitle={title} />
+        <SelectTokenButton modalTitle={title} token={token} onTokenChange={onTokenChange} />
       </View>
       <View style={styles.infoWrap}>
         <View style={styles.usdAmountWrap}>
@@ -140,7 +146,7 @@ const AmountCard: React.FC<IAmountCardProps> = ({
             </>
           )}
         </View>
-        {isInput && (
+        {isInput && isMaxShow && (
           <View style={styles.balanceWrap}>
             <Text style={styles.balanceAmount}>{balanceStr}</Text>
             <CommonButton

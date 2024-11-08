@@ -20,3 +20,15 @@ export type PBTimestamp = {
   seconds: number;
   nanos: number;
 };
+
+export type TCurrency = {
+  symbol: string;
+  balance: string;
+  balanceInUsd: string;
+  imageUrl: string;
+  label: null;
+  displayChainName: string;
+  chainImageUrl: string;
+  chainId: string;
+  decimals: number;
+};

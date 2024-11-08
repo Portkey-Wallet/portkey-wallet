@@ -42,6 +42,7 @@ import { useSwapHookContractAddress } from '@portkey-wallet/hooks/hooks-ca/awake
 import { AWAKEN_DEFAULT_CID } from '@portkey-wallet/constants/constants-ca/awaken';
 import navigationService from 'utils/navigationService';
 import { ActionType } from 'types/common';
+import ActionSheet from 'components/ActionSheet';
 
 type TRouterParams = {
   swapInfo: TSwapInfo;
@@ -286,11 +287,17 @@ const SwapPreview = () => {
         ONE,
       );
       if (amountMinOutAmountBN.gt(amountOutAmount)) {
-        // TODO: swap toast
-        // notification.warning({
-        //   message: null,
-        //   description: t('The price has changed, please re-initiate the transaction'),
-        // });
+        ActionSheet.alert({
+          showInfoIcon: true,
+          title: 'Price change alert',
+          message: 'The swap price has changed. Please re-initiate the transaction to continue.',
+          buttons: [
+            {
+              title: 'OK',
+              type: 'primary',
+            },
+          ],
+        });
         return;
       }
 
@@ -353,7 +360,7 @@ const SwapPreview = () => {
       poweredIcon={<Svg icon="awakenLogo" oblongSize={[pTd(45), pTd(12)]} />}
       buttonProps={{ title: t('Swap'), onPress: handlePress }}
       isLoading={isSwapping}>
-      <PreviewAmountCard style={styles.previewAmountCard} />
+      <PreviewAmountCard style={styles.previewAmountCard} swapInfo={swapInfo} />
       <View style={styles.infoRowContainer}>
         <CommonInfoRow
           label={{ text: 'Network' }}
@@ -400,7 +407,7 @@ const SwapPreview = () => {
                 'Your transaction will execute within the maximum amount of slippage you define for this swap.',
             },
           }}
-          value={{ text: 'Oct 1, 2024 at 12:23 am' }}
+          value={{ text: `${userExpiration} minutes` }}
         />
         <CommonInfoRow
           label={{

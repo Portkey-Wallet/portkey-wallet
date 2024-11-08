@@ -70,7 +70,7 @@ const SwapPreview = () => {
   const amountOutMin = useMemo(() => {
     const { valueOut, tokenOut } = swapInfo;
     if (!valueOut || !tokenOut) return undefined;
-    return minimumAmountOut(ZERO.plus(valueOut), userSlippageTolerance), Number(tokenOut.decimals).toFixed();
+    return minimumAmountOut(ZERO.plus(valueOut), userSlippageTolerance).dp(tokenOut.decimals);
   }, [swapInfo, userSlippageTolerance]);
 
   const amountOutMinValue = useMemo(() => {

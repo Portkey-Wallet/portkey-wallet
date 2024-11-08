@@ -41,7 +41,7 @@ export interface ContactState {
   lastModifiedNew: number;
   contactIndexListNew?: IContactIndexType[];
   contactMapNew?: IContactMapType;
-  contactRelationIdMapNew?: IContactMapType;
+  // contactRelationIdMapNew?: IContactMapType;
   contactIdMapNew?: IContactMapType;
   contactPortkeyIdMapNew?: IContactMapType;
 }

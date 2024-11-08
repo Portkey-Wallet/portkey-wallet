@@ -1,5 +1,6 @@
 declare module 'aelf-sdk';
 declare module 'rn-teaset/components/Overlay/Overlay';
+declare module 'rn-teaset/components/Checkbox/Checkbox';
 declare module 'rn-teaset/components/Toast/Toast';
 declare module 'rn-teaset/components/Overlay/TopView';
 declare module 'react-native-crypto';

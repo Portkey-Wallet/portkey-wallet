@@ -27,4 +27,4 @@ export const updateAwakenTokenList = createAction<{
   list: TCurrency[];
 }>('awaken/updateAwakenTokenList');
 
-export const resetAwaken = createAction<NetworkType>('awaken/updateAwakenTokenList');
+export const resetAwaken = createAction<NetworkType>('awaken/resetAwaken');

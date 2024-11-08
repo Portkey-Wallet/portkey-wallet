@@ -509,7 +509,7 @@ const SendPreview: React.FC = () => {
               seedType: assetInfo.seedType,
               imageUrl: assetInfo.imageUrl,
               alias: assetInfo.alias,
-              collectionName: assetInfo.collectionName,
+              collectionName: assetInfo.collectionInfo?.collectionName,
               tokenId: assetInfo.tokenId,
             }
           : undefined

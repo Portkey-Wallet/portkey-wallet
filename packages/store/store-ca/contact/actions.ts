@@ -134,12 +134,12 @@ export const fetchContactListV2Async = createAsyncThunk<FetchContactListAsyncPay
       return {
         isInit: true,
         contactIndexListNew: [],
-        lastModified: 0,
+        lastModifiedNew: 0,
       };
 
     // init
     let contactList: IContactItemType[] = [];
-    if (isInit || contactState.lastModified === 0) {
+    if (isInit || contactState.lastModifiedNew === 0) {
       let page = 1,
         errorTimes = 0,
         totalCount = 0;
@@ -185,14 +185,14 @@ export const fetchContactListV2Async = createAsyncThunk<FetchContactListAsyncPay
       errorTimes = 0,
       totalCount = 0;
 
-    const lastModified = contactState.lastModified;
+    const lastModifiedNew = contactState.lastModifiedNew;
     const fetchTime = Date.now();
 
     while (page === 1 || eventList.length < totalCount) {
       try {
         console.log('getContactEventList', page, errorTimes);
         const response = await getContactEventListV2(baseUrl, {
-          modificationTime: new Date(lastModified).toISOString(),
+          modificationTime: new Date(lastModifiedNew).toISOString(),
           fetchTime: new Date(fetchTime).toISOString(),
           page,
           size: CONTACT_API_FETCH_SIZE,

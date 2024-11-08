@@ -60,7 +60,7 @@ export default function useInitData() {
       getCurrentCAViewContract();
       dispatch(getCaHolderInfoAsync());
       dispatch(getSymbolImagesAsync());
-      dispatch(fetchContactListV2Async());
+      dispatch(fetchContactListV2Async(true));
 
       initGuardianList();
 

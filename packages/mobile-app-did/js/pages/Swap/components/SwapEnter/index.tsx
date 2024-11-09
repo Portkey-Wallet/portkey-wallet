@@ -426,14 +426,13 @@ const SwapEnter = () => {
           />
           <CommonInfoRow label={{ text: 'Price' }} value={{ text: priceLabel }} />
         </View>
-        {isInvalidParis ||
-          (isRouteEmpty && (
-            <CommonPromptCard
-              style={styles.promptCard}
-              type={PromptCardType.ERROR}
-              description="There is currently no available liquidity pool for the selected token pair. Select different tokens to continue."
-            />
-          ))}
+        {(isInvalidParis || isRouteEmpty) && (
+          <CommonPromptCard
+            style={styles.promptCard}
+            type={PromptCardType.ERROR}
+            description="There is currently no available liquidity pool for the selected token pair. Select different tokens to continue."
+          />
+        )}
       </View>
       <KeyboardSafeArea bottomPad={pTd(16)}>
         <CommonButton

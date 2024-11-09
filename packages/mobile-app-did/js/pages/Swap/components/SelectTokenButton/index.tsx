@@ -9,6 +9,7 @@ import { useLanguage } from 'i18n/hooks';
 import { getContentStyles, getButtonStyles } from './style';
 import Svg from 'components/Svg';
 import { pTd } from 'utils/unit';
+import { truncateString } from '@portkey-wallet/utils';
 import { TCurrency } from '@portkey-wallet/types/types-ca/awaken';
 import { useAwakenTokenList } from '@portkey-wallet/hooks/hooks-ca/awaken/state';
 import CurrencyItem from '../CurrencyItem';
@@ -105,7 +106,9 @@ const SelectTokenButton: React.FC<ISelectTokenButtonProps> = ({ modalTitle, toke
           imageUrl={token?.chainImageUrl}
         />
       </View>
-      <Text style={styles.symbolText}>{formatNameWithNoUnderline(token?.label || token?.symbol || '')}</Text>
+      <Text style={styles.symbolText}>
+        {truncateString(formatNameWithNoUnderline(token?.label || token?.symbol || ''))}
+      </Text>
       <Svg icon={'down-arrow'} size={pTd(16)} />
     </Touchable>
   );

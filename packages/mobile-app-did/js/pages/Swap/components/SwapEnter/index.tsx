@@ -72,10 +72,10 @@ const SwapEnter = () => {
   const refreshTokenValueRef = useRef<typeof refreshTokenValue>();
   // const [swapRoute, setSwapRoute] = useState<TSwapRoute>();
 
-  const [isPriceReverse, setIsPriceReverse] = useState(true);
-  const resetIsPriceReverse = useCallback(() => {
-    setIsPriceReverse(false);
-  }, []);
+  // const [isPriceReverse, setIsPriceReverse] = useState(true);
+  // const resetIsPriceReverse = useCallback(() => {
+  //   setIsPriceReverse(false);
+  // }, []);
 
   const [isRouteEmpty, setIsRouteEmpty] = useState(false);
   const executeCb = useCallback(async () => {
@@ -230,13 +230,13 @@ const SwapEnter = () => {
   );
 
   const onTokenChange = useCallback(async () => {
-    resetIsPriceReverse();
+    // resetIsPriceReverse();
     // setSwapRoute(undefined);
     setIsRouteEmpty(false);
     setIsInvalidParis(false);
     await sleep(100);
     registerTimer();
-  }, [registerTimer, resetIsPriceReverse]);
+  }, [registerTimer]);
 
   const setTokenIn = useCallback(
     async (tokenIn?: TCurrency) => {
@@ -311,18 +311,18 @@ const SwapEnter = () => {
     const symbolIn = formatNameWithNoUnderline(tokenIn.symbol);
     const symbolOut = formatNameWithNoUnderline(tokenOut.symbol);
 
-    if (!isPriceReverse) {
-      if (!valueIn || !valueOut) return `1 ${symbolOut} = - ${symbolIn}`;
+    // if (!isPriceReverse) {
+    //   if (!valueIn || !valueOut) return `1 ${symbolOut} = - ${symbolIn}`;
 
-      const _price = formatPrice(ZERO.plus(valueIn).div(ZERO.plus(valueOut)));
-      return `1 ${symbolOut} = ${_price} ${symbolIn}`;
-    } else {
-      if (!valueIn || !valueOut) return `1 ${symbolIn} = - ${symbolOut}`;
+    //   const _price = formatPrice(ZERO.plus(valueIn).div(ZERO.plus(valueOut)));
+    //   return `1 ${symbolOut} = ${_price} ${symbolIn}`;
+    // } else {
+    if (!valueIn || !valueOut) return `1 ${symbolIn} = - ${symbolOut}`;
 
-      const _price = formatPrice(ZERO.plus(valueOut).div(ZERO.plus(valueIn)));
-      return `1 ${symbolIn} = ${_price} ${symbolOut}`;
-    }
-  }, [isPriceReverse, swapInfo]);
+    const _price = formatPrice(ZERO.plus(valueOut).div(ZERO.plus(valueIn)));
+    return `1 ${symbolIn} = ${_price} ${symbolOut}`;
+    // }
+  }, [swapInfo]);
 
   const isExceedBalance = useMemo(() => {
     const { tokenIn, valueIn } = swapInfo;
@@ -352,14 +352,14 @@ const SwapEnter = () => {
   }, [isExceedBalance, isInvalidParis, isRouteEmpty, swapInfo]);
 
   const bottomButtonTitle = useMemo(() => {
-    if (isInvalidParis) {
+    if (isInvalidParis || isRouteEmpty) {
       return 'Swap not available';
     } else if (isExceedBalance) {
       return `Insufficient ${swapInfo.tokenIn?.label || swapInfo.tokenIn?.symbol} balance`;
     } else {
       return 'Preview';
     }
-  }, [isExceedBalance, isInvalidParis, swapInfo.tokenIn?.label, swapInfo.tokenIn?.symbol]);
+  }, [isExceedBalance, isInvalidParis, isRouteEmpty, swapInfo.tokenIn?.label, swapInfo.tokenIn?.symbol]);
 
   const [isSwapping, setIsSwapping] = useState(false);
   const onPreviewClick = useCallback(async () => {
@@ -413,25 +413,26 @@ const SwapEnter = () => {
           setTokenOut={setTokenOut}
           switchToken={switchToken}
         />
-        <View style={styles.infoWrap}>
-          <CommonInfoRow
-            label={{
-              text: 'Provider',
-              tooltipProps: {
-                title: 'Provider',
-                description: 'The decentralised exchange where your trade will be executed.',
-              },
-            }}
-            value={{ text: 'AwakenSwap' }}
-          />
-          <CommonInfoRow label={{ text: 'Price' }} value={{ text: priceLabel }} />
-        </View>
-        {(isInvalidParis || isRouteEmpty) && (
+        {isInvalidParis || isRouteEmpty ? (
           <CommonPromptCard
             style={styles.promptCard}
             type={PromptCardType.ERROR}
             description="There is currently no available liquidity pool for the selected token pair. Select different tokens to continue."
           />
+        ) : (
+          <View style={styles.infoWrap}>
+            <CommonInfoRow
+              label={{
+                text: 'Provider',
+                tooltipProps: {
+                  title: 'Provider',
+                  description: 'The decentralised exchange where your trade will be executed.',
+                },
+              }}
+              value={{ text: 'AwakenSwap' }}
+            />
+            <CommonInfoRow label={{ text: 'Price' }} value={{ text: priceLabel }} />
+          </View>
         )}
       </View>
       <KeyboardSafeArea bottomPad={pTd(16)}>

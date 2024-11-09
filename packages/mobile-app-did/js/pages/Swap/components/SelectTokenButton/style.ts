@@ -40,7 +40,8 @@ export const getButtonStyles = makeStyles(theme => ({
 
 export const getContentStyles = makeStyles(theme => ({
   containerStyle: {
-    marginVertical: pTd(12),
+    marginTop: pTd(4),
+    marginBottom: pTd(12),
   },
   inputContainerStyle: {
     marginHorizontal: pTd(16),

@@ -71,7 +71,6 @@ const SendPreview: React.FC = () => {
     targetNetwork,
   } = routerParams;
   useFetchTxFee();
-
   const [isLoading, setIsLoading] = useState(false);
   const { getAELFChainInfoConfig, getEVMChainInfoConfig, getTokenConfig } = useGetEBridgeConfig();
   const isApproved = useMemo(() => guardiansApproved && guardiansApproved.length > 0, [guardiansApproved]);
@@ -509,7 +508,7 @@ const SendPreview: React.FC = () => {
               seedType: assetInfo.seedType,
               imageUrl: assetInfo.imageUrl,
               alias: assetInfo.alias,
-              collectionName: assetInfo.collectionInfo?.collectionName,
+              collectionName: assetInfo.collectionName || assetInfo.collectionInfo?.collectionName,
               tokenId: assetInfo.tokenId,
             }
           : undefined

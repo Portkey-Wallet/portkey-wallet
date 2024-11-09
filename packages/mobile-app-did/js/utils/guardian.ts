@@ -212,17 +212,19 @@ export function encodedDeletionManager(contract: ContractBasic, address: string,
 
 export function removeOtherManager(
   contract: ContractBasic,
-  address: string,
+  address: string[],
   caHash: string,
   userGuardiansList: UserGuardianItem[],
   guardiansStatus: GuardiansStatus,
 ) {
-  const managerInfo = {
-    address,
-    extraData: Date.now(),
-  };
+  const managerInfo = address.map(ele => {
+    return {
+      address: ele,
+      extraData: Date.now(),
+    };
+  });
   const guardiansApproved = getGuardiansApproved(userGuardiansList, guardiansStatus);
-  return contract?.callSendMethod('RemoveOtherManagerInfo', address, {
+  return contract?.callSendMethod('RemoveOtherManagerInfos', '', {
     caHash,
     managerInfo,
     guardiansApproved: guardiansApproved,

@@ -4,45 +4,22 @@ import { TextM, TextH1 } from 'components/CommonText';
 import VerifierCountdown, { VerifierCountdownInterface } from 'components/VerifierCountdown';
 import PageContainer from 'components/PageContainer';
 import DigitInput, { DigitInputInterface } from 'components/DigitInput';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useMemo, useRef } from 'react';
+import { Text } from 'react-native';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
-import { makeStyles, useTheme } from '@rneui/themed';
+import { makeStyles } from '@rneui/themed';
 import { FontStyles } from 'assets/theme/styles';
 import Loading from 'components/Loading';
 import navigationService from 'utils/navigationService';
 import CommonToast from 'components/CommonToast';
 import useEffectOnce from 'hooks/useEffectOnce';
-import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 import myEvents from 'utils/deviceEvent';
-import { useCurrentWalletInfo, useOriginChainId, useVerifyManagerAddress } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { LoginType, ManagerInfo } from '@portkey-wallet/types/types-ca/wallet';
-import { GuardiansApproved, GuardiansStatusItem } from '../types';
 import { verification } from 'utils/api';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
-import { useOnRequestOrSetPin } from 'hooks/login';
-import { usePin } from 'hooks/store';
-import {
-  VERIFICATION_TO_APPROVAL_MAP,
-  VERIFICATION_TO_OPERATION_MAP,
-} from '@portkey-wallet/constants/constants-ca/verifier';
-import { ChainId } from '@portkey-wallet/types';
-import { CreateAddressLoading, VERIFY_INVALID_TIME } from '@portkey-wallet/constants/constants-ca/wallet';
-import { handleGuardiansApproved } from 'utils/login';
+import { VERIFY_INVALID_TIME } from '@portkey-wallet/constants/constants-ca/wallet';
 import { checkVerifierIsInvalidCode } from '@portkey-wallet/utils/guardian';
 import { pTd } from 'utils/unit';
 import { useErrorMessage } from '@portkey-wallet/hooks/hooks-ca/misc';
-import { useLatestRef } from '@portkey-wallet/hooks';
-import { deleteLoginAccount } from '@portkey-wallet/utils/deleteAccount';
-import { useGetCurrentCAContract } from 'hooks/contract';
-import useLogOut from 'hooks/useLogOut';
-import { String } from 'lodash';
-import GuardianItem from 'pages/Guardian/components/GuardianItem';
-import Svg from 'components/Svg';
-import { AuthTypes } from 'constants/guardian';
-import { LOGIN_GUARDIAN_TYPE_ICON } from 'constants/misc';
-import { defaultColors } from 'assets/theme';
-import { request } from '@portkey-wallet/api/api-did';
 
 type RouterParams = {
   verifierSessionId: string;
@@ -51,7 +28,7 @@ type RouterParams = {
 function TipText({ email }: { email?: string }) {
   const [first, last] = useMemo(() => {
     return [
-      `Minerva, your assigned Guardian Verifier, has sent a verification email to `,
+      `Your assigned Guardian Verifier, has sent a verification email to `,
       `. Please enter the ${DIGIT_CODE.length}-digit code from the email to continue.`,
     ];
   }, []);

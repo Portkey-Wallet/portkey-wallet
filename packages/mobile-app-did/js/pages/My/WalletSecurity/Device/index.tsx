@@ -17,6 +17,7 @@ import { TextM, TextL, TextTitle } from 'components/CommonText';
 import { makeStyles, useTheme } from '@rneui/themed';
 import { ApprovalType } from '@portkey-wallet/types/verifier';
 import ActionSheet from 'components/ActionSheet';
+import navigationService from 'utils/navigationService';
 
 const DeviceList: React.FC = () => {
   const onError = useCallback(() => {
@@ -109,12 +110,17 @@ const DeviceList: React.FC = () => {
             title: t(`Remove (${removeDevices.length})`),
             type: 'warning',
             onPress: () => {
-              // todo: remove devices
+              navigationService.navigate('GuardianApproval', {
+                approvalType: ApprovalType.removeOtherManager,
+                removeManagerAddress: removeDevices.map(ele => {
+                  return ele.managerAddress;
+                }),
+              });
             },
           },
         ],
       }),
-    [t],
+    [t, removeDevices],
   );
   return (
     <PageContainer
@@ -124,7 +130,6 @@ const DeviceList: React.FC = () => {
           {isRemoving ? <TextM>Cancel</TextM> : <Svg size={pTd(24)} icon="edit" />}
         </Touchable>
       }
-      safeAreaColor={['black']}
       containerStyles={pageStyles.pageWrap}
       hideTouchable={true}
       scrollViewProps={{ disabled: true }}>
@@ -151,10 +156,6 @@ const DeviceList: React.FC = () => {
         disabled={removeDevices.length === 0}
         onPress={() => {
           showDialog();
-          // navigationService.navigate('GuardianApproval', {
-          //   approvalType: ApprovalType.removeOtherManager,
-          //   removeManagerAddress: deviceItem?.managerAddress,
-          // });
         }}>
         <TextL style={pageStyles.deleteBtnTitle}>Remove ({removeDevices.length})</TextL>
       </CommonButton>

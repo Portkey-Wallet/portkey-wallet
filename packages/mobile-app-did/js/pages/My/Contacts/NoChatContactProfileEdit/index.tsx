@@ -2,38 +2,22 @@ import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { StyleSheet, TextInput, View, Image, TouchableOpacity } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { useLanguage } from 'i18n/hooks';
-import {
-  AddressItem,
-  // ContactItemType, EditContactItemApiType
-} from '@portkey-wallet/types/types-ca/contact';
+import { AddressItem } from '@portkey-wallet/types/types-ca/contact';
 import Input from 'components/CommonInput';
 import CommonButton from 'components/CommonButton';
 import { pTd } from 'utils/unit';
 import Svg from 'components/Svg';
+import ActionSheet from 'components/ActionSheet';
 import ListItem from 'components/ListItem';
-// import navigationService from 'utils/navigationService';
-// import { FontStyles } from 'assets/theme/styles';
 import GStyles from 'assets/theme/GStyles';
-import {
-  // INIT_HAS_ERROR,
-  INIT_NONE_ERROR,
-  ErrorType,
-  INIT_HAS_ERROR,
-} from '@portkey-wallet/constants/constants-ca/common';
-// import ContactAddress from '../ContactEdit/components/ContactAddress';
-// import { isValidCAWalletName } from '@portkey-wallet/utils/reg';
+import { INIT_NONE_ERROR, ErrorType, INIT_HAS_ERROR } from '@portkey-wallet/constants/constants-ca/common';
 import ChainOverlay from 'pages/My/Contacts/ContactChainOverlay';
-// import { getAelfAddress, isAelfAddress } from '@portkey-wallet/utils/aelf';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-// import CommonToast from 'components/CommonToast';
-// import ActionSheet from 'components/ActionSheet';
-// import { useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import {
   useAddContact,
   useCheckContactName,
-  // useContact,
-  // useDeleteContact,
-  // useEditContact,
+  useDeleteContact,
+  useEditContact,
 } from '@portkey-wallet/hooks/hooks-ca/contactNew';
 import { useNetworkList } from '@portkey-wallet/hooks/hooks-ca/contactNew';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
@@ -50,6 +34,8 @@ import { TextL } from 'components/CommonText';
 import { AELF_NETWORK_NAME } from 'constants/common';
 import Loading from 'components/Loading';
 import CommonToast from 'components/CommonToast';
+import Touchable from 'components/Touchable';
+import { KeyboardSafeArea } from 'components/KeyboardSafeArea';
 
 type RouterParams = {
   contact?: IContactItemType;
@@ -87,8 +73,8 @@ const ContactEdit: React.FC = () => {
   const addContactApi = useAddContact();
   const checkContactName = useCheckContactName();
   const [formError, setFormError] = useState<IFormErrorType>(initFormError);
-  // const editContactApi = useEditContact();
-  // const deleteContactApi = useDeleteContact();
+  const editContactApi = useEditContact();
+  const deleteContactApi = useDeleteContact();
 
   // const { contactIndexList } = useContact();
   const [editContact, setEditContact] = useState<IEditContactItemApiType>(initEditContact);
@@ -96,6 +82,7 @@ const ContactEdit: React.FC = () => {
   useEffect(() => {
     if (!contact) return;
     const _contact: IContactItemType = JSON.parse(JSON.stringify(contact));
+    console.log('contact', _contact);
     const _editContact = {
       id: _contact.id,
       name: _contact.name,
@@ -113,9 +100,13 @@ const ContactEdit: React.FC = () => {
   const networkList = useNetworkList();
 
   const selectedNetwork = useMemo(() => {
-    const network = networkList.find(
-      item => item.network === editContact.network && item.chainId === editContact.chainId,
-    );
+    const network = networkList.find(item => {
+      let isChainIdMatch = true;
+      if (item.network === AELF_NETWORK_NAME) {
+        isChainIdMatch = item.chainId === editContact.chainId;
+      }
+      return item.network === editContact.network && isChainIdMatch;
+    });
     return network;
   }, [networkList, editContact]);
   const handleAddressChange = useCallback((value: string) => {
@@ -138,6 +129,33 @@ const ContactEdit: React.FC = () => {
     if (editContact.address?.trim() === '') return true;
     return false;
   }, [editContact]);
+  const hadnleRemove = useCallback(() => {
+    ActionSheet.alert({
+      showInfoIcon: true,
+      title: 'Confirm delete address',
+      message: 'Are you sure you want to delete this saved address?',
+      buttons: [
+        {
+          title: 'Cancel',
+          type: 'outline',
+        },
+        {
+          title: 'Delete',
+          type: 'warning',
+          onPress: async () => {
+            try {
+              Loading.show();
+              await deleteContactApi({ id: editContact.id ?? '' });
+            } catch (error) {
+              CommonToast.failError(error);
+            } finally {
+              Loading.hide();
+            }
+          },
+        },
+      ],
+    });
+  }, [deleteContactApi, editContact.id]);
   const checkError = useCallback(async () => {
     const _nameValue = editContact.name.trim();
 
@@ -172,7 +190,7 @@ const ContactEdit: React.FC = () => {
     const errorNameList = await Promise.all([
       checkRequired(_nameValue),
       checkRegex(_nameValue),
-      // checkNameExist(_nameValue),
+      checkNameExist(_nameValue),
     ]);
     console.log('errorNameList', errorNameList);
     const errorName = errorNameList.find(item => item.isError);
@@ -199,28 +217,31 @@ const ContactEdit: React.FC = () => {
   }, [checkContactName, editContact.name, t]);
   const onFinish = useCallback(async () => {
     try {
+      Loading.show();
       console.log('start onFinish', editContact);
       const isErrorExist = await checkError();
-      Loading.show();
       console.log('isErrorExist', isErrorExist, 'editContact', editContact);
       if (isErrorExist) return;
       const { id, name, address, network, isExchange, chainId } = editContact;
+      const upsertParams: IAddContactItemApiType = {
+        name,
+        address,
+        network,
+      };
+      const isAelf = editContact.network === AELF_NETWORK_NAME;
+      if (isAelf) {
+        upsertParams.chainId = chainId;
+        upsertParams.isExchange = isExchange;
+      }
       if (editContact.id) {
         // edit
+        const updateParams = { ...upsertParams, id };
+        const editContactResponse = await editContactApi(updateParams);
+        console.log('editContactResponse', editContactResponse);
       } else {
         // add
-        const addParams: IAddContactItemApiType = {
-          name,
-          address,
-          network,
-        };
-        const isAelf = editContact.network === AELF_NETWORK_NAME;
-        if (isAelf) {
-          addParams.chainId = chainId;
-          addParams.isExchange = isExchange;
-        }
-        const newContact = await addContactApi(addParams);
-        console.log('newContact', newContact);
+        const addContactResponse = await addContactApi(upsertParams);
+        console.log('newConaddContactResponsetact', addContactResponse);
       }
       CommonToast.success('Saved Successful');
     } catch (err: any) {
@@ -228,14 +249,21 @@ const ContactEdit: React.FC = () => {
     } finally {
       Loading.hide();
     }
-  }, [addContactApi, checkError, editContact]);
+  }, [addContactApi, checkError, editContact, editContactApi]);
 
   return (
     <PageContainer
       safeAreaColor={['black', 'black']}
       titleDom={isEdit ? t('Edit Contact') : t('Add New Contacts')}
       containerStyles={pageStyles.pageWrap}
-      scrollViewProps={{ disabled: true }}>
+      scrollViewProps={{ disabled: true }}
+      rightDom={
+        contact && (
+          <Touchable style={{ paddingRight: pTd(16) }} onPress={hadnleRemove}>
+            <Svg icon="remove" size={pTd(24)} />
+          </Touchable>
+        )
+      }>
       <Input
         type="general"
         maxLength={16}
@@ -337,21 +365,13 @@ const ContactEdit: React.FC = () => {
           />
         </View>
       </KeyboardAwareScrollView>
-      <View style={pageStyles.btnContainer}>
-        <CommonButton onPress={onFinish} disabled={isSaveDisable} type="primary">
-          {/* {isEdit ? t('Save') : t('Add')} */}
-          Save address
-        </CommonButton>
-        {/* {isEdit && (
-          <CommonButton
-            style={pageStyles.deleteBtnStyle}
-            onPress={onDelete}
-            titleStyle={FontStyles.font12}
-            type="clear">
-            {t('Delete')}
+      <KeyboardSafeArea>
+        <View style={pageStyles.btnContainer}>
+          <CommonButton onPress={onFinish} disabled={isSaveDisable} type="primary">
+            Save address
           </CommonButton>
-        )} */}
-      </View>
+        </View>
+      </KeyboardSafeArea>
     </PageContainer>
   );
 };

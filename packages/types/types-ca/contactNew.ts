@@ -24,6 +24,9 @@ export interface IContactItemType {
   userId: string;
   modificationTime: number;
 }
+export interface IDeteleContactItemParams {
+  id: string;
+}
 
 export interface RecentContactItemType extends IContactItemType {
   chainId: ChainId;

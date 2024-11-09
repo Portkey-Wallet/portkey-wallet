@@ -3,9 +3,9 @@ import { CheckContactNameResponseType } from '@portkey-wallet/api/api-did/contac
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import {
   IAddContactItemApiType,
-  IAddressInfo,
   IContactIndexType,
   IContactItemType,
+  IDeteleContactItemParams,
   IEditContactItemApiType,
   INetworkItemType,
 } from '@portkey-wallet/types/types-ca/contactNew';
@@ -64,7 +64,7 @@ export const useDeleteContact = () => {
   const dispatch = useAppCommonDispatch();
   const currentNetworkInfo = useCurrentNetworkInfo();
   return useCallback(
-    async (contactItem: IContactItemType): Promise<IContactItemType> => {
+    async (contactItem: IDeteleContactItemParams): Promise<IContactItemType> => {
       const response = await request.contact.deleteSaved({
         baseURL: currentNetworkInfo.apiUrl,
         params: contactItem,

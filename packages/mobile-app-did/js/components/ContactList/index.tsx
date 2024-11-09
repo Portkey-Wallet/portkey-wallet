@@ -15,7 +15,6 @@ import { FontStyles } from 'assets/theme/styles';
 import GStyles from 'assets/theme/GStyles';
 import { ViewStyleType } from 'types/styles';
 import { useContact, useLocalContactSearch } from '@portkey-wallet/hooks/hooks-ca/contactNew';
-import { useJumpToChatDetails } from 'hooks/chat';
 import { IContactIndexType, IContactItemType } from '@portkey-wallet/types/types-ca/contactNew';
 interface ContactsListProps {
   isIndexBarShow?: boolean;
@@ -113,7 +112,7 @@ const ContactsList: React.FC<ContactsListProps> = ({
         contact={item}
         onPress={() => {
           return navigationService.navigate('NoChatContactProfile', {
-            editContact: item,
+            contact: item,
           });
         }}
         // onPressChat={() => {

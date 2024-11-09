@@ -38,7 +38,7 @@ const AssetList = () => {
       return accountAssetsList;
     }
   }, [accountAssetsList, debounceKeyword, filteredListShow]);
-
+  console.log('assetListShow', JSON.stringify(assetListShow));
   const getAssetsList = useLockCallback(async () => {
     try {
       await fetchAccountAssetsInfoList({

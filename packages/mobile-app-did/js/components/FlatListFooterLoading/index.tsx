@@ -1,10 +1,7 @@
 import { View, StyleSheet } from 'react-native';
 import React from 'react';
 import { pTd } from 'utils/unit';
-import { defaultColors } from 'assets/theme';
-import { TextS } from 'components/CommonText';
-import { FontStyles } from 'assets/theme/styles';
-import LottieLoading from 'components/LottieLoading';
+import Lottie from 'lottie-react-native';
 
 export interface IFlatListFooterLoadingProps {
   refreshing?: boolean;
@@ -15,10 +12,7 @@ export const FlatListFooterLoading = ({ refreshing }: IFlatListFooterLoadingProp
     <View style={styles.container}>
       <View style={styles.content}>
         {refreshing && (
-          <>
-            <LottieLoading lottieStyle={styles.loadingStyle} color="grey" type="custom" />
-            <TextS style={FontStyles.font3}>Loading...</TextS>
-          </>
+          <Lottie style={styles.loadingStyle} source={require('assets/lottieFiles/spinnerDark.json')} autoPlay loop />
         )}
       </View>
     </View>
@@ -28,8 +22,6 @@ export const FlatListFooterLoading = ({ refreshing }: IFlatListFooterLoadingProp
 const styles = StyleSheet.create({
   container: {
     marginTop: pTd(4),
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: defaultColors.bg7,
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'row',
@@ -45,8 +37,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   loadingStyle: {
-    width: pTd(12),
-    height: pTd(12),
-    marginRight: pTd(4),
+    width: pTd(16),
   },
 });

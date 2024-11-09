@@ -35,11 +35,13 @@ export const FloatTip = (props: FloatTipProps) => {
     backgroundColor: display ? defaultColors.bgBase3 : 'transparent',
     flexDirection: 'row',
     alignItems: 'center',
+    flexWrap: 'wrap',
     justifyContent: 'center',
     paddingHorizontal: 12,
     paddingVertical: 8,
     alignSelf: 'flex-start',
     minWidth: 64,
+    maxWidth: 280,
     overflow: 'visible',
     borderRadius: 8,
   };

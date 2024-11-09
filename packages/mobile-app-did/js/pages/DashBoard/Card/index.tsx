@@ -65,7 +65,7 @@ const Card: React.FC<{ title: string }> = ({ title }) => {
         <SendButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />
         <ReceiveButton onPress={onReceivePress} />
         {isRampShow && <BuyButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />}
-        {/* {isSwapShow && <SwapButton />} */}
+        {isSwapShow && <SwapButton />}
         {!isMainnet && <FaucetButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />}
       </View>
     </View>

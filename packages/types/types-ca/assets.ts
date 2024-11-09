@@ -55,6 +55,9 @@ export type NFTItemBaseType = {
   recommendedRefreshSeconds?: number;
   generation?: string;
   traitsPercentages?: TraitsPercentType[];
+  displayChainName?: string;
+  chainImageUrl?: string;
+  description?: string;
 };
 
 export type TraitsPercentType = {

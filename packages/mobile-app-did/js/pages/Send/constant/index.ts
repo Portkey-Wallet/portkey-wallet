@@ -33,5 +33,5 @@ export const warning3Arr: WarningKey[] = [WarningKey.MAKE_SURE_SUPPORT_PLATFORM]
 
 export const TransferErrorMessage = {
   BALANCE_NOT_ENOUGH: 'Exceeds available balance',
-  FEE_NOT_ENOUGH: 'Fee not enough',
+  FEE_NOT_ENOUGH: 'Not enough ELF balance for transaction fee',
 };

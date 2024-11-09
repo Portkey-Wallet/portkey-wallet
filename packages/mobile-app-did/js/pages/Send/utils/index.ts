@@ -52,6 +52,7 @@ export const eBridgeActionSheet = () => {
 
 export const isValidAmount = (input: string) => {
   if (input === '0' || !input) return false;
+  if (ZERO.plus(input).isEqualTo(0)) return false;
 
   const regex = /^(0|[1-9]\d*)(\.\d+)?$/;
   return regex.test(input);

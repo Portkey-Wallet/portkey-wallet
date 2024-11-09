@@ -276,7 +276,7 @@ export const handleLoopFetch = async <T>({
 }): Promise<T> => {
   try {
     const result = await fetch();
-    console.log('wfs=== handleLoopFetch result', result);
+    console.log('=== handleLoopFetch result', result);
     if (checkIsContinue) {
       const isContinue = checkIsContinue(result);
       if (!isContinue) return result;
@@ -326,6 +326,10 @@ export const formatNameWithRules = (
   });
   return result;
 };
+export const formatNameWithNoUnderline = (tokenName: string) => {
+  return formatNameWithRules(tokenName, [FormatNameRuleList.NO_UNDERLINE]);
+};
+
 const DEFAULT_USER_ID = '00000000-0000-0000-0000-000000000000';
 export function isValidUserId(id?: string): boolean {
   if (!id) {

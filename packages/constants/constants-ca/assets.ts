@@ -32,7 +32,7 @@ export const NEW_CLIENT_MOCK_ELF_LIST: ITokenSectionResponse[] = [
   },
 ];
 
-export const PAGE_SIZE_IN_NFT_ITEM = 9;
+export const PAGE_SIZE_IN_NFT_ITEM = 15;
 
 export const PAGE_SIZE_IN_ACCOUNT_NFT_COLLECTION = 20;
 

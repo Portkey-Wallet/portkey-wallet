@@ -68,7 +68,7 @@ export type RouterParams = {
   guardianItem?: UserGuardianItem;
   verifierInfo?: VerifierInfo;
   verifiedTime?: number;
-  removeManagerAddress?: string;
+  removeManagerAddress?: string[];
   loginType?: LoginType;
   authenticationInfo?: AuthenticationInfo;
   approveParams?: ApproveParams;

@@ -25,8 +25,10 @@ import Loading from 'components/Loading';
 import CommonToast from 'components/CommonToast';
 import { isValidUserId } from '@portkey-wallet/utils';
 import { isIOS } from '@rneui/base';
+import { makeStyles } from '@rneui/themed';
 
 export default function GiftDetail() {
+  const styles = getStyles();
   const { t } = useLanguage();
   const { id } = useRouterParams<{ id: string }>();
   const { info, list, next, init } = useGetCryptoGiftDetail(id);
@@ -155,15 +157,15 @@ export default function GiftDetail() {
     </PageContainer>
   );
 }
-const styles = StyleSheet.create({
+const getStyles = makeStyles(theme => ({
   pageStyles: {
-    backgroundColor: defaultColors.neutralDefaultBG,
+    backgroundColor: theme.colors.bgBase1,
     flex: 1,
     paddingHorizontal: 0,
   },
   container: {
     position: 'relative',
-    backgroundColor: defaultColors.bg1,
+    backgroundColor: theme.colors.bgBase1,
     flex: 1,
     ...GStyles.paddingArg(0),
   },
@@ -202,4 +204,4 @@ const styles = StyleSheet.create({
     color: defaultColors.font3,
     textAlign: 'center',
   },
-});
+}));

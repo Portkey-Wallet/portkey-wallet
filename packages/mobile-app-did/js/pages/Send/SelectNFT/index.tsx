@@ -18,23 +18,34 @@ import { makeStyles } from '@rneui/themed';
 export interface SelectNFTProps {
   nftInfos: IAssetNftCollection[];
   noDataMessage: string;
+  toAddress?: string;
 }
 
-export default function SelectNFT({ nftInfos, noDataMessage }: SelectNFTProps) {
+export default function SelectNFT({ nftInfos, noDataMessage, toAddress }: SelectNFTProps) {
   const { t } = useLanguage();
   const isMainnet = useIsMainnet();
   const itemStyle = getStyles();
 
-  const onNavigate = useCallback((nft: INftInfoType) => {
-    navigationService.navigate('SendHome', {
-      sendType: 'nft',
-      assetInfo: { ...nft, symbol: '' },
-      toInfo: {
-        name: '',
-        address: '',
-      },
-    } as unknown as IToSendHomeParamsType);
-  }, []);
+  const onNavigate = useCallback(
+    (nft: INftInfoType) => {
+      // navigationService.navigate('SendHome', {
+      //   sendType: 'nft',
+      //   assetInfo: nftItem,
+      //   toInfo: { name: '', address: '' },
+      // } as unknown as IToSendHomeParamsType);
+
+      console.log('onNavigate nft is::', nft);
+      navigationService.navigate('SendHome', {
+        sendType: 'nft',
+        assetInfo: { ...nft },
+        toInfo: {
+          name: '',
+          address: toAddress || '',
+        },
+      } as unknown as IToSendHomeParamsType);
+    },
+    [toAddress],
+  );
 
   const renderNFTItem = useCallback(
     ({ item: nft }: { item: INftInfoType }) => {

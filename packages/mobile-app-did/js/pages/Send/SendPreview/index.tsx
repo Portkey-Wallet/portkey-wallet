@@ -71,7 +71,6 @@ const SendPreview: React.FC = () => {
     targetNetwork,
   } = routerParams;
   useFetchTxFee();
-
   const [isLoading, setIsLoading] = useState(false);
   const { getAELFChainInfoConfig, getEVMChainInfoConfig, getTokenConfig } = useGetEBridgeConfig();
   const isApproved = useMemo(() => guardiansApproved && guardiansApproved.length > 0, [guardiansApproved]);
@@ -319,6 +318,7 @@ const SendPreview: React.FC = () => {
           decimals: Number(assetInfo.decimals),
           address: assetInfo.tokenContractAddress,
         },
+        isCheckSymbol: false,
       });
       console.log('crossTransferByEtransferResult', crossTransferByEtransferResult);
       if (!crossTransferByEtransferResult?.transactionId) throw 'Transfer error';
@@ -508,7 +508,7 @@ const SendPreview: React.FC = () => {
               seedType: assetInfo.seedType,
               imageUrl: assetInfo.imageUrl,
               alias: assetInfo.alias,
-              collectionName: assetInfo.collectionName,
+              collectionName: assetInfo.collectionName || assetInfo.collectionInfo?.collectionName,
               tokenId: assetInfo.tokenId,
             }
           : undefined
@@ -517,7 +517,7 @@ const SendPreview: React.FC = () => {
       amountUSD={`${formatAmountUSDShow(ZERO.plus(sendNumber).multipliedBy(tokenPriceObject[assetInfo.symbol]))}`}
       toAddress={toInfo?.address}
       toInfoChainId={toInfo?.chainId}
-      destinationNetwork={isETransferOrEBridge ? targetNetwork?.name : networkInfoShow(toInfo?.address)}
+      destinationNetwork={isETransferOrEBridge ? targetNetwork?.name : formatChainInfoToShow(toInfo?.chainId)}
       destinationNetworkImageUrl={targetNetwork?.imageUrl}
       transactionFee={isETransferOrEBridge ? `${transactionFee} ${transactionFeeUnit}` : ''}
       transactionFeeUSD={

@@ -1,46 +1,372 @@
-import React, { memo, useCallback, useState } from 'react';
-import { Text, View, TouchableWithoutFeedback } from 'react-native';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { View } from 'react-native';
 import { useLanguage } from 'i18n/hooks';
 import CommonPreviewContainer from 'components/CommonPreviewContainer';
-import PageContainer from 'components/PageContainer';
 import Svg from 'components/Svg';
-import CommonButton from 'components/CommonButton';
 import CommonInfoRow from 'components/CommonInfoRow';
-import Touchable from 'components/Touchable';
 import { CommonPromptCard, PromptCardType } from 'components/CommonPromptCard';
-import { formatStr2EllipsisStr } from '@portkey-wallet/utils';
+import PreviewAmountCard from '../components/PreviewAmountCard';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
-import { ChainId } from '@portkey-wallet/types';
 import { getChainSvgName } from 'utils';
 import { pTd } from 'utils/unit';
-import { openOutLink } from 'utils/link';
-import { SEND_RECEIVE_HELP_URL } from 'constants/common';
 import { getStyles } from './style';
+import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
+import { TSwapInfo } from '../components/SwapEnter';
+import {
+  useAwakenGasFee,
+  useAwakenTokenPrices,
+  useAwakenUserExpiration,
+  useAwakenUserSlippageTolerance,
+} from '@portkey-wallet/hooks/hooks-ca/awaken/state';
+import { LANG_MAX, ONE, TEN_THOUSAND, ZERO } from '@portkey-wallet/constants/misc';
+import { bigNumberToString, getDeadline, minimumAmountOut } from '@portkey-wallet/utils/awaken';
+import { getContractTotalAmountOut, getPriceImpactWithBuy, sendSwap } from '@portkey-wallet/utils/awaken/swap';
+import { formatNameWithNoUnderline } from '@portkey-wallet/utils';
+import { TContractSwapToken, TSwapRoute } from '@portkey-wallet/types/types-ca/awaken/swap';
+import BigNumber from 'bignumber.js';
+import { divDecimals, timesDecimals } from '@portkey-wallet/utils/converter';
+import {
+  SWAP_LABS_FEE_RATE,
+  SWAP_RECEIVE_RATE,
+  SWAP_TIME_INTERVAL,
+} from '@portkey-wallet/constants/constants-ca/awaken/swap';
+import { useDefaultTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
+import { formatPriceUsd } from '@portkey-wallet/utils/format';
+import { useReturnLastCallback } from '@portkey-wallet/hooks';
+import { useGetSwapHookViewContract } from 'hooks/awaken';
+import { useGetCAContract, useGetTokenViewContract } from 'hooks/contract';
+import { useDAppChainId } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { getAllowance } from '@portkey-wallet/utils/contract';
+import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useSwapHookContractAddress } from '@portkey-wallet/hooks/hooks-ca/awaken';
+import { AWAKEN_DEFAULT_CID } from '@portkey-wallet/constants/constants-ca/awaken';
+import navigationService from 'utils/navigationService';
+import { ActionType } from 'types/common';
+import ActionSheet from 'components/ActionSheet';
 
+type TRouterParams = {
+  swapInfo: TSwapInfo;
+  swapRoute: TSwapRoute;
+  priceLabel: string;
+};
 const SwapPreview = () => {
+  const { swapInfo: swapInfoProp, swapRoute, priceLabel } = useRouterParams<TRouterParams>();
+  const [swapInfo, setSwapInfo] = useState<TSwapInfo>(swapInfoProp);
+
   const { t } = useLanguage();
   const styles = getStyles();
 
   const isMainnet = useIsMainnet();
 
-  const [isLoading, setIsLoading] = useState(false);
+  const { userSlippageTolerance } = useAwakenUserSlippageTolerance();
 
-  const handlePress = useCallback(() => {
-    setIsLoading(true);
+  const userSlippageToleranceStr = useMemo(
+    () => `${ZERO.plus(userSlippageTolerance).times(100).toFixed()}%`,
+    [userSlippageTolerance],
+  );
+  const { price: tokenOutPrice } = useAwakenTokenPrices({ symbol: swapInfo.tokenOut?.symbol || '', isInit: false });
+  const { price: tokenInPrice } = useAwakenTokenPrices({ symbol: swapInfo.tokenIn?.symbol || '', isInit: false });
+
+  const amountOutMin = useMemo(() => {
+    const { valueOut, tokenOut } = swapInfo;
+    if (!valueOut || !tokenOut) return undefined;
+    return minimumAmountOut(ZERO.plus(valueOut), userSlippageTolerance).dp(tokenOut.decimals);
+  }, [swapInfo, userSlippageTolerance]);
+
+  const amountOutMinValue = useMemo(() => {
+    const { tokenOut } = swapInfo;
+    if (amountOutMin === undefined || !tokenOut) return '-';
+    return `${amountOutMin.toFixed()} ${formatNameWithNoUnderline(tokenOut.symbol)}`;
+  }, [amountOutMin, swapInfo]);
+
+  const amountOutMinUsd = useMemo(() => {
+    if (amountOutMin === undefined) return '-';
+    return `$${formatPriceUsd(ZERO.plus(tokenOutPrice).times(amountOutMin))}`;
+  }, [amountOutMin, tokenOutPrice]);
+
+  const priceImpact = useMemo(() => {
+    if (!swapRoute) return '-';
+
+    const impactList: BigNumber[] = [];
+    swapRoute.distributions.forEach(path => {
+      for (let i = 0; i < path.tokens.length - 1; i++) {
+        const tradePairExtension = path.tradePairExtensions[i];
+        const tradePair = path.tradePairs[i];
+        const tokenIn = path.tokens[i];
+        const tokenOut = path.tokens[i + 1];
+        let tokenInReserve = ZERO.plus(tradePairExtension.valueLocked0);
+        let tokenOutReserve = ZERO.plus(tradePairExtension.valueLocked1);
+        if (tokenIn.symbol !== tradePair.token0.symbol) {
+          tokenInReserve = ZERO.plus(tradePairExtension.valueLocked1);
+          tokenOutReserve = ZERO.plus(tradePairExtension.valueLocked0);
+        }
+
+        const valueIn = divDecimals(path.amounts[i], tokenIn.decimals);
+        const valueOut = divDecimals(path.amounts[i + 1], tokenOut.decimals);
+
+        const _impact = getPriceImpactWithBuy(tokenOutReserve, tokenInReserve, valueIn, valueOut);
+        impactList.push(_impact);
+      }
+    });
+
+    return `${bigNumberToString(BigNumber.max(...impactList), 2)}%`;
+  }, [swapRoute]);
+
+  const feeValue = useMemo(() => {
+    const { valueOut } = swapInfo;
+    if (!valueOut) return undefined;
+
+    return ZERO.plus(swapInfo.valueOut)
+      .div(SWAP_RECEIVE_RATE)
+      .times(SWAP_LABS_FEE_RATE)
+      .div(TEN_THOUSAND)
+      .dp(Number(swapInfo.tokenOut?.decimals || 1), BigNumber.ROUND_DOWN)
+      .toFixed();
+  }, [swapInfo]);
+  const feeValueStr = useMemo(() => {
+    if (!swapInfo.tokenOut) return '-';
+    const _symbol = formatNameWithNoUnderline(swapInfo.tokenOut.symbol);
+    if (feeValue === undefined) return `- ${_symbol}`;
+
+    return `${feeValue} ${_symbol}`;
+  }, [feeValue, swapInfo.tokenOut]);
+  const feeUsd = useMemo(() => {
+    const value = ZERO.plus(tokenOutPrice).times(feeValue || 0);
+    return `$${formatPriceUsd(value)}`;
+  }, [feeValue, tokenOutPrice]);
+
+  const gasFee = useAwakenGasFee();
+  const gasFeeValue = useMemo(() => {
+    return `${divDecimals(ZERO.plus(gasFee), 8).toFixed()} ELF`;
+  }, [gasFee]);
+
+  const defaultTokenPrice = useDefaultTokenPrice();
+  const gasFeeUsd = useMemo(() => {
+    return `$${formatPriceUsd(divDecimals(ZERO.plus(gasFee), 8).times(defaultTokenPrice))}`;
+  }, [defaultTokenPrice, gasFee]);
+
+  const priceIn = useMemo(
+    () =>
+      ZERO.plus(swapInfo?.valueIn || 0)
+        .times(tokenInPrice)
+        .dp(2)
+        .toFixed(),
+    [swapInfo?.valueIn, tokenInPrice],
+  );
+
+  const priceOut = useMemo(
+    () =>
+      ZERO.plus(swapInfo?.valueOut || 0)
+        .times(tokenOutPrice)
+        .dp(2)
+        .toFixed(),
+    [swapInfo?.valueOut, tokenOutPrice],
+  );
+
+  const getValueOut = useReturnLastCallback(getContractTotalAmountOut, []);
+
+  const getSwapHookViewContract = useGetSwapHookViewContract();
+
+  const executeCb = useCallback(async () => {
+    if (!swapInfo || !swapRoute) return;
+    const { tokenOut } = swapInfo;
+    if (!tokenOut) return;
+
+    try {
+      const routeContract = await getSwapHookViewContract();
+      const { amountOuts, total: amountOutAmount } = await getValueOut({
+        contract: routeContract,
+        swapRoute,
+      });
+
+      console.log('SwapPreview amountOutValue', amountOutAmount);
+
+      const amountOutValue = divDecimals(
+        ZERO.plus(amountOutAmount).times(SWAP_RECEIVE_RATE).dp(0, BigNumber.ROUND_CEIL),
+        tokenOut.decimals,
+      ).toFixed();
+
+      setSwapInfo(pre => {
+        if (!pre) return pre;
+        return {
+          ...pre,
+          valueOut: amountOutValue,
+        };
+      });
+      const _swapRoute: TSwapRoute = JSON.parse(JSON.stringify(swapRoute));
+      _swapRoute.distributions.forEach((path, idx) => {
+        path.amountOut = amountOuts[idx];
+      });
+      console.log('_swapRoute', _swapRoute);
+
+      return {
+        amountOutValue,
+        amountOutAmount,
+        swapRoute: _swapRoute,
+      };
+    } catch (error) {
+      console.log('SwapPreview executeCb error:', error);
+      return;
+    }
+  }, [getSwapHookViewContract, getValueOut, swapInfo, swapRoute]);
+  const executeCbRef = useRef(executeCb);
+  executeCbRef.current = executeCb;
+
+  const timerRef = useRef<NodeJS.Timeout>();
+  const clearTimer = useCallback(() => {
+    if (!timerRef.current) return;
+    clearInterval(timerRef.current);
+    console.log('SwapPreview: clearTimer');
   }, []);
+
+  const registerTimer = useCallback(() => {
+    clearTimer();
+    console.log('SwapPreview: registerTimer');
+
+    executeCbRef.current();
+    timerRef.current = setInterval(() => {
+      executeCbRef.current();
+    }, SWAP_TIME_INTERVAL);
+  }, [clearTimer]);
+
+  useEffect(() => {
+    registerTimer();
+    return () => {
+      clearTimer();
+    };
+  }, [clearTimer, registerTimer]);
+
+  const [isSwapping, setIsSwapping] = useState(false);
+
+  const swapHookContractAddress = useSwapHookContractAddress();
+  const getTokenViewContract = useGetTokenViewContract();
+  const getCAContract = useGetCAContract();
+  const dAppChainId = useDAppChainId();
+  const wallet = useCurrentWalletInfo();
+  const { userExpiration } = useAwakenUserExpiration();
+
+  const handlePress = useCallback(async () => {
+    if (!swapInfo) return;
+
+    const { tokenIn, tokenOut, valueIn, valueOut } = swapInfo;
+    if (!tokenIn || !tokenOut || !valueIn || !valueOut) return;
+    const caAddress = wallet[dAppChainId]?.caAddress || '';
+
+    setIsSwapping(true);
+    try {
+      const tokenViewContract = await getTokenViewContract(dAppChainId);
+
+      const valueInAmountBN = timesDecimals(valueIn, tokenIn.decimals);
+      const allowance = await getAllowance(tokenViewContract, {
+        symbol: tokenIn.symbol,
+        owner: caAddress,
+        spender: swapHookContractAddress,
+      });
+
+      const caContract = await getCAContract(dAppChainId);
+      if (valueInAmountBN.gt(allowance)) {
+        console.log('allowance', allowance);
+        const approveResult = await caContract.callSendMethod('ManagerApprove', wallet.address, {
+          caHash: wallet.caHash,
+          spender: swapHookContractAddress,
+          symbol: tokenIn.symbol,
+          amount: LANG_MAX.toFixed(),
+        });
+        if (approveResult?.error) throw approveResult?.error;
+      }
+
+      const valueOutAmountBN = timesDecimals(valueOut, tokenOut.decimals);
+
+      const result = await executeCbRef.current();
+      if (!result) return;
+      const _swapRoute = result.swapRoute;
+      const amountOutAmount = result.amountOutAmount;
+
+      const amountMinOutAmountBN = BigNumber.max(
+        minimumAmountOut(valueOutAmountBN, userSlippageTolerance).dp(0, BigNumber.ROUND_DOWN),
+        ONE,
+      );
+      if (amountMinOutAmountBN.gt(amountOutAmount)) {
+        ActionSheet.alert({
+          showInfoIcon: true,
+          title: 'Price change alert',
+          message: 'The swap price has changed. Please re-initiate the transaction to continue.',
+          buttons: [
+            {
+              title: 'OK',
+              type: 'primary',
+            },
+          ],
+        });
+        return;
+      }
+
+      const deadline = getDeadline(userExpiration);
+      const channel = AWAKEN_DEFAULT_CID;
+      const swapTokens: TContractSwapToken[] = _swapRoute.distributions.map(item => {
+        const amountOutMinBN = BigNumber.max(
+          minimumAmountOut(ZERO.plus(item.amountOut), userSlippageTolerance).dp(0, BigNumber.ROUND_DOWN),
+          ONE,
+        );
+        const _amountOutMin = amountOutMinBN.lt(1) ? '1' : amountOutMinBN.toFixed();
+
+        return {
+          amountIn: item.amountIn,
+          amountOutMin: _amountOutMin,
+          channel,
+          deadline,
+          path: item.tokens.map(token => token.symbol),
+          to: caAddress,
+          feeRates: item.feeRates.map(fee => ZERO.plus(TEN_THOUSAND).times(fee).toNumber()),
+        };
+      });
+
+      const req = await sendSwap({
+        contract: caContract,
+        managerAddress: wallet.address,
+        caHash: wallet.caHash || '',
+        contractAddress: swapHookContractAddress,
+        args: {
+          swapTokens,
+          labsFeeRate: SWAP_LABS_FEE_RATE,
+        },
+      });
+      if (req?.error) throw req?.error;
+      console.log('req', req);
+
+      navigationService.navigate('SwapFinishPage', {
+        actionType: ActionType.SWAP,
+      });
+    } catch (error) {
+      console.log('SwapPreview onSwap error', error);
+    } finally {
+      console.log('onSwap finally');
+      setIsSwapping(false);
+    }
+  }, [
+    dAppChainId,
+    getCAContract,
+    getTokenViewContract,
+    swapHookContractAddress,
+    swapInfo,
+    userExpiration,
+    userSlippageTolerance,
+    wallet,
+  ]);
 
   return (
     <CommonPreviewContainer
+      footerStyle={styles.footerWrap}
       poweredIcon={<Svg icon="awakenLogo" oblongSize={[pTd(45), pTd(12)]} />}
       buttonProps={{ title: t('Swap'), onPress: handlePress }}
-      isLoading={isLoading}>
-      <View>
+      isLoading={isSwapping}>
+      <PreviewAmountCard style={styles.previewAmountCard} swapInfo={swapInfo} />
+      <View style={styles.infoRowContainer}>
         <CommonInfoRow
           label={{ text: 'Network' }}
           value={{ text: 'aelf dAppChain', leftSvgName: getChainSvgName('tDVV') }}
         />
-        <CommonInfoRow label={{ text: 'Price' }} value={{ text: '1 ELF = 0.3794 USDT' }} />
+        <CommonInfoRow label={{ text: 'Price' }} value={{ text: priceLabel }} />
         <CommonInfoRow
           label={{
             text: 'Slippage tolerance',
@@ -50,7 +376,7 @@ const SwapPreview = () => {
                 'Slippage occurs when the price changes between placing and executing your order. If the change exceeds your set slippage tolerance, your trade will not proceed.',
             },
           }}
-          value={{ text: '0.3%' }}
+          value={{ text: userSlippageToleranceStr }}
         />
         <CommonInfoRow
           label={{
@@ -60,7 +386,7 @@ const SwapPreview = () => {
               description: 'The minimum amount you are guaranteed to receive based on your set slippage tolerance.',
             },
           }}
-          value={{ text: '0.005 ELF', textBelow: isMainnet ? '$0.01' : '' }}
+          value={{ text: amountOutMinValue, textBelow: isMainnet ? amountOutMinUsd : '' }}
         />
         <CommonInfoRow
           label={{
@@ -70,7 +396,7 @@ const SwapPreview = () => {
               description: "The effect of your trade on the token's price.",
             },
           }}
-          value={{ text: '0.82%' }}
+          value={{ text: priceImpact }}
         />
         <CommonInfoRow
           label={{
@@ -81,7 +407,7 @@ const SwapPreview = () => {
                 'Your transaction will execute within the maximum amount of slippage you define for this swap.',
             },
           }}
-          value={{ text: 'Oct 1, 2024 at 12:23 am' }}
+          value={{ text: `${userExpiration} minutes` }}
         />
         <CommonInfoRow
           label={{
@@ -92,7 +418,7 @@ const SwapPreview = () => {
               learnMoreUrl: 'https://awakenfinance.gitbook.io/en/ii.-trader-faq/what-is-a-swap-trade/what-is-the-fee',
             },
           }}
-          value={{ text: '0.0048 ELF', textBelow: isMainnet ? '$0.12' : '' }}
+          value={{ text: feeValueStr, textBelow: isMainnet ? feeUsd : '' }}
         />
         <CommonInfoRow
           label={{
@@ -102,16 +428,16 @@ const SwapPreview = () => {
               description: 'Fee applied by the blockchain to process your transaction, also known as gas fee.',
             },
           }}
-          value={{ text: '0.005 ELF', textBelow: isMainnet ? '$0.01' : '' }}
+          value={{ text: gasFeeValue, textBelow: isMainnet ? gasFeeUsd : '' }}
         />
       </View>
-      <CommonPromptCard
+      {/* <CommonPromptCard
         style={styles.promptCard}
         type={PromptCardType.INFO}
         description={t(
           'Keep your wallet balance sufficient and avoid editing the authorization amount, or the transaction may fail.',
         )}
-      />
+      /> */}
     </CommonPreviewContainer>
   );
 };

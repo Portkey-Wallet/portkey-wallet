@@ -4,6 +4,7 @@ import { getChainListAsync } from '@portkey-wallet/store/store-ca/wallet/actions
 import { useCurrentWallet, useOriginChainId, useWallet } from './wallet';
 import { ChainId } from '@portkey-wallet/types';
 import { DEFAULT_TOKEN } from '@portkey-wallet/constants/constants-ca/wallet';
+import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 
 export function useChainListFetch() {
   const { currentNetwork } = useWallet();
@@ -72,3 +73,13 @@ export function useGetChain() {
     [currentChainList],
   );
 }
+
+export const useDAppChain = () => {
+  const currentChainList = useCurrentChainList();
+  return useMemo(() => currentChainList?.find(item => item.chainId !== MAIN_CHAIN_ID), [currentChainList]);
+};
+
+export const useDAppChainId = () => {
+  const dAppChain = useDAppChain();
+  return useMemo(() => dAppChain?.chainId || 'tDVV', [dAppChain?.chainId]);
+};

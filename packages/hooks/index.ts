@@ -73,3 +73,21 @@ export function useEffectOnce(effect: EffectCallback) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(effect, []);
 }
+
+export function useReturnLastCallback<T extends (...args: any[]) => any>(callback: T, deps: DependencyList) {
+  const last = useRef<number>(0);
+  return useCallback(async (...args: any) => {
+    ++last.current;
+    const id = last.current;
+    try {
+      const req = await callback(...args);
+      if (last.current !== id) throw new Error('Not the latest request');
+      return req;
+    } catch (error) {
+      if (last.current !== id) throw new Error('Not the latest request');
+      throw error;
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, deps) as T;
+}

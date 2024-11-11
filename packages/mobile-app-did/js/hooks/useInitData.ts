@@ -83,7 +83,16 @@ export default function useInitData() {
     } catch (error) {
       console.log(error, '====error');
     }
-  }, [dispatch, getCurrentCAViewContract, initCryptoGiftConfig, initGuardianList, initRamp, loadBookmarkList]);
+  }, [
+    dispatch,
+    fetchAssetSupportConfig,
+    fetchContactSupportConfig,
+    getCurrentCAViewContract,
+    initCryptoGiftConfig,
+    initGuardianList,
+    initRamp,
+    loadBookmarkList,
+  ]);
 
   const isChat = useIsChatShow();
   useEffect(() => {

@@ -10,8 +10,10 @@ import { pTd } from 'utils/unit';
 import { openOutLink } from 'utils/link';
 import { getStyles } from './style';
 import { useTheme } from '@rneui/themed';
+import { ViewStyleType } from 'types/styles';
 
 interface ICommonPreviewContainerProps {
+  footerStyle?: ViewStyleType;
   helpUrl?: string;
   poweredIcon?: React.ReactNode;
   buttonProps: Omit<CommonButtonProps, 'type' | 'loading'>;
@@ -20,6 +22,7 @@ interface ICommonPreviewContainerProps {
 }
 
 const CommonPreviewContainer: React.FC<ICommonPreviewContainerProps> = ({
+  footerStyle,
   helpUrl,
   poweredIcon,
   buttonProps,
@@ -64,7 +67,7 @@ const CommonPreviewContainer: React.FC<ICommonPreviewContainerProps> = ({
           <View>
             {children}
             {poweredIcon && (
-              <View style={styles.footerWrap}>
+              <View style={[styles.footerWrap, footerStyle]}>
                 <Text style={styles.footerText}>Powered by</Text>
                 {poweredIcon}
               </View>

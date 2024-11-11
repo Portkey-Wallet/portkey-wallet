@@ -15,6 +15,7 @@ export const getStyles = makeStyles(theme => ({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    marginBottom: pTd(16),
   },
   footerText: {
     ...fonts.SGRegularFont,

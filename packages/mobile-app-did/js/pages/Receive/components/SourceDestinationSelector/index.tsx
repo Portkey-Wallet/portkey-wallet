@@ -87,7 +87,7 @@ const SelectList = ({ type, title, list, selectedIndex, onSelected }: SelectList
 
   return (
     <ModalBody title={title} modalBodyType="bottom">
-      {type === SourceDestinationTypeEnum.Destination ? renderList(list) : renderSourceChainList()}
+      {renderList(list)}
     </ModalBody>
   );
 };

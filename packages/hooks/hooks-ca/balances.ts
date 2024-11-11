@@ -8,7 +8,7 @@ import { fetchTargetTokenBalanceAsync } from '@portkey-wallet/store/store-ca/ass
 import { useCaAddressInfoList } from './wallet';
 
 export function useAllBalances() {
-  return useAppCASelector(state => state.tokenBalance.balances);
+  return useAppCASelector(state => state.tokenBalance?.balances);
 }
 
 export function useAccountCryptoBoxAssetList() {

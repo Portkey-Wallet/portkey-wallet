@@ -18,6 +18,7 @@ import { makeStyles, useTheme } from '@rneui/themed';
 import { ApprovalType } from '@portkey-wallet/types/verifier';
 import ActionSheet from 'components/ActionSheet';
 import navigationService from 'utils/navigationService';
+import { sleep } from '@portkey-wallet/utils';
 
 const DeviceList: React.FC = () => {
   const onError = useCallback(() => {
@@ -109,13 +110,16 @@ const DeviceList: React.FC = () => {
           {
             title: t(`Remove (${removeDevices.length})`),
             type: 'warning',
-            onPress: () => {
+            onPress: async () => {
               navigationService.navigate('GuardianApproval', {
                 approvalType: ApprovalType.removeOtherManager,
                 removeManagerAddress: removeDevices.map(ele => {
                   return ele.managerAddress;
                 }),
               });
+              setIsRemoving(false);
+              await sleep(5000);
+              getDeviceList();
             },
           },
         ],

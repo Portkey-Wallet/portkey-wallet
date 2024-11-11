@@ -293,7 +293,7 @@ const getStyles = makeStyles(theme => ({
   },
   tabHeaderStyle: {
     width: '100%',
-    marginBottom: pTd(24),
+    marginBottom: pTd(16),
     backgroundColor: theme.colors.bgBase1,
     borderColor: theme.colors.textBase3,
     borderWidth: pTd(1),

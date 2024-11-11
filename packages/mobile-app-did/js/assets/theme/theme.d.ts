@@ -28,6 +28,7 @@ declare module '@rneui/themed' {
     bgDanger3: string;
     bgDanger4: string;
     bgDanger5: string;
+    bgTransparent: string;
 
     textBase1: string;
     textBase2: string;

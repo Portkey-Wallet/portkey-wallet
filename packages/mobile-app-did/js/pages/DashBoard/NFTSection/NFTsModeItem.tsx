@@ -9,7 +9,6 @@ import GStyles from 'assets/theme/GStyles';
 import CommonAvatar from 'components/CommonAvatar';
 import Svg from 'components/Svg';
 import { TextL, TextM, TextS } from 'components/CommonText';
-import { FontStyles } from 'assets/theme/styles';
 import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { NFTCollectionItemShowType } from '@portkey-wallet/types/types-ca/assets';
 import Touchable from 'components/Touchable';
@@ -17,8 +16,9 @@ import { OpenCollectionObjType } from './index';
 import { ChainId } from '@portkey-wallet/types';
 
 import { Skeleton } from '@rneui/base';
-import { formatChainInfoToShow } from '@portkey-wallet/utils';
-import { PortkeyLinearGradient } from 'components/PortkeyLinearGradient';
+import { makeStyles } from '@rneui/themed';
+import { formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
+import { PortkeyLinearGradientV2 } from 'components/PortkeyLinearGradient';
 
 export enum NoDataMessage {
   CustomNetWorkNoData = 'No transaction records accessible from the current custom network',
@@ -48,9 +48,8 @@ export default function NFTItem(props: NFTItemPropsType) {
     openCollectionObj,
     openItem,
     closeItem,
-    loadMoreItem,
   } = props;
-  const { currentNetwork } = useWallet();
+  const styles = getStyles();
 
   const [open, setOpen] = useState<boolean>(false);
 
@@ -64,7 +63,7 @@ export default function NFTItem(props: NFTItemPropsType) {
   }, [collapsed]);
 
   const showChildren = useMemo(
-    () => (children.length > 9 ? children.slice(0, ((openCollectionInfo?.pageNum ?? 0) + 1) * 9) : children),
+    () => (children.length > 8 ? children.slice(0, ((openCollectionInfo?.pageNum ?? 0) + 1) * 8) : children),
     [children, openCollectionInfo?.pageNum],
   );
 
@@ -92,98 +91,137 @@ export default function NFTItem(props: NFTItemPropsType) {
             openItem(symbol, chainId, itemCount);
           }
         }}>
+        <CommonAvatar avatarSize={pTd(24)} imageUrl={imageUrl} title={collectionName} shapeType={'square'} />
+        <TextL style={[styles.nftSeriesName, styles.title]} ellipsizeMode="tail" numberOfLines={1}>
+          {collectionName}
+        </TextL>
+        <TextL style={[styles.nftSeriesName, styles.itemCount]}>{itemCount}</TextL>
         <Svg
-          icon={!open ? 'right-arrow' : 'down-arrow'}
-          size={pTd(16)}
-          color={defaultColors.font3}
-          iconStyle={styles.touchIcon}
+          icon={'chevron_down'}
+          size={pTd(24)}
+          iconStyle={[
+            styles.touchIcon,
+            {
+              transform: [{ rotate: !open ? '180deg' : '0deg' }],
+            },
+          ]}
         />
-        <CommonAvatar avatarSize={pTd(36)} imageUrl={imageUrl} title={collectionName} shapeType={'square'} />
-        <View style={styles.topSeriesCenter}>
-          <TextL style={[styles.nftSeriesName, styles.title]} ellipsizeMode="tail">
-            {collectionName}
-          </TextL>
-          <TextS style={styles.nftSeriesChainInfo}>{formatChainInfoToShow(chainId, currentNetwork)}</TextS>
-        </View>
-        <View>
-          <TextL style={[styles.nftSeriesName, styles.title]}>{itemCount}</TextL>
-          <TextM style={styles.nftSeriesChainInfo} />
-        </View>
       </Touchable>
       <Collapsible collapsed={!open}>
         <View style={[styles.listWrap]}>
           {showChildren?.map((ele: any, index: number) => (
-            <NFTAvatar
-              showNftDetailInfo
-              isSeed={ele.isSeed}
-              seedType={ele.seedType}
-              badgeSizeType="normal"
+            <Touchable
+              style={styles.itemWrapper}
               key={ele.symbol}
-              data={ele}
-              style={[
-                styles.itemAvatarStyle,
-                index < 3 ? styles.marginTop0 : {},
-                index % 3 === 2 ? styles.marginRight0 : {},
-              ]}
               onPress={() => {
-                navigationService.navigate('NFTDetail', { ...ele, collectionInfo: { imageUrl, collectionName } });
-              }}
-            />
+                console.log('1111111111', symbol);
+                navigationService.navigate('NFTDetail', {
+                  ...ele,
+                  collectionInfo: { imageUrl, collectionName, itemCount, symbol, chainId },
+                });
+              }}>
+              <NFTAvatar
+                disabled
+                isSeed={ele.isSeed}
+                seedType={ele.seedType}
+                badgeSizeType="normal"
+                data={ele}
+                nftSize={pTd(110)}
+                style={[
+                  styles.itemAvatarStyle,
+                  index < 3 ? styles.marginTop0 : {},
+                  index % 3 === 2 ? styles.marginRight0 : {},
+                ]}
+              />
+              <TextM numberOfLines={1} ellipsizeMode="tail" style={[GStyles.marginTop(8)]}>
+                {ele.alias}
+              </TextM>
+
+              <TextS numberOfLines={1} style={styles.itemAmount}>
+                {ele.balance && ele.decimals
+                  ? formatTokenAmountShowWithDecimals(ele.balance, ele.decimals)
+                  : `#${ele.tokenId}`}
+              </TextS>
+            </Touchable>
           ))}
+          <Touchable
+            style={[styles.itemWrapper]}
+            onPress={() => {
+              navigationService.navigate('CollectionDetail', { imageUrl, collectionName, itemCount, symbol, chainId });
+            }}>
+            {hasMore && (
+              <View style={[styles.itemAvatarStyle, styles.viewAll]}>
+                <Svg icon="arrow-right-thin" size={pTd(24)} />
+                <TextM style={styles.vieAllText}>View all</TextM>
+              </View>
+            )}
+          </Touchable>
           {skeletonList.map((ele, i) => {
             return (
               <Skeleton
                 key={i}
                 animation="wave"
-                LinearGradientComponent={() => <PortkeyLinearGradient />}
+                LinearGradientComponent={() => <PortkeyLinearGradientV2 />}
                 style={[
                   { borderRadius: pTd(8) },
                   styles.itemAvatarStyle,
+                  styles.skeleton,
                   i + showChildren.length < 3 ? styles.marginTop0 : {},
                   (i + showChildren.length) % 3 === 2 ? styles.marginRight0 : {},
                 ]}
-                height={pTd(98)}
-                width={pTd(98)}
+                height={pTd(110)}
+                width={pTd(110)}
               />
             );
           })}
         </View>
-        {hasMore && (
-          <Touchable
-            style={[styles.loadMore]}
-            onPress={() => loadMoreItem?.(symbol, chainId, openCollectionInfo?.pageNum + 1)}>
-            <TextM style={FontStyles.font4}>More</TextM>
-            <Svg icon="down-arrow" size={pTd(16)} color={defaultColors.primaryColor} iconStyle={styles.downArrow} />
-          </Touchable>
-        )}
       </Collapsible>
-      <View style={styles.divider} />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
+const getStyles = makeStyles(theme => ({
   wrap: {
     width: '100%',
-    backgroundColor: defaultColors.bg1,
+    backgroundColor: theme.colors.bgBase2,
   },
   title: {
-    color: defaultColors.font16,
+    color: theme.colors.textBase1,
+    flex: 1,
     fontWeight: '400',
+    marginLeft: pTd(8),
+  },
+  itemCount: {
+    color: theme.colors.textBase1,
+    fontWeight: '400',
+    opacity: 0.7,
   },
   topSeries: {
     ...GStyles.flexRowWrap,
     alignItems: 'center',
-    ...GStyles.marginArg(16, 16, 0),
+  },
+  itemWrapper: {
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+  },
+  viewAll: {
+    borderRadius: pTd(8),
+    width: pTd(110),
+    height: pTd(110),
+    backgroundColor: theme.colors.bgBase3,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  vieAllText: {
+    color: theme.colors.textBase1,
+    opacity: 0.4,
   },
   listWrap: {
     ...GStyles.flexRowWrap,
-    paddingLeft: pTd(44),
-    paddingRight: pTd(20),
     marginTop: pTd(16),
   },
   touchIcon: {
-    marginRight: pTd(10),
+    marginLeft: pTd(8),
   },
   topSeriesCenter: {
     flex: 1,
@@ -223,7 +261,6 @@ const styles = StyleSheet.create({
     marginTop: pTd(16),
     marginLeft: pTd(44),
     height: 0,
-    // backgroundColor: defaultColors.bg7,
   },
   marginBottom0: {
     marginBottom: 0,
@@ -234,4 +271,13 @@ const styles = StyleSheet.create({
   marginRight0: {
     marginRight: 0,
   },
-});
+  itemAmount: {
+    marginTop: pTd(4),
+    opacity: 0.4,
+    color: theme.colors.textBase1,
+  },
+  skeleton: {
+    borderRadius: pTd(8),
+    backgroundColor: theme.colors.bgBase3,
+  },
+}));

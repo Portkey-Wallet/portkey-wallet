@@ -81,6 +81,8 @@ const MintStatusSection = (props: MintStatusSectionProps) => {
         collectionInfo: {
           imageUrl: mintInfo.collectionInfo.imageUrl,
           collectionName: mintInfo.collectionInfo.collectionName,
+          symbol: mintInfo.collectionInfo.symbol,
+          chainId: mintInfo.collectionInfo.chainId,
         },
       });
     } catch (error) {
@@ -94,6 +96,7 @@ const MintStatusSection = (props: MintStatusSectionProps) => {
     mintInfo?.collectionInfo.chainId,
     mintInfo?.collectionInfo.collectionName,
     mintInfo?.collectionInfo.imageUrl,
+    mintInfo?.collectionInfo.symbol,
   ]);
 
   const setAvatar = useCallback(async () => {

@@ -20,7 +20,7 @@ import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import { codePushOperator } from 'utils/update';
 import { useGetCryptoGiftConfig } from '@portkey-wallet/hooks/hooks-ca/cryptogift';
 import * as Application from 'expo-application';
-import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/actions';
+import { fetchContactListAsync, fetchContactListV2Async } from '@portkey-wallet/store/store-ca/contact/actions';
 
 export default function useInitData() {
   const dispatch = useAppDispatch();
@@ -60,6 +60,8 @@ export default function useInitData() {
       getCurrentCAViewContract();
       dispatch(getCaHolderInfoAsync());
       dispatch(getSymbolImagesAsync());
+      dispatch(fetchContactListV2Async());
+
       initGuardianList();
 
       loadBookmarkList();

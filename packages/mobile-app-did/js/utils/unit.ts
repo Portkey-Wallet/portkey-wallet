@@ -2,7 +2,6 @@ import { Dimensions } from 'react-native';
 
 // Dimensions,width dp
 const deviceWidthDp = Dimensions.get('window').width;
-
 // Design draft width (750px here), unit px
 const uiWidthPx = 393;
 

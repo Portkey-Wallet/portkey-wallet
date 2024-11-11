@@ -21,6 +21,7 @@ export const INIT_ACCOUNT_TOKEN_INFO = {
   maxResultCount: 10,
   accountTokenList: NEW_CLIENT_MOCK_ELF_LIST,
   totalRecordCount: 0,
+  totalDisplayCount: 0,
 };
 
 export const INIT_ACCOUNT_NFT_INFO = {
@@ -76,6 +77,7 @@ const initialState: TAssetsState = {
     tokenPriceObject: {},
   },
   accountBalance: {},
+  nftSectionUiType: 'Collections',
 };
 
 // fetch tokenList on Dashboard
@@ -188,7 +190,6 @@ export const fetchNFTAsync = createAsyncThunk(
     if (!targetNFTCollection) return;
 
     const { skipCount, maxResultCount, totalRecordCount, children } = targetNFTCollection;
-
     // has cache data
     if ((pageNum + 1) * maxResultCount <= children.length) return;
 
@@ -375,6 +376,10 @@ export const assetsSlice = createSlice({
       const assetsInfoV2 = state.accountAssetsV2.accountAssetsInfo;
       if (assetsInfoV2?.[action.payload]) delete assetsInfoV2[action.payload];
       state.accountAssetsV2.accountAssetsInfo = assetsInfoV2;
+    },
+    changeNftSectionUiType: (state, action: PayloadAction<'Collections' | 'NFTs'>) => {
+      const payload = action.payload;
+      state.nftSectionUiType = payload;
     },
   },
   extraReducers: builder => {
@@ -618,6 +623,7 @@ export const {
   clearAccountNftCollectionInfo,
   clearAccountAssetsInfo,
   clearAccountTokenInfo,
+  changeNftSectionUiType,
 } = assetsSlice.actions;
 
 export default assetsSlice;

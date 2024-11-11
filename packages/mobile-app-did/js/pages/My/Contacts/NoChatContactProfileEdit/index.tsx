@@ -13,29 +13,24 @@ import GStyles from 'assets/theme/GStyles';
 import { INIT_NONE_ERROR, ErrorType, INIT_HAS_ERROR } from '@portkey-wallet/constants/constants-ca/common';
 import ChainOverlay from 'pages/My/Contacts/ContactChainOverlay';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import {
-  useAddContact,
-  useCheckContactName,
-  useDeleteContact,
-  useEditContact,
-} from '@portkey-wallet/hooks/hooks-ca/contactNew';
+import { useAddContact, useDeleteContact, useEditContact } from '@portkey-wallet/hooks/hooks-ca/contactNew';
 import { useNetworkList } from '@portkey-wallet/hooks/hooks-ca/contactNew';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
-import { defaultColors } from 'assets/theme';
 import { useInputFocus } from 'hooks/useInputFocus';
 import { makeStyles, useTheme } from '@rneui/themed';
+import { getStringAsync } from 'expo-clipboard';
 import {
   IAddContactItemApiType,
   IContactItemType,
   IEditContactItemApiType,
-  // INetworkItemType,
 } from '@portkey-wallet/types/types-ca/contactNew';
-import { TextL } from 'components/CommonText';
+import { TextL, TextM } from 'components/CommonText';
 import { AELF_NETWORK_NAME } from 'constants/common';
 import Loading from 'components/Loading';
 import CommonToast from 'components/CommonToast';
 import Touchable from 'components/Touchable';
 import { KeyboardSafeArea } from 'components/KeyboardSafeArea';
+import navigationService from 'utils/navigationService';
 
 type RouterParams = {
   contact?: IContactItemType;
@@ -71,7 +66,6 @@ const ContactEdit: React.FC = () => {
   const pageStyles = getPageStyles();
 
   const addContactApi = useAddContact();
-  const checkContactName = useCheckContactName();
   const [formError, setFormError] = useState<IFormErrorType>(initFormError);
   const editContactApi = useEditContact();
   const deleteContactApi = useDeleteContact();
@@ -146,6 +140,8 @@ const ContactEdit: React.FC = () => {
             try {
               Loading.show();
               await deleteContactApi({ id: editContact.id ?? '' });
+              CommonToast.success(t('Contact Deleted'), undefined, 'bottom');
+              navigationService.navigate('ContactsHome');
             } catch (error) {
               CommonToast.failError(error);
             } finally {
@@ -155,7 +151,7 @@ const ContactEdit: React.FC = () => {
         },
       ],
     });
-  }, [deleteContactApi, editContact.id]);
+  }, [deleteContactApi, editContact.id, t]);
   const checkError = useCallback(async () => {
     const _nameValue = editContact.name.trim();
 
@@ -177,22 +173,7 @@ const ContactEdit: React.FC = () => {
       }
       return INIT_NONE_ERROR;
     };
-    const checkNameExist = async (value: string) => {
-      const checkContactNameExist = await checkContactName(value);
-      if (checkContactNameExist.existed) {
-        return {
-          ...INIT_HAS_ERROR,
-          errorMsg: t('This name already exists.'),
-        };
-      }
-      return INIT_NONE_ERROR;
-    };
-    const errorNameList = await Promise.all([
-      checkRequired(_nameValue),
-      checkRegex(_nameValue),
-      checkNameExist(_nameValue),
-    ]);
-    console.log('errorNameList', errorNameList);
+    const errorNameList = await Promise.all([checkRequired(_nameValue), checkRegex(_nameValue)]);
     const errorName = errorNameList.find(item => item.isError);
     if (errorName) {
       setFormError(preFormError => ({
@@ -214,7 +195,7 @@ const ContactEdit: React.FC = () => {
     //   }
 
     return errorName;
-  }, [checkContactName, editContact.name, t]);
+  }, [editContact.name, t]);
   const onFinish = useCallback(async () => {
     try {
       Loading.show();
@@ -244,12 +225,21 @@ const ContactEdit: React.FC = () => {
         console.log('newConaddContactResponsetact', addContactResponse);
       }
       CommonToast.success('Saved Successful');
+      navigationService.navigate('ContactsHome');
     } catch (err: any) {
       CommonToast.failError(err);
     } finally {
       Loading.hide();
     }
   }, [addContactApi, checkError, editContact, editContactApi]);
+  const pasteAddress = useCallback(async () => {
+    try {
+      const str = await getStringAsync();
+      handleAddressChange(str);
+    } catch (error) {
+      console.log('pasteAddress', error);
+    }
+  }, [handleAddressChange]);
 
   return (
     <PageContainer
@@ -363,6 +353,12 @@ const ContactEdit: React.FC = () => {
             // eslint-disable-next-line react-native/no-inline-styles
             style={pageStyles.addressInput}
           />
+          <View style={[GStyles.flexRow, GStyles.paddingArg(pTd(8), pTd(0))]}>
+            <TextM>Enter or </TextM>
+            <TextM style={pageStyles.pasteAddressText} onPress={pasteAddress}>
+              paste a wallet address
+            </TextM>
+          </View>
         </View>
       </KeyboardAwareScrollView>
       <KeyboardSafeArea>
@@ -378,28 +374,13 @@ const ContactEdit: React.FC = () => {
 
 export default ContactEdit;
 
-const { error1, font5, font4 } = defaultColors;
-
 export const getPageStyles = makeStyles(theme => ({
   pageWrap: {
     flex: 1,
     ...GStyles.paddingArg(24, 16, 20),
   },
-  addAddressBtn: {
-    alignSelf: 'center',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: pTd(110),
-  },
-  inputStyle: {
-    color: font5,
-  },
   errorStyle: {
     borderColor: theme.colors.borderDanger1,
-  },
-  inputStyle1: {
-    backgroundColor: 'red',
   },
   inputLabelStyle: {
     fontSize: pTd(16),
@@ -449,18 +430,14 @@ export const getPageStyles = makeStyles(theme => ({
   exchangeItemActive: {
     color: theme.colors.textBrand4,
   },
-  deleteTitle: {
-    color: error1,
-  },
-  addAddressText: {
-    color: font4,
-    marginLeft: pTd(8),
-  },
   btnContainer: {
     paddingTop: pTd(16),
   },
-  deleteBtnStyle: {
-    marginTop: pTd(8),
+  pasteAddressText: {
+    color: theme.colors.textBrand2,
   },
-  networkImage: {},
+  networkImage: {
+    width: pTd(16),
+    height: pTd(16),
+  },
 }));

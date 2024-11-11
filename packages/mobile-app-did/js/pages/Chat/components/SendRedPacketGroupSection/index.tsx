@@ -30,6 +30,7 @@ import { AssetType } from '@portkey-wallet/constants/constants-ca/assets';
 import { ICryptoBoxAssetItemType } from '@portkey-wallet/types/types-ca/crypto';
 import NFTAvatar from 'components/NFTAvatar';
 import NewUserOnly from 'pages/CryptoGift/components/NewUserOnly';
+import { makeStyles } from '@rneui/themed';
 
 export type TInputValue = {
   packetNum?: string;
@@ -56,6 +57,7 @@ const AMOUNT_LABEL_MAP = {
 };
 
 export default function SendRedPacketGroupSection(props: SendRedPacketGroupSectionPropsType) {
+  const styles = getStyles();
   const { type, groupMemberCount, isCryptoGift, onPressButton } = props;
   const { getTokenInfo } = useGetRedPackageConfig();
   const [tokenPriceObject] = useGetCurrentAccountTokenPrice();
@@ -251,10 +253,10 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
   return (
     <>
       {type !== RedPackageTypeEnum.P2P && (
-        <FormItem title={isCryptoGift ? 'Quantity of Crypto Gift(s)' : 'Quantity of Crypto Box(es)'}>
+        <FormItem title="Number of gifts">
           <CommonInput
             type="general"
-            placeholder="Enter quantity"
+            placeholder="Enter number of gifts"
             keyboardType="decimal-pad"
             value={values.packetNum}
             onChangeText={onPacketNumChange}
@@ -263,7 +265,6 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
             errorMessage={packetNumTips}
             errorStyle={!isGTMax && { ...FontStyles.font7, marginTop: pTd(4) }}
             inputStyle={isGTMax && FontStyles.error}
-            containerStyle={styles.packetQuantityWrap}
           />
         </FormItem>
       )}
@@ -378,24 +379,20 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = makeStyles(theme => ({
   formContainer: {
     height: '100%',
     justifyContent: 'space-between',
   },
   inputWrap: {
-    backgroundColor: defaultColors.bg1,
-    borderColor: defaultColors.neutralBorder,
+    backgroundColor: theme.colors.bgBase1,
+    borderColor: theme.colors.textBase3,
     borderWidth: 0.5,
     borderBottomWidth: 0.5,
-    height: pTd(52),
+    height: pTd(40),
   },
   inputContainerStyle: {
-    height: pTd(64),
-  },
-  packetQuantityWrap: {
-    marginBottom: pTd(16),
-    height: pTd(68),
+    height: pTd(40),
   },
   packetNumWrap: {
     marginBottom: pTd(16),
@@ -449,4 +446,4 @@ const styles = StyleSheet.create({
     marginLeft: pTd(8),
     maxWidth: pTd(250),
   },
-});
+}));

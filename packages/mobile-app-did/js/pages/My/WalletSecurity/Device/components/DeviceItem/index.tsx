@@ -1,5 +1,5 @@
-import React, { memo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import React, { memo, useCallback, useEffect, useState } from 'react';
+import { StyleSheet, View, Text } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import { TextL, TextM, TextS } from 'components/CommonText';
 import Touchable from 'components/Touchable';
@@ -8,6 +8,9 @@ import { FontStyles } from 'assets/theme/styles';
 import { DeviceItemType, DeviceType } from '@portkey-wallet/types/types-ca/device';
 import Svg, { IconName } from 'components/Svg';
 import { formatTransferTime } from '@portkey-wallet/utils/time';
+import { makeStyles, useTheme } from '@rneui/themed';
+// import CheckBox from 'rn-teaset/components/Checkbox/Checkbox';
+import CheckBox from 'components/CheckBox';
 
 const deviceTypeIconMap: Record<DeviceType, IconName> = {
   [DeviceType.IOS]: 'phone-iOS',
@@ -21,36 +24,42 @@ interface DeviceItemProps {
   onPress?: (e: any) => void;
   isCurrent?: boolean;
   deviceItem: DeviceItemType;
-  isShowArrow?: boolean;
+  isShowCheckBox: boolean;
 }
 
-const DeviceItemRender = ({ onPress, isCurrent, deviceItem, isShowArrow = true }: DeviceItemProps) => {
+const DeviceItemRender = ({ onPress, isCurrent, deviceItem, isShowCheckBox }: DeviceItemProps) => {
+  const styles = getStyles();
+  const { theme } = useTheme();
+  const [isChecked, setIsChecked] = useState(false);
+  const onClickCheckBox = useCallback(() => {
+    onPress && onPress(!isChecked);
+    setIsChecked(!isChecked);
+  }, [onPress, isChecked, setIsChecked]);
+  useEffect(() => {
+    if (!isShowCheckBox) {
+      setIsChecked(false);
+    }
+  }, [isShowCheckBox]);
   return (
-    <Touchable onPress={onPress}>
+    <Touchable onPress={onClickCheckBox} disabled={!isShowCheckBox}>
       <View style={styles.deviceItemWrap}>
-        <View style={styles.leftWrap}>
-          <Svg
-            icon={deviceTypeIconMap[deviceItem.deviceInfo.deviceType || DeviceType.OTHER]}
-            size={pTd(16)}
-            color={defaultColors.icon1}
-          />
-        </View>
-
         <View style={styles.deviceItemInfoWrap}>
           <View style={styles.deviceItemInfo}>
             <TextL>{deviceItem.deviceInfo.deviceName}</TextL>
             {isCurrent && (
               <View style={styles.currentWrap}>
-                <TextS style={FontStyles.font3}>Current</TextS>
+                <TextS style={styles.currentWrap}>Current</TextS>
               </View>
             )}
           </View>
-          <TextM style={FontStyles.font7}>
+          <TextM style={[FontStyles.font7, { color: theme.colors.textBase2 }]}>
             {deviceItem.transactionTime ? formatTransferTime(deviceItem.transactionTime) : ''}
           </TextM>
         </View>
 
-        {isShowArrow && <Svg icon={'right-arrow'} size={pTd(20)} color={defaultColors.icon1} />}
+        {isShowCheckBox && (
+          <CheckBox checked={isChecked} onChange={() => onClickCheckBox()} boxStyle={styles.checkBox} />
+        )}
       </View>
     </Touchable>
   );
@@ -59,20 +68,13 @@ const DeviceItem = memo(DeviceItemRender);
 
 export default DeviceItem;
 
-const styles = StyleSheet.create({
+const getStyles = makeStyles(theme => ({
   deviceItemWrap: {
-    height: pTd(72),
-    paddingHorizontal: pTd(16),
-    marginBottom: pTd(24),
-    backgroundColor: defaultColors.bg1,
+    height: pTd(78),
+    backgroundColor: theme.colors.bgBase1,
     borderRadius: pTd(6),
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  leftWrap: {
-    marginRight: pTd(12),
-    paddingTop: pTd(17),
-    height: '100%',
   },
   deviceItemInfoWrap: {
     flex: 1,
@@ -84,13 +86,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  checkboxTitle: {},
   currentWrap: {
-    marginLeft: pTd(12),
     height: pTd(20),
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: defaultColors.border6,
-    borderRadius: pTd(10),
-    paddingHorizontal: pTd(9),
+    color: theme.colors.textSuccess5,
+    backgroundColor: theme.colors.bgSuccess2,
+    paddingHorizontal: pTd(4),
     justifyContent: 'center',
   },
-});
+  checkBox: {
+    backgroundColor: theme.colors.bgBase1,
+  },
+}));

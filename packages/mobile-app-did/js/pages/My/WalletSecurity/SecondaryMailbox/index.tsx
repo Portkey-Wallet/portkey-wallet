@@ -1,9 +1,8 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import PageContainer from 'components/PageContainer';
-import { StyleSheet, View } from 'react-native';
-import { defaultColors } from 'assets/theme';
+import { View } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
-
+import { makeStyles, useTheme } from '@rneui/themed';
 import CommonButton from 'components/CommonButton';
 import navigationService from 'utils/navigationService';
 import { TextM, TextL } from 'components/CommonText';
@@ -11,38 +10,39 @@ import { FontStyles } from 'assets/theme/styles';
 import { pTd } from 'utils/unit';
 import fonts from 'assets/theme/fonts';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
+import Svg from 'components/Svg';
 interface RouterParams {
   secondaryEmail?: string;
 }
 
 const SecondaryMailboxHome: React.FC = () => {
   const { secondaryEmail } = useRouterParams<RouterParams>();
+  const pageStyles = getStyles();
+  const { theme } = useTheme();
+
   return (
     <PageContainer
       titleDom={'Details'}
-      safeAreaColor={['white', 'gray']}
+      safeAreaColor={['black']}
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}>
       <View>
-        <TextM style={[FontStyles.secondaryTextColor, GStyles.marginBottom(pTd(8))]}>Backup Mailbox</TextM>
+        <TextM style={[{ color: theme.colors.textBase1 }, GStyles.marginBottom(pTd(8))]}>Backup Mailbox</TextM>
         <View style={pageStyles.labelWrap}>
-          <TextL
-            style={[
-              secondaryEmail ? FontStyles.neutralPrimaryTextColor : FontStyles.neutralDisableText,
-              fonts.mediumFont,
-            ]}>
-            {secondaryEmail || `Not Set up`}
-          </TextL>
+          <Svg icon="guardian-email" size={pTd(40)} iconStyle={{ marginRight: pTd(8) }} />
+          <TextL style={[{ color: theme.colors.textBase1 }]}>{secondaryEmail}</TextL>
         </View>
-        <TextM style={FontStyles.neutralTertiaryText}>
-          {`Before authorising, signing transactions, or performing similar operations, notifications will be sent to the mailbox associated with your guardian.
-\n\nIf your guardian cannot receive emails, they will be sent to the backup mailbox you have set up.`}
-        </TextM>
+        <View style={pageStyles.fromExchangeTipWrap}>
+          <Svg icon="warning" size={pTd(22)} color={theme.colors.textBrand3} />
+          <TextL
+            style={
+              pageStyles.fromExchangeTipText
+            }>{`Notifications for authorizing or signing transactions will be sent to your guardian's email. If unavailable, they'll go to your backup email.`}</TextL>
+        </View>
       </View>
       <CommonButton
         type="primary"
         onPress={() => {
-          console.log('click edit!');
           navigationService.navigate('SecondaryMailboxEdit', {
             mail: secondaryEmail,
           });
@@ -53,22 +53,38 @@ const SecondaryMailboxHome: React.FC = () => {
   );
 };
 
-const pageStyles = StyleSheet.create({
+const getStyles = makeStyles(theme => ({
   pageWrap: {
     flex: 1,
-    backgroundColor: defaultColors.bg4,
+    backgroundColor: theme.colors.bgBase1,
     justifyContent: 'space-between',
-    ...GStyles.paddingArg(24, 20, 18),
+    ...GStyles.paddingArg(16),
   },
   labelWrap: {
     flexDirection: 'row',
     paddingHorizontal: pTd(16),
-    backgroundColor: defaultColors.bg1,
+    backgroundColor: theme.colors.bgBase2,
+    color: theme.colors.textBase1,
     marginBottom: pTd(24),
     height: pTd(56),
     alignItems: 'center',
     borderRadius: pTd(6),
   },
-});
+  fromExchangeTipWrap: {
+    backgroundColor: theme.colors.bgBase1,
+    borderWidth: pTd(1),
+    borderColor: theme.colors.textBase3,
+    borderRadius: pTd(16),
+    padding: pTd(16),
+    flexDirection: 'row',
+  },
+  fromExchangeTipText: {
+    flex: 1,
+    marginLeft: pTd(12),
+    color: theme.colors.textBase2,
+    lineHeight: pTd(20),
+    fontSize: pTd(14),
+  },
+}));
 
 export default SecondaryMailboxHome;

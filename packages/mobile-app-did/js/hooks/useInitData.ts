@@ -21,6 +21,7 @@ import { codePushOperator } from 'utils/update';
 import { useGetCryptoGiftConfig } from '@portkey-wallet/hooks/hooks-ca/cryptogift';
 import * as Application from 'expo-application';
 import { fetchContactListAsync, fetchContactListV2Async } from '@portkey-wallet/store/store-ca/contact/actions';
+import { useContactNetworkConfig, useTransferNetworkConfig } from '@portkey-wallet/hooks/hooks-ca/config';
 
 export default function useInitData() {
   const dispatch = useAppDispatch();
@@ -31,6 +32,9 @@ export default function useInitData() {
 
   useCheckAndInitNetworkDiscoverMap();
   useGetRedPackageConfig(true, true);
+
+  const { fetchContactSupportConfig } = useContactNetworkConfig();
+  const { fetchAssetSupportConfig } = useTransferNetworkConfig();
 
   const { refresh: loadBookmarkList } = useBookmarkList();
   const initIM = useInitIM();
@@ -61,6 +65,9 @@ export default function useInitData() {
       dispatch(getCaHolderInfoAsync());
       dispatch(getSymbolImagesAsync());
       dispatch(fetchContactListV2Async());
+
+      fetchContactSupportConfig();
+      fetchAssetSupportConfig();
 
       initGuardianList();
 

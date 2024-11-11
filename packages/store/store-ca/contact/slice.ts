@@ -55,7 +55,6 @@ export const initialState: ContactState = {
   lastModifiedNew: 0,
   contactIndexListNew: getInitContactIndexListV2(),
   contactMapNew: {},
-  contactRelationIdMapNew: {},
   contactIdMapNew: {},
 };
 

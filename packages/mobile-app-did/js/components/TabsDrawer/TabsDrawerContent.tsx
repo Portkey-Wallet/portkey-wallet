@@ -6,7 +6,7 @@ import React, { useCallback, useMemo, useRef, useState, Fragment, forwardRef, us
 import { StyleSheet, ScrollView, View } from 'react-native';
 import { useAppCASelector } from '@portkey-wallet/hooks/hooks-ca/index';
 import { pTd } from 'utils/unit';
-import { defaultColors } from 'assets/theme';
+import { darkColors, defaultColors } from 'assets/theme';
 import { useLanguage } from 'i18n/hooks';
 import { FontStyles } from 'assets/theme/styles';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
@@ -314,16 +314,18 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
         </ScrollView>
         <View style={handleButtonStyle.container}>
           <Touchable style={handleButtonStyle.handleItem} onPress={closeAll}>
-            <TextM style={[FontStyles.font4, tabs?.length === 0 && handleButtonStyle.noTap]}>{t('Close All')}</TextM>
+            <TextM style={[FontStyles.fontBase1, tabs?.length === 0 && handleButtonStyle.noTap]}>
+              {t('Close All')}
+            </TextM>
           </Touchable>
 
           <Touchable
             style={[handleButtonStyle.handleItem, handleButtonStyle.add]}
             onPress={() => dispatch(changeDrawerOpenStatus(false))}>
-            <Svg icon="add" size={pTd(28)} color={defaultColors.primaryColor} />
+            <Svg icon="add-tab" size={pTd(28)} color={defaultColors.iconBrand1} />
           </Touchable>
           <Touchable style={handleButtonStyle.handleItem} onPress={onDone}>
-            <TextM style={[handleButtonStyle.done, FontStyles.font4]}>{t('Done')}</TextM>
+            <TextM style={[handleButtonStyle.done, FontStyles.fontBase1]}>{t('Done')}</TextM>
           </Touchable>
         </View>
       </>
@@ -359,7 +361,7 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
         }
         rightDom={rightDom}
         notHandleHardwareBackPress
-        safeAreaColor={['white', 'white']}
+        safeAreaColor={['black', 'black']}
         containerStyles={styles.container}
         scrollViewProps={{ disabled: true }}
         titleDom={activeTabId ? '' : `${tabs?.length} Tabs`}>
@@ -377,7 +379,7 @@ const styles = StyleSheet.create({
     paddingLeft: 0,
     paddingRight: 0,
     flex: 1,
-    backgroundColor: defaultColors.bg6,
+    backgroundColor: darkColors.bgBase1,
   },
   inputContainer: {
     ...GStyles.paddingArg(8, 20),
@@ -417,8 +419,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     flexWrap: 'wrap',
-    paddingLeft: pTd(20),
-    paddingRight: pTd(20),
+    paddingLeft: pTd(16),
+    paddingRight: pTd(16),
     paddingBottom: pTd(50),
   },
   switchButton: {
@@ -443,7 +445,7 @@ const handleButtonStyle = StyleSheet.create({
     height: pTd(44),
     position: 'absolute',
     bottom: 0,
-    backgroundColor: defaultColors.bg1,
+    backgroundColor: darkColors.bgBase1,
   },
   handleItem: {
     flex: 1,

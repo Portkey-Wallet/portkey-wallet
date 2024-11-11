@@ -2,20 +2,26 @@ import React from 'react';
 import { screenHeight, screenWidth } from '@portkey-wallet/utils/mobile/device';
 import OverlayModal, { CustomBounds } from 'components/OverlayModal';
 import Touchable from 'components/Touchable';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, StyleProp, ViewStyle, TextStyle } from 'react-native';
 import Svg, { IconName } from 'components/Svg';
 import { pTd } from 'utils/unit';
-import { defaultColors } from 'assets/theme';
+import { darkColors, defaultColors } from 'assets/theme';
 import { TextL } from 'components/CommonText';
 
 const vertical = 20;
 const horizontal = 20;
 const itemHeight = pTd(48);
-const BoxWidth = 100;
+const BoxWidth = 200;
 const horizontalSpacing = 120;
 const verticalSpacing = 300;
 
-export type ListItemType = { onPress?: () => void; title: string; iconName?: IconName; iconColor?: string };
+export type ListItemType = {
+  onPress?: () => void;
+  title: string;
+  iconName?: IconName;
+  iconColor?: string;
+  active?: boolean;
+};
 
 export type ShowChatPopoverParams = {
   list: ListItemType[];
@@ -25,6 +31,8 @@ export type ShowChatPopoverParams = {
   customPosition?: { left?: number; right?: number; top?: number; bottom?: number };
   customBounds?: CustomBounds;
   formatType?: 'fixedWidth' | 'dynamicWidth';
+  contentStyle?: StyleProp<TextStyle>;
+  containerStyle?: StyleProp<ViewStyle>;
   onMaskClose?: () => void;
 };
 
@@ -61,11 +69,15 @@ function FloatPopover({
   list,
   customPosition,
   formatType,
+  containerStyle,
+  contentStyle,
   onMaskClose,
 }: {
   formatType: ShowChatPopoverParams['formatType'];
   list: ListItemType[];
   customPosition: ShowChatPopoverParams['customPosition'];
+  containerStyle?: StyleProp<ViewStyle>;
+  contentStyle?: StyleProp<TextStyle>;
   onMaskClose?: () => void;
 }) {
   return (
@@ -76,7 +88,7 @@ function FloatPopover({
         return OverlayModal.hide();
       }}
       style={styles.backgroundBox}>
-      <View style={[styles.container, { ...customPosition }]}>
+      <View style={[styles.container, { ...customPosition }, containerStyle]}>
         {list.map((item, index) => {
           return (
             <Touchable
@@ -86,13 +98,19 @@ function FloatPopover({
                 item.onPress?.();
                 OverlayModal.hide();
               }}
-              style={[formatType === 'fixedWidth' ? styles.itemStyles : styles.dynamicWidthItemStyles]}>
-              {item.iconName && (
-                <Svg size={pTd(20)} icon={item.iconName} color={item.iconColor || defaultColors.icon1} />
+              style={[formatType === 'fixedWidth' ? styles.itemStyles : styles.dynamicWidthItemStyles, contentStyle]}>
+              <View style={styles.itemContent}>
+                {item.iconName && (
+                  <Svg size={pTd(20)} icon={item.iconName} color={item.iconColor || darkColors.textBase1} />
+                )}
+                <TextL
+                  style={[styles.textStyles, contentStyle, item.iconName ? styles.leftMargin12 : styles.leftMargin0]}>
+                  {item.title}
+                </TextL>
+              </View>
+              {item.active && (
+                <Svg size={pTd(20)} icon="check-circle" color={item.iconColor || darkColors.textBrand2} />
               )}
-              <TextL style={[styles.textStyles, item.iconName ? styles.leftMargin12 : styles.leftMargin0]}>
-                {item.title}
-              </TextL>
             </Touchable>
           );
         })}
@@ -110,6 +128,8 @@ export function showFloatPopover({
   customBounds,
   formatType = 'fixedWidth',
   onMaskClose,
+  contentStyle,
+  containerStyle,
 }: ShowChatPopoverParams) {
   if (!customPosition) {
     customPosition =
@@ -118,7 +138,14 @@ export function showFloatPopover({
         : formatPositionByDynamicWidth(px || 0, py || 0, list.length);
   }
   OverlayModal.show(
-    <FloatPopover list={list} customPosition={customPosition} formatType={formatType} onMaskClose={onMaskClose} />,
+    <FloatPopover
+      list={list}
+      customPosition={customPosition}
+      formatType={formatType}
+      containerStyle={containerStyle}
+      contentStyle={contentStyle}
+      onMaskClose={onMaskClose}
+    />,
     {
       customBounds: customBounds || {
         x: px || customPosition.left || 0,
@@ -127,7 +154,6 @@ export function showFloatPopover({
         height: 0,
       },
       overlayOpacity: 0,
-      containerStyle: {},
       style: { backgroundColor: 'transparent' },
       animated: true,
     },
@@ -159,12 +185,13 @@ const styles = StyleSheet.create({
     zIndex: 100,
     minWidth: pTd(112),
     shadowOffset: { width: 2, height: 5 },
-    backgroundColor: defaultColors.bg1,
+    backgroundColor: darkColors.bgBase1,
     shadowColor: defaultColors.shadow1,
     shadowOpacity: 0.15,
     shadowRadius: 10,
     elevation: 2,
   },
+  itemContent: { flex: 1, flexDirection: 'row', alignItems: 'center' },
   textStyles: {
     marginLeft: pTd(12),
     color: defaultColors.font5,

@@ -1,7 +1,7 @@
 import { useGetS3ImageUrl } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { useDiscoverData } from '@portkey-wallet/hooks/hooks-ca/cms/discover';
 import { TBaseCardItemType } from '@portkey-wallet/types/types-ca/cms';
-import { defaultColors } from 'assets/theme';
+import { darkColors, defaultColors } from 'assets/theme';
 import fonts from 'assets/theme/fonts';
 import CommonButton from 'components/CommonButton';
 import { TextL, TextS } from 'components/CommonText';
@@ -50,7 +50,7 @@ const EarnItem = (item: TBaseCardItemType) => {
         <Image style={styles.bigImage} source={{ uri: imageUrl }} />
       </TouchableOpacity>
       <View style={styles.infoWrap}>
-        <View style={styles.infoLine}>
+        <View style={styles.infoCol}>
           <View style={styles.textLines}>
             <TextL style={[styles.title, fonts.mediumFont]} numberOfLines={1} ellipsizeMode="tail">
               {title}
@@ -60,8 +60,8 @@ const EarnItem = (item: TBaseCardItemType) => {
             </TextS>
           </View>
           <CommonButton
-            type="primary"
-            radius={pTd(4)}
+            type="outline"
+            radius={pTd(24)}
             buttonStyle={styles.btn}
             titleStyle={[styles.btnTitle, fonts.mediumFont]}
             title={buttonTitle || 'Earn Now'}
@@ -79,15 +79,15 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    backgroundColor: defaultColors.white,
+    backgroundColor: darkColors.bgBase1,
   },
   item: {
     flexDirection: 'column',
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     borderRadius: pTd(12),
     borderWidth: pTd(1),
-    borderColor: defaultColors.bg32,
+    borderColor: darkColors.borderBase1,
     marginTop: pTd(16),
     overflow: 'hidden',
   },
@@ -98,9 +98,13 @@ const styles = StyleSheet.create({
   infoWrap: {
     flexDirection: 'row',
     justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: pTd(12),
+    alignItems: 'flex-start',
+    paddingHorizontal: pTd(16),
     paddingVertical: pTd(16),
+  },
+  infoCol: {
+    flexDirection: 'column',
+    alignItems: 'flex-start',
   },
   infoLine: {
     flex: 1,
@@ -115,19 +119,20 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   title: {
-    color: defaultColors.font5,
+    color: darkColors.textBase1,
     lineHeight: pTd(24),
     textAlign: 'left',
   },
   description: {
-    color: defaultColors.font11,
+    marginTop: pTd(8),
+    color: darkColors.textBase2,
     lineHeight: pTd(16),
     textAlign: 'left',
   },
   btn: {
-    marginLeft: pTd(8),
-    paddingHorizontal: pTd(16),
-    height: pTd(34),
+    marginTop: pTd(16),
+    paddingHorizontal: pTd(24),
+    height: pTd(48),
   },
   btnTitle: {
     fontSize: pTd(12),

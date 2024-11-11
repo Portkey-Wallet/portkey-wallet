@@ -16,3 +16,12 @@ export async function measurePageY(target: GestureResponderEvent['target']) {
     return 0;
   }
 }
+
+export async function measurePageX(target: GestureResponderEvent['target']) {
+  try {
+    const { pageX } = await measureLocation(target);
+    return pageX || 0;
+  } catch (error) {
+    return 0;
+  }
+}

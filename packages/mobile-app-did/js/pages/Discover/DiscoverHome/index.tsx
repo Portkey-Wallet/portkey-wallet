@@ -3,7 +3,7 @@ import { View, StyleSheet, GestureResponderEvent } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
 import navigationService from 'utils/navigationService';
 import SimulatedInputBox from 'components/SimulatedInputBox';
-import { defaultColors } from 'assets/theme';
+import { darkColors, defaultColors } from 'assets/theme';
 import SafeAreaBox from 'components/SafeAreaBox';
 import { BGStyles } from 'assets/theme/styles';
 import { useQrScanPermissionAndToast } from 'hooks/useQrScan';
@@ -91,7 +91,7 @@ export default function DiscoverHome() {
   });
 
   return (
-    <SafeAreaBox edges={['top', 'right', 'left']} style={BGStyles.white}>
+    <SafeAreaBox edges={['top', 'right', 'left']} style={BGStyles.bgBase1}>
       <View style={styles.functionalLine}>
         <SimulatedInputBox onClickInput={() => navigationService.navigate('DiscoverSearch')} rightDom={scanQRIcon} />
         {showAllTabsIcon}
@@ -122,7 +122,7 @@ function TouchableIcon({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: defaultColors.white,
+    backgroundColor: darkColors.bgBase1,
     flex: 1,
   },
   functionalLine: {

@@ -1,6 +1,7 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import GStyles from 'assets/theme/GStyles';
 import { StyleSheet, View } from 'react-native';
+import { useCurrencyBalancesV2 } from 'hooks/awaken';
 import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
 import FormItem from 'components/FormItem';
@@ -17,7 +18,7 @@ import { RedPackageTypeEnum } from '@portkey-wallet/im';
 import { INIT_NONE_ERROR, ErrorType } from '@portkey-wallet/constants/constants-ca/common';
 import { useGetRedPackageConfig } from '@portkey-wallet/hooks/hooks-ca/im';
 import { ZERO } from '@portkey-wallet/constants/misc';
-import { convertAmountUSDShow, divDecimalsStr, timesDecimals } from '@portkey-wallet/utils/converter';
+import { convertAmountUSDShow, divDecimals, divDecimalsStr, timesDecimals } from '@portkey-wallet/utils/converter';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import { RED_PACKAGE_DEFAULT_MEMO } from '@portkey-wallet/constants/constants-ca/im';
 import { FontStyles } from 'assets/theme/styles';
@@ -31,6 +32,16 @@ import { ICryptoBoxAssetItemType } from '@portkey-wallet/types/types-ca/crypto';
 import NFTAvatar from 'components/NFTAvatar';
 import NewUserOnly from 'pages/CryptoGift/components/NewUserOnly';
 import { makeStyles } from '@rneui/themed';
+import AmountCard from 'components/AmountCard';
+import { TCurrency } from '@portkey-wallet/types/types-ca/awaken';
+import { networkList } from 'constants/common';
+import { SourceDestinationItem } from 'pages/Receive/components/SourceDestinationPicker';
+import ModeChangeSelector from 'pages/DashBoard/componets/ModeChangeSelector';
+import { useCurrentNetwork as useCurrentNetworkType } from '@portkey-wallet/hooks/hooks-ca/network';
+import { IAccountCryptoBoxAssetItem } from '@portkey-wallet/types/types-ca/token';
+import { useAccountCryptoBoxAssetList } from '@portkey-wallet/hooks/hooks-ca/balances';
+import { merge } from 'lodash';
+import { useUpdateAssetInfo } from '../../../../hooks/useGetSymbolBalance';
 
 export type TInputValue = {
   packetNum?: string;
@@ -58,29 +69,67 @@ const AMOUNT_LABEL_MAP = {
 
 export default function SendRedPacketGroupSection(props: SendRedPacketGroupSectionPropsType) {
   const styles = getStyles();
+  // chain
+  const [destinationChain, setDestinationChain] = useState(networkList[0]);
+  const currentNetworkType = useCurrentNetworkType();
+  const destinationChainId = useMemo(() => {
+    return destinationChain.key === 'aelf dAppChain' ? (currentNetworkType === 'MAINNET' ? 'tDVV' : 'tDVW') : 'AELF';
+  }, [destinationChain, currentNetworkType]);
   const { type, groupMemberCount, isCryptoGift, onPressButton } = props;
   const { getTokenInfo } = useGetRedPackageConfig();
   const [tokenPriceObject] = useGetCurrentAccountTokenPrice();
-
   const isNewUserOnly = useRef<boolean>(true);
-
   const defaultToken = useDefaultToken(MAIN_CHAIN_ID);
-
-  const [selectToken, setSelectToken] = useState<ICryptoBoxAssetItemType>({
+  const [selectToken, setSelectToken] = useState<
+    ICryptoBoxAssetItemType & {
+      chainImageUrl: string;
+    }
+  >({
     ...defaultToken,
     chainId: MAIN_CHAIN_ID,
     assetType: AssetType.ft,
+    chainImageUrl: destinationChain.imageUrl,
   });
+  useEffect(() => {
+    setSelectToken({ ...selectToken, chainImageUrl: destinationChain.imageUrl });
+  }, [destinationChain]);
+  // values
   const [values, setValues] = useState<TInputValue>({
     packetNum: '',
     count: '',
     memo: '',
   });
 
+  // balance
+  const accountAssetList = useAccountCryptoBoxAssetList();
+  const [assetMap] = useMemo(() => {
+    const currentSymbolList: IAccountCryptoBoxAssetItem[] = [];
+    const map: { [key: string]: IAccountCryptoBoxAssetItem } = accountAssetList.reduce((acc, item) => {
+      if (item?.symbol === selectToken?.symbol) {
+        currentSymbolList.push(item);
+        return merge(acc, { [item?.chainId]: item });
+      }
+      return acc;
+    }, {});
+    return [map];
+  }, [accountAssetList, selectToken?.symbol]);
+  const currentAssetInfo: IAccountCryptoBoxAssetItem | undefined = useMemo(() => {
+    if (assetMap?.[destinationChainId]) return assetMap?.[destinationChainId];
+    return accountAssetList.find(ele => ele.symbol === selectToken.symbol);
+  }, [accountAssetList, selectToken.symbol, assetMap, destinationChainId]);
+  const updateAssetInfo = useUpdateAssetInfo(destinationChainId, selectToken, currentAssetInfo);
+
+  // token price
   const tokenPrice = useMemo<string | number | undefined>(
     () => tokenPriceObject?.[selectToken.symbol],
     [tokenPriceObject, selectToken.symbol],
   );
+  const amountUsd = useMemo(() => {
+    return `$${ZERO.plus(values.count.trim() || 0)
+      .times(tokenPrice || 0)
+      .dp(2)
+      .toFixed()}`;
+  }, [values, tokenPrice]);
 
   const symbolImages = useSymbolImages();
   const onAmountChange = useCallback(
@@ -229,16 +278,16 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
     setValues(pre => ({ ...pre, memo: _value }));
   }, []);
 
-  const onTokenChange = useCallback((assetInfo: ICryptoBoxAssetItemType) => {
+  const onTokenChange = useCallback((token: ICryptoBoxAssetItemType) => {
     setSelectToken(pre => {
-      if (pre.symbol !== assetInfo.symbol || pre.chainId !== assetInfo.chainId) {
+      if (pre.symbol !== token.symbol || pre.chainId !== token.chainId) {
         setValues(preValue => ({
           ...preValue,
           count: '',
         }));
         setCountError({ ...INIT_NONE_ERROR });
       }
-      return assetInfo;
+      return token;
     });
   }, []);
 
@@ -249,6 +298,20 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
         : selectToken.label || selectToken.symbol,
     [selectToken.alias, selectToken.assetType, selectToken.label, selectToken.symbol, selectToken.tokenId],
   );
+
+  const showDestinationList = useCallback(() => {
+    ModeChangeSelector.showList({
+      list: networkList,
+      selectedIndex: destinationChain.key,
+      iconSize: 20,
+      isShowRightCloseIcon: true,
+      title: 'Network',
+      onSelected: (_item, key) => {
+        const currentSourceChain = networkList.find(item => item.key === key);
+        currentSourceChain && setDestinationChain(currentSourceChain);
+      },
+    });
+  }, [destinationChain]);
 
   return (
     <>
@@ -265,11 +328,18 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
             errorMessage={packetNumTips}
             errorStyle={!isGTMax && { ...FontStyles.font7, marginTop: pTd(4) }}
             inputStyle={isGTMax && FontStyles.error}
+            containerStyle={styles.packetQuantityWrap}
           />
         </FormItem>
       )}
       <FormItem title={amountLabel}>
-        <CommonInput
+        <SourceDestinationItem
+          icon={destinationChain.imageUrl}
+          chainName={destinationChain.name}
+          onPress={showDestinationList}
+          containerStyles={styles.selectContainerStyles}
+        />
+        {/* <CommonInput
           type="general"
           value={values.count}
           placeholder="Enter amount"
@@ -301,7 +371,7 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
                 <NFTAvatar disabled nftSize={pTd(24)} data={selectToken} style={styles.borderRadius4} />
               )}
 
-              <View style={[styles.assetInfoWrap, GStyles.flex1]}>
+              <View style={[styles.tokenWrap, GStyles.flex1]}>
                 <TextM numberOfLines={1} style={GStyles.flex1}>
                   {assetName}
                 </TextM>
@@ -317,11 +387,22 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
           keyboardType="decimal-pad"
           onChangeText={onAmountChange}
           errorStyle={!countError.isError && FontStyles.font7}
-          errorMessage={countError.isError ? countError.errorMsg : tokenPriceStr}
+          // errorMessage={countError.isError ? countError.errorMsg : tokenPriceStr}
           containerStyle={(countError.isError || !!tokenPriceStr) && styles.amountTipsGap}
+        /> */}
+        <AmountCard
+          amount={values.count}
+          onAmountChange={onAmountChange}
+          balance={updateAssetInfo?.balance}
+          amountUsd={amountUsd}
+          showAmountUsd
+          token={selectToken as any}
+          onTokenChange={onTokenChange as any}
+          chain={destinationChainId}
+          isMaxShow={true}
         />
       </FormItem>
-      <FormItem title="Wishes">
+      <FormItem title="Wishes" style={{ marginTop: pTd(16) }}>
         <CommonInput
           type="general"
           value={values.memo}
@@ -394,6 +475,17 @@ const getStyles = makeStyles(theme => ({
   inputContainerStyle: {
     height: pTd(40),
   },
+  packetQuantityWrap: {
+    marginBottom: pTd(16),
+  },
+  selectContainerStyles: {
+    flex: 0,
+    borderWidth: pTd(1),
+    height: pTd(40),
+    borderColor: theme.colors.textBase3,
+    borderRadius: pTd(8),
+    marginBottom: pTd(16),
+  },
   packetNumWrap: {
     marginBottom: pTd(16),
     height: pTd(52),
@@ -402,13 +494,9 @@ const getStyles = makeStyles(theme => ({
     marginBottom: pTd(8),
   },
   unitWrap: {
-    width: pTd(156),
+    width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
-    borderLeftColor: defaultColors.border6,
-    borderLeftWidth: StyleSheet.hairlineWidth,
-    paddingLeft: pTd(12),
-    height: pTd(38),
   },
   unitIconStyle: {
     width: pTd(24),
@@ -433,7 +521,7 @@ const getStyles = makeStyles(theme => ({
   borderRadius4: {
     borderRadius: pTd(4),
   },
-  assetInfoWrap: {
+  tokenWrap: {
     marginLeft: pTd(8),
     display: 'flex',
     flexDirection: 'column',

@@ -13,7 +13,14 @@ const KeyList = [
   'updateContactPrivacy',
 ] as const;
 
-const KeyListV2 = ['createSaved', 'updateSaved', 'deleteSaved', 'checkSavedName', 'getSavedList'] as const;
+const KeyListV2 = [
+  'createSaved',
+  'updateSaved',
+  'deleteSaved',
+  'checkSavedName',
+  'getSavedList',
+  'getSupportNetworkList',
+] as const;
 
 const ApiObject: Record<typeof KeyList[number], BaseConfig> = {
   addContact: {
@@ -64,6 +71,10 @@ const ApiObjectV2: Record<typeof KeyListV2[number], BaseConfig> = {
   },
   getSavedList: {
     target: `${BASE_URL_V2}/read`,
+    config: { method: 'GET' },
+  },
+  getSupportNetworkList: {
+    target: `${BASE_URL_V2}/network`,
     config: { method: 'GET' },
   },
 };

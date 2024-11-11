@@ -32,10 +32,13 @@ import { useGetCryptoGiftConfig, useSendCryptoGift } from '@portkey-wallet/hooks
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { reportEnterSendCryptoGiftPage, reportSendCryptoGiftSuccess } from 'utils/analysisiReport';
 import { useEffectOnce } from '@portkey-wallet/hooks';
+import { makeStyles } from '@rneui/themed';
+import fonts from 'assets/theme/fonts';
 export interface ISendPacketGroupPageProps {
   isCryptoGift?: boolean;
 }
 export default function SendPacketGroupPage() {
+  const styles = getStyles();
   const { isCryptoGift } = useRouterParams<ISendPacketGroupPageProps>();
   const currentChannelId = useCurrentChannelId();
   const calculateRedPacketFee = useCalculateRedPacketFee();
@@ -245,9 +248,8 @@ export default function SendPacketGroupPage() {
 
   return (
     <PageContainer
-      titleDom={isCryptoGift ? 'Create Crypto Gift' : 'Send Crypto Box'}
+      titleDom={'Create Crypto Gift'}
       hideTouchable
-      safeAreaColor={['white', 'gray']}
       scrollViewProps={{ disabled: true }}
       containerStyles={styles.containerStyles}>
       <KeyboardAwareScrollView enableOnAndroid={true} contentContainerStyle={styles.scrollStyle}>
@@ -257,6 +259,8 @@ export default function SendPacketGroupPage() {
             onTabPress={onTabPress}
             selectTab={selectTab}
             tabHeaderStyle={styles.tabHeaderStyle}
+            tabWrapStyle={styles.tabWrapStyle}
+            selectTabTextStyle={styles.selectTabTextStyle}
           />
         </View>
         <View>{tabList.find(item => item.type === selectTab)?.component}</View>
@@ -270,11 +274,11 @@ export default function SendPacketGroupPage() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = makeStyles(theme => ({
   containerStyles: {
     position: 'relative',
     flex: 1,
-    backgroundColor: defaultColors.neutralDefaultBG,
+    backgroundColor: theme.colors.bgBase1,
     ...GStyles.paddingArg(0, 0),
   },
   scrollStyle: {
@@ -288,7 +292,17 @@ const styles = StyleSheet.create({
     marginBottom: isIOS ? 0 : pTd(16),
   },
   tabHeaderStyle: {
-    width: pTd(190),
+    width: '100%',
     marginBottom: pTd(24),
+    backgroundColor: theme.colors.bgBase1,
+    borderColor: theme.colors.textBase3,
+    borderWidth: pTd(1),
   },
-});
+  tabWrapStyle: {
+    backgroundColor: theme.colors.bgBase1,
+  },
+  selectTabTextStyle: {
+    color: theme.colors.textBase1,
+    ...fonts.regularFont,
+  },
+}));

@@ -78,18 +78,19 @@ export default function RampEntry() {
         refreshRampShow();
         return;
       }
-      if (type === RampType.SELL && !isSellSectionShow) {
-        ActionSheet.alert({
-          title2: (
-            <TextM style={[GStyles.textAlignCenter]}>
-              Off-ramp is currently not supported. It will be launched in the coming weeks.
-            </TextM>
-          ),
-          buttons: [{ title: 'OK' }],
-        });
-        refreshRampShow();
-        return;
-      }
+      // todo_wade
+      // if (type === RampType.SELL && !isSellSectionShow) {
+      //   ActionSheet.alert({
+      //     title2: (
+      //       <TextM style={[GStyles.textAlignCenter]}>
+      //         Off-ramp is currently not supported. It will be launched in the coming weeks.
+      //       </TextM>
+      //     ),
+      //     buttons: [{ title: 'OK' }],
+      //   });
+      //   refreshRampShow();
+      //   return;
+      // }
 
       if (type === RampType.SELL) {
         Loading.show();

@@ -1,7 +1,6 @@
 import React, { useMemo, useState, useRef, useCallback, useEffect } from 'react';
-import { View, Text, TextInput, LayoutChangeEvent } from 'react-native';
+import { View, Text, TextInput } from 'react-native';
 import { makeStyles } from '@rneui/themed';
-import { useTheme } from '@rneui/themed';
 import isEqual from 'lodash/isEqual';
 import { ErrorType, INIT_HAS_ERROR, INIT_NONE_ERROR } from '@portkey-wallet/constants/constants-ca/common';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
@@ -19,8 +18,8 @@ import GStyles from 'assets/theme/GStyles';
 import fonts from 'assets/theme/fonts';
 import CommonButton from 'components/CommonButton';
 import CommonToast from 'components/CommonToast';
-import { FloatTip } from 'components/FloatTip';
 import Loading from 'components/Loading';
+import { KeyboardSafeArea } from 'components/KeyboardSafeArea';
 import Svg from 'components/Svg';
 import PageContainer from 'components/PageContainer';
 import Touchable from 'components/Touchable';
@@ -36,10 +35,11 @@ export interface IBuyFormV2Props {
 
 export default function RampBuy() {
   const styles = getStyles();
-  const { theme }  = useTheme();
   const { symbol, network } = useRouterParams<IBuyFormV2Props>();
 
   const defaultToken = useDefaultToken(MAIN_CHAIN_ID);
+
+  const textInputRef = useRef<TextInput>(null);
 
   const { refreshRampShow } = useAppRampEntryShow();
 
@@ -61,11 +61,6 @@ export default function RampBuy() {
   const [amount, setAmount] = useState<string>('');
   const [amountLocalError, setAmountLocalError] = useState<ErrorType>(INIT_NONE_ERROR);
 
-  const [wrapperLayoutProps, setWrapperLayoutProps] = useState<{ width: number; height: number }>({
-    width: 0,
-    height: 0,
-  });
-
   const refreshList = useCallback(async () => {
     Loading.show();
     try {
@@ -82,6 +77,9 @@ export default function RampBuy() {
       console.log('buyForm refreshList error', error);
     } finally {
       Loading.hide();
+      if (textInputRef.current) {
+        textInputRef.current.focus();
+      }
     }
   }, [network, symbol]);
   useEffectOnce(() => {
@@ -234,16 +232,6 @@ export default function RampBuy() {
     });
   }, [fiatList, onFiatChange, currency]);
 
-  const onLayout = useCallback(
-    (event: LayoutChangeEvent) => {
-      const { width, height } = event.nativeEvent.layout;
-      console.log(`width: ${width}, height: ${height}`);
-      if (wrapperLayoutProps.width === width && wrapperLayoutProps.height === height) return;
-      setWrapperLayoutProps({ width, height });
-    },
-    [wrapperLayoutProps],
-  );
-
   const rightDom = useMemo(() => {
     return (
       <Touchable style={styles.rightDom} onPress={onChangeCurrency}>
@@ -251,7 +239,7 @@ export default function RampBuy() {
         <Text style={styles.rightDomText}>{currency.fiat?.symbol}</Text>
       </Touchable>
     );
-  }, [currency, styles]);
+  }, [currency, onChangeCurrency, styles]);
 
   return (
     <PageContainer
@@ -260,28 +248,19 @@ export default function RampBuy() {
       scrollViewProps={{ disabled: true }}
       rightDom={rightDom}>
       <View style={styles.fiatWrap}>
-        <TextInput style={styles.fiatInput} placeholder="0" onChangeText={onAmountInput} />
+        <TextInput ref={textInputRef} style={styles.fiatInput} placeholder="0" onChangeText={onAmountInput} />
         <Text style={styles.fiatText}>{currency.fiat?.symbol}</Text>
-        {amountError.isError && (
-          <View onLayout={onLayout} style={styles.warningIconWrap}>
-            <FloatTip
-              wrapperLayoutProps={wrapperLayoutProps}
-              textStyle={{
-                color: theme.colors.textBase2,
-                minWidth: pTd(185),
-                maxHeight: pTd(20), // todo_wade: fix width
-              }}
-              content={amountError.errorMsg}
-              display
-            />
-            <Svg icon="warning" iconStyle={{ marginLeft: pTd(6) }} color={theme.colors.iconDanger1} size={pTd(24)} />
-          </View>
-        )}
       </View>
       <Text style={styles.receiveAmount}>{receiveAmountText}</Text>
-      <CommonButton type="primary" buttonStyle={styles.btnStyle} disabled={!isAllowAmount} onPress={onNext}>
-        Next
-      </CommonButton>
+      {amountError.isError && <Text style={styles.warningText}>{amountError.errorMsg}</Text>}
+      <View style={styles.flex} />
+      <KeyboardSafeArea>
+        <View style={styles.btnWrap}>
+          <CommonButton type="primary" buttonStyle={styles.btnStyle} disabled={!isAllowAmount} onPress={onNext}>
+            Next
+          </CommonButton>
+        </View>
+      </KeyboardSafeArea>
     </PageContainer>
   );
 }
@@ -291,6 +270,9 @@ const getStyles = makeStyles(theme => ({
     flex: 1,
     backgroundColor: theme.colors.bgBase1,
     ...GStyles.paddingArg(16, 16),
+  },
+  flex: {
+    flex: 1,
   },
   rightDom: {
     marginRight: pTd(16),
@@ -306,6 +288,7 @@ const getStyles = makeStyles(theme => ({
     justifyContent: 'center',
   },
   fiatInput: {
+    flexShrink: 2,
     fontSize: pTd(32),
     ...fonts.BGMediumFont,
   },
@@ -314,15 +297,23 @@ const getStyles = makeStyles(theme => ({
     fontSize: pTd(32),
     ...fonts.BGMediumFont,
   },
-  warningIconWrap: {},
+  warningText: {
+    width: '100%',
+    textAlign: 'center',
+    marginTop: pTd(8),
+    fontSize: pTd(14),
+    color: theme.colors.textDanger2,
+  },
   receiveAmount: {
     marginTop: pTd(8),
     color: theme.colors.textBase2,
     fontSize: pTd(16),
     textAlign: 'center',
   },
+  btnWrap: {
+    paddingBottom: pTd(24),
+  },
   btnStyle: {
     width: '100%',
-    marginTop: pTd(40),
   },
 }));

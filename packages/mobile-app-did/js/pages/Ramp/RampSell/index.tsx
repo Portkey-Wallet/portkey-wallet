@@ -1,5 +1,5 @@
 import React, { useState, useRef, useMemo, useCallback, useEffect } from 'react';
-import { Text } from 'react-native';
+import { Text, View, TextInput } from 'react-native';
 import { makeStyles } from '@rneui/themed';
 import isEqual from 'lodash/isEqual';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
@@ -19,13 +19,16 @@ import { getSellFiat, getSellLimit } from '@portkey-wallet/utils/ramp';
 import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
 import { getContractBasic } from '@portkey-wallet/contracts/utils';
 import GStyles from 'assets/theme/GStyles';
+import fonts from 'assets/theme/fonts';
 import PageContainer from 'components/PageContainer';
 import CommonToast from 'components/CommonToast';
 import Svg from 'components/Svg';
-import navigationService from 'utils/navigationService';
-import { pTd } from 'utils/unit';
 import Loading from 'components/Loading';
 import Touchable from 'components/Touchable';
+import CommonButton from 'components/CommonButton';
+import { KeyboardSafeArea } from 'components/KeyboardSafeArea';
+import navigationService from 'utils/navigationService';
+import { pTd } from 'utils/unit';
 import { useCheckManagerSyncState } from 'hooks/wallet';
 import { useAppRampEntryShow } from 'hooks/ramp';
 import { useGetCurrentCAContract } from 'hooks/contract';
@@ -43,7 +46,9 @@ export interface ISellFormProps {
 export default function RampSell() {
   const styles = getStyles();
 
-  const { symbol, network } = useRouterParams<ISellFormProps>();
+  const { symbol: routerSymbol, network: routerNetwork } = useRouterParams<ISellFormProps>();
+
+  const textInputRef = useRef<TextInput>(null);
 
   const { sellCryptoList } = useSellCryptoList();
   const { refreshRampShow } = useAppRampEntryShow();
@@ -54,7 +59,7 @@ export default function RampSell() {
     crypto?: IRampCryptoItem;
     fiat?: IRampFiatItem;
   }>({
-    crypto: sellCryptoList.find(item => item.symbol === symbol && item.network === network),
+    crypto: sellCryptoList.find(item => item.symbol === routerSymbol && item.network === routerNetwork),
     fiat: undefined,
   });
   const currencyRef = useRef(currency);
@@ -77,8 +82,8 @@ export default function RampSell() {
     Loading.show();
     try {
       const { sellFiatList, sellDefaultFiat } = await getSellFiat({
-        crypto: symbol || '',
-        network: network || '',
+        crypto: routerSymbol || '',
+        network: routerNetwork || '',
       });
 
       setFiatList(sellFiatList);
@@ -94,8 +99,11 @@ export default function RampSell() {
       console.log('sellForm refreshList error', error);
     } finally {
       Loading.hide();
+      if (textInputRef.current) {
+        textInputRef.current.focus();
+      }
     }
-  }, [network, symbol]);
+  }, [routerNetwork, routerSymbol]);
   useEffectOnce(() => {
     refreshList();
   });
@@ -344,13 +352,34 @@ export default function RampSell() {
         <Text style={styles.rightDomText}>{currency.fiat?.symbol}</Text>
       </Touchable>
     );
-  }, [currency, styles]);
+  }, [currency, onChangeCurrency, styles]);
+
+  const receiveAmountText = useMemo(() => {
+    if (receiveAmount === '') return `0 ${currency?.fiat?.symbol}`;
+    return `≈ ${receiveAmount} ${currency?.fiat?.symbol}`;
+  }, [receiveAmount, currency]);
 
   return (
     <PageContainer
-      titleDom={`Sell ${symbol}`}
+      titleDom={`Sell ${routerSymbol}`}
       containerStyles={styles.pageWrap}
-      scrollViewProps={{ disabled: true }}></PageContainer>
+      rightDom={rightDom}
+      scrollViewProps={{ disabled: true }}>
+      <View style={styles.cryptoWrap}>
+        <TextInput ref={textInputRef} style={styles.cryptoInput} placeholder="0" onChangeText={onAmountInput} />
+        <Text style={styles.cryptoText}>{currency.crypto?.symbol}</Text>
+      </View>
+      <Text style={styles.receiveAmount}>{receiveAmountText}</Text>
+      {amountError.isError && <Text style={styles.warningText}>{amountError.errorMsg}</Text>}
+      <View style={styles.flex} />
+      <KeyboardSafeArea>
+        <View style={styles.btnWrap}>
+          <CommonButton type="primary" buttonStyle={styles.btnStyle} disabled={!isAllowAmount} onPress={onNext}>
+            Next
+          </CommonButton>
+        </View>
+      </KeyboardSafeArea>
+    </PageContainer>
   );
 }
 
@@ -360,6 +389,9 @@ const getStyles = makeStyles(theme => ({
     backgroundColor: theme.colors.bgBase1,
     ...GStyles.paddingArg(16, 16),
   },
+  flex: {
+    flex: 1,
+  },
   rightDom: {
     marginRight: pTd(16),
     flexDirection: 'row',
@@ -367,5 +399,38 @@ const getStyles = makeStyles(theme => ({
   },
   rightDomText: {
     fontSize: pTd(16),
+  },
+  cryptoWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  cryptoInput: {
+    fontSize: pTd(32),
+    ...fonts.BGMediumFont,
+  },
+  cryptoText: {
+    marginLeft: pTd(6),
+    fontSize: pTd(32),
+    ...fonts.BGMediumFont,
+  },
+  warningText: {
+    width: '100%',
+    textAlign: 'center',
+    marginTop: pTd(8),
+    fontSize: pTd(14),
+    color: theme.colors.textDanger2,
+  },
+  receiveAmount: {
+    marginTop: pTd(8),
+    color: theme.colors.textBase2,
+    fontSize: pTd(16),
+    textAlign: 'center',
+  },
+  btnWrap: {
+    paddingBottom: pTd(24),
+  },
+  btnStyle: {
+    width: '100%',
   },
 }));

@@ -39,19 +39,24 @@ export default function DiscoverHome() {
     return [
       {
         title: 'Bookmarks',
-        iconName: 'star',
-        iconColor: defaultColors.icon5,
+        iconName: 'book-mark',
+        iconColor: darkColors.iconBase1,
         onPress: () => jumpToHistory(ArchivedTabEnum.Bookmarks),
       },
       {
         title: 'Records',
-        iconName: 'history',
-        iconColor: defaultColors.icon5,
+        iconName: 'clock',
+        iconColor: darkColors.iconBase1,
         onPress: () => jumpToHistory(ArchivedTabEnum.History),
       },
     ];
   }, [jumpToHistory]);
-  const onTouch = useOnTouchAndPopUp({ list: popUpList });
+  const onTouch = useOnTouchAndPopUp({
+    list: popUpList,
+    formatType: 'fixedWidth',
+    contentStyle: { color: darkColors.textBase1 },
+    containerStyle: { backgroundColor: darkColors.bgBase1, borderColor: darkColors.borderBase1, borderWidth: 1 },
+  });
 
   const scanQRIcon = useMemo(
     () => (
@@ -115,7 +120,7 @@ function TouchableIcon({
 }) {
   return (
     <Touchable style={styles.svgWrap} onPress={onPress}>
-      <Svg icon={icon} size={pTd(size)} color={defaultColors.bg34} />
+      <Svg icon={icon} size={pTd(size)} color={darkColors.iconBase1} />
     </Touchable>
   );
 }

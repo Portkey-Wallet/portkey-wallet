@@ -12,18 +12,21 @@ import Svg from 'components/Svg';
 import { pTd } from 'utils/unit';
 import DiscoverWebsiteImage from 'pages/Discover/components/DiscoverWebsiteImage';
 import TextWithProtocolIcon from 'components/TextWithProtocolIcon';
-import { defaultColors } from 'assets/theme';
+import { darkColors, defaultColors } from 'assets/theme';
 import myEvents from 'utils/deviceEvent';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
 import { useDiscoverJumpWithNetWork } from 'hooks/discover';
 import { useGetCmsWebsiteInfo } from '@portkey-wallet/hooks/hooks-ca/cms';
 
-type RecordItemType = RenderItemParams<ITabItem> & { onDelete: (item: ITabItem) => void };
+type RecordItemType = RenderItemParams<ITabItem> & {
+  itemRefs: React.MutableRefObject<Map<any, any>>;
+  onDelete: (item: ITabItem) => void;
+};
 
 export default memo(
   function RecordItem(props: RecordItemType) {
-    const { item, onDelete } = props;
+    const { itemRefs, item, onDelete } = props;
 
     const discoverJump = useDiscoverJumpWithNetWork();
     const { getCmsWebsiteInfoImageUrl, getCmsWebsiteInfoName } = useGetCmsWebsiteInfo();
@@ -66,20 +69,6 @@ export default memo(
       [item, onDelete],
     );
 
-    const EditDom = useMemo(() => {
-      if (!isEdit) return null;
-      return (
-        <Touchable
-          style={styles.deleteIconWrap}
-          onPress={() => {
-            myEvents.bookmark.closeSwipeable.emit();
-            swipeableRef.current?.open(OpenDirection.LEFT);
-          }}>
-          <Svg icon="red-delete" size={pTd(20)} />
-        </Touchable>
-      );
-    }, [isEdit]);
-
     const recordInfo = useMemo(() => {
       return {
         title: getCmsWebsiteInfoName(item.url) || item.name || '',
@@ -93,10 +82,22 @@ export default memo(
         <SwipeableItem
           key={item.id}
           item={props}
-          ref={swipeableRef}
-          swipeEnabled={false}
-          snapPointsLeft={[80]}
-          renderUnderlayLeft={renderUnderlayLeft}>
+          ref={ref => {
+            if (ref && !itemRefs.current.get(item.id)) {
+              itemRefs.current.set(item.id, ref);
+            }
+          }}
+          onChange={({ openDirection }) => {
+            if (openDirection !== OpenDirection.NONE) {
+              // Close all other open items
+              [...itemRefs.current.entries()].forEach(([id, ref]) => {
+                if (id !== item.id && ref) ref.close();
+              });
+            }
+          }}
+          overSwipe={20}
+          renderUnderlayLeft={renderUnderlayLeft}
+          snapPointsLeft={[pTd(98)]}>
           <Touchable
             onPress={() => onClickJump(item)}
             // disabled={!isEdit || isActive}
@@ -104,11 +105,10 @@ export default memo(
               GStyles.flexRow,
               GStyles.itemCenter,
               styles.itemRow,
-              BGStyles.bg1,
+              BGStyles.bgBase1,
               // add margin to scale item
               styles.marginContainer,
             ]}>
-            {EditDom}
             <DiscoverWebsiteImage size={pTd(40)} style={styles.websiteIconStyle} imageUrl={recordInfo.imageUrl} />
             <View style={styles.infoWrap}>
               <TextWithProtocolIcon
@@ -120,10 +120,6 @@ export default memo(
                 {item.url || ''}
               </TextS>
             </View>
-
-            {/* <Touchable onPressIn={drag} disabled={!isEdit || isActive}>
-              <TextM>drag</TextM>
-            </Touchable> */}
           </Touchable>
         </SwipeableItem>
       </ScaleDecorator>
@@ -142,9 +138,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-end',
-    paddingRight: pTd(16),
-    backgroundColor: defaultColors.bg17,
-    color: defaultColors.font1,
+    paddingRight: pTd(24),
+    backgroundColor: darkColors.bgDanger1,
+    color: darkColors.iconDanger4,
   },
   itemRow: {
     padding: pTd(12),

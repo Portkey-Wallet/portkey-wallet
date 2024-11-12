@@ -5,8 +5,8 @@ import Touchable from 'components/Touchable';
 import { View, StyleSheet, TouchableOpacity, StyleProp, ViewStyle, TextStyle } from 'react-native';
 import Svg, { IconName } from 'components/Svg';
 import { pTd } from 'utils/unit';
-import { darkColors, defaultColors } from 'assets/theme';
-import { TextL } from 'components/CommonText';
+import { darkColors } from 'assets/theme';
+import { TextM } from 'components/CommonText';
 import fonts from 'assets/theme/fonts';
 import { makeStyles } from '@rneui/themed';
 
@@ -22,6 +22,7 @@ export type ListItemType = {
   title: string;
   iconName?: IconName;
   iconColor?: string;
+  textStyle?: TextStyle;
   active?: boolean;
 };
 
@@ -106,10 +107,15 @@ function FloatPopover({
                 {item.iconName && (
                   <Svg size={pTd(20)} icon={item.iconName} color={item.iconColor || darkColors.textBase1} />
                 )}
-                <TextL
-                  style={[styles.textStyles, contentStyle, item.iconName ? styles.leftMargin12 : styles.leftMargin0]}>
+                <TextM
+                  style={[
+                    styles.textStyles,
+                    contentStyle,
+                    item.textStyle,
+                    item.iconName ? styles.leftMargin12 : styles.leftMargin0,
+                  ]}>
                   {item.title}
-                </TextL>
+                </TextM>
               </View>
               {item.active && (
                 <Svg size={pTd(20)} icon="check-circle" color={item.iconColor || darkColors.textBrand2} />

@@ -1,7 +1,7 @@
-import React, { useCallback, useMemo, useState } from 'react';
-import { GestureResponderEvent, StyleSheet, View, Text } from 'react-native';
+import React, { useCallback } from 'react';
+import { GestureResponderEvent, StyleSheet, View } from 'react-native';
 import Svg from 'components/Svg';
-import { measurePageX, measurePageY } from 'utils/measure';
+import { measurePageY } from 'utils/measure';
 import { pTd } from 'utils/unit';
 import { darkColors, defaultColors } from 'assets/theme';
 import { TouchableOpacity } from 'react-native';
@@ -17,12 +17,9 @@ export default function MarketType({
   marketInfo?: IMarketInfo;
   handleType: (type: IMarketType) => Promise<void>;
 }) {
-  const [collapsed, setCollapsed] = useState(true);
   const onRightPress = useCallback(
     async (event: GestureResponderEvent) => {
-      setCollapsed(false);
       const top = await measurePageY(event.target);
-      const left = await measurePageX(event.target);
       FloatOverlay.showFloatPopover({
         list: [
           {
@@ -67,22 +64,10 @@ export default function MarketType({
         customBounds: { x: screenWidth - pTd(16), y: top + pTd(20), width: 0, height: 0 },
         contentStyle: { color: darkColors.textBase1 },
         containerStyle: { backgroundColor: darkColors.bgBase1, borderColor: darkColors.borderBase1, borderWidth: 1 },
-        onMaskClose() {
-          setCollapsed(true);
-        },
       });
     },
-    [handleType],
+    [handleType, marketInfo?.type],
   );
-  const showTypeName = useMemo(() => {
-    if (marketInfo?.type === 'Hot') {
-      return 'Top';
-    } else if (marketInfo?.type === 'Favorites') {
-      return 'Favourites';
-    } else if (marketInfo?.type === 'Trending') {
-      return 'Trending';
-    }
-  }, [marketInfo?.type]);
 
   return (
     <TouchableOpacity onPress={onRightPress} style={styles.touchWrapper}>

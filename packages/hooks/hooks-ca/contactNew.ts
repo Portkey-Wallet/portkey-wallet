@@ -5,7 +5,7 @@ import {
   IAddContactItemApiType,
   IContactIndexType,
   IContactItemType,
-  IDeteleContactItemParams,
+  TDeteleContactItemParams,
   IEditContactItemApiType,
   INetworkItemType,
 } from '@portkey-wallet/types/types-ca/contactNew';
@@ -64,7 +64,7 @@ export const useDeleteContact = () => {
   const dispatch = useAppCommonDispatch();
   const currentNetworkInfo = useCurrentNetworkInfo();
   return useCallback(
-    async (contactItem: IDeteleContactItemParams): Promise<IContactItemType> => {
+    async (contactItem: TDeteleContactItemParams): Promise<IContactItemType> => {
       const response = await request.contact.deleteSaved({
         baseURL: currentNetworkInfo.apiUrl,
         params: contactItem,

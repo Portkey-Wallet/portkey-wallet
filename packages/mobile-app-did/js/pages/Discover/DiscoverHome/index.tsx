@@ -3,7 +3,7 @@ import { View, StyleSheet, GestureResponderEvent } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
 import navigationService from 'utils/navigationService';
 import SimulatedInputBox from 'components/SimulatedInputBox';
-import { defaultColors } from 'assets/theme';
+import { darkColors, defaultColors } from 'assets/theme';
 import SafeAreaBox from 'components/SafeAreaBox';
 import { BGStyles } from 'assets/theme/styles';
 import { useQrScanPermissionAndToast } from 'hooks/useQrScan';
@@ -39,19 +39,24 @@ export default function DiscoverHome() {
     return [
       {
         title: 'Bookmarks',
-        iconName: 'star',
-        iconColor: defaultColors.icon5,
+        iconName: 'book-mark',
+        iconColor: darkColors.iconBase1,
         onPress: () => jumpToHistory(ArchivedTabEnum.Bookmarks),
       },
       {
         title: 'Records',
-        iconName: 'history',
-        iconColor: defaultColors.icon5,
+        iconName: 'clock',
+        iconColor: darkColors.iconBase1,
         onPress: () => jumpToHistory(ArchivedTabEnum.History),
       },
     ];
   }, [jumpToHistory]);
-  const onTouch = useOnTouchAndPopUp({ list: popUpList });
+  const onTouch = useOnTouchAndPopUp({
+    list: popUpList,
+    formatType: 'fixedWidth',
+    contentStyle: { color: darkColors.textBase1 },
+    containerStyle: { backgroundColor: darkColors.bgBase1, borderColor: darkColors.borderBase1, borderWidth: 1 },
+  });
 
   const scanQRIcon = useMemo(
     () => (
@@ -91,7 +96,7 @@ export default function DiscoverHome() {
   });
 
   return (
-    <SafeAreaBox edges={['top', 'right', 'left']} style={BGStyles.white}>
+    <SafeAreaBox edges={['top', 'right', 'left']} style={BGStyles.bgBase1}>
       <View style={styles.functionalLine}>
         <SimulatedInputBox onClickInput={() => navigationService.navigate('DiscoverSearch')} rightDom={scanQRIcon} />
         {showAllTabsIcon}
@@ -115,14 +120,14 @@ function TouchableIcon({
 }) {
   return (
     <Touchable style={styles.svgWrap} onPress={onPress}>
-      <Svg icon={icon} size={pTd(size)} color={defaultColors.bg34} />
+      <Svg icon={icon} size={pTd(size)} color={darkColors.iconBase1} />
     </Touchable>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: defaultColors.white,
+    backgroundColor: darkColors.bgBase1,
     flex: 1,
   },
   functionalLine: {

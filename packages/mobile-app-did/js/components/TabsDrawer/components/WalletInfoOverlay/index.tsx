@@ -24,6 +24,7 @@ import { copyText } from 'utils';
 import Touchable from 'components/Touchable';
 import { useAccountTokenInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
 import CommonAvatar from 'components/CommonAvatar';
+import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
 
 type MyWalletModalType = {
   tabInfo: ITabItem;
@@ -93,7 +94,7 @@ const MyWalletModal = ({ tabInfo }: MyWalletModalType) => {
           {caInfoList?.map(item => (
             <View key={item?.chainId} style={[styles.itemWrap]}>
               <View key={item?.chainId} style={styles.itemContent}>
-                <Svg icon={item?.chainId === 'AELF' ? 'mainnet' : 'sideChain'} size={pTd(24)} />
+                <Svg icon={item?.chainId === DefaultChainId ? 'mainnet' : 'sideChain'} size={pTd(24)} />
                 <View style={{ paddingLeft: pTd(12) }}>
                   <TextM>{formatStr2EllipsisStr(addressFormat(item?.caAddress, item?.chainId as ChainId), 8)}</TextM>
                   <TextS style={[styles.itemChainInfo, FontStyles.font3]}>

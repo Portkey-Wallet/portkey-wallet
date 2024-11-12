@@ -1,22 +1,20 @@
 import React, { useState, useCallback, useEffect, useRef, SetStateAction, Dispatch, useMemo } from 'react';
 import { StyleSheet, View, Text, Image } from 'react-native';
 import { pTd } from 'utils/unit';
-import { defaultColors } from 'assets/theme';
 import Svg from 'components/Svg';
 import FormItem from 'components/FormItem';
 import CommonInput from 'components/CommonInput';
-import CommonButton from 'components/CommonButton';
-import { ScrollView } from 'react-native';
 import Touchable from 'components/Touchable';
-import deleteImage from 'assets/image/pngs/deleteImage.png';
 import ImageWithUploadFunc, { ImageShowType, ImageWithUploadFuncInstance } from 'components/ImageWithUploadFuncV2';
-import { FreeMintStep } from '../components/FreeMintModal';
+import { FreeMintStep } from '../FreeMintModal';
 import { useGetMintItemInfo } from '@portkey-wallet/hooks/hooks-ca/freeMint';
 import CommonToast from 'components/CommonToast';
 import Loading from 'components/Loading';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import GStyles from 'assets/theme/GStyles';
 import ButtonRow from 'components/ButtonRow';
+import { makeStyles, useTheme } from '@rneui/themed';
+import { KeyboardSafeArea } from 'components/KeyboardSafeArea';
+import fonts from 'assets/theme/fonts';
 
 export type EditConfig = {
   imageUri: string;
@@ -30,6 +28,8 @@ const MintEdit = (props: {
   onEditCallback: (name: string, description: string, imageUrl: string) => void;
 }) => {
   const { itemId, setStep, editInfo, onEditCallback } = props;
+  const styles = getStyles();
+  const { theme } = useTheme();
   const [value, setValue] = useState<EditConfig>({
     imageUri: '',
     name: '',
@@ -105,12 +105,8 @@ const MintEdit = (props: {
     }
   }, [setShowDeleteIcon, value.imageUri]);
   return (
-    <>
-      <KeyboardAwareScrollView
-        enableOnAndroid={true}
-        style={styles.container}
-        contentContainerStyle={styles.contentContainerStyle}>
-        {/* <ScrollView style={styles.container} contentContainerStyle={styles.contentContainerStyle}> */}
+    <KeyboardSafeArea containerStyle={styles.containerStyle}>
+      <View style={styles.container}>
         <View style={styles.uploadContainer}>
           {/* <Touchable style={GStyles.center} onPress={() => uploadRef.current?.selectPhoto()}> */}
           {showDeleteIcon && (
@@ -120,10 +116,13 @@ const MintEdit = (props: {
               onPress={() => {
                 uploadRef.current?.clear();
               }}>
-              <Image resizeMode="contain" source={deleteImage} style={{ width: pTd(28), height: pTd(28) }} />
+              {/* <Image resizeMode="contain" source={deleteImage} style={{ width: pTd(28), height: pTd(28) }} /> */}
+              <View style={styles.deleteMintWrapper}>
+                <Svg icon="delete-mint" size={20} />
+              </View>
             </Touchable>
           )}
-          <View style={{ marginTop: pTd(8) }}>
+          <View style={{ marginTop: pTd(24) }}>
             <ImageWithUploadFunc
               avatarSize={pTd(280)}
               ref={uploadRef}
@@ -132,56 +131,64 @@ const MintEdit = (props: {
               imageUrl={value.imageUri}
               defaultComponent={
                 <View style={styles.uploadBox}>
-                  <Svg icon="suggest-add" size={pTd(48)} />
-                  <Text style={styles.uploadText}>
-                    Upload a picture{'\n'}Formats supported: JPG, JPEG, and PNG.{'\n'}Max size: 10 MB.
-                  </Text>
+                  <Svg icon="upload" size={pTd(48)} />
+                  <Text style={styles.uploadTextTitle}>Upload an image</Text>
+                  <Text style={styles.uploadText}>Supported formats: JPG, JPEG, and PNG{'\n'}Max size: 10 MB.</Text>
                 </View>
               }
               onChooseSuccess={onChooseSuccess}
             />
           </View>
           {/* </Touchable> */}
-          <FormItem title="Name" style={styles.formItemContainer}>
-            <CommonInput
-              type="general"
-              value={value.name}
-              placeholder={'Give your NFT a unique name'}
-              maxLength={30}
-              inputContainerStyle={styles.inputWrap}
-              onChangeText={onChangeNameText}
-              containerStyle={styles.contentWrap}
-            />
-          </FormItem>
-          <FormItem title="Description (Optional)" style={styles.formItemContainer}>
-            <CommonInput
-              type="general"
-              value={value.description}
-              placeholder={'Tell people more about your NFT'}
-              maxLength={1000}
-              multiline
-              style={[GStyles.paddingTop(12), GStyles.paddingBottom(12)]}
-              inputContainerStyle={[styles.inputWrap, styles.contentDescriptionWrap]}
-              inputStyle={styles.descriptionInput}
-              onChangeText={onChangeDescriptionText}
-              containerStyle={styles.contentDescriptionWrap}
-            />
-          </FormItem>
+          {value.imageUri && (
+            <>
+              <FormItem title="Name" style={styles.formItemContainer} titleStyle={fonts.SGRegularFont}>
+                <CommonInput
+                  type="general"
+                  value={value.name}
+                  allowClear
+                  placeholder={'Give your NFT a unique name'}
+                  placeholderTextColor={theme.colors.textBase3}
+                  maxLength={30}
+                  inputContainerStyle={styles.inputWrap}
+                  onChangeText={onChangeNameText}
+                  containerStyle={styles.contentWrap}
+                />
+              </FormItem>
+              <FormItem
+                title="Description (Optional)"
+                style={styles.formItemContainer}
+                titleStyle={fonts.SGRegularFont}>
+                <CommonInput
+                  type="general"
+                  value={value.description}
+                  placeholder={'Tell people more about your NFT'}
+                  maxLength={1000}
+                  multiline
+                  style={[GStyles.paddingTop(12), GStyles.paddingBottom(12)]}
+                  inputContainerStyle={[styles.inputWrap, styles.contentDescriptionWrap]}
+                  placeholderTextColor={theme.colors.textBase3}
+                  inputStyle={styles.descriptionInput}
+                  onChangeText={onChangeDescriptionText}
+                  containerStyle={styles.contentDescriptionWrap}
+                />
+              </FormItem>
+            </>
+          )}
         </View>
-      </KeyboardAwareScrollView>
-
-      <ButtonRow
-        style={[GStyles.paddingLeft(pTd(16)), GStyles.paddingRight(pTd(16))]}
-        buttons={[
-          {
-            disabled: !canNext,
-            type: 'primary',
-            title: 'Next',
-            onPress: onNext,
-          },
-        ]}
-      />
-    </>
+        <View style={GStyles.flex1} />
+        <ButtonRow
+          buttons={[
+            {
+              disabled: !canNext,
+              type: 'primary',
+              title: 'Next',
+              onPress: onNext,
+            },
+          ]}
+        />
+      </View>
+    </KeyboardSafeArea>
   );
 };
 
@@ -204,31 +211,29 @@ const MintEdit = (props: {
 // };
 
 export default MintEdit;
-
-const styles = StyleSheet.create({
-  contentContainerStyle: {
+const getStyles = makeStyles(theme => ({
+  containerStyle: {
     alignItems: 'center',
     justifyContent: 'center',
+    height: '100%',
+    marginTop: pTd(4),
   },
   container: {
     width: '100%',
     height: '100%',
-    paddingBottom: pTd(50),
-    backgroundColor: 'white',
-    borderTopLeftRadius: pTd(8),
-    borderTopRightRadius: pTd(8),
     flexDirection: 'column',
     paddingHorizontal: pTd(16),
   },
   deleteIconStyle: {
     position: 'absolute',
-    right: pTd(18),
-    top: 0,
+    right: pTd(21),
+    top: pTd(2),
     zIndex: 999,
   },
   formItemContainer: {
     width: '100%',
-    marginTop: pTd(24),
+    marginTop: pTd(32),
+    paddingHorizontal: pTd(24),
   },
   btnStyle: {
     marginTop: pTd(24),
@@ -239,33 +244,41 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-    gap: pTd(24),
+    paddingHorizontal: pTd(16),
   },
   uploadBox: {
     overflow: 'hidden',
     width: pTd(280),
     height: pTd(280),
     padding: pTd(24),
-    backgroundColor: defaultColors.neutralHoverBG,
-    borderRadius: pTd(12),
+    backgroundColor: theme.colors.bgNeutral2,
+    borderRadius: pTd(16),
     borderStyle: 'dashed',
     borderWidth: pTd(1),
-    borderColor: defaultColors.neutralBorder,
+    borderColor: theme.colors.borderNeutral2,
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
   },
+  uploadTextTitle: {
+    extAlign: 'center',
+    color: theme.colors.textNeutral5,
+    fontSize: pTd(16),
+    marginTop: pTd(16),
+    lineHeight: pTd(23),
+    ...fonts.SGRegularFont,
+  },
   uploadText: {
     textAlign: 'center',
-    color: defaultColors.neutralDisableText,
-    fontSize: pTd(14),
+    color: theme.colors.textNeutral5,
+    fontSize: pTd(12),
     marginTop: pTd(16),
-    fontWeight: '400',
-    lineHeight: pTd(22),
+    lineHeight: pTd(12),
+    ...fonts.SGRegularFont,
   },
   inputWrap: {
-    backgroundColor: defaultColors.bg1,
-    borderColor: defaultColors.neutralBorder,
+    backgroundColor: theme.colors.bgBase1,
+    borderColor: theme.colors.borderBase1,
     borderWidth: StyleSheet.hairlineWidth,
     borderBottomWidth: StyleSheet.hairlineWidth,
     height: pTd(52),
@@ -282,4 +295,12 @@ const styles = StyleSheet.create({
     paddingTop: pTd(12),
     paddingBottom: pTd(12),
   },
-});
+  deleteMintWrapper: {
+    width: pTd(40),
+    height: pTd(40),
+    borderRadius: pTd(24),
+    backgroundColor: theme.colors.bgBrand1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+}));

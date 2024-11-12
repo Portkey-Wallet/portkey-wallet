@@ -2,26 +2,20 @@ import { defaultColors } from 'assets/theme';
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { pTd } from 'utils/unit';
-import { MintStatus } from '../MintStatusSection';
 import Lottie from 'lottie-react-native';
-import { commonStyles } from 'components/CommonInput/style';
 import Svg from 'components/Svg';
+import { MintStatus } from 'pages/FreeMint/components/MintStatusSection';
 
 interface MintStatusIconProps {
   status: MintStatus;
 }
 
-const MintStatusIcon = (props: MintStatusIconProps) => {
+const MinStatusComponent = (props: MintStatusIconProps) => {
   const { status = MintStatus.Minted } = props;
 
   if (status === MintStatus.Minting)
     return (
-      <Lottie
-        style={commonStyles.loadingStyle}
-        source={require('../../../../assets/lottieFiles/loading.json')}
-        autoPlay
-        loop
-      />
+      <Lottie style={styles.loadingStyle} source={require('../../../assets/lottieFiles/loading.json')} autoPlay loop />
     );
 
   if (status === MintStatus.Minted)
@@ -31,7 +25,7 @@ const MintStatusIcon = (props: MintStatusIconProps) => {
       </View>
     );
 
-  if (status === MintStatus.MintFailed) return <Svg icon="error" size={pTd(32)} />;
+  if (status === MintStatus.MintFailed) return <Svg icon="error" size={pTd(20)} />;
 
   return null;
 };
@@ -48,6 +42,9 @@ const styles = StyleSheet.create({
   borderRadios: {
     borderRadius: pTd(20),
   },
+  loadingStyle: {
+    width: pTd(24),
+  },
 });
 
-export default MintStatusIcon;
+export default MinStatusComponent;

@@ -3,17 +3,24 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import Svg, { IconName } from 'components/Svg';
 import { pTd } from 'utils/unit';
 import { makeStyles } from '@rneui/themed';
+import { ViewStyleType } from 'types/styles';
 
 export type OutlinedButtonProps = {
   onPress: () => void;
   iconName?: IconName;
   title: string;
+  style: ViewStyleType;
 };
 
-const OutlinedTextButton: React.FC<OutlinedButtonProps> = ({ iconName, title, onPress }: OutlinedButtonProps) => {
+const OutlinedTextButton: React.FC<OutlinedButtonProps> = ({
+  iconName,
+  title,
+  style,
+  onPress,
+}: OutlinedButtonProps) => {
   const styles = getStyles();
   return (
-    <TouchableOpacity style={styles.buttonWrap} onPress={onPress}>
+    <TouchableOpacity style={[styles.buttonWrap, style]} onPress={onPress}>
       <View style={styles.buttonInnerWrap}>
         {iconName && <Svg icon={iconName} size={pTd(16)} color={styles.iconColor.color} iconStyle={styles.iconStyle} />}
         <Text style={styles.title}>{title}</Text>
@@ -25,7 +32,7 @@ const OutlinedTextButton: React.FC<OutlinedButtonProps> = ({ iconName, title, on
 const getStyles = makeStyles(theme => ({
   buttonWrap: {
     backgroundColor: theme.colors.bgBrand1,
-    width: '100%',
+    // width: '100%',
     height: pTd(48),
     alignItems: 'center',
     justifyContent: 'center',

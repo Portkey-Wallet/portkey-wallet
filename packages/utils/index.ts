@@ -326,7 +326,8 @@ export const formatNameWithRules = (
   });
   return result;
 };
-export const formatNameWithNoUnderline = (tokenName: string) => {
+export const formatNameWithNoUnderline = (tokenName?: string) => {
+  if (!tokenName) return '';
   return formatNameWithRules(tokenName, [FormatNameRuleList.NO_UNDERLINE]);
 };
 

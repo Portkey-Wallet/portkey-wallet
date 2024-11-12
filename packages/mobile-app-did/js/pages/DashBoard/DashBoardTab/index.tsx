@@ -12,6 +12,7 @@ import Touchable from 'components/Touchable';
 import ModeChangeSelector from '../componets/ModeChangeSelector';
 import { useNFTSection } from '@portkey-wallet/hooks/hooks-ca';
 import CommonToast from 'components/CommonToast';
+import navigationService from 'utils/navigationService';
 
 const DashBoardTab: React.FC = () => {
   const { t } = useLanguage();
@@ -72,7 +73,7 @@ const DashBoardTab: React.FC = () => {
         </Touchable>
         <Touchable
           onPress={() => {
-            CommonToast.message('coming soon...', 2000, 'center');
+            navigationService.navigate('FreeMintHome');
           }}>
           <Svg icon="free-mint-entry" size={pTd(22)} />
         </Touchable>

@@ -79,7 +79,7 @@ export function useChangeNetworkDirectly(route: RouteProp<ParamListBase>) {
 
   return useCallback(() => {
     // TODO: change it
-    return false;
+    // return false;
     const targetNetwork = networkList.find(network => network.name !== currentNetworkInfo.name);
     changeNetwork(targetNetwork, false);
   }, [changeNetwork, currentNetworkInfo.name, networkList]);

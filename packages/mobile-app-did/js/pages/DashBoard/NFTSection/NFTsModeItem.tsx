@@ -9,7 +9,6 @@ import GStyles from 'assets/theme/GStyles';
 import CommonAvatar from 'components/CommonAvatar';
 import Svg from 'components/Svg';
 import { TextL, TextM, TextS } from 'components/CommonText';
-import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { NFTCollectionItemShowType } from '@portkey-wallet/types/types-ca/assets';
 import Touchable from 'components/Touchable';
 import { OpenCollectionObjType } from './index';
@@ -19,6 +18,7 @@ import { Skeleton } from '@rneui/base';
 import { makeStyles } from '@rneui/themed';
 import { formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import { PortkeyLinearGradientV2 } from 'components/PortkeyLinearGradient';
+import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 
 export enum NoDataMessage {
   CustomNetWorkNoData = 'No transaction records accessible from the current custom network',
@@ -41,6 +41,8 @@ export default function NFTItem(props: NFTItemPropsType) {
     chainId,
     collectionName,
     imageUrl,
+    chainImageUrl,
+    displayChainImage,
     itemCount,
     children,
     symbol,
@@ -91,7 +93,20 @@ export default function NFTItem(props: NFTItemPropsType) {
             openItem(symbol, chainId, itemCount);
           }
         }}>
-        <CommonAvatar avatarSize={pTd(24)} imageUrl={imageUrl} title={collectionName} shapeType={'square'} />
+        <View>
+          <CommonAvatar avatarSize={pTd(24)} imageUrl={imageUrl} title={collectionName} shapeType={'square'} />
+          {displayChainImage && (
+            <CommonAvatar
+              hasBorder
+              style={styles.chainIcon}
+              title={''}
+              avatarSize={pTd(16)}
+              imageUrl={chainImageUrl}
+              titleStyle={styles.tokenIconTitle}
+              borderStyle={styles.iconBorder}
+            />
+          )}
+        </View>
         <TextL style={[styles.nftSeriesName, styles.title]} ellipsizeMode="tail" numberOfLines={1}>
           {collectionName}
         </TextL>
@@ -111,10 +126,16 @@ export default function NFTItem(props: NFTItemPropsType) {
         <View style={[styles.listWrap]}>
           {showChildren?.map((ele: any, index: number) => (
             <Touchable
-              style={styles.itemWrapper}
+              style={[
+                styles.itemWrapper,
+                // eslint-disable-next-line react-native/no-inline-styles
+                {
+                  marginRight: index % 3 === 2 ? 0 : pTd(16),
+                  marginTop: index < 3 ? 0 : pTd(16),
+                },
+              ]}
               key={ele.symbol}
               onPress={() => {
-                console.log('1111111111', symbol);
                 navigationService.navigate('NFTDetail', {
                   ...ele,
                   collectionInfo: { imageUrl, collectionName, itemCount, symbol, chainId },
@@ -126,7 +147,7 @@ export default function NFTItem(props: NFTItemPropsType) {
                 seedType={ele.seedType}
                 badgeSizeType="normal"
                 data={ele}
-                nftSize={pTd(110)}
+                nftSize={(screenWidth - pTd(4 * 16)) / 3}
                 style={[
                   styles.itemAvatarStyle,
                   index < 3 ? styles.marginTop0 : {},
@@ -144,18 +165,24 @@ export default function NFTItem(props: NFTItemPropsType) {
               </TextS>
             </Touchable>
           ))}
-          <Touchable
-            style={[styles.itemWrapper]}
-            onPress={() => {
-              navigationService.navigate('CollectionDetail', { imageUrl, collectionName, itemCount, symbol, chainId });
-            }}>
-            {hasMore && (
+          {hasMore && (
+            <Touchable
+              style={[styles.itemWrapper, GStyles.marginTop(16)]}
+              onPress={() => {
+                navigationService.navigate('CollectionDetail', {
+                  imageUrl,
+                  collectionName,
+                  itemCount,
+                  symbol,
+                  chainId,
+                });
+              }}>
               <View style={[styles.itemAvatarStyle, styles.viewAll]}>
                 <Svg icon="arrow-right-thin" size={pTd(24)} />
                 <TextM style={styles.vieAllText}>View all</TextM>
               </View>
-            )}
-          </Touchable>
+            </Touchable>
+          )}
           {skeletonList.map((ele, i) => {
             return (
               <Skeleton
@@ -163,14 +190,13 @@ export default function NFTItem(props: NFTItemPropsType) {
                 animation="wave"
                 LinearGradientComponent={() => <PortkeyLinearGradientV2 />}
                 style={[
-                  { borderRadius: pTd(8) },
-                  styles.itemAvatarStyle,
+                  styles.itemWrapper,
                   styles.skeleton,
-                  i + showChildren.length < 3 ? styles.marginTop0 : {},
-                  (i + showChildren.length) % 3 === 2 ? styles.marginRight0 : {},
+                  // eslint-disable-next-line react-native/no-inline-styles
+                  { marginRight: i % 3 === 2 ? 0 : pTd(16), marginTop: i < 3 ? 0 : pTd(16) },
                 ]}
-                height={pTd(110)}
-                width={pTd(110)}
+                height={(screenWidth - pTd(4 * 16)) / 3}
+                width={(screenWidth - pTd(4 * 16)) / 3}
               />
             );
           })}
@@ -202,6 +228,8 @@ const getStyles = makeStyles(theme => ({
   itemWrapper: {
     flexDirection: 'column',
     alignItems: 'flex-start',
+    width: (screenWidth - pTd(4 * 16)) / 3,
+    // backgroundColor: 'red',
   },
   viewAll: {
     borderRadius: pTd(8),
@@ -279,5 +307,16 @@ const getStyles = makeStyles(theme => ({
   skeleton: {
     borderRadius: pTd(8),
     backgroundColor: theme.colors.bgBase3,
+  },
+  iconBorder: {
+    borderColor: theme.colors.borderBase1,
+  },
+  tokenIconTitle: {
+    fontSize: pTd(10),
+  },
+  chainIcon: {
+    position: 'absolute',
+    right: -pTd(4),
+    bottom: -pTd(2),
   },
 }));

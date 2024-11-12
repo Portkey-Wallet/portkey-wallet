@@ -137,9 +137,10 @@ const ContactEdit: React.FC = () => {
           title: 'Delete',
           type: 'warning',
           onPress: async () => {
+            if (!contact) return;
             try {
               Loading.show();
-              await deleteContactApi({ id: editContact.id ?? '' });
+              await deleteContactApi(contact);
               CommonToast.success(t('Contact Deleted'), undefined, 'bottom');
               navigationService.navigate('ContactsHome');
             } catch (error) {

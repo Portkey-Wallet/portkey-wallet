@@ -41,7 +41,7 @@ export interface ContactState {
   lastModifiedNew: number;
   contactIndexListNew?: IContactIndexType[];
   contactMapNew?: IContactMapType;
-  contactRelationIdMapNew?: IContactMapType;
+  // contactRelationIdMapNew?: IContactMapType;
   contactIdMapNew?: IContactMapType;
   contactPortkeyIdMapNew?: IContactMapType;
 }
@@ -55,7 +55,6 @@ export const initialState: ContactState = {
   lastModifiedNew: 0,
   contactIndexListNew: getInitContactIndexListV2(),
   contactMapNew: {},
-  contactRelationIdMapNew: {},
   contactIdMapNew: {},
 };
 

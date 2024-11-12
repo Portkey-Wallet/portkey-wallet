@@ -1,5 +1,5 @@
 import React, { ReactNode, useCallback, useMemo, useRef, useState } from 'react';
-import { View, Text, TextInput } from 'react-native';
+import { View, Text, TextInput, TextInputProps } from 'react-native';
 import { Input, useTheme } from '@rneui/themed';
 import CommonButton from 'components/CommonButton';
 import Touchable from 'components/Touchable';
@@ -28,6 +28,7 @@ interface IAmountCardProps {
   token?: TCurrency;
   onTokenChange?: (token: TCurrency) => void;
   isMaxShow?: boolean;
+  inputProps?: TextInputProps;
 }
 
 const AmountCard: React.FC<IAmountCardProps> = ({
@@ -44,6 +45,7 @@ const AmountCard: React.FC<IAmountCardProps> = ({
   token,
   onTokenChange,
   isMaxShow = false,
+  inputProps,
 }) => {
   const { theme } = useTheme();
   const styles = getStyles();
@@ -90,6 +92,7 @@ const AmountCard: React.FC<IAmountCardProps> = ({
       <View style={styles.amountWrap}>
         {isInput && isInputting ? (
           <Input
+            {...inputProps}
             ref={iptRef}
             keyboardType="numeric"
             maxLength={18}

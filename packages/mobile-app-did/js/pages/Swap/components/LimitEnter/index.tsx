@@ -338,6 +338,9 @@ const LimitEnter = () => {
         }>
         <AmountCardGroup
           style={styles.amountCardGroup}
+          inputProps={{
+            returnKeyType: 'done',
+          }}
           swapInfo={limitInfo}
           setValueIn={setValueIn}
           setValueOut={setValueOut}

@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { View } from 'react-native';
+import { TextInputProps, View } from 'react-native';
 import Svg from 'components/Svg';
 import Touchable from 'components/Touchable';
 import AmountCard from '../AmountCard';
@@ -24,6 +24,7 @@ interface IAmountCardGroupProps {
   setTokenIn?: (token: TCurrency) => void;
   setTokenOut?: (token: TCurrency) => void;
   switchToken?: () => void;
+  inputProps?: TextInputProps;
 }
 
 const AmountCardGroup = ({
@@ -36,6 +37,7 @@ const AmountCardGroup = ({
   setTokenIn,
   setTokenOut,
   switchToken,
+  inputProps,
 }: IAmountCardGroupProps) => {
   const styles = getStyles();
   const { theme } = useTheme();
@@ -93,6 +95,7 @@ const AmountCardGroup = ({
   return (
     <View style={[styles.amountCardGroup, style]}>
       <AmountCard
+        inputProps={inputProps}
         title="You Pay"
         isInput
         amount={swapInfo.valueIn}
@@ -105,6 +108,7 @@ const AmountCardGroup = ({
         isMaxShow={true}
       />
       <AmountCard
+        inputProps={inputProps}
         style={styles.amountCardMarginTop}
         title="You Receive"
         amount={swapInfo.valueOut}

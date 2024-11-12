@@ -3,7 +3,6 @@ import { CheckContactNameResponseType } from '@portkey-wallet/api/api-did/contac
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import {
   IAddContactItemApiType,
-  IAddressInfo,
   IContactIndexType,
   IContactItemType,
   IEditContactItemApiType,
@@ -19,6 +18,8 @@ import {
 import { useAppCASelector, useAppCommonDispatch, useAppCommonSelector } from '../index';
 import { getAelfAddress, isAelfAddress } from '@portkey-wallet/utils/aelf';
 import { sleep } from '@portkey-wallet/utils';
+import { useTransferNetworkConfig } from './config';
+import { ChainId } from '@portkey-wallet/types';
 
 export const REFRESH_DELAY_TIME = 1.5 * 1000;
 
@@ -113,7 +114,30 @@ export const useContactList = () => {
         result = [...result, ...ele.contacts];
       });
     return result;
-  }, [contact.contactIndexList]);
+  }, [contact?.contactIndexListNew]);
+};
+
+// in send page
+export const useFilterContactList = (fromChainId: ChainId, tokenId: string) => {
+  const contact = useAppCommonSelector(state => state.contact);
+  const { checkIsSupportTargetChain } = useTransferNetworkConfig();
+
+  return useMemo(() => {
+    let result: IContactItemType[] = [];
+    const _list = contact?.contactIndexListNew || [];
+    _list
+      .filter(ele => ele.contacts.length !== 0)
+      .map(ele => {
+        result = [...result, ...ele.contacts];
+      });
+
+    result = result.filter(ele => {
+      if (ele.addressInfo.network === 'aelf') return true;
+      return checkIsSupportTargetChain({ fromChainId, symbol: tokenId, network: ele.addressInfo.network });
+    });
+
+    return result;
+  }, [checkIsSupportTargetChain, contact?.contactIndexListNew, fromChainId, tokenId]);
 };
 
 export const useCheckContactMap = () => {

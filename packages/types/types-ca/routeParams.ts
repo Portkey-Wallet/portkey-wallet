@@ -3,6 +3,7 @@ import { ChainId, ChainType } from '..';
 import { SeedTypeEnum } from './assets';
 import { GuardiansApprovedType } from './guardian';
 import type { SendType } from './send';
+import { ICollectionInfo } from './freeMint';
 
 export interface IToSendHomeAssetParamsBaseType {
   symbol: string;
@@ -26,6 +27,8 @@ export interface IToSendNftParamsType extends IToSendHomeAssetParamsBaseType {
   decimals: string;
   isSeed?: boolean;
   seedType?: SeedTypeEnum;
+  collectionName?: string;
+  collectionInfo: ICollectionInfo;
 }
 
 export type IToSendAssetParamsType = IToSendTokenParamsType | IToSendNftParamsType;

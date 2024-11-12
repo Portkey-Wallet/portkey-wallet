@@ -22,6 +22,8 @@ import { rampSlice } from '@portkey-wallet/store/store-ca/ramp/slice';
 import { guardiansSlice } from '@portkey-wallet/store/store-ca/guardians/slice';
 import { referralSlice } from '@portkey-wallet/store/store-ca/referral/slice';
 import cryptoGiftSlice from '@portkey-wallet/store/store-ca/cryptoGift/slice';
+import { configSlice } from '@portkey-wallet/store/store-ca/config/slice';
+import awakenSlice from '@portkey-wallet/store/store-ca/awaken/slice';
 
 interface ThunkOptions<E = any> {
   extraArgument: E;
@@ -57,9 +59,11 @@ const reduxPersistConfig = {
     txFeeSlice.name,
     securitySlice.name,
     rampSlice.name,
+    awakenSlice.name,
     guardiansSlice.name,
     referralSlice.name,
     cryptoGiftSlice.name,
+    configSlice.name,
   ],
 
   // More info here:  https://shift.infinite.red/shipping-persistant-reducers-7341691232b1

@@ -5,9 +5,10 @@ import React, { ReactNode, useCallback, useEffect, useMemo, useRef, useState } f
 import { View } from 'react-native';
 
 export type TKeyboardSafeAreaProps = {
-  children: ReactNode;
+  children?: ReactNode;
+  bottomPad?: number;
 };
-export const KeyboardSafeArea = ({ children }: TKeyboardSafeAreaProps) => {
+export const KeyboardSafeArea = ({ children, bottomPad = 0 }: TKeyboardSafeAreaProps) => {
   const viewRef = useRef<View>(null);
   const { keyboardHeight, isKeyboardOpened } = useKeyboard(0);
   const [viewPositionY, setViewPositionY] = useState(0);
@@ -40,9 +41,9 @@ export const KeyboardSafeArea = ({ children }: TKeyboardSafeAreaProps) => {
     if (viewPositionY <= keyboardPositionY) return undefined;
 
     return {
-      paddingBottom: viewPositionY - keyboardPositionY,
+      paddingBottom: viewPositionY - keyboardPositionY + bottomPad,
     };
-  }, [isKeyboardOpened, keyboardHeight, viewPositionY]);
+  }, [bottomPad, isKeyboardOpened, keyboardHeight, viewPositionY]);
 
   return (
     <View ref={viewRef} collapsable={false} style={style}>

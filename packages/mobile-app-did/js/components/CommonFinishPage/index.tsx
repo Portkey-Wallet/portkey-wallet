@@ -11,7 +11,7 @@ import navigationService from 'utils/navigationService';
 import CommonButton from 'components/CommonButton';
 import { ActionType } from 'types/common';
 
-const SendReceiveFinishPage: React.FC = () => {
+const CommonFinishPage: React.FC = () => {
   const {
     params: { actionType, address },
   } = useRoute<RouteProp<{ params: { actionType: ActionType; address?: string; onClose?(): void } }>>();
@@ -32,7 +32,11 @@ const SendReceiveFinishPage: React.FC = () => {
         break;
       case ActionType.RECEIVE:
         result.title = 'Transaction approved';
-        result.description = ['View the transaction in “Activity” tab to check its status.'];
+        result.description = ['View the transaction in “Activity” tab', ' to check its status.'];
+        break;
+      case ActionType.SWAP:
+        result.title = 'Transaction completed';
+        result.description = ['View the transaction in “Activity” tab', ' to check its status.'];
         break;
       default:
         break;
@@ -68,7 +72,7 @@ const SendReceiveFinishPage: React.FC = () => {
   );
 };
 
-export default memo(SendReceiveFinishPage);
+export default memo(CommonFinishPage);
 
 export const getStyles = makeStyles(theme => ({
   pageWrap: {
@@ -106,7 +110,7 @@ export const getStyles = makeStyles(theme => ({
   },
   description: {
     ...fonts.SGRegularFont,
-    color: theme.colors.textBase1,
+    color: theme.colors.textBase2,
     fontSize: pTd(16),
     lineHeight: pTd(22),
     textAlign: 'center',

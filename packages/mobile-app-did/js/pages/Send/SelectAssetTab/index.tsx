@@ -22,12 +22,12 @@ const SelectAssetTab: React.FC<SelectAssetTabProps> = (props: SelectAssetTabProp
         name: t('Tokens'),
         tabItemDom: <SelectToken toAddress={toAddress} tokenInfos={tokenInfos} noDataMessage={noDataMessage} />,
       },
-      // {
-      //   name: t('NFTs'),
-      //   tabItemDom: <SelectNFT nftInfos={nftInfos} noDataMessage={noDataMessage} />,
-      // },
+      {
+        name: t('NFTs'),
+        tabItemDom: <SelectNFT toAddress={toAddress} nftInfos={nftInfos} noDataMessage={noDataMessage} />,
+      },
     ];
-  }, [noDataMessage, t, toAddress, tokenInfos]);
+  }, [nftInfos, noDataMessage, t, toAddress, tokenInfos]);
 
   return <CommonTopTab swipeEnabled hasTabBarBorderRadius={false} hasBottomBorder={false} tabList={tabList} />;
 };

@@ -20,7 +20,8 @@ import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import { codePushOperator } from 'utils/update';
 import { useGetCryptoGiftConfig } from '@portkey-wallet/hooks/hooks-ca/cryptogift';
 import * as Application from 'expo-application';
-import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/actions';
+import { fetchContactListAsync, fetchContactListV2Async } from '@portkey-wallet/store/store-ca/contact/actions';
+import { useContactNetworkConfig, useTransferNetworkConfig } from '@portkey-wallet/hooks/hooks-ca/config';
 
 export default function useInitData() {
   const dispatch = useAppDispatch();
@@ -31,6 +32,9 @@ export default function useInitData() {
 
   useCheckAndInitNetworkDiscoverMap();
   useGetRedPackageConfig(true, true);
+
+  const { fetchContactSupportConfig } = useContactNetworkConfig();
+  const { fetchAssetSupportConfig } = useTransferNetworkConfig();
 
   const { refresh: loadBookmarkList } = useBookmarkList();
   const initIM = useInitIM();
@@ -60,6 +64,11 @@ export default function useInitData() {
       getCurrentCAViewContract();
       dispatch(getCaHolderInfoAsync());
       dispatch(getSymbolImagesAsync());
+      dispatch(fetchContactListV2Async());
+
+      fetchContactSupportConfig();
+      fetchAssetSupportConfig();
+
       initGuardianList();
 
       loadBookmarkList();
@@ -74,7 +83,16 @@ export default function useInitData() {
     } catch (error) {
       console.log(error, '====error');
     }
-  }, [dispatch, getCurrentCAViewContract, initCryptoGiftConfig, initGuardianList, initRamp, loadBookmarkList]);
+  }, [
+    dispatch,
+    fetchAssetSupportConfig,
+    fetchContactSupportConfig,
+    getCurrentCAViewContract,
+    initCryptoGiftConfig,
+    initGuardianList,
+    initRamp,
+    loadBookmarkList,
+  ]);
 
   const isChat = useIsChatShow();
   useEffect(() => {

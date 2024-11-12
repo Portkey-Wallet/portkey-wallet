@@ -11,7 +11,6 @@ import { pTd } from 'utils/unit';
 import Touchable from 'components/Touchable';
 import { makeStyles } from '@rneui/themed';
 import Divider from 'components/Divider';
-import navigationService from 'utils/navigationService';
 import { useQrScanPermissionAndToast } from 'hooks/useQrScan';
 import { getSendNetworkList } from 'pages/Send/utils';
 import { IToSendAssetParamsType, IToSendHomeParamsType } from '@portkey-wallet/types/types-ca/routeParams';
@@ -111,10 +110,14 @@ export default function ToAddressInput({
         }
       } else {
         // TODO: change it
+        const isSameAddress = isSameAddresses(wallet?.[selectedToken?.chainId || 'AELF']?.caAddress || '', v);
         // same address
-        if (selectedToken?.chainId === 'AELF') {
+        if (selectedToken?.chainId === 'AELF' && !isSameAddress) {
           setCheckedPass(false);
           setWarning([WarningKey.MAIN_CHAIN_TO_NO_AFFIX_ADDRESS_ELF]);
+        } else if (selectedToken?.chainId === 'AELF' && isSameAddress) {
+          setCheckedPass(false);
+          setWarning([WarningKey.SAME_ADDRESS]);
         } else {
           setCheckedPass(false);
           setWarning([WarningKey.DAPP_CHAIN_TO_NO_AFFIX_ADDRESS_ELF]);
@@ -137,16 +140,19 @@ export default function ToAddressInput({
 
       try {
         setIsChecking(true);
-        const { data } = await getSendNetworkList({
+        const { data, code } = await getSendNetworkList({
           symbol: selectedToken?.symbol || '',
           chainId: selectedToken?.chainId || 'AELF',
           toAddress,
         });
 
-        const chainListLen = data.networkList.length;
-        setChainList(data.networkList);
-        setCheckedPass(!!chainListLen);
-        chainListLen ? setWarning([WarningKey.MAKE_SURE_SUPPORT_PLATFORM]) : setWarning([WarningKey.INVALID_ADDRESS]);
+        if (code === '40001') {
+          setWarning([WarningKey.INVALID_ADDRESS]);
+        } else {
+          setCheckedPass(true);
+          setChainList(data.networkList);
+          setWarning([WarningKey.MAKE_SURE_SUPPORT_PLATFORM]);
+        }
       } catch (error) {
         console.log('getNetworkList err', error);
         setWarning([WarningKey.INVALID_ADDRESS]);

@@ -234,6 +234,7 @@ export const useInitIM = () => {
 
       await im.init(account, caHash, relationToken);
       dispatch(fetchContactListAsync());
+
       fetchAndSetBlockList();
 
       await request.es.getCaHolder({

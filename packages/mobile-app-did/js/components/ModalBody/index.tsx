@@ -5,10 +5,9 @@ import { StyleSheet } from 'react-native';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { pTd } from 'utils/unit';
 import { darkColors, defaultColors } from 'assets/theme';
-import { TextXL } from 'components/CommonText';
+import { TextTitle } from 'components/CommonText';
 import Svg from 'components/Svg';
 import GStyles from 'assets/theme/GStyles';
-import fonts from 'assets/theme/fonts';
 import { useGStyles } from 'assets/theme/useGStyles';
 import ButtonRow from 'components/ButtonRow';
 import { CommonButtonProps } from 'components/CommonButton';
@@ -50,44 +49,46 @@ export const ModalBody: React.FC<ModalBodyProps> = props => {
   const gStyles = useGStyles();
 
   if (modalBodyType === 'bottom') {
+    const showTopWrap = !!leftTitleDom || !!title || !!isShowRightCloseIcon;
     return (
       <View onTouchStart={onTouchStart} style={[styles.commonBox, gStyles.overlayStyle, styles.wrapStyle, style]}>
         <View style={styles.topWrap}>
           <View style={styles.slot} />
           {/* {isShowLeftBackIcon && (
-            <View
-              style={styles.leftIcon}
-              pointerEvents="box-only"
-              onTouchStart={() => {
-                onBack?.();
-                Keyboard.dismiss();
-                !preventBack && OverlayModal.hide();
-              }}>
-              <Svg icon="left-arrow" size={pTd(20)} />
-            </View>
-          )} */}
-          {leftTitleDom ? (
-            leftTitleDom
-          ) : (
-            <TextXL
-              suppressHighlighting={true}
-              style={[styles.titleStyle, fonts.mediumFont]}
-              onPress={Keyboard.dismiss}>
-              {title}
-            </TextXL>
-          )}
+              <View
+                style={styles.leftIcon}
+                pointerEvents="box-only"
+                onTouchStart={() => {
+                  onBack?.();
+                  Keyboard.dismiss();
+                  !preventBack && OverlayModal.hide();
+                }}>
+                <Svg icon="left-arrow" size={pTd(20)} />
+              </View>
+            )} */}
+          {showTopWrap && (
+            <>
+              {leftTitleDom ? (
+                leftTitleDom
+              ) : (
+                <TextTitle suppressHighlighting={true} style={styles.titleStyle} onPress={Keyboard.dismiss}>
+                  {title}
+                </TextTitle>
+              )}
 
-          {isShowRightCloseIcon && (
-            <View
-              style={styles.closeIcon}
-              pointerEvents="box-only"
-              onTouchStart={() => {
-                onClose?.();
-                Keyboard.dismiss();
-                OverlayModal.hide();
-              }}>
-              <Svg icon="close3" size={pTd(20)} color={darkColors.iconBase1} />
-            </View>
+              {isShowRightCloseIcon && (
+                <View
+                  style={styles.closeIcon}
+                  pointerEvents="box-only"
+                  onTouchStart={() => {
+                    onClose?.();
+                    Keyboard.dismiss();
+                    OverlayModal.hide();
+                  }}>
+                  <Svg icon="close3" size={pTd(20)} color={darkColors.iconBase1} />
+                </View>
+              )}
+            </>
           )}
         </View>
         {children}
@@ -139,10 +140,8 @@ export const styles = StyleSheet.create({
     zIndex: 10000,
   },
   titleStyle: {
-    lineHeight: pTd(22),
     paddingLeft: pTd(16),
     width: '100%',
-    color: darkColors.textBase1,
   },
   closeIcon: {
     position: 'absolute',

@@ -57,20 +57,21 @@ export const generalStyles = StyleSheet.create({
   containerStyle: {
     ...GStyles.paddingArg(0),
     ...GStyles.marginArg(0),
+    height: pTd(40),
   },
   inputContainerStyle: {
     borderColor: darkColors.borderBase1,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: pTd(1),
     borderBottomWidth: StyleSheet.hairlineWidth,
     height: pTd(40),
-    borderRadius: pTd(6),
+    borderRadius: pTd(8),
   },
   inputStyle: {
     fontSize: pTd(16),
     color: darkColors.textBase1,
-    ...GStyles.marginArg(18, 16),
-    minHeight: pTd(60),
-    height: pTd(60),
+    paddingHorizontal: pTd(16),
+    minHeight: pTd(40),
+    height: pTd(40),
   },
   labelStyle: {
     color: darkColors.textDisabled1,

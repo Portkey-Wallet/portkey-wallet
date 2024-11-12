@@ -71,9 +71,13 @@ const WalletSecurity: React.FC = () => {
         title="Set up Backup Mailbox"
         suffix={!fetching && showNotSet ? 'Not Set up' : ''}
         onPress={async () => {
-          navigationService.navigate('SecondaryMailboxHome', {
-            secondaryEmail,
-          });
+          if (showNotSet) {
+            navigationService.navigate('SecondaryMailboxEdit');
+          } else {
+            navigationService.navigate('SecondaryMailboxHome', {
+              secondaryEmail,
+            });
+          }
           // if (!secondaryEmail) {
           //   try {
           //     Loading.show();

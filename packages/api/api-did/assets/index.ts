@@ -32,4 +32,8 @@ export default {
     target: '/api/app/user/assets/asset-estimation',
     config: { method: 'GET' },
   },
+  getAwakenTokenList: {
+    target: '/api/app/user/assets/awaken/token',
+    config: { method: 'GET' },
+  },
 } as const;

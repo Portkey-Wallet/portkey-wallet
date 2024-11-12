@@ -27,6 +27,7 @@ import depositApi from './deposit';
 import redPackageApi from './red-package';
 import freeMintApi from './freeMint';
 import receiveApi from './receive';
+import awakenApi from './awaken';
 
 export const DEFAULT_METHOD = 'POST';
 
@@ -72,6 +73,7 @@ export const EXPAND_APIS = {
   freeMintApi: freeMintApi,
   receive: receiveApi,
   sendApi: sendApi,
+  awakenApi: awakenApi,
 };
 
 export type BASE_REQ_TYPES = {

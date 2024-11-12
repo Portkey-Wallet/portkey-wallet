@@ -51,7 +51,7 @@ export default function CommonAvatar(props: CommonAvatarProps) {
     () => ({
       width: width || Number(avatarSize),
       height: height || Number(avatarSize),
-      borderRadius: shapeType === 'square' ? 4 : Number(avatarSize) / 2,
+      borderRadius: shapeType === 'square' ? pTd(8) : Number(avatarSize) / 2,
     }),
     [avatarSize, height, shapeType, width],
   );
@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
   },
   squareStyle: {
     borderRadius: pTd(6),
-    backgroundColor: defaultColors.bg7,
+    backgroundColor: '#000000B2',
     borderWidth: 0,
     color: defaultColors.font7,
   },

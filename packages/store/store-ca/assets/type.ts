@@ -141,4 +141,5 @@ export type TAssetsState = {
     accountAssetsList: IAccountCryptoBoxAssetItem[];
     totalRecordCount: number;
   };
+  nftSectionUiType: 'Collections' | 'NFTs';
 };

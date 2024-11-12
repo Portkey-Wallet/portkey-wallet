@@ -12,7 +12,14 @@ export const PortkeyLinearGradient = () => (
     style={styles.container}
   />
 );
-
+export const PortkeyLinearGradientV2 = () => (
+  <LinearGradient
+    start={{ x: 0, y: 0.15 }}
+    end={{ x: 1, y: 0.15 }}
+    colors={['#4141424D', '#6262644D', '#4141424D']}
+    style={styles.container}
+  />
+);
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',

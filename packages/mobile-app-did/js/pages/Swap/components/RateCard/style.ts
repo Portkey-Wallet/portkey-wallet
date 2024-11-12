@@ -47,4 +47,20 @@ export const getStyles = makeStyles(theme => ({
   tagItemStyle: {
     flex: 0,
   },
+  containerStyle: {
+    flex: 1,
+    height: pTd(24),
+    marginRight: -pTd(2),
+    marginLeft: -pTd(10),
+  },
+  inputContainerStyle: {
+    borderBottomWidth: 0,
+    height: pTd(24),
+  },
+  inputStyle: {
+    ...fonts.BGMediumFont,
+    fontSize: pTd(20),
+    lineHeight: pTd(24),
+    color: theme.colors.textBase1,
+  },
 }));

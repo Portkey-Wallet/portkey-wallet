@@ -38,7 +38,8 @@ const SwapHome = () => {
       rightDom={selectTab === SwapHomeTabType.SWAP && <SwapSettingButton style={styles.swapSettingButton} />}
       safeAreaColor={['black', 'black']}
       containerStyles={styles.pageWrap}
-      scrollViewProps={{ disabled: true }}>
+      scrollViewProps={{ disabled: true }}
+      style={styles.titleWrap}>
       {selectTab === SwapHomeTabType.SWAP && <SwapEnter />}
       {selectTab === SwapHomeTabType.LIMIT && <LimitEnter />}
     </PageContainer>

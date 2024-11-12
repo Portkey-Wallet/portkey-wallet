@@ -3,7 +3,7 @@ import { pTd } from 'utils/unit';
 
 export const getStyles = makeStyles(() => ({
   limitEnterWrap: {
-    flex: 1,
+    overflow: 'hidden',
   },
   amountCardGroup: {
     marginTop: pTd(8),

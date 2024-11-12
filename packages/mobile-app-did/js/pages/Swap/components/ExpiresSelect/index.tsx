@@ -5,24 +5,18 @@ import Svg from 'components/Svg';
 import SelectOverlay from 'components/SelectOverlay';
 import { pTd } from 'utils/unit';
 import { getStyles } from './style';
+import { EXPIRY_LIST, LimitExpiryEnum } from '@portkey-wallet/constants/constants-ca/awaken/limit';
 
 interface IExpiresSelectProps {
-  selectedValue: string;
-  onChangeValue: (value: string) => void;
+  selectedValue: LimitExpiryEnum;
+  onChangeValue: (value: LimitExpiryEnum) => void;
 }
 
-const EXPIRES_LIST = [
-  { label: '1 day', value: '1' },
-  { label: '3 days', value: '3' },
-  { label: '7 days', value: '7' },
-  { label: '30 days', value: '30' },
-];
-
-const ExpiresSelect: React.FC<IExpiresSelectProps> = ({ selectedValue = EXPIRES_LIST[0].value, onChangeValue }) => {
+const ExpiresSelect: React.FC<IExpiresSelectProps> = ({ selectedValue = EXPIRY_LIST[0].value, onChangeValue }) => {
   const styles = getStyles();
 
   const expiresText = useMemo(() => {
-    return EXPIRES_LIST.find(ele => ele.value === selectedValue)?.label;
+    return EXPIRY_LIST.find(ele => ele.value === selectedValue)?.label;
   }, [selectedValue]);
 
   return (
@@ -32,7 +26,7 @@ const ExpiresSelect: React.FC<IExpiresSelectProps> = ({ selectedValue = EXPIRES_
         SelectOverlay.showSelectModal({
           title: 'Set expiration time',
           value: selectedValue,
-          dataList: EXPIRES_LIST,
+          dataList: EXPIRY_LIST,
           onChangeValue: item => {
             onChangeValue(item.value);
           },

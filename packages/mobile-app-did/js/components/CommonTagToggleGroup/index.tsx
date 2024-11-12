@@ -25,14 +25,14 @@ interface ITagItemProps<T> {
   size?: TagToggleGroupSize;
   item: ITagItem<T>;
   isSelected: boolean;
-  onSelect?: (value: T) => void;
+  onSelect?: (value: T, item: ITagItem<T>) => void;
 }
 
 interface ICommonTagToggleGroupProps<T> extends Pick<ITagItemProps<T>, 'isRound' | 'isOutline' | 'size' | 'onSelect'> {
   style?: ViewStyleType;
   tagItemStyle?: ViewStyleType;
   tagList: ITagItem<T>[];
-  selectedValue: T;
+  selectedValue?: T;
 }
 
 function TagItem<T extends string>({
@@ -57,7 +57,7 @@ function TagItem<T extends string>({
         size && styles[`${size}TagItem`],
         style,
       ]}
-      onPress={() => onSelect?.(item.value)}>
+      onPress={() => onSelect?.(item.value, item)}>
       {isSelected && !item.hideCheckIcon && (
         <Svg iconStyle={styles.checkIcon} icon="check" size={pTd(16)} color={theme.colors.iconBrand4} />
       )}

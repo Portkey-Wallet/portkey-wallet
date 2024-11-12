@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { ScrollView, StyleSheet, View, Image } from 'react-native';
 import Touchable from 'components/Touchable';
 import PageContainer from 'components/PageContainer';
@@ -7,6 +7,8 @@ import fonts from 'assets/theme/fonts';
 import * as Clipboard from 'expo-clipboard';
 import navigationService from 'utils/navigationService';
 import CommonToast from 'components/CommonToast';
+import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { getExploreLink } from '@portkey-wallet/utils';
 import GStyles from 'assets/theme/GStyles';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import ProfileHeaderSection from 'pages/My/components/ProfileHeaderSection';
@@ -16,13 +18,16 @@ import { makeStyles, useTheme } from '@rneui/themed';
 import { TextL } from 'components/CommonText';
 import { IContactItemType } from '@portkey-wallet/types/types-ca/contactNew';
 import ContactAddress, { IContactAddressRef } from 'components/ContactAddress';
+import { AELF_NETWORK_NAME } from 'constants/common';
+import AddressActivity from '../AddressActivity';
 
 type RouterParams = {
   contact?: IContactItemType;
+  isSaved?: boolean;
 };
 
 const NoChatContactProfile: React.FC = () => {
-  const { contact } = useRouterParams<RouterParams>();
+  const { contact, isSaved = true } = useRouterParams<RouterParams>();
   const contactAddressRef = useRef<IContactAddressRef>(null);
   const [isViewMoreDropdown, setIsViewMoreDropdown] = useState(false);
   const { t } = useLanguage();
@@ -37,6 +42,22 @@ const NoChatContactProfile: React.FC = () => {
     const isCopy = await Clipboard.setStringAsync(addressFormatStr);
     isCopy && CommonToast.success(t('Copy Success'));
   }, [t]);
+  const hadleAddContact = useCallback(() => {
+    navigationService.navigate('NoChatContactProfileEdit', { willAddContact: contact });
+  }, [contact]);
+  const isAelfNetwork = useMemo(() => {
+    const { network } = contact?.addressInfo ?? {};
+    return network === AELF_NETWORK_NAME;
+  }, [contact]);
+
+  const activityParams = useMemo(() => {
+    return {
+      address: contact?.addressInfo?.address,
+      chainId: contact?.addressInfo?.chainId,
+    };
+  }, [contact]);
+
+  const { explorerUrl } = useCurrentChain(contact?.addressInfo?.chainId) ?? {};
 
   return (
     <PageContainer
@@ -54,13 +75,15 @@ const NoChatContactProfile: React.FC = () => {
         </Touchable>
       }>
       <ScrollView alwaysBounceVertical={true}>
-        <ProfileHeaderSection
-          showRemark={false}
-          name={(contact?.name || contact?.caHolderInfo?.walletName)?.toUpperCase() || ''}
-          avatarUrl={contact?.caHolderInfo?.avatar || ''}
-          style={pageStyles.profileHeader}
-          nameStyle={pageStyles.profileHeaderName}
-        />
+        {isSaved && (
+          <ProfileHeaderSection
+            showRemark={false}
+            name={(contact?.name || contact?.caHolderInfo?.walletName)?.toUpperCase() || ''}
+            avatarUrl={contact?.caHolderInfo?.avatar || ''}
+            style={pageStyles.profileHeader}
+            nameStyle={pageStyles.profileHeaderName}
+          />
+        )}
         <View style={pageStyles.profileAddress}>
           <TextL>Address</TextL>
           <View style={pageStyles.addressWrap}>
@@ -71,26 +94,65 @@ const NoChatContactProfile: React.FC = () => {
               <TextL style={pageStyles.addressNetworkName}>{contact?.addressInfo?.networkName}</TextL>
               {contact && <ContactAddress ref={contactAddressRef} contact={contact} style={pageStyles.address} />}
             </View>
-            <Touchable style={pageStyles.addressCopy} onPress={hadleCopy}>
-              <Svg icon="copy" size={pTd(24)} color={colors.iconBase3} />
-            </Touchable>
+            {isSaved ? (
+              <Touchable style={pageStyles.addressCopy} onPress={hadleCopy}>
+                <Svg icon="copy" size={pTd(24)} color={colors.iconBase3} />
+              </Touchable>
+            ) : (
+              <Touchable style={pageStyles.addressCopy} onPress={hadleAddContact}>
+                <Svg icon="add-contact1" size={pTd(24)} color={colors.iconBase3} />
+              </Touchable>
+            )}
           </View>
         </View>
+        <TextL>112121</TextL>
+        {isSaved &&
+          (isAelfNetwork ? (
+            activityParams?.address &&
+            activityParams?.chainId && (
+              <AddressActivity address={activityParams?.address} chainId={activityParams?.chainId} />
+            )
+          ) : (
+            <TextL style={pageStyles.emptyActivity}>Activity not available</TextL>
+          ))}
       </ScrollView>
       {isViewMoreDropdown && (
         <View style={pageStyles.dropDownWrap}>
-          <Touchable
-            style={pageStyles.dropDownItem}
-            onPress={() => {
-              navigationService.navigate('NoChatContactProfileEdit', { contact });
-            }}>
-            <Svg icon="edit1" size={pTd(24)} color={colors.textBase1} />
-            <TextL style={pageStyles.dropDownItemText}>Edit address</TextL>
-          </Touchable>
-          <Touchable style={pageStyles.dropDownItem}>
-            <Svg icon="external" size={pTd(24)} color={colors.textBase1} />
-            <TextL style={pageStyles.dropDownItemText}>View on explorer</TextL>
-          </Touchable>
+          {isSaved ? (
+            <Touchable
+              style={pageStyles.dropDownItem}
+              onPress={() => {
+                navigationService.navigate('NoChatContactProfileEdit', { contact });
+                setIsViewMoreDropdown(false);
+              }}>
+              <Svg icon="edit1" size={pTd(24)} color={colors.textBase1} />
+              <TextL style={pageStyles.dropDownItemText}>Edit address</TextL>
+            </Touchable>
+          ) : (
+            <Touchable
+              style={pageStyles.dropDownItem}
+              onPress={() => {
+                hadleCopy();
+                setIsViewMoreDropdown(false);
+              }}>
+              <Svg icon="copy" size={pTd(24)} color={colors.iconBase1} />
+              <TextL style={pageStyles.dropDownItemText}>Copy address</TextL>
+            </Touchable>
+          )}
+          {isAelfNetwork && explorerUrl && (
+            <Touchable
+              style={pageStyles.dropDownItem}
+              onPress={() => {
+                navigationService.navigate('ViewOnWebView', {
+                  title: t('View on Explorer'),
+                  url: getExploreLink(explorerUrl, contact?.addressInfo?.address || '', 'address'),
+                });
+                setIsViewMoreDropdown(false);
+              }}>
+              <Svg icon="external" size={pTd(24)} color={colors.textBase1} />
+              <TextL style={pageStyles.dropDownItemText}>View on explorer</TextL>
+            </Touchable>
+          )}
         </View>
       )}
     </PageContainer>
@@ -125,7 +187,8 @@ export const getPageStyles = makeStyles(theme => ({
     lineHeight: pTd(22),
   },
   profileHeader: {
-    marginTop: pTd(32),
+    marginTop: pTd(16),
+    marginBottom: pTd(32),
   },
   profileHeaderName: {
     marginTop: pTd(12),
@@ -134,9 +197,7 @@ export const getPageStyles = makeStyles(theme => ({
     color: theme.colors.textBase1,
     ...fonts.BGMediumFont,
   },
-  profileAddress: {
-    marginTop: pTd(32),
-  },
+  profileAddress: {},
   addressWrap: {
     marginTop: pTd(8),
     borderColor: theme.colors.bgBase2,
@@ -164,5 +225,10 @@ export const getPageStyles = makeStyles(theme => ({
   addressCopy: {
     width: pTd(24),
     height: pTd(24),
+  },
+  emptyActivity: {
+    textAlign: 'center',
+    color: theme.colors.textBase2,
+    paddingTop: pTd(32),
   },
 }));

@@ -4,6 +4,7 @@ import { addressFormat } from '@portkey-wallet/utils';
 import React, { useImperativeHandle, useMemo, forwardRef } from 'react';
 import { Text, TextStyle } from 'react-native';
 import { AELF_NETWORK_NAME } from 'constants/common';
+import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 
 export const formatStr2EllipsisStr = (address = '', startDigit = 8, endDigit = 8): string => {
   if (!address) return '';
@@ -25,8 +26,11 @@ const ContactAddress = forwardRef<IContactAddressRef, ItemType>((props, ref) => 
   const { contact, style } = props;
 
   const addressFormatStr = useMemo(() => {
-    const { address, chainId, network } = contact?.addressInfo ?? {};
+    const { address, chainId, network, isExchange } = contact?.addressInfo ?? {};
     if (network === AELF_NETWORK_NAME) {
+      if (isExchange && chainId === MAIN_CHAIN_ID) {
+        return address;
+      }
       return addressFormat(address, chainId, network);
     }
     return address;

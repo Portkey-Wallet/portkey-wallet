@@ -14,7 +14,6 @@ import { INIT_NONE_ERROR, ErrorType, INIT_HAS_ERROR } from '@portkey-wallet/cons
 import ChainOverlay from 'pages/My/Contacts/ContactChainOverlay';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useAddContact, useDeleteContact, useEditContact } from '@portkey-wallet/hooks/hooks-ca/contactNew';
-import { useNetworkList } from '@portkey-wallet/hooks/hooks-ca/contactNew';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { useInputFocus } from 'hooks/useInputFocus';
 import { makeStyles, useTheme } from '@rneui/themed';
@@ -31,9 +30,11 @@ import CommonToast from 'components/CommonToast';
 import Touchable from 'components/Touchable';
 import { KeyboardSafeArea } from 'components/KeyboardSafeArea';
 import navigationService from 'utils/navigationService';
+import { useContactNetworkConfig } from '@portkey-wallet/hooks/hooks-ca/config';
 
 type RouterParams = {
   contact?: IContactItemType;
+  willAddContact?: IContactItemType;
 };
 
 export type EditAddressType = AddressItem & { error: ErrorType };
@@ -47,15 +48,29 @@ const initEditContact: IEditContactItemApiType = {
   address: '',
 };
 interface IFormErrorType {
-  name: ErrorType;
-  address: ErrorType;
+  name?: ErrorType;
+  address?: ErrorType;
 }
 const initFormError: IFormErrorType = {
   name: INIT_NONE_ERROR,
   address: INIT_NONE_ERROR,
 };
+const errorCodeMessageMap: Record<string, IFormErrorType> = {
+  40021: {
+    name: {
+      ...INIT_HAS_ERROR,
+      errorMsg: 'This name already exists',
+    },
+  },
+  40022: {
+    address: {
+      ...INIT_HAS_ERROR,
+      errorMsg: 'Please enter a valid address',
+    },
+  },
+};
 const ContactEdit: React.FC = () => {
-  const { contact } = useRouterParams<RouterParams>();
+  const { contact, willAddContact } = useRouterParams<RouterParams>();
   const isEdit = useMemo(() => contact !== undefined, [contact]);
 
   const iptRef = useRef<TextInput>();
@@ -73,10 +88,10 @@ const ContactEdit: React.FC = () => {
   // const { contactIndexList } = useContact();
   const [editContact, setEditContact] = useState<IEditContactItemApiType>(initEditContact);
 
+  // exist contact, enter edit page, fill form default value
   useEffect(() => {
     if (!contact) return;
     const _contact: IContactItemType = JSON.parse(JSON.stringify(contact));
-    console.log('contact', _contact);
     const _editContact = {
       id: _contact.id,
       name: _contact.name,
@@ -87,14 +102,28 @@ const ContactEdit: React.FC = () => {
     };
     setEditContact(_editContact);
   }, [contact]);
+  // no exist contact, enter add page, fill form default value
+  useEffect(() => {
+    if (!willAddContact) return;
+    const _contact: IContactItemType = JSON.parse(JSON.stringify(willAddContact));
+    const _editContact = {
+      name: '',
+      chainId: _contact.addressInfo.chainId,
+      network: _contact.addressInfo.network,
+      isExchange: _contact.addressInfo.isExchange ?? false,
+      address: _contact.addressInfo.address,
+    };
+    setEditContact(_editContact);
+  }, [willAddContact]);
 
   const {
     theme: { colors },
   } = useTheme();
-  const networkList = useNetworkList();
+  const { supportNetworkList } = useContactNetworkConfig();
+  // const supportNetworkList = useNetworkList();
 
   const selectedNetwork = useMemo(() => {
-    const network = networkList.find(item => {
+    const network = supportNetworkList?.find(item => {
       let isChainIdMatch = true;
       if (item.network === AELF_NETWORK_NAME) {
         isChainIdMatch = item.chainId === editContact.chainId;
@@ -102,7 +131,7 @@ const ContactEdit: React.FC = () => {
       return item.network === editContact.network && isChainIdMatch;
     });
     return network;
-  }, [networkList, editContact]);
+  }, [supportNetworkList, editContact]);
   const handleAddressChange = useCallback((value: string) => {
     setEditContact(preEditContact => {
       const _editContact = { ...preEditContact };
@@ -152,7 +181,7 @@ const ContactEdit: React.FC = () => {
         },
       ],
     });
-  }, [deleteContactApi, editContact.id, t]);
+  }, [contact, deleteContactApi, t]);
   const checkError = useCallback(async () => {
     const _nameValue = editContact.name.trim();
 
@@ -187,22 +216,13 @@ const ContactEdit: React.FC = () => {
         name: INIT_NONE_ERROR,
       }));
     }
-    // if (!isAelfAddress(addressItem.address)) {
-    //     isErrorExist = true;
-    //     addressItem.error = {
-    //       ...INIT_HAS_ERROR,
-    //       errorMsg: t('Invalid address'),
-    //     };
-    //   }
 
     return errorName;
   }, [editContact.name, t]);
   const onFinish = useCallback(async () => {
     try {
       Loading.show();
-      console.log('start onFinish', editContact);
       const isErrorExist = await checkError();
-      console.log('isErrorExist', isErrorExist, 'editContact', editContact);
       if (isErrorExist) return;
       const { id, name, address, network, isExchange, chainId } = editContact;
       const upsertParams: IAddContactItemApiType = {
@@ -226,13 +246,25 @@ const ContactEdit: React.FC = () => {
         console.log('newConaddContactResponsetact', addContactResponse);
       }
       CommonToast.success('Saved Successful');
-      navigationService.navigate('ContactsHome');
+      if (willAddContact) {
+      } else {
+        navigationService.navigate('ContactsHome');
+      }
     } catch (err: any) {
-      CommonToast.failError(err);
+      console.log('err', err);
+      const errorCode = err?.error?.code;
+      const formItemError = errorCodeMessageMap[errorCode];
+      console.log('formItemError', formItemError);
+      if (formItemError) {
+        setFormError(formItemError);
+      } else {
+        setFormError(initFormError);
+        CommonToast.failError(err);
+      }
     } finally {
       Loading.hide();
     }
-  }, [addContactApi, checkError, editContact, editContactApi]);
+  }, [addContactApi, checkError, editContact, editContactApi, willAddContact]);
   const pasteAddress = useCallback(async () => {
     try {
       const str = await getStringAsync();
@@ -265,7 +297,7 @@ const ContactEdit: React.FC = () => {
         value={editContact.name}
         onChangeText={onNameChange}
         errorStyle={pageStyles.errorStyle}
-        errorMessage={formError.name.isError ? formError.name.errorMsg : ''}
+        errorMessage={formError.name?.isError ? formError.name?.errorMsg : ''}
       />
       <KeyboardAwareScrollView
         extraHeight={pTd(300)}
@@ -277,7 +309,7 @@ const ContactEdit: React.FC = () => {
           <ListItem
             onPress={() => {
               ChainOverlay.showList({
-                list: networkList,
+                list: supportNetworkList || [],
                 value: selectedNetwork,
                 onChange: item => {
                   console.log('item', item);
@@ -294,19 +326,10 @@ const ContactEdit: React.FC = () => {
                 <Image style={pageStyles.networkImage} source={{ uri: selectedNetwork?.imageUrl || '' }} />
               )
             }
-            titleStyle={[]}
-            // titleTextStyle={}
-            // style={}
+            titleTextStyle={pageStyles.titleTextStyle}
             title={selectedNetwork?.name ?? ''}
             rightElement={<Svg size={pTd(20)} icon="down-arrow" color={colors.iconBase1} />}
           />
-          {/* <AddressInput
-              placeholder={t("Enter contact's address")}
-              value={addressValue}
-              affix={affix}
-              onChangeText={_onAddressChange}
-              errorMessage={editAddressItem.error.isError ? editAddressItem.error.errorMsg : ''}
-            /> */}
           {selectedNetwork?.network === AELF_NETWORK_NAME && (
             <View style={pageStyles.exchangeContainer}>
               <TouchableOpacity
@@ -352,8 +375,9 @@ const ContactEdit: React.FC = () => {
             onChangeText={handleAddressChange}
             placeholderTextColor={colors.textBase3}
             // eslint-disable-next-line react-native/no-inline-styles
-            style={pageStyles.addressInput}
+            style={[pageStyles.addressInput, formError.address?.isError && pageStyles.errorStyle]}
           />
+          {formError.address?.isError && <TextL style={pageStyles.errorMessage}>{formError.address?.errorMsg}</TextL>}
           <View style={[GStyles.flexRow, GStyles.paddingArg(pTd(8), pTd(0))]}>
             <TextM>Enter or </TextM>
             <TextM style={pageStyles.pasteAddressText} onPress={pasteAddress}>
@@ -382,6 +406,10 @@ export const getPageStyles = makeStyles(theme => ({
   },
   errorStyle: {
     borderColor: theme.colors.borderDanger1,
+  },
+  errorMessage: {
+    color: theme.colors.textDanger2,
+    paddingTop: pTd(8),
   },
   inputLabelStyle: {
     fontSize: pTd(16),
@@ -440,5 +468,10 @@ export const getPageStyles = makeStyles(theme => ({
   networkImage: {
     width: pTd(16),
     height: pTd(16),
+    marginRight: pTd(8),
+  },
+  titleTextStyle: {
+    fontSize: pTd(16),
+    lineHeight: pTd(16),
   },
 }));

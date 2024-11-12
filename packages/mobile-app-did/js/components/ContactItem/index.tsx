@@ -1,5 +1,5 @@
 import { IContactItemType } from '@portkey-wallet/types/types-ca/contactNew';
-import { makeStyles } from '@rneui/themed';
+import { makeStyles, useTheme } from '@rneui/themed';
 import GStyles from 'assets/theme/GStyles';
 import CommonAvatar from 'components/CommonAvatar';
 import { TextL } from 'components/CommonText';
@@ -8,6 +8,7 @@ import React, { memo } from 'react';
 import { View, Image, StyleSheet } from 'react-native';
 import { pTd } from 'utils/unit';
 import ContactAddress from 'components/ContactAddress';
+import Svg from 'components/Svg';
 
 export const formatStr2EllipsisStr = (address = '', startDigit = 8, endDigit = 8): string => {
   if (!address) return '';
@@ -19,13 +20,18 @@ export const formatStr2EllipsisStr = (address = '', startDigit = 8, endDigit = 8
 export interface ItemType {
   contact: IContactItemType;
   onPress?: (item: any) => void;
-  onPressChat?: (item: any) => void;
-  isShowChat?: boolean;
+  isSaved?: boolean;
+  showInfoIcon?: boolean;
+  onInfoIconPress?: (item: any) => void;
 }
 
 const ContactItem: React.FC<ItemType> = props => {
-  const { contact, onPress } = props;
+  const { contact, onPress, isSaved = true, showInfoIcon = false, onInfoIconPress } = props;
   const styles = getStyles();
+
+  const {
+    theme: { colors },
+  } = useTheme();
 
   return (
     <Touchable onPress={() => onPress?.(contact)}>
@@ -44,13 +50,25 @@ const ContactItem: React.FC<ItemType> = props => {
           )}
         </View>
         <View style={styles.itemNameWrap}>
-          <View style={GStyles.flexRow}>
-            <TextL numberOfLines={1} style={[styles.itemNameText]}>
-              {contact?.name || contact?.caHolderInfo?.walletName}
-            </TextL>
-          </View>
-          <ContactAddress contact={contact} style={styles.itemAddressText} />
+          {isSaved ? (
+            <>
+              <TextL numberOfLines={1} style={[styles.primaryText]}>
+                {contact?.name || contact?.caHolderInfo?.walletName}
+              </TextL>
+              <ContactAddress contact={contact} style={styles.secondaryText} />
+            </>
+          ) : (
+            <>
+              <ContactAddress contact={contact} style={styles.primaryText} />
+              <TextL style={styles.secondaryText}>{contact?.addressInfo?.networkName}</TextL>
+            </>
+          )}
         </View>
+        {showInfoIcon && (
+          <Touchable onPress={onInfoIconPress}>
+            <Svg icon="info" size={pTd(24)} color={colors.iconBase1} />
+          </Touchable>
+        )}
       </View>
     </Touchable>
   );
@@ -64,8 +82,7 @@ export const getStyles = makeStyles(theme => ({
     width: '100%',
     display: 'flex',
     flexDirection: 'row',
-    alignItems: 'center',
-
+    alignItems: 'flex-start',
     ...GStyles.paddingArg(12, 16),
   },
   itemAvatar: {
@@ -79,11 +96,11 @@ export const getStyles = makeStyles(theme => ({
   itemNameWrap: {
     flex: 1,
   },
-  itemNameText: {
+  primaryText: {
     color: theme.colors.textBase1,
     lineHeight: pTd(22),
   },
-  itemAddressText: {
+  secondaryText: {
     color: theme.colors.textBase2,
     lineHeight: pTd(20),
     fontSize: pTd(14),

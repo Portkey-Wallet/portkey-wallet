@@ -43,28 +43,8 @@ const ContactsList: React.FC<ContactsListProps> = ({
   const contactListStyles = getContactListStyles();
   const contactItemStyles = getContactItemStyles();
   const { contactIndexListNew: contactIndexList = defaultList } = useContact();
-  // const contactIndexList = contactIndexListNew ?? [];
-  // const contactMap = contactMapNew ?? {};
-  console.log('contactIndexList', contactIndexList);
   const [list, setList] = useState<IContactIndexType[]>([]);
-  // const navToChatDetails = useJumpToChatDetails();
   const localContactSearch = useLocalContactSearch();
-
-  // const chatContactIndexList = useMemo(() => {
-  //   const _chatContactIndexList: ContactIndexType[] = [];
-
-  //   contactIndexList.map(ele => {
-  //     const chatList = ele.contacts.filter(contact => !!contact.imInfo);
-  //     if (chatList.length > 0) {
-  //       _chatContactIndexList.push({
-  //         contacts: chatList,
-  //         index: ele.index,
-  //       });
-  //     }
-  //   });
-
-  //   return _chatContactIndexList;
-  // }, [contactIndexList]);
 
   const flashListData = useMemo<FlashItemType[]>(() => {
     let _flashListData: FlashItemType[] = [];
@@ -115,10 +95,6 @@ const ContactsList: React.FC<ContactsListProps> = ({
             contact: item,
           });
         }}
-        // onPressChat={() => {
-        //   if (!item?.imInfo?.relationId) return;
-        //   navToChatDetails({ toRelationId: item?.imInfo?.relationId || '' });
-        // }}
       />
     );
   };

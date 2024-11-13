@@ -197,7 +197,7 @@ const SendPreview: React.FC = () => {
   );
 
   const actionAfterTransfer = useCallback(async () => {
-    const aelfIcon = caAddressInfos?.find(ele => ele?.chainId === toInfo?.chainId)?.displayChainName;
+    const aelfIcon = caAddressInfos?.find(ele => ele?.chainId === toInfo?.chainId)?.chainImageUrl;
 
     const recentItem: IRecentItem = {
       address: toInfo?.address || '',
@@ -232,6 +232,7 @@ const SendPreview: React.FC = () => {
     fetchAccountNFTCollectionInfoList,
     fetchAccountTokenInfoList,
     sendType,
+    targetNetwork?.imageUrl,
     targetNetwork?.network,
     toInfo.address,
     toInfo?.chainId,

@@ -135,7 +135,7 @@ const getStyles = makeStyles(theme => ({
     width: pTd(48),
     height: pTd(48),
     borderRadius: pTd(48),
-    backgroundColor: theme.colors.bgBase1,
+    backgroundColor: defaultColors.bg6,
     display: 'flex',
     overflow: 'hidden',
     alignItems: 'center',

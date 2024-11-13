@@ -39,4 +39,5 @@ export const initialRampState: IRampStateType = {
     countryName: '',
     icon: '',
   },
+  buyCryptoList: [],
 };

@@ -38,3 +38,7 @@ export const setSellDefaultFiatList = createAction<{
 export const setSellDefaultFiat = createAction<{
   value: IRampFiatDefault;
 }>('ramp/setSellDefaultFiat');
+
+export const setBuyCryptoList = createAction<{
+  list: IRampCryptoItem[];
+}>('ramp/setBuyCryptoList');

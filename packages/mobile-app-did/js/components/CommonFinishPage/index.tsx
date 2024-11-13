@@ -34,6 +34,7 @@ const CommonFinishPage: React.FC = () => {
         result.title = 'Transaction approved';
         result.description = ['View the transaction in “Activity” tab', ' to check its status.'];
         break;
+      case ActionType.LIMIT:
       case ActionType.SWAP:
         result.title = 'Transaction completed';
         result.description = ['View the transaction in “Activity” tab', ' to check its status.'];

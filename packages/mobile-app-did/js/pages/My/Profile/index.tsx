@@ -24,6 +24,7 @@ import CommonAvatar from 'components/CommonAvatar';
 import GStyles from 'assets/theme/GStyles';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import Divider from 'components/Divider';
+import ActionSheet from 'components/ActionSheet';
 
 interface MenuItemType {
   name?: RootStackName;
@@ -91,10 +92,26 @@ const Settings = () => {
     // todo
   }, []);
   const onSignOut = useCallback(() => {
-    ExistOverlay.showExistOverlay({
-      callBack: onExitClick,
+    // ExistOverlay.showExistOverlay({
+    //   callBack: onExitClick,
+    // });
+    ActionSheet.alert({
+      showInfoIcon: true,
+      title: 'Confirm sign out',
+      message: 'Your assets will remain safe in your account and accessible next time you log in via social recovery.',
+      buttons: [
+        { title: 'Cancel', type: 'outline' },
+        {
+          title: 'Sign out',
+          type: 'warning',
+          onPress: () => {
+            onExitClick(true);
+          },
+        },
+      ],
     });
   }, [onExitClick]);
+
   const styles = getStyles();
   return (
     <PageContainer
@@ -137,7 +154,7 @@ const Settings = () => {
             title={t(ele.label || '')}
             key={ele.name}
             // iconStyle={styles.menuItemIconStyle}
-            onPress={ele.onPress ? ele.onPress : () => navigationService.navigate(ele.name)}
+            onPress={ele.onPress ? ele.onPress : () => navigationService.navigate('SwitchNetworks')}
             suffix={ele.suffixDom}
           />
         );

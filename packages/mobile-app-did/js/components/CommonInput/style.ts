@@ -91,7 +91,7 @@ export const generalStyles = StyleSheet.create({
     color: darkColors.textDanger2,
   },
   disabledInputStyle: {
-    color: font5,
+    color: darkColors.textBase1,
     opacity: 1,
   },
 });

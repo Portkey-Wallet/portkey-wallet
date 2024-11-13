@@ -76,7 +76,7 @@ export default function Biometric() {
     [setBiometrics],
   );
   return (
-    <PageContainer containerStyles={styles.containerStyles} safeAreaColor={['white', 'gray']} titleDom={t('Biometric')}>
+    <PageContainer containerStyles={styles.containerStyles} safeAreaColor={['black']} titleDom={t('Biometric')}>
       {biometricsReady && (
         <>
           <ListItem
@@ -95,10 +95,7 @@ export default function Biometric() {
 }
 
 const styles = StyleSheet.create({
-  containerStyles: {
-    paddingTop: 8,
-    backgroundColor: defaultColors.bg4,
-  },
+  containerStyles: {},
   listStyle: {
     marginTop: 24,
     marginBottom: 0,

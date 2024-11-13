@@ -23,7 +23,7 @@ const BuyButton = (props: SendButtonType) => {
     if (themeType === 'innerPage') {
       navigationService.navigate('Receive', Object.assign({}, tokenInfo, { targetScene: ReceivePageTabType.BUY }));
     } else {
-      navigationService.navigate('RampHome', { symbol: tokenInfo ? tokenInfo.symbol : 'ELF' });
+      navigationService.navigate('RampEntry', { symbol: tokenInfo ? tokenInfo.symbol : 'ELF' });
     }
   }, [isMainnet, themeType, tokenInfo]);
 

@@ -1,5 +1,5 @@
 import React, { useMemo, useCallback } from 'react';
-import { StyleProp, ViewStyle, TextProps, View } from 'react-native';
+import { View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import useBiometricsReady from 'hooks/useBiometrics';
 import useLogOut from 'hooks/useLogOut';
@@ -7,8 +7,6 @@ import navigationService from 'utils/navigationService';
 import { StyleSheet } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import { useLanguage } from 'i18n/hooks';
-import MenuItem from '../components/MenuItem';
-import ExistOverlay from '../WalletHome/components/ExistOverlay';
 import { pTd } from 'utils/unit';
 import { RootStackName } from 'navigation';
 import { useCurrentUserInfo, useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
@@ -23,6 +21,7 @@ import FastImage from 'components/FastImage';
 import { TextM } from 'components/CommonText';
 import { makeStyles } from '@rneui/themed';
 import { getDeviceInfo } from 'utils/deviceInfo';
+import ActionSheet from 'components/ActionSheet';
 
 interface MenuItemType {
   name: string;
@@ -37,44 +36,6 @@ export default function AccountSettings() {
   const biometricsReady = useBiometricsReady();
   const styles = getStyles();
 
-  const {
-    walletInfo: { caHash, address: managerAddress },
-  } = useCurrentWallet();
-  const getCurrentCAContract = useGetCurrentCAContract();
-  const userInfo = useCurrentUserInfo();
-  const logout = useLogOut();
-  const onExitClick = useCallback(
-    async (isConfirm: boolean) => {
-      if (!isConfirm || !managerAddress || !caHash) return;
-      Loading.show();
-      try {
-        const { deviceId } = await getDeviceInfo();
-        await request.wallet.reportExitWallet({ params: { deviceId } });
-
-        const caContract = await getCurrentCAContract();
-        const req = await removeManager(caContract, managerAddress, caHash);
-
-        if (req && !req.error) {
-          console.log('logout success', req);
-          logout();
-        } else {
-          CommonToast.fail(req?.error?.message || '');
-        }
-      } catch (error) {
-        console.log(error, '=====error');
-
-        CommonToast.failError(error);
-      }
-      Loading.hide();
-    },
-    [caHash, getCurrentCAContract, logout, managerAddress],
-  );
-  const onSignOut = useCallback(() => {
-    ExistOverlay.showExistOverlay({
-      callBack: onExitClick,
-    });
-  }, [onExitClick]);
-
   const onPressItem = useCallback((item: MenuItemType) => {
     if (item.onPress) {
       item.onPress();
@@ -82,6 +43,13 @@ export default function AccountSettings() {
       navigationService.navigate(item.name as RootStackName);
     }
   }, []);
+
+  const {
+    walletInfo: { caHash, address: managerAddress },
+  } = useCurrentWallet();
+  const getCurrentCAContract = useGetCurrentCAContract();
+  const userInfo = useCurrentUserInfo();
+  const logout = useLogOut();
 
   const { t } = useLanguage();
   const avatarSize = pTd(40);
@@ -206,6 +174,52 @@ export default function AccountSettings() {
     ],
     [],
   );
+
+  const onExitClick = useCallback(
+    async (isConfirm: boolean) => {
+      if (!isConfirm || !managerAddress || !caHash) return;
+      // Loading.show({ text: t('Signing out of Portkey...') });
+      Loading.show();
+      try {
+        const { deviceId } = await getDeviceInfo();
+        await request.wallet.reportExitWallet({ params: { deviceId } });
+
+        const caContract = await getCurrentCAContract();
+        const req = await removeManager(caContract, managerAddress, caHash);
+
+        if (req && !req.error) {
+          console.log('logout success', req);
+          logout();
+        } else {
+          CommonToast.fail(req?.error?.message || '');
+        }
+      } catch (error) {
+        console.log(error, '=====error');
+
+        CommonToast.failError(error);
+      }
+      Loading.hide();
+    },
+    [caHash, getCurrentCAContract, logout, managerAddress],
+  );
+
+  const onSignOut = useCallback(() => {
+    ActionSheet.alert({
+      showInfoIcon: true,
+      title: 'Confirm sign out',
+      message: 'Your assets will remain safe in your account and accessible next time you log in via social recovery.',
+      buttons: [
+        { title: 'Cancel', type: 'outline' },
+        {
+          title: 'Sign out',
+          type: 'warning',
+          onPress: () => {
+            onExitClick(true);
+          },
+        },
+      ],
+    });
+  }, [onExitClick]);
 
   return (
     <PageContainer containerStyles={styles.containerStyles} safeAreaColor={['black']} titleDom={t('Setting')}>

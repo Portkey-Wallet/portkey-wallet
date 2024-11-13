@@ -1,18 +1,23 @@
-import { StyleSheet } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
 import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
+import { makeStyles } from '@rneui/themed';
 
 const { font2, bg1 } = defaultColors;
 
-export const styles = StyleSheet.create({
+export const getContactListStyles = makeStyles(theme => ({
+  bg: {
+    backgroundColor: theme.colors.bgBase1,
+    // backgroundColor: 'red',
+  },
   listWrap: {
     flex: 1,
   },
   noResult: {
     lineHeight: pTd(22),
-    marginTop: pTd(60),
+    marginTop: pTd(24),
     textAlign: 'center',
+    color: theme.colors.textBase2,
   },
   addButtonWrap: {
     width: '100%',
@@ -37,11 +42,12 @@ export const styles = StyleSheet.create({
     color: font2,
   },
   sectionIndex: {
-    height: pTd(30),
-    lineHeight: pTd(22),
-    ...GStyles.paddingArg(8, 20, 0),
+    height: pTd(44),
+    lineHeight: pTd(20),
+    color: theme.colors.textBase2,
+    ...GStyles.paddingArg(16, 16, 8, 16),
   },
   sectionIndexWrap: {
     backgroundColor: bg1,
   },
-});
+}));

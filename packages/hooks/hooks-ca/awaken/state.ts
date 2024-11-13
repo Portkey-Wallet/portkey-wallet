@@ -23,7 +23,7 @@ export const useAwakenGasFee = () => {
   const currentNetwork = useCurrentNetwork();
   const awakenGasFeeState = useAwakenGasFeeState();
 
-  return useMemo(() => awakenGasFeeState[currentNetwork] || '', [awakenGasFeeState, currentNetwork]);
+  return useMemo(() => awakenGasFeeState[currentNetwork] || '480000', [awakenGasFeeState, currentNetwork]);
 };
 
 export const useInitAwakenGasFeeState = () => {

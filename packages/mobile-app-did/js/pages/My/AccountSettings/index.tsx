@@ -11,7 +11,6 @@ import MenuItem from '../components/MenuItem';
 import ExistOverlay from '../WalletHome/components/ExistOverlay';
 import { pTd } from 'utils/unit';
 import { RootStackName } from 'navigation';
-import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { useCurrentUserInfo, useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { removeManager } from '@portkey-wallet/utils/guardian';
 import { request } from '@portkey-wallet/api/api-did';
@@ -23,20 +22,19 @@ import CommonToast from 'components/CommonToast';
 import FastImage from 'components/FastImage';
 import { TextM } from 'components/CommonText';
 import { makeStyles } from '@rneui/themed';
-import { screenHeight, screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { getDeviceInfo } from 'utils/deviceInfo';
 
 interface MenuItemType {
-  name: RootStackName;
+  name: string;
   label: string;
   icon: IconName;
-  suffixDom?: React.ReactNode;
+  suffixDom?: () => React.ReactNode;
   onPress?: () => void;
+  showDivider?: boolean;
 }
 
 export default function AccountSettings() {
   const biometricsReady = useBiometricsReady();
-  const showChat = useIsChatShow();
   const styles = getStyles();
 
   const {
@@ -77,6 +75,14 @@ export default function AccountSettings() {
     });
   }, [onExitClick]);
 
+  const onPressItem = useCallback((item: MenuItemType) => {
+    if (item.onPress) {
+      item.onPress();
+    } else {
+      navigationService.navigate(item.name as RootStackName);
+    }
+  }, []);
+
   const { t } = useLanguage();
   const avatarSize = pTd(40);
 
@@ -90,10 +96,10 @@ export default function AccountSettings() {
     [avatarSize],
   );
 
-  const MenuList: Array<any> = useMemo(
+  const MenuList: Array<MenuItemType> = useMemo(
     () => [
       {
-        name: 'Guardians',
+        name: 'GuardianHome',
         label: 'Guardians',
         icon: 'my_guardians',
       },
@@ -103,7 +109,7 @@ export default function AccountSettings() {
         icon: 'lock',
       },
       {
-        name: 'Transaction',
+        name: 'PaymentSecurityList',
         label: 'Transaction limits',
         icon: 'my_transaction_limit',
       },
@@ -163,7 +169,6 @@ export default function AccountSettings() {
                   fontSize: 12,
                   paddingHorizontal: pTd(6),
                   paddingVertical: pTd(4),
-                  // width: pTd(12),
                 }}>
                 New
               </TextM>
@@ -205,60 +210,30 @@ export default function AccountSettings() {
   return (
     <PageContainer containerStyles={styles.containerStyles} safeAreaColor={['black']} titleDom={t('Setting')}>
       <View style={[styles.info]}>
-        <View
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-          }}>
-          <FastImage
-            style={[sizeStyle]}
-            resizeMode="cover"
-            source={{ uri: 'https://gd-hbimg.huaban.com/1bf9b061bbe51bdde88d3ad1182c20b914031e671ba2c-AuAxiq_fw1200' }}
-          />
-          <TextM>rach***@gmail.com</TextM>
+        <View style={styles.userInfoWrap}>
+          <FastImage style={[sizeStyle]} resizeMode="cover" source={{ uri: userInfo.avatar }} />
+          <TextM>{userInfo.nickName}</TextM>
         </View>
 
         <Svg icon="right-arrow" size={pTd(20)} color={defaultColors.icon1} />
       </View>
-      <View
-        style={{
-          height: 1,
-          borderBottomWidth: 0.5,
-          marginHorizontal: pTd(12),
-          width: '100%',
-          backgroundColor: '#FFF',
-        }}
-      />
+      <View style={styles.divider} />
 
       {MenuList.map(item => (
         <>
-          <View style={[styles.cell]}>
-            <View
-              style={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-              }}>
+          <Touchable
+            style={[styles.cell]}
+            onPress={() => {
+              onPressItem(item);
+            }}>
+            <View style={styles.cellWrap}>
               <View style={styles.svgWrap}>
                 <Svg icon={item.icon} size={pTd(24)} iconStyle={[styles.menuIcon]} />
               </View>
-              <TextM
-                style={{
-                  color: '#FFFFFF',
-                  fontSize: 16,
-                }}>
-                {item.label}
-              </TextM>
+              <TextM style={styles.cellText}>{item.label}</TextM>
             </View>
 
-            <View
-              style={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}>
+            <View style={styles.cellRightWrap}>
               {item.suffixDom && item.suffixDom()}
 
               <Svg
@@ -270,7 +245,7 @@ export default function AccountSettings() {
                 color={defaultColors.icon1}
               />
             </View>
-          </View>
+          </Touchable>
           {item.showDivider && <View style={styles.divider} />}
         </>
       ))}
@@ -290,6 +265,10 @@ const getStyles = makeStyles(theme => ({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
+  userInfoWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   cell: {
     height: pTd(48),
     display: 'flex',
@@ -297,9 +276,21 @@ const getStyles = makeStyles(theme => ({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
+  cellWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   svgWrap: {
-    position: 'relative',
     marginRight: pTd(12),
+  },
+  cellText: {
+    color: theme.colors.textBase1,
+    fontSize: 16,
+  },
+  cellRightWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   menuIcon: {},
   menuItemWrap: {
@@ -322,7 +313,7 @@ const getStyles = makeStyles(theme => ({
     backgroundColor: '#FFF',
   },
   signOutText: {
-    width: screenWidth,
+    width: '100%',
     textAlign: 'center',
     color: '#E24505',
     height: pTd(48),

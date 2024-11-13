@@ -40,6 +40,7 @@ import GiftDetail from 'pages/CryptoGift/GiftDetail';
 import GiftResult from 'pages/CryptoGift/GiftResult';
 import EbridgeExample from 'pages/EbridgeExample';
 import ProfileSettings from 'pages/My/AccountSettings';
+import SecurityNav from 'pages/My/Security/router';
 
 // key: page route key, value: is page show
 const PageShowMap = new Map<string, boolean>();
@@ -73,6 +74,7 @@ export const productionNav = [
   ...DiscoverNav,
   ...FreeMintNav,
   ...SwapNav,
+  ...SecurityNav,
 ] as const;
 
 // dev nav

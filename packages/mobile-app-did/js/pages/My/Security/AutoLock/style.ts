@@ -1,15 +1,9 @@
-import { StyleSheet } from 'react-native';
-
-import { defaultColors } from 'assets/theme';
-import gStyles from 'assets/theme/GStyles';
+import { makeStyles } from '@rneui/themed';
 import { pTd } from 'utils/unit';
 
-const { bg19 } = defaultColors;
-
-export const pageStyles = StyleSheet.create({
+export const getStyles = makeStyles(theme => ({
   pageWrap: {
     flex: 1,
-    backgroundColor: bg19,
   },
   wrapStyle: {
     flexGrow: 1,
@@ -23,6 +17,6 @@ export const pageStyles = StyleSheet.create({
   },
   label: {
     fontSize: pTd(14),
-    color: defaultColors.font5,
+    color: theme.colors.textBase1,
   },
-});
+}));

@@ -19,7 +19,6 @@ type RedPacketAmountShowPropsType = {
   usdTextColor?: string;
   wrapStyle?: StyleProp<ViewStyle>;
   usdWrapStyle?: StyleProp<ViewStyle>;
-  assetType?: AssetType;
 };
 
 export const RedPacketAmountShow = (props: RedPacketAmountShowPropsType) => {
@@ -32,7 +31,6 @@ export const RedPacketAmountShow = (props: RedPacketAmountShowPropsType) => {
     usdTextColor,
     wrapStyle = {},
     usdWrapStyle = {},
-    assetType = AssetType.ft,
   } = props;
   const styles = getStyles();
 
@@ -41,8 +39,8 @@ export const RedPacketAmountShow = (props: RedPacketAmountShowPropsType) => {
 
   const amountShowValue = useMemo(() => {
     if (amountShow) return amountShow;
-    return assetType === AssetType.ft ? '0.00' : '0';
-  }, [amountShow, assetType]);
+    return '0';
+  }, [amountShow]);
 
   return (
     <>

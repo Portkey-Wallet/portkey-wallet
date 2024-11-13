@@ -423,13 +423,34 @@ const ActivityDetail = (props: ActivityItemType & IActivityApiParams) => {
     if (isShowSystemForDefault) {
       return (
         <View style={[styles.topIconWrap]}>
-          <CommonAvatar
-            title={activityItem?.transactionName}
-            svgName={activityItem?.listIcon ? undefined : 'transfer'}
-            imageUrl={activityItem?.listIcon || ''}
-            avatarSize={pTd(60)}
-            titleStyle={styles.avatarTitleStyle}
-          />
+          {activityItem?.sourceIcon ? (
+            <View style={styles.cornerMarkWrap}>
+              <CommonAvatar
+                title={activityItem?.transactionName}
+                svgName={activityItem?.listIcon ? undefined : 'transfer'}
+                imageUrl={activityItem?.listIcon || ''}
+                avatarSize={pTd(60)}
+                titleStyle={styles.avatarTitleStyle}
+              />
+              <View style={styles.cornerMark}>
+                <CommonAvatar
+                  imageUrl={activityItem.sourceIcon}
+                  style={styles.cornerMarkIcon}
+                  avatarSize={pTd(16)}
+                  titleStyle={styles.avatarTitleStyle}
+                  borderStyle={GStyles.hairlineBorder}
+                />
+              </View>
+            </View>
+          ) : (
+            <CommonAvatar
+              title={activityItem?.transactionName}
+              svgName={activityItem?.listIcon ? undefined : 'transfer'}
+              imageUrl={activityItem?.listIcon || ''}
+              avatarSize={pTd(60)}
+              titleStyle={styles.avatarTitleStyle}
+            />
+          )}
           <TextXXL style={[fonts.SGMediumFont, styles.marginTop8]}>{activityItem.transactionName}</TextXXL>
         </View>
       );
@@ -624,13 +645,6 @@ export default {
 };
 
 export const getStyles = makeStyles(theme => ({
-  containerStyle: {
-    paddingLeft: pTd(20),
-    paddingRight: pTd(20),
-    paddingTop: pTd(16),
-    display: 'flex',
-    alignItems: 'center',
-  },
   tokenCount: {
     ...fonts.mediumFont,
   },

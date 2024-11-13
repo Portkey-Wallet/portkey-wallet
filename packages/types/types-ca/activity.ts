@@ -36,6 +36,7 @@ export type ActivityItemType = {
   toChainIdUpdated?: string;
   fromChainIcon?: string;
   toChainIcon?: string;
+  sourceIcon?: string;
 };
 
 export type TDappOperations = {

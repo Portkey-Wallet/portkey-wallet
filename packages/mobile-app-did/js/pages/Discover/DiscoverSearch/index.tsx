@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { StyleSheet, TextInput, View } from 'react-native';
+import { Keyboard, StyleSheet, TextInput, View } from 'react-native';
 import CommonInput from 'components/CommonInput';
 import { SimulatedInput } from 'components/SimulatedInputBoxV2';
 
@@ -29,7 +29,7 @@ import { useKeyboard } from 'hooks/useKeyboardHeight';
 export default function DiscoverSearch() {
   const { t } = useLanguage();
   const { learnGroupList, earnList } = useDiscoverData();
-  const { isKeyboardOpened } = useKeyboard(0);
+  const { isKeyboardOpened, setIsKeyboardOpened } = useKeyboard(0);
 
   const iptRef = useRef<TextInput>();
   useInputFocus(iptRef);
@@ -117,32 +117,55 @@ export default function DiscoverSearch() {
 
       <KeyboardSafeArea>
         <View style={[GStyles.flexRow, styles.inputContainer]}>
-          <SimulatedInput />
-          {/* <CommonInput
-            autoFocus
+          <CommonInput
+            // autoFocus
             grayBorder
             theme="black-bg"
             ref={iptRef}
             value={value}
+            allowClear
+            clearIcon="clear4"
+            type="search"
+            clearIconColor={'#1F1F21'}
             onChangeText={v => setValue(v)}
             onSubmitEditing={onSearch}
             returnKeyType="search"
-            placeholder={t('Search Dapp or enter URL')}
+            placeholder={t('dApps, Sites, URL')}
             containerStyle={styles.inputStyle}
-            rightIcon={
-              value ? (
-                <Touchable onPress={clearText}>
-                  <Svg icon="clear3" size={pTd(16)} />
-                </Touchable>
-              ) : undefined
-            }
+            // rightIcon={
+            //   value ? (
+            //     <Touchable onPress={clearText}>
+            //       <Svg icon="clear3" size={pTd(16)} />
+            //     </Touchable>
+            //   ) : undefined
+            // }
             rightIconContainerStyle={styles.rightIconContainerStyle}
             style={styles.rnInputStyle}
-          /> */}
+          />
 
-          {/* <Touchable onPress={clearText}>
-            <Svg icon="chevron_down" size={pTd(20)} />
-          </Touchable> */}
+          <Touchable
+            style={{
+              padding: pTd(10),
+              borderRadius: pTd(20),
+              borderWidth: 1,
+              borderColor: '#5A5A5A',
+              marginLeft: pTd(8),
+            }}
+            onPress={() => {
+              if (isKeyboardOpened) {
+                Keyboard.dismiss();
+              }
+            }}>
+            <Svg
+              icon={'chevron_down'}
+              size={pTd(20)}
+              iconStyle={[
+                {
+                  transform: [{ rotate: !isKeyboardOpened ? '180deg' : '0deg' }],
+                },
+              ]}
+            />
+          </Touchable>
         </View>
       </KeyboardSafeArea>
     </PageContainer>

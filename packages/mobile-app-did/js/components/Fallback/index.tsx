@@ -1,13 +1,12 @@
 import React from 'react';
-import { Keyboard, TouchableWithoutFeedback, View, Image, StyleSheet } from 'react-native';
+import { Keyboard, TouchableWithoutFeedback, View, Image, StyleSheet, Text, Dimensions } from 'react-native';
 import CommonButton from 'components/CommonButton';
 import SafeAreaBox from 'components/SafeAreaBox';
-import { defaultColors } from 'assets/theme';
+import fonts from 'assets/theme/fonts';
+import { darkColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
-import { BGStyles } from 'assets/theme/styles';
 import errorUrl from 'assets/image/pngs/error.png';
 import { TextL } from 'components/CommonText';
-import { FontStyles } from 'assets/theme/styles';
 import GStyles from 'assets/theme/GStyles';
 
 export interface IErrorBoundary {
@@ -20,17 +19,16 @@ export interface IErrorBoundary {
 export type FallbackProps = IErrorBoundary;
 export function Fallback({ resetError }: FallbackProps) {
   return (
-    <SafeAreaBox edges={['left', 'top', 'right']} style={BGStyles.bg1}>
-      <SafeAreaBox edges={['bottom']} style={BGStyles.bg1}>
-        <View style={styles.headerWrap} />
-
+    <SafeAreaBox edges={['left', 'top', 'right']} style={styles.bg}>
+      <SafeAreaBox edges={['bottom']} style={styles.bg}>
         <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
           <View style={[GStyles.flexCol, GStyles.flex1, GStyles.alignCenter, GStyles.spaceBetween, styles.contentWrap]}>
             <View style={GStyles.itemCenter}>
               <Image source={errorUrl} style={styles.errorImgWrap} />
-              <TextL style={[FontStyles.font9, GStyles.textAlignCenter]}>
-                {`Oops! We're having trouble displaying your information right now. But don't worry, your wallet and funds are safe and sound.`}
-              </TextL>
+              <View style={styles.errorText}>
+                <Text style={styles.title}>Oops!</Text>
+                <TextL style={styles.subTitle}>{`Just a minor hiccup. Your wallet is perfectly safe!`}</TextL>
+              </View>
             </View>
             <CommonButton type="primary" onPress={resetError} title="Reload" />
           </View>
@@ -41,18 +39,29 @@ export function Fallback({ resetError }: FallbackProps) {
 }
 
 const styles = StyleSheet.create({
-  headerWrap: {
-    height: pTd(52),
-    width: '100%',
-    backgroundColor: defaultColors.bg1,
+  bg: {
+    backgroundColor: darkColors.bgBase1,
+  },
+  title: {
+    fontSize: pTd(32),
+    textAlign: 'center',
+    color: darkColors.textBase1,
+    ...fonts.BGMediumFont,
+  },
+  subTitle: {
+    color: darkColors.textBase2,
+    textAlign: 'center',
+    paddingTop: pTd(8),
+  },
+  errorText: {
+    ...GStyles.paddingArg(24, 16),
   },
   contentWrap: {
-    paddingHorizontal: pTd(20),
-    paddingTop: pTd(120),
-    paddingBottom: pTd(16),
+    paddingTop: pTd(100),
   },
   errorImgWrap: {
-    width: pTd(160),
-    height: pTd(140),
+    width: Dimensions.get('window').width,
+    height: pTd(195),
+    marginBottom: pTd(24),
   },
 });

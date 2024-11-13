@@ -60,6 +60,8 @@ import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type'
 import { useLatestRef } from '@portkey-wallet/hooks';
 import { getOperationDetails } from '@portkey-wallet/utils/operation.util';
 import { TVerifierAuthParams } from 'types/authentication';
+import { isIOS } from '@rneui/base';
+import { RequestSourceEnum } from '@portkey-wallet/constants/constants-ca/device';
 
 export function useOnResultFail() {
   const dispatch = useAppDispatch();
@@ -167,6 +169,7 @@ export function useOnManagerAddressAndQueryResult() {
             ...verifierInfo,
             type: LoginType[managerInfo.type],
             ...data,
+            source: isIOS ? RequestSourceEnum.IOS : RequestSourceEnum.Android,
           };
         }
         const req = await fetch({ data });

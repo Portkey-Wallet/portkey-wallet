@@ -10,6 +10,8 @@ import { contractQueries } from '@portkey-wallet/graphql';
 import { getCurrentCAViewContract, getWallet } from './redux';
 import { ChainId } from '@portkey-wallet/types';
 import { SendOptions } from '@portkey-wallet/contracts/types';
+import { RequestSourceEnum } from '@portkey-wallet/constants/constants-ca/device';
+import { isIOS } from '@rneui/base';
 
 export type TimerResult = {
   remove: () => void;
@@ -133,6 +135,7 @@ export async function addManager({
       managerInfo: {
         address: managerAddress,
         extraData: extraData || '{}',
+        platform: isIOS ? RequestSourceEnum.IOS : RequestSourceEnum.Android,
       },
     },
     sendOptions,

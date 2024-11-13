@@ -4,7 +4,7 @@ import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import { useLanguage } from 'i18n/hooks';
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 import { getContractBasic } from '@portkey-wallet/contracts/utils';
-import { useCurrentChain, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { useCurrentChain, useCurrentChainList, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { usePin } from 'hooks/store';
 import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { getManagerAccount } from 'utils/redux';
@@ -86,6 +86,7 @@ const SendPreview: React.FC = () => {
   const currentWallet = useCurrentWalletInfo();
   const currentNetwork = useCurrentNetworkInfo();
   const caAddressInfos = useCaAddressInfoList();
+  const currentChainList = useCurrentChainList();
   const wallet = useCurrentWalletInfo();
   const portkeyContractRef = useRef<ContractBasic>();
   const tokenContractRef = useRef<ContractBasic>();
@@ -197,7 +198,7 @@ const SendPreview: React.FC = () => {
   );
 
   const actionAfterTransfer = useCallback(async () => {
-    const aelfIcon = caAddressInfos?.find(ele => ele?.chainId === toInfo?.chainId)?.chainImageUrl;
+    const aelfIcon = currentChainList?.find(ele => ele?.chainId === toInfo?.chainId)?.chainImageUrl;
 
     const recentItem: IRecentItem = {
       address: toInfo?.address || '',

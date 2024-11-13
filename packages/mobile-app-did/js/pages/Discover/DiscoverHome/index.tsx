@@ -3,10 +3,9 @@ import { View, StyleSheet, GestureResponderEvent } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
 import navigationService from 'utils/navigationService';
 import SimulatedInputBox from 'components/SimulatedInputBoxV2';
-import { darkColors, defaultColors } from 'assets/theme';
+import { darkColors } from 'assets/theme';
 
 import SafeAreaBox from 'components/SafeAreaBox';
-import { BGStyles } from 'assets/theme/styles';
 import { useQrScanPermissionAndToast } from 'hooks/useQrScan';
 import Svg, { IconName } from 'components/Svg';
 import { pTd } from 'utils/unit';
@@ -81,7 +80,7 @@ export default function DiscoverHome() {
   }, [currentTabLength, showTabDrawer]);
 
   const showToolsIcon = useMemo(() => {
-    return <TouchableIcon icon="more_verti" onPress={onTouch} size={22} color={defaultColors.white} />;
+    return <TouchableIcon icon="more_verti" onPress={onTouch} size={22} color={darkColors.iconBase1} />;
   }, [onTouch]);
 
   useFocusEffect(
@@ -97,16 +96,9 @@ export default function DiscoverHome() {
   });
 
   return (
-    <SafeAreaBox edges={['top', 'right', 'left']} style={BGStyles.white}>
+    <SafeAreaBox edges={['top', 'right', 'left']} style={{ backgroundColor: darkColors.bgBase1 }}>
       <View style={styles.header}>
-        <TextM
-          style={{
-            color: defaultColors.white,
-            fontSize: 32,
-            fontWeight: '700',
-          }}>
-          Discover
-        </TextM>
+        <TextM style={styles.headerTitle}>Discover</TextM>
         {showToolsIcon}
       </View>
       <View style={styles.container}>
@@ -134,24 +126,29 @@ function TouchableIcon({
 }) {
   return (
     <Touchable style={styles.svgWrap} onPress={onPress}>
-      <Svg icon={icon} size={pTd(size)} color={color || defaultColors.bg34} />
+      <Svg icon={icon} size={pTd(size)} color={color || darkColors.iconBase1} />
     </Touchable>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: defaultColors.black,
+    backgroundColor: darkColors.bgBase1,
     flex: 1,
   },
   header: {
     height: pTd(56),
     flexDirection: 'row',
-    backgroundColor: defaultColors.black,
+    backgroundColor: darkColors.bgBase1,
     paddingHorizontal: pTd(16),
     paddingVertical: pTd(8),
     justifyContent: 'space-between',
     alignItems: 'center',
+  },
+  headerTitle: {
+    color: darkColors.textBase1,
+    fontSize: 32,
+    fontWeight: '700',
   },
   functionalLine: {
     height: pTd(56),
@@ -175,13 +172,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: pTd(4),
     borderWidth: 1.5,
-    borderColor: defaultColors.white,
+    borderColor: darkColors.borderBase1,
     width: pTd(19),
     height: pTd(19),
     marginHorizontal: pTd(16),
   },
   showAllTabsText: {
-    color: defaultColors.white,
+    color: darkColors.textBase1,
     textAlign: 'center',
   },
   svgWrap: {

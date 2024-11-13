@@ -105,4 +105,8 @@ export const getStyles = makeStyles(theme => ({
     lineHeight: pTd(14),
     color: theme.colors.textBase2,
   },
+  errorMessage: {
+    marginTop: pTd(8),
+    color: theme.colors.textDanger2,
+  },
 }));

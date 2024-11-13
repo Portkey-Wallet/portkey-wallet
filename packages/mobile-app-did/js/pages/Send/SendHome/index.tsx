@@ -13,7 +13,12 @@ import { useLanguage } from 'i18n/hooks';
 import AmountNFT from '../AmountNFT';
 import NFTInfo from '../NFTInfo';
 import CommonButton from 'components/CommonButton';
-import { useCaAddressInfoList, useCurrentWalletInfo, useMainChainCaInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import {
+  useCaAddressInfoList,
+  useCurrentUserInfo,
+  useCurrentWalletInfo,
+  useMainChainCaInfo,
+} from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useCurrentChain, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import {
   CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL,
@@ -93,7 +98,7 @@ const SendHome: React.FC = () => {
   const [chainList, setChainList] = useState<INetworkItem[]>([]);
   const [targetNetwork, setTargetNetwork] = useState<INetworkItem>();
   const [recentList, setRecentList] = useState<TFormattedRecentItem[]>();
-  const [contactList, setContactList] = useState<IContactItemType[]>();
+  const [savedList, setSavedList] = useState<TFormattedRecentItem[]>();
 
   const recommendETransfer = useMemo(
     () => targetNetwork?.serviceList?.find(ele => ele?.serviceName?.toLocaleLowerCase()?.includes('transfer')),
@@ -312,19 +317,19 @@ const SendHome: React.FC = () => {
 
   const { getTransformedRecentList } = useRecent();
 
-  const getFilterContactList = useGetFilterContactList();
+  const getSavedList = useGetFilterContactList();
 
-  const initContactList = useCallback(() => {
-    const result = getFilterContactList({
+  const initSavedList = useCallback(() => {
+    const list = getSavedList({
       fromChainId: assetInfo.chainId,
       tokenId: assetInfo.symbol,
       isFt: sendType !== 'token',
     });
-    setContactList(result);
-  }, [assetInfo.chainId, assetInfo.symbol, getFilterContactList, sendType]);
+    setSavedList(list || []);
+  }, [assetInfo.chainId, assetInfo.symbol, getSavedList, sendType]);
 
-  const initRecentList = useCallback(async () => {
-    const reList = await getTransformedRecentList({
+  const initBookList = useCallback(() => {
+    const reList = getTransformedRecentList({
       fromChainId: assetInfo.chainId,
       tokenId: assetInfo.symbol,
       isFt: sendType !== 'token',
@@ -333,8 +338,12 @@ const SendHome: React.FC = () => {
   }, [assetInfo.chainId, assetInfo.symbol, getTransformedRecentList, sendType]);
 
   useEffectOnce(() => {
-    initContactList();
-    initRecentList();
+    initBookList();
+    initBookList();
+  });
+
+  useEffectOnce(() => {
+    initSavedList();
   });
 
   const Step1Dom = useMemo(() => {
@@ -882,11 +891,50 @@ const SendHome: React.FC = () => {
   }, [onGetMaxAmount]);
 
   const caAddressInfos = useCaAddressInfoList();
-  const myOtherAddressList = useMemo(() => {
-    return caAddressInfos.filter(item => item.chainId !== assetInfo.chainId);
+  const userInfo = useCurrentUserInfo();
+
+  const myAddress = useMemo(() => {
+    return caAddressInfos.filter(item => item.chainId !== assetInfo.chainId)?.[0];
   }, [assetInfo.chainId, caAddressInfos]);
 
-  console.log('myAddress', myOtherAddressList);
+  const myAddressesList: TFormattedRecentItem = useMemo(() => {
+    const address = myAddress?.caAddress || '';
+    return {
+      id: address,
+      index: address,
+      name: userInfo?.nickName || '',
+      network: '',
+      chainId: myAddress?.chainId || '',
+      networkIcon: myAddress?.chainImageUrl,
+      addressInfo: {
+        network: '',
+        networkName: myAddress?.displayChainName || '',
+        networkImage: myAddress?.chainImageUrl || '',
+        address,
+      },
+      caHolderInfo: {
+        userId: userInfo?.userId || '',
+        caHash: '',
+        walletName: userInfo?.nickName || '',
+        avatar: userInfo?.avatar || '',
+        address,
+      },
+      isDeleted: false,
+      userId: userInfo?.userId || '',
+      modificationTime: 0,
+      address,
+    };
+  }, [
+    myAddress?.caAddress,
+    myAddress?.chainId,
+    myAddress?.chainImageUrl,
+    myAddress.displayChainName,
+    userInfo?.avatar,
+    userInfo?.nickName,
+    userInfo?.userId,
+  ]);
+
+  console.log('myAddress', recentList);
 
   return (
     <PageContainer
@@ -963,8 +1011,8 @@ const SendHome: React.FC = () => {
       {step === 1 && (
         <SelectAddressTab
           recentAddressList={recentList || []}
-          savedAddressList={contactList || []}
-          myAddressList={myOtherAddressList as any}
+          savedAddressList={savedList || []}
+          myAddressList={[myAddressesList as IContactItemType]}
           noDataMessage="No recent address"
           chainId={assetInfo.chainId}
           onPress={(item: TFormattedRecentItem) => {

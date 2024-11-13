@@ -13,6 +13,7 @@ import { StyleSheet, TouchableOpacity, Text, View, StyleProp, ViewStyle, ScrollV
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { pTd } from 'utils/unit';
+import { darkColors } from 'assets/theme';
 import { useThrottleCallback } from '@portkey-wallet/hooks';
 import { makeStyles, useTheme } from '@rneui/themed';
 import { TextM } from 'components/CommonText';
@@ -179,7 +180,7 @@ const CustomizedTopTabBar = forwardRef(
                     style={[
                       toolBarStyle.labelText,
                       {
-                        color: isFocused ? theme.colors.textBase1 : theme.colors.textBase2,
+                        color: isFocused ? darkColors.textBase1 : darkColors.textBase2,
                       },
                     ]}>
                     {label}

@@ -3,17 +3,14 @@ import { View, Text, TextInput } from 'react-native';
 import { Input, useTheme } from '@rneui/themed';
 import CommonButton from 'components/CommonButton';
 import Touchable from 'components/Touchable';
-import SelectTokenButton from '../SelectTokenButton';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import SelectTokenButton from 'components/SelectTokenButton';
 import { ViewStyleType } from 'types/styles';
 import { getStyles } from './style';
-import { useAwakenGasFee } from '@portkey-wallet/hooks/hooks-ca/awaken/state';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { divDecimals } from '@portkey-wallet/utils/converter';
-import Bignumber from 'bignumber.js';
 import { TCurrency } from '@portkey-wallet/types/types-ca/awaken';
 import { formatNameWithNoUnderline } from '@portkey-wallet/utils';
-import { ChainId } from '@portkey-wallet/types';
+import { TextM } from 'components/CommonText';
 
 interface IAmountCardProps {
   style?: ViewStyleType;
@@ -27,6 +24,7 @@ interface IAmountCardProps {
   token: TCurrency;
   onShowCryptoAssetList: () => void;
   isMaxShow?: boolean;
+  errorMessage?: string;
 }
 
 const AmountCard: React.FC<IAmountCardProps> = ({
@@ -41,6 +39,7 @@ const AmountCard: React.FC<IAmountCardProps> = ({
   token,
   onShowCryptoAssetList,
   isMaxShow = false,
+  errorMessage,
 }) => {
   const { theme } = useTheme();
   const styles = getStyles();
@@ -48,7 +47,6 @@ const AmountCard: React.FC<IAmountCardProps> = ({
   const [isInputting, setIsInputting] = useState(false);
   // amount change callback
   const handleAmountChange = (value: string) => {
-    console.log('amount change', value);
     const newValue = value.replace(/[^0-9.]/g, '');
     onAmountChange?.(newValue);
   };
@@ -77,64 +75,67 @@ const AmountCard: React.FC<IAmountCardProps> = ({
   }, [balance, token]);
 
   return (
-    <View style={[styles.container, style]}>
-      {title && <Text style={styles.title}>{title}</Text>}
-      <View style={styles.amountWrap}>
-        {isInputting ? (
-          <Input
-            ref={iptRef}
-            keyboardType="number-pad"
-            maxLength={18}
-            containerStyle={styles.containerStyle}
-            inputContainerStyle={styles.inputContainerStyle}
-            inputStyle={[styles.inputStyle, isError && styles.errorInputStyle]}
-            placeholderTextColor={theme.colors.textBase3}
-            placeholder="0"
-            value={amount}
-            onChangeText={handleAmountChange}
-            onFocus={() => setIsInputting(true)}
-            onBlur={() => setIsInputting(false)}
-          />
-        ) : (
-          <Touchable
-            style={styles.amountTextWrap}
-            onPress={() => {
-              setIsInputting(true);
-              setTimeout(() => {
-                iptRef.current?.focus();
-              }, 100);
-            }}>
-            <Text
-              style={[styles.amountText, !amount && styles.amountTextPlaceholder, isError && styles.errorInputStyle]}
-              numberOfLines={1}
-              ellipsizeMode="tail">
-              {amount || '0'}
-            </Text>
-          </Touchable>
-        )}
-        <SelectTokenButton token={token} onShowCryptoAssetList={onShowCryptoAssetList} />
-      </View>
-      <View style={styles.infoWrap}>
-        {amountUsd && (
-          <View style={styles.usdAmountWrap}>
-            <Text style={styles.usdAmount} numberOfLines={1} ellipsizeMode="tail">
-              {amountUsd}
-            </Text>
-          </View>
-        )}
-        {isMaxShow && (
-          <View style={styles.balanceWrap}>
-            <Text style={styles.balanceAmount}>{balanceStr}</Text>
-            <CommonButton
-              title="Max"
-              type="outline"
-              buttonStyle={styles.maxButton}
-              titleStyle={styles.maxButtonTitle}
-              onPress={handleMaxPress}
+    <View>
+      <View style={[styles.container, style]}>
+        {title && <Text style={styles.title}>{title}</Text>}
+        <View style={styles.amountWrap}>
+          {isInputting ? (
+            <Input
+              ref={iptRef}
+              keyboardType="number-pad"
+              maxLength={18}
+              containerStyle={styles.containerStyle}
+              inputContainerStyle={styles.inputContainerStyle}
+              inputStyle={[styles.inputStyle, isError && styles.errorInputStyle]}
+              placeholderTextColor={theme.colors.textBase3}
+              placeholder="0"
+              value={amount}
+              onChangeText={handleAmountChange}
+              onFocus={() => setIsInputting(true)}
+              onBlur={() => setIsInputting(false)}
             />
-          </View>
-        )}
+          ) : (
+            <Touchable
+              style={styles.amountTextWrap}
+              onPress={() => {
+                setIsInputting(true);
+                setTimeout(() => {
+                  iptRef.current?.focus();
+                }, 100);
+              }}>
+              <Text
+                style={[styles.amountText, !amount && styles.amountTextPlaceholder, isError && styles.errorInputStyle]}
+                numberOfLines={1}
+                ellipsizeMode="tail">
+                {amount || '0'}
+              </Text>
+            </Touchable>
+          )}
+          <SelectTokenButton token={token} onShowCryptoAssetList={onShowCryptoAssetList} />
+        </View>
+        <View style={styles.infoWrap}>
+          {amountUsd && (
+            <View style={styles.usdAmountWrap}>
+              <Text style={styles.usdAmount} numberOfLines={1} ellipsizeMode="tail">
+                {amountUsd}
+              </Text>
+            </View>
+          )}
+          {isMaxShow && (
+            <View style={styles.balanceWrap}>
+              <Text style={styles.balanceAmount}>{balanceStr}</Text>
+              <CommonButton
+                title="Max"
+                type="outline"
+                buttonStyle={styles.maxButton}
+                titleStyle={styles.maxButtonTitle}
+                onPress={handleMaxPress}
+              />
+            </View>
+          )}
+        </View>
       </View>
+      {errorMessage && <TextM style={styles.errorMessage}>{errorMessage}</TextM>}
     </View>
   );
 };

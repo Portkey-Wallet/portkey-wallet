@@ -54,7 +54,7 @@ const SelectTokenContent: React.FC<ISelectTokenContentProps> = ({ title, onSelec
   );
 
   return (
-    <ModalBody modalBodyType="bottom" title={title}>
+    <ModalBody modalBodyType="bottom" title={title} isMaxHeight>
       <CommonInput
         allowClear
         clearIcon="clear4"

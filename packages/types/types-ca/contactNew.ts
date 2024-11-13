@@ -24,6 +24,7 @@ export interface IContactItemType {
   isDeleted: boolean;
   userId: string;
   modificationTime: number;
+  address?: string;
 }
 export type TDeteleContactItemParams = IContactItemType;
 

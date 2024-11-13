@@ -5,9 +5,10 @@ import { StyleSheet, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import Touchable from 'components/Touchable';
 import { FontStyles } from 'assets/theme/styles';
-import { TextM } from 'components/CommonText';
+import { TextL, TextM } from 'components/CommonText';
 import fonts from 'assets/theme/fonts';
 import { TextStyleType, ViewStyleType } from 'types/styles';
+import { makeStyles } from '@rneui/themed';
 
 export type TabItemType<T> = {
   name: string;
@@ -34,11 +35,13 @@ export default function CommonTouchableTabs<T>({
   tabTextStyle,
   selectTabTextStyle,
 }: CommonTouchableTabsProps<T>) {
+  const styles = getStyles();
+
   return (
-    <View style={[styles.tabHeader, tabHeaderStyle]}>
-      {tabList.map(tabItem => {
+    <View style={[GStyles.flexRow, tabHeaderStyle]}>
+      {tabList.map((tabItem, idx) => {
         const selectedTab = selectTab === tabItem.type;
-        const tabTitleStyles: TextStyleType = [FontStyles.font11];
+        const tabTitleStyles: TextStyleType = [styles.baseTabTextStyle];
         if (tabTextStyle) tabTitleStyles.push(tabTextStyle);
         if (selectedTab) {
           tabTitleStyles.push(styles.selectTabTextStyle);
@@ -49,8 +52,13 @@ export default function CommonTouchableTabs<T>({
             key={tabItem.name}
             activeOpacity={0.8}
             onPress={() => onTabPress(tabItem.type)}
-            style={[styles.tabWrap, selectedTab && styles.selectTabStyle, tabWrapStyle]}>
-            <TextM style={tabTitleStyles}>{tabItem.name}</TextM>
+            style={[
+              styles.tabWrap,
+              idx === 0 && styles.firstTabWrap,
+              selectedTab && styles.selectTabStyle,
+              tabWrapStyle,
+            ]}>
+            <TextL style={tabTitleStyles}>{tabItem.name}</TextL>
           </Touchable>
         );
       })}
@@ -58,7 +66,7 @@ export default function CommonTouchableTabs<T>({
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = makeStyles(theme => ({
   tabHeader: {
     backgroundColor: darkColors.bgBase1,
     borderRadius: pTd(6),
@@ -67,15 +75,21 @@ const styles = StyleSheet.create({
     ...GStyles.paddingArg(3),
   },
   tabWrap: {
-    flex: 1,
-    width: pTd(88),
     height: pTd(30),
-    borderRadius: pTd(6),
-    alignItems: 'center',
+    borderRadius: pTd(8),
     justifyContent: 'center',
     overflow: 'hidden',
+    paddingHorizontal: pTd(12),
+    marginLeft: pTd(8),
+  },
+  firstTabWrap: {
+    marginLeft: 0,
   },
   selectTabStyle: {
+    backgroundColor: theme.colors.bgBase2,
+  },
+  selectTabTextStyle: {
+    color: theme.colors.textNeutral1,
     shadowColor: defaultColors.shadow1,
     shadowOffset: {
       width: 0,
@@ -86,8 +100,11 @@ const styles = StyleSheet.create({
     elevation: 2,
     backgroundColor: darkColors.bgBase2,
   },
-  selectTabTextStyle: {
-    color: darkColors.textNeutral1,
-    ...fonts.mediumFont,
+  // selectTabTextStyle: {
+  //   color: darkColors.textNeutral1, // todo_leon zhang
+  //   ...fonts.mediumFont,
+  // },
+  baseTabTextStyle: {
+    color: theme.colors.textNeutral3,
   },
-});
+}));

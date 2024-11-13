@@ -1,6 +1,6 @@
 import PageContainer from 'components/PageContainer';
 import { useLanguage } from 'i18n/hooks';
-import React, { useCallback, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { pTd } from 'utils/unit';
 import { ScrollView, View } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
@@ -9,7 +9,6 @@ import MenuItem from '../components/MenuItem';
 import { useAppDispatch } from 'store/hooks';
 import { getCaHolderInfoAsync } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { StyleSheet } from 'react-native';
-import { defaultColors } from 'assets/theme';
 import WalletMenuItem from '../components/WalletMenuItem';
 
 interface SecurityProps {
@@ -37,18 +36,21 @@ const Security: React.FC<SecurityProps> = () => {
             onPress={() => navigationService.navigate('AutoLock')}
             title={t('Auto-Lock')}
             icon="my_auto_lock"
+            size={pTd(24)}
           />
           <MenuItem
             style={pageStyles.menuItem}
-            onPress={() => navigationService.navigate('Beometic')}
+            onPress={() => navigationService.navigate('Biometric')}
             title={t('Biometric authentication')}
             icon="my_biometric"
+            size={pTd(24)}
           />
           <MenuItem
             style={pageStyles.menuItem}
             onPress={() => navigationService.navigate('CheckPin')}
             title={t('Change PIN')}
             icon="my_biometric"
+            size={pTd(24)}
           />
         </View>
       </ScrollView>
@@ -60,7 +62,6 @@ export default Security;
 const pageStyles = StyleSheet.create({
   pageWrap: {
     flex: 1,
-    backgroundColor: defaultColors.bg19,
     ...GStyles.paddingArg(12, 16),
   },
   menuItem: {

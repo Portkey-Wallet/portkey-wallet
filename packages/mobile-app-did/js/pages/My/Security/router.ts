@@ -1,6 +1,6 @@
 import Security from '.';
 import AutoLock from './AutoLock';
-import Beometic from '../AccountSettings/Biometric';
+import Biometric from '../AccountSettings/Biometric';
 
 const stackNav = [
   {
@@ -12,8 +12,8 @@ const stackNav = [
     component: AutoLock,
   },
   {
-    name: 'Beometic',
-    component: Beometic,
+    name: 'Biometric',
+    component: Biometric,
   },
 ] as const;
 

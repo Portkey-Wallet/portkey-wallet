@@ -19,6 +19,8 @@ export type NFTCollectionItemBaseType = {
   seedType?: SeedTypeEnum;
   expires?: string;
   seedOwnedSymbol?: string;
+  chainImageUrl?: string;
+  displayChainImage?: boolean;
 };
 
 export interface NFTCollectionItemShowType extends NFTCollectionItemBaseType {

@@ -2,8 +2,9 @@ import React, { useCallback, useMemo } from 'react';
 import { View, StyleSheet, GestureResponderEvent } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
 import navigationService from 'utils/navigationService';
-import SimulatedInputBox from 'components/SimulatedInputBox';
-import { defaultColors } from 'assets/theme';
+import SimulatedInputBox from 'components/SimulatedInputBoxV2';
+import { darkColors, defaultColors } from 'assets/theme';
+
 import SafeAreaBox from 'components/SafeAreaBox';
 import { BGStyles } from 'assets/theme/styles';
 import { useQrScanPermissionAndToast } from 'hooks/useQrScan';
@@ -39,19 +40,24 @@ export default function DiscoverHome() {
     return [
       {
         title: 'Bookmarks',
-        iconName: 'star',
-        iconColor: defaultColors.icon5,
+        iconName: 'book-mark',
+        iconColor: darkColors.iconBase1,
         onPress: () => jumpToHistory(ArchivedTabEnum.Bookmarks),
       },
       {
         title: 'Records',
-        iconName: 'history',
-        iconColor: defaultColors.icon5,
+        iconName: 'clock',
+        iconColor: darkColors.iconBase1,
         onPress: () => jumpToHistory(ArchivedTabEnum.History),
       },
     ];
   }, [jumpToHistory]);
-  const onTouch = useOnTouchAndPopUp({ list: popUpList });
+  const onTouch = useOnTouchAndPopUp({
+    list: popUpList,
+    formatType: 'fixedWidth',
+    contentStyle: { color: darkColors.textBase1 },
+    containerStyle: { backgroundColor: darkColors.bgBase1, borderColor: darkColors.borderBase1, borderWidth: 1 },
+  });
 
   const scanQRIcon = useMemo(
     () => (
@@ -75,7 +81,7 @@ export default function DiscoverHome() {
   }, [currentTabLength, showTabDrawer]);
 
   const showToolsIcon = useMemo(() => {
-    return <TouchableIcon icon="more-vertical" onPress={onTouch} size={22} />;
+    return <TouchableIcon icon="more_verti" onPress={onTouch} size={22} color={defaultColors.white} />;
   }, [onTouch]);
 
   useFocusEffect(
@@ -92,13 +98,24 @@ export default function DiscoverHome() {
 
   return (
     <SafeAreaBox edges={['top', 'right', 'left']} style={BGStyles.white}>
-      <View style={styles.functionalLine}>
-        <SimulatedInputBox onClickInput={() => navigationService.navigate('DiscoverSearch')} rightDom={scanQRIcon} />
-        {showAllTabsIcon}
+      <View style={styles.header}>
+        <TextM
+          style={{
+            color: defaultColors.white,
+            fontSize: 32,
+            fontWeight: '700',
+          }}>
+          Discover
+        </TextM>
         {showToolsIcon}
       </View>
       <View style={styles.container}>
         <DiscoverTab />
+      </View>
+      <View style={styles.functionalLine}>
+        <SimulatedInputBox onClickInput={() => navigationService.navigate('DiscoverSearch')} rightDom={scanQRIcon} />
+        {showAllTabsIcon}
+        {/* {showToolsIcon} */}
       </View>
     </SafeAreaBox>
   );
@@ -108,22 +125,33 @@ function TouchableIcon({
   icon,
   onPress,
   size = 20,
+  color,
 }: {
   icon: IconName;
   onPress: (event: GestureResponderEvent) => Promise<any> | void;
   size?: number;
+  color?: string;
 }) {
   return (
     <Touchable style={styles.svgWrap} onPress={onPress}>
-      <Svg icon={icon} size={pTd(size)} color={defaultColors.bg34} />
+      <Svg icon={icon} size={pTd(size)} color={color || defaultColors.bg34} />
     </Touchable>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: defaultColors.white,
+    backgroundColor: defaultColors.black,
     flex: 1,
+  },
+  header: {
+    height: pTd(56),
+    flexDirection: 'row',
+    backgroundColor: defaultColors.black,
+    paddingHorizontal: pTd(16),
+    paddingVertical: pTd(8),
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   functionalLine: {
     height: pTd(56),
@@ -132,6 +160,9 @@ const styles = StyleSheet.create({
     paddingVertical: pTd(8),
     justifyContent: 'center',
     alignItems: 'center',
+    fontSize: pTd(32),
+    backgroundColor: '#1F1F21',
+    // color: defaultColors.white,
   },
   pagesBtn: {
     paddingHorizontal: pTd(16),
@@ -144,13 +175,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: pTd(4),
     borderWidth: 1.5,
-    borderColor: defaultColors.font19,
+    borderColor: defaultColors.white,
     width: pTd(19),
     height: pTd(19),
     marginHorizontal: pTd(16),
   },
   showAllTabsText: {
-    color: defaultColors.font19,
+    color: defaultColors.white,
     textAlign: 'center',
   },
   svgWrap: {

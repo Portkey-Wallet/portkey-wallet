@@ -3,13 +3,13 @@ import GStyles from 'assets/theme/GStyles';
 import { TextM } from 'components/CommonText';
 import PageContainer from 'components/PageContainer';
 import React, { useCallback, useMemo, useRef, useState, Fragment, forwardRef, useImperativeHandle } from 'react';
-import { StyleSheet, ScrollView, View } from 'react-native';
+import { StyleSheet, ScrollView, View, GestureResponderEvent, Share } from 'react-native';
 import { useAppCASelector } from '@portkey-wallet/hooks/hooks-ca/index';
 import { pTd } from 'utils/unit';
-import { defaultColors } from 'assets/theme';
+import { darkColors, defaultColors } from 'assets/theme';
 import { useLanguage } from 'i18n/hooks';
 import { FontStyles } from 'assets/theme/styles';
-import { screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { isIOS, screenHeight, screenWidth } from '@portkey-wallet/utils/mobile/device';
 import Card from './components/Card';
 import { useAppCommonDispatch, useLatestRef } from '@portkey-wallet/hooks';
 import {
@@ -39,6 +39,21 @@ import { getOrigin } from '@portkey-wallet/utils/dapp/browser';
 import { useGetCmsWebsiteInfo } from '@portkey-wallet/hooks/hooks-ca/cms';
 import Touchable from 'components/Touchable';
 import { ITabContext } from './tools';
+import FloatOverlay from 'components/FloatOverlay';
+import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import CommonAvatar from 'components/CommonAvatar';
+import { useBookmarkList } from '@portkey-wallet/hooks/hooks-ca/discover';
+import { request } from '@portkey-wallet/api/api-did';
+import CommonToast from 'components/CommonToast';
+
+enum HANDLE_TYPE {
+  REFRESH = 'Refresh',
+  SHARE = 'Share',
+  FORWARD = 'Forward',
+  BACK = 'Back',
+  BOOKMARK = 'Bookmark',
+  UN_BOOKMARK = 'Delete Bookmark',
+}
 
 export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
   const { t } = useLanguage();
@@ -64,7 +79,7 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
 
   const tabRef = useRef<IBrowserTab | null>(null);
   const [preActiveTabId, setPreActiveTabId] = useState<number | undefined>(activeTabId);
-
+  const userInfo = useCurrentUserInfo();
   const [tabStateMap, setTabStateMap] = useState<{
     canGoBack: Record<string, boolean>;
     canGoForward: Record<string, boolean>;
@@ -72,6 +87,53 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
     canGoBack: {},
     canGoForward: {},
   });
+  const { bookmarkList, refresh } = useBookmarkList();
+  const isBookmarkLoading = useRef(false);
+  const [bookmark, setBookmark] = useState(bookmarkList.find(item => item.url === activeItem?.url));
+
+  const handleMark = useCallback(async () => {
+    if (!isBookmarkLoading.current) {
+      isBookmarkLoading.current = true;
+      try {
+        const result = await request.discover.addBookmark({
+          params: {
+            name: activeItem?.name || activeItem?.url || '',
+            url: activeItem?.url || '',
+          },
+        });
+        setBookmark(result);
+        CommonToast.success('Added successfully');
+        refresh();
+      } catch (error) {
+        CommonToast.failError('Added failed');
+      }
+      isBookmarkLoading.current = false;
+    }
+  }, [activeItem?.name, activeItem?.url, refresh]);
+
+  const removeMark = useCallback(async () => {
+    if (!isBookmarkLoading.current) {
+      isBookmarkLoading.current = true;
+      try {
+        await request.discover.deleteBookmark({
+          params: {
+            deleteInfos: [
+              {
+                id: bookmark?.id,
+                index: bookmark?.index,
+              },
+            ],
+          },
+        });
+        CommonToast.success('Deleted successfully');
+        refresh();
+        setBookmark(undefined);
+      } catch (error) {
+        CommonToast.failError('Deleted failed');
+      }
+      isBookmarkLoading.current = false;
+    }
+  }, [bookmark?.id, bookmark?.index, refresh]);
 
   const activeWebviewScreenShot = useCallback(async () => {
     if (!activeTabId) return;
@@ -101,19 +163,6 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
     activeWebviewScreenShot();
     dispatch(changeDrawerOpenStatus(false));
   }, [activeItem?.url, activeWebviewScreenShot, dappList, dispatch, nav]);
-
-  // header right
-  const rightDom = useMemo(() => {
-    if (activeTabId)
-      return (
-        <View style={rightDomStyle.iconGroupWrap}>
-          <Touchable style={rightDomStyle.iconWrap} onPress={() => showWalletInfo({ tabInfo: activeItem })}>
-            <Svg icon="wallet-gray" size={pTd(20)} />
-          </Touchable>
-        </View>
-      );
-    return null;
-  }, [activeItem, activeTabId]);
 
   const value = useMemo(
     () => ({
@@ -205,6 +254,54 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
     [activeItem, activeTabId, activeWebviewScreenShot],
   );
 
+  const onTouch = useCallback(
+    async (event: GestureResponderEvent, canGoBack: boolean, canGoForward: boolean) => {
+      const { pageY, pageX } = event.nativeEvent;
+      FloatOverlay.showFloatPopover({
+        list: [
+          {
+            title: HANDLE_TYPE.SHARE,
+            iconName: 'share-thin',
+            onPress: async () => {
+              await Share.share({
+                message: isIOS ? activeItem?.name ?? activeItem?.url : activeItem?.url,
+                url: activeItem?.url ?? activeItem?.name ?? '',
+                title: activeItem?.name ?? activeItem?.url,
+              }).catch(shareError => {
+                console.log(shareError);
+              });
+            },
+          },
+          {
+            title: bookmark ? HANDLE_TYPE.UN_BOOKMARK : HANDLE_TYPE.BOOKMARK,
+            iconName: !bookmark ? 'book-mark-fill' : 'book-mark',
+            onPress: bookmark ? removeMark : handleMark,
+          },
+          {
+            title: 'Forward',
+            iconName: 'arrow-right',
+            textStyle: { color: canGoForward ? darkColors.iconBase1 : darkColors.iconDisabled },
+            iconColor: canGoForward ? darkColors.iconBase1 : darkColors.iconDisabled,
+            onPress: () => canGoForward && clickBottomActionBtn('forward'),
+          },
+          {
+            title: 'Back',
+            iconName: 'arrow-left',
+            textStyle: { color: canGoForward ? darkColors.iconBase1 : darkColors.iconDisabled },
+            iconColor: canGoBack ? darkColors.iconBase1 : darkColors.iconDisabled,
+            onPress: () => canGoForward && clickBottomActionBtn('back'),
+          },
+        ],
+        formatType: 'fixedWidth',
+        customPosition: { left: pageX - pTd(26), bottom: screenHeight - pageY + pTd(40) },
+        customBounds: { x: pageX - pTd(16), y: pageY - pTd(40), width: 0, height: 0 },
+        contentStyle: { color: darkColors.textBase1 },
+        containerStyle: { backgroundColor: darkColors.bgBase1, borderColor: darkColors.borderBase1, borderWidth: 1 },
+      });
+    },
+    [activeItem, bookmark, clickBottomActionBtn, handleMark, removeMark],
+  );
+
   const provider = useMemo<ITabContext>(() => {
     return {
       currentTabLength: (tabs ?? []).length,
@@ -258,30 +355,34 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
           />
           {!isHidden && (
             <View style={handleButtonStyle.wrap}>
-              <Touchable
-                disabled={!canGoBack}
-                onPress={() => clickBottomActionBtn('back')}
-                style={rightDomStyle.iconWrap}>
-                <Svg icon="left-arrow" size={pTd(20)} color={canGoBack ? defaultColors.font5 : defaultColors.bg16} />
-              </Touchable>
-              <Touchable
-                disabled={!canGoForward}
-                onPress={() => clickBottomActionBtn('forward')}
-                style={rightDomStyle.iconWrap}>
-                <Svg
-                  icon="right-arrow"
-                  size={pTd(24)}
-                  color={canGoForward ? defaultColors.font5 : defaultColors.bg16}
+              <Touchable style={{ paddingHorizontal: pTd(12) }} onPress={() => showWalletInfo({ tabInfo: activeItem })}>
+                <CommonAvatar
+                  hasBorder={!userInfo?.avatar}
+                  title={userInfo?.nickName}
+                  avatarSize={pTd(32)}
+                  imageUrl={userInfo?.avatar || ''}
+                  resizeMode="cover"
+                  titleStyle={{ fontSize: pTd(14) }}
                 />
               </Touchable>
-              <Touchable onPress={() => clickBottomActionBtn('showTab')} style={rightDomStyle.iconWrap}>
+              <View style={rightDomStyle.contentWrap}>
+                <Touchable onPress={event => onTouch(event, canGoBack, canGoForward)} style={rightDomStyle.iconWrap}>
+                  <Svg icon="more-circle" size={20} color={darkColors.iconBase1} />
+                </Touchable>
+                <Touchable style={rightDomStyle.inputContent}>
+                  {!activeItem?.url?.includes('https://') && (
+                    <Svg icon="warning-fill" size={12} iconStyle={{ marginRight: pTd(10) }} />
+                  )}
+                  <TextM style={rightDomStyle.domain}>{activeItem?.url}</TextM>
+                </Touchable>
+                <Touchable onPress={() => tabRef.current?.reload?.()} style={rightDomStyle.iconWrap}>
+                  <Svg icon="accessory" size={20} color={darkColors.iconBase1} />
+                </Touchable>
+              </View>
+              <Touchable
+                onPress={() => clickBottomActionBtn('showTab')}
+                style={[rightDomStyle.iconWrap, styles.switchButtonWrap]}>
                 <TextM style={styles.switchButton}>{tabs?.length || 0}</TextM>
-              </Touchable>
-              <Touchable onPress={() => clickBottomActionBtn('home')} style={rightDomStyle.iconWrap}>
-                <Svg icon="homepage" size={pTd(24)} color={defaultColors.font5} />
-              </Touchable>
-              <Touchable onPress={() => clickBottomActionBtn('more')} style={rightDomStyle.iconWrap}>
-                <Svg icon="more" size={20} color={defaultColors.font5} />
               </Touchable>
             </View>
           )}
@@ -289,6 +390,7 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
       );
     });
   }, [
+    activeItem,
     activeTabId,
     autoApproveMap,
     clickBottomActionBtn,
@@ -296,9 +398,13 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
     initializedList,
     latestCheckAndUpDateRecordItemName,
     latestCheckAndUpDateTabItemName,
+    onTouch,
+    refresh,
     tabStateMap?.canGoBack,
     tabStateMap?.canGoForward,
     tabs,
+    userInfo?.avatar,
+    userInfo?.nickName,
   ]);
 
   // card group
@@ -314,16 +420,18 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
         </ScrollView>
         <View style={handleButtonStyle.container}>
           <Touchable style={handleButtonStyle.handleItem} onPress={closeAll}>
-            <TextM style={[FontStyles.font4, tabs?.length === 0 && handleButtonStyle.noTap]}>{t('Close All')}</TextM>
+            <TextM style={[FontStyles.fontBase1, tabs?.length === 0 && handleButtonStyle.noTap]}>
+              {t('Close All')}
+            </TextM>
           </Touchable>
 
           <Touchable
             style={[handleButtonStyle.handleItem, handleButtonStyle.add]}
             onPress={() => dispatch(changeDrawerOpenStatus(false))}>
-            <Svg icon="add" size={pTd(28)} color={defaultColors.primaryColor} />
+            <Svg icon="add-tab" size={pTd(28)} color={defaultColors.iconBrand1} />
           </Touchable>
           <Touchable style={handleButtonStyle.handleItem} onPress={onDone}>
-            <TextM style={[handleButtonStyle.done, FontStyles.font4]}>{t('Done')}</TextM>
+            <TextM style={[handleButtonStyle.done, FontStyles.fontBase1]}>{t('Done')}</TextM>
           </Touchable>
         </View>
       </>
@@ -337,29 +445,22 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
         type="leftBack"
         noCenterDom={!!activeTabId}
         leftDom={
-          activeTabId ? (
-            <View style={styles.leftWrap}>
-              <Touchable onPress={backToSearchPage} style={styles.backIcon}>
-                <Svg icon="left-arrow" size={pTd(20)} color={defaultColors.font18} />
-              </Touchable>
+          <View style={styles.leftWrap}>
+            <Touchable onPress={backToSearchPage} style={styles.backIcon}>
+              <Svg icon="left-arrow" size={pTd(20)} color={defaultColors.font18} />
+            </Touchable>
+            {activeTabId ? (
               <TextWithProtocolIcon
                 type="iconLeft"
                 location="header"
                 title={getCmsWebsiteInfoName(activeItem?.url || '') || activeItem?.name}
                 url={activeItem?.url || ''}
               />
-            </View>
-          ) : (
-            <View style={styles.leftWrap}>
-              <Touchable onPress={backToSearchPage} style={styles.backIcon}>
-                <Svg icon="left-arrow" size={pTd(20)} color={defaultColors.font18} />
-              </Touchable>
-            </View>
-          )
+            ) : null}
+          </View>
         }
-        rightDom={rightDom}
         notHandleHardwareBackPress
-        safeAreaColor={['white', 'white']}
+        safeAreaColor={['black', 'black']}
         containerStyles={styles.container}
         scrollViewProps={{ disabled: true }}
         titleDom={activeTabId ? '' : `${tabs?.length} Tabs`}>
@@ -377,13 +478,10 @@ const styles = StyleSheet.create({
     paddingLeft: 0,
     paddingRight: 0,
     flex: 1,
-    backgroundColor: defaultColors.bg6,
+    backgroundColor: darkColors.bgBase1,
   },
   inputContainer: {
     ...GStyles.paddingArg(8, 20),
-  },
-  inputStyle: {
-    width: pTd(280),
   },
   sectionWrap: {
     ...GStyles.paddingArg(24, 20),
@@ -417,17 +515,22 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     flexWrap: 'wrap',
-    paddingLeft: pTd(20),
-    paddingRight: pTd(20),
+    paddingLeft: pTd(16),
+    paddingRight: pTd(16),
     paddingBottom: pTd(50),
+  },
+  switchButtonWrap: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: pTd(44),
   },
   switchButton: {
     width: pTd(21),
     height: pTd(21),
     borderRadius: pTd(4),
     borderWidth: pTd(1.5),
-    borderColor: defaultColors.font5,
-    color: defaultColors.font5,
+    borderColor: darkColors.textBase1,
+    color: defaultColors.textBase1,
     textAlign: 'center',
     lineHeight: pTd(18),
   },
@@ -443,7 +546,7 @@ const handleButtonStyle = StyleSheet.create({
     height: pTd(44),
     position: 'absolute',
     bottom: 0,
-    backgroundColor: defaultColors.bg1,
+    backgroundColor: darkColors.bgBase1,
   },
   handleItem: {
     flex: 1,
@@ -470,13 +573,36 @@ const handleButtonStyle = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    paddingVertical: pTd(12),
     width: screenWidth,
-    height: pTd(44),
-    backgroundColor: defaultColors.bg1,
   },
 });
 
 const rightDomStyle = StyleSheet.create({
+  contentWrap: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: pTd(12),
+    paddingVertical: pTd(12),
+    flex: 1,
+    height: pTd(40),
+    borderRadius: pTd(20),
+    borderWidth: pTd(1),
+    borderColor: darkColors.borderBase1,
+  },
+  inputContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    maxWidth: pTd(217),
+    overflow: 'hidden',
+  },
+  domain: {
+    color: darkColors.textBase1,
+    textAlign: 'center',
+    lineHeight: pTd(16),
+  },
   iconGroupWrap: {
     display: 'flex',
     flexDirection: 'row',
@@ -484,6 +610,5 @@ const rightDomStyle = StyleSheet.create({
   },
   iconWrap: {
     ...GStyles.paddingArg(pTd(4)),
-    marginHorizontal: pTd(20),
   },
 });

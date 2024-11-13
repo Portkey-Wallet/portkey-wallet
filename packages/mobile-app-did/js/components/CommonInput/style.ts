@@ -10,7 +10,7 @@ export const commonStyles = StyleSheet.create({
     marginRight: pTd(10),
   },
   loadingStyle: {
-    width: pTd(20),
+    width: pTd(32),
   },
   inputContainerGrayBorderStyle: {
     borderWidth: StyleSheet.hairlineWidth,
@@ -57,7 +57,6 @@ export const generalStyles = StyleSheet.create({
   containerStyle: {
     ...GStyles.paddingArg(0),
     ...GStyles.marginArg(0),
-    height: pTd(40),
   },
   inputContainerStyle: {
     borderColor: darkColors.borderBase1,

@@ -30,6 +30,8 @@ export const BGStyles = StyleSheet.create({
   bg24: { backgroundColor: defaultColors.bg24 },
   bg43: { backgroundColor: defaultColors.bg43 },
 
+  bgBase1: { backgroundColor: darkColors.bgBase1 },
+
   white: { backgroundColor: defaultColors.white },
 
   transparent: { backgroundColor: 'transparent' },

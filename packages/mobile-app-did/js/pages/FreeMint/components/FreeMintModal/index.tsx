@@ -9,7 +9,7 @@ import GStyles from 'assets/theme/GStyles';
 import { IconName } from 'components/Svg';
 import MintPreview from '../MintPreview';
 import MintStatusSection from '../MintStatusSection';
-import MintEdit, { EditConfig } from 'pages/FreeMint/MintEdit';
+import MintEdit, { EditConfig } from 'pages/FreeMint/components/MintEdit';
 import { useConfirmMint, useFreeMintInfo, useGetMintItemInfo } from '@portkey-wallet/hooks/hooks-ca/freeMint';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { ICollectionData, IConfirmMintRes } from '@portkey-wallet/types/types-ca/freeMint';

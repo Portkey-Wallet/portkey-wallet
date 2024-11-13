@@ -6,85 +6,103 @@ import GStyles from 'assets/theme/GStyles';
 import { FontStyles } from 'assets/theme/styles';
 import ButtonRow from 'components/ButtonRow';
 import CommonAvatar from 'components/CommonAvatar';
-import { TextL, TextM, TextS } from 'components/CommonText';
+import { TextL, TextM, TextXXL } from 'components/CommonText';
 import NFTAvatar from 'components/NFTAvatar';
-import OverlayModal from 'components/OverlayModal';
 import { useLanguage } from 'i18n/hooks';
-import { EditConfig } from 'pages/FreeMint/MintEdit';
+import { EditConfig } from 'pages/FreeMint/components/MintEdit';
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { pTd } from 'utils/unit';
 import { FreeMintStep } from '../FreeMintModal';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import fonts from 'assets/theme/fonts';
+import { makeStyles } from '@rneui/themed';
 
 interface MintPreviewProps {
   mintInfo?: ICollectionData;
   editInfo?: EditConfig;
-  onCancelPress?: () => void;
   onMintPress?: () => void;
   changeStep?: (step: FreeMintStep) => void;
 }
 
 const MintPreview = (props: MintPreviewProps) => {
   const { t } = useLanguage();
+  const styles = getStyles();
   const { currentNetwork } = useWallet();
   const defaultToken = useDefaultToken();
-  const { mintInfo, editInfo, onCancelPress, onMintPress } = props;
+  const { mintInfo, editInfo, onMintPress } = props;
 
   return (
     <>
       <View style={[styles.topSection, !editInfo?.description && GStyles.itemCenter]}>
-        <NFTAvatar disabled nftSize={pTd(64)} data={{ imageUrl: editInfo?.imageUri || '' }} style={styles.nftAvatar} />
+        <NFTAvatar disabled nftSize={pTd(280)} data={{ imageUrl: editInfo?.imageUri || '' }} style={styles.nftAvatar} />
         <View style={styles.nftInfo}>
-          <TextL numberOfLines={1} ellipsizeMode="middle">
+          <TextXXL numberOfLines={1} ellipsizeMode="tail" style={[fonts.BGMediumFont, styles.textCenter]}>
             {editInfo?.name}
-          </TextL>
+          </TextXXL>
           {editInfo?.description && <View style={GStyles.height(pTd(4))} />}
-          {editInfo?.description && <TextS style={FontStyles.neutralTertiaryText}>{editInfo?.description}</TextS>}
+          {editInfo?.description && (
+            <TextL style={[fonts.SGRegularFont, styles.textCenter, styles.description]}>{editInfo?.description}</TextL>
+          )}
         </View>
       </View>
-      <View style={GStyles.marginTop(pTd(24))}>
+      <View style={GStyles.marginTop(pTd(32))}>
         <View style={[GStyles.flexRow, styles.rowWrap]}>
-          <TextM style={[styles.leftTitle, FontStyles.neutralTertiaryText, GStyles.flex(2)]}>{t('Chain')}</TextM>
+          <TextL style={[styles.leftTitle, FontStyles.fontBase1, GStyles.flex(2)]}>{t('Network')}</TextL>
           <View style={styles.blank} />
-          <TextM style={[styles.rightValue, styles.rightValue, FontStyles.font5, GStyles.flex(3)]}>
+          <CommonAvatar
+            hasBorder={true}
+            avatarSize={pTd(20)}
+            imageUrl={mintInfo?.collectionInfo.chainImageUrl}
+            borderStyle={styles.tokenIconBorder}
+          />
+          <TextL
+            style={[
+              styles.rightValue,
+              styles.rightValue,
+              FontStyles.fontBase1,
+              fonts.SGMediumFont,
+              GStyles.marginLeft(4),
+            ]}>
             {formatChainInfoToShow(mintInfo?.collectionInfo.chainId, currentNetwork)}
-          </TextM>
+          </TextL>
         </View>
 
-        <View style={[GStyles.flexRow, styles.rowWrap, GStyles.itemCenter, GStyles.marginTop(pTd(16))]}>
-          <TextM style={[styles.leftTitle, FontStyles.neutralTertiaryText]}>{t('Collection')}</TextM>
+        <View style={[GStyles.flexRow, styles.rowWrap, GStyles.itemCenter]}>
+          <TextL style={[styles.leftTitle, FontStyles.fontBase1]}>{t('Collection')}</TextL>
           <View style={styles.blank} />
           <View style={[GStyles.flexRow, GStyles.center]}>
             <CommonAvatar imageUrl={mintInfo?.collectionInfo?.imageUrl} style={styles.nftCollectionAvatar} />
-            <TextM style={[styles.rightValue, FontStyles.neutralPrimaryTextColor, GStyles.marginLeft(pTd(4))]}>
+            <TextL style={[styles.rightValue, FontStyles.fontBase1, GStyles.marginLeft(pTd(4)), fonts.SGMediumFont]}>
               {mintInfo?.collectionInfo?.collectionName}
-            </TextM>
+            </TextL>
           </View>
         </View>
 
-        <View style={[GStyles.flexRow, styles.rowWrap, GStyles.marginTop(16)]}>
-          <TextM style={[styles.leftTitle, FontStyles.neutralTertiaryText, GStyles.flex(2)]}>
-            {t('Transaction Fee')}
-          </TextM>
+        <View style={[GStyles.flexRow, styles.rowWrap]}>
+          <TextL style={[styles.leftTitle, FontStyles.fontBase1, GStyles.flex(2)]}>{t('Transaction Fee')}</TextL>
           <View style={styles.blank} />
           <View>
-            <TextM style={styles.rightValue}>{`${mintInfo?.transactionFee} ${defaultToken.symbol}`}</TextM>
-            <TextS style={[FontStyles.neutralTertiaryText, styles.rightValue]}>{`$ 0`}</TextS>
+            <TextL
+              style={[
+                styles.rightValue,
+                fonts.SGMediumFont,
+              ]}>{`${mintInfo?.transactionFee} ${defaultToken.symbol}`}</TextL>
+            <TextM style={[FontStyles.neutralTertiaryText, styles.feeSub]}>{`$ 0`}</TextM>
           </View>
         </View>
       </View>
       <View style={GStyles.flex1} />
       <ButtonRow
         buttons={[
-          {
-            title: 'Cancel',
-            type: 'outline',
-            onPress: () => {
-              onCancelPress?.();
-              OverlayModal.hide();
-            },
-          },
+          // {
+          //   title: 'Cancel',
+          //   type: 'outline',
+          //   onPress: () => {
+          //     onCancelPress?.();
+          //     OverlayModal.hide();
+          //   },
+          // },
           {
             title: 'Mint',
             type: 'primary',
@@ -98,26 +116,26 @@ const MintPreview = (props: MintPreviewProps) => {
   );
 };
 
-const styles = StyleSheet.create({
+const getStyles = makeStyles(theme => ({
   topSection: {
-    padding: pTd(12),
-    borderRadius: pTd(6),
-    borderColor: defaultColors.neutralBorder,
-    borderWidth: StyleSheet.hairlineWidth,
+    // padding: pTd(12),
+    // borderRadius: pTd(6),
+    // borderColor: defaultColors.neutralBorder,
+    // borderWidth: StyleSheet.hairlineWidth,
     display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'flex-start',
+    flexDirection: 'column',
+    alignItems: 'center',
   },
   nftAvatar: {
-    width: pTd(64),
-    height: pTd(64),
+    // width: pTd(64),
+    // height: pTd(64),
     borderRadius: pTd(6),
     marginRight: pTd(12),
   },
   nftInfo: {
-    width: pTd(243),
+    marginTop: pTd(16),
   },
-  rowWrap: { marginBottom: pTd(12) },
+  rowWrap: { paddingVertical: pTd(16) },
   leftTitle: {},
   blank: { width: pTd(16), flex: 1 },
   rightValue: {
@@ -127,10 +145,25 @@ const styles = StyleSheet.create({
     height: pTd(4),
   },
   nftCollectionAvatar: {
-    borderRadius: pTd(4),
-    width: pTd(20),
-    height: pTd(20),
+    borderRadius: pTd(9),
+    width: pTd(18),
+    height: pTd(18),
   },
-});
+  feeSub: {
+    color: theme.colors.textBase2,
+    ...fonts.SGRegularFont,
+    textAlign: 'right',
+  },
+  textCenter: {
+    textAlign: 'center',
+  },
+  tokenIconBorder: {
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: theme.colors.borderBase1,
+  },
+  description: {
+    color: theme.colors.textBase2,
+  },
+}));
 
 export default MintPreview;

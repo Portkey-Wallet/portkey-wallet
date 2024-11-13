@@ -4,7 +4,7 @@ import { FontStyles } from 'assets/theme/styles';
 import CommonAvatar from 'components/CommonAvatar';
 import { TextM, TextXXXL } from 'components/CommonText';
 import React, { memo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, ViewStyle, TextStyle } from 'react-native';
 import { pTd } from 'utils/unit';
 
 type ProfileHeaderPropsType = {
@@ -13,13 +13,15 @@ type ProfileHeaderPropsType = {
   remark?: string;
   avatarUrl?: string;
   noMarginTop?: boolean;
+  style?: ViewStyle;
+  nameStyle?: TextStyle;
 };
 
 const ProfileHeader: React.FC<ProfileHeaderPropsType> = props => {
-  const { name, showRemark, remark, avatarUrl, noMarginTop = true } = props;
+  const { name, showRemark, remark, avatarUrl, noMarginTop = true, style, nameStyle } = props;
 
   return (
-    <View style={[GStyles.center, styles.wrap, noMarginTop && GStyles.marginTop(0)]}>
+    <View style={[GStyles.center, styles.wrap, noMarginTop && GStyles.marginTop(0), style]}>
       <CommonAvatar
         hasBorder
         resizeMode="cover"
@@ -28,7 +30,7 @@ const ProfileHeader: React.FC<ProfileHeaderPropsType> = props => {
         imageUrl={avatarUrl || ''}
         style={styles.avatarStyle}
       />
-      <TextXXXL style={[FontStyles.font5, GStyles.marginTop(pTd(8))]}>{name}</TextXXXL>
+      <TextXXXL style={[FontStyles.font5, GStyles.marginTop(pTd(8)), nameStyle]}>{name}</TextXXXL>
       {showRemark && (
         <TextM style={[FontStyles.font7, GStyles.marginTop(pTd(4))]}>{`Remark: ${remark || 'Not set'}`}</TextM>
       )}

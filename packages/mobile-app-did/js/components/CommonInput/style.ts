@@ -57,7 +57,6 @@ export const generalStyles = StyleSheet.create({
   containerStyle: {
     ...GStyles.paddingArg(0),
     ...GStyles.marginArg(0),
-    height: pTd(40),
   },
   inputContainerStyle: {
     borderColor: darkColors.borderBase1,

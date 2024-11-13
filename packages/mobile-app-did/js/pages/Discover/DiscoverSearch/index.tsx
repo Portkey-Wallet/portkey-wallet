@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, TextInput, View } from 'react-native';
 import CommonInput from 'components/CommonInput';
+import { SimulatedInput } from 'components/SimulatedInputBoxV2';
+
 import GStyles from 'assets/theme/GStyles';
 import { BGStyles, FontStyles } from 'assets/theme/styles';
 import PageContainer from 'components/PageContainer';
@@ -20,10 +22,14 @@ import { useInputFocus } from 'hooks/useInputFocus';
 import Touchable from 'components/Touchable';
 import { useDiscoverData } from '@portkey-wallet/hooks/hooks-ca/cms/discover';
 import { TBaseCardItemType } from '@portkey-wallet/types/types-ca/cms';
+import { defaultColors } from 'assets/theme';
+import { KeyboardSafeArea } from 'components/KeyboardSafeArea';
+import { useKeyboard } from 'hooks/useKeyboardHeight';
 
 export default function DiscoverSearch() {
   const { t } = useLanguage();
   const { learnGroupList, earnList } = useDiscoverData();
+  const { isKeyboardOpened } = useKeyboard(0);
 
   const iptRef = useRef<TextInput>();
   useInputFocus(iptRef);
@@ -95,36 +101,50 @@ export default function DiscoverSearch() {
   return (
     <PageContainer
       hideHeader
-      safeAreaColor={['white', 'white']}
+      safeAreaColor={['black', 'black']}
       containerStyles={styles.container}
       scrollViewProps={{ disabled: true }}>
-      <View style={[BGStyles.bg1, GStyles.flexRow, styles.inputContainer]}>
-        <CommonInput
-          autoFocus
-          grayBorder
-          theme="white-bg"
-          ref={iptRef}
-          value={value}
-          onChangeText={v => setValue(v)}
-          onSubmitEditing={onSearch}
-          returnKeyType="search"
-          placeholder={t('Search Dapp or enter URL')}
-          containerStyle={styles.inputStyle}
-          rightIcon={
-            value ? (
-              <Touchable onPress={clearText}>
-                <Svg icon="clear3" size={pTd(16)} />
-              </Touchable>
-            ) : undefined
-          }
-          rightIconContainerStyle={styles.rightIconContainerStyle}
-          style={styles.rnInputStyle}
-        />
-        <Touchable onPress={navigationService.goBack}>
-          <TextM style={[FontStyles.primaryColor, styles.cancelButton]}>{t('Cancel')}</TextM>
-        </Touchable>
-      </View>
+      <Touchable
+        style={{
+          marginLeft: pTd(16),
+          marginVertical: pTd(12),
+        }}
+        onPress={navigationService.goBack}>
+        <Svg icon={'close'} size={pTd(20)} color={defaultColors.white} />
+      </Touchable>
+
       {showRecord ? <RecordSection /> : <SearchDiscoverSection searchedDiscoverList={filteredDiscoverList || []} />}
+
+      <KeyboardSafeArea>
+        <View style={[GStyles.flexRow, styles.inputContainer]}>
+          <SimulatedInput />
+          {/* <CommonInput
+            autoFocus
+            grayBorder
+            theme="black-bg"
+            ref={iptRef}
+            value={value}
+            onChangeText={v => setValue(v)}
+            onSubmitEditing={onSearch}
+            returnKeyType="search"
+            placeholder={t('Search Dapp or enter URL')}
+            containerStyle={styles.inputStyle}
+            rightIcon={
+              value ? (
+                <Touchable onPress={clearText}>
+                  <Svg icon="clear3" size={pTd(16)} />
+                </Touchable>
+              ) : undefined
+            }
+            rightIconContainerStyle={styles.rightIconContainerStyle}
+            style={styles.rnInputStyle}
+          /> */}
+
+          {/* <Touchable onPress={clearText}>
+            <Svg icon="chevron_down" size={pTd(20)} />
+          </Touchable> */}
+        </View>
+      </KeyboardSafeArea>
     </PageContainer>
   );
 }
@@ -147,6 +167,7 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     ...GStyles.paddingArg(12, 20, 8),
+    backgroundColor: '#1F1F21',
   },
   inputStyle: {
     width: pTd(280),

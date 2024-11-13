@@ -3,10 +3,11 @@ import { CheckContactNameResponseType } from '@portkey-wallet/api/api-did/contac
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import {
   IAddContactItemApiType,
-  IAddressInfo,
   IContactIndexType,
   IContactItemType,
+  TDeteleContactItemParams,
   IEditContactItemApiType,
+  INetworkItemType,
 } from '@portkey-wallet/types/types-ca/contactNew';
 import { useCallback, useEffect, useMemo } from 'react';
 import {
@@ -16,9 +17,11 @@ import {
   refreshContactMapNew,
   fetchContactListV2Async,
 } from '@portkey-wallet/store/store-ca/contact/actions';
-import { useAppCASelector, useAppCommonDispatch, useAppCommonSelector } from '../index';
+import { useAppCommonDispatch, useAppCommonSelector } from '../index';
 import { getAelfAddress, isAelfAddress } from '@portkey-wallet/utils/aelf';
 import { sleep } from '@portkey-wallet/utils';
+import { useTransferNetworkConfig } from './config';
+import { ChainId } from '@portkey-wallet/types';
 
 export const REFRESH_DELAY_TIME = 1.5 * 1000;
 
@@ -63,7 +66,7 @@ export const useDeleteContact = () => {
   const dispatch = useAppCommonDispatch();
   const currentNetworkInfo = useCurrentNetworkInfo();
   return useCallback(
-    async (contactItem: IContactItemType): Promise<IContactItemType> => {
+    async (contactItem: TDeteleContactItemParams): Promise<IContactItemType> => {
       const response = await request.contact.deleteSaved({
         baseURL: currentNetworkInfo.apiUrl,
         params: contactItem,
@@ -113,7 +116,27 @@ export const useContactList = () => {
         result = [...result, ...ele.contacts];
       });
     return result;
-  }, [contact.contactIndexList]);
+  }, [contact?.contactIndexListNew]);
+};
+
+// in send page
+export const useGetFilterContactList = (params: { fromChainId: ChainId; tokenId: string; isFt?: boolean }) => {
+  const { fromChainId, tokenId, isFt } = params;
+  const contactList = useContactList();
+  const { checkIsSupportTargetChain } = useTransferNetworkConfig();
+
+  return useMemo(() => {
+    let result: IContactItemType[] = [];
+
+    result = contactList.filter(ele => {
+      if (isFt && ele.addressInfo.network !== 'aelf') return false;
+      if (ele.addressInfo.network === 'aelf') return true;
+
+      return checkIsSupportTargetChain({ fromChainId, symbol: tokenId, network: ele.addressInfo.network });
+    });
+
+    return result;
+  }, [checkIsSupportTargetChain, contactList, fromChainId, isFt, tokenId]);
 };
 
 export const useCheckContactMap = () => {
@@ -170,12 +193,12 @@ export const useAllContactList = () => {
 };
 
 export const useLocalContactSearch = () => {
-  const { contactIndexList } = useContact(false, false);
+  const { contactIndexListNew } = useContact(false, false);
 
   return useCallback(
     (value: string) => {
       // STEP 1 > filter - type
-      const filterList: IContactIndexType[] = [];
+      const filterList: IContactIndexType[] = contactIndexListNew ?? [];
 
       // STEP 2 > filter - no data
       const notEmptyFilterList = filterList.filter(item => item?.contacts?.length > 0);
@@ -237,7 +260,7 @@ export const useLocalContactSearch = () => {
       });
       return { contactFilterList, contactIndexFilterList };
     },
-    [contactIndexList],
+    [contactIndexListNew],
   );
 };
 

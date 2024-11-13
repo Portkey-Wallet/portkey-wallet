@@ -1,20 +1,20 @@
 import React, { useCallback, useRef } from 'react';
 import { View } from 'react-native';
 import { styles as contactListStyles } from './style';
-import { ContactIndexType, ContactItemType } from '@portkey-wallet/types/types-ca/contact';
+import { IContactIndexType, IContactItemType } from '@portkey-wallet/types/types-ca/contactNew';
 import { FlashList } from '@shopify/flash-list';
 import IndexBar from 'components/IndexBar';
 
-type contactFlatItemType = ContactIndexType | ContactItemType;
+type contactFlatItemType = IContactIndexType | IContactItemType;
 interface ContactsListProps {
   dataArray: contactFlatItemType[];
-  contactIndexList: ContactIndexType[];
+  contactIndexList: IContactIndexType[];
   isIndexBarShow?: boolean;
   sectionHeight?: number;
   itemHeight?: number;
   ListFooterComponent?: JSX.Element;
-  renderContactItem: (item: ContactItemType) => JSX.Element;
-  renderContactIndex: (contactIndex: ContactIndexType) => JSX.Element;
+  renderContactItem: (item: IContactItemType) => JSX.Element;
+  renderContactIndex: (contactIndex: IContactIndexType) => JSX.Element;
 }
 
 const ContactsList: React.FC<ContactsListProps> = ({
@@ -49,18 +49,20 @@ const ContactsList: React.FC<ContactsListProps> = ({
         data={dataArray}
         estimatedItemSize={contactListStyles.sectionIndex.height}
         overrideItemLayout={(layout, item) => {
-          layout.size = (item as ContactItemType).id === undefined ? sectionHeight : itemHeight;
+          layout.size = (item as IContactItemType).id === undefined ? sectionHeight : itemHeight;
         }}
         renderItem={({ item }) => {
-          if ((item as ContactItemType).id === undefined) {
-            return renderContactIndex(item as ContactIndexType);
+          if ((item as IContactItemType).id === undefined) {
+            return renderContactIndex(item as IContactIndexType);
           }
-          return renderContactItem(item as ContactItemType);
+          return renderContactItem(item as IContactItemType);
         }}
         getItemType={item => {
-          return (item as ContactItemType).id === undefined ? 'sectionHeader' : 'row';
+          return (item as IContactItemType).id === undefined ? 'sectionHeader' : 'row';
         }}
-        keyExtractor={item => ((item as ContactItemType).id === undefined ? item.index : (item as ContactItemType).id)}
+        keyExtractor={item =>
+          (item as IContactItemType).id === undefined ? item.index : (item as IContactItemType).id
+        }
         ListFooterComponent={ListFooterComponent}
       />
 

@@ -42,7 +42,7 @@ export const getContactListV2 = (
   baseURL: string,
   { page, size, modificationTime, keyword }: IGetContactListParams,
 ): Promise<TGetContactListApiType> => {
-  return request.es.getContactList({
+  return request.es.getContactListNew({
     baseURL,
     params: {
       filter: `modificationTime: [* TO ${modificationTime}] AND isDeleted: false`,
@@ -59,7 +59,7 @@ export const getContactEventListV2 = (
   baseURL: string,
   { page, size, modificationTime, fetchTime, keyword }: IGetContactListParams & { fetchTime: string },
 ): Promise<TGetContactListApiType> => {
-  return request.es.getContactList({
+  return request.es.getContactListNew({
     baseURL,
     params: {
       filter: `modificationTime: [${modificationTime} TO ${fetchTime}]`,

@@ -235,26 +235,27 @@ const ContactEdit: React.FC = () => {
         upsertParams.chainId = chainId;
         upsertParams.isExchange = isExchange;
       }
+      let addContactResponse = null;
       if (editContact.id) {
         // edit
         const updateParams = { ...upsertParams, id };
-        const editContactResponse = await editContactApi(updateParams);
-        console.log('editContactResponse', editContactResponse);
+        await editContactApi(updateParams);
       } else {
         // add
-        const addContactResponse = await addContactApi(upsertParams);
-        console.log('newConaddContactResponsetact', addContactResponse);
+        addContactResponse = await addContactApi(upsertParams);
       }
       CommonToast.success('Saved Successful');
-      if (willAddContact) {
+      if (willAddContact && addContactResponse) {
+        navigationService.navigate('NoChatContactProfile', {
+          contact: addContactResponse,
+          isSaved: true,
+        });
       } else {
         navigationService.navigate('ContactsHome');
       }
     } catch (err: any) {
-      console.log('err', err);
       const errorCode = err?.error?.code;
       const formItemError = errorCodeMessageMap[errorCode];
-      console.log('formItemError', formItemError);
       if (formItemError) {
         setFormError(formItemError);
       } else {
@@ -312,7 +313,6 @@ const ContactEdit: React.FC = () => {
                 list: supportNetworkList || [],
                 value: selectedNetwork,
                 onChange: item => {
-                  console.log('item', item);
                   setEditContact(preEditContact => ({
                     ...preEditContact,
                     network: item.network,

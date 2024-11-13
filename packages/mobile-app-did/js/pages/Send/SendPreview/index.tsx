@@ -197,11 +197,13 @@ const SendPreview: React.FC = () => {
   );
 
   const actionAfterTransfer = useCallback(async () => {
+    const aelfIcon = caAddressInfos?.find(ele => ele?.chainId === toInfo?.chainId)?.displayChainName;
+
     const recentItem: IRecentItem = {
       address: toInfo?.address || '',
       chainId: toInfo?.chainId,
       network: targetNetwork?.network || 'aelf',
-      networkIcon: targetNetwork?.imageUrl,
+      networkIcon: targetNetwork?.imageUrl || aelfIcon,
       transferTime: Date.now(),
     };
 

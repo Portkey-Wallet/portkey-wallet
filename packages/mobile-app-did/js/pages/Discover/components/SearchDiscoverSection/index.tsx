@@ -24,6 +24,8 @@ interface ISearchDiscoverSectionProps {
 export default function SearchDiscoverSection(props: ISearchDiscoverSectionProps) {
   const { t } = useLanguage();
   const { searchedDiscoverList, inputValue } = props;
+  console.log('inputValue:', inputValue);
+
   const { s3Url } = useCurrentNetworkInfo();
   const jumpToWebview = useDiscoverJumpWithNetWork();
 
@@ -82,7 +84,7 @@ export default function SearchDiscoverSection(props: ISearchDiscoverSectionProps
               numberOfLines={1}
               ellipsizeMode={'tail'}
               style={{
-                color: defaultColors.white,
+                color: defaultColors.textBase1,
                 fontSize: 16,
               }}>
               {inputValue}

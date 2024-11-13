@@ -25,6 +25,8 @@ import { TBaseCardItemType } from '@portkey-wallet/types/types-ca/cms';
 import { defaultColors } from 'assets/theme';
 import { KeyboardSafeArea } from 'components/KeyboardSafeArea';
 import { useKeyboard } from 'hooks/useKeyboardHeight';
+import { RouteProp, useRoute } from '@react-navigation/native';
+import { ActionType } from 'types/common';
 
 export default function DiscoverSearch() {
   const { t } = useLanguage();
@@ -39,6 +41,12 @@ export default function DiscoverSearch() {
   const [value, setValue] = useState<string>('');
   const [showRecord, setShowRecord] = useState<boolean>(true);
   const [filteredDiscoverList, setFilteredDiscoverList] = useState<DiscoverItem[]>([]);
+
+  const {
+    params: { address },
+  } = useRoute<RouteProp<{ params: { address?: string; onClose?(): void } }>>();
+
+  console.log('address:', address);
 
   const clearText = useCallback(() => setValue(''), []);
 
@@ -66,6 +74,15 @@ export default function DiscoverSearch() {
     if (!value) setShowRecord(true);
   }, [value]);
 
+  useEffect(() => {
+    if (address?.length) {
+      setValue(address);
+      setTimeout(() => {
+        onSearch(address);
+      }, 0);
+    }
+  }, [address]);
+
   const onDiscoverJump = useCallback(
     (name: string, url: string) => {
       jumpToWebview({
@@ -78,25 +95,32 @@ export default function DiscoverSearch() {
     [jumpToWebview],
   );
 
-  const onSearch = useCallback(() => {
-    const newValue = value.replace(/\s+/g, '');
-    if (!newValue) return;
+  // const onSearchExternalLink = (link: string) => {
+  //   onSearch();
+  // }
 
-    console.log('checkIsUrl', checkIsUrl(newValue));
+  const onSearch = useCallback(
+    (inputValue: string) => {
+      const newValue = inputValue.replace(/\s+/g, '');
+      if (!newValue) return;
 
-    if (checkIsUrl(newValue)) {
-      console.log('checkIsUrl', getHost(prefixUrlWithProtocol(newValue)));
+      console.log('checkIsUrl', checkIsUrl(newValue));
 
-      onDiscoverJump(getHost(prefixUrlWithProtocol(newValue)), prefixUrlWithProtocol(newValue));
-    } else {
-      // else search in Discover list
-      const filterList = flatList.filter(item =>
-        item.title.replace(/\s+/g, '').toLocaleLowerCase().includes(newValue.toLocaleLowerCase()),
-      );
-      setFilteredDiscoverList(filterList);
-      setShowRecord(false);
-    }
-  }, [flatList, onDiscoverJump, value]);
+      if (checkIsUrl(newValue)) {
+        console.log('checkIsUrl', getHost(prefixUrlWithProtocol(newValue)));
+
+        onDiscoverJump(getHost(prefixUrlWithProtocol(newValue)), prefixUrlWithProtocol(newValue));
+      } else {
+        // else search in Discover list
+        const filterList = flatList.filter(item =>
+          item.title.replace(/\s+/g, '').toLocaleLowerCase().includes(newValue.toLocaleLowerCase()),
+        );
+        setFilteredDiscoverList(filterList);
+        setShowRecord(false);
+      }
+    },
+    [flatList, onDiscoverJump],
+  );
 
   return (
     <PageContainer
@@ -113,7 +137,11 @@ export default function DiscoverSearch() {
         <Svg icon={'close'} size={pTd(20)} color={defaultColors.white} />
       </Touchable>
 
-      {showRecord ? <RecordSection /> : <SearchDiscoverSection searchedDiscoverList={filteredDiscoverList || []} />}
+      {showRecord ? (
+        <RecordSection />
+      ) : (
+        <SearchDiscoverSection searchedDiscoverList={filteredDiscoverList || []} inputValue={value} />
+      )}
 
       <KeyboardSafeArea>
         <View style={[GStyles.flexRow, styles.inputContainer]}>
@@ -128,7 +156,7 @@ export default function DiscoverSearch() {
             type="search"
             clearIconColor={'#1F1F21'}
             onChangeText={v => setValue(v)}
-            onSubmitEditing={onSearch}
+            onSubmitEditing={() => onSearch(value)}
             returnKeyType="search"
             placeholder={t('dApps, Sites, URL')}
             containerStyle={styles.inputStyle}

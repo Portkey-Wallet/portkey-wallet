@@ -27,7 +27,6 @@ import { rampSlice } from '@portkey-wallet/store/store-ca/ramp/slice';
 import { referralSlice } from '@portkey-wallet/store/store-ca/referral/slice';
 import { configSlice } from '@portkey-wallet/store/store-ca/config/slice';
 import awakenSlice from '@portkey-wallet/store/store-ca/awaken/slice';
-import { configSlice } from '@portkey-wallet/store/store-ca/config/slice';
 
 const userPersistConfig = {
   key: userSlice.name,

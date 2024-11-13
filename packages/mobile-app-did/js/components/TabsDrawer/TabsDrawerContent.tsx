@@ -164,19 +164,6 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
     dispatch(changeDrawerOpenStatus(false));
   }, [activeItem?.url, activeWebviewScreenShot, dappList, dispatch, nav]);
 
-  // header right
-  const rightDom = useMemo(() => {
-    if (activeTabId)
-      return (
-        <View style={rightDomStyle.iconGroupWrap}>
-          <Touchable style={rightDomStyle.iconWrap} onPress={() => showWalletInfo({ tabInfo: activeItem })}>
-            <Svg icon="wallet-gray" size={pTd(20)} />
-          </Touchable>
-        </View>
-      );
-    return null;
-  }, [activeItem, activeTabId]);
-
   const value = useMemo(
     () => ({
       setTabRef: (ref: IBrowserTab) => {
@@ -382,14 +369,19 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
                 <Touchable onPress={event => onTouch(event, canGoBack, canGoForward)} style={rightDomStyle.iconWrap}>
                   <Svg icon="more-circle" size={20} color={darkColors.iconBase1} />
                 </Touchable>
-                <Touchable style={rightDomStyle.inputContent} onPress={() => clickBottomActionBtn('more')}>
+                <Touchable style={rightDomStyle.inputContent}>
+                  {!activeItem?.url?.includes('https://') && (
+                    <Svg icon="warning-fill" size={12} iconStyle={{ marginRight: pTd(10) }} />
+                  )}
                   <TextM style={rightDomStyle.domain}>{activeItem?.url}</TextM>
                 </Touchable>
-                <Touchable onPress={() => refresh()} style={rightDomStyle.iconWrap}>
+                <Touchable onPress={() => tabRef.current?.reload?.()} style={rightDomStyle.iconWrap}>
                   <Svg icon="accessory" size={20} color={darkColors.iconBase1} />
                 </Touchable>
               </View>
-              <Touchable onPress={() => clickBottomActionBtn('showTab')} style={rightDomStyle.iconWrap}>
+              <Touchable
+                onPress={() => clickBottomActionBtn('showTab')}
+                style={[rightDomStyle.iconWrap, styles.switchButtonWrap]}>
                 <TextM style={styles.switchButton}>{tabs?.length || 0}</TextM>
               </Touchable>
             </View>
@@ -453,27 +445,20 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
         type="leftBack"
         noCenterDom={!!activeTabId}
         leftDom={
-          activeTabId ? (
-            <View style={styles.leftWrap}>
-              <Touchable onPress={backToSearchPage} style={styles.backIcon}>
-                <Svg icon="left-arrow" size={pTd(20)} color={defaultColors.font18} />
-              </Touchable>
+          <View style={styles.leftWrap}>
+            <Touchable onPress={backToSearchPage} style={styles.backIcon}>
+              <Svg icon="left-arrow" size={pTd(20)} color={defaultColors.font18} />
+            </Touchable>
+            {activeTabId ? (
               <TextWithProtocolIcon
                 type="iconLeft"
                 location="header"
                 title={getCmsWebsiteInfoName(activeItem?.url || '') || activeItem?.name}
                 url={activeItem?.url || ''}
               />
-            </View>
-          ) : (
-            <View style={styles.leftWrap}>
-              <Touchable onPress={backToSearchPage} style={styles.backIcon}>
-                <Svg icon="left-arrow" size={pTd(20)} color={defaultColors.font18} />
-              </Touchable>
-            </View>
-          )
+            ) : null}
+          </View>
         }
-        rightDom={rightDom}
         notHandleHardwareBackPress
         safeAreaColor={['black', 'black']}
         containerStyles={styles.container}
@@ -497,9 +482,6 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     ...GStyles.paddingArg(8, 20),
-  },
-  inputStyle: {
-    width: pTd(280),
   },
   sectionWrap: {
     ...GStyles.paddingArg(24, 20),
@@ -536,6 +518,11 @@ const styles = StyleSheet.create({
     paddingLeft: pTd(16),
     paddingRight: pTd(16),
     paddingBottom: pTd(50),
+  },
+  switchButtonWrap: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: pTd(44),
   },
   switchButton: {
     width: pTd(21),
@@ -588,7 +575,6 @@ const handleButtonStyle = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: pTd(12),
     width: screenWidth,
-    backgroundColor: darkColors.bgBase1,
   },
 });
 
@@ -597,16 +583,20 @@ const rightDomStyle = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
+    justifyContent: 'space-between',
+    paddingHorizontal: pTd(12),
     paddingVertical: pTd(12),
+    flex: 1,
     height: pTd(40),
     borderRadius: pTd(20),
     borderWidth: pTd(1),
     borderColor: darkColors.borderBase1,
   },
   inputContent: {
-    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    maxWidth: pTd(217),
+    overflow: 'hidden',
   },
   domain: {
     color: darkColors.textBase1,
@@ -620,6 +610,5 @@ const rightDomStyle = StyleSheet.create({
   },
   iconWrap: {
     ...GStyles.paddingArg(pTd(4)),
-    marginHorizontal: pTd(12),
   },
 });

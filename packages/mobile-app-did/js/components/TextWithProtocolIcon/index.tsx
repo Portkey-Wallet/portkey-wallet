@@ -15,6 +15,7 @@ interface ITextWithProtocolIconProps {
   iconSize?: number;
   type?: 'iconLeft' | 'iconRight';
   location?: 'header' | 'other';
+  showProtocolIcon?: boolean;
 }
 
 const TextWithProtocolIcon = ({
@@ -25,6 +26,7 @@ const TextWithProtocolIcon = ({
   wrapStyle = {},
   type = 'iconRight',
   location = 'other',
+  showProtocolIcon = true,
 }: ITextWithProtocolIconProps) => {
   const isDanger = isDangerousLink(url);
 
@@ -33,6 +35,7 @@ const TextWithProtocolIcon = ({
   };
 
   const ProtocolIcon = useMemo(() => {
+    if (!showProtocolIcon) return null;
     if (isDanger) {
       return <Svg icon="httpWarn" size={iconSize} iconStyle={styles.iconStyle} />;
     } else {
@@ -45,7 +48,7 @@ const TextWithProtocolIcon = ({
         />
       );
     }
-  }, [iconSize, isDanger, location]);
+  }, [iconSize, isDanger, location, showProtocolIcon]);
 
   return (
     <View style={[styles.wrap, wrapStyle]}>

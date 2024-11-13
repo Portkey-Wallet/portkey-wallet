@@ -190,13 +190,11 @@ const PaymentSecurityDetail: React.FC = () => {
 const getStyles = makeStyles(theme => ({
   pageWrap: {
     flex: 1,
-    backgroundColor: defaultColors.bg19,
     justifyContent: 'space-between',
   },
   labelWrap: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    backgroundColor: defaultColors.bg19,
     height: pTd(54),
     alignItems: 'center',
   },

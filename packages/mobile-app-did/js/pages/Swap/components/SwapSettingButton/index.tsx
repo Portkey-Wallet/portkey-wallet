@@ -16,6 +16,8 @@ import { pTd } from 'utils/unit';
 import { ViewStyleType } from 'types/styles';
 import { getStyles } from './style';
 import { KeyboardSafeArea } from 'components/KeyboardSafeArea';
+import { isStrictInteger, isValidNumberV2 } from '@portkey-wallet/utils/reg';
+import BigNumber from 'bignumber.js';
 
 interface ISwapSettingButtonProps {
   style?: ViewStyleType;
@@ -37,7 +39,9 @@ const SwapSettingContent = () => {
     );
   }, [userSlippageTolerance]);
 
-  const [slippageTolerance, setSlippageTolerance] = useState(userSlippageTolerance);
+  const [slippageTolerance, setSlippageTolerance] = useState(
+    new BigNumber(userSlippageTolerance || '0').multipliedBy(100).toFixed(),
+  );
   const [slippageToleranceSelectedValue, setSlippageToleranceSelectedValue] = useState(
     defaultSlippageToleranceSelectedValue,
   );
@@ -49,7 +53,7 @@ const SwapSettingContent = () => {
   const handleSlippageToleranceTagChange = useCallback((value: string) => {
     setSlippageToleranceSelectedValue(value);
     if (value === SLIPPAGE_TOLERANCE_INPUT_TAG_KEY) {
-      setSlippageTolerance('0');
+      setSlippageTolerance('');
       setTimeout(() => {
         slippageToleranceInputRef.current?.focus();
       }, 100);
@@ -59,26 +63,37 @@ const SwapSettingContent = () => {
   }, []);
 
   const handleSlippageToleranceInputChange = useCallback((text: string) => {
-    const newValue = text.replace(/[^0-9.]/g, '');
-    setSlippageTolerance((Number(newValue) / 100).toString());
+    if (text && !isValidNumberV2(text)) {
+      return;
+    }
+    setSlippageTolerance(text);
   }, []);
+
+  const handleSlippageToleranceInputBlur = useCallback(() => {
+    if (!slippageTolerance) {
+      setSlippageTolerance('0');
+    }
+  }, [slippageTolerance]);
 
   const handleExpirationChange = useCallback((text: string) => {
-    const newValue = text.replace(/[^0-9]/g, '');
-    setExpiration(newValue);
+    if (text && !isStrictInteger(text)) {
+      return;
+    }
+    setExpiration(text);
   }, []);
 
+  const handleExpirationBlur = useCallback(() => {
+    if (!expiration) {
+      setExpiration('0');
+    }
+  }, [expiration]);
+
   const saveSetting = useCallback(() => {
-    updateSlippageTolerance(slippageTolerance);
-    updateExpiration(expiration);
+    const slippageValue = new BigNumber(slippageTolerance || '0').dividedBy(100).toFixed();
+    updateSlippageTolerance(slippageValue);
+    updateExpiration(expiration || '0');
     OverlayModal.hide();
   }, [expiration, slippageTolerance, updateExpiration, updateSlippageTolerance]);
-
-  const displaySlippageTolerance = useMemo(() => {
-    if (!slippageTolerance) return '0';
-    const percentage = (Number(slippageTolerance) * 100).toFixed(1);
-    return percentage.endsWith('.0') ? percentage.slice(0, -2) : percentage;
-  }, [slippageTolerance]);
 
   const slippageToleranceTagList = useMemo(
     () => [
@@ -91,14 +106,15 @@ const SwapSettingContent = () => {
               containerStyle={styles.slippageToleranceInputContainer}
               inputContainerStyle={styles.slippageToleranceInputContainerStyle}
               inputStyle={styles.slippageToleranceInputStyle}
-              maxLength={10}
+              maxLength={5}
               autoCorrect={false}
-              keyboardType="number-pad"
-              placeholder="0.0"
+              keyboardType="numeric"
+              placeholder="0"
               placeholderTextColor={theme.colors.textBrand4}
               rightIcon={<Text style={styles.slippageToleranceUnitText}>%</Text>}
-              value={displaySlippageTolerance}
+              value={slippageTolerance}
               onChangeText={handleSlippageToleranceInputChange}
+              onBlur={handleSlippageToleranceInputBlur}
             />
           ) : (
             SLIPPAGE_TOLERANCE_INPUT_TAG_KEY
@@ -108,8 +124,9 @@ const SwapSettingContent = () => {
       },
     ],
     [
-      displaySlippageTolerance,
+      slippageTolerance,
       handleSlippageToleranceInputChange,
+      handleSlippageToleranceInputBlur,
       slippageToleranceSelectedValue,
       styles,
       theme.colors.textBrand4,
@@ -152,12 +169,13 @@ const SwapSettingContent = () => {
               <CommonInput
                 containerStyle={styles.expiresByInputContainer}
                 type="general"
-                maxLength={10}
+                maxLength={5}
                 autoCorrect={false}
                 keyboardType="number-pad"
                 placeholder="0"
                 value={expiration}
                 onChangeText={handleExpirationChange}
+                onBlur={handleExpirationBlur}
               />
               <Text style={styles.expiresByUnitText}>Minute(s)</Text>
             </View>

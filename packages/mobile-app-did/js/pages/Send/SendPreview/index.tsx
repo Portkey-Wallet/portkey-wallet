@@ -46,6 +46,8 @@ import { ActionType } from 'types/common';
 import { getEstimatedTime } from '../utils';
 import { useGetTokenViewContract } from 'hooks/contract';
 import { getELFChainBalance } from '@portkey-wallet/utils/balance';
+import { useRecent } from '@portkey-wallet/hooks/hooks-ca/recent';
+import { IRecentItem } from '@portkey-wallet/store/store-ca/recent/type';
 
 const SendPreview: React.FC = () => {
   const { t } = useLanguage();
@@ -90,6 +92,7 @@ const SendPreview: React.FC = () => {
   const [tokenPriceObject, getTokenPrice] = useGetCurrentAccountTokenPrice();
 
   const crossTransferByEtransfer = useCrossTransferByEtransfer(pin);
+  const { addRecent } = useRecent();
 
   const isETransferOrEBridge = useMemo(
     () => transferType === TransferType.E_TRANSFER || transferType === TransferType.E_BRIDGE,
@@ -194,6 +197,18 @@ const SendPreview: React.FC = () => {
   );
 
   const actionAfterTransfer = useCallback(async () => {
+    const aelfIcon = caAddressInfos?.find(ele => ele?.chainId === toInfo?.chainId)?.chainImageUrl;
+
+    const recentItem: IRecentItem = {
+      address: toInfo?.address || '',
+      chainId: toInfo?.chainId,
+      network: targetNetwork?.network || 'aelf',
+      networkIcon: targetNetwork?.imageUrl || aelfIcon,
+      transferTime: Date.now(),
+    };
+
+    addRecent({ recentItem });
+
     if (sendType === 'nft') {
       await fetchAccountNFTCollectionInfoList({
         caAddressInfos,
@@ -211,7 +226,17 @@ const SendPreview: React.FC = () => {
       actionType: ActionType.SEND,
       address: toInfo.address,
     });
-  }, [caAddressInfos, fetchAccountNFTCollectionInfoList, fetchAccountTokenInfoList, sendType, toInfo.address]);
+  }, [
+    addRecent,
+    caAddressInfos,
+    fetchAccountNFTCollectionInfoList,
+    fetchAccountTokenInfoList,
+    sendType,
+    targetNetwork?.imageUrl,
+    targetNetwork?.network,
+    toInfo.address,
+    toInfo?.chainId,
+  ]);
 
   const transfer = useCallback(async () => {
     setIsError(false);

@@ -1,10 +1,7 @@
-import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import fonts from 'assets/theme/fonts';
 import { makeStyles } from '@rneui/themed';
-
-const { white } = defaultColors;
 
 export const getStyles = makeStyles(theme => ({
   cardWrap: {
@@ -55,7 +52,7 @@ export const getStyles = makeStyles(theme => ({
     fontSize: pTd(32),
     lineHeight: pTd(38),
     height: pTd(38),
-    color: white,
+    color: theme.colors.textBase1,
   },
   eyeIcon: {
     marginLeft: pTd(4),

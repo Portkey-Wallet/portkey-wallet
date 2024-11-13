@@ -1,24 +1,22 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import OverlayModal from 'components/OverlayModal';
-import { ScrollView, StyleSheet, View } from 'react-native';
-import { defaultColors } from 'assets/theme';
+import { ScrollView, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import { useLanguage } from 'i18n/hooks';
 import { ModalBody } from 'components/ModalBody';
 import GStyles from 'assets/theme/GStyles';
 import { DappStoreItem } from '@portkey-wallet/store/store-ca/dapp/type';
 import { CommonButtonProps } from 'components/CommonButton';
-
-import DappInfoSection from '../DappInfoSection';
 import { GetSignatureParams } from '@portkey/provider-types';
 import TransactionDataSection from '../TransactionDataSection';
-import { TextS, TextXXXL } from 'components/CommonText';
+import { TextL } from 'components/CommonText';
 import { OverlayBottomSection } from '../OverlayBottomSection';
 import { isIOS } from '@rneui/base';
 import { useDecodeTx } from '@portkey-wallet/hooks/hooks-ca/dapp';
-import Svg from 'components/Svg';
-import { BGStyles, BorderStyles, FontStyles } from 'assets/theme/styles';
 import TransactionDataSectionWrapper from '../TransactionDataSectionWrapper';
+import TitleInfoSection from '../TitleInfoSection';
+import { makeStyles, useTheme } from '@rneui/themed';
+import { CommonPromptCard, PromptCardType } from 'components/CommonPromptCard';
 
 type SignModalPropsType = {
   dappInfo: DappStoreItem;
@@ -36,6 +34,8 @@ const SignModal = (props: SignModalPropsType) => {
   const [clearText, setClearText] = useState<any>();
   const [showWarning, setShowWarning] = useState<boolean>(true);
   const [isManagerForwardCall, setIsManagerForwardCall] = useState<boolean>(false);
+  const styles = getStyles();
+  const { theme } = useTheme();
   useEffect(() => {
     (async () => {
       if (isCipherText) {
@@ -79,7 +79,7 @@ const SignModal = (props: SignModalPropsType) => {
         },
       },
       {
-        title: t('Approve'),
+        title: t('Sign'),
         type: 'primary' as CommonButtonProps['type'],
         onPress: async () => {
           onSign?.();
@@ -93,12 +93,25 @@ const SignModal = (props: SignModalPropsType) => {
     return null;
   }
   return (
-    <ModalBody modalBodyType="bottom" title="" onClose={onReject}>
+    <ModalBody
+      modalBodyType="bottom"
+      leftTitleDom={<TitleInfoSection viewStyle={{ paddingLeft: pTd(16) }} dappInfo={dappInfo} title="Sign message" />}
+      onClose={onReject}>
       <View style={styles.contentWrap}>
-        <DappInfoSection dappInfo={dappInfo} />
-        <TextXXXL style={styles.signTitle}>Sign Message</TextXXXL>
-        {/* fix ScrollView scroll */}
         <ScrollView contentContainerStyle={GStyles.paddingBottom(100)}>
+          {showWarning && (
+            <CommonPromptCard
+              style={{ marginTop: pTd(8) }}
+              type={PromptCardType.WARNING}
+              description={`Unknown authorization. Please proceed with caution.`}
+            />
+          )}
+          <TextL
+            style={{
+              marginTop: pTd(24),
+              color: theme.colors.textBase2,
+            }}>{`Signing this message will prove you have ownership of the current account. Only sign messages from applications you trust.`}</TextL>
+
           {clearText ? (
             isManagerForwardCall ? (
               <TransactionDataSectionWrapper methodName={clearText.methodName} dataInfo={clearText.params} />
@@ -108,28 +121,11 @@ const SignModal = (props: SignModalPropsType) => {
           ) : (
             <TransactionDataSection dataInfo={signInfo} />
           )}
-          {showWarning && (
-            <View
-              style={[
-                GStyles.flexRow,
-                GStyles.itemCenter,
-                GStyles.radiusArg(pTd(8)),
-                GStyles.hairlineBorder,
-                BorderStyles.functionalYellowDisable,
-                BGStyles.functionalYellowLight,
-                GStyles.paddingArg(pTd(9), pTd(12)),
-                GStyles.marginTop(pTd(12)),
-              ]}>
-              <Svg icon={'warning3'} size={pTd(16)} />
-              <TextS style={[FontStyles.neutralPrimaryTextColor, GStyles.marginLeft(pTd(8))]}>
-                Unrecognised authorisation. Please exercise caution and refrain from approving the transaction if you
-                are uncertain.
-              </TextS>
-            </View>
-          )}
         </ScrollView>
       </View>
-      <OverlayBottomSection bottomButtonGroup={ButtonList} />
+      <OverlayBottomSection bottomButtonGroup={ButtonList}>
+        <TextL style={[styles.bottomText, GStyles.alignCenter]}>{t(`Only sign if you trust this website`)}</TextL>
+      </OverlayBottomSection>
     </ModalBody>
   );
 };
@@ -147,26 +143,14 @@ export default {
   showSignModal,
 };
 
-const styles = StyleSheet.create({
+const getStyles = makeStyles(theme => ({
   contentWrap: {
-    flex: 1,
-    paddingLeft: pTd(20),
-    paddingRight: pTd(20),
+    paddingLeft: pTd(16),
+    paddingRight: pTd(16),
+    paddingBottom: pTd(36),
   },
-  title: {
-    marginBottom: pTd(2),
+  bottomText: {
+    marginTop: pTd(16),
+    color: theme.colors.textBase2,
   },
-  method: {
-    borderRadius: pTd(6),
-    marginTop: pTd(24),
-    textAlign: 'center',
-    color: defaultColors.primaryColor,
-    backgroundColor: defaultColors.brandLight,
-    ...GStyles.paddingArg(2, 8),
-  },
-  signTitle: {
-    marginTop: pTd(24),
-    marginBottom: pTd(24),
-    textAlign: 'center',
-  },
-});
+}));

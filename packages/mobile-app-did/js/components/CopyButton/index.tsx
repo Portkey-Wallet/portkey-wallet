@@ -56,7 +56,7 @@ export const CopyButton = (props: CopyButtonProps) => {
   return (
     <TouchableOpacity onPress={realCopy} onLayout={onLayout} disabled={copyChecked} style={style}>
       <FloatTip wrapperLayoutProps={wrapperLayoutProps} {...tipsStyle} content={'Copied'} display={copyChecked} />
-      <Svg icon={copyChecked ? 'copy-checked' : 'copy1'} size={pTd(32)} iconStyle={styles.copyButtonIcon} />
+      <Svg icon={copyChecked ? 'copy-checked' : 'copy_v2'} size={pTd(32)} iconStyle={styles.copyButtonIcon} />
     </TouchableOpacity>
   );
 };

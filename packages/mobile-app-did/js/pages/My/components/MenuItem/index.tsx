@@ -76,7 +76,6 @@ export default memo(MenuItem);
 const styles = StyleSheet.create({
   itemWrap: {
     height: pTd(56),
-    backgroundColor: defaultColors.bg19,
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: pTd(16),

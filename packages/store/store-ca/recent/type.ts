@@ -14,13 +14,12 @@ export interface IRecentItem {
   address: string;
   chainId?: ChainId;
   network: 'aelf' | string;
+  networkIcon?: string;
   transferTime: number;
 }
 
 export interface RecentStateType {
   recentMap: {
-    [T in NetworkType]?: {
-      [key: string]: IRecentItem[]; // key is symbol-chainId
-    };
+    [T in NetworkType]?: IRecentItem[];
   };
 }

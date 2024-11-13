@@ -1,6 +1,6 @@
 import { darkColors } from 'assets/theme';
 import React, { memo, useEffect, useMemo, useState } from 'react';
-import { Animated, StyleSheet, View } from 'react-native';
+import { Animated, StyleSheet, View, ViewStyle } from 'react-native';
 import { formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import { pTd } from 'utils/unit';
 import { ActivityItemType } from '@portkey-wallet/types/types-ca/activity';
@@ -32,9 +32,10 @@ interface ActivityItemPropsType {
   item?: ActivityItemType;
   index?: number;
   onPress?: (item: any) => void;
+  style?: ViewStyle;
 }
 
-const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress, index }) => {
+const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress, index, style }) => {
   const isMainnet = useIsMainnet();
   const [rotation] = useState(new Animated.Value(0));
   const itemStyle = getStyles();
@@ -134,6 +135,27 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
         <View style={itemStyle.left}>
           {item?.status === contractStatusEnum.PENDING ? (
             loadingStatus
+          ) : item?.sourceIcon ? (
+            <View style={itemStyle.cornerMarkWrap}>
+              <CommonAvatar
+                title={item?.transactionName}
+                svgName={item?.listIcon ? undefined : 'transfer'}
+                imageUrl={item?.listIcon || ''}
+                avatarSize={pTd(42)}
+                hasBorder
+                titleStyle={itemStyle.avatarTitleStyle}
+                borderStyle={GStyles.hairlineBorder}
+              />
+              <View style={itemStyle.cornerMark}>
+                <CommonAvatar
+                  title={item?.transactionName}
+                  imageUrl={item?.sourceIcon || ''}
+                  style={itemStyle.cornerMarkIcon}
+                  avatarSize={pTd(14)}
+                  titleStyle={itemStyle.avatarTitleStyle}
+                />
+              </View>
+            </View>
           ) : (
             <CommonAvatar
               title={item?.transactionName}
@@ -410,13 +432,12 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
   }, [item, itemStyle, statusFontColor, loadingStatus]);
 
   return (
-    <Touchable style={[itemStyle.itemWrap]} onPress={() => onPress?.(item)}>
+    <Touchable style={[itemStyle.itemWrap, style]} onPress={() => onPress?.(item)}>
       {!isDaySame && <TextM style={itemStyle.time}>{dayStr}</TextM>}
       <View style={itemStyle.containerWrap}>
         {isShowEmptyTokenForDapp && EmptyTokenForDapp}
         {isShowSystemForDefault && SystemActivityItem}
         {isShowTx && TxActivityItem}
-        {/* <Resend containerStyle={itemStyle.resendContainer} item={item} /> */}
       </View>
     </Touchable>
   );

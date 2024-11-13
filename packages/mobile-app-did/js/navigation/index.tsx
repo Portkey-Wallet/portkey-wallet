@@ -39,7 +39,8 @@ import GiftHistory from 'pages/CryptoGift/GiftHistory';
 import GiftDetail from 'pages/CryptoGift/GiftDetail';
 import GiftResult from 'pages/CryptoGift/GiftResult';
 import EbridgeExample from 'pages/EbridgeExample';
-import Settings from 'pages/My/Profile';
+import ProfileSettings from 'pages/My/AccountSettings';
+import SecurityNav from 'pages/My/Security/router';
 
 // key: page route key, value: is page show
 const PageShowMap = new Map<string, boolean>();
@@ -58,7 +59,7 @@ export const productionNav = [
   { name: 'GiftHistory', component: GiftHistory },
   { name: 'GiftDetail', component: GiftDetail },
   { name: 'GiftResult', component: GiftResult },
-  { name: 'ProfileSettings', component: Settings },
+  { name: 'ProfileSettings', component: ProfileSettings },
   ...QrCodeNav,
   ...GuardianNav,
   ...ActivityNav,
@@ -73,6 +74,7 @@ export const productionNav = [
   ...DiscoverNav,
   ...FreeMintNav,
   ...SwapNav,
+  ...SecurityNav,
 ] as const;
 
 // dev nav
@@ -109,7 +111,6 @@ export default function NavigationRoot() {
     reportPageShow({ page_name: currentRouteName });
     PageShowMap.set(currentRouteKey, true);
   }, []);
-  console.log('stackNav', stackNav);
   return (
     <NavigationContainer ref={refHandler} onStateChange={onNavigationStateChange}>
       <TabsDrawer>

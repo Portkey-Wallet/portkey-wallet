@@ -8,6 +8,7 @@ import { checkIsSvgUrl } from 'utils';
 import { SvgCssUri } from 'react-native-svg';
 import FastImage from 'components/FastImage';
 import { ResizeMode } from 'react-native-fast-image';
+import { makeStyles } from '@rneui/themed';
 
 export interface CommonAvatarProps {
   title?: string;
@@ -44,6 +45,7 @@ export default function CommonAvatar(props: CommonAvatarProps) {
     borderStyle: borderStyleProp,
   } = props;
 
+  const styles = getStyles();
   const [loadError, setLoadError] = useState(false);
   const initialsTitle = String(title?.[0] || '').toUpperCase();
 
@@ -128,7 +130,7 @@ export default function CommonAvatar(props: CommonAvatarProps) {
     </View>
   );
 }
-const styles = StyleSheet.create({
+const getStyles = makeStyles(theme => ({
   avatarWrap: {
     width: pTd(48),
     height: pTd(48),
@@ -145,4 +147,4 @@ const styles = StyleSheet.create({
     borderWidth: 0,
     color: defaultColors.font7,
   },
-});
+}));

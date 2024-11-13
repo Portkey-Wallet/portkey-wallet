@@ -3,6 +3,7 @@ import { LoginKeyType } from '@portkey-wallet/types/types-ca/wallet';
 import { VerificationType, ZKLoginInfo } from '@portkey-wallet/types/verifier';
 import { request } from '..';
 import { IContext } from '../types';
+import { RequestSourceEnum } from '@portkey-wallet/constants/constants-ca/device';
 
 interface RegisterDIDWalletParams extends IContext {
   baseUrl?: string;
@@ -14,6 +15,7 @@ interface RegisterDIDWalletParams extends IContext {
   verificationDoc?: string;
   signature?: string;
   chainId: string;
+  source?: RequestSourceEnum;
 }
 
 export const registerDIDWallet = async (
@@ -39,6 +41,7 @@ interface RecoveryDIDWalletParams extends IContext {
   extraData: string;
   chainId: string;
   guardiansApproved: GuardiansApprovedWithZK[];
+  source?: RequestSourceEnum;
 }
 
 export const recoveryDIDWallet = async (

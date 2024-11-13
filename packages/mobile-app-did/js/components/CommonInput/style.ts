@@ -57,11 +57,10 @@ export const generalStyles = StyleSheet.create({
   containerStyle: {
     ...GStyles.paddingArg(0),
     ...GStyles.marginArg(0),
-    height: pTd(40),
   },
   inputContainerStyle: {
     borderColor: darkColors.borderBase1,
-    borderWidth: pTd(1),
+    borderWidth: StyleSheet.hairlineWidth,
     borderBottomWidth: StyleSheet.hairlineWidth,
     height: pTd(40),
     borderRadius: pTd(8),
@@ -74,7 +73,7 @@ export const generalStyles = StyleSheet.create({
     height: pTd(40),
   },
   labelStyle: {
-    color: darkColors.textDisabled1,
+    color: darkColors.textBase1,
     fontSize: pTd(14),
     lineHeight: pTd(20),
     marginBottom: pTd(8),
@@ -92,7 +91,7 @@ export const generalStyles = StyleSheet.create({
     color: darkColors.textDanger2,
   },
   disabledInputStyle: {
-    color: font5,
+    color: darkColors.textBase1,
     opacity: 1,
   },
 });

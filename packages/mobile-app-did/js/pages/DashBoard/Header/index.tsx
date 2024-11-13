@@ -8,7 +8,6 @@ import CommonToast from 'components/CommonToast';
 import Svg from 'components/Svg';
 import fonts from 'assets/theme/fonts';
 import GStyles from 'assets/theme/GStyles';
-import { darkColors, defaultColors } from 'assets/theme';
 import { measureLocation } from 'utils/measure';
 import { showCopyUserAddress } from '../CopyUserAddress';
 import { showSetNewWalletNamePopover } from '../SetNewWalletName/Popover';
@@ -16,16 +15,14 @@ import { useCurrentUserInfo, useSetNewWalletName } from '@portkey-wallet/hooks/h
 import { useQrScanPermissionAndToast } from 'hooks/useQrScan';
 import navigationService from 'utils/navigationService';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
-import { makeStyles } from '@rneui/themed';
+import { makeStyles, useTheme } from '@rneui/themed';
 
 const DashBoardHeader: React.FC = () => {
   const userInfo = useCurrentUserInfo();
   const qrScanPermissionAndToast = useQrScanPermissionAndToast();
   const { shouldShowSetNewWalletNameIcon, handleSetNewWalletName } = useSetNewWalletName();
   const styles = getStyles();
-  const onGiftClick = useCallback(() => {
-    navigationService.navigate('CryptoGift');
-  }, []);
+  const { theme } = useTheme();
 
   const onCopyAddress = useCallback(() => {
     showCopyUserAddress();
@@ -110,25 +107,20 @@ const DashBoardHeader: React.FC = () => {
   const rightDom = useMemo(() => {
     return (
       <View style={styles.rightDomWrap}>
-        {
-          <Touchable style={styles.svgWrap} onPress={onGiftClick}>
-            <Svg icon="crypto-gift" size={pTd(20)} />
-          </Touchable>
-        }
         <Touchable style={styles.svgWrap} onPress={onCopyAddress}>
-          <Svg icon="copy" size={pTd(24)} color={darkColors.iconBase2} />
+          <Svg icon="copy" size={pTd(24)} color={theme.colors.iconBase2} />
         </Touchable>
-        {/* <Touchable
+        <Touchable
           style={styles.svgWrap}
           onPress={async () => {
             if (!(await qrScanPermissionAndToast())) return;
             navigationService.navigate('QrScanner');
           }}>
-          <Svg icon="scan" size={pTd(24)} color={darkColors.iconBase2} />
-        </Touchable> */}
+          <Svg icon="scan" size={pTd(24)} color={theme.colors.iconBase2} />
+        </Touchable>
       </View>
     );
-  }, [onCopyAddress, styles]);
+  }, [onCopyAddress, qrScanPermissionAndToast, styles, theme]);
 
   return (
     <View style={styles.container}>
@@ -162,7 +154,7 @@ const getStyles = makeStyles(theme => ({
     alignItems: 'center',
   },
   accountName: {
-    color: defaultColors.white,
+    color: theme.colors.textBase1,
     fontSize: pTd(14),
     lineHeight: pTd(20),
     height: pTd(20),
@@ -203,7 +195,7 @@ const getStyles = makeStyles(theme => ({
   title: {
     height: pTd(44),
     lineHeight: pTd(44),
-    color: defaultColors.white,
+    color: theme.colors.textBase1,
     fontWeight: 'bold',
     ...fonts.mediumFont,
   },

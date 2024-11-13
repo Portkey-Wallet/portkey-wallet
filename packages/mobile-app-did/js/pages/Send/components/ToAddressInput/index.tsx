@@ -5,7 +5,13 @@ import Svg from 'components/Svg';
 import { useLanguage } from 'i18n/hooks';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { View, TextInput } from 'react-native';
-import { formatStr2EllipsisStr, getAddressChainId, getChainIdByAddress, isSameAddresses } from '@portkey-wallet/utils';
+import {
+  formatStr2EllipsisStr,
+  getAddressChainId,
+  getChainIdByAddress,
+  isSameAddresses,
+  sleep,
+} from '@portkey-wallet/utils';
 import LottieLoading from 'components/LottieLoading';
 import { pTd } from 'utils/unit';
 import Touchable from 'components/Touchable';
@@ -24,6 +30,8 @@ import { getStringAsync } from 'expo-clipboard';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network-mainnet-v2';
 import { SendType } from '@portkey-wallet/types/types-ca/send';
+import navigationService from 'utils/navigationService';
+import { set } from 'lodash';
 interface IToAddressInput {
   isFixedToContact?: boolean;
   selectedToken?: IToSendAssetParamsType;
@@ -179,9 +187,8 @@ export default function ToAddressInput({
       if (!FEPass && sendType === 'nft') return setWarning([WarningKey.INVALID_ADDRESS]);
 
       if (!FEPass) getNetworkList(_v);
-      // getNetworkList(_v);
     },
-    [checkAddressByFE, getNetworkList, setCheckFinish, setSelectedToContact],
+    [checkAddressByFE, getNetworkList, sendType, setCheckFinish, setSelectedToContact, setWarning],
   );
 
   const pasteAddress = useCallback(async () => {
@@ -193,6 +200,15 @@ export default function ToAddressInput({
       console.log('pasteAddress', error);
     }
   }, [onInput]);
+
+  const onPressEdit = useCallback(async () => {
+    setCheckFinish(true);
+    setCheckedPass(true);
+    setStep(1);
+    onInput(selectedToContact.address);
+    await sleep(10);
+    setSelectedToContact((pre: any) => ({ ...pre, name: '' }));
+  }, [onInput, selectedToContact.address, setCheckFinish, setSelectedToContact, setStep]);
 
   useEffect(() => {
     onInput(toInfo.address);
@@ -209,7 +225,7 @@ export default function ToAddressInput({
               <>
                 <TextM>{selectedToContact?.name || ''}</TextM>
                 <TextM style={styles.grayColor}>{`(${
-                  formatStr2EllipsisStr(selectedToContact?.address || '', 15) || ''
+                  formatStr2EllipsisStr(selectedToContact?.address || '', 8) || ''
                 })`}</TextM>
               </>
             ) : (
@@ -235,6 +251,11 @@ export default function ToAddressInput({
               value={selectedToContact?.address || ''}
               onChangeText={onInput}
             />
+            {selectedToContact.name && step === 1 && (
+              <Touchable onPress={onPressEdit}>
+                <Svg icon="edit" size={pTd(16)} />
+              </Touchable>
+            )}
 
             {selectedToContact.address && !isChecking && (
               <Touchable onPress={clearInput}>
@@ -259,7 +280,7 @@ export default function ToAddressInput({
               />
             )}
 
-            {/* {!isFixedToContact && !selectedToContact.address && (
+            {!isFixedToContact && !selectedToContact.address && (
               <Touchable
                 style={[GStyles.marginLeft(16), GStyles.flex1, GStyles.flexRow, GStyles.flexEnd]}
                 onPress={async () => {
@@ -268,7 +289,7 @@ export default function ToAddressInput({
                 }}>
                 <Svg icon="scan" size={pTd(20)} color={darkColors.iconBase1} />
               </Touchable>
-            )} */}
+            )}
           </>
         )}
       </View>

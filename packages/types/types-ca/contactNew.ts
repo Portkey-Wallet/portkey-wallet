@@ -28,7 +28,7 @@ export interface IContactItemType {
 }
 export type TDeteleContactItemParams = IContactItemType;
 
-export type TFormattedRecentItem = IRecentItem | IContactItemType;
+export type TFormattedRecentItem = Partial<IRecentItem & IContactItemType>;
 
 export interface RecentContactItemType extends IContactItemType {
   chainId: ChainId;

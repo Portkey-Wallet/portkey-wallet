@@ -34,6 +34,7 @@ import {
   IToSendHomeParamsType,
   IToSendPreviewParamsType,
   TransferType,
+  TToInfo,
 } from '@portkey-wallet/types/types-ca/routeParams';
 
 import { getELFChainBalance } from '@portkey-wallet/utils/balance';
@@ -73,7 +74,7 @@ import useGetEBridgeConfig from 'hooks/ebridge';
 import { EBridge } from '@portkey-wallet/utils/eBridge';
 import ActionSheet from 'components/ActionSheet';
 import OverlayModal from 'components/OverlayModal';
-import { eBridgeActionSheet, getLimitTips, getSmallerValue, isValidAmount } from '../utils';
+import { eBridgeActionSheet, getLimitTips, getSendNetworkList, getSmallerValue, isValidAmount } from '../utils';
 import { SEND_RECEIVE_HELP_URL } from 'constants/common';
 import { openOutLink } from 'utils/link';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
@@ -99,6 +100,7 @@ const SendHome: React.FC = () => {
   const [targetNetwork, setTargetNetwork] = useState<INetworkItem>();
   const [recentList, setRecentList] = useState<TFormattedRecentItem[]>();
   const [savedList, setSavedList] = useState<TFormattedRecentItem[]>();
+  const { userId: myUserId } = useCurrentUserInfo();
 
   const recommendETransfer = useMemo(
     () => targetNetwork?.serviceList?.find(ele => ele?.serviceName?.toLocaleLowerCase()?.includes('transfer')),
@@ -934,7 +936,41 @@ const SendHome: React.FC = () => {
     userInfo?.userId,
   ]);
 
-  console.log('myAddress', recentList);
+  const onPressTabItem = useCallback(
+    async (i: TFormattedRecentItem) => {
+      console.log('onPressTabItem', i);
+      try {
+        if (i.userId === myUserId) {
+          setSelectedToContact({
+            name: '',
+            address: addressFormat(i.addressInfo?.address, i.addressInfo?.chainId),
+          } as TToInfo);
+          setStep(2);
+        } else if (i.network !== 'aelf' && i.addressInfo?.network !== 'aelf') {
+          Loading.show();
+          const { data } = await getSendNetworkList({
+            symbol: assetInfo?.symbol || '',
+            chainId: assetInfo?.chainId || 'AELF',
+            toAddress: i?.addressInfo?.address || '',
+          });
+          const tmpNetwork = data?.networkList?.find((ele: any) => ele.network === i.network);
+
+          if (!tmpNetwork) throw 'not supported';
+          setTargetNetwork(tmpNetwork);
+          setSelectedToContact({ name: i?.name, address: i.address || i.addressInfo?.address } as TToInfo);
+          setStep(2);
+        } else {
+          setSelectedToContact({ name: i?.name, address: i.address || i.addressInfo?.address } as TToInfo);
+          setStep(2);
+        }
+      } catch (error) {
+        CommonToast.failError(error);
+      } finally {
+        Loading.hide();
+      }
+    },
+    [assetInfo?.chainId, assetInfo?.symbol],
+  );
 
   return (
     <PageContainer
@@ -1015,9 +1051,7 @@ const SendHome: React.FC = () => {
           myAddressList={[myAddressesList as IContactItemType]}
           noDataMessage="No recent address"
           chainId={assetInfo.chainId}
-          onPress={(item: TFormattedRecentItem) => {
-            setSelectedToContact(item as any);
-          }}
+          onPress={onPressTabItem}
         />
       )}
 

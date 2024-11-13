@@ -54,7 +54,7 @@ const SelectTokenContent: React.FC<ISelectTokenContentProps> = ({ title, onSelec
   );
 
   return (
-    <ModalBody modalBodyType="bottom" title={title}>
+    <ModalBody modalBodyType="bottom" title={title} isMaxHeight>
       <CommonInput
         allowClear
         clearIcon="clear4"
@@ -106,9 +106,7 @@ const SelectTokenButton: React.FC<ISelectTokenButtonProps> = ({ modalTitle, toke
           imageUrl={token?.chainImageUrl}
         />
       </View>
-      <Text style={styles.symbolText}>
-        {truncateString(formatNameWithNoUnderline(token?.label || token?.symbol || ''))}
-      </Text>
+      <Text style={styles.symbolText}>{truncateString(formatNameWithNoUnderline(token?.label || token?.symbol))}</Text>
       <Svg icon={'down-arrow'} size={pTd(16)} />
     </Touchable>
   );

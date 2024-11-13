@@ -15,6 +15,7 @@ interface ILabel {
 
 interface IValue {
   text?: string;
+  content?: React.ReactNode;
   leftImageUrl?: string;
   leftSvgName?: SvgProps['icon'];
   textBelow?: string;
@@ -44,16 +45,22 @@ const CommonInfoRow = ({ label, value, isError }: ICommonInfoRowProps) => {
         )}
       </View>
       <View style={styles.infoValueColumnWrap}>
-        <View style={styles.infoValueWrap}>
-          {value.leftImageUrl ? (
-            <Image style={styles.infoValueLeftIcon} source={{ uri: value.leftImageUrl }} />
-          ) : (
-            value.leftSvgName && <Svg iconStyle={styles.infoValueLeftSvg} icon={value.leftSvgName} size={pTd(18)} />
-          )}
-          <Text style={[styles.infoValue, isError ? styles.infoErrorText : undefined]}>{t(value.text || '--')}</Text>
-        </View>
-        {value.textBelow && (
-          <Text style={[styles.infoValueBelow, isError ? styles.infoErrorText : undefined]}>{value.textBelow}</Text>
+        {value.content || (
+          <>
+            <View style={styles.infoValueWrap}>
+              {value.leftImageUrl ? (
+                <Image style={styles.infoValueLeftIcon} source={{ uri: value.leftImageUrl }} />
+              ) : (
+                value.leftSvgName && <Svg iconStyle={styles.infoValueLeftSvg} icon={value.leftSvgName} size={pTd(18)} />
+              )}
+              <Text style={[styles.infoValue, isError ? styles.infoErrorText : undefined]}>
+                {t(value.text || '--')}
+              </Text>
+            </View>
+            {value.textBelow && (
+              <Text style={[styles.infoValueBelow, isError ? styles.infoErrorText : undefined]}>{value.textBelow}</Text>
+            )}
+          </>
         )}
       </View>
     </View>

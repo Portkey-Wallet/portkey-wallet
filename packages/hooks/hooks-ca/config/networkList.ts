@@ -17,8 +17,6 @@ export const useTransferNetworkConfig = () => {
 
   const targetMap = sendAssetSupportNetworkMap[currentNetwork];
 
-  // console.log('targetMap', targetMap);
-
   const getTargetChainSymbolConfigList = useCallback(
     (fromChainId: ChainId, symbol: string) => {
       return targetMap?.[fromChainId]?.[symbol];

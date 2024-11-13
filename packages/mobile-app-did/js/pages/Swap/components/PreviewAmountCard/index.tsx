@@ -5,7 +5,6 @@ import { useTheme } from '@rneui/themed';
 import { pTd } from 'utils/unit';
 import { ViewStyleType } from 'types/styles';
 import { getStyles } from './style';
-import { TSwapInfo } from '../SwapEnter';
 import { TCurrency } from '@portkey-wallet/types/types-ca/awaken';
 import CurrencyItem from '../CurrencyItem';
 import { useAwakenTokenPrices } from '@portkey-wallet/hooks/hooks-ca/awaken/state';
@@ -19,7 +18,10 @@ interface IAmountRowProps {
 
 interface IPreviewAmountCardProps {
   style?: ViewStyleType;
-  swapInfo?: TSwapInfo;
+  tokenIn?: TCurrency;
+  tokenOut?: TCurrency;
+  valueIn: string;
+  valueOut: string;
 }
 
 const AmountRow = ({ item, value }: IAmountRowProps) => {
@@ -44,17 +46,17 @@ const AmountRow = ({ item, value }: IAmountRowProps) => {
   );
 };
 
-const PreviewAmountCard = ({ style, swapInfo }: IPreviewAmountCardProps) => {
+const PreviewAmountCard = ({ style, tokenIn, tokenOut, valueIn, valueOut }: IPreviewAmountCardProps) => {
   const styles = getStyles();
   const { theme } = useTheme();
 
-  if (!swapInfo?.tokenIn || !swapInfo?.tokenOut) return null;
+  if (!tokenIn || !tokenOut) return null;
 
   return (
     <View style={[styles.container, style]}>
-      <AmountRow item={swapInfo.tokenIn} value={swapInfo.valueIn} />
+      <AmountRow item={tokenIn} value={valueIn} />
       <Svg iconStyle={styles.arrowIcon} icon="arrow-down-thin" color={theme.colors.iconBase3} size={pTd(22)} />
-      <AmountRow item={swapInfo.tokenOut} value={swapInfo.valueOut} />
+      <AmountRow item={tokenOut} value={valueOut} />
     </View>
   );
 };

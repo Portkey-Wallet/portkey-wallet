@@ -7,20 +7,41 @@ export const getTagItemStyles = makeStyles(theme => ({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: pTd(8),
+    paddingHorizontal: pTd(8),
     borderRadius: pTd(8),
     backgroundColor: theme.colors.bgNeutral2,
   },
-  selectedTagItem: {
+  tagItemRound: {
+    borderRadius: pTd(24),
+  },
+  tagItemOutline: {
+    borderWidth: pTd(1),
+    borderColor: theme.colors.borderBase1,
+    borderStyle: 'solid',
+    backgroundColor: 'transparent',
+  },
+  tagItemSelected: {
     backgroundColor: theme.colors.bgBrand1,
+  },
+  mdTagItem: {
+    paddingVertical: pTd(8),
+  },
+  smTagItem: {
+    paddingVertical: pTd(6),
   },
   checkIcon: {
     marginRight: pTd(4),
   },
   label: {
+    color: theme.colors.textNeutral5,
+  },
+  mdLabel: {
     fontSize: pTd(16),
     lineHeight: pTd(16),
-    color: theme.colors.textNeutral5,
+  },
+  smLabel: {
+    fontSize: pTd(14),
+    lineHeight: pTd(14),
   },
   selectedLabel: {
     color: theme.colors.textBrand4,

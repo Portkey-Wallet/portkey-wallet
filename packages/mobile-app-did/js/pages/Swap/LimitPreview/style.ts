@@ -8,6 +8,9 @@ export const getStyles = makeStyles(() => ({
   infoRowContainer: {
     marginTop: pTd(8),
   },
+  promptCard: {
+    marginTop: pTd(16),
+  },
   footerWrap: {
     marginTop: pTd(16),
   },

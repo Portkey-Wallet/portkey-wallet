@@ -135,6 +135,27 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
         <View style={itemStyle.left}>
           {item?.status === contractStatusEnum.PENDING ? (
             loadingStatus
+          ) : item?.sourceIcon ? (
+            <View style={itemStyle.cornerMarkWrap}>
+              <CommonAvatar
+                title={item?.transactionName}
+                svgName={item?.listIcon ? undefined : 'transfer'}
+                imageUrl={item?.listIcon || ''}
+                avatarSize={pTd(42)}
+                hasBorder
+                titleStyle={itemStyle.avatarTitleStyle}
+                borderStyle={GStyles.hairlineBorder}
+              />
+              <View style={itemStyle.cornerMark}>
+                <CommonAvatar
+                  title={item?.transactionName}
+                  imageUrl={item?.sourceIcon || ''}
+                  style={itemStyle.cornerMarkIcon}
+                  avatarSize={pTd(14)}
+                  titleStyle={itemStyle.avatarTitleStyle}
+                />
+              </View>
+            </View>
           ) : (
             <CommonAvatar
               title={item?.transactionName}
@@ -417,7 +438,6 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
         {isShowEmptyTokenForDapp && EmptyTokenForDapp}
         {isShowSystemForDefault && SystemActivityItem}
         {isShowTx && TxActivityItem}
-        {/* <Resend containerStyle={itemStyle.resendContainer} item={item} /> */}
       </View>
     </Touchable>
   );

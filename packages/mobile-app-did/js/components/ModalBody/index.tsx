@@ -12,6 +12,7 @@ import { useGStyles } from 'assets/theme/useGStyles';
 import ButtonRow from 'components/ButtonRow';
 import { CommonButtonProps } from 'components/CommonButton';
 import { ViewStyleType } from 'types/styles';
+import { makeStyles } from '@rneui/themed';
 
 export interface ModalBodyProps extends ViewProps {
   title?: string;
@@ -49,6 +50,7 @@ export const ModalBody: React.FC<ModalBodyProps> = props => {
   } = props;
 
   const gStyles = useGStyles();
+  const styles = getStyles();
 
   if (modalBodyType === 'bottom') {
     const showTopWrap = !!leftTitleDom || !!title || !!isShowRightCloseIcon;
@@ -117,7 +119,7 @@ export const ModalBody: React.FC<ModalBodyProps> = props => {
   return <View style={[styles.commonBox, styles.centerBox, style]}>{children}</View>;
 };
 
-export const styles = StyleSheet.create({
+export const getStyles = makeStyles(theme => ({
   commonBox: {
     overflow: 'hidden',
     backgroundColor: darkColors.bgBase1,
@@ -179,16 +181,14 @@ export const styles = StyleSheet.create({
     width: pTd(48),
   },
   buttonGroup: {
-    backgroundColor: defaultColors.bg1,
-    position: 'absolute',
-    bottom: 0,
-    ...GStyles.paddingArg(10, 20, 16, 20),
+    ...GStyles.paddingArg(0, 16, 14, 16),
+    backgroundColor: theme.colors.bgBase1,
   },
   buttonStyle: {
     height: pTd(48),
-    fontSize: pTd(18),
+    fontSize: pTd(16),
   },
   buttonTitleStyle: {
     fontSize: pTd(16),
   },
-});
+}));

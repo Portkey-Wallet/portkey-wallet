@@ -26,6 +26,7 @@ import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type'
 import { useNavigate } from 'react-router';
 import { useLatestRef } from '@portkey-wallet/hooks';
 import singleMessage from 'utils/singleMessage';
+import { RequestSourceEnum } from '@portkey-wallet/constants/constants-ca/device';
 
 export function useOnManagerAddressAndQueryResult(state: string | undefined) {
   const { setLoading } = useLoading();
@@ -82,6 +83,7 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
           clientId: managerAddress,
           requestId,
         },
+        source: RequestSourceEnum.Web,
       });
       return {
         requestId,
@@ -122,6 +124,7 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
           clientId: managerAddress,
           requestId,
         },
+        source: RequestSourceEnum.Web,
       });
 
       return {

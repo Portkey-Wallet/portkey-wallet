@@ -173,6 +173,11 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
     [],
   );
 
+  const handleNaviagte = useCallback(() => {
+    navigationService.navigate('DiscoverSearch', { url: activeItem?.url });
+    dispatch(changeDrawerOpenStatus(false));
+  }, [activeItem?.url, dispatch]);
+
   const closeAll = useCallback(() => {
     if (tabs?.length === 0) return;
 
@@ -369,7 +374,7 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
                 <Touchable onPress={event => onTouch(event, canGoBack, canGoForward)} style={rightDomStyle.iconWrap}>
                   <Svg icon="more-circle" size={20} color={darkColors.iconBase1} />
                 </Touchable>
-                <Touchable style={rightDomStyle.inputContent}>
+                <Touchable style={rightDomStyle.inputContent} onPress={handleNaviagte}>
                   {!activeItem?.url?.includes('https://') && (
                     <Svg icon="warning-fill" size={12} iconStyle={{ marginRight: pTd(10) }} />
                   )}
@@ -399,7 +404,6 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
     latestCheckAndUpDateRecordItemName,
     latestCheckAndUpDateTabItemName,
     onTouch,
-    refresh,
     tabStateMap?.canGoBack,
     tabStateMap?.canGoForward,
     tabs,
@@ -447,7 +451,7 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
         leftDom={
           <View style={styles.leftWrap}>
             <Touchable onPress={backToSearchPage} style={styles.backIcon}>
-              <Svg icon="left-arrow" size={pTd(20)} color={defaultColors.font18} />
+              <Svg icon="left-arrow" size={pTd(20)} color={darkColors.textBase2} />
             </Touchable>
             {activeTabId ? (
               <TextWithProtocolIcon

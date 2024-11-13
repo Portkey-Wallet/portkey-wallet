@@ -7,12 +7,11 @@ import { RenderItemParams, ScaleDecorator } from 'react-native-draggable-flatlis
 import SwipeableItem, { OpenDirection, SwipeableItemImperativeRef } from 'react-native-swipeable-item';
 import { useBookmark } from '../context/bookmarksContext';
 import usePrevious from 'hooks/usePrevious';
-import { BGStyles, FontStyles } from 'assets/theme/styles';
-import Svg from 'components/Svg';
+import { BGStyles, DarkFontStyles } from 'assets/theme/styles';
 import { pTd } from 'utils/unit';
 import DiscoverWebsiteImage from 'pages/Discover/components/DiscoverWebsiteImage';
 import TextWithProtocolIcon from 'components/TextWithProtocolIcon';
-import { darkColors, defaultColors } from 'assets/theme';
+import { darkColors } from 'assets/theme';
 import myEvents from 'utils/deviceEvent';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
@@ -63,7 +62,7 @@ export default memo(
           onPress={() => {
             onDelete(item);
           }}>
-          <TextM style={[FontStyles.font2, GStyles.flexCol, GStyles.center]}>Delete</TextM>
+          <TextM style={[DarkFontStyles.textBase1, GStyles.flexCol, GStyles.center]}>Delete</TextM>
         </Touchable>
       ),
       [item, onDelete],
@@ -116,7 +115,7 @@ export default memo(
                 url={recordInfo?.url}
                 textFontSize={pTd(16)}
               />
-              <TextS numberOfLines={1} ellipsizeMode="tail" style={[FontStyles.font7]}>
+              <TextS numberOfLines={1} ellipsizeMode="tail" style={[DarkFontStyles.textBase2]}>
                 {item.url || ''}
               </TextS>
             </View>

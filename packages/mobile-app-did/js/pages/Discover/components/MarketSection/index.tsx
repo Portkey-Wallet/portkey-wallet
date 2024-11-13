@@ -9,7 +9,7 @@ import CommonToast from 'components/CommonToast';
 import Svg from 'components/Svg';
 import CommonButton from 'components/CommonButton';
 import { StyleSheet } from 'react-native';
-import { darkColors, defaultColors } from 'assets/theme';
+import { darkColors } from 'assets/theme';
 import { TextM } from 'components/CommonText';
 import MarketItemSkeleton from './components/MarketItemSkeleton';
 
@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
     marginBottom: pTd(8),
   },
   message: {
-    color: defaultColors.neutralTertiaryText,
+    color: darkColors.textBase2,
     fontSize: pTd(14),
     fontWeight: '400',
     lineHeight: pTd(22),
@@ -117,7 +117,7 @@ const styles = StyleSheet.create({
   nextButtonText: {
     fontSize: pTd(12),
     lineHeight: pTd(20),
-    color: defaultColors.white,
+    color: darkColors.textBase1,
   },
   btnTitleStyle: {
     lineHeight: pTd(16),

@@ -21,10 +21,10 @@ interface IAmountCardProps {
   isError?: boolean;
   amount?: string;
   amountUsd?: ReactNode;
-  balance?: Bignumber;
+  balance?: string;
+  gasFee?: string;
   onAmountChange?: (value: string) => void;
-  token?: TCurrency;
-  onTokenChange?: (token: TCurrency) => void;
+  token: TCurrency;
   onShowCryptoAssetList: () => void;
   isMaxShow?: boolean;
 }
@@ -36,9 +36,9 @@ const AmountCard: React.FC<IAmountCardProps> = ({
   amount,
   amountUsd,
   balance,
+  gasFee,
   onAmountChange,
   token,
-  onTokenChange,
   onShowCryptoAssetList,
   isMaxShow = false,
 }) => {
@@ -54,25 +54,24 @@ const AmountCard: React.FC<IAmountCardProps> = ({
   };
   // click max btn
   const handleMaxPress = useCallback(() => {
-    // if (balance?.isNaN() || !token) {
-    //   onAmountChange?.('');
-    //   return;
-    // }
-    // const { symbol, decimals } = token;
-    // if (symbol === 'ELF' && gasFee && balance) {
-    //   const _valueBN = ZERO.plus(balance).minus(gasFee);
-    //   if (_valueBN.lte(ZERO)) {
-    //     onAmountChange?.('');
-    //     return;
-    //   }
-    //   onAmountChange?.(divDecimals(_valueBN, decimals).toFixed() || '');
-    //   return;
-    // }
-    // onAmountChange?.(divDecimals(balance || ZERO, decimals).toFixed() || '');
-  }, [balance, onAmountChange, token]);
+    if (!balance || !token) {
+      onAmountChange?.('');
+      return;
+    }
+    const { symbol, decimals } = token;
+    if (symbol === 'ELF' && gasFee && balance) {
+      const _valueBN = ZERO.plus(balance).minus(gasFee);
+      if (_valueBN.lte(ZERO)) {
+        onAmountChange?.('');
+        return;
+      }
+      onAmountChange?.(divDecimals(_valueBN, decimals).toFixed() || '');
+      return;
+    }
+    onAmountChange?.(divDecimals(balance || ZERO, decimals).toFixed() || '');
+  }, [balance, gasFee, onAmountChange, token]);
 
   const balanceStr = useMemo(() => {
-    if (!balance || !token) return '';
     const { symbol, decimals } = token;
     return `${divDecimals(balance, decimals).toFixed()} ${formatNameWithNoUnderline(symbol)}`;
   }, [balance, token]);
@@ -113,12 +112,7 @@ const AmountCard: React.FC<IAmountCardProps> = ({
             </Text>
           </Touchable>
         )}
-        <SelectTokenButton
-          modalTitle={title}
-          token={token}
-          onShowCryptoAssetList={onShowCryptoAssetList}
-          onTokenChange={onTokenChange}
-        />
+        <SelectTokenButton token={token} onShowCryptoAssetList={onShowCryptoAssetList} />
       </View>
       <View style={styles.infoWrap}>
         {amountUsd && (

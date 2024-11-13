@@ -61,7 +61,6 @@ export default function SendPacketGroupPage() {
   const onPressBtn = useLockCallback(
     async (values: CryptoValuesType) => {
       const { token } = values;
-
       Loading.show();
       try {
         const isManagerSynced = await checkManagerSyncState(token.chainId);
@@ -77,10 +76,19 @@ export default function SendPacketGroupPage() {
       } finally {
         Loading.hide();
       }
-
       const totalAmount = timesDecimals(values.count, token.decimals);
       let caContract: ContractBasic;
-
+      const fee = await calculateRedPacketFee({
+        symbol: token.symbol,
+        chainId: token.chainId,
+        decimals: token.decimals,
+        count: values.count,
+      });
+      navigationService.navigate('SendRedPacketPreview', {
+        assetInfo: token,
+        fee,
+        values,
+      });
       try {
         if (isCryptoGift) {
           await PaymentOverlay.showCryptoGift({
@@ -264,11 +272,6 @@ export default function SendPacketGroupPage() {
           />
         </View>
         <View>{tabList.find(item => item.type === selectTab)?.component}</View>
-        <TextM style={styles.tips}>
-          {`A crypto ${
-            isCryptoGift ? 'gift' : 'box'
-          } is valid for 24 hours. Unclaimed tokens/NFTs will be automatically returned to you upon expiration.`}
-        </TextM>
       </KeyboardAwareScrollView>
     </PageContainer>
   );
@@ -288,7 +291,7 @@ const getStyles = makeStyles(theme => ({
   tips: {
     marginTop: pTd(24),
     textAlign: 'center',
-    color: defaultColors.font3,
+    color: theme.colors.textBase3,
     marginBottom: isIOS ? 0 : pTd(16),
   },
   tabHeaderStyle: {

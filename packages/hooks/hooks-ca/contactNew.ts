@@ -7,7 +7,6 @@ import {
   IContactItemType,
   TDeteleContactItemParams,
   IEditContactItemApiType,
-  INetworkItemType,
 } from '@portkey-wallet/types/types-ca/contactNew';
 import { useCallback, useEffect, useMemo } from 'react';
 import {

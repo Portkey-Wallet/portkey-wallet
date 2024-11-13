@@ -12,6 +12,7 @@ import { pTd } from 'utils/unit';
 import SinkableText, { getDecimalPlaces } from '../SinkableText';
 import { FloatTips } from 'components/FloatTips';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { TextS } from 'components/CommonText';
 export interface IMarketItemProps {
   isLoading: boolean;
   item: ICryptoCurrencyItem;
@@ -109,18 +110,23 @@ export default function MarketItem(props: IMarketItemProps) {
             />
             <View style={styles.section}>
               <Text style={[styles.text, FontStyles.white]}>{item.symbol || '--'}</Text>
-              <Text style={[styles.text2, DarkFontStyles.textBase2]}>${item.marketCap || 0}</Text>
+              <TextS style={[styles.text2, DarkFontStyles.textBase2]}>${item.marketCap || 0}</TextS>
             </View>
           </View>
           <SinkableText sinkable value={item?.currentPrice} />
           {/* </Text> */}
-          <Text style={[styles.text4, FontStyles.functionalRedDefault, styles.section3Width, chgColor]}>
-            {prefixChg}
-            {item.priceChangePercentage24H?.toFixed(
-              getDecimalPlaces(item.priceChangePercentage24H) < 1 ? 1 : getDecimalPlaces(item.priceChangePercentage24H),
-            ) || 0}
-            %
-          </Text>
+          <View style={styles.rightSection}>
+            <Text style={[styles.text1, FontStyles.white]}>${item.currentPrice || 0}</Text>
+            <TextS style={[styles.text4, FontStyles.functionalRedDefault, styles.section3Width, chgColor]}>
+              {prefixChg}
+              {item.priceChangePercentage24H?.toFixed(
+                getDecimalPlaces(item.priceChangePercentage24H) < 1
+                  ? 1
+                  : getDecimalPlaces(item.priceChangePercentage24H),
+              ) || 0}
+              %
+            </TextS>
+          </View>
         </Touchable>
       )}
     </View>
@@ -133,7 +139,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     width: '100%',
-    height: pTd(64),
+    height: pTd(74),
     backgroundColor: darkColors.bgBase1,
   },
   boxWrapper: {
@@ -142,8 +148,8 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
   },
   img: {
-    width: pTd(36),
-    height: pTd(36),
+    width: pTd(42),
+    height: pTd(42),
     marginRight: pTd(10),
     borderRadius: pTd(18),
   },
@@ -153,28 +159,33 @@ const styles = StyleSheet.create({
   section: {
     flexDirection: 'column',
     alignItems: 'flex-start',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
+    height: pTd(42),
+  },
+  rightSection: {
+    flexDirection: 'column',
+    alignItems: 'flex-end',
+    justifyContent: 'space-between',
+    height: pTd(42),
   },
   text: {
     fontSize: pTd(16),
-    fontWeight: '500',
     textAlign: 'left',
     color: darkColors.textBase1,
   },
+  text1: {
+    fontSize: pTd(16),
+    textAlign: 'left',
+    fontWeight: 'bold',
+    color: darkColors.textBase1,
+  },
   text2: {
-    height: pTd(16),
-    fontSize: pTd(12),
+    height: pTd(20),
+    lineHeight: pTd(20),
     fontWeight: '400',
     textAlign: 'left',
   },
-  priceWrapper: {
-    flexDirection: 'row',
-    backgroundColor: 'transparent',
-    justifyContent: 'flex-end',
-    height: pTd(22),
-  },
   text3: {
-    // height: pTd(22),
     fontSize: pTd(14),
     fontWeight: '500',
     textAlign: 'right',
@@ -185,9 +196,7 @@ const styles = StyleSheet.create({
   text4: {
     alignItems: 'flex-start',
     justifyContent: 'flex-end',
-    width: pTd(64),
-    height: pTd(22),
-    fontSize: pTd(14),
+    height: pTd(20),
     fontWeight: '500',
     textAlign: 'right',
   },

@@ -1,5 +1,5 @@
 import GStyles from 'assets/theme/GStyles';
-import { FontStyles } from 'assets/theme/styles';
+import { DarkFontStyles, FontStyles } from 'assets/theme/styles';
 import React, { useMemo, useRef } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { pTd } from 'utils/unit';
@@ -37,7 +37,7 @@ export default function SinkableText(props: ISinkableTextProps) {
   }, [sinkable, sinkValue]);
   return (
     <View style={[styles.priceWrapper, styles.section2Width]}>
-      <Text style={[styles.text3, FontStyles.neutralPrimaryTextColor, GStyles.alignCenter]}>
+      <Text style={[styles.text3, DarkFontStyles.textBase1, GStyles.alignCenter]}>
         ${showSink ? '0.0' : value?.toFixed(getDecimalPlaces(value) < 2 ? 2 : getDecimalPlaces(value))?.toString()}
       </Text>
       {showSink && <Text style={[styles.priceSinkText, GStyles.alignEnd]}>{sinkValue}</Text>}

@@ -221,7 +221,7 @@ const SwapPreview = () => {
     <CommonPreviewContainer
       footerStyle={styles.footerWrap}
       poweredIcon={<Svg icon="awakenLogo" oblongSize={[pTd(45), pTd(12)]} />}
-      buttonProps={{ title: t('Swap'), onPress: handlePress }}
+      buttonProps={{ title: t('Place limit order'), onPress: handlePress }}
       isLoading={isLoading}>
       <PreviewAmountCard
         style={styles.previewAmountCard}

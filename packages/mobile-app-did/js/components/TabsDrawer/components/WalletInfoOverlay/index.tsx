@@ -11,7 +11,7 @@ import { useCurrentCaInfo, useCurrentUserInfo, useWallet } from '@portkey-wallet
 import { CAInfo } from '@portkey-wallet/types/types-ca/wallet';
 import { addressFormat, formatChainInfoToShow, formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import { ChainId } from '@portkey-wallet/types';
-import { DarkFontStyles, FontStyles } from 'assets/theme/styles';
+import { DarkFontStyles } from 'assets/theme/styles';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
@@ -97,7 +97,7 @@ const MyWalletModal = ({ tabInfo }: MyWalletModalType) => {
                 <Svg icon={item?.chainId === DefaultChainId ? 'mainnet' : 'sideChain'} size={pTd(24)} />
                 <View style={{ paddingLeft: pTd(12) }}>
                   <TextM>{formatStr2EllipsisStr(addressFormat(item?.caAddress, item?.chainId as ChainId), 8)}</TextM>
-                  <TextS style={[styles.itemChainInfo, FontStyles.font3]}>
+                  <TextS style={[styles.itemChainInfo, DarkFontStyles.textBase2]}>
                     {formatChainInfoToShow(item?.chainId as ChainId, currentNetwork)}
                   </TextS>
                 </View>

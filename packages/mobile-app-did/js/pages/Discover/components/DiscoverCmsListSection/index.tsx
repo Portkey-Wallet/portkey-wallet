@@ -1,9 +1,9 @@
 import { useDiscoverGroupList, useGetS3ImageUrl } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { DiscoverItem } from '@portkey-wallet/store/store-ca/cms/types';
-import { darkColors, defaultColors } from 'assets/theme';
+import { darkColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
-import { FontStyles } from 'assets/theme/styles';
+import { DarkFontStyles, FontStyles } from 'assets/theme/styles';
 import { TextM, TextS } from 'components/CommonText';
 import { useDiscoverJumpWithNetWork } from 'hooks/discover';
 import React, { useCallback, useMemo } from 'react';
@@ -67,7 +67,7 @@ export function DiscoverCmsListSection() {
                   />
                   <View style={styles.right}>
                     <TextWithProtocolIcon textFontSize={pTd(16)} title={item?.title} url={item.url} iconSize={12} />
-                    <TextS style={FontStyles.font7} numberOfLines={1} ellipsizeMode="tail">
+                    <TextS style={DarkFontStyles.textBase2} numberOfLines={1} ellipsizeMode="tail">
                       {item?.description}
                     </TextS>
                   </View>
@@ -107,7 +107,6 @@ const styles = StyleSheet.create({
   },
   itemsGroup: {
     borderRadius: pTd(6),
-    backgroundColor: defaultColors.bg1,
     overflow: 'hidden',
   },
   itemWrap: {

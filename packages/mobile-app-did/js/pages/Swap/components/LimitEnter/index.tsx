@@ -319,10 +319,12 @@ const LimitEnter = () => {
       return 'Limit not available';
     } else if (isExceedBalance) {
       return `Insufficient ${limitInfo.tokenIn?.label || limitInfo.tokenIn?.symbol} balance`;
+    } else if (isBtnDisable) {
+      return `Place limit order`;
     } else {
       return 'Preview';
     }
-  }, [isExceedBalance, isReserveError, limitInfo.tokenIn?.label, limitInfo.tokenIn?.symbol]);
+  }, [isBtnDisable, isExceedBalance, isReserveError, limitInfo.tokenIn?.label, limitInfo.tokenIn?.symbol]);
 
   const { ref, value } = useKeyboardSafeArea(pTd(16));
   const [isRateInputting, setIsRateInputting] = useState(false);

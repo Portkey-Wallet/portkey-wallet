@@ -1,5 +1,5 @@
 import { getOrigin, isDangerousLink } from '@portkey-wallet/utils/dapp/browser';
-import { defaultColors } from 'assets/theme';
+import { darkColors } from 'assets/theme';
 
 import { TextM } from 'components/CommonText';
 import Svg from 'components/Svg';
@@ -44,7 +44,7 @@ const TextWithProtocolIcon = ({
           icon="httpsLock"
           size={iconSize}
           iconStyle={styles.iconStyle}
-          color={location === 'header' ? defaultColors.font11 : defaultColors.font7}
+          color={location === 'header' ? darkColors.iconBase1 : darkColors.iconBase2}
         />
       );
     }
@@ -85,6 +85,6 @@ const styles = StyleSheet.create({
     marginLeft: pTd(4),
   },
   headerTextColor: {
-    color: defaultColors.font5,
+    color: darkColors.textBase1,
   },
 });

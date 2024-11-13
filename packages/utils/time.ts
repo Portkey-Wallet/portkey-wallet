@@ -82,3 +82,9 @@ export function formatTimeToHmStr(time?: number): string {
   if (time === undefined || time === null) return '--';
   return dayjs(time).format('HH:mm');
 }
+
+export function formatTimeMinDxStr(time?: number): string {
+  if (time === undefined || time === null) return '0';
+  const diffMinutes = Math.abs(dayjs().diff(dayjs(time), 'minute'));
+  return diffMinutes.toString();
+}

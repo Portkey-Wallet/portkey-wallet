@@ -1,9 +1,8 @@
 import { ICryptoCurrencyItem } from '@portkey-wallet/store/store-ca/discover/type';
 import { darkColors, defaultColors } from 'assets/theme';
-import { DarkFontStyles, FontStyles } from 'assets/theme/styles';
+import { DarkFontStyles } from 'assets/theme/styles';
 import CommonToast from 'components/CommonToast';
 import PortkeySkeleton from 'components/PortkeySkeleton';
-import Svg from 'components/Svg';
 import Touchable from 'components/Touchable';
 import { useMarketFavorite } from 'hooks/discover';
 import React, { useCallback, useMemo, useState } from 'react';
@@ -30,11 +29,11 @@ export default function MarketItem(props: IMarketItemProps) {
   const isDefaultSymbol = item.symbol === 'ELF' || item.symbol === 'SGR';
   const chgColor = useMemo(() => {
     if (item.priceChangePercentage24H > 0) {
-      return FontStyles.functionalGreenDefault;
+      return darkColors.textSuccess1;
     } else if (item.priceChangePercentage24H < 0) {
-      return FontStyles.functionalRedDefault;
+      return darkColors.textDanger2;
     }
-    return FontStyles.neutralTertiaryText;
+    return darkColors.textBase2;
   }, [item.priceChangePercentage24H]);
   const prefixChg = useMemo(() => {
     if (item.priceChangePercentage24H > 0) {
@@ -109,15 +108,14 @@ export default function MarketItem(props: IMarketItemProps) {
               style={styles.img}
             />
             <View style={styles.section}>
-              <Text style={[styles.text, FontStyles.white]}>{item.symbol || '--'}</Text>
+              <Text style={[styles.text, DarkFontStyles.textBase1]}>{item.symbol || '--'}</Text>
               <TextS style={[styles.text2, DarkFontStyles.textBase2]}>${item.marketCap || 0}</TextS>
             </View>
           </View>
-          <SinkableText sinkable value={item?.currentPrice} />
           {/* </Text> */}
           <View style={styles.rightSection}>
-            <Text style={[styles.text1, FontStyles.white]}>${item.currentPrice || 0}</Text>
-            <TextS style={[styles.text4, FontStyles.functionalRedDefault, styles.section3Width, chgColor]}>
+            <SinkableText sinkable value={item?.currentPrice} />
+            <TextS style={[styles.text4, DarkFontStyles.textBase2, styles.section3Width, { color: chgColor }]}>
               {prefixChg}
               {item.priceChangePercentage24H?.toFixed(
                 getDecimalPlaces(item.priceChangePercentage24H) < 1

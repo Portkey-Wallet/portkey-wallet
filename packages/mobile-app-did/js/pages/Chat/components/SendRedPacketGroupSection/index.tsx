@@ -18,7 +18,13 @@ import { RedPackageTypeEnum } from '@portkey-wallet/im';
 import { INIT_NONE_ERROR, ErrorType } from '@portkey-wallet/constants/constants-ca/common';
 import { useGetRedPackageConfig } from '@portkey-wallet/hooks/hooks-ca/im';
 import { ZERO } from '@portkey-wallet/constants/misc';
-import { convertAmountUSDShow, divDecimals, divDecimalsStr, timesDecimals } from '@portkey-wallet/utils/converter';
+import {
+  convertAmountUSDShow,
+  divDecimals,
+  divDecimalsStr,
+  formatAmountShow,
+  timesDecimals,
+} from '@portkey-wallet/utils/converter';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import { RED_PACKAGE_DEFAULT_MEMO } from '@portkey-wallet/constants/constants-ca/im';
 import { FontStyles } from 'assets/theme/styles';
@@ -86,7 +92,9 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
   const destinationChainId = useMemo(() => {
     return destinationChain.key === 'aelf dAppChain' ? (currentNetworkType === 'MAINNET' ? 'tDVV' : 'tDVW') : 'AELF';
   }, [destinationChain, currentNetworkType]);
+
   const { type, groupMemberCount, onPressButton } = props;
+  // token
   const { getTokenInfo } = useGetRedPackageConfig();
   const [tokenPriceObject] = useGetCurrentAccountTokenPrice();
   const isNewUserOnly = useRef<boolean>(true);
@@ -152,20 +160,20 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
       .toFixed()}`;
   }, [values, tokenPrice]);
   const amountShowStr = useMemo(() => {
-    if (type !== RedPackageTypeEnum.FIXED) return values.count;
+    if (type !== RedPackageTypeEnum.FIXED) return formatAmountShow(values.count);
     if (values.packetNum === '' || values.packetNum === undefined || values.count === '' || values.count === undefined)
       return '';
     if (ZERO.plus(values.packetNum).isNaN() || ZERO.plus(values.count).isNaN()) return '';
-    return ZERO.plus(values.count)
+    return ZERO.plus(formatAmountShow(values.count))
       .times(values.packetNum || '1')
       .toFixed();
   }, [type, values.count, values.packetNum]);
   const amountUsdShowStr = useMemo(() => {
-    return `$${ZERO.plus(amountShowStr || 0)
+    return `$${ZERO.plus(values.count || 0)
       .times(tokenPrice || 0)
       .dp(2)
       .toFixed(2)}`;
-  }, [amountShowStr, tokenPrice]);
+  }, [tokenPrice, values.count]);
 
   const onAmountChange = useCallback(
     (value: string) => {
@@ -324,14 +332,6 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
     });
   }, []);
 
-  const assetName = useMemo(
-    () =>
-      selectToken.assetType === AssetType.nft
-        ? `${selectToken.alias} #${selectToken.tokenId}` || selectToken.symbol
-        : selectToken.label || selectToken.symbol,
-    [selectToken.alias, selectToken.assetType, selectToken.label, selectToken.symbol, selectToken.tokenId],
-  );
-
   const showDestinationList = useCallback(() => {
     ModeChangeSelector.showList({
       list: networkList,
@@ -388,6 +388,8 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
               accountAssetList: accountAssetList,
             });
           }}
+          isError={isInsufficientBalance}
+          errorMessage={countError.isError ? countError.errorMsg : ''}
         />
       </FormItem>
       <FormItem title="Gift message" style={{ marginTop: pTd(16) }} titleStyle={{ fontSize: pTd(16) }}>
@@ -408,36 +410,15 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
         containerStyle={{ marginBottom: pTd(16) }}
       />
 
-      {selectToken.assetType === AssetType.nft ? (
-        <>
-          <RedPacketAmountShow
-            componentType="sendPacketPage"
-            amountShow={amountShowStr}
-            amountUsdShowStr={amountUsdShowStr}
-            wrapStyle={GStyles.marginTop(pTd(8))}
-            usdWrapStyle={GStyles.marginTop(pTd(8))}
-            assetType={selectToken.assetType}
-            usdTextColor={theme.colors.textBase2}
-          />
-          {/* <View style={[GStyles.flexRow, GStyles.center, styles.nftInfoWrap]}>
-            <NFTAvatar disabled nftSize={pTd(24)} data={selectToken} style={styles.borderRadius4} />
-            <TextM numberOfLines={1} style={styles.nftNameWrap}>
-              {assetName}
-            </TextM>
-          </View> */}
-        </>
-      ) : (
-        <RedPacketAmountShow
-          componentType="sendPacketPage"
-          amountShow={amountShowStr}
-          amountUsdShowStr={amountUsdShowStr}
-          symbol={selectToken.symbol}
-          label={selectToken.label}
-          wrapStyle={GStyles.marginTop(pTd(8))}
-          usdWrapStyle={GStyles.marginTop(pTd(8))}
-          usdTextColor={theme.colors.textBase2}
-        />
-      )}
+      <RedPacketAmountShow
+        componentType="sendPacketPage"
+        amountShow={amountShowStr}
+        amountUsdShowStr={amountUsdShowStr}
+        symbol={selectToken.symbol}
+        wrapStyle={GStyles.marginTop(pTd(8))}
+        usdWrapStyle={GStyles.marginTop(pTd(8))}
+        usdTextColor={theme.colors.textBase2}
+      />
 
       <CommonButton
         disabled={!isAllowPrepare || isInsufficientBalance}

@@ -19,7 +19,7 @@ export default function HeaderCard(props: IHeaderCardProps) {
   const { showViewDetails, memo, giftId } = props;
   return (
     <View style={styles.container}>
-      <Image resizeMode="contain" source={boxClose} style={{ width: pTd(171.5), height: pTd(120) }} />
+      <Image resizeMode="contain" source={boxClose} style={{ width: pTd(172), height: pTd(120) }} />
       <View style={styles.titleWrapper}>
         {showViewDetails && <Svg icon="success" size={pTd(20)} iconStyle={styles.icon} />}
         <TextL style={{ ...fonts.mediumFont }}>

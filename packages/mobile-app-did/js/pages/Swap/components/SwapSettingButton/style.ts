@@ -45,9 +45,7 @@ export const getStyles = makeStyles(theme => ({
   },
   expiresByInputContainer: {
     width: pTd(100),
-  },
-  expiresByInput: {
-    width: pTd(100),
+    height: pTd(40),
   },
   expiresByUnitText: {
     marginLeft: pTd(10),

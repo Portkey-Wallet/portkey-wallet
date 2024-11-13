@@ -13,6 +13,9 @@ import { divDecimals } from '@portkey-wallet/utils/converter';
 import Bignumber from 'bignumber.js';
 import { TCurrency } from '@portkey-wallet/types/types-ca/awaken';
 import { formatNameWithNoUnderline } from '@portkey-wallet/utils';
+import { isValidNumberV2 } from '@portkey-wallet/utils/reg';
+import { parseInputChange } from '@portkey-wallet/utils/input';
+import { LIMIT_PRICE_DECIMAL } from '@portkey-wallet/constants/constants-ca/awaken/limit';
 
 interface IAmountCardProps {
   style?: ViewStyleType;
@@ -57,7 +60,10 @@ const AmountCard: React.FC<IAmountCardProps> = ({
   const [isInputting, setIsInputting] = useState(false);
 
   const handleAmountChange = (value: string) => {
-    const newValue = value.replace(/[^0-9.]/g, '');
+    if (value && !isValidNumberV2(value)) {
+      return;
+    }
+    const newValue = parseInputChange(value, ZERO, LIMIT_PRICE_DECIMAL);
     onAmountChange?.(newValue);
   };
 

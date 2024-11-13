@@ -13,7 +13,7 @@ import { useLanguage } from 'i18n/hooks';
 import AmountNFT from '../AmountNFT';
 import NFTInfo from '../NFTInfo';
 import CommonButton from 'components/CommonButton';
-import { useCurrentWalletInfo, useMainChainCaInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCaAddressInfoList, useCurrentWalletInfo, useMainChainCaInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useCurrentChain, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import {
   CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL,
@@ -72,7 +72,10 @@ import { eBridgeActionSheet, getLimitTips, getSmallerValue, isValidAmount } from
 import { SEND_RECEIVE_HELP_URL } from 'constants/common';
 import { openOutLink } from 'utils/link';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
-
+import SelectAddressTab from '../components/SelectAddressTab';
+import { useRecent } from '@portkey-wallet/hooks/hooks-ca/recent';
+import { useGetFilterContactList } from '@portkey-wallet/hooks/hooks-ca/contactNew';
+import { TFormattedRecentItem } from '@portkey-wallet/types/types-ca/contactNew';
 const SendHome: React.FC = () => {
   const {
     params: { sendType = 'token', toInfo, assetInfo, imTransferInfo },
@@ -89,6 +92,8 @@ const SendHome: React.FC = () => {
   const [tokenPriceObject] = useGetCurrentAccountTokenPrice();
   const [chainList, setChainList] = useState<INetworkItem[]>([]);
   const [targetNetwork, setTargetNetwork] = useState<INetworkItem>();
+  const [recentList, setRecentList] = useState<TFormattedRecentItem[]>();
+
   const recommendETransfer = useMemo(
     () => targetNetwork?.serviceList?.find(ele => ele?.serviceName?.toLocaleLowerCase()?.includes('transfer')),
     [targetNetwork?.serviceList],
@@ -303,6 +308,27 @@ const SendHome: React.FC = () => {
       </View>
     );
   }, [chainList, selectTargetNetwork]);
+
+  const { getTransformedRecentList } = useRecent();
+
+  const savedList = useGetFilterContactList({
+    fromChainId: assetInfo.chainId,
+    tokenId: assetInfo.symbol,
+    isFt: sendType !== 'token',
+  });
+
+  const initBookList = useCallback(async () => {
+    const reList = await getTransformedRecentList({
+      fromChainId: assetInfo.chainId,
+      tokenId: assetInfo.symbol,
+      isFt: sendType !== 'token',
+    });
+    setRecentList(reList || []);
+  }, [assetInfo.chainId, assetInfo.symbol, getTransformedRecentList, sendType]);
+
+  useEffectOnce(() => {
+    initBookList();
+  });
 
   const Step1Dom = useMemo(() => {
     if (step === 2) return null;
@@ -848,6 +874,13 @@ const SendHome: React.FC = () => {
     onGetMaxAmount();
   }, [onGetMaxAmount]);
 
+  const caAddressInfos = useCaAddressInfoList();
+  const myOtherAddressList = useMemo(() => {
+    return caAddressInfos.filter(item => item.chainId !== assetInfo.chainId);
+  }, [assetInfo.chainId, caAddressInfos]);
+
+  console.log('myAddress', myOtherAddressList);
+
   return (
     <PageContainer
       safeAreaColor={['black']}
@@ -920,15 +953,18 @@ const SendHome: React.FC = () => {
           </View>
         </>
       )}
-      {/* <View style={styles.space} />
       {step === 1 && (
-        <SelectContact
+        <SelectAddressTab
+          recentAddressList={recentList || []}
+          savedAddressList={savedList || []}
+          myAddressList={myOtherAddressList as any}
+          noDataMessage="No recent address"
           chainId={assetInfo.chainId}
-          onPress={(item: { address: string; name: string }) => {
-            setSelectedToContact(item);
+          onPress={(item: TFormattedRecentItem) => {
+            setSelectedToContact(item as any);
           }}
         />
-      )} */}
+      )}
 
       {renderBottomSection()}
     </PageContainer>

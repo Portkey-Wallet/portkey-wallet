@@ -68,6 +68,7 @@ type TDiffPercentInfo = {
   color?: string;
   value: string;
   prefix: string;
+  valueStr: string;
 };
 
 export type TLimitPairPriceError = {
@@ -261,20 +262,27 @@ export default forwardRef(function RateCard(
     const isZero = diffPercent.dp(4, BigNumber.ROUND_HALF_CEIL).eq(ZERO);
 
     if (isZero || ZERO.eq(tokenOutMarketPriceBN)) {
-      return undefined;
+      return {
+        value: '0',
+        valueStr: '0%',
+        prefix: '',
+      };
     }
 
-    const absPercentStr = `${diffPercent.abs().times(100).toFixed(2, BigNumber.ROUND_HALF_CEIL)}%`;
+    const absPercentValue = diffPercent.abs().times(100).toFixed(2, BigNumber.ROUND_HALF_CEIL);
+    const absPercentStr = `${absPercentValue}%`;
     if (ZERO.gt(diffPercent)) {
       return {
         color: theme.colors.textDanger2,
-        value: absPercentStr,
+        value: absPercentValue,
+        valueStr: absPercentStr,
         prefix: '-',
       };
     }
     return {
       color: theme.colors.textSuccess1,
-      value: absPercentStr,
+      value: absPercentValue,
+      valueStr: absPercentStr,
       prefix: '+',
     };
   }, [price, theme.colors.textDanger2, theme.colors.textSuccess1]);
@@ -286,7 +294,7 @@ export default forwardRef(function RateCard(
   }, [isReverse, tokenIn?.symbol, tokenOut?.symbol]);
 
   const title = useMemo(() => {
-    if (!diffPercentInfo) return titlePrefix;
+    if (!diffPercentInfo || diffPercentInfo.value === '0') return titlePrefix;
 
     return (
       <>
@@ -295,7 +303,7 @@ export default forwardRef(function RateCard(
           style={[
             styles.title,
             { color: diffPercentInfo.color },
-          ]}>{` (${diffPercentInfo.prefix}${diffPercentInfo.value})`}</Text>
+          ]}>{` (${diffPercentInfo.prefix}${diffPercentInfo.valueStr})`}</Text>
       </>
     );
   }, [diffPercentInfo, styles.title, titlePrefix]);
@@ -309,6 +317,16 @@ export default forwardRef(function RateCard(
   const switchReverse = useCallback(() => {
     setIsReverse(pre => !pre);
   }, []);
+
+  const selectedValue = useMemo(() => {
+    if (!diffPercentInfo) return undefined;
+    if (isReverse && diffPercentInfo.prefix === '-') return undefined;
+    const selectItem = PRICE_BTN_LIST.find(item =>
+      ZERO.plus(diffPercentInfo.value).div(100).minus(item.value).abs().lt(0.0001),
+    );
+    if (!selectItem) return undefined;
+    return selectItem.value;
+  }, [diffPercentInfo, isReverse]);
 
   const tagList = useMemo(() => {
     return PRICE_BTN_LIST.map(item => {
@@ -365,7 +383,7 @@ export default forwardRef(function RateCard(
         isRound
         isOutline
         tagList={tagList}
-        selectedValue={undefined}
+        selectedValue={selectedValue}
         onSelect={onChangeRate}
       />
     </View>

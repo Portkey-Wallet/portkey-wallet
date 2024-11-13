@@ -10,7 +10,7 @@ export const commonStyles = StyleSheet.create({
     marginRight: pTd(10),
   },
   loadingStyle: {
-    width: pTd(20),
+    width: pTd(32),
   },
   inputContainerGrayBorderStyle: {
     borderWidth: StyleSheet.hairlineWidth,

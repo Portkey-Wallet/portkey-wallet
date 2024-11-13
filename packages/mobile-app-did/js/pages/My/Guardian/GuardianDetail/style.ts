@@ -1,22 +1,20 @@
-import { StyleSheet } from 'react-native';
-import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
 import GStyles from 'assets/theme/GStyles';
+import { makeStyles } from '@rneui/themed';
+import fonts from 'assets/theme/fonts';
 
-const { font3, bg1, bg4, border6 } = defaultColors;
-
-export const pageStyles = StyleSheet.create({
+export const getPageStyles = makeStyles(theme => ({
   pageWrap: {
     flex: 1,
-    backgroundColor: bg4,
+    backgroundColor: theme.colors.bgBase1,
     justifyContent: 'space-between',
-    ...GStyles.paddingArg(24, 20, 18),
+    ...GStyles.paddingArg(16, 16, 0),
   },
   contentWrap: {
     flex: 1,
   },
   guardianInfoWrap: {
-    backgroundColor: bg1,
+    backgroundColor: theme.colors.bgBase1,
     marginBottom: pTd(24),
     borderRadius: pTd(6),
   },
@@ -24,36 +22,52 @@ export const pageStyles = StyleSheet.create({
     ...GStyles.marginArg(4, 16),
   },
   guardianTypeWrap: {
-    height: pTd(56),
     flexDirection: 'row',
     alignItems: 'center',
   },
   verifierInfoWrap: {
-    borderTopColor: border6,
-    height: pTd(56),
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: pTd(16),
   },
   loginSwitchWrap: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: pTd(16),
-    backgroundColor: bg1,
-    marginBottom: pTd(24),
-    height: pTd(56),
-    alignItems: 'center',
+    backgroundColor: theme.colors.bgNeutral2,
+    marginBottom: pTd(16),
     borderRadius: pTd(6),
+    padding: pTd(16),
+  },
+  rowSpaceBetweenItemsCenter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  loginSwitch: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  loginSwitchTitle: {
+    lineHeight: pTd(22),
   },
   tips: {
-    color: font3,
+    color: theme.colors.textBase2,
     lineHeight: pTd(20),
+    paddingTop: pTd(4),
+  },
+  guardianInfoItem: {
+    ...GStyles.paddingArg(16, 0),
+  },
+  guardianInfoText: {
+    marginLeft: pTd(4),
+    ...fonts.SGMediumFont,
+  },
+  textBold: {
+    ...fonts.SGMediumFont,
+  },
+  guardianAccountWrap: {
+    alignItems: 'flex-end',
   },
   loginTypeIcon: {
     borderRadius: pTd(14),
     marginRight: pTd(12),
   },
-  verifierImageStyle: {
-    marginRight: pTd(12),
-  },
-});
+}));

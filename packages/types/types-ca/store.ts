@@ -40,6 +40,8 @@ import { configSlice } from '@portkey-wallet/store/store-ca/config/slice';
 import { ConfigStateType } from '@portkey-wallet/store/store-ca/config/types';
 import awakenSlice from '@portkey-wallet/store/store-ca/awaken/slice';
 import { TAwakenState } from '@portkey-wallet/store/store-ca/awaken/type';
+import { configSlice } from '@portkey-wallet/store/store-ca/config/slice';
+import { ConfigStateType } from '@portkey-wallet/store/store-ca/config/types';
 
 export type CACommonState = RootCommonState & {
   [tokenManagementSlice.name]: TokenState;

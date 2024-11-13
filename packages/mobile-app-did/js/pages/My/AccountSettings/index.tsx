@@ -9,65 +9,286 @@ import MenuItem from '../components/MenuItem';
 import { pTd } from 'utils/unit';
 import { RootStackName } from 'navigation';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { StyleProp, ViewStyle, TextProps, View } from 'react-native';
+import Svg, { IconName } from 'components/Svg';
+import Touchable from 'components/Touchable';
+import FastImage from 'components/FastImage';
+import { TextM } from 'components/CommonText';
+import { screenHeight, screenWidth } from '@portkey-wallet/utils/mobile/device';
+
+interface MenuItemType {
+  name: RootStackName;
+  label: string;
+  icon: IconName;
+  suffixDom?: React.ReactNode;
+  onPress?: () => void;
+}
 
 export default function AccountSettings() {
   const biometricsReady = useBiometricsReady();
   const showChat = useIsChatShow();
 
   const { t } = useLanguage();
+  const avatarSize = pTd(40);
 
-  const list = useMemo(() => {
-    const _list: Array<{
-      name: RootStackName;
-      label: string;
-      sort: number;
-    }> = [
+  const sizeStyle = useMemo(
+    () => ({
+      width: Number(avatarSize),
+      height: Number(avatarSize),
+      borderRadius: Number(avatarSize) / 2,
+      marginHorizontal: pTd(8),
+    }),
+    [avatarSize],
+  );
+
+  const MenuList: Array<any> = useMemo(
+    () => [
       {
-        name: 'CheckPin',
-        label: 'Change Pin',
-        sort: 1,
+        name: 'Guardians',
+        label: 'Guardians',
+        icon: 'my_guardians',
       },
-    ];
-
-    showChat &&
-      _list.push({
-        name: 'ChatPrivacy',
-        label: 'Privacy',
-        sort: 3,
-      });
-
-    biometricsReady &&
-      _list.push({
-        name: 'Biometric',
-        label: 'Biometric Authentication',
-        sort: 2,
-      });
-    return _list.sort((a, b) => a.sort - b.sort);
-  }, [biometricsReady, showChat]);
+      {
+        name: 'Security',
+        label: 'Security',
+        icon: 'lock',
+      },
+      {
+        name: 'Transaction',
+        label: 'Transaction limits',
+        icon: 'my_transaction_limit',
+      },
+      {
+        name: 'Token allowances',
+        label: 'Token allowances',
+        icon: 'my_token allowance',
+      },
+      {
+        name: 'Backup email',
+        label: 'Backup email',
+        icon: 'my_mail_thin',
+        suffixDom: () => {
+          return (
+            <TextM
+              style={{
+                color: '#FFFFFF',
+                fontSize: 16,
+              }}>
+              Not set up
+            </TextM>
+          );
+        },
+        showDivider: true,
+      },
+      {
+        name: 'Manage devices',
+        label: 'Manage devices',
+        icon: 'my_device',
+      },
+      {
+        name: 'Connected dApps',
+        label: 'Connected dApps',
+        icon: 'my_connect',
+      },
+      {
+        name: 'Address book',
+        label: 'Address book',
+        icon: 'my_contact',
+        showDivider: true,
+      },
+      {
+        name: 'Crypto gift',
+        label: 'Crypto gift',
+        icon: 'gift_thin',
+        suffixDom: () => {
+          return (
+            <View
+              style={{
+                borderRadius: 4,
+                backgroundColor: '#0076CC',
+                height: pTd(20),
+              }}>
+              <TextM
+                style={{
+                  color: '#FFFFFF',
+                  fontSize: 12,
+                  paddingHorizontal: pTd(6),
+                  paddingVertical: pTd(4),
+                  // width: pTd(12),
+                }}>
+                New
+              </TextM>
+            </View>
+          );
+        },
+      },
+      {
+        name: 'Referral',
+        label: 'Referral',
+        icon: 'my_referral',
+        showDivider: true,
+      },
+      {
+        name: 'Switch network',
+        label: 'Switch network',
+        icon: 'my_change',
+        showDivider: true,
+      },
+      {
+        name: 'Help center',
+        label: 'Help center',
+        icon: 'my_help',
+      },
+      {
+        name: 'About Portkey',
+        label: 'About Portkey',
+        icon: 'my_about',
+      },
+      {
+        name: 'Check for updates',
+        label: 'Check for updates',
+        icon: 'my_change',
+      },
+    ],
+    [],
+  );
 
   return (
-    <PageContainer
-      containerStyles={styles.containerStyles}
-      safeAreaColor={['white', 'gray']}
-      titleDom={t('Account Setting')}>
-      {list.map(item => (
-        <MenuItem
-          style={styles.itemWrap}
-          key={item.name}
-          title={t(item.label)}
-          onPress={() => navigationService.navigate(item.name)}
-        />
+    <PageContainer containerStyles={styles.containerStyles} safeAreaColor={['white', 'gray']} titleDom={t('Setting')}>
+      <View style={[styles.info]}>
+        <View
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+          }}>
+          <FastImage
+            style={[sizeStyle]}
+            resizeMode="cover"
+            source={{ uri: 'https://gd-hbimg.huaban.com/1bf9b061bbe51bdde88d3ad1182c20b914031e671ba2c-AuAxiq_fw1200' }}
+          />
+          <TextM>rach***@gmail.com</TextM>
+        </View>
+
+        <Svg icon="right-arrow" size={pTd(20)} color={defaultColors.icon1} />
+      </View>
+      <View
+        style={{
+          height: 1,
+          borderBottomWidth: 0.5,
+          marginHorizontal: pTd(12),
+          width: '100%',
+          backgroundColor: '#FFF',
+        }}
+      />
+
+      {MenuList.map(item => (
+        <>
+          <View style={[styles.cell]}>
+            <View
+              style={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}>
+              <View style={styles.svgWrap}>
+                <Svg icon={item.icon} size={24} iconStyle={[styles.menuIcon]} />
+              </View>
+              <TextM
+                style={{
+                  color: '#FFFFFF',
+                  fontSize: 16,
+                }}>
+                {item.label}
+              </TextM>
+            </View>
+
+            <View
+              style={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}>
+              {item.suffixDom && item.suffixDom()}
+
+              <Svg
+                iconStyle={{
+                  marginLeft: pTd(12),
+                }}
+                icon="right-arrow"
+                size={pTd(20)}
+                color={defaultColors.icon1}
+              />
+            </View>
+          </View>
+          {item.showDivider && (
+            <View
+              style={{
+                height: 1,
+                borderBottomWidth: 0.5,
+                marginHorizontal: pTd(12),
+                width: '100%',
+                backgroundColor: '#FFF',
+              }}
+            />
+          )}
+        </>
       ))}
+      <TextM
+        style={{
+          width: screenWidth,
+          textAlign: 'center',
+          color: '#E24505',
+          height: pTd(48),
+          marginTop: pTd(12),
+          fontSize: 16,
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+        }}>
+        Sign out
+      </TextM>
     </PageContainer>
   );
 }
 
 const styles = StyleSheet.create({
   containerStyles: {
-    backgroundColor: defaultColors.bg4,
+    backgroundColor: defaultColors.black,
+  },
+  info: {
+    padding: pTd(16),
+    height: pTd(72),
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  cell: {
+    padding: pTd(16),
+    height: pTd(48),
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  svgWrap: {
+    position: 'relative',
+    marginRight: pTd(12),
+  },
+  menuIcon: {},
+  menuItemWrap: {
+    backgroundColor: defaultColors.black,
+    color: defaultColors.white,
+    borderBottomColor: defaultColors.border6,
+    borderRadius: 0,
+    borderBottomWidth: StyleSheet.hairlineWidth,
   },
   itemWrap: {
-    marginTop: pTd(24),
-    marginBottom: 0,
+    backgroundColor: defaultColors.black,
+    borderBottomColor: defaultColors.border6,
+    borderRadius: 0,
+    borderBottomWidth: StyleSheet.hairlineWidth,
   },
 });

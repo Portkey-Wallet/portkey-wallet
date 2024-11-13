@@ -19,6 +19,7 @@ import SendPacketGroupPage from './SendPacketGroupPage';
 import RedPacketDetails from './RedPacketDetailsPage';
 import { Animated } from 'react-native';
 import SelectGroupMembersToTransferPage from './SelectGroupMembersToTransferPage';
+import SendRedPacketPreview from './Preview';
 
 const RedPacketDetailsPageOptions = {
   transitionSpec: {
@@ -73,6 +74,10 @@ const stackNav = [
     options: RedPacketDetailsPageOptions,
   },
   { name: 'SelectGroupMembersToTransferPage', component: SelectGroupMembersToTransferPage },
+  {
+    name: 'SendRedPacketPreview',
+    component: SendRedPacketPreview,
+  },
 ] as const;
 
 export default stackNav;

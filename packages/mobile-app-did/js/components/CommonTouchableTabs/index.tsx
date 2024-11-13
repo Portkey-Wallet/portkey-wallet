@@ -1,5 +1,5 @@
 import React from 'react';
-import { defaultColors } from 'assets/theme';
+import { darkColors, defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import { StyleSheet, View } from 'react-native';
 import { pTd } from 'utils/unit';
@@ -60,7 +60,7 @@ export default function CommonTouchableTabs<T>({
 
 const styles = StyleSheet.create({
   tabHeader: {
-    backgroundColor: defaultColors.bg6,
+    backgroundColor: darkColors.bgBase1,
     borderRadius: pTd(6),
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -84,10 +84,10 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.09,
     shadowRadius: 4,
     elevation: 2,
-    backgroundColor: defaultColors.bg1,
+    backgroundColor: darkColors.bgBase2,
   },
   selectTabTextStyle: {
-    color: defaultColors.font5,
+    color: darkColors.textNeutral1,
     ...fonts.mediumFont,
   },
 });

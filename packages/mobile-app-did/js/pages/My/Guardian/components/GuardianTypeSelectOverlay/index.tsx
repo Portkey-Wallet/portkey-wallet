@@ -9,7 +9,7 @@ import { TextL } from 'components/CommonText';
 import { pTd } from 'utils/unit';
 import { useLanguage } from 'i18n/hooks';
 import { ModalBody } from 'components/ModalBody';
-import { defaultColors } from 'assets/theme';
+import { GUARDIAN_ITEM_TYPE_ICON } from 'constants/misc';
 
 type ValueType = string | number;
 type DefaultValueType = string;
@@ -37,7 +37,7 @@ const SelectList = <ItemType extends ItemTypeBase<ItemValueType>, ItemValueType 
   return (
     <ModalBody title={t('Select Guardians Type')} modalBodyType="bottom">
       <ScrollView alwaysBounceVertical={false}>
-        {list.map(item => {
+        {list.map((item, index) => {
           return (
             <Touchable
               key={item.value}
@@ -45,21 +45,25 @@ const SelectList = <ItemType extends ItemTypeBase<ItemValueType>, ItemValueType 
                 OverlayModal.hide();
                 callBack(item);
               }}>
-              <View style={[GStyles.paddingLeft(20), styles.itemRow]}>
+              <View
+                style={[
+                  styles.itemRow,
+                  index !== 0
+                    ? {
+                        marginTop: pTd(12),
+                      }
+                    : {},
+                ]}>
                 <View style={styles.itemContent}>
                   {item.icon && (
                     <View style={[GStyles.center, styles.itemIconWrap]}>
-                      <Svg icon={item.icon} size={pTd(18)} />
+                      <Svg icon={GUARDIAN_ITEM_TYPE_ICON[item.value]} size={pTd(24)} />
+                      {/* <Svg icon={item.icon} size={pTd(24)} /> */}
                     </View>
                   )}
                   <TextL>{item[labelAttrName]}</TextL>
                   {value !== undefined && value === item.value && (
-                    <Svg
-                      iconStyle={styles.itemIcon}
-                      icon="selected"
-                      size={pTd(24)}
-                      color={defaultColors.primaryColor}
-                    />
+                    <Svg iconStyle={styles.itemIcon} icon="selected" size={pTd(24)} />
                   )}
                 </View>
               </View>

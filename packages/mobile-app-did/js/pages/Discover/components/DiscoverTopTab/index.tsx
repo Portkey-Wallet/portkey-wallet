@@ -1,12 +1,13 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import CommonTopTab from 'components/CommonTopTab';
 
 import MarketSection from '../MarketSection';
 import { DiscoverCmsListSection } from '../DiscoverCmsListSection';
 import { EarnPage } from '../SubPages/Earn';
 import { LearnPage } from '../SubPages/Learn/MainPage';
-import { useDiscoverData } from '@portkey-wallet/hooks/hooks-ca/cms/discover';
 import { Platform } from 'react-native';
+import MarketType from '../MarketSection/components/MarketType';
+import { useMarket } from 'hooks/discover';
 
 const defaultList = [
   {
@@ -33,22 +34,31 @@ const defaultList = [
 ];
 
 const DiscoverTab: React.FC = () => {
-  const { discoverHeaderTabList } = useDiscoverData();
+  const [currentRouteName, setCurrentRouteName] = useState<string>();
+  const { marketInfo, handleType } = useMarket();
 
   const tabList = useMemo(
     () =>
-      discoverHeaderTabList.map(item => ({
+      defaultList.map(item => ({
         name: item.name || item.value || '',
         tabItemDom: defaultList.find(tab => tab.value === item.value)?.tabItemDom || <></>,
       })),
-    [discoverHeaderTabList],
+    [],
   );
+
+  const handleTabChange = (routeName: string) => {
+    setCurrentRouteName(routeName);
+  };
 
   return (
     <CommonTopTab
       swipeEnabled={Platform.OS === 'android' ? false : true}
       hasTabBarBorderRadius={false}
       tabList={tabList}
+      isBlockTab={true}
+      hasBottomBorder={false}
+      onTabChange={handleTabChange}
+      expandView={currentRouteName === 'Market' && <MarketType marketInfo={marketInfo} handleType={handleType} />}
     />
   );
 };

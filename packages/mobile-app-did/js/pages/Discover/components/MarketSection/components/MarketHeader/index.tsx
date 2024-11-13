@@ -1,5 +1,5 @@
 import { IMarketInfo, IMarketSort, IMarketSortDir } from '@portkey-wallet/store/store-ca/discover/type';
-import { darkColors, defaultColors } from 'assets/theme';
+import { darkColors } from 'assets/theme';
 import CommonToast from 'components/CommonToast';
 import Svg from 'components/Svg';
 import React, { useCallback } from 'react';
@@ -11,15 +11,11 @@ function HeaderItem({ name, sortDir, style }: { name: string; sortDir: IMarketSo
     <View style={[itemStyles.mainContainer, style]}>
       <Text style={itemStyles.text}>{name}</Text>
       <View style={itemStyles.wrapper}>
-        <Svg
-          icon={'sort-asc'}
-          size={pTd(6)}
-          color={sortDir === 'asc' ? defaultColors.brandNormal : defaultColors.neutralTertiaryText}
-        />
+        <Svg icon={'sort-asc'} size={pTd(6)} color={sortDir === 'asc' ? darkColors.textBase2 : darkColors.textBase3} />
         <Svg
           icon={'sort-desc'}
           size={pTd(6)}
-          color={sortDir === 'desc' ? defaultColors.brandNormal : defaultColors.neutralTertiaryText}
+          color={sortDir === 'desc' ? darkColors.textBase2 : darkColors.textBase3}
         />
       </View>
     </View>

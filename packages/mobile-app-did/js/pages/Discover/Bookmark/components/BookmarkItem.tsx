@@ -5,7 +5,7 @@ import React, { memo, useCallback, useMemo, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { RenderItemParams, ScaleDecorator } from 'react-native-draggable-flatlist';
 import SwipeableItem, { OpenDirection, SwipeableItemImperativeRef } from 'react-native-swipeable-item';
-import { BGStyles, FontStyles } from 'assets/theme/styles';
+import { BGStyles, DarkFontStyles } from 'assets/theme/styles';
 import { pTd } from 'utils/unit';
 import DiscoverWebsiteImage from 'pages/Discover/components/DiscoverWebsiteImage';
 import TextWithProtocolIcon from 'components/TextWithProtocolIcon';
@@ -50,7 +50,7 @@ export default memo(
     const renderUnderlayLeft = useCallback(
       () => (
         <Touchable style={styles.underlayLeftBox} onPress={deleteItem}>
-          <TextM style={[FontStyles.font2]}>Delete</TextM>
+          <TextM style={[DarkFontStyles.textBase1]}>Delete</TextM>
         </Touchable>
       ),
       [deleteItem],
@@ -90,7 +90,7 @@ export default memo(
               <DiscoverWebsiteImage imageUrl={bookmarkInfo.imageUrl} size={pTd(40)} style={styles.websiteIconStyle} />
               <View style={styles.infoWrap}>
                 <TextWithProtocolIcon title={bookmarkInfo?.title} url={bookmarkInfo?.url} textFontSize={pTd(16)} />
-                <TextS style={[FontStyles.font7]} numberOfLines={1} ellipsizeMode="tail">
+                <TextS style={[DarkFontStyles.textBase2]} numberOfLines={1} ellipsizeMode="tail">
                   {item?.url}
                 </TextS>
               </View>

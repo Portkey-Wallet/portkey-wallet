@@ -3,7 +3,7 @@ import { GestureResponderEvent, StyleSheet, View } from 'react-native';
 import Svg from 'components/Svg';
 import { measurePageY } from 'utils/measure';
 import { pTd } from 'utils/unit';
-import { darkColors, defaultColors } from 'assets/theme';
+import { darkColors } from 'assets/theme';
 import { TouchableOpacity } from 'react-native';
 import CommonToast from 'components/CommonToast';
 import { IMarketInfo, IMarketType } from '@portkey-wallet/store/store-ca/discover/type';
@@ -72,7 +72,7 @@ export default function MarketType({
   return (
     <TouchableOpacity onPress={onRightPress} style={styles.touchWrapper}>
       <View style={styles.mainContainer}>
-        <Svg icon={'filter'} size={pTd(16)} color={defaultColors.neutralSecondaryTextColor} />
+        <Svg icon={'filter'} size={pTd(16)} color={darkColors.textBase2} />
       </View>
     </TouchableOpacity>
   );
@@ -91,12 +91,12 @@ const styles = StyleSheet.create({
     width: pTd(32),
     height: pTd(32),
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: defaultColors.neutralBorder,
+    borderColor: darkColors.borderBase1,
     borderRadius: pTd(16),
   },
   text: {
     minHeight: pTd(22),
-    color: defaultColors.neutralPrimaryTextColor,
+    color: darkColors.textBase2,
     fontSize: pTd(14),
     textAlign: 'left',
   },

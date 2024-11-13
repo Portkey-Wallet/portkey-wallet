@@ -6,7 +6,7 @@ import PortkeySkeleton from 'components/PortkeySkeleton';
 import { TAppLink } from '@portkey-wallet/types/types-ca/cms';
 import useJump from 'hooks/useJump';
 import { darkColors } from 'assets/theme';
-import { TextXXL, TextXXXL } from 'components/CommonText';
+import { TextS, TextXXL } from 'components/CommonText';
 
 export interface BannerItemProps {
   imgUrl: string;
@@ -79,8 +79,8 @@ const CarouselComponent: React.FC<BannerProps> = ({ containerStyle, items, onCli
                   resizeMode="cover"
                   onLoadEnd={onImageLoadEnd}
                 />
-                <TextXXXL>{item.title}</TextXXXL>
-                <TextXXL style={styles.description}>{item.description}</TextXXL>
+                <TextXXL style={styles.title}>{item.title || ''}</TextXXL>
+                <TextS style={styles.description}>{item.description || ''}</TextS>
               </TouchableOpacity>
             ))}
           </View>
@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
   },
   carouselItemWrap: {
     marginRight: pTd(16),
-    padding: pTd(16),
+    padding: pTd(12),
     width: pTd(176),
     height: pTd(130),
     borderWidth: pTd(1),
@@ -112,6 +112,10 @@ const styles = StyleSheet.create({
     width: pTd(42),
     height: pTd(42),
     borderRadius: pTd(21),
+  },
+  title: {
+    marginTop: pTd(12),
+    marginBottom: pTd(4),
   },
   description: {
     color: darkColors.textBase2,

@@ -1,6 +1,5 @@
 import { ChainId } from '@portkey-wallet/types';
 import { addressFormat, formatChainInfoToShow, getExploreLink, sleep } from '@portkey-wallet/utils';
-import { FlatList } from 'react-native';
 import { useRoute, RouteProp } from '@react-navigation/native';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
@@ -123,11 +122,11 @@ const ContactActivity: React.FC = () => {
     );
   }, []);
 
-  // const navToAddContact = useCallback(() => {
-  // navigationService.navigate('NoChatContactProfileEdit', {
-  //   addressList: [{ address, chainId }],
-  // });
-  // }, [address, chainId]);
+  const navToAddContact = useCallback(() => {
+    navigationService.navigate('NoChatContactProfileEdit', {
+      addressList: [{ address, chainId }],
+    });
+  }, [address, chainId]);
 
   const navToExplore = useCallback(
     (navAddress: string, navChainId: ChainId) => {
@@ -206,7 +205,7 @@ const ContactActivity: React.FC = () => {
         </>
       </View>
 
-      {/* <FlashList
+      <FlashList
         refreshing={isLoading === ListLoadingEnum.header}
         data={activityList ?? []}
         keyExtractor={(_item, index) => `${index}`}
@@ -226,20 +225,6 @@ const ContactActivity: React.FC = () => {
           if (isInitRef.current) return;
           init();
         }}
-      /> */}
-      <FlatList
-        style={{}}
-        refreshing={false}
-        onRefresh={() => init()}
-        data={activityList ?? []}
-        renderItem={renderItem}
-        onEndReached={() => {
-          if (isFetching) return;
-          if (activityList?.length >= totalCount) return;
-          fetchActivityList(activityList?.length);
-        }}
-        onEndReachedThreshold={ON_END_REACHED_THRESHOLD}
-        ListEmptyComponent={<NoData noPic message="" />}
       />
     </PageContainer>
   );

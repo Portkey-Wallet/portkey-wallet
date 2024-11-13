@@ -9,14 +9,6 @@ import { View, Image, StyleSheet } from 'react-native';
 import { pTd } from 'utils/unit';
 import ContactAddress from 'components/ContactAddress';
 import Svg from 'components/Svg';
-
-export const formatStr2EllipsisStr = (address = '', startDigit = 8, endDigit = 8): string => {
-  if (!address) return '';
-
-  const pre = address.substring(0, startDigit);
-  const suffix = address.substring(address.length - endDigit);
-  return `${pre}...${suffix}`;
-};
 export interface ItemType {
   contact: IContactItemType;
   onPress?: (item: any) => void;

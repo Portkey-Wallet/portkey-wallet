@@ -1,17 +1,11 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 import CommonInput from 'components/CommonInput';
 import navigationService from 'utils/navigationService';
-import Svg from 'components/Svg';
 import { getContactListStyles } from './style';
-import CommonButton from 'components/CommonButton';
-import { pTd } from 'utils/unit';
-import { useLanguage } from 'i18n/hooks';
 import ContactItem, { getStyles as getContactItemStyles } from 'components/ContactItem';
 import ContactFlashList from './ContactFlashList';
 import { TextL, TextM } from 'components/CommonText';
-import { defaultColors } from 'assets/theme';
-import { FontStyles } from 'assets/theme/styles';
 import GStyles from 'assets/theme/GStyles';
 import { ViewStyleType } from 'types/styles';
 import { useContact, useLocalContactSearch } from '@portkey-wallet/hooks/hooks-ca/contactNew';
@@ -20,7 +14,6 @@ interface ContactsListProps {
   isIndexBarShow?: boolean;
   isSearchShow?: boolean;
   isContactUpdateWarningShow?: boolean;
-  isReadOnly?: boolean;
   renderContactItem?: (item: IContactItemType) => JSX.Element;
   itemHeight?: number;
   style?: ViewStyleType;
@@ -32,14 +25,11 @@ const defaultList: IContactIndexType[] = [];
 const ContactsList: React.FC<ContactsListProps> = ({
   isIndexBarShow = true,
   isSearchShow = true,
-  isReadOnly = false,
   renderContactItem,
   itemHeight,
   style,
   ListFooterComponent,
-  // isTransaction,
 }) => {
-  const { t } = useLanguage();
   const contactListStyles = getContactListStyles();
   const contactItemStyles = getContactItemStyles();
   const { contactIndexListNew: contactIndexList = defaultList } = useContact();
@@ -132,9 +122,7 @@ const ContactsList: React.FC<ContactsListProps> = ({
         />
       )}
 
-      {!isExistContact && !!keyWord && (
-        <TextL style={[contactListStyles.noResult, FontStyles.font7]}>{t('No results found')}</TextL>
-      )}
+      {!isExistContact && <TextL style={[contactListStyles.noResult]}>No saved address</TextL>}
     </View>
   );
 };

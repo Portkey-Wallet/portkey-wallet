@@ -15,8 +15,9 @@ export const getContactListStyles = makeStyles(theme => ({
   },
   noResult: {
     lineHeight: pTd(22),
-    marginTop: pTd(60),
+    marginTop: pTd(24),
     textAlign: 'center',
+    color: theme.colors.textBase2,
   },
   addButtonWrap: {
     width: '100%',

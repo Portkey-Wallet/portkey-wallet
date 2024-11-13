@@ -272,36 +272,3 @@ export const useIndexAndName = (item: Partial<IContactItemType>) => {
     return { index, name };
   }, [item?.caHolderInfo?.walletName, item?.name]);
 };
-const mockList = [
-  {
-    network: 'aelf',
-    name: 'aelf MainChain',
-    chainId: 'AELF',
-    imageUrl: '',
-  },
-  {
-    network: 'aelf',
-    name: 'dApp chain',
-    chainId: 'tDVW',
-    imageUrl: '',
-  },
-  {
-    network: 'ETH',
-    name: 'Ethereum',
-    imageUrl: '',
-  },
-  {
-    network: 'BSC',
-    name: 'BNB Smart Chain',
-    imageUrl: '',
-  },
-  {
-    network: 'TON',
-    name: 'The Open Network',
-    imageUrl: '',
-  },
-];
-export const useNetworkList = () => {
-  const networkList: INetworkItemType[] = mockList as INetworkItemType[];
-  return networkList;
-};

@@ -33,7 +33,7 @@ const ExpiresSelect: React.FC<IExpiresSelectProps> = ({ selectedValue = EXPIRY_L
         })
       }>
       <Text style={styles.expiresSelectText}>{expiresText}</Text>
-      <Svg icon="chevron_right" oblongSize={[pTd(6), pTd(11)]} />
+      <Svg icon="chevron_right2" oblongSize={[pTd(6), pTd(11)]} />
     </Touchable>
   );
 };

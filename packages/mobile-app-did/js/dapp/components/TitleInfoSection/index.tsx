@@ -1,5 +1,5 @@
 import React from 'react';
-import { View } from 'react-native';
+import { View, ViewStyle } from 'react-native';
 import fonts from 'assets/theme/fonts';
 import { pTd } from 'utils/unit';
 import { TextM, TextXXL } from 'components/CommonText';
@@ -13,17 +13,19 @@ import { useTheme } from '@rneui/themed';
 type TitleInfoSectionType = {
   title?: string;
   dappInfo: DappStoreItem;
+  viewStyle?: ViewStyle;
 };
 
 export const TitleInfoSection = (props: TitleInfoSectionType) => {
   const {
     title,
     dappInfo: { origin, name, icon, svgIcon },
+    viewStyle,
   } = props;
   const { theme } = useTheme();
 
   return (
-    <View style={[GStyles.flexRow, fonts.BGMediumFont]}>
+    <View style={[GStyles.flexRow, fonts.BGMediumFont, viewStyle]}>
       {svgIcon ? (
         <Svg icon={svgIcon as IconName} size={pTd(48)} />
       ) : (

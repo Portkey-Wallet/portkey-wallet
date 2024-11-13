@@ -82,11 +82,11 @@ const ConnectModal = (props: ConnectModalType) => {
   );
 
   return (
-    <ModalBody modalBodyType="bottom" title="" onClose={onReject}>
+    <ModalBody
+      modalBodyType="bottom"
+      leftTitleDom={<TitleInfoSection viewStyle={{ paddingLeft: pTd(16) }} dappInfo={dappInfo} title={t(`Connect`)} />}
+      onClose={onReject}>
       <View style={[styles.contentWrap]}>
-        <View>
-          <TitleInfoSection dappInfo={dappInfo} title={t(`Connect`)} />
-        </View>
         <View style={styles.groupWrap}>
           <TextL style={[{ color: theme.colors.textBase2, lineHeight: pTd(22) }]}>
             {t(`Connecting will allow this site to view balances and activity in your current account.`)}
@@ -147,11 +147,10 @@ const getStyles = makeStyles(theme => ({
   contentWrap: {
     paddingLeft: pTd(16),
     paddingRight: pTd(16),
-    // TODO
-    height: pTd(400),
+    paddingBottom: pTd(120),
   },
   groupWrap: {
-    marginTop: pTd(12),
+    marginTop: pTd(8),
     paddingTop: pTd(8),
   },
   walletInfo: {

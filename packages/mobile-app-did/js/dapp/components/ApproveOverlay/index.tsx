@@ -23,7 +23,6 @@ import useEffectOnce from 'hooks/useEffectOnce';
 import { isIOS } from '@rneui/base';
 import { isValidNumber } from '@portkey-wallet/utils/reg';
 import Svg from 'components/Svg';
-import { SET_ALLOWANCE_MULTIPLY_TIP } from '@portkey-wallet/constants/constants-ca/allowance';
 import { isNFT } from '@portkey-wallet/utils/token';
 import { formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import { makeStyles, useTheme } from '@rneui/themed';
@@ -148,9 +147,18 @@ const ApproveModal = (props: SignModalPropsType) => {
   });
 
   return (
-    <ModalBody modalBodyType="bottom" title="" onClose={onReject} onTouchStart={Keyboard.dismiss}>
+    <ModalBody
+      modalBodyType="bottom"
+      leftTitleDom={
+        <TitleInfoSection
+          viewStyle={{ paddingLeft: pTd(16) }}
+          title={t(`Approve token allowance`)}
+          dappInfo={dappInfo}
+        />
+      }
+      onClose={onReject}
+      onTouchStart={Keyboard.dismiss}>
       <View style={styles.contentWrap}>
-        <TitleInfoSection title={t(`Approve token allowance`)} dappInfo={dappInfo} />
         <View style={styles.inputWrap}>
           <View style={[GStyles.flexRow, GStyles.itemCenter, { marginBottom: pTd(8) }]}>
             <TextL style={{ lineHeight: pTd(22) }}>{t('Token allowance')}</TextL>
@@ -191,7 +199,7 @@ const ApproveModal = (props: SignModalPropsType) => {
               GStyles.flexRow,
               GStyles.spaceBetween,
               styles.clickWrap,
-              { marginTop: pTd(errorMessage ? 0 : -16) },
+              { marginTop: pTd(errorMessage ? 28 : 8) },
             ]}>
             {isEditBatchApprovalInApp ? (
               <TextL>{` `}</TextL>
@@ -205,7 +213,6 @@ const ApproveModal = (props: SignModalPropsType) => {
             </Touchable>
           </View>
         </View>
-        <TextL>{SET_ALLOWANCE_MULTIPLY_TIP}</TextL>
       </View>
       <OverlayBottomSection bottomButtonGroup={ButtonList} />
     </ModalBody>
@@ -228,9 +235,10 @@ const getStyles = makeStyles(theme => ({
   contentWrap: {
     paddingLeft: pTd(16),
     paddingRight: pTd(16),
+    paddingBottom: pTd(76),
   },
   inputWrap: {
-    marginTop: pTd(24),
+    marginTop: pTd(8),
   },
   clickWrap: {
     height: pTd(38),

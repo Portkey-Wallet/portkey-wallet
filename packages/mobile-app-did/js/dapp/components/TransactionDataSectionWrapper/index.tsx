@@ -3,11 +3,10 @@ import { StyleSheet, View, ViewStyle } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import fonts from 'assets/theme/fonts';
 import { pTd } from 'utils/unit';
-import { TextM, TextS } from 'components/CommonText';
+import { TextL, TextM } from 'components/CommonText';
 import Svg from 'components/Svg';
 import GStyles from 'assets/theme/GStyles';
 import Touchable from 'components/Touchable';
-import Collapsible from 'components/Collapsible';
 import { valueToString, showValueToStr } from '@portkey-wallet/utils/byteConversion';
 import { makeStyles } from '@rneui/themed';
 
@@ -18,7 +17,7 @@ type TransactionDataSectionType = {
 };
 
 export const TransactionDataSectionWrapper = (props: TransactionDataSectionType) => {
-  const { methodName, dataInfo, style = {} } = props;
+  const { methodName, dataInfo } = props;
   const [collapsed, setCollapsed] = useState<boolean>(false);
   const styles = getStyles();
   const TopMethodSection = useCallback(
@@ -26,30 +25,30 @@ export const TransactionDataSectionWrapper = (props: TransactionDataSectionType)
       <Touchable
         style={[styles.topSection, GStyles.flexCol, GStyles.itemStart]}
         onPress={() => setCollapsed(pre => !pre)}>
-        <TextM style={[fonts.mediumFont]}>{name}</TextM>
-        <TextS style={[fonts.regularFont, GStyles.marginTop(4), GStyles.alignStart]}>{value || 'unknown'}</TextS>
+        <TextL style={[fonts.mediumFont]}>{name}</TextL>
+        <TextM style={[fonts.regularFont, GStyles.marginTop(4), GStyles.alignStart]}>{value || 'unknown'}</TextM>
       </Touchable>
     ),
     [styles.topSection],
   );
   const TopMessageSection = useMemo(
     (topTitle?: string) => (
-      <Touchable style={styles.topSection} onPress={() => setCollapsed(pre => !pre)}>
-        <TextM style={[fonts.mediumFont]}>{topTitle ?? 'Message'}</TextM>
+      <Touchable style={[GStyles.flexRow, GStyles.itemCenter]} onPress={() => setCollapsed(pre => !pre)}>
+        <TextL style={[fonts.SGMediumFont]}>{topTitle ?? 'Message'}</TextL>
         <Svg
-          iconStyle={[{ transform: [{ rotate: collapsed ? '0deg' : '-90deg' }] }]}
-          size={pTd(20)}
+          iconStyle={[{ marginLeft: pTd(4), transform: [{ rotate: collapsed ? '0deg' : '-90deg' }] }]}
+          size={pTd(16)}
           icon={'down-arrow'}
         />
       </Touchable>
     ),
-    [collapsed, styles],
+    [collapsed],
   );
   const DataSection = useMemo(() => {
     if (typeof dataInfo === 'string') {
       return (
         <View style={styles.dataInfoGroup}>
-          <TextS style={[styles.dataValue]}>{dataInfo}</TextS>
+          <TextM style={[styles.dataValue]}>{dataInfo}</TextM>
         </View>
       );
     } else if (typeof dataInfo === 'object') {
@@ -65,14 +64,14 @@ export const TransactionDataSectionWrapper = (props: TransactionDataSectionType)
         return (
           <View key={index} style={styles.dataInfoGroup}>
             <TextM>{key}</TextM>
-            <TextS style={[styles.dataValue]}>{key === 'expirationTime' ? formattedDate : valueToString(value)}</TextS>
+            <TextM style={[styles.dataValue]}>{key === 'expirationTime' ? formattedDate : valueToString(value)}</TextM>
           </View>
         );
       });
     } else {
       return (
         <View style={styles.dataInfoGroup}>
-          <TextS style={[styles.dataValue]}>{showValueToStr(dataInfo)}</TextS>
+          <TextM style={[styles.dataValue]}>{showValueToStr(dataInfo)}</TextM>
         </View>
       );
     }
@@ -81,10 +80,8 @@ export const TransactionDataSectionWrapper = (props: TransactionDataSectionType)
   return (
     <View>
       {TopMethodSection('Method', methodName)}
-      <View style={[styles.card, style]}>
-        {TopMessageSection}
-        <Collapsible collapsed={collapsed}>{DataSection}</Collapsible>
-      </View>
+      {TopMessageSection}
+      {collapsed && <View style={styles.dataSection}>{DataSection}</View>}
     </View>
   );
 };
@@ -99,18 +96,19 @@ const getStyles = makeStyles(theme => ({
     borderRadius: pTd(6),
   },
   topSection: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    ...GStyles.paddingArg(16, 0),
+  },
+  dataSection: {
+    marginTop: pTd(16),
+    backgroundColor: theme.colors.bgBase2,
+    borderRadius: pTd(8),
     ...GStyles.paddingArg(16),
   },
   dataInfoGroup: {
-    flex: 1,
     marginBottom: pTd(16),
-    ...GStyles.paddingArg(0, 16),
   },
   dataValue: {
     marginTop: pTd(4),
+    color: theme.colors.textBase2,
   },
 }));

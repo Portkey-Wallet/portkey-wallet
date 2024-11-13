@@ -93,13 +93,15 @@ const SignModal = (props: SignModalPropsType) => {
     return null;
   }
   return (
-    <ModalBody modalBodyType="bottom" title="" onClose={onReject}>
+    <ModalBody
+      modalBodyType="bottom"
+      leftTitleDom={<TitleInfoSection viewStyle={{ paddingLeft: pTd(16) }} dappInfo={dappInfo} title="Sign message" />}
+      onClose={onReject}>
       <View style={styles.contentWrap}>
-        <TitleInfoSection dappInfo={dappInfo} title="Sign message" />
         <ScrollView contentContainerStyle={GStyles.paddingBottom(100)}>
           {showWarning && (
             <CommonPromptCard
-              style={{ marginTop: pTd(24) }}
+              style={{ marginTop: pTd(8) }}
               type={PromptCardType.WARNING}
               description={`Unknown authorization. Please proceed with caution.`}
             />
@@ -143,10 +145,9 @@ export default {
 
 const getStyles = makeStyles(theme => ({
   contentWrap: {
-    // TODO
-    height: pTd(600),
     paddingLeft: pTd(16),
     paddingRight: pTd(16),
+    paddingBottom: pTd(36),
   },
   bottomText: {
     marginTop: pTd(16),

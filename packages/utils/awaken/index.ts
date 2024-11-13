@@ -29,6 +29,10 @@ export const getDeadline = (userExpiration: string): number | PBTimestamp => {
   return { seconds: seconds, nanos: 0 };
 };
 
+export const getDeadlineWithSec = (seconds: number) => {
+  return { seconds: seconds, nanos: 0 };
+};
+
 type Reserves = {
   [key: string]: string;
 };

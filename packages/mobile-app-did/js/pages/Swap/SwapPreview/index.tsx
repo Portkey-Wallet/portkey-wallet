@@ -4,7 +4,6 @@ import { useLanguage } from 'i18n/hooks';
 import CommonPreviewContainer from 'components/CommonPreviewContainer';
 import Svg from 'components/Svg';
 import CommonInfoRow from 'components/CommonInfoRow';
-import { CommonPromptCard, PromptCardType } from 'components/CommonPromptCard';
 import PreviewAmountCard from '../components/PreviewAmountCard';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { getChainSvgName } from 'utils';
@@ -65,7 +64,6 @@ const SwapPreview = () => {
     [userSlippageTolerance],
   );
   const { price: tokenOutPrice } = useAwakenTokenPrices({ symbol: swapInfo.tokenOut?.symbol || '', isInit: false });
-  const { price: tokenInPrice } = useAwakenTokenPrices({ symbol: swapInfo.tokenIn?.symbol || '', isInit: false });
 
   const amountOutMin = useMemo(() => {
     const { valueOut, tokenOut } = swapInfo;
@@ -144,24 +142,6 @@ const SwapPreview = () => {
   const gasFeeUsd = useMemo(() => {
     return `$${formatPriceUsd(divDecimals(ZERO.plus(gasFee), 8).times(defaultTokenPrice))}`;
   }, [defaultTokenPrice, gasFee]);
-
-  const priceIn = useMemo(
-    () =>
-      ZERO.plus(swapInfo?.valueIn || 0)
-        .times(tokenInPrice)
-        .dp(2)
-        .toFixed(),
-    [swapInfo?.valueIn, tokenInPrice],
-  );
-
-  const priceOut = useMemo(
-    () =>
-      ZERO.plus(swapInfo?.valueOut || 0)
-        .times(tokenOutPrice)
-        .dp(2)
-        .toFixed(),
-    [swapInfo?.valueOut, tokenOutPrice],
-  );
 
   const getValueOut = useReturnLastCallback(getContractTotalAmountOut, []);
 
@@ -360,7 +340,13 @@ const SwapPreview = () => {
       poweredIcon={<Svg icon="awakenLogo" oblongSize={[pTd(45), pTd(12)]} />}
       buttonProps={{ title: t('Swap'), onPress: handlePress }}
       isLoading={isSwapping}>
-      <PreviewAmountCard style={styles.previewAmountCard} swapInfo={swapInfo} />
+      <PreviewAmountCard
+        style={styles.previewAmountCard}
+        tokenIn={swapInfo.tokenIn}
+        tokenOut={swapInfo.tokenOut}
+        valueIn={swapInfo.valueIn}
+        valueOut={swapInfo.valueOut}
+      />
       <View style={styles.infoRowContainer}>
         <CommonInfoRow
           label={{ text: 'Network' }}

@@ -22,6 +22,7 @@ import { useDAppChainId } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useKeyboardSafeArea } from 'components/KeyboardSafeArea';
 import { pTd } from 'utils/unit';
+import navigationService from 'utils/navigationService';
 
 export type TLimitInfo = {
   tokenIn?: TCurrency;
@@ -75,11 +76,10 @@ const LimitEnter = () => {
     [limitInfo.tokenIn?.symbol, limitInfo.tokenOut?.symbol],
   );
   const currencyBalances = useCurrencyBalancesV2(symbols);
-  const {
-    maxReserve,
-    isError: isReserveError,
-    refresh: refreshReserve,
-  } = usePairMaxReserve(limitInfo.tokenIn?.symbol, limitInfo.tokenOut?.symbol);
+  const { maxReserve, isError: isReserveError } = usePairMaxReserve(
+    limitInfo.tokenIn?.symbol,
+    limitInfo.tokenOut?.symbol,
+  );
   const [expiryValue, setExpiryValue] = useState(LimitExpiryEnum.day);
 
   const setValueIn = useCallback(
@@ -297,22 +297,22 @@ const LimitEnter = () => {
           tokenSymbol: tokenIn.symbol,
         },
       });
-      // limitConfirmModalRef.current?.show({
-      //   tokenIn,
-      //   tokenOut,
-      //   amountIn: valueIn,
-      //   amountOut: valueOut,
-      //   expiryValue,
-      //   isPriceReverse: tokenPriceInfo.isReverse,
-      //   unfilledCount: result.data.limitOrderRemainingUnfilled.orderCount,
-      //   unfilledValue: result.data.limitOrderRemainingUnfilled.value,
-      // });
+      navigationService.navigate('LimitPreview', {
+        tokenIn,
+        tokenOut,
+        valueIn: valueIn,
+        valueOut: valueOut,
+        expiryValue,
+        isPriceReverse: tokenPriceInfo.isReverse,
+        unfilledCount: result.data.limitOrderRemainingUnfilled.orderCount,
+        unfilledValue: result.data.limitOrderRemainingUnfilled.value,
+      });
     } catch (error) {
       console.log('LimitSellBtnWithPay error', error);
     } finally {
       setIsLoading(false);
     }
-  }, [dAppChainId, getUnfilled, isReserveError, limitInfo, wallet]);
+  }, [dAppChainId, expiryValue, getUnfilled, isReserveError, limitInfo, tokenPriceInfo.isReverse, wallet]);
 
   const actionButtonTitle = useMemo(() => {
     if (isReserveError) {
@@ -350,11 +350,13 @@ const LimitEnter = () => {
           setTokenOut={setTokenOut}
           switchToken={switchToken}
         />
-        <CommonPromptCard
-          style={styles.promptCard}
-          type={PromptCardType.ERROR}
-          description="There is currently no available liquidity pool for the selected token pair. Select different tokens to continue."
-        />
+        {isReserveError && (
+          <CommonPromptCard
+            style={styles.promptCard}
+            type={PromptCardType.ERROR}
+            description="There is currently no available liquidity pool for the selected token pair. Select different tokens to continue."
+          />
+        )}
         <CommonButton
           style={styles.actionButton}
           type="primary"

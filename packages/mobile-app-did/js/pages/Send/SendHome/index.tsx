@@ -339,6 +339,7 @@ const SendHome: React.FC = () => {
 
   useEffectOnce(() => {
     initBookList();
+    initBookList();
   });
 
   useEffectOnce(() => {

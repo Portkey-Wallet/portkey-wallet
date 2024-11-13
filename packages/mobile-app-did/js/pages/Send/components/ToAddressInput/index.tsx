@@ -23,6 +23,7 @@ import { INetworkItem } from '../SelectNetwork';
 import { getStringAsync } from 'expo-clipboard';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network-mainnet-v2';
+import { SendType } from '@portkey-wallet/types/types-ca/send';
 interface IToAddressInput {
   isFixedToContact?: boolean;
   selectedToken?: IToSendAssetParamsType;
@@ -38,6 +39,7 @@ interface IToAddressInput {
   setCheckFinish: React.Dispatch<React.SetStateAction<boolean>>;
   setSendNumber: React.Dispatch<React.SetStateAction<string>>;
   setSendUSDNumber: React.Dispatch<React.SetStateAction<string>>;
+  sendType?: SendType;
 }
 
 export default function ToAddressInput({
@@ -54,6 +56,7 @@ export default function ToAddressInput({
   setCheckFinish,
   setSendNumber,
   setSendUSDNumber,
+  sendType,
 }: IToAddressInput) {
   const {
     params: { toInfo },
@@ -91,8 +94,6 @@ export default function ToAddressInput({
           isSameAddresses(wallet?.[selectedToken?.chainId || 'AELF']?.caAddress || '', getAelfAddress(v)) &&
           suffix === selectedToken?.chainId
         ) {
-          console.log('isDIDAelfAddress333');
-
           setCheckedPass(false);
           setWarning([WarningKey.SAME_ADDRESS]);
         } else if (!isValidChainId(suffix)) {
@@ -104,7 +105,6 @@ export default function ToAddressInput({
           setCheckedPass(false);
           setWarning([WarningKey.CROSS_CHAIN]);
         } else {
-          console.log('isDIDAelfAddress222');
           setWarning([]);
           setCheckedPass(true);
         }
@@ -175,6 +175,9 @@ export default function ToAddressInput({
       });
 
       const FEPass = checkAddressByFE(_v);
+      // when send nft other chain is not support
+      if (!FEPass && sendType === 'nft') return setWarning([WarningKey.INVALID_ADDRESS]);
+
       if (!FEPass) getNetworkList(_v);
       // getNetworkList(_v);
     },

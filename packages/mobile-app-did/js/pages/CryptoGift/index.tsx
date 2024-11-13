@@ -1,14 +1,16 @@
 import React, { useCallback, useEffect } from 'react';
 import PageContainer from 'components/PageContainer';
-import { DeviceEventEmitter, Image, StyleSheet, View } from 'react-native';
+import { DeviceEventEmitter, Image, View } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import { useLanguage } from 'i18n/hooks';
-import { TextL, TextM, TextS, TextXXXL } from 'components/CommonText';
+import { TextL, TextM, TextS, TextH1 } from 'components/CommonText';
 import { pTd } from 'utils/unit';
 import { FontStyles } from 'assets/theme/styles';
+import Touchable from 'components/Touchable';
 import GStyles from 'assets/theme/GStyles';
-import Svg from 'components/Svg';
+import { makeStyles } from '@rneui/themed';
 import CommonButton from 'components/CommonButton';
+import Svg from 'components/Svg';
 import HistoryCard from './components/HistoryCard';
 import { CryptoGiftCreateSuccess, useGetFirstCryptoGift } from '@portkey-wallet/hooks/hooks-ca/cryptogift';
 import navigationService from 'utils/navigationService';
@@ -17,6 +19,7 @@ import boxOpen from 'assets/image/pngs/box-open.png';
 
 export default function CryptoGift() {
   const { t } = useLanguage();
+  const styles = getStyles();
   const { firstCryptoGift, loading, getFirstCryptoGift } = useGetFirstCryptoGift();
   useEffect(() => {
     const eventListener = DeviceEventEmitter.addListener(CryptoGiftCreateSuccess, () => {
@@ -34,83 +37,71 @@ export default function CryptoGift() {
   return (
     <PageContainer
       noCenterDom
-      safeAreaColor={['white']}
       containerStyles={styles.pageStyles}
-      scrollViewProps={{ disabled: false }}>
-      <TextXXXL style={[styles.title, FontStyles.size30, GStyles.textAlignCenter, GStyles.lineHeight(pTd(38))]}>
-        Crypto Gift
-      </TextXXXL>
-      <TextM
-        style={[
-          styles.subTitle,
-          FontStyles.neutralSecondaryTextColor,
-          GStyles.textAlignCenter,
-          GStyles.lineHeight(pTd(22)),
-        ]}>
-        Send crypto assets as a gift
+      rightDom={
+        <Touchable
+          onPress={() => {
+            // TODO: help
+          }}>
+          <Svg icon="help-white" size={pTd(24)} iconStyle={styles.headerHelpIcon} />
+        </Touchable>
+      }
+      scrollViewProps={{ disabled: true }}>
+      <TextH1 style={[styles.title, GStyles.lineHeight(pTd(38))]}>Crypto gift</TextH1>
+      <TextM style={[styles.subTitle, GStyles.lineHeight(pTd(19.6))]}>
+        Spread joy with Portkey&apos;s Crypto Gift feature—send crypto assets to anyone as a gift!
       </TextM>
       <Image resizeMode="contain" source={boxOpen} style={{ width: pTd(343), height: pTd(240) }} />
 
-      <CommonButton containerStyle={styles.buttonContainer} type="primary" disabled={false} onPress={onGiftCreatePress}>
-        <TextL style={styles.buttonText}>{t('Send Crypto Gift')}</TextL>
+      <CommonButton
+        containerStyle={styles.button}
+        buttonStyle={styles.buttonStyle}
+        type="transparent"
+        onPress={onGiftCreatePress}>
+        <View style={styles.buttonContainer}>
+          <TextL style={styles.buttonText}>{t('Create Crypto Gift')}</TextL>
+        </View>
       </CommonButton>
-      {firstCryptoGift && firstCryptoGift.exist && (
-        <HistoryCard
-          containerStyle={styles.hsCardContainer}
-          showTitle
-          redPacketDetail={firstCryptoGift || undefined}
-          isSkeleton={loading}
-        />
-      )}
-      <View style={styles.noteWrap}>
-        <TextM style={styles.noteTextTitle}>{t('About Crypto Gift')}</TextM>
-        <View style={styles.qaWrapper}>
-          <TextM style={styles.noteTextQuestion}>{t('What is crypto gift?')}</TextM>
-          <TextS style={styles.noteTextAnswer}>
-            {t(
-              'Crypto gift allows Portkey users to send crypto assets to anyone as a gift, adding an element of fun and surprise.',
-            )}
-          </TextS>
-        </View>
-        <View style={styles.qaWrapper}>
-          <TextM style={styles.noteTextQuestion}>{t('How to send a crypto gift?')}</TextM>
-          <TextS style={styles.noteTextAnswer}>
-            {t(
-              'Click "Send Crypto Gift" and customise the gift by selecting the asset, quantity, and requirements for claimers. After the gift is sent, a gift link will be generated, which you can then share with friends.',
-            )}
-          </TextS>
-        </View>
-        <View style={styles.qaWrapper}>
-          <TextM style={styles.noteTextQuestion}>{t('How to claim a crypto gift?')}</TextM>
-          <TextS style={styles.noteTextAnswer}>
-            {t(
-              'Click on the crypto gift link and log in to your Portkey account to check eligibility. If you qualify, simply claim the gift.',
-            )}
-          </TextS>
-        </View>
-      </View>
     </PageContainer>
   );
 }
-const styles = StyleSheet.create({
+const getStyles = makeStyles(theme => ({
   pageStyles: {
-    backgroundColor: defaultColors.neutralDefaultBG,
+    backgroundColor: theme.colors.bgBase1,
     flex: 1,
-    paddingBottom: pTd(40),
   },
+  headerHelpIcon: { marginRight: pTd(16) },
   title: {
-    marginTop: pTd(16),
+    marginTop: pTd(24),
   },
   subTitle: {
-    marginTop: pTd(8),
-    marginBottom: pTd(32),
+    marginTop: pTd(16),
+    marginBottom: pTd(64),
+    color: theme.colors.textBase2,
+  },
+  button: {
+    position: 'absolute',
+    left: pTd(16),
+    bottom: pTd(24),
+  },
+  buttonStyle: {
+    height: pTd(48),
+    borderWidth: pTd(1.5),
+    paddingVertical: pTd(3.5),
+    paddingHorizontal: pTd(3.5),
   },
   buttonContainer: {
-    paddingVertical: pTd(32),
+    width: '100%',
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: theme.colors.bgBrand1,
+    borderRadius: pTd(38),
   },
   buttonText: {
     lineHeight: pTd(24),
-    color: defaultColors.neutralContainerBG,
+    color: theme.colors.bgNeutral4,
+    ...fonts.mediumFont,
   },
   noteWrap: {
     width: '100%',
@@ -138,4 +129,4 @@ const styles = StyleSheet.create({
   hsCardContainer: {
     marginBottom: pTd(16),
   },
-});
+}));

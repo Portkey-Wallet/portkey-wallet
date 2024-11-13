@@ -1,15 +1,15 @@
 import { screenHeight } from '@portkey-wallet/utils/mobile/device';
 import { useKeyboard } from 'hooks/useKeyboardHeight';
-import { TopSpacing } from 'pages/Chat/components/hooks';
 import React, { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { StyleProp, View, ViewStyle } from 'react-native';
+import { View } from 'react-native';
+import { ViewStyleType } from 'types/styles';
 
 export type TKeyboardSafeAreaProps = {
   children?: ReactNode;
   bottomPad?: number;
-  style?: StyleProp<ViewStyle>;
+  containerStyle?: ViewStyleType;
 };
-export const KeyboardSafeArea = ({ children, bottomPad = 0, style: styleProp }: TKeyboardSafeAreaProps) => {
+export const KeyboardSafeArea = ({ children, bottomPad = 0, containerStyle }: TKeyboardSafeAreaProps) => {
   const viewRef = useRef<View>(null);
   const { keyboardHeight, isKeyboardOpened } = useKeyboard(0);
   const [viewPositionY, setViewPositionY] = useState(0);
@@ -48,7 +48,7 @@ export const KeyboardSafeArea = ({ children, bottomPad = 0, style: styleProp }: 
   }, [bottomPad, isKeyboardOpened, keyboardHeight, viewPositionY]);
 
   return (
-    <View ref={viewRef} collapsable={false} style={[styleProp, style]}>
+    <View ref={viewRef} collapsable={false} style={[style, containerStyle]}>
       {children}
     </View>
   );

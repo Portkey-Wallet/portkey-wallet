@@ -16,7 +16,7 @@ export function SourceDestinationItem({
   onPress,
   containerStyles,
 }: {
-  title: string;
+  title?: string;
   icon: string;
   chainName: string;
   containerStyles?: ViewStyleType;
@@ -25,7 +25,7 @@ export function SourceDestinationItem({
   const styles = getStyles();
   return (
     <TouchableOpacity style={[styles.itemWrapper, containerStyles]} onPress={onPress}>
-      <Text style={styles.title}>{title}</Text>
+      {title && <Text style={styles.title}>{title}</Text>}
       <View style={styles.itemChianWrapper}>
         <View style={styles.iconAndName}>
           <CommonAvatar avatarSize={pTd(24)} imageUrl={icon} />

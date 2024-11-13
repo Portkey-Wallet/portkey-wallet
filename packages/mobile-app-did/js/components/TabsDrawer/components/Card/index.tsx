@@ -11,7 +11,7 @@ import { ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
 import { closeExistingTab, setActiveTab } from '@portkey-wallet/store/store-ca/discover/slice';
 import DiscoverWebsiteImage from 'pages/Discover/components/DiscoverWebsiteImage';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
-import { defaultColors } from 'assets/theme';
+import { darkColors } from 'assets/theme';
 import { useGetCmsWebsiteInfo } from '@portkey-wallet/hooks/hooks-ca/cms';
 import Touchable from 'components/Touchable';
 
@@ -53,20 +53,21 @@ export default Card;
 
 const tabShowItemStyle = StyleSheet.create({
   cardWrap: {
-    borderRadius: pTd(8),
-    width: pTd(160),
+    borderRadius: pTd(16),
+    width: pTd(172.5),
     height: pTd(214),
-    marginTop: pTd(24),
+    marginTop: pTd(16),
     shadowOffset: { width: 2, height: 10 },
-    backgroundColor: defaultColors.bg1,
-    shadowColor: defaultColors.shadow1,
+    backgroundColor: darkColors.bgBase1,
+    borderWidth: 1,
+    borderColor: darkColors.borderBase1,
     shadowOpacity: 0.15,
     shadowRadius: 10,
     elevation: 2,
   },
   header: {
-    ...GStyles.paddingArg(6, 8),
-    height: pTd(32),
+    padding: pTd(8),
+    height: pTd(36),
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
@@ -77,9 +78,10 @@ const tabShowItemStyle = StyleSheet.create({
     marginRight: pTd(8),
   },
   screenshot: {
-    width: pTd(160),
+    width: pTd(172.5),
     height: pTd(182),
     overflow: 'hidden',
-    borderRadius: pTd(6),
+    borderBottomLeftRadius: pTd(16),
+    borderBottomRightRadius: pTd(16),
   },
 });

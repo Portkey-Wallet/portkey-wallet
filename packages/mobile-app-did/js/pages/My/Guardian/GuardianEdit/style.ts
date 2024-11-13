@@ -1,33 +1,45 @@
-import { StyleSheet } from 'react-native';
-import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
 import GStyles from 'assets/theme/GStyles';
 import { windowHeight } from '@portkey-wallet/utils/mobile/device';
+import { makeStyles } from '@rneui/themed';
 
-export const pageStyles = StyleSheet.create({
+export const getPageStyles = makeStyles(theme => ({
   pageWrap: {
     flex: 1,
-    backgroundColor: defaultColors.bg4,
+    backgroundColor: theme.colors.bgBase1,
     justifyContent: 'space-between',
-    ...GStyles.paddingArg(24, 20, 18),
+    ...GStyles.paddingArg(16, 16, 0),
     minHeight: windowHeight - pTd(100),
   },
   contentWrap: {
     flex: 1,
   },
   titleLabel: {
-    color: defaultColors.font3,
-    lineHeight: pTd(20),
-    ...GStyles.marginArg(0, 0, 8, 8),
+    color: theme.colors.textBase1,
+    lineHeight: pTd(22),
+    marginRight: pTd(4),
   },
   typeWrap: {
     marginBottom: pTd(24),
   },
   titleTextStyle: {
-    fontSize: pTd(14),
+    fontSize: pTd(16),
+  },
+  selectListTitleStyle: {
+    ...GStyles.flexRowWrap,
+    ...GStyles.itemCenter,
+    paddingVertical: pTd(12),
+  },
+  notSelectedTitleStyle: {
+    color: theme.colors.textBase3,
   },
   verifierImageStyle: {
-    marginRight: pTd(12),
+    marginRight: pTd(8),
+  },
+  formItemLabelWrap: {
+    ...GStyles.flexRow,
+    alignItems: 'center',
+    marginBottom: pTd(8),
   },
   verifierWrap: {
     marginBottom: pTd(4),
@@ -36,29 +48,26 @@ export const pageStyles = StyleSheet.create({
     marginTop: pTd(8),
   },
   errorTips: {
-    color: defaultColors.error,
+    color: theme.colors.error,
     marginLeft: pTd(8),
+  },
+  warningTips: {
+    color: theme.colors.textDanger2,
+    marginTop: pTd(8),
   },
   accountWrap: {
     marginBottom: pTd(24),
   },
   accountLabel: {
-    color: defaultColors.font3,
-    marginLeft: pTd(8),
+    color: theme.colors.textBase1,
     marginBottom: pTd(8),
-    lineHeight: pTd(20),
+    lineHeight: pTd(22),
   },
   typeIcon: {
     borderRadius: pTd(14),
     marginRight: pTd(12),
   },
   itemIconWrap: {
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: defaultColors.border6,
-    backgroundColor: defaultColors.bg6,
-    width: pTd(32),
-    height: pTd(32),
-    borderRadius: pTd(16),
-    marginRight: pTd(10),
+    marginRight: pTd(8),
   },
-});
+}));

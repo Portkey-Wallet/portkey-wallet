@@ -62,6 +62,7 @@ const reduxPersistConfig = {
     guardiansSlice.name,
     referralSlice.name,
     cryptoGiftSlice.name,
+    configSlice.name,
   ],
 
   // More info here:  https://shift.infinite.red/shipping-persistant-reducers-7341691232b1

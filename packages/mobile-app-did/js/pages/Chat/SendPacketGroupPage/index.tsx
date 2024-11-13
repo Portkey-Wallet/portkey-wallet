@@ -32,10 +32,13 @@ import { useGetCryptoGiftConfig, useSendCryptoGift } from '@portkey-wallet/hooks
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { reportEnterSendCryptoGiftPage, reportSendCryptoGiftSuccess } from 'utils/analysisiReport';
 import { useEffectOnce } from '@portkey-wallet/hooks';
+import { makeStyles } from '@rneui/themed';
+import fonts from 'assets/theme/fonts';
 export interface ISendPacketGroupPageProps {
   isCryptoGift?: boolean;
 }
 export default function SendPacketGroupPage() {
+  const styles = getStyles();
   const { isCryptoGift } = useRouterParams<ISendPacketGroupPageProps>();
   const currentChannelId = useCurrentChannelId();
   const calculateRedPacketFee = useCalculateRedPacketFee();
@@ -58,7 +61,6 @@ export default function SendPacketGroupPage() {
   const onPressBtn = useLockCallback(
     async (values: CryptoValuesType) => {
       const { token } = values;
-
       Loading.show();
       try {
         const isManagerSynced = await checkManagerSyncState(token.chainId);
@@ -74,10 +76,19 @@ export default function SendPacketGroupPage() {
       } finally {
         Loading.hide();
       }
-
       const totalAmount = timesDecimals(values.count, token.decimals);
       let caContract: ContractBasic;
-
+      const fee = await calculateRedPacketFee({
+        symbol: token.symbol,
+        chainId: token.chainId,
+        decimals: token.decimals,
+        count: values.count,
+      });
+      navigationService.navigate('SendRedPacketPreview', {
+        assetInfo: token,
+        fee,
+        values,
+      });
       try {
         if (isCryptoGift) {
           await PaymentOverlay.showCryptoGift({
@@ -245,9 +256,8 @@ export default function SendPacketGroupPage() {
 
   return (
     <PageContainer
-      titleDom={isCryptoGift ? 'Create Crypto Gift' : 'Send Crypto Box'}
+      titleDom={'Create Crypto Gift'}
       hideTouchable
-      safeAreaColor={['white', 'gray']}
       scrollViewProps={{ disabled: true }}
       containerStyles={styles.containerStyles}>
       <KeyboardAwareScrollView enableOnAndroid={true} contentContainerStyle={styles.scrollStyle}>
@@ -257,24 +267,21 @@ export default function SendPacketGroupPage() {
             onTabPress={onTabPress}
             selectTab={selectTab}
             tabHeaderStyle={styles.tabHeaderStyle}
+            tabWrapStyle={styles.tabWrapStyle}
+            selectTabTextStyle={styles.selectTabTextStyle}
           />
         </View>
         <View>{tabList.find(item => item.type === selectTab)?.component}</View>
-        <TextM style={styles.tips}>
-          {`A crypto ${
-            isCryptoGift ? 'gift' : 'box'
-          } is valid for 24 hours. Unclaimed tokens/NFTs will be automatically returned to you upon expiration.`}
-        </TextM>
       </KeyboardAwareScrollView>
     </PageContainer>
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = makeStyles(theme => ({
   containerStyles: {
     position: 'relative',
     flex: 1,
-    backgroundColor: defaultColors.neutralDefaultBG,
+    backgroundColor: theme.colors.bgBase1,
     ...GStyles.paddingArg(0, 0),
   },
   scrollStyle: {
@@ -284,11 +291,21 @@ const styles = StyleSheet.create({
   tips: {
     marginTop: pTd(24),
     textAlign: 'center',
-    color: defaultColors.font3,
+    color: theme.colors.textBase3,
     marginBottom: isIOS ? 0 : pTd(16),
   },
   tabHeaderStyle: {
-    width: pTd(190),
-    marginBottom: pTd(24),
+    width: '100%',
+    marginBottom: pTd(16),
+    backgroundColor: theme.colors.bgBase1,
+    borderColor: theme.colors.textBase3,
+    borderWidth: pTd(1),
   },
-});
+  tabWrapStyle: {
+    backgroundColor: theme.colors.bgBase1,
+  },
+  selectTabTextStyle: {
+    color: theme.colors.textBase1,
+    ...fonts.regularFont,
+  },
+}));

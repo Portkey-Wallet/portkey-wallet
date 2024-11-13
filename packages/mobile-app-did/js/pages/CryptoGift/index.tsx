@@ -64,41 +64,6 @@ export default function CryptoGift() {
           <TextL style={styles.buttonText}>{t('Create Crypto Gift')}</TextL>
         </View>
       </CommonButton>
-      {/* {firstCryptoGift && firstCryptoGift.exist && (
-        <HistoryCard
-          containerStyle={styles.hsCardContainer}
-          showTitle
-          redPacketDetail={firstCryptoGift || undefined}
-          isSkeleton={loading}
-        />
-      )}
-      <View style={styles.noteWrap}>
-        <TextM style={styles.noteTextTitle}>{t('About Crypto Gift')}</TextM>
-        <View style={styles.qaWrapper}>
-          <TextM style={styles.noteTextQuestion}>{t('What is crypto gift?')}</TextM>
-          <TextS style={styles.noteTextAnswer}>
-            {t(
-              'Crypto gift allows Portkey users to send crypto assets to anyone as a gift, adding an element of fun and surprise.',
-            )}
-          </TextS>
-        </View>
-        <View style={styles.qaWrapper}>
-          <TextM style={styles.noteTextQuestion}>{t('How to send a crypto gift?')}</TextM>
-          <TextS style={styles.noteTextAnswer}>
-            {t(
-              'Click "Send Crypto Gift" and customise the gift by selecting the asset, quantity, and requirements for claimers. After the gift is sent, a gift link will be generated, which you can then share with friends.',
-            )}
-          </TextS>
-        </View>
-        <View style={styles.qaWrapper}>
-          <TextM style={styles.noteTextQuestion}>{t('How to claim a crypto gift?')}</TextM>
-          <TextS style={styles.noteTextAnswer}>
-            {t(
-              'Click on the crypto gift link and log in to your Portkey account to check eligibility. If you qualify, simply claim the gift.',
-            )}
-          </TextS>
-        </View>
-      </View> */}
     </PageContainer>
   );
 }

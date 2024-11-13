@@ -8,10 +8,10 @@ import { StyleSheet, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import { FontStyles } from 'assets/theme/styles';
 import GStyles from 'assets/theme/GStyles';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import fonts from 'assets/theme/fonts';
 import { ViewStyleType, TextStyleType } from 'types/styles';
 import { TCurrency } from '@portkey-wallet/types/types-ca/awaken';
+import { makeStyles } from '@rneui/themed';
 import { formatNameWithNoUnderline } from '@portkey-wallet/utils';
 
 export type TCurrencyItem = {
@@ -36,7 +36,7 @@ const CurrencyItem: React.FC<TCurrencyItem> = props => {
     balance,
     balanceInUsd,
   } = props;
-  const isMainnet = useIsMainnet();
+  const itemStyle = getStyles();
   return (
     <Touchable style={[itemStyle.wrap, wrapStyle]} onPress={() => onPress?.(item)}>
       <View style={itemStyle.left}>
@@ -74,7 +74,7 @@ const CurrencyItem: React.FC<TCurrencyItem> = props => {
         <TextM numberOfLines={1} ellipsizeMode={'tail'} style={[itemStyle.balanceText, balanceTextStyle]}>
           {hideBalance ? '******' : balance ? balance : formatTokenAmountShowWithDecimals(item.balance, item.decimals)}
         </TextM>
-        {(balanceInUsd || item.balanceInUsd) && isMainnet && (
+        {(balanceInUsd || item.balanceInUsd) && (
           <TextM numberOfLines={1} ellipsizeMode={'tail'} style={[itemStyle.balanceInUseText, balanceInUseTextStyle]}>
             {hideBalance ? '******' : balanceInUsd ? balanceInUsd : item.balanceInUsd}
           </TextM>
@@ -86,7 +86,7 @@ const CurrencyItem: React.FC<TCurrencyItem> = props => {
 
 export default memo(CurrencyItem);
 
-const itemStyle = StyleSheet.create({
+const getStyles = makeStyles(theme => ({
   wrap: {
     height: pTd(74),
     display: 'flex',
@@ -113,26 +113,26 @@ const itemStyle = StyleSheet.create({
   },
   tokenIconBorder: {
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: darkColors.borderBase1,
+    borderColor: theme.colors.borderBase1,
   },
   chainIcon: {
     position: 'absolute',
     right: 0,
     bottom: 0,
     borderWidth: pTd(1),
-    borderColor: darkColors.borderBase1,
+    borderColor: theme.colors.borderBase1,
   },
   symbolText: {
     fontSize: pTd(16),
     lineHeight: pTd(22),
     marginLeft: pTd(8),
-    color: darkColors.textBase1,
+    color: theme.colors.textBase1,
   },
   chainText: {
     fontSize: pTd(14),
     lineHeight: pTd(20),
     marginLeft: pTd(8),
-    color: darkColors.textBase2,
+    color: theme.colors.textBase2,
   },
   right: {
     marginLeft: pTd(10),
@@ -143,13 +143,13 @@ const itemStyle = StyleSheet.create({
   balanceText: {
     fontSize: pTd(16),
     lineHeight: pTd(16),
-    color: darkColors.textBase1,
+    color: theme.colors.textBase1,
     ...fonts.SGMediumFont,
   },
   balanceInUseText: {
     fontSize: pTd(14),
     lineHeight: pTd(20),
-    color: darkColors.textBase2,
+    color: theme.colors.textBase2,
     marginTop: pTd(6),
   },
-});
+}));

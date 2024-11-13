@@ -204,11 +204,7 @@ const SendPreview: React.FC = () => {
       transferTime: Date.now(),
     };
 
-    addRecent({
-      chainId: assetInfo.chainId,
-      tokenId: sendType === 'nft' ? assetInfo.tokenId : assetInfo.symbol,
-      recentItem,
-    });
+    addRecent({ recentItem });
 
     if (sendType === 'nft') {
       await fetchAccountNFTCollectionInfoList({
@@ -227,7 +223,19 @@ const SendPreview: React.FC = () => {
       actionType: ActionType.SEND,
       address: toInfo.address,
     });
-  }, [caAddressInfos, fetchAccountNFTCollectionInfoList, fetchAccountTokenInfoList, sendType, toInfo.address]);
+  }, [
+    addRecent,
+    assetInfo.chainId,
+    assetInfo.symbol,
+    assetInfo.tokenId,
+    caAddressInfos,
+    fetchAccountNFTCollectionInfoList,
+    fetchAccountTokenInfoList,
+    sendType,
+    targetNetwork?.network,
+    toInfo.address,
+    toInfo?.chainId,
+  ]);
 
   const transfer = useCallback(async () => {
     setIsError(false);

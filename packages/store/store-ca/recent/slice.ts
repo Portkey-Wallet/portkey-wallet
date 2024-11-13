@@ -15,15 +15,13 @@ export const recentSlice = createSlice({
     addRecentItem: (
       state,
       action: PayloadAction<{
-        chainId: ChainId;
-        tokenId: string; // ft is symbol, nft is nft
         recentItem: IRecentItem;
         network: NetworkType;
       }>,
     ) => {
-      const { chainId, tokenId, network, recentItem } = action.payload;
-      const id = `${chainId}-${tokenId}`;
-      const targetList = [...(state.recentMap?.[network]?.[id] || [])];
+      const { network, recentItem } = action.payload;
+
+      const targetList = [...(state.recentMap?.[network] || [])];
 
       const existingIndex = targetList.findIndex(ele => {
         return recentItem.network && recentItem.network !== 'aelf'
@@ -42,10 +40,7 @@ export const recentSlice = createSlice({
 
       state.recentMap = {
         ...state.recentMap,
-        [network]: {
-          ...state.recentMap[network],
-          [id]: targetList,
-        },
+        [network]: targetList,
       };
     },
     resetTargetNetworkRecent: (
@@ -55,9 +50,10 @@ export const recentSlice = createSlice({
       }>,
     ) => {
       const { network } = action.payload;
+
       state.recentMap = {
         ...state.recentMap,
-        [network]: {},
+        [network]: [],
       };
     },
     resetRecent: () => initialState,

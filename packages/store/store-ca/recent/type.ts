@@ -19,8 +19,6 @@ export interface IRecentItem {
 
 export interface RecentStateType {
   recentMap: {
-    [T in NetworkType]?: {
-      [key: string]: IRecentItem[]; // key is symbol-chainId
-    };
+    [T in NetworkType]?: IRecentItem[];
   };
 }

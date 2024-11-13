@@ -29,8 +29,19 @@ export type NFTItemPropsType = NFTCollectionItemShowType & {
 };
 
 export default function CollectionItem(props: NFTItemPropsType) {
-  const { isFetching, chainId, collectionName, imageUrl, itemCount, children, symbol, collapsed, openCollectionObj } =
-    props;
+  const {
+    isFetching,
+    chainId,
+    collectionName,
+    imageUrl,
+    itemCount,
+    children,
+    symbol,
+    collapsed,
+    chainImageUrl,
+    displayChainImage,
+    openCollectionObj,
+  } = props;
   const styles = getStyles();
 
   const openCollectionInfo = useMemo(
@@ -64,15 +75,27 @@ export default function CollectionItem(props: NFTItemPropsType) {
             chainId,
           });
         }}>
-        <CommonAvatar
-          avatarSize={pTd(172.5)}
-          imageUrl={imageUrl}
-          title={collectionName}
-          shapeType={'square'}
-          style={{
-            borderRadius: pTd(8),
-          }}
-        />
+        <View>
+          <CommonAvatar
+            avatarSize={pTd(172.5)}
+            imageUrl={imageUrl}
+            title={collectionName}
+            shapeType={'square'}
+            style={{
+              borderRadius: pTd(8),
+            }}
+          />
+          {displayChainImage && (
+            <CommonAvatar
+              hasBorder
+              style={styles.chainIcon}
+              avatarSize={pTd(16)}
+              imageUrl={chainImageUrl}
+              titleStyle={styles.tokenIconTitle}
+              borderStyle={styles.iconBorder}
+            />
+          )}
+        </View>
         <View style={[GStyles.flexRow, styles.collectNameAndCountWrapper]}>
           <TextL style={styles.collectionName} numberOfLines={1} ellipsizeMode="tail">
             {collectionName}
@@ -166,5 +189,16 @@ const getStyles = makeStyles(theme => ({
     color: theme.colors.textBase1,
     opacity: 0.7,
     marginRight: pTd(7),
+  },
+  iconBorder: {
+    borderColor: theme.colors.borderBase1,
+  },
+  tokenIconTitle: {
+    fontSize: pTd(10),
+  },
+  chainIcon: {
+    position: 'absolute',
+    right: pTd(4),
+    bottom: pTd(4),
   },
 }));

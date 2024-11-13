@@ -4,26 +4,39 @@ import { defaultColors } from 'assets/theme';
 import Svg from 'components/Svg';
 import Touchable from 'components/Touchable';
 import React, { useCallback, useMemo } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text } from 'react-native';
 import { pTd } from 'utils/unit';
-import { FreeMintStep, showFreeMintModal } from '../FreeMintModal';
+import { FreeMintStep } from '../FreeMintModal';
 import navigationService from 'utils/navigationService';
 import fonts from 'assets/theme/fonts';
+import { makeStyles, useTheme } from '@rneui/themed';
+import { MintStatus as MintStatusType } from '../MintStatusSection';
+import MinStatusComponent from 'pages/DashBoard/NFTSection/MinStatusComponent';
+import GStyles from 'assets/theme/GStyles';
+import FastImage from 'react-native-fast-image';
 export interface MintStatus {
   recentStatus: FreeMintStatus;
   itemId: string;
+  imageUrl: string;
 }
 const MintStatusLine = (props: MintStatus) => {
-  const { recentStatus, itemId } = props;
+  const { recentStatus, itemId, imageUrl } = props;
+  const status =
+    recentStatus === FreeMintStatus.PENDING
+      ? MintStatusType.Minting
+      : recentStatus === FreeMintStatus.FAIL
+      ? MintStatusType.MintFailed
+      : MintStatusType.Minted;
+  const styles = getStyles();
   const info = useMemo(() => {
     if (recentStatus === FreeMintStatus.PENDING) {
       return {
-        title: 'Your NFT is being minted.',
+        title: 'Minting your NFT...',
         buttonText: 'View',
       };
     } else if (recentStatus === FreeMintStatus.FAIL) {
       return {
-        title: 'Mint failed.',
+        title: 'NFT minting failed. ',
         buttonText: 'Try Again',
       };
     }
@@ -33,49 +46,59 @@ const MintStatusLine = (props: MintStatus) => {
     };
   }, [recentStatus]);
   const handleClickMint = useCallback(() => {
-    navigationService.navigate('FreeMintHome', { recentStatus: recentStatus });
-    if (recentStatus === FreeMintStatus.FAIL) {
-      showFreeMintModal(itemId, FreeMintStep.mintNft);
-    } else if (recentStatus === FreeMintStatus.PENDING) {
-      showFreeMintModal(itemId, FreeMintStep.mintResult);
-    }
-  }, [itemId, recentStatus]);
+    navigationService.navigate('MintProcess', {
+      itemId: itemId,
+      freeMintStep: FreeMintStep.mintResult,
+      mintStatusType: status,
+    });
+  }, [itemId, status]);
+  const { theme } = useTheme();
   return (
-    <View style={styles.container}>
-      <Text style={[styles.text, styles.mediumText]}>{info.title}</Text>
-      <Touchable onPress={handleClickMint}>
+    <Touchable onPress={handleClickMint}>
+      <View style={styles.container}>
+        <MinStatusComponent status={status} />
+        <Text style={[styles.text, styles.sGRegularFont]}>{info.title}</Text>
+        <View style={GStyles.flex1} />
         <View style={styles.mintNowContainer}>
-          <Text style={[styles.mintNowText, styles.mediumText]}>{info.buttonText}</Text>
-          <Svg icon="right-arrow" color={defaultColors.brandNormal} size={pTd(14)} />
+          {imageUrl && (
+            <FastImage
+              source={{
+                uri: imageUrl,
+              }}
+              style={styles.imgStyle}
+            />
+          )}
+          <Svg icon="right-arrow" color={theme.colors.iconNeutral3} size={pTd(12)} />
         </View>
-      </Touchable>
-    </View>
+      </View>
+    </Touchable>
   );
 };
 
-const styles = StyleSheet.create({
+const getStyles = makeStyles(theme => ({
   container: {
-    marginLeft: pTd(16),
-    marginRight: pTd(16),
+    marginBottom: pTd(16),
     paddingLeft: pTd(12),
     paddingRight: pTd(12),
     paddingTop: pTd(13),
     paddingBottom: pTd(13),
     width: screenWidth - pTd(32),
-    backgroundColor: defaultColors.neutralContainerBG,
+    backgroundColor: theme.colors.bgBase2,
     borderRadius: pTd(8),
-    justifyContent: 'space-between',
+    borderWidth: pTd(1),
+    borderColor: theme.colors.borderBase1,
     alignItems: 'center',
     flexDirection: 'row',
   },
   text: {
-    color: '#101114',
-    fontSize: pTd(14),
-    fontWeight: '500',
+    color: theme.colors.textBase1,
+    fontSize: pTd(16),
     lineHeight: pTd(22),
+    textAlign: 'left',
+    marginLeft: pTd(12),
   },
-  mediumText: {
-    ...fonts.mediumFont,
+  sGRegularFont: {
+    ...fonts.SGRegularFont,
   },
   mintNowContainer: {
     flexDirection: 'row',
@@ -87,6 +110,11 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     lineHeight: pTd(22),
   },
-});
-
+  imgStyle: {
+    width: pTd(24),
+    height: pTd(24),
+    marginRight: pTd(12),
+    borderRadius: pTd(4),
+  },
+}));
 export default MintStatusLine;

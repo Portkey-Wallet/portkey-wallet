@@ -1,12 +1,13 @@
-import React, { useCallback, useMemo, useState } from 'react';
-import { GestureResponderEvent, StyleSheet, View, Text } from 'react-native';
+import React, { useCallback } from 'react';
+import { GestureResponderEvent, StyleSheet, View } from 'react-native';
 import Svg from 'components/Svg';
 import { measurePageY } from 'utils/measure';
 import { pTd } from 'utils/unit';
-import { defaultColors } from 'assets/theme';
+import { darkColors, defaultColors } from 'assets/theme';
 import { TouchableOpacity } from 'react-native';
 import CommonToast from 'components/CommonToast';
 import { IMarketInfo, IMarketType } from '@portkey-wallet/store/store-ca/discover/type';
+import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import FloatOverlay from 'components/FloatOverlay';
 
 export default function MarketType({
@@ -16,25 +17,15 @@ export default function MarketType({
   marketInfo?: IMarketInfo;
   handleType: (type: IMarketType) => Promise<void>;
 }) {
-  const [collapsed, setCollapsed] = useState(true);
   const onRightPress = useCallback(
     async (event: GestureResponderEvent) => {
-      setCollapsed(false);
       const top = await measurePageY(event.target);
       FloatOverlay.showFloatPopover({
         list: [
           {
-            title: 'Favourites',
-            onPress: async () => {
-              try {
-                await handleType('Favorites');
-              } catch (e) {
-                CommonToast.failError(`${e}`);
-              }
-            },
-          },
-          {
             title: 'Top',
+            iconName: 'filter-top',
+            active: marketInfo?.type === 'Hot',
             onPress: async () => {
               try {
                 await handleType('Hot');
@@ -44,7 +35,21 @@ export default function MarketType({
             },
           },
           {
+            title: 'Favourites',
+            iconName: 'collect',
+            active: marketInfo?.type === 'Favorites',
+            onPress: async () => {
+              try {
+                await handleType('Favorites');
+              } catch (e) {
+                CommonToast.failError(`${e}`);
+              }
+            },
+          },
+          {
             title: 'Trending',
+            iconName: 'trend',
+            active: marketInfo?.type === 'Trending',
             onPress: async () => {
               try {
                 await handleType('Trending');
@@ -54,34 +59,20 @@ export default function MarketType({
             },
           },
         ],
-        formatType: 'dynamicWidth',
-        customPosition: { left: pTd(16), top: top + pTd(40) },
-        customBounds: { x: pTd(16), y: top + pTd(20), width: 0, height: 0 },
-        onMaskClose() {
-          setCollapsed(true);
-        },
+        formatType: 'fixedWidth',
+        customPosition: { right: pTd(16), top: top + pTd(40) },
+        customBounds: { x: screenWidth - pTd(16), y: top + pTd(20), width: 0, height: 0 },
+        contentStyle: { color: darkColors.textBase1 },
+        containerStyle: { backgroundColor: darkColors.bgBase1, borderColor: darkColors.borderBase1, borderWidth: 1 },
       });
     },
-    [handleType],
+    [handleType, marketInfo?.type],
   );
-  const showTypeName = useMemo(() => {
-    if (marketInfo?.type === 'Hot') {
-      return 'Top';
-    } else if (marketInfo?.type === 'Favorites') {
-      return 'Favourites';
-    } else if (marketInfo?.type === 'Trending') {
-      return 'Trending';
-    }
-  }, [marketInfo?.type]);
+
   return (
     <TouchableOpacity onPress={onRightPress} style={styles.touchWrapper}>
       <View style={styles.mainContainer}>
-        <Text style={styles.text}>{showTypeName || 'Top'}</Text>
-        <Svg
-          icon={collapsed ? 'down-arrow' : 'direction-up'}
-          size={pTd(16)}
-          color={defaultColors.neutralSecondaryTextColor}
-        />
+        <Svg icon={'filter'} size={pTd(16)} color={defaultColors.neutralSecondaryTextColor} />
       </View>
     </TouchableOpacity>
   );
@@ -91,20 +82,17 @@ const styles = StyleSheet.create({
   touchWrapper: {
     alignItems: 'center',
     justifyContent: 'center',
-    alignSelf: 'flex-start',
+    marginRight: pTd(16),
   },
   mainContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    width: pTd(112),
-    padding: pTd(5),
-    paddingLeft: pTd(12),
-    paddingRight: pTd(12),
-    backgroundColor: defaultColors.neutralDefaultBG,
+    justifyContent: 'center',
+    width: pTd(32),
+    height: pTd(32),
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: defaultColors.neutralBorder,
-    borderRadius: pTd(24),
+    borderRadius: pTd(16),
   },
   text: {
     minHeight: pTd(22),

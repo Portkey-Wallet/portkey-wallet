@@ -330,6 +330,11 @@ export const formatNameWithNoUnderline = (tokenName: string) => {
   return formatNameWithRules(tokenName, [FormatNameRuleList.NO_UNDERLINE]);
 };
 
+export const truncateString = (str = '', maxLength = 6) => {
+  if (!str) return '';
+  return str.length > maxLength ? str.slice(0, maxLength) + '...' : str;
+};
+
 const DEFAULT_USER_ID = '00000000-0000-0000-0000-000000000000';
 export function isValidUserId(id?: string): boolean {
   if (!id) {

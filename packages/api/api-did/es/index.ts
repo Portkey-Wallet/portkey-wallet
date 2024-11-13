@@ -9,6 +9,7 @@ const KeyList = [
   'getRegisterResult',
   'getRecoverResult',
   'getContactList',
+  'getContactListNew',
   'getCaHolder',
 ] as const;
 
@@ -31,6 +32,10 @@ const ApiObject: Record<typeof KeyList[number], ESBaseConfig> = {
   },
   getContactList: {
     target: `${BaseESUrl}contacts/list`,
+    config: { method: Method },
+  },
+  getContactListNew: {
+    target: `${BaseESUrl}address-book/list`,
     config: { method: Method },
   },
   getCaHolder: {

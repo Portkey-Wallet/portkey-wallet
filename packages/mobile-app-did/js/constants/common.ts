@@ -27,6 +27,7 @@ export const DISCOVER_BOOKMARK_MAX_COUNT = 30;
 
 export const SEND_RECEIVE_HELP_URL = 'https://doc.portkey.finance/docs/How-to-send-and-receive-assets';
 
+export const AELF_NETWORK_NAME = 'aelf';
 export const networkList = [
   {
     imageUrl: 'https://portkey-did.s3.ap-northeast-1.amazonaws.com/img/aelf/dappChain.png',

@@ -5,7 +5,9 @@ import {
   IAddContactItemApiType,
   IContactIndexType,
   IContactItemType,
+  TDeteleContactItemParams,
   IEditContactItemApiType,
+  INetworkItemType,
 } from '@portkey-wallet/types/types-ca/contactNew';
 import { useCallback, useEffect, useMemo } from 'react';
 import {
@@ -64,7 +66,7 @@ export const useDeleteContact = () => {
   const dispatch = useAppCommonDispatch();
   const currentNetworkInfo = useCurrentNetworkInfo();
   return useCallback(
-    async (contactItem: IContactItemType): Promise<IContactItemType> => {
+    async (contactItem: TDeteleContactItemParams): Promise<IContactItemType> => {
       const response = await request.contact.deleteSaved({
         baseURL: currentNetworkInfo.apiUrl,
         params: contactItem,
@@ -191,12 +193,12 @@ export const useAllContactList = () => {
 };
 
 export const useLocalContactSearch = () => {
-  const { contactIndexList } = useContact(false, false);
+  const { contactIndexListNew } = useContact(false, false);
 
   return useCallback(
     (value: string) => {
       // STEP 1 > filter - type
-      const filterList: IContactIndexType[] = [];
+      const filterList: IContactIndexType[] = contactIndexListNew ?? [];
 
       // STEP 2 > filter - no data
       const notEmptyFilterList = filterList.filter(item => item?.contacts?.length > 0);
@@ -258,7 +260,7 @@ export const useLocalContactSearch = () => {
       });
       return { contactFilterList, contactIndexFilterList };
     },
-    [contactIndexList],
+    [contactIndexListNew],
   );
 };
 

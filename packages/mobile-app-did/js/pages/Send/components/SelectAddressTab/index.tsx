@@ -54,7 +54,7 @@ const AddressList = ({
       const contactProps: IContactItemType = {
         id: address,
         index: String(index),
-        name: item.name || '',
+        name: item?.name || '',
         addressInfo: {
           network: item?.network,
           networkName: item?.chainId || '',

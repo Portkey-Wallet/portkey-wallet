@@ -75,7 +75,7 @@ import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import SelectAddressTab from '../components/SelectAddressTab';
 import { useRecent } from '@portkey-wallet/hooks/hooks-ca/recent';
 import { useGetFilterContactList } from '@portkey-wallet/hooks/hooks-ca/contactNew';
-import { TFormattedRecentItem } from '@portkey-wallet/types/types-ca/contactNew';
+import { IContactItemType, TFormattedRecentItem } from '@portkey-wallet/types/types-ca/contactNew';
 const SendHome: React.FC = () => {
   const {
     params: { sendType = 'token', toInfo, assetInfo, imTransferInfo },
@@ -93,6 +93,7 @@ const SendHome: React.FC = () => {
   const [chainList, setChainList] = useState<INetworkItem[]>([]);
   const [targetNetwork, setTargetNetwork] = useState<INetworkItem>();
   const [recentList, setRecentList] = useState<TFormattedRecentItem[]>();
+  const [contactList, setContactList] = useState<IContactItemType[]>();
 
   const recommendETransfer = useMemo(
     () => targetNetwork?.serviceList?.find(ele => ele?.serviceName?.toLocaleLowerCase()?.includes('transfer')),
@@ -311,13 +312,18 @@ const SendHome: React.FC = () => {
 
   const { getTransformedRecentList } = useRecent();
 
-  const savedList = useGetFilterContactList({
-    fromChainId: assetInfo.chainId,
-    tokenId: assetInfo.symbol,
-    isFt: sendType !== 'token',
-  });
+  const getFilterContactList = useGetFilterContactList();
 
-  const initBookList = useCallback(async () => {
+  const initContactList = useCallback(() => {
+    const result = getFilterContactList({
+      fromChainId: assetInfo.chainId,
+      tokenId: assetInfo.symbol,
+      isFt: sendType !== 'token',
+    });
+    setContactList(result);
+  }, [assetInfo.chainId, assetInfo.symbol, getFilterContactList, sendType]);
+
+  const initRecentList = useCallback(async () => {
     const reList = await getTransformedRecentList({
       fromChainId: assetInfo.chainId,
       tokenId: assetInfo.symbol,
@@ -327,7 +333,8 @@ const SendHome: React.FC = () => {
   }, [assetInfo.chainId, assetInfo.symbol, getTransformedRecentList, sendType]);
 
   useEffectOnce(() => {
-    initBookList();
+    initContactList();
+    initRecentList();
   });
 
   const Step1Dom = useMemo(() => {
@@ -956,7 +963,7 @@ const SendHome: React.FC = () => {
       {step === 1 && (
         <SelectAddressTab
           recentAddressList={recentList || []}
-          savedAddressList={savedList || []}
+          savedAddressList={contactList || []}
           myAddressList={myOtherAddressList as any}
           noDataMessage="No recent address"
           chainId={assetInfo.chainId}

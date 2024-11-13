@@ -25,7 +25,7 @@ interface IAddress {
 interface ISelectAddressTabProps {
   recentAddressList: TFormattedRecentItem[];
   savedAddressList: TFormattedRecentItem[];
-  myAddressList: ICaAddressInfoListItemType[];
+  myAddressList: TFormattedRecentItem[];
   noDataMessage: string;
   chainId: string;
   onPress?: (item: TFormattedRecentItem) => void;
@@ -48,24 +48,24 @@ const AddressList = ({
 
   const renderItem = useCallback(
     ({ item, index }: { item: TFormattedRecentItem | ICaAddressInfoListItemType | any; index: number }) => {
-      const address = formatStr2EllipsisStr(item?.address || item?.caAddress);
-      // const textAbove = item.nickName ? item.nickName : address;
-      // const textBelow = item.nickName ? address : item.chain;
-      const contactProps: IContactItemType = {
-        id: address,
-        index: String(index),
-        name: item.name || '',
-        addressInfo: {
-          network: item?.network,
-          networkName: item?.chainId || '',
-          networkImage: '', //
-          address: address,
-        },
-        caHolderInfo: item?.caHolderInfo,
-        userId: address,
-        modificationTime: item?.transferTime,
-        isDeleted: false,
-      };
+      const address = formatStr2EllipsisStr(item?.name ? item?.caHolderInfo?.address : item?.address);
+      const contactProps: IContactItemType = item?.name
+        ? item
+        : {
+            id: address,
+            index: String(index),
+            name: item?.name || '',
+            addressInfo: {
+              network: item?.network,
+              networkName: item?.chainId || '',
+              networkImage: item?.networkIcon,
+              address: address,
+            },
+            caHolderInfo: item?.caHolderInfo,
+            userId: address,
+            modificationTime: item?.transferTime,
+            isDeleted: false,
+          };
       const isSaved = item?.name ? true : false;
       return (
         <ContactItem

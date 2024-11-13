@@ -88,6 +88,7 @@ export default function SendPacketGroupPage() {
         assetInfo: token,
         fee,
         values,
+        selectTab,
       });
       try {
         if (isCryptoGift) {

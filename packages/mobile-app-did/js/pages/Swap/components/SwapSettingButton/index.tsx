@@ -108,7 +108,7 @@ const SwapSettingContent = () => {
               inputStyle={styles.slippageToleranceInputStyle}
               maxLength={5}
               autoCorrect={false}
-              keyboardType="number-pad"
+              keyboardType="numeric"
               placeholder="0"
               placeholderTextColor={theme.colors.textBrand4}
               rightIcon={<Text style={styles.slippageToleranceUnitText}>%</Text>}

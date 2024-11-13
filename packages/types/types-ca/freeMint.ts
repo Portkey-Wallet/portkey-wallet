@@ -24,6 +24,7 @@ export interface ICollectionInfo {
   imageUrl: string;
   collectionName: string;
   chainId: ChainId;
+  chainImageUrl: string;
   symbol: string;
 }
 

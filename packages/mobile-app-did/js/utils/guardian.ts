@@ -217,7 +217,7 @@ export function removeOtherManager(
   userGuardiansList: UserGuardianItem[],
   guardiansStatus: GuardiansStatus,
 ) {
-  const managerInfo = address.map(ele => {
+  const managerInfos = address.map(ele => {
     return {
       address: ele,
       extraData: Date.now(),
@@ -226,7 +226,7 @@ export function removeOtherManager(
   const guardiansApproved = getGuardiansApproved(userGuardiansList, guardiansStatus);
   return contract?.callSendMethod('RemoveOtherManagerInfos', '', {
     caHash,
-    managerInfo,
+    managerInfos,
     guardiansApproved: guardiansApproved,
   });
 }

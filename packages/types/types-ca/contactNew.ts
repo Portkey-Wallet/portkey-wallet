@@ -1,3 +1,4 @@
+import { IRecentItem } from '@portkey-wallet/store/store-ca/recent/type';
 import { ChainId } from '..';
 import { CaHolderInfo, LoginType } from './wallet';
 
@@ -24,6 +25,8 @@ export interface IContactItemType {
   userId: string;
   modificationTime: number;
 }
+
+export type TFormattedRecentItem = IRecentItem | IContactItemType;
 
 export interface RecentContactItemType extends IContactItemType {
   chainId: ChainId;

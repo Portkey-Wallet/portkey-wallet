@@ -125,6 +125,9 @@ export default function AccountSettings() {
         label: 'Address book',
         icon: 'my_contact',
         showDivider: true,
+        onPress: () => {
+          navigationService.navigate('ContactsHome');
+        },
       },
       {
         name: 'CryptoGift',

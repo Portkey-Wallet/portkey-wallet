@@ -2,7 +2,6 @@ import React, { useCallback, useMemo } from 'react';
 import { useLanguage } from 'i18n/hooks';
 import { makeStyles } from '@rneui/themed';
 import { useTheme } from '@rneui/themed';
-import { formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import { View, FlatList, Text } from 'react-native';
 import CommonTopTab from 'components/CommonTopTab';
 import CommonAvatar from 'components/CommonAvatar';
@@ -48,13 +47,13 @@ const AddressList = ({
 
   const renderItem = useCallback(
     ({ item, index }: { item: TFormattedRecentItem | ICaAddressInfoListItemType | any; index: number }) => {
-      const address = formatStr2EllipsisStr(item?.name ? item?.caHolderInfo?.address : item?.address);
+      const address = item?.name ? item?.caHolderInfo?.address : item?.address;
       const contactProps: IContactItemType = item?.name
         ? item
         : {
             id: address,
             index: String(index),
-            name: item?.name || '',
+            name: item?.name || address,
             addressInfo: {
               network: item?.network,
               networkName: item?.chainId || '',
@@ -127,6 +126,7 @@ const AddressList = ({
 const SelectAddressTab: React.FC<ISelectAddressTabProps> = (props: ISelectAddressTabProps) => {
   const { t } = useLanguage();
   const { recentAddressList, savedAddressList, myAddressList, chainId, onPress } = props;
+  console.log('recentAddressList', recentAddressList);
 
   const tabList = useMemo(() => {
     return [

@@ -10,6 +10,8 @@ import { useLanguage } from 'i18n/hooks';
 import { pTd } from 'utils/unit';
 import { RootStackName } from 'navigation';
 import { useCurrentUserInfo, useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useIsSecondaryMailSet } from '@portkey-wallet/hooks/hooks-ca/useSecondaryMail';
+import { HELP_CENTER_URL } from '@portkey-wallet/constants/constants-ca/common';
 import { removeManager } from '@portkey-wallet/utils/guardian';
 import { request } from '@portkey-wallet/api/api-did';
 import { useGetCurrentCAContract } from 'hooks/contract';
@@ -35,6 +37,7 @@ interface MenuItemType {
 export default function AccountSettings() {
   const biometricsReady = useBiometricsReady();
   const styles = getStyles();
+  const { showNotSet, secondaryEmail, getSecondaryMail, hideNotSetMark, fetching } = useIsSecondaryMailSet();
 
   const onPressItem = useCallback((item: MenuItemType) => {
     if (item.onPress) {
@@ -82,7 +85,7 @@ export default function AccountSettings() {
         icon: 'my_transaction_limit',
       },
       {
-        name: 'Token allowances',
+        name: 'TokenAllowanceHome',
         label: 'Token allowances',
         icon: 'my_token allowance',
       },
@@ -90,26 +93,30 @@ export default function AccountSettings() {
         name: 'Backup email',
         label: 'Backup email',
         icon: 'my_mail_thin',
-        suffixDom: () => {
-          return (
-            <TextM
-              style={{
-                color: '#FFFFFF',
-                fontSize: 16,
-              }}>
-              Not set up
-            </TextM>
-          );
-        },
+        suffixDom:
+          !fetching && showNotSet
+            ? () => {
+                return <TextM style={styles.setBackupMailText}>Not set up</TextM>;
+              }
+            : undefined,
         showDivider: true,
+        onPress: () => {
+          if (showNotSet) {
+            navigationService.navigate('SecondaryMailboxEdit');
+          } else {
+            navigationService.navigate('SecondaryMailboxHome', {
+              secondaryEmail,
+            });
+          }
+        },
       },
       {
-        name: 'Manage devices',
+        name: 'DeviceList',
         label: 'Manage devices',
         icon: 'my_device',
       },
       {
-        name: 'Connected dApps',
+        name: 'DappList',
         label: 'Connected dApps',
         icon: 'my_connect',
       },
@@ -120,26 +127,13 @@ export default function AccountSettings() {
         showDivider: true,
       },
       {
-        name: 'Crypto gift',
+        name: 'CryptoGift',
         label: 'Crypto gift',
         icon: 'gift_thin',
         suffixDom: () => {
           return (
-            <View
-              style={{
-                borderRadius: 4,
-                backgroundColor: '#0076CC',
-                height: pTd(20),
-              }}>
-              <TextM
-                style={{
-                  color: '#FFFFFF',
-                  fontSize: 12,
-                  paddingHorizontal: pTd(6),
-                  paddingVertical: pTd(4),
-                }}>
-                New
-              </TextM>
+            <View style={styles.newLabelWrap}>
+              <TextM style={styles.newLabelText}>New</TextM>
             </View>
           );
         },
@@ -151,7 +145,7 @@ export default function AccountSettings() {
         showDivider: true,
       },
       {
-        name: 'Switch network',
+        name: 'SwitchNetworks',
         label: 'Switch network',
         icon: 'my_change',
         showDivider: true,
@@ -160,9 +154,15 @@ export default function AccountSettings() {
         name: 'Help center',
         label: 'Help center',
         icon: 'my_help',
+        onPress: () => {
+          navigationService.navigate('ProviderWebPage', {
+            title: 'Help center',
+            url: HELP_CENTER_URL,
+          });
+        },
       },
       {
-        name: 'About Portkey',
+        name: 'AboutUs',
         label: 'About Portkey',
         icon: 'my_about',
       },
@@ -172,7 +172,7 @@ export default function AccountSettings() {
         icon: 'my_change',
       },
     ],
-    [],
+    [fetching, secondaryEmail, showNotSet, styles],
   );
 
   const onExitClick = useCallback(
@@ -336,5 +336,21 @@ const getStyles = makeStyles(theme => ({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  setBackupMailText: {
+    color: theme.colors.textBase1,
+    fontSize: 16,
+  },
+  newLabelWrap: {
+    borderRadius: 4,
+    backgroundColor: theme.colors.iconBrand6,
+    height: pTd(20),
+    width: pTd(38),
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  newLabelText: {
+    color: theme.colors.textBase1,
+    fontSize: 12,
   },
 }));

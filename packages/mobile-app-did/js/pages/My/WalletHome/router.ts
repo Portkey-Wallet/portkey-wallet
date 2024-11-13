@@ -1,11 +1,8 @@
 import WalletHome from '.';
-import WalletName from './WalletName';
 import MyWallet from './MyWallet';
 import EditWalletName from './EditWalletName';
 
-import AutoLock from './AutoLock';
 import SwitchNetworks from './SwitchNetworks';
-import AboutUs from './AboutUs';
 import AccountCancelation from './AccountCancelation';
 import PhotoScreen from './CameraPage';
 
@@ -29,10 +26,6 @@ const stackNav = [
   {
     name: 'SwitchNetworks',
     component: SwitchNetworks,
-  },
-  {
-    name: 'AboutUs',
-    component: AboutUs,
   },
   {
     name: 'AccountCancelation',

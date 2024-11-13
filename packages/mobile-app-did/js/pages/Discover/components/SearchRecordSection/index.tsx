@@ -43,7 +43,14 @@ export default function SearchRecordSection() {
     [discoverJump],
   );
 
-  if (showRecordList?.length === 0) return null;
+  if (showRecordList?.length === 0)
+    return (
+      <View
+        style={{
+          flex: 1,
+        }}
+      />
+    );
 
   return (
     <ScrollView style={styles.sectionWrap}>

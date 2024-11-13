@@ -174,7 +174,7 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
   );
 
   const handleNaviagte = useCallback(() => {
-    navigationService.navigate('DiscoverSearch', { url: activeItem?.url });
+    navigationService.navigate('DiscoverSearch', { address: activeItem?.url });
     dispatch(changeDrawerOpenStatus(false));
   }, [activeItem?.url, dispatch]);
 

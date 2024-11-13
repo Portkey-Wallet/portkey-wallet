@@ -61,8 +61,8 @@ export default function GiftDetail() {
     [info?.alias, info?.decimal, info?.label, info?.luckKingId, info?.symbol],
   );
   const renderDivider = useCallback(() => {
-    return <Divider style={styles.divider} />;
-  }, []);
+    return <Divider style={[styles.divider, GStyles.marginTop(48)]} />;
+  }, [styles.divider]);
   const nextList = useCallback(() => {
     next();
   }, [next]);
@@ -74,7 +74,7 @@ export default function GiftDetail() {
       info?.status === CryptoGiftOriginalStatus.Claimed
     ) {
       return t(
-        `Active, with ${info?.grabbed || '0'}/${info?.count || '--'} crypto gift(s) opened and ${
+        `${info?.grabbed || '0'}/${info?.count || '--'} crypto gift(s) opened, with a total of ${
           info?.grabbedAmount ? formatTokenAmountShowWithDecimals(info?.grabbedAmount, info?.decimal) : '--'
         }/${info?.totalAmount ? formatTokenAmountShowWithDecimals(info?.totalAmount, info?.decimal) : '--'} ${
           info?.label || info?.alias || info?.symbol || ''
@@ -82,14 +82,14 @@ export default function GiftDetail() {
       );
     } else if (info?.status === CryptoGiftOriginalStatus.FullyClaimed) {
       return t(
-        `All claimed, with ${info?.grabbed || '0'}/${info?.count || '--'} crypto gift(s) opened and ${
+        `${info?.grabbed || '0'}/${info?.count || '--'} crypto gift(s) opened, with a total of ${
           info?.grabbedAmount ? formatTokenAmountShowWithDecimals(info?.grabbedAmount, info?.decimal) : '--'
         }/${info?.totalAmount ? formatTokenAmountShowWithDecimals(info?.totalAmount, info?.decimal) : '--'} ${
           info?.label || info?.alias || info?.symbol || ''
         } claimed.`,
       );
     }
-    return `Expired, with ${info?.grabbed || '0'}/${info?.count || '--'} crypto gift(s) opened and ${
+    return `${info?.grabbed || '0'}/${info?.count || '--'} crypto gift(s) opened, with a total of ${
       info?.grabbedAmount ? formatTokenAmountShowWithDecimals(info?.grabbedAmount, info?.decimal) : '--'
     }/${info?.totalAmount ? formatTokenAmountShowWithDecimals(info?.totalAmount, info?.decimal) : '--'} ${
       info?.label || info?.alias || info?.symbol || ''
@@ -123,17 +123,20 @@ export default function GiftDetail() {
       rightDom={
         info?.status && info?.status <= CryptoGiftOriginalStatus.Claimed ? (
           <Touchable onPress={onSharePress}>
-            <Svg size={pTd(22)} icon="share-gift" iconStyle={styles.iconMargin} />
+            <Svg size={pTd(24)} icon="share-thin" iconStyle={styles.iconMargin} />
           </Touchable>
         ) : null
       }
       containerStyles={styles.pageStyles}
-      safeAreaColor={['white']}>
+      safeAreaColor={['white', 'black']}>
       <FlatList
         ListHeaderComponent={() => (
           <>
             <HeaderCard memo={info?.memo} />
             {renderDivider()}
+            <TextM style={[FontStyles.neutralTertiaryText, GStyles.marginTop(pTd(16)), GStyles.paddingArg(0, pTd(12))]}>
+              {info?.displayStatus}
+            </TextM>
             <TextM style={[FontStyles.neutralTertiaryText, GStyles.marginTop(pTd(16)), GStyles.paddingArg(0, pTd(12))]}>
               {statusTextShow}
             </TextM>
@@ -141,7 +144,7 @@ export default function GiftDetail() {
               style={[
                 GStyles.paddingArg(0, pTd(16)),
                 BGStyles.neutralDivider,
-                GStyles.height(pTd(0.5)),
+                styles.divider,
                 GStyles.marginTop(pTd(8)),
               ]}
             />
@@ -184,9 +187,8 @@ const getStyles = makeStyles(theme => ({
     ...GStyles.paddingArg(0, pTd(16)),
   },
   divider: {
-    height: pTd(8),
-    backgroundColor: defaultColors.neutralContainerBG,
-    marginTop: pTd(32),
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: theme.colors.bgBase3,
   },
   itemContainer: {
     flexDirection: 'row',

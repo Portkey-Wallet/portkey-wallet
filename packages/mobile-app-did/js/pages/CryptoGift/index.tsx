@@ -30,6 +30,8 @@ export default function CryptoGift() {
     };
   }, [getFirstCryptoGift]);
   const onGiftCreatePress = useCallback(() => {
+    // todo delete
+    // navigationService.navigate('GiftHistory');
     navigationService.navigate('SendPacketGroupPage', {
       isCryptoGift: true,
     });

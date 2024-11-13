@@ -230,6 +230,7 @@ const SendPreview: React.FC = () => {
   }, [
     addRecent,
     caAddressInfos,
+    currentChainList,
     fetchAccountNFTCollectionInfoList,
     fetchAccountTokenInfoList,
     sendType,

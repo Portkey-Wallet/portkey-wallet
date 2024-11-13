@@ -85,7 +85,7 @@ export default function SearchDiscoverSection(props: ISearchDiscoverSectionProps
                 color: defaultColors.white,
                 fontSize: 16,
               }}>
-              123456
+              {inputValue}
             </TextS>
             <TextS
               numberOfLines={1}

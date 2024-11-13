@@ -17,7 +17,7 @@ export const KeyboardSafeArea = ({ children, bottomPad = 0, containerStyle }: TK
   const measureView = useCallback(() => {
     requestAnimationFrame(() => {
       if (viewRef.current) {
-        viewRef.current.measure((x, y, width, height, pageX, pageY) => {
+        viewRef.current.measure?.((x, y, width, height, pageX, pageY) => {
           if (pageY === undefined || height === undefined) return;
           setViewPositionY(pageY + height);
         });
@@ -41,8 +41,9 @@ export const KeyboardSafeArea = ({ children, bottomPad = 0, containerStyle }: TK
     const keyboardPositionY = screenHeight - keyboardHeight;
     if (viewPositionY <= keyboardPositionY) return undefined;
 
+    const value = viewPositionY - keyboardPositionY + bottomPad;
     return {
-      paddingBottom: viewPositionY - keyboardPositionY + bottomPad,
+      paddingBottom: value,
     };
   }, [bottomPad, isKeyboardOpened, keyboardHeight, viewPositionY]);
 
@@ -51,4 +52,41 @@ export const KeyboardSafeArea = ({ children, bottomPad = 0, containerStyle }: TK
       {children}
     </View>
   );
+};
+
+export const useKeyboardSafeArea = (bottomPad = 0) => {
+  const viewRef = useRef<View>(null);
+
+  const { keyboardHeight, isKeyboardOpened } = useKeyboard(0);
+  const [viewPositionY, setViewPositionY] = useState(0);
+
+  const measureView = useCallback(() => {
+    requestAnimationFrame(() => {
+      if (viewRef.current) {
+        viewRef.current.measure?.((x, y, width, height, pageX, pageY) => {
+          if (pageY === undefined || height === undefined) return;
+          setViewPositionY(pageY + height);
+        });
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    setTimeout(() => {
+      measureView();
+    }, 100);
+  }, [measureView]);
+
+  const value = useMemo(() => {
+    if (!isKeyboardOpened) return undefined;
+    const keyboardPositionY = screenHeight - keyboardHeight;
+    if (viewPositionY <= keyboardPositionY) return undefined;
+
+    return viewPositionY - keyboardPositionY + bottomPad;
+  }, [bottomPad, isKeyboardOpened, keyboardHeight, viewPositionY]);
+
+  return {
+    ref: viewRef,
+    value,
+  };
 };

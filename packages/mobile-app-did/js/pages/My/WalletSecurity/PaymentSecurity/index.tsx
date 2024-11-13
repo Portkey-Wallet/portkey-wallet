@@ -71,7 +71,6 @@ const PaymentSecurityItem = memo(_renderPaymentSecurityItem, (prevProps, nextPro
 const getStyles = makeStyles(theme => ({
   wrap: {
     flexDirection: 'row',
-    paddingHorizontal: pTd(16),
     paddingVertical: pTd(16),
     height: pTd(74),
     borderRadius: pTd(6),
@@ -152,10 +151,7 @@ const PaymentSecurityList: React.FC = () => {
 };
 
 const getListStyles = makeStyles(theme => ({
-  pageWrap: {
-    backgroundColor: defaultColors.bg19,
-    paddingHorizontal: 0,
-  },
+  pageWrap: {},
   tipsWrap: {
     lineHeight: pTd(20),
     marginBottom: pTd(24),

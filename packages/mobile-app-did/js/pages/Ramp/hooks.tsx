@@ -111,9 +111,10 @@ export const useReceive = ({
       if (amountNum < minLimit || amountNum > maxLimit) {
         setAmountError({
           ...INIT_HAS_ERROR,
-          errorMsg: `Limit Amount ${formatAmountShow(minLimit, 4)}-${formatAmountShow(maxLimit, 4)} ${
-            type === RampType.BUY ? fiat.symbol : crypto.symbol
-          }`,
+          errorMsg: `${type === RampType.BUY ? 'Buy' : 'Sell'} limit: ${formatAmountShow(
+            minLimit,
+            4,
+          )} to ${formatAmountShow(maxLimit, 4)} ${type === RampType.BUY ? fiat.symbol : crypto.symbol}`,
         });
         setRate('');
         setReceiveAmount('');

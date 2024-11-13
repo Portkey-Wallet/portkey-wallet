@@ -20,6 +20,7 @@ export interface ModalBodyProps extends ViewProps {
   preventBack?: boolean;
   isShowLeftBackIcon?: boolean;
   isShowRightCloseIcon?: boolean;
+  isMaxHeight?: boolean;
   modalBodyType?: 'center' | 'bottom';
   style?: ViewStyleType;
   onClose?: () => void;
@@ -45,6 +46,7 @@ export const ModalBody: React.FC<ModalBodyProps> = props => {
     onClose,
     bottomButtonGroup,
     onTouchStart,
+    isMaxHeight = false,
   } = props;
 
   const gStyles = useGStyles();
@@ -53,7 +55,15 @@ export const ModalBody: React.FC<ModalBodyProps> = props => {
   if (modalBodyType === 'bottom') {
     const showTopWrap = !!leftTitleDom || !!title || !!isShowRightCloseIcon;
     return (
-      <View onTouchStart={onTouchStart} style={[styles.commonBox, gStyles.overlayStyle, styles.wrapStyle, style]}>
+      <View
+        onTouchStart={onTouchStart}
+        style={[
+          styles.commonBox,
+          gStyles.overlayStyle,
+          isMaxHeight && gStyles.overlayStyleMaxHeight,
+          styles.wrapStyle,
+          style,
+        ]}>
         <View style={styles.topWrap}>
           <View style={styles.slot} />
           {/* {isShowLeftBackIcon && (

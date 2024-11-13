@@ -24,7 +24,9 @@ export interface IContactItemType {
   isDeleted: boolean;
   userId: string;
   modificationTime: number;
+  address?: string;
 }
+export type TDeteleContactItemParams = IContactItemType;
 
 export type TFormattedRecentItem = IRecentItem | IContactItemType;
 
@@ -55,11 +57,12 @@ export interface IAddContactItemApiType {
   isExchange?: boolean;
 }
 export interface IEditContactItemApiType {
-  name?: string;
-  id: string;
-  chainId?: string;
-  isExchange?: string;
-  address?: string;
+  name: string;
+  id?: string;
+  chainId?: ChainId;
+  network: 'aelf' | string;
+  isExchange?: boolean;
+  address: string;
 }
 
 export type TGetContactListApiType = {
@@ -70,3 +73,10 @@ export type TGetContactListApiType = {
 export type IContactIndexType = Pick<IContactItemType, 'index'> & { contacts: IContactItemType[] };
 
 export type IContactMapType = { [key: string]: IContactItemType[] };
+
+export interface INetworkItemType {
+  network: string;
+  name: string;
+  chainId?: ChainId;
+  imageUrl: string;
+}

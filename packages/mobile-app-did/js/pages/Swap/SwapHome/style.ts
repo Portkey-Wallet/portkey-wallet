@@ -9,4 +9,7 @@ export const getStyles = makeStyles(theme => ({
   swapSettingButton: {
     marginRight: pTd(16),
   },
+  titleWrap: {
+    zIndex: 100,
+  },
 }));

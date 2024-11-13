@@ -3,6 +3,7 @@ import { useLanguage } from 'i18n/hooks';
 import CommonTopTabWithoutContent from 'components/CommonTopTabWithoutContent';
 import PageContainer from 'components/PageContainer';
 import SwapEnter from '../components/SwapEnter';
+import LimitEnter from '../components/LimitEnter';
 import SwapSettingButton from '../components/SwapSettingButton';
 import { getStyles } from './style';
 import { useAwakenTokenList } from '@portkey-wallet/hooks/hooks-ca/awaken/state';
@@ -37,9 +38,10 @@ const SwapHome = () => {
       rightDom={selectTab === SwapHomeTabType.SWAP && <SwapSettingButton style={styles.swapSettingButton} />}
       safeAreaColor={['black', 'black']}
       containerStyles={styles.pageWrap}
-      scrollViewProps={{ disabled: true }}>
+      scrollViewProps={{ disabled: true }}
+      style={styles.titleWrap}>
       {selectTab === SwapHomeTabType.SWAP && <SwapEnter />}
-      {/* {selectTab === SwapHomeTabType.LIMIT && <LimitEnter />} */}
+      {selectTab === SwapHomeTabType.LIMIT && <LimitEnter />}
     </PageContainer>
   );
 };

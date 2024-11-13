@@ -57,7 +57,6 @@ export const generalStyles = StyleSheet.create({
   containerStyle: {
     ...GStyles.paddingArg(0),
     ...GStyles.marginArg(0),
-    height: pTd(40),
   },
   inputContainerStyle: {
     borderColor: darkColors.borderBase1,
@@ -92,7 +91,7 @@ export const generalStyles = StyleSheet.create({
     color: darkColors.textDanger2,
   },
   disabledInputStyle: {
-    color: font5,
+    color: darkColors.textBase1,
     opacity: 1,
   },
 });

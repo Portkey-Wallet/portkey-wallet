@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import {
+  setBuyCryptoList,
   setBuyDefaultCrypto,
   setBuyDefaultCryptoList,
   setBuyDefaultFiat,
@@ -49,6 +50,9 @@ export const rampSlice = createSlice({
       })
       .addCase(setSellDefaultFiat, (state, action) => {
         state.sellDefaultFiat = action.payload.value;
+      })
+      .addCase(setBuyCryptoList, (state, action) => {
+        state.buyCryptoList = action.payload.list;
       });
   },
 });

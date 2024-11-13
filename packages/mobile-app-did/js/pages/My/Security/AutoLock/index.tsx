@@ -1,16 +1,15 @@
 import * as React from 'react';
+import { ScrollView } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { useLanguage } from 'i18n/hooks';
 import { useAppCommonDispatch, useAppCASelector } from '@portkey-wallet/hooks';
 import { changeLockingTime } from '@portkey-wallet/store/settings/action';
 import { pTd } from 'utils/unit';
-import ListItem from 'components/ListItem';
 import Svg from 'components/Svg';
-import { defaultColors } from 'assets/theme';
-import { pageStyles } from './style';
-import Touchable from '../../../../components/Touchable';
-import { TextL } from '../../../../components/CommonText';
-import { ScrollView, View } from 'react-native';
+import { useTheme } from '@rneui/themed';
+import { getStyles } from './style';
+import Touchable from 'components/Touchable';
+import { TextL } from 'components/CommonText';
 
 const AutoLockList: { value: number; label: string }[] = [
   {
@@ -43,6 +42,8 @@ export default function InnerSettings() {
   const dispatch = useAppCommonDispatch();
   const { autoLockingTime } = useAppCASelector(state => state.settings);
   const { t } = useLanguage();
+  const pageStyles = getStyles();
+  const { theme } = useTheme();
 
   return (
     <PageContainer
@@ -59,7 +60,7 @@ export default function InnerSettings() {
               dispatch(changeLockingTime({ time: Number(ele.value) }));
             }}>
             <TextL>{ele.label}</TextL>
-            {autoLockingTime === ele.value && <Svg icon="selected" size={pTd(24)} color={defaultColors.primaryColor} />}
+            {autoLockingTime === ele.value && <Svg icon="selected" size={pTd(24)} color={theme.colors.iconBrand2} />}
           </Touchable>
         ))}
       </ScrollView>

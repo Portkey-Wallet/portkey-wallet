@@ -8,6 +8,7 @@ import { IRecentItem } from '@portkey-wallet/store/store-ca/recent/type';
 import { useTransferNetworkConfig } from './config';
 import { useContact } from './contact';
 import { TFormattedRecentItem } from '@portkey-wallet/types/types-ca/contactNew';
+import { getAelfAddress } from '@portkey-wallet/utils/aelf';
 
 export const useRecentState = () => useAppCASelector(state => state.recent);
 
@@ -26,10 +27,8 @@ export function useRecent() {
   const getFilterRecentList = useCallback(
     ({ fromChainId, tokenId, isFt }: { fromChainId: ChainId; tokenId: string; isFt: boolean }) => {
       fetchAssetSupportConfig();
-
       const targetList = recentMap?.[currentNetwork] || [];
 
-      console.log('getFilterRecentList', targetList);
       // aelf is OK, others need check
       const result = targetList.filter(ele => {
         if (ele.network === 'aelf') return true;
@@ -53,7 +52,9 @@ export function useRecent() {
         .map(ele => {
           if (isFt && !!ele.network && ele.network !== 'aelf') return;
 
-          const target = contactMapNew?.[ele.address] || [];
+          const addr = getAelfAddress(ele.address);
+
+          const target = contactMapNew?.[addr] || [];
           const aelfResult = target.find(
             m =>
               m.addressInfo?.address === ele?.address &&

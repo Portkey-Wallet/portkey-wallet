@@ -201,6 +201,7 @@ const SendPreview: React.FC = () => {
       address: toInfo?.address || '',
       chainId: toInfo?.chainId,
       network: targetNetwork?.network || 'aelf',
+      networkIcon: targetNetwork?.imageUrl,
       transferTime: Date.now(),
     };
 

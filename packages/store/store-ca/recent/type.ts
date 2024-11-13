@@ -14,6 +14,7 @@ export interface IRecentItem {
   address: string;
   chainId?: ChainId;
   network: 'aelf' | string;
+  networkIcon?: string;
   transferTime: number;
 }
 

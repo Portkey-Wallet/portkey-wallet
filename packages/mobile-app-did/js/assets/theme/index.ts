@@ -135,7 +135,7 @@ export const defaultColors = {
   neutralMaskBG: 'red',
   neutralTooltipBG: 'red',
 
-  bgBase1: 'red',
+  bgBase1: '#151318',
   bgBase2: '#1F1F21',
   bgBase3: '#414142',
   bgBase4: '#626264',

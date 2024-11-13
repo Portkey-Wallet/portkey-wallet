@@ -185,7 +185,7 @@ const getStyles = makeStyles(theme => ({
   },
 
   dateContainer: {
-    paddingLeft: pTd(32),
+    paddingLeft: pTd(36),
     flexDirection: 'row',
     alignItems: 'center',
     marginTop: pTd(2),

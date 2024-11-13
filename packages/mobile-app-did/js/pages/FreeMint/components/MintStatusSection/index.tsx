@@ -1,13 +1,12 @@
 import { defaultColors } from 'assets/theme';
 import NFTAvatar from 'components/NFTAvatar';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 import { pTd } from 'utils/unit';
 import StatusIcon from '../StatusIcon';
-import { TextL, TextM, TextXXL } from 'components/CommonText';
+import { TextL, TextXXL } from 'components/CommonText';
 import GStyles from 'assets/theme/GStyles';
-import ButtonCol, { ButtonRowProps } from 'components/ButtonCol';
-import { FontStyles } from 'assets/theme/styles';
+import { ButtonRowProps } from 'components/ButtonCol';
 import { FreeMintStep } from '../FreeMintModal';
 import { useLoopMintNFTDetail, useLoopMintStatus } from '@portkey-wallet/hooks/hooks-ca/freeMint';
 import { FreeMintStatus, ICollectionData, IConfirmMintRes } from '@portkey-wallet/types/types-ca/freeMint';
@@ -15,7 +14,6 @@ import { EditConfig } from 'pages/FreeMint/components/MintEdit';
 import { useSetUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import Loading from 'components/Loading';
 import CommonToast from 'components/CommonToast';
-import OverlayModal from 'components/OverlayModal';
 import navigationService from 'utils/navigationService';
 import myEvents from 'utils/deviceEvent';
 import fonts from 'assets/theme/fonts';
@@ -79,8 +77,7 @@ const MintStatusSection = (props: MintStatusSectionProps) => {
         symbol: confirmMintResponse?.symbol,
         chainId: mintInfo?.collectionInfo.chainId ?? 'AELF',
       });
-
-      OverlayModal.hide();
+      navigationService.navigate('Tab');
       navigationService.navigate('NFTDetail', {
         ...nftDetail,
         collectionInfo: {
@@ -111,7 +108,7 @@ const MintStatusSection = (props: MintStatusSectionProps) => {
         avatar: editInfo?.imageUri || '',
       });
       CommonToast.success('Profile photo is set.');
-      OverlayModal.hide();
+      navigationService.navigate('Tab');
     } catch (error) {
       CommonToast.fail('Failed to set profile photo. Please try again.');
       console.log('error', error);
@@ -127,7 +124,7 @@ const MintStatusSection = (props: MintStatusSectionProps) => {
           title: 'Close',
           type: 'outline',
           onPress: () => {
-            OverlayModal.hide();
+            navigationService.navigate('Tab');
           },
         },
       ];

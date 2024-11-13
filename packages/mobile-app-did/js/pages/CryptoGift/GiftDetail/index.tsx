@@ -11,8 +11,8 @@ import HeaderCard from '../components/HeaderCard';
 import { View } from 'react-native';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import GStyles from 'assets/theme/GStyles';
-import { TextM } from 'components/CommonText';
-import { BGStyles, FontStyles } from 'assets/theme/styles';
+import { TextL, TextM } from 'components/CommonText';
+import { BGStyles } from 'assets/theme/styles';
 import ReceiverItem from '../components/ReceiverItem';
 import { useGetCryptoGiftDetail } from '@portkey-wallet/hooks/hooks-ca/cryptogift';
 import { RedPackageGrabInfoItem } from '@portkey-wallet/im';
@@ -26,6 +26,7 @@ import CommonToast from 'components/CommonToast';
 import { isValidUserId } from '@portkey-wallet/utils';
 import { isIOS } from '@rneui/base';
 import { makeStyles } from '@rneui/themed';
+import fonts from 'assets/theme/fonts';
 
 export default function GiftDetail() {
   const styles = getStyles();
@@ -134,10 +135,17 @@ export default function GiftDetail() {
           <>
             <HeaderCard memo={info?.memo} />
             {renderDivider()}
-            <TextM style={[FontStyles.neutralTertiaryText, GStyles.marginTop(pTd(16)), GStyles.paddingArg(0, pTd(12))]}>
+            <TextL style={[GStyles.marginTop(pTd(16)), GStyles.paddingArg(0, 16), fonts.SGMediumFont]}>
               {info?.displayStatus}
-            </TextM>
-            <TextM style={[FontStyles.neutralTertiaryText, GStyles.marginTop(pTd(16)), GStyles.paddingArg(0, pTd(12))]}>
+            </TextL>
+            <TextM
+              style={[
+                styles.subTitle,
+                GStyles.marginTop(pTd(7)),
+                GStyles.paddingArg(0, 16),
+                fonts.SGRegularFont,
+                GStyles.lineHeight(20),
+              ]}>
               {statusTextShow}
             </TextM>
             <View
@@ -205,5 +213,8 @@ const getStyles = makeStyles(theme => ({
   bottomTips: {
     color: defaultColors.font3,
     textAlign: 'center',
+  },
+  subTitle: {
+    color: theme.colors.textBase2,
   },
 }));

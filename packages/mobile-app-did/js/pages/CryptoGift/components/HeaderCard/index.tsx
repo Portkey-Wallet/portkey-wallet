@@ -2,7 +2,7 @@ import React from 'react';
 import Svg from 'components/Svg';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { pTd } from 'utils/unit';
-import { TextL, TextM } from 'components/CommonText';
+import { TextL, TextM, TextXXL } from 'components/CommonText';
 import fonts from 'assets/theme/fonts';
 import { FontStyles } from 'assets/theme/styles';
 import GStyles from 'assets/theme/GStyles';
@@ -22,9 +22,9 @@ export default function HeaderCard(props: IHeaderCardProps) {
       <Image resizeMode="contain" source={boxClose} style={{ width: pTd(172), height: pTd(120) }} />
       <View style={styles.titleWrapper}>
         {showViewDetails && <Svg icon="success" size={pTd(20)} iconStyle={styles.icon} />}
-        <TextL style={{ ...fonts.mediumFont }}>
+        <TextXXL style={{ ...fonts.BGMediumFont }}>
           {memo ? `"${memo}"` : showViewDetails ? `The crypto gift is packaged.` : ''}
-        </TextL>
+        </TextXXL>
       </View>
       {showViewDetails && (
         <TouchableOpacity

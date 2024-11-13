@@ -135,17 +135,6 @@ const ContactsList: React.FC<ContactsListProps> = ({
       {!isExistContact && !!keyWord && (
         <TextL style={[contactListStyles.noResult, FontStyles.font7]}>{t('No results found')}</TextL>
       )}
-
-      {!isExistContact && !keyWord && !isReadOnly && (
-        <CommonButton
-          type="primary"
-          containerStyle={contactListStyles.addButtonWrap}
-          buttonStyle={[contactListStyles.addButton]}
-          onPress={() => navigationService.navigate('NoChatContactProfileEdit')}>
-          <Svg icon="add1" size={pTd(16)} color={defaultColors.icon2} />
-          <Text style={contactListStyles.addText}>{t('Add New Contacts')}</Text>
-        </CommonButton>
-      )}
     </View>
   );
 };

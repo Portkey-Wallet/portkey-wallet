@@ -1,13 +1,7 @@
 import { ChainId } from '@portkey-wallet/types';
 import { sleep } from '@portkey-wallet/utils';
-import { useRoute, RouteProp } from '@react-navigation/native';
-// import Svg from 'components/Svg';
+import fonts from 'assets/theme/fonts';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-// import { View, StyleSheet } from 'react-native';
-import navigationService from 'utils/navigationService';
-// import { pTd } from 'utils/unit';
-import NoData from 'components/NoData';
-// import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { ActivityItemType } from '@portkey-wallet/types/types-ca/activity';
 import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { NFT_MIDDLE_SIZE } from '@portkey-wallet/constants/constants-ca/assets';
@@ -20,6 +14,9 @@ import { ListLoadingEnum } from 'constants/misc';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { FlatListFooterLoading } from 'components/FlatListFooterLoading';
 import { FlashList } from '@shopify/flash-list';
+import { View } from 'react-native';
+import { makeStyles } from '@rneui/themed';
+import { TextL, TextXXL } from 'components/CommonText';
 import { pTd } from 'utils/unit';
 
 interface IAddressActivityProps {
@@ -37,7 +34,7 @@ const AddressActivity: React.FC<IAddressActivityProps> = props => {
   const [activityList, setActivityList] = useState<ActivityItemType[]>([]);
   const activityListRef = useRef(activityList);
   activityListRef.current = activityList;
-  const isFetching = useRef(false);
+  const styles = getStyles();
 
   const params: IActivityListWithAddressApiParams = useMemo(
     () => ({
@@ -59,7 +56,7 @@ const AddressActivity: React.FC<IAddressActivityProps> = props => {
     [activityList.length, address, caAddressInfos, chainId],
   );
 
-  const [isLoading, setIsLoading] = useState(ListLoadingEnum.hide);
+  const [isLoading, setIsLoading] = useState(ListLoadingEnum.header);
   const fetchActivityList = useLockCallback(
     async (skipActivityNumber = 0) => {
       const newParams = {
@@ -85,10 +82,21 @@ const AddressActivity: React.FC<IAddressActivityProps> = props => {
     [activityList, params],
   );
 
-  const renderItem = useCallback(({ item, index }: { item: ActivityItemType; index: number }) => {
-    const preItem = activityListRef.current?.[index - 1];
-    return <ActivityItem preItem={preItem} item={item} index={index} onPress={() => showActivityDetail(item)} />;
-  }, []);
+  const renderItem = useCallback(
+    ({ item, index }: { item: ActivityItemType; index: number }) => {
+      const preItem = activityListRef.current?.[index - 1];
+      return (
+        <ActivityItem
+          preItem={preItem}
+          item={item}
+          index={index}
+          onPress={() => showActivityDetail(item)}
+          style={styles.itemWrap}
+        />
+      );
+    },
+    [styles],
+  );
 
   const isInitRef = useRef(false);
   const init = useCallback(async () => {
@@ -99,77 +107,61 @@ const AddressActivity: React.FC<IAddressActivityProps> = props => {
 
   const isEmpty = useMemo(() => activityList.length === 0, [activityList.length]);
 
-  return (
-    <FlashList
-      refreshing={isLoading === ListLoadingEnum.header}
-      data={activityList ?? []}
-      keyExtractor={(_item, index) => `${index}`}
-      ListEmptyComponent={<NoData noPic message="" />}
-      renderItem={renderItem}
-      onRefresh={() => init()}
-      onEndReached={() => {
-        console.log('onEndReached', isInitRef.current, activityList?.length, totalCount);
-        if (!isInitRef.current || isLoading !== ListLoadingEnum.hide) return;
-        if (activityList?.length >= totalCount) return;
+  const isRefreshing = useMemo(
+    () => isLoading === ListLoadingEnum.header || isLoading === ListLoadingEnum.footer,
+    [isLoading],
+  );
 
-        fetchActivityList(activityList?.length);
-      }}
-      // onEndReachedThreshold={ON_END_REACHED_THRESHOLD}
-      onEndReachedThreshold={0}
-      ListFooterComponent={
-        <>{!isEmpty && <FlatListFooterLoading refreshing={isLoading === ListLoadingEnum.footer} />}</>
-      }
-      onLoad={() => {
-        if (isInitRef.current) return;
-        init();
-      }}
-      style={{
-        height: pTd(900),
-      }}
-    />
+  return (
+    <View style={styles.container}>
+      <FlashList
+        refreshing={isRefreshing}
+        data={activityList ?? []}
+        keyExtractor={(_item, index) => `${index}`}
+        ListEmptyComponent={isRefreshing ? null : <TextL style={styles.emptyText}>No recent interactions</TextL>}
+        renderItem={renderItem}
+        onRefresh={() => init()}
+        estimatedItemSize={74}
+        onEndReached={() => {
+          if (!isInitRef.current) return;
+          if (activityList?.length >= totalCount) return;
+
+          fetchActivityList(activityList?.length);
+        }}
+        onEndReachedThreshold={ON_END_REACHED_THRESHOLD}
+        ListFooterComponent={
+          <>{!isEmpty && <FlatListFooterLoading refreshing={isLoading === ListLoadingEnum.footer} />}</>
+        }
+        ListHeaderComponent={
+          isLoading === ListLoadingEnum.header || isEmpty ? null : (
+            <TextXXL style={styles.headerText}>Recent interactions</TextXXL>
+          )
+        }
+        onLoad={() => {
+          if (isInitRef.current) return;
+          init();
+        }}
+      />
+    </View>
   );
 };
 
 export default AddressActivity;
 
-// const styles = StyleSheet.create({
-//   container: {
-//     ...GStyles.paddingArg(0, 0),
-//   },
-//   itemAvatar: {
-//     marginRight: pTd(10),
-//   },
-//   topSection: {
-//     ...GStyles.paddingArg(24, 20),
-//     backgroundColor: defaultColors.bg4,
-//   },
-//   nameSection: {
-//     marginTop: pTd(8),
-//     marginBottom: pTd(16),
-//     ...GStyles.paddingArg(10, 16),
-//     alignItems: 'center',
-//     borderRadius: pTd(6),
-//   },
-//   addressSection: {
-//     marginTop: pTd(8),
-//     ...GStyles.paddingArg(16),
-//     borderRadius: pTd(6),
-//   },
-//   addressStr: {
-//     lineHeight: pTd(20),
-//   },
-//   chainInfo: {
-//     marginTop: pTd(8),
-//     color: defaultColors.font3,
-//   },
-//   handleWrap: {
-//     marginTop: pTd(16),
-//     display: 'flex',
-//     flexDirection: 'row',
-//     justifyContent: 'flex-end',
-//     alignItems: 'center',
-//   },
-//   handleIconItem: {
-//     marginLeft: pTd(40),
-//   },
-// });
+const getStyles = makeStyles(theme => ({
+  container: {
+    flex: 1,
+  },
+  itemWrap: {
+    marginHorizontal: 0,
+  },
+  headerText: {
+    paddingTop: pTd(32),
+    ...fonts.BGMediumFont,
+  },
+  emptyText: {
+    color: theme.colors.textBase2,
+    paddingTop: pTd(32),
+    textAlign: 'center',
+  },
+}));

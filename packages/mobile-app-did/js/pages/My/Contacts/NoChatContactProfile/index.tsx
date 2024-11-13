@@ -74,48 +74,45 @@ const NoChatContactProfile: React.FC = () => {
           <Svg icon="more-vertical" size={pTd(24)} color={colors.textBase1} />
         </Touchable>
       }>
-      <ScrollView alwaysBounceVertical={true}>
-        {isSaved && (
-          <ProfileHeaderSection
-            showRemark={false}
-            name={(contact?.name || contact?.caHolderInfo?.walletName)?.toUpperCase() || ''}
-            avatarUrl={contact?.caHolderInfo?.avatar || ''}
-            style={pageStyles.profileHeader}
-            nameStyle={pageStyles.profileHeaderName}
-          />
-        )}
-        <View style={pageStyles.profileAddress}>
-          <TextL>Address</TextL>
-          <View style={pageStyles.addressWrap}>
-            {contact?.addressInfo?.networkImage && (
-              <Image source={{ uri: contact.addressInfo.networkImage }} style={pageStyles.avatarNetworkIcon} />
-            )}
-            <View style={GStyles.flex1}>
-              <TextL style={pageStyles.addressNetworkName}>{contact?.addressInfo?.networkName}</TextL>
-              {contact && <ContactAddress ref={contactAddressRef} contact={contact} style={pageStyles.address} />}
-            </View>
-            {isSaved ? (
-              <Touchable style={pageStyles.addressCopy} onPress={hadleCopy}>
-                <Svg icon="copy" size={pTd(24)} color={colors.iconBase3} />
-              </Touchable>
-            ) : (
-              <Touchable style={pageStyles.addressCopy} onPress={hadleAddContact}>
-                <Svg icon="add-contact1" size={pTd(24)} color={colors.iconBase3} />
-              </Touchable>
-            )}
+      {isSaved && (
+        <ProfileHeaderSection
+          showRemark={false}
+          name={(contact?.name || contact?.caHolderInfo?.walletName)?.toUpperCase() || ''}
+          avatarUrl={contact?.caHolderInfo?.avatar || ''}
+          style={pageStyles.profileHeader}
+          nameStyle={pageStyles.profileHeaderName}
+        />
+      )}
+      <View style={pageStyles.profileAddress}>
+        <TextL>Address</TextL>
+        <View style={pageStyles.addressWrap}>
+          {contact?.addressInfo?.networkImage && (
+            <Image source={{ uri: contact.addressInfo.networkImage }} style={pageStyles.avatarNetworkIcon} />
+          )}
+          <View style={GStyles.flex1}>
+            <TextL style={pageStyles.addressNetworkName}>{contact?.addressInfo?.networkName}</TextL>
+            {contact && <ContactAddress ref={contactAddressRef} contact={contact} style={pageStyles.address} />}
           </View>
-        </View>
-        <TextL>112121</TextL>
-        {isSaved &&
-          (isAelfNetwork ? (
-            activityParams?.address &&
-            activityParams?.chainId && (
-              <AddressActivity address={activityParams?.address} chainId={activityParams?.chainId} />
-            )
+          {isSaved ? (
+            <Touchable style={pageStyles.addressCopy} onPress={hadleCopy}>
+              <Svg icon="copy" size={pTd(24)} color={colors.iconBase3} />
+            </Touchable>
           ) : (
-            <TextL style={pageStyles.emptyActivity}>Activity not available</TextL>
-          ))}
-      </ScrollView>
+            <Touchable style={pageStyles.addressCopy} onPress={hadleAddContact}>
+              <Svg icon="add-contact1" size={pTd(24)} color={colors.iconBase3} />
+            </Touchable>
+          )}
+        </View>
+      </View>
+      {isSaved &&
+        (isAelfNetwork ? (
+          activityParams?.address &&
+          activityParams?.chainId && (
+            <AddressActivity address={activityParams?.address} chainId={activityParams?.chainId} />
+          )
+        ) : (
+          <TextL style={pageStyles.emptyActivity}>Activity not available</TextL>
+        ))}
       {isViewMoreDropdown && (
         <View style={pageStyles.dropDownWrap}>
           {isSaved ? (

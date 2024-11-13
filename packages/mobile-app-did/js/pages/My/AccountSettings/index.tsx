@@ -1,20 +1,30 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useCallback } from 'react';
+import { StyleProp, ViewStyle, TextProps, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import useBiometricsReady from 'hooks/useBiometrics';
+import useLogOut from 'hooks/useLogOut';
 import navigationService from 'utils/navigationService';
 import { StyleSheet } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import { useLanguage } from 'i18n/hooks';
 import MenuItem from '../components/MenuItem';
+import ExistOverlay from '../WalletHome/components/ExistOverlay';
 import { pTd } from 'utils/unit';
 import { RootStackName } from 'navigation';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
-import { StyleProp, ViewStyle, TextProps, View } from 'react-native';
+import { useCurrentUserInfo, useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { removeManager } from '@portkey-wallet/utils/guardian';
+import { request } from '@portkey-wallet/api/api-did';
+import { useGetCurrentCAContract } from 'hooks/contract';
 import Svg, { IconName } from 'components/Svg';
 import Touchable from 'components/Touchable';
+import Loading from 'components/Loading';
+import CommonToast from 'components/CommonToast';
 import FastImage from 'components/FastImage';
 import { TextM } from 'components/CommonText';
+import { makeStyles } from '@rneui/themed';
 import { screenHeight, screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { getDeviceInfo } from 'utils/deviceInfo';
 
 interface MenuItemType {
   name: RootStackName;
@@ -27,6 +37,45 @@ interface MenuItemType {
 export default function AccountSettings() {
   const biometricsReady = useBiometricsReady();
   const showChat = useIsChatShow();
+  const styles = getStyles();
+
+  const {
+    walletInfo: { caHash, address: managerAddress },
+  } = useCurrentWallet();
+  const getCurrentCAContract = useGetCurrentCAContract();
+  const userInfo = useCurrentUserInfo();
+  const logout = useLogOut();
+  const onExitClick = useCallback(
+    async (isConfirm: boolean) => {
+      if (!isConfirm || !managerAddress || !caHash) return;
+      Loading.show();
+      try {
+        const { deviceId } = await getDeviceInfo();
+        await request.wallet.reportExitWallet({ params: { deviceId } });
+
+        const caContract = await getCurrentCAContract();
+        const req = await removeManager(caContract, managerAddress, caHash);
+
+        if (req && !req.error) {
+          console.log('logout success', req);
+          logout();
+        } else {
+          CommonToast.fail(req?.error?.message || '');
+        }
+      } catch (error) {
+        console.log(error, '=====error');
+
+        CommonToast.failError(error);
+      }
+      Loading.hide();
+    },
+    [caHash, getCurrentCAContract, logout, managerAddress],
+  );
+  const onSignOut = useCallback(() => {
+    ExistOverlay.showExistOverlay({
+      callBack: onExitClick,
+    });
+  }, [onExitClick]);
 
   const { t } = useLanguage();
   const avatarSize = pTd(40);
@@ -154,7 +203,7 @@ export default function AccountSettings() {
   );
 
   return (
-    <PageContainer containerStyles={styles.containerStyles} safeAreaColor={['white', 'gray']} titleDom={t('Setting')}>
+    <PageContainer containerStyles={styles.containerStyles} safeAreaColor={['black']} titleDom={t('Setting')}>
       <View style={[styles.info]}>
         <View
           style={{
@@ -192,7 +241,7 @@ export default function AccountSettings() {
                 alignItems: 'center',
               }}>
               <View style={styles.svgWrap}>
-                <Svg icon={item.icon} size={24} iconStyle={[styles.menuIcon]} />
+                <Svg icon={item.icon} size={pTd(24)} iconStyle={[styles.menuIcon]} />
               </View>
               <TextM
                 style={{
@@ -222,43 +271,19 @@ export default function AccountSettings() {
               />
             </View>
           </View>
-          {item.showDivider && (
-            <View
-              style={{
-                height: 1,
-                borderBottomWidth: 0.5,
-                marginHorizontal: pTd(12),
-                width: '100%',
-                backgroundColor: '#FFF',
-              }}
-            />
-          )}
+          {item.showDivider && <View style={styles.divider} />}
         </>
       ))}
-      <TextM
-        style={{
-          width: screenWidth,
-          textAlign: 'center',
-          color: '#E24505',
-          height: pTd(48),
-          marginTop: pTd(12),
-          fontSize: 16,
-          display: 'flex',
-          flexDirection: 'row',
-          alignItems: 'center',
-        }}>
-        Sign out
-      </TextM>
+      <Touchable onPress={onSignOut}>
+        <TextM style={styles.signOutText}>Sign out</TextM>
+      </Touchable>
     </PageContainer>
   );
 }
 
-const styles = StyleSheet.create({
-  containerStyles: {
-    backgroundColor: defaultColors.black,
-  },
+const getStyles = makeStyles(theme => ({
+  containerStyles: {},
   info: {
-    padding: pTd(16),
     height: pTd(72),
     display: 'flex',
     flexDirection: 'row',
@@ -266,7 +291,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   cell: {
-    padding: pTd(16),
     height: pTd(48),
     display: 'flex',
     flexDirection: 'row',
@@ -291,4 +315,21 @@ const styles = StyleSheet.create({
     borderRadius: 0,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
-});
+  divider: {
+    height: 1,
+    borderBottomWidth: 0.5,
+    width: '100%',
+    backgroundColor: '#FFF',
+  },
+  signOutText: {
+    width: screenWidth,
+    textAlign: 'center',
+    color: '#E24505',
+    height: pTd(48),
+    marginTop: pTd(12),
+    fontSize: 16,
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+}));

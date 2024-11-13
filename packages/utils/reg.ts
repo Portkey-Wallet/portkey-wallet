@@ -46,6 +46,12 @@ export function isValidNumberV2(n: string) {
   return P_N_REG_V2.test(n);
 }
 
+export const STRICT_INTEGER = /^(0|[1-9]\d*)$/;
+export function isStrictInteger(num?: string) {
+  if (!num) return false;
+  return STRICT_INTEGER.test(num);
+}
+
 const PASSWORD_REG = /^[a-zA-Z\d! ~@#_^*%/.+:;=\\|,'~{}\[\]]{8,16}$/;
 
 const PIN_REG = /^[a-zA-Z\d! ~@#_^*%/.+:;=\\|,'~{}\[\]]{6,16}$/;

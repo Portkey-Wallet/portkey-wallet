@@ -6,13 +6,12 @@ import Touchable from 'components/Touchable';
 import React, { memo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { pTd } from 'utils/unit';
-import { FontStyles } from 'assets/theme/styles';
-import GStyles from 'assets/theme/GStyles';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import fonts from 'assets/theme/fonts';
 import { ViewStyleType, TextStyleType } from 'types/styles';
 import { TCurrency } from '@portkey-wallet/types/types-ca/awaken';
 import { formatNameWithNoUnderline } from '@portkey-wallet/utils';
+import { useTheme } from '@rneui/themed';
 
 export type TCurrencyItem = {
   wrapStyle?: ViewStyleType;
@@ -37,18 +36,17 @@ const CurrencyItem: React.FC<TCurrencyItem> = props => {
     balanceInUsd,
   } = props;
   const isMainnet = useIsMainnet();
+  const { theme } = useTheme();
   return (
     <Touchable style={[itemStyle.wrap, wrapStyle]} onPress={() => onPress?.(item)}>
       <View style={itemStyle.left}>
         <View style={itemStyle.iconWrap}>
           <CommonAvatar
-            hasBorder
             style={itemStyle.tokenIcon}
             title={item?.symbol}
             avatarSize={pTd(40)}
             imageUrl={item?.imageUrl}
-            titleStyle={FontStyles.font11}
-            borderStyle={GStyles.hairlineBorder}
+            titleStyle={{ color: theme.colors.textNeutral3 }}
           />
           <CommonAvatar
             hasBorder={true}
@@ -112,7 +110,7 @@ const itemStyle = StyleSheet.create({
     top: 0,
   },
   tokenIconBorder: {
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: pTd(1),
     borderColor: darkColors.borderBase1,
   },
   chainIcon: {

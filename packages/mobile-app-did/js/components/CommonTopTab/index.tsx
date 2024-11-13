@@ -15,7 +15,7 @@ import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { pTd } from 'utils/unit';
 import { darkColors } from 'assets/theme';
 import { useThrottleCallback } from '@portkey-wallet/hooks';
-import { makeStyles } from '@rneui/themed';
+import { makeStyles, useTheme } from '@rneui/themed';
 import { TextM } from 'components/CommonText';
 import fonts from 'assets/theme/fonts';
 
@@ -137,6 +137,8 @@ const CustomizedTopTabBar = forwardRef(
       },
     }));
 
+    const { theme } = useTheme();
+
     return (
       <View style={toolBarStyle.tabBarStyle}>
         <ScrollView horizontal={true} alwaysBounceHorizontal={false}>
@@ -247,7 +249,7 @@ const getToolBarStyle = makeStyles(theme => ({
     paddingHorizontal: pTd(16),
     height: pTd(54),
     alignItems: 'center',
-    backgroundColor: darkColors.bgBase1,
+    backgroundColor: theme.colors.bgBase1,
   },
   label: { flexDirection: 'row', alignItems: 'center' },
   blockTab: {

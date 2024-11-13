@@ -118,23 +118,26 @@ export const useContactList = () => {
 };
 
 // in send page
-export const useGetFilterContactList = (params: { fromChainId: ChainId; tokenId: string; isFt?: boolean }) => {
-  const { fromChainId, tokenId, isFt } = params;
+export const useGetFilterContactList = () => {
   const contactList = useContactList();
   const { checkIsSupportTargetChain } = useTransferNetworkConfig();
 
-  return useMemo(() => {
-    let result: IContactItemType[] = [];
+  return useCallback(
+    (params: { fromChainId: ChainId; tokenId: string; isFt?: boolean }) => {
+      const { fromChainId, tokenId, isFt } = params;
+      let result: IContactItemType[] = [];
 
-    result = contactList.filter(ele => {
-      if (isFt && ele.addressInfo.network !== 'aelf') return false;
-      if (ele.addressInfo.network === 'aelf') return true;
+      result = contactList.filter(ele => {
+        if (isFt && ele.addressInfo.network !== 'aelf') return false;
+        if (ele.addressInfo.network === 'aelf') return true;
 
-      return checkIsSupportTargetChain({ fromChainId, symbol: tokenId, network: ele.addressInfo.network });
-    });
+        return checkIsSupportTargetChain({ fromChainId, symbol: tokenId, network: ele.addressInfo.network });
+      });
 
-    return result;
-  }, [checkIsSupportTargetChain, contactList, fromChainId, isFt, tokenId]);
+      return result;
+    },
+    [checkIsSupportTargetChain, contactList],
+  );
 };
 
 export const useCheckContactMap = () => {

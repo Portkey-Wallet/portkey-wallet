@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { StyleSheet, View, ScrollView } from 'react-native';
+import { StyleSheet, View, ScrollView, TextBase } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
 import { useLanguage } from 'i18n/hooks';
 import { TextS } from 'components/CommonText';
@@ -8,19 +8,22 @@ import fonts from 'assets/theme/fonts';
 import NoData from 'components/NoData';
 import { FontStyles } from 'assets/theme/styles';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
-import { defaultColors } from 'assets/theme';
+import { darkColors, defaultColors } from 'assets/theme';
 import { DiscoverItem } from '@portkey-wallet/store/store-ca/cms/types';
 import DiscoverWebsiteImage from '../DiscoverWebsiteImage';
 import { useDiscoverJumpWithNetWork } from 'hooks/discover';
 import TextWithProtocolIcon from 'components/TextWithProtocolIcon';
 import Touchable from 'components/Touchable';
+import Svg, { IconName } from 'components/Svg';
+
 interface ISearchDiscoverSectionProps {
   searchedDiscoverList: DiscoverItem[];
+  inputValue?: string;
 }
 
 export default function SearchDiscoverSection(props: ISearchDiscoverSectionProps) {
   const { t } = useLanguage();
-  const { searchedDiscoverList } = props;
+  const { searchedDiscoverList, inputValue } = props;
   const { s3Url } = useCurrentNetworkInfo();
   const jumpToWebview = useDiscoverJumpWithNetWork();
 
@@ -36,25 +39,86 @@ export default function SearchDiscoverSection(props: ISearchDiscoverSectionProps
     [jumpToWebview],
   );
 
-  if (searchedDiscoverList.length === 0) return <NoData noPic message={t('There is no search result.')} />;
+  // if (searchedDiscoverList.length === 0) return <NoData noPic message={t('There is no search result.')} />;
+
+  // if (searchedDiscoverList.length === 0) {
+  //   return (
+
+  //   );
+  // }
+
+  // if (!inputValue) {
+
+  // }
 
   return (
     <ScrollView style={styles.sectionWrap}>
-      {searchedDiscoverList?.map((item, index) => (
-        <Touchable key={index} style={itemStyle.wrap} onPress={() => onClickJump(item)}>
-          <DiscoverWebsiteImage imageUrl={`${s3Url}/${item?.imgUrl?.filename_disk}`} size={pTd(32)} />
-          <View style={itemStyle.right}>
-            <View style={itemStyle.infoWrap}>
-              <TextWithProtocolIcon title={item?.title} url={item?.url} />
-              {item?.description && (
-                <TextS numberOfLines={1} ellipsizeMode={'tail'} style={[FontStyles.font3, itemStyle.gameInfo]}>
-                  {item.description}
-                </TextS>
-              )}
-            </View>
+      {searchedDiscoverList.length === 0 ? (
+        <Touchable
+          style={{
+            flexDirection: 'row',
+            marginTop: pTd(16),
+          }}
+          onPress={() => {
+            jumpToWebview({
+              item: {
+                name: inputValue || '',
+                url: `https://www.google.com/search?q=${inputValue}`,
+              },
+            });
+          }}>
+          <View
+            style={{
+              padding: pTd(10),
+              borderRadius: pTd(20),
+              borderWidth: 1,
+              borderColor: '#5A5A5A',
+              marginRight: pTd(8),
+            }}>
+            <Svg icon={'search'} size={pTd(20)} />
+          </View>
+          <View>
+            <TextS
+              numberOfLines={1}
+              ellipsizeMode={'tail'}
+              style={{
+                color: defaultColors.white,
+                fontSize: 16,
+              }}>
+              123456
+            </TextS>
+            <TextS
+              numberOfLines={1}
+              ellipsizeMode={'tail'}
+              style={[
+                {
+                  color: darkColors.textBase2,
+                },
+                itemStyle.gameInfo,
+              ]}>
+              Search with Google
+            </TextS>
           </View>
         </Touchable>
-      ))}
+      ) : (
+        <>
+          {searchedDiscoverList?.map((item, index) => (
+            <Touchable key={index} style={itemStyle.wrap} onPress={() => onClickJump(item)}>
+              <DiscoverWebsiteImage imageUrl={`${s3Url}/${item?.imgUrl?.filename_disk}`} size={pTd(32)} />
+              <View style={itemStyle.right}>
+                <View style={itemStyle.infoWrap}>
+                  <TextWithProtocolIcon title={item?.title} url={item?.url} />
+                  {item?.description && (
+                    <TextS numberOfLines={1} ellipsizeMode={'tail'} style={[FontStyles.font3, itemStyle.gameInfo]}>
+                      {item.description}
+                    </TextS>
+                  )}
+                </View>
+              </View>
+            </Touchable>
+          ))}
+        </>
+      )}
     </ScrollView>
   );
 }

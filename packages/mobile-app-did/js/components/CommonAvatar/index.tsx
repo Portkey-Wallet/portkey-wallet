@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
     width: pTd(48),
     height: pTd(48),
     borderRadius: pTd(48),
-    backgroundColor: defaultColors.bg6,
+    backgroundColor: defaultColors.bgNeutral2,
     display: 'flex',
     overflow: 'hidden',
     alignItems: 'center',

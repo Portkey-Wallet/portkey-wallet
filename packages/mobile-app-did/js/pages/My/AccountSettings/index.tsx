@@ -221,16 +221,20 @@ export default function AccountSettings() {
     });
   }, [onExitClick]);
 
+  const onPressUserInfo = useCallback(() => {
+    navigationService.navigate('WalletName');
+  }, []);
+
   return (
     <PageContainer containerStyles={styles.containerStyles} safeAreaColor={['black']} titleDom={t('Setting')}>
-      <View style={[styles.info]}>
+      <Touchable style={[styles.info]} onPress={onPressUserInfo}>
         <View style={styles.userInfoWrap}>
           <FastImage style={[sizeStyle]} resizeMode="cover" source={{ uri: userInfo.avatar }} />
           <TextM>{userInfo.nickName}</TextM>
         </View>
 
         <Svg icon="right-arrow" size={pTd(20)} color={defaultColors.icon1} />
-      </View>
+      </Touchable>
       <View style={styles.divider} />
 
       {MenuList.map(item => (

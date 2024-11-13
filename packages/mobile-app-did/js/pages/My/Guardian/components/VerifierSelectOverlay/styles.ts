@@ -1,22 +1,18 @@
-import { defaultColors } from 'assets/theme';
-import { StyleSheet } from 'react-native';
+import { makeStyles } from '@rneui/themed';
 import { pTd } from 'utils/unit';
 
-const styles = StyleSheet.create({
+const getStyles = makeStyles(theme => ({
   itemRow: {
-    height: pTd(76),
+    height: pTd(48),
     flexDirection: 'row',
     alignItems: 'center',
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: defaultColors.border6,
-    marginHorizontal: pTd(20),
+    marginHorizontal: pTd(16),
   },
   verifierImageStyle: {
     marginRight: pTd(12),
   },
   itemContent: {
     flex: 1,
-    height: pTd(76),
     flexDirection: 'row',
     alignItems: 'center',
   },
@@ -30,7 +26,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   warnWrap: {
-    backgroundColor: defaultColors.bg6,
+    backgroundColor: theme.colors.bg6,
     borderRadius: pTd(6),
     padding: pTd(12),
     flexDirection: 'row',
@@ -41,13 +37,18 @@ const styles = StyleSheet.create({
     marginTop: pTd(2),
   },
   warnLabelWrap: {
-    color: defaultColors.font3,
+    color: theme.colors.font3,
     marginLeft: pTd(8),
     flex: 1,
   },
   disableWrap: {
     opacity: 0.3,
   },
-});
+  tagStyle: {
+    marginLeft: pTd(4),
+    backgroundColor: theme.colors.bgSuccess2,
+    color: theme.colors.textSuccess5,
+  },
+}));
 
-export default styles;
+export default getStyles;

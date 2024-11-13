@@ -7,12 +7,12 @@ import { Text, View, StyleSheet } from 'react-native';
 import { pTd } from 'utils/unit';
 import navigationService from 'utils/navigationService';
 import PageContainer from 'components/PageContainer';
-import { pageStyles } from './style';
+import { getPageStyles } from './style';
 import ListItem from 'components/ListItem';
 import CommonInput from 'components/CommonInput';
 import { checkEmail } from '@portkey-wallet/utils/check';
 import { useGuardiansInfo } from 'hooks/store';
-import { LOGIN_TYPE_LIST, T_LOGIN_TYPE_LIST_ITEM } from 'constants/misc';
+import { GUARDIAN_ITEM_TYPE_ICON, LOGIN_TYPE_LIST, T_LOGIN_TYPE_LIST_ITEM } from 'constants/misc';
 import { PRIVATE_GUARDIAN_ACCOUNT } from '@portkey-wallet/constants/constants-ca/guardian';
 import {
   ApprovalType,
@@ -27,7 +27,6 @@ import VerifierSelectOverlay from '../components/VerifierSelectOverlay';
 import ActionSheet from 'components/ActionSheet';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 import { FontStyles } from 'assets/theme/styles';
-import { defaultColors } from 'assets/theme';
 import Loading from 'components/Loading';
 import CommonToast from 'components/CommonToast';
 import useRouterParams, { useRouterEffectParams } from '@portkey-wallet/hooks/useRouterParams';
@@ -64,6 +63,9 @@ import { TAppleAuthentication } from 'types/authentication';
 import { useLoginModeList } from 'hooks/loginMode';
 import { LOGIN_TYPE_LABEL_MAP } from '@portkey-wallet/constants/verifier';
 import { getOperationDetails } from '@portkey-wallet/utils/operation.util';
+import Touchable from 'components/Touchable';
+import { useTheme } from '@rneui/themed';
+import CommonTooltip from 'components/CommonTooltip';
 
 type RouterParams = {
   guardian?: UserGuardianItem;
@@ -85,6 +87,10 @@ const GuardianEdit: React.FC = () => {
   const dispatch = useAppDispatch();
   const originChainId = useOriginChainId();
   const refreshGuardiansList = useRefreshGuardiansList();
+  const pageStyles = getPageStyles();
+  const {
+    theme: { colors },
+  } = useTheme();
 
   const {
     guardian: editGuardian,
@@ -604,9 +610,9 @@ const GuardianEdit: React.FC = () => {
     if (isEdit) {
       return (
         <View style={pageStyles.accountWrap}>
-          <TextM style={pageStyles.accountLabel}>Guardian {LoginType[editGuardian?.guardianType || 0]}</TextM>
+          <TextL style={pageStyles.accountLabel}>Guardian {LoginType[editGuardian?.guardianType || 0]}</TextL>
           <GuardianAccountItem guardian={editGuardian} />
-          <TextM>{guardianAccountError.errorMsg}</TextM>
+          {guardianAccountError.errorMsg && <TextM>{guardianAccountError.errorMsg}</TextM>}
         </View>
       );
     }
@@ -619,9 +625,10 @@ const GuardianEdit: React.FC = () => {
           <CommonInput
             disabled={isEdit}
             type="general"
-            theme="white-bg"
+            theme="black-bg"
             label={'Guardian email'}
             value={account}
+            allowClear
             placeholder={'Enter email'}
             onChangeText={onAccountChange}
             errorMessage={guardianAccountError.isError ? guardianAccountError.errorMsg : ''}
@@ -714,6 +721,7 @@ const GuardianEdit: React.FC = () => {
     onFacebookSign,
     onTwitterSign,
     selectedType,
+    pageStyles,
   ]);
   const goBack = useCallback(() => {
     if (isEdit) return navigationService.navigate('GuardianHome');
@@ -725,18 +733,59 @@ const GuardianEdit: React.FC = () => {
       ?.map(i => LOGIN_TYPE_LIST.find(v => LOGIN_TYPE_LABEL_MAP[v.value] === i.type?.value))
       .filter(i => !!i) as T_LOGIN_TYPE_LIST_ITEM[];
   }, [loginModeList]);
+  const isEditGuardianZKLoginSupported = useMemo(() => {
+    return editGuardian && isZKLoginSupported(editGuardian.guardianType);
+  }, [editGuardian]);
+
+  const disabledMap = useMemo(() => {
+    if (!userGuardiansList) return {};
+    const guardianList = userGuardiansList.filter(item => item.key !== editGuardian?.key);
+    const map: Record<string, boolean> = {};
+    // has selected by user, so disable
+    // editGuardian is able
+    guardianList.forEach(item => {
+      map[item.verifier?.id || ''] = true;
+    });
+    if (editGuardian && isZKLoginSupported(editGuardian.guardianType)) {
+      // support zk, so disable all verifier except zkLogin
+      verifierList.forEach(item => {
+        if (item.id !== zkLoginVerifierItem.id) {
+          map[item.id] = true;
+        } else {
+          map[item.id] = false;
+        }
+      });
+    } else {
+      map[zkLoginVerifierItem.id] = true;
+    }
+    return map;
+  }, [editGuardian, userGuardiansList, verifierList]);
+
+  const selectAbleVerifierList = useMemo(() => {
+    return verifierList.filter(item => !disabledMap[item.id]);
+  }, [verifierList, disabledMap]);
+  const isEmptySelectAbleVerifierList = useMemo(() => {
+    return !selectAbleVerifierList.length && !selectedVerifier;
+  }, [selectAbleVerifierList, selectedVerifier]);
 
   return (
     <PageContainer
-      safeAreaColor={['white', 'gray']}
+      safeAreaColor={['black', 'black']}
       titleDom={isEdit ? 'Edit Guardians' : 'Add Guardians'}
       leftCallback={goBack}
       containerStyles={pageStyles.pageWrap}
-      scrollViewProps={{ disabled: true }}>
+      scrollViewProps={{ disabled: true }}
+      rightDom={
+        isEdit ? (
+          <Touchable style={{ paddingRight: pTd(16) }} onPress={onRemove}>
+            <Svg icon="remove" size={pTd(24)} />
+          </Touchable>
+        ) : null
+      }>
       <View style={pageStyles.contentWrap}>
         {!isEdit && (
           <>
-            <TextM style={pageStyles.titleLabel}>{'Guardian Type'}</TextM>
+            <TextL style={[pageStyles.titleLabel, pageStyles.formItemLabelWrap]}>{'Guardian Type'}</TextL>
             <ListItem
               onPress={() => {
                 GuardianTypeSelectOverlay.showList({
@@ -746,13 +795,13 @@ const GuardianEdit: React.FC = () => {
                   callBack: onChooseType,
                 });
               }}
-              titleStyle={[GStyles.flexRowWrap, GStyles.itemCenter]}
-              titleTextStyle={[pageStyles.titleTextStyle, !selectedType && FontStyles.font7]}
+              titleStyle={[pageStyles.selectListTitleStyle]}
+              titleTextStyle={[pageStyles.titleTextStyle, !selectedType && pageStyles.notSelectedTitleStyle]}
               style={pageStyles.typeWrap}
               titleLeftElement={
                 selectedType?.icon && (
                   <View style={[GStyles.center, pageStyles.itemIconWrap]}>
-                    <Svg icon={selectedType.icon} size={pTd(20)} />
+                    <Svg icon={GUARDIAN_ITEM_TYPE_ICON[selectedType.value]} size={pTd(16)} />
                   </View>
                 )
               }
@@ -763,65 +812,74 @@ const GuardianEdit: React.FC = () => {
         )}
 
         {renderGuardianAccount()}
-
-        <TextM style={pageStyles.titleLabel}>{'Verifier'}</TextM>
+        <View style={pageStyles.formItemLabelWrap}>
+          <TextL style={pageStyles.titleLabel}>{'Verifier'}</TextL>
+          <CommonTooltip
+            iconSize={pTd(16)}
+            tooltipProps={{
+              title: 'Guardian verifier',
+              description:
+                'Except for zkLogin, used verifiers cannot be selected. To choose ZkLogin, the guardian type must be either a Google account or an Apple ID.',
+            }}
+          />
+        </View>
         <ListItem
           onPress={() => {
-            if (isSelectedVerifierDisabled) return;
+            if (isSelectedVerifierDisabled || isEmptySelectAbleVerifierList) return;
             VerifierSelectOverlay.showList({
               id: selectedVerifier?.id,
               callBack: onChooseVerifier,
               editGuardian: editGuardian,
+              list: selectAbleVerifierList,
+              disabledMap,
             });
           }}
           titleLeftElement={
             selectedVerifier && (
               <VerifierImage
                 style={pageStyles.verifierImageStyle}
-                size={pTd(30)}
+                size={pTd(16)}
                 label={selectedVerifier.name}
                 uri={selectedVerifier.imageUrl}
               />
             )
           }
-          titleStyle={[GStyles.flexRowWrap, GStyles.itemCenter]}
-          titleTextStyle={[pageStyles.titleTextStyle, !selectedVerifier && FontStyles.font7]}
+          titleStyle={[pageStyles.selectListTitleStyle]}
+          titleTextStyle={[
+            pageStyles.titleTextStyle,
+            !selectedVerifier && pageStyles.notSelectedTitleStyle,
+            (isSelectedVerifierDisabled || isEmptySelectAbleVerifierList) && { color: colors.textDisabled1 },
+          ]}
           style={[
             pageStyles.verifierWrap,
-            isSelectedVerifierDisabled
+            isSelectedVerifierDisabled || isEmptySelectAbleVerifierList
               ? {
-                  backgroundColor: defaultColors.neutralContainerBG,
-                  borderColor: defaultColors.border8,
+                  backgroundColor: colors.bgBase2,
+                  borderColor: colors.bgBase3,
                   borderWidth: StyleSheet.hairlineWidth,
                 }
-              : { backgroundColor: defaultColors.white },
+              : { backgroundColor: colors.bgBase1 },
           ]}
           title={selectedVerifier?.name || 'Select guardian verifiers'}
           rightElement={
-            <Svg
-              size={pTd(20)}
-              icon="down-arrow"
-              color={isSelectedVerifierDisabled ? defaultColors.neutralDisableText : defaultColors.secondaryTextColor}
-            />
+            !(isSelectedVerifierDisabled || isEmptySelectAbleVerifierList) && (
+              <Svg size={pTd(20)} icon="down-arrow" color={colors.iconBase1} />
+            )
           }
         />
         {verifierError.isError && <TextS style={pageStyles.errorTips}>{verifierError.errorMsg || ''}</TextS>}
+        {isEmptySelectAbleVerifierList && (
+          <TextM style={pageStyles.warningTips}>{'All applicable verifiers have already been used.'}</TextM>
+        )}
       </View>
 
       <View>
         {isEdit ? (
-          <>
+          !isEditGuardianZKLoginSupported && (
             <CommonButton disabled={isApprovalDisable} type="primary" onPress={onApproval}>
-              {'Send Request'}
+              {'Verify with guardian'}
             </CommonButton>
-            <CommonButton
-              style={pageStyles.removeBtnWrap}
-              type="clear"
-              onPress={onRemove}
-              titleStyle={FontStyles.font12}>
-              {'Remove'}
-            </CommonButton>
-          </>
+          )
         ) : (
           <CommonButton disabled={isConfirmDisable} type="primary" onPress={onConfirm}>
             {'Confirm'}

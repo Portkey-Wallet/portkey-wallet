@@ -5,28 +5,82 @@ import { useAppCommonDispatch } from '../index';
 import { ChainId } from '@portkey-wallet/types';
 import { addRecentItem, resetTargetNetworkRecent } from '@portkey-wallet/store/store-ca/recent/slice';
 import { IRecentItem } from '@portkey-wallet/store/store-ca/recent/type';
+import { useTransferNetworkConfig } from './config';
+import { useContact } from './contact';
+import { TFormattedRecentItem } from '@portkey-wallet/types/types-ca/contactNew';
 
 export const useRecentState = () => useAppCASelector(state => state.recent);
 
 export function useRecent() {
   const dispatch = useAppCommonDispatch();
   const currentNetwork = useCurrentNetwork();
-  const { recentMap } = useRecentState();
 
-  const getRecentList = useCallback(
-    (chainId: ChainId, tokenId: string) => {
-      const id = `${chainId}-${tokenId}`;
-      return recentMap?.[currentNetwork]?.[id] || [];
+  const { contactMapNew } = useContact();
+  const { recentMap } = useRecentState();
+  const { fetchAssetSupportConfig, checkIsSupportTargetChain } = useTransferNetworkConfig();
+
+  const getRecentList = useCallback(() => {
+    return recentMap?.[currentNetwork] || [];
+  }, [currentNetwork, recentMap]);
+
+  const getFilterRecentList = useCallback(
+    ({ fromChainId, tokenId, isFt }: { fromChainId: ChainId; tokenId: string; isFt: boolean }) => {
+      fetchAssetSupportConfig();
+
+      const targetList = recentMap?.[currentNetwork] || [];
+
+      console.log('getFilterRecentList', targetList);
+      // aelf is OK, others need check
+      const result = targetList.filter(ele => {
+        if (ele.network === 'aelf') return true;
+        // nft just for aelf chain
+        if (!isFt) return ele.network === 'aelf' && !!ele.chainId;
+
+        return checkIsSupportTargetChain({ fromChainId, symbol: tokenId, network: ele.network });
+      });
+      return result || [];
     },
-    [currentNetwork, recentMap],
+    [checkIsSupportTargetChain, currentNetwork, fetchAssetSupportConfig, recentMap],
+  );
+
+  // adjust my contact
+  const getTransformedRecentList = useCallback(
+    (params: { fromChainId: ChainId; tokenId: string; isFt: boolean }): TFormattedRecentItem[] => {
+      const { isFt } = params;
+      const result = getFilterRecentList(params);
+
+      const list = result
+        .map(ele => {
+          if (isFt && !!ele.network && ele.network !== 'aelf') return;
+
+          const target = contactMapNew?.[ele.address] || [];
+          const aelfResult = target.find(
+            m =>
+              m.addressInfo?.address === ele?.address &&
+              m?.addressInfo?.chainId === ele?.chainId &&
+              m.addressInfo?.network === 'aelf',
+          );
+          const otherResult = target.find(
+            m =>
+              m.addressInfo?.address === ele?.address &&
+              m?.addressInfo?.network === ele?.network &&
+              m.addressInfo?.network !== 'aelf',
+          );
+
+          if (aelfResult) return { ...aelfResult, ...ele };
+          if (otherResult) return { ...otherResult, ...ele };
+
+          return ele;
+        })
+        .filter(i => !!i);
+
+      return list;
+    },
+    [contactMapNew, getFilterRecentList],
   );
 
   const addRecent = useCallback(
-    (params: {
-      chainId: ChainId;
-      tokenId: string; // ft is symbol, nft is nft
-      recentItem: IRecentItem;
-    }) => {
+    (params: { recentItem: IRecentItem }) => {
       return dispatch(addRecentItem({ ...params, network: currentNetwork }));
     },
     [currentNetwork, dispatch],
@@ -36,5 +90,5 @@ export function useRecent() {
     return dispatch(resetTargetNetworkRecent({ network: currentNetwork }));
   }, [currentNetwork, dispatch]);
 
-  return { getRecentList, addRecent, resetRecent };
+  return { getTransformedRecentList, getRecentList, addRecent, resetRecent };
 }

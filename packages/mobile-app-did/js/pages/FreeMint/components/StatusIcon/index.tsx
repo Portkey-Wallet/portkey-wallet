@@ -1,6 +1,4 @@
-import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { defaultColors } from 'assets/theme';
-import NFTAvatar from 'components/NFTAvatar';
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { pTd } from 'utils/unit';
@@ -18,40 +16,27 @@ const MintStatusIcon = (props: MintStatusIconProps) => {
 
   if (status === MintStatus.Minting)
     return (
-      <View style={[styles.iconWrap, styles.iconShade]}>
-        <Lottie style={commonStyles.loadingStyle} source={require('assets/lottieFiles/loading.json')} autoPlay loop />
-      </View>
+      <Lottie
+        style={commonStyles.loadingStyle}
+        source={require('../../../../assets/lottieFiles/loading.json')}
+        autoPlay
+        loop
+      />
     );
 
   if (status === MintStatus.Minted)
     return (
       <View style={[styles.iconShade, styles.borderRadios]}>
-        <Svg icon="minted" size={pTd(40)} />
+        <Svg icon="minted" size={pTd(20)} />
       </View>
     );
 
-  if (status === MintStatus.MintFailed)
-    return (
-      <View style={[styles.iconShade, styles.borderRadios]}>
-        <Svg icon="mintFail" size={pTd(40)} />
-      </View>
-    );
+  if (status === MintStatus.MintFailed) return <Svg icon="error" size={pTd(32)} />;
 
   return null;
 };
 
 const styles = StyleSheet.create({
-  iconWrap: {
-    width: pTd(40),
-    height: pTd(40),
-    borderWidth: pTd(2),
-    borderRadius: pTd(20),
-    borderColor: '#fff',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: defaultColors.neutralContainerBG,
-  },
   iconShade: {
     shadowOffset: { width: 0, height: 4 },
     backgroundColor: defaultColors.bg1,

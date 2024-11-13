@@ -1,5 +1,5 @@
 import { makeStyles } from '@rneui/themed';
-import { defaultColors } from 'assets/theme';
+import { darkColors, defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import CommonButton, { CommonButtonProps } from 'components/CommonButton';
 import React from 'react';
@@ -63,10 +63,12 @@ export const getStyles = makeStyles(theme => ({
     width: '100%',
     height: pTd(48),
     paddingHorizontal: 0,
+    backgroundColor: darkColors.bgBrand1,
   },
   outlineButtonStyle: {
     borderWidth: pTd(1.5),
     borderColor: theme.colors.borderNeutral2,
+    backgroundColor: 'transparent',
   },
   containerStyle: {
     flex: 1,
@@ -89,5 +91,6 @@ export const getStyles = makeStyles(theme => ({
   titleStyle: {
     width: '100%',
     fontSize: pTd(14),
+    color: darkColors.textBrand4,
   },
 }));

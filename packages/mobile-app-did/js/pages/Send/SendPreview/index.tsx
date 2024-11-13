@@ -225,9 +225,6 @@ const SendPreview: React.FC = () => {
     });
   }, [
     addRecent,
-    assetInfo.chainId,
-    assetInfo.symbol,
-    assetInfo.tokenId,
     caAddressInfos,
     fetchAccountNFTCollectionInfoList,
     fetchAccountTokenInfoList,

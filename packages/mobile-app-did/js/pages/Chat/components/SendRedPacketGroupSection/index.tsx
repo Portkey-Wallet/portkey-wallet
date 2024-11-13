@@ -417,13 +417,14 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
             wrapStyle={GStyles.marginTop(pTd(8))}
             usdWrapStyle={GStyles.marginTop(pTd(8))}
             assetType={selectToken.assetType}
+            usdTextColor={theme.colors.textBase2}
           />
-          <View style={[GStyles.flexRow, GStyles.center, styles.nftInfoWrap]}>
+          {/* <View style={[GStyles.flexRow, GStyles.center, styles.nftInfoWrap]}>
             <NFTAvatar disabled nftSize={pTd(24)} data={selectToken} style={styles.borderRadius4} />
             <TextM numberOfLines={1} style={styles.nftNameWrap}>
               {assetName}
             </TextM>
-          </View>
+          </View> */}
         </>
       ) : (
         <RedPacketAmountShow

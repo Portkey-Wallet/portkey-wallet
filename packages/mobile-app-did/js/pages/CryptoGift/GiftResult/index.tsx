@@ -27,6 +27,7 @@ export interface IGiftResultProps {
 
 export default function GiftResult() {
   const { giftId } = useRouterParams<IGiftResultProps>();
+  console.log(giftId, 'xxxx');
   const { t } = useLanguage();
   const getCryptoGiftTgLink = useGetCryptoGiftTgLink();
   const currentNetworkInfo = useCurrentNetworkInfo();
@@ -59,7 +60,6 @@ export default function GiftResult() {
           </View>
         </TouchableOpacity>
         <HeaderCard showViewDetails giftId={giftId} />
-        {/* <Image source={referralTopText} style={styles.referralTopText} /> */}
       </ImageBackground>
       <View style={[GStyles.itemCenter, GStyles.flexCenter, GStyles.flexRow, GStyles.marginTop(pTd(40))]}>
         <TextTitle>Share the surprise with your friends NOW!</TextTitle>

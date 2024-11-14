@@ -27,6 +27,7 @@ import { TextXXXL } from 'components/CommonText';
 import ImageWithUploadFunc, { ImageWithUploadFuncInstance } from 'components/ImageWithUploadFunc';
 import FastImage from 'components/FastImage';
 import ChangeOverlay from './components/ChangePictureOverlay';
+import RenameOverlay from './components/RenameOverlay';
 
 const MyWallet: React.FC = () => {
   const { t } = useLanguage();
@@ -63,6 +64,10 @@ const MyWallet: React.FC = () => {
     }
   };
 
+  const handleRename = (name: string) => {
+    console.log('handleRename');
+  };
+
   return (
     <PageContainer
       titleDom={t('My Wallet')}
@@ -72,13 +77,16 @@ const MyWallet: React.FC = () => {
       <View style={pageStyles.userInfoWrap}>
         <View style={pageStyles.avatarWrap}>
           <Touchable
-            style={{}}
+            style={{
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
             onPress={async () => {
-              // ChangeOverlay.showModal({
-              //   title: t('Change wallet picture'),
-              //   avatar: avatar,
-              //   selectPhoto: handleSelectPhoto,
-              // });
+              ChangeOverlay.showModal({
+                title: t('Change wallet picture'),
+                avatar: avatar,
+                selectPhoto: handleSelectPhoto,
+              });
             }}>
             <View
               style={{
@@ -120,7 +128,25 @@ const MyWallet: React.FC = () => {
             </View>
           </Touchable>
         </View>
-        <TextXXXL style={pageStyles.nicknameText}>{userInfo.nickName}</TextXXXL>
+        <View
+          style={{
+            marginTop: pTd(12),
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexDirection: 'row',
+          }}>
+          <TextXXXL style={pageStyles.nicknameText}>{userInfo.nickName}</TextXXXL>
+          <Touchable
+            onPress={() => {
+              RenameOverlay.showModal({
+                title: t('Rename wallet'),
+                nickName: userInfo.nickName,
+                onChange: handleRename,
+              });
+            }}>
+            <Svg icon="edit_thin" size={pTd(20)} />
+          </Touchable>
+        </View>
       </View>
       <ProfileAddressSectionV2 title={'My addresses'} isMySelf addressList={caInfoList} />
       <View style={pageStyles.flex} />
@@ -153,9 +179,9 @@ const getStyles = makeStyles(theme => ({
     justifyContent: 'center',
   },
   nicknameText: {
-    marginTop: pTd(12),
     color: theme.colors.textBase1,
     textAlign: 'center',
+    marginRight: pTd(4),
   },
   editIcon: {
     position: 'absolute',

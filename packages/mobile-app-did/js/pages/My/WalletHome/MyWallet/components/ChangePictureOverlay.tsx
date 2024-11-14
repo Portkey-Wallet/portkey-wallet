@@ -22,7 +22,7 @@ import ImageWithUploadFunc from 'components/ImageWithUploadFunc';
 type SelectModalProps = {
   title?: string;
   avatar?: string;
-  selectPhoto: () => boolean;
+  selectPhoto: () => Promise<boolean>;
 };
 
 type AvatarListProps = {

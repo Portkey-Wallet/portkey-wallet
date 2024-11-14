@@ -13,7 +13,7 @@ import { useTheme } from '@rneui/themed';
 
 const show = (
   items: {
-    title: string;
+    title: string | ReactNode;
     onPress?: (v: any) => void;
   }[],
   cancelItem?: {
@@ -35,7 +35,7 @@ const show = (
                 OverlayModal.hide();
                 onPress?.(item);
               }}>
-              <Text style={showStyles.itemText}>{title}</Text>
+              {typeof title === 'string' ? <Text style={showStyles.itemText}>{title}</Text> : title}
             </Touchable>
           );
         })}
@@ -53,7 +53,7 @@ const show = (
 };
 
 type AlertBodyProps = {
-  title?: string;
+  title?: string | ReactNode;
   title2?: ReactNode;
   message?: ReactNode;
   message2?: ReactNode;
@@ -115,7 +115,9 @@ export function AlertBody({
           </View>
         )}
         {showInfoIcon && <Svg iconStyle={styles.infoIcon} icon="info" size={pTd(32)} color={theme.colors.iconBase1} />}
-        {title ? <TextTitle style={[styles.alertTitle, titleStyle]}>{title}</TextTitle> : null}
+        {typeof title === 'string' ? <Text style={showStyles.itemText}>{title}</Text> : title}
+
+        {/* {title ? <TextTitle style={[styles.alertTitle, titleStyle]}>{title}</TextTitle> : null} */}
         {typeof title2 === 'string' ? (
           title2 ? (
             <TextTitle style={styles.alertTitle2}>{title2}</TextTitle>

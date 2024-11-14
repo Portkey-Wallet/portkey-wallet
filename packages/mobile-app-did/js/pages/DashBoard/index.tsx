@@ -4,7 +4,6 @@ import { PullToRefresh } from '@sdcx/pull-to-refresh';
 import CustomPullToRefreshHeader from './PullToRefresh';
 import Card from './Card';
 import DashBoardTab from './DashBoardTab';
-import { SetNewWalletNamePopup } from './SetNewWalletName/Popup';
 import DashBoardHeader from './Header';
 import SafeAreaBox from 'components/SafeAreaBox';
 import { BGStyles } from 'assets/theme/styles';
@@ -95,7 +94,6 @@ const DashBoard: React.FC<any> = ({ navigation }) => {
   return (
     <SafeAreaBox edges={['top', 'right', 'left']} style={{ backgroundColor: theme.colors.bgBase1 }}>
       <DashBoardHeader />
-      <SetNewWalletNamePopup />
       {React.cloneElement(
         <PullToRefresh header={<CustomPullToRefreshHeader refreshing={refreshing} onRefresh={onRefresh} />} />,
         {

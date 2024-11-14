@@ -21,6 +21,8 @@ interface ICommonTooltipProps {
   iconStyle?: SvgProps['iconStyle'];
   iconSize?: number;
   tooltipProps?: ITooltipContentProps;
+  color?: string;
+  iconName?: SvgProps['icon'];
 }
 
 const TooltipContent = ({ title, description, learnMoreUrl }: ITooltipContentProps) => {
@@ -65,10 +67,10 @@ const showTooltip = (props: ITooltipContentProps) => {
   });
 };
 
-const CommonTooltip = ({ iconStyle, iconSize = pTd(16), tooltipProps }: ICommonTooltipProps) => {
+const CommonTooltip = ({ iconStyle, iconSize = pTd(16), tooltipProps, color, iconName }: ICommonTooltipProps) => {
   return (
     <Touchable onPress={tooltipProps && (() => showTooltip(tooltipProps))}>
-      <Svg iconStyle={iconStyle} icon="help-gray" size={iconSize} />
+      <Svg iconStyle={iconStyle} icon={iconName || 'help-gray'} size={iconSize} color={color} />
     </Touchable>
   );
 };

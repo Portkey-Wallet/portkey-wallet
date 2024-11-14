@@ -70,20 +70,26 @@ export const ToolBar = memo(function ToolBar({ style }: { style?: ViewStyleType 
         allowsMultipleSelection: false,
         quality: 1,
       });
-      if (result.cancelled || !result.uri) return;
-
-      if (!result?.fileSize) {
-        const info = await getInfo(result.uri);
-        result.fileSize = info.size;
+      if (result.canceled || !result.assets || result.assets.length <= 0) {
+        return;
       }
 
-      if (!result?.fileSize || result.fileSize > MAX_FILE_SIZE_BYTE) return CommonToast.fail('The file is too large');
+      if (!result?.assets[0].fileSize) {
+        const info = await getInfo(result.assets[0].uri);
+        if (info.exists) {
+          result.assets[0].fileSize = info.size;
+        }
+      }
+
+      if (!result?.assets[0].fileSize || result.assets[0].fileSize > MAX_FILE_SIZE_BYTE) {
+        return CommonToast.fail('The file is too large');
+      }
 
       SendPicModal.showSendPic({
-        uri: result.uri,
+        uri: result.assets[0].uri,
         autoClose: false,
-        height: result.height,
-        width: result.width,
+        height: result.assets[0].height,
+        width: result.assets[0].width,
         buttons: [
           {
             title: 'Cancel',
@@ -95,7 +101,7 @@ export const ToolBar = memo(function ToolBar({ style }: { style?: ViewStyleType 
             type: 'primary',
             onPress: async () => {
               try {
-                await sendChannelImage(result);
+                await sendChannelImage(result.assets[0]);
               } catch (error) {
                 if (isBot) {
                   console.log('removeBotSending===sendChannelImage', error);
@@ -121,7 +127,9 @@ export const ToolBar = memo(function ToolBar({ style }: { style?: ViewStyleType 
         label: 'Camera',
         icon: 'chat-camera' as IconName,
         onPress: async () => {
-          if (!(await requestQrPermission())) return showDialog();
+          if (!(await requestQrPermission())) {
+            return showDialog();
+          }
           navigationService.navigate('ChatCameraPage');
         },
       },

@@ -4,7 +4,7 @@ import { divDecimals, timesDecimals } from '@portkey-wallet/utils/converter';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import BigNumber from 'bignumber.js';
 import { useCallback, useMemo, useState } from 'react';
-import { useAppCASelector } from '.';
+import { useAppCASelector } from './index';
 import { useCurrentNetworkInfo } from './network';
 import { request } from '@portkey-wallet/api/api-did';
 import { useAppCommonDispatch } from '../index';

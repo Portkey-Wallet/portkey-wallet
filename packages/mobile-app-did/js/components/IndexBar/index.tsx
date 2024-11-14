@@ -1,17 +1,9 @@
 import React, { forwardRef, memo, useCallback, useImperativeHandle, useMemo, useRef, useState } from 'react';
-import {
-  StyleSheet,
-  PanResponder,
-  TextStyle,
-  GestureResponderEvent,
-  View,
-  PanResponderCallbacks,
-  Animated,
-} from 'react-native';
+import { PanResponder, TextStyle, GestureResponderEvent, View, PanResponderCallbacks, Animated } from 'react-native';
 import { TextL, TextS } from 'components/CommonText';
 import { TextStyleType, ViewStyleType } from 'types/styles';
-import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
+import { makeStyles } from '@rneui/themed';
 export interface IndexBarProps {
   data: string[];
   style?: ViewStyleType;
@@ -45,6 +37,7 @@ export const Popover = forwardRef(function Popover(_, _ref) {
   const [show, setShow] = useState<boolean>();
   const [popoverInfo, setPopoverInfo] = useState<PopoverInfo>();
   const marginTop = useRef(new Animated.Value(0)).current;
+  const styles = getStyles();
   const onSetPopoverInfo = useCallback(
     (info: PopoverInfo) => {
       if (!info) return;
@@ -59,7 +52,7 @@ export const Popover = forwardRef(function Popover(_, _ref) {
       //   finished && setPopoverInfo(info);
       // });
     },
-    [marginTop],
+    [marginTop, styles],
   );
   useImperativeHandle(_ref, () => ({ setPopoverInfo: onSetPopoverInfo, setShow }), [onSetPopoverInfo]);
 
@@ -89,6 +82,7 @@ const IndexBarItem = memo(
     text: string;
     isSelected?: boolean;
   }) {
+    const styles = getStyles();
     return (
       <View style={[style]}>
         <View style={[indexWrapStyle, isSelected && indexWrapSelectStyle]}>
@@ -109,6 +103,7 @@ const IndexBar = forwardRef(function IndexBar(
   forwardedRef,
 ) {
   const indexInfoRef = useRef<IndexInfoType>();
+  const styles = getStyles();
   const indexRef = useRef<View>(null);
   const popoverRef = useRef<PopoverInterface>();
   const dataLength = useRef<number>(0);
@@ -217,7 +212,7 @@ const IndexBar = forwardRef(function IndexBar(
         />
       );
     },
-    [disableIndexSelect, indexBarItemStyle, indexTextStyle, selectIndex],
+    [disableIndexSelect, indexBarItemStyle, indexTextStyle, selectIndex, styles],
   );
 
   return (
@@ -230,9 +225,9 @@ const IndexBar = forwardRef(function IndexBar(
 
 export default IndexBar;
 
-const styles = StyleSheet.create({
+const getStyles = makeStyles(theme => ({
   indexTextStyle: {
-    color: defaultColors.font3,
+    color: theme.colors.textBase1,
     width: pTd(15),
     height: pTd(15),
     lineHeight: pTd(15),
@@ -253,7 +248,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
-    backgroundColor: defaultColors.bg6,
   },
   popoverItem: {},
   barBox: {
@@ -267,9 +261,9 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   indexWrapSelectStyle: {
-    backgroundColor: defaultColors.bg5,
+    backgroundColor: theme.colors.textBrand2,
   },
   indexTextSelectStyle: {
-    color: defaultColors.font2,
+    color: theme.colors.textBrand4,
   },
-});
+}));

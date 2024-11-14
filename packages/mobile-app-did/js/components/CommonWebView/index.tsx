@@ -27,7 +27,6 @@ const CommonWebView: React.FC<CommonWebViewProps> = props => {
     source = { uri: 'http://192.168.66.186:3001' },
     // source = { uri: 'http://192.168.10.160:3000' },
     aelfInstance = new AElf(new AElf.providers.HttpProvider('http://192.168.66.251:8000')),
-    wallet = AElf.wallet.createNewWallet(),
   } = props;
 
   const [, setAelf] = useState(null);
@@ -46,7 +45,9 @@ const CommonWebView: React.FC<CommonWebViewProps> = props => {
     console.log(data, deserializeMessage(data), 'deserializeMessage');
 
     const messageObj: WebViewRequestTypes = deserializeMessage(data) as WebViewRequestTypes;
-    if (!messageObj) return;
+    if (!messageObj) {
+      return;
+    }
     console.log('data', messageObj);
 
     const { action, appId } = messageObj as WebViewRequestTypes;
@@ -74,12 +75,16 @@ const CommonWebView: React.FC<CommonWebViewProps> = props => {
 
   // when onload , overWrite the postMessage func of Webview(dapp)
   const overWriteFuncOfWebview = () => {
-    if (!webRef) throw Error('no WebViewRef');
+    if (!webRef) {
+      throw Error('no WebViewRef');
+    }
     webRef.injectJavaScript(injectJavaScript);
   };
 
   const sendMessageToWebView = (result: any) => {
-    if (!webRef) throw Error('no WebViewRef');
+    if (!webRef) {
+      throw Error('no WebViewRef');
+    }
     webRef.injectJavaScript(formatJsCodeInjectedToWebView(result));
   };
   console.log(styles.sectionContainer);

@@ -1,7 +1,7 @@
 import { request } from '@portkey-wallet/api/api-did';
 import { ChainId } from '@portkey-wallet/types';
 import { LoginKeyType } from '@portkey-wallet/types/types-ca/wallet';
-import { sleep } from '.';
+import { sleep } from './index';
 
 export interface IAccelerateGuardian {
   type: LoginKeyType;

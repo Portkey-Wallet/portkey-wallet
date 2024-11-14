@@ -7,7 +7,7 @@ import {
   getFilePath,
   isLocalPath,
   urlToLocalName,
-} from '.';
+} from './index';
 import RNFS from 'react-native-fs';
 
 import { FileEnum } from './types';
@@ -22,7 +22,9 @@ export const isLocalSource = (source: ImageURISource) => {
 
 export const checkExistsImage = async (uri?: string) => {
   try {
-    if (!uri) return false;
+    if (!uri) {
+      return false;
+    }
     const { path } = getLocalImagePath(uri);
     const exists = await RNFS.exists(path);
     return exists ? path : false;
@@ -37,16 +39,24 @@ export type GetCacheImageInfoResult = {
 };
 
 export const getCacheImageInfo = async (source: ImageURISource): Promise<GetCacheImageInfoResult> => {
-  if (!source.uri) return { source };
+  if (!source.uri) {
+    return { source };
+  }
   let localPath;
   try {
-    if (isLocalSource(source)) return { source };
+    if (isLocalSource(source)) {
+      return { source };
+    }
     const { directory, path } = getLocalImagePath(source.uri);
     localPath = path;
     const exists = await checkExistsImage(source.uri);
-    if (exists) return { source: { uri: path } };
+    if (exists) {
+      return { source: { uri: path } };
+    }
     const existsDirectory = await checkAndMakeDirectory(directory);
-    if (!existsDirectory) return { source };
+    if (!existsDirectory) {
+      return { source };
+    }
   } catch (error) {
     //
   }
@@ -59,11 +69,17 @@ export const downloadCacheImageSource = async (uri: string, path: string) => {
 };
 
 export const getCacheImage = async (source: ImageURISource) => {
-  if (!source.uri) return source;
+  if (!source.uri) {
+    return source;
+  }
   try {
     const { source: imageSource, path } = await getCacheImageInfo(source);
-    if (imageSource) return imageSource;
-    if (!path) return source;
+    if (imageSource) {
+      return imageSource;
+    }
+    if (!path) {
+      return source;
+    }
     return downloadCacheImageSource(source.uri, path);
   } catch (error) {
     return source;
@@ -79,7 +95,9 @@ export const bindUriToLocalImage = async (originPath: string, uri: string) => {
     originPath = formatFilePath(originPath);
     const { directory, path } = await getLocalImagePath(uri);
     const existsDirectory = await checkAndMakeDirectory(directory);
-    if (!existsDirectory) return;
+    if (!existsDirectory) {
+      return;
+    }
     await copyFileToPath(originPath, path);
     return true;
   } catch (error) {

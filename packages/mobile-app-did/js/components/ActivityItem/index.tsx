@@ -150,8 +150,7 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
                 <CommonAvatar
                   title={item?.transactionName}
                   imageUrl={item?.sourceIcon || ''}
-                  style={itemStyle.cornerMarkIcon}
-                  avatarSize={pTd(14)}
+                  avatarSize={pTd(18)}
                   titleStyle={itemStyle.avatarTitleStyle}
                 />
               </View>

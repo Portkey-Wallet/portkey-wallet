@@ -45,7 +45,9 @@ const ProfileAddressSection: React.FC<ProfileAddressSectionPropsType> = props =>
   const addressList = useMemo(() => {
     const _addressList = [...(addressListProps || [])];
     const index = _addressList.findIndex(ele => ele.chainId === 'AELF');
-    if (index === -1) return _addressList;
+    if (index === -1) {
+      return _addressList;
+    }
     const aelfAddress = _addressList.splice(index, 1)[0];
     return [aelfAddress, ..._addressList];
   }, [addressListProps]);
@@ -110,7 +112,7 @@ const ProfileAddressSectionV2: React.FC<ProfileAddressSectionPropsType> = props 
         <View
           key={index}
           style={[
-            disable ? BGStyles.bg18 : { backgroundColor: '#1F1F21' },
+            disable ? BGStyles.bg18 : { backgroundColor: darkColors.bgBase2 },
             styles.itemWrap,
             index !== 0 && GStyles.marginTop(12),
           ]}>

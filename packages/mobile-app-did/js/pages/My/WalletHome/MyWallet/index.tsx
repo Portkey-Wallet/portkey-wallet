@@ -20,19 +20,20 @@ import { FontStyles } from 'assets/theme/styles';
 import { Button, Text } from 'react-native';
 import { darkColors } from 'assets/theme';
 import CommonAvatar from 'components/CommonAvatar';
-
+import { makeStyles } from '@rneui/themed';
 import { isIOS } from '@rneui/base';
 import { pTd } from 'utils/unit';
 import { TextXXXL } from 'components/CommonText';
 import ImageWithUploadFunc, { ImageWithUploadFuncInstance } from 'components/ImageWithUploadFunc';
 import FastImage from 'components/FastImage';
 import ChangeOverlay from './components/ChangePictureOverlay';
-const PageHeight = windowHeight - headerHeight;
+import RenameOverlay from './components/RenameOverlay';
 
 const MyWallet: React.FC = () => {
   const { t } = useLanguage();
   const userInfo = useCurrentUserInfo();
   const caInfo = useCurrentCaInfo();
+  const pageStyles = getStyles();
   const showDeletion = useIsShowDeletion();
   const [avatar, setAvatar] = useState<string>(userInfo?.avatar || '');
 
@@ -63,143 +64,95 @@ const MyWallet: React.FC = () => {
     }
   };
 
+  const handleRename = (name: string) => {
+    console.log('handleRename');
+  };
+
   return (
-    <PageContainer titleDom={t('My Wallet')} safeAreaColor={['white', 'gray']} containerStyles={pageStyles.pageWrap}>
-      <View style={pageStyles.pageContainer}>
-        <View>
-          <View
+    <PageContainer
+      titleDom={t('My Wallet')}
+      safeAreaColor={['black']}
+      containerStyles={pageStyles.pageWrap}
+      scrollViewProps={{ disabled: true }}>
+      <View style={pageStyles.userInfoWrap}>
+        <View style={pageStyles.avatarWrap}>
+          <Touchable
             style={{
-              display: 'flex',
-              alignContent: 'center',
               justifyContent: 'center',
+              alignItems: 'center',
+            }}
+            onPress={async () => {
+              ChangeOverlay.showModal({
+                title: t('Change wallet picture'),
+                avatar: avatar,
+                selectPhoto: handleSelectPhoto,
+              });
             }}>
             <View
               style={{
-                display: 'flex',
-                alignContent: 'center',
-                justifyContent: 'center',
+                width: pTd(80),
+                height: pTd(80),
               }}>
-              <Touchable
-                style={[
-                  GStyles.center,
-                  {
-                    position: 'relative',
-                  },
-                ]}
-                onPress={async () => {
-                  ChangeOverlay.showModal({
-                    title: t('Change wallet picture'),
-                    avatar: avatar,
-                    selectPhoto: handleSelectPhoto,
-                  });
-                }}>
-                <View
-                  style={{
-                    width: pTd(80),
-                    height: pTd(80),
-                  }}>
-                  <FastImage
-                    style={{
-                      width: pTd(80),
-                      height: pTd(80),
-                      borderRadius: pTd(80) / 2,
-                      marginHorizontal: pTd(8),
-                    }}
-                    resizeMode="cover"
-                    source={{
-                      uri: avatar,
-                    }}
-                  />
+              <FastImage
+                style={{
+                  width: pTd(80),
+                  height: pTd(80),
+                  borderRadius: pTd(80) / 2,
+                  marginHorizontal: pTd(8),
+                }}
+                resizeMode="cover"
+                source={{
+                  uri: avatar,
+                }}
+              />
 
-                  <View style={{ display: 'none' }}>
-                    <ImageWithUploadFunc
-                      avatarSize={pTd(80)}
-                      ref={uploadRef}
-                      title={userInfo?.nickName || ''}
-                      // imageUrl={avatar || ''}
-                    />
-                  </View>
+              {/* <View style={{ display: 'none' }}>
+                <ImageWithUploadFunc
+                  avatarSize={pTd(80)}
+                  ref={uploadRef}
+                  title={userInfo?.nickName || ''}
+                  // imageUrl={avatar || ''}
+                />
+              </View> */}
 
-                  <View
-                    style={{
-                      position: 'absolute',
-                      right: pTd(0),
-                      bottom: pTd(0),
-                      zIndex: 1,
-                      width: pTd(32),
-                      height: pTd(32),
-                      borderRadius: pTd(16),
-                      borderColor: '#414142',
-                      borderWidth: pTd(1),
-                      backgroundColor: defaultColors.black,
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                    }}>
-                    <Svg
-                      iconStyle={{
-                        width: pTd(20),
-                        height: pTd(20),
-                      }}
-                      icon="edit_thin"
-                      size={pTd(20)}
-                    />
-                  </View>
-                </View>
-              </Touchable>
+              <View style={pageStyles.editIcon}>
+                <Svg
+                  iconStyle={{
+                    width: pTd(20),
+                    height: pTd(20),
+                  }}
+                  icon="edit_thin"
+                  size={pTd(20)}
+                />
+              </View>
             </View>
-            <TextXXXL
-              style={[
-                {
-                  color: defaultColors.white,
-                  textAlign: 'center',
-                },
-                GStyles.marginTop(pTd(12)),
-              ]}>
-              rach***@gmail.com
-            </TextXXXL>
-          </View>
-          <ProfileAddressSectionV2 title={'My address'} isMySelf addressList={caInfoList} />
+          </Touchable>
         </View>
         <View
           style={{
-            height: pTd(48),
-            backgroundColor: defaultColors.black,
-            display: 'flex',
-            alignContent: 'center',
+            marginTop: pTd(12),
+            alignItems: 'center',
             justifyContent: 'center',
+            flexDirection: 'row',
           }}>
-          <Text
-            onPress={() => navigationService.navigate('AccountCancelation')}
-            style={{
-              color: darkColors.textBase2,
-              height: pTd(16),
-              fontSize: 16,
-              textAlign: 'center',
+          <TextXXXL style={pageStyles.nicknameText}>{userInfo.nickName}</TextXXXL>
+          <Touchable
+            onPress={() => {
+              RenameOverlay.showModal({
+                title: t('Rename wallet'),
+                nickName: userInfo.nickName,
+                onChange: handleRename,
+              });
             }}>
-            Delete Account
-          </Text>
+            <Svg icon="edit_thin" size={pTd(20)} />
+          </Touchable>
         </View>
       </View>
-
-      <CommonButton
-        title="Delete Account"
-        type="clear"
-        titleStyle={FontStyles.font7}
-        onPress={() => navigationService.navigate('AccountCancelation')}
-      />
-      <View
-        style={{
-          height: pTd(48),
-          backgroundColor: defaultColors.black,
-          display: 'flex',
-          alignContent: 'center',
-          justifyContent: 'center',
-        }}>
-        <Text
-          style={{
-            color: darkColors.textBase2,
-          }}>
-          Delete Account
+      <ProfileAddressSectionV2 title={'My addresses'} isMySelf addressList={caInfoList} />
+      <View style={pageStyles.flex} />
+      <View style={pageStyles.deleteWalletWrap}>
+        <Text onPress={() => navigationService.navigate('AccountCancelation')} style={pageStyles.deleteWalletText}>
+          Delete wallet
         </Text>
       </View>
     </PageContainer>
@@ -207,19 +160,56 @@ const MyWallet: React.FC = () => {
 };
 export default MyWallet;
 
-export const pageStyles = StyleSheet.create({
+const getStyles = makeStyles(theme => ({
   pageWrap: {
     flex: 1,
-    backgroundColor: defaultColors.black,
-  },
-  pageContainer: {
-    paddingTop: 24,
-    paddingBottom: isIOS ? 40 : 20,
-    height: PageHeight,
+    alignItems: 'center',
     justifyContent: 'space-between',
+  },
+  flex: {
+    flex: 1,
+  },
+  userInfoWrap: {
+    marginTop: pTd(24),
+    alignContent: 'center',
+    justifyContent: 'center',
+  },
+  avatarWrap: {
+    alignContent: 'center',
+    justifyContent: 'center',
+  },
+  nicknameText: {
+    color: theme.colors.textBase1,
+    textAlign: 'center',
+    marginRight: pTd(4),
+  },
+  editIcon: {
+    position: 'absolute',
+    right: pTd(0),
+    bottom: pTd(0),
+    zIndex: 1,
+    width: pTd(32),
+    height: pTd(32),
+    borderRadius: pTd(16),
+    borderColor: darkColors.borderBase1,
+    borderWidth: pTd(1),
+    backgroundColor: theme.colors.bgBase2,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   setButton: {
     marginTop: pTd(8),
     marginBottom: pTd(24),
   },
-});
+  deleteWalletWrap: {
+    height: pTd(48),
+    alignContent: 'center',
+    justifyContent: 'center',
+  },
+  deleteWalletText: {
+    color: theme.colors.textBase3,
+    height: pTd(16),
+    fontSize: 16,
+    textAlign: 'center',
+  },
+}));

@@ -69,7 +69,6 @@ const ContactsList: React.FC<ContactsListProps> = ({
       {isIndexBarShow && (
         <View style={contactListStyles.indexBarWrap}>
           <IndexBar
-            showPopover
             data={contactIndexList.map(item => item.index)}
             onPress={index => onSectionSelect(index)}
             disableIndexSelect={true}

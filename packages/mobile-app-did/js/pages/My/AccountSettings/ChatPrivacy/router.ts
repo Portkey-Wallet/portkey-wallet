@@ -1,4 +1,4 @@
-import ChatPrivacy from '.';
+import ChatPrivacy from './index';
 import EditChatPrivacy from './EditChatPrivacy';
 
 const stackNav = [

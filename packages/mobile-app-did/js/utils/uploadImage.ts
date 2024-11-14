@@ -4,7 +4,7 @@ import s3Instance from '@portkey-wallet/utils/s3';
 import { bindUriToLocalImage } from './fs/img';
 import * as ImagePicker from 'expo-image-picker';
 
-export const uploadPortkeyImage = async (file: ImagePicker.ImageInfo): Promise<string> => {
+export const uploadPortkeyImage = async (file: ImagePicker.ImagePickerAsset): Promise<string> => {
   const fileBase64 = await readFile(file.uri, { encoding: 'base64' });
   const data = formatRNImage(file, fileBase64);
   const s3Result = await s3Instance.uploadFile({

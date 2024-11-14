@@ -32,6 +32,7 @@ export const FloatTip = (props: FloatTipProps) => {
     textAlign: 'center',
   };
   const textWrapStyle: ViewStyle = {
+    display: display ? 'flex' : 'none',
     backgroundColor: display ? defaultColors.bgBase3 : 'transparent',
     flexDirection: 'row',
     alignItems: 'center',
@@ -39,7 +40,7 @@ export const FloatTip = (props: FloatTipProps) => {
     justifyContent: 'center',
     paddingHorizontal: 12,
     paddingVertical: 8,
-    alignSelf: 'flex-start',
+    alignSelf: 'center',
     minWidth: 64,
     maxWidth: 280,
     overflow: 'visible',

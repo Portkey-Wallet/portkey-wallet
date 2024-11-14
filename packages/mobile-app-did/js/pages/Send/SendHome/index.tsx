@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { View } from 'react-native';
+import { KeyboardAvoidingView, Platform, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import navigationService from 'utils/navigationService';
 import Svg from 'components/Svg';
@@ -13,7 +13,12 @@ import { useLanguage } from 'i18n/hooks';
 import AmountNFT from '../AmountNFT';
 import NFTInfo from '../NFTInfo';
 import CommonButton from 'components/CommonButton';
-import { useCaAddressInfoList, useCurrentWalletInfo, useMainChainCaInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import {
+  useCaAddressInfoList,
+  useCurrentUserInfo,
+  useCurrentWalletInfo,
+  useMainChainCaInfo,
+} from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useCurrentChain, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import {
   CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL,
@@ -29,6 +34,7 @@ import {
   IToSendHomeParamsType,
   IToSendPreviewParamsType,
   TransferType,
+  TToInfo,
 } from '@portkey-wallet/types/types-ca/routeParams';
 
 import { getELFChainBalance } from '@portkey-wallet/utils/balance';
@@ -68,19 +74,17 @@ import useGetEBridgeConfig from 'hooks/ebridge';
 import { EBridge } from '@portkey-wallet/utils/eBridge';
 import ActionSheet from 'components/ActionSheet';
 import OverlayModal from 'components/OverlayModal';
-import { eBridgeActionSheet, getLimitTips, getSmallerValue, isValidAmount } from '../utils';
+import { eBridgeActionSheet, getLimitTips, getSendNetworkList, getSmallerValue, isValidAmount } from '../utils';
 import { SEND_RECEIVE_HELP_URL } from 'constants/common';
 import { openOutLink } from 'utils/link';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import SelectAddressTab from '../components/SelectAddressTab';
 import { useRecent } from '@portkey-wallet/hooks/hooks-ca/recent';
 import { useGetFilterContactList } from '@portkey-wallet/hooks/hooks-ca/contactNew';
-import { TFormattedRecentItem } from '@portkey-wallet/types/types-ca/contactNew';
+import { IContactItemType, TFormattedRecentItem } from '@portkey-wallet/types/types-ca/contactNew';
 const SendHome: React.FC = () => {
   const {
     params: { sendType = 'token', toInfo, assetInfo, imTransferInfo },
   } = useRoute<RouteProp<{ params: IToSendHomeParamsType }>>();
-  const isMainnet = useIsMainnet();
   const { t } = useLanguage();
   const styles = getStyles();
   useFetchTxFee();
@@ -93,6 +97,8 @@ const SendHome: React.FC = () => {
   const [chainList, setChainList] = useState<INetworkItem[]>([]);
   const [targetNetwork, setTargetNetwork] = useState<INetworkItem>();
   const [recentList, setRecentList] = useState<TFormattedRecentItem[]>();
+  const [savedList, setSavedList] = useState<TFormattedRecentItem[]>();
+  const { userId: myUserId } = useCurrentUserInfo();
 
   const recommendETransfer = useMemo(
     () => targetNetwork?.serviceList?.find(ele => ele?.serviceName?.toLocaleLowerCase()?.includes('transfer')),
@@ -146,7 +152,9 @@ const SendHome: React.FC = () => {
   const getTransferFee = useGetTransferFee();
   const getTransactionFee = useCallback(
     async (isCross: boolean, sendAmount?: string) => {
-      if (!chainInfo) return;
+      if (!chainInfo) {
+        return;
+      }
       const caContract = await getCAContract(chainInfo.chainId);
       return getTransferFee({
         isCross,
@@ -173,21 +181,27 @@ const SendHome: React.FC = () => {
   );
 
   const onGetMaxAmount = useLockCallback(async () => {
-    if (!balance) return setMaxAmountSend('0');
+    if (!balance) {
+      return setMaxAmountSend('0');
+    }
 
     const balanceBN = divDecimals(balance, assetInfo.decimals);
     const balanceStr = balanceBN.toString();
 
     // balance 0
-    if (divDecimals(balance, assetInfo.decimals).isEqualTo(0)) return setMaxAmountSend('0');
+    if (divDecimals(balance, assetInfo.decimals).isEqualTo(0)) {
+      return setMaxAmountSend('0');
+    }
 
     // if other tokens
-    if (assetInfo.symbol !== defaultToken.symbol)
+    if (assetInfo.symbol !== defaultToken.symbol) {
       return setMaxAmountSend(divDecimals(balance, assetInfo.decimals || '0').toString());
+    }
 
-    // elf <= maxFee proxy fee
-    if (divDecimals(balance, assetInfo.decimals).isLessThanOrEqualTo(maxFee))
+    // elf <= maxFee
+    if (divDecimals(balance, assetInfo.decimals).isLessThanOrEqualTo(maxFee)) {
       return setMaxAmountSend(divDecimals(balance, assetInfo.decimals || '0').toString());
+    }
 
     const isAELFCross = !!(selectedToContact.chainId && selectedToContact.chainId !== assetInfo.chainId);
     let fee;
@@ -219,7 +233,9 @@ const SendHome: React.FC = () => {
       Loading.hide();
       // check is SYNCHRONIZING
       const _isManagerSynced = await checkManagerSyncState(chainInfo?.chainId || 'AELF');
-      if (!_isManagerSynced) return CommonToast.warn(TransactionError.SYNCHRONIZING);
+      if (!_isManagerSynced) {
+        return CommonToast.warn(TransactionError.SYNCHRONIZING);
+      }
 
       setSendNumber(maxAmountSend);
       setSendUsdNumber(maxAmountSendUsd);
@@ -236,7 +252,9 @@ const SendHome: React.FC = () => {
     console.log('initBalance assetInfo1', assetInfo);
     console.log('initBalance assetInfo2', assetInfo.symbol || assetInfo.collectionName);
     const caAddress = wallet?.[assetInfo.chainId]?.caAddress;
-    if (!assetInfo || !caAddress) return;
+    if (!assetInfo || !caAddress) {
+      return;
+    }
     try {
       const tokenContract = await getTokenViewContract(assetInfo.chainId);
       const _balance = await getELFChainBalance(tokenContract, assetInfo.symbol, caAddress);
@@ -311,14 +329,19 @@ const SendHome: React.FC = () => {
 
   const { getTransformedRecentList } = useRecent();
 
-  const savedList = useGetFilterContactList({
-    fromChainId: assetInfo.chainId,
-    tokenId: assetInfo.symbol,
-    isFt: sendType !== 'token',
-  });
+  const getSavedList = useGetFilterContactList();
 
-  const initBookList = useCallback(async () => {
-    const reList = await getTransformedRecentList({
+  const initSavedList = useCallback(() => {
+    const list = getSavedList({
+      fromChainId: assetInfo.chainId,
+      tokenId: assetInfo.symbol,
+      isFt: sendType !== 'token',
+    });
+    setSavedList(list || []);
+  }, [assetInfo.chainId, assetInfo.symbol, getSavedList, sendType]);
+
+  const initBookList = useCallback(() => {
+    const reList = getTransformedRecentList({
       fromChainId: assetInfo.chainId,
       tokenId: assetInfo.symbol,
       isFt: sendType !== 'token',
@@ -328,6 +351,11 @@ const SendHome: React.FC = () => {
 
   useEffectOnce(() => {
     initBookList();
+    initBookList();
+  });
+
+  useEffectOnce(() => {
+    initSavedList();
   });
 
   const Step1Dom = useMemo(() => {
@@ -518,7 +546,6 @@ const SendHome: React.FC = () => {
         return { status: false };
       }
     }
-    Loading.show();
     try {
       // cross chain interception
       if (isAELFCross) {
@@ -875,11 +902,84 @@ const SendHome: React.FC = () => {
   }, [onGetMaxAmount]);
 
   const caAddressInfos = useCaAddressInfoList();
-  const myOtherAddressList = useMemo(() => {
-    return caAddressInfos.filter(item => item.chainId !== assetInfo.chainId);
+  const userInfo = useCurrentUserInfo();
+
+  const myAddress = useMemo(() => {
+    return caAddressInfos.filter(item => item.chainId !== assetInfo.chainId)?.[0];
   }, [assetInfo.chainId, caAddressInfos]);
 
-  console.log('myAddress', myOtherAddressList);
+  const myAddressesList: TFormattedRecentItem = useMemo(() => {
+    const address = myAddress?.caAddress || '';
+    return {
+      id: address,
+      index: address,
+      name: userInfo?.nickName || '',
+      network: '',
+      chainId: myAddress?.chainId || '',
+      networkIcon: myAddress?.chainImageUrl,
+      addressInfo: {
+        network: '',
+        networkName: myAddress?.displayChainName || '',
+        networkImage: myAddress?.chainImageUrl || '',
+        address,
+      },
+      caHolderInfo: {
+        userId: userInfo?.userId || '',
+        caHash: '',
+        walletName: userInfo?.nickName || '',
+        avatar: userInfo?.avatar || '',
+        address,
+      },
+      isDeleted: false,
+      userId: userInfo?.userId || '',
+      modificationTime: 0,
+      address,
+    };
+  }, [
+    myAddress?.caAddress,
+    myAddress?.chainId,
+    myAddress?.chainImageUrl,
+    myAddress.displayChainName,
+    userInfo?.avatar,
+    userInfo?.nickName,
+    userInfo?.userId,
+  ]);
+
+  const onPressTabItem = useCallback(
+    async (i: TFormattedRecentItem) => {
+      console.log('onPressTabItem', i);
+      try {
+        if (i.userId === myUserId) {
+          setSelectedToContact({
+            name: '',
+            address: addressFormat(i.addressInfo?.address, i.addressInfo?.chainId),
+          } as TToInfo);
+          setStep(2);
+        } else if (i.network !== 'aelf' && i.addressInfo?.network !== 'aelf') {
+          Loading.show();
+          const { data } = await getSendNetworkList({
+            symbol: assetInfo?.symbol || '',
+            chainId: assetInfo?.chainId || 'AELF',
+            toAddress: i?.addressInfo?.address || '',
+          });
+          const tmpNetwork = data?.networkList?.find((ele: any) => ele.network === i.network);
+
+          if (!tmpNetwork) throw 'not supported';
+          setTargetNetwork(tmpNetwork);
+          setSelectedToContact({ name: i?.name, address: i.address || i.addressInfo?.address } as TToInfo);
+          setStep(2);
+        } else {
+          setSelectedToContact({ name: i?.name, address: i.address || i.addressInfo?.address } as TToInfo);
+          setStep(2);
+        }
+      } catch (error) {
+        CommonToast.failError(error);
+      } finally {
+        Loading.hide();
+      }
+    },
+    [assetInfo?.chainId, assetInfo?.symbol, myUserId],
+  );
 
   return (
     <PageContainer
@@ -897,76 +997,78 @@ const SendHome: React.FC = () => {
       }
       containerStyles={styles.pageWrap}
       scrollViewProps={{ disabled: true }}>
-      <ToAddressInput
-        step={step}
-        warning={warning}
-        checkFinish={isCheckAddressFinish}
-        selectedToken={assetInfo}
-        selectedToContact={selectedToContact}
-        isFixedToContact={isFixedToContact}
-        setStep={setStep}
-        setWarning={setWarning}
-        setSelectedToContact={setSelectedToContact}
-        setChainList={setChainList}
-        setCheckFinish={setIsCheckAddressFinish}
-        setSendNumber={setSendNumber}
-        setSendUSDNumber={setSendUsdNumber}
-      />
-      {Step1Dom}
-
-      {/* Group 2 token */}
-      {sendType === 'token' && step === 2 && (
-        <View style={styles.group}>
-          <TokenBalanceShow
-            label={assetInfo?.label}
-            symbol={assetInfo.symbol}
-            balanceShow={formatTokenAmountShowWithDecimals(balance, assetInfo.decimals)}
-            onPressMax={onPressMax}
-            imageUrl={assetInfo.imageUrl}
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
+        <View style={styles.mainWrap}>
+          <ToAddressInput
+            step={step}
+            warning={warning}
+            checkFinish={isCheckAddressFinish}
+            selectedToken={assetInfo}
+            selectedToContact={selectedToContact}
+            isFixedToContact={isFixedToContact}
+            setStep={setStep}
+            setWarning={setWarning}
+            setSelectedToContact={setSelectedToContact}
+            setChainList={setChainList}
+            setCheckFinish={setIsCheckAddressFinish}
+            setSendNumber={setSendNumber}
+            setSendUSDNumber={setSendUsdNumber}
           />
-          <TokenAmountInput
-            warningTip={errorMessage}
-            value={sendNumber}
-            usdValue={sendUsdNumber}
-            label={assetInfo.label}
-            symbol={assetInfo.symbol}
-            decimals={assetInfo.decimals}
-            setValue={setSendNumber}
-            setUsdValue={setSendUsdNumber}
-          />
-        </View>
-      )}
+          {Step1Dom}
 
-      {/* TODO: nft section */}
-      {sendType === 'nft' && step === 2 && (
-        <>
-          <View style={styles.group}>
-            <NFTInfo nftItem={assetInfo} onMaxPress={onPressMax} />
-          </View>
-          <View style={styles.group}>
-            <AmountNFT
-              warningTip={errorMessage}
-              sendNumber={sendNumber}
-              setSendNumber={setSendNumber}
-              assetInfo={assetInfo}
+          {/* Group 2 token */}
+          {sendType === 'token' && step === 2 && (
+            <View style={styles.group}>
+              <TokenBalanceShow
+                label={assetInfo?.label}
+                symbol={assetInfo.symbol}
+                balanceShow={formatTokenAmountShowWithDecimals(balance, assetInfo.decimals)}
+                onPressMax={onPressMax}
+                imageUrl={assetInfo.imageUrl}
+              />
+              <TokenAmountInput
+                warningTip={errorMessage}
+                value={sendNumber}
+                usdValue={sendUsdNumber}
+                label={assetInfo.label}
+                symbol={assetInfo.symbol}
+                decimals={assetInfo.decimals}
+                setValue={setSendNumber}
+                setUsdValue={setSendUsdNumber}
+              />
+            </View>
+          )}
+
+          {/* TODO: nft section */}
+          {sendType === 'nft' && step === 2 && (
+            <>
+              <View style={styles.group}>
+                <NFTInfo nftItem={assetInfo} onMaxPress={onPressMax} />
+              </View>
+              <View style={styles.group}>
+                <AmountNFT
+                  warningTip={errorMessage}
+                  sendNumber={sendNumber}
+                  setSendNumber={setSendNumber}
+                  assetInfo={assetInfo}
+                />
+              </View>
+            </>
+          )}
+          {step === 1 && (
+            <SelectAddressTab
+              recentAddressList={recentList || []}
+              savedAddressList={savedList || []}
+              myAddressList={[myAddressesList as IContactItemType]}
+              noDataMessage="No recent address"
+              chainId={assetInfo.chainId}
+              onPress={onPressTabItem}
             />
-          </View>
-        </>
-      )}
-      {step === 1 && (
-        <SelectAddressTab
-          recentAddressList={recentList || []}
-          savedAddressList={savedList || []}
-          myAddressList={myOtherAddressList as any}
-          noDataMessage="No recent address"
-          chainId={assetInfo.chainId}
-          onPress={(item: TFormattedRecentItem) => {
-            setSelectedToContact(item as any);
-          }}
-        />
-      )}
+          )}
+        </View>
 
-      {renderBottomSection()}
+        {renderBottomSection()}
+      </KeyboardAvoidingView>
     </PageContainer>
   );
 };

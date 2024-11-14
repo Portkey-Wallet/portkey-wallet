@@ -10,7 +10,6 @@ import CommonToast from 'components/CommonToast';
 import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { getExploreLink } from '@portkey-wallet/utils';
 import GStyles from 'assets/theme/GStyles';
-import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import ProfileHeaderSection from 'pages/My/components/ProfileHeaderSection';
 import { pTd } from 'utils/unit';
 import Svg from 'components/Svg';
@@ -20,6 +19,7 @@ import { IContactItemType } from '@portkey-wallet/types/types-ca/contactNew';
 import ContactAddress, { IContactAddressRef } from 'components/ContactAddress';
 import { AELF_NETWORK_NAME } from 'constants/common';
 import AddressActivity from '../AddressActivity';
+import { RouteProp, useRoute } from '@react-navigation/native';
 
 type RouterParams = {
   contact?: IContactItemType;
@@ -27,7 +27,9 @@ type RouterParams = {
 };
 
 const NoChatContactProfile: React.FC = () => {
-  const { contact, isSaved = true } = useRouterParams<RouterParams>();
+  const {
+    params: { contact, isSaved = true },
+  } = useRoute<RouteProp<{ params: RouterParams }>>();
   const contactAddressRef = useRef<IContactAddressRef>(null);
   const [isViewMoreDropdown, setIsViewMoreDropdown] = useState(false);
   const { t } = useLanguage();
@@ -36,13 +38,13 @@ const NoChatContactProfile: React.FC = () => {
   } = useTheme();
   const pageStyles = getPageStyles();
 
-  const hadleCopy = useCallback(async () => {
+  const handleCopy = useCallback(async () => {
     const addressFormatStr = contactAddressRef.current?.getAddress();
     if (!addressFormatStr) return;
     const isCopy = await Clipboard.setStringAsync(addressFormatStr);
     isCopy && CommonToast.success(t('Copy Success'));
   }, [t]);
-  const hadleAddContact = useCallback(() => {
+  const handleAddContact = useCallback(() => {
     navigationService.navigate('NoChatContactProfileEdit', { willAddContact: contact });
   }, [contact]);
   const isAelfNetwork = useMemo(() => {
@@ -94,11 +96,11 @@ const NoChatContactProfile: React.FC = () => {
             {contact && <ContactAddress ref={contactAddressRef} contact={contact} style={pageStyles.address} />}
           </View>
           {isSaved ? (
-            <Touchable style={pageStyles.addressCopy} onPress={hadleCopy}>
+            <Touchable style={pageStyles.addressCopy} onPress={handleCopy}>
               <Svg icon="copy" size={pTd(24)} color={colors.iconBase3} />
             </Touchable>
           ) : (
-            <Touchable style={pageStyles.addressCopy} onPress={hadleAddContact}>
+            <Touchable style={pageStyles.addressCopy} onPress={handleAddContact}>
               <Svg icon="add-contact1" size={pTd(24)} color={colors.iconBase3} />
             </Touchable>
           )}
@@ -129,7 +131,7 @@ const NoChatContactProfile: React.FC = () => {
             <Touchable
               style={pageStyles.dropDownItem}
               onPress={() => {
-                hadleCopy();
+                handleCopy();
                 setIsViewMoreDropdown(false);
               }}>
               <Svg icon="copy" size={pTd(24)} color={colors.iconBase1} />

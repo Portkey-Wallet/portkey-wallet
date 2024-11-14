@@ -969,7 +969,7 @@ const SendHome: React.FC = () => {
         Loading.hide();
       }
     },
-    [assetInfo?.chainId, assetInfo?.symbol],
+    [assetInfo?.chainId, assetInfo?.symbol, myUserId],
   );
 
   return (

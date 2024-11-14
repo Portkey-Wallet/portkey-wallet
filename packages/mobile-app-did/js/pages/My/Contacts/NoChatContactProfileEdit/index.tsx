@@ -316,7 +316,6 @@ const ContactEdit: React.FC = () => {
         labelStyle={pageStyles.inputLabelStyle}
         value={editContact.name}
         onChangeText={onNameChange}
-        autoCapitalize="none"
         errorStyle={pageStyles.errorStyle}
         errorMessage={formError.name?.isError ? formError.name?.errorMsg : ''}
       />

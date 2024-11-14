@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState, useEffect, useRef } from 'react';
 import { useCurrentNetworkInfo } from '../network';
 import { useAppCommonDispatch } from '../..';
 import { addBotSending, removeBotSending } from '@portkey-wallet/store/store-ca/im/actions';
-import { useImSendingBotNetMapState } from '.';
+import { useImSendingBotNetMapState } from './index';
 
 export const useBotSendingStatus = (targetRelationId: string) => {
   const { networkType } = useCurrentNetworkInfo();

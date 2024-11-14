@@ -152,7 +152,9 @@ const SendHome: React.FC = () => {
   const getTransferFee = useGetTransferFee();
   const getTransactionFee = useCallback(
     async (isCross: boolean, sendAmount?: string) => {
-      if (!chainInfo) return;
+      if (!chainInfo) {
+        return;
+      }
       const caContract = await getCAContract(chainInfo.chainId);
       return getTransferFee({
         isCross,
@@ -179,21 +181,27 @@ const SendHome: React.FC = () => {
   );
 
   const onGetMaxAmount = useLockCallback(async () => {
-    if (!balance) return setMaxAmountSend('0');
+    if (!balance) {
+      return setMaxAmountSend('0');
+    }
 
     const balanceBN = divDecimals(balance, assetInfo.decimals);
     const balanceStr = balanceBN.toString();
 
     // balance 0
-    if (divDecimals(balance, assetInfo.decimals).isEqualTo(0)) return setMaxAmountSend('0');
+    if (divDecimals(balance, assetInfo.decimals).isEqualTo(0)) {
+      return setMaxAmountSend('0');
+    }
 
     // if other tokens
-    if (assetInfo.symbol !== defaultToken.symbol)
+    if (assetInfo.symbol !== defaultToken.symbol) {
       return setMaxAmountSend(divDecimals(balance, assetInfo.decimals || '0').toString());
+    }
 
-    // elf <= maxFee proxy fee
-    if (divDecimals(balance, assetInfo.decimals).isLessThanOrEqualTo(maxFee))
+    // elf <= maxFee
+    if (divDecimals(balance, assetInfo.decimals).isLessThanOrEqualTo(maxFee)) {
       return setMaxAmountSend(divDecimals(balance, assetInfo.decimals || '0').toString());
+    }
 
     const isAELFCross = !!(selectedToContact.chainId && selectedToContact.chainId !== assetInfo.chainId);
     let fee;
@@ -225,7 +233,9 @@ const SendHome: React.FC = () => {
       Loading.hide();
       // check is SYNCHRONIZING
       const _isManagerSynced = await checkManagerSyncState(chainInfo?.chainId || 'AELF');
-      if (!_isManagerSynced) return CommonToast.warn(TransactionError.SYNCHRONIZING);
+      if (!_isManagerSynced) {
+        return CommonToast.warn(TransactionError.SYNCHRONIZING);
+      }
 
       setSendNumber(maxAmountSend);
       setSendUsdNumber(maxAmountSendUsd);
@@ -242,7 +252,9 @@ const SendHome: React.FC = () => {
     console.log('initBalance assetInfo1', assetInfo);
     console.log('initBalance assetInfo2', assetInfo.symbol || assetInfo.collectionName);
     const caAddress = wallet?.[assetInfo.chainId]?.caAddress;
-    if (!assetInfo || !caAddress) return;
+    if (!assetInfo || !caAddress) {
+      return;
+    }
     try {
       const tokenContract = await getTokenViewContract(assetInfo.chainId);
       const _balance = await getELFChainBalance(tokenContract, assetInfo.symbol, caAddress);
@@ -534,7 +546,6 @@ const SendHome: React.FC = () => {
         return { status: false };
       }
     }
-    Loading.show();
     try {
       // cross chain interception
       if (isAELFCross) {

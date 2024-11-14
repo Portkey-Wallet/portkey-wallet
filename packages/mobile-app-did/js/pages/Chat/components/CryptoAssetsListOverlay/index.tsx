@@ -150,7 +150,9 @@ const CryptoAssetsList = ({
 
   const getList = useCallback(
     async (_keyword = '', isInit = false) => {
-      if (!isInit && listShow.length > 0) return;
+      if (!isInit && listShow.length > 0) {
+        return;
+      }
       try {
         const response = await fetchCryptoBoxAssetList({
           caAddressInfos,

@@ -48,6 +48,12 @@ import { useGetTokenViewContract } from 'hooks/contract';
 import { getELFChainBalance } from '@portkey-wallet/utils/balance';
 import { useRecent } from '@portkey-wallet/hooks/hooks-ca/recent';
 import { IRecentItem } from '@portkey-wallet/store/store-ca/recent/type';
+import {
+  useEtransferCrossTrack,
+  useEtransferCrossFinishTrack,
+  useCrossChainTransferTrack,
+  usePortkeyCrossTrack,
+} from 'hooks/amplitude';
 
 const SendPreview: React.FC = () => {
   const { t } = useLanguage();
@@ -128,11 +134,12 @@ const SendPreview: React.FC = () => {
       };
 
     const fee = (isETransferOrEBridge ? transactionFee : networkFee) || 0;
-    if (ZERO.plus(sendNumber).isLessThanOrEqualTo(fee))
+    if (ZERO.plus(sendNumber).isLessThanOrEqualTo(fee)) {
       return {
         estimateAmount: `0 ${assetInfo?.label || assetInfo?.symbol}`,
         estimateAmountUsd: isMainnet ? '$ 0' : '',
       };
+    }
 
     let _amount = sendNumber;
     _amount = formatAmountShow(ZERO.plus(_amount).minus(networkFee || ''), Number(defaultToken.decimals));
@@ -240,6 +247,10 @@ const SendPreview: React.FC = () => {
     toInfo?.chainId,
   ]);
 
+  const crossChainTransferTrack = useCrossChainTransferTrack();
+  const portkeyCrossTrack = usePortkeyCrossTrack();
+  const etransferCrossTrack = useEtransferCrossTrack();
+  const etransferCrossFinishTrack = useEtransferCrossFinishTrack();
   const transfer = useCallback(async () => {
     setIsError(false);
 
@@ -249,9 +260,13 @@ const SendPreview: React.FC = () => {
       address: assetInfo.tokenContractAddress,
     };
 
-    if (!chainInfo || !pin) return;
+    if (!chainInfo || !pin) {
+      return;
+    }
     const account = getManagerAccount(pin);
-    if (!account) return;
+    if (!account) {
+      return;
+    }
 
     if (!portkeyContractRef.current) {
       portkeyContractRef.current = await getContractBasic({
@@ -287,10 +302,12 @@ const SendPreview: React.FC = () => {
           },
         },
       });
-      if (!checkTransferLimitResult) return;
+      if (!checkTransferLimitResult) {
+        return;
+      }
     }
 
-    // TODO:change it
+    // TODO:change it, add track
     if (transferType === TransferType.GENERAL_SAME_CHAIN) {
       console.log('sameChainTransfers==sendHandler', tokenInfo);
       const sameTransferResult = await sameChainTransfer({
@@ -402,6 +419,10 @@ const SendPreview: React.FC = () => {
     getEVMChainInfoConfig,
     getElfBalance,
     getTokenConfig,
+    etransferCrossFinishTrack,
+    etransferCrossTrack,
+    fetchAccountNFTCollectionInfoList,
+    fetchAccountTokenInfoList,
     guardiansApproved,
     isApproved,
     pin,
@@ -423,9 +444,13 @@ const SendPreview: React.FC = () => {
         decimals: assetInfo.decimals ?? 0,
         address: assetInfo.tokenContractAddress,
       };
-      if (!chainInfo || !pin) return;
+      if (!chainInfo || !pin) {
+        return;
+      }
       const account = getManagerAccount(pin);
-      if (!account) return;
+      if (!account) {
+        return;
+      }
 
       setIsLoading(true);
       try {
@@ -489,6 +514,13 @@ const SendPreview: React.FC = () => {
       } else {
         CommonToast.failError(error);
       }
+      // TODO: add track  Etransfer Cross fail
+      // if (isSupportEtransferCross) {
+      //   etransferCrossFinishTrack({
+      //     success: false,
+      //     msg: JSON.stringify(error),
+      //   });
+      // }
     } finally {
       setIsLoading(false);
     }

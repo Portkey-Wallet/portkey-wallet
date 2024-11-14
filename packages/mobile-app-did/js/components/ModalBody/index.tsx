@@ -48,7 +48,6 @@ export const ModalBody: React.FC<ModalBodyProps> = props => {
     onTouchStart,
     isMaxHeight = false,
   } = props;
-
   const gStyles = useGStyles();
   const styles = getStyles();
 

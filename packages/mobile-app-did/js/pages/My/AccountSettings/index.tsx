@@ -9,7 +9,7 @@ import { defaultColors } from 'assets/theme';
 import { useLanguage } from 'i18n/hooks';
 import { pTd } from 'utils/unit';
 import { RootStackName } from 'navigation';
-import { useCurrentUserInfo, useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentUserInfo, useCurrentWallet, useSetNewWalletName } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useIsSecondaryMailSet } from '@portkey-wallet/hooks/hooks-ca/useSecondaryMail';
 import { HELP_CENTER_URL } from '@portkey-wallet/constants/constants-ca/common';
 import { removeManager } from '@portkey-wallet/utils/guardian';
@@ -21,9 +21,15 @@ import Loading from 'components/Loading';
 import CommonToast from 'components/CommonToast';
 import FastImage from 'components/FastImage';
 import { TextM } from 'components/CommonText';
-import { makeStyles } from '@rneui/themed';
+import { makeStyles, useTheme } from '@rneui/themed';
 import { getDeviceInfo } from 'utils/deviceInfo';
 import ActionSheet from 'components/ActionSheet';
+import { CommonPromptCard, PromptCardType } from 'components/CommonPromptCard';
+import fonts from 'assets/theme/fonts';
+import { useUpdateInfo } from 'store/user/hooks';
+import { codePushOperator, parseLabel } from 'utils/update';
+import * as Application from 'expo-application';
+import { parseVersion } from 'utils';
 
 interface MenuItemType {
   name: string;
@@ -38,6 +44,8 @@ export default function AccountSettings() {
   const biometricsReady = useBiometricsReady();
   const styles = getStyles();
   const { showNotSet, secondaryEmail, getSecondaryMail, hideNotSetMark, fetching } = useIsSecondaryMailSet();
+  const { shouldShowSetNewWalletNameIcon, handleSetNewWalletName } = useSetNewWalletName();
+  const updateInfo = useUpdateInfo();
 
   const onPressItem = useCallback((item: MenuItemType) => {
     if (item.onPress) {
@@ -53,7 +61,7 @@ export default function AccountSettings() {
   const getCurrentCAContract = useGetCurrentCAContract();
   const userInfo = useCurrentUserInfo();
   const logout = useLogOut();
-
+  const { theme } = useTheme();
   const { t } = useLanguage();
   const avatarSize = pTd(40);
 
@@ -140,13 +148,14 @@ export default function AccountSettings() {
             </View>
           );
         },
-      },
-      {
-        name: 'Referral',
-        label: 'Referral',
-        icon: 'my_referral',
         showDivider: true,
       },
+      // {
+      //   name: 'Referral',
+      //   label: 'Referral',
+      //   icon: 'my_referral',
+      //   showDivider: true,
+      // },
       {
         name: 'SwitchNetworks',
         label: 'Switch network',
@@ -172,10 +181,27 @@ export default function AccountSettings() {
       {
         name: 'Check for updates',
         label: 'Check for updates',
-        icon: 'my_change',
+        icon: 'my_update',
+        suffixDom: () => {
+          return (
+            <TextM style={{ color: theme.colors.textBase2 }}>
+              {parseVersion([
+                `v${Application.nativeApplicationVersion}`,
+                parseLabel(codePushOperator.localPackage?.label),
+              ])}
+            </TextM>
+          );
+        },
+        onPress: () => {
+          if (updateInfo) {
+            codePushOperator.checkToUpdate();
+          } else {
+            CommonToast.info(`You're using the latest version.`);
+          }
+        },
       },
     ],
-    [fetching, secondaryEmail, showNotSet, styles],
+    [fetching, secondaryEmail, showNotSet, styles, theme, updateInfo],
   );
 
   const onExitClick = useCallback(
@@ -228,8 +254,39 @@ export default function AccountSettings() {
     navigationService.navigate('WalletName');
   }, []);
 
+  const onSetNewWalletName = useCallback(async () => {
+    try {
+      await handleSetNewWalletName();
+      CommonToast.success('Wallet name updated.');
+    } catch (error) {
+      CommonToast.failError(error);
+    }
+  }, [handleSetNewWalletName]);
+
+  const updateWalletNameTip = useMemo(() => {
+    return (
+      <View>
+        <TextM style={{ color: theme.colors.textWarning1, lineHeight: pTd(20) }}>
+          {t(`Use your login account as your wallet name to give it a unique identity.`)}
+        </TextM>
+        <Touchable onPress={onSetNewWalletName}>
+          <TextM style={[fonts.SGMediumFont, { color: theme.colors.textBrand1, marginTop: pTd(16) }]}>
+            {t(`Set it now`)}
+          </TextM>
+        </Touchable>
+      </View>
+    );
+  }, [onSetNewWalletName, t, theme]);
+
   return (
     <PageContainer containerStyles={styles.containerStyles} safeAreaColor={['black']} titleDom={t('Setting')}>
+      {shouldShowSetNewWalletNameIcon && (
+        <CommonPromptCard
+          style={{ marginBottom: pTd(16) }}
+          type={PromptCardType.WARNING}
+          description={updateWalletNameTip}
+        />
+      )}
       <Touchable style={[styles.info]} onPress={onPressUserInfo}>
         <View style={styles.userInfoWrap}>
           <FastImage style={[sizeStyle]} resizeMode="cover" source={{ uri: userInfo.avatar }} />

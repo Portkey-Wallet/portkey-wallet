@@ -435,8 +435,7 @@ const ActivityDetail = (props: ActivityItemType & IActivityApiParams) => {
               <View style={styles.cornerMark}>
                 <CommonAvatar
                   imageUrl={activityItem.sourceIcon}
-                  style={styles.cornerMarkIcon}
-                  avatarSize={pTd(16)}
+                  avatarSize={pTd(24)}
                   titleStyle={styles.avatarTitleStyle}
                   borderStyle={GStyles.hairlineBorder}
                 />

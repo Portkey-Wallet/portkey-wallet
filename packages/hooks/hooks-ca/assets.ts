@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react';
-import { useAppCASelector } from '.';
+import { useAppCASelector } from './index';
 import { useCaAddressInfoList } from './wallet';
 import { fetchNFTItem, fetchTokenAllowanceList } from '@portkey-wallet/store/store-ca/assets/api';
 import { ChainId } from '@portkey-wallet/types';

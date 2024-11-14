@@ -4,7 +4,7 @@ import { ChainId } from '@portkey-wallet/types';
 import { ParsedTransfer, TransferTypeEnum } from '@portkey-wallet/im/types';
 import im, { Message, MessageTypeEnum } from '@portkey-wallet/im';
 import { handleLoopFetch } from '@portkey-wallet/utils';
-import { useRelationId } from '.';
+import { useRelationId } from './index';
 import { TransferStatusEnum } from '@portkey-wallet/im/types';
 import { messageParser } from '@portkey-wallet/im/utils';
 import { useCurrentUserInfo, useCurrentWalletInfo } from '../wallet';

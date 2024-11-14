@@ -45,7 +45,9 @@ const ProfileAddressSection: React.FC<ProfileAddressSectionPropsType> = props =>
   const addressList = useMemo(() => {
     const _addressList = [...(addressListProps || [])];
     const index = _addressList.findIndex(ele => ele.chainId === 'AELF');
-    if (index === -1) return _addressList;
+    if (index === -1) {
+      return _addressList;
+    }
     const aelfAddress = _addressList.splice(index, 1)[0];
     return [aelfAddress, ..._addressList];
   }, [addressListProps]);

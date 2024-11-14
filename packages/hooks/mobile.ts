@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { BackHandler } from 'react-native';
-import { useLatestRef } from '.';
+import { useLatestRef } from './index';
 export function useHardwareBackPress(callback?: () => boolean) {
   useEffect(() => {
     if (!callback) return;

@@ -10,7 +10,7 @@ import { useGStyles } from 'assets/theme/useGStyles';
 import { ModalBody } from 'components/ModalBody';
 import { defaultColors } from 'assets/theme';
 import CommonAvatar from 'components/CommonAvatar';
-import { chainShowText, formatChainInfoToShow } from '@portkey-wallet/utils';
+import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import { FontStyles } from 'assets/theme/styles';
 import { IRampCryptoItem } from '@portkey-wallet/ramp';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';

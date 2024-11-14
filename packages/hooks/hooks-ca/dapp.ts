@@ -1,6 +1,6 @@
 import { useMemo, useCallback } from 'react';
 import AElf from 'aelf-sdk';
-import { useAppCASelector } from '.';
+import { useAppCASelector } from './index';
 import { useCurrentWalletInfo, useWallet } from './wallet';
 import { useAppCommonDispatch } from '../index';
 import { updateSessionInfo } from '@portkey-wallet/store/store-ca/dapp/actions';

@@ -360,7 +360,7 @@ const LimitEnter = () => {
           />
         )}
         <CommonButton
-          style={styles.actionButton}
+          buttonStyle={styles.actionButton}
           type="primary"
           title={t(actionButtonTitle)}
           disabled={isBtnDisable}

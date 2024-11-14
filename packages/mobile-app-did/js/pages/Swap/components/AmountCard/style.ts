@@ -29,7 +29,7 @@ export const getStyles = makeStyles(theme => ({
     flex: 1,
   },
   amountText: {
-    ...fonts.BGMediumFont,
+    fontFamily: 'BricolageGrotesque-Bold',
     fontSize: pTd(32),
     lineHeight: pTd(38),
     color: theme.colors.textBase1,
@@ -40,20 +40,26 @@ export const getStyles = makeStyles(theme => ({
   containerStyle: {
     flex: 1,
     height: pTd(38),
-    marginRight: -pTd(2),
-    marginLeft: -pTd(10),
+    paddingHorizontal: 0,
   },
   inputContainerStyle: {
     borderBottomWidth: 0,
   },
   inputStyle: {
-    ...fonts.BGMediumFont,
+    padding: 0,
+    fontFamily: 'BricolageGrotesque-Bold',
     fontSize: pTd(32),
     lineHeight: pTd(38),
     color: theme.colors.textBase1,
   },
+  errorStyle: {
+    display: 'none',
+  },
   errorInputStyle: {
     color: theme.colors.textDanger1,
+  },
+  selectTokenButton: {
+    marginLeft: pTd(8),
   },
   infoWrap: {
     flexDirection: 'row',

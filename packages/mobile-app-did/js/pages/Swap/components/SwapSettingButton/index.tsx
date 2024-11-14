@@ -180,7 +180,7 @@ const SwapSettingContent = () => {
               <Text style={styles.expiresByUnitText}>Minute(s)</Text>
             </View>
           </View>
-          <CommonButton style={styles.bottomButton} title={t('Done')} type="primary" onPress={saveSetting} />
+          <CommonButton buttonStyle={styles.bottomButton} title={t('Done')} type="primary" onPress={saveSetting} />
         </KeyboardSafeArea>
       </View>
     </ModalBody>

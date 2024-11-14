@@ -58,7 +58,7 @@ const DiscoverTab: React.FC = () => {
       isBlockTab={true}
       hasBottomBorder={false}
       onTabChange={handleTabChange}
-      expandView={currentRouteName === 'Market' && <MarketType marketInfo={marketInfo} handleType={handleType} />}
+      suffixIconDom={currentRouteName === 'Market' && <MarketType marketInfo={marketInfo} handleType={handleType} />}
     />
   );
 };

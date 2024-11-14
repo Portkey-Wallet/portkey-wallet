@@ -15,6 +15,7 @@ import PageContainer from 'components/PageContainer';
 import SelectAssetTab from '../SelectAssetTab';
 import { makeStyles } from '@rneui/themed';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
+import Loading from 'components/Loading';
 
 const AssetList = () => {
   // when scan qrcode should add toAddress
@@ -41,10 +42,12 @@ const AssetList = () => {
   console.log('assetListShow', JSON.stringify(assetListShow));
   const getAssetsList = useLockCallback(async () => {
     try {
+      Loading.show();
       await fetchAccountAssetsInfoList({
         caAddressInfos,
         keyword: '',
       });
+      Loading.hide();
     } catch (error) {
       console.log('fetchAccountAssetsByKeywords err:', error);
     }
@@ -53,10 +56,12 @@ const AssetList = () => {
   const getFilteredAssetsList = useLockCallback(async () => {
     if (!debounceKeyword.trim()) return;
     try {
+      Loading.show();
       const { nftInfos, tokenInfos } = await fetchAssetListV2({
         caAddressInfos,
         keyword: debounceKeyword,
       });
+      Loading.hide();
       setFilteredListShow({ nftInfos, tokenInfos });
     } catch (err) {
       console.log('fetchAccountAssetsByKeywords err:', err);

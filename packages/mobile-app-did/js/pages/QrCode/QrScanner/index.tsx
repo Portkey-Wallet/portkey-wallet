@@ -1,6 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { BarCodeScanner } from 'expo-barcode-scanner';
-import { View, SafeAreaView, StyleSheet } from 'react-native';
+import { View, SafeAreaView } from 'react-native';
 import navigationService from 'utils/navigationService';
 import Svg from 'components/Svg';
 import { pTd } from 'utils/unit';
@@ -14,7 +13,7 @@ import GStyles from 'assets/theme/GStyles';
 import fonts from 'assets/theme/fonts';
 import { isIOS, screenHeight, screenWidth } from '@portkey-wallet/utils/mobile/device';
 
-import { Camera } from 'expo-camera';
+import { CameraView, Camera } from 'expo-camera';
 import Loading from 'components/Loading';
 import { useHandleDataFromQrCode } from 'hooks/useQrScan';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
@@ -50,7 +49,9 @@ const QrScanner: React.FC<QrScannerProps> = () => {
 
   const handleBarCodeScanned = useLockCallback(
     async ({ data = '' }) => {
-      if (!latestIsFocused.current) return;
+      if (!latestIsFocused.current) {
+        return;
+      }
       try {
         await handleDataFromQrCode(data);
       } catch {
@@ -69,23 +70,29 @@ const QrScanner: React.FC<QrScannerProps> = () => {
       allowsMultipleSelection: false,
       quality: 1,
     });
+    if (result.canceled || !result.assets || result.assets.length <= 0) {
+      return;
+    }
 
-    if (result.cancelled || !result.uri) return;
+    if (result && result?.assets[0].uri) {
+      const scanResult = await Camera.scanFromURLAsync(result?.assets[0].uri, ['qr']);
 
-    if (result && result?.uri) {
-      const scanResult = await BarCodeScanner.scanFromURLAsync(result?.uri, [BarCodeScanner.Constants.BarCodeType.qr]);
-
-      if (scanResult[0]?.data) handleBarCodeScanned({ data: scanResult[0]?.data || '' });
+      if (scanResult[0]?.data) {
+        handleBarCodeScanned({ data: scanResult[0]?.data || '' });
+      }
     }
   };
 
   return (
     <View style={PageStyle.wrapper}>
       {refresh ? null : (
-        <Camera
+        <CameraView
           ratio={'16:9'}
+          barcodeScannerSettings={{
+            barcodeTypes: ['qr', 'pdf417'],
+          }}
           style={[PageStyle.barCodeScanner, !isIOS && PageStyle.barCodeScannerAndroid]}
-          onBarCodeScanned={handleBarCodeScanned}>
+          onBarcodeScanned={handleBarCodeScanned}>
           <SafeAreaView style={PageStyle.innerView}>
             <View style={PageStyle.iconWrap}>
               <Touchable
@@ -102,7 +109,7 @@ const QrScanner: React.FC<QrScannerProps> = () => {
             <Svg icon="scan-square" size={pTd(240)} iconStyle={PageStyle.scan} />
             <TextM style={PageStyle.tips}>{t('Send crypto and connect to dApps \n by scanning a QR code')}</TextM>
           </SafeAreaView>
-        </Camera>
+        </CameraView>
       )}
     </View>
   );

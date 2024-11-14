@@ -1,5 +1,5 @@
-import WalletHome from '.';
 import MyWallet from './MyWallet';
+import WalletHome from './index';
 import EditWalletName from './EditWalletName';
 
 import SwitchNetworks from './SwitchNetworks';

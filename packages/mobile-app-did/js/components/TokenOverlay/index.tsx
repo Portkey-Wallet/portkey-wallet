@@ -14,7 +14,7 @@ import { useAppCommonDispatch, useLatestRef } from '@portkey-wallet/hooks';
 import useDebounce from 'hooks/useDebounce';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { useChainIdList } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { fetchAllTokenList } from '@portkey-wallet/store/store-ca/tokenManagement/api';
+import { fetchAllTokenListLegacy } from '@portkey-wallet/store/store-ca/tokenManagement/api';
 import NoData from 'components/NoData';
 import { useGStyles } from 'assets/theme/useGStyles';
 import myEvents from '../../utils/deviceEvent';
@@ -64,8 +64,12 @@ const TokenList = ({ title = 'Select Token', onFinishSelectToken, currentSymbol,
 
   const getTokenList = useLockCallback(
     async (init?: boolean) => {
-      if (debounceKeyword.trim()) return;
-      if (totalRecordCount && tokenDataShowInMarket?.length >= totalRecordCount && !init) return;
+      if (debounceKeyword.trim()) {
+        return;
+      }
+      if (totalRecordCount && tokenDataShowInMarket?.length >= totalRecordCount && !init) {
+        return;
+      }
 
       await fetchTokenInfoList({
         keyword: '',
@@ -79,15 +83,16 @@ const TokenList = ({ title = 'Select Token', onFinishSelectToken, currentSymbol,
   const getTokenListLatest = useLatestRef(getTokenList);
 
   const getTokenListWithKeyword = useLockCallback(async () => {
-    if (!debounceKeyword) return;
+    if (!debounceKeyword) {
+      return;
+    }
     try {
-      const result = await fetchAllTokenList({
+      const result = await fetchAllTokenListLegacy({
         keyword: debounceKeyword,
         chainIdArray: chainIdList,
         skipCount: 0,
         maxResultCount: PAGE_SIZE_DEFAULT,
       });
-
       setFilteredShowList(result?.items);
     } catch (error) {
       console.log('fetchTokenListByFilter error', error);
@@ -95,7 +100,9 @@ const TokenList = ({ title = 'Select Token', onFinishSelectToken, currentSymbol,
   }, [chainIdList, debounceKeyword]);
 
   useEffect(() => {
-    if (!debounceKeyword) setFilteredShowList([]);
+    if (!debounceKeyword) {
+      setFilteredShowList([]);
+    }
     getTokenListWithKeyword();
   }, [chainIdList, debounceKeyword, dispatch, getTokenListWithKeyword]);
 

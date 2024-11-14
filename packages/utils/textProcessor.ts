@@ -17,6 +17,7 @@ class TextProcessor {
     this.replaceList = replaceList;
   }
   format(value: string) {
+    console.log('value value is:', value);
     if (typeof value !== 'string') return;
     this.replaceList.forEach(({ from, to }) => {
       value = value.replace(from, to);
@@ -49,6 +50,11 @@ const replaceList: ReplaceItem[] = [
   {
     from: 'Processing on the chain...',
     to: 'This operation cannot be done before guardian info syncing is completed. Please try again later.',
+  },
+  {
+    from: `Call to function 'ExpoSecureStore.setValueWithKeyAsync' has been rejected.
+→ Caused by: Could not Authenticate the user: User canceled the authentication`,
+    to: 'User canceled the authentication',
   },
 ];
 

@@ -53,7 +53,9 @@ function ReceiveTip({ chainId, style }: TTopViewProps) {
   const latestSelected = useLatestRef(selected);
   useEffectOnce(() => {
     return () => {
-      if (latestSelected.current) cancelSideChainTokenReceiveTip();
+      if (latestSelected.current) {
+        cancelSideChainTokenReceiveTip();
+      }
     };
   });
   return (
@@ -67,7 +69,7 @@ function ReceiveTip({ chainId, style }: TTopViewProps) {
             color={selected ? defaultColors.primaryColor : undefined}
           />
         </Touchable>
-        <TextM style={GStyles.flex1}>{`Don't show this again`}</TextM>
+        <TextM style={GStyles.flex1}>{"Don't show this again"}</TextM>
       </View>
     </View>
   );

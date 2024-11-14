@@ -11,6 +11,8 @@ export type ButtonRowProps = {
     onPress?: () => void;
     type?: CommonButtonProps['type'];
     title: string;
+    style?: any;
+    titleStyle?: any;
     loading?: CommonButtonProps['loading'];
     disabled?: boolean;
   }[];
@@ -29,9 +31,9 @@ export default function ButtonRow({
       {Array.isArray(buttons) &&
         buttons.map((item, index) => {
           const isLastItem = index === buttons.length - 1;
-          const buttonStyle: StyleProp<ViewStyle> = [styles.buttonStyle];
+          const buttonStyle: StyleProp<ViewStyle> = [styles.buttonStyle, item.style];
           const containerStyle: StyleProp<ViewStyle> = [styles.containerStyle];
-          const titleStyle: StyleProp<TextStyle> = [styles.titleStyle];
+          const titleStyle: StyleProp<TextStyle> = [styles.titleStyle, item.titleStyle];
           if (item.type === 'outline') {
             buttonStyle.push(styles.outlineButtonStyle);
             titleStyle.push(styles.outlineTitleStyle);

@@ -22,7 +22,7 @@ import { pTd } from 'utils/unit';
 import { useGetCurrentLoginAccountVerifyFunc } from 'hooks/verification';
 import { useGuardiansInfo } from 'hooks/store';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
-import { makeStyles, useTheme } from '@rneui/themed';
+import { darkColors, makeStyles, useTheme } from '@rneui/themed';
 import {
   getSocialLoginAccountToken,
   deleteLoginAccount,
@@ -115,11 +115,17 @@ export default function AccountCancelation() {
   const AlertWaring = useCallback(
     (pass?: boolean) => {
       ActionSheet.alert({
-        title: 'Warning',
+        title: <Svg icon="warning" color={'#FFF'} size={pTd(32)} />,
+        title2: <TextM style={styles.title2}>Delete Account Warning</TextM>,
         message: ACCOUNT_CANCELATION_WARNING,
         buttons: [
           { title: 'Cancel', onPress: pass ? undefined : navigationService.goBack, type: 'outline' },
-          { title: 'Continue', onPress: pass ? onDeletion : undefined },
+          {
+            title: 'Continue',
+            onPress: pass ? onDeletion : undefined,
+            style: styles.continue,
+            titleStyle: styles.continueTitle,
+          },
         ],
       });
     },
@@ -162,7 +168,7 @@ export default function AccountCancelation() {
       safeAreaColor={safeAreaColor}>
       <ScrollView>
         <View style={styles.containerStyle}>
-          <Svg icon="warning" color={theme.colors.iconDanger1} size={pTd(42)} />
+          <Svg icon="warning_v2" color={theme.colors.iconDanger1} size={pTd(42)} />
           <TextM style={styles.tipText}>{ACCOUNT_CANCELATION_TIP}</TextM>
           <View style={styles.boxStyle}>
             <TextM style={FontStyles.font3}>{ACCOUNT_CANCELATION_NOTE}</TextM>
@@ -181,7 +187,13 @@ export default function AccountCancelation() {
           </View>
         </View>
       </ScrollView>
-      <CommonButton title="Confirm" type="primary" onPress={onConfirm} />
+      <CommonButton
+        buttonStyle={styles.continue}
+        titleStyle={styles.continueTitle}
+        title="Confirm account deletion"
+        type="primary"
+        onPress={onConfirm}
+      />
     </PageContainer>
   );
 }
@@ -191,11 +203,24 @@ export const getStyles = makeStyles(theme => ({
     flex: 1,
     ...GStyles.paddingArg(24, 20, 18),
   },
+  title2: {
+    color: theme.colors.textBase1,
+    fontSize: pTd(20),
+    marginTop: pTd(12),
+  },
+  continue: {
+    backgroundColor: theme.colors.bgDanger1,
+    color: theme.colors.textBase1,
+  },
+  continueTitle: {
+    color: theme.colors.textBase1,
+  },
   containerStyle: {
     ...GStyles.itemCenter,
   },
   tipText: {
     marginVertical: 16,
+    textAlign: 'center',
   },
   boxStyle: {
     borderRadius: 6,
@@ -213,6 +238,7 @@ export const getStyles = makeStyles(theme => ({
   },
   contentStyle: {
     color: theme.colors.textBase2,
+    marginTop: pTd(12),
   },
   alertMessage: {
     color: defaultColors.font3,

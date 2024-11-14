@@ -21,7 +21,7 @@ import Loading from 'components/Loading';
 import CommonToast from 'components/CommonToast';
 import FastImage from 'components/FastImage';
 import { TextM } from 'components/CommonText';
-import { makeStyles, useTheme } from '@rneui/themed';
+import { makeStyles, useTheme, darkColors } from '@rneui/themed';
 import { getDeviceInfo } from 'utils/deviceInfo';
 import ActionSheet from 'components/ActionSheet';
 import { CommonPromptCard, PromptCardType } from 'components/CommonPromptCard';
@@ -388,7 +388,7 @@ const getStyles = makeStyles(theme => ({
     height: 1,
     borderBottomWidth: 0.5,
     width: '100%',
-    backgroundColor: '#FFF',
+    backgroundColor: darkColors.white,
   },
   signOutText: {
     width: '100%',

@@ -22,7 +22,7 @@ import ImageWithUploadFunc from 'components/ImageWithUploadFunc';
 type SelectModalProps = {
   title?: string;
   avatar?: string;
-  selectPhoto: () => boolean;
+  selectPhoto: () => Promise<boolean>;
 };
 
 type AvatarListProps = {
@@ -170,7 +170,7 @@ const SelectModal = ({ title = '', avatar = '', selectPhoto }: SelectModalProps)
             marginTop: pTd(32),
           }}>
           <TouchableOpacity
-            style={[styles.tagWrapper, selectKey === 'avatar' && { backgroundColor: '#1F1F21' }]}
+            style={[styles.tagWrapper, selectKey === 'avatar' && { backgroundColor: darkColors.bgBase2 }]}
             key={'avatar'}
             onPress={() => {
               setSelectKey('avatar');
@@ -185,7 +185,7 @@ const SelectModal = ({ title = '', avatar = '', selectPhoto }: SelectModalProps)
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.tagWrapper, selectKey === 'photo' && { backgroundColor: '#1F1F21' }]}
+            style={[styles.tagWrapper, selectKey === 'photo' && { backgroundColor: darkColors.bgBase2 }]}
             key={'photo'}
             onPress={() => {
               setSelectKey('photo');
@@ -313,7 +313,7 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     height: pTd(48),
-    backgroundColor: '#1F1F21',
+    backgroundColor: darkColors.bgBase2,
     borderRadius: pTd(8),
     paddingHorizontal: pTd(16),
   },

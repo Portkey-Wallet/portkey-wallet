@@ -2,7 +2,7 @@ import { darkColors, defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import { TextH1, TextL } from 'components/CommonText';
 import Svg from 'components/Svg';
-import React, { memo, useCallback, useRef, useState } from 'react';
+import React, { memo, useCallback, useMemo, useRef, useState } from 'react';
 import { View, TextInput, TouchableOpacity, LayoutChangeEvent, ViewStyle } from 'react-native';
 import { pTd } from 'utils/unit';
 import { makeStyles, useThemeMode } from '@rneui/themed';
@@ -99,6 +99,10 @@ const TokenAmountInput: React.FC<ITokenAmountInput> = props => {
     }, 2000);
   }, []);
 
+  const existTokenPrice = useMemo(() => {
+    return tokenPriceObject[symbol] !== 0;
+  }, [tokenPriceObject, symbol]);
+
   return (
     <View style={[styles.wrap, styleProps]}>
       <View style={[GStyles.flexRow, styles.topSection]}>
@@ -149,7 +153,7 @@ const TokenAmountInput: React.FC<ITokenAmountInput> = props => {
           )}
         </>
       </View>
-      {isMainnet && (
+      {isMainnet && existTokenPrice && (
         <Touchable onPress={onPressRevert} style={[GStyles.flexRow, styles.bottomSection]}>
           {isRevert ? (
             <TextL style={styles.bottomText}>{`${value || 0} ${label || symbol}`}</TextL>

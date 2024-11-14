@@ -14,7 +14,7 @@ import crossChainTransfer, {
 } from 'utils/transfer/crossChainTransfer';
 import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { formatAmountShow, formatAmountUSDShow, timesDecimals, unitConverter } from '@portkey-wallet/utils/converter';
+import { formatAmountShow, timesDecimals, unitConverter } from '@portkey-wallet/utils/converter';
 import sameChainTransfer from 'utils/transfer/sameChainTransfer';
 import { addFailedActivity, removeFailedActivity } from '@portkey-wallet/store/store-ca/activity/slice';
 import { useRouterEffectParams } from '@portkey-wallet/hooks/useRouterParams';
@@ -541,7 +541,7 @@ const SendPreview: React.FC = () => {
           : undefined
       }
       amount={`${formatAmountShow(sendNumber, assetInfo.decimals)} ${assetInfo.label || assetInfo?.symbol}`}
-      amountUSD={`${formatAmountUSDShow(ZERO.plus(sendNumber).multipliedBy(tokenPriceObject[assetInfo.symbol]))}`}
+      amountUSD={ZERO.plus(sendNumber).multipliedBy(tokenPriceObject[assetInfo.symbol])}
       toAddress={toInfo?.address}
       toInfoChainId={toInfo?.chainId}
       destinationNetwork={isETransferOrEBridge ? targetNetwork?.name : formatChainInfoToShow(toInfo?.chainId)}

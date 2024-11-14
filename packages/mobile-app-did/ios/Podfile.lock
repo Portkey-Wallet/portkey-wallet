@@ -1610,10 +1610,29 @@ PODS:
   - react-native-background-timer (2.4.1):
     - React-Core
   - react-native-compat (2.17.1):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.01.01.00)
+    - RCTRequired
+    - RCTTypeSafety
     - React-Core
-  - react-native-config (1.4.6):
-    - react-native-config/App (= 1.4.6)
-  - react-native-config/App (1.4.6):
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
+  - react-native-config (1.5.3):
+    - react-native-config/App (= 1.5.3)
+  - react-native-config/App (1.5.3):
     - React-Core
   - react-native-fbsdk-next (12.2.0):
     - React-Core
@@ -1634,6 +1653,8 @@ PODS:
     - React-Core
   - react-native-minimizer (1.0.0):
     - React
+  - react-native-netinfo (11.4.1):
+    - React-Core
   - react-native-pager-view (6.4.1):
     - DoubleConversion
     - glog
@@ -2036,6 +2057,8 @@ PODS:
   - RNNotifee/NotifeeCore (5.7.0):
     - React-Core
   - RNPermissions (3.10.1):
+    - React-Core
+  - RNPullToRefresh (0.23.0):
     - React-Core
   - RNReanimated (3.16.0):
     - DoubleConversion
@@ -2771,10 +2794,12 @@ SPEC CHECKSUMS:
   React-Mapbuffer: b982d5bba94a8bc073bda48f0d27c9b28417fae3
   React-microtasksnativemodule: 2b73e68f0462f3175f98782db08896f8501afd20
   react-native-background-timer: 17ea5e06803401a379ebf1f20505b793ac44d0fe
+  react-native-compat: 6f315a20c4a80382bd315d01c1672b4536104bcc
   react-native-config: 8f7283449bbb048902f4e764affbbf24504454af
   react-native-fbsdk-next: fcecfa33c37ce63bcda9cd24766ee9d345463230
   react-native-get-random-values: a6ea6a8a65dc93e96e24a11105b1a9c8cfe1d72a
   react-native-minimizer: 48a715600fd432ef1d182cfd1858f92f0afa022f
+  react-native-netinfo: f0a9899081c185db1de5bb2fdc1c88c202a059ac
   react-native-pager-view: c476f76d54f946df5147645e902d3d7173688187
   react-native-randombytes: 421f1c7d48c0af8dbcd471b0324393ebf8fe7846
   react-native-safe-area-context: 5141f11858b033636f1788b14f32eaba92cee810
@@ -2825,6 +2850,7 @@ SPEC CHECKSUMS:
   RNNestedScrollView: b9a2ac8588c89dd671d571b1184a0af007e1bea3
   RNNotifee: 5155e0a5e0a97d0c839030d8192783cd63053999
   RNPermissions: 4e3714e18afe7141d000beae3755e5b5fb2f5e05
+  RNPullToRefresh: cc6d153a0b4dac79e4bbaa5c81d177aee92c9fdf
   RNReanimated: f6a10979b3701f8029c71dbfe35d0ff4328dce4c
   RNScreens: 19719a9c326e925498ac3b2d35c4e50fe87afc06
   RNSentry: a7660b72556d6574867d488e60c4b4b0be7422d8

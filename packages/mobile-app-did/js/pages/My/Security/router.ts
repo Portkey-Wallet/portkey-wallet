@@ -1,4 +1,4 @@
-import Security from '.';
+import Security from './index';
 import AutoLock from './AutoLock';
 import Biometric from '../AccountSettings/Biometric';
 

@@ -141,6 +141,7 @@ const TokenAmountInput: React.FC<ITokenAmountInput> = props => {
                 textStyle={{
                   color: defaultColors.textBase2,
                 }}
+                containerStyle={styles.tipContainerStyle}
                 content={warningTip}
                 display={warningClick}
               />
@@ -197,5 +198,8 @@ export const getStyles = makeStyles(theme => ({
   },
   warningIconWrap: {
     flexDirection: 'row',
+  },
+  tipContainerStyle: {
+    width: pTd(189),
   },
 }));

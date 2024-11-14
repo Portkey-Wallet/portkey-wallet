@@ -11,7 +11,6 @@ import { View } from 'react-native';
 import Touchable from 'components/Touchable';
 import ModeChangeSelector from '../componets/ModeChangeSelector';
 import { useNFTSection } from '@portkey-wallet/hooks/hooks-ca';
-import CommonToast from 'components/CommonToast';
 import navigationService from 'utils/navigationService';
 
 const DashBoardTab: React.FC = () => {
@@ -51,7 +50,7 @@ const DashBoardTab: React.FC = () => {
   }, []);
   const suffixIconDom = useMemo(() => {
     return (
-      <View style={[styles.suffixDomWrapper, { marginLeft: totalRecordCount !== 0 ? pTd(130) : pTd(168) }]}>
+      <View style={[styles.suffixDomWrapper]}>
         {/* <View style={[GStyles.flex1, { backgroundColor: 'red'}]} /> */}
         <Touchable
           onPress={() => {

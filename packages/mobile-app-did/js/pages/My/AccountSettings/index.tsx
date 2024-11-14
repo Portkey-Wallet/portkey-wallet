@@ -26,6 +26,10 @@ import { getDeviceInfo } from 'utils/deviceInfo';
 import ActionSheet from 'components/ActionSheet';
 import { CommonPromptCard, PromptCardType } from 'components/CommonPromptCard';
 import fonts from 'assets/theme/fonts';
+import { useUpdateInfo } from 'store/user/hooks';
+import { codePushOperator, parseLabel } from 'utils/update';
+import * as Application from 'expo-application';
+import { parseVersion } from 'utils';
 
 interface MenuItemType {
   name: string;
@@ -41,6 +45,7 @@ export default function AccountSettings() {
   const styles = getStyles();
   const { showNotSet, secondaryEmail, getSecondaryMail, hideNotSetMark, fetching } = useIsSecondaryMailSet();
   const { shouldShowSetNewWalletNameIcon, handleSetNewWalletName } = useSetNewWalletName();
+  const updateInfo = useUpdateInfo();
 
   const onPressItem = useCallback((item: MenuItemType) => {
     if (item.onPress) {
@@ -177,9 +182,26 @@ export default function AccountSettings() {
         name: 'Check for updates',
         label: 'Check for updates',
         icon: 'my_update',
+        suffixDom: () => {
+          return (
+            <TextM style={{ color: theme.colors.textBase2 }}>
+              {parseVersion([
+                `v${Application.nativeApplicationVersion}`,
+                parseLabel(codePushOperator.localPackage?.label),
+              ])}
+            </TextM>
+          );
+        },
+        onPress: () => {
+          if (updateInfo) {
+            codePushOperator.checkToUpdate();
+          } else {
+            CommonToast.info(`You're using the latest version.`);
+          }
+        },
       },
     ],
-    [fetching, secondaryEmail, showNotSet, styles],
+    [fetching, secondaryEmail, showNotSet, styles, theme, updateInfo],
   );
 
   const onExitClick = useCallback(

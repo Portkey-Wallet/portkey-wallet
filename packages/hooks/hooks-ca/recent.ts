@@ -37,6 +37,7 @@ export function useRecent() {
 
         return checkIsSupportTargetChain({ fromChainId, symbol: tokenId, network: ele.network });
       });
+
       return result || [];
     },
     [checkIsSupportTargetChain, currentNetwork, fetchAssetSupportConfig, recentMap],
@@ -55,15 +56,16 @@ export function useRecent() {
           const addr = getAelfAddress(ele.address);
 
           const target = contactMapNew?.[addr] || [];
+
           const aelfResult = target.find(
             m =>
-              m.addressInfo?.address === ele?.address &&
+              m.addressInfo?.address === addr &&
               m?.addressInfo?.chainId === ele?.chainId &&
               m.addressInfo?.network === 'aelf',
           );
           const otherResult = target.find(
             m =>
-              m.addressInfo?.address === ele?.address &&
+              m.addressInfo?.address === addr &&
               m?.addressInfo?.network === ele?.network &&
               m.addressInfo?.network !== 'aelf',
           );

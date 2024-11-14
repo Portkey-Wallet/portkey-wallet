@@ -13,7 +13,12 @@ import { useLanguage } from 'i18n/hooks';
 import AmountNFT from '../AmountNFT';
 import NFTInfo from '../NFTInfo';
 import CommonButton from 'components/CommonButton';
-import { useCurrentWalletInfo, useMainChainCaInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import {
+  useCaAddressInfoList,
+  useCurrentUserInfo,
+  useCurrentWalletInfo,
+  useMainChainCaInfo,
+} from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useCurrentChain, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import {
   CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL,
@@ -29,6 +34,7 @@ import {
   IToSendHomeParamsType,
   IToSendPreviewParamsType,
   TransferType,
+  TToInfo,
 } from '@portkey-wallet/types/types-ca/routeParams';
 
 import { getELFChainBalance } from '@portkey-wallet/utils/balance';
@@ -68,11 +74,14 @@ import useGetEBridgeConfig from 'hooks/ebridge';
 import { EBridge } from '@portkey-wallet/utils/eBridge';
 import ActionSheet from 'components/ActionSheet';
 import OverlayModal from 'components/OverlayModal';
-import { eBridgeActionSheet, getLimitTips, getSmallerValue, isValidAmount } from '../utils';
+import { eBridgeActionSheet, getLimitTips, getSendNetworkList, getSmallerValue, isValidAmount } from '../utils';
 import { SEND_RECEIVE_HELP_URL } from 'constants/common';
 import { openOutLink } from 'utils/link';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
-
+import SelectAddressTab from '../components/SelectAddressTab';
+import { useRecent } from '@portkey-wallet/hooks/hooks-ca/recent';
+import { useGetFilterContactList } from '@portkey-wallet/hooks/hooks-ca/contactNew';
+import { IContactItemType, TFormattedRecentItem } from '@portkey-wallet/types/types-ca/contactNew';
 const SendHome: React.FC = () => {
   const {
     params: { sendType = 'token', toInfo, assetInfo, imTransferInfo },
@@ -89,6 +98,10 @@ const SendHome: React.FC = () => {
   const [tokenPriceObject] = useGetCurrentAccountTokenPrice();
   const [chainList, setChainList] = useState<INetworkItem[]>([]);
   const [targetNetwork, setTargetNetwork] = useState<INetworkItem>();
+  const [recentList, setRecentList] = useState<TFormattedRecentItem[]>();
+  const [savedList, setSavedList] = useState<TFormattedRecentItem[]>();
+  const { userId: myUserId } = useCurrentUserInfo();
+
   const recommendETransfer = useMemo(
     () => targetNetwork?.serviceList?.find(ele => ele?.serviceName?.toLocaleLowerCase()?.includes('transfer')),
     [targetNetwork?.serviceList],
@@ -141,7 +154,9 @@ const SendHome: React.FC = () => {
   const getTransferFee = useGetTransferFee();
   const getTransactionFee = useCallback(
     async (isCross: boolean, sendAmount?: string) => {
-      if (!chainInfo) return;
+      if (!chainInfo) {
+        return;
+      }
       const caContract = await getCAContract(chainInfo.chainId);
       return getTransferFee({
         isCross,
@@ -168,21 +183,27 @@ const SendHome: React.FC = () => {
   );
 
   const onGetMaxAmount = useLockCallback(async () => {
-    if (!balance) return setMaxAmountSend('0');
+    if (!balance) {
+      return setMaxAmountSend('0');
+    }
 
     const balanceBN = divDecimals(balance, assetInfo.decimals);
     const balanceStr = balanceBN.toString();
 
     // balance 0
-    if (divDecimals(balance, assetInfo.decimals).isEqualTo(0)) return setMaxAmountSend('0');
+    if (divDecimals(balance, assetInfo.decimals).isEqualTo(0)) {
+      return setMaxAmountSend('0');
+    }
 
     // if other tokens
-    if (assetInfo.symbol !== defaultToken.symbol)
+    if (assetInfo.symbol !== defaultToken.symbol) {
       return setMaxAmountSend(divDecimals(balance, assetInfo.decimals || '0').toString());
+    }
 
-    // elf <= maxFee proxy fee
-    if (divDecimals(balance, assetInfo.decimals).isLessThanOrEqualTo(maxFee))
+    // elf <= maxFee
+    if (divDecimals(balance, assetInfo.decimals).isLessThanOrEqualTo(maxFee)) {
       return setMaxAmountSend(divDecimals(balance, assetInfo.decimals || '0').toString());
+    }
 
     const isAELFCross = !!(selectedToContact.chainId && selectedToContact.chainId !== assetInfo.chainId);
     let fee;
@@ -214,7 +235,9 @@ const SendHome: React.FC = () => {
       Loading.hide();
       // check is SYNCHRONIZING
       const _isManagerSynced = await checkManagerSyncState(chainInfo?.chainId || 'AELF');
-      if (!_isManagerSynced) return CommonToast.warn(TransactionError.SYNCHRONIZING);
+      if (!_isManagerSynced) {
+        return CommonToast.warn(TransactionError.SYNCHRONIZING);
+      }
 
       setSendNumber(maxAmountSend);
       setSendUsdNumber(maxAmountSendUsd);
@@ -228,12 +251,16 @@ const SendHome: React.FC = () => {
 
   const getTokenViewContract = useGetTokenViewContract();
   const initBalance = useCallback(async () => {
+    console.log('initBalance assetInfo1', assetInfo);
+    console.log('initBalance assetInfo2', assetInfo.symbol || assetInfo.collectionName);
     const caAddress = wallet?.[assetInfo.chainId]?.caAddress;
-    if (!assetInfo || !caAddress) return;
+    if (!assetInfo || !caAddress) {
+      return;
+    }
     try {
       const tokenContract = await getTokenViewContract(assetInfo.chainId);
       const _balance = await getELFChainBalance(tokenContract, assetInfo.symbol, caAddress);
-
+      console.log('__balance', _balance);
       setBalance(_balance);
     } catch (error) {
       console.log('initBalance', error);
@@ -301,6 +328,37 @@ const SendHome: React.FC = () => {
       </View>
     );
   }, [chainList, selectTargetNetwork]);
+
+  const { getTransformedRecentList } = useRecent();
+
+  const getSavedList = useGetFilterContactList();
+
+  const initSavedList = useCallback(() => {
+    const list = getSavedList({
+      fromChainId: assetInfo.chainId,
+      tokenId: assetInfo.symbol,
+      isFt: sendType !== 'token',
+    });
+    setSavedList(list || []);
+  }, [assetInfo.chainId, assetInfo.symbol, getSavedList, sendType]);
+
+  const initBookList = useCallback(() => {
+    const reList = getTransformedRecentList({
+      fromChainId: assetInfo.chainId,
+      tokenId: assetInfo.symbol,
+      isFt: sendType !== 'token',
+    });
+    setRecentList(reList || []);
+  }, [assetInfo.chainId, assetInfo.symbol, getTransformedRecentList, sendType]);
+
+  useEffectOnce(() => {
+    initBookList();
+    initBookList();
+  });
+
+  useEffectOnce(() => {
+    initSavedList();
+  });
 
   const Step1Dom = useMemo(() => {
     if (step === 2) return null;
@@ -450,6 +508,7 @@ const SendHome: React.FC = () => {
     setErrorMessage('');
 
     if (!chainInfo) {
+      console.log('checkCanPreview 1');
       return { status: false };
     }
 
@@ -463,28 +522,32 @@ const SendHome: React.FC = () => {
         // ELF
         if (sendBigNumber.isGreaterThan(assetBalanceBigNumber)) {
           setErrorMessage(TransactionError.TOKEN_NOT_ENOUGH);
+          console.log('checkCanPreview 2');
           return { status: false };
         }
 
         if (isAELFCross && sendBigNumber.isLessThanOrEqualTo(timesDecimals(crossFee, defaultToken.decimals))) {
           setErrorMessage(TransactionError.CROSS_NOT_ENOUGH);
+          console.log('checkCanPreview 3');
           return { status: false };
         }
       } else {
         // other token
         if (sendBigNumber.isGreaterThan(assetBalanceBigNumber)) {
           setErrorMessage(TransferErrorMessage.BALANCE_NOT_ENOUGH);
+          console.log('checkCanPreview 4');
           return { status: false };
         }
       }
     } else {
       // nft
+      console.log('sendBigNumber', sendBigNumber, 'assetBalanceBigNumber', assetBalanceBigNumber);
       if (sendBigNumber.isGreaterThan(assetBalanceBigNumber)) {
         setErrorMessage(TransactionError.NFT_NOT_ENOUGH);
+        console.log('checkCanPreview 5');
         return { status: false };
       }
     }
-    Loading.show();
     try {
       // cross chain interception
       if (isAELFCross) {
@@ -508,6 +571,7 @@ const SendHome: React.FC = () => {
               },
             ],
           });
+          console.log('checkCanPreview 6');
           return;
         }
       }
@@ -515,11 +579,13 @@ const SendHome: React.FC = () => {
       const securitySafeResult = await securitySafeCheckAndToast(assetInfo.chainId);
       if (!securitySafeResult) {
         Loading.hide();
+        console.log('checkCanPreview 7');
         return { status: false };
       }
     } catch (err) {
       CommonToast.failError(err);
       Loading.hide();
+      console.log('checkCanPreview 8');
       return { status: false };
     }
 
@@ -529,6 +595,7 @@ const SendHome: React.FC = () => {
       caContract = await getCAContract(chainInfo.chainId);
     } catch (error) {
       Loading.hide();
+      console.log('checkCanPreview 9');
       return { status: false };
     }
     try {
@@ -549,11 +616,13 @@ const SendHome: React.FC = () => {
       console.log('checkTransferLimitResult', checkTransferLimitResult);
       if (!checkTransferLimitResult) {
         Loading.hide();
+        console.log('checkCanPreview 10');
         return { status: false };
       }
     } catch (error) {
       CommonToast.failError(error);
       Loading.hide();
+      console.log('checkCanPreview 11');
       return { status: false };
     }
 
@@ -562,6 +631,7 @@ const SendHome: React.FC = () => {
     if (!_isManagerSynced) {
       Loading.hide();
       setErrorMessage(TransactionError.SYNCHRONIZING);
+      console.log('checkCanPreview 12');
       return { status: false };
     }
 
@@ -600,6 +670,7 @@ const SendHome: React.FC = () => {
           receiveAmount = withdrawInfo?.receiveAmount;
           receiveAmountUsd = withdrawInfo?.receiveAmountUsd;
           transferType = TransferType.E_TRANSFER;
+          console.log('checkCanPreview 13');
           return {
             status: true,
             networkFee,
@@ -617,6 +688,7 @@ const SendHome: React.FC = () => {
         }
       } catch (error) {
         console.log('etansfer err', error);
+        console.log('checkCanPreview 14');
         return { status: false };
       } finally {
         Loading.hide();
@@ -645,6 +717,7 @@ const SendHome: React.FC = () => {
         const limit = await bridge.getLimit();
         const targetLimit = getSmallerValue(limit.remain, limit.currentCapacity);
         if (limit.isEnable && sendBigNumber.isGreaterThan(targetLimit)) {
+          console.log('checkCanPreview 16');
           return setErrorMessage(getLimitTips(assetInfo.symbol, '0', formatAmountShow(targetLimit)));
         }
         transactionFee = divDecimals(f, defaultToken.decimals).toString();
@@ -652,7 +725,7 @@ const SendHome: React.FC = () => {
         transferType = TransferType.E_BRIDGE;
 
         await eBridgeActionSheet();
-
+        console.log('checkCanPreview 17');
         return {
           status: true,
           networkFee,
@@ -666,6 +739,7 @@ const SendHome: React.FC = () => {
         };
       } catch (error) {
         console.log('err', error);
+        console.log('checkCanPreview 18');
         return { status: false };
       } finally {
         Loading.hide();
@@ -709,12 +783,13 @@ const SendHome: React.FC = () => {
       if (err?.code === 500) {
         setErrorMessage(TransactionError.FEE_NOT_ENOUGH);
         Loading.hide();
+        console.log('checkCanPreview 19');
         return { status: false };
       }
     } finally {
       Loading.hide();
     }
-
+    console.log('checkCanPreview 20');
     return {
       status: true,
       networkFee,
@@ -759,6 +834,8 @@ const SendHome: React.FC = () => {
 
   const preview = useCallback(async () => {
     const result = await checkCanPreview();
+    console.log('preview preview', result);
+
     if (!result?.status) return;
 
     console.log('nav params', {
@@ -826,6 +903,86 @@ const SendHome: React.FC = () => {
     onGetMaxAmount();
   }, [onGetMaxAmount]);
 
+  const caAddressInfos = useCaAddressInfoList();
+  const userInfo = useCurrentUserInfo();
+
+  const myAddress = useMemo(() => {
+    return caAddressInfos.filter(item => item.chainId !== assetInfo.chainId)?.[0];
+  }, [assetInfo.chainId, caAddressInfos]);
+
+  const myAddressesList: TFormattedRecentItem = useMemo(() => {
+    const address = myAddress?.caAddress || '';
+    return {
+      id: address,
+      index: address,
+      name: userInfo?.nickName || '',
+      network: '',
+      chainId: myAddress?.chainId || '',
+      networkIcon: myAddress?.chainImageUrl,
+      addressInfo: {
+        network: '',
+        networkName: myAddress?.displayChainName || '',
+        networkImage: myAddress?.chainImageUrl || '',
+        address,
+      },
+      caHolderInfo: {
+        userId: userInfo?.userId || '',
+        caHash: '',
+        walletName: userInfo?.nickName || '',
+        avatar: userInfo?.avatar || '',
+        address,
+      },
+      isDeleted: false,
+      userId: userInfo?.userId || '',
+      modificationTime: 0,
+      address,
+    };
+  }, [
+    myAddress?.caAddress,
+    myAddress?.chainId,
+    myAddress?.chainImageUrl,
+    myAddress.displayChainName,
+    userInfo?.avatar,
+    userInfo?.nickName,
+    userInfo?.userId,
+  ]);
+
+  const onPressTabItem = useCallback(
+    async (i: TFormattedRecentItem) => {
+      console.log('onPressTabItem', i);
+      try {
+        if (i.userId === myUserId) {
+          setSelectedToContact({
+            name: '',
+            address: addressFormat(i.addressInfo?.address, i.addressInfo?.chainId),
+          } as TToInfo);
+          setStep(2);
+        } else if (i.network !== 'aelf' && i.addressInfo?.network !== 'aelf') {
+          Loading.show();
+          const { data } = await getSendNetworkList({
+            symbol: assetInfo?.symbol || '',
+            chainId: assetInfo?.chainId || 'AELF',
+            toAddress: i?.addressInfo?.address || '',
+          });
+          const tmpNetwork = data?.networkList?.find((ele: any) => ele.network === i.network);
+
+          if (!tmpNetwork) throw 'not supported';
+          setTargetNetwork(tmpNetwork);
+          setSelectedToContact({ name: i?.name, address: i.address || i.addressInfo?.address } as TToInfo);
+          setStep(2);
+        } else {
+          setSelectedToContact({ name: i?.name, address: i.address || i.addressInfo?.address } as TToInfo);
+          setStep(2);
+        }
+      } catch (error) {
+        CommonToast.failError(error);
+      } finally {
+        Loading.hide();
+      }
+    },
+    [assetInfo?.chainId, assetInfo?.symbol, myUserId],
+  );
+
   return (
     <PageContainer
       safeAreaColor={['black']}
@@ -886,22 +1043,28 @@ const SendHome: React.FC = () => {
       {sendType === 'nft' && step === 2 && (
         <>
           <View style={styles.group}>
-            <NFTInfo nftItem={assetInfo} />
+            <NFTInfo nftItem={assetInfo} onMaxPress={onPressMax} />
           </View>
           <View style={styles.group}>
-            <AmountNFT sendNumber={sendNumber} setSendNumber={setSendNumber} assetInfo={assetInfo} />
+            <AmountNFT
+              warningTip={errorMessage}
+              sendNumber={sendNumber}
+              setSendNumber={setSendNumber}
+              assetInfo={assetInfo}
+            />
           </View>
         </>
       )}
-      {/* <View style={styles.space} />
       {step === 1 && (
-        <SelectContact
+        <SelectAddressTab
+          recentAddressList={recentList || []}
+          savedAddressList={savedList || []}
+          myAddressList={[myAddressesList as IContactItemType]}
+          noDataMessage="No recent address"
           chainId={assetInfo.chainId}
-          onPress={(item: { address: string; name: string }) => {
-            setSelectedToContact(item);
-          }}
+          onPress={onPressTabItem}
         />
-      )} */}
+      )}
 
       {renderBottomSection()}
     </PageContainer>

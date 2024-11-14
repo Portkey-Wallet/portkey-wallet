@@ -1,9 +1,9 @@
 import { useDiscoverGroupList, useGetS3ImageUrl } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { DiscoverItem } from '@portkey-wallet/store/store-ca/cms/types';
-import { defaultColors } from 'assets/theme';
+import { darkColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
-import { FontStyles } from 'assets/theme/styles';
+import { DarkFontStyles, FontStyles } from 'assets/theme/styles';
 import { TextM, TextS } from 'components/CommonText';
 import { useDiscoverJumpWithNetWork } from 'hooks/discover';
 import React, { useCallback, useMemo } from 'react';
@@ -14,8 +14,8 @@ import fonts from 'assets/theme/fonts';
 import { getFaviconUrl } from '@portkey-wallet/utils/dapp/browser';
 import Touchable from 'components/Touchable';
 import { useCmsBanner } from '@portkey-wallet/hooks/hooks-ca/cms/banner';
-import CarouselComponent, { CarouselItemProps } from 'components/Carousel';
 import { parseLink } from '@portkey-wallet/hooks/hooks-ca/cms/util';
+import Banner, { BannerItemProps } from './components/Banner';
 
 export function DiscoverCmsListSection() {
   const GroupList = useDiscoverGroupList();
@@ -36,11 +36,13 @@ export function DiscoverCmsListSection() {
     [discoverJump],
   );
 
-  const lists: CarouselItemProps[] = useMemo(() => {
+  const lists: BannerItemProps[] = useMemo(() => {
     return dappBannerList.map(it => {
       return {
         imgUrl: getS3ImgUrl(it.imgUrl.filename_disk),
         appLink: parseLink(it.appLink, it.url),
+        title: it.title,
+        description: it.description,
       };
     });
   }, [dappBannerList, getS3ImgUrl]);
@@ -48,18 +50,7 @@ export function DiscoverCmsListSection() {
   return (
     <ScrollView contentContainerStyle={styles.scroll} style={styles.scroll}>
       <View style={styles.wrap}>
-        {lists.length > 0 ? (
-          <CarouselComponent
-            containerStyle={styles.slide}
-            items={lists}
-            imageMarginHorizontal={16}
-            showImageBorderRadius={true}
-            imageRatio={343.0 / 128.0}
-            dotStyle="Light"
-          />
-        ) : (
-          <View style={styles.init} />
-        )}
+        {lists.length > 0 ? <Banner items={lists} /> : <View style={styles.init} />}
         {GroupList.map((group, index) => (
           <View key={index} style={styles.groupWrap}>
             <TextM style={[FontStyles.font5, fonts.mediumFont, styles.groupTitle]}>{group.title}</TextM>
@@ -76,7 +67,7 @@ export function DiscoverCmsListSection() {
                   />
                   <View style={styles.right}>
                     <TextWithProtocolIcon textFontSize={pTd(16)} title={item?.title} url={item.url} iconSize={12} />
-                    <TextS style={FontStyles.font7} numberOfLines={1} ellipsizeMode="tail">
+                    <TextS style={DarkFontStyles.textBase2} numberOfLines={1} ellipsizeMode="tail">
                       {item?.description}
                     </TextS>
                   </View>
@@ -92,7 +83,7 @@ export function DiscoverCmsListSection() {
 
 const styles = StyleSheet.create({
   scroll: {
-    backgroundColor: defaultColors.white,
+    backgroundColor: darkColors.bgBase1,
   },
   init: {
     height: pTd(16),
@@ -100,7 +91,7 @@ const styles = StyleSheet.create({
   wrap: {
     ...GStyles.paddingArg(0, 16),
     marginBottom: pTd(16),
-    backgroundColor: defaultColors.white,
+    backgroundColor: darkColors.bgBase1,
   },
   slide: {
     marginLeft: pTd(-16),
@@ -112,14 +103,14 @@ const styles = StyleSheet.create({
   },
   groupTitle: {
     marginBottom: pTd(8),
+    color: darkColors.textBase1,
   },
   itemsGroup: {
     borderRadius: pTd(6),
-    backgroundColor: defaultColors.bg1,
     overflow: 'hidden',
   },
   itemWrap: {
-    backgroundColor: defaultColors.bg1,
+    backgroundColor: darkColors.bgBase1,
     display: 'flex',
     flexDirection: 'row',
     ...GStyles.paddingArg(16, 0),

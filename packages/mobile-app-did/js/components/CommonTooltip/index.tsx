@@ -7,20 +7,26 @@ import Touchable from 'components/Touchable';
 import Svg, { SvgProps } from 'components/Svg';
 import CommonButton from 'components/CommonButton';
 import fonts from 'assets/theme/fonts';
+import { useLanguage } from 'i18n/hooks';
 import { pTd } from 'utils/unit';
+import { openOutLink } from 'utils/link';
 
 export interface ITooltipContentProps {
   title: string;
   description: string;
+  learnMoreUrl?: string;
 }
 
 interface ICommonTooltipProps {
   iconStyle?: SvgProps['iconStyle'];
   iconSize?: number;
   tooltipProps?: ITooltipContentProps;
+  color?: string;
+  iconName?: SvgProps['icon'];
 }
 
-const TooltipContent = ({ title, description }: ITooltipContentProps) => {
+const TooltipContent = ({ title, description, learnMoreUrl }: ITooltipContentProps) => {
+  const { t } = useLanguage();
   const {
     theme: { colors },
   } = useTheme();
@@ -28,13 +34,29 @@ const TooltipContent = ({ title, description }: ITooltipContentProps) => {
   return (
     <ModalBody style={styles.modalBody} modalBodyType="center">
       <View style={styles.header}>
-        <Text style={styles.title}>{title}</Text>
+        <Text style={styles.title}>{t(title)}</Text>
         <Touchable onPress={() => OverlayModal.hide()}>
           <Svg icon="close3" size={pTd(20)} color={colors.iconBase1} />
         </Touchable>
       </View>
-      <Text style={styles.description}>{description}</Text>
-      <CommonButton title="OK" type="primary" onPress={() => OverlayModal.hide()} />
+      <View>
+        <Text style={styles.description}>
+          {t(description)}
+          {learnMoreUrl && (
+            <>
+              {' '}
+              <Touchable
+                onPress={async () => {
+                  await openOutLink(learnMoreUrl);
+                }}>
+                <Text style={styles.learnMore}>{t('Learn more')}</Text>
+              </Touchable>
+              .
+            </>
+          )}
+        </Text>
+      </View>
+      <CommonButton title={t('OK')} type="primary" onPress={() => OverlayModal.hide()} />
     </ModalBody>
   );
 };
@@ -45,10 +67,10 @@ const showTooltip = (props: ITooltipContentProps) => {
   });
 };
 
-const CommonTooltip = ({ iconStyle, iconSize = pTd(16), tooltipProps }: ICommonTooltipProps) => {
+const CommonTooltip = ({ iconStyle, iconSize = pTd(16), tooltipProps, color, iconName }: ICommonTooltipProps) => {
   return (
     <Touchable onPress={tooltipProps && (() => showTooltip(tooltipProps))}>
-      <Svg iconStyle={iconStyle} icon="help-gray" size={iconSize} />
+      <Svg iconStyle={iconStyle} icon={iconName || 'help-gray'} size={iconSize} color={color} />
     </Touchable>
   );
 };
@@ -83,5 +105,12 @@ const getStyles = makeStyles(theme => ({
     fontSize: pTd(16),
     lineHeight: pTd(22),
     marginBottom: pTd(24),
+  },
+  learnMore: {
+    ...fonts.SGRegularFont,
+    color: theme.colors.textBrand1,
+    fontSize: pTd(16),
+    lineHeight: pTd(22),
+    transform: [{ translateY: pTd(2) }],
   },
 }));

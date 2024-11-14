@@ -10,6 +10,7 @@ import { resetReferral } from '@portkey-wallet/store/store-ca/referral/slice';
 import { useOtherNetworkLogged, useWallet } from './wallet';
 import { resetTokenInfo } from '@portkey-wallet/store/store-ca/tokenManagement/action';
 import {
+  changeNftSectionUiType,
   clearAccountAssetsInfo,
   clearAccountNftCollectionInfo,
   clearAccountTokenInfo,
@@ -19,7 +20,6 @@ import { resetTokenManagement } from '@portkey-wallet/store/store-ca/tokenManage
 import { resetCaInfo, resetCurrentUserInfoAction, resetWallet } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { resetNetwork } from '@portkey-wallet/store/network/actions';
 import { resetSettings } from '@portkey-wallet/store/settings/slice';
-
 export const useAppCASelector: TypedUseSelectorHook<CACommonState> = useSelector;
 
 export function useResetStore() {
@@ -53,4 +53,18 @@ export function useLogoutResetStore() {
       dispatch(resetSettings());
     }
   }, [currentNetwork, dispatch, otherNetworkLogged]);
+}
+export function useNFTSection() {
+  const dispatch = useAppCommonDispatch();
+  const { nftSectionUiType } = useAppCASelector(state => state.assets);
+  const changeNFTSectionMode = useCallback(
+    (value: 'Collections' | 'NFTs') => {
+      dispatch(changeNftSectionUiType(value));
+    },
+    [dispatch],
+  );
+  return {
+    nftSectionUiType,
+    changeNFTSectionMode,
+  };
 }

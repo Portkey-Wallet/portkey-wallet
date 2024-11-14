@@ -1,13 +1,19 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { ContactIndexType, ContactMapType } from '@portkey-wallet/types/types-ca/contact';
+import { IContactIndexType, IContactMapType } from '@portkey-wallet/types/types-ca/contactNew';
 import {
   fetchContactListAsync,
   addContactAction,
   editContactAction,
   deleteContactAction,
   resetContact,
-  readImputationAction,
   refreshContactMap,
+  fetchContactListV2Async,
+  addContactActionNew,
+  editContactActionNew,
+  deleteContactActionNew,
+  resetContactNew,
+  refreshContactMapNew,
 } from './actions';
 import {
   executeEventToContactIndexList,
@@ -17,6 +23,12 @@ import {
   transIndexesToContactMap,
   transIndexesToContactRelationIdMap,
   transIndexesToPortkeyIdMap,
+  sortContactIndexListV2,
+  executeEventToContactIndexListV2,
+  getInitContactIndexListV2,
+  transIndexesToContactMapV2,
+  transIndexesToContactIdMapV2,
+  transIndexesToPortkeyIdMapV2,
 } from './utils';
 
 export interface ContactState {
@@ -26,7 +38,12 @@ export interface ContactState {
   contactRelationIdMap?: ContactMapType;
   contactIdMap?: ContactMapType;
   contactPortkeyIdMap?: ContactMapType;
-  isImputation?: boolean;
+  lastModifiedNew: number;
+  contactIndexListNew?: IContactIndexType[];
+  contactMapNew?: IContactMapType;
+  // contactRelationIdMapNew?: IContactMapType;
+  contactIdMapNew?: IContactMapType;
+  contactPortkeyIdMapNew?: IContactMapType;
 }
 
 export const initialState: ContactState = {
@@ -35,7 +52,10 @@ export const initialState: ContactState = {
   contactMap: {},
   contactRelationIdMap: {},
   contactIdMap: {},
-  isImputation: false,
+  lastModifiedNew: 0,
+  contactIndexListNew: getInitContactIndexListV2(),
+  contactMapNew: {},
+  contactIdMapNew: {},
 };
 
 export const contactSlice = createSlice({
@@ -46,11 +66,10 @@ export const contactSlice = createSlice({
     builder
       // getContactList
       .addCase(fetchContactListAsync.fulfilled, (state, action) => {
-        const { isInit, lastModified, contactIndexList, eventList, isImputation } = action.payload;
+        const { isInit, lastModified, contactIndexList, eventList } = action.payload;
         if (isInit && contactIndexList !== undefined) {
           state.contactIndexList = sortContactIndexList(contactIndexList);
           state.lastModified = lastModified;
-          state.isImputation = isImputation;
         }
 
         if (!isInit && eventList !== undefined) {
@@ -58,7 +77,6 @@ export const contactSlice = createSlice({
           _contactIndexList = executeEventToContactIndexList(_contactIndexList, eventList);
           state.contactIndexList = sortContactIndexList(_contactIndexList);
           state.lastModified = lastModified;
-          state.isImputation = isImputation;
         }
 
         if (state.contactIndexList.length === 0) {
@@ -105,21 +123,81 @@ export const contactSlice = createSlice({
         state.contactRelationIdMap = {};
         state.contactIdMap = {};
         state.lastModified = 0;
-        state.isImputation = false;
-      })
-      .addCase(readImputationAction, (state, action) => {
-        let _contactIndexList = [...state.contactIndexList];
-        _contactIndexList = executeEventToContactIndexList(_contactIndexList, [action.payload]);
-        state.contactIndexList = sortContactIndexList(_contactIndexList);
-        state.contactMap = transIndexesToContactMap(state.contactIndexList);
-        state.contactRelationIdMap = transIndexesToContactRelationIdMap(state.contactIndexList);
-        state.contactIdMap = transIndexesToContactIdMap(state.contactIndexList);
       })
       .addCase(refreshContactMap, state => {
         state.contactMap = transIndexesToContactMap(state.contactIndexList);
         state.contactRelationIdMap = transIndexesToContactRelationIdMap(state.contactIndexList);
         state.contactIdMap = transIndexesToContactIdMap(state.contactIndexList);
         state.contactPortkeyIdMap = transIndexesToPortkeyIdMap(state.contactIndexList);
+      })
+
+      // getContactListV2
+      .addCase(fetchContactListV2Async.fulfilled, (state, action) => {
+        const { isInit, lastModified, contactIndexList, eventList } = action.payload;
+        if (isInit && contactIndexList !== undefined) {
+          state.contactIndexListNew = sortContactIndexListV2(contactIndexList);
+          state.lastModified = lastModified;
+        }
+
+        if (!isInit && eventList !== undefined) {
+          let _contactIndexListNew = [...(state.contactIndexListNew || [])];
+          _contactIndexListNew = executeEventToContactIndexListV2(_contactIndexListNew, eventList);
+          state.contactIndexListNew = sortContactIndexListV2(_contactIndexListNew);
+          state.lastModified = lastModified;
+        }
+
+        if (state.contactIndexListNew?.length === 0) {
+          state.contactIndexListNew = getInitContactIndexListV2();
+        }
+        state.contactMapNew = transIndexesToContactMapV2(state.contactIndexListNew || []);
+        // TODO： if im delete, this is delete
+        // state.contactRelationIdMap = transIndexesToContactRelationIdMap(state.contactIndexList);
+        state.contactIdMapNew = transIndexesToContactIdMapV2(state.contactIndexListNew || []);
+        state.contactPortkeyIdMapNew = transIndexesToPortkeyIdMapV2(state.contactIndexListNew || []);
+      })
+      .addCase(fetchContactListV2Async.rejected, (_state, action) => {
+        console.log('fetchContactListAsync.rejected: error', action.error.message);
+      })
+      .addCase(addContactActionNew, (state, action) => {
+        let _contactIndexListNew = [...(state.contactIndexListNew || [])];
+        _contactIndexListNew = executeEventToContactIndexListV2(_contactIndexListNew, [action.payload]);
+        state.contactIndexListNew = sortContactIndexListV2(_contactIndexListNew);
+        state.contactMapNew = transIndexesToContactMapV2(state.contactIndexListNew);
+        // TODO: delete it?
+        // state.contactRelationIdMap = transIndexesToContactRelationIdMap(state.contactIndexList);
+        state.contactIdMapNew = transIndexesToContactIdMapV2(state.contactIndexListNew);
+        state.contactPortkeyIdMapNew = transIndexesToPortkeyIdMapV2(state.contactIndexListNew);
+      })
+      .addCase(editContactActionNew, (state, action) => {
+        let _contactIndexListNew = [...(state.contactIndexListNew || [])];
+        _contactIndexListNew = executeEventToContactIndexListV2(_contactIndexListNew, [action.payload]);
+        state.contactIndexListNew = sortContactIndexListV2(_contactIndexListNew);
+        state.contactMapNew = transIndexesToContactMapV2(state.contactIndexListNew);
+        // state.contactRelationIdMap = transIndexesToContactRelationIdMap(state.contactIndexList);
+        state.contactIdMapNew = transIndexesToContactIdMapV2(state.contactIndexListNew);
+        state.contactPortkeyIdMapNew = transIndexesToPortkeyIdMapV2(state.contactIndexListNew);
+      })
+      .addCase(deleteContactActionNew, (state, action) => {
+        let _contactIndexListNew = [...(state.contactIndexListNew || [])];
+        _contactIndexListNew = executeEventToContactIndexListV2(_contactIndexListNew, [action.payload]);
+        state.contactIndexListNew = sortContactIndexListV2(_contactIndexListNew);
+        state.contactMapNew = transIndexesToContactMapV2(state.contactIndexListNew);
+        // state.contactRelationIdMap = transIndexesToContactRelationIdMap(state.contactIndexList);
+        state.contactIdMapNew = transIndexesToContactIdMapV2(state.contactIndexListNew);
+        state.contactPortkeyIdMapNew = transIndexesToPortkeyIdMapV2(state.contactIndexListNew);
+      })
+      .addCase(resetContactNew, state => {
+        state.contactIndexListNew = getInitContactIndexListV2();
+        state.contactMap = {};
+        // state.contactRelationIdMap = {};
+        state.contactIdMap = {};
+        state.lastModified = 0;
+      })
+      .addCase(refreshContactMapNew, state => {
+        state.contactMapNew = transIndexesToContactIdMapV2(state.contactIndexListNew || []);
+        // state.contactRelationIdMapNew = transIndexesToContactRelationIdMapV2(state.contactIndexList);
+        state.contactIdMapNew = transIndexesToContactIdMapV2(state.contactIndexListNew || []);
+        state.contactPortkeyIdMapNew = transIndexesToPortkeyIdMapV2(state.contactIndexListNew || []);
       });
   },
 });

@@ -1,8 +1,7 @@
 import { StyleSheet } from 'react-native';
-import { darkColors, defaultColors } from '.';
+import { darkColors, defaultColors } from './index';
 import fonts from './fonts';
 import { pTd } from 'utils/unit';
-
 export const BGStyles = StyleSheet.create({
   bg1: { backgroundColor: defaultColors.bg1 },
   bg2: { backgroundColor: defaultColors.bg2 },
@@ -29,6 +28,8 @@ export const BGStyles = StyleSheet.create({
   bg23: { backgroundColor: defaultColors.bg23 },
   bg24: { backgroundColor: defaultColors.bg24 },
   bg43: { backgroundColor: defaultColors.bg43 },
+
+  bgBase1: { backgroundColor: darkColors.bgBase1 },
 
   white: { backgroundColor: defaultColors.white },
 

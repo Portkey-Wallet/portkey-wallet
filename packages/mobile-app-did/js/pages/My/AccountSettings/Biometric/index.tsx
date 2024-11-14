@@ -1,24 +1,26 @@
 import React, { useCallback } from 'react';
 import PageContainer from 'components/PageContainer';
-import ListItem from 'components/ListItem';
 import { touchAuth } from '@portkey-wallet/utils/mobile/authentication';
 import CommonToast from 'components/CommonToast';
 import useBiometricsReady, { useSetBiometrics } from 'hooks/useBiometrics';
 import navigationService from 'utils/navigationService';
-import { StyleSheet } from 'react-native';
-import { defaultColors } from 'assets/theme';
+import { View } from 'react-native';
 import { checkPin } from 'utils/redux';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { useLanguage } from 'i18n/hooks';
 import i18n from 'i18n';
 import { useUser } from 'hooks/store';
-import { TextM } from 'components/CommonText';
+import { TextL, TextM } from 'components/CommonText';
+import CommonSwitch from 'components/CommonSwitch';
 import ActionSheet from 'components/ActionSheet';
 import { setSecureStoreItem } from '@portkey-wallet/utils/mobile/biometric';
 import myEvents from 'utils/deviceEvent';
 import { changeCanLock } from 'utils/LockManager';
+import { makeStyles } from '@rneui/themed';
+import { pTd } from 'utils/unit';
 
 export default function Biometric() {
+  const styles = getStyles();
   const { biometrics } = useUser();
   const setBiometrics = useSetBiometrics();
   const biometricsReady = useBiometricsReady();
@@ -76,36 +78,46 @@ export default function Biometric() {
     [setBiometrics],
   );
   return (
-    <PageContainer containerStyles={styles.containerStyles} safeAreaColor={['white', 'gray']} titleDom={t('Biometric')}>
+    <PageContainer
+      containerStyles={styles.containerStyles}
+      safeAreaColor={['black']}
+      titleDom={t('Biometric Authentication')}>
       {biometricsReady && (
-        <>
-          <ListItem
-            disabled
-            switching
-            switchValue={biometrics}
-            style={styles.listStyle}
-            onValueChange={onValueChange}
-            title={t('Biometric Authentication')}
-          />
-          <TextM style={styles.tipText}>Enable biometric authentication to quickly unlock the device</TextM>
-        </>
+        <View style={styles.wrap}>
+          <View style={styles.switchWrap}>
+            <TextL style={styles.switchText}>Biometric authentication</TextL>
+            <CommonSwitch style={styles.switchButton} value={biometrics} onValueChange={onValueChange} />
+          </View>
+          <TextM style={styles.tipText}>Enable biometric authentication to quickly unlock the device.</TextM>
+        </View>
       )}
     </PageContainer>
   );
 }
 
-const styles = StyleSheet.create({
-  containerStyles: {
-    paddingTop: 8,
-    backgroundColor: defaultColors.bg4,
+export const getStyles = makeStyles(theme => ({
+  containerStyles: {},
+  wrap: {
+    width: '100%',
+    marginTop: pTd(16),
+    backgroundColor: theme.colors.bgBase2,
+    borderRadius: pTd(8),
+    padding: pTd(16),
   },
-  listStyle: {
-    marginTop: 24,
-    marginBottom: 0,
+  switchWrap: {
+    height: pTd(40),
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  switchText: {
+    color: theme.colors.textBase1,
+  },
+  switchButton: {
+    transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }],
   },
   tipText: {
-    paddingLeft: 8,
-    marginTop: 24,
-    color: defaultColors.font3,
+    marginTop: pTd(4),
+    color: theme.colors.textBase2,
   },
-});
+}));

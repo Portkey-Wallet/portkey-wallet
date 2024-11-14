@@ -1,35 +1,35 @@
 import { defaultColors } from 'assets/theme';
 import NFTAvatar from 'components/NFTAvatar';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 import { pTd } from 'utils/unit';
 import StatusIcon from '../StatusIcon';
-import { TextL, TextM, TextXXL } from 'components/CommonText';
+import { TextL, TextXXL } from 'components/CommonText';
 import GStyles from 'assets/theme/GStyles';
-import ButtonCol, { ButtonRowProps } from 'components/ButtonCol';
-import { FontStyles } from 'assets/theme/styles';
+import { ButtonRowProps } from 'components/ButtonCol';
 import { FreeMintStep } from '../FreeMintModal';
 import { useLoopMintNFTDetail, useLoopMintStatus } from '@portkey-wallet/hooks/hooks-ca/freeMint';
 import { FreeMintStatus, ICollectionData, IConfirmMintRes } from '@portkey-wallet/types/types-ca/freeMint';
-import { EditConfig } from 'pages/FreeMint/MintEdit';
+import { EditConfig } from 'pages/FreeMint/components/MintEdit';
 import { useSetUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import Loading from 'components/Loading';
 import CommonToast from 'components/CommonToast';
-import OverlayModal from 'components/OverlayModal';
 import navigationService from 'utils/navigationService';
 import myEvents from 'utils/deviceEvent';
 import fonts from 'assets/theme/fonts';
+import { makeStyles } from '@rneui/themed';
+import ButtonRow from 'components/ButtonRow';
 
 export enum MintStatus {
   Minting = 'Minting...',
   Minted = 'Minted',
-  MintFailed = 'Mint Failed',
+  MintFailed = 'Mint NFT Failed',
 }
 
 const mintTextObj = {
-  [MintStatus.Minting]: 'Your NFT is being minted.',
+  [MintStatus.Minting]: 'Your NFT is being minted. You can close this window and view it later in your NFT gallery.',
   [MintStatus.Minted]: 'Your NFT has been successfully minted.',
-  [MintStatus.MintFailed]: `Mint failure could be due to network issues. Please try again.`,
+  [MintStatus.MintFailed]: `There was an issue minting your NFT. Would you like to try again?`,
 };
 
 interface MintStatusSectionProps {
@@ -37,17 +37,19 @@ interface MintStatusSectionProps {
   editInfo?: EditConfig;
   mintInfo?: ICollectionData;
   confirmMintResponse?: IConfirmMintRes;
+  mintStatusType?: MintStatus;
   changeStep?: (step: FreeMintStep) => void;
 }
 
 const MintStatusSection = (props: MintStatusSectionProps) => {
-  const { itemId, editInfo, mintInfo, confirmMintResponse, changeStep } = props;
+  const { itemId, editInfo, mintInfo, confirmMintResponse, mintStatusType, changeStep } = props;
+  const styles = getStyles();
   const setUserInfo = useSetUserInfo();
   const loopFetchNFTItemDetail = useLoopMintNFTDetail();
   const [btnLoading, setBtnLoading] = useState(false);
 
   const getMintStatus = useLoopMintStatus();
-  const [status, setStatus] = useState<MintStatus>(MintStatus.Minting);
+  const [status, setStatus] = useState<MintStatus>(mintStatusType ?? MintStatus.Minting);
 
   useEffect(() => {
     (async () => {
@@ -58,7 +60,8 @@ const MintStatusSection = (props: MintStatusSectionProps) => {
       }
       if (result === FreeMintStatus.SUCCESS) {
         myEvents.updateMintStatus.emit();
-        setStatus(MintStatus.Minted);
+        // setStatus(MintStatus.Minted);
+        fetchNftItemInfo();
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -74,13 +77,14 @@ const MintStatusSection = (props: MintStatusSectionProps) => {
         symbol: confirmMintResponse?.symbol,
         chainId: mintInfo?.collectionInfo.chainId ?? 'AELF',
       });
-
-      OverlayModal.hide();
+      navigationService.navigate('Tab');
       navigationService.navigate('NFTDetail', {
         ...nftDetail,
         collectionInfo: {
           imageUrl: mintInfo.collectionInfo.imageUrl,
           collectionName: mintInfo.collectionInfo.collectionName,
+          symbol: mintInfo.collectionInfo.symbol,
+          chainId: mintInfo.collectionInfo.chainId,
         },
       });
     } catch (error) {
@@ -94,6 +98,7 @@ const MintStatusSection = (props: MintStatusSectionProps) => {
     mintInfo?.collectionInfo.chainId,
     mintInfo?.collectionInfo.collectionName,
     mintInfo?.collectionInfo.imageUrl,
+    mintInfo?.collectionInfo.symbol,
   ]);
 
   const setAvatar = useCallback(async () => {
@@ -103,7 +108,7 @@ const MintStatusSection = (props: MintStatusSectionProps) => {
         avatar: editInfo?.imageUri || '',
       });
       CommonToast.success('Profile photo is set.');
-      OverlayModal.hide();
+      navigationService.navigate('Tab');
     } catch (error) {
       CommonToast.fail('Failed to set profile photo. Please try again.');
       console.log('error', error);
@@ -119,7 +124,7 @@ const MintStatusSection = (props: MintStatusSectionProps) => {
           title: 'Close',
           type: 'outline',
           onPress: () => {
-            OverlayModal.hide();
+            navigationService.navigate('Tab');
           },
         },
       ];
@@ -144,7 +149,14 @@ const MintStatusSection = (props: MintStatusSectionProps) => {
     if (MintStatus.MintFailed === status)
       return [
         {
-          title: 'Try Again',
+          title: 'Cancel',
+          type: 'outline',
+          onPress: () => {
+            navigationService.navigate('Tab');
+          },
+        },
+        {
+          title: 'Retry',
           type: 'primary',
           onPress: () => {
             changeStep?.(FreeMintStep.mintNft);
@@ -156,25 +168,25 @@ const MintStatusSection = (props: MintStatusSectionProps) => {
   return (
     <>
       <View style={styles.topSection}>
-        <TextL
+        {/* <TextL
           style={[
             GStyles.marginTop(pTd(32)),
             GStyles.width100,
             GStyles.textAlignCenter,
             styles.mediumText,
-          ]}>{`${confirmMintResponse?.name} #${confirmMintResponse?.tokenId}`}</TextL>
+          ]}>{`${confirmMintResponse?.name} #${confirmMintResponse?.tokenId}`}</TextL> */}
         <View style={styles.nftWrap}>
           <NFTAvatar
             disabled
-            nftSize={pTd(200)}
+            nftSize={pTd(280)}
             data={{
               imageUrl: editInfo?.imageUri || '',
             }}
             style={styles.nftAvatar}
           />
-          <View style={styles.nftStatusWrapIcon}>
-            <StatusIcon status={status} />
-          </View>
+        </View>
+        <View style={styles.nftStatusWrapIcon}>
+          <StatusIcon status={status} />
         </View>
         <View
           style={[
@@ -183,31 +195,19 @@ const MintStatusSection = (props: MintStatusSectionProps) => {
             GStyles.paddingRight(pTd(36)),
             GStyles.width100,
           ]}>
-          <TextXXL style={[GStyles.textAlignCenter, styles.mediumText]}>{status}</TextXXL>
-          <TextM style={[GStyles.textAlignCenter, GStyles.marginTop(pTd(4)), FontStyles.neutralTertiaryText]}>
+          <TextXXL style={[GStyles.textAlignCenter, fonts.BGMediumFont]}>{status}</TextXXL>
+          <TextL style={[GStyles.textAlignCenter, GStyles.marginTop(pTd(4)), styles.sgRegular]}>
             {mintTextObj[status]}
-          </TextM>
+          </TextL>
         </View>
       </View>
 
       <View style={GStyles.flex1} />
-      {status === MintStatus.Minting && (
-        <TextM
-          style={[
-            FontStyles.neutralTertiaryText,
-            GStyles.textAlignCenter,
-            GStyles.paddingLeft(pTd(16)),
-            GStyles.paddingRight(pTd(16)),
-          ]}>
-          You can safely close this window and view it later in NFTs.
-        </TextM>
-      )}
-      <ButtonCol buttons={buttonList} />
+      <ButtonRow buttons={buttonList} />
     </>
   );
 };
-
-const styles = StyleSheet.create({
+const getStyles = makeStyles(theme => ({
   topSection: {
     width: '100%',
     display: 'flex',
@@ -216,15 +216,16 @@ const styles = StyleSheet.create({
   },
   nftWrap: {
     position: 'relative',
-    marginTop: pTd(12),
-    width: pTd(200),
-    height: pTd(200),
+    marginTop: pTd(8),
+    width: pTd(280),
+    height: pTd(280),
     marginHorizontal: 'auto',
+    alignItems: 'center',
   },
   nftAvatar: {
-    width: pTd(200),
-    height: pTd(200),
-    borderRadius: pTd(12),
+    width: pTd(280),
+    height: pTd(280),
+    borderRadius: pTd(16),
     marginHorizontal: 'auto',
   },
   nftStatusIcon: {
@@ -237,17 +238,17 @@ const styles = StyleSheet.create({
     backgroundColor: defaultColors.primaryColor,
   },
   nftStatusWrapIcon: {
-    position: 'absolute',
-    bottom: -pTd(20),
-    width: pTd(200),
-    height: pTd(40),
-    display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
+    marginTop: pTd(48),
   },
   mediumText: {
     ...fonts.mediumFont,
   },
-});
+  sgRegular: {
+    ...fonts.SGRegularFont,
+    color: theme.colors.textBase2,
+  },
+}));
 
 export default MintStatusSection;

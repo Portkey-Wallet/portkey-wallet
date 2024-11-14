@@ -10,7 +10,7 @@ import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/u
 import { useAccountAssetsInfoV2 } from '@portkey-wallet/hooks/hooks-ca/assets';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import GStyles from 'assets/theme/GStyles';
-import CommonInputNew from 'components/CommonInputNew';
+import CommonInput from 'components/CommonInput';
 import PageContainer from 'components/PageContainer';
 import SelectAssetTab from '../SelectAssetTab';
 import { makeStyles } from '@rneui/themed';
@@ -38,7 +38,7 @@ const AssetList = () => {
       return accountAssetsList;
     }
   }, [accountAssetsList, debounceKeyword, filteredListShow]);
-
+  console.log('assetListShow', JSON.stringify(assetListShow));
   const getAssetsList = useLockCallback(async () => {
     try {
       await fetchAccountAssetsInfoList({
@@ -78,12 +78,13 @@ const AssetList = () => {
 
   return (
     <PageContainer
-      titleDom={t(`Select Asset to Send`)}
+      titleDom={t(`sset to Send`)}
       safeAreaColor={['black', 'black']}
       containerStyles={styles.pageWrap}
       scrollViewProps={{ disabled: true }}>
-      <CommonInputNew
+      <CommonInput
         allowClear
+        clearIcon="clear4"
         placeholder={t('Search')}
         containerStyle={styles.containerStyle}
         inputContainerStyle={styles.inputContainerStyle}

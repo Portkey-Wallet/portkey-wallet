@@ -1,10 +1,10 @@
-import { darkColors, defaultColors } from 'assets/theme';
+import { darkColors } from 'assets/theme';
 import React, { memo, useEffect, useMemo, useState } from 'react';
-import { Animated, StyleSheet, Text, View } from 'react-native';
+import { Animated, StyleSheet, View, ViewStyle } from 'react-native';
 import { formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import { pTd } from 'utils/unit';
 import { ActivityItemType } from '@portkey-wallet/types/types-ca/activity';
-import { TransactionTypes } from '@portkey-wallet/constants/constants-ca/activity';
+import { SHOW_FROM_TRANSACTION_TYPES, TransactionTypes } from '@portkey-wallet/constants/constants-ca/activity';
 import {
   AmountSign,
   formatAmountUSDShow,
@@ -16,40 +16,38 @@ import CommonAvatar from 'components/CommonAvatar';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import Touchable from 'components/Touchable';
-import { formatActivityTime, isSameDay } from '@portkey-wallet/utils/time';
-import { Resend } from 'components/Resend';
+import { formatActivityTimeRevamp, isSameDay } from '@portkey-wallet/utils/time';
 import dayjs from 'dayjs';
-import { FontStyles } from 'assets/theme/styles';
 import NFTAvatar from 'components/NFTAvatar';
 import GStyles from 'assets/theme/GStyles';
 import fonts from 'assets/theme/fonts';
 import DoubleAvatar from 'components/DoubleAvatar';
-import { TextM } from 'components/CommonText';
+import { TextL, TextM } from 'components/CommonText';
 import { contractStatusEnum } from '@portkey-wallet/constants/constants-ca/common';
-import Svg from 'components/Svg';
+import Lottie from 'lottie-react-native';
+import { makeStyles } from '@rneui/themed';
 
 interface ActivityItemPropsType {
   preItem?: ActivityItemType;
   item?: ActivityItemType;
   index?: number;
   onPress?: (item: any) => void;
+  style?: ViewStyle;
 }
 
-const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress, index }) => {
+const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress, index, style }) => {
   const isMainnet = useIsMainnet();
   const [rotation] = useState(new Animated.Value(0));
-
+  const itemStyle = getStyles();
   const isDaySame = useMemo(() => {
     const preTime = dayjs.unix(Number(preItem?.timestamp || 0));
     const curTime = dayjs.unix(Number(item?.timestamp || 0));
     return isSameDay(preTime, curTime);
   }, [item?.timestamp, preItem?.timestamp]);
 
-  const isLineShow = useMemo(() => !isDaySame && index !== 0, [index, isDaySame]);
-
   const dayStr = useMemo(() => {
     if (isDaySame) return '';
-    return formatActivityTime(dayjs.unix(Number(item?.timestamp || 0)));
+    return formatActivityTimeRevamp(dayjs.unix(Number(item?.timestamp || 0)));
   }, [isDaySame, item?.timestamp]);
 
   const AddressDom = useMemo(() => {
@@ -59,11 +57,11 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
     if (!address || !chainId) return null;
 
     return (
-      <Text style={itemStyle.centerStatus}>
-        {`${item?.isReceived ? 'From' : 'To'} ${formatStr2EllipsisStr(addressFormat(address, chainId), 8)}`}
-      </Text>
+      <TextM style={itemStyle.centerStatus}>
+        {`${item?.isReceived ? 'From' : 'To'} ${formatStr2EllipsisStr(addressFormat(address, chainId), 7)}`}
+      </TextM>
     );
-  }, [item]);
+  }, [item, itemStyle.centerStatus]);
 
   const AmountDom = useMemo(() => {
     const { amount = '', isReceived, decimals = 8, symbol, nftInfo } = item || {};
@@ -72,14 +70,18 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
     const suffix = nftInfo?.alias || symbol || '';
 
     return (
-      <Text
+      <TextL
         numberOfLines={1}
         ellipsizeMode="tail"
-        style={[itemStyle.tokenBalance, { color: isReceived ? darkColors.textSuccess1 : darkColors.textBase1 }]}>
+        style={[
+          fonts.SGMediumFont,
+          itemStyle.tokenBalance,
+          { color: isReceived ? darkColors.textSuccess1 : darkColors.textBase1 },
+        ]}>
         {`${prefix}${formatTokenAmountShowWithDecimals(item?.amount, decimals)} ${suffix}`}
-      </Text>
+      </TextL>
     );
-  }, [item]);
+  }, [item, itemStyle.tokenBalance]);
 
   useEffect(() => {
     const rotationAnimation = Animated.loop(
@@ -95,48 +97,27 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
     };
   }, [rotation]);
 
-  const StatusDom = useMemo(() => {
-    if (item?.status === contractStatusEnum.FAILED)
-      return (
-        <View style={GStyles.marginLeft(pTd(8))}>
-          <Svg icon="activity-fail" size={pTd(16)} />
-        </View>
-      );
-    if (item?.status === contractStatusEnum.MINED)
-      return (
-        <View style={GStyles.marginLeft(pTd(8))}>
-          <Svg icon="activity-mined" size={pTd(16)} />
-        </View>
-      );
-
+  const loadingStatus = useMemo(() => {
     return (
-      <Animated.View
-        style={[
-          GStyles.marginLeft(8),
-          {
-            transform: [
-              {
-                rotate: rotation.interpolate({
-                  inputRange: [0, 360],
-                  outputRange: ['0deg', '360deg'],
-                }),
-              },
-            ],
-          },
-        ]}>
-        <Svg icon="activity-pending" size={pTd(16)} />
-      </Animated.View>
+      <View style={itemStyle.loadingWrap}>
+        <Lottie style={itemStyle.loadingIcon} source={require('assets/lottieFiles/spinnerDark.json')} autoPlay loop />
+      </View>
     );
-  }, [item?.status, rotation]);
+  }, [itemStyle]);
+
+  const statusFontColor = useMemo(() => {
+    if (item?.status === contractStatusEnum.FAILED) return darkColors.textDanger2;
+    return darkColors.textBase1;
+  }, [item?.status]);
 
   const ExtraDom = useMemo(() => {
     if (!item?.currentTxPriceInUsd) return null;
     return (
-      <Text numberOfLines={1} ellipsizeMode="tail" style={itemStyle.usdtBalance}>
-        {formatAmountUSDShow(isMainnet ? item?.currentTxPriceInUsd : '')}
-      </Text>
+      <TextM numberOfLines={1} ellipsizeMode="tail" style={itemStyle.usdtBalance}>
+        {formatAmountUSDShow(!isMainnet ? item?.currentTxPriceInUsd : '')}
+      </TextM>
     );
-  }, [isMainnet, item?.currentTxPriceInUsd]);
+  }, [isMainnet, item?.currentTxPriceInUsd, itemStyle.usdtBalance]);
 
   // new rules
   const isEmptyToken = useMemo(
@@ -151,26 +132,51 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
   const SystemActivityItem = useMemo(() => {
     return (
       <View style={itemStyle.contentWrap}>
-        <CommonAvatar
-          title={item?.symbol}
-          style={itemStyle.left}
-          svgName={item?.listIcon ? undefined : 'transfer'}
-          imageUrl={item?.listIcon || ''}
-          avatarSize={pTd(32)}
-          hasBorder
-          titleStyle={itemStyle.avatarTitleStyle}
-          borderStyle={GStyles.hairlineBorder}
-        />
+        <View style={itemStyle.left}>
+          {item?.status === contractStatusEnum.PENDING ? (
+            loadingStatus
+          ) : item?.sourceIcon ? (
+            <View style={itemStyle.cornerMarkWrap}>
+              <CommonAvatar
+                title={item?.transactionName}
+                svgName={item?.listIcon ? undefined : 'transfer'}
+                imageUrl={item?.listIcon || ''}
+                avatarSize={pTd(42)}
+                hasBorder
+                titleStyle={itemStyle.avatarTitleStyle}
+                borderStyle={GStyles.hairlineBorder}
+              />
+              <View style={itemStyle.cornerMark}>
+                <CommonAvatar
+                  title={item?.transactionName}
+                  imageUrl={item?.sourceIcon || ''}
+                  style={itemStyle.cornerMarkIcon}
+                  avatarSize={pTd(14)}
+                  titleStyle={itemStyle.avatarTitleStyle}
+                />
+              </View>
+            </View>
+          ) : (
+            <CommonAvatar
+              title={item?.transactionName}
+              svgName={item?.listIcon ? undefined : 'transfer'}
+              imageUrl={item?.listIcon || ''}
+              avatarSize={pTd(42)}
+              hasBorder
+              titleStyle={itemStyle.avatarTitleStyle}
+              borderStyle={GStyles.hairlineBorder}
+            />
+          )}
+        </View>
 
         <View style={[itemStyle.center, item?.isSystem && itemStyle.systemCenter]}>
           <View style={itemStyle.textAndStatusWrapCenter}>
-            <TextM style={[itemStyle.centerType, fonts.mediumFont]}>{item?.transactionName}</TextM>
-            {StatusDom}
+            <TextL style={[itemStyle.centerType, { color: statusFontColor }]}>{item?.transactionName}</TextL>
           </View>
         </View>
       </View>
     );
-  }, [StatusDom, item?.isSystem, item?.listIcon, item?.symbol, item?.transactionName]);
+  }, [item, itemStyle, loadingStatus, statusFontColor]);
 
   const TxActivityItem = useMemo(() => {
     if (item?.operations?.length !== 0) {
@@ -195,22 +201,25 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
 
       return (
         <View style={itemStyle.contentWrap}>
-          <DoubleAvatar firstAvatar={renderTopIconInfo} secondAvatar={renderBottomIconInfo} />
+          {item?.status === contractStatusEnum.PENDING ? (
+            <View style={itemStyle.doubleAvatarLoadingWrap}>{loadingStatus}</View>
+          ) : (
+            <DoubleAvatar firstAvatar={renderTopIconInfo} secondAvatar={renderBottomIconInfo} />
+          )}
           <View style={[itemStyle.center, itemStyle.systemCenter]}>
             <View style={itemStyle.textAndStatusWrapCenter}>
-              <TextM numberOfLines={1} style={[itemStyle.centerType, fonts.mediumFont]}>
+              <TextL numberOfLines={1} style={[itemStyle.centerType, { color: statusFontColor }]}>
                 {item?.transactionName}
-              </TextM>
-              {StatusDom}
+              </TextL>
             </View>
 
-            <Text style={itemStyle.centerStatus}>{item?.dappName}</Text>
+            <TextM style={itemStyle.centerStatus}>{item?.dappName}</TextM>
           </View>
           <View style={itemStyle.right}>
-            <TextM
+            <TextL
               numberOfLines={1}
               style={[
-                !sameDirection && GStyles.fontSize(16),
+                fonts.SGMediumFont,
                 { color: tokenTop.isReceived ? darkColors.textSuccess1 : darkColors.textBase1 },
               ]}>
               {`${formatWithCommas({
@@ -219,55 +228,96 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
                 decimals: tokenTop.decimals,
                 digits: Number(tokenTop.decimals),
               })} ${tokenTop.symbol}`}
-            </TextM>
-            <TextM
-              numberOfLines={1}
-              style={[!sameDirection && GStyles.fontSize(12), tokenBottom.isReceived && FontStyles.font10]}>
-              {`${formatWithCommas({
-                sign: tokenBottom.isReceived ? AmountSign.PLUS : AmountSign.MINUS,
-                amount: tokenBottom.amount,
-                decimals: tokenBottom.decimals,
-                digits: Number(tokenBottom.decimals),
-              })} ${tokenBottom.symbol}`}
-            </TextM>
+            </TextL>
+            {sameDirection ? (
+              <TextL
+                numberOfLines={1}
+                style={[
+                  fonts.SGMediumFont,
+                  { color: tokenBottom.isReceived ? darkColors.textSuccess1 : darkColors.textBase1 },
+                ]}>
+                {`${formatWithCommas({
+                  sign: tokenBottom.isReceived ? AmountSign.PLUS : AmountSign.MINUS,
+                  amount: tokenBottom.amount,
+                  decimals: tokenBottom.decimals,
+                  digits: Number(tokenBottom.decimals),
+                })} ${tokenBottom.symbol}`}
+              </TextL>
+            ) : (
+              <TextM numberOfLines={1} style={[{ color: darkColors.textBase2 }]}>
+                {`${formatWithCommas({
+                  sign: tokenBottom.isReceived ? AmountSign.PLUS : AmountSign.MINUS,
+                  amount: tokenBottom.amount,
+                  decimals: tokenBottom.decimals,
+                  digits: Number(tokenBottom.decimals),
+                })} ${tokenBottom.symbol}`}
+              </TextM>
+            )}
           </View>
         </View>
       );
     }
 
+    const isTransferType = SHOW_FROM_TRANSACTION_TYPES.includes(item.transactionType);
+
     if (item?.dappName)
       return (
         <View style={itemStyle.contentWrap}>
-          {item?.nftInfo ? (
-            <NFTAvatar
-              disabled
-              isSeed={item.nftInfo.isSeed}
-              seedType={item.nftInfo.seedType}
-              nftSize={pTd(32)}
-              badgeSizeType="small"
-              data={item.nftInfo}
-              style={[itemStyle.left, itemStyle.nftAvatarWrap]}
-            />
-          ) : (
-            <CommonAvatar
-              style={itemStyle.left}
-              svgName={item?.listIcon ? undefined : 'transfer'}
-              imageUrl={item?.listIcon || ''}
-              avatarSize={pTd(32)}
-              hasBorder
-              titleStyle={itemStyle.avatarTitleStyle}
-              borderStyle={GStyles.hairlineBorder}
-            />
-          )}
+          <View style={itemStyle.left}>
+            {item.status === contractStatusEnum.PENDING ? (
+              loadingStatus
+            ) : item?.nftInfo ? (
+              <NFTAvatar
+                disabled
+                isSeed={item.nftInfo.isSeed}
+                seedType={item.nftInfo.seedType}
+                nftSize={pTd(42)}
+                badgeSizeType="small"
+                data={item.nftInfo}
+                style={[itemStyle.nftAvatarWrap]}
+              />
+            ) : isTransferType ? (
+              <View style={itemStyle.cornerMarkWrap}>
+                <CommonAvatar
+                  svgName={item?.listIcon ? undefined : 'transfer'}
+                  imageUrl={item?.listIcon || ''}
+                  title={item.transactionName}
+                  style={itemStyle.symbolIcon}
+                  avatarSize={pTd(42)}
+                  hasBorder
+                  titleStyle={itemStyle.avatarTitleStyle}
+                  borderStyle={GStyles.hairlineBorder}
+                />
+                <View style={itemStyle.cornerMark}>
+                  <CommonAvatar
+                    svgName={item.isReceived ? 'arrow-down-thin' : 'send-thin'}
+                    style={itemStyle.cornerMarkIcon}
+                    avatarSize={pTd(14)}
+                    titleStyle={itemStyle.avatarTitleStyle}
+                  />
+                </View>
+              </View>
+            ) : (
+              <CommonAvatar
+                svgName={item?.listIcon ? undefined : 'transfer'}
+                imageUrl={item?.listIcon || ''}
+                title={item.transactionName}
+                avatarSize={pTd(42)}
+                hasBorder
+                titleStyle={itemStyle.avatarTitleStyle}
+                borderStyle={GStyles.hairlineBorder}
+              />
+            )}
+          </View>
+
           <View style={[itemStyle.center, item?.isSystem && itemStyle.systemCenter]}>
             <View style={itemStyle.textAndStatusWrapCenter}>
-              <TextM numberOfLines={1} style={[itemStyle.centerType, fonts.mediumFont]}>
+              <TextL numberOfLines={1} style={[itemStyle.centerType, { color: statusFontColor }]}>
                 {item?.transactionName}
-              </TextM>
-              {StatusDom}
+              </TextL>
             </View>
 
-            <Text style={itemStyle.centerStatus}>{item?.dappName}</Text>
+            <TextM style={itemStyle.centerStatus}>{item?.dappName}</TextM>
           </View>
           <View style={itemStyle.right}>
             {AmountDom}
@@ -278,41 +328,65 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
 
     return (
       <View style={itemStyle.contentWrap}>
-        {item?.nftInfo ? (
-          <NFTAvatar
-            disabled
-            isSeed={item.nftInfo.isSeed}
-            seedType={item.nftInfo.seedType}
-            nftSize={pTd(32)}
-            badgeSizeType="small"
-            data={item.nftInfo}
-            style={[itemStyle.left, itemStyle.nftAvatarWrap]}
-          />
-        ) : (
-          <CommonAvatar
-            style={itemStyle.left}
-            svgName={item?.listIcon ? undefined : 'transfer'}
-            imageUrl={item?.listIcon || ''}
-            avatarSize={pTd(32)}
-            hasBorder
-            titleStyle={itemStyle.avatarTitleStyle}
-            borderStyle={GStyles.hairlineBorder}
-          />
-        )}
+        <View style={itemStyle.left}>
+          {item.status === contractStatusEnum.PENDING ? (
+            loadingStatus
+          ) : item?.nftInfo ? (
+            <NFTAvatar
+              disabled
+              isSeed={item.nftInfo.isSeed}
+              seedType={item.nftInfo.seedType}
+              nftSize={pTd(42)}
+              badgeSizeType="small"
+              data={item.nftInfo}
+              style={[itemStyle.nftAvatarWrap]}
+            />
+          ) : isTransferType ? (
+            <View style={itemStyle.cornerMarkWrap}>
+              <CommonAvatar
+                svgName={item?.listIcon ? undefined : 'transfer'}
+                imageUrl={item?.listIcon || ''}
+                title={item.symbol}
+                style={itemStyle.symbolIcon}
+                avatarSize={pTd(42)}
+                hasBorder
+                titleStyle={itemStyle.avatarTitleStyle}
+                borderStyle={GStyles.hairlineBorder}
+              />
+              <View style={itemStyle.cornerMark}>
+                <CommonAvatar
+                  svgName={item.isReceived ? 'arrow-down-thin' : 'send-thin'}
+                  style={itemStyle.cornerMarkIcon}
+                  avatarSize={pTd(14)}
+                  titleStyle={itemStyle.avatarTitleStyle}
+                />
+              </View>
+            </View>
+          ) : (
+            <CommonAvatar
+              svgName={item?.listIcon ? undefined : 'transfer'}
+              imageUrl={item?.listIcon || ''}
+              title={item.transactionName}
+              avatarSize={pTd(42)}
+              hasBorder
+              titleStyle={itemStyle.avatarTitleStyle}
+              borderStyle={GStyles.hairlineBorder}
+            />
+          )}
+        </View>
 
         <View style={[itemStyle.center, item?.isSystem && itemStyle.systemCenter]}>
           <View style={itemStyle.textAndStatusWrapCenter}>
-            <TextM numberOfLines={1} style={[itemStyle.centerType, fonts.mediumFont]}>
+            <TextL numberOfLines={1} style={[itemStyle.centerType, { color: statusFontColor }]}>
               {item?.transactionName}
-            </TextM>
-            {StatusDom}
+            </TextL>
           </View>
 
           {!item?.isSystem && (
             <>
               {AddressDom}
               {item?.transactionType === TransactionTypes.CROSS_CHAIN_TRANSFER && (
-                <Text style={itemStyle.centerStatus}>Cross-Chain Transfer</Text>
+                <TextM style={itemStyle.centerStatus}>Cross-Chain Transfer</TextM>
               )}
             </>
           )}
@@ -324,43 +398,46 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
         </View>
       </View>
     );
-  }, [AddressDom, AmountDom, ExtraDom, StatusDom, item]);
+  }, [AddressDom, AmountDom, ExtraDom, item, itemStyle, loadingStatus, statusFontColor]);
 
   const EmptyTokenForDapp = useMemo(() => {
     return (
       <View style={itemStyle.contentWrap}>
-        <CommonAvatar
-          title={item?.dappName || 'Unknown'}
-          style={itemStyle.left}
-          svgName={item?.dappName ? undefined : 'transfer'}
-          imageUrl={item?.dappIcon || ''}
-          avatarSize={pTd(32)}
-          hasBorder
-          titleStyle={itemStyle.avatarTitleStyle}
-          borderStyle={GStyles.hairlineBorder}
-        />
+        <View style={itemStyle.left}>
+          {item?.status === contractStatusEnum.PENDING ? (
+            loadingStatus
+          ) : (
+            <CommonAvatar
+              title={item?.dappName || 'Unknown'}
+              svgName={item?.dappName ? undefined : 'transfer'}
+              imageUrl={item?.dappIcon || ''}
+              avatarSize={pTd(42)}
+              hasBorder
+              titleStyle={itemStyle.avatarTitleStyle}
+              borderStyle={GStyles.hairlineBorder}
+            />
+          )}
+        </View>
 
         <View style={[itemStyle.center, item?.isSystem && itemStyle.systemCenter]}>
           <View style={itemStyle.textAndStatusWrapCenter}>
-            <TextM numberOfLines={1} style={[itemStyle.centerType, fonts.mediumFont]}>
+            <TextL numberOfLines={1} style={[itemStyle.centerType, { color: statusFontColor }]}>
               {item?.transactionName}
-            </TextM>
-            {StatusDom}
+            </TextL>
           </View>
-          <Text style={itemStyle.centerStatus}>{item?.dappName}</Text>
+          <TextM style={itemStyle.centerStatus}>{item?.dappName}</TextM>
         </View>
       </View>
     );
-  }, [StatusDom, item?.dappIcon, item?.dappName, item?.isSystem, item?.transactionName]);
+  }, [item, itemStyle, statusFontColor, loadingStatus]);
 
   return (
-    <Touchable style={[itemStyle.itemWrap, isLineShow && itemStyle.itemBorder]} onPress={() => onPress?.(item)}>
-      {!isDaySame && <Text style={itemStyle.time}>{dayStr}</Text>}
+    <Touchable style={[itemStyle.itemWrap, style]} onPress={() => onPress?.(item)}>
+      {!isDaySame && <TextM style={itemStyle.time}>{dayStr}</TextM>}
       <View style={itemStyle.containerWrap}>
         {isShowEmptyTokenForDapp && EmptyTokenForDapp}
         {isShowSystemForDefault && SystemActivityItem}
         {isShowTx && TxActivityItem}
-        <Resend containerStyle={itemStyle.resendContainer} item={item} />
       </View>
     </Touchable>
   );
@@ -368,29 +445,19 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
 
 export default memo(ActivityItem);
 
-const itemStyle = StyleSheet.create({
+const getStyles = makeStyles(theme => ({
   itemWrap: {
     flex: 1,
-    backgroundColor: darkColors.bgBase1,
+    backgroundColor: theme.colors.bgBase1,
     marginHorizontal: pTd(16),
   },
-  itemBorder: {
-    marginTop: pTd(4),
-    paddingTop: pTd(4),
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: defaultColors.bg7,
-  },
   time: {
-    fontSize: pTd(14),
-    color: darkColors.textBase1,
     lineHeight: pTd(18),
     marginTop: pTd(16),
-    marginBottom: pTd(4),
   },
   containerWrap: {
     paddingVertical: pTd(8),
   },
-
   contentWrap: {
     display: 'flex',
     flexDirection: 'row',
@@ -398,6 +465,7 @@ const itemStyle = StyleSheet.create({
     height: pTd(60),
   },
   left: {
+    width: pTd(45),
     marginRight: pTd(8),
   },
   nftAvatarWrap: {
@@ -405,10 +473,38 @@ const itemStyle = StyleSheet.create({
   },
   avatarTitleStyle: {
     fontSize: pTd(16),
-    color: defaultColors.font11,
+    color: theme.colors.font11,
+  },
+  cornerMarkWrap: {
+    width: pTd(45),
+    height: pTd(42),
+    position: 'relative',
+  },
+  symbolIcon: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+  },
+  cornerMark: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: pTd(19),
+    height: pTd(19),
+    position: 'absolute',
+    right: 0,
+    bottom: 0,
+    backgroundColor: theme.colors.bgBrand2,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: theme.colors.borderBase1,
+    borderRadius: pTd(10),
+  },
+  cornerMarkIcon: {
+    backgroundColor: theme.colors.bgBrand2,
   },
   center: {
-    width: pTd(160),
+    width: pTd(165),
     marginRight: pTd(8),
     justifyContent: 'center',
   },
@@ -416,15 +512,13 @@ const itemStyle = StyleSheet.create({
     flex: 1,
   },
   centerType: {
-    color: darkColors.textBase1,
+    color: theme.colors.textBase1,
     fontSize: pTd(16),
     lineHeight: pTd(24),
   },
   centerStatus: {
-    color: darkColors.textBase2,
+    color: theme.colors.textBase2,
     marginTop: StyleSheet.hairlineWidth,
-    fontSize: pTd(10),
-    lineHeight: pTd(16),
   },
   right: {
     display: 'flex',
@@ -434,17 +528,15 @@ const itemStyle = StyleSheet.create({
   },
   tokenBalance: {
     textAlign: 'right',
-    color: defaultColors.font5,
-    fontSize: pTd(16),
-    lineHeight: pTd(24),
+    lineHeight: pTd(16),
+    fontWeight: '600',
     width: pTd(135),
   },
   usdtBalance: {
     textAlign: 'right',
-    fontSize: pTd(12),
-    lineHeight: pTd(18),
-    color: defaultColors.font11,
-    height: pTd(16),
+    lineHeight: pTd(20),
+    color: theme.colors.textBase2,
+    height: pTd(20),
   },
   tokenName: {
     flex: 1,
@@ -458,4 +550,21 @@ const itemStyle = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-});
+  loadingWrap: {
+    width: pTd(42),
+    height: pTd(42),
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: pTd(21),
+    backgroundColor: theme.colors.bgBrand1,
+  },
+  loadingIcon: {
+    width: pTd(24),
+  },
+  doubleAvatarLoadingWrap: {
+    width: pTd(45),
+    marginRight: pTd(8),
+  },
+}));

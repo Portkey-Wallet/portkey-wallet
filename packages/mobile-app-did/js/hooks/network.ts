@@ -53,9 +53,8 @@ export function useChangeNetwork(route: RouteProp<ParamListBase>) {
       if (!isShowAlert) return onConfirm(network, logged);
 
       ActionSheet.alert({
-        title: t('You are about to switch to', {
-          title: `aelf ${networkName}`,
-        }),
+        showInfoIcon: true,
+        title: t('Confirm network switch'),
         message: t(`${logged ? 'switch network logged message' : 'switch network not logged message'}`, {
           title: networkName,
         }),
@@ -78,8 +77,6 @@ export function useChangeNetworkDirectly(route: RouteProp<ParamListBase>) {
   const changeNetwork = useChangeNetwork(route);
 
   return useCallback(() => {
-    // TODO: change it
-    return false;
     const targetNetwork = networkList.find(network => network.name !== currentNetworkInfo.name);
     changeNetwork(targetNetwork, false);
   }, [changeNetwork, currentNetworkInfo.name, networkList]);

@@ -6,9 +6,7 @@ export const defaultColors = {
   bgColor: '#ffffff',
   bgColor1: 'rgba(242, 244, 246, 1)',
   primaryColor: '#5D42FF',
-
   primaryColorV2: '#68C3FF',
-
   bg1: '#ffffff',
   bg2: '#FEF6E7',
   bg3: '#F3E4E4',
@@ -52,7 +50,6 @@ export const defaultColors = {
   bg41: 'rgba(255, 255, 255, 0.60)',
   bg42: 'rgba(255, 255, 255, 0.90)',
   bg43: '#1F1F21',
-
   font1: '#464B53',
   font2: 'white',
   font3: '#515A62',
@@ -79,16 +76,13 @@ export const defaultColors = {
   font24: '#1A1A1A',
   font25: '#5D42FF',
   font26: '#CDCDCD',
-
   white: '#ffffff',
   black: '#000000',
-
   icon1: '#515A62',
   icon2: '#ffffff',
   icon3: '#333333',
   icon4: '#757A85',
   icon5: '#55585E',
-
   border1: '#C5CBD5',
   border2: '#F7F8F9',
   border3: '#5D42FF',
@@ -99,28 +93,22 @@ export const defaultColors = {
   border8: '#DCDEE1',
   border9: '#FFD4A2',
   border10: '#F53F3F',
-
   error: '#F53F3F',
   error1: '#FF4D4F',
-
   shadow1: '#4D4E59',
   brandTouched: '#5137EE',
   brandNormal: '#5D42FF',
   brandDisable: '#B2B0FF',
   brandLight: '#EFECFF',
-
   functionalGreenDefault: '#00B75F',
   functionalGreenDisable: '#99E2BF',
   functionalGreenLight: '#EAF9EF',
-
   functionalYellowDefault: '#FF9417',
   functionalYellowDisable: '#FFD4A2',
   functionalYellowLight: '#FFF4E8',
-
   functionalRedDefault: '#F53F3F',
   functionalRedDisable: '#FCBCBC',
   functionalRedLight: '#FFEEEE',
-
   primaryTextColor: '#101114',
   secondaryTextColor: '#55585E',
   neutralPrimaryTextColor: '#101114',
@@ -135,7 +123,7 @@ export const defaultColors = {
   neutralMaskBG: 'rgba(0, 0, 0, 0.6)',
   neutralTooltipBG: 'rgba(0, 0, 0, 0.8)',
 
-  bgBase1: 'red',
+  bgBase1: '#151318',
   bgBase2: '#1F1F21',
   bgBase3: '#414142',
   bgBase4: '#626264',
@@ -161,6 +149,7 @@ export const defaultColors = {
   bgDanger3: '#20110C',
   bgDanger4: '#8C2E08',
   bgDanger5: '#61220A',
+  bgTransparent: 'transparent',
 
   textBase1: '#ffffff',
   textBase2: '#FFFFFFB2',
@@ -287,6 +276,7 @@ export const darkColors = {
   bgDanger3: '#20110C',
   bgDanger4: '#8C2E08',
   bgDanger5: '#61220A',
+  bgTransparent: 'transparent',
 
   textBase1: '#ffffff',
   textBase2: '#FFFFFFB2',

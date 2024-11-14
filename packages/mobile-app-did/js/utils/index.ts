@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc.js';
 import * as Network from 'expo-network';
 import { setStringAsync } from 'expo-clipboard';
-import { Timestamp } from '@portkey-wallet/types';
+import { ChainId, Timestamp } from '@portkey-wallet/types';
 import CommonToast from 'components/CommonToast';
 import i18n from 'i18n';
 dayjs.extend(utc);
@@ -74,3 +74,32 @@ export const isExpired = (timestamp: Timestamp): boolean => dayjs().isAfter(time
 
 export const parseVersion = (list: (string | undefined | null)[]) =>
   list.reduce((pre, cv) => (cv ? `${pre}(${cv})` : pre));
+
+export const getChainSvgName = (chainId?: ChainId) => {
+  if (!chainId) return undefined;
+  return chainId === 'AELF' ? 'mainnet' : 'sideChain';
+};
+
+export const timeAgo = (timestampInSeconds: number) => {
+  const now = Math.floor(Date.now() / 1000);
+  const diffInSeconds = now - timestampInSeconds;
+
+  if (diffInSeconds < 60) {
+    return `< 1 minute ago`;
+  } else if (diffInSeconds < 120) {
+    return `1 minute ago`;
+  } else if (diffInSeconds < 3600) {
+    const minutes = Math.floor(diffInSeconds / 60);
+    return `${minutes} minutes ago`;
+  } else if (diffInSeconds < 7200) {
+    return `1 hour ago`;
+  } else if (diffInSeconds < 86400) {
+    const hours = Math.floor(diffInSeconds / 3600);
+    return `${hours} hours ago`;
+  } else if (diffInSeconds < 172800) {
+    return `1 day ago`;
+  } else {
+    const days = Math.floor(diffInSeconds / 86400);
+    return `${days} days ago`;
+  }
+};

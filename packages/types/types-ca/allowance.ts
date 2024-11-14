@@ -4,6 +4,8 @@ export interface ISymbolApprovedItem {
   symbol: string;
   amount: number;
   decimals: number;
+  imageUrl: string;
+  updateTime: number;
 }
 
 export interface ITokenAllowance {
@@ -13,4 +15,5 @@ export interface ITokenAllowance {
   icon?: string; // dapp icon
   name?: string; // dapp name
   symbolApproveList?: ISymbolApprovedItem[];
+  chainImageUrl?: string;
 }

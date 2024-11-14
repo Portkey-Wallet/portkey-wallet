@@ -7,22 +7,25 @@ import { makeStyles } from '@rneui/themed';
 import CommonAvatar from 'components/CommonAvatar';
 import Svg from 'components/Svg';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
+import { ViewStyleType } from 'types/styles';
 
-function SourceDestinationItem({
+export function SourceDestinationItem({
   title,
   icon,
   chainName,
   onPress,
+  containerStyles,
 }: {
-  title: string;
+  title?: string;
   icon: string;
   chainName: string;
+  containerStyles?: ViewStyleType;
   onPress: () => void;
 }) {
   const styles = getStyles();
   return (
-    <TouchableOpacity style={styles.itemWrapper} onPress={onPress}>
-      <Text style={styles.title}>{title}</Text>
+    <TouchableOpacity style={[styles.itemWrapper, containerStyles]} onPress={onPress}>
+      {title && <Text style={styles.title}>{title}</Text>}
       <View style={styles.itemChianWrapper}>
         <View style={styles.iconAndName}>
           <CommonAvatar avatarSize={pTd(24)} imageUrl={icon} />

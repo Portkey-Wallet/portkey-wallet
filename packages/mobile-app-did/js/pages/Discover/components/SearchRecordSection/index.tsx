@@ -43,13 +43,20 @@ export default function SearchRecordSection() {
     [discoverJump],
   );
 
-  if (showRecordList?.length === 0) return null;
+  if (showRecordList?.length === 0)
+    return (
+      <View
+        style={{
+          flex: 1,
+        }}
+      />
+    );
 
   return (
     <ScrollView style={styles.sectionWrap}>
       <View style={[styles.headerWrap, GStyles.flexRow, GStyles.spaceBetween]}>
-        <TextL style={styles.header}>{'Records'}</TextL>
-        <TextS style={[FontStyles.font4, GStyles.alignCenter]} onPress={clearRecord}>
+        <TextL style={styles.header}>{'Recent'}</TextL>
+        <TextS style={[{ color: '#68C3FF' }, GStyles.alignCenter]} onPress={clearRecord}>
           {t('Clear')}
         </TextS>
       </View>

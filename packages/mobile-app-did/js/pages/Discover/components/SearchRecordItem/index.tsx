@@ -56,8 +56,8 @@ const itemStyle = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    borderBottomColor: defaultColors.border6,
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    // borderBottomColor: defaultColors.border6,
+    // borderBottomWidth: StyleSheet.hairlineWidth,
   },
   infoWrap: {
     flex: 1,
@@ -72,5 +72,6 @@ const itemStyle = StyleSheet.create({
   gameInfo: {
     lineHeight: pTd(16),
     marginTop: pTd(2),
+    color: '#FFFFFFB2',
   },
 });

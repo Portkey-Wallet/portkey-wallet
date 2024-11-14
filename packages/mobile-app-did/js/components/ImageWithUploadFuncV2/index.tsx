@@ -1,4 +1,4 @@
-import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useState } from 'react';
+import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useState } from 'react';
 import CommonAvatar from 'components/CommonAvatar';
 import * as ImagePicker from 'expo-image-picker';
 import { getInfo } from 'utils/fs';
@@ -6,12 +6,12 @@ import { MAX_FILE_SIZE_BYTE } from '@portkey-wallet/constants/constants-ca/im';
 import { uploadPortkeyImage } from 'utils/uploadImage';
 import Touchable from 'components/Touchable';
 import { pTd } from 'utils/unit';
-import FastImage from 'react-native-fast-image';
 import Loading from 'components/Loading';
 import { isValidAvatarFile } from '@portkey-wallet/utils/reg';
 import CommonToast from 'components/CommonToast';
 import { View, StyleSheet } from 'react-native';
 import { defaultColors } from 'assets/theme';
+import { makeStyles } from '@rneui/themed';
 export enum ImageShowType {
   CIRCLE,
   NORMAL,
@@ -24,7 +24,7 @@ type UploadImageType = {
   onChangeImage?: (url: string) => void;
   defaultComponent?: React.ReactNode;
   type?: ImageShowType;
-  onChooseSuccess?: (obj: ImagePicker.ImageInfo) => void;
+  onChooseSuccess?: (obj: ImagePicker.ImagePickerAsset) => void;
 };
 
 export type ImageWithUploadFuncInstance = {
@@ -35,7 +35,8 @@ export type ImageWithUploadFuncInstance = {
 
 const ImageWithUploadFuncV2 = forwardRef(function ImageWithUploadFuncV2(props: UploadImageType, ref) {
   const { title, imageUrl, avatarSize = pTd(48), onChangeImage, defaultComponent, type, onChooseSuccess } = props;
-  const [localPhotoFile, setLocalPhotoFile] = useState<ImagePicker.ImageInfo>();
+  const [localPhotoFile, setLocalPhotoFile] = useState<ImagePicker.ImagePickerAsset>();
+  const styles = getStyles();
   useEffect(() => {
     setLocalPhotoFile({
       uri: imageUrl || '',
@@ -44,20 +45,20 @@ const ImageWithUploadFuncV2 = forwardRef(function ImageWithUploadFuncV2(props: U
       cancelled: true,
     });
   }, [avatarSize, imageUrl]);
-  const sizeStyle = useMemo(() => {
-    if (!!type && type === ImageShowType.NORMAL) {
-      return {
-        width: Number(avatarSize),
-        height: Number(avatarSize),
-        borderRadius: pTd(12),
-      };
-    }
-    return {
-      width: Number(avatarSize),
-      height: Number(avatarSize),
-      borderRadius: Number(avatarSize) / 2,
-    };
-  }, [avatarSize, type]);
+  // const sizeStyle = useMemo(() => {
+  //   if (!!type && type === ImageShowType.NORMAL) {
+  //     return {
+  //       width: Number(avatarSize),
+  //       height: Number(avatarSize),
+  //       borderRadius: pTd(12),
+  //     };
+  //   }
+  //   return {
+  //     width: Number(avatarSize),
+  //     height: Number(avatarSize),
+  //     borderRadius: Number(avatarSize) / 2,
+  //   };
+  // }, [avatarSize, type]);
   const selectPhoto = useCallback(async () => {
     try {
       Loading.show();
@@ -67,18 +68,26 @@ const ImageWithUploadFuncV2 = forwardRef(function ImageWithUploadFuncV2(props: U
         allowsMultipleSelection: false,
         quality: 0.1,
       });
-      if (result.cancelled || !result.uri) return;
-
-      if (!isValidAvatarFile(result.uri)) return CommonToast.fail('Unsupported format. Please use jpeg, jpg or png.');
-
-      if (!result?.fileSize) {
-        const info = await getInfo(result.uri);
-        result.fileSize = info.size;
+      if (result.canceled || !result.assets || result.assets.length <= 0) {
+        return;
       }
-      if (!result?.fileSize || result.fileSize > MAX_FILE_SIZE_BYTE) return CommonToast.fail('The file is too large.');
 
-      setLocalPhotoFile(result);
-      onChooseSuccess?.(result);
+      if (!isValidAvatarFile(result.assets[0].uri)) {
+        return CommonToast.fail('Unsupported format. Please use jpeg, jpg or png.');
+      }
+
+      if (!result?.assets[0].fileSize) {
+        const info = await getInfo(result.assets[0].uri);
+        if (info.exists) {
+          result.assets[0].fileSize = info.size;
+        }
+      }
+      if (!result?.assets[0].fileSize || result.assets[0].fileSize > MAX_FILE_SIZE_BYTE) {
+        return CommonToast.fail('The file is too large.');
+      }
+
+      setLocalPhotoFile(result.assets[0]);
+      onChooseSuccess?.(result.assets[0]);
       return true;
     } catch (error) {
       console.log('==', error);
@@ -91,7 +100,9 @@ const ImageWithUploadFuncV2 = forwardRef(function ImageWithUploadFuncV2(props: U
   const uploadPhoto = useCallback(async () => {
     console.log('localPhotoFile', localPhotoFile);
 
-    if (!localPhotoFile) return;
+    if (!localPhotoFile) {
+      return;
+    }
     try {
       const s3Url = await uploadPortkeyImage(localPhotoFile);
 
@@ -111,7 +122,7 @@ const ImageWithUploadFuncV2 = forwardRef(function ImageWithUploadFuncV2(props: U
       uri: '',
       width: 0,
       height: 0,
-      cancelled: false,
+      // cancelled: false,
     });
   }, [onChooseSuccess]);
 
@@ -156,12 +167,11 @@ const ImageWithUploadFuncV2 = forwardRef(function ImageWithUploadFuncV2(props: U
 });
 
 export default ImageWithUploadFuncV2;
-
-const styles = StyleSheet.create({
+const getStyles = makeStyles(theme => ({
   avatarWrap: {
     overflow: 'hidden',
-    borderWidth: pTd(1),
-    borderRadius: pTd(12),
-    borderColor: defaultColors.neutralBorder,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: pTd(16),
+    borderColor: theme.colors.borderNeutral2,
   },
-});
+}));

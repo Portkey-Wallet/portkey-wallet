@@ -16,10 +16,12 @@ import ReceiveNav from 'pages/Receive';
 import ActivityNav from 'pages/Activity';
 import Home from 'pages/Home';
 import GuardianNav from 'pages/Guardian';
+import SwapNav from 'pages/Swap';
 
 import Referral from 'pages/Referral';
 import SecurityLock from 'pages/SecurityLock';
 import NFTDetail from 'pages/NFT/NFTDetail';
+import CollectionDetail from 'pages/NFT/CollectionDetail';
 import QrCodeNav from 'pages/QrCode';
 import MyNav from 'pages/My/router';
 import RampNav from 'pages/Ramp';
@@ -37,7 +39,8 @@ import GiftHistory from 'pages/CryptoGift/GiftHistory';
 import GiftDetail from 'pages/CryptoGift/GiftDetail';
 import GiftResult from 'pages/CryptoGift/GiftResult';
 import EbridgeExample from 'pages/EbridgeExample';
-import Settings from 'pages/My/Profile';
+import ProfileSettings from 'pages/My/AccountSettings';
+import SecurityNav from 'pages/My/Security/router';
 
 // key: page route key, value: is page show
 const PageShowMap = new Map<string, boolean>();
@@ -49,13 +52,14 @@ export const productionNav = [
   { name: 'Tab', component: Tab },
   { name: 'SecurityLock', component: SecurityLock, options: { gestureEnabled: false } },
   { name: 'NFTDetail', component: NFTDetail },
+  { name: 'CollectionDetail', component: CollectionDetail },
   { name: 'ProviderWebPage', component: ProviderWebPage },
   { name: 'Deposit', component: Deposit },
   { name: 'CryptoGift', component: CryptoGift },
   { name: 'GiftHistory', component: GiftHistory },
   { name: 'GiftDetail', component: GiftDetail },
   { name: 'GiftResult', component: GiftResult },
-  { name: 'ProfileSettings', component: Settings },
+  { name: 'ProfileSettings', component: ProfileSettings },
   ...QrCodeNav,
   ...GuardianNav,
   ...ActivityNav,
@@ -69,6 +73,8 @@ export const productionNav = [
   ...ChatNav,
   ...DiscoverNav,
   ...FreeMintNav,
+  ...SwapNav,
+  ...SecurityNav,
 ] as const;
 
 // dev nav
@@ -105,7 +111,6 @@ export default function NavigationRoot() {
     reportPageShow({ page_name: currentRouteName });
     PageShowMap.set(currentRouteKey, true);
   }, []);
-  console.log('stackNav', stackNav);
   return (
     <NavigationContainer ref={refHandler} onStateChange={onNavigationStateChange}>
       <TabsDrawer>

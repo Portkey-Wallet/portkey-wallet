@@ -11,18 +11,22 @@ import GStyles from 'assets/theme/GStyles';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import fonts from 'assets/theme/fonts';
+import { ViewStyleType, TextStyleType } from 'types/styles';
 
 interface TokenListItemType {
+  wrapStyle?: ViewStyleType;
+  balanceTextStyle?: TextStyleType;
+  balanceInUseTextStyle?: TextStyleType;
   item: TokenItemShowType;
   onPress?: (item: TokenItemShowType) => void;
   hideBalance?: boolean;
 }
 
 const TokenItem: React.FC<TokenListItemType> = props => {
-  const { onPress, item, hideBalance = false } = props;
+  const { onPress, item, hideBalance = false, wrapStyle, balanceTextStyle, balanceInUseTextStyle } = props;
   const isMainnet = useIsMainnet();
   return (
-    <Touchable style={itemStyle.wrap} onPress={() => onPress?.(item)}>
+    <Touchable style={[itemStyle.wrap, wrapStyle]} onPress={() => onPress?.(item)}>
       <View style={itemStyle.left}>
         <View style={itemStyle.iconWrap}>
           <CommonAvatar
@@ -31,6 +35,7 @@ const TokenItem: React.FC<TokenListItemType> = props => {
             title={item?.symbol}
             avatarSize={pTd(40)}
             imageUrl={item?.imageUrl}
+            svgName={item?.svgName}
             titleStyle={FontStyles.font11}
             borderStyle={GStyles.hairlineBorder}
           />
@@ -40,20 +45,29 @@ const TokenItem: React.FC<TokenListItemType> = props => {
             title={item?.displayChainName}
             avatarSize={pTd(20)}
             imageUrl={item?.chainImageUrl}
+            svgName={item?.chainSvgName}
             borderStyle={itemStyle.tokenIconBorder}
           />
         </View>
         <View>
-          <TextM style={itemStyle.symbolText}>{item.label || item.symbol}</TextM>
-          <TextM style={itemStyle.chainText}>{item.displayChainName}</TextM>
+          <TextM numberOfLines={1} ellipsizeMode={'tail'} style={itemStyle.symbolText}>
+            {item.label || item.symbol}
+          </TextM>
+          {item.displayChainName && (
+            <TextM numberOfLines={1} ellipsizeMode={'tail'} style={itemStyle.chainText}>
+              {item.displayChainName}
+            </TextM>
+          )}
         </View>
       </View>
       <View style={itemStyle.right}>
-        <TextM style={itemStyle.balanceText}>
+        <TextM numberOfLines={1} ellipsizeMode={'tail'} style={[itemStyle.balanceText, balanceTextStyle]}>
           {hideBalance ? '******' : formatTokenAmountShowWithDecimals(item.balance, item.decimals)}
         </TextM>
         {item.balanceInUsd && isMainnet && (
-          <TextM style={itemStyle.balanceInUseText}>{hideBalance ? '******' : item.balanceInUsd}</TextM>
+          <TextM numberOfLines={1} ellipsizeMode={'tail'} style={[itemStyle.balanceInUseText, balanceInUseTextStyle]}>
+            {hideBalance ? '******' : item.balanceInUsd}
+          </TextM>
         )}
       </View>
     </Touchable>
@@ -95,14 +109,18 @@ const itemStyle = StyleSheet.create({
     position: 'absolute',
     right: 0,
     bottom: 0,
+    borderWidth: pTd(1),
+    borderColor: darkColors.borderBase1,
   },
   symbolText: {
     fontSize: pTd(16),
+    lineHeight: pTd(22),
     marginLeft: pTd(8),
     color: darkColors.textBase1,
   },
   chainText: {
     fontSize: pTd(14),
+    lineHeight: pTd(20),
     marginLeft: pTd(8),
     color: darkColors.textBase2,
   },
@@ -114,10 +132,14 @@ const itemStyle = StyleSheet.create({
   },
   balanceText: {
     fontSize: pTd(16),
+    lineHeight: pTd(16),
     color: darkColors.textBase1,
-    ...fonts.BGMediumFont,
+    ...fonts.SGMediumFont,
   },
   balanceInUseText: {
+    fontSize: pTd(14),
+    lineHeight: pTd(20),
     color: darkColors.textBase2,
+    marginTop: pTd(6),
   },
 });

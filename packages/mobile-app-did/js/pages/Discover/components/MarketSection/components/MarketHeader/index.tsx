@@ -1,5 +1,5 @@
 import { IMarketInfo, IMarketSort, IMarketSortDir } from '@portkey-wallet/store/store-ca/discover/type';
-import { defaultColors } from 'assets/theme';
+import { darkColors } from 'assets/theme';
 import CommonToast from 'components/CommonToast';
 import Svg from 'components/Svg';
 import React, { useCallback } from 'react';
@@ -11,15 +11,11 @@ function HeaderItem({ name, sortDir, style }: { name: string; sortDir: IMarketSo
     <View style={[itemStyles.mainContainer, style]}>
       <Text style={itemStyles.text}>{name}</Text>
       <View style={itemStyles.wrapper}>
-        <Svg
-          icon={'sort-asc'}
-          size={pTd(6)}
-          color={sortDir === 'asc' ? defaultColors.brandNormal : defaultColors.neutralTertiaryText}
-        />
+        <Svg icon={'sort-asc'} size={pTd(6)} color={sortDir === 'asc' ? darkColors.textBase2 : darkColors.textBase3} />
         <Svg
           icon={'sort-desc'}
           size={pTd(6)}
-          color={sortDir === 'desc' ? defaultColors.brandNormal : defaultColors.neutralTertiaryText}
+          color={sortDir === 'desc' ? darkColors.textBase2 : darkColors.textBase3}
         />
       </View>
     </View>
@@ -33,7 +29,7 @@ const itemStyles = StyleSheet.create({
   },
   text: {
     height: pTd(16),
-    color: defaultColors.neutralTertiaryText,
+    color: darkColors.textBase3,
     fontSize: pTd(12),
     lineHeight: pTd(16),
     textAlign: 'left',
@@ -128,7 +124,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     width: '100%',
-    backgroundColor: defaultColors.neutralDefaultBG,
+    backgroundColor: darkColors.bgBase1,
     paddingVertical: pTd(8),
   },
   section: {

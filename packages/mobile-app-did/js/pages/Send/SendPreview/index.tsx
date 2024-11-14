@@ -4,7 +4,7 @@ import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import { useLanguage } from 'i18n/hooks';
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 import { getContractBasic } from '@portkey-wallet/contracts/utils';
-import { useCurrentChain, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { useCurrentChain, useCurrentChainList, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { usePin } from 'hooks/store';
 import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { getManagerAccount } from 'utils/redux';
@@ -20,7 +20,6 @@ import { addFailedActivity, removeFailedActivity } from '@portkey-wallet/store/s
 import { useRouterEffectParams } from '@portkey-wallet/hooks/useRouterParams';
 import CommonToast from 'components/CommonToast';
 import navigationService from 'utils/navigationService';
-import Loading from 'components/Loading';
 import { IToSendPreviewParamsType, TransferType } from '@portkey-wallet/types/types-ca/routeParams';
 import { BaseToken } from '@portkey-wallet/types/types-ca/token';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
@@ -47,6 +46,14 @@ import { ActionType } from 'types/common';
 import { getEstimatedTime } from '../utils';
 import { useGetTokenViewContract } from 'hooks/contract';
 import { getELFChainBalance } from '@portkey-wallet/utils/balance';
+import { useRecent } from '@portkey-wallet/hooks/hooks-ca/recent';
+import { IRecentItem } from '@portkey-wallet/store/store-ca/recent/type';
+import {
+  useEtransferCrossTrack,
+  useEtransferCrossFinishTrack,
+  useCrossChainTransferTrack,
+  usePortkeyCrossTrack,
+} from 'hooks/amplitude';
 
 const SendPreview: React.FC = () => {
   const { t } = useLanguage();
@@ -72,7 +79,7 @@ const SendPreview: React.FC = () => {
     targetNetwork,
   } = routerParams;
   useFetchTxFee();
-
+  const [isLoading, setIsLoading] = useState(false);
   const { getAELFChainInfoConfig, getEVMChainInfoConfig, getTokenConfig } = useGetEBridgeConfig();
   const isApproved = useMemo(() => guardiansApproved && guardiansApproved.length > 0, [guardiansApproved]);
   const { crossChain: crossDefaultFee } = useGetTxFee(assetInfo.chainId);
@@ -85,12 +92,14 @@ const SendPreview: React.FC = () => {
   const currentWallet = useCurrentWalletInfo();
   const currentNetwork = useCurrentNetworkInfo();
   const caAddressInfos = useCaAddressInfoList();
+  const currentChainList = useCurrentChainList();
   const wallet = useCurrentWalletInfo();
   const portkeyContractRef = useRef<ContractBasic>();
   const tokenContractRef = useRef<ContractBasic>();
   const [tokenPriceObject, getTokenPrice] = useGetCurrentAccountTokenPrice();
 
   const crossTransferByEtransfer = useCrossTransferByEtransfer(pin);
+  const { addRecent } = useRecent();
 
   const isETransferOrEBridge = useMemo(
     () => transferType === TransferType.E_TRANSFER || transferType === TransferType.E_BRIDGE,
@@ -125,11 +134,12 @@ const SendPreview: React.FC = () => {
       };
 
     const fee = (isETransferOrEBridge ? transactionFee : networkFee) || 0;
-    if (ZERO.plus(sendNumber).isLessThanOrEqualTo(fee))
+    if (ZERO.plus(sendNumber).isLessThanOrEqualTo(fee)) {
       return {
         estimateAmount: `0 ${assetInfo?.label || assetInfo?.symbol}`,
         estimateAmountUsd: isMainnet ? '$ 0' : '',
       };
+    }
 
     let _amount = sendNumber;
     _amount = formatAmountShow(ZERO.plus(_amount).minus(networkFee || ''), Number(defaultToken.decimals));
@@ -195,6 +205,18 @@ const SendPreview: React.FC = () => {
   );
 
   const actionAfterTransfer = useCallback(async () => {
+    const aelfIcon = currentChainList?.find(ele => ele?.chainId === toInfo?.chainId)?.chainImageUrl;
+
+    const recentItem: IRecentItem = {
+      address: toInfo?.address || '',
+      chainId: toInfo?.chainId,
+      network: targetNetwork?.network || 'aelf',
+      networkIcon: targetNetwork?.imageUrl || aelfIcon,
+      transferTime: Date.now(),
+    };
+
+    addRecent({ recentItem });
+
     if (sendType === 'nft') {
       await fetchAccountNFTCollectionInfoList({
         caAddressInfos,
@@ -212,8 +234,23 @@ const SendPreview: React.FC = () => {
       actionType: ActionType.SEND,
       address: toInfo.address,
     });
-  }, [caAddressInfos, fetchAccountNFTCollectionInfoList, fetchAccountTokenInfoList, sendType, toInfo.address]);
+  }, [
+    addRecent,
+    caAddressInfos,
+    currentChainList,
+    fetchAccountNFTCollectionInfoList,
+    fetchAccountTokenInfoList,
+    sendType,
+    targetNetwork?.imageUrl,
+    targetNetwork?.network,
+    toInfo.address,
+    toInfo?.chainId,
+  ]);
 
+  const crossChainTransferTrack = useCrossChainTransferTrack();
+  const portkeyCrossTrack = usePortkeyCrossTrack();
+  const etransferCrossTrack = useEtransferCrossTrack();
+  const etransferCrossFinishTrack = useEtransferCrossFinishTrack();
   const transfer = useCallback(async () => {
     setIsError(false);
 
@@ -223,9 +260,13 @@ const SendPreview: React.FC = () => {
       address: assetInfo.tokenContractAddress,
     };
 
-    if (!chainInfo || !pin) return;
+    if (!chainInfo || !pin) {
+      return;
+    }
     const account = getManagerAccount(pin);
-    if (!account) return;
+    if (!account) {
+      return;
+    }
 
     if (!portkeyContractRef.current) {
       portkeyContractRef.current = await getContractBasic({
@@ -261,10 +302,12 @@ const SendPreview: React.FC = () => {
           },
         },
       });
-      if (!checkTransferLimitResult) return;
+      if (!checkTransferLimitResult) {
+        return;
+      }
     }
 
-    // TODO:change it
+    // TODO:change it, add track
     if (transferType === TransferType.GENERAL_SAME_CHAIN) {
       console.log('sameChainTransfers==sendHandler', tokenInfo);
       const sameTransferResult = await sameChainTransfer({
@@ -376,6 +419,10 @@ const SendPreview: React.FC = () => {
     getEVMChainInfoConfig,
     getElfBalance,
     getTokenConfig,
+    etransferCrossFinishTrack,
+    etransferCrossTrack,
+    fetchAccountNFTCollectionInfoList,
+    fetchAccountTokenInfoList,
     guardiansApproved,
     isApproved,
     pin,
@@ -397,11 +444,15 @@ const SendPreview: React.FC = () => {
         decimals: assetInfo.decimals ?? 0,
         address: assetInfo.tokenContractAddress,
       };
-      if (!chainInfo || !pin) return;
+      if (!chainInfo || !pin) {
+        return;
+      }
       const account = getManagerAccount(pin);
-      if (!account) return;
+      if (!account) {
+        return;
+      }
 
-      Loading.show();
+      setIsLoading(true);
       try {
         if (!tokenContractRef.current) {
           tokenContractRef.current = await getContractBasic({
@@ -422,7 +473,7 @@ const SendPreview: React.FC = () => {
           retryCrossChain(managerTransferTxId, data);
         });
       } finally {
-        Loading.hide();
+        setIsLoading(false);
       }
     },
     [
@@ -438,7 +489,7 @@ const SendPreview: React.FC = () => {
   );
 
   const send = useCallback(async () => {
-    Loading.show();
+    setIsLoading(true);
     try {
       await transfer();
       await sleep(1500);
@@ -463,8 +514,15 @@ const SendPreview: React.FC = () => {
       } else {
         CommonToast.failError(error);
       }
+      // TODO: add track  Etransfer Cross fail
+      // if (isSupportEtransferCross) {
+      //   etransferCrossFinishTrack({
+      //     success: false,
+      //     msg: JSON.stringify(error),
+      //   });
+      // }
     } finally {
-      Loading.hide();
+      setIsLoading(false);
     }
   }, [actionAfterTransfer, dispatch, retryCrossChain, showRetry, transfer]);
 
@@ -498,6 +556,7 @@ const SendPreview: React.FC = () => {
 
   return (
     <SendReceivePreview
+      isLoading={isLoading}
       isError={isError}
       actionType={ActionType.SEND}
       footerType={footerType}
@@ -508,7 +567,7 @@ const SendPreview: React.FC = () => {
               seedType: assetInfo.seedType,
               imageUrl: assetInfo.imageUrl,
               alias: assetInfo.alias,
-              collectionName: assetInfo.collectionName,
+              collectionName: assetInfo.collectionName || assetInfo.collectionInfo?.collectionName,
               tokenId: assetInfo.tokenId,
             }
           : undefined

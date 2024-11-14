@@ -3,7 +3,7 @@ import { formatAmountUSDShow, formatTokenAmountShowWithDecimals } from '@portkey
 import { darkColors } from 'assets/theme';
 import { FontStyles } from 'assets/theme/styles';
 import CommonAvatar from 'components/CommonAvatar';
-import { TextL, TextS } from 'components/CommonText';
+import { TextL, TextM } from 'components/CommonText';
 import TokenItem from './TokenItem';
 import React, { memo, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -67,9 +67,9 @@ const TokenListUnionItem: React.FC<TokenListItemType> = props => {
               {item?.label || item?.symbol}
             </TextL>
             {isMainnet && typeof item.price === 'number' && item.price > 0 && (
-              <TextS numberOfLines={1} style={[FontStyles.font11, itemStyle.chainInfo]}>
+              <TextM numberOfLines={1} style={[FontStyles.font11, itemStyle.chainInfo]}>
                 {'$' + item.price}
-              </TextS>
+              </TextM>
             )}
           </View>
 
@@ -78,9 +78,9 @@ const TokenListUnionItem: React.FC<TokenListItemType> = props => {
               {hideBalance ? '******' : formatTokenAmountShowWithDecimals(item.balance, item.decimals)}
             </TextL>
             {isMainnet && item.balanceInUsd && (
-              <TextS numberOfLines={1} ellipsizeMode={'tail'} style={itemStyle.dollar}>
+              <TextM numberOfLines={1} ellipsizeMode={'tail'} style={itemStyle.dollar}>
                 {hideBalance ? '******' : formatAmountUSDShow(item.balanceInUsd)}
-              </TextS>
+              </TextM>
             )}
           </View>
         </View>
@@ -151,11 +151,10 @@ const itemStyle = StyleSheet.create({
   },
   tokenName: {
     color: darkColors.textBase1,
-    lineHeight: pTd(24),
+    lineHeight: pTd(22),
   },
   chainInfo: {
-    lineHeight: pTd(16),
-    marginTop: pTd(2),
+    lineHeight: pTd(20),
     height: pTd(20),
     width: pTd(150),
     fontSize: pTd(14),
@@ -170,13 +169,13 @@ const itemStyle = StyleSheet.create({
   },
   token: {
     color: darkColors.textBase1,
-    lineHeight: pTd(24),
+    lineHeight: pTd(16),
     overflow: 'hidden',
-    ...fonts.BGMediumFont,
+    ...fonts.SGMediumFont,
   },
   dollar: {
-    marginTop: pTd(2),
-    lineHeight: pTd(16),
+    marginTop: pTd(6),
+    lineHeight: pTd(20),
     height: pTd(20),
     fontSize: pTd(14),
     color: darkColors.textBase2,

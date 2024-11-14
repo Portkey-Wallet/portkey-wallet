@@ -7,12 +7,15 @@ import { pTd } from 'utils/unit';
 import { useLanguage } from 'i18n/hooks';
 import { FlashList } from '@shopify/flash-list';
 import SendRecentItem from 'pages/Send/components/SendRecentItem';
-import SendContactItem from 'pages/Send/components/SendContactItem';
+// import SendContactItem from 'pages/Send/components/SendContactItem';
 
-import { ContactItemType, RecentContactItemType } from '@portkey-wallet/types/types-ca/contact';
+import {
+  // ContactItemType,
+  RecentContactItemType,
+} from '@portkey-wallet/types/types-ca/contact';
 
 // import RecentList from '../components/RecentList';
-import ContactsList from 'components/ContactList';
+// import ContactsList from 'components/ContactList';
 import NoData from 'components/NoData';
 import { TextS } from 'components/CommonText';
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
@@ -120,22 +123,23 @@ export default function SelectContact(props: SelectContactProps) {
         tabItemDom: !isExistContact ? (
           <NoData noPic message={t('There is no contacts')} />
         ) : (
-          <ContactsList
-            isReadOnly
-            isTransaction
-            style={styles.contactWrap}
-            isIndexBarShow={false}
-            isSearchShow={false}
-            renderContactItem={(item: ContactItemType) => (
-              <SendContactItem
-                fromChainId={chainId}
-                isContacts={true}
-                contact={item as RecentContactItemType}
-                onPress={onPress}
-              />
-            )}
-            ListFooterComponent={<View style={styles.footer} />}
-          />
+          // <ContactsList
+          //   isReadOnly
+          //   isTransaction
+          //   style={styles.contactWrap}
+          //   isIndexBarShow={false}
+          //   isSearchShow={false}
+          //   renderContactItem={(item: ContactItemType) => (
+          //     <SendContactItem
+          //       fromChainId={chainId}
+          //       isContacts={true}
+          //       contact={item as RecentContactItemType}
+          //       onPress={onPress}
+          //     />
+          //   )}
+          //   ListFooterComponent={<View style={styles.footer} />}
+          // />
+          <></>
         ),
       },
       {
@@ -154,7 +158,6 @@ export default function SelectContact(props: SelectContactProps) {
       },
     ];
   }, [
-    chainId,
     init,
     isExistContact,
     loadMore,

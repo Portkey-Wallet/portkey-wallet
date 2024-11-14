@@ -10,7 +10,7 @@ export const commonStyles = StyleSheet.create({
     marginRight: pTd(10),
   },
   loadingStyle: {
-    width: pTd(20),
+    width: pTd(32),
   },
   inputContainerGrayBorderStyle: {
     borderWidth: StyleSheet.hairlineWidth,
@@ -30,15 +30,17 @@ export const searchStyles = StyleSheet.create({
     paddingRight: 0,
   },
   inputContainerStyle: {
-    borderBottomWidth: 0,
+    borderColor: darkColors.borderBase1,
+    borderWidth: pTd(1),
     backgroundColor: darkColors.bgBase1,
-    height: pTd(36),
-    borderRadius: pTd(6),
+    height: pTd(40),
+    borderRadius: pTd(20),
   },
   inputStyle: {
     fontSize: pTd(14),
     // ...GStyles.marginArg(14, 16),
     // height: pTd(50),
+    paddingLeft: pTd(16),
     marginLeft: pTd(4),
     marginRight: pTd(14),
   },
@@ -61,17 +63,17 @@ export const generalStyles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     borderBottomWidth: StyleSheet.hairlineWidth,
     height: pTd(40),
-    borderRadius: pTd(6),
+    borderRadius: pTd(8),
   },
   inputStyle: {
     fontSize: pTd(16),
     color: darkColors.textBase1,
-    ...GStyles.marginArg(18, 16),
-    minHeight: pTd(60),
-    height: pTd(60),
+    paddingHorizontal: pTd(16),
+    minHeight: pTd(40),
+    height: pTd(40),
   },
   labelStyle: {
-    color: darkColors.textDisabled1,
+    color: darkColors.textBase1,
     fontSize: pTd(14),
     lineHeight: pTd(20),
     marginBottom: pTd(8),
@@ -89,7 +91,7 @@ export const generalStyles = StyleSheet.create({
     color: darkColors.textDanger2,
   },
   disabledInputStyle: {
-    color: font5,
+    color: darkColors.textBase1,
     opacity: 1,
   },
 });

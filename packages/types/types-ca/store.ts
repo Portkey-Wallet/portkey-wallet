@@ -1,7 +1,8 @@
 import { RootCommonState } from '../store';
 import { tokenBalanceSlice } from '@portkey-wallet/store/tokenBalance/slice';
 import { tokenManagementSlice } from '@portkey-wallet/store/store-ca/tokenManagement/slice';
-import { recentSlice, RecentStateType } from '@portkey-wallet/store/store-ca/recent/slice';
+import { recentSlice } from '@portkey-wallet/store/store-ca/recent/slice';
+import { RecentStateType } from '@portkey-wallet/store/store-ca/recent/type';
 
 import { TokenState } from './token';
 import { TokenBalanceState } from './tokenBalance';
@@ -35,6 +36,12 @@ import { IRampStateType } from '@portkey-wallet/store/store-ca/ramp/type';
 import { referralSlice } from '@portkey-wallet/store/store-ca/referral/slice';
 import { ReferralStateType } from '@portkey-wallet/store/store-ca/referral/type';
 import { CryptoGiftStateType } from '@portkey-wallet/store/store-ca/cryptoGift/type';
+import { configSlice } from '@portkey-wallet/store/store-ca/config/slice';
+import { ConfigStateType } from '@portkey-wallet/store/store-ca/config/types';
+import awakenSlice from '@portkey-wallet/store/store-ca/awaken/slice';
+import { TAwakenState } from '@portkey-wallet/store/store-ca/awaken/type';
+import { configSlice } from '@portkey-wallet/store/store-ca/config/slice';
+import { ConfigStateType } from '@portkey-wallet/store/store-ca/config/types';
 
 export type CACommonState = RootCommonState & {
   [tokenManagementSlice.name]: TokenState;
@@ -52,7 +59,9 @@ export type CACommonState = RootCommonState & {
   [cmsSlice.name]: CMSState;
   [txFeeSlice.name]: TxFeeType;
   [imSlice.name]: IMStateType;
+  [awakenSlice.name]: TAwakenState;
   [cryptoGiftSlice.name]: CryptoGiftStateType;
   [securitySlice.name]: SecurityStateType;
   [referralSlice.name]: ReferralStateType;
+  [configSlice.name]: ConfigStateType;
 };

@@ -34,6 +34,9 @@ export type ActivityItemType = {
   dappIcon?: string;
   fromChainIdUpdated?: string;
   toChainIdUpdated?: string;
+  fromChainIcon?: string;
+  toChainIcon?: string;
+  sourceIcon?: string;
 };
 
 export type TDappOperations = {

@@ -7,7 +7,7 @@ const SwapButton = () => {
   const { t } = useLanguage();
 
   const onPress = useCallback(() => {
-    // todo_wade: fix this
+    navigationService.navigate('SwapHome');
   }, []);
 
   return <OutlinedButton iconName="swap" title={t('Swap')} onPress={onPress} />;

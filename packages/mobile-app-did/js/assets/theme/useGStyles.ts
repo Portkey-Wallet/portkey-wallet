@@ -21,5 +21,8 @@ export const useGStyles = makeStyles(theme => {
     overlayStyle: {
       maxHeight: windowHeight - pTd(isIOS ? 68 : 100),
     },
+    overlayStyleMaxHeight: {
+      minHeight: windowHeight - pTd(isIOS ? 68 : 100),
+    },
   };
 });

@@ -21,11 +21,12 @@ type UploadImageType = {
 export type ImageWithUploadFuncInstance = {
   selectPhoto: () => boolean;
   uploadPhoto: () => string;
+  selectPhotoWithSource: () => any;
 };
 
 const ImageWithUploadFunc = forwardRef(function ImageWithUploadFunc(props: UploadImageType, ref) {
   const { title, imageUrl, avatarSize = pTd(48), onChangeImage } = props;
-  const [localPhotoFile, setLocalPhotoFile] = useState<ImagePicker.ImageInfo>();
+  const [localPhotoFile, setLocalPhotoFile] = useState<ImagePicker.ImagePickerAsset>();
 
   const sizeStyle = useMemo(
     () => ({
@@ -36,6 +37,40 @@ const ImageWithUploadFunc = forwardRef(function ImageWithUploadFunc(props: Uploa
     [avatarSize],
   );
   const selectPhoto = useCallback(async () => {
+    try {
+      Loading.show();
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: false,
+        allowsMultipleSelection: false,
+        quality: 0.1,
+      });
+      if (result.canceled || !result.assets || result.assets.length <= 0) {
+        return;
+      }
+      if (!isValidAvatarFile(result.assets[0].uri)) {
+        return CommonToast.fail('Unsupported format. Please use jpeg, jpg or png.');
+      }
+      if (!result?.assets[0].fileSize) {
+        const info = await getInfo(result.assets[0].uri);
+        if (info.exists) {
+          result.assets[0].fileSize = info.size;
+        }
+      }
+      if (!result?.assets[0].fileSize || result.assets[0].fileSize > MAX_FILE_SIZE_BYTE) {
+        return;
+      }
+      setLocalPhotoFile(result.assets[0]);
+      return true;
+    } catch (error) {
+      console.log('==', error);
+      return false;
+    } finally {
+      Loading.hide();
+    }
+  }, []);
+
+  const selectPhotoWithSource = useCallback(async () => {
     try {
       Loading.show();
       const result = await ImagePicker.launchImageLibraryAsync({
@@ -55,7 +90,7 @@ const ImageWithUploadFunc = forwardRef(function ImageWithUploadFunc(props: Uploa
       if (!result?.fileSize || result.fileSize > MAX_FILE_SIZE_BYTE) return;
 
       setLocalPhotoFile(result);
-      return true;
+      return result;
     } catch (error) {
       console.log('==', error);
       return false;
@@ -67,7 +102,9 @@ const ImageWithUploadFunc = forwardRef(function ImageWithUploadFunc(props: Uploa
   const uploadPhoto = useCallback(async () => {
     console.log('localPhotoFile', localPhotoFile);
 
-    if (!localPhotoFile) return;
+    if (!localPhotoFile) {
+      return;
+    }
     try {
       const s3Url = await uploadPortkeyImage(localPhotoFile);
 
@@ -87,18 +124,19 @@ const ImageWithUploadFunc = forwardRef(function ImageWithUploadFunc(props: Uploa
       return {
         selectPhoto,
         uploadPhoto,
+        selectPhotoWithSource,
       };
     },
     [selectPhoto, uploadPhoto],
   );
 
-  if (localPhotoFile)
+  if (localPhotoFile) {
     return (
       <Touchable onPress={selectPhoto}>
         <FastImage style={[sizeStyle]} resizeMode="cover" source={{ uri: localPhotoFile.uri }} />
       </Touchable>
     );
-
+  }
   return (
     <Touchable onPress={selectPhoto}>
       <CommonAvatar

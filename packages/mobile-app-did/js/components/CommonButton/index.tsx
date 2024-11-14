@@ -6,8 +6,7 @@ import { useThrottleCallback } from '@portkey-wallet/hooks';
 import Lottie from 'lottie-react-native';
 
 export type CommonButtonProps = {
-  buttonType?: 'send' | 'receive';
-  type?: 'solid' | 'clear' | 'outline' | 'primary' | 'transparent';
+  type?: 'solid' | 'clear' | 'outline' | 'primary' | 'transparent' | 'warning' | 'warningNoBorder';
   onPressWithSecond?: number;
   radius?: number;
 } & Omit<ButtonProps, 'type'>;
@@ -35,10 +34,23 @@ const stylesMap: any = {
   transparent: {
     buttonStyle: styles.transparentButtonStyle,
   },
+  warning: {
+    buttonStyle: styles.waringButtonStyle,
+    titleStyle: styles.warningTitleStyle,
+    disabledStyle: styles.waringDisabledStyle,
+    disabledTitleStyle: styles.waringDisabledTitleStyle,
+  },
+  warningNoBorder: {
+    buttonStyle: styles.waringNoBorderButtonStyle,
+    titleStyle: styles.warningNoBorderTitleStyle,
+    disabledStyle: styles.waringNoBorderDisabledStyle,
+    disabledTitleStyle: styles.warningNoBorderTitleStyle,
+  },
 };
 
 const CommonButton: React.FC<CommonButtonProps> = props => {
   const {
+    size,
     radius,
     type,
     buttonStyle,
@@ -68,7 +80,11 @@ const CommonButton: React.FC<CommonButtonProps> = props => {
       {...buttonProps}
       onPress={onPress ? handleOnPress : undefined}
       onPressIn={onPressIn ? handleOnPressIn : undefined}
-      type={type === 'primary' || type === 'transparent' ? undefined : type}
+      type={
+        type === 'primary' || type === 'transparent' || type === 'warning' || type === 'warningNoBorder'
+          ? undefined
+          : type
+      }
       loading={false}>
       {loading ? (
         <Lottie style={styles.loadingIcon} source={require('assets/lottieFiles/spinnerDark.json')} autoPlay loop />

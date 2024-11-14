@@ -28,6 +28,7 @@ import { VERIFY_INVALID_TIME } from '@portkey-wallet/constants/constants-ca/wall
 import { useErrorMessage } from '@portkey-wallet/hooks/hooks-ca/misc';
 import { usePreventHardwareBack } from '@portkey-wallet/hooks/mobile';
 
+import { LoginTrackTypeEnum, useLoginSuccessTrack } from 'hooks/amplitude';
 type RouterParams = {
   oldPin?: string;
   pin?: string;
@@ -72,15 +73,20 @@ export default function ConfirmPin() {
         CommonPrompt.failError(error);
       }
       changeCanLock(true);
-      navigationService.navigate('AccountSettings');
+      navigationService.navigate('ProfileSettings');
     },
     [biometrics, dispatch, oldPin, t],
   );
 
   const [isKeypadShow, setIsKeypadShow] = useState(true);
+  const loginSuccessTrack = useLoginSuccessTrack();
   const onFinish = useCallback(
     async (confirmPin: string) => {
       if (managerInfo?.verificationType === VerificationType.addManager) {
+        loginSuccessTrack({
+          type: LoginTrackTypeEnum.Scan,
+          isPinNeeded: true,
+        });
         dispatch(createWallet({ walletInfo: paramsWalletInfo, caInfo, pin: confirmPin }));
         dispatch(setCredentials({ pin: confirmPin }));
         paramsWalletInfo?.address && sendScanLoginSuccess({ targetClientId: paramsWalletInfo.address });
@@ -106,6 +112,7 @@ export default function ConfirmPin() {
       caInfo,
       dispatch,
       guardiansApproved,
+      loginSuccessTrack,
       managerInfo,
       onManagerAddressAndQueryResult,
       paramsWalletInfo,

@@ -22,7 +22,7 @@ import {
   addChannelMessage,
   updateChannelMessageAttribute,
 } from '@portkey-wallet/store/store-ca/im/actions';
-import { useBlockAndReport, useChannelItemInfo, useIMChannelMessageListNetMapState, useRelationId } from '.';
+import { useBlockAndReport, useChannelItemInfo, useIMChannelMessageListNetMapState, useRelationId } from './index';
 import s3Instance, { getThumbSize, UploadFileType } from '@portkey-wallet/utils/s3';
 import { messageParser } from '@portkey-wallet/im/utils';
 import { useContactRelationIdMap } from '../contact';

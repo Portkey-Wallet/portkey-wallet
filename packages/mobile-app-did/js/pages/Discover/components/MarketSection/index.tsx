@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
-import MarketType from './components/MarketType';
 import MarketHeader from './components/MarketHeader';
-import { FlatList, Platform, RefreshControl, View } from 'react-native';
+import { FlatList, RefreshControl, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import MarketItem from './components/MarketItem';
 import { useMarket } from 'hooks/discover';
@@ -10,12 +9,12 @@ import CommonToast from 'components/CommonToast';
 import Svg from 'components/Svg';
 import CommonButton from 'components/CommonButton';
 import { StyleSheet } from 'react-native';
-import { defaultColors } from 'assets/theme';
+import { darkColors } from 'assets/theme';
 import { TextM } from 'components/CommonText';
 import MarketItemSkeleton from './components/MarketItemSkeleton';
 
 export default function MarketSection() {
-  const { marketInfo, refreshing, refreshList, handleType, handleSort } = useMarket();
+  const { marketInfo, refreshing, refreshList, handleSort } = useMarket();
   const flatListRef = useRef<FlatList>(null);
   const renderItem = useCallback(({ item }: { item: ICryptoCurrencyItem; index: number }) => {
     return <MarketItem isLoading={false} item={item} />;
@@ -60,7 +59,6 @@ export default function MarketSection() {
 
   return (
     <View style={styles.container}>
-      <MarketType marketInfo={marketInfo} handleType={handleType} />
       <MarketHeader style={{ marginTop: pTd(8) }} marketInfo={marketInfo} handleSort={handleSort} />
       {isSkeleton ? (
         Array.from({ length: 11 }).map((item, index) => {
@@ -90,8 +88,7 @@ export default function MarketSection() {
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: pTd(16),
-    backgroundColor: defaultColors.neutralDefaultBG,
-    paddingTop: pTd(16),
+    backgroundColor: darkColors.bgBase1,
     flex: 1,
   },
   empty: {
@@ -109,7 +106,7 @@ const styles = StyleSheet.create({
     marginBottom: pTd(8),
   },
   message: {
-    color: defaultColors.neutralTertiaryText,
+    color: darkColors.textBase2,
     fontSize: pTd(14),
     fontWeight: '400',
     lineHeight: pTd(22),
@@ -120,7 +117,7 @@ const styles = StyleSheet.create({
   nextButtonText: {
     fontSize: pTd(12),
     lineHeight: pTd(20),
-    color: defaultColors.white,
+    color: darkColors.textBase1,
   },
   btnTitleStyle: {
     lineHeight: pTd(16),

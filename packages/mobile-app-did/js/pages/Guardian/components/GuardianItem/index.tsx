@@ -309,7 +309,9 @@ export default function GuardianItem({
     }
     return (
       <View style={[styles.nameStyle, GStyles.flex1]}>
-        <TextL numberOfLines={1}>{guardianItem.firstName}</TextL>
+        <TextL numberOfLines={1} style={{ lineHeight: pTd(22) }}>
+          {guardianItem.firstName}
+        </TextL>
         <TextM style={styles.subNameText} numberOfLines={1}>
           {guardianAccount}
         </TextM>
@@ -400,6 +402,7 @@ const getStyles = makeStyles(theme => ({
   },
   subNameText: {
     color: theme.colors.textBase2,
+    lineHeight: pTd(20),
   },
 
   buttonStyle: {

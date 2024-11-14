@@ -5,14 +5,14 @@ import { StyleSheet } from 'react-native';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { pTd } from 'utils/unit';
 import { darkColors, defaultColors } from 'assets/theme';
-import { TextXL } from 'components/CommonText';
+import { TextTitle } from 'components/CommonText';
 import Svg from 'components/Svg';
 import GStyles from 'assets/theme/GStyles';
-import fonts from 'assets/theme/fonts';
 import { useGStyles } from 'assets/theme/useGStyles';
 import ButtonRow from 'components/ButtonRow';
 import { CommonButtonProps } from 'components/CommonButton';
 import { ViewStyleType } from 'types/styles';
+import { makeStyles } from '@rneui/themed';
 
 export interface ModalBodyProps extends ViewProps {
   title?: string;
@@ -20,6 +20,7 @@ export interface ModalBodyProps extends ViewProps {
   preventBack?: boolean;
   isShowLeftBackIcon?: boolean;
   isShowRightCloseIcon?: boolean;
+  isMaxHeight?: boolean;
   modalBodyType?: 'center' | 'bottom';
   style?: ViewStyleType;
   onClose?: () => void;
@@ -45,49 +46,60 @@ export const ModalBody: React.FC<ModalBodyProps> = props => {
     onClose,
     bottomButtonGroup,
     onTouchStart,
+    isMaxHeight = false,
   } = props;
-
   const gStyles = useGStyles();
+  const styles = getStyles();
 
   if (modalBodyType === 'bottom') {
+    const showTopWrap = !!leftTitleDom || !!title || !!isShowRightCloseIcon;
     return (
-      <View onTouchStart={onTouchStart} style={[styles.commonBox, gStyles.overlayStyle, styles.wrapStyle, style]}>
+      <View
+        onTouchStart={onTouchStart}
+        style={[
+          styles.commonBox,
+          gStyles.overlayStyle,
+          isMaxHeight && gStyles.overlayStyleMaxHeight,
+          styles.wrapStyle,
+          style,
+        ]}>
         <View style={styles.topWrap}>
           <View style={styles.slot} />
           {/* {isShowLeftBackIcon && (
-            <View
-              style={styles.leftIcon}
-              pointerEvents="box-only"
-              onTouchStart={() => {
-                onBack?.();
-                Keyboard.dismiss();
-                !preventBack && OverlayModal.hide();
-              }}>
-              <Svg icon="left-arrow" size={pTd(20)} />
-            </View>
-          )} */}
-          {leftTitleDom ? (
-            leftTitleDom
-          ) : (
-            <TextXL
-              suppressHighlighting={true}
-              style={[styles.titleStyle, fonts.mediumFont]}
-              onPress={Keyboard.dismiss}>
-              {title}
-            </TextXL>
-          )}
+              <View
+                style={styles.leftIcon}
+                pointerEvents="box-only"
+                onTouchStart={() => {
+                  onBack?.();
+                  Keyboard.dismiss();
+                  !preventBack && OverlayModal.hide();
+                }}>
+                <Svg icon="left-arrow" size={pTd(20)} />
+              </View>
+            )} */}
+          {showTopWrap && (
+            <>
+              {leftTitleDom ? (
+                leftTitleDom
+              ) : (
+                <TextTitle suppressHighlighting={true} style={styles.titleStyle} onPress={Keyboard.dismiss}>
+                  {title}
+                </TextTitle>
+              )}
 
-          {isShowRightCloseIcon && (
-            <View
-              style={styles.closeIcon}
-              pointerEvents="box-only"
-              onTouchStart={() => {
-                onClose?.();
-                Keyboard.dismiss();
-                OverlayModal.hide();
-              }}>
-              <Svg icon="close3" size={pTd(20)} color={darkColors.iconBase1} />
-            </View>
+              {isShowRightCloseIcon && (
+                <View
+                  style={styles.closeIcon}
+                  pointerEvents="box-only"
+                  onTouchStart={() => {
+                    onClose?.();
+                    Keyboard.dismiss();
+                    OverlayModal.hide();
+                  }}>
+                  <Svg icon="close3" size={pTd(20)} color={darkColors.iconBase1} />
+                </View>
+              )}
+            </>
           )}
         </View>
         {children}
@@ -106,7 +118,7 @@ export const ModalBody: React.FC<ModalBodyProps> = props => {
   return <View style={[styles.commonBox, styles.centerBox, style]}>{children}</View>;
 };
 
-export const styles = StyleSheet.create({
+export const getStyles = makeStyles(theme => ({
   commonBox: {
     overflow: 'hidden',
     backgroundColor: darkColors.bgBase1,
@@ -139,10 +151,8 @@ export const styles = StyleSheet.create({
     zIndex: 10000,
   },
   titleStyle: {
-    lineHeight: pTd(22),
     paddingLeft: pTd(16),
     width: '100%',
-    color: darkColors.textBase1,
   },
   closeIcon: {
     position: 'absolute',
@@ -170,16 +180,14 @@ export const styles = StyleSheet.create({
     width: pTd(48),
   },
   buttonGroup: {
-    backgroundColor: defaultColors.bg1,
-    position: 'absolute',
-    bottom: 0,
-    ...GStyles.paddingArg(10, 20, 16, 20),
+    ...GStyles.paddingArg(0, 16, 14, 16),
+    backgroundColor: theme.colors.bgBase1,
   },
   buttonStyle: {
     height: pTd(48),
-    fontSize: pTd(18),
+    fontSize: pTd(16),
   },
   buttonTitleStyle: {
     fontSize: pTd(16),
   },
-});
+}));

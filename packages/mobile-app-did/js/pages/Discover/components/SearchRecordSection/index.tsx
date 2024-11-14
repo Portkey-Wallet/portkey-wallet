@@ -13,6 +13,7 @@ import { clearRecordsList } from '@portkey-wallet/store/store-ca/discover/slice'
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
 import { useDiscoverJumpWithNetWork } from 'hooks/discover';
+import { darkColors } from '@rneui/base';
 
 export default function SearchRecordSection() {
   const { t } = useLanguage();
@@ -56,7 +57,7 @@ export default function SearchRecordSection() {
     <ScrollView style={styles.sectionWrap}>
       <View style={[styles.headerWrap, GStyles.flexRow, GStyles.spaceBetween]}>
         <TextL style={styles.header}>{'Recent'}</TextL>
-        <TextS style={[{ color: '#68C3FF' }, GStyles.alignCenter]} onPress={clearRecord}>
+        <TextS style={[{ color: darkColors.textBrand1 }, GStyles.alignCenter]} onPress={clearRecord}>
           {t('Clear')}
         </TextS>
       </View>

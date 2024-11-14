@@ -22,7 +22,7 @@ import { useInputFocus } from 'hooks/useInputFocus';
 import Touchable from 'components/Touchable';
 import { useDiscoverData } from '@portkey-wallet/hooks/hooks-ca/cms/discover';
 import { TBaseCardItemType } from '@portkey-wallet/types/types-ca/cms';
-import { defaultColors } from 'assets/theme';
+import { darkColors, defaultColors } from 'assets/theme';
 import { KeyboardSafeArea } from 'components/KeyboardSafeArea';
 import { useKeyboard } from 'hooks/useKeyboardHeight';
 import { RouteProp, useRoute } from '@react-navigation/native';
@@ -154,7 +154,7 @@ export default function DiscoverSearch() {
             allowClear
             clearIcon="clear4"
             type="search"
-            clearIconColor={'#1F1F21'}
+            clearIconColor={darkColors.bgBase2}
             onChangeText={v => setValue(v)}
             onSubmitEditing={() => onSearch(value)}
             returnKeyType="search"
@@ -176,7 +176,7 @@ export default function DiscoverSearch() {
               padding: pTd(10),
               borderRadius: pTd(20),
               borderWidth: 1,
-              borderColor: '#5A5A5A',
+              borderColor: darkColors.borderNeutral2,
               marginLeft: pTd(8),
             }}
             onPress={() => {
@@ -218,7 +218,7 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     ...GStyles.paddingArg(12, 20, 8),
-    backgroundColor: '#1F1F21',
+    backgroundColor: darkColors.bgBase2,
   },
   inputStyle: {
     width: pTd(280),

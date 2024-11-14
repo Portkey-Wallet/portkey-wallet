@@ -165,7 +165,7 @@ const getStyles = makeStyles(theme => ({
     width: pTd(32),
     height: pTd(32),
     borderRadius: pTd(16),
-    borderColor: '#414142',
+    borderColor: darkColors.borderBase1,
     borderWidth: pTd(1),
     backgroundColor: theme.colors.bgBase2,
     justifyContent: 'center',

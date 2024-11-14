@@ -1,4 +1,4 @@
-import { defaultColors } from 'assets/theme';
+import { darkColors } from 'assets/theme';
 import { FontStyles } from 'assets/theme/styles';
 import { TextS } from 'components/CommonText';
 import React, { memo } from 'react';
@@ -72,6 +72,6 @@ const itemStyle = StyleSheet.create({
   gameInfo: {
     lineHeight: pTd(16),
     marginTop: pTd(2),
-    color: '#FFFFFFB2',
+    color: darkColors.textBase2,
   },
 });

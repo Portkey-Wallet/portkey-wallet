@@ -74,7 +74,7 @@ export default function SearchDiscoverSection(props: ISearchDiscoverSectionProps
               padding: pTd(10),
               borderRadius: pTd(20),
               borderWidth: 1,
-              borderColor: '#5A5A5A',
+              borderColor: darkColors.borderNeutral2,
               marginRight: pTd(8),
             }}>
             <Svg icon={'search'} size={pTd(20)} />

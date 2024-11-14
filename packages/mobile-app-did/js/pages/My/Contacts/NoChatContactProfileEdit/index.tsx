@@ -61,13 +61,13 @@ const errorCodeMessageMap: Record<string, IFormErrorType> = {
   40021: {
     name: {
       ...INIT_HAS_ERROR,
-      errorMsg: 'This name already exists',
+      errorMsg: 'Name already in use.',
     },
   },
   40022: {
     address: {
       ...INIT_HAS_ERROR,
-      errorMsg: 'Please enter a valid address',
+      errorMsg: 'Please enter a valid address.',
     },
   },
 };
@@ -199,7 +199,7 @@ const ContactEdit: React.FC = () => {
       if (value.trim() === '') {
         return {
           ...INIT_HAS_ERROR,
-          errorMsg: t('Please enter contact name'),
+          errorMsg: t('Please enter contact name.'),
         };
       }
       return INIT_NONE_ERROR;
@@ -208,7 +208,7 @@ const ContactEdit: React.FC = () => {
       if (!/^[a-zA-Z0-9_]+$/.test(value)) {
         return {
           ...INIT_HAS_ERROR,
-          errorMsg: t('Only a-z, A-Z, 0-9 and "_"  allowed'),
+          errorMsg: t('Only a-z, A-Z, 0-9 and "_"  allowed.'),
         };
       }
       return INIT_NONE_ERROR;

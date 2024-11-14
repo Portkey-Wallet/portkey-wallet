@@ -157,6 +157,7 @@ export function useOnManagerAddressAndQueryResult() {
             requestId,
           },
           chainId: latestOriginChainId.current,
+          source: isIOS ? RequestSourceEnum.IOS : RequestSourceEnum.Android,
         };
 
         let fetch = request.verify.registerRequest;
@@ -169,7 +170,6 @@ export function useOnManagerAddressAndQueryResult() {
             ...verifierInfo,
             type: LoginType[managerInfo.type],
             ...data,
-            source: isIOS ? RequestSourceEnum.IOS : RequestSourceEnum.Android,
           };
         }
         const req = await fetch({ data });

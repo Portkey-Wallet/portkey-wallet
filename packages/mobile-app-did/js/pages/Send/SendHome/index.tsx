@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { View } from 'react-native';
+import { KeyboardAvoidingView, Platform, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import navigationService from 'utils/navigationService';
 import Svg from 'components/Svg';
@@ -77,7 +77,6 @@ import OverlayModal from 'components/OverlayModal';
 import { eBridgeActionSheet, getLimitTips, getSendNetworkList, getSmallerValue, isValidAmount } from '../utils';
 import { SEND_RECEIVE_HELP_URL } from 'constants/common';
 import { openOutLink } from 'utils/link';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import SelectAddressTab from '../components/SelectAddressTab';
 import { useRecent } from '@portkey-wallet/hooks/hooks-ca/recent';
 import { useGetFilterContactList } from '@portkey-wallet/hooks/hooks-ca/contactNew';
@@ -86,7 +85,6 @@ const SendHome: React.FC = () => {
   const {
     params: { sendType = 'token', toInfo, assetInfo, imTransferInfo },
   } = useRoute<RouteProp<{ params: IToSendHomeParamsType }>>();
-  const isMainnet = useIsMainnet();
   const { t } = useLanguage();
   const styles = getStyles();
   useFetchTxFee();
@@ -999,74 +997,78 @@ const SendHome: React.FC = () => {
       }
       containerStyles={styles.pageWrap}
       scrollViewProps={{ disabled: true }}>
-      <ToAddressInput
-        step={step}
-        warning={warning}
-        checkFinish={isCheckAddressFinish}
-        selectedToken={assetInfo}
-        selectedToContact={selectedToContact}
-        isFixedToContact={isFixedToContact}
-        setStep={setStep}
-        setWarning={setWarning}
-        setSelectedToContact={setSelectedToContact}
-        setChainList={setChainList}
-        setCheckFinish={setIsCheckAddressFinish}
-        setSendNumber={setSendNumber}
-        setSendUSDNumber={setSendUsdNumber}
-      />
-      {Step1Dom}
-
-      {/* Group 2 token */}
-      {sendType === 'token' && step === 2 && (
-        <View style={styles.group}>
-          <TokenBalanceShow
-            label={assetInfo?.label}
-            symbol={assetInfo.symbol}
-            balanceShow={formatTokenAmountShowWithDecimals(balance, assetInfo.decimals)}
-            onPressMax={onPressMax}
-            imageUrl={assetInfo.imageUrl}
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
+        <View style={styles.mainWrap}>
+          <ToAddressInput
+            step={step}
+            warning={warning}
+            checkFinish={isCheckAddressFinish}
+            selectedToken={assetInfo}
+            selectedToContact={selectedToContact}
+            isFixedToContact={isFixedToContact}
+            setStep={setStep}
+            setWarning={setWarning}
+            setSelectedToContact={setSelectedToContact}
+            setChainList={setChainList}
+            setCheckFinish={setIsCheckAddressFinish}
+            setSendNumber={setSendNumber}
+            setSendUSDNumber={setSendUsdNumber}
           />
-          <TokenAmountInput
-            warningTip={errorMessage}
-            value={sendNumber}
-            usdValue={sendUsdNumber}
-            label={assetInfo.label}
-            symbol={assetInfo.symbol}
-            decimals={assetInfo.decimals}
-            setValue={setSendNumber}
-            setUsdValue={setSendUsdNumber}
-          />
-        </View>
-      )}
+          {Step1Dom}
 
-      {/* TODO: nft section */}
-      {sendType === 'nft' && step === 2 && (
-        <>
-          <View style={styles.group}>
-            <NFTInfo nftItem={assetInfo} onMaxPress={onPressMax} />
-          </View>
-          <View style={styles.group}>
-            <AmountNFT
-              warningTip={errorMessage}
-              sendNumber={sendNumber}
-              setSendNumber={setSendNumber}
-              assetInfo={assetInfo}
+          {/* Group 2 token */}
+          {sendType === 'token' && step === 2 && (
+            <View style={styles.group}>
+              <TokenBalanceShow
+                label={assetInfo?.label}
+                symbol={assetInfo.symbol}
+                balanceShow={formatTokenAmountShowWithDecimals(balance, assetInfo.decimals)}
+                onPressMax={onPressMax}
+                imageUrl={assetInfo.imageUrl}
+              />
+              <TokenAmountInput
+                warningTip={errorMessage}
+                value={sendNumber}
+                usdValue={sendUsdNumber}
+                label={assetInfo.label}
+                symbol={assetInfo.symbol}
+                decimals={assetInfo.decimals}
+                setValue={setSendNumber}
+                setUsdValue={setSendUsdNumber}
+              />
+            </View>
+          )}
+
+          {/* TODO: nft section */}
+          {sendType === 'nft' && step === 2 && (
+            <>
+              <View style={styles.group}>
+                <NFTInfo nftItem={assetInfo} onMaxPress={onPressMax} />
+              </View>
+              <View style={styles.group}>
+                <AmountNFT
+                  warningTip={errorMessage}
+                  sendNumber={sendNumber}
+                  setSendNumber={setSendNumber}
+                  assetInfo={assetInfo}
+                />
+              </View>
+            </>
+          )}
+          {step === 1 && (
+            <SelectAddressTab
+              recentAddressList={recentList || []}
+              savedAddressList={savedList || []}
+              myAddressList={[myAddressesList as IContactItemType]}
+              noDataMessage="No recent address"
+              chainId={assetInfo.chainId}
+              onPress={onPressTabItem}
             />
-          </View>
-        </>
-      )}
-      {step === 1 && (
-        <SelectAddressTab
-          recentAddressList={recentList || []}
-          savedAddressList={savedList || []}
-          myAddressList={[myAddressesList as IContactItemType]}
-          noDataMessage="No recent address"
-          chainId={assetInfo.chainId}
-          onPress={onPressTabItem}
-        />
-      )}
+          )}
+        </View>
 
-      {renderBottomSection()}
+        {renderBottomSection()}
+      </KeyboardAvoidingView>
     </PageContainer>
   );
 };

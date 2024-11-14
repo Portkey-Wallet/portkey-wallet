@@ -112,7 +112,7 @@ const ProfileAddressSectionV2: React.FC<ProfileAddressSectionPropsType> = props 
         <View
           key={index}
           style={[
-            disable ? BGStyles.bg18 : { backgroundColor: '#1F1F21' },
+            disable ? BGStyles.bg18 : { backgroundColor: darkColors.bgBase2 },
             styles.itemWrap,
             index !== 0 && GStyles.marginTop(12),
           ]}>

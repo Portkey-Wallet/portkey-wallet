@@ -158,7 +158,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     fontSize: pTd(32),
-    backgroundColor: '#1F1F21',
+    backgroundColor: darkColors.bgBase2,
     // color: defaultColors.white,
   },
   pagesBtn: {

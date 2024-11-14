@@ -82,7 +82,6 @@ const styles = StyleSheet.create({
   touchWrapper: {
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: pTd(16),
   },
   mainContainer: {
     flexDirection: 'row',

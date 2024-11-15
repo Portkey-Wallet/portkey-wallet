@@ -31,10 +31,12 @@ import Touchable from 'components/Touchable';
 import { KeyboardSafeArea } from 'components/KeyboardSafeArea';
 import navigationService from 'utils/navigationService';
 import { useContactNetworkConfig } from '@portkey-wallet/hooks/hooks-ca/config';
+import { RECENT_PAGE_NAME } from 'constants/contact';
 
 type RouterParams = {
   contact?: IContactItemType;
   willAddContact?: IContactItemType;
+  from?: string;
 };
 
 export type EditAddressType = AddressItem & { error: ErrorType };
@@ -59,18 +61,18 @@ const errorCodeMessageMap: Record<string, IFormErrorType> = {
   40021: {
     name: {
       ...INIT_HAS_ERROR,
-      errorMsg: 'This name already exists',
+      errorMsg: 'Name already in use.',
     },
   },
   40022: {
     address: {
       ...INIT_HAS_ERROR,
-      errorMsg: 'Please enter a valid address',
+      errorMsg: 'Please enter a valid address.',
     },
   },
 };
 const ContactEdit: React.FC = () => {
-  const { contact, willAddContact } = useRouterParams<RouterParams>();
+  const { contact, willAddContact, from } = useRouterParams<RouterParams>();
   const isEdit = useMemo(() => contact !== undefined, [contact]);
 
   const iptRef = useRef<TextInput>();
@@ -138,12 +140,20 @@ const ContactEdit: React.FC = () => {
       _editContact.address = value;
       return _editContact;
     });
+    setFormError(preFormError => ({
+      ...preFormError,
+      address: INIT_NONE_ERROR,
+    }));
   }, []);
 
   const onNameChange = useCallback((value: string) => {
     setEditContact(preEditContact => ({
       ...preEditContact,
-      name: value,
+      name: value.trim(),
+    }));
+    setFormError(preFormError => ({
+      ...preFormError,
+      name: INIT_NONE_ERROR,
     }));
   }, []);
 
@@ -189,7 +199,7 @@ const ContactEdit: React.FC = () => {
       if (value.trim() === '') {
         return {
           ...INIT_HAS_ERROR,
-          errorMsg: t('Please enter contact name'),
+          errorMsg: t('Please enter contact name.'),
         };
       }
       return INIT_NONE_ERROR;
@@ -198,7 +208,7 @@ const ContactEdit: React.FC = () => {
       if (!/^[a-zA-Z0-9_]+$/.test(value)) {
         return {
           ...INIT_HAS_ERROR,
-          errorMsg: t('Only a-z, A-Z, 0-9 and "_"  allowed'),
+          errorMsg: t('Only a-z, A-Z, 0-9 and "_"  allowed.'),
         };
       }
       return INIT_NONE_ERROR;
@@ -235,24 +245,33 @@ const ContactEdit: React.FC = () => {
         upsertParams.chainId = chainId;
         upsertParams.isExchange = isExchange;
       }
-      let addContactResponse = null;
       if (editContact.id) {
         // edit
         const updateParams = { ...upsertParams, id };
-        await editContactApi(updateParams);
+        const editContactResponse = await editContactApi(updateParams);
+        if (from === RECENT_PAGE_NAME) {
+          navigationService.navigate('NoChatContactProfile', {
+            contact: editContactResponse,
+            isSaved: true,
+            from,
+          });
+        } else {
+          navigationService.navigate('ContactsHome');
+        }
       } else {
         // add
-        addContactResponse = await addContactApi(upsertParams);
+        const addContactResponse = await addContactApi(upsertParams);
+        if (from === RECENT_PAGE_NAME) {
+          navigationService.navigate('NoChatContactProfile', {
+            contact: addContactResponse,
+            isSaved: true,
+            from,
+          });
+        } else {
+          navigationService.navigate('ContactsHome');
+        }
       }
-      CommonToast.success('Saved Successful');
-      if (willAddContact && addContactResponse) {
-        navigationService.navigate('NoChatContactProfile', {
-          contact: addContactResponse,
-          isSaved: true,
-        });
-      } else {
-        navigationService.navigate('ContactsHome');
-      }
+      CommonToast.success('Address saved');
     } catch (err: any) {
       const errorCode = err?.error?.code;
       const formItemError = errorCodeMessageMap[errorCode];
@@ -265,7 +284,7 @@ const ContactEdit: React.FC = () => {
     } finally {
       Loading.hide();
     }
-  }, [addContactApi, checkError, editContact, editContactApi, willAddContact]);
+  }, [addContactApi, checkError, editContact, editContactApi, from]);
   const pasteAddress = useCallback(async () => {
     try {
       const str = await getStringAsync();
@@ -278,7 +297,7 @@ const ContactEdit: React.FC = () => {
   return (
     <PageContainer
       safeAreaColor={['black', 'black']}
-      titleDom={isEdit ? t('Edit Contact') : t('Add New Contacts')}
+      titleDom={isEdit ? 'Edit Address' : 'Add Address'}
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}
       rightDom={
@@ -313,6 +332,10 @@ const ContactEdit: React.FC = () => {
                 list: supportNetworkList || [],
                 value: selectedNetwork,
                 onChange: item => {
+                  setFormError(preFormError => ({
+                    ...preFormError,
+                    address: INIT_NONE_ERROR,
+                  }));
                   setEditContact(preEditContact => ({
                     ...preEditContact,
                     network: item.network,
@@ -373,6 +396,7 @@ const ContactEdit: React.FC = () => {
             placeholder={'Enter address'}
             value={editContact.address}
             onChangeText={handleAddressChange}
+            autoCapitalize="none"
             placeholderTextColor={colors.textBase3}
             // eslint-disable-next-line react-native/no-inline-styles
             style={[pageStyles.addressInput, formError.address?.isError && pageStyles.errorStyle]}

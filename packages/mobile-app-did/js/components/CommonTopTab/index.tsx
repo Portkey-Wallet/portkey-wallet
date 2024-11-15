@@ -184,8 +184,8 @@ const CustomizedTopTabBar = forwardRef(
                     {label}
                   </Text>
                   {suffix && (
-                    <View style={styles.amountIcon}>
-                      <TextM style={styles.amount}>{suffix}</TextM>
+                    <View style={styles.suffixWrap}>
+                      <TextM style={styles.suffixText}>{suffix}</TextM>
                     </View>
                   )}
                 </TouchableOpacity>
@@ -222,13 +222,14 @@ const getStyles = makeStyles(theme => ({
     textTransform: 'none',
     fontSize: pTd(14),
   },
-  amountIcon: {
+  suffixWrap: {
     paddingVertical: pTd(4),
     paddingHorizontal: pTd(6),
     marginLeft: pTd(4),
     backgroundColor: theme.colors.bgNeutral2,
+    borderRadius: pTd(4),
   },
-  amount: {
+  suffixText: {
     color: theme.colors.textBase1,
     ...fonts.SGRegularFont,
   },

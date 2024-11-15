@@ -6,7 +6,6 @@ import { styles } from './style';
 import navigationService from 'utils/navigationService';
 import { useLanguage } from 'i18n/hooks';
 import { FlashList } from '@shopify/flash-list';
-import GStyles from 'assets/theme/GStyles';
 import { TextL, TextS } from 'components/CommonText';
 import { TokenItemShowType, ITokenSectionResponse } from '@portkey-wallet/types/types-ca/token';
 import { useAppCASelector, useAppCommonDispatch } from '@portkey-wallet/hooks';
@@ -19,27 +18,21 @@ import { formatAmountUSDShow, formatTokenAmountShowWithDecimals } from '@portkey
 import fonts from 'assets/theme/fonts';
 import { sleep } from '@portkey-wallet/utils';
 import BuyButton from 'components/BuyButton';
-import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
-import OutlinedButton from 'components/OutlinedButton';
 import { checkEnabledFunctionalTypes } from '@portkey-wallet/utils/compass';
 import { useTokenInfoFromStore } from '@portkey-wallet/hooks/hooks-ca/assets';
 import ActivityItem from 'components/ActivityItem';
 import { FlatListFooterLoading } from 'components/FlatListFooterLoading';
 import { ListLoadingEnum } from 'constants/misc';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
-import { stringifyETrans } from '@portkey-wallet/utils/dapp/url';
 import { pTd } from 'utils/unit';
 import { useAppRampEntryShow } from 'hooks/ramp';
 import { useGetAccountTokenList } from 'hooks/account';
 import { SHOW_RAMP_SYMBOL_LIST } from '@portkey-wallet/constants/constants-ca/ramp';
 import { useAppSwapButtonShow } from 'hooks/cms';
-import { DepositModalMap, useOnDisclaimerModalPress } from 'hooks/deposit';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
-import { useCmsBanner } from '@portkey-wallet/hooks/hooks-ca/cms/banner';
-import { useGetS3ImageUrl } from '@portkey-wallet/hooks/hooks-ca/cms';
 import FaucetButton from 'components/FaucetButton';
-import { parseLink } from '@portkey-wallet/hooks/hooks-ca/cms/util';
 import { darkColors } from 'assets/theme';
 import { showActivityDetail } from 'components/ActivityOverlay';
 
@@ -61,13 +54,9 @@ const TokenDetailPage: React.FC<TokenDetailParams> = ({ tokenInfo, tokenSection 
   const dispatch = useAppCommonDispatch();
   const activity = useAppCASelector(state => state.activity);
   const defaultToken = useDefaultToken(tokenInfo.chainId);
-  const { awakenUrl = 'https://app.awaken.finance/' } = useCurrentNetworkInfo();
   const { isSwapShow } = useAppSwapButtonShow();
-  const onDisclaimerModalPress = useOnDisclaimerModalPress();
   const { buy, swap } = checkEnabledFunctionalTypes(tokenInfo.symbol, tokenInfo.chainId === 'AELF');
   const { isRampShow } = useAppRampEntryShow();
-  const getS3ImageUrl = useGetS3ImageUrl();
-  const { getTokenDetailBannerList } = useCmsBanner();
   const getAccountTokenList = useGetAccountTokenList();
   const isBuyButtonShow = useMemo(
     () =>
@@ -116,7 +105,9 @@ const TokenDetailPage: React.FC<TokenDetailParams> = ({ tokenInfo, tokenSection 
     async (isInit = false) => {
       const maxResultCount = 20;
       const { data = [], skipCount = 0, totalRecordCount = 0 } = currentActivity || {};
-      if (!isInit && data?.length >= totalRecordCount) return;
+      if (!isInit && data?.length >= totalRecordCount) {
+        return;
+      }
 
       setIsLoading(isInit ? ListLoadingEnum.header : ListLoadingEnum.footer);
       const params: IActivitiesApiParams = {
@@ -126,7 +117,9 @@ const TokenDetailPage: React.FC<TokenDetailParams> = ({ tokenInfo, tokenSection 
       };
       await dispatch(getActivityListAsync(params));
       setIsLoading(ListLoadingEnum.hide);
-      if (!isInit) await sleep(250);
+      if (!isInit) {
+        await sleep(250);
+      }
     },
     [currentActivity, dispatch, fixedParamObj],
   );
@@ -148,21 +141,27 @@ const TokenDetailPage: React.FC<TokenDetailParams> = ({ tokenInfo, tokenSection 
 
   const buttonCount = useMemo(() => {
     let count = 3;
-    if (isBuyButtonShow) count++;
-    if (isSwapShow && swap) count++;
+    if (isBuyButtonShow) {
+      count++;
+    }
+    if (isSwapShow && swap) {
+      count++;
+    }
     // FaucetButton
-    if (isFaucetButtonShow) count++;
+    if (isFaucetButtonShow) {
+      count++;
+    }
     return count;
   }, [isBuyButtonShow, isFaucetButtonShow, isSwapShow, swap]);
 
-  const buttonGroupWrapStyle = useMemo(() => {
-    if (buttonCount >= 5) {
-      // styles
-      return styles.buttonRow;
-    } else {
-      return GStyles.flexCenter;
-    }
-  }, [buttonCount]);
+  // const buttonGroupWrapStyle = useMemo(() => {
+  //   if (buttonCount >= 5) {
+  //     // styles
+  //     return styles.buttonRow;
+  //   } else {
+  //     return GStyles.flexCenter;
+  //   }
+  // }, [buttonCount]);
 
   const buttonWrapStyle = useMemo(() => {
     if (buttonCount >= 5) {
@@ -183,15 +182,6 @@ const TokenDetailPage: React.FC<TokenDetailParams> = ({ tokenInfo, tokenSection 
     return balanceShow?.length > 18;
   }, [balanceShow]);
 
-  const bannerItemsList = useMemo(() => {
-    return getTokenDetailBannerList(tokenInfo.chainId, tokenInfo.symbol).map(item => {
-      return {
-        appLink: parseLink(item.appLink, item.url),
-        imgUrl: getS3ImageUrl(item.imgUrl.filename_disk),
-      };
-    });
-  }, [getS3ImageUrl, getTokenDetailBannerList, tokenInfo.chainId, tokenInfo.symbol]);
-
   const onReceivePress = useCallback(() => {
     console.log('tokenSection : ', tokenSection);
     navigationService.navigate('Receive', { tokenInfo: tokenSection, chainId: tokenInfo.chainId });
@@ -202,7 +192,7 @@ const TokenDetailPage: React.FC<TokenDetailParams> = ({ tokenInfo, tokenSection 
       <View style={[styles.buttonGroupWrap]}>
         <SendButton themeType="innerPage" sentToken={currentTokenInfo} wrapStyle={buttonWrapStyle} />
         <ReceiveButton onPress={onReceivePress} />
-        {isBuyButtonShow && <BuyButton themeType="innerPage" wrapStyle={buttonWrapStyle} tokenInfo={tokenInfo} />}
+        {isBuyButtonShow && <BuyButton wrapStyle={buttonWrapStyle} tokenInfo={tokenInfo} />}
         {isFaucetButtonShow && <FaucetButton themeType="innerPage" wrapStyle={buttonWrapStyle} />}
         {/* {isSwapShow && swap && (
           <OutlinedButton
@@ -236,7 +226,9 @@ const TokenDetailPage: React.FC<TokenDetailParams> = ({ tokenInfo, tokenSection 
         renderItem={renderItem}
         onRefresh={onRefreshList}
         onEndReached={() => {
-          if (!isInitRef.current) return;
+          if (!isInitRef.current) {
+            return;
+          }
           getActivityList();
         }}
         onEndReachedThreshold={ON_END_REACHED_THRESHOLD}
@@ -255,7 +247,9 @@ const TokenDetailPage: React.FC<TokenDetailParams> = ({ tokenInfo, tokenSection 
           <>{!isEmpty && <FlatListFooterLoading refreshing={isLoading === ListLoadingEnum.footer} />}</>
         }
         onLoad={() => {
-          if (isInitRef.current) return;
+          if (isInitRef.current) {
+            return;
+          }
           init();
         }}
       />

@@ -24,9 +24,15 @@ const Card: React.FC<{ title: string }> = ({ title }) => {
   const styles = getStyles();
   const buttonCount = useMemo(() => {
     let count = 2;
-    if (isSwapShow) count++;
-    if (isRampShow) count++;
-    if (!isMainnet) count++; // faucet
+    if (isSwapShow) {
+      count++;
+    }
+    if (isRampShow) {
+      count++;
+    }
+    if (!isMainnet) {
+      count++;
+    } // faucet
     return count;
   }, [isMainnet, isRampShow, isSwapShow]);
 
@@ -64,7 +70,7 @@ const Card: React.FC<{ title: string }> = ({ title }) => {
       <View style={[GStyles.flexRow, GStyles.spaceBetween, styles.buttonGroupWrap]}>
         <SendButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />
         <ReceiveButton onPress={onReceivePress} />
-        {isRampShow && <BuyButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />}
+        {isRampShow && <BuyButton wrapStyle={buttonWrapStyle} />}
         {isSwapShow && <SwapButton />}
         {!isMainnet && <FaucetButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />}
       </View>

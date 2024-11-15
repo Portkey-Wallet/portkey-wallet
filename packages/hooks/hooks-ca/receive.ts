@@ -78,8 +78,69 @@ export const useReceive = (token: IUserTokenItemResponse, initToChainId?: ChainI
         },
       })
       .then(data => {
+        console.log('data.data: ', JSON.stringify(data.data));
         if (data && data.data && data.data.destinationMap) {
-          setDestinationMap(data.data.destinationMap);
+          // setDestinationMap(data.data.destinationMap);
+          setDestinationMap({
+            AELF: [
+              {
+                network: 'AELF',
+                name: 'aelf MainChain',
+                imageUrl: 'https://portkey-did.s3.ap-northeast-1.amazonaws.com/img/aelf/mainChain.png',
+                serviceList: null,
+              },
+              {
+                network: 'tDVV',
+                name: 'aelf dAppChain',
+                imageUrl: 'https://portkey-did.s3.ap-northeast-1.amazonaws.com/img/aelf/dappChain.png',
+                serviceList: null,
+              },
+              {
+                network: 'ETH',
+                name: 'Ethereum (ERC20)',
+                imageUrl: 'https://portkey-did.s3.ap-northeast-1.amazonaws.com/img/chain/ChainEthereum.png',
+                serviceList: [
+                  { serviceName: 'ETransfer', multiConfirmTime: '16 mins', maxAmount: '54749' },
+                  { serviceName: 'EBridge', multiConfirmTime: '40 mins', maxAmount: null },
+                ],
+              },
+              {
+                network: 'BSC',
+                name: 'BNB Smart Chain (BEP20)',
+                imageUrl: 'https://portkey-did.s3.ap-northeast-1.amazonaws.com/img/chain/ChainBinance.png',
+                serviceList: [{ serviceName: 'EBridge', multiConfirmTime: '10 mins', maxAmount: null }],
+              },
+            ],
+            tDVV: [
+              {
+                network: 'AELF',
+                name: 'aelf MainChain',
+                imageUrl: 'https://portkey-did.s3.ap-northeast-1.amazonaws.com/img/aelf/mainChain.png',
+                serviceList: null,
+              },
+              {
+                network: 'tDVV',
+                name: 'aelf dAppChain',
+                imageUrl: 'https://portkey-did.s3.ap-northeast-1.amazonaws.com/img/aelf/dappChain.png',
+                serviceList: null,
+              },
+              {
+                network: 'ETH',
+                name: 'Ethereum (ERC20)',
+                imageUrl: 'https://portkey-did.s3.ap-northeast-1.amazonaws.com/img/chain/ChainEthereum.png',
+                serviceList: [
+                  { serviceName: 'ETransfer', multiConfirmTime: '16 mins', maxAmount: '54749' },
+                  { serviceName: 'EBridge', multiConfirmTime: '40 mins', maxAmount: null },
+                ],
+              },
+              {
+                network: 'BSC',
+                name: 'BNB Smart Chain (BEP20)',
+                imageUrl: 'https://portkey-did.s3.ap-northeast-1.amazonaws.com/img/chain/ChainBinance.png',
+                serviceList: [{ serviceName: 'EBridge', multiConfirmTime: '10 mins', maxAmount: null }],
+              },
+            ],
+          });
         } else {
           setErrorMsg(data.error ?? 'Response data error');
         }

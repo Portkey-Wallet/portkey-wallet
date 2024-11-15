@@ -1,19 +1,15 @@
 import GStyles from 'assets/theme/GStyles';
 import { TextM, TextS } from 'components/CommonText';
 import Touchable from 'components/Touchable';
-import React, { memo, useCallback, useEffect, useMemo, useRef } from 'react';
-import { StyleSheet, View } from 'react-native';
+import React, { memo, useCallback, useMemo } from 'react';
+import { Platform, StyleSheet, UIManager, View } from 'react-native';
 import { RenderItemParams, ScaleDecorator } from 'react-native-draggable-flatlist';
-import SwipeableItem, { OpenDirection, SwipeableItemImperativeRef } from 'react-native-swipeable-item';
-import { useBookmark } from '../context/bookmarksContext';
-import usePrevious from 'hooks/usePrevious';
+import SwipeableItem, { OpenDirection } from 'react-native-swipeable-item';
 import { BGStyles, DarkFontStyles } from 'assets/theme/styles';
 import { pTd } from 'utils/unit';
 import DiscoverWebsiteImage from 'pages/Discover/components/DiscoverWebsiteImage';
 import TextWithProtocolIcon from 'components/TextWithProtocolIcon';
 import { darkColors } from 'assets/theme';
-import myEvents from 'utils/deviceEvent';
-import useEffectOnce from 'hooks/useEffectOnce';
 import { ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
 import { useDiscoverJumpWithNetWork } from 'hooks/discover';
 import { useGetCmsWebsiteInfo } from '@portkey-wallet/hooks/hooks-ca/cms';
@@ -23,28 +19,21 @@ type RecordItemType = RenderItemParams<ITabItem> & {
   onDelete: (item: ITabItem) => void;
 };
 
+const DELETE_BUTTON_WIDTH = pTd(98);
+if (Platform.OS === 'android') {
+  UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
+}
+const OVERSWIPE_DIST = 20;
+
 export default memo(
   function RecordItem(props: RecordItemType) {
-    const { itemRefs, item, onDelete } = props;
+    const { item, itemRefs, onDelete } = props;
 
     const discoverJump = useDiscoverJumpWithNetWork();
     const { getCmsWebsiteInfoImageUrl, getCmsWebsiteInfoName } = useGetCmsWebsiteInfo();
 
-    const swipeableRef = useRef<SwipeableItemImperativeRef>(null);
-    const [{ isEdit }] = useBookmark();
-    const preIsEdit = usePrevious(isEdit);
-    useEffect(() => {
-      if (!isEdit && isEdit !== preIsEdit) swipeableRef.current?.close();
-    }, [preIsEdit, isEdit]);
-    useEffectOnce(() => {
-      const listener = myEvents.bookmark.closeSwipeable.addListener(() => swipeableRef.current?.close());
-      return () => listener.remove();
-    });
-
     const onClickJump = useCallback(
       (i: any) => {
-        if (isEdit) return;
-
         discoverJump({
           item: {
             name: i?.name || '',
@@ -52,7 +41,7 @@ export default memo(
           },
         });
       },
-      [discoverJump, isEdit],
+      [discoverJump],
     );
 
     const renderUnderlayLeft = useCallback(
@@ -89,17 +78,18 @@ export default memo(
           onChange={({ openDirection }) => {
             if (openDirection !== OpenDirection.NONE) {
               // Close all other open items
-              [...itemRefs.current.entries()].forEach(([id, ref]) => {
-                if (id !== item.id && ref) ref.close();
+              [...itemRefs.current.entries()].forEach(([key, ref]) => {
+                if (key !== item.id && ref) {
+                  ref.close();
+                }
               });
             }
           }}
-          overSwipe={20}
+          overSwipe={OVERSWIPE_DIST}
           renderUnderlayLeft={renderUnderlayLeft}
-          snapPointsLeft={[pTd(98)]}>
+          snapPointsLeft={[DELETE_BUTTON_WIDTH, DELETE_BUTTON_WIDTH]}>
           <Touchable
             onPress={() => onClickJump(item)}
-            // disabled={!isEdit || isActive}
             style={[
               GStyles.flexRow,
               GStyles.itemCenter,
@@ -140,6 +130,13 @@ const styles = StyleSheet.create({
     paddingRight: pTd(24),
     backgroundColor: darkColors.bgDanger1,
     color: darkColors.iconDanger4,
+  },
+  row: {
+    flexDirection: 'row',
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 15,
   },
   itemRow: {
     padding: pTd(12),

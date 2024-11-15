@@ -5,7 +5,7 @@ import CommonToast from 'components/CommonToast';
 import PortkeySkeleton from 'components/PortkeySkeleton';
 import Touchable from 'components/Touchable';
 import { useMarketFavorite } from 'hooks/discover';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { forwardRef, useCallback, useImperativeHandle, useMemo, useState } from 'react';
 import { View, Text, Image, StyleSheet, LayoutChangeEvent } from 'react-native';
 import { pTd } from 'utils/unit';
 import SinkableText, { getDecimalPlaces } from '../SinkableText';
@@ -15,10 +15,12 @@ import { TextS } from 'components/CommonText';
 export interface IMarketItemProps {
   isLoading: boolean;
   item: ICryptoCurrencyItem;
+  itemRefs: React.MutableRefObject<Map<any, any>>;
   onStarClicked?: (favorite: boolean) => void;
 }
-export default function MarketItem(props: IMarketItemProps) {
-  const { isLoading, item, onStarClicked } = props;
+
+export default forwardRef(function MarketItem(props: IMarketItemProps, _ref: any) {
+  const { isLoading, item, onStarClicked, itemRefs } = props;
   const { markFavorite, unMarkFavorite } = useMarketFavorite();
   const [favorite, setFavorite] = useState(item.collected);
   const [showTips, setShowTips] = useState(false);
@@ -47,11 +49,30 @@ export default function MarketItem(props: IMarketItemProps) {
   const onLayout = useCallback(
     (event: LayoutChangeEvent) => {
       const { width, height } = event.nativeEvent.layout;
-      if (wrapperLayoutProps.width === width && wrapperLayoutProps.height === height) return;
+      if (wrapperLayoutProps.width === width && wrapperLayoutProps.height === height) {
+        return;
+      }
       setWrapperLayoutProps({ width: screenWidth, height });
     },
     [wrapperLayoutProps],
   );
+
+  const showTip = (isShow: boolean) => {
+    [...itemRefs.current.entries()].forEach(([id, ref]) => {
+      if (id !== item.id && ref) {
+        ref && ref.hideTips();
+      }
+    });
+    if (isDefaultSymbol) {
+      CommonToast.info(`${item.symbol} can’t be removed from the favorite list.`);
+    } else {
+      setShowTips(isShow);
+    }
+  };
+
+  useImperativeHandle(_ref, () => ({
+    hideTips: () => setShowTips(false),
+  }));
 
   return (
     <View style={styles.mainContainer}>
@@ -64,8 +85,8 @@ export default function MarketItem(props: IMarketItemProps) {
       ) : (
         <Touchable
           onLayout={onLayout}
-          onPress={() => setShowTips(false)}
-          onLongPress={() => !isDefaultSymbol && setShowTips(true)}
+          onPress={() => showTip(false)}
+          onLongPress={() => showTip(true)}
           style={[styles.mainContainer, { backgroundColor: showTips ? defaultColors.bgBase2 : darkColors.bgBase1 }]}>
           <FloatTips
             wrapperLayoutProps={wrapperLayoutProps}
@@ -129,7 +150,7 @@ export default function MarketItem(props: IMarketItemProps) {
       )}
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   mainContainer: {

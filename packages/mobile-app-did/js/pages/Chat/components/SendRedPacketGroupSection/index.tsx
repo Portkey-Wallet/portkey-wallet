@@ -380,6 +380,7 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
             errorStyle={!isGTMax && FontStyles.font7}
             inputStyle={isGTMax && FontStyles.error}
             containerStyle={packetNumTips && styles.packetQuantityWrapError}
+            returnKeyType="done"
           />
         </FormItem>
       )}

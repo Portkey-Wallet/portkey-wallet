@@ -1,16 +1,24 @@
 import { StyleSheet } from 'react-native';
 import { pTd } from 'utils/unit';
 import { ScreenHeight } from '@rneui/base';
-import GStyles from 'assets/theme/GStyles';
 import { makeStyles } from '@rneui/themed';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 
 export const getStyles = makeStyles(theme => ({
+  container: {
+    justifyContent: 'space-between',
+    flex: 1,
+    height: ScreenHeight - pTd(130),
+    position: 'relative',
+  },
   pageWrap: {
     backgroundColor: theme.colors.bg4,
     height: ScreenHeight - pTd(130),
     paddingLeft: 0,
     paddingRight: 0,
+  },
+  mainWrap: {
+    flex: 1,
   },
   iconStyle: {
     paddingHorizontal: pTd(16),
@@ -22,9 +30,6 @@ export const getStyles = makeStyles(theme => ({
     borderRadius: pTd(6),
   },
   bottomWrapStyle: {
-    backgroundColor: theme.colors.bgBase1,
-    position: 'absolute',
-    bottom: 0,
     justifyContent: 'flex-end',
     width: screenWidth,
   },

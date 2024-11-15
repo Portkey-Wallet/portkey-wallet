@@ -5,7 +5,7 @@ import Svg from 'components/Svg';
 import React from 'react';
 import { StyleSheet, View, TouchableWithoutFeedback } from 'react-native';
 import { pTd } from 'utils/unit';
-import { Input, InputProps } from '@rneui/themed';
+import { darkColors, Input, InputProps } from '@rneui/themed';
 import CommonInput from 'components/CommonInput';
 
 interface ISimulatedInputBoxProps {
@@ -72,7 +72,7 @@ export function SimulatedInput({ placeholder = 'dApps, Sites, URL', onClickInput
             returnKeyType="search"
             placeholder={'dApps, Sites, URL'}
             containerStyle={{
-              backgroundColor: '#151318',
+              backgroundColor: darkColors.bgBase1,
               height: pTd(20),
             }}
             // rightIcon={
@@ -110,9 +110,9 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'center',
     borderRadius: pTd(24),
-    backgroundColor: '#151318',
+    backgroundColor: darkColors.bgBase1,
     borderWidth: pTd(1),
-    borderColor: '#414142',
+    borderColor: darkColors.borderBase1,
   },
   content: {
     flex: 1,

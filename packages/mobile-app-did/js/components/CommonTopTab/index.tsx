@@ -50,12 +50,11 @@ const CommonTopTab: React.FC<CommonTopTabProps> = props => {
     hasBottomBorder = true,
     tabContainerStyle = {},
     isBlockTab,
-    expandView,
     onTabChange,
     suffixIconDom,
   } = props;
 
-  const tabBarRef = useRef(null);
+  const tabBarRef = useRef<any>(null);
   useEffect(() => {
     if (tabBarRef.current) {
       tabBarRef.current.changeSuffix(tabList.map(item => item.suffix));
@@ -70,13 +69,13 @@ const CommonTopTab: React.FC<CommonTopTabProps> = props => {
         <CustomizedTopTabBar
           {...prop}
           isBlockTab={isBlockTab}
-          expandView={expandView}
           hasTabBarBorderRadius={hasTabBarBorderRadius}
           hasBottomBorder={hasBottomBorder}
           containerStyle={tabContainerStyle}
           onTabChange={onTabChange}
           ref={tabBarRef}
           suffixIconDom={suffixIconDom}
+          swipeEnabled={swipeEnabled}
         />
       )}
       screenOptions={{
@@ -103,7 +102,7 @@ const CustomizedTopTabBar = forwardRef(
       isBlockTab = false,
       containerStyle = {},
       suffixIconDom,
-      expandView,
+      swipeEnabled = false,
       onTabChange,
     }: {
       state: { routes: any[]; index: number };
@@ -114,7 +113,7 @@ const CustomizedTopTabBar = forwardRef(
       isBlockTab?: boolean;
       containerStyle?: StyleProp<ViewStyle>;
       suffixIconDom?: ReactNode;
-      expandView?: ReactNode;
+      swipeEnabled?: boolean;
       onTabChange?: (name: string) => void;
     },
     ref,
@@ -140,12 +139,11 @@ const CustomizedTopTabBar = forwardRef(
     const { theme } = useTheme();
 
     return (
-      <View style={toolBarStyle.tabBarStyle}>
-        <ScrollView horizontal={true} alwaysBounceHorizontal={false}>
+      <View style={[toolBarStyle.tabBarStyle, containerStyle]}>
+        <ScrollView horizontal={true} alwaysBounceHorizontal={false} scrollEnabled={swipeEnabled}>
           <View
             style={[
               toolBarStyle.container,
-              containerStyle,
               hasBottomBorder ? styles.bottomBorder : {},
               hasTabBarBorderRadius ? styles.radiusTarBarStyle : {},
             ]}>
@@ -186,17 +184,16 @@ const CustomizedTopTabBar = forwardRef(
                     {label}
                   </Text>
                   {suffix && (
-                    <View style={styles.amountIcon}>
-                      <TextM style={styles.amount}>{suffix}</TextM>
+                    <View style={styles.suffixWrap}>
+                      <TextM style={styles.suffixText}>{suffix}</TextM>
                     </View>
                   )}
                 </TouchableOpacity>
               );
             })}
-            {suffixIconDom}
           </View>
         </ScrollView>
-        {expandView}
+        {suffixIconDom}
       </View>
     );
   },
@@ -225,13 +222,14 @@ const getStyles = makeStyles(theme => ({
     textTransform: 'none',
     fontSize: pTd(14),
   },
-  amountIcon: {
+  suffixWrap: {
     paddingVertical: pTd(4),
     paddingHorizontal: pTd(6),
     marginLeft: pTd(4),
     backgroundColor: theme.colors.bgNeutral2,
+    borderRadius: pTd(4),
   },
-  amount: {
+  suffixText: {
     color: theme.colors.textBase1,
     ...fonts.SGRegularFont,
   },
@@ -242,14 +240,16 @@ const getToolBarStyle = makeStyles(theme => ({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    paddingRight: pTd(16),
     height: pTd(54),
+    backgroundColor: theme.colors.bgBase1,
   },
   container: {
     flexDirection: 'row',
     paddingHorizontal: pTd(16),
     height: pTd(54),
+    minWidth: screenWidth,
     alignItems: 'center',
-    backgroundColor: theme.colors.bgBase1,
   },
   label: { flexDirection: 'row', alignItems: 'center' },
   blockTab: {

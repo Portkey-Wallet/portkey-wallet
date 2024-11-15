@@ -24,11 +24,12 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 type RouterParams = {
   contact?: IContactItemType;
   isSaved?: boolean;
+  from?: string;
 };
 
 const NoChatContactProfile: React.FC = () => {
   const {
-    params: { contact, isSaved = true },
+    params: { contact, isSaved = true, from },
   } = useRoute<RouteProp<{ params: RouterParams }>>();
   const contactAddressRef = useRef<IContactAddressRef>(null);
   const [isViewMoreDropdown, setIsViewMoreDropdown] = useState(false);
@@ -45,8 +46,8 @@ const NoChatContactProfile: React.FC = () => {
     isCopy && CommonToast.success(t('Copy Success'));
   }, [t]);
   const handleAddContact = useCallback(() => {
-    navigationService.navigate('NoChatContactProfileEdit', { willAddContact: contact });
-  }, [contact]);
+    navigationService.navigate('NoChatContactProfileEdit', { willAddContact: contact, from });
+  }, [contact, from]);
   const isAelfNetwork = useMemo(() => {
     const { network } = contact?.addressInfo ?? {};
     return network === AELF_NETWORK_NAME;
@@ -79,7 +80,7 @@ const NoChatContactProfile: React.FC = () => {
       {isSaved && (
         <ProfileHeaderSection
           showRemark={false}
-          name={(contact?.name || contact?.caHolderInfo?.walletName)?.toUpperCase() || ''}
+          name={contact?.name || contact?.caHolderInfo?.walletName || ''}
           avatarUrl={contact?.caHolderInfo?.avatar || ''}
           style={pageStyles.profileHeader}
           nameStyle={pageStyles.profileHeaderName}
@@ -121,7 +122,7 @@ const NoChatContactProfile: React.FC = () => {
             <Touchable
               style={pageStyles.dropDownItem}
               onPress={() => {
-                navigationService.navigate('NoChatContactProfileEdit', { contact });
+                navigationService.navigate('NoChatContactProfileEdit', { contact, from });
                 setIsViewMoreDropdown(false);
               }}>
               <Svg icon="edit1" size={pTd(24)} color={colors.textBase1} />

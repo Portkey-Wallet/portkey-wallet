@@ -52,6 +52,7 @@ export default memo(TokenBalanceShow);
 
 export const getStyles = makeStyles(theme => ({
   wrap: {
+    marginBottom: pTd(16),
     width: '100%',
     backgroundColor: theme.colors.bgBase1,
   },

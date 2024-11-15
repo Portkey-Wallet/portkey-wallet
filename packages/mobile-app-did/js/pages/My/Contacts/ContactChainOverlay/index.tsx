@@ -32,6 +32,9 @@ const SelectList = ({ list, value, onChange }: ISelectListProps) => {
                 key={item.chainId}
                 onPress={() => {
                   OverlayModal.hide();
+                  if (value === item) {
+                    return;
+                  }
                   onChange(item);
                 }}>
                 <View style={[styles.itemRow, index > 0 && { marginTop: pTd(12) }]}>

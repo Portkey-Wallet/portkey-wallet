@@ -30,6 +30,8 @@ export const getStyles = makeStyles(theme => ({
     fontSize: pTd(16),
     color: theme.colors.textBrand4,
     textAlign: 'right',
+    paddingTop: 0,
+    paddingBottom: 0,
     paddingRight: pTd(2),
   },
   slippageToleranceUnitText: {

@@ -192,7 +192,7 @@ export class CodePushOperator extends EventEmitter implements ICodePushOperator 
     const buttons: ButtonRowProps['buttons'] = [];
     if (!isForceUpdate) {
       buttons.push({
-        title: 'Not Now',
+        title: 'Not now',
         type: 'outline',
       });
     }
@@ -209,10 +209,7 @@ export class CodePushOperator extends EventEmitter implements ICodePushOperator 
         }
       },
     });
-    ActionSheet.alert({
-      title: 'The latest version is downloaded. You can update Portkey now.',
-      buttons,
-    });
+    UpdateOverlay.showDownloadedTip({ bottomButtonGroup: buttons });
   }
   public async syncData(updateInfo: RemotePackage | null, isForceUpdate?: boolean) {
     try {
@@ -271,24 +268,20 @@ export class CodePushOperator extends EventEmitter implements ICodePushOperator 
         return this.restartApp();
       }
       const info = await this.getUpdateInfo(updateInfo.label);
-      ActionSheet.alert({
-        messageStyle: { textAlign: 'left' },
-        title: info.title || 'New version found. Is an update made?',
-        message: info.content,
-        buttons: [
-          { title: 'Later', type: 'outline' },
-          {
-            title: 'Download',
-            onPress: async () => {
-              try {
-                await this.syncData(updateInfo, !!info.isForceUpdate);
-              } catch (error) {
-                CommonToast.failError(error);
-              }
-            },
+      const buttons: ButtonRowProps['buttons'] = [
+        { title: 'Remind me later', type: 'outline' },
+        {
+          title: 'Download now',
+          onPress: async () => {
+            try {
+              await this.syncData(updateInfo, !!info.isForceUpdate);
+            } catch (error) {
+              CommonToast.failError(error);
+            }
           },
-        ],
-      });
+        },
+      ];
+      UpdateOverlay.showTip({ bottomButtonGroup: buttons, title: info.title || '', message: info.content || '' });
     } catch (error) {
       const message = handleErrorMessage(error);
       if (message === CODE_PUSH_ERROR.Installed || message === CODE_PUSH_ERROR.Installed) {

@@ -1,5 +1,6 @@
-import React, { memo } from 'react';
+import React, { memo, useMemo } from 'react';
 import { Text, View } from 'react-native';
+import BigNumber from 'bignumber.js';
 import CommonPreviewContainer from 'components/CommonPreviewContainer';
 import Svg from 'components/Svg';
 import NFTAvatar from 'components/NFTAvatar';
@@ -13,6 +14,7 @@ import { getChainSvgName } from 'utils';
 import { pTd } from 'utils/unit';
 import { SEND_RECEIVE_HELP_URL } from 'constants/common';
 import { getStyles } from './style';
+import { formatAmountUSDShow } from '@portkey-wallet/utils/converter';
 
 export enum FooterType {
   'E_BRIDGE' = 'eBridge',
@@ -32,7 +34,7 @@ interface ISendReceivePreviewProps {
   actionType: ActionType;
   footerType?: FooterType;
   amount: string;
-  amountUSD?: string;
+  amountUSD?: BigNumber;
   toAddress?: string;
   toInfoChainId?: ChainId;
   fromAddress?: string;
@@ -101,6 +103,10 @@ const SendReceivePreview: React.FC<ISendReceivePreviewProps> = ({
 
   const { topIcon, buttonText } = ACTION_CONFIG[actionType] || {};
 
+  const formatUSDvalue = useMemo(() => {
+    return formatAmountUSDShow(amountUSD);
+  }, [amountUSD]);
+
   return (
     <CommonPreviewContainer
       helpUrl={SEND_RECEIVE_HELP_URL}
@@ -132,7 +138,7 @@ const SendReceivePreview: React.FC<ISendReceivePreviewProps> = ({
           <View style={styles.amountAboveWrap}>
             <Text style={styles.amountAbove}>{amount}</Text>
           </View>
-          {!!amountUSD && isMainnet && <Text style={styles.amountBelow}>{amountUSD}</Text>}
+          {!amountUSD?.isZero() && isMainnet && <Text style={styles.amountBelow}>{formatUSDvalue}</Text>}
         </View>
       )}
       {/* eslint-disable-next-line react-native/no-inline-styles */}

@@ -106,14 +106,14 @@ const MyWallet: React.FC = () => {
                 }}
               />
 
-              {/* <View style={{ display: 'none' }}>
+              <View style={{ display: 'none' }}>
                 <ImageWithUploadFunc
                   avatarSize={pTd(80)}
                   ref={uploadRef}
                   title={userInfo?.nickName || ''}
-                  // imageUrl={avatar || ''}
+                  imageUrl={avatar || ''}
                 />
-              </View> */}
+              </View>
 
               <View style={pageStyles.editIcon}>
                 <Svg

@@ -818,8 +818,7 @@ const GuardianEdit: React.FC = () => {
             iconSize={pTd(16)}
             tooltipProps={{
               title: 'Guardian verifier',
-              description:
-                'Except for zkLogin, used verifiers cannot be selected. To choose ZkLogin, the guardian type must be either a Google account or an Apple ID.',
+              description: `Verifiers are external services that boost security and decentralization in Portkey's social recovery system. Note: Used verifiers can't be selected again, except for zkLogin. For zkLogin, your guardian must be a Google account or Apple ID.`,
             }}
           />
         </View>

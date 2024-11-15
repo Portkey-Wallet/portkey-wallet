@@ -230,7 +230,7 @@ export default function RampPreview() {
       });
 
       navigationService.navigate('ViewOnWebView', {
-        title: 'Ramp',
+        title: `${isBuy ? 'Buy' : 'Sell'} ${crypto.symbol}`,
         url: url,
         webViewPageType: type === RampType.BUY ? 'ramp-buy' : 'ramp-sell',
         injectedJavaScript: undefined,

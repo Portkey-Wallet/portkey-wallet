@@ -1,13 +1,12 @@
 import { defaultColors } from 'assets/theme';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { makeStyles } from '@rneui/themed';
 import { pTd } from 'utils/unit';
 import PageContainer from 'components/PageContainer';
 import GStyles from 'assets/theme/GStyles';
-import { TextM, TextS, TextL } from 'components/CommonText';
+import { TextM, TextL } from 'components/CommonText';
 import fonts from 'assets/theme/fonts';
-import { FontStyles } from 'assets/theme/styles';
 import CommonButton from 'components/CommonButton';
 import ActionSheet from 'components/ActionSheet';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
@@ -143,7 +142,9 @@ export default function RampPreview() {
     setProviderKey(pre => {
       if (pre) {
         const preProvider = providerPriceList.find(item => item.providerInfo.key === pre);
-        if (preProvider) return pre;
+        if (preProvider) {
+          return pre;
+        }
       }
       return providerPriceList[0].providerInfo.key;
     });
@@ -166,7 +167,9 @@ export default function RampPreview() {
     providerPriceList.forEach(item => {
       const key = item?.providerInfo?.key;
       const logo = item?.providerInfo?.logo;
-      if (!key || !logo || _providerImageSizeMap[key]) return;
+      if (!key || !logo || _providerImageSizeMap[key]) {
+        return;
+      }
       if (checkIsSvgUrl(logo)) {
         setProviderImageSizeMap(pre => ({
           ...pre,
@@ -190,11 +193,15 @@ export default function RampPreview() {
   }, [providerPriceList]);
 
   const goPayPage = useCallback(async () => {
-    if (!providerKey || !amount || !fiat || !crypto) return;
+    if (!providerKey || !amount || !fiat || !crypto) {
+      return;
+    }
 
     try {
       const provider = ramp.getProvider(providerKey as IRampProviderType);
-      if (!provider) throw new Error('Failed to get ramp provider');
+      if (!provider) {
+        throw new Error('Failed to get ramp provider');
+      }
 
       const emailGuardian = userGuardiansList?.find(
         item => item.guardianType === LoginType.Email && item.isLoginAccount,
@@ -255,7 +262,9 @@ export default function RampPreview() {
   ]);
 
   const receiveAmount = useMemo(() => {
-    if (!currentProvider) return '';
+    if (!currentProvider) {
+      return '';
+    }
     return isBuy
       ? (currentProvider as IBuyProviderPrice).cryptoAmount
       : (currentProvider as ISellProviderPrice).fiatAmount;
@@ -360,13 +369,13 @@ const getStyles = makeStyles(theme => ({
   providerWrap: {
     marginTop: pTd(16),
     borderRadius: pTd(16),
-    borderColor: theme.colors.borderBrand1,
+    borderColor: theme.colors.borderBase1,
     borderWidth: pTd(1),
     overflow: 'hidden',
     ...GStyles.paddingArg(16, 16),
   },
   providerActiveStyle: {
-    borderColor: theme.colors.borderBase1,
+    borderColor: theme.colors.borderBrand1,
   },
   providerActiveTagWrap: {
     width: pTd(24),

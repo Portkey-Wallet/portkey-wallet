@@ -115,7 +115,7 @@ export function AlertBody({
           </View>
         )}
         {showInfoIcon && <Svg iconStyle={styles.infoIcon} icon="info" size={pTd(32)} color={theme.colors.iconBase1} />}
-        {typeof title === 'string' ? <Text style={showStyles.itemText}>{title}</Text> : title}
+        {title ? <TextTitle style={[styles.alertTitle, titleStyle]}>{title}</TextTitle> : null}
 
         {/* {title ? <TextTitle style={[styles.alertTitle, titleStyle]}>{title}</TextTitle> : null} */}
         {typeof title2 === 'string' ? (
@@ -164,7 +164,9 @@ export function AlertBody({
             buttons={buttons?.map(i => ({
               ...i,
               onPress: () => {
-                if (autoClose) OverlayModal.hide();
+                if (autoClose) {
+                  OverlayModal.hide();
+                }
                 i.onPress?.();
               },
             }))}
@@ -174,7 +176,9 @@ export function AlertBody({
             buttons={buttons?.map(i => ({
               ...i,
               onPress: () => {
-                if (autoClose) OverlayModal.hide();
+                if (autoClose) {
+                  OverlayModal.hide();
+                }
                 i.onPress?.();
               },
             }))}

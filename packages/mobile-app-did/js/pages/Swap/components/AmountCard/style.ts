@@ -13,7 +13,6 @@ export const getStyles = makeStyles(theme => ({
     borderStyle: 'solid',
   },
   title: {
-    marginBottom: pTd(8),
     ...fonts.SGMediumFont,
     fontSize: pTd(14),
     lineHeight: pTd(14),
@@ -23,7 +22,7 @@ export const getStyles = makeStyles(theme => ({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: pTd(8),
+    height: pTd(54),
   },
   amountTextWrap: {
     flex: 1,
@@ -31,7 +30,7 @@ export const getStyles = makeStyles(theme => ({
   amountText: {
     fontFamily: 'BricolageGrotesque-Bold',
     fontSize: pTd(32),
-    lineHeight: pTd(38),
+    lineHeight: pTd(52),
     color: theme.colors.textBase1,
   },
   amountTextPlaceholder: {
@@ -39,17 +38,18 @@ export const getStyles = makeStyles(theme => ({
   },
   containerStyle: {
     flex: 1,
-    height: pTd(38),
+    height: pTd(52),
     paddingHorizontal: 0,
   },
   inputContainerStyle: {
     borderBottomWidth: 0,
+    height: pTd(52),
   },
   inputStyle: {
     padding: 0,
     fontFamily: 'BricolageGrotesque-Bold',
     fontSize: pTd(32),
-    lineHeight: pTd(38),
+    height: pTd(52),
     color: theme.colors.textBase1,
   },
   errorStyle: {

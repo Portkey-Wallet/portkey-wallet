@@ -216,7 +216,7 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
     const fee = gasFee.value || 0;
     const _valueBN = ZERO.plus(balance).minus(fee);
     const v = divDecimals(_valueBN, selectToken.decimals);
-    return v.lte(values.count);
+    return v.lt(values.count);
   }, [updateAssetInfo?.balance, gasFee.value, selectToken.decimals, values.count]);
 
   const onPacketNumChange = useCallback(

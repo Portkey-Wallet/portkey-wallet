@@ -18,6 +18,7 @@ import { getStyles } from './style';
 import { KeyboardSafeArea } from 'components/KeyboardSafeArea';
 import { isStrictInteger, isValidNumberV2 } from '@portkey-wallet/utils/reg';
 import BigNumber from 'bignumber.js';
+import { isIOS } from '@portkey-wallet/utils/mobile/device';
 
 interface ISwapSettingButtonProps {
   style?: ViewStyleType;
@@ -147,7 +148,7 @@ const SwapSettingContent = () => {
   return (
     <ModalBody modalBodyType="bottom" title={t('Settings')}>
       <View style={styles.modalContentWrap}>
-        <KeyboardSafeArea bottomPad={pTd(16)}>
+        <KeyboardSafeArea bottomPad={pTd(16)} disable={!isIOS}>
           <View>
             <View style={styles.labelWrap}>
               <Text style={styles.labelText}>{t('Slippage tolerance')}</Text>
@@ -191,7 +192,7 @@ const SwapSettingContent = () => {
               <Text style={styles.expiresByUnitText}>Minute(s)</Text>
             </View>
           </View>
-          <CommonButton style={styles.bottomButton} title={t('Done')} type="primary" onPress={saveSetting} />
+          <CommonButton buttonStyle={styles.bottomButton} title={t('Done')} type="primary" onPress={saveSetting} />
         </KeyboardSafeArea>
       </View>
     </ModalBody>

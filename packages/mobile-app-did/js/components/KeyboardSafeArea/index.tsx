@@ -8,8 +8,14 @@ export type TKeyboardSafeAreaProps = {
   children?: ReactNode;
   bottomPad?: number;
   containerStyle?: ViewStyleType;
+  disable?: boolean;
 };
-export const KeyboardSafeArea = ({ children, bottomPad = 0, containerStyle }: TKeyboardSafeAreaProps) => {
+export const KeyboardSafeArea = ({
+  children,
+  bottomPad = 0,
+  containerStyle,
+  disable = false,
+}: TKeyboardSafeAreaProps) => {
   const viewRef = useRef<View>(null);
   const { keyboardHeight, isKeyboardOpened } = useKeyboard(0);
   const [viewPositionY, setViewPositionY] = useState(0);
@@ -18,7 +24,9 @@ export const KeyboardSafeArea = ({ children, bottomPad = 0, containerStyle }: TK
     requestAnimationFrame(() => {
       if (viewRef.current) {
         viewRef.current.measure?.((x, y, width, height, pageX, pageY) => {
-          if (pageY === undefined || height === undefined) return;
+          if (pageY === undefined || height === undefined) {
+            return;
+          }
           setViewPositionY(pageY + height);
         });
       }
@@ -32,20 +40,26 @@ export const KeyboardSafeArea = ({ children, bottomPad = 0, containerStyle }: TK
   }, [measureView]);
 
   useEffect(() => {
-    if (!isKeyboardOpened) return;
+    if (!isKeyboardOpened) {
+      return;
+    }
     measureView();
   }, [isKeyboardOpened, measureView]);
 
   const style = useMemo(() => {
-    if (!isKeyboardOpened) return undefined;
+    if (!isKeyboardOpened || disable) {
+      return undefined;
+    }
     const keyboardPositionY = screenHeight - keyboardHeight;
-    if (viewPositionY <= keyboardPositionY) return undefined;
+    if (viewPositionY <= keyboardPositionY) {
+      return undefined;
+    }
 
     const value = viewPositionY - keyboardPositionY + bottomPad;
     return {
       paddingBottom: value,
     };
-  }, [bottomPad, isKeyboardOpened, keyboardHeight, viewPositionY]);
+  }, [disable, bottomPad, isKeyboardOpened, keyboardHeight, viewPositionY]);
 
   return (
     <View ref={viewRef} collapsable={false} style={[style, containerStyle]}>
@@ -64,7 +78,9 @@ export const useKeyboardSafeArea = (bottomPad = 0) => {
     requestAnimationFrame(() => {
       if (viewRef.current) {
         viewRef.current.measure?.((x, y, width, height, pageX, pageY) => {
-          if (pageY === undefined || height === undefined) return;
+          if (pageY === undefined || height === undefined) {
+            return;
+          }
           setViewPositionY(pageY + height);
         });
       }
@@ -78,9 +94,13 @@ export const useKeyboardSafeArea = (bottomPad = 0) => {
   }, [measureView]);
 
   const value = useMemo(() => {
-    if (!isKeyboardOpened) return undefined;
+    if (!isKeyboardOpened) {
+      return undefined;
+    }
     const keyboardPositionY = screenHeight - keyboardHeight;
-    if (viewPositionY <= keyboardPositionY) return undefined;
+    if (viewPositionY <= keyboardPositionY) {
+      return undefined;
+    }
 
     return viewPositionY - keyboardPositionY + bottomPad;
   }, [bottomPad, isKeyboardOpened, keyboardHeight, viewPositionY]);

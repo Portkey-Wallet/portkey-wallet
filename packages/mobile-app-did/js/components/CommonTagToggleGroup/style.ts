@@ -24,10 +24,10 @@ export const getTagItemStyles = makeStyles(theme => ({
     backgroundColor: theme.colors.bgBrand1,
   },
   mdTagItem: {
-    paddingVertical: pTd(8),
+    height: pTd(32),
   },
   smTagItem: {
-    paddingVertical: pTd(6),
+    height: pTd(26),
   },
   checkIcon: {
     marginRight: pTd(4),
@@ -37,11 +37,9 @@ export const getTagItemStyles = makeStyles(theme => ({
   },
   mdLabel: {
     fontSize: pTd(16),
-    lineHeight: pTd(16),
   },
   smLabel: {
     fontSize: pTd(14),
-    lineHeight: pTd(14),
   },
   selectedLabel: {
     color: theme.colors.textBrand4,

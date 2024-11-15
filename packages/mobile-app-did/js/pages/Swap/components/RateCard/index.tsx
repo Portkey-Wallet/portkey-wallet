@@ -362,6 +362,7 @@ export default forwardRef(function RateCard(
           containerStyle={styles.containerStyle}
           inputContainerStyle={styles.inputContainerStyle}
           inputStyle={styles.inputStyle}
+          errorStyle={styles.errorStyle}
           onFocus={() => onInputtingChange?.(true)}
           onBlur={() => onInputtingChange?.(false)}
         />

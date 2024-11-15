@@ -83,7 +83,7 @@ const AssetList = () => {
 
   return (
     <PageContainer
-      titleDom={t(`sset to Send`)}
+      titleDom={t('Select Asset to Send')}
       safeAreaColor={['black', 'black']}
       containerStyles={styles.pageWrap}
       scrollViewProps={{ disabled: true }}>

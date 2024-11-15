@@ -26,6 +26,7 @@ export interface TabItemTypes {
 }
 
 export type CommonTopTabProps = {
+  labelRightNum?: number;
   swipeEnabled?: boolean;
   hasTabBarBorderRadius?: boolean;
   hasBottomBorder?: boolean;
@@ -43,6 +44,7 @@ const Tab = createMaterialTopTabNavigator();
 
 const CommonTopTab: React.FC<CommonTopTabProps> = props => {
   const {
+    labelRightNum,
     tabList,
     initialRouteName,
     hasTabBarBorderRadius,
@@ -68,6 +70,7 @@ const CommonTopTab: React.FC<CommonTopTabProps> = props => {
       tabBar={prop => (
         <CustomizedTopTabBar
           {...prop}
+          labelRightNum={labelRightNum}
           isBlockTab={isBlockTab}
           hasTabBarBorderRadius={hasTabBarBorderRadius}
           hasBottomBorder={hasBottomBorder}
@@ -94,6 +97,7 @@ const CommonTopTab: React.FC<CommonTopTabProps> = props => {
 const CustomizedTopTabBar = forwardRef(
   (
     {
+      labelRightNum,
       state,
       descriptors,
       navigation,
@@ -105,6 +109,7 @@ const CustomizedTopTabBar = forwardRef(
       swipeEnabled = false,
       onTabChange,
     }: {
+      labelRightNum?: number;
       state: { routes: any[]; index: number };
       descriptors: any;
       navigation: any;
@@ -171,8 +176,8 @@ const CustomizedTopTabBar = forwardRef(
                     isBlockTab && toolBarStyle.blockTab,
                     isBlockTab && isFocused && toolBarStyle.selectedBlockTab,
                     isBlockTab
-                      ? { marginRight: index !== state.routes.length - 1 ? pTd(10) : 0 }
-                      : { paddingRight: index !== state.routes.length - 1 ? pTd(32) : 0 },
+                      ? { marginRight: index !== state.routes.length - 1 ? labelRightNum || pTd(10) : 0 }
+                      : { paddingRight: index !== state.routes.length - 1 ? labelRightNum || pTd(32) : 0 },
                   ]}>
                   <Text
                     style={[
@@ -185,7 +190,7 @@ const CustomizedTopTabBar = forwardRef(
                   </Text>
                   {suffix && (
                     <View style={styles.suffixWrap}>
-                      <TextM style={styles.suffixText}>{suffix}</TextM>
+                      <TextM style={[styles.suffixText, isFocused && styles.suffixTextFocused]}>{suffix}</TextM>
                     </View>
                   )}
                 </TouchableOpacity>
@@ -230,8 +235,11 @@ const getStyles = makeStyles(theme => ({
     borderRadius: pTd(4),
   },
   suffixText: {
-    color: theme.colors.textBase1,
+    color: theme.colors.textBase2,
     ...fonts.SGRegularFont,
+  },
+  suffixTextFocused: {
+    color: theme.colors.textBase1,
   },
 }));
 

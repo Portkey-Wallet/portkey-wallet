@@ -25,6 +25,9 @@ interface ISwapSettingButtonProps {
 
 const SLIPPAGE_TOLERANCE_INPUT_TAG_KEY = 'Custom';
 
+const SLIPPAGE_TOLERANCE_MAX_VALUE = '99.99';
+const SLIPPAGE_TOLERANCE_MIN_VALUE = '0.01';
+
 const SwapSettingContent = () => {
   const { t } = useLanguage();
   const styles = getStyles();
@@ -66,12 +69,20 @@ const SwapSettingContent = () => {
     if (text && !isValidNumberV2(text)) {
       return;
     }
+
+    const value = parseFloat(text);
+
+    if (value > parseFloat(SLIPPAGE_TOLERANCE_MAX_VALUE)) {
+      return;
+    }
+
     setSlippageTolerance(text);
   }, []);
 
   const handleSlippageToleranceInputBlur = useCallback(() => {
-    if (!slippageTolerance) {
-      setSlippageTolerance('0');
+    const value = parseFloat(slippageTolerance);
+    if (!slippageTolerance || value < parseFloat(SLIPPAGE_TOLERANCE_MIN_VALUE)) {
+      setSlippageTolerance(SLIPPAGE_TOLERANCE_MIN_VALUE);
     }
   }, [slippageTolerance]);
 
@@ -89,7 +100,7 @@ const SwapSettingContent = () => {
   }, [expiration]);
 
   const saveSetting = useCallback(() => {
-    const slippageValue = new BigNumber(slippageTolerance || '0').dividedBy(100).toFixed();
+    const slippageValue = new BigNumber(slippageTolerance || SLIPPAGE_TOLERANCE_MIN_VALUE).dividedBy(100).toFixed();
     updateSlippageTolerance(slippageValue);
     updateExpiration(expiration || '0');
     OverlayModal.hide();

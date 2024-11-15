@@ -352,6 +352,7 @@ export default forwardRef(function RateCard(
           {amount || '0'}
         </Text> */}
         <Input
+          returnKeyType="done"
           keyboardType="numeric"
           maxLength={18}
           placeholderTextColor={theme.colors.textBase3}

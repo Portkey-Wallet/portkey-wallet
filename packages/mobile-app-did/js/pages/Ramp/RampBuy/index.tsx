@@ -3,7 +3,6 @@ import { View, Text, TextInput } from 'react-native';
 import { makeStyles } from '@rneui/themed';
 import isEqual from 'lodash/isEqual';
 import { ErrorType, INIT_HAS_ERROR, INIT_NONE_ERROR } from '@portkey-wallet/constants/constants-ca/common';
-import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useBuyCryptoList } from '@portkey-wallet/hooks/hooks-ca/ramp';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { getBuyFiat, getBuyLimit } from '@portkey-wallet/utils/ramp';
@@ -12,7 +11,6 @@ import { formatAmountShow } from '@portkey-wallet/utils/converter';
 import { IRampCryptoItem, IRampFiatItem, RampType } from '@portkey-wallet/ramp';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { IRampLimit } from '@portkey-wallet/types/types-ca/ramp';
-import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import { useAppRampEntryShow } from 'hooks/ramp';
 import GStyles from 'assets/theme/GStyles';
 import fonts from 'assets/theme/fonts';
@@ -36,8 +34,6 @@ export interface IBuyFormV2Props {
 export default function RampBuy() {
   const styles = getStyles();
   const { symbol, network } = useRouterParams<IBuyFormV2Props>();
-
-  const defaultToken = useDefaultToken(MAIN_CHAIN_ID);
 
   const textInputRef = useRef<TextInput>(null);
 
@@ -92,7 +88,9 @@ export default function RampBuy() {
   const setLimitAmount = useCallback(async () => {
     limitAmountRef.current = undefined;
     const { fiat: _fiat, crypto: _crypto } = currency;
-    if (_fiat === undefined || _crypto === undefined) return;
+    if (_fiat === undefined || _crypto === undefined) {
+      return;
+    }
 
     const loadingKey = Loading.show();
     try {
@@ -114,7 +112,6 @@ export default function RampBuy() {
   const {
     receiveAmount,
     rate,
-    rateRefreshTime,
     refreshReceive,
     amountError: amountFetchError,
     isAllowAmount,
@@ -139,7 +136,9 @@ export default function RampBuy() {
   }, [amountFetchError, amountLocalError]);
 
   const receiveAmountText = useMemo(() => {
-    if (receiveAmount === '') return `0 ${crypto?.symbol}`;
+    if (receiveAmount === '') {
+      return `0 ${crypto?.symbol}`;
+    }
     return `≈ ${receiveAmount} ${crypto?.symbol}`;
   }, [receiveAmount, crypto]);
 
@@ -170,12 +169,16 @@ export default function RampBuy() {
       setAmount('');
       return;
     }
-    if (!isPotentialNumber(text)) return;
+    if (!isPotentialNumber(text)) {
+      return;
+    }
     setAmount(text);
   }, []);
 
   const onNext = useCallback(async () => {
-    if (!limitAmountRef.current || !refreshReceiveRef.current) return;
+    if (!limitAmountRef.current || !refreshReceiveRef.current) {
+      return;
+    }
     const amountNum = Number(amount);
     const { minLimit, maxLimit } = limitAmountRef.current;
     if (amountNum < minLimit || amountNum > maxLimit) {
@@ -207,7 +210,9 @@ export default function RampBuy() {
     if (isRefreshReceiveValid.current === false) {
       const rst = await refreshReceiveRef.current();
       Loading.hide();
-      if (!rst) return;
+      if (!rst) {
+        return;
+      }
       _rate = rst.rate;
     }
 
@@ -222,7 +227,9 @@ export default function RampBuy() {
   }, [amount, fiat, rate, refreshRampShow, crypto]);
 
   const onChangeCurrency = useCallback(() => {
-    if (!fiatList.length) return;
+    if (!fiatList.length) {
+      return;
+    }
     CurrencySelector.showList({
       list: fiatList,
       selectedItem: currency.fiat || fiatList[0],
@@ -248,7 +255,13 @@ export default function RampBuy() {
       scrollViewProps={{ disabled: true }}
       rightDom={rightDom}>
       <View style={styles.fiatWrap}>
-        <TextInput ref={textInputRef} style={styles.fiatInput} placeholder="0" onChangeText={onAmountInput} />
+        <TextInput
+          keyboardType="numeric"
+          ref={textInputRef}
+          style={[styles.fiatInput, amountError.isError && styles.amountErrorText]}
+          placeholder="0"
+          onChangeText={onAmountInput}
+        />
         <Text style={styles.fiatText}>{currency.fiat?.symbol}</Text>
       </View>
       <Text style={styles.receiveAmount}>{receiveAmountText}</Text>
@@ -256,7 +269,11 @@ export default function RampBuy() {
       <View style={styles.flex} />
       <KeyboardSafeArea>
         <View style={styles.btnWrap}>
-          <CommonButton type="primary" buttonStyle={styles.btnStyle} disabled={!isAllowAmount} onPress={onNext}>
+          <CommonButton
+            type="primary"
+            buttonStyle={styles.btnStyle}
+            disabled={!isAllowAmount || amountError.isError}
+            onPress={onNext}>
             Next
           </CommonButton>
         </View>
@@ -291,6 +308,9 @@ const getStyles = makeStyles(theme => ({
     flexShrink: 2,
     fontSize: pTd(32),
     ...fonts.BGMediumFont,
+  },
+  amountErrorText: {
+    color: theme.colors.textDanger1,
   },
   fiatText: {
     marginLeft: pTd(6),

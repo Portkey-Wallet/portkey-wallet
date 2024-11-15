@@ -243,7 +243,7 @@ const TokenDetailPage: React.FC<TokenDetailParams> = ({ tokenInfo, tokenSection 
         ListHeaderComponent={
           currentActivity?.data?.length ? (
             <View>
-              <TextL style={[{ color: darkColors.textBase1, fontSize: pTd(20) }, styles.listFront, fonts.mediumFont]}>
+              <TextL style={[{ color: darkColors.textBase1, fontSize: pTd(20) }, styles.listFront, fonts.BGMediumFont]}>
                 {'Activity'}
               </TextL>
             </View>

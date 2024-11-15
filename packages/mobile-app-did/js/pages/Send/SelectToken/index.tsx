@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { StyleSheet } from 'react-native';
 import navigationService from 'utils/navigationService';
-import { View, FlatList } from 'react-native';
+import { View, FlatList, Text } from 'react-native';
 import { TextL, TextM } from 'components/CommonText';
 import { pTd } from 'utils/unit';
 import { useLanguage } from 'i18n/hooks';
@@ -16,6 +16,7 @@ import GStyles from 'assets/theme/GStyles';
 import { DarkFontStyles } from 'assets/theme/styles';
 import { IToSendHomeParamsType } from '@portkey-wallet/types/types-ca/routeParams';
 import { makeStyles } from '@rneui/themed';
+import fonts from 'assets/theme/fonts';
 
 export interface SelectTokenProps {
   tokenInfos: IAssetToken[];
@@ -75,9 +76,9 @@ export default function SelectToken({ tokenInfos, noDataMessage, toAddress }: Se
               </TextM>
             </View>
             <View style={itemStyle.rightAmount}>
-              <TextL numberOfLines={1} ellipsizeMode={'tail'}>
+              <Text style={itemStyle.tokenAmount} numberOfLines={1} ellipsizeMode={'tail'}>
                 {userInfo.hideAssets ? '******' : formatTokenAmountShowWithDecimals(item.balance, item.decimals)}
-              </TextL>
+              </Text>
               {isMainnet && item.balanceInUsd && (
                 <TextM numberOfLines={1} style={DarkFontStyles.textBase2} ellipsizeMode={'tail'}>
                   {userInfo.hideAssets ? '******' : formatAmountUSDShow(item.balanceInUsd)}
@@ -149,6 +150,10 @@ const getStyles = makeStyles(theme => ({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+  },
+  tokenAmount: {
+    fontSize: pTd(16),
+    ...fonts.SGMediumFont,
   },
   rightAmount: {
     alignItems: 'flex-end',

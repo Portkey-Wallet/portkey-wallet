@@ -9,13 +9,13 @@ import React, {
   useState,
   ReactNode,
 } from 'react';
-import { StyleSheet, TouchableOpacity, Text, View, StyleProp, ViewStyle, ScrollView } from 'react-native';
+import { StyleSheet, TouchableOpacity, Text, View, StyleProp, ViewStyle } from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { pTd } from 'utils/unit';
 import { darkColors } from 'assets/theme';
 import { useThrottleCallback } from '@portkey-wallet/hooks';
-import { makeStyles, useTheme } from '@rneui/themed';
+import { makeStyles } from '@rneui/themed';
 import { TextM } from 'components/CommonText';
 import fonts from 'assets/theme/fonts';
 
@@ -26,6 +26,7 @@ export interface TabItemTypes {
 }
 
 export type CommonTopTabProps = {
+  labelRightNum?: number;
   swipeEnabled?: boolean;
   hasTabBarBorderRadius?: boolean;
   hasBottomBorder?: boolean;
@@ -43,6 +44,7 @@ const Tab = createMaterialTopTabNavigator();
 
 const CommonTopTab: React.FC<CommonTopTabProps> = props => {
   const {
+    labelRightNum,
     tabList,
     initialRouteName,
     hasTabBarBorderRadius,
@@ -68,6 +70,7 @@ const CommonTopTab: React.FC<CommonTopTabProps> = props => {
       tabBar={prop => (
         <CustomizedTopTabBar
           {...prop}
+          labelRightNum={labelRightNum}
           isBlockTab={isBlockTab}
           hasTabBarBorderRadius={hasTabBarBorderRadius}
           hasBottomBorder={hasBottomBorder}
@@ -75,7 +78,6 @@ const CommonTopTab: React.FC<CommonTopTabProps> = props => {
           onTabChange={onTabChange}
           ref={tabBarRef}
           suffixIconDom={suffixIconDom}
-          swipeEnabled={swipeEnabled}
         />
       )}
       screenOptions={{
@@ -94,6 +96,7 @@ const CommonTopTab: React.FC<CommonTopTabProps> = props => {
 const CustomizedTopTabBar = forwardRef(
   (
     {
+      labelRightNum,
       state,
       descriptors,
       navigation,
@@ -102,9 +105,9 @@ const CustomizedTopTabBar = forwardRef(
       isBlockTab = false,
       containerStyle = {},
       suffixIconDom,
-      swipeEnabled = false,
       onTabChange,
     }: {
+      labelRightNum?: number;
       state: { routes: any[]; index: number };
       descriptors: any;
       navigation: any;
@@ -113,7 +116,6 @@ const CustomizedTopTabBar = forwardRef(
       isBlockTab?: boolean;
       containerStyle?: StyleProp<ViewStyle>;
       suffixIconDom?: ReactNode;
-      swipeEnabled?: boolean;
       onTabChange?: (name: string) => void;
     },
     ref,
@@ -136,63 +138,59 @@ const CustomizedTopTabBar = forwardRef(
       },
     }));
 
-    const { theme } = useTheme();
-
     return (
       <View style={[toolBarStyle.tabBarStyle, containerStyle]}>
-        <ScrollView horizontal={true} alwaysBounceHorizontal={false} scrollEnabled={swipeEnabled}>
-          <View
-            style={[
-              toolBarStyle.container,
-              hasBottomBorder ? styles.bottomBorder : {},
-              hasTabBarBorderRadius ? styles.radiusTarBarStyle : {},
-            ]}>
-            {state.routes.map((route, index) => {
-              const suffixPro = suffixList ? suffixList[index] : undefined;
-              const suffix = suffixPro || route.params?.suffix;
-              const { options } = descriptors[route.key];
-              const label =
-                options.tabBarLabel !== undefined
-                  ? options.tabBarLabel
-                  : options.title !== undefined
-                  ? options.title
-                  : route.name;
+        <View
+          style={[
+            toolBarStyle.container,
+            hasBottomBorder ? styles.bottomBorder : {},
+            hasTabBarBorderRadius ? styles.radiusTarBarStyle : {},
+          ]}>
+          {state.routes.map((route, index) => {
+            const suffixPro = suffixList ? suffixList[index] : undefined;
+            const suffix = suffixPro || route.params?.suffix;
+            const { options } = descriptors[route.key];
+            const label =
+              options.tabBarLabel !== undefined
+                ? options.tabBarLabel
+                : options.title !== undefined
+                ? options.title
+                : route.name;
 
-              const isFocused = state.index === index;
+            const isFocused = state.index === index;
 
-              return (
-                <TouchableOpacity
-                  testID={options.tabBarTestID}
-                  onPress={() => onPress(route.name, route.params)}
-                  disabled={isFocused}
-                  key={label}
+            return (
+              <TouchableOpacity
+                testID={options.tabBarTestID}
+                onPress={() => onPress(route.name, route.params)}
+                disabled={isFocused}
+                key={label}
+                style={[
+                  toolBarStyle.label,
+                  isBlockTab && toolBarStyle.blockTab,
+                  isBlockTab && isFocused && toolBarStyle.selectedBlockTab,
+                  isBlockTab
+                    ? { marginRight: index !== state.routes.length - 1 ? labelRightNum || pTd(10) : 0 }
+                    : { paddingRight: index !== state.routes.length - 1 ? labelRightNum || pTd(32) : 0 },
+                ]}>
+                <Text
                   style={[
-                    toolBarStyle.label,
-                    isBlockTab && toolBarStyle.blockTab,
-                    isBlockTab && isFocused && toolBarStyle.selectedBlockTab,
-                    isBlockTab
-                      ? { marginRight: index !== state.routes.length - 1 ? pTd(10) : 0 }
-                      : { paddingRight: index !== state.routes.length - 1 ? pTd(32) : 0 },
+                    toolBarStyle.labelText,
+                    {
+                      color: isFocused ? darkColors.textBase1 : darkColors.textBase2,
+                    },
                   ]}>
-                  <Text
-                    style={[
-                      toolBarStyle.labelText,
-                      {
-                        color: isFocused ? darkColors.textBase1 : darkColors.textBase2,
-                      },
-                    ]}>
-                    {label}
-                  </Text>
-                  {suffix && (
-                    <View style={styles.suffixWrap}>
-                      <TextM style={styles.suffixText}>{suffix}</TextM>
-                    </View>
-                  )}
-                </TouchableOpacity>
-              );
-            })}
-          </View>
-        </ScrollView>
+                  {label}
+                </Text>
+                {suffix && (
+                  <View style={styles.suffixWrap}>
+                    <TextM style={[styles.suffixText, isFocused && styles.suffixTextFocused]}>{suffix}</TextM>
+                  </View>
+                )}
+              </TouchableOpacity>
+            );
+          })}
+        </View>
         {suffixIconDom}
       </View>
     );
@@ -230,8 +228,11 @@ const getStyles = makeStyles(theme => ({
     borderRadius: pTd(4),
   },
   suffixText: {
-    color: theme.colors.textBase1,
+    color: theme.colors.textBase2,
     ...fonts.SGRegularFont,
+  },
+  suffixTextFocused: {
+    color: theme.colors.textBase1,
   },
 }));
 
@@ -248,7 +249,6 @@ const getToolBarStyle = makeStyles(theme => ({
     flexDirection: 'row',
     paddingHorizontal: pTd(16),
     height: pTd(54),
-    minWidth: screenWidth,
     alignItems: 'center',
   },
   label: { flexDirection: 'row', alignItems: 'center' },

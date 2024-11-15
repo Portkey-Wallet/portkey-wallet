@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import TokenSection from '../TokenSection';
 import NFTSection from '../NFTSection/index';
 import CommonTopTab from 'components/CommonTopTab';
@@ -13,6 +13,11 @@ import ModeChangeSelector from '../componets/ModeChangeSelector';
 import { useNFTSection } from '@portkey-wallet/hooks/hooks-ca';
 import navigationService from 'utils/navigationService';
 
+enum TabName {
+  Tokens = 'Tokens',
+  NFTs = 'NFTs',
+}
+
 const DashBoardTab: React.FC = () => {
   const { t } = useLanguage();
   const { totalRecordCount } = useAccountNFTCollectionInfo();
@@ -20,20 +25,33 @@ const DashBoardTab: React.FC = () => {
   const { nftSectionUiType, changeNFTSectionMode } = useNFTSection();
   const styles = getStyles();
 
+  const tabNameMap = useMemo(() => {
+    return {
+      [TabName.Tokens]: t(TabName.Tokens),
+      [TabName.NFTs]: t(TabName.NFTs),
+    };
+  }, [t]);
+
+  const [selectedTab, setSelectedTab] = useState<string>(tabNameMap[TabName.Tokens]);
+
+  const onTabChange = useCallback((name: string) => {
+    setSelectedTab(name);
+  }, []);
+
   const tabList = useMemo(() => {
     return [
       {
-        name: t('Tokens'),
+        name: tabNameMap[TabName.Tokens],
         tabItemDom: <TokenSection />,
         suffix: (totalDisplayCount || 0) + '',
       },
       {
-        name: t('NFTs'),
+        name: tabNameMap[TabName.NFTs],
         tabItemDom: <NFTSection />,
         suffix: (totalRecordCount || 0) + '',
       },
     ];
-  }, [t, totalDisplayCount, totalRecordCount]);
+  }, [tabNameMap, totalDisplayCount, totalRecordCount]);
   const modeList = useMemo(() => {
     return [
       {
@@ -86,7 +104,9 @@ const DashBoardTab: React.FC = () => {
       hasBottomBorder={false}
       tabList={tabList}
       tabContainerStyle={styles.tabContainerStyle}
-      suffixIconDom={suffixIconDom}
+      labelRightNum={pTd(16)}
+      suffixIconDom={selectedTab === tabNameMap[TabName.NFTs] ? suffixIconDom : null}
+      onTabChange={onTabChange}
     />
   );
 };

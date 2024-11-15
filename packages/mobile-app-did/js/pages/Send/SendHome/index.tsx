@@ -286,7 +286,9 @@ const SendHome: React.FC = () => {
         <SupportedExchangesCard />
         <View style={GStyles.height(pTd(24))} />
         <GeneralTips
-          content={`If you're not sending to an exchange, no worries! You can continue, and we'll send your assets through the aelf MainChain.`}
+          content={
+            "If you're not sending to an exchange, no worries! You can continue, and we'll send your assets through the aelf MainChain."
+          }
         />
       </View>
     );
@@ -359,22 +361,31 @@ const SendHome: React.FC = () => {
   });
 
   const Step1Dom = useMemo(() => {
-    if (step === 2) return null;
-    if (!warning[0]) return null;
+    if (step === 2) {
+      return null;
+    }
+    if (!warning[0]) {
+      return null;
+    }
     if (
       warning[0] === WarningKey.CROSS_CHAIN ||
       warning[0] === WarningKey.INVALID_ADDRESS ||
       warning[0] === WarningKey.SAME_ADDRESS
-    )
+    ) {
       return JustWarningOrErrorDom;
+    }
 
-    if (warning[0] === WarningKey.DAPP_CHAIN_TO_NO_AFFIX_ADDRESS_ELF && assetInfo.symbol === defaultToken.symbol)
+    if (warning[0] === WarningKey.DAPP_CHAIN_TO_NO_AFFIX_ADDRESS_ELF && assetInfo.symbol === defaultToken.symbol) {
       return DappChainToNoAffixDom;
+    }
 
-    if (warning[0] === WarningKey.MAIN_CHAIN_TO_NO_AFFIX_ADDRESS_ELF && assetInfo.symbol === defaultToken.symbol)
+    if (warning[0] === WarningKey.MAIN_CHAIN_TO_NO_AFFIX_ADDRESS_ELF && assetInfo.symbol === defaultToken.symbol) {
       return MainChainToNoAffixDom;
+    }
 
-    if (warning[0] === WarningKey.MAKE_SURE_SUPPORT_PLATFORM) return ETransferOrEBridgeDom;
+    if (warning[0] === WarningKey.MAKE_SURE_SUPPORT_PLATFORM) {
+      return ETransferOrEBridgeDom;
+    }
 
     return null;
   }, [
@@ -406,8 +417,12 @@ const SendHome: React.FC = () => {
   // }, [enableEtransfer, isValidOtherChainAddress, selectedToContact?.address]);
 
   const previewDisable = useMemo(() => {
-    if (!selectedToContact?.address) return true;
-    if (!isValidAmount(sendNumber)) return true;
+    if (!selectedToContact?.address) {
+      return true;
+    }
+    if (!isValidAmount(sendNumber)) {
+      return true;
+    }
     return false;
   }, [selectedToContact?.address, sendNumber]);
 
@@ -974,7 +989,9 @@ const SendHome: React.FC = () => {
           });
           const tmpNetwork = data?.networkList?.find((ele: any) => ele.network === i.network);
 
-          if (!tmpNetwork) throw 'not supported';
+          if (!tmpNetwork) {
+            throw 'not supported';
+          }
           setTargetNetwork(tmpNetwork);
           setSelectedToContact({ name: i?.name, address: i.address || i.addressInfo?.address } as TToInfo);
           setStep(2);

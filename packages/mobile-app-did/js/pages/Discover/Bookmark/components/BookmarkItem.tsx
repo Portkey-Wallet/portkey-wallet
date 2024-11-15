@@ -10,8 +10,6 @@ import { pTd } from 'utils/unit';
 import DiscoverWebsiteImage from 'pages/Discover/components/DiscoverWebsiteImage';
 import TextWithProtocolIcon from 'components/TextWithProtocolIcon';
 import { darkColors } from 'assets/theme';
-import myEvents from 'utils/deviceEvent';
-import useEffectOnce from 'hooks/useEffectOnce';
 import { IBookmarkItem } from '@portkey-wallet/store/store-ca/discover/type';
 import { useDiscoverJumpWithNetWork } from 'hooks/discover';
 import { useGetCmsWebsiteInfo } from '@portkey-wallet/hooks/hooks-ca/cms';
@@ -27,11 +25,6 @@ export default memo(
     const swipeableRef = useRef<SwipeableItemImperativeRef>(null);
     const discoverJump = useDiscoverJumpWithNetWork();
     const { getCmsWebsiteInfoImageUrl, getCmsWebsiteInfoName } = useGetCmsWebsiteInfo();
-
-    useEffectOnce(() => {
-      const listener = myEvents.bookmark.closeSwipeable.addListener(() => swipeableRef.current?.close());
-      return () => listener.remove();
-    });
 
     const onClickJump = useCallback(() => {
       discoverJump({
@@ -78,7 +71,9 @@ export default memo(
             if (openDirection !== OpenDirection.NONE) {
               // Close all other open items
               [...itemRefs.current.entries()].forEach(([id, ref]) => {
-                if (id !== item.id && ref) ref.close();
+                if (id !== item.id && ref) {
+                  ref.close();
+                }
               });
             }
           }}

@@ -1,14 +1,11 @@
 import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import DraggableFlatList from 'react-native-draggable-flatlist';
 import { StyleSheet, View } from 'react-native';
-import { BookmarkProvider, setEdit, useBookmark } from '../context/bookmarksContext';
 import BookmarkItem from './BookmarkItem';
 import { darkColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
 import { RefreshControl } from 'react-native-gesture-handler';
 import NoDiscoverData from 'pages/Discover/components/NoDiscoverData';
-import myEvents from 'utils/deviceEvent';
-import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { useBookmarkList } from '@portkey-wallet/hooks/hooks-ca/discover';
 import { nextAnimation } from 'utils/animation';
 
@@ -35,7 +32,9 @@ function BookmarksSection({ onChange }: { onChange: (n: number) => void }, forwa
   const loadingRef = useRef(false);
   const getBookmarkList = useCallback(
     async (isInit: boolean) => {
-      if (loadingRef.current) return;
+      if (loadingRef.current) {
+        return;
+      }
       loadingRef.current = true;
 
       let { skipCount } = pagerRef.current;
@@ -120,8 +119,6 @@ function BookmarksSection({ onChange }: { onChange: (n: number) => void }, forwa
     nextAnimation();
   }, []);
 
-  const closeSwipeable = useLockCallback(() => myEvents.bookmark.closeSwipeable.emit(), []);
-
   useEffect(() => {
     onChange(list.length);
   }, [list, onChange]);
@@ -142,7 +139,6 @@ function BookmarksSection({ onChange }: { onChange: (n: number) => void }, forwa
           contentContainerStyle={[styles.flatListContent]}
           scrollEnabled
           data={list}
-          onTouchStart={closeSwipeable}
           keyExtractor={_item => _item.id}
           renderItem={props => <BookmarkItem onDelete={onItemDelete} itemRefs={itemRefs} {...props} />}
           refreshControl={

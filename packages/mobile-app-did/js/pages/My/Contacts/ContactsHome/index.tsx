@@ -16,7 +16,7 @@ const ContactsHome: React.FC = () => {
   return (
     <PageContainer
       leftCallback={() => navigationService.navigate('Tab')}
-      titleDom={t('Contacts')}
+      titleDom={'Address Book'}
       safeAreaColor={['black', 'black']}
       rightDom={
         <Touchable

@@ -168,7 +168,7 @@ export default function NFTSection() {
     [accountNFTList, caAddressInfos, fetchAccountNFTItem, openCollectionObj],
   );
   return (
-    <View style={styles.wrap}>
+    <View style={[styles.wrap, nftSectionUiType === 'NFTs' ? { paddingTop: pTd(8) } : {}]}>
       <FlatList
         key={nftSectionUiType}
         nestedScrollEnabled

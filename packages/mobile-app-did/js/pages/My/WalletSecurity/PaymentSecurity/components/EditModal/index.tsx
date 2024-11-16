@@ -18,6 +18,7 @@ import navigationService from 'utils/navigationService';
 import { isValidInteger } from '@portkey-wallet/utils/reg';
 import { ApprovalType } from '@portkey-wallet/types/verifier';
 import { makeStyles } from '@rneui/themed';
+import { KeyboardSafeArea } from 'components/KeyboardSafeArea';
 
 interface IProps {
   detail?: ITransferLimitItem | undefined;
@@ -53,7 +54,9 @@ const EditModal: React.FC<IProps> = ({ detail }: IProps) => {
       ...INIT_NONE_ERROR,
     });
     setEditInfo(pre => {
-      if (!pre) return undefined;
+      if (!pre) {
+        return undefined;
+      }
       return {
         ...pre,
         singleLimit: value,
@@ -65,7 +68,9 @@ const EditModal: React.FC<IProps> = ({ detail }: IProps) => {
       ...INIT_NONE_ERROR,
     });
     setEditInfo(pre => {
-      if (!pre) return undefined;
+      if (!pre) {
+        return undefined;
+      }
       return {
         ...pre,
         dailyLimit: value,
@@ -74,35 +79,39 @@ const EditModal: React.FC<IProps> = ({ detail }: IProps) => {
   }, []);
 
   const save = useCallback(() => {
-    if (!editInfo) return;
+    if (!editInfo) {
+      return;
+    }
     let isError = false;
 
-    if (editInfo.restricted) {
-      if (!isValidInteger(editInfo.singleLimit)) {
-        setSingleLimitError({
-          ...INIT_HAS_ERROR,
-          errorMsg: 'Please enter a positive whole number',
-        });
-        isError = true;
-      }
-      if (!isValidInteger(editInfo.dailyLimit)) {
-        setDailyLimitError({
-          ...INIT_HAS_ERROR,
-          errorMsg: 'Please enter a positive whole number',
-        });
-        isError = true;
-      }
-
-      if (!isError && Number(editInfo.singleLimit) > Number(editInfo.dailyLimit)) {
-        setSingleLimitError({
-          ...INIT_HAS_ERROR,
-          errorMsg: 'Cannot exceed the daily limit',
-        });
-        isError = true;
-      }
+    // if (editInfo.restricted) {
+    if (!isValidInteger(editInfo.singleLimit)) {
+      setSingleLimitError({
+        ...INIT_HAS_ERROR,
+        errorMsg: 'Please enter a positive whole number',
+      });
+      isError = true;
+    }
+    if (!isValidInteger(editInfo.dailyLimit)) {
+      setDailyLimitError({
+        ...INIT_HAS_ERROR,
+        errorMsg: 'Please enter a positive whole number',
+      });
+      isError = true;
     }
 
-    if (isError) return;
+    if (!isError && Number(editInfo.singleLimit) > Number(editInfo.dailyLimit)) {
+      setSingleLimitError({
+        ...INIT_HAS_ERROR,
+        errorMsg: 'Cannot exceed the daily limit',
+      });
+      isError = true;
+    }
+    // }
+
+    if (isError) {
+      return;
+    }
     navigationService.navigate('GuardianApproval', {
       approvalType: ApprovalType.modifyTransferLimit,
       transferLimitDetail: {
@@ -120,51 +129,53 @@ const EditModal: React.FC<IProps> = ({ detail }: IProps) => {
 
   return (
     <View>
-      <ModalBody title={t(`${detail?.restricted ? 'Edit' : 'Set'} transaction limits`)} modalBodyType="bottom">
-        <View style={pageStyles.container}>
-          <TextM style={pageStyles.title}>{t('Limit per Transaction')}</TextM>
-          <CommonInput
-            type="general"
-            keyboardType={isIOS ? 'number-pad' : 'numeric'}
-            value={editInfo?.singleLimit || ''}
-            rightIcon={
-              <View style={pageStyles.rightIconContainer}>
-                <Touchable onPress={() => onSingleLimitInput('')}>
-                  <Svg icon="clear4" />
-                </Touchable>
-                <TextM>{detail?.symbol}</TextM>
-              </View>
-            }
-            onChangeText={onSingleLimitInput}
-            maxLength={maxLength}
-            errorMessage={singleLimitError.isError ? singleLimitError.errorMsg : ''}
-          />
-          <TextM style={pageStyles.title}>{t('Daily limit')}</TextM>
-          <CommonInput
-            type="general"
-            rightIcon={
-              <View style={pageStyles.rightIconContainer}>
-                <Touchable onPress={() => onDailyLimitInput('')}>
-                  <Svg icon="clear4" />
-                </Touchable>
-                <TextM>{detail?.symbol}</TextM>
-              </View>
-            }
-            keyboardType={isIOS ? 'number-pad' : 'numeric'}
-            value={editInfo?.dailyLimit || ''}
-            onChangeText={onDailyLimitInput}
-            maxLength={maxLength}
-            errorMessage={dailyLimitError.isError ? dailyLimitError.errorMsg : ''}
-          />
-          <CommonButton type="primary" style={pageStyles.button} onPress={save}>
-            Verify with guardian
-          </CommonButton>
-        </View>
-      </ModalBody>
+      <KeyboardSafeArea>
+        <ModalBody title={t(`${detail?.restricted ? 'Edit' : 'Set'} transaction limits`)} modalBodyType="bottom">
+          <View style={pageStyles.container}>
+            <TextM style={pageStyles.title}>{t('Limit per Transaction')}</TextM>
+            <CommonInput
+              type="general"
+              keyboardType={isIOS ? 'number-pad' : 'numeric'}
+              value={editInfo?.singleLimit || ''}
+              rightIcon={
+                <View style={pageStyles.rightIconContainer}>
+                  <Touchable onPress={() => onSingleLimitInput('')} style={{ marginRight: pTd(8) }}>
+                    <Svg icon="clear4" size={pTd(16)} />
+                  </Touchable>
+                  <TextM>{detail?.symbol}</TextM>
+                </View>
+              }
+              onChangeText={onSingleLimitInput}
+              maxLength={maxLength}
+              errorMessage={singleLimitError.isError ? singleLimitError.errorMsg : ''}
+            />
+            <TextM style={pageStyles.title}>{t('Daily limit')}</TextM>
+            <CommonInput
+              type="general"
+              rightIcon={
+                <View style={pageStyles.rightIconContainer}>
+                  <Touchable onPress={() => onDailyLimitInput('')} style={{ marginRight: pTd(8) }}>
+                    <Svg icon="clear4" size={pTd(16)} />
+                  </Touchable>
+                  <TextM>{detail?.symbol}</TextM>
+                </View>
+              }
+              keyboardType={isIOS ? 'number-pad' : 'numeric'}
+              value={editInfo?.dailyLimit || ''}
+              onChangeText={onDailyLimitInput}
+              maxLength={maxLength}
+              errorMessage={dailyLimitError.isError ? dailyLimitError.errorMsg : ''}
+            />
+            <CommonButton type="primary" style={pageStyles.button} onPress={save}>
+              Verify with guardian
+            </CommonButton>
+          </View>
+        </ModalBody>
+      </KeyboardSafeArea>
     </View>
   );
 };
-const getStyles = makeStyles(theme => ({
+const getStyles = makeStyles(() => ({
   container: {
     paddingVertical: pTd(16),
     paddingHorizontal: pTd(16),

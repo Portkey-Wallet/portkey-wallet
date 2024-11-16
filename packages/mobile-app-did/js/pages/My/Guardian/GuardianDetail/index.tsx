@@ -41,6 +41,15 @@ export default function GuardianDetail() {
   useEffect(() => {
     setGuardian(guardianRouter);
   }, [guardianRouter]);
+  const loginGuardians = useMemo(
+    () => (userGuardiansList || []).filter(item => item.isLoginAccount),
+    [userGuardiansList],
+  );
+
+  const isShowEditButton = useMemo(() => {
+    // only 1 login guardians
+    return !(guardian?.isLoginAccount && loginGuardians.length <= 1);
+  }, [loginGuardians, guardian]);
 
   useEffect(() => {
     const listener = myEvents.setLoginAccount.addListener(({ guardian: _guardian }: { guardian: UserGuardianItem }) => {
@@ -191,7 +200,7 @@ export default function GuardianDetail() {
           </View>
         )}
       </View>
-      {userGuardiansList && userGuardiansList.length > 1 && (
+      {isShowEditButton && (
         <CommonButton
           type="primary"
           onPress={() => {

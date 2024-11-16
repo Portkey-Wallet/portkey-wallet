@@ -59,7 +59,7 @@ const GuardianThirdAccount = ({
             </Touchable>
           </View>
           {guardianAccountError.isError && (
-            <TextS style={styles.thirdPartAccountError}>{guardianAccountError.errorMsg}</TextS>
+            <TextL style={styles.thirdPartAccountError}>{guardianAccountError.errorMsg}</TextL>
           )}
         </View>
       ) : (
@@ -100,23 +100,23 @@ const getStyles = makeStyles(theme => ({
   },
   thirdPartAccount: {
     justifyContent: 'center',
-  },
-  thirdPartAccountWrap: {
-    ...GStyles.paddingArg(12, 16),
-    marginBottom: pTd(24),
     borderRadius: pTd(8),
-    backgroundColor: theme.colors.bgBase1,
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: theme.colors.borderBase1,
+    backgroundColor: theme.colors.bgBase1,
+    position: 'relative',
+    ...GStyles.paddingArg(12, 16),
+  },
+  thirdPartAccountWrap: {
+    marginBottom: pTd(24),
   },
   thirdPartAccountError: {
-    marginTop: pTd(4),
-    marginLeft: pTd(8),
-    color: theme.colors.error,
+    paddingTop: pTd(8),
+    color: theme.colors.textDanger2,
   },
   iconWrap: {
     zIndex: 100,
     position: 'absolute',
-    right: pTd(0),
+    right: pTd(16),
   },
 }));

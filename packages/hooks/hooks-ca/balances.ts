@@ -3,8 +3,8 @@ import { useMemo, useCallback } from 'react';
 import { useAppCASelector } from './index';
 import { useAssets } from './assets';
 import { ChainId } from '@portkey-wallet/types';
-import { useAppCommonDispatch } from '../';
-import { fetchTargetTokenBalanceAsync } from '@portkey-wallet/store/store-ca/assets/slice';
+import { useAppCommonDispatch, useEffectOnce } from '../';
+import { fetchCryptoBoxAssetAsync, fetchTargetTokenBalanceAsync } from '@portkey-wallet/store/store-ca/assets/slice';
 import { useCaAddressInfoList } from './wallet';
 
 export function useAllBalances() {
@@ -12,6 +12,16 @@ export function useAllBalances() {
 }
 
 export function useAccountCryptoBoxAssetList() {
+  const dispatch = useAppCommonDispatch();
+  const caAddressInfos = useCaAddressInfoList();
+  useEffectOnce(() => {
+    dispatch(
+      fetchCryptoBoxAssetAsync({
+        caAddressInfos,
+        keyword: '',
+      }),
+    );
+  });
   return useAppCASelector(state => state.assets?.accountCryptoBoxAssets.accountAssetsList);
 }
 

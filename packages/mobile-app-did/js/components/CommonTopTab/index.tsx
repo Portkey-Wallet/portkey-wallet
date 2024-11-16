@@ -9,13 +9,13 @@ import React, {
   useState,
   ReactNode,
 } from 'react';
-import { StyleSheet, TouchableOpacity, Text, View, StyleProp, ViewStyle, ScrollView } from 'react-native';
+import { StyleSheet, TouchableOpacity, Text, View, StyleProp, ViewStyle } from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { pTd } from 'utils/unit';
 import { darkColors } from 'assets/theme';
 import { useThrottleCallback } from '@portkey-wallet/hooks';
-import { makeStyles, useTheme } from '@rneui/themed';
+import { makeStyles } from '@rneui/themed';
 import { TextM } from 'components/CommonText';
 import fonts from 'assets/theme/fonts';
 
@@ -26,6 +26,7 @@ export interface TabItemTypes {
 }
 
 export type CommonTopTabProps = {
+  labelRightNum?: number;
   swipeEnabled?: boolean;
   hasTabBarBorderRadius?: boolean;
   hasBottomBorder?: boolean;
@@ -37,12 +38,14 @@ export type CommonTopTabProps = {
   expandView?: ReactNode;
   onTabChange?: (name: string) => void;
   suffixIconDom?: ReactNode;
+  suffixIconDomVisible?: boolean;
 };
 
 const Tab = createMaterialTopTabNavigator();
 
 const CommonTopTab: React.FC<CommonTopTabProps> = props => {
   const {
+    labelRightNum,
     tabList,
     initialRouteName,
     hasTabBarBorderRadius,
@@ -50,27 +53,32 @@ const CommonTopTab: React.FC<CommonTopTabProps> = props => {
     hasBottomBorder = true,
     tabContainerStyle = {},
     isBlockTab,
-    expandView,
     onTabChange,
     suffixIconDom,
+    suffixIconDomVisible,
   } = props;
 
-  const tabBarRef = useRef(null);
+  const tabBarRef = useRef<any>(null);
   useEffect(() => {
     if (tabBarRef.current) {
       tabBarRef.current.changeSuffix(tabList.map(item => item.suffix));
     }
   }, [tabBarRef, tabList]);
-
+  useEffect(() => {
+    if (tabBarRef.current) {
+      tabBarRef.current.changeSuffixIconDomVisible(suffixIconDomVisible);
+    }
+  }, [tabBarRef, suffixIconDomVisible]);
   return (
     <Tab.Navigator
       initialRouteName={initialRouteName}
       initialLayout={{ width: screenWidth }}
+      // eslint-disable-next-line react/no-unstable-nested-components
       tabBar={prop => (
         <CustomizedTopTabBar
           {...prop}
+          labelRightNum={labelRightNum}
           isBlockTab={isBlockTab}
-          expandView={expandView}
           hasTabBarBorderRadius={hasTabBarBorderRadius}
           hasBottomBorder={hasBottomBorder}
           containerStyle={tabContainerStyle}
@@ -103,9 +111,9 @@ const CustomizedTopTabBar = forwardRef(
       isBlockTab = false,
       containerStyle = {},
       suffixIconDom,
-      expandView,
       onTabChange,
     }: {
+      labelRightNum?: number;
       state: { routes: any[]; index: number };
       descriptors: any;
       navigation: any;
@@ -114,7 +122,6 @@ const CustomizedTopTabBar = forwardRef(
       isBlockTab?: boolean;
       containerStyle?: StyleProp<ViewStyle>;
       suffixIconDom?: ReactNode;
-      expandView?: ReactNode;
       onTabChange?: (name: string) => void;
     },
     ref,
@@ -130,73 +137,73 @@ const CustomizedTopTabBar = forwardRef(
     const toolBarStyle = getToolBarStyle();
     const styles = getStyles();
     const [suffixList, setSuffixList] = useState();
+    const [suffixIconDomVisible, setSuffixIconDomVisible] = useState<boolean>();
 
     useImperativeHandle(ref, () => ({
       changeSuffix(updateSuffixList: any) {
         setSuffixList(updateSuffixList);
       },
+      changeSuffixIconDomVisible(visible: boolean) {
+        setSuffixIconDomVisible(visible);
+      },
     }));
-
-    const { theme } = useTheme();
-
+    useEffect(() => {
+      const name = state.routes[state.index].name;
+      onTabChange?.(name);
+    }, [onTabChange, state]);
     return (
-      <View style={toolBarStyle.tabBarStyle}>
-        <ScrollView horizontal={true} alwaysBounceHorizontal={false}>
-          <View
-            style={[
-              toolBarStyle.container,
-              containerStyle,
-              hasBottomBorder ? styles.bottomBorder : {},
-              hasTabBarBorderRadius ? styles.radiusTarBarStyle : {},
-            ]}>
-            {state.routes.map((route, index) => {
-              const suffixPro = suffixList ? suffixList[index] : undefined;
-              const suffix = suffixPro || route.params?.suffix;
-              const { options } = descriptors[route.key];
-              const label =
-                options.tabBarLabel !== undefined
-                  ? options.tabBarLabel
-                  : options.title !== undefined
-                  ? options.title
-                  : route.name;
+      <View style={[toolBarStyle.tabBarStyle, containerStyle]}>
+        <View
+          style={[
+            toolBarStyle.container,
+            hasBottomBorder ? styles.bottomBorder : {},
+            hasTabBarBorderRadius ? styles.radiusTarBarStyle : {},
+          ]}>
+          {state.routes.map((route, index) => {
+            const suffixPro = suffixList ? suffixList[index] : undefined;
+            const suffix = suffixPro || route.params?.suffix;
+            const { options } = descriptors[route.key];
+            const label =
+              options.tabBarLabel !== undefined
+                ? options.tabBarLabel
+                : options.title !== undefined
+                ? options.title
+                : route.name;
 
-              const isFocused = state.index === index;
-
-              return (
-                <TouchableOpacity
-                  testID={options.tabBarTestID}
-                  onPress={() => onPress(route.name, route.params)}
-                  disabled={isFocused}
-                  key={label}
+            const isFocused = state.index === index;
+            return (
+              <TouchableOpacity
+                testID={options.tabBarTestID}
+                onPress={() => onPress(route.name, route.params)}
+                disabled={isFocused}
+                key={label}
+                style={[
+                  toolBarStyle.label,
+                  isBlockTab && toolBarStyle.blockTab,
+                  isBlockTab && isFocused && toolBarStyle.selectedBlockTab,
+                  isBlockTab
+                    ? { marginRight: index !== state.routes.length - 1 ? pTd(10) : 0 }
+                    : { paddingRight: index !== state.routes.length - 1 ? (suffix ? pTd(16) : pTd(32)) : 0 },
+                ]}>
+                <Text
                   style={[
-                    toolBarStyle.label,
-                    isBlockTab && toolBarStyle.blockTab,
-                    isBlockTab && isFocused && toolBarStyle.selectedBlockTab,
-                    isBlockTab
-                      ? { marginRight: index !== state.routes.length - 1 ? pTd(10) : 0 }
-                      : { paddingRight: index !== state.routes.length - 1 ? pTd(32) : 0 },
+                    toolBarStyle.labelText,
+                    {
+                      color: isFocused ? darkColors.textBase1 : darkColors.textBase2,
+                    },
                   ]}>
-                  <Text
-                    style={[
-                      toolBarStyle.labelText,
-                      {
-                        color: isFocused ? darkColors.textBase1 : darkColors.textBase2,
-                      },
-                    ]}>
-                    {label}
-                  </Text>
-                  {suffix && (
-                    <View style={styles.amountIcon}>
-                      <TextM style={styles.amount}>{suffix}</TextM>
-                    </View>
-                  )}
-                </TouchableOpacity>
-              );
-            })}
-            {suffixIconDom}
-          </View>
-        </ScrollView>
-        {expandView}
+                  {label}
+                </Text>
+                {suffix && (
+                  <View style={styles.suffixWrap}>
+                    <TextM style={[styles.suffixText, isFocused && styles.suffixTextFocused]}>{suffix}</TextM>
+                  </View>
+                )}
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+        {suffixIconDomVisible && suffixIconDom}
       </View>
     );
   },
@@ -225,15 +232,19 @@ const getStyles = makeStyles(theme => ({
     textTransform: 'none',
     fontSize: pTd(14),
   },
-  amountIcon: {
+  suffixWrap: {
     paddingVertical: pTd(4),
     paddingHorizontal: pTd(6),
+    borderRadius: pTd(4),
     marginLeft: pTd(4),
     backgroundColor: theme.colors.bgNeutral2,
   },
-  amount: {
-    color: theme.colors.textBase1,
+  suffixText: {
+    color: theme.colors.textBase2,
     ...fonts.SGRegularFont,
+  },
+  suffixTextFocused: {
+    color: theme.colors.textBase1,
   },
 }));
 
@@ -242,14 +253,15 @@ const getToolBarStyle = makeStyles(theme => ({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    paddingRight: pTd(16),
     height: pTd(54),
+    backgroundColor: theme.colors.bgBase1,
   },
   container: {
     flexDirection: 'row',
     paddingHorizontal: pTd(16),
     height: pTd(54),
     alignItems: 'center',
-    backgroundColor: theme.colors.bgBase1,
   },
   label: { flexDirection: 'row', alignItems: 'center' },
   blockTab: {

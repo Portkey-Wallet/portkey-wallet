@@ -9,7 +9,6 @@ import MenuItem from '../components/MenuItem';
 import { useAppDispatch } from 'store/hooks';
 import { getCaHolderInfoAsync } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { StyleSheet } from 'react-native';
-import WalletMenuItem from '../components/WalletMenuItem';
 
 interface SecurityProps {
   name?: string;
@@ -68,6 +67,5 @@ const pageStyles = StyleSheet.create({
     height: pTd(63),
     borderRadius: 0,
     paddingHorizontal: pTd(0),
-    borderBottomWidth: StyleSheet.hairlineWidth,
   },
 });

@@ -28,7 +28,7 @@ type RouterParams = {
 function TipText({ email }: { email?: string }) {
   const [first, last] = useMemo(() => {
     return [
-      `Your assigned Guardian Verifier, has sent a verification email to `,
+      'Your assigned Guardian Verifier, has sent a verification email to ',
       `. Please enter the ${DIGIT_CODE.length}-digit code from the email to continue.`,
     ];
   }, []);
@@ -67,7 +67,7 @@ export default function VerifierEmail() {
         if (rst.verifiedResult) {
           CommonToast.success('Successfully');
           myEvents.updateSecondaryEmail.emit({ email });
-          navigationService.navigate('WalletSecurity');
+          navigationService.goBack();
         } else {
           throw 'Invalid code';
         }

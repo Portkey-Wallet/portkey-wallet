@@ -5,27 +5,23 @@ import OutlinedButton from 'components/OutlinedButton';
 import { useLanguage } from 'i18n/hooks';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
-import { ReceivePageTabType } from 'pages/Receive/types';
 
 interface SendButtonType {
-  themeType?: 'dashBoard' | 'innerPage';
   wrapStyle?: StyleProp<ViewProps>;
   tokenInfo?: TokenItemShowType;
 }
 
 const BuyButton = (props: SendButtonType) => {
-  const { themeType = 'dashBoard', tokenInfo } = props;
+  const { tokenInfo } = props;
   const isMainnet = useIsMainnet();
   const { t } = useLanguage();
 
   const onPressButton = useCallback(() => {
-    if (!isMainnet) return;
-    if (themeType === 'innerPage') {
-      navigationService.navigate('Receive', Object.assign({}, tokenInfo, { targetScene: ReceivePageTabType.BUY }));
-    } else {
-      navigationService.navigate('RampEntry', { symbol: tokenInfo ? tokenInfo.symbol : 'ELF' });
+    if (!isMainnet) {
+      return;
     }
-  }, [isMainnet, themeType, tokenInfo]);
+    navigationService.navigate('RampEntry', { symbol: tokenInfo ? tokenInfo.symbol : 'ELF' });
+  }, [isMainnet, tokenInfo]);
 
   return <OutlinedButton iconName="buy" title={t('Buy')} onPress={onPressButton} />;
 };

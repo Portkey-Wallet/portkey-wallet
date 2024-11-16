@@ -48,8 +48,8 @@ export const getPageStyles = makeStyles(theme => ({
     marginTop: pTd(8),
   },
   errorTips: {
-    color: theme.colors.error,
-    marginLeft: pTd(8),
+    color: theme.colors.textDanger2,
+    paddingTop: pTd(8),
   },
   warningTips: {
     color: theme.colors.textDanger2,

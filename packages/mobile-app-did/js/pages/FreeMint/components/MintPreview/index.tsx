@@ -11,7 +11,7 @@ import NFTAvatar from 'components/NFTAvatar';
 import { useLanguage } from 'i18n/hooks';
 import { EditConfig } from 'pages/FreeMint/components/MintEdit';
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, ScrollView } from 'react-native';
 import { pTd } from 'utils/unit';
 import { FreeMintStep } from '../FreeMintModal';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
@@ -33,7 +33,7 @@ const MintPreview = (props: MintPreviewProps) => {
   const { mintInfo, editInfo, onMintPress } = props;
 
   return (
-    <>
+    <ScrollView>
       <View style={[styles.topSection, !editInfo?.description && GStyles.itemCenter]}>
         <NFTAvatar disabled nftSize={pTd(280)} data={{ imageUrl: editInfo?.imageUri || '' }} style={styles.nftAvatar} />
         <View style={styles.nftInfo}>
@@ -88,7 +88,7 @@ const MintPreview = (props: MintPreviewProps) => {
                 styles.rightValue,
                 fonts.SGMediumFont,
               ]}>{`${mintInfo?.transactionFee} ${defaultToken.symbol}`}</TextL>
-            <TextM style={[FontStyles.neutralTertiaryText, styles.feeSub]}>{`$ 0`}</TextM>
+            <TextM style={[FontStyles.neutralTertiaryText, styles.feeSub]}>{'$ 0'}</TextM>
           </View>
         </View>
       </View>
@@ -112,7 +112,7 @@ const MintPreview = (props: MintPreviewProps) => {
           },
         ]}
       />
-    </>
+    </ScrollView>
   );
 };
 

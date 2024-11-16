@@ -33,6 +33,7 @@ export default function GiftHistory() {
         nestedScrollEnabled
         data={!loading ? cryptoGiftHistories : emptyData}
         renderItem={renderItem}
+        // eslint-disable-next-line react/no-unstable-nested-components
         ListEmptyComponent={() => (
           <NoData style={styles.noData} topDistance={pTd(80)} message={error || 'No gifts sent yet'} noPic />
         )}

@@ -43,7 +43,7 @@ const CommonPreviewContainer: React.FC<ICommonPreviewContainerProps> = ({
 
   return (
     <PageContainer
-      titleDom={t(`Preview`)}
+      titleDom={t('Preview')}
       safeAreaColor={['black', 'black']}
       containerStyles={styles.pageWrap}
       isLeftBackDisabled={isLoading}

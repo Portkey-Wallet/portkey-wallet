@@ -146,6 +146,7 @@ const SelectToken = () => {
             myEvents.nestScrollViewScrolledTop.emit();
           }
         }}
+        // eslint-disable-next-line react/no-unstable-nested-components
         ListHeaderComponent={() => {
           return (
             <Touchable

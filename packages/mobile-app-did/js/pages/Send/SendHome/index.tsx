@@ -562,6 +562,8 @@ const SendHome: React.FC = () => {
       }
     }
     try {
+      Loading.show();
+
       // cross chain interception
       if (isAELFCross) {
         const sendChainId = selectedToContact.chainId || (getChainIdByAddress(selectedToContact.address) as ChainId);

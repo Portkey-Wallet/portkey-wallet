@@ -98,7 +98,7 @@ const SendHome: React.FC = () => {
   const [targetNetwork, setTargetNetwork] = useState<INetworkItem>();
   const [recentList, setRecentList] = useState<TFormattedRecentItem[]>();
   const [savedList, setSavedList] = useState<TFormattedRecentItem[]>();
-  const { userId: myUserId } = useCurrentUserInfo();
+  const caAddressInfoList = useCaAddressInfoList();
 
   const recommendETransfer = useMemo(
     () => targetNetwork?.serviceList?.find(ele => ele?.serviceName?.toLocaleLowerCase()?.includes('transfer')),
@@ -974,10 +974,12 @@ const SendHome: React.FC = () => {
     async (i: TFormattedRecentItem) => {
       console.log('onPressTabItem', i);
       try {
-        if (i.userId === myUserId) {
+        if (i.addressInfo?.address === caAddressInfoList[0].caAddress) {
+          // anther address
           setSelectedToContact({
             name: '',
             address: addressFormat(i.addressInfo?.address, i.addressInfo?.chainId),
+            chainId: i.addressInfo?.chainId,
           } as TToInfo);
           setStep(2);
         } else if (i.network !== 'aelf' && i.addressInfo?.network !== 'aelf') {
@@ -987,6 +989,8 @@ const SendHome: React.FC = () => {
             chainId: assetInfo?.chainId || 'AELF',
             toAddress: i?.addressInfo?.address || '',
           });
+
+          console.log('getSendNetworkList', data, i);
           const tmpNetwork = data?.networkList?.find((ele: any) => ele.network === i.network);
 
           if (!tmpNetwork) {
@@ -996,7 +1000,11 @@ const SendHome: React.FC = () => {
           setSelectedToContact({ name: i?.name, address: i.address || i.addressInfo?.address } as TToInfo);
           setStep(2);
         } else {
-          setSelectedToContact({ name: i?.name, address: i.address || i.addressInfo?.address } as TToInfo);
+          setSelectedToContact({
+            name: i?.name,
+            address: i.address || i.addressInfo?.address,
+            chainId: i.chainId || i.addressInfo?.chainId,
+          } as TToInfo);
           setStep(2);
         }
       } catch (error) {
@@ -1005,7 +1013,7 @@ const SendHome: React.FC = () => {
         Loading.hide();
       }
     },
-    [assetInfo?.chainId, assetInfo?.symbol, myUserId],
+    [assetInfo?.chainId, assetInfo?.symbol, caAddressInfoList],
   );
 
   return (

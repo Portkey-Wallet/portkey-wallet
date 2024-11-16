@@ -1,5 +1,5 @@
 import React, { memo, ReactNode, useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 import { makeStyles } from '@rneui/themed';
 import { pTd } from 'utils/unit';
 import { TextL, TextM, TextS } from 'components/CommonText';
@@ -88,7 +88,7 @@ const getStyles = makeStyles(theme => ({
     paddingHorizontal: pTd(16),
     borderRadius: pTd(8),
     borderColor: theme.colors.borderBase1,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: pTd(1),
   },
   titleTextStyle: {
     flex: 1,

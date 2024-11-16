@@ -13,6 +13,7 @@ import { useLanguage } from 'i18n/hooks';
 import AmountNFT from '../AmountNFT';
 import NFTInfo from '../NFTInfo';
 import CommonButton from 'components/CommonButton';
+import myEvents from 'utils/deviceEvent';
 import {
   useCaAddressInfoList,
   useCurrentUserInfo,
@@ -358,6 +359,15 @@ const SendHome: React.FC = () => {
 
   useEffectOnce(() => {
     initSavedList();
+  });
+  useEffectOnce(() => {
+    const listener = myEvents.updateSendAddressList.addListener(() => {
+      // todo:
+      console.log('update list');
+    });
+    return () => {
+      listener.remove();
+    };
   });
 
   const Step1Dom = useMemo(() => {

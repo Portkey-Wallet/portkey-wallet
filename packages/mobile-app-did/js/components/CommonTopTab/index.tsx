@@ -195,7 +195,7 @@ const CustomizedTopTabBar = forwardRef(
                   {label}
                 </Text>
                 {suffix && (
-                  <View style={styles.amountIcon}>
+                  <View style={styles.suffixWrap}>
                     <TextM style={[styles.suffixText, isFocused && styles.suffixTextFocused]}>{suffix}</TextM>
                   </View>
                 )}

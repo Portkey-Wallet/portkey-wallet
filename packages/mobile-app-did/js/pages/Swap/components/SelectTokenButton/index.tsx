@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useMemo, useState } from 'react';
-import { Text, FlatList, View } from 'react-native';
+import { Text, FlatList, View, Keyboard } from 'react-native';
 import OverlayModal from 'components/OverlayModal';
 import { ModalBody } from 'components/ModalBody';
 import CommonInput from 'components/CommonInput';
@@ -36,7 +36,9 @@ const SelectTokenContent: React.FC<ISelectTokenContentProps> = ({ title, onSelec
   const { list } = useAwakenTokenList();
 
   const filterList = useMemo(() => {
-    if (keyword === '') return list;
+    if (keyword === '') {
+      return list;
+    }
     return list.filter(item => item.symbol.toLocaleUpperCase().includes(keyword.toLocaleUpperCase()));
   }, [keyword, list]);
 
@@ -89,15 +91,16 @@ const showSelectTokenModal = (props: ISelectTokenContentProps) => {
 const SelectTokenButton: React.FC<ISelectTokenButtonProps> = ({ style, modalTitle, token, onTokenChange }) => {
   const styles = getButtonStyles();
 
+  const onPress = useCallback(() => {
+    Keyboard.dismiss();
+    showSelectTokenModal({
+      title: modalTitle,
+      onSelect: onTokenChange,
+    });
+  }, [modalTitle, onTokenChange]);
+
   return (
-    <Touchable
-      style={[styles.selectTokenButton, style]}
-      onPress={() =>
-        showSelectTokenModal({
-          title: modalTitle,
-          onSelect: onTokenChange,
-        })
-      }>
+    <Touchable style={[styles.selectTokenButton, style]} onPress={onPress}>
       <View style={styles.iconWrap}>
         <CommonAvatar style={styles.tokenIcon} title={token?.symbol} avatarSize={pTd(25)} imageUrl={token?.imageUrl} />
         <CommonAvatar

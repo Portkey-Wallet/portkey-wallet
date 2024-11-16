@@ -97,6 +97,7 @@ const SelectModal = ({ title = '', avatar = '', selectPhoto, avatarList, photoUp
   // const { t } = useLanguage();
   // const [isFocused, setIsFocused] = useState<boolean>(false);
   const [selectKey, setSelectKey] = useState<string>('avatar');
+  const [icon, setIcon] = useState<string>(avatar);
 
   const [selectAvatarKey, setSelectAvatarKey] = useState<number | undefined>();
 
@@ -160,7 +161,7 @@ const SelectModal = ({ title = '', avatar = '', selectPhoto, avatarList, photoUp
             }}
             resizeMode="cover"
             source={{
-              uri: avatar,
+              uri: icon,
             }}
           />
         </View>
@@ -209,6 +210,8 @@ const SelectModal = ({ title = '', avatar = '', selectPhoto, avatarList, photoUp
               avatarList={avatarList}
               onChange={key => {
                 setSelectAvatarKey(key);
+                const item = avatarList[key];
+                setIcon(item);
               }}
               itemKey={selectAvatarKey}
             />

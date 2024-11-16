@@ -23,7 +23,6 @@ import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useKeyboardSafeArea } from 'components/KeyboardSafeArea';
 import { pTd } from 'utils/unit';
 import navigationService from 'utils/navigationService';
-import { isIOS } from '@portkey-wallet/utils/mobile/device';
 
 export type TLimitInfo = {
   tokenIn?: TCurrency;
@@ -372,8 +371,7 @@ const LimitEnter = () => {
     <View style={styles.limitEnterWrap}>
       <View
         style={
-          isRateInputting &&
-          isIOS && {
+          isRateInputting && {
             marginTop: value ? -1 * value : undefined,
             paddingBottom: value ? value : undefined,
           }

@@ -3,13 +3,22 @@ import { useKeyboard } from 'hooks/useKeyboardHeight';
 import React, { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { View } from 'react-native';
 import { ViewStyleType } from 'types/styles';
+import { pTd } from 'utils/unit';
 
 export type TKeyboardSafeAreaProps = {
   children?: ReactNode;
   bottomPad?: number;
+  gap?: number;
   containerStyle?: ViewStyleType;
+  mode?: 'default' | 'page';
 };
-export const KeyboardSafeArea = ({ children, bottomPad = 0, containerStyle }: TKeyboardSafeAreaProps) => {
+export const KeyboardSafeArea = ({
+  children,
+  bottomPad = 0,
+  containerStyle,
+  mode = 'default',
+  gap,
+}: TKeyboardSafeAreaProps) => {
   const viewRef = useRef<View>(null);
   const { keyboardHeight, isKeyboardOpened } = useKeyboard(0);
   const [viewPositionY, setViewPositionY] = useState(0);
@@ -18,7 +27,10 @@ export const KeyboardSafeArea = ({ children, bottomPad = 0, containerStyle }: TK
     requestAnimationFrame(() => {
       if (viewRef.current) {
         viewRef.current.measure?.((x, y, width, height, pageX, pageY) => {
-          if (pageY === undefined || height === undefined) return;
+          console.log('pageY', pageY, 'height', height, 'screenHeight', screenHeight);
+          if (pageY === undefined || height === undefined) {
+            return;
+          }
           setViewPositionY(pageY + height);
         });
       }
@@ -26,27 +38,57 @@ export const KeyboardSafeArea = ({ children, bottomPad = 0, containerStyle }: TK
   }, []);
 
   useEffect(() => {
+    if (mode === 'page') {
+      setTimeout(() => {
+        if (viewRef.current) {
+          viewRef.current.measure?.((x, y, width, height, pageX, pageY) => {
+            console.log('pageY', pageY, 'height', height, 'screenHeight', screenHeight);
+            if (pageY === undefined || height === undefined) {
+              return;
+            }
+            setViewPositionY(pageY + height);
+          });
+        }
+      }, 100);
+    }
+  }, [mode]);
+
+  useEffect(() => {
+    if (mode === 'page') {
+      return;
+    }
     setTimeout(() => {
       measureView();
     }, 100);
-  }, [measureView]);
+  }, [measureView, mode]);
 
   useEffect(() => {
-    if (!isKeyboardOpened) return;
+    if (mode === 'page') {
+      return;
+    }
+    if (!isKeyboardOpened) {
+      return;
+    }
     measureView();
-  }, [isKeyboardOpened, measureView]);
+  }, [isKeyboardOpened, measureView, mode]);
 
   const style = useMemo(() => {
-    if (!isKeyboardOpened) return undefined;
+    if (!isKeyboardOpened) {
+      return undefined;
+    }
     const keyboardPositionY = screenHeight - keyboardHeight;
-    if (viewPositionY <= keyboardPositionY) return undefined;
-
+    if (viewPositionY <= keyboardPositionY) {
+      return undefined;
+    }
+    // const v = keyboardHeight - (screenHeight - viewPositionY) + bottomPad;
     const value = viewPositionY - keyboardPositionY + bottomPad;
+    // console.log('value Is:', value, 'v is:', v);
     return {
-      paddingBottom: value,
+      paddingBottom: value - (gap ?? 0),
+      marginTop: -value + (gap ?? 0),
+      marginBottom: gap ?? 0,
     };
-  }, [bottomPad, isKeyboardOpened, keyboardHeight, viewPositionY]);
-
+  }, [bottomPad, gap, isKeyboardOpened, keyboardHeight, viewPositionY]);
   return (
     <View ref={viewRef} collapsable={false} style={[style, containerStyle]}>
       {children}
@@ -64,7 +106,9 @@ export const useKeyboardSafeArea = (bottomPad = 0) => {
     requestAnimationFrame(() => {
       if (viewRef.current) {
         viewRef.current.measure?.((x, y, width, height, pageX, pageY) => {
-          if (pageY === undefined || height === undefined) return;
+          if (pageY === undefined || height === undefined) {
+            return;
+          }
           setViewPositionY(pageY + height);
         });
       }
@@ -78,10 +122,13 @@ export const useKeyboardSafeArea = (bottomPad = 0) => {
   }, [measureView]);
 
   const value = useMemo(() => {
-    if (!isKeyboardOpened) return undefined;
+    if (!isKeyboardOpened) {
+      return undefined;
+    }
     const keyboardPositionY = screenHeight - keyboardHeight;
-    if (viewPositionY <= keyboardPositionY) return undefined;
-
+    if (viewPositionY <= keyboardPositionY) {
+      return undefined;
+    }
     return viewPositionY - keyboardPositionY + bottomPad;
   }, [bottomPad, isKeyboardOpened, keyboardHeight, viewPositionY]);
 

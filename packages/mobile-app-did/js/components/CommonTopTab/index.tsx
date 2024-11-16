@@ -15,7 +15,7 @@ import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { pTd } from 'utils/unit';
 import { darkColors } from 'assets/theme';
 import { useThrottleCallback } from '@portkey-wallet/hooks';
-import { makeStyles, useTheme } from '@rneui/themed';
+import { makeStyles } from '@rneui/themed';
 import { TextM } from 'components/CommonText';
 import fonts from 'assets/theme/fonts';
 
@@ -37,6 +37,7 @@ export type CommonTopTabProps = {
   expandView?: ReactNode;
   onTabChange?: (name: string) => void;
   suffixIconDom?: ReactNode;
+  suffixIconDomVisible?: boolean;
 };
 
 const Tab = createMaterialTopTabNavigator();
@@ -52,6 +53,7 @@ const CommonTopTab: React.FC<CommonTopTabProps> = props => {
     isBlockTab,
     onTabChange,
     suffixIconDom,
+    suffixIconDomVisible,
   } = props;
 
   const tabBarRef = useRef<any>(null);
@@ -60,11 +62,16 @@ const CommonTopTab: React.FC<CommonTopTabProps> = props => {
       tabBarRef.current.changeSuffix(tabList.map(item => item.suffix));
     }
   }, [tabBarRef, tabList]);
-
+  useEffect(() => {
+    if (tabBarRef.current) {
+      tabBarRef.current.changeSuffixIconDomVisible(suffixIconDomVisible);
+    }
+  }, [tabBarRef, suffixIconDomVisible]);
   return (
     <Tab.Navigator
       initialRouteName={initialRouteName}
       initialLayout={{ width: screenWidth }}
+      // eslint-disable-next-line react/no-unstable-nested-components
       tabBar={prop => (
         <CustomizedTopTabBar
           {...prop}
@@ -129,15 +136,20 @@ const CustomizedTopTabBar = forwardRef(
     const toolBarStyle = getToolBarStyle();
     const styles = getStyles();
     const [suffixList, setSuffixList] = useState();
+    const [suffixIconDomVisible, setSuffixIconDomVisible] = useState<boolean>();
 
     useImperativeHandle(ref, () => ({
       changeSuffix(updateSuffixList: any) {
         setSuffixList(updateSuffixList);
       },
+      changeSuffixIconDomVisible(visible: boolean) {
+        setSuffixIconDomVisible(visible);
+      },
     }));
-
-    const { theme } = useTheme();
-
+    useEffect(() => {
+      const name = state.routes[state.index].name;
+      onTabChange?.(name);
+    }, [onTabChange, state]);
     return (
       <View style={[toolBarStyle.tabBarStyle, containerStyle]}>
         <ScrollView horizontal={true} alwaysBounceHorizontal={false} scrollEnabled={swipeEnabled}>
@@ -159,7 +171,6 @@ const CustomizedTopTabBar = forwardRef(
                   : route.name;
 
               const isFocused = state.index === index;
-
               return (
                 <TouchableOpacity
                   testID={options.tabBarTestID}
@@ -172,7 +183,7 @@ const CustomizedTopTabBar = forwardRef(
                     isBlockTab && isFocused && toolBarStyle.selectedBlockTab,
                     isBlockTab
                       ? { marginRight: index !== state.routes.length - 1 ? pTd(10) : 0 }
-                      : { paddingRight: index !== state.routes.length - 1 ? pTd(32) : 0 },
+                      : { paddingRight: index !== state.routes.length - 1 ? (suffix ? pTd(16) : pTd(32)) : 0 },
                   ]}>
                   <Text
                     style={[
@@ -193,7 +204,7 @@ const CustomizedTopTabBar = forwardRef(
             })}
           </View>
         </ScrollView>
-        {suffixIconDom}
+        {suffixIconDomVisible && suffixIconDom}
       </View>
     );
   },
@@ -225,6 +236,7 @@ const getStyles = makeStyles(theme => ({
   amountIcon: {
     paddingVertical: pTd(4),
     paddingHorizontal: pTd(6),
+    borderRadius: pTd(4),
     marginLeft: pTd(4),
     backgroundColor: theme.colors.bgNeutral2,
   },

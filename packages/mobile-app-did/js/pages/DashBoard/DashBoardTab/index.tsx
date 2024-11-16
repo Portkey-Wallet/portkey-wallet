@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import TokenSection from '../TokenSection';
 import NFTSection from '../NFTSection/index';
 import CommonTopTab from 'components/CommonTopTab';
@@ -19,6 +19,7 @@ const DashBoardTab: React.FC = () => {
   const { totalDisplayCount } = useAccountTokenInfo();
   const { nftSectionUiType, changeNFTSectionMode } = useNFTSection();
   const styles = getStyles();
+  const [ suffixIconDomVisible, setSuffixIconDomVisible] = useState<boolean>();
 
   const tabList = useMemo(() => {
     return [
@@ -87,6 +88,14 @@ const DashBoardTab: React.FC = () => {
       tabList={tabList}
       tabContainerStyle={styles.tabContainerStyle}
       suffixIconDom={suffixIconDom}
+      suffixIconDomVisible={suffixIconDomVisible}
+      onTabChange={name => {
+        if (name === t('Tokens')) {
+          setSuffixIconDomVisible(false);
+        } else {
+          setSuffixIconDomVisible(true);
+        }
+      }}
     />
   );
 };

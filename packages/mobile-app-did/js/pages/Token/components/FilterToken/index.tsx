@@ -11,10 +11,11 @@ import { TextL } from 'components/CommonText';
 import CommonButton from 'components/CommonButton';
 import navigationService from 'utils/navigationService';
 import Svg from 'components/Svg';
+import fonts from 'assets/theme/fonts';
 
 enum TipsEnum {
   NO_RESULT = 'No tokens available',
-  TRY = `Don't see your token?`,
+  TRY = "Don't see your token?",
 }
 
 interface IFilterTokenSectionProps {
@@ -38,7 +39,7 @@ const FilterTokenSection: React.FC<IFilterTokenSectionProps> = (props: IFilterTo
           buttonStyle={customTokenTipsStyle.addButton}
           onPress={() => navigationService.navigate('CustomToken')}>
           <Svg icon="add1" size={pTd(16)} color={darkColors.iconBrand4} />
-          <TextL style={customTokenTipsStyle.addText}>{t('Import token')}</TextL>
+          <TextL style={[customTokenTipsStyle.addText, fonts.SGMediumFont]}>{t('Import token')}</TextL>
         </CommonButton>
       </>
     ),

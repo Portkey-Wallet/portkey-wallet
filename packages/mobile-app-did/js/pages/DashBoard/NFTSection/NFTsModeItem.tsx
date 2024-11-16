@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import navigationService from 'utils/navigationService';
 import { pTd } from 'utils/unit';
@@ -74,7 +74,6 @@ export default function NFTItem(props: NFTItemPropsType) {
     () => (children.length > 8 ? children.slice(0, ((openCollectionInfo?.pageNum ?? 0) + 1) * 8) : children),
     [children, openCollectionInfo?.pageNum],
   );
-
   // const hasMore = useMemo(
   //   () =>
   //     showChildren?.length !== 0 &&
@@ -183,7 +182,7 @@ export default function NFTItem(props: NFTItemPropsType) {
                 seedType={ele.seedType}
                 badgeSizeType="normal"
                 data={ele}
-                nftSize={(screenWidth - pTd(4 * 16)) / 3}
+                nftSize={Math.floor((screenWidth - pTd(4 * 16)) / 3)}
                 style={[
                   styles.itemAvatarStyle,
                   index < 3 ? styles.marginTop0 : {},
@@ -231,8 +230,8 @@ export default function NFTItem(props: NFTItemPropsType) {
                   // eslint-disable-next-line react-native/no-inline-styles
                   { marginRight: i % 3 === 2 ? 0 : pTd(16), marginTop: i < 3 ? 0 : pTd(16) },
                 ]}
-                height={(screenWidth - pTd(4 * 16)) / 3}
-                width={(screenWidth - pTd(4 * 16)) / 3}
+                height={Math.floor((screenWidth - pTd(4 * 16)) / 3)}
+                width={Math.floor((screenWidth - pTd(4 * 16)) / 3)}
               />
             );
           })}
@@ -264,7 +263,7 @@ const getStyles = makeStyles(theme => ({
   itemWrapper: {
     flexDirection: 'column',
     alignItems: 'flex-start',
-    width: (screenWidth - pTd(4 * 16)) / 3,
+    width: Math.floor((screenWidth - pTd(4 * 16)) / 3),
     // backgroundColor: 'red',
   },
   viewAll: {
@@ -299,8 +298,8 @@ const getStyles = makeStyles(theme => ({
     color: defaultColors.font11,
   },
   itemAvatarStyle: {
-    marginRight: pTd(8) - StyleSheet.hairlineWidth,
-    marginTop: pTd(8),
+    // marginRight: 20,
+    // marginTop: pTd(8),
     backgroundColor: defaultColors.bg4,
   },
   noMarginRight: {

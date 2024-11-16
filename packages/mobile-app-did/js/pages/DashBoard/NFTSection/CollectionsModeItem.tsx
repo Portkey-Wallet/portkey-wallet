@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import navigationService from 'utils/navigationService';
@@ -6,7 +6,6 @@ import { pTd } from 'utils/unit';
 import GStyles from 'assets/theme/GStyles';
 import CommonAvatar from 'components/CommonAvatar';
 import { TextL } from 'components/CommonText';
-import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { NFTCollectionItemShowType } from '@portkey-wallet/types/types-ca/assets';
 import Touchable from 'components/Touchable';
 import { OpenCollectionObjType } from './index';
@@ -29,37 +28,25 @@ export type NFTItemPropsType = NFTCollectionItemShowType & {
 };
 
 export default function CollectionItem(props: NFTItemPropsType) {
-  const {
-    isFetching,
-    chainId,
-    collectionName,
-    imageUrl,
-    itemCount,
-    children,
-    symbol,
-    collapsed,
-    chainImageUrl,
-    displayChainImage,
-    openCollectionObj,
-  } = props;
+  const { chainId, collectionName, imageUrl, itemCount, symbol, chainImageUrl, displayChainImage } = props;
   const styles = getStyles();
 
-  const openCollectionInfo = useMemo(
-    () => openCollectionObj?.[`${symbol}${chainId}`],
-    [chainId, openCollectionObj, symbol],
-  );
+  // const openCollectionInfo = useMemo(
+  //   () => openCollectionObj?.[`${symbol}${chainId}`],
+  //   [chainId, openCollectionObj, symbol],
+  // );
 
-  const showChildren = useMemo(
-    () => (children.length > 9 ? children.slice(0, ((openCollectionInfo?.pageNum ?? 0) + 1) * 9) : children),
-    [children, openCollectionInfo?.pageNum],
-  );
+  // const showChildren = useMemo(
+  //   () => (children.length > 9 ? children.slice(0, ((openCollectionInfo?.pageNum ?? 0) + 1) * 9) : children),
+  //   [children, openCollectionInfo?.pageNum],
+  // );
 
-  const skeletonList = useMemo(() => {
-    if (!isFetching) return [];
+  // const skeletonList = useMemo(() => {
+  //   if (!isFetching) return [];
 
-    const count = itemCount - showChildren?.length >= 9 ? 9 : itemCount - showChildren?.length;
-    return count > 0 ? new Array(count).fill('-') : [];
-  }, [isFetching, itemCount, showChildren?.length]);
+  //   const count = itemCount - showChildren?.length >= 9 ? 9 : itemCount - showChildren?.length;
+  //   return count > 0 ? new Array(count).fill('-') : [];
+  // }, [isFetching, itemCount, showChildren?.length]);
 
   return (
     <View style={styles.wrap}>
@@ -89,7 +76,7 @@ export default function CollectionItem(props: NFTItemPropsType) {
             <CommonAvatar
               hasBorder
               style={styles.chainIcon}
-              avatarSize={pTd(16)}
+              avatarSize={pTd(24)}
               imageUrl={chainImageUrl}
               titleStyle={styles.tokenIconTitle}
               borderStyle={styles.iconBorder}

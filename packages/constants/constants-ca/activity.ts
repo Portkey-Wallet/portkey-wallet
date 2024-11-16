@@ -27,6 +27,7 @@ export const SHOW_FROM_TRANSACTION_TYPES = [
   TransactionTypes.CLAIM_TOKEN,
   TransactionTypes.TRANSFER_RED_PACKET,
   TransactionTypes.SWAP,
+  TransactionTypes.CROSS_CHAIN_RECEIVE,
 ];
 
 export const SHOW_DAPP_TRANSACTION_TYPES = [TransactionTypes.SWAP];

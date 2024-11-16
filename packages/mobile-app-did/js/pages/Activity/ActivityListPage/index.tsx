@@ -21,6 +21,7 @@ import { showActivityDetail } from 'components/ActivityOverlay';
 import { makeStyles } from '@rneui/themed';
 import { TextH1 } from 'components/CommonText';
 import SafeAreaBox from 'components/SafeAreaBox';
+import LottieLoading from 'components/LottieLoading';
 
 interface RouterParams {
   chainId?: string;
@@ -86,15 +87,26 @@ const ActivityListPage = () => {
     <SafeAreaBox edges={['top', 'right', 'left']} style={styles.pageWrap}>
       <FlashList
         ListHeaderComponent={
-          <View style={styles.title}>
-            <TextH1>{t('Activity')}</TextH1>
-          </View>
+          <>
+            <View style={styles.title}>
+              <TextH1>{t('Activity')}</TextH1>
+            </View>
+            {isLoading === ListLoadingEnum.header && (
+              <View style={{ marginBottom: pTd(24), marginTop: pTd(24) }}>
+                <LottieLoading style={{ width: pTd(32) }} />
+              </View>
+            )}
+          </>
         }
         refreshing={isLoading === ListLoadingEnum.header}
         data={currentActivity?.data || []}
         keyExtractor={(_item, index) => `${index}`}
         ListEmptyComponent={
-          <NoData message={'You have no transactions.'} topDistance={pTd(160)} oblongSize={[pTd(96), pTd(84)]} />
+          <>
+            {isLoading === ListLoadingEnum.hide && (
+              <NoData message={'You have no transactions.'} topDistance={pTd(160)} oblongSize={[pTd(96), pTd(84)]} />
+            )}
+          </>
         }
         renderItem={renderItem}
         onRefresh={() => getActivityList(true)}

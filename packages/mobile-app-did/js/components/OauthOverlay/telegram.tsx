@@ -55,7 +55,9 @@ function TelegramSign({ onConfirm, onReject }: TelegramSignProps) {
               const { token } = parseData.query || {};
               if (typeof token === 'string') {
                 const user = parseTelegramToken(token);
-                if (!user) return onReject(new Error('Invalid Token'));
+                if (!user) {
+                  return onReject(new Error('Invalid Token'));
+                }
                 const userInfo: TelegramAuthentication = {
                   user,
                   accessToken: token,
@@ -97,7 +99,7 @@ function TelegramSign({ onConfirm, onReject }: TelegramSignProps) {
   );
 
   return (
-    <ModalBody title="Continue with Telegram" modalBodyType="bottom" style={{ height: pTd(550) }}>
+    <ModalBody title="Continue with Telegram" modalBodyType="bottom" style={{ height: pTd(715) }}>
       <KeyboardAwareScrollView enableOnAndroid={true} contentContainerStyle={styles.container}>
         {loading && (
           <View style={styles.loadingBox}>
@@ -111,7 +113,9 @@ function TelegramSign({ onConfirm, onReject }: TelegramSignProps) {
           injectedJavaScript={!isIOS ? InjectTelegramOpenJavaScript : undefined}
           javaScriptCanOpenWindowsAutomatically={true}
           onLoadProgress={({ nativeEvent }) => {
-            if (nativeEvent.url.includes('telegram.org') && nativeEvent.progress > 0.7) setLoading(false);
+            if (nativeEvent.url.includes('telegram.org') && nativeEvent.progress > 0.7) {
+              setLoading(false);
+            }
           }}
           onMessage={onMessage}
           onLoadEnd={() => {

@@ -1,26 +1,17 @@
 import React, { useCallback, useMemo } from 'react';
 import { useLanguage } from 'i18n/hooks';
 import { makeStyles } from '@rneui/themed';
-import { useTheme } from '@rneui/themed';
-import { View, FlatList, Text } from 'react-native';
+import { View, FlatList } from 'react-native';
 import CommonTopTab from 'components/CommonTopTab';
-import CommonAvatar from 'components/CommonAvatar';
-import Touchable from 'components/Touchable';
-import Svg from 'components/Svg';
 import { pTd } from 'utils/unit';
 import fonts from 'assets/theme/fonts';
 import ContactItem from 'components/ContactItem';
 import { IContactItemType, TFormattedRecentItem } from '@portkey-wallet/types/types-ca/contactNew';
+import { useContactNetworkConfig } from '@portkey-wallet/hooks/hooks-ca/config';
 import navigationService from 'utils/navigationService';
 import { ICaAddressInfoListItemType } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { RECENT_PAGE_NAME } from 'constants/contact';
-
-interface IAddress {
-  avatar?: string;
-  nickName?: string;
-  address: string;
-  chain?: string;
-}
+import { AELF_NETWORK_NAME } from 'constants/common';
 
 interface ISelectAddressTabProps {
   recentAddressList: TFormattedRecentItem[];
@@ -42,9 +33,20 @@ const AddressList = ({
   isMyAddress?: boolean;
 }) => {
   const styles = getStyles();
-  const {
-    theme: { colors },
-  } = useTheme();
+  const { supportNetworkList } = useContactNetworkConfig();
+  const getNetworkName = useCallback(
+    (chainId: string, network: string) => {
+      const networkItem = supportNetworkList?.find(item => {
+        let isChainIdMatch = true;
+        if (network === AELF_NETWORK_NAME) {
+          isChainIdMatch = item.chainId === chainId;
+        }
+        return item.network === network && isChainIdMatch;
+      });
+      return networkItem?.name ?? '';
+    },
+    [supportNetworkList],
+  );
 
   const renderItem = useCallback(
     ({ item, index }: { item: TFormattedRecentItem | ICaAddressInfoListItemType | any; index: number }) => {
@@ -56,8 +58,9 @@ const AddressList = ({
             index: String(index),
             name: item?.name || address,
             addressInfo: {
-              network: item?.network,
-              networkName: item?.chainId || '',
+              network: item?.network, // aelf ETH BSC
+              networkName: getNetworkName(item?.chainId, item?.network), //  aelf MainChain
+              chainId: item?.chainId ?? '', // tDVW TDVV
               networkImage: item?.networkIcon,
               address: address,
             },
@@ -109,7 +112,7 @@ const AddressList = ({
       //   </Touchable>
       // );
     },
-    [isMyAddress, onPress],
+    [getNetworkName, isMyAddress, onPress],
   );
 
   return (

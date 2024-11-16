@@ -256,7 +256,7 @@ export default function RampBuy() {
       rightDom={rightDom}>
       <View style={styles.fiatWrap}>
         <TextInput
-          keyboardType="numeric"
+          keyboardType="decimal-pad"
           ref={textInputRef}
           style={[styles.fiatInput, amountError.isError && styles.amountErrorText]}
           placeholder="0"

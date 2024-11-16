@@ -142,7 +142,7 @@ const SendHome: React.FC = () => {
   );
 
   const [step, setStep] = useState<1 | 2>(isFixedToContact ? 2 : 1);
-  const [isLoading] = useState(false);
+  const [isLoading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
   const checkManagerSyncState = useCheckManagerSyncState();
@@ -568,6 +568,9 @@ const SendHome: React.FC = () => {
                 type: 'primary',
               },
             ],
+            closeAction: () => {
+              setLoading(false);
+            },
           });
           console.log('checkCanPreview 6');
           return;
@@ -834,7 +837,9 @@ const SendHome: React.FC = () => {
     const result = await checkCanPreview();
     console.log('preview preview', result);
 
-    if (!result?.status) return;
+    if (!result?.status) {
+      return;
+    }
 
     console.log('nav params', {
       ...previewParamsWithoutFee,
@@ -862,7 +867,9 @@ const SendHome: React.FC = () => {
   }, [checkCanPreview, previewParamsWithoutFee]);
 
   const titleText = useMemo(() => {
-    if (step === 2) return `Enter Amount`;
+    if (step === 2) {
+      return 'Enter Amount';
+    }
     return `${t('Send')}${sendType === 'token' ? ' ' + (assetInfo.label || assetInfo.symbol) : ''}`;
   }, [assetInfo.label, assetInfo.symbol, sendType, step, t]);
 
@@ -871,14 +878,17 @@ const SendHome: React.FC = () => {
     if (
       (!selectedToContact.address || !isCheckAddressFinish || warning[0] === WarningKey.MAKE_SURE_SUPPORT_PLATFORM) &&
       step === 1
-    )
+    ) {
       return null;
-
+    }
     // text
     let btnText = 'Next';
-    if (step === 1 && warning[0] === WarningKey.MAIN_CHAIN_TO_NO_AFFIX_ADDRESS_ELF) btnText = 'Confirm and continue';
-    if (step === 2) btnText = 'Preview';
-
+    if (step === 1 && warning[0] === WarningKey.MAIN_CHAIN_TO_NO_AFFIX_ADDRESS_ELF) {
+      btnText = 'Confirm and continue';
+    }
+    if (step === 2) {
+      btnText = 'Preview';
+    }
     // disable
     const disable =
       step === 1 ? warning[0] === WarningKey.INVALID_ADDRESS || warning[0] === WarningKey.SAME_ADDRESS : previewDisable;

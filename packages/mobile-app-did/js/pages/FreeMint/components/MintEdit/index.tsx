@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect, useRef, SetStateAction, Dispatch, useMemo } from 'react';
-import { StyleSheet, View, Text, Image } from 'react-native';
+import { StyleSheet, View, Text, Image, ScrollView } from 'react-native';
 import { pTd } from 'utils/unit';
 import Svg from 'components/Svg';
 import FormItem from 'components/FormItem';
@@ -15,6 +15,8 @@ import ButtonRow from 'components/ButtonRow';
 import { makeStyles, useTheme } from '@rneui/themed';
 import { KeyboardSafeArea } from 'components/KeyboardSafeArea';
 import fonts from 'assets/theme/fonts';
+import { useKeyboard, useKeyboardListener } from 'hooks/useKeyboardHeight';
+import { screenHeight } from '@portkey-wallet/utils/mobile/device';
 
 export type EditConfig = {
   imageUri: string;
@@ -41,6 +43,42 @@ const MintEdit = (props: {
   const getMintItemInfo = useGetMintItemInfo();
   const hasUploadImage = useMemo(() => !!editInfo?.imageUri, [editInfo?.imageUri]);
 
+  // const viewRef = useRef<View>(null);
+  // const { keyboardHeight, isKeyboardOpened } = useKeyboard(0);
+  // // const [viewPositionY, setViewPositionY] = useState(0);
+  // const viewPositionY = useRef<number>(0);
+
+  // useEffect(() => {
+  //   if (value.imageUri) {
+  //     setTimeout(() => {
+  //       if (viewRef.current) {
+  //         viewRef.current.measure?.((x, y, width, height, pageX, pageY) => {
+  //           if (pageY === undefined || height === undefined) {
+  //             return;
+  //           }
+  //           viewPositionY.current = pageY + height;
+  //         });
+  //       }
+  //     }, 50);
+  //   }
+  // }, [value.imageUri]);
+
+  // const style = useMemo(() => {
+  //   if (!isKeyboardOpened) {
+  //     return undefined;
+  //   }
+  //   const keyboardPositionY = screenHeight - keyboardHeight;
+  //   if (viewPositionY <= keyboardPositionY) {
+  //     return undefined;
+  //   }
+  //   const v = keyboardHeight - (screenHeight - viewPositionY) + bottomPad;
+  //   const value = viewPositionY - keyboardPositionY + bottomPad;
+  //   console.log('value Is:', value, 'v is:', v);
+  //   return {
+  //     paddingBottom: value,
+  //   };
+  // }, [bottomPad, isKeyboardOpened, keyboardHeight, viewPositionY]);
+
   useEffect(() => {
     if (editInfo) {
       setValue(prev => ({
@@ -64,13 +102,15 @@ const MintEdit = (props: {
   }, []);
 
   const onChangeNameText = useCallback((valueName: string) => {
-    setValue(prev => ({ ...prev, name: valueName }));
+    setValue(prev => ({ ...prev, name: valueName.trim() }));
   }, []);
   const onChangeDescriptionText = useCallback((valueDescription: string) => {
-    setValue(prev => ({ ...prev, description: valueDescription }));
+    setValue(prev => ({ ...prev, description: valueDescription.trim() }));
   }, []);
   const onNext = useCallback(async () => {
-    if (!value.imageUri) return;
+    if (!value.imageUri) {
+      return;
+    }
 
     // todo wfs onNext
     let s3Url = value.imageUri || '';
@@ -104,91 +144,101 @@ const MintEdit = (props: {
       setShowDeleteIcon(false);
     }
   }, [setShowDeleteIcon, value.imageUri]);
+  // return <View style={{height: 346, width: '100%', backgroundColor: 'red', position: 'absolute', bottom: 0}}>
+  useKeyboardListener({
+    show: () => {
+      console.log('Keyboard show');
+    },
+    hide: () => {
+      console.log('Keyboard hide');
+    },
+  });
   return (
-    <KeyboardSafeArea containerStyle={styles.containerStyle}>
-      <View style={styles.container}>
-        <View style={styles.uploadContainer}>
-          {/* <Touchable style={GStyles.center} onPress={() => uploadRef.current?.selectPhoto()}> */}
-          {showDeleteIcon && (
-            <Touchable
-              style={styles.deleteIconStyle}
-              activeOpacity={1}
-              onPress={() => {
-                uploadRef.current?.clear();
-              }}>
-              {/* <Image resizeMode="contain" source={deleteImage} style={{ width: pTd(28), height: pTd(28) }} /> */}
-              <View style={styles.deleteMintWrapper}>
-                <Svg icon="delete-mint" size={20} />
-              </View>
-            </Touchable>
-          )}
-          <View style={{ marginTop: pTd(24) }}>
-            <ImageWithUploadFunc
-              avatarSize={pTd(280)}
-              ref={uploadRef}
-              title={''}
-              type={ImageShowType.NORMAL}
-              imageUrl={value.imageUri}
-              defaultComponent={
-                <View style={styles.uploadBox}>
-                  <Svg icon="upload" size={pTd(48)} />
-                  <Text style={styles.uploadTextTitle}>Upload an image</Text>
-                  <Text style={styles.uploadText}>Supported formats: JPG, JPEG, and PNG{'\n'}Max size: 10 MB.</Text>
+    <View style={styles.wrapper}>
+      <KeyboardSafeArea containerStyle={styles.containerStyle} mode="page" bottomPad={pTd(16)} gap={pTd(82)}>
+        <View style={styles.container}>
+          <View style={styles.uploadContainer}>
+            {/* <Touchable style={GStyles.center} onPress={() => uploadRef.current?.selectPhoto()}> */}
+            {showDeleteIcon && (
+              <Touchable
+                style={styles.deleteIconStyle}
+                activeOpacity={1}
+                onPress={() => {
+                  uploadRef.current?.clear();
+                }}>
+                {/* <Image resizeMode="contain" source={deleteImage} style={{ width: pTd(28), height: pTd(28) }} /> */}
+                <View style={styles.deleteMintWrapper}>
+                  <Svg icon="delete-mint" size={20} />
                 </View>
-              }
-              onChooseSuccess={onChooseSuccess}
-            />
+              </Touchable>
+            )}
+            <View style={{ marginTop: pTd(24) }}>
+              <ImageWithUploadFunc
+                avatarSize={pTd(280)}
+                ref={uploadRef}
+                title={''}
+                type={ImageShowType.NORMAL}
+                imageUrl={value.imageUri}
+                defaultComponent={
+                  <View style={styles.uploadBox}>
+                    <Svg icon="upload" size={pTd(48)} />
+                    <Text style={styles.uploadTextTitle}>Upload an image</Text>
+                    <Text style={styles.uploadText}>Supported formats: JPG, JPEG, and PNG{'\n'}Max size: 10 MB.</Text>
+                  </View>
+                }
+                onChooseSuccess={onChooseSuccess}
+              />
+            </View>
+            {/* </Touchable> */}
+            {value.imageUri && (
+              <>
+                <FormItem title="Name" style={styles.formItemContainer} titleStyle={fonts.SGRegularFont}>
+                  <CommonInput
+                    type="general"
+                    value={value.name}
+                    allowClear
+                    placeholder={'Give your NFT a unique name'}
+                    placeholderTextColor={theme.colors.textBase3}
+                    maxLength={30}
+                    inputContainerStyle={styles.inputWrap}
+                    onChangeText={onChangeNameText}
+                    containerStyle={styles.contentWrap}
+                  />
+                </FormItem>
+                <FormItem
+                  title="Description (Optional)"
+                  style={styles.formItemContainer}
+                  titleStyle={fonts.SGRegularFont}>
+                  <CommonInput
+                    type="general"
+                    value={value.description}
+                    placeholder={'Tell people more about your NFT'}
+                    maxLength={1000}
+                    multiline
+                    style={[GStyles.paddingTop(12), GStyles.paddingBottom(12)]}
+                    inputContainerStyle={[styles.inputWrap, styles.contentDescriptionWrap]}
+                    placeholderTextColor={theme.colors.textBase3}
+                    inputStyle={styles.descriptionInput}
+                    onChangeText={onChangeDescriptionText}
+                    containerStyle={styles.contentDescriptionWrap}
+                  />
+                </FormItem>
+              </>
+            )}
           </View>
-          {/* </Touchable> */}
-          {value.imageUri && (
-            <>
-              <FormItem title="Name" style={styles.formItemContainer} titleStyle={fonts.SGRegularFont}>
-                <CommonInput
-                  type="general"
-                  value={value.name}
-                  allowClear
-                  placeholder={'Give your NFT a unique name'}
-                  placeholderTextColor={theme.colors.textBase3}
-                  maxLength={30}
-                  inputContainerStyle={styles.inputWrap}
-                  onChangeText={onChangeNameText}
-                  containerStyle={styles.contentWrap}
-                />
-              </FormItem>
-              <FormItem
-                title="Description (Optional)"
-                style={styles.formItemContainer}
-                titleStyle={fonts.SGRegularFont}>
-                <CommonInput
-                  type="general"
-                  value={value.description}
-                  placeholder={'Tell people more about your NFT'}
-                  maxLength={1000}
-                  multiline
-                  style={[GStyles.paddingTop(12), GStyles.paddingBottom(12)]}
-                  inputContainerStyle={[styles.inputWrap, styles.contentDescriptionWrap]}
-                  placeholderTextColor={theme.colors.textBase3}
-                  inputStyle={styles.descriptionInput}
-                  onChangeText={onChangeDescriptionText}
-                  containerStyle={styles.contentDescriptionWrap}
-                />
-              </FormItem>
-            </>
-          )}
+          <ButtonRow
+            buttons={[
+              {
+                disabled: !canNext,
+                type: 'primary',
+                title: 'Next',
+                onPress: onNext,
+              },
+            ]}
+          />
         </View>
-        <View style={GStyles.flex1} />
-        <ButtonRow
-          buttons={[
-            {
-              disabled: !canNext,
-              type: 'primary',
-              title: 'Next',
-              onPress: onNext,
-            },
-          ]}
-        />
-      </View>
-    </KeyboardSafeArea>
+      </KeyboardSafeArea>
+    </View>
   );
 };
 
@@ -212,17 +262,35 @@ const MintEdit = (props: {
 
 export default MintEdit;
 const getStyles = makeStyles(theme => ({
-  containerStyle: {
-    alignItems: 'center',
-    justifyContent: 'center',
+  wrapper: {
     height: '100%',
-    marginTop: pTd(4),
+    width: '100%',
+    justifyContent: 'flex-end',
+    flexDirection: 'column',
+    overflow: 'hidden',
+  },
+  containerStyle: {
+    // alignItems: 'center',
+    // justifyContent: 'flex-start',
+    // height: '100%',
+    flex: 1,
+    width: '100%',
+    // position: 'absolute',
+    flexDirection: 'column',
+    // backgroundColor: 'red',
+    // paddingBottom: 154,
+    // bottom: 300,
+    // overflow: 'hidden',
   },
   container: {
     width: '100%',
-    height: '100%',
+    flex: 1,
+    // height: '100%',
     flexDirection: 'column',
     paddingHorizontal: pTd(16),
+    justifyContent: 'space-between',
+    // overflow: 'hidden',
+    // backgroundColor: 'red',
   },
   deleteIconStyle: {
     position: 'absolute',

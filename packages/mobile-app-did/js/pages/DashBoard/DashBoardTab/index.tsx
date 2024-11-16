@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import TokenSection from '../TokenSection';
 import NFTSection from '../NFTSection/index';
 import CommonTopTab from 'components/CommonTopTab';
@@ -24,6 +24,7 @@ const DashBoardTab: React.FC = () => {
   const { totalDisplayCount } = useAccountTokenInfo();
   const { nftSectionUiType, changeNFTSectionMode } = useNFTSection();
   const styles = getStyles();
+  const [ suffixIconDomVisible, setSuffixIconDomVisible] = useState<boolean>();
 
   const tabNameMap = useMemo(() => {
     return {
@@ -31,12 +32,6 @@ const DashBoardTab: React.FC = () => {
       [TabName.NFTs]: t(TabName.NFTs),
     };
   }, [t]);
-
-  const [selectedTab, setSelectedTab] = useState<string>(tabNameMap[TabName.Tokens]);
-
-  const onTabChange = useCallback((name: string) => {
-    setSelectedTab(name);
-  }, []);
 
   const tabList = useMemo(() => {
     return [
@@ -104,9 +99,15 @@ const DashBoardTab: React.FC = () => {
       hasBottomBorder={false}
       tabList={tabList}
       tabContainerStyle={styles.tabContainerStyle}
-      labelRightNum={pTd(16)}
-      suffixIconDom={selectedTab === tabNameMap[TabName.NFTs] ? suffixIconDom : null}
-      onTabChange={onTabChange}
+      suffixIconDom={suffixIconDom}
+      suffixIconDomVisible={suffixIconDomVisible}
+      onTabChange={name => {
+        if (name === t('Tokens')) {
+          setSuffixIconDomVisible(false);
+        } else {
+          setSuffixIconDomVisible(true);
+        }
+      }}
     />
   );
 };

@@ -1002,7 +1002,7 @@ const SendHome: React.FC = () => {
         } else {
           setSelectedToContact({
             name: i?.name,
-            address: i.address || i.addressInfo?.address,
+            address: addressFormat(i.address || i.addressInfo?.address, i.chainId || i.addressInfo?.chainId),
             chainId: i.chainId || i.addressInfo?.chainId,
           } as TToInfo);
           setStep(2);

@@ -26,7 +26,6 @@ import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
 import { getAelfTxResult } from '@portkey-wallet/utils/aelf';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { sleep } from '@portkey-wallet/utils';
-import { ChainId } from '@portkey-wallet/types';
 import { useAmountInUsdShow, useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { useFetchTxFee, useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
@@ -48,12 +47,12 @@ import { useGetTokenViewContract } from 'hooks/contract';
 import { getELFChainBalance } from '@portkey-wallet/utils/balance';
 import { useRecent } from '@portkey-wallet/hooks/hooks-ca/recent';
 import { IRecentItem } from '@portkey-wallet/store/store-ca/recent/type';
-import {
-  useEtransferCrossTrack,
-  useEtransferCrossFinishTrack,
-  useCrossChainTransferTrack,
-  usePortkeyCrossTrack,
-} from 'hooks/amplitude';
+// import {
+// useEtransferCrossTrack,
+// useEtransferCrossFinishTrack,
+// useCrossChainTransferTrack,
+// usePortkeyCrossTrack,
+// } from 'hooks/amplitude';
 
 const SendPreview: React.FC = () => {
   const { t } = useLanguage();
@@ -120,18 +119,20 @@ const SendPreview: React.FC = () => {
       ZERO.plus(sendNumber).isLessThanOrEqualTo(transactionFee || '') &&
       assetInfo.symbol === defaultToken.symbol &&
       transferType === TransferType.E_TRANSFER
-    )
+    ) {
       return {
         estimateAmount: `0 ${assetInfo?.label || assetInfo?.symbol}`,
         estimateAmountUsd: isMainnet ? '$ 0' : '',
       };
+    }
 
     // adjust etransfer & ebridge
-    if (transferType === TransferType.E_BRIDGE || transferType === TransferType.E_TRANSFER)
+    if (transferType === TransferType.E_BRIDGE || transferType === TransferType.E_TRANSFER) {
       return {
         estimateAmount: `${receiveAmount} ${assetInfo.label || assetInfo.symbol}`,
         estimateAmountUsd: isMainnet ? receiveAmountUsd : '',
       };
+    }
 
     const fee = (isETransferOrEBridge ? transactionFee : networkFee) || 0;
     if (ZERO.plus(sendNumber).isLessThanOrEqualTo(fee)) {
@@ -175,14 +176,16 @@ const SendPreview: React.FC = () => {
 
   const getElfBalance = useCallback(async () => {
     const caAddress = wallet?.[assetInfo.chainId]?.caAddress;
-    if (!assetInfo || !caAddress) return;
+    if (!assetInfo || !caAddress) {
+      return;
+    }
     try {
       const tokenContract = await getTokenViewContract(assetInfo.chainId);
       const _balance = await getELFChainBalance(tokenContract, defaultToken.symbol, caAddress);
       return _balance;
     } catch (error) {
-      throw 'fail';
       console.log('init ELF Balance', error);
+      throw 'fail';
     }
   }, [assetInfo, defaultToken.symbol, getTokenViewContract, wallet]);
 
@@ -247,10 +250,11 @@ const SendPreview: React.FC = () => {
     toInfo?.chainId,
   ]);
 
-  const crossChainTransferTrack = useCrossChainTransferTrack();
-  const portkeyCrossTrack = usePortkeyCrossTrack();
-  const etransferCrossTrack = useEtransferCrossTrack();
-  const etransferCrossFinishTrack = useEtransferCrossFinishTrack();
+  // TODO: add track
+  // const crossChainTransferTrack = useCrossChainTransferTrack();
+  // const portkeyCrossTrack = usePortkeyCrossTrack();
+  // const etransferCrossTrack = useEtransferCrossTrack();
+  // const etransferCrossFinishTrack = useEtransferCrossFinishTrack();
   const transfer = useCallback(async () => {
     setIsError(false);
 
@@ -365,7 +369,9 @@ const SendPreview: React.FC = () => {
         isCheckSymbol: false,
       });
       console.log('crossTransferByEtransferResult', crossTransferByEtransferResult);
-      if (!crossTransferByEtransferResult?.transactionId) throw 'Transfer error';
+      if (!crossTransferByEtransferResult?.transactionId) {
+        throw 'Transfer error';
+      }
       const txResult = await getAelfTxResult(chainInfo.endPoint, crossTransferByEtransferResult.transactionId);
       console.log(txResult, 'txResult===etransferCrossTransfer');
     } else if (transferType === TransferType.E_BRIDGE) {
@@ -378,7 +384,9 @@ const SendPreview: React.FC = () => {
         tokenInfo: tokenEBridgeInfo,
       });
 
-      if (!currentWallet.caAddress || !currentWallet.caHash) throw 'currentWallet is null';
+      if (!currentWallet.caAddress || !currentWallet.caHash) {
+        throw 'currentWallet is null';
+      }
       const fee = await bridge.getELFFee();
       const needElfBalance =
         assetInfo.symbol === defaultToken.symbol
@@ -419,10 +427,6 @@ const SendPreview: React.FC = () => {
     getEVMChainInfoConfig,
     getElfBalance,
     getTokenConfig,
-    etransferCrossFinishTrack,
-    etransferCrossTrack,
-    fetchAccountNFTCollectionInfoList,
-    fetchAccountTokenInfoList,
     guardiansApproved,
     isApproved,
     pin,
@@ -528,15 +532,12 @@ const SendPreview: React.FC = () => {
 
   useFocusEffect(
     useCallback(() => {
-      if (!isAutoSend) return;
+      if (!isAutoSend) {
+        return;
+      }
       send();
     }, [isAutoSend, send]),
   );
-
-  const networkInfoShow = (address: string) => {
-    const chainId = address.split('_')[2] as ChainId;
-    return formatChainInfoToShow(chainId);
-  };
 
   useEffectOnce(() => {
     getTokenPrice(assetInfo.symbol);
@@ -576,7 +577,11 @@ const SendPreview: React.FC = () => {
       amountUSD={ZERO.plus(sendNumber).multipliedBy(tokenPriceObject[assetInfo.symbol])}
       toAddress={toInfo?.address}
       toInfoChainId={toInfo?.chainId}
-      destinationNetwork={isETransferOrEBridge ? targetNetwork?.name : formatChainInfoToShow(toInfo?.chainId)}
+      destinationNetwork={
+        isETransferOrEBridge
+          ? targetNetwork?.name || formatChainInfoToShow(toInfo?.chainId)
+          : formatChainInfoToShow(toInfo?.chainId)
+      }
       destinationNetworkImageUrl={targetNetwork?.imageUrl}
       transactionFee={isETransferOrEBridge ? `${transactionFee} ${transactionFeeUnit}` : ''}
       transactionFeeUSD={

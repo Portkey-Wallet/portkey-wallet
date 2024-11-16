@@ -15,6 +15,7 @@ import {
 import LottieLoading from 'components/LottieLoading';
 import { pTd } from 'utils/unit';
 import Touchable from 'components/Touchable';
+// @ts-expect-error: Importing makeStyles from @rneui/themed
 import { makeStyles } from '@rneui/themed';
 import Divider from 'components/Divider';
 import { useQrScanPermissionAndToast } from 'hooks/useQrScan';
@@ -31,7 +32,8 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network-mainnet-v2';
 import { SendType } from '@portkey-wallet/types/types-ca/send';
 import navigationService from 'utils/navigationService';
-import { set } from 'lodash';
+import fonts from 'assets/theme/fonts';
+
 interface IToAddressInput {
   isFixedToContact?: boolean;
   selectedToken?: IToSendAssetParamsType;
@@ -91,7 +93,9 @@ export default function ToAddressInput({
 
   const checkAddressByFE = useCallback(
     (v: string) => {
-      if (!isDIDAelfAddress(v)) return false;
+      if (!isDIDAelfAddress(v)) {
+        return false;
+      }
 
       // include chainId
       if (v.includes('_')) {
@@ -178,15 +182,21 @@ export default function ToAddressInput({
       setCheckFinish(false);
       setSelectedToContact(() => {
         let chainId = DefaultChainId;
-        if (_v.includes('_') && isDIDAelfAddress(_v)) chainId = getChainIdByAddress(_v);
+        if (_v.includes('_') && isDIDAelfAddress(_v)) {
+          chainId = getChainIdByAddress(_v);
+        }
         return { name: '', address: _v, chainId };
       });
 
       const FEPass = checkAddressByFE(_v);
       // when send nft other chain is not support
-      if (!FEPass && sendType === 'nft') return setWarning([WarningKey.INVALID_ADDRESS]);
+      if (!FEPass && sendType === 'nft') {
+        return setWarning([WarningKey.INVALID_ADDRESS]);
+      }
 
-      if (!FEPass) getNetworkList(_v);
+      if (!FEPass) {
+        getNetworkList(_v);
+      }
     },
     [checkAddressByFE, getNetworkList, sendType, setCheckFinish, setSelectedToContact, setWarning],
   );
@@ -220,7 +230,7 @@ export default function ToAddressInput({
       <View style={styles.toWrap}>
         {step === 2 ? (
           <>
-            <TextL style={styles.grayColor}>{`To:  `}</TextL>
+            <TextL style={styles.grayColor}>{'To:  '}</TextL>
             {selectedToContact?.name ? (
               <>
                 <TextM>{selectedToContact?.name || ''}</TextM>
@@ -239,7 +249,7 @@ export default function ToAddressInput({
           </>
         ) : (
           <>
-            <TextL style={styles.grayColor}>{`To:  `}</TextL>
+            <TextL style={styles.grayColor}>{'To:  '}</TextL>
             <TextInput
               editable={step === 1}
               style={styles.inputStyle}
@@ -284,7 +294,9 @@ export default function ToAddressInput({
               <Touchable
                 style={[GStyles.marginLeft(16), GStyles.flex1, GStyles.flexRow, GStyles.flexEnd]}
                 onPress={async () => {
-                  if (!(await qrScanPermissionAndToast())) return;
+                  if (!(await qrScanPermissionAndToast())) {
+                    return;
+                  }
                   navigationService.navigate('QrScanner');
                 }}>
                 <Svg icon="scan" size={pTd(20)} color={darkColors.iconBase1} />
@@ -307,16 +319,17 @@ export default function ToAddressInput({
   );
 }
 
-export const getStyles = makeStyles(theme => ({
+export const getStyles = makeStyles((theme: any) => ({
   wrap: {},
   toWrap: {
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: pTd(14),
+    paddingVertical: pTd(12),
     paddingHorizontal: pTd(16),
   },
   grayColor: {
+    ...fonts.SGMediumFont,
     color: theme.colors.textBase2,
   },
   brand2Color: {
@@ -354,11 +367,13 @@ export const getStyles = makeStyles(theme => ({
     height: pTd(56),
   },
   inputStyle: {
+    ...fonts.SGMediumFont,
     color: theme.colors.textBase1,
+    paddingVertical: 0,
     paddingRight: pTd(6),
     fontSize: pTd(14),
-    lineHeight: pTd(14),
     width: pTd(260),
+    height: pTd(32),
   },
   right: {
     width: pTd(16),

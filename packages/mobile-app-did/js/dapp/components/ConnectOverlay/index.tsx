@@ -42,8 +42,8 @@ const ConnectModal = (props: ConnectModalType) => {
   const styles = getStyles();
   const { theme } = useTheme();
   const [rememberInfo, setRememberMeInfo] = useState<RememberInfoType>({
-    isRemember: false,
-    value: SessionExpiredPlan.hour1,
+    isRemember: true,
+    value: SessionExpiredPlan.always,
   });
   const showAuthText = useMemo(() => {
     if (!rememberInfo.isRemember) {

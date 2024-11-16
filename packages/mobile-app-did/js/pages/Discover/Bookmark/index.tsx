@@ -56,7 +56,7 @@ export default function Bookmark() {
       component: <BookmarksSection ref={ref => (bookmarksRef.current = ref)} onChange={onBookMarksChange} />,
     },
     {
-      name: 'Records',
+      name: 'History',
       type: ArchivedTabEnum.History,
       component: <RecordsSection />,
     },

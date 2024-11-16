@@ -53,7 +53,10 @@ const CommonInfoRow = ({ label, value, isError }: ICommonInfoRowProps) => {
               ) : (
                 value.leftSvgName && <Svg iconStyle={styles.infoValueLeftSvg} icon={value.leftSvgName} size={pTd(18)} />
               )}
-              <Text style={[styles.infoValue, isError ? styles.infoErrorText : undefined]}>
+              <Text
+                style={[styles.infoValue, isError ? styles.infoErrorText : undefined]}
+                numberOfLines={1}
+                ellipsizeMode={'tail'}>
                 {t(value.text || '--')}
               </Text>
             </View>
@@ -103,9 +106,11 @@ export const getStyles = makeStyles(theme => ({
     lineHeight: pTd(20),
   },
   infoValueColumnWrap: {
+    flex: 1,
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'flex-end',
+    marginLeft: pTd(8),
   },
   infoValueWrap: {
     display: 'flex',

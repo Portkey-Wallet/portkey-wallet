@@ -16,7 +16,7 @@ export const getButtonStyles = makeStyles(theme => ({
     marginHorizontal: pTd(4),
     ...fonts.SGMediumFont,
     fontSize: pTd(16),
-    lineHeight: pTd(16),
+    lineHeight: pTd(20),
     color: theme.colors.textBase1,
   },
   iconWrap: {

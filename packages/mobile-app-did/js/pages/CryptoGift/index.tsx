@@ -1,15 +1,12 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback } from 'react';
 import PageContainer from 'components/PageContainer';
-import { DeviceEventEmitter, Image, View } from 'react-native';
+import { Image, View } from 'react-native';
 import { useLanguage } from 'i18n/hooks';
 import { TextL, TextM, TextH1 } from 'components/CommonText';
 import { pTd } from 'utils/unit';
-import Touchable from 'components/Touchable';
 import GStyles from 'assets/theme/GStyles';
-import { makeStyles, useTheme } from '@rneui/themed';
+import { makeStyles } from '@rneui/themed';
 import CommonButton from 'components/CommonButton';
-import Svg from 'components/Svg';
-import { CryptoGiftCreateSuccess, useGetFirstCryptoGift } from '@portkey-wallet/hooks/hooks-ca/cryptogift';
 import navigationService from 'utils/navigationService';
 import fonts from 'assets/theme/fonts';
 import boxOpen from 'assets/image/pngs/box-open.png';
@@ -18,17 +15,6 @@ import CommonTooltip from 'components/CommonTooltip';
 export default function CryptoGift() {
   const { t } = useLanguage();
   const styles = getStyles();
-  const { theme } = useTheme();
-  console.log(theme.colors.textBase1, 'theme.colors.textBase1');
-  const { firstCryptoGift, getFirstCryptoGift } = useGetFirstCryptoGift();
-  useEffect(() => {
-    const eventListener = DeviceEventEmitter.addListener(CryptoGiftCreateSuccess, () => {
-      getFirstCryptoGift();
-    });
-    return () => {
-      eventListener.remove();
-    };
-  }, [getFirstCryptoGift]);
   const onGiftCreatePress = useCallback(() => {
     navigationService.navigate('SendPacketGroupPage', {
       isCryptoGift: true,
@@ -62,21 +48,19 @@ To claim, click the link, log in to your Portkey account, and verify eligibility
         Spread joy with Portkey&apos;s Crypto Gift feature—send crypto assets to anyone as a gift!
       </TextM>
       <Image resizeMode="contain" source={boxOpen} style={{ width: pTd(343), height: pTd(240) }} />
-      {firstCryptoGift && firstCryptoGift.exist ? (
-        <View style={styles.multiBtnWrap}>
-          <CommonButton buttonStyle={styles.createBtnStyle} type="transparent" onPress={onGiftCreatePress}>
-            <View style={styles.createBtnContainer}>
-              <TextL style={styles.createBtnText}>{t('Create Crypto Gift')}</TextL>
-            </View>
-          </CommonButton>
-          <CommonButton buttonStyle={styles.ViewBtnStyle} type="transparent" onPress={onViewSentGifts}>
-            <View style={styles.ViewBtnContainer}>
-              <TextL style={styles.ViewBtnText}>{t('View sent gifts')}</TextL>
-            </View>
-          </CommonButton>
-        </View>
-      ) : (
-        <CommonButton
+      <View style={styles.multiBtnWrap}>
+        <CommonButton buttonStyle={styles.createBtnStyle} type="transparent" onPress={onGiftCreatePress}>
+          <View style={styles.createBtnContainer}>
+            <TextL style={styles.createBtnText}>{t('Create Crypto Gift')}</TextL>
+          </View>
+        </CommonButton>
+        <CommonButton buttonStyle={styles.ViewBtnStyle} type="transparent" onPress={onViewSentGifts}>
+          <View style={styles.ViewBtnContainer}>
+            <TextL style={styles.ViewBtnText}>{t('View sent gifts')}</TextL>
+          </View>
+        </CommonButton>
+      </View>
+      {/* <CommonButton
           containerStyle={styles.button}
           buttonStyle={styles.buttonStyle}
           type="transparent"
@@ -84,8 +68,7 @@ To claim, click the link, log in to your Portkey account, and verify eligibility
           <View style={styles.buttonContainer}>
             <TextL style={styles.buttonText}>{t('Create Crypto Gift')}</TextL>
           </View>
-        </CommonButton>
-      )}
+        </CommonButton> */}
     </PageContainer>
   );
 }

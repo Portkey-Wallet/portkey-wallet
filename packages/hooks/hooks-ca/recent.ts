@@ -1,4 +1,4 @@
-import { useAppCASelector } from '.';
+import { useAppCASelector } from './index';
 import { useCallback } from 'react';
 import { useCurrentNetwork } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useAppCommonDispatch } from '../index';
@@ -10,7 +10,7 @@ import { useContact } from './contact';
 import { TFormattedRecentItem } from '@portkey-wallet/types/types-ca/contactNew';
 import { getAelfAddress } from '@portkey-wallet/utils/aelf';
 
-export const useRecentState = () => useAppCASelector(state => state.recent);
+export const useRecentState = () => useAppCASelector(state => state?.recent);
 
 export function useRecent() {
   const dispatch = useAppCommonDispatch();

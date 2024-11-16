@@ -1,15 +1,16 @@
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 import React from 'react';
 import { TextL, TextM } from 'components/CommonText';
 import { pTd } from 'utils/unit';
 import Svg from 'components/Svg';
-import CommonSwitch from 'components/CommonSwitch';
 import CommonAvatar from 'components/CommonAvatar';
 import Touchable from 'components/Touchable';
 import GStyles from 'assets/theme/GStyles';
 import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { darkColors } from 'assets/theme';
+import { makeStyles } from '@rneui/themed';
+import CustomSwitch from 'components/CustomSwitch';
 
 type TokenItemProps = {
   item: TokenItemShowType;
@@ -18,7 +19,7 @@ type TokenItemProps = {
 
 const TokenItem = ({ item, onHandleToken }: TokenItemProps) => {
   const { currentNetwork } = useWallet();
-
+  const itemStyle = getStyles();
   return (
     // if not touchable, can not scroll
 
@@ -38,6 +39,7 @@ const TokenItem = ({ item, onHandleToken }: TokenItemProps) => {
           title={item?.displayChainName}
           avatarSize={pTd(20)}
           imageUrl={item?.chainImageUrl}
+          titleStyle={{ fontSize: pTd(16) }}
           borderStyle={itemStyle.chainIconBorder}
         />
       </View>
@@ -56,14 +58,12 @@ const TokenItem = ({ item, onHandleToken }: TokenItemProps) => {
           {item.isDefault ? (
             <Svg icon="lock" size={pTd(20)} />
           ) : (
-            <Touchable
-              onPress={() => {
+            <CustomSwitch
+              value={!!item.isAdded}
+              onToggle={() => {
                 onHandleToken(item, !!item.isAdded);
-              }}>
-              <View pointerEvents="none">
-                <CommonSwitch value={!!item.isAdded} />
-              </View>
-            </Touchable>
+              }}
+            />
           )}
         </View>
       </View>
@@ -73,7 +73,7 @@ const TokenItem = ({ item, onHandleToken }: TokenItemProps) => {
 
 export default TokenItem;
 
-const itemStyle = StyleSheet.create({
+const getStyles = makeStyles(theme => ({
   wrap: {
     height: pTd(74),
     display: 'flex',
@@ -93,13 +93,15 @@ const itemStyle = StyleSheet.create({
     top: 0,
   },
   chainIconBorder: {
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: darkColors.borderBase1,
+    borderWidth: pTd(1),
+    borderColor: theme.colors.borderBase1,
   },
   chainIcon: {
     position: 'absolute',
     right: 0,
     bottom: 0,
+    borderWidth: pTd(1),
+    borderColor: theme.colors.borderBase1,
   },
   right: {
     height: pTd(72),
@@ -115,4 +117,4 @@ const itemStyle = StyleSheet.create({
     marginTop: pTd(16),
     alignSelf: 'flex-start',
   },
-});
+}));

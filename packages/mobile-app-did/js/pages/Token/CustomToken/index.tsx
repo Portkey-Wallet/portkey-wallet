@@ -2,9 +2,9 @@ import PageContainer from 'components/PageContainer';
 import CommonInput from 'components/CommonInput';
 import { StyleSheet, View } from 'react-native';
 import gStyles from 'assets/theme/GStyles';
-import { darkColors, defaultColors } from 'assets/theme';
+import { defaultColors } from 'assets/theme';
 import React, { useCallback, useState } from 'react';
-import { TextM } from 'components/CommonText';
+import { TextL } from 'components/CommonText';
 import { pTd } from 'utils/unit';
 import { useLanguage } from 'i18n/hooks';
 import { ChainId } from '@portkey-wallet/types';
@@ -21,9 +21,7 @@ import { sleep } from '@portkey-wallet/utils';
 import CommonToast from 'components/CommonToast';
 import { FontStyles } from 'assets/theme/styles';
 import GStyles from 'assets/theme/GStyles';
-import { RichText } from 'components/RichText';
-import Svg from 'components/Svg';
-import { style } from 'components/Dialog/style';
+import { makeStyles } from '@rneui/themed';
 
 interface CustomTokenProps {
   route?: any;
@@ -51,9 +49,11 @@ const CustomToken: React.FC<CustomTokenProps> = () => {
   });
   const [btnDisable, setBtnDisable] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string>('');
-
+  const pageStyles = getStyles();
   const fetchTokenItem = useCallback(async () => {
-    if (!keyword) return;
+    if (!keyword) {
+      return;
+    }
 
     Loading.show();
 
@@ -154,7 +154,7 @@ const CustomToken: React.FC<CustomTokenProps> = () => {
           ]}
         />
       </View> */}
-      <FormItem title={'Network'} style={pageStyles.networkWrap}>
+      <FormItem title={'Network'} style={pageStyles.networkWrap} titleStyle={pageStyles.labelWrap}>
         <SelectChain
           currentNetwork={currentNetwork}
           chainId={tokenItem.chainId || originChainId}
@@ -162,7 +162,7 @@ const CustomToken: React.FC<CustomTokenProps> = () => {
           onChainPress={onChainChange}
         />
       </FormItem>
-      <FormItem title={'Token symbol'}>
+      <FormItem title={'Token symbol'} titleStyle={pageStyles.labelWrap}>
         <CommonInput
           type="general"
           spellCheck={false}
@@ -174,8 +174,8 @@ const CustomToken: React.FC<CustomTokenProps> = () => {
           errorMessage={errorMessage}
         />
       </FormItem>
-      <FormItem title={'Decimals'} titleStyle={pageStyles.disableText}>
-        <TextM style={[pageStyles.tokenDecimal, FontStyles.fontDisabled1]}>{tokenItem.decimals}</TextM>
+      <FormItem title={'Decimals'} titleStyle={[pageStyles.disableText, pageStyles.labelWrap]}>
+        <TextL style={[pageStyles.tokenDecimal, FontStyles.fontDisabled1]}>{tokenItem.decimals}</TextL>
       </FormItem>
 
       <View style={pageStyles.btnContainer}>
@@ -189,18 +189,18 @@ const CustomToken: React.FC<CustomTokenProps> = () => {
 
 export default CustomToken;
 
-export const pageStyles = StyleSheet.create({
+export const getStyles = makeStyles(theme => ({
   pageWrap: {
     flex: 1,
-    backgroundColor: darkColors.bgBase1,
+    backgroundColor: theme.colors.bgBase1,
     ...gStyles.paddingArg(16, 16),
   },
   tipsSection: {
     color: defaultColors.font3,
     borderRadius: pTd(12),
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: darkColors.borderWarning3,
-    backgroundColor: darkColors.bgWarning3,
+    borderColor: theme.colors.borderWarning3,
+    backgroundColor: theme.colors.bgWarning3,
     padding: pTd(16),
     display: 'flex',
     flexDirection: 'row',
@@ -210,23 +210,18 @@ export const pageStyles = StyleSheet.create({
     width: pTd(280),
   },
   richTextCommonStyle: {
-    color: darkColors.textWarning3,
+    color: theme.colors.textWarning3,
     fontSize: pTd(16),
   },
   richTextSpecialStyle: {
-    color: darkColors.textBrand1,
+    color: theme.colors.textBrand1,
     fontSize: pTd(16),
   },
   networkWrap: {
     paddingBottom: pTd(16),
   },
-  list: {
-    flex: 1,
-  },
-  noResult: {
-    marginTop: pTd(40),
-    textAlign: 'center',
-    color: defaultColors.font7,
+  labelWrap: {
+    fontSize: pTd(16),
   },
   btnContainer: {
     position: 'absolute',
@@ -236,15 +231,15 @@ export const pageStyles = StyleSheet.create({
   },
   tokenDecimal: {
     lineHeight: pTd(40),
-    backgroundColor: darkColors.bgBase2,
-    color: darkColors.textDisabled2,
+    backgroundColor: theme.colors.bgBase2,
+    color: theme.colors.textDisabled2,
     overflow: 'hidden',
-    borderRadius: pTd(6),
+    borderRadius: pTd(8),
     paddingLeft: pTd(16),
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: darkColors.borderBase1,
+    borderWidth: pTd(1),
+    borderColor: theme.colors.borderBase1,
   },
   disableText: {
-    color: darkColors.textDisabled1,
+    color: theme.colors.textDisabled1,
   },
-});
+}));

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import navigationService from 'utils/navigationService';
@@ -19,6 +19,10 @@ import { makeStyles } from '@rneui/themed';
 import { formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import { PortkeyLinearGradientV2 } from 'components/PortkeyLinearGradient';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
+import CommonButton from 'components/CommonButton';
+import fonts from 'assets/theme/fonts';
+import { useAccountNFTCollectionInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
+import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 
 export enum NoDataMessage {
   CustomNetWorkNoData = 'No transaction records accessible from the current custom network',
@@ -52,7 +56,8 @@ export default function NFTItem(props: NFTItemPropsType) {
     closeItem,
   } = props;
   const styles = getStyles();
-
+  const { fetchAccountNFTItem } = useAccountNFTCollectionInfo();
+  const caAddressInfos = useCaAddressInfoList();
   const [open, setOpen] = useState<boolean>(false);
 
   const openCollectionInfo = useMemo(
@@ -75,11 +80,21 @@ export default function NFTItem(props: NFTItemPropsType) {
   );
 
   const skeletonList = useMemo(() => {
-    if (!isFetching) return [];
+    if (!isFetching) {
+      return [];
+    }
 
     const count = itemCount - showChildren?.length >= 9 ? 9 : itemCount - showChildren?.length;
     return count > 0 ? new Array(count).fill('-') : [];
   }, [isFetching, itemCount, showChildren?.length]);
+  const retry = useCallback(async () => {
+    await fetchAccountNFTItem({
+      symbol,
+      chainId,
+      caAddressInfos: caAddressInfos.filter(item => item.chainId === chainId),
+      pageNum: 0,
+    });
+  }, [caAddressInfos, chainId, fetchAccountNFTItem, symbol]);
 
   return (
     <View style={styles.wrap}>
@@ -124,6 +139,14 @@ export default function NFTItem(props: NFTItemPropsType) {
       </Touchable>
       <Collapsible collapsed={!open}>
         <View style={[styles.listWrap]}>
+          {!isFetching && showChildren.length === 0 && (
+            <View style={styles.noDataContainer}>
+              <TextL style={styles.noDataTitle}>No data</TextL>
+              <CommonButton type="outline" buttonStyle={styles.noDataButton} onPress={retry}>
+                Retry
+              </CommonButton>
+            </View>
+          )}
           {showChildren?.map((ele: any, index: number) => (
             <Touchable
               style={[
@@ -154,10 +177,9 @@ export default function NFTItem(props: NFTItemPropsType) {
                   index % 3 === 2 ? styles.marginRight0 : {},
                 ]}
               />
-              <TextM numberOfLines={1} ellipsizeMode="tail" style={[GStyles.marginTop(8)]}>
+              <TextM numberOfLines={1} ellipsizeMode="tail" style={[GStyles.marginTop(8), GStyles.maxWidth(109)]}>
                 {ele.alias}
               </TextM>
-
               <TextS numberOfLines={1} style={styles.itemAmount}>
                 {ele.balance && ele.decimals
                   ? formatTokenAmountShowWithDecimals(ele.balance, ele.decimals)
@@ -188,6 +210,7 @@ export default function NFTItem(props: NFTItemPropsType) {
               <Skeleton
                 key={i}
                 animation="wave"
+                // eslint-disable-next-line react/no-unstable-nested-components
                 LinearGradientComponent={() => <PortkeyLinearGradientV2 />}
                 style={[
                   styles.itemWrapper,
@@ -318,5 +341,18 @@ const getStyles = makeStyles(theme => ({
     position: 'absolute',
     right: -pTd(4),
     bottom: -pTd(2),
+  },
+  noDataContainer: {
+    alignItems: 'center',
+    width: '100%',
+  },
+  noDataTitle: {
+    color: theme.colors.textBase2,
+    ...fonts.SGRegularFont,
+    marginBottom: pTd(16),
+  },
+  noDataButton: {
+    width: pTd(74),
+    height: pTd(40),
   },
 }));

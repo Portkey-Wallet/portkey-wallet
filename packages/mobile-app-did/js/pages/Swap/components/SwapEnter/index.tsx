@@ -49,10 +49,14 @@ const SwapEnter = () => {
 
   const isInitRef = useRef(false);
   useEffect(() => {
-    if (isInitRef.current) return;
+    if (isInitRef.current) {
+      return;
+    }
     const defaultTokenIn = list.find(item => item.symbol === 'ELF');
     const defaultTokenOut = list.find(item => item.symbol === 'USDT');
-    if (!defaultTokenIn || !defaultTokenOut) return;
+    if (!defaultTokenIn || !defaultTokenOut) {
+      return;
+    }
     isInitRef.current = true;
     setSwapInfo(pre => ({
       ...pre,
@@ -80,7 +84,9 @@ const SwapEnter = () => {
   const [isRouteEmpty, setIsRouteEmpty] = useState(false);
   const executeCb = useCallback(async () => {
     const { tokenIn, tokenOut } = swapInfoRef.current;
-    if (!tokenIn || !tokenOut) return;
+    if (!tokenIn || !tokenOut) {
+      return;
+    }
 
     try {
       refreshTokenValueRef.current?.();
@@ -179,7 +185,9 @@ const SwapEnter = () => {
   const timerRef = useRef<NodeJS.Timeout>();
 
   const clearTimer = useCallback(() => {
-    if (!timerRef.current) return;
+    if (!timerRef.current) {
+      return;
+    }
     clearInterval(timerRef.current);
     timerRef.current = undefined;
     console.log('clearTimer');
@@ -194,7 +202,9 @@ const SwapEnter = () => {
   const registerTimer = useCallback(() => {
     clearTimer();
     const { tokenIn, tokenOut } = swapInfoRef.current;
-    if (!tokenIn || !tokenOut) return;
+    if (!tokenIn || !tokenOut) {
+      return;
+    }
 
     executeCbRef.current();
 
@@ -205,7 +215,9 @@ const SwapEnter = () => {
 
   useEffectOnce(() => {
     const { tokenIn, tokenOut } = swapInfo;
-    if (!tokenIn || !tokenOut) return;
+    if (!tokenIn || !tokenOut) {
+      return;
+    }
     registerTimer();
   });
 
@@ -240,10 +252,12 @@ const SwapEnter = () => {
 
   const setTokenIn = useCallback(
     async (tokenIn?: TCurrency) => {
-      if (!tokenIn) return;
+      if (!tokenIn) {
+        return;
+      }
       setSwapInfo(pre => {
         const isSwitch = pre.tokenOut?.symbol === tokenIn.symbol;
-        if (!isSwitch)
+        if (!isSwitch) {
           return {
             ...pre,
             tokenIn,
@@ -251,6 +265,7 @@ const SwapEnter = () => {
             valueIn: '',
             valueOut: '',
           };
+        }
         return {
           ...pre,
           tokenIn,
@@ -267,16 +282,19 @@ const SwapEnter = () => {
 
   const setTokenOut = useCallback(
     async (tokenOut?: TCurrency) => {
-      if (!tokenOut) return;
+      if (!tokenOut) {
+        return;
+      }
       setSwapInfo(pre => {
         const isSwitch = pre.tokenIn?.symbol === tokenOut.symbol;
-        if (!isSwitch)
+        if (!isSwitch) {
           return {
             ...pre,
             tokenOut,
             isFocusValueIn: true,
             valueOut: '',
           };
+        }
 
         return {
           ...pre,
@@ -306,7 +324,9 @@ const SwapEnter = () => {
 
   const priceLabel = useMemo(() => {
     const { tokenIn, tokenOut, valueIn, valueOut } = swapInfo;
-    if (!tokenIn || !tokenOut) return '-';
+    if (!tokenIn || !tokenOut) {
+      return '-';
+    }
     // if (!valueIn && !valueOut) return '-';
     const symbolIn = formatNameWithNoUnderline(tokenIn.symbol);
     const symbolOut = formatNameWithNoUnderline(tokenOut.symbol);
@@ -317,7 +337,9 @@ const SwapEnter = () => {
     //   const _price = formatPrice(ZERO.plus(valueIn).div(ZERO.plus(valueOut)));
     //   return `1 ${symbolOut} = ${_price} ${symbolIn}`;
     // } else {
-    if (!valueIn || !valueOut) return `1 ${symbolIn} = - ${symbolOut}`;
+    if (!valueIn || !valueOut) {
+      return `1 ${symbolIn} = - ${symbolOut}`;
+    }
 
     const _price = formatPrice(ZERO.plus(valueOut).div(ZERO.plus(valueIn)));
     return `1 ${symbolIn} = ${_price} ${symbolOut}`;
@@ -326,28 +348,50 @@ const SwapEnter = () => {
 
   const isExceedBalance = useMemo(() => {
     const { tokenIn, valueIn } = swapInfo;
-    if (!tokenIn) return false;
+    if (!tokenIn) {
+      return false;
+    }
     const tokenInBalance = currencyBalances?.[swapInfo.tokenIn?.symbol || ''];
-    if (tokenInBalance === undefined) return true;
+    if (tokenInBalance === undefined) {
+      return true;
+    }
     const validBalance = tokenIn.symbol === 'ELF' ? ZERO.plus(tokenInBalance).minus(gasFee) : tokenInBalance;
-    if (ZERO.plus(valueIn).gt(divDecimals(validBalance, tokenIn.decimals))) return true;
+    if (ZERO.plus(valueIn).gt(divDecimals(validBalance, tokenIn.decimals))) {
+      return true;
+    }
     return false;
   }, [currencyBalances, gasFee, swapInfo]);
   const isInputError = useMemo(() => {
-    if (!currencyBalances) return false;
+    if (!currencyBalances) {
+      return false;
+    }
     const tokenInBalance = currencyBalances[swapInfo.tokenIn?.symbol || ''];
-    if (!tokenInBalance || tokenInBalance.isNaN()) return false;
+    if (!tokenInBalance || tokenInBalance.isNaN()) {
+      return false;
+    }
     return isExceedBalance;
   }, [currencyBalances, isExceedBalance, swapInfo.tokenIn?.symbol]);
 
   const isBtnDisable = useMemo(() => {
     const { tokenIn, tokenOut, valueIn, valueOut } = swapInfo;
-    if (!tokenIn || !tokenOut) return true;
-    if (isRouteEmpty) return true;
-    if (!valueIn || ZERO.eq(valueIn)) return true;
-    if (!valueOut || ZERO.eq(valueOut)) return true;
-    if (isInvalidParis) return true;
-    if (isExceedBalance) return true;
+    if (!tokenIn || !tokenOut) {
+      return true;
+    }
+    if (isRouteEmpty) {
+      return true;
+    }
+    if (!valueIn || ZERO.eq(valueIn)) {
+      return true;
+    }
+    if (!valueOut || ZERO.eq(valueOut)) {
+      return true;
+    }
+    if (isInvalidParis) {
+      return true;
+    }
+    if (isExceedBalance) {
+      return true;
+    }
     return false;
   }, [isExceedBalance, isInvalidParis, isRouteEmpty, swapInfo]);
 
@@ -364,23 +408,33 @@ const SwapEnter = () => {
   const [isSwapping, setIsSwapping] = useState(false);
   const onPreviewClick = useCallback(async () => {
     const { tokenIn, tokenOut, valueIn, valueOut } = swapInfo;
-    if (!tokenIn || !tokenOut) return;
-    if (!valueIn || !valueOut) return;
+    if (!tokenIn || !tokenOut) {
+      return;
+    }
+    if (!valueIn || !valueOut) {
+      return;
+    }
 
     const _refreshTokenValue = refreshTokenValueRef.current;
-    if (!_refreshTokenValue) return;
+    if (!_refreshTokenValue) {
+      return;
+    }
     setIsSwapping(true);
     try {
       const result = await _refreshTokenValue(true);
       // can not get routeInfo
-      if (!result || !result.swapRoute) return;
+      if (!result || !result.swapRoute) {
+        return;
+      }
 
       const route = result.swapRoute;
       const _tokens = route.distributions[0]?.tokens;
       const routeSymbolIn = _tokens[0].symbol;
       const routeSymbolOut = _tokens[_tokens.length - 1]?.symbol;
       // swapInfo do not match routeInfo
-      if (tokenIn.symbol !== routeSymbolIn || tokenOut.symbol !== routeSymbolOut) return;
+      if (tokenIn.symbol !== routeSymbolIn || tokenOut.symbol !== routeSymbolOut) {
+        return;
+      }
 
       navigationService.navigate('SwapPreview', {
         swapInfo: {
@@ -398,6 +452,16 @@ const SwapEnter = () => {
       setIsSwapping(false);
     }
   }, [priceLabel, swapInfo]);
+
+  const isPreviewShow = useMemo(() => {
+    if (swapInfo.isFocusValueIn && !swapInfo.valueIn) {
+      return false;
+    }
+    if (!swapInfo.isFocusValueIn && !swapInfo.valueOut) {
+      return false;
+    }
+    return true;
+  }, [swapInfo.isFocusValueIn, swapInfo.valueIn, swapInfo.valueOut]);
 
   return (
     <View style={styles.swapEnterWrap}>
@@ -420,27 +484,31 @@ const SwapEnter = () => {
             description="There is currently no available liquidity pool for the selected token pair. Select different tokens to continue."
           />
         ) : (
-          <View style={styles.infoWrap}>
-            <CommonInfoRow
-              label={{
-                text: 'Provider',
-                tooltipProps: {
-                  title: 'Provider',
-                  description: 'The decentralised exchange where your trade will be executed.',
-                },
-              }}
-              value={{ text: 'AwakenSwap' }}
-            />
-            <CommonInfoRow label={{ text: 'Price' }} value={{ text: priceLabel }} />
-          </View>
+          isPreviewShow && (
+            <View style={styles.infoWrap}>
+              <CommonInfoRow
+                label={{
+                  text: 'Provider',
+                  tooltipProps: {
+                    title: 'Provider',
+                    description: 'The decentralised exchange where your trade will be executed.',
+                  },
+                }}
+                value={{ text: 'AwakenSwap' }}
+              />
+              <CommonInfoRow label={{ text: 'Price' }} value={{ text: priceLabel }} />
+            </View>
+          )
         )}
       </View>
+
       <KeyboardSafeArea bottomPad={pTd(16)}>
         <CommonButton
           loading={isSwapping}
           title={t(bottomButtonTitle)}
           type="primary"
           disabled={isBtnDisable}
+          containerStyle={!isPreviewShow && styles.previewHide}
           onPress={onPreviewClick}
         />
       </KeyboardSafeArea>

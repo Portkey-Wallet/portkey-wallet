@@ -16,6 +16,7 @@ import { PortkeyLinearGradientV2 } from 'components/PortkeyLinearGradient';
 import Touchable from 'components/Touchable';
 import navigationService from 'utils/navigationService';
 import { NFTItemBaseType } from '@portkey-wallet/types/types-ca/assets';
+import { divDecimalsToShow } from '@portkey-wallet/utils/converter';
 
 export interface ICollectionDetailProps {
   name: string;
@@ -79,7 +80,9 @@ const CollectionDetail = () => {
     pageNumRef.current += 1;
   }, [caAddressInfos, chainId, fetchAccountNFTItem, itemCount, showChildren?.length, symbol]);
   const skeletonList: number[] = useMemo(() => {
-    if (!isFetching && !isInit) return [];
+    if (!isFetching && !isInit) {
+      return [];
+    }
     const count = isInit ? 15 : isFetching ? 3 : 0;
     return count > 0 ? new Array(count).fill('-') : [];
   }, [isFetching, isInit]);
@@ -90,6 +93,7 @@ const CollectionDetail = () => {
         <Skeleton
           key={item}
           animation="wave"
+          // eslint-disable-next-line react/no-unstable-nested-components
           LinearGradientComponent={() => <PortkeyLinearGradientV2 />}
           style={styles.skeleton}
           height={pTd(110)}
@@ -102,7 +106,7 @@ const CollectionDetail = () => {
 
   const renderItem = useCallback(
     (item: NFTItemBaseType, index: number) => {
-      const { alias, balance, imageUrl: imageUrlLocal } = item;
+      const { alias, balance, decimals, imageUrl: imageUrlLocal } = item;
       const isEndColum = index % 3 === 2;
       return (
         <Touchable
@@ -122,7 +126,7 @@ const CollectionDetail = () => {
             </View>
             <View style={styles.textContainer}>
               <Text style={styles.itemName}>{alias}</Text>
-              <Text style={styles.itemAmount}>{balance}</Text>
+              <Text style={styles.itemAmount}>{divDecimalsToShow(balance, decimals)}</Text>
             </View>
           </View>
         </Touchable>
@@ -160,6 +164,7 @@ const CollectionDetail = () => {
       hideTouchable>
       {isInit ? (
         <FlatList
+          // eslint-disable-next-line react/no-unstable-nested-components
           ListHeaderComponent={() => {
             return (
               <View style={styles.topWrapper}>
@@ -176,10 +181,12 @@ const CollectionDetail = () => {
           numColumns={3}
           scrollEnabled={false}
           columnWrapperStyle={styles.columnWrapperThree}
+          // eslint-disable-next-line react/no-unstable-nested-components
           ItemSeparatorComponent={() => <View style={GStyles.height(16)} />}
         />
       ) : (
         <FlatList
+          // eslint-disable-next-line react/no-unstable-nested-components
           ListHeaderComponent={() => {
             return (
               <View style={styles.topWrapper}>
@@ -197,21 +204,21 @@ const CollectionDetail = () => {
           showsVerticalScrollIndicator={false}
           onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], {
             useNativeDriver: false,
-            listener: event => {
-              const y = (event.nativeEvent as any).contentOffset.y;
-            },
           })}
           scrollEventThrottle={16}
+          // eslint-disable-next-line react/no-unstable-nested-components
           ItemSeparatorComponent={() => <View style={GStyles.height(16)} />}
           columnWrapperStyle={styles.columnWrapper}
+          // eslint-disable-next-line react/no-unstable-nested-components
           ListFooterComponent={() => {
             return isFetching && !isInit ? (
               <View style={[GStyles.flexRow, styles.columnMode]}>
-                {skeletonList.map((ele, i) => {
+                {skeletonList.map((_ele, i) => {
                   return (
                     <Skeleton
                       key={i}
                       animation="wave"
+                      // eslint-disable-next-line react/no-unstable-nested-components
                       LinearGradientComponent={() => <PortkeyLinearGradientV2 />}
                       style={styles.skeleton}
                       height={pTd(110)}

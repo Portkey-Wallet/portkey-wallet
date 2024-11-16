@@ -1,12 +1,9 @@
 import React, { useMemo } from 'react';
-import { StyleProp, StyleSheet, Text, TextStyle, ViewStyle } from 'react-native';
+import { StyleProp, Text, TextStyle, ViewStyle } from 'react-native';
 import { pTd } from 'utils/unit';
 import GStyles from 'assets/theme/GStyles';
 import { TextM } from 'components/CommonText';
-import { defaultColors } from 'assets/theme';
 import fonts from 'assets/theme/fonts';
-import { isNumberInInterval, INFINITY } from 'utils';
-import { AssetType } from '@portkey-wallet/constants/constants-ca/assets';
 import { makeStyles } from '@rneui/themed';
 
 type RedPacketAmountShowPropsType = {
@@ -37,15 +34,10 @@ export const RedPacketAmountShow = (props: RedPacketAmountShowPropsType) => {
   const TextColorStyle = useMemo<StyleProp<TextStyle>>(() => ({ color: textColor }), [textColor]);
   const UsdTextColorStyle = useMemo<StyleProp<TextStyle>>(() => ({ color: usdTextColor }), [usdTextColor]);
 
-  const amountShowValue = useMemo(() => {
-    if (amountShow) return amountShow;
-    return '0';
-  }, [amountShow]);
-
   return (
     <>
       <Text style={[GStyles.textAlignCenter, wrapStyle]}>
-        <Text style={[styles.amount, TextColorStyle]}>{amountShowValue}</Text>
+        <Text style={[styles.amount, TextColorStyle]}>{amountShow || '0'}</Text>
         {symbol && <TextM style={[styles.symbol, TextColorStyle]}>{` ${label || symbol}`}</TextM>}
       </Text>
       <Text style={[GStyles.textAlignCenter, usdWrapStyle]}>
@@ -57,7 +49,7 @@ export const RedPacketAmountShow = (props: RedPacketAmountShowPropsType) => {
 
 export default RedPacketAmountShow;
 
-const getStyles = makeStyles(theme => ({
+const getStyles = makeStyles(() => ({
   amount: {
     ...fonts.mediumFont,
     fontSize: pTd(32),

@@ -123,6 +123,13 @@ const DeviceList: React.FC = () => {
               await sleep(5000);
               getDeviceList();
             },
+            style: {
+              backgroundColor: theme.colors.bgDanger1,
+            },
+            titleStyle: {
+              ...fonts.mediumFont,
+              color: theme.colors.textDanger4,
+            },
           },
         ],
       }),

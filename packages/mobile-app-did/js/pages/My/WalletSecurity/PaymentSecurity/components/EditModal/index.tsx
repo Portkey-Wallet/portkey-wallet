@@ -127,10 +127,15 @@ const EditModal: React.FC<IProps> = ({ detail }: IProps) => {
     OverlayModal.hide();
   }, [detail, editInfo]);
 
+  const [isInputing, setIsInputing] = useState(false);
+
   return (
     <View>
-      <KeyboardSafeArea>
-        <ModalBody title={t(`${detail?.restricted ? 'Edit' : 'Set'} transaction limits`)} modalBodyType="bottom">
+      <ModalBody
+        title={t(`${detail?.restricted ? 'Edit' : 'Set'} transaction limits`)}
+        modalBodyType="bottom"
+        style={isInputing && { minHeight: pTd(600) }}>
+        <KeyboardSafeArea>
           <View style={pageStyles.container}>
             <TextM style={pageStyles.title}>{t('Limit per Transaction')}</TextM>
             <CommonInput
@@ -148,6 +153,8 @@ const EditModal: React.FC<IProps> = ({ detail }: IProps) => {
               onChangeText={onSingleLimitInput}
               maxLength={maxLength}
               errorMessage={singleLimitError.isError ? singleLimitError.errorMsg : ''}
+              onFocus={() => setIsInputing(true)}
+              onBlur={() => setIsInputing(false)}
             />
             <TextM style={pageStyles.title}>{t('Daily limit')}</TextM>
             <CommonInput
@@ -165,13 +172,15 @@ const EditModal: React.FC<IProps> = ({ detail }: IProps) => {
               onChangeText={onDailyLimitInput}
               maxLength={maxLength}
               errorMessage={dailyLimitError.isError ? dailyLimitError.errorMsg : ''}
+              onFocus={() => setIsInputing(true)}
+              onBlur={() => setIsInputing(false)}
             />
             <CommonButton type="primary" style={pageStyles.button} onPress={save}>
               Verify with guardian
             </CommonButton>
           </View>
-        </ModalBody>
-      </KeyboardSafeArea>
+        </KeyboardSafeArea>
+      </ModalBody>
     </View>
   );
 };

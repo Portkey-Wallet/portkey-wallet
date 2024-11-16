@@ -187,8 +187,7 @@ const CryptoAssetsList = ({
   }, [debounceKeyword, t]);
 
   return (
-    <ModalBody modalBodyType="bottom" title={t('You pay')} style={gStyles.overlayStyle}>
-      {/* no assets in this account  */}
+    <ModalBody modalBodyType="bottom" title={t('You pay')} style={[gStyles.overlayStyle, { minHeight: pTd(700) }]}>
       <CommonInput
         placeholder={t('Search')}
         containerStyle={styles.containerStyle}
@@ -199,6 +198,7 @@ const CryptoAssetsList = ({
           setKeyword(v.trim());
         }}
       />
+
       <FlatList
         disableScrollViewPanResponder={true}
         onLayout={e => {

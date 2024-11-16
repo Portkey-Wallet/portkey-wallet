@@ -1,24 +1,13 @@
 import React, { memo, useCallback, useEffect, useState } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
-import { defaultColors } from 'assets/theme';
+import { View } from 'react-native';
 import { TextL, TextM, TextS } from 'components/CommonText';
 import Touchable from 'components/Touchable';
 import { pTd } from 'utils/unit';
 import { FontStyles } from 'assets/theme/styles';
-import { DeviceItemType, DeviceType } from '@portkey-wallet/types/types-ca/device';
-import Svg, { IconName } from 'components/Svg';
+import { DeviceItemType } from '@portkey-wallet/types/types-ca/device';
 import { formatTransferTime } from '@portkey-wallet/utils/time';
 import { makeStyles, useTheme } from '@rneui/themed';
-// import CheckBox from 'rn-teaset/components/Checkbox/Checkbox';
 import CheckBox from 'components/CheckBox';
-
-const deviceTypeIconMap: Record<DeviceType, IconName> = {
-  [DeviceType.IOS]: 'phone-iOS',
-  [DeviceType.ANDROID]: 'phone-Android',
-  [DeviceType.MAC]: 'desk-mac',
-  [DeviceType.WINDOWS]: 'desk-win',
-  [DeviceType.OTHER]: 'desk-win',
-};
 
 interface DeviceItemProps {
   onPress?: (e: any) => void;
@@ -48,7 +37,7 @@ const DeviceItemRender = ({ onPress, isCurrent, deviceItem, isShowCheckBox }: De
             <TextL>{deviceItem.deviceInfo.deviceName}</TextL>
             {isCurrent && (
               <View style={styles.currentWrap}>
-                <TextS style={styles.currentWrap}>Current</TextS>
+                <TextS style={styles.currentText}>Current</TextS>
               </View>
             )}
           </View>
@@ -89,10 +78,16 @@ const getStyles = makeStyles(theme => ({
   checkboxTitle: {},
   currentWrap: {
     height: pTd(20),
-    color: theme.colors.textSuccess5,
+    width: pTd(55),
     backgroundColor: theme.colors.bgSuccess2,
-    paddingHorizontal: pTd(4),
     justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: pTd(4),
+    marginLeft: pTd(8),
+  },
+  currentText: {
+    fontSize: pTd(12),
+    color: theme.colors.textSuccess5,
   },
   checkBox: {
     backgroundColor: theme.colors.bgBase1,

@@ -31,7 +31,6 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network-mainnet-v2';
 import { SendType } from '@portkey-wallet/types/types-ca/send';
 import navigationService from 'utils/navigationService';
-import { set } from 'lodash';
 interface IToAddressInput {
   isFixedToContact?: boolean;
   selectedToken?: IToSendAssetParamsType;
@@ -91,7 +90,9 @@ export default function ToAddressInput({
 
   const checkAddressByFE = useCallback(
     (v: string) => {
-      if (!isDIDAelfAddress(v)) return false;
+      if (!isDIDAelfAddress(v)) {
+        return false;
+      }
 
       // include chainId
       if (v.includes('_')) {
@@ -178,15 +179,21 @@ export default function ToAddressInput({
       setCheckFinish(false);
       setSelectedToContact(() => {
         let chainId = DefaultChainId;
-        if (_v.includes('_') && isDIDAelfAddress(_v)) chainId = getChainIdByAddress(_v);
+        if (_v.includes('_') && isDIDAelfAddress(_v)) {
+          chainId = getChainIdByAddress(_v);
+        }
         return { name: '', address: _v, chainId };
       });
 
       const FEPass = checkAddressByFE(_v);
       // when send nft other chain is not support
-      if (!FEPass && sendType === 'nft') return setWarning([WarningKey.INVALID_ADDRESS]);
+      if (!FEPass && sendType === 'nft') {
+        return setWarning([WarningKey.INVALID_ADDRESS]);
+      }
 
-      if (!FEPass) getNetworkList(_v);
+      if (!FEPass) {
+        getNetworkList(_v);
+      }
     },
     [checkAddressByFE, getNetworkList, sendType, setCheckFinish, setSelectedToContact, setWarning],
   );
@@ -220,7 +227,7 @@ export default function ToAddressInput({
       <View style={styles.toWrap}>
         {step === 2 ? (
           <>
-            <TextL style={styles.grayColor}>{`To:  `}</TextL>
+            <TextL style={styles.grayColor}>{'To:  '}</TextL>
             {selectedToContact?.name ? (
               <>
                 <TextM>{selectedToContact?.name || ''}</TextM>
@@ -239,7 +246,7 @@ export default function ToAddressInput({
           </>
         ) : (
           <>
-            <TextL style={styles.grayColor}>{`To:  `}</TextL>
+            <TextL style={styles.grayColor}>{'To:  '}</TextL>
             <TextInput
               editable={step === 1}
               style={styles.inputStyle}
@@ -284,7 +291,9 @@ export default function ToAddressInput({
               <Touchable
                 style={[GStyles.marginLeft(16), GStyles.flex1, GStyles.flexRow, GStyles.flexEnd]}
                 onPress={async () => {
-                  if (!(await qrScanPermissionAndToast())) return;
+                  if (!(await qrScanPermissionAndToast())) {
+                    return;
+                  }
                   navigationService.navigate('QrScanner');
                 }}>
                 <Svg icon="scan" size={pTd(20)} color={darkColors.iconBase1} />

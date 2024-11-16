@@ -212,7 +212,7 @@ const SendPreview: React.FC = () => {
 
     const recentItem: IRecentItem = {
       address: toInfo?.address || '',
-      chainId: toInfo?.chainId,
+      chainId: targetNetwork?.network ? undefined : toInfo?.chainId,
       network: targetNetwork?.network || 'aelf',
       networkIcon: targetNetwork?.imageUrl || aelfIcon,
       transferTime: Date.now(),

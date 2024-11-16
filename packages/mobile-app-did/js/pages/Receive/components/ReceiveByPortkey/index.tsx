@@ -34,8 +34,8 @@ export default function ReceiveByPortkey({
     return tokenInfo.tokens?.find(item => item.chainId === destinationChain.chainId);
   }, [destinationChain.chainId, tokenInfo.tokens]);
   const isSupportExchange = useMemo(() => {
-    return tokenItem?.symbol === 'ELF' && destinationChain.chainId === MAIN_CHAIN_ID;
-  }, [destinationChain.chainId, tokenItem?.symbol]);
+    return sourceChain.network === MAIN_CHAIN_ID && destinationChain.chainId === MAIN_CHAIN_ID;
+  }, [destinationChain.chainId, sourceChain.network]);
   const showExchangeTip = useMemo(
     () =>
       tokenItem?.symbol === 'ELF' &&
@@ -137,10 +137,9 @@ export default function ReceiveByPortkey({
     return (
       <View style={styles.fromExchangeTipWrap}>
         <Svg icon="warning" size={pTd(22)} color={defaultColors.iconWarning5} />
-        <TextL
-          style={
-            styles.fromExchangeTipText
-          }>{`If you're transferring from an exchange, set the destination to “aelf MainChain”.`}</TextL>
+        <TextL style={styles.fromExchangeTipText}>
+          {"If you're transferring from an exchange, set the destination to “aelf MainChain”."}
+        </TextL>
       </View>
     );
   }, [styles]);

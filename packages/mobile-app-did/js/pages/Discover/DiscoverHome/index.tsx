@@ -1,5 +1,5 @@
-import React, { useCallback, useMemo } from 'react';
-import { View, StyleSheet, GestureResponderEvent } from 'react-native';
+import React, { useCallback, useMemo, useRef } from 'react';
+import { View, StyleSheet, GestureResponderEvent, TouchableWithoutFeedback } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
 import navigationService from 'utils/navigationService';
 import SimulatedInputBox from 'components/SimulatedInputBoxV2';
@@ -31,6 +31,7 @@ export default function DiscoverHome() {
   const { fetchDiscoverLearnBannerAsync } = useCmsBanner();
   const { fetchDiscoverEarnAsync, fetchDiscoverLearnAsync } = useDiscoverData();
   const { currentTabLength = 0, showTabDrawer } = useTabDrawer();
+  const tabRef = useRef<any>();
   const jumpToHistory = useCallback(
     (num: ArchivedTabEnum) => navigationService.navigate('Bookmark', { type: num }),
     [],
@@ -97,20 +98,31 @@ export default function DiscoverHome() {
     fetchDiscoverLearnAsync();
   });
 
+  const onTouchCleanAll = () => {
+    tabRef.current?.hideAll?.();
+  };
+
   return (
     <SafeAreaBox edges={['top', 'right', 'left']} style={{ backgroundColor: darkColors.bgBase1 }}>
-      <View style={styles.header}>
-        <TextM style={styles.headerTitle}>Discover</TextM>
-        {showToolsIcon}
-      </View>
-      <View style={styles.container}>
-        <DiscoverTab />
-      </View>
-      <View style={styles.functionalLine}>
-        <SimulatedInputBox onClickInput={() => navigationService.navigate('DiscoverSearch')} rightDom={scanQRIcon} />
-        {showAllTabsIcon}
-        {/* {showToolsIcon} */}
-      </View>
+      <TouchableWithoutFeedback onPressIn={onTouchCleanAll}>
+        <View style={styles.container}>
+          <View style={styles.header}>
+            <TextM style={styles.headerTitle}>Discover</TextM>
+            {showToolsIcon}
+          </View>
+          <View style={styles.container}>
+            <DiscoverTab ref={(ref: any) => (tabRef.current = ref)} />
+          </View>
+          <View style={styles.functionalLine}>
+            <SimulatedInputBox
+              onClickInput={() => navigationService.navigate('DiscoverSearch')}
+              rightDom={scanQRIcon}
+            />
+            {showAllTabsIcon}
+            {/* {showToolsIcon} */}
+          </View>
+        </View>
+      </TouchableWithoutFeedback>
     </SafeAreaBox>
   );
 }

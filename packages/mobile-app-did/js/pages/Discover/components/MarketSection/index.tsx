@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef } from 'react';
 import MarketHeader from './components/MarketHeader';
 import { FlatList, View } from 'react-native';
 import { pTd } from 'utils/unit';
@@ -14,7 +14,7 @@ import { TextM } from 'components/CommonText';
 import MarketItemSkeleton from './components/MarketItemSkeleton';
 import Loading from 'components/Loading';
 
-export default function MarketSection() {
+export default forwardRef(function MarketSection(_, _ref) {
   const { marketInfo, refreshing, refreshList, handleSort } = useMarket();
   const flatListRef = useRef<FlatList>(null);
   const itemRefs = useRef(new Map());
@@ -39,6 +39,15 @@ export default function MarketSection() {
   const isSkeleton = useMemo(() => {
     return refreshing && (marketInfo?.dataList?.length || 0) <= 0;
   }, [marketInfo?.dataList?.length, refreshing]);
+
+  useImperativeHandle(_ref, () => ({
+    closeTips: () => {
+      [...itemRefs.current.entries()].forEach(([id, ref]) => {
+        id && ref && ref.hideTips();
+      });
+    },
+  }));
+
   const renderEmpty = useCallback(() => {
     return (
       <View style={styles.empty}>
@@ -83,7 +92,7 @@ export default function MarketSection() {
       )}
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   container: {

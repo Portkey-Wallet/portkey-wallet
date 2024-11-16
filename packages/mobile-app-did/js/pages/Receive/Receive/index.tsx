@@ -118,7 +118,7 @@ export default function Receive() {
   );
 }
 
-const getStyles = makeStyles(theme => ({
+const getStyles = makeStyles(() => ({
   containerStyles: {
     flex: 1,
     display: 'flex',

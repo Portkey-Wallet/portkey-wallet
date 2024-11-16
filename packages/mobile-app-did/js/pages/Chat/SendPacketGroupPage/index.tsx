@@ -8,7 +8,6 @@ import SendRedPacketGroupSection, { CryptoValuesType } from '../components/SendR
 import { RedPackageTypeEnum } from '@portkey-wallet/im';
 import { useCurrentChannelId } from '../context/hooks';
 import { useGetRedPackageConfig, useGroupChannelInfo, useSendRedPackage } from '@portkey-wallet/hooks/hooks-ca/im';
-import { useCalculateRedPacketFee } from 'hooks/useCalculateRedPacketFee';
 import { useGetCAContract } from 'hooks/contract';
 import { useSecuritySafeCheckAndToast } from 'hooks/security';
 import Loading from 'components/Loading';
@@ -34,7 +33,7 @@ export default function SendPacketGroupPage() {
   const styles = getStyles();
   const { isCryptoGift } = useRouterParams<ISendPacketGroupPageProps>();
   const currentChannelId = useCurrentChannelId();
-  const calculateRedPacketFee = useCalculateRedPacketFee();
+  // const calculateRedPacketFee = useCalculateRedPacketFee();
   const { groupInfo } = useGroupChannelInfo(isCryptoGift ? '' : currentChannelId || '', true);
   const [selectTab, setSelectTab] = useState<GroupRedPacketTabEnum>(GroupRedPacketTabEnum.Random);
   const sendRedPackage = useSendRedPackage();
@@ -73,21 +72,20 @@ export default function SendPacketGroupPage() {
       } finally {
         Loading.hide();
       }
-      const fee = await calculateRedPacketFee({
-        symbol: token.symbol,
-        chainId: token.chainId,
-        decimals: token.decimals,
-        count: values.count,
-      });
+      // const fee = await calculateRedPacketFee({
+      //   symbol: token.symbol,
+      //   chainId: token.chainId,
+      //   decimals: token.decimals,
+      //   count: values.count,
+      // });
       navigationService.navigate('SendRedPacketPreview', {
         assetInfo: token,
-        fee,
+        fee: 0,
         values,
         selectTab,
       });
     },
     [
-      calculateRedPacketFee,
       checkAllowanceAndApprove,
       checkManagerSyncState,
       currentChannelId,

@@ -6,7 +6,6 @@ import React, { useCallback, useRef, useState } from 'react';
 import navigationService from 'utils/navigationService';
 import { useAppDispatch } from 'store/hooks';
 import { changePin, createWallet } from '@portkey-wallet/store/store-ca/wallet/actions';
-import CommonToast from 'components/CommonToast';
 import CommonPrompt from 'components/CommonPromptCard';
 import { setCredentials } from 'store/user/actions';
 import { useUser } from 'hooks/store';
@@ -62,10 +61,14 @@ export default function ConfirmPin() {
   const onManagerAddressAndQueryResult = useOnManagerAddressAndQueryResult();
   const onChangePin = useCallback(
     async (newPin: string) => {
-      if (!oldPin) return;
+      if (!oldPin) {
+        return;
+      }
       changeCanLock(false);
       try {
-        if (biometrics) await setSecureStoreItem('Pin', newPin);
+        if (biometrics) {
+          await setSecureStoreItem('Pin', newPin);
+        }
         dispatch(changePin({ pin: oldPin, newPin }));
         dispatch(setCredentials({ pin: newPin }));
         // CommonToast.success(t('Modified Successfully'));
@@ -137,8 +140,12 @@ export default function ConfirmPin() {
         return;
       }
 
-      if (oldPin) return onChangePin(confirmPin);
-      if (managerInfo) return onFinish(confirmPin);
+      if (oldPin) {
+        return onChangePin(confirmPin);
+      }
+      if (managerInfo) {
+        return onFinish(confirmPin);
+      }
     },
     [pin, oldPin, onChangePin, managerInfo, onFinish, textError.isError, setTextError],
   );
@@ -148,7 +155,6 @@ export default function ConfirmPin() {
       titleDom
       type="leftBack"
       notHandleHardwareBackPress={true}
-      backTitle={oldPin ? 'Change PIN' : undefined}
       onGestureStartCallback={() => {
         myEvents.clearSetPin.emit('clearSetPin');
       }}

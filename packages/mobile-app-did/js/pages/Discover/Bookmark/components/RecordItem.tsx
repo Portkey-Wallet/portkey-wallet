@@ -13,6 +13,7 @@ import { darkColors } from 'assets/theme';
 import { ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
 import { useDiscoverJumpWithNetWork } from 'hooks/discover';
 import { useGetCmsWebsiteInfo } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { isDangerousLink } from '@portkey-wallet/utils/dapp/browser';
 
 type RecordItemType = RenderItemParams<ITabItem> & {
   itemRefs: React.MutableRefObject<Map<any, any>>;
@@ -104,6 +105,7 @@ export default memo(
                 title={recordInfo?.title || item.url}
                 url={recordInfo?.url}
                 textFontSize={pTd(16)}
+                showProtocolIcon={isDangerousLink(recordInfo.url)}
               />
               <TextS numberOfLines={1} ellipsizeMode="tail" style={[DarkFontStyles.textBase2]}>
                 {item.url || ''}

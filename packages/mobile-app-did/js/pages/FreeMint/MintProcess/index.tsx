@@ -1,7 +1,6 @@
 import { useConfirmMint, useFreeMintInfo, useGetMintItemInfo } from '@portkey-wallet/hooks/hooks-ca/freeMint';
 import { ICollectionData, IConfirmMintRes } from '@portkey-wallet/types/types-ca/freeMint';
 import Svg, { IconName } from 'components/Svg';
-import { useLanguage } from 'i18n/hooks';
 import React, { useCallback, useState } from 'react';
 import MintEdit, { EditConfig } from '../components/MintEdit';
 import Loading from 'components/Loading';
@@ -32,7 +31,6 @@ export type DisclaimerModalProps = {
   icon?: IconName;
 };
 const MintProcess = () => {
-  const { t } = useLanguage();
   const styles = getStyles();
   const { itemId, freeMintStep, mintStatusType } = useRouterParams<{
     itemId?: string;
@@ -79,7 +77,9 @@ const MintProcess = () => {
 
   useEffectOnce(() => {
     (async () => {
-      if (!itemId) return;
+      if (!itemId) {
+        return;
+      }
       const res = await getMintItemInfo(itemId);
       setEditInfo({
         ...res,
@@ -90,7 +90,8 @@ const MintProcess = () => {
   });
   return (
     <PageContainer
-      noCenterDom
+      noCenterDom={step === FreeMintStep.mintResult}
+      titleDom={step === FreeMintStep.preview ? 'Preview' : 'Mint NFT'}
       leftCallback={() => {
         if (step === FreeMintStep.preview) {
           setStep(FreeMintStep.mintNft);

@@ -24,7 +24,7 @@ const SelectAssetTab: React.FC<SelectAssetTabProps> = (props: SelectAssetTabProp
       },
       {
         name: t('NFTs'),
-        tabItemDom: <SelectNFT toAddress={toAddress} nftInfos={nftInfos} noDataMessage={noDataMessage} />,
+        tabItemDom: <SelectNFT toAddress={toAddress} nftInfos={nftInfos} noDataMessage={'No NFTs available'} />,
       },
     ];
   }, [nftInfos, noDataMessage, t, toAddress, tokenInfos]);

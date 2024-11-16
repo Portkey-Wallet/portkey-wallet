@@ -3,17 +3,22 @@ import { useKeyboard } from 'hooks/useKeyboardHeight';
 import React, { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { View } from 'react-native';
 import { ViewStyleType } from 'types/styles';
+import { pTd } from 'utils/unit';
 
 export type TKeyboardSafeAreaProps = {
   children?: ReactNode;
   bottomPad?: number;
+  gap?: number;
   containerStyle?: ViewStyleType;
+  mode?: 'default' | 'page';
   disable?: boolean;
 };
 export const KeyboardSafeArea = ({
   children,
   bottomPad = 0,
   containerStyle,
+  mode = 'default',
+  gap,
   disable = false,
 }: TKeyboardSafeAreaProps) => {
   const viewRef = useRef<View>(null);
@@ -34,17 +39,39 @@ export const KeyboardSafeArea = ({
   }, []);
 
   useEffect(() => {
+    if (mode === 'page') {
+      setTimeout(() => {
+        if (viewRef.current) {
+          viewRef.current.measure?.((x, y, width, height, pageX, pageY) => {
+            console.log('pageY', pageY, 'height', height, 'screenHeight', screenHeight);
+            if (pageY === undefined || height === undefined) {
+              return;
+            }
+            setViewPositionY(pageY + height);
+          });
+        }
+      }, 100);
+    }
+  }, [mode]);
+
+  useEffect(() => {
+    if (mode === 'page') {
+      return;
+    }
     setTimeout(() => {
       measureView();
     }, 100);
-  }, [measureView]);
+  }, [measureView, mode]);
 
   useEffect(() => {
+    if (mode === 'page') {
+      return;
+    }
     if (!isKeyboardOpened) {
       return;
     }
     measureView();
-  }, [isKeyboardOpened, measureView]);
+  }, [isKeyboardOpened, measureView, mode]);
 
   const style = useMemo(() => {
     if (!isKeyboardOpened || disable) {
@@ -54,12 +81,13 @@ export const KeyboardSafeArea = ({
     if (viewPositionY <= keyboardPositionY) {
       return undefined;
     }
-
     const value = viewPositionY - keyboardPositionY + bottomPad;
     return {
-      paddingBottom: value,
+      paddingBottom: value - (gap ?? 0),
+      marginTop: -value + (gap ?? 0),
+      marginBottom: gap ?? 0,
     };
-  }, [disable, bottomPad, isKeyboardOpened, keyboardHeight, viewPositionY]);
+  }, [disable, gap, bottomPad, isKeyboardOpened, keyboardHeight, viewPositionY]);
 
   return (
     <View ref={viewRef} collapsable={false} style={[style, containerStyle]}>

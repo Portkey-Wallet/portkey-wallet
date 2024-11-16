@@ -38,6 +38,7 @@ export type CommonTopTabProps = {
   expandView?: ReactNode;
   onTabChange?: (name: string) => void;
   suffixIconDom?: ReactNode;
+  suffixIconDomVisible?: boolean;
 };
 
 const Tab = createMaterialTopTabNavigator();
@@ -54,6 +55,7 @@ const CommonTopTab: React.FC<CommonTopTabProps> = props => {
     isBlockTab,
     onTabChange,
     suffixIconDom,
+    suffixIconDomVisible,
   } = props;
 
   const tabBarRef = useRef<any>(null);
@@ -62,11 +64,16 @@ const CommonTopTab: React.FC<CommonTopTabProps> = props => {
       tabBarRef.current.changeSuffix(tabList.map(item => item.suffix));
     }
   }, [tabBarRef, tabList]);
-
+  useEffect(() => {
+    if (tabBarRef.current) {
+      tabBarRef.current.changeSuffixIconDomVisible(suffixIconDomVisible);
+    }
+  }, [tabBarRef, suffixIconDomVisible]);
   return (
     <Tab.Navigator
       initialRouteName={initialRouteName}
       initialLayout={{ width: screenWidth }}
+      // eslint-disable-next-line react/no-unstable-nested-components
       tabBar={prop => (
         <CustomizedTopTabBar
           {...prop}
@@ -131,13 +138,20 @@ const CustomizedTopTabBar = forwardRef(
     const toolBarStyle = getToolBarStyle();
     const styles = getStyles();
     const [suffixList, setSuffixList] = useState();
+    const [suffixIconDomVisible, setSuffixIconDomVisible] = useState<boolean>();
 
     useImperativeHandle(ref, () => ({
       changeSuffix(updateSuffixList: any) {
         setSuffixList(updateSuffixList);
       },
+      changeSuffixIconDomVisible(visible: boolean) {
+        setSuffixIconDomVisible(visible);
+      },
     }));
-
+    useEffect(() => {
+      const name = state.routes[state.index].name;
+      onTabChange?.(name);
+    }, [onTabChange, state]);
     return (
       <View style={[toolBarStyle.tabBarStyle, containerStyle]}>
         <View
@@ -157,41 +171,41 @@ const CustomizedTopTabBar = forwardRef(
                 ? options.title
                 : route.name;
 
-            const isFocused = state.index === index;
-
-            return (
-              <TouchableOpacity
-                testID={options.tabBarTestID}
-                onPress={() => onPress(route.name, route.params)}
-                disabled={isFocused}
-                key={label}
-                style={[
-                  toolBarStyle.label,
-                  isBlockTab && toolBarStyle.blockTab,
-                  isBlockTab && isFocused && toolBarStyle.selectedBlockTab,
-                  isBlockTab
-                    ? { marginRight: index !== state.routes.length - 1 ? labelRightNum || pTd(10) : 0 }
-                    : { paddingRight: index !== state.routes.length - 1 ? labelRightNum || pTd(32) : 0 },
-                ]}>
-                <Text
+              const isFocused = state.index === index;
+              return (
+                <TouchableOpacity
+                  testID={options.tabBarTestID}
+                  onPress={() => onPress(route.name, route.params)}
+                  disabled={isFocused}
+                  key={label}
                   style={[
-                    toolBarStyle.labelText,
-                    {
-                      color: isFocused ? darkColors.textBase1 : darkColors.textBase2,
-                    },
+                    toolBarStyle.label,
+                    isBlockTab && toolBarStyle.blockTab,
+                    isBlockTab && isFocused && toolBarStyle.selectedBlockTab,
+                    isBlockTab
+                      ? { marginRight: index !== state.routes.length - 1 ? pTd(10) : 0 }
+                      : { paddingRight: index !== state.routes.length - 1 ? (suffix ? pTd(16) : pTd(32)) : 0 },
                   ]}>
-                  {label}
-                </Text>
-                {suffix && (
-                  <View style={styles.suffixWrap}>
-                    <TextM style={[styles.suffixText, isFocused && styles.suffixTextFocused]}>{suffix}</TextM>
-                  </View>
-                )}
-              </TouchableOpacity>
-            );
-          })}
-        </View>
-        {suffixIconDom}
+                  <Text
+                    style={[
+                      toolBarStyle.labelText,
+                      {
+                        color: isFocused ? darkColors.textBase1 : darkColors.textBase2,
+                      },
+                    ]}>
+                    {label}
+                  </Text>
+                  {suffix && (
+                    <View style={styles.amountIcon}>
+                      <TextM style={[styles.suffixText, isFocused && styles.suffixTextFocused]}>{suffix}</TextM>
+                    </View>
+                  )}
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+        </ScrollView>
+        {suffixIconDomVisible && suffixIconDom}
       </View>
     );
   },
@@ -223,6 +237,7 @@ const getStyles = makeStyles(theme => ({
   suffixWrap: {
     paddingVertical: pTd(4),
     paddingHorizontal: pTd(6),
+    borderRadius: pTd(4),
     marginLeft: pTd(4),
     backgroundColor: theme.colors.bgNeutral2,
     borderRadius: pTd(4),

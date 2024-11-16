@@ -37,7 +37,9 @@ const RememberMeModal = (props: RememberMeModalType) => {
 
   const onPressItem = useCallback(
     (v: SessionExpiredPlan) => {
-      if (String(rememberInfo.value) === String(v)) return;
+      if (String(rememberInfo.value) === String(v)) {
+        return;
+      }
       setRememberMeInfo({ isRemember: true, value: v });
       OverlayModal.hide();
     },
@@ -45,7 +47,9 @@ const RememberMeModal = (props: RememberMeModalType) => {
   );
 
   const setRememberMe = useCallback(() => {
-    if (!rememberInfo.isRemember) return;
+    if (!rememberInfo.isRemember) {
+      return;
+    }
     setRememberMeInfo({ ...rememberInfo, isRemember: false });
     OverlayModal.hide();
   }, [rememberInfo, setRememberMeInfo]);
@@ -75,7 +79,7 @@ export const showRememberMeModal = (props: RememberMeModalType) => {
   });
 };
 
-const getStyles = makeStyles(theme => ({
+const getStyles = makeStyles(() => ({
   itemRow: {
     height: pTd(48),
     marginTop: pTd(12),

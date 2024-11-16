@@ -9,6 +9,7 @@ import MenuItem from '../components/MenuItem';
 import { useAppDispatch } from 'store/hooks';
 import { getCaHolderInfoAsync } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { StyleSheet } from 'react-native';
+import useBiometricsReady from 'hooks/useBiometrics';
 
 interface SecurityProps {
   name?: string;
@@ -17,6 +18,7 @@ interface SecurityProps {
 const Security: React.FC<SecurityProps> = () => {
   const { t } = useLanguage();
   const appDispatch = useAppDispatch();
+  const biometricsReady = useBiometricsReady();
 
   useEffect(() => {
     appDispatch(getCaHolderInfoAsync());
@@ -37,13 +39,15 @@ const Security: React.FC<SecurityProps> = () => {
             icon="my_auto_lock"
             size={pTd(24)}
           />
-          <MenuItem
-            style={pageStyles.menuItem}
-            onPress={() => navigationService.navigate('Biometric')}
-            title={t('Biometric authentication')}
-            icon="my_biometric"
-            size={pTd(24)}
-          />
+          {biometricsReady && (
+            <MenuItem
+              style={pageStyles.menuItem}
+              onPress={() => navigationService.navigate('Biometric')}
+              title={t('Biometric authentication')}
+              icon="my_biometric"
+              size={pTd(24)}
+            />
+          )}
           <MenuItem
             style={pageStyles.menuItem}
             onPress={() => navigationService.navigate('CheckPin')}

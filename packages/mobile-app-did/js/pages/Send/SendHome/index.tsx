@@ -98,7 +98,7 @@ const SendHome: React.FC = () => {
   const [targetNetwork, setTargetNetwork] = useState<INetworkItem>();
   const [recentList, setRecentList] = useState<TFormattedRecentItem[]>();
   const [savedList, setSavedList] = useState<TFormattedRecentItem[]>();
-  const { userId: myUserId } = useCurrentUserInfo();
+  const caAddressInfoList = useCaAddressInfoList();
 
   const recommendETransfer = useMemo(
     () => targetNetwork?.serviceList?.find(ele => ele?.serviceName?.toLocaleLowerCase()?.includes('transfer')),
@@ -142,7 +142,7 @@ const SendHome: React.FC = () => {
   );
 
   const [step, setStep] = useState<1 | 2>(isFixedToContact ? 2 : 1);
-  const [isLoading] = useState(false);
+  const [isLoading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
   const checkManagerSyncState = useCheckManagerSyncState();
@@ -286,7 +286,9 @@ const SendHome: React.FC = () => {
         <SupportedExchangesCard />
         <View style={GStyles.height(pTd(24))} />
         <GeneralTips
-          content={`If you're not sending to an exchange, no worries! You can continue, and we'll send your assets through the aelf MainChain.`}
+          content={
+            "If you're not sending to an exchange, no worries! You can continue, and we'll send your assets through the aelf MainChain."
+          }
         />
       </View>
     );
@@ -359,22 +361,31 @@ const SendHome: React.FC = () => {
   });
 
   const Step1Dom = useMemo(() => {
-    if (step === 2) return null;
-    if (!warning[0]) return null;
+    if (step === 2) {
+      return null;
+    }
+    if (!warning[0]) {
+      return null;
+    }
     if (
       warning[0] === WarningKey.CROSS_CHAIN ||
       warning[0] === WarningKey.INVALID_ADDRESS ||
       warning[0] === WarningKey.SAME_ADDRESS
-    )
+    ) {
       return JustWarningOrErrorDom;
+    }
 
-    if (warning[0] === WarningKey.DAPP_CHAIN_TO_NO_AFFIX_ADDRESS_ELF && assetInfo.symbol === defaultToken.symbol)
+    if (warning[0] === WarningKey.DAPP_CHAIN_TO_NO_AFFIX_ADDRESS_ELF && assetInfo.symbol === defaultToken.symbol) {
       return DappChainToNoAffixDom;
+    }
 
-    if (warning[0] === WarningKey.MAIN_CHAIN_TO_NO_AFFIX_ADDRESS_ELF && assetInfo.symbol === defaultToken.symbol)
+    if (warning[0] === WarningKey.MAIN_CHAIN_TO_NO_AFFIX_ADDRESS_ELF && assetInfo.symbol === defaultToken.symbol) {
       return MainChainToNoAffixDom;
+    }
 
-    if (warning[0] === WarningKey.MAKE_SURE_SUPPORT_PLATFORM) return ETransferOrEBridgeDom;
+    if (warning[0] === WarningKey.MAKE_SURE_SUPPORT_PLATFORM) {
+      return ETransferOrEBridgeDom;
+    }
 
     return null;
   }, [
@@ -406,8 +417,12 @@ const SendHome: React.FC = () => {
   // }, [enableEtransfer, isValidOtherChainAddress, selectedToContact?.address]);
 
   const previewDisable = useMemo(() => {
-    if (!selectedToContact?.address) return true;
-    if (!isValidAmount(sendNumber)) return true;
+    if (!selectedToContact?.address) {
+      return true;
+    }
+    if (!isValidAmount(sendNumber)) {
+      return true;
+    }
     return false;
   }, [selectedToContact?.address, sendNumber]);
 
@@ -568,6 +583,9 @@ const SendHome: React.FC = () => {
                 type: 'primary',
               },
             ],
+            closeAction: () => {
+              setLoading(false);
+            },
           });
           console.log('checkCanPreview 6');
           return;
@@ -834,7 +852,9 @@ const SendHome: React.FC = () => {
     const result = await checkCanPreview();
     console.log('preview preview', result);
 
-    if (!result?.status) return;
+    if (!result?.status) {
+      return;
+    }
 
     console.log('nav params', {
       ...previewParamsWithoutFee,
@@ -862,7 +882,9 @@ const SendHome: React.FC = () => {
   }, [checkCanPreview, previewParamsWithoutFee]);
 
   const titleText = useMemo(() => {
-    if (step === 2) return `Enter Amount`;
+    if (step === 2) {
+      return 'Enter Amount';
+    }
     return `${t('Send')}${sendType === 'token' ? ' ' + (assetInfo.label || assetInfo.symbol) : ''}`;
   }, [assetInfo.label, assetInfo.symbol, sendType, step, t]);
 
@@ -871,14 +893,17 @@ const SendHome: React.FC = () => {
     if (
       (!selectedToContact.address || !isCheckAddressFinish || warning[0] === WarningKey.MAKE_SURE_SUPPORT_PLATFORM) &&
       step === 1
-    )
+    ) {
       return null;
-
+    }
     // text
     let btnText = 'Next';
-    if (step === 1 && warning[0] === WarningKey.MAIN_CHAIN_TO_NO_AFFIX_ADDRESS_ELF) btnText = 'Confirm and continue';
-    if (step === 2) btnText = 'Preview';
-
+    if (step === 1 && warning[0] === WarningKey.MAIN_CHAIN_TO_NO_AFFIX_ADDRESS_ELF) {
+      btnText = 'Confirm and continue';
+    }
+    if (step === 2) {
+      btnText = 'Preview';
+    }
     // disable
     const disable =
       step === 1 ? warning[0] === WarningKey.INVALID_ADDRESS || warning[0] === WarningKey.SAME_ADDRESS : previewDisable;
@@ -949,10 +974,12 @@ const SendHome: React.FC = () => {
     async (i: TFormattedRecentItem) => {
       console.log('onPressTabItem', i);
       try {
-        if (i.userId === myUserId) {
+        if (i.addressInfo?.address === caAddressInfoList[0].caAddress) {
+          // anther address
           setSelectedToContact({
             name: '',
             address: addressFormat(i.addressInfo?.address, i.addressInfo?.chainId),
+            chainId: i.addressInfo?.chainId,
           } as TToInfo);
           setStep(2);
         } else if (i.network !== 'aelf' && i.addressInfo?.network !== 'aelf') {
@@ -962,14 +989,22 @@ const SendHome: React.FC = () => {
             chainId: assetInfo?.chainId || 'AELF',
             toAddress: i?.addressInfo?.address || '',
           });
+
+          console.log('getSendNetworkList', data, i);
           const tmpNetwork = data?.networkList?.find((ele: any) => ele.network === i.network);
 
-          if (!tmpNetwork) throw 'not supported';
+          if (!tmpNetwork) {
+            throw 'not supported';
+          }
           setTargetNetwork(tmpNetwork);
           setSelectedToContact({ name: i?.name, address: i.address || i.addressInfo?.address } as TToInfo);
           setStep(2);
         } else {
-          setSelectedToContact({ name: i?.name, address: i.address || i.addressInfo?.address } as TToInfo);
+          setSelectedToContact({
+            name: i?.name,
+            address: i.address || i.addressInfo?.address,
+            chainId: i.chainId || i.addressInfo?.chainId,
+          } as TToInfo);
           setStep(2);
         }
       } catch (error) {
@@ -978,7 +1013,7 @@ const SendHome: React.FC = () => {
         Loading.hide();
       }
     },
-    [assetInfo?.chainId, assetInfo?.symbol, myUserId],
+    [assetInfo?.chainId, assetInfo?.symbol, caAddressInfoList],
   );
 
   return (

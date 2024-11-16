@@ -11,8 +11,10 @@ import ModeChangeSelector from 'pages/DashBoard/componets/ModeChangeSelector';
 import ReceiveQRCode from '../components/ReceiveQRCode';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useCurrentNetwork as useCurrentNetworkType } from '@portkey-wallet/hooks/hooks-ca/network';
-import { View } from 'react-native';
+import { Text, View } from 'react-native';
 import { StyleSheet } from 'react-native';
+import { formatChainInfoToShow } from '@portkey-wallet/utils';
+import fonts from 'assets/theme/fonts';
 
 const networkList = [
   {
@@ -60,6 +62,17 @@ export default function ReceiveNFTs() {
     });
   }, [currentSelectedIndex]);
 
+  const reminderUI = useMemo(() => {
+    return (
+      <View style={styles.reminderWrap}>
+        <Svg icon="info" size={pTd(22)} />
+        <Text style={styles.reminderText}>
+          {'Use this address to receive assets on the '}
+          <Text style={styles.reminderHighlightText}>{destinationChain.name}</Text>
+        </Text>
+      </View>
+    );
+  }, [destinationChain.name, styles.reminderHighlightText, styles.reminderText, styles.reminderWrap]);
   return (
     <PageContainer
       titleDom={'Receive NFTs'}
@@ -84,6 +97,7 @@ export default function ReceiveNFTs() {
         />
       </View>
       <ReceiveQRCode data={qrcodeAddress} address={qrcodeAddress} />
+      {reminderUI}
     </PageContainer>
   );
 }
@@ -109,5 +123,24 @@ const getStyles = makeStyles(theme => ({
     borderRadius: pTd(8),
     flexDirection: 'column',
     marginBottom: pTd(24),
+  },
+  reminderText: {
+    marginLeft: pTd(12),
+    marginRight: pTd(12),
+    fontSize: pTd(14),
+    color: theme.colors.textBase2,
+    ...fonts.SGRegularFont,
+  },
+  reminderHighlightText: {
+    color: theme.colors.textBase1,
+    ...fonts.SGRegularFont,
+  },
+  reminderWrap: {
+    marginTop: pTd(24),
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: theme.colors.borderBase1,
+    borderRadius: pTd(16),
+    padding: pTd(16),
+    flexDirection: 'row',
   },
 }));

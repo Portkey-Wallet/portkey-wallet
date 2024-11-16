@@ -53,7 +53,7 @@ export default function SetPin() {
     return () => listener.remove();
   });
   const leftCallback = useCallback(() => {
-    if (!oldPin && managerInfo && managerInfo.verificationType !== VerificationType.communityRecovery)
+    if (!oldPin && managerInfo && managerInfo.verificationType !== VerificationType.communityRecovery) {
       return ActionSheet.alert({
         title: 'Leave this page?',
         message: MessageMap[managerInfo.verificationType],
@@ -62,7 +62,9 @@ export default function SetPin() {
           {
             title: 'Yes',
             onPress: () => {
-              if (managerInfo.verificationType === VerificationType.addManager) myEvents.clearQRWallet.emit();
+              if (managerInfo.verificationType === VerificationType.addManager) {
+                myEvents.clearQRWallet.emit();
+              }
               if (managerInfo.verificationType === VerificationType.register) {
                 const isLoginEmailExist = checkRouteExistInRouteStack('LoginEmail');
                 const isSignUpEmailPageExist = checkRouteExistInRouteStack('SignUpEmail');
@@ -80,9 +82,11 @@ export default function SetPin() {
           },
         ],
       });
+    }
 
-    if (!autoLogin && managerInfo && MessageMap[managerInfo.verificationType])
+    if (!autoLogin && managerInfo && MessageMap[managerInfo.verificationType]) {
       return navigationService.navigate(RouterMap[managerInfo.verificationType]);
+    }
 
     navigationService.goBack();
   }, [autoLogin, checkRouteExistInRouteStack, managerInfo, oldPin]);
@@ -93,7 +97,6 @@ export default function SetPin() {
       titleDom
       noLeftDom={isBackHide}
       type="leftBack"
-      backTitle={oldPin ? 'Change PIN' : undefined}
       leftCallback={leftCallback}
       notHandleHardwareBackPress
       containerStyles={styles.container}>

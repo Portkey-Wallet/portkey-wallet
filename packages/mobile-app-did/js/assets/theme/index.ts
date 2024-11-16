@@ -83,6 +83,7 @@ export const defaultColors = {
   icon3: '#333333',
   icon4: '#757A85',
   icon5: '#55585E',
+  icon6: '##B2B2B2',
   border1: '#C5CBD5',
   border2: '#F7F8F9',
   border3: '#5D42FF',

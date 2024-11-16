@@ -1,17 +1,14 @@
 import React, { useMemo, useCallback } from 'react';
-import { View, Animated, TouchableOpacity, GestureResponderEvent } from 'react-native';
+import { View, Animated, TouchableOpacity } from 'react-native';
 import { pTd } from 'utils/unit';
 import { TextM } from 'components/CommonText';
 import CommonAvatar from 'components/CommonAvatar';
 import Touchable from 'components/Touchable';
-import CommonToast from 'components/CommonToast';
 import Svg from 'components/Svg';
 import fonts from 'assets/theme/fonts';
 import GStyles from 'assets/theme/GStyles';
-import { measureLocation } from 'utils/measure';
 import { showCopyUserAddress } from '../CopyUserAddress';
-import { showSetNewWalletNamePopover } from '../SetNewWalletName/Popover';
-import { useCurrentUserInfo, useSetNewWalletName } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useQrScanPermissionAndToast } from 'hooks/useQrScan';
 import navigationService from 'utils/navigationService';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
@@ -20,7 +17,6 @@ import { makeStyles, useTheme } from '@rneui/themed';
 const DashBoardHeader: React.FC = () => {
   const userInfo = useCurrentUserInfo();
   const qrScanPermissionAndToast = useQrScanPermissionAndToast();
-  const { shouldShowSetNewWalletNameIcon, handleSetNewWalletName } = useSetNewWalletName();
   const styles = getStyles();
   const { theme } = useTheme();
 
@@ -28,37 +24,11 @@ const DashBoardHeader: React.FC = () => {
     showCopyUserAddress();
   }, []);
 
-  const onSetNewWalletName = useCallback(async () => {
-    try {
-      await handleSetNewWalletName();
-      CommonToast.success('Set Success');
-    } catch (error) {
-      CommonToast.failError(error);
-    }
-  }, [handleSetNewWalletName]);
-
-  const onShowSetNewWalletNamePopover = useCallback(
-    async (event: GestureResponderEvent) => {
-      const xOffset = pTd(-8);
-      const yOffset = pTd(16) + pTd(7);
-      const location = await measureLocation(event.target);
-      showSetNewWalletNamePopover({
-        setNewWalletName: onSetNewWalletName,
-        xPosition: location.pageX + xOffset,
-        yPosition: location.pageY + yOffset,
-      });
-    },
-    [onSetNewWalletName],
-  );
-
   const nickNameMaxWidth = useMemo(() => {
     const nickNameLeft = pTd(46);
-    let nickNameMinRight = 74;
-    if (shouldShowSetNewWalletNameIcon) {
-      nickNameMinRight += pTd(32);
-    }
+    const nickNameMinRight = 74;
     return screenWidth - nickNameLeft - nickNameMinRight;
-  }, [shouldShowSetNewWalletNameIcon]);
+  }, []);
   const onShowAccountSetting = useCallback(() => {
     navigationService.navigate('ProfileSettings');
   }, []);
@@ -79,11 +49,9 @@ const DashBoardHeader: React.FC = () => {
               <TextM numberOfLines={1} style={[styles.accountName, GStyles.maxWidth(nickNameMaxWidth)]}>
                 {userInfo.nickName}
               </TextM>
-              {shouldShowSetNewWalletNameIcon && (
-                <TouchableOpacity onPress={onShowSetNewWalletNamePopover} style={styles.suggestIcon}>
-                  <Svg icon="suggest-circle" size={pTd(16)} />
-                </TouchableOpacity>
-              )}
+              <View style={styles.arrowIconWrap}>
+                <Svg icon="keyboard_arrow_down" size={pTd(12)} />
+              </View>
             </View>
           </TouchableOpacity>
         ) : (
@@ -94,15 +62,7 @@ const DashBoardHeader: React.FC = () => {
         )}
       </Animated.View>
     );
-  }, [
-    nickNameMaxWidth,
-    onShowAccountSetting,
-    onShowSetNewWalletNamePopover,
-    shouldShowSetNewWalletNameIcon,
-    userInfo?.avatar,
-    userInfo.nickName,
-    styles,
-  ]);
+  }, [nickNameMaxWidth, onShowAccountSetting, userInfo?.avatar, userInfo.nickName, styles]);
 
   const rightDom = useMemo(() => {
     return (
@@ -153,6 +113,12 @@ const getStyles = makeStyles(theme => ({
   accountNameWrap: {
     flex: 1,
     flexDirection: 'row',
+    alignItems: 'center',
+  },
+  arrowIconWrap: {
+    width: pTd(18),
+    height: pTd(12),
+    justifyContent: 'center',
     alignItems: 'center',
   },
   accountName: {

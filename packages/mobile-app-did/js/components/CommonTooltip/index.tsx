@@ -10,6 +10,7 @@ import fonts from 'assets/theme/fonts';
 import { useLanguage } from 'i18n/hooks';
 import { pTd } from 'utils/unit';
 import { openOutLink } from 'utils/link';
+import { TextL } from 'components/CommonText';
 
 export interface ITooltipContentProps {
   title: string;
@@ -48,8 +49,9 @@ const TooltipContent = ({ title, description, learnMoreUrl }: ITooltipContentPro
               <Touchable
                 onPress={async () => {
                   await openOutLink(learnMoreUrl);
-                }}>
-                <Text style={styles.learnMore}>{t('Learn more')}</Text>
+                }}
+                style={styles.learnMoreWrap}>
+                <TextL style={styles.learnMore}>{t('Learn more')}</TextL>
               </Touchable>
               .
             </>
@@ -106,11 +108,16 @@ const getStyles = makeStyles(theme => ({
     lineHeight: pTd(22),
     marginBottom: pTd(24),
   },
+  learnMoreWrap: {
+    height: pTd(22),
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    alignContent: 'flex-end',
+  },
   learnMore: {
     ...fonts.SGRegularFont,
     color: theme.colors.textBrand1,
     fontSize: pTd(16),
-    lineHeight: pTd(22),
     transform: [{ translateY: pTd(2) }],
   },
 }));

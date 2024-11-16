@@ -208,6 +208,7 @@ export const useDeviceList = (config?: IUseDeviceListConfig) => {
 
   return { refresh, deviceList, deviceAmount, loading };
 };
+// getIconList
 
 export const useSetUserInfo = () => {
   const dispatch = useAppCommonDispatch();

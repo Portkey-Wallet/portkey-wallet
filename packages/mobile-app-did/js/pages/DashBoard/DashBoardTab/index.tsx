@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import TokenSection from '../TokenSection';
 import NFTSection from '../NFTSection/index';
 import CommonTopTab from 'components/CommonTopTab';
@@ -13,27 +13,40 @@ import ModeChangeSelector from '../componets/ModeChangeSelector';
 import { useNFTSection } from '@portkey-wallet/hooks/hooks-ca';
 import navigationService from 'utils/navigationService';
 
+enum TabName {
+  Tokens = 'Tokens',
+  NFTs = 'NFTs',
+}
+
 const DashBoardTab: React.FC = () => {
   const { t } = useLanguage();
   const { totalRecordCount } = useAccountNFTCollectionInfo();
   const { totalDisplayCount } = useAccountTokenInfo();
   const { nftSectionUiType, changeNFTSectionMode } = useNFTSection();
   const styles = getStyles();
+  const [ suffixIconDomVisible, setSuffixIconDomVisible] = useState<boolean>();
+
+  const tabNameMap = useMemo(() => {
+    return {
+      [TabName.Tokens]: t(TabName.Tokens),
+      [TabName.NFTs]: t(TabName.NFTs),
+    };
+  }, [t]);
 
   const tabList = useMemo(() => {
     return [
       {
-        name: t('Tokens'),
+        name: tabNameMap[TabName.Tokens],
         tabItemDom: <TokenSection />,
         suffix: (totalDisplayCount || 0) + '',
       },
       {
-        name: t('NFTs'),
+        name: tabNameMap[TabName.NFTs],
         tabItemDom: <NFTSection />,
         suffix: (totalRecordCount || 0) + '',
       },
     ];
-  }, [t, totalDisplayCount, totalRecordCount]);
+  }, [tabNameMap, totalDisplayCount, totalRecordCount]);
   const modeList = useMemo(() => {
     return [
       {
@@ -87,6 +100,14 @@ const DashBoardTab: React.FC = () => {
       tabList={tabList}
       tabContainerStyle={styles.tabContainerStyle}
       suffixIconDom={suffixIconDom}
+      suffixIconDomVisible={suffixIconDomVisible}
+      onTabChange={name => {
+        if (name === t('Tokens')) {
+          setSuffixIconDomVisible(false);
+        } else {
+          setSuffixIconDomVisible(true);
+        }
+      }}
     />
   );
 };

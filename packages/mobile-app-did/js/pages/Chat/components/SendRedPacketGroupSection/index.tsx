@@ -24,7 +24,6 @@ import { ICryptoBoxAssetItemType } from '@portkey-wallet/types/types-ca/crypto';
 import NewUserOnly from 'pages/CryptoGift/components/NewUserOnly';
 import { makeStyles, useTheme } from '@rneui/themed';
 import AmountCard from 'components/AmountCard';
-import { useAsync } from 'react-use';
 import { networkList } from 'constants/common';
 import { SourceDestinationItem } from 'pages/Receive/components/SourceDestinationPicker';
 import ModeChangeSelector from 'pages/DashBoard/componets/ModeChangeSelector';
@@ -33,7 +32,6 @@ import { IAccountCryptoBoxAssetItem } from '@portkey-wallet/types/types-ca/token
 import { useAccountCryptoBoxAssetList } from '@portkey-wallet/hooks/hooks-ca/balances';
 import { merge } from 'lodash';
 import { useUpdateAssetInfo } from 'hooks/useGetSymbolBalance';
-import { useCalculateRedPacketFee } from '../../../../hooks/useCalculateRedPacketFee';
 
 export type TInputValue = {
   packetNum?: string;
@@ -123,16 +121,16 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
   const updateAssetInfo = useUpdateAssetInfo(destinationChainId, selectToken, currentAssetInfo);
 
   // fee
-  const calculateRedPacketFee = useCalculateRedPacketFee();
-  const gasFee = useAsync(async () => {
-    const fee = calculateRedPacketFee({
-      symbol: selectToken.symbol,
-      chainId: selectToken.chainId,
-      decimals: selectToken.decimals,
-      count: values.count,
-    });
-    return fee;
-  }, [calculateRedPacketFee, selectToken.symbol, selectToken.chainId, selectToken.decimals]);
+  // const calculateRedPacketFee = useCalculateRedPacketFee();
+  // const gasFee = useAsync(async () => {
+  //   const fee = calculateRedPacketFee({
+  //     symbol: selectToken.symbol,
+  //     chainId: selectToken.chainId,
+  //     decimals: selectToken.decimals,
+  //     count: values.count,
+  //   });
+  //   return fee;
+  // }, [calculateRedPacketFee, selectToken.symbol, selectToken.chainId, selectToken.decimals]);
 
   // token price
   const tokenPrice = useMemo<string | number | undefined>(
@@ -213,11 +211,11 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
   // insufficient balance
   const isInsufficientBalance = useMemo(() => {
     const balance = updateAssetInfo?.balance || 0;
-    const fee = gasFee.value || 0;
-    const _valueBN = ZERO.plus(balance).minus(fee);
+    // const fee = gasFee.value || 0;
+    const _valueBN = ZERO.plus(balance);
     const v = divDecimals(_valueBN, selectToken.decimals);
-    return v.lte(values.count);
-  }, [updateAssetInfo?.balance, gasFee.value, selectToken.decimals, values.count]);
+    return v.lt(values.count);
+  }, [updateAssetInfo?.balance, selectToken.decimals, values.count]);
 
   const onPacketNumChange = useCallback(
     (value: string) => {
@@ -380,6 +378,7 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
             errorStyle={!isGTMax && FontStyles.font7}
             inputStyle={isGTMax && FontStyles.error}
             containerStyle={packetNumTips && styles.packetQuantityWrapError}
+            returnKeyType="done"
           />
         </FormItem>
       )}
@@ -397,7 +396,6 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
           amountUsd={amountUsd}
           token={selectToken as any}
           isMaxShow={true}
-          gasFee={gasFee.value}
           onShowCryptoAssetList={() => {
             CryptoAssetsListOverlay.showCryptoAssetList({
               onFinishSelectAssets: onTokenChange,
@@ -432,6 +430,7 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
         componentType="sendPacketPage"
         amountShow={amountShowStr}
         amountUsdShowStr={amountUsdShowStr}
+        label={selectToken.label}
         symbol={selectToken.symbol}
         wrapStyle={GStyles.marginTop(pTd(8))}
         usdWrapStyle={GStyles.marginTop(pTd(8))}

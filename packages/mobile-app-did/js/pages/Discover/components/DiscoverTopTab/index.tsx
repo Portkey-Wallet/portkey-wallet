@@ -1,41 +1,37 @@
-import React, { useMemo, useState } from 'react';
+import React, { forwardRef, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import CommonTopTab from 'components/CommonTopTab';
 
 import MarketSection from '../MarketSection';
 import { DiscoverCmsListSection } from '../DiscoverCmsListSection';
 import { EarnPage } from '../SubPages/Earn';
-import { LearnPage } from '../SubPages/Learn/MainPage';
-import { Platform } from 'react-native';
 import MarketType from '../MarketSection/components/MarketType';
 import { useMarket } from 'hooks/discover';
 
-const defaultList = [
-  {
-    name: 'dApp',
-    value: 'Dapp',
-    tabItemDom: <DiscoverCmsListSection />,
-  },
-  {
-    name: 'Market',
-    value: 'Market',
-
-    tabItemDom: <MarketSection />,
-  },
-  {
-    name: 'Earn',
-    value: 'Earn',
-    tabItemDom: <EarnPage />,
-  },
-  {
-    name: 'Learn',
-    value: 'Learn',
-    tabItemDom: <LearnPage />,
-  },
-];
-
-const DiscoverTab: React.FC = () => {
+export default forwardRef(function DiscoverTab(_, _ref) {
   const [currentRouteName, setCurrentRouteName] = useState<string>();
   const { marketInfo, handleType } = useMarket();
+  const marketRef = useRef<any>(null);
+
+  const defaultList = useMemo(
+    () => [
+      {
+        name: 'dApps',
+        value: 'Dapp',
+        tabItemDom: <DiscoverCmsListSection />,
+      },
+      {
+        name: 'Market',
+        value: 'Market',
+        tabItemDom: <MarketSection ref={(ref: any) => (marketRef.current = ref)} />,
+      },
+      {
+        name: 'Earn',
+        value: 'Earn',
+        tabItemDom: <EarnPage />,
+      },
+    ],
+    [],
+  );
 
   const tabList = useMemo(
     () =>
@@ -48,18 +44,23 @@ const DiscoverTab: React.FC = () => {
 
   const handleTabChange = (routeName: string) => {
     setCurrentRouteName(routeName);
+    marketRef.current?.closeTips?.();
   };
+
+  useImperativeHandle(_ref, () => ({
+    hideAll: () => marketRef.current?.closeTips?.(),
+  }));
 
   return (
     <CommonTopTab
-      swipeEnabled={Platform.OS === 'android' ? false : true}
+      swipeEnabled={false}
       hasTabBarBorderRadius={false}
       tabList={tabList}
       isBlockTab={true}
       hasBottomBorder={false}
       onTabChange={handleTabChange}
-      suffixIconDom={currentRouteName === 'Market' && <MarketType marketInfo={marketInfo} handleType={handleType} />}
+      suffixIconDomVisible={currentRouteName === 'Market'}
+      suffixIconDom={<MarketType marketInfo={marketInfo} handleType={handleType} />}
     />
   );
-};
-export default DiscoverTab;
+});

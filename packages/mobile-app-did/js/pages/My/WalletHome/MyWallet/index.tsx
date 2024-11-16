@@ -1,43 +1,62 @@
 import PageContainer from 'components/PageContainer';
 import { useLanguage } from 'i18n/hooks';
-import React, { useMemo, useRef, useState } from 'react';
-import CommonButton from 'components/CommonButton';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import navigationService from 'utils/navigationService';
-import { View, StyleSheet } from 'react-native';
-import { useCurrentCaInfo, useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { View } from 'react-native';
+import { useCurrentCaInfo, useCurrentUserInfo, useSetUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import Svg from 'components/Svg';
 import Touchable from 'components/Touchable';
-import ProfileHeaderSection from 'pages/My/components/ProfileHeaderSection';
-import ProfileAddressSection, { ProfileAddressSectionV2 } from 'pages/My/components/ProfileAddressSection';
-import { useIsShowDeletion } from '@portkey-wallet/hooks/hooks-ca/account';
-import GStyles from 'assets/theme/GStyles';
-import { defaultColors } from 'assets/theme';
+import { ProfileAddressSectionV2 } from 'pages/My/components/ProfileAddressSection';
 import { CAInfo } from '@portkey-wallet/types/types-ca/wallet';
 import { ChainId } from '@portkey-wallet/types';
-import { windowHeight } from '@portkey-wallet/utils/mobile/device';
-import { headerHeight } from 'components/CustomHeader/style/index.style';
-import { FontStyles } from 'assets/theme/styles';
-import { Button, Text } from 'react-native';
+
+import { Text } from 'react-native';
 import { darkColors } from 'assets/theme';
-import CommonAvatar from 'components/CommonAvatar';
 import { makeStyles } from '@rneui/themed';
-import { isIOS } from '@rneui/base';
 import { pTd } from 'utils/unit';
 import { TextXXXL } from 'components/CommonText';
 import ImageWithUploadFunc, { ImageWithUploadFuncInstance } from 'components/ImageWithUploadFunc';
 import FastImage from 'components/FastImage';
 import ChangeOverlay from './components/ChangePictureOverlay';
 import RenameOverlay from './components/RenameOverlay';
+import { sleep } from '@portkey-wallet/utils';
+import { request } from '@portkey-wallet/api/api-did';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import { LoadingBody } from 'components/Loading';
 
 const MyWallet: React.FC = () => {
   const { t } = useLanguage();
   const userInfo = useCurrentUserInfo();
   const caInfo = useCurrentCaInfo();
   const pageStyles = getStyles();
-  const showDeletion = useIsShowDeletion();
   const [avatar, setAvatar] = useState<string>(userInfo?.avatar || '');
+  const setUserInfo = useSetUserInfo();
+  const [avatarList, setAvatarList] = useState<Array<string>>();
+
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const uploadRef = useRef<ImageWithUploadFuncInstance>(null);
+  const networkInfo = useCurrentNetworkInfo();
+
+  const fetchIconList = async () => {
+    console.log('=============Fetching');
+
+    try {
+      const iconList = await request.wallet.getIconList({
+        baseURL: networkInfo.apiUrl,
+      });
+
+      setAvatarList(iconList.defaultAvatars);
+
+      console.log('=============iconList:', iconList);
+    } catch (error) {
+      console.log('=============iconList:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchIconList();
+  }, []);
 
   const caInfoList = useMemo(() => {
     const result: { address: string; chainId: ChainId }[] = [];
@@ -53,7 +72,7 @@ const MyWallet: React.FC = () => {
     return result;
   }, [caInfo]);
 
-  const handleSelectPhoto = async () => {
+  const handlePhotoUpload = async () => {
     try {
       const res = await uploadRef.current?.selectPhotoWithSource();
       console.log(res);
@@ -64,8 +83,33 @@ const MyWallet: React.FC = () => {
     }
   };
 
-  const handleRename = (name: string) => {
-    console.log('handleRename');
+  const handleSelectPhoto = async (url: string) => {
+    // Loading.show();
+    console.log('url:', url);
+    setAvatar(url);
+    console.log('setAvatar:', url);
+
+    try {
+      setIsLoading(true);
+      await sleep(500); // adjust large size on android
+      const res = await setUserInfo({ avatar: url });
+      console.log('res:', res);
+
+      navigationService.goBack();
+      // CommonToast.success(t('Saved Successful'));
+    } catch (error: any) {
+      console.log('setUserInfo: error', error);
+      // CommonToast.failError(error);
+    } finally {
+      // Loading.hide();
+      setIsLoading(false);
+    }
+  };
+
+  const handleRename = async (name: string) => {
+    console.log('handleRename:', name);
+    const res = await setUserInfo({ nickName: name });
+    console.log(res);
   };
 
   return (
@@ -85,6 +129,8 @@ const MyWallet: React.FC = () => {
               ChangeOverlay.showModal({
                 title: t('Change wallet picture'),
                 avatar: avatar,
+                avatarList: avatarList || [],
+                photoUpload: handlePhotoUpload,
                 selectPhoto: handleSelectPhoto,
               });
             }}>
@@ -93,26 +139,42 @@ const MyWallet: React.FC = () => {
                 width: pTd(80),
                 height: pTd(80),
               }}>
-              <FastImage
+              <View
                 style={{
-                  width: pTd(80),
-                  height: pTd(80),
-                  borderRadius: pTd(80) / 2,
                   marginHorizontal: pTd(8),
-                }}
-                resizeMode="cover"
-                source={{
-                  uri: avatar,
-                }}
-              />
-
-              <View style={{ display: 'none' }}>
-                <ImageWithUploadFunc
-                  avatarSize={pTd(80)}
-                  ref={uploadRef}
-                  title={userInfo?.nickName || ''}
-                  imageUrl={avatar || ''}
+                  position: 'relative',
+                }}>
+                <FastImage
+                  style={{
+                    width: pTd(80),
+                    height: pTd(80),
+                    borderRadius: pTd(80) / 2,
+                  }}
+                  resizeMode="cover"
+                  source={{
+                    uri: avatar,
+                  }}
                 />
+
+                {isLoading && (
+                  <View
+                    style={{
+                      position: 'absolute',
+                      width: pTd(80),
+                      height: pTd(80),
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      borderRadius: pTd(80) / 2,
+                      backgroundColor: '#000000B2',
+                    }}>
+                    <View
+                      style={{
+                        top: 8,
+                      }}>
+                      <LoadingBody position={'center'} iconType={'loading'} />
+                    </View>
+                  </View>
+                )}
               </View>
 
               <View style={pageStyles.editIcon}>
@@ -154,6 +216,10 @@ const MyWallet: React.FC = () => {
         <Text onPress={() => navigationService.navigate('AccountCancelation')} style={pageStyles.deleteWalletText}>
           Delete wallet
         </Text>
+      </View>
+
+      <View style={{ display: 'none' }}>
+        <ImageWithUploadFunc avatarSize={pTd(80)} ref={uploadRef} title={''} imageUrl={avatar || ''} />
       </View>
     </PageContainer>
   );

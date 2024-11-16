@@ -1,15 +1,13 @@
 import React, { useCallback, useMemo } from 'react';
-import { StyleSheet } from 'react-native';
 import Svg from 'components/Svg';
 import { pTd } from 'utils/unit';
 import ListItem from 'components/ListItem';
 import GStyles from 'assets/theme/GStyles';
-import { darkColors, defaultColors } from 'assets/theme';
 import { ChainId, NetworkType } from '@portkey-wallet/types';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import ChainOverlay from 'components/ChainOverlay';
-import { useCurrentNetwork } from '@portkey-wallet/hooks/hooks-ca/network';
 import { IChainItemType } from '@portkey-wallet/types/types-ca/chain';
+import { makeStyles, useTheme } from '@rneui/themed';
 
 interface SelectChainProps {
   currentNetwork: NetworkType;
@@ -19,8 +17,8 @@ interface SelectChainProps {
 }
 
 const SelectChain: React.FC<SelectChainProps> = ({ currentNetwork, chainId, chainList, onChainPress }) => {
-  const networkType = useCurrentNetwork();
-
+  const styles = getStyles();
+  const { theme } = useTheme();
   const _chainList = useMemo(
     () =>
       chainList
@@ -49,14 +47,14 @@ const SelectChain: React.FC<SelectChainProps> = ({ currentNetwork, chainId, chai
       titleTextStyle={styles.chainSelectTitleStyle}
       style={styles.selectedItem}
       title={formatChainInfoToShow(chainId, currentNetwork)}
-      rightElement={<Svg size={pTd(16)} icon="down-arrow" color={darkColors.iconBase1} />}
+      rightElement={<Svg size={pTd(16)} icon="down-arrow" color={theme.colors.iconBase1} />}
     />
   );
 };
 
 export default SelectChain;
 
-const styles = StyleSheet.create({
+const getStyles = makeStyles(theme => ({
   addressHeader: {
     flexDirection: 'row',
     height: pTd(20),
@@ -68,11 +66,12 @@ const styles = StyleSheet.create({
     lineHeight: pTd(20),
   },
   chainSelectTitleStyle: {
-    fontSize: pTd(14),
-    color: darkColors.textBase1,
+    fontSize: pTd(16),
+    color: theme.colors.textBase1,
   },
   selectedItem: {
-    borderRadius: pTd(6),
+    borderRadius: pTd(8),
     height: pTd(40),
+    borderWidth: pTd(1),
   },
-});
+}));

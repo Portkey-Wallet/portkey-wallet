@@ -3,7 +3,7 @@ import { StyleSheet, View, ScrollView, GestureResponderEvent, Animated, FlatList
 import { useLanguage } from 'i18n/hooks';
 import GStyles from 'assets/theme/GStyles';
 import { pTd } from 'utils/unit';
-import { defaultColors } from 'assets/theme';
+import { darkColors, defaultColors } from 'assets/theme';
 import { TextL, TextM, TextXXL } from 'components/CommonText';
 import { FontStyles } from 'assets/theme/styles';
 import fonts from 'assets/theme/fonts';
@@ -138,7 +138,7 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
       const top = await measurePageY(event.target);
       FloatOverlay.showFloatPopover({
         list: handleList,
-        formatType: 'dynamicWidth',
+        formatType: 'fixedWidth',
         customPosition: { right: pTd(8), top: (top || pageY) + 30 },
         customBounds: {
           x: screenWidth - pTd(20),
@@ -146,6 +146,8 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
           width: 0,
           height: 0,
         },
+        contentStyle: { color: darkColors.textBase1 },
+        containerStyle: { backgroundColor: darkColors.bgBase1, borderColor: darkColors.borderBase1, borderWidth: 1 },
       });
     },
     [handleList],
@@ -182,9 +184,6 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
         showsVerticalScrollIndicator={false}
         onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], {
           useNativeDriver: false,
-          listener: event => {
-            const y = (event.nativeEvent as any).contentOffset.y;
-          },
         })}>
         <NFTAvatar
           disabled
@@ -207,6 +206,7 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
           ]}>{`You own: ${formatTokenAmountShowWithDecimals(balance, decimals)}`}</TextM>
         <OutlinedTextButton
           title={t('Send')}
+          textStyle={styles.sendButtonText}
           iconName="send-small"
           onPress={() => {
             navigationService.navigate('SendHome', {
@@ -286,7 +286,7 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
             </View>
           )}
           {/* Basic Info */}
-          <View>
+          <View style={GStyles.marginTop(pTd(12))}>
             <TextL style={[styles.basicInfoTitle, fonts.SGMediumFont]}>{t('Basic Info')}</TextL>
             <View style={[GStyles.flexRow, styles.paddingVertical16]}>
               <TextL style={[styles.leftTitle, FontStyles.fontBase1, fonts.SGRegularFont]}>
@@ -475,7 +475,7 @@ export const getStyles = makeStyles(theme => ({
     textAlign: 'center',
   },
   pageWrap: {
-    backgroundColor: defaultColors.bgBase2,
+    backgroundColor: defaultColors.bgBase1,
     ...GStyles.paddingArg(0, 16, 0),
   },
   iconWrap: {
@@ -565,6 +565,10 @@ export const getStyles = makeStyles(theme => ({
   },
   sendBtn: {
     marginBottom: pTd(16),
+  },
+  sendButtonText: {
+    ...fonts.SGMediumFont,
+    fontSize: pTd(16),
   },
   infoWrap: {
     marginTop: pTd(12),

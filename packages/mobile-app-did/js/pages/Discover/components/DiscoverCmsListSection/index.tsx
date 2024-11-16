@@ -66,7 +66,13 @@ export function DiscoverCmsListSection() {
                     }}
                   />
                   <View style={styles.right}>
-                    <TextWithProtocolIcon textFontSize={pTd(16)} title={item?.title} url={item.url} iconSize={12} />
+                    <TextWithProtocolIcon
+                      textFontSize={pTd(16)}
+                      title={item?.title}
+                      url={item.url}
+                      iconSize={12}
+                      showProtocolIcon={false}
+                    />
                     <TextS style={DarkFontStyles.textBase2} numberOfLines={1} ellipsizeMode="tail">
                       {item?.description}
                     </TextS>

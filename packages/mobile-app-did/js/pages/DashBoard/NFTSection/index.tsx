@@ -50,6 +50,43 @@ const NFTSectionItem: React.FC<NFTSectionItemProps> = function NFTSectionItem(pr
     return <CollectionItem key={symbol} collapsed={isCollapsed} {...props} />;
   }
 };
+
+const ListHeaderComponent = ({
+  recentStatus,
+  itemId,
+  imageUrl,
+}: {
+  recentStatus: FreeMintStatus;
+  itemId: string;
+  imageUrl: string;
+}) => {
+  if (recentStatus === FreeMintStatus.PENDING || recentStatus === FreeMintStatus.FAIL) {
+    return (
+      <View>
+        <MintStatusLine recentStatus={recentStatus} itemId={itemId || ''} imageUrl={imageUrl || ''} />
+      </View>
+    );
+  }
+  return null;
+};
+const ItemSeparatorComponent = () => {
+  const styles = getStyles();
+  return <View style={styles.separator} />;
+};
+
+const ListEmptyComponent = () => {
+  const styles = getStyles();
+  return (
+    <View>
+      <Touchable
+        onPress={() => {
+          navigationService.navigate('FreeMintHome');
+        }}>
+        <Image source={require('../../../assets/image/pngs/no-nft-banner.png')} style={[styles.imageEmpty]} />
+      </Touchable>
+    </View>
+  );
+};
 export default function NFTSection() {
   const { t } = useLanguage();
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -66,7 +103,9 @@ export default function NFTSection() {
 
   const getNFTCollectionsAsync = useLockCallback(
     async (isInit: boolean) => {
-      if (totalRecordCount && accountNFTList.length >= totalRecordCount && !isInit) return;
+      if (totalRecordCount && accountNFTList.length >= totalRecordCount && !isInit) {
+        return;
+      }
 
       await fetchAccountNFTCollectionInfoList({
         caAddressInfos,
@@ -88,7 +127,9 @@ export default function NFTSection() {
   }, [getNFTCollectionsAsync, getRecentStatus, setImageUrl, setItemId, setRecentStatus]);
 
   useEffect(() => {
-    if (timerRef.current) clearInterval(timerRef.current);
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+    }
     timerRef.current = setInterval(async () => {
       const res = await getRecentStatus();
       setRecentStatus(res.status);
@@ -98,7 +139,9 @@ export default function NFTSection() {
       getNFTCollectionsAsync(true);
     }, REFRESH_TIME);
     return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
     };
   }, [setRecentStatus, setItemId, timerRef, getRecentStatus, getNFTCollectionsAsync, setImageUrl]);
 
@@ -107,7 +150,9 @@ export default function NFTSection() {
   }, [getNFTCollectionsAsync]);
 
   useEffect(() => {
-    if (clearType) setOpenCollectionObj({});
+    if (clearType) {
+      setOpenCollectionObj({});
+    }
   }, [clearType]);
 
   const closeItem = useCallback((symbol: string, chainId: string) => {
@@ -168,7 +213,7 @@ export default function NFTSection() {
     [accountNFTList, caAddressInfos, fetchAccountNFTItem, openCollectionObj],
   );
   return (
-    <View style={styles.wrap}>
+    <View style={[styles.wrap, nftSectionUiType === 'NFTs' ? { paddingTop: pTd(8) } : {}]}>
       <FlatList
         key={nftSectionUiType}
         nestedScrollEnabled
@@ -177,17 +222,8 @@ export default function NFTSection() {
         data={totalRecordCount === 0 ? [] : accountNFTList || []}
         numColumns={nftSectionUiType === 'Collections' ? 2 : 1}
         columnWrapperStyle={nftSectionUiType === 'Collections' ? styles.columnWrapperStyle : null}
-        ItemSeparatorComponent={() => <View style={styles.separator} />}
-        ListEmptyComponent={() => (
-          <View>
-            <Touchable
-              onPress={() => {
-                navigationService.navigate('FreeMintHome');
-              }}>
-              <Image source={require('../../../assets/image/pngs/no-nft-banner.png')} style={[styles.imageEmpty]} />
-            </Touchable>
-          </View>
-        )}
+        ItemSeparatorComponent={ItemSeparatorComponent}
+        ListEmptyComponent={ListEmptyComponent}
         renderItem={({ item }: { item: NFTCollectionItemShowType }) => (
           <NFTSectionItem
             mode={nftSectionUiType}
@@ -203,21 +239,9 @@ export default function NFTSection() {
         )}
         keyExtractor={(item: NFTCollectionItemShowType) => item?.symbol + item.chainId}
         onEndReached={() => getNFTCollectionsAsync()}
-        ListHeaderComponent={() => {
-          // return (
-          //   <View>
-          //     <MintStatusLine recentStatus={recentStatus} itemId={itemId || ''} imageUrl={imageUrl || ''} />
-          //   </View>
-          // );
-          if (recentStatus === FreeMintStatus.PENDING || recentStatus === FreeMintStatus.FAIL) {
-            return (
-              <View>
-                <MintStatusLine recentStatus={recentStatus} itemId={itemId || ''} imageUrl={imageUrl || ''} />
-              </View>
-            );
-          }
-          return null;
-        }}
+        ListHeaderComponent={
+          <ListHeaderComponent recentStatus={recentStatus} itemId={itemId || ''} imageUrl={imageUrl || ''} />
+        }
       />
     </View>
   );

@@ -41,7 +41,7 @@ const MintHome = () => {
       <TextM style={styles.subTitle}>{t('Upload any image you like! You can mint up to 5 NFTs per day.')}</TextM>
       <Image source={require('../../../assets/image/pngs/mint_nft_cover.png')} style={[styles.image]} />
       <View style={GStyles.flex1} />
-      <OutlinedTextButton style={styles.button} title={t('Get started')} onPress={onMintPress} />
+      <OutlinedTextButton style={styles.button} textStyle={styles.buttonText} title={t('Get started')} onPress={onMintPress} />
     </PageContainer>
   );
 };
@@ -62,7 +62,6 @@ const getStyles = makeStyles(theme => ({
   title: {
     marginTop: pTd(24),
     paddingHorizontal: pTd(16),
-    ...fonts.SGMediumFont,
   },
   subTitle: {
     marginTop: pTd(16),
@@ -77,6 +76,10 @@ const getStyles = makeStyles(theme => ({
   },
   button: {
     marginHorizontal: pTd(16),
+  },
+  buttonText: {
+    ...fonts.SGMediumFont,
+    fontSize: pTd(16),
   },
 }));
 export default MintHome;

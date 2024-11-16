@@ -13,6 +13,7 @@ import { LocalStorageKey } from '@etransfer/core';
 import { removeDIDAddressSuffix } from '@etransfer/utils';
 
 export const CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL = ['ELF', 'USDT', 'SGR-1'];
+const ETRANSFER_VERSION = '2.13.0';
 
 class CrossTransfer implements ICrossTransfer {
   options: ICrossTransferInitOption;
@@ -23,7 +24,12 @@ class CrossTransfer implements ICrossTransfer {
   init(options: ICrossTransferInitOption) {
     this.options = options;
     const eTransferUrl = this.options.eTransferUrl;
-    eTransferCore.init({ etransferUrl: eTransferUrl, etransferAuthUrl: eTransferUrl, storage: this.options.storage });
+    eTransferCore.init({
+      etransferUrl: eTransferUrl,
+      etransferAuthUrl: eTransferUrl,
+      storage: this.options.storage,
+      version: ETRANSFER_VERSION,
+    });
   }
 
   formatAuthTokenParams = () => {

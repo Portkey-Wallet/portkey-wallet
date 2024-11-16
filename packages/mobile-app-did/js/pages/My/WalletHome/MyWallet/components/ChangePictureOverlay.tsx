@@ -1,49 +1,33 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import OverlayModal from 'components/OverlayModal';
-import { StyleSheet, ScrollView, View, Text, TouchableOpacity } from 'react-native';
-import { TextL } from 'components/CommonText';
+import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { ModalBody } from 'components/ModalBody';
 import { darkColors, defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
 import Svg from 'components/Svg';
-import { useLanguage } from 'i18n/hooks';
+// import { useLanguage } from 'i18n/hooks';
 import Touchable from 'components/Touchable';
 import FastImage from 'components/FastImage';
-import GStyles from 'assets/theme/GStyles';
-import CommonTopTab from 'components/CommonTopTab';
-import DiscoverTab from 'pages/Discover/components/DiscoverTopTab';
-import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import CommonButton from 'components/CommonButton';
-import { useQrScanPermission } from 'hooks/useQrScan';
-import ActionSheet from 'components/ActionSheet';
-import navigationService from 'utils/navigationService';
-import ImageWithUploadFunc from 'components/ImageWithUploadFunc';
+// import ActionSheet from 'components/ActionSheet';
 
 type SelectModalProps = {
   title?: string;
   avatar?: string;
-  selectPhoto: () => Promise<boolean>;
+  avatarList: string[];
+  selectPhoto: (url: string) => Promise<void>;
+  photoUpload: () => void;
 };
 
 type AvatarListProps = {
-  onChange: (idx: string | number) => void;
+  onChange: (idx: number) => void;
   itemKey?: string | number;
+  avatarList: string[];
 };
 
 const AvatarList = (props: AvatarListProps) => {
-  const { onChange, itemKey } = props;
-  const avatarList = [
-    'https://gd-hbimg.huaban.com/1bf9b061bbe51bdde88d3ad1182c20b914031e671ba2c-AuAxiq_fw1200',
-    'https://gd-hbimg.huaban.com/1bf9b061bbe51bdde88d3ad1182c20b914031e671ba2c-AuAxiq_fw1200',
-    'https://gd-hbimg.huaban.com/1bf9b061bbe51bdde88d3ad1182c20b914031e671ba2c-AuAxiq_fw1200',
-    'https://gd-hbimg.huaban.com/1bf9b061bbe51bdde88d3ad1182c20b914031e671ba2c-AuAxiq_fw1200',
-    'https://gd-hbimg.huaban.com/1bf9b061bbe51bdde88d3ad1182c20b914031e671ba2c-AuAxiq_fw1200',
-    'https://gd-hbimg.huaban.com/1bf9b061bbe51bdde88d3ad1182c20b914031e671ba2c-AuAxiq_fw1200',
-    'https://gd-hbimg.huaban.com/1bf9b061bbe51bdde88d3ad1182c20b914031e671ba2c-AuAxiq_fw1200',
-    'https://gd-hbimg.huaban.com/1bf9b061bbe51bdde88d3ad1182c20b914031e671ba2c-AuAxiq_fw1200',
-    'https://gd-hbimg.huaban.com/1bf9b061bbe51bdde88d3ad1182c20b914031e671ba2c-AuAxiq_fw1200',
-    'https://gd-hbimg.huaban.com/1bf9b061bbe51bdde88d3ad1182c20b914031e671ba2c-AuAxiq_fw1200',
-  ];
+  const { onChange, itemKey, avatarList } = props;
+
   return (
     <View
       style={{
@@ -109,32 +93,51 @@ const AvatarList = (props: AvatarListProps) => {
   );
 };
 
-const SelectModal = ({ title = '', avatar = '', selectPhoto }: SelectModalProps) => {
-  const { t } = useLanguage();
-  const [isFocused, setIsFocused] = useState<boolean>(false);
+const SelectModal = ({ title = '', avatar = '', selectPhoto, avatarList, photoUpload }: SelectModalProps) => {
+  // const { t } = useLanguage();
+  // const [isFocused, setIsFocused] = useState<boolean>(false);
   const [selectKey, setSelectKey] = useState<string>('avatar');
+  const [icon, setIcon] = useState<string>(avatar);
 
-  const [selectAvatarKey, setSelectAvatarKey] = useState<string | number | undefined>();
+  const [selectAvatarKey, setSelectAvatarKey] = useState<number | undefined>();
 
-  const [, requestQrPermission] = useQrScanPermission();
+  // const [, requestQrPermission] = useQrScanPermission();
+  // const uploadRef = useRef<ImageWithUploadFuncInstance>(null);
 
-  const showDialog = useCallback(
-    () =>
-      ActionSheet.alert({
-        title: t('Enable Camera Access'),
-        message: t('Cannot connect to the camera. Please make sure it is turned on'),
-        buttons: [
-          {
-            title: t('Close'),
-            type: 'solid',
-          },
-        ],
-      }),
-    [t],
-  );
+  // const showDialog = useCallback(
+  //   () =>
+  //     ActionSheet.alert({
+  //       title: t('Enable Camera Access'),
+  //       message: t('Cannot connect to the camera. Please make sure it is turned on'),
+  //       buttons: [
+  //         {
+  //           title: t('Close'),
+  //           type: 'solid',
+  //         },
+  //       ],
+  //     }),
+  //   [t],
+  // );
+
+  // const handlePhotoUpload = async () => {
+  //   try {
+  //     const res = await uploadRef.current?.selectPhotoWithSource();
+  //     console.log(res);
+  //     return true;
+  //   } catch (error) {
+  //     console.log(error);
+  //     return false;
+  //   }
+  // };
 
   const onSave = () => {
     console.log('onSave');
+    if (selectAvatarKey !== undefined) {
+      const item = avatarList[selectAvatarKey];
+      console.log('onSave:', item);
+      selectPhoto(item);
+      OverlayModal.hide();
+    }
   };
 
   return (
@@ -158,7 +161,7 @@ const SelectModal = ({ title = '', avatar = '', selectPhoto }: SelectModalProps)
             }}
             resizeMode="cover"
             source={{
-              uri: avatar,
+              uri: icon,
             }}
           />
         </View>
@@ -204,8 +207,11 @@ const SelectModal = ({ title = '', avatar = '', selectPhoto }: SelectModalProps)
         {selectKey === 'avatar' ? (
           <View>
             <AvatarList
+              avatarList={avatarList}
               onChange={key => {
                 setSelectAvatarKey(key);
+                const item = avatarList[key];
+                setIcon(item);
               }}
               itemKey={selectAvatarKey}
             />
@@ -213,7 +219,7 @@ const SelectModal = ({ title = '', avatar = '', selectPhoto }: SelectModalProps)
               style={{
                 marginTop: pTd(48),
               }}
-              disabled
+              disabled={selectAvatarKey === undefined}
               title={'Save'}
               type="primary"
               onPress={onSave}
@@ -224,7 +230,7 @@ const SelectModal = ({ title = '', avatar = '', selectPhoto }: SelectModalProps)
             style={{
               marginVertical: pTd(32),
             }}>
-            <Touchable
+            {/* <Touchable
               style={[styles.cellWrapper]}
               onPress={async () => {
                 if (!(await requestQrPermission())) return showDialog();
@@ -242,14 +248,15 @@ const SelectModal = ({ title = '', avatar = '', selectPhoto }: SelectModalProps)
               </View>
 
               <Svg icon={'chevron_right'} size={pTd(11.15)} />
-            </Touchable>
+            </Touchable> */}
 
             <Touchable
               style={[styles.cellWrapper, { marginTop: pTd(12) }]}
               onPress={async () => {
-                const isFinished = await selectPhoto();
-                if (isFinished) {
-                }
+                photoUpload();
+                // const isFinished = await selectPhoto();
+                // if (isFinished) {
+                // }
               }}>
               <View style={styles.cellLayer}>
                 <Svg icon={'photo'} size={pTd(24)} />

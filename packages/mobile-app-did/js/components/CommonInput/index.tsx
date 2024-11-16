@@ -1,7 +1,7 @@
 import React, { forwardRef, useMemo } from 'react';
 import { Input, InputProps, useTheme } from '@rneui/themed';
 import Svg, { IconName } from 'components/Svg';
-import { bgWhiteStyles, commonStyles, generalStyles, searchStyles } from './style';
+import { bgWhiteStyles, commonStyles, getGeneralStyles, getSearchStyles } from './style';
 import { pTd } from 'utils/unit';
 import { useLanguage } from 'i18n/hooks';
 import Touchable from 'components/Touchable';
@@ -39,6 +39,8 @@ const CommonInput = forwardRef(function CommonInput(props: CommonInputProps, for
     ...inputProps
   } = props;
   const { theme: pageTheme } = useTheme();
+  const searchStyles = getSearchStyles();
+  const generalStyles = getGeneralStyles();
   const rightIconDom = useMemo(() => {
     if (loading) {
       return (
@@ -64,7 +66,7 @@ const CommonInput = forwardRef(function CommonInput(props: CommonInputProps, for
     type,
   ]);
 
-  if (type === 'search')
+  if (type === 'search') {
     return (
       <Input
         selectionColor={pageTheme.colors.bg13}
@@ -86,6 +88,7 @@ const CommonInput = forwardRef(function CommonInput(props: CommonInputProps, for
         ref={forwardedRef}
       />
     );
+  }
 
   return (
     <Input

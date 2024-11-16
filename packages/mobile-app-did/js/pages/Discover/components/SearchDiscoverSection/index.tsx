@@ -1,11 +1,9 @@
 import React, { useCallback } from 'react';
-import { StyleSheet, View, ScrollView, TextBase } from 'react-native';
+import { StyleSheet, View, ScrollView } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
-import { useLanguage } from 'i18n/hooks';
 import { TextS } from 'components/CommonText';
 import { pTd } from 'utils/unit';
 import fonts from 'assets/theme/fonts';
-import NoData from 'components/NoData';
 import { FontStyles } from 'assets/theme/styles';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { darkColors, defaultColors } from 'assets/theme';
@@ -14,7 +12,7 @@ import DiscoverWebsiteImage from '../DiscoverWebsiteImage';
 import { useDiscoverJumpWithNetWork } from 'hooks/discover';
 import TextWithProtocolIcon from 'components/TextWithProtocolIcon';
 import Touchable from 'components/Touchable';
-import Svg, { IconName } from 'components/Svg';
+import Svg from 'components/Svg';
 
 interface ISearchDiscoverSectionProps {
   searchedDiscoverList: DiscoverItem[];
@@ -22,7 +20,6 @@ interface ISearchDiscoverSectionProps {
 }
 
 export default function SearchDiscoverSection(props: ISearchDiscoverSectionProps) {
-  const { t } = useLanguage();
   const { searchedDiscoverList, inputValue } = props;
   console.log('inputValue:', inputValue);
 
@@ -40,18 +37,6 @@ export default function SearchDiscoverSection(props: ISearchDiscoverSectionProps
     },
     [jumpToWebview],
   );
-
-  // if (searchedDiscoverList.length === 0) return <NoData noPic message={t('There is no search result.')} />;
-
-  // if (searchedDiscoverList.length === 0) {
-  //   return (
-
-  //   );
-  // }
-
-  // if (!inputValue) {
-
-  // }
 
   return (
     <ScrollView style={styles.sectionWrap}>
@@ -106,12 +91,12 @@ export default function SearchDiscoverSection(props: ISearchDiscoverSectionProps
         <>
           {searchedDiscoverList?.map((item, index) => (
             <Touchable key={index} style={itemStyle.wrap} onPress={() => onClickJump(item)}>
-              <DiscoverWebsiteImage imageUrl={`${s3Url}/${item?.imgUrl?.filename_disk}`} size={pTd(32)} />
+              <DiscoverWebsiteImage imageUrl={`${s3Url}/${item?.imgUrl?.filename_disk}`} size={pTd(42)} />
               <View style={itemStyle.right}>
                 <View style={itemStyle.infoWrap}>
-                  <TextWithProtocolIcon title={item?.title} url={item?.url} />
+                  <TextWithProtocolIcon title={item?.title} url={item?.url} textFontSize={pTd(14)} />
                   {item?.description && (
-                    <TextS numberOfLines={1} ellipsizeMode={'tail'} style={[FontStyles.font3, itemStyle.gameInfo]}>
+                    <TextS numberOfLines={1} ellipsizeMode={'tail'} style={[FontStyles.font1, itemStyle.gameInfo]}>
                       {item.description}
                     </TextS>
                   )}
@@ -144,7 +129,7 @@ const styles = StyleSheet.create({
 
 const itemStyle = StyleSheet.create({
   wrap: {
-    height: pTd(80),
+    height: pTd(78),
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -152,15 +137,13 @@ const itemStyle = StyleSheet.create({
   },
   right: {
     height: pTd(80),
-    marginLeft: pTd(16),
+    marginLeft: pTd(8),
     paddingRight: pTd(16),
     flex: 1,
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    borderBottomColor: defaultColors.border6,
-    borderBottomWidth: StyleSheet.hairlineWidth,
   },
   image: {
     width: pTd(32),

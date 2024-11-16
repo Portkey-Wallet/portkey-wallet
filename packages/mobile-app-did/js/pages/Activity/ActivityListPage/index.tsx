@@ -45,7 +45,9 @@ const ActivityListPage = () => {
     async (isInit: boolean) => {
       const { skipCount = 0, hasNextPage = true } = currentActivity || {};
       const maxResultCount = 30;
-      if (!isInit && !hasNextPage) return;
+      if (!isInit && !hasNextPage) {
+        return;
+      }
 
       setIsLoading(isInit ? ListLoadingEnum.header : ListLoadingEnum.footer);
       const params: IActivitiesApiParams = {
@@ -59,7 +61,9 @@ const ActivityListPage = () => {
 
       await dispatch(getActivityListAsync(params));
       setIsLoading(ListLoadingEnum.hide);
-      if (!isInit) await sleep(250);
+      if (!isInit) {
+        await sleep(250);
+      }
     },
     [caAddressInfos, chainId, currentActivity, dispatch, symbol],
   );
@@ -95,7 +99,9 @@ const ActivityListPage = () => {
         renderItem={renderItem}
         onRefresh={() => getActivityList(true)}
         onEndReached={() => {
-          if (!isInitRef.current) return;
+          if (!isInitRef.current) {
+            return;
+          }
           getActivityList(false);
         }}
         onEndReachedThreshold={ON_END_REACHED_THRESHOLD}
@@ -103,7 +109,9 @@ const ActivityListPage = () => {
           <>{!isEmpty && <FlatListFooterLoading refreshing={isLoading === ListLoadingEnum.footer} />}</>
         }
         onLoad={() => {
-          if (isInitRef.current) return;
+          if (isInitRef.current) {
+            return;
+          }
           init();
         }}
       />
@@ -115,7 +123,6 @@ export default ActivityListPage;
 
 export const getStyles = makeStyles(theme => ({
   pageWrap: {
-    paddingBottom: pTd(15),
     backgroundColor: theme.colors.bgBase1,
   },
   title: {

@@ -155,7 +155,9 @@ const ActivityDetail = (props: ActivityItemType & IActivityApiParams) => {
   const amountShowUI = useMemo(() => {
     const { amount = '', isReceived, decimals = 8, symbol, nftInfo } = activityItem || {};
     let prefix = ' ';
-    if (amount && !ZERO.isEqualTo(amount)) prefix = isReceived ? AmountSign.PLUS : AmountSign.MINUS;
+    if (amount && !ZERO.isEqualTo(amount)) {
+      prefix = isReceived ? AmountSign.PLUS : AmountSign.MINUS;
+    }
     const suffix = nftInfo?.alias || symbol || '';
 
     return (
@@ -169,7 +171,9 @@ const ActivityDetail = (props: ActivityItemType & IActivityApiParams) => {
   }, [activityItem]);
 
   const modalTitle = useMemo(() => {
-    if (isShowSystemForDefault) return 'Wallet activity';
+    if (isShowSystemForDefault) {
+      return 'Wallet activity';
+    }
     return activityItem.transactionName;
   }, [activityItem.transactionName, isShowSystemForDefault]);
 
@@ -228,7 +232,9 @@ const ActivityDetail = (props: ActivityItemType & IActivityApiParams) => {
   }, [activityItem?.status, styles, t, theme]);
 
   const fromOrToUI = useMemo(() => {
-    if (activityItem?.dappName) return <></>;
+    if (activityItem?.dappName) {
+      return <></>;
+    }
     if (activityItem?.transactionType && SHOW_FROM_TRANSACTION_TYPES.includes(activityItem?.transactionType)) {
       return activityItem.isReceived ? (
         <View style={[styles.flexSpaceBetween]}>
@@ -263,7 +269,9 @@ const ActivityDetail = (props: ActivityItemType & IActivityApiParams) => {
     //   }
     // }
     const isNetworkShow = transactionType && SHOW_FROM_TRANSACTION_TYPES.includes(transactionType);
-    if (!isNetworkShow) return null;
+    if (!isNetworkShow) {
+      return null;
+    }
     return (
       <>
         <View style={styles.flexSpaceBetween}>
@@ -295,7 +303,9 @@ const ActivityDetail = (props: ActivityItemType & IActivityApiParams) => {
   }, [activityItem, styles.avatarTitleStyle, styles.flexSpaceBetween, styles.marginLeft4, t]);
 
   const feeUI = useMemo(() => {
-    if (activityItem?.isReceived) return null;
+    if (activityItem?.isReceived) {
+      return null;
+    }
 
     const transactionFees =
       activityItem?.transactionFees?.length === 0
@@ -308,7 +318,7 @@ const ActivityDetail = (props: ActivityItemType & IActivityApiParams) => {
         {activityItem?.isDelegated ? (
           <View style={styles.transactionFeeItemWrap}>
             <TextL style={fonts.SGMediumFont}>{`0 ${defaultToken.symbol}`}</TextL>
-            {isMainnet && <TextM style={styles.usdtCount}>{`$0`}</TextM>}
+            {isMainnet && <TextM style={styles.usdtCount}>{'$0'}</TextM>}
           </View>
         ) : (
           <View>
@@ -450,7 +460,7 @@ const ActivityDetail = (props: ActivityItemType & IActivityApiParams) => {
               titleStyle={styles.avatarTitleStyle}
             />
           )}
-          <TextXXL style={[fonts.SGMediumFont, styles.marginTop8]}>{activityItem.transactionName}</TextXXL>
+          <TextXXL style={[fonts.BGMediumFont, styles.marginTop8]}>{activityItem.transactionName}</TextXXL>
         </View>
       );
     }
@@ -590,7 +600,9 @@ const ActivityDetail = (props: ActivityItemType & IActivityApiParams) => {
       <CommonButton
         containerStyle={GStyles.marginArg(12, 16, 0, 16)}
         onPress={() => {
-          if (!activityItem?.transactionId) return;
+          if (!activityItem?.transactionId) {
+            return;
+          }
 
           OverlayModal.hide();
           navigationService.navigate('ViewOnWebView', {

@@ -31,7 +31,8 @@ type ConnectModalType = {
   onReject: () => void;
   onApprove: () => void;
 };
-const AUTH_MSG = `When set to any value other than "Always," your session key will automatically approve this dApp's requests on this device, suppressing pop-ups until it expires. The feature disables when you disconnect or when the session key expires, and you can manually turn it off or adjust the expiration time.`;
+const AUTH_MSG =
+  'When set to any value other than "Always," your session key will automatically approve this dApp\'s requests on this device, suppressing pop-ups until it expires. The feature disables when you disconnect or when the session key expires, and you can manually turn it off or adjust the expiration time.';
 const ConnectModal = (props: ConnectModalType) => {
   const { dappInfo, onReject, onApprove } = props;
   const { t } = useLanguage();
@@ -41,11 +42,13 @@ const ConnectModal = (props: ConnectModalType) => {
   const styles = getStyles();
   const { theme } = useTheme();
   const [rememberInfo, setRememberMeInfo] = useState<RememberInfoType>({
-    isRemember: false,
-    value: SessionExpiredPlan.hour1,
+    isRemember: true,
+    value: SessionExpiredPlan.always,
   });
   const showAuthText = useMemo(() => {
-    if (!rememberInfo.isRemember) return 'Never';
+    if (!rememberInfo.isRemember) {
+      return 'Never';
+    }
     return SessionKeyMap[rememberInfo.value];
   }, [rememberInfo.isRemember, rememberInfo.value]);
 
@@ -60,7 +63,7 @@ const ConnectModal = (props: ConnectModalType) => {
         },
       },
       {
-        title: t('Approve'),
+        title: t('Connect'),
         type: 'primary' as CommonButtonProps['type'],
         onPress: async () => {
           onApprove?.();
@@ -86,12 +89,12 @@ const ConnectModal = (props: ConnectModalType) => {
   return (
     <ModalBody
       modalBodyType="bottom"
-      leftTitleDom={<TitleInfoSection viewStyle={{ paddingLeft: pTd(16) }} dappInfo={dappInfo} title={t(`Connect`)} />}
+      leftTitleDom={<TitleInfoSection viewStyle={{ paddingLeft: pTd(16) }} dappInfo={dappInfo} title={t('Connect')} />}
       onClose={onReject}>
       <View style={[styles.contentWrap]}>
         <View style={styles.groupWrap}>
           <TextL style={[{ color: theme.colors.textBase2, lineHeight: pTd(22) }]}>
-            {t(`Connecting will allow this site to view balances and activity in your current account.`)}
+            {t('Connecting will allow this site to view balances and activity in your current account.')}
           </TextL>
           <View style={[styles.walletInfo, GStyles.flexRow, GStyles.itemCenter]}>
             <CommonAvatar
@@ -126,7 +129,7 @@ const ConnectModal = (props: ConnectModalType) => {
           </View>
         </View>
         <OverlayBottomSection bottomButtonGroup={ButtonList}>
-          <TextL style={[styles.bottomText, GStyles.alignCenter]}>{t(`Only connect to websites you trust`)}</TextL>
+          <TextL style={[styles.bottomText, GStyles.alignCenter]}>{t('Only connect to websites you trust')}</TextL>
         </OverlayBottomSection>
       </View>
     </ModalBody>

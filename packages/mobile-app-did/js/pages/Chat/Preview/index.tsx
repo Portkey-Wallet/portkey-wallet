@@ -215,7 +215,7 @@ To claim, click the link, log in to your Portkey account, and verify eligibility
         </View>
         <View style={styles.infoItem}>
           <TextM style={styles.infoItemTitle}>
-            Transaction fee
+            Estimated network fee
             <CommonTooltip
               iconStyle={{ marginLeft: pTd(2) }}
               iconSize={pTd(16)}

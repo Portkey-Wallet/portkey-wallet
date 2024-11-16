@@ -163,11 +163,19 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
       .toFixed();
   }, [type, values.count, values.packetNum]);
   const amountUsdShowStr = useMemo(() => {
-    return `$${ZERO.plus(values.count || 0)
-      .times(tokenPrice || 0)
-      .dp(2)
-      .toFixed(2)}`;
-  }, [tokenPrice, values.count]);
+    if (type !== RedPackageTypeEnum.FIXED) {
+      return `$${ZERO.plus(values.count || 0)
+        .times(tokenPrice || 0)
+        .dp(2)
+        .toFixed(2)}`;
+    } else {
+      return `$${ZERO.plus(values.count || 0)
+        .times(values.packetNum || '1')
+        .times(tokenPrice || 0)
+        .dp(2)
+        .toFixed(2)}`;
+    }
+  }, [tokenPrice, values.count, values.packetNum]);
 
   const onAmountChange = useCallback(
     (value: string) => {
@@ -440,7 +448,7 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
       <CommonButton
         disabled={!isAllowPrepare || isInsufficientBalance}
         type="primary"
-        title={isInsufficientBalance ? 'Insufficient ELF balance' : 'Preview'}
+        title={isInsufficientBalance ? 'Insufficient balance' : 'Preview'}
         containerStyle={styles.btnStyle}
         onPress={onPreparePress}
       />

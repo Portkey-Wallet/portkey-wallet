@@ -24,21 +24,17 @@ const TokenDetail: React.FC = () => {
     if (!tokenSection.tokens || tokenSection.tokens.length < 1) {
       return <NoData noPic message={t('No Data')} />;
     }
-    if (tokenSection.tokens?.length === 1) {
-      return <TokenDetailPage tokenInfo={tokenSection.tokens[0]} tokenSection={tokenSection} />;
-    } else {
-      return (
-        <TokenDetailTopTab
-          initialRouteName={tokenSection.tokens[index].displayChainName}
-          tabList={tokenSection.tokens.map(token => {
-            return {
-              name: token.displayChainName ?? '',
-              tabItemDom: <TokenDetailPage tokenInfo={token} tokenSection={tokenSection} />,
-            };
-          })}
-        />
-      );
-    }
+    return (
+      <TokenDetailTopTab
+        initialRouteName={tokenSection.tokens[index].displayChainName}
+        tabList={tokenSection.tokens.map(token => {
+          return {
+            name: token.displayChainName ?? '',
+            tabItemDom: <TokenDetailPage tokenInfo={token} tokenSection={tokenSection} />,
+          };
+        })}
+      />
+    );
   }, [index, t, tokenSection]);
 
   return (

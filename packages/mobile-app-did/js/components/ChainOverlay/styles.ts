@@ -1,4 +1,5 @@
 import { darkColors, defaultColors } from 'assets/theme';
+import GStyles from 'assets/theme/GStyles';
 import { StyleSheet } from 'react-native';
 import { pTd } from 'utils/unit';
 
@@ -10,10 +11,7 @@ const styles = StyleSheet.create({
     height: pTd(48),
     flexDirection: 'row',
     alignItems: 'center',
-    marginLeft: pTd(16),
-    marginRight: pTd(16),
-    // borderBottomWidth: StyleSheet.hairlineWidth,
-    // borderBottomColor: defaultColors.border6,
+    ...GStyles.marginArg(0, 16, 12, 16),
   },
   itemContent: {
     flex: 1,

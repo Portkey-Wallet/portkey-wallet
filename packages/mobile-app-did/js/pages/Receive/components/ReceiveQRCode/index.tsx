@@ -5,6 +5,7 @@ import CommonQRCodeStyled from 'components/CommonQRCodeStyled';
 import Touchable from 'components/Touchable';
 import { TextL } from 'components/CommonText';
 import Svg from 'components/Svg';
+// @ts-expect-error: Importing makeStyles from @rneui/themed
 import { makeStyles } from '@rneui/themed';
 import { formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import { copyText } from 'utils';
@@ -25,17 +26,17 @@ export default function ReceiveQRCode({
       <View style={styles.qrCodeWrap}>
         <CommonQRCodeStyled qrData={data} width={pTd(289)} style={styles.qrCode} />
       </View>
-      <View style={styles.addressWrap}>
+      <Touchable style={styles.addressWrap} onPress={onCopy}>
         <TextL>{formatStr2EllipsisStr(address, 8, 'middle')}</TextL>
-        <Touchable style={styles.copyIcon} onPress={onCopy}>
+        <View style={styles.copyIcon}>
           <Svg icon="copy" size={pTd(16)} />
-        </Touchable>
-      </View>
+        </View>
+      </Touchable>
     </View>
   );
 }
 
-const getStyles = makeStyles(theme => ({
+const getStyles = makeStyles((theme: any) => ({
   container: {
     alignItems: 'center',
     justifyContent: 'center',

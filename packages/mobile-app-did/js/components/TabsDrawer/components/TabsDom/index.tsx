@@ -28,7 +28,7 @@ enum HANDLE_TYPE {
   FORWARD = 'Forward',
   BACK = 'Back',
   BOOKMARK = 'Bookmark',
-  UN_BOOKMARK = 'Delete Bookmark',
+  UN_BOOKMARK = 'Remove bookmark',
 }
 
 type IProps = {
@@ -74,7 +74,7 @@ function TabsDom({ activeWebViewRef, clickBottomActionBtn }: IProps) {
               url: browserInfo?.url || '',
             },
           });
-          CommonToast.success('Added successfully');
+          CommonToast.success('Bookmark added');
           refresh();
         } catch (error) {
           CommonToast.failError('Added failed');
@@ -100,10 +100,10 @@ function TabsDom({ activeWebViewRef, clickBottomActionBtn }: IProps) {
               ],
             },
           });
-          CommonToast.success('Deleted successfully');
+          CommonToast.success('Bookmark removed');
           refresh();
         } catch (error) {
-          CommonToast.failError('Deleted failed');
+          CommonToast.failError('Remove failed');
         }
         isBookmarkLoading.current = false;
       }

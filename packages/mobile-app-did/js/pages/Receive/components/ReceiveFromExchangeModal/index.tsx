@@ -4,8 +4,10 @@ import { Keyboard, Text, View } from 'react-native';
 import Touchable from 'components/Touchable';
 import { pTd } from 'utils/unit';
 import { ModalBody } from 'components/ModalBody';
+// @ts-expect-error: Importing makeStyles from @rneui/themed
 import { makeStyles } from '@rneui/themed';
 import ExchangeIcons from 'components/ExchangeIcons';
+import fonts from 'assets/theme/fonts';
 
 type ReceiveFromExchangeModalProps = {
   onPress: (isExchange: boolean) => void;
@@ -53,7 +55,7 @@ export default {
   showList: showReminder,
 };
 
-const getStyles = makeStyles(theme => ({
+const getStyles = makeStyles((theme: any) => ({
   wrap: {
     marginLeft: pTd(16),
     marginRight: pTd(16),
@@ -75,6 +77,7 @@ const getStyles = makeStyles(theme => ({
     borderRadius: pTd(24),
   },
   positiveText: {
+    ...fonts.SGMediumFont,
     fontSize: pTd(16),
     color: theme.colors.textBrand4,
   },
@@ -89,6 +92,7 @@ const getStyles = makeStyles(theme => ({
     borderColor: theme.colors.borderNeutral2,
   },
   negativeText: {
+    ...fonts.SGMediumFont,
     fontSize: pTd(16),
     color: theme.colors.textBase1,
   },

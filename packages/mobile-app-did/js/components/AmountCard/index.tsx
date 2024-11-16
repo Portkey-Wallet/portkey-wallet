@@ -11,6 +11,7 @@ import { divDecimals } from '@portkey-wallet/utils/converter';
 import { TCurrency } from '@portkey-wallet/types/types-ca/awaken';
 import { formatNameWithNoUnderline } from '@portkey-wallet/utils';
 import { TextM } from 'components/CommonText';
+import { isIOS } from '@rneui/base';
 
 interface IAmountCardProps {
   style?: ViewStyleType;
@@ -87,7 +88,7 @@ const AmountCard: React.FC<IAmountCardProps> = ({
               maxLength={18}
               containerStyle={styles.containerStyle}
               inputContainerStyle={styles.inputContainerStyle}
-              inputStyle={[styles.inputStyle, isError && styles.errorInputStyle]}
+              inputStyle={[styles.inputStyle, isError && styles.errorInputStyle, !isIOS && styles.androidInputStyle]}
               placeholderTextColor={theme.colors.textBase3}
               placeholder="0"
               value={amount}

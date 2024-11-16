@@ -54,6 +54,10 @@ import { IRecentItem } from '@portkey-wallet/store/store-ca/recent/type';
 // usePortkeyCrossTrack,
 // } from 'hooks/amplitude';
 
+enum ErrorType {
+  NO_TOAST = 'noToast',
+}
+
 const SendPreview: React.FC = () => {
   const { t } = useLanguage();
   const isMainnet = useIsMainnet();
@@ -184,7 +188,6 @@ const SendPreview: React.FC = () => {
       const _balance = await getELFChainBalance(tokenContract, defaultToken.symbol, caAddress);
       return _balance;
     } catch (error) {
-      console.log('init ELF Balance', error);
       throw 'fail';
     }
   }, [assetInfo, defaultToken.symbol, getTokenViewContract, wallet]);
@@ -255,6 +258,7 @@ const SendPreview: React.FC = () => {
   // const portkeyCrossTrack = usePortkeyCrossTrack();
   // const etransferCrossTrack = useEtransferCrossTrack();
   // const etransferCrossFinishTrack = useEtransferCrossFinishTrack();
+
   const transfer = useCallback(async () => {
     setIsError(false);
 
@@ -395,7 +399,11 @@ const SendPreview: React.FC = () => {
       const elfBalance = (await getElfBalance()) || '';
       if (ZERO.plus(needElfBalance).isGreaterThan(elfBalance)) {
         setIsError(true);
-        throw 'No enough fee';
+        setIsLoading(false);
+        throw {
+          type: ErrorType.NO_TOAST,
+          error: 'No enough fee',
+        };
       }
 
       const limit = bridge.getLimit();
@@ -515,7 +523,7 @@ const SendPreview: React.FC = () => {
           retryCrossChain(error.managerTransferTxId, error.data);
         });
         return;
-      } else {
+      } else if (error.type !== ErrorType.NO_TOAST) {
         CommonToast.failError(error);
       }
       // TODO: add track  Etransfer Cross fail

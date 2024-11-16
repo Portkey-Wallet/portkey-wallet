@@ -7,7 +7,7 @@ import DigitInput, { DigitInputInterface } from 'components/DigitInput';
 import React, { useMemo, useRef } from 'react';
 import { Text } from 'react-native';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
-import { makeStyles } from '@rneui/themed';
+import { makeStyles, useTheme } from '@rneui/themed';
 import { FontStyles } from 'assets/theme/styles';
 import Loading from 'components/Loading';
 import navigationService from 'utils/navigationService';
@@ -26,6 +26,7 @@ type RouterParams = {
   email: string;
 };
 function TipText({ email }: { email?: string }) {
+  const { theme } = useTheme();
   const [first, last] = useMemo(() => {
     return [
       'Your assigned Guardian Verifier, has sent a verification email to ',
@@ -33,9 +34,10 @@ function TipText({ email }: { email?: string }) {
     ];
   }, []);
   return (
-    <TextM style={[FontStyles.font3, GStyles.marginTop(16), GStyles.marginBottom(32)]}>
+    <TextM
+      style={[FontStyles.font3, GStyles.marginTop(16), GStyles.marginBottom(32), { color: theme.colors.textBase2 }]}>
       {first}
-      <Text style={FontStyles.font4}>{email}</Text>
+      <Text style={[FontStyles.font4, { color: theme.colors.textBrand1 }]}>{email}</Text>
       {last}
     </TextM>
   );

@@ -1,10 +1,10 @@
 import { useGetS3ImageUrl } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { useDiscoverData } from '@portkey-wallet/hooks/hooks-ca/cms/discover';
 import { TBaseCardItemType } from '@portkey-wallet/types/types-ca/cms';
-import { darkColors, defaultColors } from 'assets/theme';
+import { darkColors } from 'assets/theme';
 import fonts from 'assets/theme/fonts';
 import CommonButton from 'components/CommonButton';
-import { TextL, TextS } from 'components/CommonText';
+import { TextXL, TextM } from 'components/CommonText';
 import NoData from 'components/NoData';
 import { useDiscoverJumpWithNetWork } from 'hooks/discover';
 import React, { useCallback } from 'react';
@@ -36,7 +36,9 @@ const EarnItem = (item: TBaseCardItemType) => {
   const imageUrl = getS3ImgUrl(item.imgUrl.filename_disk);
   const { title = '', description, url, buttonTitle } = item;
   const onPress = useCallback(() => {
-    if (!isUrl(url)) return;
+    if (!isUrl(url)) {
+      return;
+    }
     discoverJump({
       item: {
         name: title,
@@ -52,12 +54,12 @@ const EarnItem = (item: TBaseCardItemType) => {
       <View style={styles.infoWrap}>
         <View style={styles.infoCol}>
           <View style={styles.textLines}>
-            <TextL style={[styles.title, fonts.mediumFont]} numberOfLines={1} ellipsizeMode="tail">
+            <TextXL style={[styles.title, fonts.mediumFont]} numberOfLines={1} ellipsizeMode="tail">
               {title}
-            </TextL>
-            <TextS style={styles.description} numberOfLines={2} ellipsizeMode="tail">
+            </TextXL>
+            <TextM style={styles.description} numberOfLines={2} ellipsizeMode="tail">
               {description}
-            </TextS>
+            </TextM>
           </View>
           <CommonButton
             type="outline"
@@ -88,12 +90,13 @@ const styles = StyleSheet.create({
     borderRadius: pTd(12),
     borderWidth: pTd(1),
     borderColor: darkColors.borderBase1,
+    backgroundColor: darkColors.bgBase2,
     marginTop: pTd(16),
     overflow: 'hidden',
   },
   bigImage: {
     width: pTd(343),
-    height: pTd(128),
+    height: pTd(152),
   },
   infoWrap: {
     flexDirection: 'row',
@@ -135,7 +138,7 @@ const styles = StyleSheet.create({
     height: pTd(48),
   },
   btnTitle: {
-    fontSize: pTd(12),
+    fontSize: pTd(14),
     lineHeight: pTd(16),
   },
   gap: {

@@ -15,6 +15,7 @@ import {
 import LottieLoading from 'components/LottieLoading';
 import { pTd } from 'utils/unit';
 import Touchable from 'components/Touchable';
+// @ts-expect-error: Importing makeStyles from @rneui/themed
 import { makeStyles } from '@rneui/themed';
 import Divider from 'components/Divider';
 import { useQrScanPermissionAndToast } from 'hooks/useQrScan';
@@ -31,6 +32,8 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network-mainnet-v2';
 import { SendType } from '@portkey-wallet/types/types-ca/send';
 import navigationService from 'utils/navigationService';
+import fonts from 'assets/theme/fonts';
+
 interface IToAddressInput {
   isFixedToContact?: boolean;
   selectedToken?: IToSendAssetParamsType;
@@ -316,16 +319,17 @@ export default function ToAddressInput({
   );
 }
 
-export const getStyles = makeStyles(theme => ({
+export const getStyles = makeStyles((theme: any) => ({
   wrap: {},
   toWrap: {
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: pTd(14),
+    paddingVertical: pTd(12),
     paddingHorizontal: pTd(16),
   },
   grayColor: {
+    ...fonts.SGMediumFont,
     color: theme.colors.textBase2,
   },
   brand2Color: {
@@ -363,11 +367,13 @@ export const getStyles = makeStyles(theme => ({
     height: pTd(56),
   },
   inputStyle: {
+    ...fonts.SGMediumFont,
     color: theme.colors.textBase1,
+    paddingVertical: 0,
     paddingRight: pTd(6),
     fontSize: pTd(14),
-    lineHeight: pTd(14),
     width: pTd(260),
+    height: pTd(32),
   },
   right: {
     width: pTd(16),

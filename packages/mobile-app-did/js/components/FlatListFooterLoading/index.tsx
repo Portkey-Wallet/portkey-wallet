@@ -1,7 +1,7 @@
 import { View, StyleSheet } from 'react-native';
 import React from 'react';
 import { pTd } from 'utils/unit';
-import Lottie from 'lottie-react-native';
+import LottieLoading from 'components/LottieLoading';
 
 export interface IFlatListFooterLoadingProps {
   refreshing?: boolean;
@@ -10,11 +10,7 @@ export interface IFlatListFooterLoadingProps {
 export const FlatListFooterLoading = ({ refreshing }: IFlatListFooterLoadingProps) => {
   return (
     <View style={styles.container}>
-      <View style={styles.content}>
-        {refreshing && (
-          <Lottie style={styles.loadingStyle} source={require('assets/lottieFiles/spinnerDark.json')} autoPlay loop />
-        )}
-      </View>
+      <View style={styles.content}>{refreshing && <LottieLoading />}</View>
     </View>
   );
 };

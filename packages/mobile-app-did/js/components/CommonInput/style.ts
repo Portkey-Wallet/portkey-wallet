@@ -2,8 +2,7 @@ import { StyleSheet } from 'react-native';
 import { darkColors, defaultColors } from 'assets/theme/index';
 import GStyles from 'assets/theme/GStyles';
 import { pTd } from 'utils/unit';
-
-const { font5 } = defaultColors;
+import { makeStyles } from '@rneui/themed';
 
 export const commonStyles = StyleSheet.create({
   rightIconContainerStyle: {
@@ -23,23 +22,21 @@ export const commonStyles = StyleSheet.create({
   },
 });
 
-export const searchStyles = StyleSheet.create({
+export const getSearchStyles = makeStyles(theme => ({
   containerStyle: {
     height: pTd(40),
     paddingLeft: 0,
     paddingRight: 0,
   },
   inputContainerStyle: {
-    borderColor: darkColors.borderBase1,
+    borderColor: theme.colors.borderBase1,
     borderWidth: pTd(1),
-    backgroundColor: darkColors.bgBase1,
+    backgroundColor: theme.colors.bgBase1,
     height: pTd(40),
     borderRadius: pTd(20),
   },
   inputStyle: {
-    fontSize: pTd(14),
-    // ...GStyles.marginArg(14, 16),
-    // height: pTd(50),
+    fontSize: pTd(16),
     paddingLeft: pTd(16),
     marginLeft: pTd(4),
     marginRight: pTd(14),
@@ -51,29 +48,29 @@ export const searchStyles = StyleSheet.create({
   leftIconContainerStyle: {
     marginLeft: pTd(12),
   },
-});
+}));
 
-export const generalStyles = StyleSheet.create({
+export const getGeneralStyles = makeStyles(theme => ({
   containerStyle: {
     ...GStyles.paddingArg(0),
     ...GStyles.marginArg(0),
   },
   inputContainerStyle: {
-    borderColor: darkColors.borderBase1,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderColor: theme.colors.borderBase1,
+    borderWidth: pTd(1),
+    // borderBottomWidth: StyleSheet.hairlineWidth,
     height: pTd(40),
     borderRadius: pTd(8),
   },
   inputStyle: {
     fontSize: pTd(16),
-    color: darkColors.textBase1,
+    color: theme.colors.textBase1,
     paddingHorizontal: pTd(16),
     minHeight: pTd(40),
     height: pTd(40),
   },
   labelStyle: {
-    color: darkColors.textBase1,
+    color: theme.colors.textBase1,
     fontSize: pTd(14),
     lineHeight: pTd(20),
     marginBottom: pTd(8),
@@ -88,13 +85,13 @@ export const generalStyles = StyleSheet.create({
     paddingLeft: 0,
     fontSize: pTd(16),
     lineHeight: pTd(23),
-    color: darkColors.textDanger2,
+    color: theme.colors.textDanger2,
   },
   disabledInputStyle: {
-    color: darkColors.textBase1,
+    color: theme.colors.textBase1,
     opacity: 1,
   },
-});
+}));
 
 export const bgWhiteStyles = StyleSheet.create({
   inputContainerStyle: {

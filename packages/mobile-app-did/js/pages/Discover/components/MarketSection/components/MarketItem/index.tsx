@@ -6,12 +6,12 @@ import PortkeySkeleton from 'components/PortkeySkeleton';
 import Touchable from 'components/Touchable';
 import { useMarketFavorite } from 'hooks/discover';
 import React, { forwardRef, useCallback, useImperativeHandle, useMemo, useState } from 'react';
-import { View, Text, Image, StyleSheet, LayoutChangeEvent } from 'react-native';
+import { View, Image, StyleSheet, LayoutChangeEvent } from 'react-native';
 import { pTd } from 'utils/unit';
-import SinkableText, { getDecimalPlaces } from '../SinkableText';
+import { getDecimalPlaces } from '../SinkableText';
 import { FloatTips } from 'components/FloatTips';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
-import { TextS } from 'components/CommonText';
+import { TextM, TextS } from 'components/CommonText';
 export interface IMarketItemProps {
   isLoading: boolean;
   item: ICryptoCurrencyItem;
@@ -75,7 +75,7 @@ export default forwardRef(function MarketItem(props: IMarketItemProps, _ref: any
   }));
 
   return (
-    <View style={styles.mainContainer}>
+    <View style={styles.mainContainerWrap}>
       {isLoading ? (
         <>
           <PortkeySkeleton width={pTd(167)} height={pTd(28)} />
@@ -99,20 +99,18 @@ export default forwardRef(function MarketItem(props: IMarketItemProps, _ref: any
               console.log('wfs=== favorite', favorite);
               if (favorite) {
                 try {
-                  setFavorite(false);
                   await unMarkFavorite(item.id, item.symbol);
                   CommonToast.success('Removed');
+                  setFavorite(false);
                 } catch (e) {
-                  setFavorite(true);
                   CommonToast.failError('Failed to remove favourites');
                 }
               } else {
                 try {
-                  setFavorite(true);
                   await markFavorite(item.id, item.symbol);
                   CommonToast.success('Added to favourites');
+                  setFavorite(true);
                 } catch (e) {
-                  setFavorite(false);
                   CommonToast.failError('Failed to add favourites');
                 }
               }
@@ -129,13 +127,15 @@ export default forwardRef(function MarketItem(props: IMarketItemProps, _ref: any
               style={styles.img}
             />
             <View style={styles.section}>
-              <Text style={[styles.text, DarkFontStyles.textBase1]}>{item.symbol || '--'}</Text>
+              <TextM style={[styles.text, DarkFontStyles.textBase1]}>{item.symbol || '--'}</TextM>
               <TextS style={[styles.text2, DarkFontStyles.textBase2]}>${item.marketCap || 0}</TextS>
             </View>
           </View>
           {/* </Text> */}
           <View style={styles.rightSection}>
-            <SinkableText sinkable value={item?.currentPrice} />
+            <TextM style={[styles.text, DarkFontStyles.textBase1, styles.snkableText]}>
+              ${item.currentPrice || '--'}
+            </TextM>
             <TextS style={[styles.text4, DarkFontStyles.textBase2, styles.section3Width, { color: chgColor }]}>
               {prefixChg}
               {item.priceChangePercentage24H?.toFixed(
@@ -153,12 +153,21 @@ export default forwardRef(function MarketItem(props: IMarketItemProps, _ref: any
 });
 
 const styles = StyleSheet.create({
+  mainContainerWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '100%',
+    height: pTd(74),
+    backgroundColor: darkColors.bgBase1,
+  },
   mainContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     width: '100%',
     height: pTd(74),
+    paddingHorizontal: pTd(16),
     backgroundColor: darkColors.bgBase1,
   },
   boxWrapper: {
@@ -188,8 +197,9 @@ const styles = StyleSheet.create({
     height: pTd(42),
   },
   text: {
-    fontSize: pTd(16),
+    fontSize: pTd(14),
     textAlign: 'left',
+    lineHeight: pTd(22),
     color: darkColors.textBase1,
   },
   text1: {
@@ -208,6 +218,10 @@ const styles = StyleSheet.create({
     fontSize: pTd(14),
     fontWeight: '500',
     textAlign: 'right',
+  },
+  snkableText: {
+    fontSize: pTd(14),
+    fontWeight: '900',
   },
   priceSinkText: {
     fontSize: pTd(10),

@@ -103,7 +103,13 @@ const getStyles = makeStyles(theme => ({
     justifyContent: 'flex-start',
     gap: 0,
   },
-  backgroundSplashContainerWrap: { padding: 50, paddingTop: 70 },
+  backgroundSplashContainerWrap: {
+    width: '100%',
+    height: '100%',
+    padding: 50,
+    paddingTop: 70,
+    backgroundColor: theme.colors.bgBase1,
+  },
   backgroundSplashContainer: {
     width: '100%',
     height: '100%',

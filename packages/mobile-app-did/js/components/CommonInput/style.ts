@@ -3,8 +3,6 @@ import { darkColors, defaultColors } from 'assets/theme/index';
 import GStyles from 'assets/theme/GStyles';
 import { pTd } from 'utils/unit';
 
-const { font5 } = defaultColors;
-
 export const commonStyles = StyleSheet.create({
   rightIconContainerStyle: {
     marginRight: pTd(10),
@@ -60,8 +58,8 @@ export const generalStyles = StyleSheet.create({
   },
   inputContainerStyle: {
     borderColor: darkColors.borderBase1,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderWidth: pTd(1),
+    borderBottomWidth: pTd(1),
     height: pTd(40),
     borderRadius: pTd(8),
   },

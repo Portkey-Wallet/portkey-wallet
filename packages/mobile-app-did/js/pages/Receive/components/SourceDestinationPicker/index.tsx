@@ -81,6 +81,7 @@ const getStyles = makeStyles(theme => ({
   },
   itemWrapper: {
     flex: 1,
+    justifyContent: 'center',
   },
   itemChianWrapper: {
     marginTop: pTd(8),
@@ -89,7 +90,7 @@ const getStyles = makeStyles(theme => ({
     alignItems: 'center',
   },
   title: {
-    marginTop: pTd(8),
+    lineHeight: pTd(12),
     marginLeft: pTd(8),
     fontSize: pTd(12),
     color: theme.colors.textBase2,

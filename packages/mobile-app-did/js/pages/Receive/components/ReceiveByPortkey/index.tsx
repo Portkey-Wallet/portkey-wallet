@@ -34,8 +34,10 @@ export default function ReceiveByPortkey({
     return tokenInfo.tokens?.find(item => item.chainId === destinationChain.chainId);
   }, [destinationChain.chainId, tokenInfo.tokens]);
   const isSupportExchange = useMemo(() => {
-    return sourceChain.network === MAIN_CHAIN_ID && destinationChain.chainId === MAIN_CHAIN_ID;
-  }, [destinationChain.chainId, sourceChain.network]);
+    return (
+      tokenItem?.symbol === 'ELF' && destinationChain.chainId === MAIN_CHAIN_ID && sourceChain.network === MAIN_CHAIN_ID
+    );
+  }, [destinationChain, tokenItem, sourceChain]);
   const showExchangeTip = useMemo(
     () =>
       tokenItem?.symbol === 'ELF' &&

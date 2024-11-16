@@ -12,7 +12,6 @@ import ListItem from 'components/ListItem';
 import GStyles from 'assets/theme/GStyles';
 import { INIT_NONE_ERROR, ErrorType, INIT_HAS_ERROR } from '@portkey-wallet/constants/constants-ca/common';
 import ChainOverlay from 'pages/My/Contacts/ContactChainOverlay';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useAddContact, useDeleteContact, useEditContact } from '@portkey-wallet/hooks/hooks-ca/contactNew';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { useInputFocus } from 'hooks/useInputFocus';
@@ -32,6 +31,7 @@ import { KeyboardSafeArea } from 'components/KeyboardSafeArea';
 import navigationService from 'utils/navigationService';
 import { useContactNetworkConfig } from '@portkey-wallet/hooks/hooks-ca/config';
 import { RECENT_PAGE_NAME } from 'constants/contact';
+import { SupportedELFChainId } from '@portkey-wallet/utils/eBridge/constants';
 
 type RouterParams = {
   contact?: IContactItemType;
@@ -307,24 +307,21 @@ const ContactEdit: React.FC = () => {
           </Touchable>
         )
       }>
-      <Input
-        type="general"
-        maxLength={16}
-        ref={iptRef}
-        label={t('Name')}
-        placeholder={t('Enter name')}
-        labelStyle={pageStyles.inputLabelStyle}
-        value={editContact.name}
-        onChangeText={onNameChange}
-        errorStyle={pageStyles.errorStyle}
-        errorMessage={formError.name?.isError ? formError.name?.errorMsg : ''}
-      />
-      <KeyboardAwareScrollView
-        extraHeight={pTd(300)}
-        keyboardShouldPersistTaps="handled"
-        keyboardOpeningTime={0}
-        enableOnAndroid={true}>
-        <View style={GStyles.paddingArg(0, 4)}>
+      <View style={pageStyles.formWrap}>
+        <Input
+          type="general"
+          maxLength={16}
+          ref={iptRef}
+          label={t('Name')}
+          placeholder={t('Enter name')}
+          labelStyle={pageStyles.inputLabelStyle}
+          value={editContact.name}
+          onChangeText={onNameChange}
+          errorStyle={pageStyles.errorStyle}
+          errorMessage={formError.name?.isError ? formError.name?.errorMsg : ''}
+        />
+
+        <View>
           <TextL style={pageStyles.inputLabelStyle}>Address</TextL>
           <ListItem
             onPress={() => {
@@ -353,7 +350,7 @@ const ContactEdit: React.FC = () => {
             title={selectedNetwork?.name ?? ''}
             rightElement={<Svg size={pTd(20)} icon="down-arrow" color={colors.iconBase1} />}
           />
-          {selectedNetwork?.network === AELF_NETWORK_NAME && (
+          {selectedNetwork?.network === AELF_NETWORK_NAME && selectedNetwork.chainId === SupportedELFChainId.AELF && (
             <View style={pageStyles.exchangeContainer}>
               <TouchableOpacity
                 style={[
@@ -409,7 +406,8 @@ const ContactEdit: React.FC = () => {
             </TextM>
           </View>
         </View>
-      </KeyboardAwareScrollView>
+      </View>
+
       <KeyboardSafeArea>
         <View style={pageStyles.btnContainer}>
           <CommonButton onPress={onFinish} disabled={isSaveDisable} type="primary">
@@ -427,6 +425,9 @@ export const getPageStyles = makeStyles(theme => ({
   pageWrap: {
     flex: 1,
     ...GStyles.paddingArg(24, 16, 20),
+  },
+  formWrap: {
+    flex: 1,
   },
   errorStyle: {
     borderColor: theme.colors.borderDanger1,
@@ -484,7 +485,7 @@ export const getPageStyles = makeStyles(theme => ({
     color: theme.colors.textBrand4,
   },
   btnContainer: {
-    paddingTop: pTd(16),
+    marginBottom: pTd(14),
   },
   pasteAddressText: {
     color: theme.colors.textBrand2,

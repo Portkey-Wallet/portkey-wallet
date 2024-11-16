@@ -6,7 +6,6 @@ import React, { useCallback, useRef, useState } from 'react';
 import navigationService from 'utils/navigationService';
 import { useAppDispatch } from 'store/hooks';
 import { changePin, createWallet } from '@portkey-wallet/store/store-ca/wallet/actions';
-import CommonToast from 'components/CommonToast';
 import CommonPrompt from 'components/CommonPromptCard';
 import { setCredentials } from 'store/user/actions';
 import { useUser } from 'hooks/store';
@@ -156,7 +155,6 @@ export default function ConfirmPin() {
       titleDom
       type="leftBack"
       notHandleHardwareBackPress={true}
-      backTitle={oldPin ? 'Change PIN' : undefined}
       onGestureStartCallback={() => {
         myEvents.clearSetPin.emit('clearSetPin');
       }}

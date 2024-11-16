@@ -48,7 +48,7 @@ export default function CheckPin() {
     <PageContainer
       titleDom
       type="leftBack"
-      backTitle={!openBiometrics ? 'Change Pin' : 'Authentication'}
+      backTitle={!openBiometrics ? '' : 'Authentication'}
       containerStyles={styles.container}
       scrollViewProps={{ disabled: true }}>
       <PinContainer

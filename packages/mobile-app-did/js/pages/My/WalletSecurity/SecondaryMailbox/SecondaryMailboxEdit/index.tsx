@@ -1,17 +1,14 @@
 import React, { useCallback, useState } from 'react';
 import PageContainer from 'components/PageContainer';
-import { Text, View, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import CommonButton from 'components/CommonButton';
 import navigationService from 'utils/navigationService';
 import { TextL } from 'components/CommonText';
-import { FontStyles } from 'assets/theme/styles';
 import { pTd } from 'utils/unit';
 import CommonInput from 'components/CommonInput';
-import ActionSheet from 'components/ActionSheet';
 import CommonToast from 'components/CommonToast';
-import Loading from 'components/Loading';
 import { useSecondaryMail } from '@portkey-wallet/hooks/hooks-ca/useSecondaryMail';
 import { verification } from 'utils/api';
 import { makeStyles, useTheme } from '@rneui/themed';
@@ -65,14 +62,16 @@ const SecondaryMailboxEdit: React.FC = () => {
             onFocus={() => {
               setErrorMessage('');
             }}
+            allowClear
           />
         </View>
         <View style={pageStyles.fromExchangeTipWrap}>
           <Svg icon="warning" size={pTd(22)} color={theme.colors.textBrand3} />
-          <TextL
-            style={
-              pageStyles.fromExchangeTipText
-            }>{`Notifications for authorizing or signing transactions will be sent to your guardian's email. If unavailable, they'll go to your backup email.`}</TextL>
+          <TextL style={pageStyles.fromExchangeTipText}>
+            {
+              "Notifications for authorizing or signing transactions will be sent to your guardian's email. If unavailable, they'll go to your backup email."
+            }
+          </TextL>
         </View>
       </View>
       <CommonButton
@@ -115,7 +114,7 @@ const getStyles = makeStyles(theme => ({
     color: theme.colors.textNeutral2,
   },
   inputContainer: {
-    borderColor: theme.colors.textBase3,
+    borderColor: theme.colors.borderBase1,
     borderLeftWidth: pTd(1),
     borderRightWidth: pTd(1),
     borderTopWidth: pTd(1),
@@ -124,7 +123,7 @@ const getStyles = makeStyles(theme => ({
   fromExchangeTipWrap: {
     backgroundColor: theme.colors.bgBase1,
     borderWidth: pTd(1),
-    borderColor: theme.colors.textBase3,
+    borderColor: theme.colors.borderBase1,
     borderRadius: pTd(16),
     padding: pTd(16),
     flexDirection: 'row',

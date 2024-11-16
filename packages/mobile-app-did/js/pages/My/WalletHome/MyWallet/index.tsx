@@ -29,7 +29,7 @@ const MyWallet: React.FC = () => {
   const userInfo = useCurrentUserInfo();
   const caInfo = useCurrentCaInfo();
   const pageStyles = getStyles();
-  const [avatar] = useState<string>(userInfo?.avatar || '');
+  const [avatar, setAvatar] = useState<string>(userInfo?.avatar || '');
   const setUserInfo = useSetUserInfo();
   const [avatarList, setAvatarList] = useState<Array<string>>();
 
@@ -86,6 +86,8 @@ const MyWallet: React.FC = () => {
   const handleSelectPhoto = async (url: string) => {
     // Loading.show();
     console.log('url:', url);
+    setAvatar(url);
+    console.log('setAvatar:', url);
 
     try {
       setIsLoading(true);

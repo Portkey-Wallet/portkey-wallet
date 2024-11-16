@@ -35,7 +35,7 @@ interface ActivityItemPropsType {
   style?: ViewStyle;
 }
 
-const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress, index, style }) => {
+const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress, style }) => {
   const isMainnet = useIsMainnet();
   const [rotation] = useState(new Animated.Value(0));
   const itemStyle = getStyles();
@@ -46,15 +46,26 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
   }, [item?.timestamp, preItem?.timestamp]);
 
   const dayStr = useMemo(() => {
-    if (isDaySame) return '';
+    if (isDaySame) {
+      return '';
+    }
     return formatActivityTimeRevamp(dayjs.unix(Number(item?.timestamp || 0)));
   }, [isDaySame, item?.timestamp]);
 
   const AddressDom = useMemo(() => {
-    if (!item) return null;
+    if (!item) {
+      return null;
+    }
     const address = item.isReceived ? item.fromAddress : item.toAddress;
     const chainId = item.isReceived ? item.fromChainId : item.toChainId;
-    if (!address || !chainId) return null;
+    if (!address || !chainId) {
+      return null;
+    }
+
+    // Issue
+    if (address === '_') {
+      return null;
+    }
 
     return (
       <TextM style={itemStyle.centerStatus}>
@@ -66,7 +77,9 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
   const AmountDom = useMemo(() => {
     const { amount = '', isReceived, decimals = 8, symbol, nftInfo } = item || {};
     let prefix = ' ';
-    if (amount && !ZERO.isEqualTo(amount)) prefix = isReceived ? AmountSign.PLUS : AmountSign.MINUS;
+    if (amount && !ZERO.isEqualTo(amount)) {
+      prefix = isReceived ? AmountSign.PLUS : AmountSign.MINUS;
+    }
     const suffix = nftInfo?.alias || symbol || '';
 
     return (
@@ -106,12 +119,16 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
   }, [itemStyle]);
 
   const statusFontColor = useMemo(() => {
-    if (item?.status === contractStatusEnum.FAILED) return darkColors.textDanger2;
+    if (item?.status === contractStatusEnum.FAILED) {
+      return darkColors.textDanger2;
+    }
     return darkColors.textBase1;
   }, [item?.status]);
 
   const ExtraDom = useMemo(() => {
-    if (!item?.currentTxPriceInUsd) return null;
+    if (!item?.currentTxPriceInUsd) {
+      return null;
+    }
     return (
       <TextM numberOfLines={1} ellipsizeMode="tail" style={itemStyle.usdtBalance}>
         {formatAmountUSDShow(!isMainnet ? item?.currentTxPriceInUsd : '')}
@@ -180,7 +197,9 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
   const TxActivityItem = useMemo(() => {
     if (item?.operations?.length !== 0) {
       const { operations = [] } = item || {};
-      if (operations.length < 2) return null;
+      if (operations.length < 2) {
+        return null;
+      }
       let [tokenTop, tokenBottom] = operations.map(_token => ({
         symbol: _token.nftInfo ? _token.nftInfo.alias : _token.symbol,
         url: _token.nftInfo ? _token.nftInfo.imageUrl : _token.icon,
@@ -259,7 +278,7 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
 
     const isTransferType = SHOW_FROM_TRANSACTION_TYPES.includes(item.transactionType);
 
-    if (item?.dappName)
+    if (item?.dappName) {
       return (
         <View style={itemStyle.contentWrap}>
           <View style={itemStyle.left}>
@@ -324,6 +343,7 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
           </View>
         </View>
       );
+    }
 
     return (
       <View style={itemStyle.contentWrap}>

@@ -1,6 +1,5 @@
 import React, { memo, useCallback, useMemo, useState } from 'react';
 import PageContainer from 'components/PageContainer';
-import Touchable from 'components/Touchable';
 import Svg from 'components/Svg';
 import { makeStyles } from '@rneui/themed';
 import { pTd } from 'utils/unit';
@@ -15,7 +14,6 @@ import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { CryptoValuesType } from '../components/SendRedPacketGroupSection';
 import { divDecimals, timesDecimals } from '@portkey-wallet/utils/converter';
 import BigNumber from 'bignumber.js';
-import { formatPriceUsd } from '@portkey-wallet/utils/format';
 import CommonAvatar from 'components/CommonAvatar';
 import { networkList } from '../../../constants/common';
 import { chainShowText, checkIsUserCancel } from '@portkey-wallet/utils';
@@ -24,7 +22,6 @@ import { useGetCAContract } from 'hooks/contract';
 import { useCheckAllowanceAndApprove } from 'hooks/wallet';
 import CommonToast from 'components/CommonToast';
 import Loading from '../../../components/Loading';
-import { createTimeRecorder } from '@portkey-wallet/utils/timeRecorder';
 import { GroupRedPacketTabEnum } from '../types';
 import { RedPackageTypeEnum } from '@portkey-wallet/im';
 import { reportSendCryptoGiftSuccess } from '../../../utils/analysisiReport';
@@ -44,7 +41,7 @@ interface IPreviewProps {
 const Preview: React.FC = () => {
   const styles = getStyles();
   const { t } = useLanguage();
-  const { assetInfo, fee, values, selectTab } = useRouterParams<IPreviewProps>();
+  const { assetInfo, values, selectTab } = useRouterParams<IPreviewProps>();
   const { amountShowStr, amountUsdShowStr, tokenPrice, token } = values;
   const [balance, setBalance] = useState<string | number>(values.balance);
   const [isLgBalance, setIsLgBalance] = useState<boolean>(true);
@@ -79,7 +76,9 @@ const Preview: React.FC = () => {
     return [map];
   }, [accountAssetList, symbol]);
   const currentAssetInfo: IAccountCryptoBoxAssetItem | undefined = useMemo(() => {
-    if (assetMap?.[chainId]) return assetMap?.[chainId];
+    if (assetMap?.[chainId]) {
+      return assetMap?.[chainId];
+    }
     return accountAssetList.find(ele => ele.symbol === symbol);
   }, [accountAssetList, symbol, assetMap, chainId]);
   const updateAssetInfo = useUpdateAssetInfo(chainId, token, currentAssetInfo);
@@ -222,15 +221,13 @@ To claim, click the link, log in to your Portkey account, and verify eligibility
               iconSize={pTd(16)}
               tooltipProps={{
                 title: 'Estimated network fee',
-                description: `Fee applied by the blockchain to process your transaction, also known as gas fee.`,
+                description: 'Fee applied by the blockchain to process your transaction, also known as gas fee.',
               }}
             />
           </TextM>
           <View style={styles.infoItemRight}>
-            <TextM style={styles.infoItemValue}>
-              {showStr(fee)} {symbol}
-            </TextM>
-            <TextM style={styles.infoItemUsdValue}>{formatPriceUsd(divDecimals(fee, decimals))}</TextM>
+            <TextM style={styles.infoItemValue}>0 ELF</TextM>
+            <TextM style={styles.infoItemUsdValue}>$0.00</TextM>
           </View>
         </View>
       </View>

@@ -160,12 +160,14 @@ const DeviceList: React.FC = () => {
       {isRemoving && (
         <CommonButton
           type="clear"
-          buttonStyle={pageStyles.deleteBtn}
+          buttonStyle={removeDevices.length ? pageStyles.deleteBtn : pageStyles.noneDeleteBtn}
           disabled={removeDevices.length === 0}
           onPress={() => {
             showDialog();
           }}>
-          <TextL style={pageStyles.deleteBtnTitle}>Remove ({removeDevices.length})</TextL>
+          <TextL style={removeDevices.length ? pageStyles.deleteBtnTitle : pageStyles.noneDeleteBtnTitle}>
+            Remove {removeDevices.length ? `(${removeDevices.length})` : ''}
+          </TextL>
         </CommonButton>
       )}
     </PageContainer>
@@ -208,6 +210,15 @@ const getStyles = makeStyles(theme => ({
     marginHorizontal: pTd(16),
     marginBottom: pTd(14),
     backgroundColor: theme.colors.bgDanger1,
+  },
+  noneDeleteBtn: {
+    marginHorizontal: pTd(16),
+    marginBottom: pTd(14),
+    backgroundColor: theme.colors.bgBase2,
+  },
+  noneDeleteBtnTitle: {
+    ...fonts.mediumFont,
+    color: theme.colors.textDisabled2,
   },
 }));
 

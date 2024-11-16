@@ -1,20 +1,15 @@
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import OverlayModal from 'components/OverlayModal';
-import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
-import { TextL, TextS } from 'components/CommonText';
+import { FlatList, StyleSheet } from 'react-native';
 import { ModalBody } from 'components/ModalBody';
 import CommonInput from 'components/CommonInput';
 import { pTd } from 'utils/unit';
 import { useLanguage } from 'i18n/hooks';
 import useDebounce from 'hooks/useDebounce';
 import NoData from 'components/NoData';
-import { defaultColors } from 'assets/theme';
-import { useCaAddressInfoList, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import TokenListItem from 'components/TokenListItem';
-import { FontStyles } from 'assets/theme/styles';
+import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { fetchCryptoBoxAssetList } from '@portkey-wallet/store/store-ca/assets/api';
 import { IAssetItemType } from '@portkey-wallet/store/store-ca/assets/type';
-import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import { ChainId } from '@portkey-wallet/types';
 import { useGStyles } from 'assets/theme/useGStyles';
 import myEvents from 'utils/deviceEvent';
@@ -24,17 +19,12 @@ import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca
 import { useAppDispatch } from 'store/hooks';
 import { fetchCryptoBoxAssetAsync } from '@portkey-wallet/store/store-ca/assets/slice';
 import { useAssets } from '@portkey-wallet/hooks/hooks-ca/assets';
-import Svg from 'components/Svg';
-import GStyles from 'assets/theme/GStyles';
 import { AssetType } from '@portkey-wallet/constants/constants-ca/assets';
 import { ICryptoBoxAssetItemType } from '@portkey-wallet/types/types-ca/crypto';
-import NFTAvatar from 'components/NFTAvatar';
-import CurrencyItem from '../../../../components/CurrencyItem';
-import { TCurrency } from '@portkey-wallet/types/types-ca/awaken';
+import CurrencyItem from 'components/CurrencyItem';
 import { IAccountCryptoBoxAssetItem } from '@portkey-wallet/types/types-ca/token';
-import { formatPriceUsd } from '@portkey-wallet/utils/format';
 import { ZERO } from '@portkey-wallet/constants/misc';
-import { divDecimals, timesDecimals } from '@portkey-wallet/utils/converter';
+import { divDecimals } from '@portkey-wallet/utils/converter';
 
 export type TImTransferInfo = {
   isGroupChat?: boolean;
@@ -67,15 +57,13 @@ const AssetItem = (props: {
   balanceInUsd: string;
   onPress: (item: any) => void;
 }) => {
-  const { currentNetwork } = useWallet();
-
-  const { currentSymbol, currentChainId, onPress, item, balance, balanceInUsd } = props;
-  const { assetType, chainId, symbol, alias, tokenId, isSeed, seedType } = item;
+  const { onPress, item, balance, balanceInUsd } = props;
+  const { assetType } = item;
   const handleSelect = useCallback(() => {
     onPress?.(item);
     OverlayModal.hide();
   }, [item, onPress]);
-  if (assetType === AssetType.ft)
+  if (assetType === AssetType.ft) {
     return (
       <CurrencyItem
         wrapStyle={styles.tokenItem}
@@ -85,34 +73,10 @@ const AssetItem = (props: {
         onPress={() => handleSelect()}
       />
     );
+  }
 
   if (assetType === AssetType.nft) {
-    return (
-      <TouchableOpacity style={itemStyle.wrap} onPress={() => onPress?.(item)}>
-        <NFTAvatar
-          disabled
-          isSeed={isSeed}
-          seedType={seedType}
-          nftSize={pTd(48)}
-          badgeSizeType="small"
-          data={item}
-          style={itemStyle.left}
-        />
-        <View style={itemStyle.right}>
-          <View>
-            <TextL numberOfLines={1} ellipsizeMode={'tail'} style={[itemStyle.nftNameShow, FontStyles.font5]}>
-              {`${alias} #${tokenId}`}
-            </TextL>
-            <TextS numberOfLines={1} style={[FontStyles.font11, itemStyle.nftItemInfo]}>
-              {formatChainInfoToShow(chainId as ChainId, currentNetwork)}
-            </TextS>
-          </View>
-          {currentSymbol === symbol && currentChainId === item?.chainId && (
-            <Svg icon="selected" size={pTd(24)} color={defaultColors.primaryColor} iconStyle={GStyles.flexEnd} />
-          )}
-        </View>
-      </TouchableOpacity>
-    );
+    return <CurrencyItem wrapStyle={styles.tokenItem} item={item} balance={balance} onPress={() => handleSelect()} />;
   }
   return null;
 };
@@ -188,6 +152,7 @@ const CryptoAssetsList = ({
   const [tokenPriceObject] = useGetCurrentAccountTokenPrice();
   const renderItem = useCallback(
     ({ item }: { item: ICryptoBoxAssetItemType }) => {
+      console.log(item, 'item');
       const balance =
         accountAssetList?.find(ele => ele.symbol === item.symbol && ele.chainId === item.chainId)?.balance || '0';
       const balanceStr = divDecimals(balance, item.decimals).toFixed();
@@ -222,10 +187,10 @@ const CryptoAssetsList = ({
   }, [debounceKeyword, t]);
 
   return (
-    <ModalBody modalBodyType="bottom" title={t('Select Assets')} style={gStyles.overlayStyle}>
+    <ModalBody modalBodyType="bottom" title={t('You pay')} style={gStyles.overlayStyle}>
       {/* no assets in this account  */}
       <CommonInput
-        placeholder={t('Search Assets')}
+        placeholder={t('Search')}
         containerStyle={styles.containerStyle}
         inputContainerStyle={styles.inputContainerStyle}
         inputStyle={styles.inputStyle}
@@ -298,65 +263,5 @@ export const styles = StyleSheet.create({
   },
   tokenItem: {
     paddingLeft: 0,
-  },
-});
-
-const itemStyle = StyleSheet.create({
-  wrap: {
-    height: pTd(72),
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  left: {
-    marginLeft: pTd(16),
-    width: pTd(48),
-    height: pTd(48),
-    borderRadius: pTd(6),
-    overflow: 'hidden',
-  },
-  noPic: {
-    backgroundColor: defaultColors.bg7,
-    color: defaultColors.font7,
-    fontSize: pTd(20),
-    textAlign: 'center',
-    lineHeight: pTd(48),
-  },
-  right: {
-    height: pTd(72),
-    marginLeft: pTd(16),
-    paddingRight: pTd(16),
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    borderBottomColor: defaultColors.bg7,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-  },
-  tokenName: {
-    flex: 1,
-  },
-  balanceWrap: {
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'flex-end',
-  },
-  token: {
-    lineHeight: pTd(22),
-    overflow: 'hidden',
-  },
-  dollar: {
-    marginTop: pTd(2),
-    lineHeight: pTd(16),
-  },
-  nftItemInfo: {
-    marginTop: pTd(2),
-  },
-  nftNameShow: {
-    width: pTd(250),
   },
 });

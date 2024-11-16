@@ -48,6 +48,7 @@ export default function NFTItem(props: NFTItemPropsType) {
     chainImageUrl,
     displayChainImage,
     itemCount,
+    totalRecordCount,
     children,
     symbol,
     collapsed,
@@ -74,9 +75,21 @@ export default function NFTItem(props: NFTItemPropsType) {
     [children, openCollectionInfo?.pageNum],
   );
 
-  const hasMore = useMemo(
-    () => showChildren?.length !== 0 && showChildren?.length < itemCount && !isFetching,
-    [isFetching, itemCount, showChildren?.length],
+  // const hasMore = useMemo(
+  //   () =>
+  //     showChildren?.length !== 0 &&
+  //     showChildren?.length <
+  //       (typeof totalRecordCount === 'string' ? parseInt(totalRecordCount, 10) : totalRecordCount) &&
+  //     !isFetching,
+  //   [isFetching, totalRecordCount, showChildren?.length],
+  // );
+  const showViewAll = useMemo(
+    () =>
+      showChildren?.length === 8 &&
+      showChildren?.length <
+        (typeof totalRecordCount === 'string' ? parseInt(totalRecordCount, 10) : totalRecordCount) &&
+      !isFetching,
+    [isFetching, totalRecordCount, showChildren?.length],
   );
 
   const skeletonList = useMemo(() => {
@@ -187,7 +200,7 @@ export default function NFTItem(props: NFTItemPropsType) {
               </TextS>
             </Touchable>
           ))}
-          {hasMore && (
+          {showViewAll && (
             <Touchable
               style={[styles.itemWrapper, GStyles.marginTop(16)]}
               onPress={() => {

@@ -63,7 +63,9 @@ export default function DiscoverHome() {
       <TouchableIcon
         icon="scan"
         onPress={async () => {
-          if (!(await qrScanPermissionAndToast())) return;
+          if (!(await qrScanPermissionAndToast())) {
+            return;
+          }
           navigationService.navigate('QrScanner');
         }}
       />
@@ -146,9 +148,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   headerTitle: {
+    ...fonts.BGMediumFont,
+    fontSize: pTd(32),
+    lineHeight: pTd(38),
+    height: pTd(38),
     color: darkColors.textBase1,
-    fontSize: 32,
-    fontWeight: '700',
   },
   functionalLine: {
     height: pTd(56),
@@ -158,7 +162,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     fontSize: pTd(32),
-    backgroundColor: '#1F1F21',
+    backgroundColor: darkColors.bgBase2,
     // color: defaultColors.white,
   },
   pagesBtn: {

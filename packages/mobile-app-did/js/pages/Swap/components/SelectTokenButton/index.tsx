@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useMemo, useState } from 'react';
-import { Text, FlatList, View } from 'react-native';
+import { Text, FlatList, View, Keyboard } from 'react-native';
 import OverlayModal from 'components/OverlayModal';
 import { ModalBody } from 'components/ModalBody';
 import CommonInput from 'components/CommonInput';
@@ -14,6 +14,7 @@ import { TCurrency } from '@portkey-wallet/types/types-ca/awaken';
 import { useAwakenTokenList } from '@portkey-wallet/hooks/hooks-ca/awaken/state';
 import CurrencyItem from '../CurrencyItem';
 import { formatNameWithNoUnderline } from '@portkey-wallet/utils';
+import { ViewStyleType } from 'types/styles';
 
 interface ISelectTokenContentProps {
   title: string;
@@ -21,6 +22,7 @@ interface ISelectTokenContentProps {
 }
 
 interface ISelectTokenButtonProps {
+  style?: ViewStyleType;
   modalTitle: string;
   token?: TCurrency;
   onTokenChange?: (token: TCurrency) => void;
@@ -34,7 +36,9 @@ const SelectTokenContent: React.FC<ISelectTokenContentProps> = ({ title, onSelec
   const { list } = useAwakenTokenList();
 
   const filterList = useMemo(() => {
-    if (keyword === '') return list;
+    if (keyword === '') {
+      return list;
+    }
     return list.filter(item => item.symbol.toLocaleUpperCase().includes(keyword.toLocaleUpperCase()));
   }, [keyword, list]);
 
@@ -84,18 +88,19 @@ const showSelectTokenModal = (props: ISelectTokenContentProps) => {
   });
 };
 
-const SelectTokenButton: React.FC<ISelectTokenButtonProps> = ({ modalTitle, token, onTokenChange }) => {
+const SelectTokenButton: React.FC<ISelectTokenButtonProps> = ({ style, modalTitle, token, onTokenChange }) => {
   const styles = getButtonStyles();
 
+  const onPress = useCallback(() => {
+    Keyboard.dismiss();
+    showSelectTokenModal({
+      title: modalTitle,
+      onSelect: onTokenChange,
+    });
+  }, [modalTitle, onTokenChange]);
+
   return (
-    <Touchable
-      style={styles.selectTokenButton}
-      onPress={() =>
-        showSelectTokenModal({
-          title: modalTitle,
-          onSelect: onTokenChange,
-        })
-      }>
+    <Touchable style={[styles.selectTokenButton, style]} onPress={onPress}>
       <View style={styles.iconWrap}>
         <CommonAvatar style={styles.tokenIcon} title={token?.symbol} avatarSize={pTd(25)} imageUrl={token?.imageUrl} />
         <CommonAvatar

@@ -23,6 +23,7 @@ import NoData from 'components/NoData';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { useTransferLimitList } from '@portkey-wallet/hooks/hooks-ca/security';
 import { darkColors } from 'assets/theme';
+import Loading from 'components/Loading';
 
 const _renderPaymentSecurityItem = ({ item }: { item: ITransferLimitItem }) => {
   const defaultToken = useDefaultToken();
@@ -68,7 +69,7 @@ const _renderPaymentSecurityItem = ({ item }: { item: ITransferLimitItem }) => {
 const PaymentSecurityItem = memo(_renderPaymentSecurityItem, (prevProps, nextProps) =>
   isEqual(prevProps.item, nextProps.item),
 );
-const getStyles = makeStyles(theme => ({
+const getStyles = makeStyles(() => ({
   wrap: {
     flexDirection: 'row',
     paddingVertical: pTd(16),
@@ -109,16 +110,19 @@ const PaymentSecurityList: React.FC = () => {
   const { list, isNext, next, init } = useTransferLimitList();
   const pageStyles = getListStyles();
   const getList = useLockCallback(async () => {
-    if (!isNext) return;
+    if (!isNext) {
+      return;
+    }
     setIsRefreshing(true);
+    Loading.show();
     try {
       await next();
     } catch (error) {
       console.log('PaymentSecurityList: error', error);
       CommonToast.failError('Failed to fetch data');
     }
-
     setIsRefreshing(false);
+    Loading.hide();
   }, [isNext, next]);
 
   useEffectOnce(() => {
@@ -129,7 +133,6 @@ const PaymentSecurityList: React.FC = () => {
       clearTimeout(timer);
     };
   });
-
   return (
     <PageContainer
       titleDom={'Transaction Limits'}
@@ -137,6 +140,7 @@ const PaymentSecurityList: React.FC = () => {
       containerStyles={pageStyles.pageWrap}
       hideTouchable={true}
       scrollViewProps={{ disabled: true }}>
+      {}
       <FlatList
         refreshing={isRefreshing}
         data={list || []}
@@ -150,7 +154,7 @@ const PaymentSecurityList: React.FC = () => {
   );
 };
 
-const getListStyles = makeStyles(theme => ({
+const getListStyles = makeStyles(() => ({
   pageWrap: {},
   tipsWrap: {
     lineHeight: pTd(20),

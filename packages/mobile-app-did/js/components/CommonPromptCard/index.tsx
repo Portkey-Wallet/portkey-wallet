@@ -40,14 +40,14 @@ export const CommonPromptCard: React.FC<ICommonPromptCardProps> = ({
       case PromptCardType.LOADING:
         return <Lottie style={styles.icon} source={require('assets/lottieFiles/spinnerWhite.json')} autoPlay loop />;
       case PromptCardType.SUCCESS:
-        return <Svg iconStyle={styles.icon} color={colors.iconSuccess1} icon="check-circle" />;
+        return <Svg iconStyle={styles.icon} size={pTd(22)} color={colors.iconSuccess1} icon="check-circle" />;
       case PromptCardType.WARNING:
-        return <Svg iconStyle={styles.icon} color={colors.iconWarning5} icon="info" />;
+        return <Svg iconStyle={styles.icon} size={pTd(22)} color={colors.iconWarning5} icon="info" />;
       case PromptCardType.ERROR:
-        return <Svg iconStyle={styles.icon} color={colors.iconDanger3} icon="info" />;
+        return <Svg iconStyle={styles.icon} size={pTd(22)} color={colors.iconDanger3} icon="info" />;
       case PromptCardType.INFO:
       default:
-        return <Svg iconStyle={styles.icon} color={colors.bgBrand4} icon="info" />;
+        return <Svg iconStyle={styles.icon} size={pTd(22)} color={colors.bgBrand4} icon="info" />;
     }
   }, [colors.bgBrand4, colors.iconDanger3, colors.iconSuccess1, colors.iconWarning5, styles.icon, type]);
 

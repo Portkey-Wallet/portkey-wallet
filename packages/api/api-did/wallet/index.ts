@@ -60,4 +60,8 @@ export default {
     target: '/api/app/account/replace',
     config: { method: 'POST' },
   },
+  getIconList: {
+    target: '/api/app/account/defaultAvatars',
+    config: { method: 'GET' },
+  },
 } as const;

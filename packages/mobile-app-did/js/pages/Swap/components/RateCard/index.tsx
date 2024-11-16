@@ -144,11 +144,13 @@ export default forwardRef(function RateCard(
       if (!isReverse) {
         value = realValue.dp(LIMIT_PRICE_DECIMAL, BigNumber.ROUND_DOWN);
       } else {
-        if (ZERO.eq(tokenOutMarketPriceBN)) value = ZERO;
-        else
+        if (ZERO.eq(tokenOutMarketPriceBN)) {
+          value = ZERO;
+        } else {
           value = ONE.div(tokenOutMarketPriceBN)
             .times(ONE.plus(priceBtn?.value || 0))
             .dp(LIMIT_PRICE_DECIMAL, BigNumber.ROUND_DOWN);
+        }
       }
 
       const valueStr = value.toFixed();
@@ -163,15 +165,21 @@ export default forwardRef(function RateCard(
 
   const isTokenAMarketPriceInitRef = useRef(false);
   useEffect(() => {
-    if (!isTokenAMarketPriceInitRef.current) return;
+    if (!isTokenAMarketPriceInitRef.current) {
+      return;
+    }
     console.log('LimitPairPrice value change', isReverse, tokenOutMarketPrice, isTokenAMarketPriceInitRef.current);
     const value = refreshPriceValueRef.current(PriceBtnKeyEnum.market);
     onChange?.(value, isReverseRef.current);
   }, [onChange, isReverse, tokenOutMarketPrice]);
 
   useEffect(() => {
-    if (isTokenAMarketPriceInitRef.current) return;
-    if (ZERO.gte(tokenOutMarketPrice)) return;
+    if (isTokenAMarketPriceInitRef.current) {
+      return;
+    }
+    if (ZERO.gte(tokenOutMarketPrice)) {
+      return;
+    }
     isTokenAMarketPriceInitRef.current = true;
     console.log('LimitPairPrice init', tokenOutMarketPrice);
     const value = refreshPriceValueRef.current(PriceBtnKeyEnum.market);
@@ -253,7 +261,9 @@ export default forwardRef(function RateCard(
   }, [amountError, onErrorChange]);
 
   const diffPercentInfo: TDiffPercentInfo | undefined = useMemo(() => {
-    if (!price || ZERO.eq(price)) return undefined;
+    if (!price || ZERO.eq(price)) {
+      return undefined;
+    }
     const _isReverse = isReverseRef.current;
     const tokenOutMarketPriceBN = ZERO.plus(tokenOutMarketPriceRef.current);
     const marketPriceBN = !_isReverse ? tokenOutMarketPriceBN : ONE.div(tokenOutMarketPriceBN);
@@ -294,7 +304,9 @@ export default forwardRef(function RateCard(
   }, [isReverse, tokenIn?.symbol, tokenOut?.symbol]);
 
   const title = useMemo(() => {
-    if (!diffPercentInfo || diffPercentInfo.value === '0') return titlePrefix;
+    if (!diffPercentInfo || diffPercentInfo.value === '0') {
+      return titlePrefix;
+    }
 
     return (
       <>
@@ -319,12 +331,18 @@ export default forwardRef(function RateCard(
   }, []);
 
   const selectedValue = useMemo(() => {
-    if (!diffPercentInfo) return undefined;
-    if (isReverse && diffPercentInfo.prefix === '-') return undefined;
+    if (!diffPercentInfo) {
+      return undefined;
+    }
+    if (isReverse && diffPercentInfo.prefix === '-') {
+      return undefined;
+    }
     const selectItem = PRICE_BTN_LIST.find(item =>
       ZERO.plus(diffPercentInfo.value).div(100).minus(item.value).abs().lt(0.0001),
     );
-    if (!selectItem) return undefined;
+    if (!selectItem) {
+      return undefined;
+    }
     return selectItem.value;
   }, [diffPercentInfo, isReverse]);
 
@@ -352,6 +370,7 @@ export default forwardRef(function RateCard(
           {amount || '0'}
         </Text> */}
         <Input
+          returnKeyType="done"
           keyboardType="numeric"
           maxLength={18}
           placeholderTextColor={theme.colors.textBase3}
@@ -361,6 +380,7 @@ export default forwardRef(function RateCard(
           containerStyle={styles.containerStyle}
           inputContainerStyle={styles.inputContainerStyle}
           inputStyle={styles.inputStyle}
+          errorStyle={styles.errorStyle}
           onFocus={() => onInputtingChange?.(true)}
           onBlur={() => onInputtingChange?.(false)}
         />

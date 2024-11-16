@@ -207,6 +207,7 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
           ]}>{`You own: ${formatTokenAmountShowWithDecimals(balance, decimals)}`}</TextM>
         <OutlinedTextButton
           title={t('Send')}
+          textStyle={styles.sendButtonText}
           iconName="send-small"
           onPress={() => {
             navigationService.navigate('SendHome', {
@@ -286,7 +287,7 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
             </View>
           )}
           {/* Basic Info */}
-          <View>
+          <View  style={GStyles.marginTop(pTd(12))}>
             <TextL style={[styles.basicInfoTitle, fonts.SGMediumFont]}>{t('Basic Info')}</TextL>
             <View style={[GStyles.flexRow, styles.paddingVertical16]}>
               <TextL style={[styles.leftTitle, FontStyles.fontBase1, fonts.SGRegularFont]}>
@@ -475,7 +476,7 @@ export const getStyles = makeStyles(theme => ({
     textAlign: 'center',
   },
   pageWrap: {
-    backgroundColor: defaultColors.bgBase2,
+    backgroundColor: defaultColors.bgBase1,
     ...GStyles.paddingArg(0, 16, 0),
   },
   iconWrap: {
@@ -565,6 +566,10 @@ export const getStyles = makeStyles(theme => ({
   },
   sendBtn: {
     marginBottom: pTd(16),
+  },
+  sendButtonText: {
+    ...fonts.SGMediumFont,
+    fontSize: pTd(16),
   },
   infoWrap: {
     marginTop: pTd(12),

@@ -1,4 +1,5 @@
 import { makeStyles } from '@rneui/themed';
+import fonts from 'assets/theme/fonts';
 import { pTd } from 'utils/unit';
 
 export const getTagItemStyles = makeStyles(theme => ({
@@ -24,24 +25,25 @@ export const getTagItemStyles = makeStyles(theme => ({
     backgroundColor: theme.colors.bgBrand1,
   },
   mdTagItem: {
-    paddingVertical: pTd(8),
+    height: pTd(32),
   },
   smTagItem: {
-    paddingVertical: pTd(6),
+    height: pTd(26),
   },
   checkIcon: {
     marginRight: pTd(4),
   },
   label: {
     color: theme.colors.textNeutral5,
+    ...fonts.regularFont,
   },
   mdLabel: {
     fontSize: pTd(16),
-    lineHeight: pTd(16),
+    lineHeight: pTd(20),
   },
   smLabel: {
     fontSize: pTd(14),
-    lineHeight: pTd(14),
+    lineHeight: pTd(17.5),
   },
   selectedLabel: {
     color: theme.colors.textBrand4,

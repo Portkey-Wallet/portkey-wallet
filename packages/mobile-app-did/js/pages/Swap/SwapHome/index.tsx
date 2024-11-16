@@ -2,9 +2,9 @@ import React, { memo, useMemo, useState } from 'react';
 import { useLanguage } from 'i18n/hooks';
 import CommonTopTabWithoutContent from 'components/CommonTopTabWithoutContent';
 import PageContainer from 'components/PageContainer';
-import SwapEnter from '../components/SwapEnter';
-import LimitEnter from '../components/LimitEnter';
-import SwapSettingButton from '../components/SwapSettingButton';
+import SwapEnter from '../components/SwapEnter/index';
+import LimitEnter from '../components/LimitEnter/index';
+import SwapSettingButton from '../components/SwapSettingButton/index';
 import { getStyles } from './style';
 import { useAwakenTokenList } from '@portkey-wallet/hooks/hooks-ca/awaken/state';
 

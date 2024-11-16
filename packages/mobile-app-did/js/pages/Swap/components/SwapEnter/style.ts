@@ -17,4 +17,7 @@ export const getStyles = makeStyles(() => ({
   promptCard: {
     marginTop: pTd(16),
   },
+  previewHide: {
+    opacity: 0,
+  },
 }));

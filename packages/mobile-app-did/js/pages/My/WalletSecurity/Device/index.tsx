@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import PageContainer from 'components/PageContainer';
-import { FlatList, View, Text } from 'react-native';
+import { FlatList, View } from 'react-native';
 import { useLanguage } from 'i18n/hooks';
 import Touchable from 'components/Touchable';
 import CommonButton from 'components/CommonButton';
@@ -13,7 +13,7 @@ import { pTd } from 'utils/unit';
 import myEvents from 'utils/deviceEvent';
 import useEffectOnce from 'hooks/useEffectOnce';
 import CommonToast from 'components/CommonToast';
-import { TextM, TextL, TextTitle } from 'components/CommonText';
+import { TextM, TextL } from 'components/CommonText';
 import { makeStyles, useTheme } from '@rneui/themed';
 import { ApprovalType } from '@portkey-wallet/types/verifier';
 import ActionSheet from 'components/ActionSheet';
@@ -22,7 +22,7 @@ import { sleep } from '@portkey-wallet/utils';
 
 const DeviceList: React.FC = () => {
   const onError = useCallback(() => {
-    CommonToast.failError(`Loading failed. Please retry.`);
+    CommonToast.failError('Loading failed. Please retry.');
   }, []);
   const pageStyles = getStyles();
   const { theme } = useTheme();
@@ -39,7 +39,9 @@ const DeviceList: React.FC = () => {
   const [removeDevices, setRemoveDevices] = useState<IDeviceItem[]>([]);
   const isLoadingRef = useRef(false);
   const getDeviceList = useCallback(async () => {
-    if (isLoadingRef.current) return;
+    if (isLoadingRef.current) {
+      return;
+    }
     isLoadingRef.current = true;
     await refresh();
     isLoadingRef.current = false;
@@ -99,7 +101,7 @@ const DeviceList: React.FC = () => {
       ActionSheet.alert({
         title: t('Remove selected login devices?'),
         message: t(
-          `After removal, you'll need to verify your identity through your guardians the next time you log in on these devices.`,
+          "After removal, you'll need to verify your identity through your guardians the next time you log in on these devices.",
         ),
         showInfoIcon: true,
         buttons: [
@@ -147,22 +149,27 @@ const DeviceList: React.FC = () => {
         ListHeaderComponent={
           <View style={pageStyles.fromExchangeTipWrap}>
             <Svg icon="warning" size={pTd(22)} color={theme.colors.textBrand3} />
-            <TextL
-              style={
-                pageStyles.fromExchangeTipText
-              }>{`You can manage and remove any login device. Note: If you log in again on a removed device, you'll need to verify your identity through your guardians.`}</TextL>
+            <TextL style={pageStyles.fromExchangeTipText}>
+              {
+                "You can manage and remove any login device. Note: If you log in again on a removed device, you'll need to verify your identity through your guardians."
+              }
+            </TextL>
           </View>
         }
       />
-      <CommonButton
-        type="clear"
-        buttonStyle={pageStyles.deleteBtn}
-        disabled={removeDevices.length === 0}
-        onPress={() => {
-          showDialog();
-        }}>
-        <TextL style={pageStyles.deleteBtnTitle}>Remove ({removeDevices.length})</TextL>
-      </CommonButton>
+      {isRemoving && (
+        <CommonButton
+          type="clear"
+          buttonStyle={removeDevices.length ? pageStyles.deleteBtn : pageStyles.noneDeleteBtn}
+          disabled={removeDevices.length === 0}
+          onPress={() => {
+            showDialog();
+          }}>
+          <TextL style={removeDevices.length ? pageStyles.deleteBtnTitle : pageStyles.noneDeleteBtnTitle}>
+            Remove {removeDevices.length ? `(${removeDevices.length})` : ''}
+          </TextL>
+        </CommonButton>
+      )}
     </PageContainer>
   );
 };
@@ -203,6 +210,15 @@ const getStyles = makeStyles(theme => ({
     marginHorizontal: pTd(16),
     marginBottom: pTd(14),
     backgroundColor: theme.colors.bgDanger1,
+  },
+  noneDeleteBtn: {
+    marginHorizontal: pTd(16),
+    marginBottom: pTd(14),
+    backgroundColor: theme.colors.bgBase2,
+  },
+  noneDeleteBtnTitle: {
+    ...fonts.mediumFont,
+    color: theme.colors.textDisabled2,
   },
 }));
 

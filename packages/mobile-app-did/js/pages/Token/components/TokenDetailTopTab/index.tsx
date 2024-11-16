@@ -107,6 +107,7 @@ const toolBarStyle = StyleSheet.create({
     backgroundColor: darkColors.bgBase1,
     flexDirection: 'row',
     paddingHorizontal: pTd(16),
+    paddingVertical: pTd(8),
     alignItems: 'center',
   },
   button: {

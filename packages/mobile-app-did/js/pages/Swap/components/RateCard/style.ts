@@ -34,6 +34,8 @@ export const getStyles = makeStyles(theme => ({
     borderWidth: pTd(1),
     borderColor: theme.colors.borderBase1,
     height: pTd(28),
+    paddingTop: 0,
+    paddingBottom: 0,
   },
   switchTokenIcon: {
     marginRight: pTd(4),
@@ -41,7 +43,7 @@ export const getStyles = makeStyles(theme => ({
   switchTokenText: {
     ...fonts.SGRegularFont,
     fontSize: pTd(14),
-    lineHeight: pTd(14),
+    lineHeight: pTd(16),
     color: theme.colors.iconBase2,
   },
   tagItemStyle: {
@@ -49,18 +51,19 @@ export const getStyles = makeStyles(theme => ({
   },
   containerStyle: {
     flex: 1,
-    height: pTd(24),
-    marginRight: -pTd(2),
-    marginLeft: -pTd(10),
+    paddingHorizontal: 0,
   },
   inputContainerStyle: {
     borderBottomWidth: 0,
-    height: pTd(24),
   },
   inputStyle: {
+    minHeight: pTd(24),
+    padding: 0,
     ...fonts.BGMediumFont,
     fontSize: pTd(20),
-    lineHeight: pTd(24),
     color: theme.colors.textBase1,
+  },
+  errorStyle: {
+    display: 'none',
   },
 }));

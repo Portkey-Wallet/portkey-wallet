@@ -2,27 +2,24 @@ import fonts from 'assets/theme/fonts';
 import GStyles from 'assets/theme/GStyles';
 import { TextM } from 'components/CommonText';
 import PageContainer from 'components/PageContainer';
-import React, { useCallback, useMemo, useRef, useState, Fragment, forwardRef, useImperativeHandle } from 'react';
-import { StyleSheet, ScrollView, View, GestureResponderEvent, Share } from 'react-native';
+import React, { useCallback, useMemo, useRef, useState, forwardRef, useImperativeHandle } from 'react';
+import { StyleSheet, ScrollView, View } from 'react-native';
 import { useAppCASelector } from '@portkey-wallet/hooks/hooks-ca/index';
 import { pTd } from 'utils/unit';
 import { darkColors, defaultColors } from 'assets/theme';
 import { useLanguage } from 'i18n/hooks';
 import { FontStyles } from 'assets/theme/styles';
-import { isIOS, screenHeight, screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import Card from './components/Card';
-import { useAppCommonDispatch, useLatestRef } from '@portkey-wallet/hooks';
+import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 import {
   changeDrawerOpenStatus,
   closeAllTabs,
-  removeAutoApproveItem,
   setActiveTab,
   updateTab,
 } from '@portkey-wallet/store/store-ca/discover/slice';
-import BrowserTab from 'components/BrowserTab';
 import { showBrowserModal } from './components/TabsOverlay';
 
-import { showWalletInfo } from './components/WalletInfoOverlay';
 import { ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
 
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
@@ -31,7 +28,6 @@ import { useHardwareBackPress } from '@portkey-wallet/hooks/mobile';
 import Svg from 'components/Svg';
 import TextWithProtocolIcon from 'components/TextWithProtocolIcon';
 import ActionSheet from 'components/ActionSheet';
-import { useCheckAndUpDateRecordItemName, useCheckAndUpDateTabItemName } from 'hooks/discover';
 import { useNavigation } from '@react-navigation/native';
 import navigationService from 'utils/navigationService';
 import { useCurrentDappList } from '@portkey-wallet/hooks/hooks-ca/dapp';
@@ -39,21 +35,7 @@ import { getOrigin } from '@portkey-wallet/utils/dapp/browser';
 import { useGetCmsWebsiteInfo } from '@portkey-wallet/hooks/hooks-ca/cms';
 import Touchable from 'components/Touchable';
 import { ITabContext } from './tools';
-import FloatOverlay from 'components/FloatOverlay';
-import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import CommonAvatar from 'components/CommonAvatar';
-import { useBookmarkList } from '@portkey-wallet/hooks/hooks-ca/discover';
-import { request } from '@portkey-wallet/api/api-did';
-import CommonToast from 'components/CommonToast';
-
-enum HANDLE_TYPE {
-  REFRESH = 'Refresh',
-  SHARE = 'Share',
-  FORWARD = 'Forward',
-  BACK = 'Back',
-  BOOKMARK = 'Bookmark',
-  UN_BOOKMARK = 'Delete Bookmark',
-}
+import TabsDom from './components/TabsDom';
 
 export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
   const { t } = useLanguage();
@@ -61,82 +43,19 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
   const nav = useNavigation();
   const dappList = useCurrentDappList();
   const dispatch = useAppCommonDispatch();
-  const {
-    isDrawerOpen,
-    discoverMap = {},
-    initializedList,
-    activeTabId,
-    autoApproveMap,
-  } = useAppCASelector(state => state.discover);
+  const { isDrawerOpen, discoverMap = {}, activeTabId } = useAppCASelector(state => state.discover);
   const { tabs } = discoverMap[networkType] ?? {};
   const activeItem = useMemo(() => tabs?.find(ele => ele.id === activeTabId) as ITabItem, [activeTabId, tabs]);
 
-  const checkAndUpDateRecordItemName = useCheckAndUpDateRecordItemName();
-  const checkAndUpDateTabItemName = useCheckAndUpDateTabItemName();
-  const latestCheckAndUpDateRecordItemName = useLatestRef(checkAndUpDateRecordItemName);
-  const latestCheckAndUpDateTabItemName = useLatestRef(checkAndUpDateTabItemName);
   const { getCmsWebsiteInfoName } = useGetCmsWebsiteInfo();
 
   const tabRef = useRef<IBrowserTab | null>(null);
   const [preActiveTabId, setPreActiveTabId] = useState<number | undefined>(activeTabId);
-  const userInfo = useCurrentUserInfo();
-  const [tabStateMap, setTabStateMap] = useState<{
-    canGoBack: Record<string, boolean>;
-    canGoForward: Record<string, boolean>;
-  }>({
-    canGoBack: {},
-    canGoForward: {},
-  });
-  const { bookmarkList, refresh } = useBookmarkList();
-  const isBookmarkLoading = useRef(false);
-  const [bookmark, setBookmark] = useState(bookmarkList.find(item => item.url === activeItem?.url));
-
-  const handleMark = useCallback(async () => {
-    if (!isBookmarkLoading.current) {
-      isBookmarkLoading.current = true;
-      try {
-        const result = await request.discover.addBookmark({
-          params: {
-            name: activeItem?.name || activeItem?.url || '',
-            url: activeItem?.url || '',
-          },
-        });
-        setBookmark(result);
-        CommonToast.success('Added successfully');
-        refresh();
-      } catch (error) {
-        CommonToast.failError('Added failed');
-      }
-      isBookmarkLoading.current = false;
-    }
-  }, [activeItem?.name, activeItem?.url, refresh]);
-
-  const removeMark = useCallback(async () => {
-    if (!isBookmarkLoading.current) {
-      isBookmarkLoading.current = true;
-      try {
-        await request.discover.deleteBookmark({
-          params: {
-            deleteInfos: [
-              {
-                id: bookmark?.id,
-                index: bookmark?.index,
-              },
-            ],
-          },
-        });
-        CommonToast.success('Deleted successfully');
-        refresh();
-        setBookmark(undefined);
-      } catch (error) {
-        CommonToast.failError('Deleted failed');
-      }
-      isBookmarkLoading.current = false;
-    }
-  }, [bookmark?.id, bookmark?.index, refresh]);
 
   const activeWebviewScreenShot = useCallback(async () => {
-    if (!activeTabId) return;
+    if (!activeTabId) {
+      return;
+    }
 
     try {
       const uri = await tabRef.current?.capture?.();
@@ -173,13 +92,10 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
     [],
   );
 
-  const handleNaviagte = useCallback(() => {
-    navigationService.navigate('DiscoverSearch', { address: activeItem?.url });
-    dispatch(changeDrawerOpenStatus(false));
-  }, [activeItem?.url, dispatch]);
-
   const closeAll = useCallback(() => {
-    if (tabs?.length === 0) return;
+    if (tabs?.length === 0) {
+      return;
+    }
 
     ActionSheet.alert({
       title: 'Close all tabs?',
@@ -201,8 +117,12 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
   }, [dispatch, networkType, t, tabs?.length]);
 
   const onDone = useCallback(() => {
-    if (tabs?.length === 0) return dispatch(changeDrawerOpenStatus(false));
-    if (!preActiveTabId) return dispatch(changeDrawerOpenStatus(false));
+    if (tabs?.length === 0) {
+      return dispatch(changeDrawerOpenStatus(false));
+    }
+    if (!preActiveTabId) {
+      return dispatch(changeDrawerOpenStatus(false));
+    }
 
     if (tabs?.find(ele => ele.id === preActiveTabId)) {
       dispatch(setActiveTab({ id: preActiveTabId, networkType }));
@@ -234,7 +154,9 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
           break;
 
         case 'showTab':
-          if (!activeTabId) return;
+          if (!activeTabId) {
+            return;
+          }
           activeWebviewScreenShot();
           setPreActiveTabId(Number(activeItem?.id));
           break;
@@ -259,54 +181,6 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
     [activeItem, activeTabId, activeWebviewScreenShot],
   );
 
-  const onTouch = useCallback(
-    async (event: GestureResponderEvent, canGoBack: boolean, canGoForward: boolean) => {
-      const { pageY, pageX } = event.nativeEvent;
-      FloatOverlay.showFloatPopover({
-        list: [
-          {
-            title: HANDLE_TYPE.SHARE,
-            iconName: 'share-thin',
-            onPress: async () => {
-              await Share.share({
-                message: isIOS ? activeItem?.name ?? activeItem?.url : activeItem?.url,
-                url: activeItem?.url ?? activeItem?.name ?? '',
-                title: activeItem?.name ?? activeItem?.url,
-              }).catch(shareError => {
-                console.log(shareError);
-              });
-            },
-          },
-          {
-            title: bookmark ? HANDLE_TYPE.UN_BOOKMARK : HANDLE_TYPE.BOOKMARK,
-            iconName: !bookmark ? 'book-mark-fill' : 'book-mark',
-            onPress: bookmark ? removeMark : handleMark,
-          },
-          {
-            title: 'Forward',
-            iconName: 'arrow-right',
-            textStyle: { color: canGoForward ? darkColors.iconBase1 : darkColors.iconDisabled },
-            iconColor: canGoForward ? darkColors.iconBase1 : darkColors.iconDisabled,
-            onPress: () => canGoForward && clickBottomActionBtn('forward'),
-          },
-          {
-            title: 'Back',
-            iconName: 'arrow-left',
-            textStyle: { color: canGoForward ? darkColors.iconBase1 : darkColors.iconDisabled },
-            iconColor: canGoBack ? darkColors.iconBase1 : darkColors.iconDisabled,
-            onPress: () => canGoForward && clickBottomActionBtn('back'),
-          },
-        ],
-        formatType: 'fixedWidth',
-        customPosition: { left: pageX - pTd(26), bottom: screenHeight - pageY + pTd(40) },
-        customBounds: { x: pageX - pTd(16), y: pageY - pTd(40), width: 0, height: 0 },
-        contentStyle: { color: darkColors.textBase1 },
-        containerStyle: { backgroundColor: darkColors.bgBase1, borderColor: darkColors.borderBase1, borderWidth: 1 },
-      });
-    },
-    [activeItem, bookmark, clickBottomActionBtn, handleMark, removeMark],
-  );
-
   const provider = useMemo<ITabContext>(() => {
     return {
       currentTabLength: (tabs ?? []).length,
@@ -317,99 +191,6 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
   }, [clickBottomActionBtn, tabs]);
 
   useImperativeHandle(drawerRef, () => provider, [provider]);
-
-  const TabsDom = useMemo(() => {
-    return tabs?.map(ele => {
-      const isHidden = activeTabId !== ele.id;
-      const initialized = initializedList?.has(ele.id);
-      if (isHidden && !initialized) return;
-      const autoApprove = autoApproveMap?.[ele.id];
-
-      const canGoBack: boolean = tabStateMap?.canGoBack?.[ele.id];
-      const canGoForward: boolean = tabStateMap?.canGoForward?.[String(ele?.id)];
-
-      const onNavigationStateChange = (navState: any) => {
-        if (ele.id === activeTabId) {
-          setTabStateMap(pre => ({
-            canGoBack: {
-              ...pre.canGoBack,
-              [ele.id]: navState?.canGoBack,
-            },
-            canGoForward: {
-              ...pre.canGoForward,
-              [ele.id]: navState?.canGoForward,
-            },
-          }));
-        }
-      };
-
-      return (
-        <Fragment key={ele.id}>
-          <BrowserTab
-            key={ele.id}
-            id={ele.id}
-            uri={ele.url}
-            isHidden={isHidden}
-            autoApprove={autoApprove}
-            onLoadEnd={nativeEvent => {
-              if (autoApprove) dispatch(removeAutoApproveItem(ele.id));
-              latestCheckAndUpDateRecordItemName.current({ id: ele.id, name: nativeEvent.title });
-              latestCheckAndUpDateTabItemName.current({ id: ele.id, name: nativeEvent.title });
-            }}
-            onNavigationStateChange={onNavigationStateChange}
-          />
-          {!isHidden && (
-            <View style={handleButtonStyle.wrap}>
-              <Touchable style={{ paddingHorizontal: pTd(12) }} onPress={() => showWalletInfo({ tabInfo: activeItem })}>
-                <CommonAvatar
-                  hasBorder={!userInfo?.avatar}
-                  title={userInfo?.nickName}
-                  avatarSize={pTd(32)}
-                  imageUrl={userInfo?.avatar || ''}
-                  resizeMode="cover"
-                  titleStyle={{ fontSize: pTd(14) }}
-                />
-              </Touchable>
-              <View style={rightDomStyle.contentWrap}>
-                <Touchable onPress={event => onTouch(event, canGoBack, canGoForward)} style={rightDomStyle.iconWrap}>
-                  <Svg icon="more-circle" size={20} color={darkColors.iconBase1} />
-                </Touchable>
-                <Touchable style={rightDomStyle.inputContent} onPress={handleNaviagte}>
-                  {!activeItem?.url?.includes('https://') && (
-                    <Svg icon="warning-fill" size={12} iconStyle={{ marginRight: pTd(10) }} />
-                  )}
-                  <TextM style={rightDomStyle.domain}>{activeItem?.url}</TextM>
-                </Touchable>
-                <Touchable onPress={() => tabRef.current?.reload?.()} style={rightDomStyle.iconWrap}>
-                  <Svg icon="accessory" size={20} color={darkColors.iconBase1} />
-                </Touchable>
-              </View>
-              <Touchable
-                onPress={() => clickBottomActionBtn('showTab')}
-                style={[rightDomStyle.iconWrap, styles.switchButtonWrap]}>
-                <TextM style={styles.switchButton}>{tabs?.length || 0}</TextM>
-              </Touchable>
-            </View>
-          )}
-        </Fragment>
-      );
-    });
-  }, [
-    activeItem,
-    activeTabId,
-    autoApproveMap,
-    clickBottomActionBtn,
-    dispatch,
-    initializedList,
-    latestCheckAndUpDateRecordItemName,
-    latestCheckAndUpDateTabItemName,
-    onTouch,
-    tabStateMap?.canGoBack,
-    tabStateMap?.canGoForward,
-    tabs,
-    userInfo?.avatar,
-    userInfo?.nickName,
-  ]);
 
   // card group
   const CardGroupDom = useMemo(() => {
@@ -468,7 +249,7 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
         containerStyles={styles.container}
         scrollViewProps={{ disabled: true }}
         titleDom={activeTabId ? '' : `${tabs?.length} Tabs`}>
-        {TabsDom}
+        <TabsDom activeWebViewRef={tabRef} clickBottomActionBtn={clickBottomActionBtn} />
         {!activeTabId && isDrawerOpen && CardGroupDom}
       </PageContainer>
     </BrowserContext.Provider>
@@ -579,40 +360,5 @@ const handleButtonStyle = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: pTd(12),
     width: screenWidth,
-  },
-});
-
-const rightDomStyle = StyleSheet.create({
-  contentWrap: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: pTd(12),
-    paddingVertical: pTd(12),
-    flex: 1,
-    height: pTd(40),
-    borderRadius: pTd(20),
-    borderWidth: pTd(1),
-    borderColor: darkColors.borderBase1,
-  },
-  inputContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    maxWidth: pTd(217),
-    overflow: 'hidden',
-  },
-  domain: {
-    color: darkColors.textBase1,
-    textAlign: 'center',
-    lineHeight: pTd(16),
-  },
-  iconGroupWrap: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  iconWrap: {
-    ...GStyles.paddingArg(pTd(4)),
   },
 });

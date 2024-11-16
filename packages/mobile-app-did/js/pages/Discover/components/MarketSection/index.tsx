@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import MarketHeader from './components/MarketHeader';
-import { FlatList, RefreshControl, View } from 'react-native';
+import { FlatList, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import MarketItem from './components/MarketItem';
 import { useMarket } from 'hooks/discover';
@@ -12,6 +12,7 @@ import { StyleSheet } from 'react-native';
 import { darkColors } from 'assets/theme';
 import { TextM } from 'components/CommonText';
 import MarketItemSkeleton from './components/MarketItemSkeleton';
+import Loading from 'components/Loading';
 
 export default function MarketSection() {
   const { marketInfo, refreshing, refreshList, handleSort } = useMarket();
@@ -24,7 +25,9 @@ export default function MarketSection() {
   }, []);
   const onRefresh = useCallback(async () => {
     try {
+      Loading.show();
       await refreshList();
+      Loading.hide();
     } catch (e) {
       CommonToast.failError(`${e}`);
     }
@@ -35,9 +38,6 @@ export default function MarketSection() {
   }, [marketInfo?.dataList]);
   const isSkeleton = useMemo(() => {
     return refreshing && (marketInfo?.dataList?.length || 0) <= 0;
-  }, [marketInfo?.dataList?.length, refreshing]);
-  const isLoading = useMemo(() => {
-    return refreshing && (marketInfo?.dataList?.length || 0) > 0;
   }, [marketInfo?.dataList?.length, refreshing]);
   const renderEmpty = useCallback(() => {
     return (
@@ -78,9 +78,6 @@ export default function MarketSection() {
           data={Array.isArray(marketInfo?.dataList) ? marketInfo?.dataList : []}
           renderItem={renderItem}
           keyExtractor={(item: ICryptoCurrencyItem, index: number) => '' + (item.id || index)}
-          refreshControl={
-            marketInfo?.dataList ? <RefreshControl refreshing={isLoading} onRefresh={onRefresh} /> : undefined
-          }
           ListEmptyComponent={renderEmpty}
         />
       )}
@@ -90,7 +87,6 @@ export default function MarketSection() {
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: pTd(16),
     backgroundColor: darkColors.bgBase1,
     flex: 1,
   },

@@ -44,7 +44,7 @@ export default function DiscoverHome() {
         onPress: () => jumpToHistory(ArchivedTabEnum.Bookmarks),
       },
       {
-        title: 'Records',
+        title: 'History',
         iconName: 'clock',
         iconColor: darkColors.iconBase1,
         onPress: () => jumpToHistory(ArchivedTabEnum.History),

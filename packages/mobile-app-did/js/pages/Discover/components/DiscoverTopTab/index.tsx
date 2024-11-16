@@ -9,7 +9,7 @@ import { useMarket } from 'hooks/discover';
 
 const defaultList = [
   {
-    name: 'dApp',
+    name: 'dApps',
     value: 'Dapp',
     tabItemDom: <DiscoverCmsListSection />,
   },

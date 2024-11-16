@@ -1,5 +1,6 @@
 import { IMarketInfo, IMarketSort, IMarketSortDir } from '@portkey-wallet/store/store-ca/discover/type';
 import { darkColors } from 'assets/theme';
+import { TextS } from 'components/CommonText';
 import CommonToast from 'components/CommonToast';
 import Svg from 'components/Svg';
 import React, { useCallback } from 'react';
@@ -60,7 +61,7 @@ export default function MarketHeader({
   );
   return (
     <View style={[styles.mainContainer, style]}>
-      <View style={[styles.section, styles.section1Width]}>
+      <View style={[styles.section]}>
         <TouchableOpacity
           activeOpacity={0.8}
           onPress={() => {
@@ -73,6 +74,7 @@ export default function MarketHeader({
           }}>
           <HeaderItem name={'Name'} sortDir={calSortDirBySort('symbol')} />
         </TouchableOpacity>
+        <TextS style={styles.divider}>/</TextS>
         <TouchableOpacity
           activeOpacity={0.8}
           onPress={() => {
@@ -83,10 +85,10 @@ export default function MarketHeader({
               CommonToast.failError(`${e}`);
             }
           }}>
-          <HeaderItem name={'/Market Cap'} style={styles.marginLeft4} sortDir={calSortDirBySort('marketCap')} />
+          <HeaderItem name={'Market Cap'} sortDir={calSortDirBySort('marketCap')} />
         </TouchableOpacity>
       </View>
-      <View style={[styles.section, styles.section2Width]}>
+      <View style={[styles.section]}>
         <TouchableOpacity
           activeOpacity={0.8}
           onPress={() => {
@@ -99,8 +101,7 @@ export default function MarketHeader({
           }}>
           <HeaderItem name={'Price'} sortDir={calSortDirBySort('currentPrice')} />
         </TouchableOpacity>
-      </View>
-      <View style={[styles.section, styles.section3Width]}>
+        <TextS style={styles.divider}>/</TextS>
         <TouchableOpacity
           activeOpacity={0.8}
           onPress={() => {
@@ -126,23 +127,17 @@ const styles = StyleSheet.create({
     width: '100%',
     backgroundColor: darkColors.bgBase1,
     paddingVertical: pTd(8),
+    paddingHorizontal: pTd(16),
+  },
+  divider: {
+    marginHorizontal: pTd(8),
+    height: pTd(16),
+    color: darkColors.textBase3,
+    fontSize: pTd(12),
+    lineHeight: pTd(16),
   },
   section: {
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  section1Width: {
-    width: pTd(165),
-  },
-  section2Width: {
-    width: pTd(92),
-    justifyContent: 'flex-end',
-  },
-  section3Width: {
-    width: pTd(68),
-    justifyContent: 'flex-end',
-  },
-  marginLeft4: {
-    marginLeft: pTd(4),
   },
 });

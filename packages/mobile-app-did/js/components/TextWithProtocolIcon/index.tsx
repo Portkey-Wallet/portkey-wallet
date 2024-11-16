@@ -35,9 +35,11 @@ const TextWithProtocolIcon = ({
   };
 
   const ProtocolIcon = useMemo(() => {
-    if (!showProtocolIcon) return null;
+    if (!showProtocolIcon) {
+      return null;
+    }
     if (isDanger) {
-      return <Svg icon="httpWarn" size={iconSize} iconStyle={styles.iconStyle} />;
+      return <Svg icon="warning-fill" size={iconSize} iconStyle={styles.iconStyle} color={darkColors.iconDanger2} />;
     } else {
       return (
         <Svg

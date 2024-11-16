@@ -47,7 +47,12 @@ import { useGetTokenViewContract } from 'hooks/contract';
 import { getELFChainBalance } from '@portkey-wallet/utils/balance';
 import { useRecent } from '@portkey-wallet/hooks/hooks-ca/recent';
 import { IRecentItem } from '@portkey-wallet/store/store-ca/recent/type';
-import { useEtransferCrossTrack, useEtransferCrossFinishTrack } from 'hooks/amplitude';
+// import {
+// useEtransferCrossTrack,
+// useEtransferCrossFinishTrack,
+// useCrossChainTransferTrack,
+// usePortkeyCrossTrack,
+// } from 'hooks/amplitude';
 
 enum ErrorType {
   NO_TOAST = 'noToast',
@@ -210,7 +215,7 @@ const SendPreview: React.FC = () => {
 
     const recentItem: IRecentItem = {
       address: toInfo?.address || '',
-      chainId: toInfo?.chainId,
+      chainId: targetNetwork?.network ? undefined : toInfo?.chainId,
       network: targetNetwork?.network || 'aelf',
       networkIcon: targetNetwork?.imageUrl || aelfIcon,
       transferTime: Date.now(),
@@ -248,8 +253,12 @@ const SendPreview: React.FC = () => {
     toInfo?.chainId,
   ]);
 
-  const etransferCrossTrack = useEtransferCrossTrack();
-  const etransferCrossFinishTrack = useEtransferCrossFinishTrack();
+  // TODO: add track
+  // const crossChainTransferTrack = useCrossChainTransferTrack();
+  // const portkeyCrossTrack = usePortkeyCrossTrack();
+  // const etransferCrossTrack = useEtransferCrossTrack();
+  // const etransferCrossFinishTrack = useEtransferCrossFinishTrack();
+
   const transfer = useCallback(async () => {
     setIsError(false);
 
@@ -426,10 +435,6 @@ const SendPreview: React.FC = () => {
     getEVMChainInfoConfig,
     getElfBalance,
     getTokenConfig,
-    etransferCrossFinishTrack,
-    etransferCrossTrack,
-    fetchAccountNFTCollectionInfoList,
-    fetchAccountTokenInfoList,
     guardiansApproved,
     isApproved,
     pin,
@@ -580,7 +585,11 @@ const SendPreview: React.FC = () => {
       amountUSD={ZERO.plus(sendNumber).multipliedBy(tokenPriceObject[assetInfo.symbol])}
       toAddress={toInfo?.address}
       toInfoChainId={toInfo?.chainId}
-      destinationNetwork={isETransferOrEBridge ? targetNetwork?.name : formatChainInfoToShow(toInfo?.chainId)}
+      destinationNetwork={
+        isETransferOrEBridge
+          ? targetNetwork?.name || formatChainInfoToShow(toInfo?.chainId)
+          : formatChainInfoToShow(toInfo?.chainId)
+      }
       destinationNetworkImageUrl={targetNetwork?.imageUrl}
       transactionFee={isETransferOrEBridge ? `${transactionFee} ${transactionFeeUnit}` : ''}
       transactionFeeUSD={

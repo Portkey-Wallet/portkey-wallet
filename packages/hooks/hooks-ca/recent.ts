@@ -51,7 +51,8 @@ export function useRecent() {
 
       const list = result
         .map(ele => {
-          if (isFt && !!ele.network && ele.network !== 'aelf') return;
+          // nft adjust
+          if (!isFt && !!ele.network && ele.network !== 'aelf') return;
 
           const addr = getAelfAddress(ele.address);
 

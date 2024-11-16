@@ -347,7 +347,7 @@ const SendHome: React.FC = () => {
     const reList = getTransformedRecentList({
       fromChainId: assetInfo.chainId,
       tokenId: assetInfo.symbol,
-      isFt: sendType !== 'token',
+      isFt: sendType === 'token',
     });
     setRecentList(reList || []);
   }, [assetInfo.chainId, assetInfo.symbol, getTransformedRecentList, sendType]);
@@ -572,6 +572,8 @@ const SendHome: React.FC = () => {
       }
     }
     try {
+      Loading.show();
+
       // cross chain interception
       if (isAELFCross) {
         const sendChainId = selectedToContact.chainId || (getChainIdByAddress(selectedToContact.address) as ChainId);
@@ -809,7 +811,7 @@ const SendHome: React.FC = () => {
       if (err?.code === 500) {
         setErrorMessage(TransactionError.FEE_NOT_ENOUGH);
         Loading.hide();
-        console.log('checkCanPreview 19');
+        console.log('checkCanPreview 19', err);
         return { status: false };
       }
     } finally {
@@ -997,7 +999,7 @@ const SendHome: React.FC = () => {
           const { data } = await getSendNetworkList({
             symbol: assetInfo?.symbol || '',
             chainId: assetInfo?.chainId || 'AELF',
-            toAddress: i?.addressInfo?.address || '',
+            toAddress: i?.address || i?.addressInfo?.address || '',
           });
 
           console.log('getSendNetworkList', data, i);
@@ -1012,7 +1014,7 @@ const SendHome: React.FC = () => {
         } else {
           setSelectedToContact({
             name: i?.name,
-            address: i.address || i.addressInfo?.address,
+            address: addressFormat(i.address || i.addressInfo?.address, i.chainId || i.addressInfo?.chainId),
             chainId: i.chainId || i.addressInfo?.chainId,
           } as TToInfo);
           setStep(2);
@@ -1045,6 +1047,7 @@ const SendHome: React.FC = () => {
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
         <View style={styles.mainWrap}>
           <ToAddressInput
+            sendType={sendType}
             step={step}
             warning={warning}
             checkFinish={isCheckAddressFinish}

@@ -9,7 +9,7 @@ import React, {
   useState,
   ReactNode,
 } from 'react';
-import { StyleSheet, TouchableOpacity, Text, View, StyleProp, ViewStyle, ScrollView } from 'react-native';
+import { StyleSheet, TouchableOpacity, Text, View, StyleProp, ViewStyle } from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { pTd } from 'utils/unit';
@@ -26,6 +26,7 @@ export interface TabItemTypes {
 }
 
 export type CommonTopTabProps = {
+  labelRightNum?: number;
   swipeEnabled?: boolean;
   hasTabBarBorderRadius?: boolean;
   hasBottomBorder?: boolean;
@@ -44,6 +45,7 @@ const Tab = createMaterialTopTabNavigator();
 
 const CommonTopTab: React.FC<CommonTopTabProps> = props => {
   const {
+    labelRightNum,
     tabList,
     initialRouteName,
     hasTabBarBorderRadius,
@@ -75,6 +77,7 @@ const CommonTopTab: React.FC<CommonTopTabProps> = props => {
       tabBar={prop => (
         <CustomizedTopTabBar
           {...prop}
+          labelRightNum={labelRightNum}
           isBlockTab={isBlockTab}
           hasTabBarBorderRadius={hasTabBarBorderRadius}
           hasBottomBorder={hasBottomBorder}
@@ -82,7 +85,6 @@ const CommonTopTab: React.FC<CommonTopTabProps> = props => {
           onTabChange={onTabChange}
           ref={tabBarRef}
           suffixIconDom={suffixIconDom}
-          swipeEnabled={swipeEnabled}
         />
       )}
       screenOptions={{
@@ -101,6 +103,7 @@ const CommonTopTab: React.FC<CommonTopTabProps> = props => {
 const CustomizedTopTabBar = forwardRef(
   (
     {
+      labelRightNum,
       state,
       descriptors,
       navigation,
@@ -109,9 +112,9 @@ const CustomizedTopTabBar = forwardRef(
       isBlockTab = false,
       containerStyle = {},
       suffixIconDom,
-      swipeEnabled = false,
       onTabChange,
     }: {
+      labelRightNum?: number;
       state: { routes: any[]; index: number };
       descriptors: any;
       navigation: any;
@@ -120,7 +123,6 @@ const CustomizedTopTabBar = forwardRef(
       isBlockTab?: boolean;
       containerStyle?: StyleProp<ViewStyle>;
       suffixIconDom?: ReactNode;
-      swipeEnabled?: boolean;
       onTabChange?: (name: string) => void;
     },
     ref,
@@ -152,23 +154,22 @@ const CustomizedTopTabBar = forwardRef(
     }, [onTabChange, state]);
     return (
       <View style={[toolBarStyle.tabBarStyle, containerStyle]}>
-        <ScrollView horizontal={true} alwaysBounceHorizontal={false} scrollEnabled={swipeEnabled}>
-          <View
-            style={[
-              toolBarStyle.container,
-              hasBottomBorder ? styles.bottomBorder : {},
-              hasTabBarBorderRadius ? styles.radiusTarBarStyle : {},
-            ]}>
-            {state.routes.map((route, index) => {
-              const suffixPro = suffixList ? suffixList[index] : undefined;
-              const suffix = suffixPro || route.params?.suffix;
-              const { options } = descriptors[route.key];
-              const label =
-                options.tabBarLabel !== undefined
-                  ? options.tabBarLabel
-                  : options.title !== undefined
-                  ? options.title
-                  : route.name;
+        <View
+          style={[
+            toolBarStyle.container,
+            hasBottomBorder ? styles.bottomBorder : {},
+            hasTabBarBorderRadius ? styles.radiusTarBarStyle : {},
+          ]}>
+          {state.routes.map((route, index) => {
+            const suffixPro = suffixList ? suffixList[index] : undefined;
+            const suffix = suffixPro || route.params?.suffix;
+            const { options } = descriptors[route.key];
+            const label =
+              options.tabBarLabel !== undefined
+                ? options.tabBarLabel
+                : options.title !== undefined
+                ? options.title
+                : route.name;
 
               const isFocused = state.index === index;
               return (
@@ -196,7 +197,7 @@ const CustomizedTopTabBar = forwardRef(
                   </Text>
                   {suffix && (
                     <View style={styles.amountIcon}>
-                      <TextM style={styles.amount}>{suffix}</TextM>
+                      <TextM style={[styles.suffixText, isFocused && styles.suffixTextFocused]}>{suffix}</TextM>
                     </View>
                   )}
                 </TouchableOpacity>
@@ -233,16 +234,20 @@ const getStyles = makeStyles(theme => ({
     textTransform: 'none',
     fontSize: pTd(14),
   },
-  amountIcon: {
+  suffixWrap: {
     paddingVertical: pTd(4),
     paddingHorizontal: pTd(6),
     borderRadius: pTd(4),
     marginLeft: pTd(4),
     backgroundColor: theme.colors.bgNeutral2,
+    borderRadius: pTd(4),
   },
-  amount: {
-    color: theme.colors.textBase1,
+  suffixText: {
+    color: theme.colors.textBase2,
     ...fonts.SGRegularFont,
+  },
+  suffixTextFocused: {
+    color: theme.colors.textBase1,
   },
 }));
 
@@ -259,7 +264,6 @@ const getToolBarStyle = makeStyles(theme => ({
     flexDirection: 'row',
     paddingHorizontal: pTd(16),
     height: pTd(54),
-    minWidth: screenWidth,
     alignItems: 'center',
   },
   label: { flexDirection: 'row', alignItems: 'center' },

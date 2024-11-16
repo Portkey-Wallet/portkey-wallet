@@ -13,6 +13,7 @@ import ContactItem from 'components/ContactItem';
 import { IContactItemType, TFormattedRecentItem } from '@portkey-wallet/types/types-ca/contactNew';
 import navigationService from 'utils/navigationService';
 import { ICaAddressInfoListItemType } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { RECENT_PAGE_NAME } from 'constants/contact';
 
 interface IAddress {
   avatar?: string;
@@ -78,6 +79,7 @@ const AddressList = ({
             navigationService.navigate('NoChatContactProfile', {
               contact: contactProps,
               isSaved,
+              from: RECENT_PAGE_NAME,
             });
           }}
         />

@@ -81,7 +81,7 @@ type thirdPartyInfoType = {
   timestamp?: number;
 };
 
-type TypeItemType = typeof LOGIN_TYPE_LIST[number];
+type TypeItemType = (typeof LOGIN_TYPE_LIST)[number];
 
 const GuardianEdit: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -175,6 +175,7 @@ const GuardianEdit: React.FC = () => {
   const checkCurGuardianRepeat = useCallback(
     (guardiansList: UserGuardianItem[]) => {
       if (!selectedType) return false;
+      const totalUserGuardiansList = guardiansList.slice(0);
 
       if (isEdit) {
         guardiansList = guardiansList.filter(guardian => guardian.key !== editGuardian?.key);
@@ -203,7 +204,13 @@ const GuardianEdit: React.FC = () => {
         setGuardianAccountError({ ...INIT_NONE_ERROR });
       }
 
-      if (guardiansList.find(item => item.verifier?.id === selectedVerifier?.id)) {
+      const guardianRepeatList = totalUserGuardiansList.filter(
+        item =>
+          item.key !== editGuardian?.key &&
+          !(isZKLoginSupported(item.guardianType) && (item.verifiedByZk || item.manuallySupportForZk)),
+      );
+
+      if (guardianRepeatList.find(item => item.verifier?.id === selectedVerifier?.id)) {
         isValid = false;
         setVerifierError({
           ...INIT_HAS_ERROR,
@@ -736,12 +743,16 @@ const GuardianEdit: React.FC = () => {
   const isEditGuardianZKLoginSupported = useMemo(() => {
     return editGuardian && isZKLoginSupported(editGuardian.guardianType);
   }, [editGuardian]);
-
   const disabledMap = useMemo(() => {
     if (!userGuardiansList) return {};
-    const guardianList = userGuardiansList.filter(item => item.key !== editGuardian?.key);
+    // The verification between ZK and non-ZK is independent.
+    const guardianList = userGuardiansList.filter(
+      item =>
+        item.key !== editGuardian?.key &&
+        !(isZKLoginSupported(item.guardianType) && (item.verifiedByZk || item.manuallySupportForZk)),
+    );
     const map: Record<string, boolean> = {};
-    // has selected by user, so disable
+    // has selected by user, so disable them
     // editGuardian is able
     guardianList.forEach(item => {
       map[item.verifier?.id || ''] = true;
@@ -819,7 +830,7 @@ const GuardianEdit: React.FC = () => {
             tooltipProps={{
               title: 'Guardian verifier',
               description:
-                'Except for zkLogin, used verifiers cannot be selected. To choose ZkLogin, the guardian type must be either a Google account or an Apple ID.',
+                "Verifiers are external services that boost security and decentralization in Portkey's social recovery system. Note: Used verifiers can't be selected again, except for zkLogin. For zkLogin, your guardian must be a Google account or Apple ID.",
             }}
           />
         </View>
@@ -867,7 +878,7 @@ const GuardianEdit: React.FC = () => {
             )
           }
         />
-        {verifierError.isError && <TextS style={pageStyles.errorTips}>{verifierError.errorMsg || ''}</TextS>}
+        {verifierError.isError && <TextL style={pageStyles.errorTips}>{verifierError.errorMsg || ''}</TextL>}
         {isEmptySelectAbleVerifierList && (
           <TextM style={pageStyles.warningTips}>{'All applicable verifiers have already been used.'}</TextM>
         )}

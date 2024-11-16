@@ -18,12 +18,16 @@ import { getStyles } from './style';
 import { KeyboardSafeArea } from 'components/KeyboardSafeArea';
 import { isStrictInteger, isValidNumberV2 } from '@portkey-wallet/utils/reg';
 import BigNumber from 'bignumber.js';
+import { isIOS } from '@portkey-wallet/utils/mobile/device';
 
 interface ISwapSettingButtonProps {
   style?: ViewStyleType;
 }
 
 const SLIPPAGE_TOLERANCE_INPUT_TAG_KEY = 'Custom';
+
+const SLIPPAGE_TOLERANCE_MAX_VALUE = '99.99';
+const SLIPPAGE_TOLERANCE_MIN_VALUE = '0.01';
 
 const SwapSettingContent = () => {
   const { t } = useLanguage();
@@ -66,12 +70,20 @@ const SwapSettingContent = () => {
     if (text && !isValidNumberV2(text)) {
       return;
     }
+
+    const value = parseFloat(text);
+
+    if (value > parseFloat(SLIPPAGE_TOLERANCE_MAX_VALUE)) {
+      return;
+    }
+
     setSlippageTolerance(text);
   }, []);
 
   const handleSlippageToleranceInputBlur = useCallback(() => {
-    if (!slippageTolerance) {
-      setSlippageTolerance('0');
+    const value = parseFloat(slippageTolerance);
+    if (!slippageTolerance || value < parseFloat(SLIPPAGE_TOLERANCE_MIN_VALUE)) {
+      setSlippageTolerance(SLIPPAGE_TOLERANCE_MIN_VALUE);
     }
   }, [slippageTolerance]);
 
@@ -89,7 +101,7 @@ const SwapSettingContent = () => {
   }, [expiration]);
 
   const saveSetting = useCallback(() => {
-    const slippageValue = new BigNumber(slippageTolerance || '0').dividedBy(100).toFixed();
+    const slippageValue = new BigNumber(slippageTolerance || SLIPPAGE_TOLERANCE_MIN_VALUE).dividedBy(100).toFixed();
     updateSlippageTolerance(slippageValue);
     updateExpiration(expiration || '0');
     OverlayModal.hide();
@@ -136,7 +148,7 @@ const SwapSettingContent = () => {
   return (
     <ModalBody modalBodyType="bottom" title={t('Settings')}>
       <View style={styles.modalContentWrap}>
-        <KeyboardSafeArea bottomPad={pTd(16)}>
+        <KeyboardSafeArea bottomPad={pTd(16)} disable={!isIOS}>
           <View>
             <View style={styles.labelWrap}>
               <Text style={styles.labelText}>{t('Slippage tolerance')}</Text>
@@ -180,7 +192,7 @@ const SwapSettingContent = () => {
               <Text style={styles.expiresByUnitText}>Minute(s)</Text>
             </View>
           </View>
-          <CommonButton style={styles.bottomButton} title={t('Done')} type="primary" onPress={saveSetting} />
+          <CommonButton buttonStyle={styles.bottomButton} title={t('Done')} type="primary" onPress={saveSetting} />
         </KeyboardSafeArea>
       </View>
     </ModalBody>

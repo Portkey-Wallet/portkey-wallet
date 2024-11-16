@@ -14,6 +14,7 @@ import { TCurrency } from '@portkey-wallet/types/types-ca/awaken';
 import { useAwakenTokenList } from '@portkey-wallet/hooks/hooks-ca/awaken/state';
 import CurrencyItem from '../CurrencyItem';
 import { formatNameWithNoUnderline } from '@portkey-wallet/utils';
+import { ViewStyleType } from 'types/styles';
 
 interface ISelectTokenContentProps {
   title: string;
@@ -21,6 +22,7 @@ interface ISelectTokenContentProps {
 }
 
 interface ISelectTokenButtonProps {
+  style?: ViewStyleType;
   modalTitle: string;
   token?: TCurrency;
   onTokenChange?: (token: TCurrency) => void;
@@ -84,12 +86,12 @@ const showSelectTokenModal = (props: ISelectTokenContentProps) => {
   });
 };
 
-const SelectTokenButton: React.FC<ISelectTokenButtonProps> = ({ modalTitle, token, onTokenChange }) => {
+const SelectTokenButton: React.FC<ISelectTokenButtonProps> = ({ style, modalTitle, token, onTokenChange }) => {
   const styles = getButtonStyles();
 
   return (
     <Touchable
-      style={styles.selectTokenButton}
+      style={[styles.selectTokenButton, style]}
       onPress={() =>
         showSelectTokenModal({
           title: modalTitle,

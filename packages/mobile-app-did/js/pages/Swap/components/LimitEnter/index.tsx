@@ -23,6 +23,7 @@ import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useKeyboardSafeArea } from 'components/KeyboardSafeArea';
 import { pTd } from 'utils/unit';
 import navigationService from 'utils/navigationService';
+import { isIOS } from '@portkey-wallet/utils/mobile/device';
 
 export type TLimitInfo = {
   tokenIn?: TCurrency;
@@ -54,10 +55,14 @@ const LimitEnter = () => {
   const { list } = useAwakenTokenList();
   const isInitRef = useRef(false);
   useEffect(() => {
-    if (isInitRef.current) return;
+    if (isInitRef.current) {
+      return;
+    }
     const defaultTokenIn = list.find(item => item.symbol === 'ELF');
     const defaultTokenOut = list.find(item => item.symbol === 'USDT');
-    if (!defaultTokenIn || !defaultTokenOut) return;
+    if (!defaultTokenIn || !defaultTokenOut) {
+      return;
+    }
     isInitRef.current = true;
     setLimitInfo(pre => ({
       ...pre,
@@ -157,11 +162,13 @@ const LimitEnter = () => {
   );
 
   const setTokenIn = useCallback(async (tokenIn?: TCurrency) => {
-    if (!tokenIn) return;
+    if (!tokenIn) {
+      return;
+    }
     limitPairPriceRef.current?.reset();
     setLimitInfo(pre => {
       const isSwitch = pre.tokenOut?.symbol === tokenIn.symbol;
-      if (!isSwitch)
+      if (!isSwitch) {
         return {
           ...pre,
           tokenIn,
@@ -169,6 +176,7 @@ const LimitEnter = () => {
           valueIn: '',
           valueOut: '',
         };
+      }
       return {
         ...pre,
         tokenIn,
@@ -181,17 +189,20 @@ const LimitEnter = () => {
   }, []);
 
   const setTokenOut = useCallback(async (tokenOut?: TCurrency) => {
-    if (!tokenOut) return;
+    if (!tokenOut) {
+      return;
+    }
     limitPairPriceRef.current?.reset();
     setLimitInfo(pre => {
       const isSwitch = pre.tokenIn?.symbol === tokenOut.symbol;
-      if (!isSwitch)
+      if (!isSwitch) {
         return {
           ...pre,
           tokenOut,
           isFocusValueIn: true,
           valueOut: '',
         };
+      }
 
       return {
         ...pre,
@@ -244,11 +255,17 @@ const LimitEnter = () => {
 
   const isExceedBalance = useMemo(() => {
     const { tokenIn, valueIn } = limitInfo;
-    if (!tokenIn) return false;
+    if (!tokenIn) {
+      return false;
+    }
     const tokenInBalance = currencyBalances?.[limitInfo.tokenIn?.symbol || ''];
-    if (tokenInBalance === undefined) return true;
+    if (tokenInBalance === undefined) {
+      return true;
+    }
     const validBalance = tokenIn.symbol === 'ELF' ? ZERO.plus(tokenInBalance).minus(gasFee) : tokenInBalance;
-    if (ZERO.plus(valueIn).gt(divDecimals(validBalance, tokenIn.decimals))) return true;
+    if (ZERO.plus(valueIn).gt(divDecimals(validBalance, tokenIn.decimals))) {
+      return true;
+    }
     return false;
   }, [currencyBalances, gasFee, limitInfo]);
 
@@ -260,21 +277,39 @@ const LimitEnter = () => {
 
   const isBtnDisable = useMemo(() => {
     const { tokenIn, tokenOut, valueIn, valueOut } = limitInfo;
-    if (!tokenIn || !tokenOut) return true;
-    if (isReserveError) return true;
-    if (!tokenPriceInfo.price || ZERO.eq(tokenPriceInfo.price)) return true;
-    if (pairPriceError.error) return true;
-    if (!valueIn || ZERO.eq(valueIn)) return true;
-    if (!valueOut || ZERO.eq(valueOut)) return true;
+    if (!tokenIn || !tokenOut) {
+      return true;
+    }
+    if (isReserveError) {
+      return true;
+    }
+    if (!tokenPriceInfo.price || ZERO.eq(tokenPriceInfo.price)) {
+      return true;
+    }
+    if (pairPriceError.error) {
+      return true;
+    }
+    if (!valueIn || ZERO.eq(valueIn)) {
+      return true;
+    }
+    if (!valueOut || ZERO.eq(valueOut)) {
+      return true;
+    }
 
-    if (isExceedBalance) return true;
+    if (isExceedBalance) {
+      return true;
+    }
     return false;
   }, [isExceedBalance, isReserveError, limitInfo, pairPriceError.error, tokenPriceInfo.price]);
 
   const isInputError = useMemo(() => {
-    if (!currencyBalances) return false;
+    if (!currencyBalances) {
+      return false;
+    }
     const tokenInBalance = currencyBalances[limitInfo.tokenIn?.symbol || ''];
-    if (!tokenInBalance || tokenInBalance.isNaN()) return false;
+    if (!tokenInBalance || tokenInBalance.isNaN()) {
+      return false;
+    }
     return isExceedBalance;
   }, [currencyBalances, isExceedBalance, limitInfo.tokenIn?.symbol]);
 
@@ -285,9 +320,13 @@ const LimitEnter = () => {
   const wallet = useCurrentWalletInfo();
   const onSwapClick = useCallback(async () => {
     const { tokenIn, tokenOut, valueIn, valueOut } = limitInfo;
-    if (!tokenIn || !tokenOut || isReserveError) return;
+    if (!tokenIn || !tokenOut || isReserveError) {
+      return;
+    }
 
-    if (ZERO.gte(valueIn || 0) || ZERO.gte(valueOut || 0)) return;
+    if (ZERO.gte(valueIn || 0) || ZERO.gte(valueOut || 0)) {
+      return;
+    }
     setIsLoading(true);
     try {
       const result = await getUnfilled({
@@ -320,7 +359,7 @@ const LimitEnter = () => {
     } else if (isExceedBalance) {
       return `Insufficient ${limitInfo.tokenIn?.label || limitInfo.tokenIn?.symbol} balance`;
     } else if (isBtnDisable) {
-      return `Place limit order`;
+      return 'Place limit order';
     } else {
       return 'Preview';
     }
@@ -333,7 +372,8 @@ const LimitEnter = () => {
     <View style={styles.limitEnterWrap}>
       <View
         style={
-          isRateInputting && {
+          isRateInputting &&
+          isIOS && {
             marginTop: value ? -1 * value : undefined,
             paddingBottom: value ? value : undefined,
           }
@@ -360,7 +400,7 @@ const LimitEnter = () => {
           />
         )}
         <CommonButton
-          style={styles.actionButton}
+          buttonStyle={styles.actionButton}
           type="primary"
           title={t(actionButtonTitle)}
           disabled={isBtnDisable}

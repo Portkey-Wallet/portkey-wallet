@@ -63,7 +63,7 @@ const AmountCard: React.FC<IAmountCardProps> = ({
     if (value && !isValidNumberV2(value)) {
       return;
     }
-    const newValue = parseInputChange(value, ZERO, LIMIT_PRICE_DECIMAL);
+    const newValue = parseInputChange(value, ZERO, token?.decimals || LIMIT_PRICE_DECIMAL);
     onAmountChange?.(newValue);
   };
 
@@ -105,6 +105,7 @@ const AmountCard: React.FC<IAmountCardProps> = ({
             containerStyle={styles.containerStyle}
             inputContainerStyle={styles.inputContainerStyle}
             inputStyle={[styles.inputStyle, isError && styles.errorInputStyle]}
+            errorStyle={styles.errorStyle}
             placeholderTextColor={theme.colors.textBase3}
             placeholder="0"
             value={amount}
@@ -131,7 +132,12 @@ const AmountCard: React.FC<IAmountCardProps> = ({
             </Text>
           </Touchable>
         )}
-        <SelectTokenButton modalTitle={title} token={token} onTokenChange={onTokenChange} />
+        <SelectTokenButton
+          style={styles.selectTokenButton}
+          modalTitle={title}
+          token={token}
+          onTokenChange={onTokenChange}
+        />
       </View>
       <View style={styles.infoWrap}>
         <View style={styles.usdAmountWrap}>

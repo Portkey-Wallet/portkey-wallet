@@ -62,18 +62,22 @@ export default function ConfirmPin() {
   const onManagerAddressAndQueryResult = useOnManagerAddressAndQueryResult();
   const onChangePin = useCallback(
     async (newPin: string) => {
-      if (!oldPin) return;
+      if (!oldPin) {
+        return;
+      }
       changeCanLock(false);
       try {
-        if (biometrics) await setSecureStoreItem('Pin', newPin);
+        if (biometrics) {
+          await setSecureStoreItem('Pin', newPin);
+        }
         dispatch(changePin({ pin: oldPin, newPin }));
         dispatch(setCredentials({ pin: newPin }));
-        // CommonToast.success(t('Modified Successfully'));
+        CommonToast.success(t('PIN updated'));
       } catch (error) {
         CommonPrompt.failError(error);
       }
       changeCanLock(true);
-      navigationService.navigate('ProfileSettings');
+      navigationService.navigate('Security');
     },
     [biometrics, dispatch, oldPin, t],
   );
@@ -137,8 +141,12 @@ export default function ConfirmPin() {
         return;
       }
 
-      if (oldPin) return onChangePin(confirmPin);
-      if (managerInfo) return onFinish(confirmPin);
+      if (oldPin) {
+        return onChangePin(confirmPin);
+      }
+      if (managerInfo) {
+        return onFinish(confirmPin);
+      }
     },
     [pin, oldPin, onChangePin, managerInfo, onFinish, textError.isError, setTextError],
   );

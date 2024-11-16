@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useRef } from 'react';
 import DraggableFlatList from 'react-native-draggable-flatlist';
 import GStyles from 'assets/theme/GStyles';
 import { StyleSheet, View } from 'react-native';
@@ -12,8 +12,6 @@ import { removeRecordsItems } from '@portkey-wallet/store/store-ca/discover/slic
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 import { ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
-import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
-import myEvents from 'utils/deviceEvent';
 
 function BookmarksSection() {
   const { networkType } = useCurrentNetworkInfo();
@@ -30,8 +28,6 @@ function BookmarksSection() {
     [networkType, storeDispatch],
   );
 
-  const closeSwipeable = useLockCallback(() => myEvents.bookmark.closeSwipeable.emit(), []);
-
   return (
     <View style={styles.containerStyles}>
       <View style={[GStyles.flex1, styles.listWrap]}>
@@ -44,7 +40,6 @@ function BookmarksSection() {
           }
           keyExtractor={_item => String(_item.id)}
           renderItem={props => <RecordItem onDelete={onAddDelete} itemRefs={itemRefs} {...props} />}
-          onTouchStart={closeSwipeable}
         />
       </View>
     </View>

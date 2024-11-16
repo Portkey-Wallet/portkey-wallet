@@ -11,6 +11,7 @@ export type TKeyboardSafeAreaProps = {
   gap?: number;
   containerStyle?: ViewStyleType;
   mode?: 'default' | 'page';
+  disable?: boolean;
 };
 export const KeyboardSafeArea = ({
   children,
@@ -18,6 +19,7 @@ export const KeyboardSafeArea = ({
   containerStyle,
   mode = 'default',
   gap,
+  disable = false,
 }: TKeyboardSafeAreaProps) => {
   const viewRef = useRef<View>(null);
   const { keyboardHeight, isKeyboardOpened } = useKeyboard(0);
@@ -27,7 +29,6 @@ export const KeyboardSafeArea = ({
     requestAnimationFrame(() => {
       if (viewRef.current) {
         viewRef.current.measure?.((x, y, width, height, pageX, pageY) => {
-          console.log('pageY', pageY, 'height', height, 'screenHeight', screenHeight);
           if (pageY === undefined || height === undefined) {
             return;
           }
@@ -73,22 +74,21 @@ export const KeyboardSafeArea = ({
   }, [isKeyboardOpened, measureView, mode]);
 
   const style = useMemo(() => {
-    if (!isKeyboardOpened) {
+    if (!isKeyboardOpened || disable) {
       return undefined;
     }
     const keyboardPositionY = screenHeight - keyboardHeight;
     if (viewPositionY <= keyboardPositionY) {
       return undefined;
     }
-    // const v = keyboardHeight - (screenHeight - viewPositionY) + bottomPad;
     const value = viewPositionY - keyboardPositionY + bottomPad;
-    // console.log('value Is:', value, 'v is:', v);
     return {
       paddingBottom: value - (gap ?? 0),
       marginTop: -value + (gap ?? 0),
       marginBottom: gap ?? 0,
     };
-  }, [bottomPad, gap, isKeyboardOpened, keyboardHeight, viewPositionY]);
+  }, [disable, gap, bottomPad, isKeyboardOpened, keyboardHeight, viewPositionY]);
+
   return (
     <View ref={viewRef} collapsable={false} style={[style, containerStyle]}>
       {children}
@@ -129,6 +129,7 @@ export const useKeyboardSafeArea = (bottomPad = 0) => {
     if (viewPositionY <= keyboardPositionY) {
       return undefined;
     }
+
     return viewPositionY - keyboardPositionY + bottomPad;
   }, [bottomPad, isKeyboardOpened, keyboardHeight, viewPositionY]);
 

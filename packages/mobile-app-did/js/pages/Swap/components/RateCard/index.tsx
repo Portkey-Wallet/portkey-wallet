@@ -352,6 +352,7 @@ export default forwardRef(function RateCard(
           {amount || '0'}
         </Text> */}
         <Input
+          returnKeyType="done"
           keyboardType="numeric"
           maxLength={18}
           placeholderTextColor={theme.colors.textBase3}
@@ -361,6 +362,7 @@ export default forwardRef(function RateCard(
           containerStyle={styles.containerStyle}
           inputContainerStyle={styles.inputContainerStyle}
           inputStyle={styles.inputStyle}
+          errorStyle={styles.errorStyle}
           onFocus={() => onInputtingChange?.(true)}
           onBlur={() => onInputtingChange?.(false)}
         />

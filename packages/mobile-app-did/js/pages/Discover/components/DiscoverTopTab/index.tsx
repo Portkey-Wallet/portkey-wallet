@@ -4,8 +4,6 @@ import CommonTopTab from 'components/CommonTopTab';
 import MarketSection from '../MarketSection';
 import { DiscoverCmsListSection } from '../DiscoverCmsListSection';
 import { EarnPage } from '../SubPages/Earn';
-import { LearnPage } from '../SubPages/Learn/MainPage';
-import { Platform } from 'react-native';
 import MarketType from '../MarketSection/components/MarketType';
 import { useMarket } from 'hooks/discover';
 
@@ -25,11 +23,6 @@ const defaultList = [
     name: 'Earn',
     value: 'Earn',
     tabItemDom: <EarnPage />,
-  },
-  {
-    name: 'Learn',
-    value: 'Learn',
-    tabItemDom: <LearnPage />,
   },
 ];
 
@@ -52,7 +45,7 @@ const DiscoverTab: React.FC = () => {
 
   return (
     <CommonTopTab
-      swipeEnabled={Platform.OS === 'android' ? false : true}
+      swipeEnabled={false}
       hasTabBarBorderRadius={false}
       tabList={tabList}
       isBlockTab={true}

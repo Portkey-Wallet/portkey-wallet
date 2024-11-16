@@ -83,6 +83,7 @@ const AmountCard: React.FC<IAmountCardProps> = ({
             <Input
               ref={iptRef}
               keyboardType="number-pad"
+              returnKeyType="done"
               maxLength={18}
               containerStyle={styles.containerStyle}
               inputContainerStyle={styles.inputContainerStyle}

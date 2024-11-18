@@ -15,7 +15,6 @@ import {
 import LottieLoading from 'components/LottieLoading';
 import { pTd } from 'utils/unit';
 import Touchable from 'components/Touchable';
-// @ts-expect-error: Importing makeStyles from @rneui/themed
 import { makeStyles } from '@rneui/themed';
 import Divider from 'components/Divider';
 import { useQrScanPermissionAndToast } from 'hooks/useQrScan';
@@ -204,8 +203,9 @@ export default function ToAddressInput({
       });
 
       const FEPass = checkAddressByFE(_v);
+
       // when send nft other chain is not support
-      if (!FEPass && sendType === 'nft') {
+      if (!FEPass && sendType === 'nft' && !!_v) {
         return setWarning([WarningKey.INVALID_ADDRESS]);
       }
 
@@ -388,7 +388,6 @@ export const getStyles = makeStyles((theme: any) => ({
     paddingRight: pTd(6),
     fontSize: pTd(14),
     width: pTd(260),
-    height: pTd(32),
   },
   right: {
     width: pTd(16),

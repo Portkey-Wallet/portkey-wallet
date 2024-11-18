@@ -48,19 +48,24 @@ export const useGetTransferFee = () => {
 
       const req = await caContract.calculateTransactionFee(methodName, calculateParams);
 
-      if (req?.error) request.errorReport('calculateTransactionFee', calculateParams, req.error);
+      if (req?.error) {
+        request.errorReport('calculateTransactionFee', calculateParams, req.error);
+      }
 
       const { TransactionFees, TransactionFee } = (req.data as CalculateTransactionFeeResponse) || {};
       // V2 calculateTransactionFee
       if (TransactionFees) {
         const { ChargingAddress, Fee } = TransactionFees;
         const myPayFee = isMyPayTransactionFee(ChargingAddress, chainId);
-        if (myPayFee) return divDecimalsStr(Fee?.[defaultToken.symbol], defaultToken.decimals).toString();
+        if (myPayFee) {
+          return divDecimalsStr(Fee?.[defaultToken.symbol], defaultToken.decimals).toString();
+        }
         return '0';
       }
       // V1 calculateTransactionFee
-      if (TransactionFee)
+      if (TransactionFee) {
         return divDecimalsStr(TransactionFee?.[defaultToken.symbol], defaultToken.decimals).toString();
+      }
       throw { code: 500, message: 'no enough fee' };
     },
     [defaultToken.decimals, defaultToken.symbol, wallet.address, wallet.caHash],

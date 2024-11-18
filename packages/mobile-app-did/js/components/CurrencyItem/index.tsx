@@ -1,5 +1,4 @@
 import { formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
-import { darkColors } from 'assets/theme';
 import { TextM } from 'components/CommonText';
 import CommonAvatar from 'components/CommonAvatar';
 import Touchable from 'components/Touchable';

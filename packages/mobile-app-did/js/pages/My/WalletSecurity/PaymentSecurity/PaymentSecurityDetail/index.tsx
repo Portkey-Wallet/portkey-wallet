@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import PageContainer from 'components/PageContainer';
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import CommonSwitch from 'components/CommonSwitch';
 import { ITransferLimitItem } from '@portkey-wallet/types/types-ca/paymentSecurity';
@@ -10,7 +10,7 @@ import { TextL, TextM, TextS } from 'components/CommonText';
 import { FontStyles } from 'assets/theme/styles';
 import { pTd } from 'utils/unit';
 import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/native';
-import { divDecimals, divDecimalsToShow, timesDecimals } from '@portkey-wallet/utils/converter';
+import { divDecimalsToShow } from '@portkey-wallet/utils/converter';
 import { useGetTransferLimit } from '@portkey-wallet/hooks/hooks-ca/security';
 import { useLatestRef } from '@portkey-wallet/hooks';
 import { useGetCurrentCAContract } from 'hooks/contract';
@@ -24,7 +24,8 @@ import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import OverlayModal from 'components/OverlayModal';
 import EditModal from '../components/EditModal';
-import { makeStyles } from '@rneui/themed';
+import { makeStyles, useTheme } from '@rneui/themed';
+import fonts from 'assets/theme/fonts';
 
 interface RouterParams {
   transferLimitDetail?: ITransferLimitItem;
@@ -35,6 +36,7 @@ const PaymentSecurityDetail: React.FC = () => {
     params: { transferLimitDetail },
   } = useRoute<RouteProp<{ params: RouterParams }>>();
   const pageStyles = getStyles();
+  const { theme } = useTheme();
   const [detail, setDetail] = useState<ITransferLimitItem | undefined>(transferLimitDetail);
   const getCurrentCAContract = useGetCurrentCAContract(transferLimitDetail?.chainId);
   const getTransferLimit = useGetTransferLimit();
@@ -82,7 +84,9 @@ const PaymentSecurityDetail: React.FC = () => {
   );
 
   const detailFormatted = useMemo(() => {
-    if (!detail) return undefined;
+    if (!detail) {
+      return undefined;
+    }
     return {
       ...detail,
       singleLimit: divDecimalsToShow(detail.singleLimit, detail.decimals),
@@ -118,7 +122,7 @@ const PaymentSecurityDetail: React.FC = () => {
 
   return (
     <PageContainer
-      titleDom={'Transaction limits'}
+      titleDom={'Transaction Limits'}
       safeAreaColor={['black']}
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}>
@@ -148,21 +152,21 @@ const PaymentSecurityDetail: React.FC = () => {
               onValueChange={onRestrictedChange}
             />
           </View>
-          <TextS style={FontStyles.font3}>
+          <TextS style={{ color: theme.colors.textBase2, fontSize: pTd(14), lineHeight: pTd(20) }}>
             Transactions over the limit require you to modify the limit settings with guardian approval.
           </TextS>
         </View>
         {detailFormatted?.restricted ? (
           <>
             <View style={pageStyles.labelWrap}>
-              <TextM>Limit per Transaction</TextM>
-              <TextM style={FontStyles.font3}>{`${detailFormatted?.singleLimit || ''} ${
+              <TextM style={pageStyles.labelText}>Limit per Transaction</TextM>
+              <TextM style={pageStyles.contentText}>{`${detailFormatted?.singleLimit || ''} ${
                 detailFormatted?.symbol || ''
               }`}</TextM>
             </View>
             <View style={pageStyles.labelWrap}>
-              <TextM>Daily Limit</TextM>
-              <TextM style={FontStyles.font3}>{`${detailFormatted?.dailyLimit || ''} ${
+              <TextM style={pageStyles.labelText}>Daily Limit</TextM>
+              <TextM style={pageStyles.contentText}>{`${detailFormatted?.dailyLimit || ''} ${
                 detailFormatted?.symbol || ''
               }`}</TextM>
             </View>
@@ -173,10 +177,8 @@ const PaymentSecurityDetail: React.FC = () => {
       </View>
       <CommonButton
         type="primary"
+        style={{ marginBottom: pTd(14) }}
         onPress={() => {
-          // navigationService.navigate('PaymentSecurityEdit', {
-          //   transferLimitDetail: detail,
-          // });
           OverlayModal.show(<EditModal detail={detail} />, {
             position: 'bottom',
           });
@@ -187,7 +189,7 @@ const PaymentSecurityDetail: React.FC = () => {
   );
 };
 
-const getStyles = makeStyles(theme => ({
+const getStyles = makeStyles(_ => ({
   pageWrap: {
     flex: 1,
     justifyContent: 'space-between',
@@ -197,6 +199,13 @@ const getStyles = makeStyles(theme => ({
     justifyContent: 'space-between',
     height: pTd(54),
     alignItems: 'center',
+  },
+  labelText: {
+    fontSize: pTd(16),
+  },
+  contentText: {
+    fontSize: pTd(16),
+    ...fonts.mediumFont,
   },
   infoWrap: {
     marginVertical: pTd(24),
@@ -218,18 +227,20 @@ const getStyles = makeStyles(theme => ({
     backgroundColor: defaultColors.bg43,
     marginBottom: pTd(12),
     borderRadius: pTd(8),
+    height: pTd(100),
   },
   switchContainer: {
     flexDirection: 'row',
+    height: pTd(24),
+    marginBottom: pTd(5),
+    alignItems: 'center',
   },
   switchLeft: {
     flex: 1,
     justifyContent: 'center',
   },
   switchRight: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'flex-end',
+    transform: [{ scaleX: 40 / 51 }, { scaleY: 24 / 31 }],
   },
 }));
 

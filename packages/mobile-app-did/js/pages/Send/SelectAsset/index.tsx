@@ -26,9 +26,8 @@ const AssetList = () => {
   const [keyword, setKeyword] = useState('');
   const { accountAssetsList, fetchAccountAssetsInfoList } = useAccountAssetsInfoV2();
   const styles = getStyles();
-
   const debounceKeyword = useDebounce(keyword, 800);
-
+  const [isFetching, setIsFetching] = useState(false);
   const [, getTokenPrice] = useGetCurrentAccountTokenPrice();
   const [filteredListShow, setFilteredListShow] = useState<IAssetItemV2>({ nftInfos: [], tokenInfos: [] });
 
@@ -42,20 +41,25 @@ const AssetList = () => {
   console.log('assetListShow', JSON.stringify(assetListShow));
   const getAssetsList = useLockCallback(async () => {
     try {
+      setIsFetching(true);
       Loading.show();
       await fetchAccountAssetsInfoList({
         caAddressInfos,
         keyword: '',
       });
       Loading.hide();
+      setIsFetching(false);
     } catch (error) {
       console.log('fetchAccountAssetsByKeywords err:', error);
     }
   }, [caAddressInfos, fetchAccountAssetsInfoList]);
 
   const getFilteredAssetsList = useLockCallback(async () => {
-    if (!debounceKeyword.trim()) return;
+    if (!debounceKeyword.trim()) {
+      return;
+    }
     try {
+      setIsFetching(true);
       Loading.show();
       const { nftInfos, tokenInfos } = await fetchAssetListV2({
         caAddressInfos,
@@ -63,6 +67,7 @@ const AssetList = () => {
       });
       Loading.hide();
       setFilteredListShow({ nftInfos, tokenInfos });
+      setIsFetching(false);
     } catch (err) {
       console.log('fetchAccountAssetsByKeywords err:', err);
     }
@@ -99,7 +104,7 @@ const AssetList = () => {
           setKeyword(v.trim());
         }}
       />
-      <SelectAssetTab toAddress={toAddress} {...assetListShow} noDataMessage={noDataMessage} />
+      <SelectAssetTab loading={isFetching} toAddress={toAddress} {...assetListShow} noDataMessage={noDataMessage} />
     </PageContainer>
   );
 };

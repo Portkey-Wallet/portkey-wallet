@@ -67,7 +67,6 @@ import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/u
 import { TransferErrorMessage, warning1Arr, WarningKey, WarningTips } from '../constant';
 import { CommonPromptCard, PromptCardType } from 'components/CommonPromptCard';
 import SupportedExchangesCard from '../components/SupportedExchangesCard';
-import GeneralTips from '../components/GeneralTips';
 import SelectExchangeCard from '../components/SelectExchangeCard';
 import SelectNetwork, { INetworkItem } from '../components/SelectNetwork';
 import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network-mainnet-v2';
@@ -159,6 +158,7 @@ const SendHome: React.FC = () => {
         return;
       }
       const caContract = await getCAContract(chainInfo.chainId);
+
       return getTransferFee({
         isCross,
         sendAmount: sendAmount ?? debounceSendNumber,
@@ -287,12 +287,6 @@ const SendHome: React.FC = () => {
         />
         <View style={GStyles.height(pTd(24))} />
         <SupportedExchangesCard />
-        <View style={GStyles.height(pTd(24))} />
-        <GeneralTips
-          content={
-            "If you're not sending to an exchange, no worries! You can continue, and we'll send your assets through the aelf MainChain."
-          }
-        />
       </View>
     );
   }, []);
@@ -481,11 +475,12 @@ const SendHome: React.FC = () => {
   }, []);
 
   const crossChainAction = useCallback(() => {
-    if (assetInfo.chainId !== DefaultChainId) {
+    if (assetInfo.chainId !== DefaultChainId && assetInfo.symbol === defaultToken.symbol) {
       return ActionSheet.alert({
         showInfoIcon: true,
         title: 'Confirm to proceed',
-        message: 'Direct transfers from dAppChain to Exchange are currently unsupported and could lead to asset loss.',
+        message:
+          'Direct transfers from dAppChain to exchanges are not supported and may result in asset loss. Use only non-exchange addresses.',
         buttons: [
           {
             title: 'Cancel',
@@ -500,7 +495,7 @@ const SendHome: React.FC = () => {
       });
     }
     setStep(2);
-  }, [assetInfo.chainId]);
+  }, [assetInfo.chainId, assetInfo.symbol, defaultToken.symbol]);
 
   const nextStep = useCallback(() => {
     if (warning[0] === WarningKey.DAPP_CHAIN_TO_NO_AFFIX_ADDRESS_ELF) {
@@ -807,7 +802,6 @@ const SendHome: React.FC = () => {
         networkFee = await getTransactionFee(isAELFCross);
         networkFeeUnit = 'ELF';
         transferType = isAELFCross ? TransferType.GENERAL_CROSS_CHAIN : TransferType.GENERAL_SAME_CHAIN;
-        console.log('!!!');
       }
     } catch (err: any) {
       if (err?.code === 500) {
@@ -983,7 +977,9 @@ const SendHome: React.FC = () => {
           });
 
           console.log('getSendNetworkList', data, i);
-          const tmpNetwork = data?.networkList?.find((ele: any) => ele.network === i.network);
+          const tmpNetwork = data?.networkList?.find(
+            (ele: any) => ele.network === (i?.network || i.addressInfo?.network),
+          );
 
           if (!tmpNetwork) {
             throw 'not supported';

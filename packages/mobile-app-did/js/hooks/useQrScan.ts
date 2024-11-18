@@ -1,7 +1,6 @@
 import { useCallback, useState } from 'react';
 import { Camera } from 'expo-camera';
 import { changeCanLock } from 'utils/LockManager';
-import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { useCurrentUserInfo, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import navigationService from 'utils/navigationService';
 import im from '@portkey-wallet/im';
@@ -20,7 +19,6 @@ import {
   isWeb3Address,
 } from 'utils/qrcode';
 import { useNavigation } from '@react-navigation/native';
-import { parseLinkPortkeyUrl } from 'utils/scheme';
 import ActionSheet from 'components/ActionSheet';
 import { useLanguage } from 'i18n/hooks';
 import { useJoinGroupChannel } from '@portkey-wallet/hooks/hooks-ca/im';
@@ -161,27 +159,11 @@ export const useHandlePortkeyId = () => {
 };
 
 export const useHandleUrl = () => {
-  const isChatShow = useIsChatShow();
-
-  const handlePortkeyId = useHandlePortkeyId();
-  const handleGroupId = useHandleGroupId();
   const jumpToWebview = useDiscoverJumpWithNetWork();
 
   return useCallback(
     async (data: string) => {
       const str = data.replace(/("|'|\s)/g, '');
-
-      const { id, type } = parseLinkPortkeyUrl(str);
-
-      if (id && type && !isChatShow) {
-        throw data;
-      }
-      if (type === 'addContact' && id) {
-        return handlePortkeyId({ portkeyId: id || '', showLoading: true, goBack: true });
-      }
-      if (type === 'addGroup' && id) {
-        return handleGroupId({ channelId: id, showLoading: true, goBack: true });
-      }
 
       jumpToWebview({
         item: {
@@ -191,7 +173,7 @@ export const useHandleUrl = () => {
       });
       navigationService.goBack();
     },
-    [handleGroupId, handlePortkeyId, isChatShow, jumpToWebview],
+    [jumpToWebview],
   );
 };
 

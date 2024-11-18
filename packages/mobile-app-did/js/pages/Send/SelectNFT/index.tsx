@@ -19,9 +19,10 @@ export interface SelectNFTProps {
   nftInfos: IAssetNftCollection[];
   noDataMessage: string;
   toAddress?: string;
+  loading: boolean;
 }
 
-export default function SelectNFT({ nftInfos, noDataMessage, toAddress }: SelectNFTProps) {
+export default function SelectNFT({ nftInfos, noDataMessage, toAddress, loading }: SelectNFTProps) {
   const { t } = useLanguage();
   const isMainnet = useIsMainnet();
   const itemStyle = getStyles();
@@ -112,7 +113,7 @@ export default function SelectNFT({ nftInfos, noDataMessage, toAddress }: Select
         data={nftInfos || []}
         renderItem={renderItem}
         keyExtractor={item => item.collectionName}
-        ListEmptyComponent={() => <NoData noPic message={t(noDataMessage)} />}
+        ListEmptyComponent={() => <>{loading ? <></> : <NoData noPic message={t(noDataMessage)} />}</>}
       />
     </View>
   );

@@ -86,7 +86,9 @@ const TokenAmountInput: React.FC<ITokenAmountInput> = props => {
   const onLayout = useCallback(
     (event: LayoutChangeEvent) => {
       const { width, height } = event.nativeEvent.layout;
-      if (wrapperLayoutProps.width === width && wrapperLayoutProps.height === height) return;
+      if (wrapperLayoutProps.width === width && wrapperLayoutProps.height === height) {
+        return;
+      }
       setWrapperLayoutProps({ width, height });
     },
     [wrapperLayoutProps],
@@ -109,7 +111,7 @@ const TokenAmountInput: React.FC<ITokenAmountInput> = props => {
         <>
           {isRevert ? (
             <>
-              <TextH1>{`$ `}</TextH1>
+              <TextH1>{'$ '}</TextH1>
               <TextInput
                 value={usdValue}
                 onChangeText={onUsdValueInputChange}
@@ -149,7 +151,7 @@ const TokenAmountInput: React.FC<ITokenAmountInput> = props => {
                 content={warningTip}
                 display={warningClick}
               />
-              <Svg icon="warning" iconStyle={{ marginLeft: pTd(6) }} color={defaultColors.iconDanger1} size={pTd(24)} />
+              <Svg icon="warning" color={defaultColors.iconDanger1} size={pTd(24)} />
             </TouchableOpacity>
           )}
         </>
@@ -196,12 +198,14 @@ export const getStyles = makeStyles(theme => ({
     textAlign: 'right',
     fontSize: pTd(32),
     ...fonts.BGMediumFont,
+    paddingHorizontal: 0,
   },
   bottomText: {
     color: theme.colors.textBase2,
   },
   warningIconWrap: {
     flexDirection: 'row',
+    marginLeft: pTd(6),
   },
   tipContainerStyle: {
     width: pTd(189),

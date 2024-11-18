@@ -1,6 +1,5 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { View, FlatList, Image } from 'react-native';
-import { useLanguage } from 'i18n/hooks';
 import { pTd } from 'utils/unit';
 import NFTItem from './NFTsModeItem';
 import CollectionItem from './CollectionsModeItem';
@@ -88,7 +87,6 @@ const ListEmptyComponent = () => {
   );
 };
 export default function NFTSection() {
-  const { t } = useLanguage();
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const { recentStatus, itemId, imageUrl, setRecentStatus, setItemId, setImageUrl } = useRecentStatus();
   const getRecentStatus = useGetRecentStatus();
@@ -250,7 +248,7 @@ const getStyles = makeStyles(theme => ({
   wrap: {
     flex: 1,
     backgroundColor: theme.colors.bgBase2,
-    paddingHorizontal: pTd(16),
+    // paddingHorizontal: pTd(16),
   },
   itemWrap: {
     width: '100%',
@@ -258,6 +256,7 @@ const getStyles = makeStyles(theme => ({
   },
   contentContainerStyle: {
     paddingBottom: pTd(16),
+    paddingHorizontal: pTd(16),
   },
   separator: {
     height: pTd(24),

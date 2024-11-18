@@ -2,9 +2,8 @@ import GStyles from 'assets/theme/GStyles';
 import { TextM, TextS } from 'components/CommonText';
 import Touchable from 'components/Touchable';
 import React, { memo, useCallback, useMemo } from 'react';
-import { Platform, StyleSheet, UIManager, View } from 'react-native';
-import { RenderItemParams, ScaleDecorator } from 'react-native-draggable-flatlist';
-import SwipeableItem, { OpenDirection } from 'react-native-swipeable-item';
+import { StyleSheet, View } from 'react-native';
+import { RenderItemParams } from 'react-native-draggable-flatlist';
 import { BGStyles, DarkFontStyles } from 'assets/theme/styles';
 import { pTd } from 'utils/unit';
 import DiscoverWebsiteImage from 'pages/Discover/components/DiscoverWebsiteImage';
@@ -14,17 +13,13 @@ import { ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
 import { useDiscoverJumpWithNetWork } from 'hooks/discover';
 import { useGetCmsWebsiteInfo } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { isDangerousLink } from '@portkey-wallet/utils/dapp/browser';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 
 type RecordItemType = RenderItemParams<ITabItem> & {
   itemRefs: React.MutableRefObject<Map<any, any>>;
   onDelete: (item: ITabItem) => void;
 };
-
-const DELETE_BUTTON_WIDTH = pTd(98);
-if (Platform.OS === 'android') {
-  UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
-}
-const OVERSWIPE_DIST = 20;
 
 export default memo(
   function RecordItem(props: RecordItemType) {
@@ -67,28 +62,24 @@ export default memo(
     }, [getCmsWebsiteInfoImageUrl, getCmsWebsiteInfoName, item.name, item.url]);
 
     return (
-      <ScaleDecorator activeScale={1.05}>
-        <SwipeableItem
-          key={item.id}
-          item={props}
+      <GestureHandlerRootView>
+        <ReanimatedSwipeable
+          friction={2}
+          enableTrackpadTwoFingerGesture
+          rightThreshold={40}
           ref={ref => {
             if (ref && !itemRefs.current.get(item.id)) {
               itemRefs.current.set(item.id, ref);
             }
           }}
-          onChange={({ openDirection }) => {
-            if (openDirection !== OpenDirection.NONE) {
-              // Close all other open items
-              [...itemRefs.current.entries()].forEach(([key, ref]) => {
-                if (key !== item.id && ref) {
-                  ref.close();
-                }
-              });
-            }
+          onSwipeableWillOpen={() => {
+            [...itemRefs.current.entries()].forEach(([key, ref]) => {
+              if (key !== item.id && ref) {
+                ref?.close?.();
+              }
+            });
           }}
-          overSwipe={OVERSWIPE_DIST}
-          renderUnderlayLeft={renderUnderlayLeft}
-          snapPointsLeft={[DELETE_BUTTON_WIDTH, DELETE_BUTTON_WIDTH]}>
+          renderRightActions={renderUnderlayLeft}>
           <Touchable
             onPress={() => onClickJump(item)}
             style={[
@@ -112,8 +103,8 @@ export default memo(
               </TextS>
             </View>
           </Touchable>
-        </SwipeableItem>
-      </ScaleDecorator>
+        </ReanimatedSwipeable>
+      </GestureHandlerRootView>
     );
   },
   (prevProps: RenderItemParams<any>, nextProps: RenderItemParams<any>) => {
@@ -124,12 +115,9 @@ export default memo(
 const styles = StyleSheet.create({
   marginContainer: {},
   underlayLeftBox: {
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'flex-end',
-    paddingRight: pTd(24),
+    justifyContent: 'center',
+    width: pTd(98),
     backgroundColor: darkColors.bgDanger1,
     color: darkColors.iconDanger4,
   },

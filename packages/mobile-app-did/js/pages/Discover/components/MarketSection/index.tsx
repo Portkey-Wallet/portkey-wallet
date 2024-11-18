@@ -18,9 +18,15 @@ export default forwardRef(function MarketSection(_, _ref) {
   const { marketInfo, refreshing, refreshList, handleSort } = useMarket();
   const flatListRef = useRef<FlatList>(null);
   const itemRefs = useRef(new Map());
-  const renderItem = useCallback(({ item }: { item: ICryptoCurrencyItem; index: number }) => {
+  const renderItem = useCallback(({ item, index }: { item: ICryptoCurrencyItem; index: number }) => {
     return (
-      <MarketItem ref={ref => itemRefs.current.set(item.id, ref)} isLoading={false} item={item} itemRefs={itemRefs} />
+      <MarketItem
+        ref={ref => itemRefs.current.set(item.id, ref)}
+        isLoading={false}
+        item={item}
+        itemRefs={itemRefs}
+        idx={index}
+      />
     );
   }, []);
   const onRefresh = useCallback(async () => {

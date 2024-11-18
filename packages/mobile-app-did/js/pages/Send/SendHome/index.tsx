@@ -1009,22 +1009,22 @@ const SendHome: React.FC = () => {
   );
 
   return (
-    <PageContainer
-      safeAreaColor={['black']}
-      titleDom={titleText}
-      rightDom={
-        step === 2 ? (
-          <Touchable
-            onPress={async () => {
-              await openOutLink(SEND_RECEIVE_HELP_URL);
-            }}>
-            <Svg icon="question" size={pTd(24)} color={defaultColors.font2} iconStyle={styles.iconStyle} />
-          </Touchable>
-        ) : null
-      }
-      containerStyles={styles.pageWrap}
-      scrollViewProps={{ disabled: true }}>
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
+    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
+      <PageContainer
+        safeAreaColor={['black']}
+        titleDom={titleText}
+        rightDom={
+          step === 2 ? (
+            <Touchable
+              onPress={async () => {
+                await openOutLink(SEND_RECEIVE_HELP_URL);
+              }}>
+              <Svg icon="question" size={pTd(24)} color={defaultColors.font2} iconStyle={styles.iconStyle} />
+            </Touchable>
+          ) : null
+        }
+        containerStyles={styles.pageWrap}
+        scrollViewProps={{ disabled: true }}>
         <View style={styles.mainWrap}>
           <ToAddressInput
             sendType={sendType}
@@ -1095,8 +1095,8 @@ const SendHome: React.FC = () => {
         </View>
 
         {renderBottomSection()}
-      </KeyboardAvoidingView>
-    </PageContainer>
+      </PageContainer>
+    </KeyboardAvoidingView>
   );
 };
 

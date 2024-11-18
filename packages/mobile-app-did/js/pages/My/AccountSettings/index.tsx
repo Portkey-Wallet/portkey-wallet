@@ -138,13 +138,10 @@ export default function AccountSettings() {
         suffixDom: () => <TextM style={styles.setBackupMailText}>{dappList?.length}</TextM>,
       },
       {
-        name: 'Address book',
+        name: 'ContactsHome',
         label: 'Address book',
         icon: 'my_contact',
         showDivider: true,
-        onPress: () => {
-          navigationService.navigate('ContactsHome');
-        },
       },
       {
         name: 'CryptoGift',

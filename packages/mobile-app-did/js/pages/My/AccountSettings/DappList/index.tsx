@@ -1,19 +1,16 @@
 import React from 'react';
 import PageContainer from 'components/PageContainer';
-import { StyleSheet } from 'react-native';
-import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import { pTd } from 'utils/unit';
 import { useCurrentDappList } from '@portkey-wallet/hooks/hooks-ca/dapp';
 import NoData from 'components/NoData';
 import navigationService from 'utils/navigationService';
 import DappListItem from './components/DappListItem';
-import { makeStyles, useTheme } from '@rneui/themed';
+import { makeStyles } from '@rneui/themed';
 
 const DappList: React.FC = () => {
   const dappList = useCurrentDappList();
   const styles = getStyles();
-  const theme = useTheme();
 
   return (
     <PageContainer
@@ -28,7 +25,7 @@ const DappList: React.FC = () => {
           onPress={() => navigationService.navigate('DappDetail', { origin: item.origin })}
         />
       ))}
-      {(dappList ?? []).length === 0 && <NoData style={styles.noData} message="No Connected Sites" />}
+      {(dappList ?? []).length === 0 && <NoData style={styles.noData} message="No connected dApps" noPic />}
     </PageContainer>
   );
 };

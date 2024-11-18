@@ -159,6 +159,7 @@ const SendHome: React.FC = () => {
         return;
       }
       const caContract = await getCAContract(chainInfo.chainId);
+
       return getTransferFee({
         isCross,
         sendAmount: sendAmount ?? debounceSendNumber,
@@ -807,7 +808,6 @@ const SendHome: React.FC = () => {
         networkFee = await getTransactionFee(isAELFCross);
         networkFeeUnit = 'ELF';
         transferType = isAELFCross ? TransferType.GENERAL_CROSS_CHAIN : TransferType.GENERAL_SAME_CHAIN;
-        console.log('!!!');
       }
     } catch (err: any) {
       if (err?.code === 500) {
@@ -983,7 +983,9 @@ const SendHome: React.FC = () => {
           });
 
           console.log('getSendNetworkList', data, i);
-          const tmpNetwork = data?.networkList?.find((ele: any) => ele.network === i.network);
+          const tmpNetwork = data?.networkList?.find(
+            (ele: any) => ele.network === (i?.network || i.addressInfo?.network),
+          );
 
           if (!tmpNetwork) {
             throw 'not supported';

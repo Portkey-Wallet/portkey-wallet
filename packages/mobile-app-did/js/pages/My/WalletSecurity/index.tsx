@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback } from 'react';
 import PageContainer from 'components/PageContainer';
 import { StyleSheet } from 'react-native';
 import { defaultColors } from 'assets/theme';
@@ -57,13 +57,6 @@ const WalletSecurity: React.FC = () => {
         title="Payment Security"
         onPress={() => {
           navigationService.navigate('PaymentSecurityList');
-        }}
-      />
-      <MenuItem
-        style={pageStyles.menuStyle}
-        title="Token Allowance"
-        onPress={() => {
-          navigationService.navigate('TokenAllowanceHome');
         }}
       />
       <MenuItem

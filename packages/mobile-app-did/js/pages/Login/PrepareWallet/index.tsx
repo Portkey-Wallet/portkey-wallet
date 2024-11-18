@@ -76,10 +76,10 @@ export default function PrepareWallet() {
       containerStyles={styles.containerStyle}
       leftIconType="close"
       noLeftDom
-      titleDom
+      hideHeader
       notHandleHardwareBackPress
       hideTouchable>
-      <Image source={require('assets/image/pngs/prepare-wallet.png')} style={styles.imageStyle} />
+      <Image source={require('assets/image/pngs/prepare-wallet.png')} style={styles.imageStyle} resizeMode="cover" />
       <PrepareWalletProgress ref={prepareWalletProgressRef} />
     </PageContainer>
   );
@@ -87,14 +87,13 @@ export default function PrepareWallet() {
 
 const getStyles = makeStyles(_theme => ({
   containerStyle: {
-    paddingTop: pTd(36),
     paddingBottom: pTd(16),
-    paddingHorizontal: pTd(16),
+    paddingHorizontal: 0,
     alignItems: 'center',
   },
   imageStyle: {
-    width: pTd(291),
-    height: pTd(286),
-    marginBottom: pTd(100),
+    width: '100%',
+    height: pTd(409),
+    marginBottom: pTd(48),
   },
 }));

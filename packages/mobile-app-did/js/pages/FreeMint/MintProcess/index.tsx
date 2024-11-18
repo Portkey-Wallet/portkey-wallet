@@ -113,7 +113,7 @@ const MintProcess = () => {
       }
       safeAreaColor={['white', 'black']}
       containerStyles={styles.pageStyles}
-      scrollViewProps={{ disabled: true }}>
+      scrollViewProps={{ disabled: step !== FreeMintStep.preview }}>
       {step === FreeMintStep.mintNft && (
         <MintEdit
           itemId={itemId || ''}

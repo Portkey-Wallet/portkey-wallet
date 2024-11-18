@@ -2,6 +2,8 @@ import ChatPrivacyNav from './ChatPrivacy/router';
 import AboutUs from './AboutUs';
 import TokenAllowanceDetail from './TokenAllowance/TokenAllowanceDetail';
 import TokenAllowanceHome from './TokenAllowance';
+import DappList from './DappList';
+import DappDetail from './DappList/DappDetail';
 
 const stackNav = [
   {
@@ -15,6 +17,14 @@ const stackNav = [
   {
     name: 'TokenAllowanceDetail',
     component: TokenAllowanceDetail,
+  },
+  {
+    name: 'DappList',
+    component: DappList,
+  },
+  {
+    name: 'DappDetail',
+    component: DappDetail,
   },
   ...ChatPrivacyNav,
 ] as const;

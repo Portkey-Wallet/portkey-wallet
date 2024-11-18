@@ -81,7 +81,8 @@ import { openOutLink } from 'utils/link';
 import SelectAddressTab from '../components/SelectAddressTab';
 import { useRecent } from '@portkey-wallet/hooks/hooks-ca/recent';
 import { useGetFilterContactList } from '@portkey-wallet/hooks/hooks-ca/contactNew';
-import { IContactItemType, TFormattedRecentItem } from '@portkey-wallet/types/types-ca/contactNew';
+import { TFormattedRecentItem } from '@portkey-wallet/types/types-ca/contactNew';
+import { IContactItemMyType } from 'components/ContactItemMy';
 const SendHome: React.FC = () => {
   const {
     params: { sendType = 'token', toInfo, assetInfo, imTransferInfo },
@@ -946,42 +947,20 @@ const SendHome: React.FC = () => {
     return caAddressInfos.filter(item => item.chainId !== assetInfo.chainId)?.[0];
   }, [assetInfo.chainId, caAddressInfos]);
 
-  const myAddressesList: TFormattedRecentItem = useMemo(() => {
-    const address = myAddress?.caAddress || '';
-    return {
-      id: address,
-      index: address,
-      name: userInfo?.nickName || '',
-      network: '',
+  const myAddressesList: Array<IContactItemMyType> = useMemo(() => {
+    const myOtherAddress: IContactItemMyType = {
+      address: myAddress?.caAddress || '',
+      avatarImg: userInfo?.avatar || '',
+      network: 'aelf',
       chainId: myAddress?.chainId || '',
-      networkIcon: myAddress?.chainImageUrl,
       addressInfo: {
-        network: '',
-        networkName: myAddress?.displayChainName || '',
-        networkImage: myAddress?.chainImageUrl || '',
-        address,
+        chainId: myAddress?.chainId || '',
+        network: 'aelf',
+        address: myAddress?.caAddress || '',
       },
-      caHolderInfo: {
-        userId: userInfo?.userId || '',
-        caHash: '',
-        walletName: userInfo?.nickName || '',
-        avatar: userInfo?.avatar || '',
-        address,
-      },
-      isDeleted: false,
-      userId: userInfo?.userId || '',
-      modificationTime: 0,
-      address,
     };
-  }, [
-    myAddress?.caAddress,
-    myAddress?.chainId,
-    myAddress?.chainImageUrl,
-    myAddress.displayChainName,
-    userInfo?.avatar,
-    userInfo?.nickName,
-    userInfo?.userId,
-  ]);
+    return [myOtherAddress];
+  }, [myAddress?.caAddress, myAddress?.chainId, userInfo?.avatar]);
 
   const onPressTabItem = useCallback(
     async (i: TFormattedRecentItem) => {
@@ -1108,8 +1087,7 @@ const SendHome: React.FC = () => {
             <SelectAddressTab
               recentAddressList={recentList || []}
               savedAddressList={savedList || []}
-              myAddressList={[myAddressesList as IContactItemType]}
-              noDataMessage="No recent address"
+              myAddressList={myAddressesList}
               chainId={assetInfo.chainId}
               onPress={onPressTabItem}
             />

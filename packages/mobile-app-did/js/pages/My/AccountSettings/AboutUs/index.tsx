@@ -1,27 +1,27 @@
 import React, { memo, useMemo } from 'react';
-import { Linking, StyleSheet, View } from 'react-native';
+import { Linking, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import Svg from 'components/Svg';
 import { pTd } from 'utils/unit';
 import { defaultColors } from 'assets/theme';
 import { useLanguage } from 'i18n/hooks';
-import { TextM, TextXXL, TextXXXL } from 'components/CommonText';
+import { TextM, TextXXL } from 'components/CommonText';
 import * as Application from 'expo-application';
 import MenuItem, { IMenuItemProps } from '../../components/MenuItem';
 import Divider from 'components/Divider';
 import navigationService from 'utils/navigationService';
 import { OfficialWebsite } from '@portkey-wallet/constants/constants-ca/network';
 import { useSocialMediaList } from '@portkey-wallet/hooks/hooks-ca/cms';
-import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { codePushOperator, parseLabel } from 'utils/update';
 import { parseVersion } from 'utils';
 import { useUpdateInfo } from 'store/user/hooks';
-import { makeStyles, useTheme } from '@rneui/themed';
+import { makeStyles } from '@rneui/themed';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 
 const AboutUs = () => {
   const { t } = useLanguage();
   const socialMediaList = useSocialMediaList();
-  const { s3Url } = useCurrentNetworkInfo();
+
   const updateInfo = useUpdateInfo();
   const styles = getStyles();
 
@@ -65,6 +65,8 @@ const AboutUs = () => {
     [],
   );
 
+  const { portkeyFinanceUrl } = useCurrentNetworkInfo();
+
   return (
     <PageContainer
       titleDom={t('About Portkey')}
@@ -72,11 +74,11 @@ const AboutUs = () => {
       containerStyles={styles.pageContainer}
       scrollViewProps={{ disabled: false }}>
       <View style={styles.logoWrap}>
-        <Svg icon="app-blue-logo" size={pTd(80)} />
+        <Svg icon="app-logo-new" size={pTd(80)} />
       </View>
       <TextXXL>Portkey</TextXXL>
       <TextM style={styles.version}>
-        {parseVersion([`V${Application.nativeApplicationVersion}`, parseLabel(codePushOperator.localPackage?.label)])}
+        {parseVersion([`v${Application.nativeApplicationVersion}`, parseLabel(codePushOperator.localPackage?.label)])}
       </TextM>
       <View style={styles.btnContainer}>
         {socialMediaList.map((item, index) => (
@@ -89,9 +91,18 @@ const AboutUs = () => {
                 Linking.openURL(item.link);
               }}
             />
-            {index === socialMediaList.length - 1 && <Divider style={styles.dividerStyle} />}
           </View>
         ))}
+        <View>
+          <MenuItem
+            style={styles.menuItem}
+            title={'View website'}
+            onPress={() => {
+              Linking.openURL(portkeyFinanceUrl || '');
+            }}
+          />
+          <Divider style={styles.dividerStyle} />
+        </View>
       </View>
 
       <View style={styles.btnContainer}>

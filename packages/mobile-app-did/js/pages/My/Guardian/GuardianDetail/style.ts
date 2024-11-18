@@ -48,6 +48,13 @@ export const getPageStyles = makeStyles(theme => ({
   loginSwitchTitle: {
     lineHeight: pTd(22),
   },
+  loginSwitchContainer: {
+    width: pTd(40),
+    height: pTd(24),
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   tips: {
     color: theme.colors.textBase2,
     lineHeight: pTd(20),

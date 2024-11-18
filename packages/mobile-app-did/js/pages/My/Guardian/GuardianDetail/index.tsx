@@ -54,7 +54,9 @@ export default function GuardianDetail() {
   useEffect(() => {
     const listener = myEvents.setLoginAccount.addListener(({ guardian: _guardian }: { guardian: UserGuardianItem }) => {
       setGuardian(pre => {
-        if (pre?.key !== _guardian.key) return pre;
+        if (pre?.key !== _guardian.key) {
+          return pre;
+        }
         return {
           ...pre,
           isLoginAccount: _guardian.isLoginAccount,
@@ -68,7 +70,9 @@ export default function GuardianDetail() {
 
   const onLoginAccountChange = useCallback(
     async (value: boolean) => {
-      if (guardian === undefined || userGuardiansList === undefined) return;
+      if (guardian === undefined || userGuardiansList === undefined) {
+        return;
+      }
 
       if (!value) {
         const isLastLoginAccount = checkIsLastLoginAccount(userGuardiansList, guardian);
@@ -108,7 +112,8 @@ export default function GuardianDetail() {
             ActionSheet.alert({
               showInfoIcon: true,
               title2: 'Already used as login account',
-              message: `This account is already set as a login account for other wallet(s) and can't be used for this purpose.`,
+              message:
+                "This account is already set as a login account for other wallet(s) and can't be used for this purpose.",
               buttons: [
                 {
                   title: 'Close',
@@ -163,11 +168,13 @@ export default function GuardianDetail() {
         <View style={pageStyles.loginSwitchWrap}>
           <View style={pageStyles.rowSpaceBetweenItemsCenter}>
             <TextL style={pageStyles.loginSwitchTitle}>{'Login account'}</TextL>
-            <CommonSwitch
-              value={guardian === undefined ? false : guardian.isLoginAccount}
-              disabled={(userGuardiansList?.length ?? 0) <= 1}
-              onValueChange={onLoginAccountChange}
-            />
+            <View style={pageStyles.loginSwitchContainer}>
+              <CommonSwitch
+                value={guardian === undefined ? false : guardian.isLoginAccount}
+                disabled={(userGuardiansList?.length ?? 0) <= 1}
+                onValueChange={onLoginAccountChange}
+              />
+            </View>
           </View>
           <TextM style={pageStyles.tips}>
             {'The login account will be able to log in and control all your assets'}

@@ -88,6 +88,7 @@ const MintProcess = () => {
       setConfirmMintResponse(res);
     })();
   });
+  // return  <View style={{ position: 'absolute', top: 0, width: '100%',  height: 496, backgroundColor: 'red'}}/>
   return (
     <PageContainer
       noCenterDom={step === FreeMintStep.mintResult}
@@ -112,7 +113,7 @@ const MintProcess = () => {
       }
       safeAreaColor={['white', 'black']}
       containerStyles={styles.pageStyles}
-      scrollViewProps={{ disabled: true }}>
+      scrollViewProps={{ disabled: step !== FreeMintStep.preview }}>
       {step === FreeMintStep.mintNft && (
         <MintEdit
           itemId={itemId || ''}

@@ -103,7 +103,7 @@ export default function SetPin() {
       <PinContainer
         showHeader
         ref={digitInput}
-        title={oldPin ? 'Please enter a new PIN' : 'Create a PIN to protect your wallet'}
+        title={oldPin ? 'Create a new PIN to protect your wallet' : 'Create a PIN to protect your wallet'}
         onFinish={pin => {
           navigationService.navigate('ConfirmPin', {
             oldPin,

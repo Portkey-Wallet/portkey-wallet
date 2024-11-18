@@ -2,10 +2,10 @@ import React from 'react';
 import PageContainer from 'components/PageContainer';
 import { useLanguage } from 'i18n/hooks';
 import { pTd } from 'utils/unit';
-import { View, Text } from 'react-native';
+import { View } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
 import { useAppSelector } from 'store/hooks';
-import { TextM } from 'components/CommonText';
+import { TextM, TextS } from 'components/CommonText';
 import Touchable from 'components/Touchable';
 import { defaultColors } from 'assets/theme';
 import Svg from 'components/Svg';
@@ -40,7 +40,7 @@ const SwitchNetworks: React.FC = () => {
               <TextM style={styles.networkText}>{item.name}</TextM>
               {item.networkType === currentNetwork && (
                 <View style={styles.curLabel}>
-                  <Text style={{ color: theme.theme.colors.textSuccess5 }}>Current</Text>
+                  <TextS style={{ color: theme.theme.colors.textSuccess5 }}>Current</TextS>
                 </View>
               )}
             </View>
@@ -79,7 +79,6 @@ const getStyles = makeStyles(theme => ({
     marginLeft: pTd(8),
   },
   curLabel: {
-    fontSize: pTd(12),
     borderRadius: pTd(4),
     marginLeft: pTd(4),
     backgroundColor: theme.colors.bgSuccess2,

@@ -52,7 +52,7 @@ const Security: React.FC<SecurityProps> = () => {
             style={pageStyles.menuItem}
             onPress={() => navigationService.navigate('CheckPin')}
             title={t('Change PIN')}
-            icon="my_biometric"
+            icon="my-pin"
             size={pTd(24)}
           />
         </View>

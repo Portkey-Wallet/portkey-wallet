@@ -3,8 +3,8 @@ import { TextM, TextS } from 'components/CommonText';
 import Touchable from 'components/Touchable';
 import React, { memo, useCallback, useMemo, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { RenderItemParams, ScaleDecorator } from 'react-native-draggable-flatlist';
-import SwipeableItem, { OpenDirection, SwipeableItemImperativeRef } from 'react-native-swipeable-item';
+import { RenderItemParams } from 'react-native-draggable-flatlist';
+import { SwipeableItemImperativeRef } from 'react-native-swipeable-item';
 import { BGStyles, DarkFontStyles } from 'assets/theme/styles';
 import { pTd } from 'utils/unit';
 import DiscoverWebsiteImage from 'pages/Discover/components/DiscoverWebsiteImage';
@@ -13,6 +13,8 @@ import { darkColors } from 'assets/theme';
 import { IBookmarkItem } from '@portkey-wallet/store/store-ca/discover/type';
 import { useDiscoverJumpWithNetWork } from 'hooks/discover';
 import { useGetCmsWebsiteInfo } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 
 type BookmarkItemProps<T> = RenderItemParams<T> & {
   itemRefs: React.MutableRefObject<Map<any, any>>;
@@ -58,28 +60,24 @@ export default memo(
     }, [getCmsWebsiteInfoImageUrl, getCmsWebsiteInfoName, item.name, item.url]);
 
     return (
-      <ScaleDecorator activeScale={1.05}>
-        <SwipeableItem
-          key={item.id}
-          item={props}
+      <GestureHandlerRootView>
+        <ReanimatedSwipeable
+          friction={2}
+          enableTrackpadTwoFingerGesture
+          rightThreshold={40}
           ref={ref => {
             if (ref && !itemRefs.current.get(item.id)) {
               itemRefs.current.set(item.id, ref);
             }
           }}
-          onChange={({ openDirection }) => {
-            if (openDirection !== OpenDirection.NONE) {
-              // Close all other open items
-              [...itemRefs.current.entries()].forEach(([id, ref]) => {
-                if (id !== item.id && ref) {
-                  ref.close();
-                }
-              });
-            }
+          onSwipeableWillOpen={() => {
+            [...itemRefs.current.entries()].forEach(([key, ref]) => {
+              if (key !== item.id && ref) {
+                ref?.close?.();
+              }
+            });
           }}
-          overSwipe={20}
-          renderUnderlayLeft={renderUnderlayLeft}
-          snapPointsLeft={[pTd(98)]}>
+          renderRightActions={renderUnderlayLeft}>
           <Touchable onPress={onClickJump}>
             <View style={[GStyles.flexRow, GStyles.itemCenter, styles.itemRow, BGStyles.bgBase1]}>
               <DiscoverWebsiteImage imageUrl={bookmarkInfo.imageUrl} size={pTd(40)} style={styles.websiteIconStyle} />
@@ -91,8 +89,8 @@ export default memo(
               </View>
             </View>
           </Touchable>
-        </SwipeableItem>
-      </ScaleDecorator>
+        </ReanimatedSwipeable>
+      </GestureHandlerRootView>
     );
   },
   (prevProps: RenderItemParams<IBookmarkItem>, nextProps: RenderItemParams<IBookmarkItem>) => {
@@ -102,12 +100,9 @@ export default memo(
 
 const styles = StyleSheet.create({
   underlayLeftBox: {
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'flex-end',
-    paddingRight: pTd(24),
+    justifyContent: 'center',
+    width: pTd(98),
     backgroundColor: darkColors.bgDanger1,
     color: darkColors.iconDanger4,
   },

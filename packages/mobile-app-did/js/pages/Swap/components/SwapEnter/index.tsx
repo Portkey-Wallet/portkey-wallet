@@ -399,7 +399,7 @@ const SwapEnter = () => {
     if (isInvalidParis || isRouteEmpty) {
       return 'Swap not available';
     } else if (isExceedBalance) {
-      return `Insufficient ${swapInfo.tokenIn?.label || swapInfo.tokenIn?.symbol} balance`;
+      return `Insufficient ${formatNameWithNoUnderline(swapInfo.tokenIn?.label || swapInfo.tokenIn?.symbol)} balance`;
     } else {
       return 'Preview';
     }

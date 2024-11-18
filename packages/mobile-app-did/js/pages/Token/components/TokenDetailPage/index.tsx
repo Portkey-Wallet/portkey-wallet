@@ -219,9 +219,13 @@ const TokenDetailPage: React.FC<TokenDetailParams> = ({ tokenInfo, tokenSection 
         data={currentActivity?.data || []}
         keyExtractor={(_item, index) => `${index}`}
         ListEmptyComponent={
-          <View style={styles.noData}>
-            <TextL>{t('No activity')}</TextL>
-          </View>
+          <>
+            {isLoading === ListLoadingEnum.hide && (
+              <View style={styles.noData}>
+                <TextL>{t('No activity')}</TextL>
+              </View>
+            )}
+          </>
         }
         renderItem={renderItem}
         onRefresh={onRefreshList}

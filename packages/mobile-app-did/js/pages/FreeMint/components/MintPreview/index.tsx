@@ -34,7 +34,7 @@ const MintPreview = (props: MintPreviewProps) => {
   const isMainnet = useIsMainnet();
 
   return (
-    <ScrollView>
+    <ScrollView nestedScrollEnabled>
       <View style={[styles.topSection, !editInfo?.description && GStyles.itemCenter]}>
         <NFTAvatar disabled nftSize={pTd(280)} data={{ imageUrl: editInfo?.imageUri || '' }} style={styles.nftAvatar} />
         <View style={styles.nftInfo}>

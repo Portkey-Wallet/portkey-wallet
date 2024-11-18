@@ -1103,7 +1103,7 @@ const SendHome: React.FC = () => {
               </View>
             </>
           )}
-          {step === 1 && (
+          {step === 1 && !selectedToContact.address && (
             <SelectAddressTab
               recentAddressList={recentList || []}
               savedAddressList={savedList || []}

@@ -25,8 +25,9 @@ export const useTransferNetworkConfig = () => {
   );
 
   const checkIsSupportTargetChain = useCallback(
-    ({ fromChainId, symbol, network }: { fromChainId: ChainId; symbol: string; network: string }) =>
-      targetMap?.[fromChainId]?.[symbol]?.find(ele => ele.network === network),
+    ({ fromChainId, symbol, network }: { fromChainId: ChainId; symbol: string; network: string }) => {
+      return targetMap?.[fromChainId]?.[symbol]?.find(ele => ele.network === network);
+    },
     [targetMap],
   );
 

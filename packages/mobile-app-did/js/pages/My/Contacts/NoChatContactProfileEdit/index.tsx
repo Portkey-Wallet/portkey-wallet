@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { StyleSheet, TextInput, View, Image, TouchableOpacity } from 'react-native';
+import { TextInput, View, Image, TouchableOpacity } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { useLanguage } from 'i18n/hooks';
 import { AddressItem } from '@portkey-wallet/types/types-ca/contact';
@@ -7,6 +7,7 @@ import Input from 'components/CommonInput';
 import CommonButton from 'components/CommonButton';
 import { pTd } from 'utils/unit';
 import Svg from 'components/Svg';
+import isEqual from 'lodash/isEqual';
 import ActionSheet from 'components/ActionSheet';
 import ListItem from 'components/ListItem';
 import GStyles from 'assets/theme/GStyles';
@@ -32,6 +33,8 @@ import navigationService from 'utils/navigationService';
 import { useContactNetworkConfig } from '@portkey-wallet/hooks/hooks-ca/config';
 import { RECENT_PAGE_NAME } from 'constants/contact';
 import { SupportedELFChainId } from '@portkey-wallet/utils/eBridge/constants';
+import { getAddressInfo } from '@portkey-wallet/utils/aelf';
+import myEvents from 'utils/deviceEvent';
 
 type RouterParams = {
   contact?: IContactItemType;
@@ -57,6 +60,7 @@ const initFormError: IFormErrorType = {
   name: INIT_NONE_ERROR,
   address: INIT_NONE_ERROR,
 };
+const invalidAddressMessage = 'Please enter a valid address.';
 const errorCodeMessageMap: Record<string, IFormErrorType> = {
   40021: {
     name: {
@@ -67,7 +71,7 @@ const errorCodeMessageMap: Record<string, IFormErrorType> = {
   40022: {
     address: {
       ...INIT_HAS_ERROR,
-      errorMsg: 'Please enter a valid address.',
+      errorMsg: invalidAddressMessage,
     },
   },
 };
@@ -91,8 +95,10 @@ const ContactEdit: React.FC = () => {
   const [editContact, setEditContact] = useState<IEditContactItemApiType>(initEditContact);
 
   // exist contact, enter edit page, fill form default value
-  useEffect(() => {
-    if (!contact) return;
+  const editDefaultValue = useMemo(() => {
+    if (!contact) {
+      return initEditContact;
+    }
     const _contact: IContactItemType = JSON.parse(JSON.stringify(contact));
     const _editContact = {
       id: _contact.id,
@@ -102,11 +108,16 @@ const ContactEdit: React.FC = () => {
       isExchange: _contact.addressInfo.isExchange ?? false,
       address: _contact.addressInfo.address,
     };
-    setEditContact(_editContact);
+    return _editContact;
   }, [contact]);
+  useEffect(() => {
+    setEditContact(editDefaultValue);
+  }, [editDefaultValue]);
   // no exist contact, enter add page, fill form default value
   useEffect(() => {
-    if (!willAddContact) return;
+    if (!willAddContact) {
+      return;
+    }
     const _contact: IContactItemType = JSON.parse(JSON.stringify(willAddContact));
     const _editContact = {
       name: '',
@@ -157,11 +168,15 @@ const ContactEdit: React.FC = () => {
     }));
   }, []);
 
-  const isSaveDisable = useMemo(() => {
-    if (editContact.name?.trim() === '') return true;
-    if (editContact.address?.trim() === '') return true;
-    return false;
-  }, [editContact]);
+  const isAddDisable = useMemo(() => {
+    // did not fill name or address or select network
+    return editContact.name?.trim() === '' || editContact.address?.trim() === '' || !selectedNetwork;
+  }, [editContact, selectedNetwork]);
+  const isEditDisable = useMemo(() => {
+    // did not change any value
+    return isEqual(editContact, editDefaultValue);
+  }, [editContact, editDefaultValue]);
+  const isSaveDisable = isEdit ? isEditDisable : isAddDisable;
   const hadnleRemove = useCallback(() => {
     ActionSheet.alert({
       showInfoIcon: true,
@@ -176,12 +191,21 @@ const ContactEdit: React.FC = () => {
           title: 'Delete',
           type: 'warning',
           onPress: async () => {
-            if (!contact) return;
+            if (!contact) {
+              return;
+            }
             try {
               Loading.show();
               await deleteContactApi(contact);
               CommonToast.success(t('Contact Deleted'), undefined, 'bottom');
-              navigationService.navigate('ContactsHome');
+              myEvents.updateSendAddressList.emit();
+              if (from === RECENT_PAGE_NAME) {
+                // go back two pages
+                navigationService.goBack();
+                navigationService.goBack();
+              } else {
+                navigationService.navigate('ContactsHome');
+              }
             } catch (error) {
               CommonToast.failError(error);
             } finally {
@@ -191,9 +215,10 @@ const ContactEdit: React.FC = () => {
         },
       ],
     });
-  }, [contact, deleteContactApi, t]);
+  }, [contact, deleteContactApi, from, t]);
   const checkError = useCallback(async () => {
     const _nameValue = editContact.name.trim();
+    const _addressValue = editContact.address;
 
     const checkRequired = (value: string) => {
       if (value.trim() === '') {
@@ -213,7 +238,20 @@ const ContactEdit: React.FC = () => {
       }
       return INIT_NONE_ERROR;
     };
-    const errorNameList = await Promise.all([checkRequired(_nameValue), checkRegex(_nameValue)]);
+    const checkAddressChainId = (address: string) => {
+      const addressInfo = getAddressInfo(address);
+      if (selectedNetwork?.chainId && addressInfo.suffix && selectedNetwork.chainId !== addressInfo.suffix) {
+        return {
+          ...INIT_HAS_ERROR,
+          errorMsg: invalidAddressMessage,
+        };
+      }
+      return INIT_NONE_ERROR;
+    };
+    const [errorNameList, errorAddressList] = await Promise.all([
+      [checkRequired(_nameValue), checkRegex(_nameValue)],
+      [checkAddressChainId(_addressValue)],
+    ]);
     const errorName = errorNameList.find(item => item.isError);
     if (errorName) {
       setFormError(preFormError => ({
@@ -226,14 +264,28 @@ const ContactEdit: React.FC = () => {
         name: INIT_NONE_ERROR,
       }));
     }
+    const errorAddress = errorAddressList.find(item => item.isError);
+    if (errorAddress) {
+      setFormError(preFormError => ({
+        ...preFormError,
+        address: errorAddress,
+      }));
+    } else {
+      setFormError(preFormError => ({
+        ...preFormError,
+        address: INIT_NONE_ERROR,
+      }));
+    }
 
-    return errorName;
-  }, [editContact.name, t]);
+    return errorName || errorAddress;
+  }, [editContact, selectedNetwork, t]);
   const onFinish = useCallback(async () => {
     try {
       Loading.show();
       const isErrorExist = await checkError();
-      if (isErrorExist) return;
+      if (isErrorExist) {
+        return;
+      }
       const { id, name, address, network, isExchange, chainId } = editContact;
       const upsertParams: IAddContactItemApiType = {
         name,
@@ -271,6 +323,7 @@ const ContactEdit: React.FC = () => {
           navigationService.navigate('ContactsHome');
         }
       }
+      myEvents.updateSendAddressList.emit();
       CommonToast.success('Address saved');
     } catch (err: any) {
       const errorCode = err?.error?.code;
@@ -468,7 +521,7 @@ export const getPageStyles = makeStyles(theme => ({
   },
   addressInput: {
     borderColor: theme.colors.borderBase1,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: pTd(1),
     height: pTd(80),
     borderRadius: pTd(8),
     paddingHorizontal: pTd(16),

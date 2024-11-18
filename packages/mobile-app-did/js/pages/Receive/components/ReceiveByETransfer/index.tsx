@@ -5,6 +5,7 @@ import { TReceiveFromNetworkItem } from '@portkey-wallet/types/types-ca/receive'
 import { IUserTokenItemResponse } from '@portkey-wallet/types/types-ca/token';
 import { IChainItemType } from '@portkey-wallet/types/types-ca/chain';
 import { useReceiveByETransfer } from '@portkey-wallet/hooks/hooks-ca/receive';
+// @ts-expect-error: Importing makeStyles from @rneui/themed
 import { makeStyles } from '@rneui/themed';
 import fonts from 'assets/theme/fonts';
 import Loading from 'components/Loading';
@@ -48,6 +49,9 @@ export default function ReceiveByETransfer({
   }, [depositInfo?.depositAddress]);
 
   const infoUI = useMemo(() => {
+    if (!depositInfo?.minAmount || depositInfo.minAmount === '0') {
+      return null;
+    }
     return (
       <View style={styles.infoWrap}>
         <Text style={styles.infoTitle}>Minimum deposit</Text>
@@ -97,7 +101,7 @@ export default function ReceiveByETransfer({
   );
 }
 
-const getStyles = makeStyles(theme => ({
+const getStyles = makeStyles((theme: any) => ({
   container: {
     marginTop: pTd(24),
   },
@@ -116,7 +120,7 @@ const getStyles = makeStyles(theme => ({
   reminderText: {
     marginLeft: pTd(12),
     marginRight: pTd(12),
-    fontSize: pTd(16),
+    fontSize: pTd(14),
     color: theme.colors.textBase2,
   },
   reminderHighlightText: {

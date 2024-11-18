@@ -52,6 +52,12 @@ export const getStyles = makeStyles(theme => ({
     lineHeight: pTd(38),
     color: theme.colors.textBase1,
   },
+  androidInputStyle: {
+    paddingTop: 0,
+    paddingHorizontal: 0,
+    marginTop: pTd(7),
+    marginLeft: -pTd(1),
+  },
   errorInputStyle: {
     color: theme.colors.textDanger1,
   },

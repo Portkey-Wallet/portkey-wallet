@@ -2,7 +2,12 @@ import * as React from 'react';
 import { useRef, useCallback } from 'react';
 import { NavigationContainer, NavigationContainerRef } from '@react-navigation/native';
 import { type ParamListBase } from '@react-navigation/core';
-import { createStackNavigator, StackNavigationProp, CardStyleInterpolators } from '@react-navigation/stack';
+import {
+  createStackNavigator,
+  StackNavigationProp,
+  CardStyleInterpolators,
+  TransitionPresets,
+} from '@react-navigation/stack';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { reportPageShow } from 'utils/analysisiReport';
 
@@ -59,7 +64,7 @@ export const productionNav = [
   { name: 'GiftHistory', component: GiftHistory },
   { name: 'GiftDetail', component: GiftDetail },
   { name: 'GiftResult', component: GiftResult },
-  { name: 'ProfileSettings', component: ProfileSettings },
+  { name: 'ProfileSettings', component: ProfileSettings, options: { ...TransitionPresets.ModalSlideFromBottomIOS } },
   ...QrCodeNav,
   ...GuardianNav,
   ...ActivityNav,
@@ -88,12 +93,12 @@ export const devNav = [
 const stackNav = __DEV__ ? devNav : productionNav;
 
 export type RootStackParamList = {
-  [key in typeof devNav[number]['name']]: undefined;
+  [key in (typeof devNav)[number]['name']]: undefined;
 };
 export type TabParamList = {
   [key in IRenderTabMenuItem['name']]: undefined;
 };
-export type RootStackName = typeof devNav[number]['name'];
+export type RootStackName = (typeof devNav)[number]['name'];
 
 export type RootNavigationProp = StackNavigationProp<RootStackParamList>;
 export default function NavigationRoot() {
@@ -106,8 +111,12 @@ export default function NavigationRoot() {
   const onNavigationStateChange = useCallback(async () => {
     const currentRouteName = navigationRef?.current?.getCurrentRoute()?.name;
     const currentRouteKey = navigationRef?.current?.getCurrentRoute()?.key;
-    if (!currentRouteName || !currentRouteKey) return;
-    if (PageShowMap.get(currentRouteKey)) return;
+    if (!currentRouteName || !currentRouteKey) {
+      return;
+    }
+    if (PageShowMap.get(currentRouteKey)) {
+      return;
+    }
     reportPageShow({ page_name: currentRouteName });
     PageShowMap.set(currentRouteKey, true);
   }, []);

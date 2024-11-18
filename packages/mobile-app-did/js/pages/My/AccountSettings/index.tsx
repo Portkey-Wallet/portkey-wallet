@@ -1,7 +1,6 @@
 import React, { useMemo, useCallback } from 'react';
 import { View } from 'react-native';
 import PageContainer from 'components/PageContainer';
-import useBiometricsReady from 'hooks/useBiometrics';
 import useLogOut from 'hooks/useLogOut';
 import navigationService from 'utils/navigationService';
 import { StyleSheet } from 'react-native';
@@ -9,7 +8,12 @@ import { defaultColors } from 'assets/theme';
 import { useLanguage } from 'i18n/hooks';
 import { pTd } from 'utils/unit';
 import { RootStackName } from 'navigation';
-import { useCurrentUserInfo, useCurrentWallet, useSetNewWalletName } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import {
+  useCurrentUserInfo,
+  useCurrentWallet,
+  useDeviceList,
+  useSetNewWalletName,
+} from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useIsSecondaryMailSet } from '@portkey-wallet/hooks/hooks-ca/useSecondaryMail';
 import { HELP_CENTER_URL } from '@portkey-wallet/constants/constants-ca/common';
 import { removeManager } from '@portkey-wallet/utils/guardian';
@@ -30,6 +34,7 @@ import { useUpdateInfo } from 'store/user/hooks';
 import { codePushOperator, parseLabel } from 'utils/update';
 import * as Application from 'expo-application';
 import { parseVersion } from 'utils';
+import { useCurrentDappList } from '@portkey-wallet/hooks/hooks-ca/dapp';
 
 interface MenuItemType {
   name: string;
@@ -41,11 +46,11 @@ interface MenuItemType {
 }
 
 export default function AccountSettings() {
-  const biometricsReady = useBiometricsReady();
   const styles = getStyles();
-  const { showNotSet, secondaryEmail, getSecondaryMail, hideNotSetMark, fetching } = useIsSecondaryMailSet();
+  const { showNotSet, secondaryEmail, fetching } = useIsSecondaryMailSet();
   const { shouldShowSetNewWalletNameIcon, handleSetNewWalletName } = useSetNewWalletName();
   const updateInfo = useUpdateInfo();
+  const dappList = useCurrentDappList();
 
   const onPressItem = useCallback((item: MenuItemType) => {
     if (item.onPress) {
@@ -64,6 +69,8 @@ export default function AccountSettings() {
   const { theme } = useTheme();
   const { t } = useLanguage();
   const avatarSize = pTd(40);
+
+  const { deviceAmount } = useDeviceList({ isAmountOnly: true, isInit: false });
 
   const sizeStyle = useMemo(
     () => ({
@@ -122,20 +129,19 @@ export default function AccountSettings() {
         name: 'DeviceList',
         label: 'Manage devices',
         icon: 'my_device',
+        suffixDom: () => <TextM style={styles.setBackupMailText}>{deviceAmount}</TextM>,
       },
       {
         name: 'DappList',
         label: 'Connected dApps',
         icon: 'my_connect',
+        suffixDom: () => <TextM style={styles.setBackupMailText}>{dappList?.length}</TextM>,
       },
       {
-        name: 'Address book',
+        name: 'ContactsHome',
         label: 'Address book',
         icon: 'my_contact',
         showDivider: true,
-        onPress: () => {
-          navigationService.navigate('ContactsHome');
-        },
       },
       {
         name: 'CryptoGift',
@@ -196,7 +202,7 @@ export default function AccountSettings() {
           if (updateInfo) {
             codePushOperator.checkToUpdate();
           } else {
-            CommonToast.info(`You're using the latest version.`);
+            CommonToast.info("You're using the latest version.");
           }
         },
       },
@@ -206,7 +212,9 @@ export default function AccountSettings() {
 
   const onExitClick = useCallback(
     async (isConfirm: boolean) => {
-      if (!isConfirm || !managerAddress || !caHash) return;
+      if (!isConfirm || !managerAddress || !caHash) {
+        return;
+      }
       // Loading.show({ text: t('Signing out of Portkey...') });
       Loading.show();
       try {
@@ -267,11 +275,11 @@ export default function AccountSettings() {
     return (
       <View>
         <TextM style={{ color: theme.colors.textWarning1, lineHeight: pTd(20) }}>
-          {t(`Use your login account as your wallet name to give it a unique identity.`)}
+          {t('Use your login account as your wallet name to give it a unique identity.')}
         </TextM>
         <Touchable onPress={onSetNewWalletName}>
           <TextM style={[fonts.SGMediumFont, { color: theme.colors.textBrand1, marginTop: pTd(16) }]}>
-            {t(`Set it now`)}
+            {t('Set it now')}
           </TextM>
         </Touchable>
       </View>
@@ -279,7 +287,11 @@ export default function AccountSettings() {
   }, [onSetNewWalletName, t, theme]);
 
   return (
-    <PageContainer containerStyles={styles.containerStyles} safeAreaColor={['black']} titleDom={t('Setting')}>
+    <PageContainer
+      containerStyles={styles.containerStyles}
+      safeAreaColor={['black']}
+      titleDom={t('Setting')}
+      leftIconType="close">
       {shouldShowSetNewWalletNameIcon && (
         <CommonPromptCard
           style={{ marginBottom: pTd(16) }}
@@ -293,7 +305,7 @@ export default function AccountSettings() {
           <TextM>{userInfo.nickName}</TextM>
         </View>
 
-        <Svg icon="right-arrow" size={pTd(20)} color={defaultColors.icon1} />
+        <Svg icon="chevron_right" size={pTd(12)} color={darkColors.icon1} />
       </Touchable>
       <View style={styles.divider} />
 
@@ -318,9 +330,9 @@ export default function AccountSettings() {
                 iconStyle={{
                   marginLeft: pTd(12),
                 }}
-                icon="right-arrow"
-                size={pTd(20)}
-                color={defaultColors.icon1}
+                icon="chevron_right"
+                size={pTd(12)}
+                color={darkColors.icon1}
               />
             </View>
           </Touchable>
@@ -388,7 +400,9 @@ const getStyles = makeStyles(theme => ({
     height: 1,
     borderBottomWidth: 0.5,
     width: '100%',
-    backgroundColor: darkColors.white,
+    backgroundColor: theme.colors.borderNeutral3,
+    // backgroundColor: '#FFF',
+    marginVertical: pTd(12),
   },
   signOutText: {
     width: '100%',

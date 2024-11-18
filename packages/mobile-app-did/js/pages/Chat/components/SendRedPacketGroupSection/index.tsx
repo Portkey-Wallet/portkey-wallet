@@ -163,17 +163,29 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
       .toFixed();
   }, [type, values.count, values.packetNum]);
   const amountUsdShowStr = useMemo(() => {
-    return `$${ZERO.plus(values.count || 0)
-      .times(tokenPrice || 0)
-      .dp(2)
-      .toFixed(2)}`;
-  }, [tokenPrice, values.count]);
+    if (type !== RedPackageTypeEnum.FIXED) {
+      return `$${ZERO.plus(values.count || 0)
+        .times(tokenPrice || 0)
+        .dp(2)
+        .toFixed(2)}`;
+    } else {
+      return `$${ZERO.plus(values.count || 0)
+        .times(values.packetNum || '1')
+        .times(tokenPrice || 0)
+        .dp(2)
+        .toFixed(2)}`;
+    }
+  }, [tokenPrice, values.count, values.packetNum]);
 
   const onAmountChange = useCallback(
     (value: string) => {
       if (value === '') {
         setValues(pre => ({ ...pre, count: '' }));
         setCountError({ ...INIT_NONE_ERROR });
+        return;
+      }
+      // for android
+      if (!isPotentialNumber(value)) {
         return;
       }
       const decimals = Number(selectToken.decimals || 0);
@@ -228,6 +240,9 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
       }
       const reg = /^[1-9]\d*$/;
       if (!reg.test(value)) {
+        return;
+      }
+      if (!isPotentialNumber(value)) {
         return;
       }
       if (type === RedPackageTypeEnum.RANDOM) {
@@ -440,7 +455,7 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
       <CommonButton
         disabled={!isAllowPrepare || isInsufficientBalance}
         type="primary"
-        title={isInsufficientBalance ? 'Insufficient ELF balance' : 'Preview'}
+        title={isInsufficientBalance ? 'Insufficient balance' : 'Preview'}
         containerStyle={styles.btnStyle}
         onPress={onPreparePress}
       />

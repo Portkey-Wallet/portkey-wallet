@@ -1,6 +1,6 @@
 import GStyles from 'assets/theme/GStyles';
 import CommonButton from 'components/CommonButton';
-import { TextL, TextM, TextS } from 'components/CommonText';
+import { TextL, TextM } from 'components/CommonText';
 import Svg from 'components/Svg';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Text, View, StyleSheet } from 'react-native';
@@ -122,12 +122,16 @@ const GuardianEdit: React.FC = () => {
   const { approveParams } = useRouterParams<NavigateMultiLevelParams>();
   const isFocused = useIsFocused();
   const onEmitDapp = useCallback(() => {
-    if (!isFocused) return;
+    if (!isFocused) {
+      return;
+    }
     approveParams?.isDiscover && dispatch(changeDrawerOpenStatus(true));
   }, [approveParams?.isDiscover, dispatch, isFocused]);
   const lastOnEmitDapp = useLatestRef(onEmitDapp);
   const isSelectedVerifierDisabled = useMemo(() => {
-    if (!selectedType) return false;
+    if (!selectedType) {
+      return false;
+    }
     if (isEdit) {
       return (
         isZKLoginSupported(selectedType.value) && (editGuardian?.verifiedByZk || editGuardian?.manuallySupportForZk)
@@ -174,7 +178,9 @@ const GuardianEdit: React.FC = () => {
 
   const checkCurGuardianRepeat = useCallback(
     (guardiansList: UserGuardianItem[]) => {
-      if (!selectedType) return false;
+      if (!selectedType) {
+        return false;
+      }
       const totalUserGuardiansList = guardiansList.slice(0);
 
       if (isEdit) {
@@ -271,7 +277,9 @@ const GuardianEdit: React.FC = () => {
   );
 
   const onConfirm = useCallback(async () => {
-    if (selectedVerifier === undefined || selectedType === undefined) return;
+    if (selectedVerifier === undefined || selectedType === undefined) {
+      return;
+    }
     const guardianType = selectedType.value;
     let guardianAccount = account;
     let showGuardianAccount;
@@ -292,7 +300,9 @@ const GuardianEdit: React.FC = () => {
     }
 
     const isValid = checkCurGuardianRepeat(userGuardiansList || []);
-    if (!isValid) return;
+    if (!isValid) {
+      return;
+    }
 
     Loading.showOnce();
     const _userGuardiansList = await refreshGuardiansList();
@@ -334,7 +344,9 @@ const GuardianEdit: React.FC = () => {
           title: 'Confirm',
           onPress: async () => {
             try {
-              if (![LoginType.Email, LoginType.Phone].includes(guardianType)) return;
+              if (![LoginType.Email, LoginType.Phone].includes(guardianType)) {
+                return;
+              }
               Loading.show();
               const req = await verification.sendVerificationCode({
                 params: {
@@ -396,13 +408,17 @@ const GuardianEdit: React.FC = () => {
 
   const onApproval = useCallback(async () => {
     const isValid = checkCurGuardianRepeat(userGuardiansList || []);
-    if (!isValid || !editGuardian || !selectedVerifier) return;
+    if (!isValid || !editGuardian || !selectedVerifier) {
+      return;
+    }
 
     Loading.show();
     const _userGuardiansList = await refreshGuardiansList();
     const isValid2 = checkCurGuardianRepeat(_userGuardiansList || []);
     Loading.hide();
-    if (!isValid2) return;
+    if (!isValid2) {
+      return;
+    }
 
     dispatch(setPreGuardianAction(editGuardian));
     // if the selectedVerifier is zkLoginVerifierItem, then the verifierId should be the original verifierId of the editGuardian
@@ -418,7 +434,9 @@ const GuardianEdit: React.FC = () => {
 
   const setLoginAccount = useSetLoginAccount(true);
   const onRemove = useCallback(async () => {
-    if (!editGuardian || !userGuardiansList) return;
+    if (!editGuardian || !userGuardiansList) {
+      return;
+    }
 
     const isLastLoginAccount = checkIsLastLoginAccount(userGuardiansList, editGuardian);
 
@@ -439,9 +457,9 @@ const GuardianEdit: React.FC = () => {
       ActionSheet.alert({
         title: isLoginAccount ? undefined : 'Are you sure you want to remove this guardian?',
         title2: isLoginAccount
-          ? `This guardian is currently set as a login account. You need to unset its login account identity before removing it. Please click "Confirm" to proceed.`
+          ? 'This guardian is currently set as a login account. You need to unset its login account identity before removing it. Please click "Confirm" to proceed.'
           : undefined,
-        message: isLoginAccount ? undefined : `Removing a guardian requires guardians' approval`,
+        message: isLoginAccount ? undefined : "Removing a guardian requires guardians' approval",
         buttons: [
           {
             title: isLoginAccount ? 'Cancel' : 'Close',
@@ -455,7 +473,9 @@ const GuardianEdit: React.FC = () => {
         ],
       });
     });
-    if (!result) return;
+    if (!result) {
+      return;
+    }
 
     if (!isLoginAccount) {
       navigationService.navigate('GuardianApproval', {
@@ -536,7 +556,9 @@ const GuardianEdit: React.FC = () => {
         setAccount(appleUserExtraInfo.email || PRIVATE_GUARDIAN_ACCOUNT);
       }
     } catch (error) {
-      if (!userInfo) return;
+      if (!userInfo) {
+        return;
+      }
       setFirstName(userInfo.fullName?.givenName || undefined);
       if (userInfo.user.isPrivate) {
         setAccount(PRIVATE_GUARDIAN_ACCOUNT);
@@ -624,7 +646,9 @@ const GuardianEdit: React.FC = () => {
       );
     }
 
-    if (!selectedType) return null;
+    if (!selectedType) {
+      return null;
+    }
 
     switch (selectedType.value) {
       case LoginType.Email:
@@ -731,7 +755,9 @@ const GuardianEdit: React.FC = () => {
     pageStyles,
   ]);
   const goBack = useCallback(() => {
-    if (isEdit) return navigationService.navigate('GuardianHome');
+    if (isEdit) {
+      return navigationService.navigate('GuardianHome');
+    }
     navigationService.goBack();
   }, [isEdit]);
 
@@ -744,7 +770,9 @@ const GuardianEdit: React.FC = () => {
     return editGuardian && isZKLoginSupported(editGuardian.guardianType);
   }, [editGuardian]);
   const disabledMap = useMemo(() => {
-    if (!userGuardiansList) return {};
+    if (!userGuardiansList) {
+      return {};
+    }
     // The verification between ZK and non-ZK is independent.
     const guardianList = userGuardiansList.filter(
       item =>
@@ -836,7 +864,9 @@ const GuardianEdit: React.FC = () => {
         </View>
         <ListItem
           onPress={() => {
-            if (isSelectedVerifierDisabled || isEmptySelectAbleVerifierList) return;
+            if (isSelectedVerifierDisabled || isEmptySelectAbleVerifierList) {
+              return;
+            }
             VerifierSelectOverlay.showList({
               id: selectedVerifier?.id,
               callBack: onChooseVerifier,

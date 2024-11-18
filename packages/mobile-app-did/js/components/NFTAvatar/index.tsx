@@ -1,5 +1,5 @@
 import React, { memo, useMemo } from 'react';
-import { StyleSheet, View, Text, ViewStyle, Image, StyleProp, ImageStyle, TextStyle } from 'react-native';
+import { View, Text, ViewStyle, Image, StyleProp, ImageStyle, TextStyle } from 'react-native';
 import { pTd } from 'utils/unit';
 import { TextM, TextS } from 'components/CommonText';
 import { defaultColors } from 'assets/theme';
@@ -47,18 +47,18 @@ const NFTAvatar: React.FC<NoDataPropsType> = props => {
   const outStyles = Array.isArray(style) ? style : [style];
 
   const badgeSizeStyle = useMemo<StyleProp<ImageStyle>>(() => {
-    if (badgeSizeType === 'small')
+    if (badgeSizeType === 'small') {
       return {
         width: pTd(24),
         height: pTd(12),
       };
-
-    if (badgeSizeType === 'large')
+    }
+    if (badgeSizeType === 'large') {
       return {
         width: pTd(48),
         height: pTd(24),
       };
-
+    }
     return { width: pTd(32), height: pTd(16) };
   }, [badgeSizeType]);
 

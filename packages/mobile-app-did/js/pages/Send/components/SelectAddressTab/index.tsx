@@ -1,33 +1,26 @@
 import React, { useCallback, useMemo } from 'react';
 import { useLanguage } from 'i18n/hooks';
 import { makeStyles } from '@rneui/themed';
-import { useTheme } from '@rneui/themed';
-import { View, FlatList, Text } from 'react-native';
+import { View, FlatList } from 'react-native';
 import CommonTopTab from 'components/CommonTopTab';
-import CommonAvatar from 'components/CommonAvatar';
-import Touchable from 'components/Touchable';
-import Svg from 'components/Svg';
 import { pTd } from 'utils/unit';
 import fonts from 'assets/theme/fonts';
 import ContactItem from 'components/ContactItem';
 import { IContactItemType, TFormattedRecentItem } from '@portkey-wallet/types/types-ca/contactNew';
+import { useContactNetworkConfig } from '@portkey-wallet/hooks/hooks-ca/config';
 import navigationService from 'utils/navigationService';
 import { ICaAddressInfoListItemType } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { RECENT_PAGE_NAME } from 'constants/contact';
-
-interface IAddress {
-  avatar?: string;
-  nickName?: string;
-  address: string;
-  chain?: string;
-}
+import { AELF_NETWORK_NAME } from 'constants/common';
+import ContactItemMy, { IContactItemMyType } from 'components/ContactItemMy';
+import { ChainId } from '@portkey-wallet/types';
+import NoData from 'components/NoData';
 
 interface ISelectAddressTabProps {
   recentAddressList: TFormattedRecentItem[];
   savedAddressList: TFormattedRecentItem[];
-  myAddressList: TFormattedRecentItem[];
-  noDataMessage: string;
-  chainId: string;
+  myAddressList: IContactItemMyType[];
+  chainId: ChainId;
   onPress?: (item: TFormattedRecentItem) => void;
 }
 
@@ -35,16 +28,31 @@ const AddressList = ({
   addressList,
   onPress,
   isMyAddress = false,
+  type = SelectAddressTabTypeEnum.Recent,
 }: {
   addressList: TFormattedRecentItem[] | ICaAddressInfoListItemType[];
   chainId: string;
   onPress?: (item: TFormattedRecentItem) => void;
   isMyAddress?: boolean;
+  type: SelectAddressTabTypeEnum;
 }) => {
   const styles = getStyles();
-  const {
-    theme: { colors },
-  } = useTheme();
+  const { supportNetworkList } = useContactNetworkConfig();
+  const { t } = useLanguage();
+
+  const getNetworkName = useCallback(
+    (chainId: string, network: string) => {
+      const networkItem = supportNetworkList?.find(item => {
+        let isChainIdMatch = true;
+        if (network === AELF_NETWORK_NAME) {
+          isChainIdMatch = item.chainId === chainId;
+        }
+        return item.network === network && isChainIdMatch;
+      });
+      return networkItem?.name ?? '';
+    },
+    [supportNetworkList],
+  );
 
   const renderItem = useCallback(
     ({ item, index }: { item: TFormattedRecentItem | ICaAddressInfoListItemType | any; index: number }) => {
@@ -56,8 +64,9 @@ const AddressList = ({
             index: String(index),
             name: item?.name || address,
             addressInfo: {
-              network: item?.network,
-              networkName: item?.chainId || '',
+              network: item?.network, // aelf ETH BSC
+              networkName: getNetworkName(item?.chainId, item?.network), //  aelf MainChain
+              chainId: item?.chainId ?? '', // tDVW TDVV
               networkImage: item?.networkIcon,
               address: address,
             },
@@ -109,8 +118,12 @@ const AddressList = ({
       //   </Touchable>
       // );
     },
-    [isMyAddress, onPress],
+    [getNetworkName, isMyAddress, onPress],
   );
+
+  const noData = useMemo(() => {
+    return <NoData noPic message={t(`No ${type === SelectAddressTabTypeEnum.Recent ? 'recent' : 'saved'} address`)} />;
+  }, [t, type]);
 
   return (
     <View style={styles.addressListWrap}>
@@ -120,10 +133,16 @@ const AddressList = ({
         data={addressList || []}
         renderItem={renderItem}
         keyExtractor={item => item?.address || ''}
+        ListEmptyComponent={noData}
       />
     </View>
   );
 };
+
+export enum SelectAddressTabTypeEnum {
+  Recent = 'Recent',
+  Saved = 'Saved',
+}
 
 const SelectAddressTab: React.FC<ISelectAddressTabProps> = (props: ISelectAddressTabProps) => {
   const { t } = useLanguage();
@@ -134,15 +153,29 @@ const SelectAddressTab: React.FC<ISelectAddressTabProps> = (props: ISelectAddres
     return [
       {
         name: t('Recent'),
-        tabItemDom: <AddressList addressList={recentAddressList} chainId={chainId} onPress={onPress} />,
+        tabItemDom: (
+          <AddressList
+            addressList={recentAddressList}
+            chainId={chainId}
+            onPress={onPress}
+            type={SelectAddressTabTypeEnum.Recent}
+          />
+        ),
       },
       {
         name: t('Saved'),
-        tabItemDom: <AddressList addressList={savedAddressList} chainId={chainId} onPress={onPress} />,
+        tabItemDom: (
+          <AddressList
+            addressList={savedAddressList}
+            chainId={chainId}
+            onPress={onPress}
+            type={SelectAddressTabTypeEnum.Saved}
+          />
+        ),
       },
       {
         name: t('My addresses'),
-        tabItemDom: <AddressList addressList={myAddressList} chainId={chainId} onPress={onPress} isMyAddress={true} />,
+        tabItemDom: <ContactItemMy addressList={myAddressList} onPress={onPress} />,
       },
     ];
   }, [t, recentAddressList, chainId, onPress, savedAddressList, myAddressList]);

@@ -3,6 +3,7 @@ import QRCodeStyled, { SVGQRCodeStyledProps, useQRCodeData } from 'react-native-
 import portkeyLogo from 'assets/image/pngs/portkey-v2-new-brand-2.png';
 import { pTd } from 'utils/unit';
 import { View } from 'react-native';
+// @ts-expect-error: Importing makeStyles from @rneui/themed
 import { makeStyles } from '@rneui/themed';
 import Lottie from 'lottie-react-native';
 
@@ -41,22 +42,22 @@ export default function CommonQRCodeStyled(props: CommonQRCodeStyledPropsType) {
         padding={0}
         pieceSize={pieceSize}
         isPiecesGlued={false}
-        pieceBorderRadius={2}
+        pieceBorderRadius={pieceSize / 2}
         color={'#000000'}
         logo={{
           href: portkeyLogo,
           width: pTd(64),
           height: pTd(64),
-          scale: 1.8,
+          scale: 3.5,
           padding: pTd(0),
           hidePieces: false,
         }}
         outerEyesOptions={{
           strokeWidth: pTd(6),
-          borderRadius: pTd(13),
+          borderRadius: pTd(30),
         }}
         innerEyesOptions={{
-          borderRadius: pTd(6),
+          borderRadius: pTd(12),
         }}
         {...props}
       />
@@ -64,7 +65,7 @@ export default function CommonQRCodeStyled(props: CommonQRCodeStyledPropsType) {
   );
 }
 
-const getStyles = makeStyles(theme => ({
+const getStyles = makeStyles((theme: any) => ({
   mask: {
     position: 'absolute',
     zIndex: 99,

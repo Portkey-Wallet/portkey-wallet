@@ -1,8 +1,6 @@
 import WalletSecurity from './index';
 import DeviceNav from './Device/router';
-import DappNav from './Dapp/router';
 import PaymentSecurityNav from './PaymentSecurity/router';
-import TokenAllowanceNav from './TokenAllowance/router';
 import SecondaryMailboxHome from './SecondaryMailbox';
 import SecondaryMailboxEdit from './SecondaryMailbox/SecondaryMailboxEdit';
 import VerifierEmail from './SecondaryMailbox/VerifierEmail';
@@ -24,10 +22,8 @@ const stackNav = [
     name: 'VerifierEmail',
     component: VerifierEmail,
   },
-  ...DappNav,
   ...DeviceNav,
   ...PaymentSecurityNav,
-  ...TokenAllowanceNav,
 ] as const;
 
 export default stackNav;

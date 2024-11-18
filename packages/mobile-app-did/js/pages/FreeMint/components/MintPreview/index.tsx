@@ -1,7 +1,6 @@
 import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { ICollectionData } from '@portkey-wallet/types/types-ca/freeMint';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
-import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import { FontStyles } from 'assets/theme/styles';
 import ButtonRow from 'components/ButtonRow';
@@ -17,6 +16,7 @@ import { FreeMintStep } from '../FreeMintModal';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import fonts from 'assets/theme/fonts';
 import { makeStyles } from '@rneui/themed';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 
 interface MintPreviewProps {
   mintInfo?: ICollectionData;
@@ -31,9 +31,10 @@ const MintPreview = (props: MintPreviewProps) => {
   const { currentNetwork } = useWallet();
   const defaultToken = useDefaultToken();
   const { mintInfo, editInfo, onMintPress } = props;
+  const isMainnet = useIsMainnet();
 
   return (
-    <ScrollView>
+    <ScrollView nestedScrollEnabled>
       <View style={[styles.topSection, !editInfo?.description && GStyles.itemCenter]}>
         <NFTAvatar disabled nftSize={pTd(280)} data={{ imageUrl: editInfo?.imageUri || '' }} style={styles.nftAvatar} />
         <View style={styles.nftInfo}>
@@ -88,11 +89,11 @@ const MintPreview = (props: MintPreviewProps) => {
                 styles.rightValue,
                 fonts.SGMediumFont,
               ]}>{`${mintInfo?.transactionFee} ${defaultToken.symbol}`}</TextL>
-            <TextM style={[FontStyles.neutralTertiaryText, styles.feeSub]}>{'$ 0'}</TextM>
+            {isMainnet && <TextM style={[FontStyles.neutralTertiaryText, styles.feeSub]}>{'$ 0'}</TextM>}
           </View>
         </View>
       </View>
-      <View style={GStyles.flex1} />
+      <View style={GStyles.height(84)} />
       <ButtonRow
         buttons={[
           // {

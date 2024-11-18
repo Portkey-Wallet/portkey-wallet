@@ -15,7 +15,7 @@ import { useEffectOnce } from '@portkey-wallet/hooks';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import LottieLoading from 'components/LottieLoading';
 import myEvents from 'utils/deviceEvent';
-import { makeStyles, useTheme } from '@rneui/themed';
+import { makeStyles } from '@rneui/themed';
 
 const TokenAllowanceHome: React.FC = () => {
   const { t } = useLanguage();
@@ -25,7 +25,6 @@ const TokenAllowanceHome: React.FC = () => {
   const [isFetching, setIsFetching] = useState(false);
 
   const styles = getStyles();
-  const theme = useTheme();
   const fetchTokenAllowanceList = useFetchTokenAllowanceList();
 
   const fetchList = useLockCallback(
@@ -52,8 +51,12 @@ const TokenAllowanceHome: React.FC = () => {
   );
 
   const onEndReached = useCallback(() => {
-    if (totalCount <= list.length) return;
-    if (isFetching) return;
+    if (totalCount <= list.length) {
+      return;
+    }
+    if (isFetching) {
+      return;
+    }
     fetchList(false);
   }, [fetchList, isFetching, list.length, totalCount]);
 
@@ -84,11 +87,7 @@ const TokenAllowanceHome: React.FC = () => {
             <LottieLoading />
           ) : (
             <Touchable>
-              <NoData
-                style={{ backgroundColor: theme.theme.colors.bg6 }}
-                message={t('No Data')}
-                topDistance={pTd(120)}
-              />
+              <NoData message={t('No Data')} topDistance={pTd(120)} noPic />
             </Touchable>
           )
         }

@@ -22,9 +22,10 @@ export interface SelectTokenProps {
   tokenInfos: IAssetToken[];
   noDataMessage: string;
   toAddress?: string;
+  loading: boolean;
 }
 
-export default function SelectToken({ tokenInfos, noDataMessage, toAddress }: SelectTokenProps) {
+export default function SelectToken({ tokenInfos, noDataMessage, toAddress, loading }: SelectTokenProps) {
   const { t } = useLanguage();
   const userInfo = useCurrentUserInfo();
   const isMainnet = useIsMainnet();
@@ -101,7 +102,7 @@ export default function SelectToken({ tokenInfos, noDataMessage, toAddress }: Se
         data={tokenInfos || []}
         renderItem={renderItem}
         keyExtractor={item => `${item.symbol}${item.chainId}`}
-        ListEmptyComponent={() => <NoData noPic message={t(noDataMessage)} />}
+        ListEmptyComponent={() => <>{loading ? <></> : <NoData noPic message={t(noDataMessage)} />}</>}
       />
     </View>
   );

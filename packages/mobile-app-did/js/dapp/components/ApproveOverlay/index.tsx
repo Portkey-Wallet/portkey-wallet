@@ -129,16 +129,22 @@ const ApproveModal = (props: SignModalPropsType) => {
 
   const onChangeText = useCallback(
     (v: string) => {
-      if (isValidNumber(v.trim())) return setSymbolNum(parseInputNumberChange(v.trim(), MAX_NUM, decimals));
+      if (isValidNumber(v.trim())) {
+        return setSymbolNum(parseInputNumberChange(v.trim(), MAX_NUM, decimals));
+      }
 
-      if (!v.trim()) return setSymbolNum('');
+      if (!v.trim()) {
+        return setSymbolNum('');
+      }
     },
     [MAX_NUM, decimals],
   );
 
   const onUseRecommendedValue = useCallback(() => {
     setErrorMessage('');
-    if (LANG_MAX.lt(amount)) return onPressMax();
+    if (LANG_MAX.lt(amount)) {
+      return onPressMax();
+    }
     setSymbolNum(parseInputNumberChange(divDecimalsStr(amount, approveParams.approveInfo.decimals), MAX_NUM, decimals));
   }, [MAX_NUM, amount, approveParams.approveInfo.decimals, decimals, onPressMax]);
 
@@ -152,7 +158,7 @@ const ApproveModal = (props: SignModalPropsType) => {
       leftTitleDom={
         <TitleInfoSection
           viewStyle={{ paddingLeft: pTd(16) }}
-          title={t(`Approve token allowance`)}
+          title={t('Approve token allowance')}
           dappInfo={dappInfo}
         />
       }
@@ -202,7 +208,7 @@ const ApproveModal = (props: SignModalPropsType) => {
               { marginTop: pTd(errorMessage ? 28 : 8) },
             ]}>
             {isEditBatchApprovalInApp ? (
-              <TextL>{` `}</TextL>
+              <TextL> </TextL>
             ) : (
               <Touchable onPress={onUseRecommendedValue}>
                 <TextM style={{ color: theme.colors.textBrand1 }}>Use default</TextM>
@@ -222,6 +228,7 @@ const ApproveModal = (props: SignModalPropsType) => {
 export const showApproveModal = (props: SignModalPropsType) => {
   OverlayModal.show(<ApproveModal {...props} />, {
     position: 'bottom',
+    autoKeyboardInsets: false,
     onCloseRequest: props.onReject,
     containerStyle: [!isIOS && GStyles.paddingBottom(0)],
   });
@@ -231,7 +238,7 @@ export default {
   showApproveModal,
 };
 
-const getStyles = makeStyles(theme => ({
+const getStyles = makeStyles(() => ({
   contentWrap: {
     paddingLeft: pTd(16),
     paddingRight: pTd(16),

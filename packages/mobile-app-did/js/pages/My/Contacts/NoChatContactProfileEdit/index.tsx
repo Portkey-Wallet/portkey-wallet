@@ -7,6 +7,7 @@ import Input from 'components/CommonInput';
 import CommonButton from 'components/CommonButton';
 import { pTd } from 'utils/unit';
 import Svg from 'components/Svg';
+import isEqual from 'lodash/isEqual';
 import ActionSheet from 'components/ActionSheet';
 import ListItem from 'components/ListItem';
 import GStyles from 'assets/theme/GStyles';
@@ -94,9 +95,9 @@ const ContactEdit: React.FC = () => {
   const [editContact, setEditContact] = useState<IEditContactItemApiType>(initEditContact);
 
   // exist contact, enter edit page, fill form default value
-  useEffect(() => {
+  const editDefaultValue = useMemo(() => {
     if (!contact) {
-      return;
+      return initEditContact;
     }
     const _contact: IContactItemType = JSON.parse(JSON.stringify(contact));
     const _editContact = {
@@ -107,8 +108,11 @@ const ContactEdit: React.FC = () => {
       isExchange: _contact.addressInfo.isExchange ?? false,
       address: _contact.addressInfo.address,
     };
-    setEditContact(_editContact);
+    return _editContact;
   }, [contact]);
+  useEffect(() => {
+    setEditContact(editDefaultValue);
+  }, [editDefaultValue]);
   // no exist contact, enter add page, fill form default value
   useEffect(() => {
     if (!willAddContact) {
@@ -164,15 +168,15 @@ const ContactEdit: React.FC = () => {
     }));
   }, []);
 
-  const isSaveDisable = useMemo(() => {
-    if (editContact.name?.trim() === '') {
-      return true;
-    }
-    if (editContact.address?.trim() === '') {
-      return true;
-    }
-    return false;
-  }, [editContact]);
+  const isAddDisable = useMemo(() => {
+    // did not fill name or address or select network
+    return editContact.name?.trim() === '' || editContact.address?.trim() === '' || !selectedNetwork;
+  }, [editContact, selectedNetwork]);
+  const isEditDisable = useMemo(() => {
+    // did not change any value
+    return isEqual(editContact, editDefaultValue);
+  }, [editContact, editDefaultValue]);
+  const isSaveDisable = isEdit ? isEditDisable : isAddDisable;
   const hadnleRemove = useCallback(() => {
     ActionSheet.alert({
       showInfoIcon: true,
@@ -194,7 +198,14 @@ const ContactEdit: React.FC = () => {
               Loading.show();
               await deleteContactApi(contact);
               CommonToast.success(t('Contact Deleted'), undefined, 'bottom');
-              navigationService.navigate('ContactsHome');
+              myEvents.updateSendAddressList.emit();
+              if (from === RECENT_PAGE_NAME) {
+                // go back two pages
+                navigationService.goBack();
+                navigationService.goBack();
+              } else {
+                navigationService.navigate('ContactsHome');
+              }
             } catch (error) {
               CommonToast.failError(error);
             } finally {
@@ -204,7 +215,7 @@ const ContactEdit: React.FC = () => {
         },
       ],
     });
-  }, [contact, deleteContactApi, t]);
+  }, [contact, deleteContactApi, from, t]);
   const checkError = useCallback(async () => {
     const _nameValue = editContact.name.trim();
     const _addressValue = editContact.address;

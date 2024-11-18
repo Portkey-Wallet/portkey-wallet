@@ -1,9 +1,8 @@
 import { screenHeight } from '@portkey-wallet/utils/mobile/device';
 import { useKeyboard } from 'hooks/useKeyboardHeight';
 import React, { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { View } from 'react-native';
+import { StatusBar, useWindowDimensions, View } from 'react-native';
 import { ViewStyleType } from 'types/styles';
-import { pTd } from 'utils/unit';
 
 export type TKeyboardSafeAreaProps = {
   children?: ReactNode;
@@ -24,7 +23,7 @@ export const KeyboardSafeArea = ({
   const viewRef = useRef<View>(null);
   const { keyboardHeight, isKeyboardOpened } = useKeyboard(0);
   const [viewPositionY, setViewPositionY] = useState(0);
-
+  const sz = useWindowDimensions();
   const measureView = useCallback(() => {
     requestAnimationFrame(() => {
       if (viewRef.current) {
@@ -77,18 +76,23 @@ export const KeyboardSafeArea = ({
     if (!isKeyboardOpened || disable) {
       return undefined;
     }
-    const keyboardPositionY = screenHeight - keyboardHeight;
+    const keyboardPositionY = sz.height - keyboardHeight;
     if (viewPositionY <= keyboardPositionY) {
       return undefined;
     }
-    const value = viewPositionY - keyboardPositionY + bottomPad;
+    const value = viewPositionY - (StatusBar.currentHeight ?? 0) - keyboardPositionY + bottomPad;
+    if (mode === 'page') {
+      return {
+        paddingBottom: value - (gap ?? 0),
+        marginTop: -value + (gap ?? 0),
+        marginBottom: gap ?? 0,
+      };
+    }
     return {
-      paddingBottom: value - (gap ?? 0),
-      marginTop: -value + (gap ?? 0),
-      marginBottom: gap ?? 0,
+      paddingBottom: value,
     };
-  }, [disable, gap, bottomPad, isKeyboardOpened, keyboardHeight, viewPositionY]);
-
+  }, [isKeyboardOpened, disable, sz.height, keyboardHeight, viewPositionY, bottomPad, mode, gap]);
+  console.log('style===', style);
   return (
     <View ref={viewRef} collapsable={false} style={[style, containerStyle]}>
       {children}

@@ -6,7 +6,7 @@ import GStyles from 'assets/theme/GStyles';
 import { TextL, TextM } from 'components/CommonText';
 import { makeStyles } from '@rneui/themed';
 import navigationService from 'utils/navigationService';
-import { BGStyles, FontStyles } from 'assets/theme/styles';
+import { FontStyles } from 'assets/theme/styles';
 import { pTd } from 'utils/unit';
 import useEffectOnce from 'hooks/useEffectOnce';
 import CommonToast from 'components/CommonToast';
@@ -19,7 +19,6 @@ import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
 import Svg from 'components/Svg';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
-import NoData from 'components/NoData';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { useTransferLimitList } from '@portkey-wallet/hooks/hooks-ca/security';
 import { darkColors } from 'assets/theme';
@@ -136,11 +135,9 @@ const PaymentSecurityList: React.FC = () => {
   return (
     <PageContainer
       titleDom={'Transaction Limits'}
-      safeAreaColor={['black']}
       containerStyles={pageStyles.pageWrap}
       hideTouchable={true}
       scrollViewProps={{ disabled: true }}>
-      {}
       <FlatList
         refreshing={isRefreshing}
         data={list || []}
@@ -148,7 +145,6 @@ const PaymentSecurityList: React.FC = () => {
         renderItem={({ item }) => <PaymentSecurityItem item={item} />}
         onRefresh={() => init()}
         onEndReached={() => getList()}
-        ListEmptyComponent={() => <NoData style={BGStyles.bg4} topDistance={pTd(95)} message="No asset" />}
       />
     </PageContainer>
   );

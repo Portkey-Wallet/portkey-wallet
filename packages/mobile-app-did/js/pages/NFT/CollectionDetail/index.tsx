@@ -192,7 +192,9 @@ const CollectionDetail = () => {
               <View style={styles.topWrapper}>
                 <CommonAvatar avatarSize={pTd(48)} imageUrl={imageUrl} shapeType={'square'} />
                 <TextXXL style={styles.collectionName}>{collectionName}</TextXXL>
-                <TextM style={styles.collectionCount}>{itemCount} items</TextM>
+                <TextM style={styles.collectionCount}>
+                  {itemCount || currentCollectionObj?.totalRecordCount} items
+                </TextM>
               </View>
             );
           }}
@@ -343,5 +345,6 @@ const getStyles = makeStyles(theme => ({
   skeleton: {
     borderRadius: pTd(8),
     backgroundColor: theme.colors.bgBase3,
+    opacity: 0.3,
   },
 }));

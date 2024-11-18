@@ -184,6 +184,10 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
         setCountError({ ...INIT_NONE_ERROR });
         return;
       }
+      // for android
+      if (!isPotentialNumber(value)) {
+        return;
+      }
       const decimals = Number(selectToken.decimals || 0);
       if (value === '.') {
         if (decimals !== 0) {
@@ -236,6 +240,9 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
       }
       const reg = /^[1-9]\d*$/;
       if (!reg.test(value)) {
+        return;
+      }
+      if (!isPotentialNumber(value)) {
         return;
       }
       if (type === RedPackageTypeEnum.RANDOM) {

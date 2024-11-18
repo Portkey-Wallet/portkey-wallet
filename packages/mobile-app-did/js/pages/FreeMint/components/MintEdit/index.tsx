@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect, useRef, SetStateAction, Dispatch, useMemo } from 'react';
-import { StyleSheet, View, Text, Image, ScrollView } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 import { pTd } from 'utils/unit';
 import Svg from 'components/Svg';
 import FormItem from 'components/FormItem';
@@ -15,8 +15,7 @@ import ButtonRow from 'components/ButtonRow';
 import { makeStyles, useTheme } from '@rneui/themed';
 import { KeyboardSafeArea } from 'components/KeyboardSafeArea';
 import fonts from 'assets/theme/fonts';
-import { useKeyboard, useKeyboardListener } from 'hooks/useKeyboardHeight';
-import { screenHeight } from '@portkey-wallet/utils/mobile/device';
+import { useKeyboardListener } from 'hooks/useKeyboardHeight';
 
 export type EditConfig = {
   imageUri: string;
@@ -155,7 +154,7 @@ const MintEdit = (props: {
   });
   return (
     <View style={styles.wrapper}>
-      <KeyboardSafeArea containerStyle={styles.containerStyle} mode="page" bottomPad={pTd(16)} gap={pTd(82)}>
+      <KeyboardSafeArea containerStyle={styles.containerStyle} mode="page" bottomPad={pTd(16)} gap={pTd(42)}>
         <View style={styles.container}>
           <View style={styles.uploadContainer}>
             {/* <Touchable style={GStyles.center} onPress={() => uploadRef.current?.selectPhoto()}> */}
@@ -289,8 +288,8 @@ const getStyles = makeStyles(theme => ({
     flexDirection: 'column',
     paddingHorizontal: pTd(16),
     justifyContent: 'space-between',
-    // overflow: 'hidden',
     // backgroundColor: 'red',
+    // overflow: 'hidden',
   },
   deleteIconStyle: {
     position: 'absolute',

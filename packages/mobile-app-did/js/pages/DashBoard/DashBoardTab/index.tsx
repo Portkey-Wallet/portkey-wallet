@@ -24,7 +24,7 @@ const DashBoardTab: React.FC = () => {
   const { totalDisplayCount } = useAccountTokenInfo();
   const { nftSectionUiType, changeNFTSectionMode } = useNFTSection();
   const styles = getStyles();
-  const [ suffixIconDomVisible, setSuffixIconDomVisible] = useState<boolean>();
+  const [suffixIconDomVisible, setSuffixIconDomVisible] = useState<boolean>();
 
   const tabNameMap = useMemo(() => {
     return {
@@ -121,7 +121,7 @@ export const getStyles = makeStyles(theme => ({
   suffixDomWrapper: {
     alignSelf: 'center',
     flexDirection: 'row',
-    marginLeft: pTd(130),
+    marginLeft: pTd(115),
   },
 }));
 

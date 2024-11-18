@@ -9,11 +9,14 @@ import Svg from 'components/Svg';
 import Touchable from 'components/Touchable';
 import FastImage from 'components/FastImage';
 import CommonButton from 'components/CommonButton';
+import CommonAvatar from 'components/CommonAvatar';
+import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 // import ActionSheet from 'components/ActionSheet';
 
 type SelectModalProps = {
   title?: string;
   avatar?: string;
+  nickName: string;
   avatarList: string[];
   selectPhoto: (url: string) => Promise<void>;
   photoUpload: () => void;
@@ -27,6 +30,8 @@ type AvatarListProps = {
 
 const AvatarList = (props: AvatarListProps) => {
   const { onChange, itemKey, avatarList } = props;
+  const marginWidth = (screenWidth - 40 - 60 * 5) / 4;
+  console.log('marginWidth:', marginWidth, screenWidth);
 
   return (
     <View
@@ -49,7 +54,7 @@ const AvatarList = (props: AvatarListProps) => {
             justifyContent: 'center',
             alignItems: 'center',
             marginVertical: pTd(12),
-            marginRight: (idx + 1) % 5 === 0 ? 0 : pTd(13.25),
+            marginRight: (idx + 1) % 5 === 0 ? 0 : pTd(marginWidth),
           }}
           onPress={() => {
             // setSelectKey(idx);
@@ -93,7 +98,7 @@ const AvatarList = (props: AvatarListProps) => {
   );
 };
 
-const SelectModal = ({ title = '', avatar = '', selectPhoto, avatarList, photoUpload }: SelectModalProps) => {
+const SelectModal = ({ title = '', avatar = '', nickName, selectPhoto, avatarList, photoUpload }: SelectModalProps) => {
   // const { t } = useLanguage();
   // const [isFocused, setIsFocused] = useState<boolean>(false);
   const [selectKey, setSelectKey] = useState<string>('avatar');
@@ -153,17 +158,7 @@ const SelectModal = ({ title = '', avatar = '', selectPhoto, avatarList, photoUp
             position: 'relative',
             marginHorizontal: pTd(32),
           }}>
-          <FastImage
-            style={{
-              width: pTd(80),
-              height: pTd(80),
-              borderRadius: pTd(80) / 2,
-            }}
-            resizeMode="cover"
-            source={{
-              uri: icon,
-            }}
-          />
+          <CommonAvatar resizeMode="cover" avatarSize={pTd(80)} imageUrl={icon || ''} title={nickName} />
         </View>
         <View
           style={{

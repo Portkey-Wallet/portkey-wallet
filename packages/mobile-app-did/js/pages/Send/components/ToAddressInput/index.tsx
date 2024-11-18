@@ -23,7 +23,7 @@ import { getSendNetworkList } from 'pages/Send/utils';
 import { IToSendAssetParamsType, IToSendHomeParamsType } from '@portkey-wallet/types/types-ca/routeParams';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
 import { getAelfAddress, isCrossChain, isDIDAelfAddress } from '@portkey-wallet/utils/aelf';
-import { useIsValidSuffix } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { useIsValidSuffix, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { warning1Arr, WarningKey } from 'pages/Send/constant';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { INetworkItem } from '../SelectNetwork';
@@ -80,6 +80,7 @@ export default function ToAddressInput({
 
   const isValidChainId = useIsValidSuffix();
   const wallet = useCurrentWalletInfo();
+  const defaultToken = useDefaultToken();
 
   const isDangerWarning = useMemo(() => warning1Arr.includes(warning?.[0]), [warning]);
 
@@ -124,9 +125,15 @@ export default function ToAddressInput({
         // TODO: change it
         const isSameAddress = isSameAddresses(wallet?.[selectedToken?.chainId || 'AELF']?.caAddress || '', v);
         // same address
-        if (selectedToken?.chainId === 'AELF' && !isSameAddress) {
+        if (selectedToken?.chainId === 'AELF' && !isSameAddress && selectedToken?.symbol === defaultToken.symbol) {
           setCheckedPass(false);
           setWarning([WarningKey.MAIN_CHAIN_TO_NO_AFFIX_ADDRESS_ELF]);
+        } else if (
+          selectedToken?.chainId === 'AELF' &&
+          !isSameAddress &&
+          selectedToken?.symbol !== defaultToken.symbol
+        ) {
+          setCheckedPass(true);
         } else if (selectedToken?.chainId === 'AELF' && isSameAddress) {
           setCheckedPass(false);
           setWarning([WarningKey.SAME_ADDRESS]);
@@ -138,7 +145,15 @@ export default function ToAddressInput({
       setCheckFinish(true);
       return true;
     },
-    [isValidChainId, selectedToken?.chainId, setCheckFinish, setWarning, wallet],
+    [
+      defaultToken.symbol,
+      isValidChainId,
+      selectedToken?.chainId,
+      selectedToken?.symbol,
+      setCheckFinish,
+      setWarning,
+      wallet,
+    ],
   );
 
   const getNetworkList = useDebounceCallback(

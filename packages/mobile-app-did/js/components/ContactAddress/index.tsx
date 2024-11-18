@@ -7,7 +7,9 @@ import { AELF_NETWORK_NAME } from 'constants/common';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 
 export const formatStr2EllipsisStr = (address = '', startDigit = 8, endDigit = 8): string => {
-  if (!address) return '';
+  if (!address) {
+    return '';
+  }
 
   const pre = address.substring(0, startDigit);
   const suffix = address.substring(address.length - endDigit);
@@ -53,4 +55,4 @@ const ContactAddress = forwardRef<IContactAddressRef, ItemType>((props, ref) => 
 ContactAddress.displayName = 'ContactAddress';
 export default ContactAddress;
 
-export const getStyles = makeStyles(theme => ({}));
+export const getStyles = makeStyles(() => ({}));

@@ -8,14 +8,18 @@ import navigationService from './navigationService';
 export function queryFailAlert(callBack: () => void, isRecovery?: boolean, isReset?: boolean) {
   OverlayModal.hide();
   ActionSheet.alert({
+    isCloseShow: false,
     message: isRecovery ? 'Wallet Recovery Failed!' : 'Wallet Register Failed!',
     buttons: [
       {
         title: isRecovery ? 'Re-login' : 'Re-register',
         onPress: () => {
           callBack();
-          if (isReset) navigationService.reset('LoginPortkey');
-          else navigationService.navigate('LoginPortkey');
+          if (isReset) {
+            navigationService.reset('LoginPortkey');
+          } else {
+            navigationService.navigate('LoginPortkey');
+          }
         },
       },
     ],

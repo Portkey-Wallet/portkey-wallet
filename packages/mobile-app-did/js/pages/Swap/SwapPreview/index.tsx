@@ -42,6 +42,7 @@ import { AWAKEN_DEFAULT_CID } from '@portkey-wallet/constants/constants-ca/awake
 import navigationService from 'utils/navigationService';
 import { ActionType } from 'types/common';
 import ActionSheet from 'components/ActionSheet';
+import CommonToast from 'components/CommonToast';
 
 type TRouterParams = {
   swapInfo: TSwapInfo;
@@ -67,23 +68,31 @@ const SwapPreview = () => {
 
   const amountOutMin = useMemo(() => {
     const { valueOut, tokenOut } = swapInfo;
-    if (!valueOut || !tokenOut) return undefined;
+    if (!valueOut || !tokenOut) {
+      return undefined;
+    }
     return minimumAmountOut(ZERO.plus(valueOut), userSlippageTolerance).dp(tokenOut.decimals);
   }, [swapInfo, userSlippageTolerance]);
 
   const amountOutMinValue = useMemo(() => {
     const { tokenOut } = swapInfo;
-    if (amountOutMin === undefined || !tokenOut) return '-';
+    if (amountOutMin === undefined || !tokenOut) {
+      return '-';
+    }
     return `${amountOutMin.toFixed()} ${formatNameWithNoUnderline(tokenOut.symbol)}`;
   }, [amountOutMin, swapInfo]);
 
   const amountOutMinUsd = useMemo(() => {
-    if (amountOutMin === undefined) return '-';
+    if (amountOutMin === undefined) {
+      return '-';
+    }
     return `$${formatPriceUsd(ZERO.plus(tokenOutPrice).times(amountOutMin))}`;
   }, [amountOutMin, tokenOutPrice]);
 
   const priceImpact = useMemo(() => {
-    if (!swapRoute) return '-';
+    if (!swapRoute) {
+      return '-';
+    }
 
     const impactList: BigNumber[] = [];
     swapRoute.distributions.forEach(path => {
@@ -112,7 +121,9 @@ const SwapPreview = () => {
 
   const feeValue = useMemo(() => {
     const { valueOut } = swapInfo;
-    if (!valueOut) return undefined;
+    if (!valueOut) {
+      return undefined;
+    }
 
     return ZERO.plus(swapInfo.valueOut)
       .div(SWAP_RECEIVE_RATE)
@@ -122,9 +133,13 @@ const SwapPreview = () => {
       .toFixed();
   }, [swapInfo]);
   const feeValueStr = useMemo(() => {
-    if (!swapInfo.tokenOut) return '-';
+    if (!swapInfo.tokenOut) {
+      return '-';
+    }
     const _symbol = formatNameWithNoUnderline(swapInfo.tokenOut.symbol);
-    if (feeValue === undefined) return `- ${_symbol}`;
+    if (feeValue === undefined) {
+      return `- ${_symbol}`;
+    }
 
     return `${feeValue} ${_symbol}`;
   }, [feeValue, swapInfo.tokenOut]);
@@ -148,9 +163,13 @@ const SwapPreview = () => {
   const getSwapHookViewContract = useGetSwapHookViewContract();
 
   const executeCb = useCallback(async () => {
-    if (!swapInfo || !swapRoute) return;
+    if (!swapInfo || !swapRoute) {
+      return;
+    }
     const { tokenOut } = swapInfo;
-    if (!tokenOut) return;
+    if (!tokenOut) {
+      return;
+    }
 
     try {
       const routeContract = await getSwapHookViewContract();
@@ -167,7 +186,9 @@ const SwapPreview = () => {
       ).toFixed();
 
       setSwapInfo(pre => {
-        if (!pre) return pre;
+        if (!pre) {
+          return pre;
+        }
         return {
           ...pre,
           valueOut: amountOutValue,
@@ -194,7 +215,9 @@ const SwapPreview = () => {
 
   const timerRef = useRef<NodeJS.Timeout>();
   const clearTimer = useCallback(() => {
-    if (!timerRef.current) return;
+    if (!timerRef.current) {
+      return;
+    }
     clearInterval(timerRef.current);
     console.log('SwapPreview: clearTimer');
   }, []);
@@ -226,10 +249,14 @@ const SwapPreview = () => {
   const { userExpiration } = useAwakenUserExpiration();
 
   const handlePress = useCallback(async () => {
-    if (!swapInfo) return;
+    if (!swapInfo) {
+      return;
+    }
 
     const { tokenIn, tokenOut, valueIn, valueOut } = swapInfo;
-    if (!tokenIn || !tokenOut || !valueIn || !valueOut) return;
+    if (!tokenIn || !tokenOut || !valueIn || !valueOut) {
+      return;
+    }
     const caAddress = wallet[dAppChainId]?.caAddress || '';
 
     setIsSwapping(true);
@@ -252,13 +279,17 @@ const SwapPreview = () => {
           symbol: tokenIn.symbol,
           amount: LANG_MAX.toFixed(),
         });
-        if (approveResult?.error) throw approveResult?.error;
+        if (approveResult?.error) {
+          throw approveResult?.error;
+        }
       }
 
       const valueOutAmountBN = timesDecimals(valueOut, tokenOut.decimals);
 
       const result = await executeCbRef.current();
-      if (!result) return;
+      if (!result) {
+        return;
+      }
       const _swapRoute = result.swapRoute;
       const amountOutAmount = result.amountOutAmount;
 
@@ -311,7 +342,9 @@ const SwapPreview = () => {
           labsFeeRate: SWAP_LABS_FEE_RATE,
         },
       });
-      if (req?.error) throw req?.error;
+      if (req?.error) {
+        throw req?.error;
+      }
       console.log('req', req);
 
       navigationService.navigate('SwapFinishPage', {
@@ -319,6 +352,7 @@ const SwapPreview = () => {
       });
     } catch (error) {
       console.log('SwapPreview onSwap error', error);
+      CommonToast.fail('Failed to create swap order. Please try again.');
     } finally {
       console.log('onSwap finally');
       setIsSwapping(false);

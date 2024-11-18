@@ -17,7 +17,7 @@ import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import navigationService from 'utils/navigationService';
 import { isValidInteger } from '@portkey-wallet/utils/reg';
 import { ApprovalType } from '@portkey-wallet/types/verifier';
-import { makeStyles } from '@rneui/themed';
+import { makeStyles, useTheme } from '@rneui/themed';
 import { KeyboardSafeArea } from 'components/KeyboardSafeArea';
 
 interface IProps {
@@ -33,6 +33,7 @@ const MAX_LENGTH = 18;
 const EditModal: React.FC<IProps> = ({ detail }: IProps) => {
   const { t } = useLanguage();
   const pageStyles = getStyles();
+  const { theme } = useTheme();
   const [editInfo, setEditInfo] = useState<EditInfoType>();
   const [singleLimitError, setSingleLimitError] = useState<ErrorType>({ ...INIT_NONE_ERROR });
   const [dailyLimitError, setDailyLimitError] = useState<ErrorType>({ ...INIT_NONE_ERROR });
@@ -147,7 +148,7 @@ const EditModal: React.FC<IProps> = ({ detail }: IProps) => {
                   <Touchable onPress={() => onSingleLimitInput('')} style={{ marginRight: pTd(8) }}>
                     <Svg icon="clear4" size={pTd(16)} />
                   </Touchable>
-                  <TextM>{detail?.symbol}</TextM>
+                  <TextM style={{ color: theme.colors.textBase2 }}>{detail?.symbol}</TextM>
                 </View>
               }
               onChangeText={onSingleLimitInput}
@@ -164,7 +165,7 @@ const EditModal: React.FC<IProps> = ({ detail }: IProps) => {
                   <Touchable onPress={() => onDailyLimitInput('')} style={{ marginRight: pTd(8) }}>
                     <Svg icon="clear4" size={pTd(16)} />
                   </Touchable>
-                  <TextM>{detail?.symbol}</TextM>
+                  <TextM style={{ color: theme.colors.textBase2 }}>{detail?.symbol}</TextM>
                 </View>
               }
               keyboardType={isIOS ? 'number-pad' : 'numeric'}
@@ -194,6 +195,7 @@ const getStyles = makeStyles(() => ({
   },
   rightIconContainer: {
     flexDirection: 'row',
+    alignItems: 'center',
   },
   button: {},
 }));

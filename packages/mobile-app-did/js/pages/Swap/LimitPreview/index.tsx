@@ -35,6 +35,7 @@ import { useDefaultTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPr
 import { sendLimit } from '@portkey-wallet/utils/awaken/limit';
 import navigationService from 'utils/navigationService';
 import { ActionType } from 'types/common';
+import CommonToast from 'components/CommonToast';
 
 type TRouterParams = {
   tokenIn: TCurrency;
@@ -50,8 +51,7 @@ type TRouterParams = {
 const SwapPreview = () => {
   const { t } = useLanguage();
   const styles = getStyles();
-  const { tokenIn, tokenOut, valueIn, valueOut, expiryValue, unfilledValue, unfilledCount, isPriceReverse } =
-    useRouterParams<TRouterParams>();
+  const { tokenIn, tokenOut, valueIn, valueOut, expiryValue, unfilledValue } = useRouterParams<TRouterParams>();
 
   const isMainnet = useIsMainnet();
 
@@ -79,7 +79,9 @@ const SwapPreview = () => {
   const wallet = useCurrentWalletInfo();
   const limitContractAddress = useLimitContractAddress();
   const handlePress = useCallback(async () => {
-    if (!requireApproveAmount) return;
+    if (!requireApproveAmount) {
+      return;
+    }
     setIsLoading(true);
     isLoadingRef.current = true;
 
@@ -123,7 +125,9 @@ const SwapPreview = () => {
           symbol: tokenIn.symbol,
           amount: LANG_MAX.toFixed(),
         });
-        if (approveResult?.error) throw approveResult?.error;
+        if (approveResult?.error) {
+          throw approveResult?.error;
+        }
       }
 
       const realAmountOutBN = timesDecimals(valueOut, tokenOut.decimals)
@@ -157,14 +161,16 @@ const SwapPreview = () => {
         contractAddress: limitContractAddress,
         args,
       });
-      if (req?.error) throw req?.error;
-      console.log('req', req);
+      if (req?.error) {
+        throw req?.error;
+      }
 
       navigationService.navigate('SwapFinishPage', {
         actionType: ActionType.LIMIT,
       });
     } catch (error) {
       console.log('LimitConfirmModal error', error);
+      CommonToast.fail('Failed to create limit order. Please try again.');
     } finally {
       setIsLoading(false);
       isLoadingRef.current = false;
@@ -186,7 +192,9 @@ const SwapPreview = () => {
   ]);
 
   const limitFeeBN = useMemo(() => {
-    if (!valueOut || !tokenOut) return undefined;
+    if (!valueOut || !tokenOut) {
+      return undefined;
+    }
 
     return ZERO.plus(valueOut)
       .div(LIMIT_RECEIVE_RATE)
@@ -196,13 +204,17 @@ const SwapPreview = () => {
   }, [valueOut, tokenOut]);
 
   const limitFeeStr = useMemo(() => {
-    if (!limitFeeBN) return '-';
+    if (!limitFeeBN) {
+      return '-';
+    }
 
     return `${limitFeeBN.toFixed()} ${formatNameWithNoUnderline(tokenOut.symbol)}`;
   }, [limitFeeBN, tokenOut.symbol]);
 
   const limitFeeUsd = useMemo(() => {
-    if (!limitFeeBN) return '-';
+    if (!limitFeeBN) {
+      return '-';
+    }
     const value = ZERO.plus(tokenOutPrice).times(limitFeeBN);
     return `$${formatPriceUsd(value)}`;
   }, [limitFeeBN, tokenOutPrice]);

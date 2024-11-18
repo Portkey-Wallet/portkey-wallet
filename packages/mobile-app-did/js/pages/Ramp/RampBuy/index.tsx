@@ -163,7 +163,6 @@ export default function RampBuy() {
   }, [onChooseChange]);
 
   const onAmountInput = useCallback((text: string) => {
-    setInputText(text);
     isRefreshReceiveValid.current = false;
     setAmountLocalError(INIT_NONE_ERROR);
 
@@ -175,6 +174,7 @@ export default function RampBuy() {
       return;
     }
     setAmount(text);
+    setInputText(text);
   }, []);
 
   const onNext = useCallback(async () => {

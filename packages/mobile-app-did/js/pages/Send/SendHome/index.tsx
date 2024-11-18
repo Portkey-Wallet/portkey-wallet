@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { KeyboardAvoidingView, Platform, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import navigationService from 'utils/navigationService';
@@ -137,6 +137,7 @@ const SendHome: React.FC = () => {
   const [sendUsdNumber, setSendUsdNumber] = useState<string>(''); // tokenNumber  like 100
   const debounceSendNumber = useDebounce(sendNumber, 500);
   const [maxAmountSend, setMaxAmountSend] = useState<string>('0');
+  const getListFnRef = useRef<() => void>();
   const maxAmountSendUsd = useMemo(
     () => ZERO.plus(maxAmountSend).times(tokenPriceObject[assetInfo.symbol]).toFixed(2),
     [assetInfo.symbol, maxAmountSend, tokenPriceObject],
@@ -352,18 +353,17 @@ const SendHome: React.FC = () => {
     setRecentList(reList || []);
   }, [assetInfo.chainId, assetInfo.symbol, getTransformedRecentList, sendType]);
 
-  useEffectOnce(() => {
+  const initList = useCallback(() => {
     initBookList();
-    initBookList();
-  });
-
-  useEffectOnce(() => {
     initSavedList();
+  }, [initBookList, initSavedList]);
+  getListFnRef.current = initList;
+  useEffectOnce(() => {
+    initList();
   });
   useEffectOnce(() => {
     const listener = myEvents.updateSendAddressList.addListener(() => {
-      // todo:
-      console.log('update list');
+      getListFnRef.current?.();
     });
     return () => {
       listener.remove();
@@ -806,6 +806,7 @@ const SendHome: React.FC = () => {
         networkFee = await getTransactionFee(isAELFCross);
         networkFeeUnit = 'ELF';
         transferType = isAELFCross ? TransferType.GENERAL_CROSS_CHAIN : TransferType.GENERAL_SAME_CHAIN;
+        console.log('!!!');
       }
     } catch (err: any) {
       if (err?.code === 500) {
@@ -817,7 +818,7 @@ const SendHome: React.FC = () => {
     } finally {
       Loading.hide();
     }
-    console.log('checkCanPreview 20');
+    console.log('checkCanPreview 20', transferType);
     return {
       status: true,
       networkFee,
@@ -1103,7 +1104,7 @@ const SendHome: React.FC = () => {
               </View>
             </>
           )}
-          {step === 1 && (
+          {step === 1 && !selectedToContact.address && (
             <SelectAddressTab
               recentAddressList={recentList || []}
               savedAddressList={savedList || []}

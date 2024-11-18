@@ -1,4 +1,3 @@
-import { ChatTabName } from '@portkey-wallet/constants/constants-ca/chat';
 import { IToSendPreviewParamsType, ImTransferInfoType } from '@portkey-wallet/types/types-ca/routeParams';
 import { NavigateName } from 'utils/navigationService';
 
@@ -34,7 +33,4 @@ export enum TabRouteNameEnum {
   WALLET = 'Wallet',
   DISCOVER = 'Discover',
   ACTIVITY = 'Activity',
-  // TRADE = 'Trade',
-  CHAT = 'Chat',
-  SETTINGS = 'Settings',
 }

@@ -343,5 +343,6 @@ const getStyles = makeStyles(theme => ({
   skeleton: {
     borderRadius: pTd(8),
     backgroundColor: theme.colors.bgBase3,
+    opacity: 0.3,
   },
 }));

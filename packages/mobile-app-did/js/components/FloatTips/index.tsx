@@ -10,7 +10,7 @@ export interface FloatTipProps {
   display: boolean;
   content: string;
   wrapperLayoutProps: { width: number; height: number };
-  // direction?: 'top' | 'bottom' | 'left' | 'right';  // for now only support 'top'
+  direction?: 'top' | 'bottom'; // for now only support 'top' ｜ 'bottom'
   containerStyle?: ViewStyle;
   arrowStyle?: ViewStyle;
   textStyle?: TextStyle;
@@ -18,14 +18,26 @@ export interface FloatTipProps {
 }
 
 export const FloatTips = (props: FloatTipProps) => {
-  const { icon, display, content, containerStyle, textStyle, arrowStyle, wrapperLayoutProps, onPress } = props;
+  const {
+    icon,
+    display,
+    content,
+    direction = 'top',
+    containerStyle,
+    textStyle,
+    arrowStyle,
+    wrapperLayoutProps,
+    onPress,
+  } = props;
   const targetStyle = display ? defaultStyle : transparentStyle;
   const { container, text, arrow } = targetStyle;
   const [layoutProps, setLayoutProps] = useState({ width: 0, height: 0 });
   const onLayout = useCallback(
     (event: LayoutChangeEvent) => {
       const { width, height } = event.nativeEvent.layout;
-      if (width === layoutProps.width && height === layoutProps.height) return;
+      if (width === layoutProps.width && height === layoutProps.height) {
+        return;
+      }
       setLayoutProps({ width, height });
     },
     [layoutProps.height, layoutProps.width],
@@ -64,7 +76,6 @@ export const FloatTips = (props: FloatTipProps) => {
     const { width: selfWidth, height } = layoutProps;
     const { width: wrapperWidth } = wrapperLayoutProps; // since now only support top direction, only width is needed
     let positionStyle: ViewStyle = {};
-    const direction = 'top';
     const width = Math.abs(wrapperWidth - selfWidth) / 2;
     switch (direction) {
       case 'top': {
@@ -74,12 +85,19 @@ export const FloatTips = (props: FloatTipProps) => {
         };
         break;
       }
+      case 'bottom': {
+        positionStyle = {
+          top: 0,
+          left: width,
+        };
+        break;
+      }
       default: {
         throw new Error('Invalid direction, still in development, use only "top" for now.');
       }
     }
     return Object.assign({ position: 'absolute' }, positionStyle, targetStyle[direction]);
-  }, [layoutProps, targetStyle, wrapperLayoutProps]);
+  }, [direction, layoutProps, targetStyle, wrapperLayoutProps]);
   return (
     <Touchable
       onLayout={onLayout}
@@ -90,17 +108,16 @@ export const FloatTips = (props: FloatTipProps) => {
 
         <Text style={[baseTextStyle, textStyle, text]}>{content}</Text>
       </View>
-      <View style={[baseArrowStyle, arrow, arrowStyle]} />
+      <View style={[baseArrowStyle, arrow, arrowStyle, direction === 'bottom' ? targetStyle.bottomArrow : {}]} />
     </Touchable>
   );
 };
 
 const transparentStyle = StyleSheet.create({
   container: {
-    backgroundColor: 'transparent',
     borderWidth: 0,
     position: 'absolute',
-    zIndex: 999,
+    zIndex: 9999,
     justifyContent: 'center',
     alignItems: 'center',
     flexWrap: 'nowrap',
@@ -125,12 +142,15 @@ const transparentStyle = StyleSheet.create({
     zIndex: 999,
     borderTopColor: 'transparent',
   },
+  bottomArrow: {
+    transform: [{ rotateX: '180deg' }],
+  },
 });
 
 const defaultStyle = StyleSheet.create({
   container: {
     position: 'absolute',
-    zIndex: 999,
+    zIndex: 9999,
     justifyContent: 'center',
     alignItems: 'center',
     flexWrap: 'nowrap',
@@ -154,5 +174,8 @@ const defaultStyle = StyleSheet.create({
   arrow: {
     zIndex: 999,
     borderTopColor: defaultColors.bgBase3,
+  },
+  bottomArrow: {
+    transform: [{ rotateX: '180deg' }],
   },
 });

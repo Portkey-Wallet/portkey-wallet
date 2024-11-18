@@ -3,7 +3,7 @@ import CustomHeader, { CustomHeaderProps } from 'components/CustomHeader';
 import SafeAreaBox, { SafeAreaBoxProps } from 'components/SafeAreaBox';
 import { useGStyles } from 'assets/theme/useGStyles';
 import { KeyboardAwareScrollView, KeyboardAwareScrollViewProps } from 'react-native-keyboard-aware-scroll-view';
-import { TouchableWithoutFeedback, View, Keyboard, StatusBar } from 'react-native';
+import { TouchableWithoutFeedback, View, Keyboard } from 'react-native';
 import { defaultColors, darkColors } from 'assets/theme';
 import { ViewStyleType } from 'types/styles';
 import { getStatusBarHeight } from 'utils/statusbar';

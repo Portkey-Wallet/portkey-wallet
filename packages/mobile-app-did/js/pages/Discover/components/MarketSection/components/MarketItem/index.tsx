@@ -13,6 +13,7 @@ import { FloatTips } from 'components/FloatTips';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { TextM, TextS } from 'components/CommonText';
 export interface IMarketItemProps {
+  idx?: number;
   isLoading: boolean;
   item: ICryptoCurrencyItem;
   itemRefs: React.MutableRefObject<Map<any, any>>;
@@ -20,7 +21,7 @@ export interface IMarketItemProps {
 }
 
 export default forwardRef(function MarketItem(props: IMarketItemProps, _ref: any) {
-  const { isLoading, item, onStarClicked, itemRefs } = props;
+  const { isLoading, idx, item, onStarClicked, itemRefs } = props;
   const { markFavorite, unMarkFavorite } = useMarketFavorite();
   const [favorite, setFavorite] = useState(item.collected);
   const [showTips, setShowTips] = useState(false);
@@ -93,6 +94,7 @@ export default forwardRef(function MarketItem(props: IMarketItemProps, _ref: any
             textStyle={{
               color: defaultColors.textBase2,
             }}
+            direction={!idx ? 'bottom' : 'top'}
             icon={favorite ? (isDefaultSymbol ? 'favorite-disable' : 'collected') : 'collect'}
             onPress={async () => {
               onStarClicked?.(!item.collected);
@@ -154,6 +156,7 @@ export default forwardRef(function MarketItem(props: IMarketItemProps, _ref: any
 
 const styles = StyleSheet.create({
   mainContainerWrap: {
+    position: 'relative',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',

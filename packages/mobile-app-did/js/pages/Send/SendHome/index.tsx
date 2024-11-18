@@ -158,6 +158,7 @@ const SendHome: React.FC = () => {
         return;
       }
       const caContract = await getCAContract(chainInfo.chainId);
+
       return getTransferFee({
         isCross,
         sendAmount: sendAmount ?? debounceSendNumber,
@@ -1004,7 +1005,9 @@ const SendHome: React.FC = () => {
           });
 
           console.log('getSendNetworkList', data, i);
-          const tmpNetwork = data?.networkList?.find((ele: any) => ele.network === i.network);
+          const tmpNetwork = data?.networkList?.find(
+            (ele: any) => ele.network === (i?.network || i.addressInfo?.network),
+          );
 
           if (!tmpNetwork) {
             throw 'not supported';

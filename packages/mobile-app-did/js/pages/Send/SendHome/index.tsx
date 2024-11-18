@@ -807,7 +807,6 @@ const SendHome: React.FC = () => {
         networkFee = await getTransactionFee(isAELFCross);
         networkFeeUnit = 'ELF';
         transferType = isAELFCross ? TransferType.GENERAL_CROSS_CHAIN : TransferType.GENERAL_SAME_CHAIN;
-        console.log('!!!');
       }
     } catch (err: any) {
       if (err?.code === 500) {

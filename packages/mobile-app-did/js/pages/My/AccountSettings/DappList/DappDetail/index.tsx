@@ -60,7 +60,7 @@ const DappDetail: React.FC = () => {
   }, [sessionInfo]);
 
   const isRememberMe = useMemo(() => {
-    if (!!sessionInfo?.expiredPlan && !isExpired) {
+    if (!!sessionInfo?.expiredPlan && !isExpired && sessionInfo?.expiredPlan !== SessionExpiredPlan.always) {
       return true;
     }
     return false;

@@ -11,7 +11,7 @@ import Svg from 'components/Svg';
 import { TextL, TextM, TextS } from 'components/CommonText';
 import { NFTCollectionItemShowType } from '@portkey-wallet/types/types-ca/assets';
 import Touchable from 'components/Touchable';
-import { OpenCollectionObjType } from './index';
+import { CONNECTION_KEY_FLAG, OpenCollectionObjType } from './index';
 import { ChainId } from '@portkey-wallet/types';
 
 import { Skeleton } from '@rneui/base';
@@ -62,7 +62,7 @@ export default function NFTItem(props: NFTItemPropsType) {
   const [open, setOpen] = useState<boolean>(false);
 
   const openCollectionInfo = useMemo(
-    () => openCollectionObj?.[`${symbol}${chainId}`],
+    () => openCollectionObj?.[`${symbol}${CONNECTION_KEY_FLAG}${chainId}`],
     [chainId, openCollectionObj, symbol],
   );
 
@@ -107,14 +107,14 @@ export default function NFTItem(props: NFTItemPropsType) {
       pageNum: 0,
     });
   }, [caAddressInfos, chainId, fetchAccountNFTItem, symbol]);
-
+  console.log('!isFetching && showChildren.length', isFetching, children.length, collectionName);
   return (
     <View style={styles.wrap}>
       <Touchable
         onPressWithSecond={800}
         style={[styles.topSeries]}
         onPress={() => {
-          if (openCollectionObj?.[`${symbol}${chainId}`]) {
+          if (openCollectionObj?.[`${symbol}${CONNECTION_KEY_FLAG}${chainId}`]) {
             closeItem(symbol, chainId);
           } else {
             openItem(symbol, chainId, itemCount);

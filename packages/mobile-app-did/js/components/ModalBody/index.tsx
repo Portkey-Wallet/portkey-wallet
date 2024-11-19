@@ -23,6 +23,7 @@ export interface ModalBodyProps extends ViewProps {
   isMaxHeight?: boolean;
   modalBodyType?: 'center' | 'bottom';
   style?: ViewStyleType;
+  topWrapStyle?: ViewStyleType;
   onClose?: () => void;
   onBack?: () => void;
   onTouchStart?: () => void;
@@ -43,6 +44,7 @@ export const ModalBody: React.FC<ModalBodyProps> = props => {
     leftTitleDom,
     children,
     style = {},
+    topWrapStyle,
     onClose,
     bottomButtonGroup,
     onTouchStart,
@@ -63,7 +65,7 @@ export const ModalBody: React.FC<ModalBodyProps> = props => {
           styles.wrapStyle,
           style,
         ]}>
-        <View style={styles.topWrap}>
+        <View style={[styles.topWrap, topWrapStyle]}>
           <View style={styles.slot} />
           {/* {isShowLeftBackIcon && (
               <View

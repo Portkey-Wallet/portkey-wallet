@@ -81,6 +81,7 @@ export type TAccountNFTInfo = {
   maxResultCount: number;
   accountNFTList: NFTCollectionItemShowType[];
   totalRecordCount: number;
+  totalNftItemCount: number;
 };
 
 export type TAccountAssetsInfo = {

@@ -20,7 +20,7 @@ enum TabName {
 
 const DashBoardTab: React.FC = () => {
   const { t } = useLanguage();
-  const { totalRecordCount } = useAccountNFTCollectionInfo();
+  const { totalNftItemCount } = useAccountNFTCollectionInfo();
   const { totalDisplayCount } = useAccountTokenInfo();
   const { nftSectionUiType, changeNFTSectionMode } = useNFTSection();
   const styles = getStyles();
@@ -43,10 +43,10 @@ const DashBoardTab: React.FC = () => {
       {
         name: tabNameMap[TabName.NFTs],
         tabItemDom: <NFTSection />,
-        suffix: (totalRecordCount || 0) + '',
+        suffix: (totalNftItemCount || 0) + '',
       },
     ];
-  }, [tabNameMap, totalDisplayCount, totalRecordCount]);
+  }, [tabNameMap, totalDisplayCount, totalNftItemCount]);
   const modeList = useMemo(() => {
     return [
       {
@@ -75,7 +75,7 @@ const DashBoardTab: React.FC = () => {
               },
             });
           }}>
-          {totalRecordCount !== 0 && (
+          {totalNftItemCount !== 0 && (
             <Svg
               icon={nftSectionUiType === 'Collections' ? 'grid' : 'rows'}
               size={pTd(22)}
@@ -91,7 +91,7 @@ const DashBoardTab: React.FC = () => {
         </Touchable>
       </View>
     );
-  }, [changeNFTSectionMode, modeList, nftSectionUiType, styles.suffixDomWrapper, totalRecordCount]);
+  }, [changeNFTSectionMode, modeList, nftSectionUiType, styles.suffixDomWrapper, totalNftItemCount]);
   return (
     <CommonTopTab
       swipeEnabled

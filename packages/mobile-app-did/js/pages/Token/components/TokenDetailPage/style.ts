@@ -32,7 +32,7 @@ export const styles = StyleSheet.create({
     marginRight: 4,
   },
   tokenBalance: {
-    ...fonts.BGMediumFont,
+    fontWeight: '700',
     color: darkColors.textBase1,
     fontSize: pTd(32),
     lineHeight: pTd(38),
@@ -53,7 +53,7 @@ export const styles = StyleSheet.create({
     textAlign: 'left',
     width: '100%',
     paddingHorizontal: pTd(16),
-    fontWeight: '900',
+    fontWeight: '700',
     lineHeight: pTd(24),
     paddingVertical: pTd(8),
   },

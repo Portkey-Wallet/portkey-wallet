@@ -97,18 +97,22 @@ export const getStyles = makeStyles(theme => ({
   balanceAmount: {
     marginRight: pTd(8),
     fontSize: pTd(14),
+    lineHeight: pTd(17.5),
     color: theme.colors.textBase2,
   },
   maxButton: {
-    height: 'auto',
+    height: pTd(26),
     paddingHorizontal: pTd(8),
-    paddingVertical: pTd(6),
+    // paddingVertical: pTd(6),
+    paddingVertical: 0,
     borderWidth: pTd(1),
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   maxButtonTitle: {
     ...fonts.SGRegularFont,
     fontSize: pTd(14),
-    lineHeight: pTd(14),
+    lineHeight: pTd(17.5),
     color: theme.colors.textBase2,
   },
 }));

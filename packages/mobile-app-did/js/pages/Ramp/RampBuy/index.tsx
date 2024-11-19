@@ -35,7 +35,6 @@ export default function RampBuy() {
   const styles = getStyles();
   const { symbol, network } = useRouterParams<IBuyFormV2Props>();
 
-  const [inputText, setInputText] = useState('');
   const textInputRef = useRef<TextInput>(null);
 
   const { refreshRampShow } = useAppRampEntryShow();
@@ -174,7 +173,6 @@ export default function RampBuy() {
       return;
     }
     setAmount(text);
-    setInputText(text);
   }, []);
 
   const onNext = useCallback(async () => {
@@ -258,7 +256,7 @@ export default function RampBuy() {
       rightDom={rightDom}>
       <View style={styles.fiatWrap}>
         <TextInput
-          value={inputText}
+          value={amount}
           keyboardType="decimal-pad"
           ref={textInputRef}
           style={[styles.fiatInput, amountError.isError && styles.amountErrorText]}

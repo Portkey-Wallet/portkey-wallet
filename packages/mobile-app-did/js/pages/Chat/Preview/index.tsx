@@ -84,7 +84,7 @@ const Preview: React.FC = () => {
   const updateAssetInfo = useUpdateAssetInfo(chainId, token, currentAssetInfo);
 
   const checkBalance = useCallback(() => {
-    return new BigNumber(values.count).lt(new BigNumber(updateAssetInfo?.balance || 0));
+    return new BigNumber(values.count).isLessThanOrEqualTo(new BigNumber(updateAssetInfo?.balance || 0));
   }, [updateAssetInfo?.balance, values.count]);
 
   // click confirm btn
@@ -197,7 +197,7 @@ To claim, click the link, log in to your Portkey account, and verify eligibility
         <View style={styles.infoItem}>
           <View>
             <TextM style={styles.infoItemTitle}>Balance</TextM>
-            {!isLgBalance && <TextM style={styles.errorMessages}>Not enough ELF</TextM>}
+            {!isLgBalance && <TextM style={styles.errorMessages}>Not enough {symbol}</TextM>}
           </View>
           <View style={styles.infoItemRight}>
             <TextM style={[styles.infoItemValue, !isLgBalance && styles.errorMessages]}>
@@ -234,6 +234,7 @@ To claim, click the link, log in to your Portkey account, and verify eligibility
       <CommonButton
         containerStyle={styles.button}
         buttonStyle={styles.buttonStyle}
+        disabled={!isLgBalance}
         type="transparent"
         onPress={onConfirm}>
         <View style={styles.buttonContainer}>

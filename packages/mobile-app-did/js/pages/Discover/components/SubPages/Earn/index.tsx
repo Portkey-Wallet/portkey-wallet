@@ -7,18 +7,35 @@ import CommonButton from 'components/CommonButton';
 import { TextXL, TextM } from 'components/CommonText';
 import NoData from 'components/NoData';
 import { useDiscoverJumpWithNetWork } from 'hooks/discover';
-import React, { useCallback } from 'react';
+import React, { forwardRef, useCallback, useImperativeHandle } from 'react';
 import { View, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native';
 import { pTd } from 'utils/unit';
 import { isUrl } from '@portkey-wallet/utils';
 
-export const EarnPage = () => {
-  const { earnList = [] } = useDiscoverData();
+export default forwardRef(function EarnPage(_, _ref) {
+  const { earnList = [], fetchDiscoverEarnAsync } = useDiscoverData();
+
+  const onRefresh = useCallback(
+    async (callback?: () => void) => {
+      await fetchDiscoverEarnAsync();
+      callback?.();
+    },
+    [fetchDiscoverEarnAsync],
+  );
+
+  useImperativeHandle(
+    _ref,
+    () => ({
+      onRefresh,
+    }),
+    [onRefresh],
+  );
+
   return (
     <View style={styles.container}>
       {earnList.length > 0 ? (
         <ScrollView showsVerticalScrollIndicator={false} bounces={false}>
-          {earnList.map((item, index) => (
+          {[...earnList, ...earnList].map((item, index) => (
             <EarnItem key={index} {...item} />
           ))}
           <View style={styles.gap} />
@@ -28,7 +45,7 @@ export const EarnPage = () => {
       )}
     </View>
   );
-};
+});
 
 const EarnItem = (item: TBaseCardItemType) => {
   const discoverJump = useDiscoverJumpWithNetWork();
@@ -77,10 +94,10 @@ const EarnItem = (item: TBaseCardItemType) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     flexDirection: 'column',
     justifyContent: 'flex-start',
     alignItems: 'center',
+    minHeight: '100%',
     backgroundColor: darkColors.bgBase1,
   },
   item: {

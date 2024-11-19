@@ -14,7 +14,7 @@ const DappList: React.FC = () => {
 
   return (
     <PageContainer
-      titleDom={'Connected Sites'}
+      titleDom={'Connected dApps'}
       safeAreaColor={['black', 'black']}
       containerStyles={styles.pageWrap}
       scrollViewProps={{ disabled: false }}>

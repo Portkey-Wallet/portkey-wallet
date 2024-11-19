@@ -1,5 +1,7 @@
 import { Dimensions, Platform, StatusBar } from 'react-native';
 
+const ANDROID_STATUSBAR_DEFAULT_HEIGHT = 24;
+
 const STATUSBAR_DEFAULT_HEIGHT = 20;
 const STATUSBAR_X_HEIGHT = 44;
 const STATUSBAR_IP12_HEIGHT = 47;
@@ -70,7 +72,7 @@ export const isIPhoneWithDynamicIsland = () => isIPhoneWithDynamicIsland_v;
 export function getStatusBarHeight() {
   return Platform.select({
     ios: statusBarHeight,
-    android: StatusBar.currentHeight,
+    android: StatusBar.currentHeight || ANDROID_STATUSBAR_DEFAULT_HEIGHT,
     default: 0,
   });
 }

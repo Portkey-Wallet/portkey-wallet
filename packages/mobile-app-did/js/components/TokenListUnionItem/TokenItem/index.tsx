@@ -132,7 +132,6 @@ const itemStyle = StyleSheet.create({
   },
   balanceText: {
     fontSize: pTd(16),
-    lineHeight: pTd(16),
     color: darkColors.textBase1,
     ...fonts.SGMediumFont,
   },

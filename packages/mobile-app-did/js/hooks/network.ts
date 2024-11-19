@@ -26,7 +26,9 @@ export function useChangeNetwork(route: RouteProp<ParamListBase>) {
   const onConfirm = useThrottleCallback(
     async (network: NetworkItem, logged: boolean) => {
       let routeName: keyof RootStackParamList = 'LoginPortkey';
-      if (logged) routeName = 'Tab';
+      if (logged) {
+        routeName = 'Tab';
+      }
       resetStore();
       request.initService();
       im.destroy();
@@ -36,8 +38,9 @@ export function useChangeNetwork(route: RouteProp<ParamListBase>) {
       if (
         routeName !== route.name &&
         !(routeName === 'LoginPortkey' && STAY_ROUTE_NAMES.includes(route.name as NavigateName))
-      )
+      ) {
         navigationService.reset(routeName);
+      }
     },
     [dispatch, resetStore, route.name],
   );
@@ -50,14 +53,19 @@ export function useChangeNetwork(route: RouteProp<ParamListBase>) {
       const logged = tmpCaInfo?.managerInfo && tmpCaInfo[tmpChainId]?.caAddress;
       const networkName = network.networkType === 'MAINNET' ? 'Mainnet' : 'Testnet';
 
-      if (!isShowAlert) return onConfirm(network, logged);
+      if (!isShowAlert) {
+        return onConfirm(network, logged);
+      }
 
       ActionSheet.alert({
         showInfoIcon: true,
         title: t('Confirm network switch'),
-        message: t(`${logged ? 'switch network logged message' : 'switch network not logged message'}`, {
-          title: networkName,
-        }),
+        message: t(
+          `Your account on the current network cannot be used on aelf ${networkName}. You'll need to register a new account or log in to your existing ${networkName} account.`,
+          {
+            title: networkName,
+          },
+        ),
         buttons: [
           { title: 'Cancel', type: 'outline' },
           {

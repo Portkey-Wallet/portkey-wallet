@@ -593,6 +593,7 @@ const SendHome: React.FC = () => {
             ],
             closeAction: () => {
               setLoading(false);
+              Loading.hide();
             },
           });
           console.log('checkCanPreview 6');
@@ -967,7 +968,6 @@ const SendHome: React.FC = () => {
             address: addressFormat(i.addressInfo?.address, i.addressInfo?.chainId),
             chainId: i.addressInfo?.chainId,
           } as TToInfo);
-          setStep(2);
         } else if (i.network !== 'aelf' && i.addressInfo?.network !== 'aelf') {
           Loading.show();
           const { data } = await getSendNetworkList({
@@ -984,16 +984,18 @@ const SendHome: React.FC = () => {
           if (!tmpNetwork) {
             throw 'not supported';
           }
+          console.log('tmpNetwork', tmpNetwork);
           setTargetNetwork(tmpNetwork);
+          setChainList(data?.networkList);
           setSelectedToContact({ name: i?.name, address: i.address || i.addressInfo?.address } as TToInfo);
+          setWarning([WarningKey.MAKE_SURE_SUPPORT_PLATFORM]);
           setStep(2);
         } else {
           setSelectedToContact({
             name: i?.name,
-            address: addressFormat(i.address || i.addressInfo?.address, i.chainId || i.addressInfo?.chainId),
+            address: i.address || i.addressInfo?.address,
             chainId: i.chainId || i.addressInfo?.chainId,
           } as TToInfo);
-          setStep(2);
         }
       } catch (error) {
         CommonToast.failError(error);

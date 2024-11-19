@@ -27,6 +27,7 @@ const DeviceList: React.FC = () => {
   const pageStyles = getStyles();
   const { theme } = useTheme();
   const {
+    deviceAmount,
     deviceList,
     refresh,
     loading: isRefreshing,
@@ -34,6 +35,9 @@ const DeviceList: React.FC = () => {
     isInit: false,
     onError,
   });
+
+  console.log('deviceList:', deviceList, deviceAmount);
+
   const walletInfo = useCurrentWalletInfo();
   const [isRemoving, setIsRemoving] = useState(false);
   const [removeDevices, setRemoveDevices] = useState<IDeviceItem[]>([]);

@@ -67,9 +67,13 @@ export default function SecurityLock() {
   const handleRouter = useThrottleCallback(
     (pinInput: string) => {
       Loading.hide();
-      if (!isFocusedRef.current) return;
+      if (!isFocusedRef.current) {
+        return;
+      }
       locked.current = true;
-      if (!managerInfo) return navigationService.reset('LoginPortkey');
+      if (!managerInfo) {
+        return navigationService.reset('LoginPortkey');
+      }
       if (navigation.canGoBack()) {
         navigation.goBack();
       } else {
@@ -87,7 +91,9 @@ export default function SecurityLock() {
     (pwd: string) => {
       dispatch(setCredentials({ pin: pwd }));
       if (!managerInfo) {
-        if (address) handleRouter(pwd);
+        if (address) {
+          handleRouter(pwd);
+        }
         return;
       }
       if (isSyncCAInfo && !caInfo) {
@@ -135,17 +141,21 @@ export default function SecurityLock() {
   );
   const verifyBiometrics = useThrottleCallback(
     async () => {
-      if (!biometrics) return;
+      if (!biometrics) {
+        return;
+      }
       try {
         const securePassword = await getSecureStoreItem('Pin');
-        if (!securePassword) throw new Error('No password');
+        if (!securePassword) {
+          throw new Error('No password');
+        }
         handlePassword(securePassword);
       } catch (error: any) {
         if (!isUserBiometricsError(error)) {
           ActionSheet.alert({
-            message: `Biometric authentication expired.Please re-enable it.`,
+            message: 'Biometric authentication expired.Please re-enable it.',
             message2: 'After you are logged in, you can set it up in My - Account Setting - Biometric Authentication.',
-            buttons: [{ title: 'I Know', type: 'primary' }],
+            buttons: [{ title: 'OK', type: 'primary' }],
           });
         }
       }
@@ -163,7 +173,9 @@ export default function SecurityLock() {
     [verifyBiometrics],
   );
   useEffectOnce(() => {
-    if (!navigation.canGoBack()) verifyBiometrics();
+    if (!navigation.canGoBack()) {
+      verifyBiometrics();
+    }
   });
   useEffect(() => {
     const listener = AppState.addEventListener('change', handleAppStateChange);
@@ -204,7 +216,7 @@ export default function SecurityLock() {
   );
 }
 
-const getStyles = makeStyles(theme => ({
+const getStyles = makeStyles(_ => ({
   pinTitle: {
     textAlign: 'center',
     marginBottom: pTd(36),

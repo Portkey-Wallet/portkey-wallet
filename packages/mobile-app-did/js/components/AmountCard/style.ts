@@ -13,7 +13,6 @@ export const getStyles = makeStyles(theme => ({
     borderStyle: 'solid',
   },
   title: {
-    marginBottom: pTd(8),
     ...fonts.SGMediumFont,
     fontSize: pTd(14),
     lineHeight: pTd(14),
@@ -23,13 +22,14 @@ export const getStyles = makeStyles(theme => ({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    height: pTd(38),
     marginBottom: pTd(8),
   },
   amountTextWrap: {
     flex: 1,
   },
   amountText: {
-    ...fonts.BGMediumFont,
+    fontFamily: 'BricolageGrotesque-Bold',
     fontSize: pTd(32),
     lineHeight: pTd(38),
     color: theme.colors.textBase1,
@@ -40,26 +40,27 @@ export const getStyles = makeStyles(theme => ({
   containerStyle: {
     flex: 1,
     height: pTd(38),
-    marginRight: -pTd(2),
-    marginLeft: -pTd(10),
+    paddingHorizontal: 0,
   },
   inputContainerStyle: {
     borderBottomWidth: 0,
+    height: pTd(38),
   },
   inputStyle: {
-    ...fonts.BGMediumFont,
+    padding: 0,
+    fontFamily: 'BricolageGrotesque-Bold',
     fontSize: pTd(32),
-    lineHeight: pTd(38),
+    height: pTd(38),
     color: theme.colors.textBase1,
   },
-  androidInputStyle: {
-    paddingTop: 0,
-    paddingHorizontal: 0,
-    marginTop: pTd(7),
-    marginLeft: -pTd(1),
-  },
+  // errorStyle: {
+  //   display: 'none',
+  // },
   errorInputStyle: {
     color: theme.colors.textDanger1,
+  },
+  selectTokenButton: {
+    marginLeft: pTd(8),
   },
   infoWrap: {
     flexDirection: 'row',
@@ -110,6 +111,12 @@ export const getStyles = makeStyles(theme => ({
     fontSize: pTd(14),
     lineHeight: pTd(14),
     color: theme.colors.textBase2,
+  },
+  androidInputStyle: {
+    paddingTop: 0,
+    paddingHorizontal: 0,
+    marginTop: pTd(7),
+    marginLeft: -pTd(1),
   },
   errorMessage: {
     marginTop: pTd(8),

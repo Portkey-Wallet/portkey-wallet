@@ -478,13 +478,14 @@ const getStyles = makeStyles(theme => ({
     marginBottom: pTd(24),
   },
   selectContainerStyles: {
-    flex: 0,
     borderWidth: pTd(1),
-    height: pTd(40),
-    borderColor: theme.colors.textBase3,
+    borderColor: theme.colors.borderBase1,
     borderRadius: pTd(8),
     marginBottom: pTd(16),
-    justifyContent: 'flex-start',
+    paddingVertical: pTd(12),
+    paddingLeft: pTd(16),
+    paddingRight: pTd(12),
+    height: pTd(40),
   },
   packetNumWrap: {
     height: pTd(52),

@@ -4,7 +4,7 @@ import fonts from 'assets/theme/fonts';
 
 export const getStyles = makeStyles(theme => ({
   container: {
-    height: pTd(126),
+    height: pTd(104),
     padding: pTd(16),
     borderRadius: pTd(16),
     backgroundColor: theme.colors.bgBase2,

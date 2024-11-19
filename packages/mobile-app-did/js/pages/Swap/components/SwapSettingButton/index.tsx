@@ -171,8 +171,7 @@ const SwapSettingContent = () => {
               <CommonTooltip
                 tooltipProps={{
                   title: 'Expires by',
-                  description:
-                    'Your transaction will execute within the maximum amount of slippage you define for this swap.',
+                  description: "Your trade will be cancelled if it's not completed within the set timeframe.",
                 }}
               />
             </View>

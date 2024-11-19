@@ -23,7 +23,7 @@ import navigationService from 'utils/navigationService';
 import { IToSendPreviewParamsType, TransferType } from '@portkey-wallet/types/types-ca/routeParams';
 import { BaseToken } from '@portkey-wallet/types/types-ca/token';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
-import { getAelfTxResult } from '@portkey-wallet/utils/aelf';
+import { getAelfTxResult, isAelfAddress } from '@portkey-wallet/utils/aelf';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { sleep } from '@portkey-wallet/utils';
 import { useAmountInUsdShow, useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
@@ -47,6 +47,7 @@ import { useGetTokenViewContract } from 'hooks/contract';
 import { getELFChainBalance } from '@portkey-wallet/utils/balance';
 import { useRecent } from '@portkey-wallet/hooks/hooks-ca/recent';
 import { IRecentItem } from '@portkey-wallet/store/store-ca/recent/type';
+
 // import {
 // useEtransferCrossTrack,
 // useEtransferCrossFinishTrack,
@@ -81,6 +82,7 @@ const SendPreview: React.FC = () => {
     transferType = TransferType.GENERAL_SAME_CHAIN,
     targetNetwork,
   } = routerParams;
+
   useFetchTxFee();
   const [isLoading, setIsLoading] = useState(false);
   const { getAELFChainInfoConfig, getEVMChainInfoConfig, getTokenConfig } = useGetEBridgeConfig();
@@ -138,7 +140,7 @@ const SendPreview: React.FC = () => {
       };
     }
 
-    const fee = (isETransferOrEBridge ? transactionFee : networkFee) || 0;
+    const fee = networkFee || 0;
     if (ZERO.plus(sendNumber).isLessThanOrEqualTo(fee)) {
       return {
         estimateAmount: `0 ${assetInfo?.label || assetInfo?.symbol}`,
@@ -147,15 +149,34 @@ const SendPreview: React.FC = () => {
     }
 
     let _amount = sendNumber;
-    _amount = formatAmountShow(ZERO.plus(_amount).minus(networkFee || ''), Number(defaultToken.decimals));
+    if (transferType === TransferType.GENERAL_CROSS_CHAIN) {
+      _amount = formatAmountShow(
+        ZERO.plus(_amount)
+          .minus(networkFee || '')
+          .minus(crossDefaultFee),
+        Number(defaultToken.decimals),
+      );
+    } else {
+      _amount = formatAmountShow(ZERO.plus(_amount).minus(networkFee || ''), Number(defaultToken.decimals));
+    }
 
-    const amountUsd = amountInUsdShow(
-      ZERO.plus(_amount)
-        .minus(networkFee || '')
-        .toFixed(),
-      0,
-      assetInfo.symbol,
-    );
+    const amountUsd =
+      transferType === TransferType.GENERAL_CROSS_CHAIN
+        ? amountInUsdShow(
+            ZERO.plus(_amount)
+              .minus(networkFee || '')
+              .toFixed(),
+            0,
+            assetInfo.symbol,
+          )
+        : amountInUsdShow(
+            ZERO.plus(_amount)
+              .minus(networkFee || '')
+              .minus(crossDefaultFee)
+              .toFixed(),
+            0,
+            assetInfo.symbol,
+          );
     return {
       estimateAmount: `${_amount} ${assetInfo.label || assetInfo.symbol}`,
       estimateAmountUsd: isMainnet ? amountUsd : '',
@@ -164,9 +185,9 @@ const SendPreview: React.FC = () => {
     amountInUsdShow,
     assetInfo.label,
     assetInfo.symbol,
+    crossDefaultFee,
     defaultToken.decimals,
     defaultToken.symbol,
-    isETransferOrEBridge,
     isMainnet,
     networkFee,
     receiveAmount,
@@ -351,7 +372,7 @@ const SendPreview: React.FC = () => {
       console.log('crossChainTransferResult', crossChainTransferResult);
     } else if (transferType === TransferType.E_TRANSFER) {
       let network = '';
-      if (toInfo.address.includes('_')) {
+      if (isAelfAddress(toInfo.address)) {
         const arr = toInfo.address.split('_');
         network = arr[arr.length - 1];
       } else {
@@ -563,6 +584,28 @@ const SendPreview: React.FC = () => {
     }
   }, [transferType]);
 
+  const transactionFeeShow = useMemo(() => {
+    const result = {
+      feeShow: '',
+      feeUsdShow: '',
+    };
+    switch (transferType) {
+      case TransferType.E_TRANSFER:
+      case TransferType.E_BRIDGE:
+        result.feeShow = `${transactionFee} ${transactionFeeUnit}`;
+        result.feeUsdShow = `$ ${unitConverter(
+          ZERO.plus(transactionFee || '').multipliedBy(tokenPriceObject[transactionFeeUnit || '']),
+        )}`;
+        break;
+      case TransferType.GENERAL_CROSS_CHAIN:
+        result.feeShow = `${unitConverter(crossDefaultFee)} ${defaultToken.symbol}`;
+        result.feeUsdShow = `$ ${unitConverter(
+          ZERO.plus(crossDefaultFee).multipliedBy(tokenPriceObject[defaultToken.symbol]),
+        )}`;
+    }
+    return result;
+  }, [crossDefaultFee, defaultToken.symbol, tokenPriceObject, transactionFee, transactionFeeUnit, transferType]);
+
   return (
     <SendReceivePreview
       isLoading={isLoading}
@@ -591,14 +634,8 @@ const SendPreview: React.FC = () => {
           : formatChainInfoToShow(toInfo?.chainId)
       }
       destinationNetworkImageUrl={targetNetwork?.imageUrl}
-      transactionFee={isETransferOrEBridge ? `${transactionFee} ${transactionFeeUnit}` : ''}
-      transactionFeeUSD={
-        isETransferOrEBridge
-          ? `$ ${unitConverter(
-              ZERO.plus(transactionFee || '').multipliedBy(tokenPriceObject[transactionFeeUnit || '']),
-            )}`
-          : ''
-      }
+      transactionFee={transactionFeeShow.feeShow}
+      transactionFeeUSD={transactionFeeShow.feeUsdShow}
       estimatedNetworkFee={`${networkFee} ${networkFeeUnit}`}
       estimatedNetworkFeeUSD={`$ ${unitConverter(
         ZERO.plus(networkFee || '').multipliedBy(tokenPriceObject[networkFeeUnit || '']),

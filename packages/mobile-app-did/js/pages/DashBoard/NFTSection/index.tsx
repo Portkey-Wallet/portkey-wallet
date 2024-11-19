@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
-import { View, FlatList, Image } from 'react-native';
+import { View, FlatList, Image, ScrollView } from 'react-native';
 import { pTd } from 'utils/unit';
 import NFTItem from './NFTsModeItem';
 import CollectionItem from './CollectionsModeItem';
@@ -19,6 +19,7 @@ import navigationService from 'utils/navigationService';
 import MintStatusLine from 'pages/FreeMint/components/MintStatusLine';
 import { FreeMintStatus } from '@portkey-wallet/types/types-ca/freeMint';
 
+export const CONNECTION_KEY_FLAG = '<==>';
 export interface OpenCollectionObjType {
   // key = symbol+chainId
   [key: string]: {
@@ -86,6 +87,7 @@ const ListEmptyComponent = () => {
     </View>
   );
 };
+
 export default function NFTSection() {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const { recentStatus, itemId, imageUrl, setRecentStatus, setItemId, setImageUrl } = useRecentStatus();
@@ -98,6 +100,30 @@ export default function NFTSection() {
   const { clearType } = useRoute<any>();
   const { nftSectionUiType } = useNFTSection();
   const styles = getStyles();
+  useEffect(() => {
+    myEvents.refreshHomeList.addListener(() => {
+      const parsedKeys = Object.keys(openCollectionObj).map(key => {
+        const [symbol, chainId] = key.split(CONNECTION_KEY_FLAG);
+        return { symbol, chainId };
+      });
+      parsedKeys.forEach(async parsedKeysItem => {
+        await fetchAccountNFTItem({
+          symbol: parsedKeysItem.symbol,
+          chainId: parsedKeysItem.chainId as ChainId,
+          caAddressInfos: caAddressInfos.filter(item => item.chainId === parsedKeysItem.chainId),
+          pageNum: 0,
+        });
+      });
+    });
+  }, [caAddressInfos, fetchAccountNFTItem, openCollectionObj]);
+  // const isInitTheFirstFiveItem = useRef<boolean>(false);
+  // const collectionItemProp = useMemo(() => {
+  //   return accountNFTList.slice(0, 2).map(item => ({
+  //     symbol: item.symbol,
+  //     chainId: item.chainId,
+  //     itemCount: item.itemCount,
+  //   }));
+  // }, [accountNFTList]);
 
   const getNFTCollectionsAsync = useLockCallback(
     async (isInit: boolean) => {
@@ -154,8 +180,8 @@ export default function NFTSection() {
   }, [clearType]);
 
   const closeItem = useCallback((symbol: string, chainId: string) => {
-    const key = `${symbol}${chainId}`;
-
+    const key = `${symbol}${CONNECTION_KEY_FLAG}${chainId}`;
+    console.log('openCollectionObj is::', openCollectionObj);
     setOpenCollectionObj(pre => {
       const newObj = { ...pre };
       delete newObj[key];
@@ -165,7 +191,7 @@ export default function NFTSection() {
 
   const openItem = useLockCallback(
     async (symbol: string, chainId: ChainId, itemCount: number) => {
-      const key = `${symbol}${chainId}`;
+      const key = `${symbol}${CONNECTION_KEY_FLAG}${chainId}`;
 
       setOpenCollectionObj(pre => ({
         ...pre,
@@ -175,7 +201,7 @@ export default function NFTSection() {
           itemCount,
         },
       }));
-      console.log('openItem');
+      // console.log('openItem', collectionName);
       await fetchAccountNFTItem({
         symbol,
         chainId,
@@ -185,10 +211,54 @@ export default function NFTSection() {
     },
     [caAddressInfos, fetchAccountNFTItem],
   );
+  // useEffect(() => {
+  //   if (isInitTheFirstFiveItem.current) {
+  //     return;
+  //   }
+  //   if (!collectionItemProp || collectionItemProp.length === 0 || nftSectionUiType === 'Collections') {
+  //     return;
+  //   }
+  //   console.log('wfs openItem=============');
+  //   (async () => {
+  //     collectionItemProp.forEach(async item => {
+  //       console.log('wfs openItem=============2222');
+  //       const { symbol, chainId, itemCount } = item;
+  //       console.log('openItem', symbol, chainId, itemCount);
+  //       await fetchAccountNFTItem({
+  //         symbol,
+  //         chainId,
+  //         caAddressInfos: caAddressInfos.filter(innerItem => innerItem.chainId === chainId),
+  //         pageNum: 0,
+  //       });
+  //       // const key = `${symbol}${chainId}`;
 
+  //       // setOpenCollectionObj(pre => ({
+  //       //   ...pre,
+  //       //   [key]: {
+  //       //     pageNum: 0,
+  //       //     pageSize: 9,
+  //       //     itemCount,
+  //       //   },
+  //       // }));
+  //       setTimeout(() => {
+  //         const key = `${symbol}${chainId}`;
+
+  //         setOpenCollectionObj(pre => ({
+  //           ...pre,
+  //           [key]: {
+  //             pageNum: 0,
+  //             pageSize: 9,
+  //             itemCount,
+  //           },
+  //         }));
+  //       }, 100);
+  //     });
+  //     isInitTheFirstFiveItem.current = true;
+  //   })();
+  // }, [caAddressInfos, collectionItemProp, fetchAccountNFTItem, nftSectionUiType]);
   const loadMoreItem = useCallback(
     async (symbol: string, chainId: ChainId, pageNum = 0) => {
-      const key = `${symbol}${chainId}`;
+      const key = `${symbol}${CONNECTION_KEY_FLAG}${chainId}`;
       const currentOpenObj = openCollectionObj?.[key];
       const currentCollectionObj = accountNFTList.find(item => item.symbol === symbol && item.chainId === chainId);
       console.log('=====', pageNum, currentOpenObj, currentCollectionObj);
@@ -212,35 +282,38 @@ export default function NFTSection() {
   );
   return (
     <View style={[styles.wrap, nftSectionUiType === 'NFTs' ? { paddingTop: pTd(8) } : {}]}>
-      <FlatList
-        key={nftSectionUiType}
-        nestedScrollEnabled
-        refreshing={reFreshing}
-        contentContainerStyle={styles.contentContainerStyle}
-        data={totalRecordCount === 0 ? [] : accountNFTList || []}
-        numColumns={nftSectionUiType === 'Collections' ? 2 : 1}
-        columnWrapperStyle={nftSectionUiType === 'Collections' ? styles.columnWrapperStyle : null}
-        ItemSeparatorComponent={ItemSeparatorComponent}
-        ListEmptyComponent={ListEmptyComponent}
-        renderItem={({ item }: { item: NFTCollectionItemShowType }) => (
-          <NFTSectionItem
-            mode={nftSectionUiType}
-            key={`${item.symbol}${item.chainId}`}
-            isCollapsed={!openCollectionObj?.[`${item.symbol}${item.chainId}`]}
-            openCollectionObj={openCollectionObj}
-            setOpenCollectionObj={setOpenCollectionObj}
-            openItem={openItem}
-            closeItem={closeItem}
-            loadMoreItem={loadMoreItem}
-            {...item}
-          />
-        )}
-        keyExtractor={(item: NFTCollectionItemShowType) => item?.symbol + item.chainId}
-        onEndReached={() => getNFTCollectionsAsync()}
-        ListHeaderComponent={
-          <ListHeaderComponent recentStatus={recentStatus} itemId={itemId || ''} imageUrl={imageUrl || ''} />
-        }
-      />
+      <ScrollView nestedScrollEnabled contentContainerStyle={{ paddingBottom: pTd(192) }}>
+        <FlatList
+          key={nftSectionUiType}
+          // nestedScrollEnabled
+          scrollEnabled={false}
+          refreshing={reFreshing}
+          contentContainerStyle={styles.contentContainerStyle}
+          data={totalRecordCount === 0 ? [] : accountNFTList || []}
+          numColumns={nftSectionUiType === 'Collections' ? 2 : 1}
+          columnWrapperStyle={nftSectionUiType === 'Collections' ? styles.columnWrapperStyle : null}
+          ItemSeparatorComponent={ItemSeparatorComponent}
+          ListEmptyComponent={ListEmptyComponent}
+          renderItem={({ item }: { item: NFTCollectionItemShowType }) => (
+            <NFTSectionItem
+              mode={nftSectionUiType}
+              key={`${item.symbol}${item.chainId}`}
+              isCollapsed={!openCollectionObj?.[`${item.symbol}${CONNECTION_KEY_FLAG}${item.chainId}`]}
+              openCollectionObj={openCollectionObj}
+              setOpenCollectionObj={setOpenCollectionObj}
+              openItem={openItem}
+              closeItem={closeItem}
+              loadMoreItem={loadMoreItem}
+              {...item}
+            />
+          )}
+          keyExtractor={(item: NFTCollectionItemShowType) => item?.symbol + item.chainId}
+          onEndReached={() => getNFTCollectionsAsync()}
+          ListHeaderComponent={
+            <ListHeaderComponent recentStatus={recentStatus} itemId={itemId || ''} imageUrl={imageUrl || ''} />
+          }
+        />
+      </ScrollView>
     </View>
   );
 }

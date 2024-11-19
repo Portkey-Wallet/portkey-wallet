@@ -11,7 +11,9 @@ export const INFINITY = 'Infinity';
 
 export const checkNetwork = async () => {
   const state = await Network.getNetworkStateAsync();
-  if (!state.isConnected || !state.isInternetReachable) throw new Error('Unstable network. Please try again later.');
+  if (!state.isConnected || !state.isInternetReachable) {
+    throw new Error('Unstable network. Please try again later.');
+  }
 };
 
 export const getFaviconUrl = (url: string) => {
@@ -32,7 +34,7 @@ export const getFaviconUrlFromDomain = (domain = '') => {
 export const copyText = async (text: string, allowToast = true) => {
   try {
     await setStringAsync(text);
-    allowToast && CommonToast.success(i18n.t('Copy Success'));
+    allowToast && CommonToast.success(i18n.t('Address copied'));
   } catch {
     allowToast && CommonToast.success(i18n.t('Copy Fail'));
   }
@@ -58,9 +60,15 @@ export const isNumberInInterval = (
   left: number | typeof INFINITY,
   right: number | typeof INFINITY,
 ): boolean => {
-  if (left === 'Infinity' && typeof right === 'number') return num <= right;
-  if (right === 'Infinity' && typeof left === 'number') return num > left;
-  if (typeof left === 'number' && typeof right === 'number') return num > left && num <= right;
+  if (left === 'Infinity' && typeof right === 'number') {
+    return num <= right;
+  }
+  if (right === 'Infinity' && typeof left === 'number') {
+    return num > left;
+  }
+  if (typeof left === 'number' && typeof right === 'number') {
+    return num > left && num <= right;
+  }
 
   return true;
 };
@@ -76,7 +84,9 @@ export const parseVersion = (list: (string | undefined | null)[]) =>
   list.reduce((pre, cv) => (cv ? `${pre}(${cv})` : pre));
 
 export const getChainSvgName = (chainId?: ChainId) => {
-  if (!chainId) return undefined;
+  if (!chainId) {
+    return undefined;
+  }
   return chainId === 'AELF' ? 'mainnet' : 'sideChain';
 };
 
@@ -85,19 +95,19 @@ export const timeAgo = (timestampInSeconds: number) => {
   const diffInSeconds = now - timestampInSeconds;
 
   if (diffInSeconds < 60) {
-    return `< 1 minute ago`;
+    return '< 1 minute ago';
   } else if (diffInSeconds < 120) {
-    return `1 minute ago`;
+    return '1 minute ago';
   } else if (diffInSeconds < 3600) {
     const minutes = Math.floor(diffInSeconds / 60);
     return `${minutes} minutes ago`;
   } else if (diffInSeconds < 7200) {
-    return `1 hour ago`;
+    return '1 hour ago';
   } else if (diffInSeconds < 86400) {
     const hours = Math.floor(diffInSeconds / 3600);
     return `${hours} hours ago`;
   } else if (diffInSeconds < 172800) {
-    return `1 day ago`;
+    return '1 day ago';
   } else {
     const days = Math.floor(diffInSeconds / 86400);
     return `${days} days ago`;

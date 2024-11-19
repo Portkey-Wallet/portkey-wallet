@@ -8,7 +8,7 @@ import { FontStyles } from 'assets/theme/styles';
 import { Text } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
 import TokenAllowanceItem from '../components/TokenAllowanceItem';
-import { TextL, TextM } from 'components/CommonText';
+import { TextL, TextM, TextXXL } from 'components/CommonText';
 import { formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import Touchable from 'components/Touchable';
 import { copyText, timeAgo } from 'utils';
@@ -49,10 +49,11 @@ const TokenAllowanceDetail: React.FC = () => {
   const unApprove = useCallback(
     async (symbol: string) => {
       try {
-        if (!switchMap[symbol])
+        if (!switchMap[symbol]) {
           return CommonToast.warn(
             'Please interact with the dApp and initiate transaction again to enable this function.',
           );
+        }
 
         Loading.show();
         setSwitchMap(pre => ({ ...pre, [symbol]: false }));
@@ -73,7 +74,9 @@ const TokenAllowanceDetail: React.FC = () => {
           },
         });
 
-        if (unApproveReq?.error) throw unApproveReq?.error;
+        if (unApproveReq?.error) {
+          throw unApproveReq?.error;
+        }
         // if (unApproveReq?.data) {
         //   const tokenContract = await getViewTokenContractByChainId(item.chainId);
         //   const confirmationAllowance = await getAllowance(tokenContract, {
@@ -137,7 +140,7 @@ const TokenAllowanceDetail: React.FC = () => {
       scrollViewProps={{ disabled: false }}>
       <TokenAllowanceItem type="detail" item={item} />
       <View style={styles.contractAddressWrap}>
-        <TextM style={FontStyles.white}>Contract Address</TextM>
+        <TextM style={FontStyles.white}>Contract address</TextM>
         <View style={GStyles.flex1} />
         <TextM style={[GStyles.marginRight(pTd(8)), FontStyles.weight500]}>
           {formatStr2EllipsisStr(allowanceDetail.contractAddress, 6)}
@@ -148,11 +151,10 @@ const TokenAllowanceDetail: React.FC = () => {
       </View>
 
       <View style={styles.approveModuleTitle}>
-        <Text style={styles.approveTitleText}>Approvals</Text>
-        <Text
-          style={
-            styles.approveTitleDesc
-          }>{`The dApp won't ask for your approval for the tokens below until their allowance is used up.`}</Text>
+        <TextXXL style={[FontStyles.weight500]}>Approvals</TextXXL>
+        <Text style={styles.approveTitleDesc}>
+          {"The dApp won't ask for your approval for the tokens below until their allowance is used up."}
+        </Text>
       </View>
 
       {approvalList?.map((ele, key) => {
@@ -170,19 +172,21 @@ const TokenAllowanceDetail: React.FC = () => {
                 }}>
                 <View style={styles.revokeWarp}>
                   <Svg
-                    icon="delete"
+                    icon="allowance-delete"
                     size={pTd(18)}
                     color={theme.theme.colors.bgDanger1}
                     iconStyle={styles.revokeIcon}
                   />
-                  <Text style={styles.revokeText}>Revoke</Text>
+                  <TextL style={[styles.revokeText, FontStyles.weight500]}>Revoke</TextL>
                 </View>
               </Touchable>
             </View>
             <View style={styles.approveMid} />
             <View style={styles.approveBottom}>
-              <TextM style={styles.approveAmountText}>Approve Amount</TextM>
-              <TextM style={styles.approveAmount}>{formatTokenAmountShowWithDecimals(ele.amount, ele.decimals)}</TextM>
+              <TextM style={styles.approveAmountText}>Approved amount</TextM>
+              <TextM style={[styles.approveAmount, FontStyles.weight500]}>
+                {formatTokenAmountShowWithDecimals(ele.amount, ele.decimals)}
+              </TextM>
             </View>
           </View>
         );
@@ -190,11 +194,10 @@ const TokenAllowanceDetail: React.FC = () => {
 
       {showRevokedSection && (
         <View style={[styles.approveModuleTitle, styles.revokedModuleTitle]}>
-          <Text style={styles.approveTitleText}>Revoked</Text>
-          <Text
-            style={
-              styles.approveTitleDesc
-            }>{`To re-approve token allowance, go to the dApp site and initiate a transaction of the token type.`}</Text>
+          <TextXXL style={[FontStyles.weight500]}>Revoked</TextXXL>
+          <Text style={styles.approveTitleDesc}>
+            {'To re-approve token allowance, go to the dApp site and initiate a transaction of the token type.'}
+          </Text>
         </View>
       )}
 
@@ -229,11 +232,6 @@ const getStyles = makeStyles(theme => ({
   approveModuleTitle: {},
   revokedModuleTitle: {
     marginTop: pTd(32),
-  },
-  approveTitleText: {
-    fontSize: pTd(20),
-    lineHeight: pTd(24),
-    color: theme.colors.textBase1,
   },
   approveTitleDesc: {
     marginTop: pTd(4),
@@ -295,9 +293,6 @@ const getStyles = makeStyles(theme => ({
   },
   revokeText: {
     color: theme.colors.bgDanger1,
-    fontWeight: '800',
-    fontSize: pTd(16),
-    lineHeight: pTd(22),
   },
   approveBottom: {
     display: 'flex',

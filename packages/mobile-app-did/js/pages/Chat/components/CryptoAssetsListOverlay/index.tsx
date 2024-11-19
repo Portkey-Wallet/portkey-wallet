@@ -187,7 +187,7 @@ const CryptoAssetsList = ({
   }, [debounceKeyword, t]);
 
   return (
-    <ModalBody modalBodyType="bottom" title={t('You pay')} style={[gStyles.overlayStyle, { minHeight: pTd(700) }]}>
+    <ModalBody modalBodyType="bottom" title={t('You pay')} style={[gStyles.overlayStyle]}>
       <CommonInput
         placeholder={t('Search')}
         containerStyle={styles.containerStyle}
@@ -260,6 +260,7 @@ export const styles = StyleSheet.create({
   },
   flatList: {
     marginTop: pTd(8),
+    height: '100%',
   },
   tokenItem: {
     paddingLeft: 0,

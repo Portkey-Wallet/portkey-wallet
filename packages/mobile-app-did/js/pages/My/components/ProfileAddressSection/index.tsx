@@ -90,7 +90,7 @@ const ProfileAddressSection: React.FC<ProfileAddressSectionPropsType> = props =>
 
 const ProfileAddressSectionV2: React.FC<ProfileAddressSectionPropsType> = props => {
   const { title = 'Address', disable, noMarginTop, addressList: addressListProps, isMySelf } = props;
-  const isMainnet = useIsMainnet();
+  // const isMainnet = useIsMainnet();
 
   const copyContent = useCallback(
     (ele: addressItemType) =>
@@ -101,9 +101,11 @@ const ProfileAddressSectionV2: React.FC<ProfileAddressSectionPropsType> = props 
   const addressList = useMemo(() => {
     const _addressList = [...(addressListProps || [])];
     const index = _addressList.findIndex(ele => ele.chainId === 'AELF');
-    if (index === -1) return _addressList;
+    if (index === -1) {
+      return _addressList;
+    }
     const aelfAddress = _addressList.splice(index, 1)[0];
-    return [aelfAddress, ..._addressList];
+    return [..._addressList, aelfAddress];
   }, [addressListProps]);
 
   return (
@@ -118,7 +120,7 @@ const ProfileAddressSectionV2: React.FC<ProfileAddressSectionPropsType> = props 
           ]}>
           <View style={[GStyles.flexRow, GStyles.spaceBetween, styles.content]}>
             {isMySelf ? (
-              <Svg icon={ele.chainId === 'AELF' ? 'mainnet' : 'side_chain'} size={pTd(24)} />
+              <Svg icon={ele.chainId === 'AELF' ? 'mainnet' : 'chain_side'} size={pTd(24)} />
             ) : (
               <Image
                 source={{

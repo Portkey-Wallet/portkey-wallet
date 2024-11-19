@@ -7,6 +7,7 @@ import { pTd } from 'utils/unit';
 import { ModalBody } from 'components/ModalBody';
 import { makeStyles } from '@rneui/themed';
 import CommonAvatar from 'components/CommonAvatar';
+import GStyles from 'assets/theme/GStyles';
 
 type TSelectItem = {
   name: string;
@@ -78,7 +79,11 @@ const SelectList = ({ list, selectedIndex, iconSize, isShowRightCloseIcon, title
   ]);
 
   return (
-    <ModalBody modalBodyType="bottom" isShowRightCloseIcon={!!isShowRightCloseIcon} title={title}>
+    <ModalBody
+      modalBodyType="bottom"
+      isShowRightCloseIcon={!!isShowRightCloseIcon}
+      title={title}
+      topWrapStyle={GStyles.paddingTop(0)}>
       {renderModeList()}
     </ModalBody>
   );

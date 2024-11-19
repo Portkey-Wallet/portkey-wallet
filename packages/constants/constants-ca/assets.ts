@@ -15,7 +15,7 @@ export const NEW_CLIENT_MOCK_ELF_LIST: ITokenSectionResponse[] = [
     balanceInUsd: '0.000000',
     price: 0,
     decimals: 8,
-    imageUrl: 'https://portkey-did.s3.ap-northeast-1.amazonaws.com/img/aelf_token_logo.png',
+    imageUrl: 'https://portkey-did.s3.ap-northeast-1.amazonaws.com/img/aelf/Coin-ELF.png',
     symbol: 'ELF',
     tokens: [
       {
@@ -24,7 +24,7 @@ export const NEW_CLIENT_MOCK_ELF_LIST: ITokenSectionResponse[] = [
         balanceInUsd: '0.000000',
         chainId: 'AELF',
         decimals: 8,
-        imageUrl: 'https://portkey-did.s3.ap-northeast-1.amazonaws.com/img/aelf_token_logo.png',
+        imageUrl: 'https://portkey-did.s3.ap-northeast-1.amazonaws.com/img/aelf/Coin-ELF.png',
         symbol: 'ELF',
         tokenContractAddress: 'JRmBduh4nXWi1aXgdUsj5gJrzeZb2LxmrAbf7W99faZSvoAaE',
       },

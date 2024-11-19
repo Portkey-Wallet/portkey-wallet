@@ -82,7 +82,12 @@ const getStyles = makeStyles(theme => ({
     borderRadius: pTd(4),
     marginLeft: pTd(4),
     backgroundColor: theme.colors.bgSuccess2,
-    ...GStyles.paddingArg(4, 6),
+    height: pTd(20),
+    width: pTd(55),
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 }));
 

@@ -11,6 +11,9 @@ export const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: darkColors.bgBase1,
   },
+  list: {
+    flex: 1,
+  },
   card: {
     flexDirection: 'column',
     marginTop: pTd(16),

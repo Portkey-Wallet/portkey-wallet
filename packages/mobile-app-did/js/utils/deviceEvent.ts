@@ -21,6 +21,7 @@ const EventList = [
   'updateMintStatus',
   'updateSecondaryEmail',
   'updateSendAddressList',
+  'refreshHomeList',
 ] as const;
 
 const BookmarkEventList = ['closeSwipeable'] as const;

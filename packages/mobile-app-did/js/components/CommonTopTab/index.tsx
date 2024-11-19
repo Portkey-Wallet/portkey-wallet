@@ -263,7 +263,7 @@ const getToolBarStyle = makeStyles(theme => ({
     height: pTd(54),
     alignItems: 'center',
   },
-  label: { flexDirection: 'row', alignItems: 'center' },
+  label: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center' },
   blockTab: {
     padding: pTd(8),
     borderRadius: pTd(8),

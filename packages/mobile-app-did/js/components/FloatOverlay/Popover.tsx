@@ -21,6 +21,7 @@ export type ListItemType = {
   onPress?: () => void;
   title: string;
   iconName?: IconName;
+  iconSize?: number;
   iconColor?: string;
   textStyle?: TextStyle;
   active?: boolean;
@@ -105,15 +106,14 @@ function FloatPopover({
               style={[formatType === 'fixedWidth' ? styles.itemStyles : styles.dynamicWidthItemStyles, contentStyle]}>
               <View style={styles.itemContent}>
                 {item.iconName && (
-                  <Svg size={pTd(20)} icon={item.iconName} color={item.iconColor || darkColors.textBase1} />
+                  <Svg
+                    size={pTd(item.iconSize ?? 20)}
+                    icon={item.iconName}
+                    color={item.iconColor || darkColors.textBase1}
+                  />
                 )}
                 <TextM
-                  style={[
-                    styles.textStyles,
-                    contentStyle,
-                    item.textStyle,
-                    item.iconName ? styles.leftMargin12 : styles.leftMargin0,
-                  ]}>
+                  style={[styles.textStyles, item.textStyle, item.iconName ? styles.leftMargin12 : styles.leftMargin0]}>
                   {item.title}
                 </TextM>
               </View>
@@ -205,6 +205,8 @@ const getStyles = makeStyles(theme => ({
     marginLeft: pTd(12),
     color: theme.colors.textBase1,
     ...fonts.SGRegularFont,
+    height: pTd(16),
+    lineHeight: pTd(16),
   },
   leftMargin12: {
     marginLeft: pTd(12),

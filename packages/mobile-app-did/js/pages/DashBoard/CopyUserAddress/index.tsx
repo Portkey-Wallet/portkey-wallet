@@ -5,7 +5,6 @@ import { ModalBody } from 'components/ModalBody';
 import Touchable from 'components/Touchable';
 import Svg from 'components/Svg';
 import { pTd } from 'utils/unit';
-import fonts from 'assets/theme/fonts';
 import { addressFormat, formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useCurrentChainList } from '@portkey-wallet/hooks/hooks-ca/chainList';
@@ -24,7 +23,9 @@ const CopyUserAddress: React.FC = () => {
 
   const getChainInfoByChainId = useCallback(
     (chainId: ChainId) => {
-      if (!currentChainList) return undefined;
+      if (!currentChainList) {
+        return undefined;
+      }
       return currentChainList.find(chain => chain.chainId === chainId);
     },
     [currentChainList],
@@ -34,12 +35,13 @@ const CopyUserAddress: React.FC = () => {
 
   const onCopyAddress = useCallback(({ address, chainId }: { address: string; chainId: ChainId }) => {
     setStringAsync(`ELF_${address}_${chainId}`);
-    CommonToast.success('address copied');
+    CommonToast.success('Address copied');
+    OverlayModal.hide();
   }, []);
 
   return (
-    <ModalBody title={'Copy Address'} modalBodyType="bottom">
-      {caAddressInfos.map((item, index) => {
+    <ModalBody title={'Your addresses'} modalBodyType="bottom">
+      {caAddressInfos?.reverse()?.map((item, index) => {
         return (
           <View key={index} style={styles.itemWrap}>
             <View style={styles.leftWrap}>
@@ -85,14 +87,13 @@ const getStyles = makeStyles(theme => ({
   },
   chainText: {
     color: theme.colors.textBase1,
-    fontSize: pTd(14),
+    fontSize: pTd(16),
     lineHeight: pTd(22),
-    ...fonts.mediumFont,
   },
   addressText: {
     marginTop: pTd(4),
     color: theme.colors.textBase2,
-    fontSize: pTd(12),
+    fontSize: pTd(14),
     lineHeight: pTd(16),
   },
   svgWrap: {},

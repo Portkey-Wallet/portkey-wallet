@@ -112,6 +112,11 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
       {
         title: 'Set as Profile Photo',
         iconName: 'profile',
+        iconSize: 22,
+        textStyle: {
+          fontSize: pTd(16),
+          lineHeight: pTd(23),
+        },
         iconColor: theme.colors.iconBase1,
         onPress: async () => {
           try {
@@ -129,7 +134,7 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
         },
       },
     ];
-  }, [imageUrl, setUserInfo]);
+  }, [imageUrl, setUserInfo, theme.colors.iconBase1]);
 
   const onPressMore = useCallback(
     async (event: GestureResponderEvent) => {
@@ -146,7 +151,7 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
           width: 0,
           height: 0,
         },
-        contentStyle: { color: darkColors.textBase1 },
+        contentStyle: { color: darkColors.textBase1, width: pTd(212) },
         containerStyle: { backgroundColor: darkColors.bgBase1, borderColor: darkColors.borderBase1, borderWidth: 1 },
       });
     },

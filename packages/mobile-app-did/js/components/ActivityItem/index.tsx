@@ -131,7 +131,7 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
     }
     return (
       <TextS numberOfLines={1} ellipsizeMode="tail" style={itemStyle.usdtBalance}>
-        {formatAmountUSDShow(!isMainnet ? item?.currentTxPriceInUsd : '')}
+        {formatAmountUSDShow(isMainnet ? item?.currentTxPriceInUsd : '')}
       </TextS>
     );
   }, [isMainnet, item?.currentTxPriceInUsd, itemStyle.usdtBalance]);

@@ -9,6 +9,7 @@ export function queryFailAlert(callBack: () => void, isRecovery?: boolean, isRes
   OverlayModal.hide();
   ActionSheet.alert({
     isCloseShow: false,
+    isModalCloseDisable: true,
     message: isRecovery ? 'Wallet Recovery Failed!' : 'Wallet Register Failed!',
     buttons: [
       {

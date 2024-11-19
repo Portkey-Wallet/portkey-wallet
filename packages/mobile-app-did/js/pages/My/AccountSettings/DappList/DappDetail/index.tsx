@@ -29,7 +29,7 @@ import { useDiscoverJumpWithNetWork } from 'hooks/discover';
 import { useCheckSiteIsInBlackList } from '@portkey-wallet/hooks/hooks-ca/cms';
 import CommonButton from 'components/CommonButton';
 import Touchable from 'components/Touchable';
-import { makeStyles, useTheme } from '@rneui/themed';
+import { makeStyles } from '@rneui/themed';
 import CommonTooltip from 'components/CommonTooltip';
 
 interface RouterParams {
@@ -51,7 +51,6 @@ const DappDetail: React.FC = () => {
   const discoverJump = useDiscoverJumpWithNetWork();
 
   const styles = getStyles();
-  const theme = useTheme();
 
   const isExpired = useMemo(() => {
     if (!sessionInfo) {
@@ -61,7 +60,7 @@ const DappDetail: React.FC = () => {
   }, [sessionInfo]);
 
   const isRememberMe = useMemo(() => {
-    if (!!sessionInfo?.expiredPlan && !isExpired) {
+    if (!!sessionInfo?.expiredPlan && !isExpired && sessionInfo?.expiredPlan !== SessionExpiredPlan.always) {
       return true;
     }
     return false;
@@ -71,6 +70,18 @@ const DappDetail: React.FC = () => {
     () => checkOriginInBlackList(dappInfo?.origin || ''),
     [checkOriginInBlackList, dappInfo?.origin],
   );
+
+  // const showTips = useCallback(() => {
+  //   ActionSheet.alert({
+  //     message: '',
+  //     buttons: [
+  //       {
+  //         title: 'OK',
+  //         type: 'primary',
+  //       },
+  //     ],
+  //   });
+  // }, []);
 
   const showOverlay = useCallback(() => {
     showPeriodOverlay({
@@ -129,7 +140,7 @@ const DappDetail: React.FC = () => {
 
   return (
     <PageContainer
-      titleDom={'Dapp Details'}
+      titleDom={'dApp Details'}
       safeAreaColor={['black', 'black']}
       containerStyles={styles.pageWrap}
       scrollViewProps={{ disabled: true }}>
@@ -139,13 +150,13 @@ const DappDetail: React.FC = () => {
         onPress={() => onJumpToDapp(dappInfo?.name || '', dappInfo?.origin || '')}
       />
       <View style={styles.connectSection}>
-        <TextM style={FontStyles.white}>{t('Connected time')}</TextM>
-        <TextM style={FontStyles.weight500}>{formatTimeToStr(dappInfo?.connectedTime)}</TextM>
+        <TextL>{t('Connected time')}</TextL>
+        <TextL style={FontStyles.weight500}>{formatTimeToStr(dappInfo?.connectedTime)}</TextL>
       </View>
 
       {!isInBlackList && (
         <View style={styles.rememberSection}>
-          <View>
+          <View style={styles.rememberFirstLine}>
             <Touchable style={[GStyles.flexRow, GStyles.itemCenter]}>
               <TextL>{t('Remember me')}</TextL>
               <CommonTooltip
@@ -154,12 +165,19 @@ const DappDetail: React.FC = () => {
                 tooltipProps={{
                   title: 'Remember me',
                   description:
-                    "Once enabled, your session key will automatically approve all requests from this DApp, on this device only. You won't see pop-up notifications asking for your approvals until the session key expires. This feature is automatically off when you disconnect from the DApp or when the session key expires. You can also manually disable it or change the expiration time. ",
+                    "Once enabled, your wallet will auto-approve all requests from this dApp on this device. You won't receive pop-up notifications for approvals until the session expires. This feature turns off automatically when you disconnect from the dApp or when the session expires. You can manually disable it or adjust the expiration time at any time.",
                 }}
               />
             </Touchable>
-
-            <TextM style={styles.rememberTip}>{t('Skip authentication after enabled')}</TextM>
+            <View>
+              <TextM style={[styles.rememberTip, FontStyles.font7]}>
+                {t(
+                  isRememberMe
+                    ? 'Disable to always require authentication for this dApp.'
+                    : 'Enable to skip authentication for this dApp.',
+                )}
+              </TextM>
+            </View>
           </View>
           <View style={styles.rememberSwitchWrap}>
             <CommonSwitch
@@ -176,15 +194,15 @@ const DappDetail: React.FC = () => {
           <TextL>{t('Session key expires in')}</TextL>
           <Touchable style={styles.selectTimeWrap} onPress={showOverlay}>
             <TextL>{SessionKeyMap[sessionInfo?.expiredPlan || SessionExpiredPlan.hour1]}</TextL>
-            <Svg icon="right-arrow" size={pTd(16)} iconStyle={styles.rightArrow} />
+            <Svg icon="down-arrow" size={pTd(16)} iconStyle={styles.rightArrow} />
           </Touchable>
         </View>
       )}
 
       {!isExpired && !isInBlackList && isRememberMe && (
         <View style={styles.expiresTimeWrap}>
-          <TextM style={{ color: theme.theme.colors.textBase3 }}>{t('Expiration time')}</TextM>
-          <TextM style={{ color: theme.theme.colors.textBase3 }}>
+          <TextM style={[FontStyles.font7]}>{t('Expiration time: ')}</TextM>
+          <TextM style={[FontStyles.font7]}>
             {sessionInfo?.expiredPlan === SessionExpiredPlan.always
               ? '--'
               : formatTimeToStr(sessionInfo?.expiredTime || 0)}
@@ -243,7 +261,7 @@ const getStyles = makeStyles(theme => ({
     padding: pTd(16),
   },
   connectSection: {
-    padding: pTd(16),
+    ...GStyles.paddingArg(16, 0),
     marginBottom: pTd(12),
     backgroundColor: theme.colors.bg6,
     display: 'flex',
@@ -258,6 +276,9 @@ const getStyles = makeStyles(theme => ({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
+  },
+  rememberFirstLine: {
+    flex: 1,
   },
   rememberTip: {
     color: theme.colors.textBase3,

@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import { TextM } from 'components/CommonText';
@@ -40,6 +40,7 @@ const DappListItem: React.FC<DappListItemProps> = ({ item, type = 'home', onPres
             showProtocolIcon={false}
             title={getCmsWebsiteInfoName(item?.origin || '') || item?.name || getHost(item?.origin || '')}
             url={item?.origin || ''}
+            textFontSize={pTd(16)}
             wrapStyle={styles.textWithPro}
           />
           <Touchable onPress={() => onPress?.(item)}>
@@ -112,6 +113,7 @@ const getStyles = makeStyles(theme => ({
     display: 'flex',
     justifyContent: 'center',
     flexDirection: 'row',
+    paddingRight: pTd(0),
   },
   itemCenter: {
     flex: 1,

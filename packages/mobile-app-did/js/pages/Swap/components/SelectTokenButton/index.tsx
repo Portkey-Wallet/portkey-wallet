@@ -15,6 +15,7 @@ import { useAwakenTokenList } from '@portkey-wallet/hooks/hooks-ca/awaken/state'
 import CurrencyItem from '../CurrencyItem';
 import { formatNameWithNoUnderline } from '@portkey-wallet/utils';
 import { ViewStyleType } from 'types/styles';
+import myEvents from 'utils/deviceEvent';
 
 interface ISelectTokenContentProps {
   title: string;
@@ -71,6 +72,17 @@ const SelectTokenContent: React.FC<ISelectTokenContentProps> = ({ title, onSelec
         }}
       />
       <FlatList
+        onLayout={e => {
+          myEvents.nestScrollViewLayout.emit(e.nativeEvent.layout);
+        }}
+        onScroll={({ nativeEvent }) => {
+          const {
+            contentOffset: { y: scrollY },
+          } = nativeEvent;
+          if (scrollY <= 0) {
+            myEvents.nestScrollViewScrolledTop.emit();
+          }
+        }}
         nestedScrollEnabled
         refreshing={false}
         data={filterList}

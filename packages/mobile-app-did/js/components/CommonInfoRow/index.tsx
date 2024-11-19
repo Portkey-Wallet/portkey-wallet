@@ -107,7 +107,7 @@ export const getStyles = makeStyles(theme => ({
     ...fonts.SGRegularFont,
     color: theme.colors.textBase1,
     fontSize: pTd(16),
-    lineHeight: pTd(22),
+    lineHeight: pTd(20),
   },
   infoLabelHelpIcon: {
     marginLeft: pTd(4),

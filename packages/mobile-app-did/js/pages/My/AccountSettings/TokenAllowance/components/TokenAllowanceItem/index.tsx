@@ -15,7 +15,6 @@ import { ITokenAllowance } from '@portkey-wallet/types/types-ca/allowance';
 import { formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import { UNKNOWN } from '@portkey-wallet/constants/constants-ca/allowance';
 import { makeStyles } from '@rneui/themed';
-import { none } from 'ramda';
 
 interface ITokenAllowanceItem {
   type?: 'home' | 'detail';
@@ -26,6 +25,8 @@ interface ITokenAllowanceItem {
 const TokenAllowanceItem: React.FC<ITokenAllowanceItem> = ({ item, type = 'home', onPress }) => {
   const { getCmsWebsiteInfoImageUrl, getCmsWebsiteInfoName } = useGetCmsWebsiteInfo();
   const styles = getStyles();
+
+  console.log('===img', item?.icon || getCmsWebsiteInfoImageUrl(item?.url || ''));
 
   if (type === 'detail') {
     return (
@@ -115,6 +116,7 @@ const getStyles = makeStyles(theme => ({
     display: 'flex',
     justifyContent: 'center',
     flexDirection: 'row',
+    paddingRight: pTd(0),
   },
   itemCenter: {
     flex: 1,

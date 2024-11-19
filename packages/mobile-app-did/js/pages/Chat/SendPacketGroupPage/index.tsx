@@ -199,8 +199,9 @@ const getStyles = makeStyles(theme => ({
     alignItems: 'center',
     marginBottom: pTd(16),
     borderRadius: pTd(8),
-    borderColor: theme.colors.textBase3,
+    borderColor: theme.colors.borderBase1,
     borderWidth: pTd(1),
+    paddingHorizontal: pTd(4),
   },
   tabWrapStyle: {
     flex: 1,

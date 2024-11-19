@@ -1,9 +1,8 @@
-import { defaultColors } from 'assets/theme';
 import CommonSwitch from 'components/CommonSwitch';
 import { TextM } from 'components/CommonText';
 import React, { useState } from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text } from 'react-native';
 import { pTd } from 'utils/unit';
 import { makeStyles } from '@rneui/themed';
 
@@ -61,6 +60,5 @@ const getStyles = makeStyles(theme => ({
     color: theme.colors.textBase2,
     fontSize: pTd(14),
     fontWeight: '400',
-    lineHeight: pTd(20),
   },
 }));

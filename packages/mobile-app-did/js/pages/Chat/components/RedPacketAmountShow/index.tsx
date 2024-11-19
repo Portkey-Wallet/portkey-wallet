@@ -51,7 +51,7 @@ export default RedPacketAmountShow;
 
 const getStyles = makeStyles(() => ({
   amount: {
-    ...fonts.mediumFont,
+    ...fonts.SGMediumFont,
     fontSize: pTd(32),
   },
   symbol: {

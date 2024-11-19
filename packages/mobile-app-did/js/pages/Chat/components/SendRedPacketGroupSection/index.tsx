@@ -62,7 +62,7 @@ export type SendRedPacketGroupSectionPropsType = {
 const AMOUNT_LABEL_MAP = {
   [RedPackageTypeEnum.P2P]: 'Amount',
   [RedPackageTypeEnum.FIXED]: 'Amount Each',
-  [RedPackageTypeEnum.RANDOM]: 'Total Amount',
+  [RedPackageTypeEnum.RANDOM]: 'Total amount',
 };
 
 export default function SendRedPacketGroupSection(props: SendRedPacketGroupSectionPropsType) {
@@ -484,6 +484,7 @@ const getStyles = makeStyles(theme => ({
     borderColor: theme.colors.textBase3,
     borderRadius: pTd(8),
     marginBottom: pTd(16),
+    justifyContent: 'flex-start',
   },
   packetNumWrap: {
     height: pTd(52),

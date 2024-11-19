@@ -35,13 +35,20 @@ const CommonInfoRow = ({ label, value, isError }: ICommonInfoRowProps) => {
     <View style={styles.infoRow}>
       <View style={styles.infoLabelColumnWrap}>
         <View style={styles.infoLabelWrap}>
-          <Text style={styles.infoLabel}>{t(label.text)}</Text>
+          <Text style={styles.infoLabel} numberOfLines={1} ellipsizeMode={'tail'}>
+            {t(label.text)}
+          </Text>
           {label.tooltipProps && (
             <CommonTooltip iconStyle={styles.infoLabelHelpIcon} tooltipProps={label.tooltipProps} />
           )}
         </View>
         {label.textBelow && (
-          <Text style={[styles.infoLabelBelow, isError ? styles.infoErrorText : undefined]}>{t(label.textBelow)}</Text>
+          <Text
+            style={[styles.infoLabelBelow, isError ? styles.infoErrorText : undefined]}
+            numberOfLines={1}
+            ellipsizeMode={'tail'}>
+            {t(label.textBelow)}
+          </Text>
         )}
       </View>
       <View style={styles.infoValueColumnWrap}>
@@ -61,7 +68,12 @@ const CommonInfoRow = ({ label, value, isError }: ICommonInfoRowProps) => {
               </Text>
             </View>
             {value.textBelow && (
-              <Text style={[styles.infoValueBelow, isError ? styles.infoErrorText : undefined]}>{value.textBelow}</Text>
+              <Text
+                style={[styles.infoValueBelow, isError ? styles.infoErrorText : undefined]}
+                numberOfLines={1}
+                ellipsizeMode={'tail'}>
+                {value.textBelow}
+              </Text>
             )}
           </>
         )}
@@ -81,6 +93,7 @@ export const getStyles = makeStyles(theme => ({
     paddingVertical: pTd(16),
   },
   infoLabelColumnWrap: {
+    flexShrink: 1,
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'flex-start',
@@ -106,7 +119,7 @@ export const getStyles = makeStyles(theme => ({
     lineHeight: pTd(20),
   },
   infoValueColumnWrap: {
-    flex: 1,
+    flexShrink: 1,
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'flex-end',
@@ -118,6 +131,7 @@ export const getStyles = makeStyles(theme => ({
     alignItems: 'center',
   },
   infoValue: {
+    flexShrink: 1,
     ...fonts.SGMediumFont,
     color: theme.colors.textBase1,
     fontSize: pTd(16),
@@ -130,11 +144,13 @@ export const getStyles = makeStyles(theme => ({
     lineHeight: pTd(20),
   },
   infoValueLeftIcon: {
+    flexShrink: 0,
     width: pTd(18),
     height: pTd(18),
     marginRight: pTd(4),
   },
   infoValueLeftSvg: {
+    flexShrink: 0,
     marginRight: pTd(4),
   },
   infoErrorText: {

@@ -1053,6 +1053,7 @@ const SendHome: React.FC = () => {
                 imageUrl={assetInfo.imageUrl}
               />
               <TokenAmountInput
+                showErrorInput
                 warningTip={errorMessage}
                 value={sendNumber}
                 usdValue={sendUsdNumber}

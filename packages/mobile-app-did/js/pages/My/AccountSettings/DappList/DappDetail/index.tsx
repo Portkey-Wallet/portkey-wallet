@@ -1,17 +1,16 @@
 import React, { useCallback, useMemo } from 'react';
 import PageContainer from 'components/PageContainer';
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
-import { TextL, TextM, TextS } from 'components/CommonText';
-import { BGStyles, FontStyles } from 'assets/theme/styles';
+import { TextL, TextM } from 'components/CommonText';
+import { FontStyles } from 'assets/theme/styles';
 import { pTd } from 'utils/unit';
 import DappListItem from '../components/DappListItem';
 import { useLanguage } from 'i18n/hooks';
 import Svg from 'components/Svg';
-import ActionSheet from 'components/ActionSheet';
 import CommonSwitch from 'components/CommonSwitch';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
@@ -55,12 +54,16 @@ const DappDetail: React.FC = () => {
   const theme = useTheme();
 
   const isExpired = useMemo(() => {
-    if (!sessionInfo) return false;
+    if (!sessionInfo) {
+      return false;
+    }
     return hasSessionInfoExpired(sessionInfo);
   }, [sessionInfo]);
 
   const isRememberMe = useMemo(() => {
-    if (!!sessionInfo?.expiredPlan && !isExpired) return true;
+    if (!!sessionInfo?.expiredPlan && !isExpired) {
+      return true;
+    }
     return false;
   }, [isExpired, sessionInfo]);
 
@@ -69,23 +72,13 @@ const DappDetail: React.FC = () => {
     [checkOriginInBlackList, dappInfo?.origin],
   );
 
-  const showTips = useCallback(() => {
-    ActionSheet.alert({
-      message: '',
-      buttons: [
-        {
-          title: 'OK',
-          type: 'primary',
-        },
-      ],
-    });
-  }, []);
-
   const showOverlay = useCallback(() => {
     showPeriodOverlay({
       value: dappInfo?.sessionInfo?.expiredPlan || SessionExpiredPlan.hour1,
       onConfirm: value => {
-        if (!pin) return;
+        if (!pin) {
+          return;
+        }
         updateSessionInfo({
           manager: getManagerAccount(pin),
           origin: getOrigin(dappInfo?.origin || ''),
@@ -100,16 +93,18 @@ const DappDetail: React.FC = () => {
     (v: boolean) => {
       if (v) {
         // select RememberMe
-        if (!pin) return;
+        if (!pin) {
+          return;
+        }
         updateSessionInfo({
           manager: getManagerAccount(pin),
           origin: getOrigin(dappInfo?.origin || ''),
           expiredPlan: SessionExpiredPlan.hour1,
         });
-        CommonToast.success('Session Key enabled');
+        CommonToast.success('"Remember Me" enabled.');
       } else {
         updateSessionInfo({ origin: getOrigin(dappInfo?.origin || '') });
-        CommonToast.success('Session Key disabled');
+        CommonToast.success('"Remember Me" disabled.');
       }
     },
     [dappInfo?.origin, pin, updateSessionInfo],
@@ -158,7 +153,8 @@ const DappDetail: React.FC = () => {
                 iconStyle={{ marginLeft: pTd(4) }}
                 tooltipProps={{
                   title: 'Remember me',
-                  description: `Once enabled, your session key will automatically approve all requests from this DApp, on this device only. You won't see pop-up notifications asking for your approvals until the session key expires. This feature is automatically off when you disconnect from the DApp or when the session key expires. You can also manually disable it or change the expiration time. `,
+                  description:
+                    "Once enabled, your session key will automatically approve all requests from this DApp, on this device only. You won't see pop-up notifications asking for your approvals until the session key expires. This feature is automatically off when you disconnect from the DApp or when the session key expires. You can also manually disable it or change the expiration time. ",
                 }}
               />
             </Touchable>

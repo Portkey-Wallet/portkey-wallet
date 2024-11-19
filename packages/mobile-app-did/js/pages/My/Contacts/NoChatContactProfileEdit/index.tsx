@@ -197,7 +197,7 @@ const ContactEdit: React.FC = () => {
             try {
               Loading.show();
               await deleteContactApi(contact);
-              CommonToast.success(t('Contact Deleted'), undefined, 'bottom');
+              CommonToast.success(t('Address deleted'), undefined, 'bottom');
               myEvents.updateSendAddressList.emit();
               if (from === RECENT_PAGE_NAME) {
                 // go back two pages
@@ -528,6 +528,7 @@ export const getPageStyles = makeStyles(theme => ({
     paddingTop: pTd(12),
     paddingBottom: pTd(12),
     marginTop: pTd(16),
+    verticalAlign: 'top',
   },
   exchangeItem: {
     lineHeight: pTd(16),

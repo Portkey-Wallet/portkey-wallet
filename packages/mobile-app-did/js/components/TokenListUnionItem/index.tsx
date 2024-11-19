@@ -169,7 +169,6 @@ const itemStyle = StyleSheet.create({
   },
   token: {
     color: darkColors.textBase1,
-    lineHeight: pTd(16),
     overflow: 'hidden',
     ...fonts.SGMediumFont,
   },

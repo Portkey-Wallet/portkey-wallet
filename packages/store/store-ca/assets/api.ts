@@ -112,7 +112,7 @@ export function fetchNFTSeriesList({
   skipCount: number;
   maxResultCount?: number;
   caAddressInfos: { chainId: string; caAddress: string }[];
-}): Promise<{ data: any[]; totalRecordCount: number }> {
+}): Promise<{ data: any[]; totalRecordCount: number; totalNftItemCount: number }> {
   return request.assets.fetchAccountNftCollectionList({
     params: {
       caAddressInfos,

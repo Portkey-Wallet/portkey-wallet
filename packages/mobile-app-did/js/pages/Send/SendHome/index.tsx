@@ -593,6 +593,7 @@ const SendHome: React.FC = () => {
             ],
             closeAction: () => {
               setLoading(false);
+              Loading.hide();
             },
           });
           console.log('checkCanPreview 6');

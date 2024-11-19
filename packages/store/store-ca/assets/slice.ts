@@ -29,6 +29,7 @@ export const INIT_ACCOUNT_NFT_INFO = {
   maxResultCount: 10,
   accountNFTList: [],
   totalRecordCount: 0,
+  totalNftItemCount: 0,
 };
 
 export const INIT_ACCOUNT_ASSETS_INFO = {
@@ -151,6 +152,7 @@ export const fetchNFTCollectionsAsync = createAsyncThunk(
     return {
       list: response.data,
       totalRecordCount: response.totalRecordCount,
+      totalNftItemCount: response.totalNftItemCount,
       maxNFTCount,
       skipCount,
       maxResultCount,
@@ -438,7 +440,8 @@ export const assetsSlice = createSlice({
         state.accountNFT.isFetching = false;
       })
       .addCase(fetchNFTCollectionsAsync.fulfilled, (state, action) => {
-        const { list, totalRecordCount, maxNFTCount, skipCount, maxResultCount, currentNetwork } = action.payload;
+        const { list, totalRecordCount, totalNftItemCount, maxNFTCount, skipCount, maxResultCount, currentNetwork } =
+          action.payload;
         const preAccountNFTCollectionList = state.accountNFT.accountNFTInfo?.[currentNetwork]?.accountNFTList || [];
         if (skipCount !== 0 && preAccountNFTCollectionList.length === totalRecordCount) {
           state.accountNFT.isFetching = false;
@@ -459,6 +462,7 @@ export const assetsSlice = createSlice({
           accountNFTList: newAllAccountList,
           skipCount,
           totalRecordCount,
+          totalNftItemCount,
           maxResultCount,
         };
         state.accountNFT.isFetching = false;

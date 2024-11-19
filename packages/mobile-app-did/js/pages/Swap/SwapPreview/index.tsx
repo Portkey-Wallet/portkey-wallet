@@ -43,6 +43,7 @@ import navigationService from 'utils/navigationService';
 import { ActionType } from 'types/common';
 import ActionSheet from 'components/ActionSheet';
 import CommonToast from 'components/CommonToast';
+import { HELP_URL } from 'pages/Send/constant';
 
 type TRouterParams = {
   swapInfo: TSwapInfo;
@@ -373,7 +374,8 @@ const SwapPreview = () => {
       footerStyle={styles.footerWrap}
       poweredIcon={<Svg icon="awakenLogo" oblongSize={[pTd(45), pTd(12)]} />}
       buttonProps={{ title: t('Swap'), onPress: handlePress }}
-      isLoading={isSwapping}>
+      isLoading={isSwapping}
+      helpUrl={HELP_URL}>
       <PreviewAmountCard
         style={styles.previewAmountCard}
         tokenIn={swapInfo.tokenIn}

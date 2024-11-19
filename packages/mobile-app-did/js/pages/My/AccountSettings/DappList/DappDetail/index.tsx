@@ -112,10 +112,10 @@ const DappDetail: React.FC = () => {
           origin: getOrigin(dappInfo?.origin || ''),
           expiredPlan: SessionExpiredPlan.hour1,
         });
-        CommonToast.success('Session Key enabled');
+        CommonToast.success('"Remember Me" enabled.');
       } else {
         updateSessionInfo({ origin: getOrigin(dappInfo?.origin || '') });
-        CommonToast.success('Session Key disabled');
+        CommonToast.success('"Remember Me" disabled.');
       }
     },
     [dappInfo?.origin, pin, updateSessionInfo],

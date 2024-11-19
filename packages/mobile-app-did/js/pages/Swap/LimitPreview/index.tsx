@@ -36,6 +36,7 @@ import { sendLimit } from '@portkey-wallet/utils/awaken/limit';
 import navigationService from 'utils/navigationService';
 import { ActionType } from 'types/common';
 import CommonToast from 'components/CommonToast';
+import { HELP_URL } from 'pages/Send/constant';
 
 type TRouterParams = {
   tokenIn: TCurrency;
@@ -234,7 +235,8 @@ const SwapPreview = () => {
       footerStyle={styles.footerWrap}
       poweredIcon={<Svg icon="awakenLogo" oblongSize={[pTd(45), pTd(12)]} />}
       buttonProps={{ title: t('Place limit order'), onPress: handlePress }}
-      isLoading={isLoading}>
+      isLoading={isLoading}
+      helpUrl={HELP_URL}>
       <PreviewAmountCard
         style={styles.previewAmountCard}
         tokenIn={tokenIn}

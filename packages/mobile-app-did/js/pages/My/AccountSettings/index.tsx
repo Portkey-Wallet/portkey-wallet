@@ -4,7 +4,7 @@ import PageContainer from 'components/PageContainer';
 import useLogOut from 'hooks/useLogOut';
 import navigationService from 'utils/navigationService';
 import { StyleSheet } from 'react-native';
-import { defaultColors } from 'assets/theme';
+// import { defaultColors } from 'assets/theme';
 import { useLanguage } from 'i18n/hooks';
 import { pTd } from 'utils/unit';
 import { RootStackName } from 'navigation';
@@ -14,6 +14,7 @@ import {
   useDeviceList,
   useSetNewWalletName,
 } from '@portkey-wallet/hooks/hooks-ca/wallet';
+
 import { useIsSecondaryMailSet } from '@portkey-wallet/hooks/hooks-ca/useSecondaryMail';
 import { HELP_CENTER_URL } from '@portkey-wallet/constants/constants-ca/common';
 import { removeManager } from '@portkey-wallet/utils/guardian';
@@ -23,9 +24,8 @@ import Svg, { IconName } from 'components/Svg';
 import Touchable from 'components/Touchable';
 import Loading from 'components/Loading';
 import CommonToast from 'components/CommonToast';
-import FastImage from 'components/FastImage';
 import { TextM } from 'components/CommonText';
-import { makeStyles, useTheme, darkColors } from '@rneui/themed';
+import { makeStyles, useTheme } from '@rneui/themed';
 import { getDeviceInfo } from 'utils/deviceInfo';
 import ActionSheet from 'components/ActionSheet';
 import { CommonPromptCard, PromptCardType } from 'components/CommonPromptCard';
@@ -35,6 +35,9 @@ import { codePushOperator, parseLabel } from 'utils/update';
 import * as Application from 'expo-application';
 import { parseVersion } from 'utils';
 import { useCurrentDappList } from '@portkey-wallet/hooks/hooks-ca/dapp';
+import CommonAvatar from 'components/CommonAvatar';
+import { darkColors } from 'assets/theme';
+import useEffectOnce from 'hooks/useEffectOnce';
 
 interface MenuItemType {
   name: string;
@@ -51,6 +54,8 @@ export default function AccountSettings() {
   const { shouldShowSetNewWalletNameIcon, handleSetNewWalletName } = useSetNewWalletName();
   const updateInfo = useUpdateInfo();
   const dappList = useCurrentDappList();
+  const { deviceAmount, deviceList, refresh } = useDeviceList({ isInit: false });
+  console.log('deviceList:', deviceList, deviceAmount);
 
   const onPressItem = useCallback((item: MenuItemType) => {
     if (item.onPress) {
@@ -70,17 +75,28 @@ export default function AccountSettings() {
   const { t } = useLanguage();
   const avatarSize = pTd(40);
 
-  const { deviceAmount } = useDeviceList({ isAmountOnly: true, isInit: false });
+  // const sizeStyle = useMemo(
+  //   () => ({
+  //     width: Number(avatarSize),
+  //     height: Number(avatarSize),
+  //     borderRadius: Number(avatarSize) / 2,
+  //     marginHorizontal: pTd(8),
+  //   }),
+  //   [avatarSize],
+  // );
 
-  const sizeStyle = useMemo(
-    () => ({
-      width: Number(avatarSize),
-      height: Number(avatarSize),
-      borderRadius: Number(avatarSize) / 2,
-      marginHorizontal: pTd(8),
-    }),
-    [avatarSize],
-  );
+  const getDeviceList = useCallback(async () => {
+    await refresh();
+  }, [refresh]);
+
+  useEffectOnce(() => {
+    const timer = setTimeout(() => {
+      getDeviceList();
+    }, 100);
+    return () => {
+      clearTimeout(timer);
+    };
+  });
 
   const MenuList: Array<MenuItemType> = useMemo(
     () => [
@@ -274,7 +290,7 @@ export default function AccountSettings() {
   const updateWalletNameTip = useMemo(() => {
     return (
       <View>
-        <TextM style={{ color: theme.colors.textWarning1, lineHeight: pTd(20) }}>
+        <TextM style={{ color: darkColors.textWarning1, lineHeight: pTd(20) }}>
           {t('Use your login account as your wallet name to give it a unique identity.')}
         </TextM>
         <Touchable onPress={onSetNewWalletName}>
@@ -301,8 +317,22 @@ export default function AccountSettings() {
       )}
       <Touchable style={[styles.info]} onPress={onPressUserInfo}>
         <View style={styles.userInfoWrap}>
-          <FastImage style={[sizeStyle]} resizeMode="cover" source={{ uri: userInfo.avatar }} />
-          <TextM>{userInfo.nickName}</TextM>
+          <CommonAvatar
+            hasBorder={!userInfo?.avatar}
+            title={userInfo?.nickName}
+            avatarSize={avatarSize}
+            imageUrl={userInfo?.avatar || ''}
+            resizeMode="cover"
+            titleStyle={{ fontSize: pTd(14) }}
+          />
+
+          {/* <FastImage style={[sizeStyle]} resizeMode="cover" source={{ uri: userInfo.avatar }} /> */}
+          <TextM
+            style={{
+              marginLeft: pTd(8),
+            }}>
+            {userInfo.nickName}
+          </TextM>
         </View>
 
         <Svg icon="chevron_right" size={pTd(12)} color={darkColors.icon1} />
@@ -384,15 +414,15 @@ const getStyles = makeStyles(theme => ({
   },
   menuIcon: {},
   menuItemWrap: {
-    backgroundColor: defaultColors.black,
-    color: defaultColors.white,
-    borderBottomColor: defaultColors.border6,
+    backgroundColor: darkColors.black,
+    color: darkColors.white,
+    borderBottomColor: darkColors.border6,
     borderRadius: 0,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
   itemWrap: {
-    backgroundColor: defaultColors.black,
-    borderBottomColor: defaultColors.border6,
+    backgroundColor: darkColors.black,
+    borderBottomColor: darkColors.border6,
     borderRadius: 0,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
@@ -400,7 +430,7 @@ const getStyles = makeStyles(theme => ({
     height: 1,
     borderBottomWidth: 0.5,
     width: '100%',
-    backgroundColor: theme.colors.borderNeutral3,
+    backgroundColor: theme.colors.borderNeutral2,
     // backgroundColor: '#FFF',
     marginVertical: pTd(12),
   },

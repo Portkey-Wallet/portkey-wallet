@@ -1,8 +1,9 @@
-import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RecentStateType, IRecentItem } from './type';
-import { ChainId, NetworkType } from '@portkey-wallet/types';
+import { NetworkType } from '@portkey-wallet/types';
 
-const MAX_RECENT_COUNT = 100;
+// TODO: BACK TO 100
+const MAX_RECENT_COUNT = 5;
 
 export const initialState: RecentStateType = {
   recentMap: {},

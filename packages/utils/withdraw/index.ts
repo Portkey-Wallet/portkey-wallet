@@ -8,8 +8,8 @@ import { ICrossTransfer, ICrossTransferInitOption, IWithdrawParams, IWithdrawPre
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { timesDecimals } from '../converter';
 import { handleErrorMessage, sleep } from '../index';
-import { isAuthTokenError } from '@etransfer/services';
-import { LocalStorageKey } from '@etransfer/core';
+import { isAuthTokenError } from '@etransfer/utils';
+import { LocalStorageKey } from '@etransfer/utils';
 import { removeDIDAddressSuffix } from '@etransfer/utils';
 
 export const CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL = ['ELF', 'USDT'];
@@ -188,7 +188,8 @@ class CrossTransfer implements ICrossTransfer {
       const { chainId, address, symbol, amount, network } = params;
 
       const authParams = this.formatAuthTokenParams();
-      await eTransferCore.getAuthToken({ chainId, ...authParams });
+      const aToken = await eTransferCore.getAuthToken({ chainId, ...authParams });
+      console.log('aToken', aToken);
       const result = await eTransferCore.services.getWithdrawInfo({
         chainId: chainId,
         network,

@@ -16,13 +16,13 @@ import { makeStyles } from '@rneui/themed';
 import { pTd } from 'utils/unit';
 import { TextXXXL } from 'components/CommonText';
 import ImageWithUploadFunc, { ImageWithUploadFuncInstance } from 'components/ImageWithUploadFunc';
-import FastImage from 'components/FastImage';
 import ChangeOverlay from './components/ChangePictureOverlay';
 import RenameOverlay from './components/RenameOverlay';
 import { sleep } from '@portkey-wallet/utils';
 import { request } from '@portkey-wallet/api/api-did';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { LoadingBody } from 'components/Loading';
+import CommonAvatar from 'components/CommonAvatar';
 
 const MyWallet: React.FC = () => {
   const { t } = useLanguage();
@@ -129,6 +129,7 @@ const MyWallet: React.FC = () => {
               ChangeOverlay.showModal({
                 title: t('Change wallet picture'),
                 avatar: avatar,
+                nickName: userInfo.nickName,
                 avatarList: avatarList || [],
                 photoUpload: handlePhotoUpload,
                 selectPhoto: handleSelectPhoto,
@@ -144,7 +145,14 @@ const MyWallet: React.FC = () => {
                   marginHorizontal: pTd(8),
                   position: 'relative',
                 }}>
-                <FastImage
+                <CommonAvatar
+                  resizeMode="cover"
+                  avatarSize={pTd(80)}
+                  imageUrl={avatar || ''}
+                  title={userInfo.nickName}
+                />
+
+                {/* <FastImage
                   style={{
                     width: pTd(80),
                     height: pTd(80),
@@ -154,7 +162,7 @@ const MyWallet: React.FC = () => {
                   source={{
                     uri: avatar,
                   }}
-                />
+                /> */}
 
                 {isLoading && (
                   <View

@@ -1,7 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 import { StyleSheet, View, ScrollView } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
-import { FontStyles } from 'assets/theme/styles';
 import { useLanguage } from 'i18n/hooks';
 import { pTd } from 'utils/unit';
 import { TextL, TextS } from 'components/CommonText';
@@ -13,7 +12,7 @@ import { clearRecordsList } from '@portkey-wallet/store/store-ca/discover/slice'
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
 import { useDiscoverJumpWithNetWork } from 'hooks/discover';
-import { darkColors } from '@rneui/base';
+import { darkColors } from 'assets/theme';
 
 export default function SearchRecordSection() {
   const { t } = useLanguage();
@@ -44,7 +43,7 @@ export default function SearchRecordSection() {
     [discoverJump],
   );
 
-  if (showRecordList?.length === 0)
+  if (showRecordList?.length === 0) {
     return (
       <View
         style={{
@@ -52,6 +51,7 @@ export default function SearchRecordSection() {
         }}
       />
     );
+  }
 
   return (
     <ScrollView style={styles.sectionWrap}>

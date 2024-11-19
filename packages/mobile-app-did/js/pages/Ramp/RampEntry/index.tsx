@@ -55,7 +55,9 @@ export default function RampEntry() {
     (async () => {
       if (!isBuySectionShow || toTab === RampType.SELL) {
         try {
-          if (!(await securitySafeCheckAndToast(MAIN_CHAIN_ID))) return;
+          if (!(await securitySafeCheckAndToast(MAIN_CHAIN_ID))) {
+            return;
+          }
         } catch (error) {
           console.log('error', error);
           return;
@@ -78,24 +80,25 @@ export default function RampEntry() {
         refreshRampShow();
         return;
       }
-      // todo_wade
-      // if (type === RampType.SELL && !isSellSectionShow) {
-      //   ActionSheet.alert({
-      //     title2: (
-      //       <TextM style={[GStyles.textAlignCenter]}>
-      //         Off-ramp is currently not supported. It will be launched in the coming weeks.
-      //       </TextM>
-      //     ),
-      //     buttons: [{ title: 'OK' }],
-      //   });
-      //   refreshRampShow();
-      //   return;
-      // }
+      if (type === RampType.SELL && !isSellSectionShow) {
+        ActionSheet.alert({
+          title2: (
+            <TextM style={[GStyles.textAlignCenter]}>
+              Off-ramp is currently not supported. It will be launched in the coming weeks.
+            </TextM>
+          ),
+          buttons: [{ title: 'OK' }],
+        });
+        refreshRampShow();
+        return;
+      }
 
       if (type === RampType.SELL) {
         Loading.show();
         try {
-          if (!(await securitySafeCheckAndToast(MAIN_CHAIN_ID))) return;
+          if (!(await securitySafeCheckAndToast(MAIN_CHAIN_ID))) {
+            return;
+          }
         } catch (error) {
           CommonToast.failError(error);
           return;
@@ -116,9 +119,14 @@ export default function RampEntry() {
 
   const { buyCryptoList } = useBuyCryptoList();
   const { sellCryptoList } = useSellCryptoList();
+  console.log('sellCryptoList', sellCryptoList);
   const list = useMemo(() => {
-    if (selectTab === RampType.BUY) return buyCryptoList;
-    if (selectTab === RampType.SELL) return sellCryptoList;
+    if (selectTab === RampType.BUY) {
+      return buyCryptoList;
+    }
+    if (selectTab === RampType.SELL) {
+      return sellCryptoList;
+    }
     return [];
   }, [buyCryptoList, selectTab, sellCryptoList]);
 
@@ -129,10 +137,12 @@ export default function RampEntry() {
 
   const onCryptoClick = useCallback(
     (item: IRampCryptoItem) => {
-      if (selectTab === RampType.BUY)
+      if (selectTab === RampType.BUY) {
         navigationService.navigate('RampBuy', { symbol: item.symbol, network: item.network });
-      if (selectTab === RampType.SELL)
+      }
+      if (selectTab === RampType.SELL) {
         navigationService.navigate('RampSell', { symbol: item.symbol, network: item.network });
+      }
       return;
     },
     [selectTab],

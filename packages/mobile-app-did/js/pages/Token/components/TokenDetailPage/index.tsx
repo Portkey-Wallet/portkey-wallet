@@ -23,6 +23,7 @@ import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca
 import { checkEnabledFunctionalTypes } from '@portkey-wallet/utils/compass';
 import { useTokenInfoFromStore } from '@portkey-wallet/hooks/hooks-ca/assets';
 import ActivityItem from 'components/ActivityItem';
+import OutlinedButton from 'components/OutlinedButton';
 import { FlatListFooterLoading } from 'components/FlatListFooterLoading';
 import { ListLoadingEnum } from 'constants/misc';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
@@ -194,27 +195,42 @@ const TokenDetailPage: React.FC<TokenDetailParams> = ({ tokenInfo, tokenSection 
         <ReceiveButton onPress={onReceivePress} />
         {isBuyButtonShow && <BuyButton wrapStyle={buttonWrapStyle} tokenInfo={tokenInfo} />}
         {isFaucetButtonShow && <FaucetButton themeType="innerPage" wrapStyle={buttonWrapStyle} />}
-        {/* {isSwapShow && swap && (
+        {isSwapShow && swap && (
           <OutlinedButton
             title="Swap"
             iconName="swap"
             onPress={() => {
-              // onDisclaimerModalPress(
-              //   DepositModalMap.AwakenSwap,
-              //   stringifyETrans({
-              //     url: `${awakenUrl}/trading/ELF_USDT_0.05` || '',
-              //   }),
-              // );
+              navigationService.navigate('SwapHome');
             }}
           />
-        )} */}
+        )}
       </View>
     );
   }, [buttonWrapStyle, currentTokenInfo, isBuyButtonShow, isFaucetButtonShow, onReceivePress, tokenInfo]);
 
+  const listHeader = useMemo(() => {
+    return (
+      <View style={styles.card}>
+        <Text style={[styles.tokenBalance, amountTextOverflow ? styles.textOverflow : {}]}>{`${balanceShow}`}</Text>
+        {isMainnet && currentTokenInfo?.balanceInUsd && (
+          <TextS style={[styles.dollarBalance]}>{formatAmountUSDShow(currentTokenInfo?.balanceInUsd)}</TextS>
+        )}
+        {renderButtonItems()}
+        {currentActivity?.data?.length && (
+          <View>
+            <TextL style={[{ color: darkColors.textBase1, fontSize: pTd(20) }, styles.listFront, fonts.BGMediumFont]}>
+              {'Activity'}
+            </TextL>
+          </View>
+        )}
+      </View>
+    );
+  }, []);
+
   const renderActivityList = useCallback(() => {
     return (
       <FlashList
+        style={styles.list}
         refreshing={isLoading === ListLoadingEnum.header}
         data={currentActivity?.data || []}
         keyExtractor={(_item, index) => `${index}`}
@@ -236,17 +252,7 @@ const TokenDetailPage: React.FC<TokenDetailParams> = ({ tokenInfo, tokenSection 
           getActivityList();
         }}
         onEndReachedThreshold={ON_END_REACHED_THRESHOLD}
-        ListHeaderComponent={
-          currentActivity?.data?.length ? (
-            <View>
-              <TextL style={[{ color: darkColors.textBase1, fontSize: pTd(20) }, styles.listFront, fonts.BGMediumFont]}>
-                {'Activity'}
-              </TextL>
-            </View>
-          ) : (
-            <></>
-          )
-        }
+        ListHeaderComponent={listHeader}
         ListFooterComponent={
           <>{!isEmpty && <FlatListFooterLoading refreshing={isLoading === ListLoadingEnum.footer} />}</>
         }
@@ -260,19 +266,7 @@ const TokenDetailPage: React.FC<TokenDetailParams> = ({ tokenInfo, tokenSection 
     );
   }, [currentActivity?.data, getActivityList, init, isEmpty, isLoading, onRefreshList, renderItem, t]);
 
-  return (
-    <View style={styles.pageWrap}>
-      <View style={styles.card}>
-        <Text style={[styles.tokenBalance, amountTextOverflow ? styles.textOverflow : {}]}>{`${balanceShow}`}</Text>
-        {isMainnet && currentTokenInfo?.balanceInUsd && (
-          <TextS style={[styles.dollarBalance]}>{formatAmountUSDShow(currentTokenInfo?.balanceInUsd)}</TextS>
-        )}
-        {renderButtonItems()}
-      </View>
-      {/* {renderBanner()} */}
-      {renderActivityList()}
-    </View>
-  );
+  return <View style={styles.pageWrap}>{renderActivityList()}</View>;
 };
 
 export default TokenDetailPage;

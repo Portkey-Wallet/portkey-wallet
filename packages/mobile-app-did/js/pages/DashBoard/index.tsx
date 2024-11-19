@@ -59,6 +59,7 @@ const DashBoard: React.FC<any> = ({ navigation }) => {
         maxResultCount: PAGE_SIZE_IN_ACCOUNT_NFT_COLLECTION,
       }),
     ]);
+    myEvents.refreshHomeList.emit();
     setRefreshing(false);
   }, [caAddressInfos, caAddressInfosList, fetchAccountNFTCollectionInfoList, fetchAccountTokenInfoList, getTokenPrice]);
 

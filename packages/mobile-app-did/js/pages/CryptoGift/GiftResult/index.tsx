@@ -22,6 +22,7 @@ import { makeStyles, useTheme } from '@rneui/themed';
 import boxClose from 'assets/image/pngs/box-close.png';
 import PageContainer from 'components/PageContainer';
 import Touchable from 'components/Touchable';
+import fonts from 'assets/theme/fonts';
 
 export interface IGiftResultProps {
   giftId: string;
@@ -155,6 +156,7 @@ const getStyles = makeStyles(theme => ({
     lineHeight: pTd(24),
     marginLeft: pTd(8),
     color: theme.colors.bgBase1,
+    ...fonts.mediumFont,
   },
   buttonContentWrapper: {
     flexDirection: 'row',

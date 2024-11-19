@@ -11,6 +11,7 @@ import React, { forwardRef, useCallback, useImperativeHandle } from 'react';
 import { View, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native';
 import { pTd } from 'utils/unit';
 import { isUrl } from '@portkey-wallet/utils';
+import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 
 export default forwardRef(function EarnPage(_, _ref) {
   const { earnList = [], fetchDiscoverEarnAsync } = useDiscoverData();
@@ -97,7 +98,6 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    minHeight: '100%',
     backgroundColor: darkColors.bgBase1,
   },
   item: {
@@ -110,9 +110,10 @@ const styles = StyleSheet.create({
     backgroundColor: darkColors.bgBase2,
     marginTop: pTd(16),
     overflow: 'hidden',
+    width: screenWidth - pTd(32),
   },
   bigImage: {
-    width: pTd(343),
+    width: screenWidth - pTd(34),
     height: pTd(152),
   },
   infoWrap: {

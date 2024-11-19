@@ -222,7 +222,9 @@ function TabsDom({ activeWebViewRef, clickBottomActionBtn }: IProps) {
                 {!activeItem?.url?.includes('https://') && (
                   <Svg icon="warning-fill" size={12} iconStyle={{ marginRight: pTd(10) }} />
                 )}
-                <TextM style={rightDomStyle.domain}>{activeItem?.url}</TextM>
+                <TextM style={rightDomStyle.domain}>
+                  {activeItem?.url?.replace('https://', '')?.replace('http://', '')}
+                </TextM>
               </Touchable>
               <Touchable onPress={() => activeWebViewRef.current?.reload?.()} style={rightDomStyle.iconWrap}>
                 <Svg icon="accessory" size={20} color={darkColors.iconBase1} />

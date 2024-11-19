@@ -107,6 +107,7 @@ const styles = StyleSheet.create({
     borderWidth: pTd(1),
     borderColor: darkColors.borderBase1,
     borderRadius: pTd(8),
+    backgroundColor: darkColors.bgBase2,
   },
   avatar: {
     width: pTd(42),

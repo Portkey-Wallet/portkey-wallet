@@ -13,7 +13,7 @@ import Svg from 'components/Svg';
 import { RememberInfoType } from 'components/RememberMe';
 
 export const SessionKeyMap = {
-  [SessionExpiredPlan.always]: 'Always',
+  [SessionExpiredPlan.always]: 'Never',
   [SessionExpiredPlan.hour1]: 'After 1 hour',
   [SessionExpiredPlan.hour3]: 'After 3 hours',
   [SessionExpiredPlan.hour12]: 'After 12 hours',
@@ -57,16 +57,16 @@ const RememberMeModal = (props: RememberMeModalType) => {
   return (
     <ModalBody modalBodyType="bottom" title={'Require authentication'}>
       <ScrollView>
+        <Touchable key={'-1'} style={styles.itemRow} onPress={setRememberMe}>
+          <TextL>{'Always'}</TextL>
+          {!rememberInfo.isRemember && <Svg icon="selected" size={pTd(24)} />}
+        </Touchable>
         {SessionKeyArray.map(ele => (
           <Touchable key={ele.value} style={styles.itemRow} onPress={() => onPressItem(ele?.value)}>
             <TextL>{ele.label}</TextL>
             {rememberInfo.isRemember && rememberInfo.value === ele.value && <Svg icon="selected" size={pTd(24)} />}
           </Touchable>
         ))}
-        <Touchable key={'-1'} style={styles.itemRow} onPress={setRememberMe}>
-          <TextL>{'Never'}</TextL>
-          {!rememberInfo.isRemember && <Svg icon="selected" size={pTd(24)} />}
-        </Touchable>
       </ScrollView>
     </ModalBody>
   );

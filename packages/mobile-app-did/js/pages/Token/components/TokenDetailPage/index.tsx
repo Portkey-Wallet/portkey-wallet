@@ -237,15 +237,26 @@ const TokenDetailPage: React.FC<TokenDetailParams> = ({ tokenInfo, tokenSection 
         }}
         onEndReachedThreshold={ON_END_REACHED_THRESHOLD}
         ListHeaderComponent={
-          currentActivity?.data?.length ? (
-            <View>
-              <TextL style={[{ color: darkColors.textBase1, fontSize: pTd(20) }, styles.listFront, fonts.BGMediumFont]}>
-                {'Activity'}
-              </TextL>
+          <>
+            <View style={styles.card}>
+              <Text
+                style={[styles.tokenBalance, amountTextOverflow ? styles.textOverflow : {}]}>{`${balanceShow}`}</Text>
+              {isMainnet && currentTokenInfo?.balanceInUsd && (
+                <TextS style={[styles.dollarBalance]}>{formatAmountUSDShow(currentTokenInfo?.balanceInUsd)}</TextS>
+              )}
+              {renderButtonItems()}
             </View>
-          ) : (
-            <></>
-          )
+            {currentActivity?.data?.length ? (
+              <View>
+                <TextL
+                  style={[{ color: darkColors.textBase1, fontSize: pTd(20) }, styles.listFront, fonts.BGMediumFont]}>
+                  {'Activity'}
+                </TextL>
+              </View>
+            ) : (
+              <></>
+            )}
+          </>
         }
         ListFooterComponent={
           <>{!isEmpty && <FlatListFooterLoading refreshing={isLoading === ListLoadingEnum.footer} />}</>
@@ -258,17 +269,24 @@ const TokenDetailPage: React.FC<TokenDetailParams> = ({ tokenInfo, tokenSection 
         }}
       />
     );
-  }, [currentActivity?.data, getActivityList, init, isEmpty, isLoading, onRefreshList, renderItem, t]);
+  }, [
+    amountTextOverflow,
+    balanceShow,
+    currentActivity?.data,
+    currentTokenInfo?.balanceInUsd,
+    getActivityList,
+    init,
+    isEmpty,
+    isLoading,
+    isMainnet,
+    onRefreshList,
+    renderButtonItems,
+    renderItem,
+    t,
+  ]);
 
   return (
     <View style={styles.pageWrap}>
-      <View style={styles.card}>
-        <Text style={[styles.tokenBalance, amountTextOverflow ? styles.textOverflow : {}]}>{`${balanceShow}`}</Text>
-        {isMainnet && currentTokenInfo?.balanceInUsd && (
-          <TextS style={[styles.dollarBalance]}>{formatAmountUSDShow(currentTokenInfo?.balanceInUsd)}</TextS>
-        )}
-        {renderButtonItems()}
-      </View>
       {/* {renderBanner()} */}
       {renderActivityList()}
     </View>

@@ -23,7 +23,7 @@ import navigationService from 'utils/navigationService';
 import { IToSendPreviewParamsType, TransferType } from '@portkey-wallet/types/types-ca/routeParams';
 import { BaseToken } from '@portkey-wallet/types/types-ca/token';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
-import { getAelfTxResult } from '@portkey-wallet/utils/aelf';
+import { getAelfTxResult, isAelfAddress } from '@portkey-wallet/utils/aelf';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { sleep } from '@portkey-wallet/utils';
 import { useAmountInUsdShow, useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
@@ -372,7 +372,7 @@ const SendPreview: React.FC = () => {
       console.log('crossChainTransferResult', crossChainTransferResult);
     } else if (transferType === TransferType.E_TRANSFER) {
       let network = '';
-      if (toInfo.address.includes('_')) {
+      if (isAelfAddress(toInfo.address)) {
         const arr = toInfo.address.split('_');
         network = arr[arr.length - 1];
       } else {

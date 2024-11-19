@@ -67,6 +67,7 @@ type AlertBodyProps = {
   bgImage?: ImageSourcePropType;
   showInfoIcon?: boolean;
   closeAction?: () => void;
+  isModalCloseDisable?: boolean;
 };
 
 export function AlertBody({
@@ -196,10 +197,12 @@ const alert = (props: AlertBodyProps) => {
   OverlayModal.show(<AlertBody {...props} />, {
     modal: true,
     position: 'bottom',
-    onCloseRequest: () => {
-      props?.closeAction?.();
-      OverlayModal.hide();
-    },
+    onCloseRequest: props.isModalCloseDisable
+      ? undefined
+      : () => {
+          props?.closeAction?.();
+          OverlayModal.hide();
+        },
   });
 };
 export default {

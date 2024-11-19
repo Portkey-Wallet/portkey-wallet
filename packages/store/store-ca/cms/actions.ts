@@ -215,6 +215,8 @@ export const getDiscoverDappBannerAsync = createAsyncThunk<
           imgUrl: {
             filename_disk: ele?.portkeyCard_id?.imgUrl?.filename_disk,
           },
+          title: ele?.portkeyCard_id?.title,
+          description: ele?.portkeyCard_id?.description,
         }))
         ?.sort((a, b) => Number(a.index) - Number(b.index)) as TBaseCardItemType[];
     }

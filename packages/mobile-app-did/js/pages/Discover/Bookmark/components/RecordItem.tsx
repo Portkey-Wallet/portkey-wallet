@@ -2,7 +2,7 @@ import GStyles from 'assets/theme/GStyles';
 import { TextM, TextS } from 'components/CommonText';
 import Touchable from 'components/Touchable';
 import React, { memo, useCallback, useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { RenderItemParams } from 'react-native-draggable-flatlist';
 import { BGStyles, DarkFontStyles } from 'assets/theme/styles';
 import { pTd } from 'utils/unit';
@@ -80,7 +80,8 @@ export default memo(
             });
           }}
           renderRightActions={renderUnderlayLeft}>
-          <Touchable
+          <TouchableOpacity
+            activeOpacity={1}
             onPress={() => onClickJump(item)}
             style={[
               GStyles.flexRow,
@@ -102,7 +103,7 @@ export default memo(
                 {item.url || ''}
               </TextS>
             </View>
-          </Touchable>
+          </TouchableOpacity>
         </ReanimatedSwipeable>
       </GestureHandlerRootView>
     );

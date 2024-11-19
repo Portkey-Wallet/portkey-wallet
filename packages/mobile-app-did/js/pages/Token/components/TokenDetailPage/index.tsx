@@ -207,7 +207,16 @@ const TokenDetailPage: React.FC<TokenDetailParams> = ({ tokenInfo, tokenSection 
         )}
       </View>
     );
-  }, [buttonWrapStyle, currentTokenInfo, isBuyButtonShow, isFaucetButtonShow, onReceivePress, tokenInfo]);
+  }, [
+    buttonWrapStyle,
+    currentTokenInfo,
+    isBuyButtonShow,
+    isFaucetButtonShow,
+    isSwapShow,
+    onReceivePress,
+    swap,
+    tokenInfo,
+  ]);
 
   const listHeader = useMemo(() => {
     return (
@@ -268,7 +277,7 @@ const TokenDetailPage: React.FC<TokenDetailParams> = ({ tokenInfo, tokenSection 
         }}
       />
     );
-  }, [currentActivity?.data, getActivityList, init, isEmpty, isLoading, onRefreshList, renderItem, t]);
+  }, [currentActivity?.data, getActivityList, init, isEmpty, isLoading, listHeader, onRefreshList, renderItem, t]);
 
   return <View style={styles.pageWrap}>{renderActivityList()}</View>;
 };

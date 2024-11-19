@@ -9,12 +9,15 @@ import { useTransferNetworkConfig } from './config';
 import { useContact } from './contact';
 import { TFormattedRecentItem } from '@portkey-wallet/types/types-ca/contactNew';
 import { getAelfAddress } from '@portkey-wallet/utils/aelf';
+import { useCaAddressInfoList } from './wallet';
+import { getAddressChainId } from '@portkey-wallet/utils';
 
 export const useRecentState = () => useAppCASelector(state => state?.recent);
 
 export function useRecent() {
   const dispatch = useAppCommonDispatch();
   const currentNetwork = useCurrentNetwork();
+  const caAddressInfos = useCaAddressInfoList();
 
   const { contactMapNew } = useContact();
   const { recentMap } = useRecentState();
@@ -31,6 +34,15 @@ export function useRecent() {
 
       // aelf is OK, others need check
       const result = targetList.filter(ele => {
+        // itself
+        if (
+          ele.network === 'aelf' &&
+          fromChainId === ele.chainId &&
+          getAelfAddress(ele.address) === caAddressInfos?.[0]?.caAddress
+        ) {
+          return false;
+        }
+
         if (ele.network === 'aelf') return true;
         // nft just for aelf chain
         if (!isFt) return ele.network === 'aelf' && !!ele.chainId;
@@ -40,7 +52,7 @@ export function useRecent() {
 
       return result || [];
     },
-    [checkIsSupportTargetChain, currentNetwork, fetchAssetSupportConfig, recentMap],
+    [caAddressInfos, checkIsSupportTargetChain, currentNetwork, fetchAssetSupportConfig, recentMap],
   );
 
   // adjust my contact

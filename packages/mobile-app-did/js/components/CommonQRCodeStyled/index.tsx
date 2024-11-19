@@ -3,7 +3,6 @@ import QRCodeStyled, { SVGQRCodeStyledProps, useQRCodeData } from 'react-native-
 import portkeyLogo from 'assets/image/pngs/portkey-v2-new-brand-2.png';
 import { pTd } from 'utils/unit';
 import { View } from 'react-native';
-// @ts-expect-error: Importing makeStyles from @rneui/themed
 import { makeStyles } from '@rneui/themed';
 import Lottie from 'lottie-react-native';
 

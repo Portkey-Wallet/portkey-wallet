@@ -593,6 +593,7 @@ const SendHome: React.FC = () => {
             ],
             closeAction: () => {
               setLoading(false);
+              Loading.hide();
             },
           });
           console.log('checkCanPreview 6');
@@ -984,8 +985,10 @@ const SendHome: React.FC = () => {
           if (!tmpNetwork) {
             throw 'not supported';
           }
+          console.log('tmpNetwork', tmpNetwork);
           setTargetNetwork(tmpNetwork);
           setSelectedToContact({ name: i?.name, address: i.address || i.addressInfo?.address } as TToInfo);
+          setWarning([WarningKey.MAKE_SURE_SUPPORT_PLATFORM]);
           setStep(2);
         } else {
           setSelectedToContact({

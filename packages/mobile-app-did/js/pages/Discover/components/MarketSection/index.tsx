@@ -12,7 +12,6 @@ import { StyleSheet } from 'react-native';
 import { darkColors } from 'assets/theme';
 import { TextM } from 'components/CommonText';
 import MarketItemSkeleton from './components/MarketItemSkeleton';
-import Loading from 'components/Loading';
 
 export default forwardRef(function MarketSection(_, _ref) {
   const { marketInfo, refreshing, refreshList, handleSort } = useMarket();
@@ -29,15 +28,17 @@ export default forwardRef(function MarketSection(_, _ref) {
       />
     );
   }, []);
-  const onRefresh = useCallback(async () => {
-    try {
-      Loading.show();
-      await refreshList();
-      Loading.hide();
-    } catch (e) {
-      CommonToast.failError(`${e}`);
-    }
-  }, [refreshList]);
+  const onRefresh = useCallback(
+    async (callback?: () => void) => {
+      try {
+        await refreshList();
+        callback?.();
+      } catch (e) {
+        CommonToast.failError(`${e}`);
+      }
+    },
+    [refreshList],
+  );
 
   useEffect(() => {
     flatListRef.current?.scrollToOffset({ animated: true, offset: 0 });
@@ -46,13 +47,18 @@ export default forwardRef(function MarketSection(_, _ref) {
     return refreshing && (marketInfo?.dataList?.length || 0) <= 0;
   }, [marketInfo?.dataList?.length, refreshing]);
 
-  useImperativeHandle(_ref, () => ({
-    closeTips: () => {
-      [...itemRefs.current.entries()].forEach(([id, ref]) => {
-        id && ref && ref.hideTips();
-      });
-    },
-  }));
+  useImperativeHandle(
+    _ref,
+    () => ({
+      closeTips: () => {
+        [...itemRefs.current.entries()].forEach(([id, ref]) => {
+          id && ref && ref.hideTips();
+        });
+      },
+      onRefresh,
+    }),
+    [onRefresh],
+  );
 
   const renderEmpty = useCallback(() => {
     return (
@@ -103,7 +109,6 @@ export default forwardRef(function MarketSection(_, _ref) {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: darkColors.bgBase1,
-    flex: 1,
   },
   empty: {
     alignItems: 'center',

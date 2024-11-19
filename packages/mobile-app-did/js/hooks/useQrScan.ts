@@ -24,7 +24,7 @@ import { useLanguage } from 'i18n/hooks';
 import { useJoinGroupChannel } from '@portkey-wallet/hooks/hooks-ca/im';
 import { useJumpToChatGroupDetails } from './chat';
 import { ALREADY_JOINED_GROUP_CODE } from '@portkey-wallet/constants/constants-ca/chat';
-import { isDIDAelfAddress } from '@portkey-wallet/utils/aelf';
+import { isAelfAddress } from '@portkey-wallet/utils/aelf';
 import { NetworkType } from '@portkey-wallet/types';
 
 export const useQrScanPermission = (): [boolean, () => Promise<boolean>] => {
@@ -228,7 +228,7 @@ export const useHandleDataFromQrCode = () => {
 
       if (checkIsUrl(dataString)) {
         await handleUrl(dataString);
-      } else if (isDIDAelfAddress(dataString) && !dataString.includes(',')) {
+      } else if (isAelfAddress(dataString) && !dataString.includes(',')) {
         handleAelfAddress(dataString);
       } else if ((await isWeb3Address(dataString)) && !dataString.includes(',')) {
         handleAelfAddress(dataString);

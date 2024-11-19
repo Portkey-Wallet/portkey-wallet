@@ -13,7 +13,6 @@ import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useCurrentNetwork as useCurrentNetworkType } from '@portkey-wallet/hooks/hooks-ca/network';
 import { Text, View } from 'react-native';
 import { StyleSheet } from 'react-native';
-import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import fonts from 'assets/theme/fonts';
 
 const networkList = [

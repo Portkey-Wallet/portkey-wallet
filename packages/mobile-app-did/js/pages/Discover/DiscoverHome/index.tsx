@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { View, StyleSheet, GestureResponderEvent, TouchableWithoutFeedback } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
 import navigationService from 'utils/navigationService';
@@ -23,6 +23,9 @@ import { useOnTouchAndPopUp } from 'components/FloatOverlay/touch';
 import { ListItemType } from 'components/FloatOverlay/Popover';
 import { ArchivedTabEnum } from '../types';
 import DiscoverTab from '../components/DiscoverTopTab';
+import { PullToRefresh } from '@sdcx/pull-to-refresh';
+import { NestedScrollView, NestedScrollViewHeader } from '@sdcx/nested-scroll';
+import CustomPullToRefreshHeader from 'pages/DashBoard/PullToRefresh';
 
 export default function DiscoverHome() {
   useCheckAndInitNetworkDiscoverMap();
@@ -31,6 +34,7 @@ export default function DiscoverHome() {
   const { fetchDiscoverLearnBannerAsync } = useCmsBanner();
   const { fetchDiscoverEarnAsync, fetchDiscoverLearnAsync } = useDiscoverData();
   const { currentTabLength = 0, showTabDrawer } = useTabDrawer();
+  const [refreshing, setRefreshing] = useState(false);
   const tabRef = useRef<any>();
   const jumpToHistory = useCallback(
     (num: ArchivedTabEnum) => navigationService.navigate('Bookmark', { type: num }),
@@ -86,6 +90,17 @@ export default function DiscoverHome() {
     return <TouchableIcon icon="more_verti" onPress={onTouch} size={22} color={darkColors.iconBase1} />;
   }, [onTouch]);
 
+  const handleRefresh = async () => {
+    try {
+      setRefreshing(true);
+      tabRef.current?.onRefresh(() => {
+        setRefreshing(false);
+      });
+    } catch (error) {
+      setRefreshing(false);
+    }
+  };
+
   useFocusEffect(
     useCallback(() => {
       fetchCurrentRememberMeBlackList();
@@ -105,14 +120,27 @@ export default function DiscoverHome() {
   return (
     <SafeAreaBox edges={['top', 'right', 'left']} style={{ backgroundColor: darkColors.bgBase1 }}>
       <TouchableWithoutFeedback onPressIn={onTouchCleanAll}>
-        <View style={styles.container}>
-          <View style={styles.header}>
-            <TextM style={styles.headerTitle}>Discover</TextM>
-            {showToolsIcon}
-          </View>
-          <View style={styles.container}>
-            <DiscoverTab ref={(ref: any) => (tabRef.current = ref)} />
-          </View>
+        <View style={styles.containerWrap}>
+          {React.cloneElement(
+            <PullToRefresh header={<CustomPullToRefreshHeader refreshing={refreshing} onRefresh={handleRefresh} />} />,
+            {
+              children: (
+                <NestedScrollView>
+                  {React.cloneElement(<NestedScrollViewHeader />, {
+                    children: (
+                      <View style={styles.header}>
+                        <TextM style={styles.headerTitle}>Discover</TextM>
+                        {showToolsIcon}
+                      </View>
+                    ),
+                  })}
+                  <View style={styles.container}>
+                    <DiscoverTab ref={(ref: any) => (tabRef.current = ref)} />
+                  </View>
+                </NestedScrollView>
+              ),
+            },
+          )}
           <View style={styles.functionalLine}>
             <SimulatedInputBox
               onClickInput={() => navigationService.navigate('DiscoverSearch')}
@@ -146,9 +174,14 @@ function TouchableIcon({
 }
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: darkColors.bgBase1,
+  containerWrap: {
+    position: 'relative',
     flex: 1,
+  },
+  container: {
+    paddingBottom: pTd(56),
+    flex: 1,
+    backgroundColor: darkColors.bgBase1,
   },
   header: {
     height: pTd(56),
@@ -167,6 +200,10 @@ const styles = StyleSheet.create({
     color: darkColors.textBase1,
   },
   functionalLine: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
     height: pTd(56),
     flexDirection: 'row',
     paddingHorizontal: pTd(16),

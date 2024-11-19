@@ -328,7 +328,7 @@ const getStyles = makeStyles(theme => ({
     fontSize: pTd(14),
     ...fonts.SGRegularFont,
     fontWeight: '400',
-    lineHeight: 14,
+    lineHeight: pTd(14),
     wordWrap: 'break-word',
     marginTop: pTd(8),
   },
@@ -339,7 +339,7 @@ const getStyles = makeStyles(theme => ({
     fontSize: pTd(12),
     ...fonts.SGRegularFont,
     fontWeight: '400',
-    lineHeight: 12,
+    lineHeight: pTd(12),
     marginTop: pTd(4),
   },
   skeleton: {

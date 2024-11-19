@@ -2,7 +2,7 @@ import GStyles from 'assets/theme/GStyles';
 import { TextM, TextS } from 'components/CommonText';
 import Touchable from 'components/Touchable';
 import React, { memo, useCallback, useMemo, useRef } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { RenderItemParams } from 'react-native-draggable-flatlist';
 import { SwipeableItemImperativeRef } from 'react-native-swipeable-item';
 import { BGStyles, DarkFontStyles } from 'assets/theme/styles';
@@ -78,7 +78,7 @@ export default memo(
             });
           }}
           renderRightActions={renderUnderlayLeft}>
-          <Touchable onPress={onClickJump}>
+          <TouchableOpacity activeOpacity={1} onPress={onClickJump}>
             <View style={[GStyles.flexRow, GStyles.itemCenter, styles.itemRow, BGStyles.bgBase1]}>
               <DiscoverWebsiteImage imageUrl={bookmarkInfo.imageUrl} size={pTd(40)} style={styles.websiteIconStyle} />
               <View style={styles.infoWrap}>
@@ -88,7 +88,7 @@ export default memo(
                 </TextS>
               </View>
             </View>
-          </Touchable>
+          </TouchableOpacity>
         </ReanimatedSwipeable>
       </GestureHandlerRootView>
     );

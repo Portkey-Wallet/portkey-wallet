@@ -26,7 +26,6 @@ import { RequireAtLeastOne } from '@portkey-wallet/types/common';
 import { getCAHolderManagerInfo } from '@portkey-wallet/graphql/contract/queries';
 import { ManagerInfo, Maybe } from '@portkey-wallet/graphql/contract/__generated__/types';
 import { DEFAULT_USER_INFO } from '@portkey-wallet/store/store-ca/wallet/slice';
-import { TypedUseSelectorHook, useSelector } from 'react-redux';
 
 export interface CurrentWalletType extends WalletInfoType, CAInfoType {
   caHash?: string;

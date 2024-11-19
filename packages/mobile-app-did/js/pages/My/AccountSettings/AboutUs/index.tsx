@@ -17,6 +17,7 @@ import { parseVersion } from 'utils';
 import { useUpdateInfo } from 'store/user/hooks';
 import { makeStyles } from '@rneui/themed';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import { FontStyles } from 'assets/theme/styles';
 
 const AboutUs = () => {
   const { t } = useLanguage();
@@ -76,8 +77,8 @@ const AboutUs = () => {
       <View style={styles.logoWrap}>
         <Svg icon="app-logo-new" size={pTd(80)} />
       </View>
-      <TextXXL>Portkey</TextXXL>
-      <TextM style={styles.version}>
+      <TextXXL style={[FontStyles.weight500]}>Portkey</TextXXL>
+      <TextM style={[styles.version, FontStyles.font7]}>
         {parseVersion([`v${Application.nativeApplicationVersion}`, parseLabel(codePushOperator.localPackage?.label)])}
       </TextM>
       <View style={styles.btnContainer}>
@@ -157,9 +158,6 @@ const getStyles = makeStyles(theme => ({
   },
   version: {
     marginTop: pTd(4),
-    fontSize: pTd(14),
-    lineHeight: pTd(20),
-    color: theme.colors.textBase3,
     marginBottom: pTd(32),
   },
   btnContainer: {

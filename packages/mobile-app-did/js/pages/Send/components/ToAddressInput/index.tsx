@@ -257,7 +257,7 @@ export default function ToAddressInput({
               <TextM>{formatStr2EllipsisStr(selectedToContact?.address, 8)}</TextM>
             )}
             {!isFixedToContact && (
-              <Touchable onPress={() => setStep(1)}>
+              <Touchable onPress={onPressEdit}>
                 <Svg icon="edit" size={pTd(16)} color={darkColors.iconBase1} />
               </Touchable>
             )}
@@ -276,11 +276,6 @@ export default function ToAddressInput({
               value={selectedToContact?.address || ''}
               onChangeText={onInput}
             />
-            {selectedToContact.name && step === 1 && (
-              <Touchable onPress={onPressEdit}>
-                <Svg icon="edit" size={pTd(16)} />
-              </Touchable>
-            )}
 
             {selectedToContact.address && !isChecking && (
               <Touchable onPress={clearInput}>

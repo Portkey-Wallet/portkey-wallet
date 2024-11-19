@@ -165,6 +165,7 @@ export function AlertBody({
               ...i,
               onPress: () => {
                 if (autoClose) {
+                  closeAction?.();
                   OverlayModal.hide();
                 }
                 i.onPress?.();
@@ -177,6 +178,7 @@ export function AlertBody({
               ...i,
               onPress: () => {
                 if (autoClose) {
+                  closeAction?.();
                   OverlayModal.hide();
                 }
                 i.onPress?.();

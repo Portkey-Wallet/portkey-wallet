@@ -6,7 +6,6 @@ import Card from './Card';
 import DashBoardTab from './DashBoardTab';
 import DashBoardHeader from './Header';
 import SafeAreaBox from 'components/SafeAreaBox';
-import { BGStyles } from 'assets/theme/styles';
 import { RootStackName } from 'navigation';
 import myEvents from 'utils/deviceEvent';
 import useReportAnalyticsEvent from 'hooks/userExceptionMessage';

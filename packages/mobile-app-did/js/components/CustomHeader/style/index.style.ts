@@ -66,12 +66,12 @@ export const whitStyles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-    backgroundColor: darkColors.bgBase1,
   },
   leftDomWrap: {
     display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'flex-start',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    flexDirection: 'row',
     flex: 1,
   },
   centerWrap: {
@@ -88,8 +88,9 @@ export const whitStyles = StyleSheet.create({
   rightDomWrap: {
     flex: 1,
     display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'flex-end',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    flexDirection: 'row',
   },
   leftBackTitle: {
     color: darkColors.iconBase1,

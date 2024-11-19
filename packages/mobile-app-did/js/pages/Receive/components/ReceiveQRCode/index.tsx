@@ -5,7 +5,6 @@ import CommonQRCodeStyled from 'components/CommonQRCodeStyled';
 import Touchable from 'components/Touchable';
 import { TextL } from 'components/CommonText';
 import Svg from 'components/Svg';
-// @ts-expect-error: Importing makeStyles from @rneui/themed
 import { makeStyles } from '@rneui/themed';
 import { formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import { copyText } from 'utils';

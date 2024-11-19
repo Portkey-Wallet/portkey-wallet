@@ -51,7 +51,7 @@ const ContactItem: React.FC<ItemType> = props => {
             </>
           ) : (
             <>
-              <ContactAddress contact={contact} style={styles.primaryText} />
+              <ContactAddress contact={contact} style={styles.primaryText} ignoreFormat={!isSaved} />
               <TextL style={styles.secondaryText}>{contact?.addressInfo?.networkName}</TextL>
             </>
           )}

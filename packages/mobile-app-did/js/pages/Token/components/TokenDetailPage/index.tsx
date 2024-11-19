@@ -36,6 +36,7 @@ import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import FaucetButton from 'components/FaucetButton';
 import { darkColors } from 'assets/theme';
 import { showActivityDetail } from 'components/ActivityOverlay';
+import CustomPullToRefreshHeader from 'pages/DashBoard/PullToRefresh';
 
 interface TokenDetailParams {
   tokenSection: ITokenSectionResponse;
@@ -230,6 +231,9 @@ const TokenDetailPage: React.FC<TokenDetailParams> = ({ tokenInfo, tokenSection 
   const renderActivityList = useCallback(() => {
     return (
       <FlashList
+        refreshControl={
+          <CustomPullToRefreshHeader refreshing={isLoading === ListLoadingEnum.header} onRefresh={onRefreshList} />
+        }
         style={styles.list}
         refreshing={isLoading === ListLoadingEnum.header}
         data={currentActivity?.data || []}

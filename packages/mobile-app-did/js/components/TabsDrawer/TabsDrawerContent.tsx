@@ -1,6 +1,6 @@
 import fonts from 'assets/theme/fonts';
 import GStyles from 'assets/theme/GStyles';
-import { TextM } from 'components/CommonText';
+import { TextS } from 'components/CommonText';
 import PageContainer from 'components/PageContainer';
 import React, { useCallback, useMemo, useRef, useState, forwardRef, useImperativeHandle } from 'react';
 import { StyleSheet, ScrollView, View } from 'react-native';
@@ -26,13 +26,11 @@ import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { BrowserContext, IBrowserTab } from './context';
 import { useHardwareBackPress } from '@portkey-wallet/hooks/mobile';
 import Svg from 'components/Svg';
-import TextWithProtocolIcon from 'components/TextWithProtocolIcon';
 import ActionSheet from 'components/ActionSheet';
 import { useNavigation } from '@react-navigation/native';
 import navigationService from 'utils/navigationService';
 import { useCurrentDappList } from '@portkey-wallet/hooks/hooks-ca/dapp';
 import { getOrigin } from '@portkey-wallet/utils/dapp/browser';
-import { useGetCmsWebsiteInfo } from '@portkey-wallet/hooks/hooks-ca/cms';
 import Touchable from 'components/Touchable';
 import { ITabContext } from './tools';
 import TabsDom from './components/TabsDom';
@@ -46,8 +44,6 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
   const { isDrawerOpen, discoverMap = {}, activeTabId } = useAppCASelector(state => state.discover);
   const { tabs } = discoverMap[networkType] ?? {};
   const activeItem = useMemo(() => tabs?.find(ele => ele.id === activeTabId) as ITabItem, [activeTabId, tabs]);
-
-  const { getCmsWebsiteInfoName } = useGetCmsWebsiteInfo();
 
   const tabRef = useRef<IBrowserTab | null>(null);
   const [preActiveTabId, setPreActiveTabId] = useState<number | undefined>(activeTabId);
@@ -68,11 +64,11 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
 
   const backToSearchPage = useCallback(() => {
     if (nav) {
-      const routes = nav.getState().routes;
-      const currentRoute = routes[routes.length - 1];
+      const routes = nav?.getState?.()?.routes;
+      const currentRoute = routes?.[routes?.length - 1];
 
       if (
-        currentRoute.name === 'DappDetail' &&
+        currentRoute?.name === 'DappDetail' &&
         !dappList?.find(ele => ele.origin === getOrigin(activeItem?.url || ''))
       ) {
         navigationService.navigate('DappList');
@@ -205,9 +201,9 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
         </ScrollView>
         <View style={handleButtonStyle.container}>
           <Touchable style={handleButtonStyle.handleItem} onPress={closeAll}>
-            <TextM style={[FontStyles.fontBase1, tabs?.length === 0 && handleButtonStyle.noTap]}>
-              {t('Close All')}
-            </TextM>
+            <TextS style={[FontStyles.fontBase1, tabs?.length === 0 && handleButtonStyle.noTap]}>
+              {t('Close all')}
+            </TextS>
           </Touchable>
 
           <Touchable
@@ -216,7 +212,7 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
             <Svg icon="add-tab" size={pTd(28)} color={defaultColors.iconBrand1} />
           </Touchable>
           <Touchable style={handleButtonStyle.handleItem} onPress={onDone}>
-            <TextM style={[handleButtonStyle.done, FontStyles.fontBase1]}>{t('Done')}</TextM>
+            <TextS style={[handleButtonStyle.done, FontStyles.fontBase1]}>{t('Done')}</TextS>
           </Touchable>
         </View>
       </>
@@ -227,28 +223,13 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
     <BrowserContext.Provider value={value}>
       <PageContainer
         hideTouchable
+        hideHeader
         type="leftBack"
         noCenterDom={!!activeTabId}
-        leftDom={
-          <View style={styles.leftWrap}>
-            <Touchable onPress={backToSearchPage} style={styles.backIcon}>
-              <Svg icon="left-arrow" size={pTd(20)} color={darkColors.textBase2} />
-            </Touchable>
-            {activeTabId ? (
-              <TextWithProtocolIcon
-                type="iconLeft"
-                location="header"
-                title={getCmsWebsiteInfoName(activeItem?.url || '') || activeItem?.name}
-                url={activeItem?.url || ''}
-              />
-            ) : null}
-          </View>
-        }
         notHandleHardwareBackPress
         safeAreaColor={['black', 'black']}
         containerStyles={styles.container}
-        scrollViewProps={{ disabled: true }}
-        titleDom={activeTabId ? '' : `${tabs?.length} Tabs`}>
+        scrollViewProps={{ disabled: true }}>
         <TabsDom activeWebViewRef={tabRef} clickBottomActionBtn={clickBottomActionBtn} />
         {!activeTabId && isDrawerOpen && CardGroupDom}
       </PageContainer>
@@ -341,6 +322,7 @@ const handleButtonStyle = StyleSheet.create({
   },
   close: {
     textAlign: 'left',
+    fontWeight: '600',
   },
   add: {
     display: 'flex',
@@ -349,6 +331,7 @@ const handleButtonStyle = StyleSheet.create({
   },
   done: {
     textAlign: 'right',
+    fontWeight: '600',
   },
   noTap: {
     opacity: 0.3,

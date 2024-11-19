@@ -42,12 +42,12 @@ const ConnectModal = (props: ConnectModalType) => {
   const styles = getStyles();
   const { theme } = useTheme();
   const [rememberInfo, setRememberMeInfo] = useState<RememberInfoType>({
-    isRemember: true,
+    isRemember: false,
     value: SessionExpiredPlan.always,
   });
   const showAuthText = useMemo(() => {
     if (!rememberInfo.isRemember) {
-      return 'Never';
+      return 'Always';
     }
     return SessionKeyMap[rememberInfo.value];
   }, [rememberInfo.isRemember, rememberInfo.value]);
@@ -83,7 +83,7 @@ const ConnectModal = (props: ConnectModalType) => {
         },
       },
     ],
-    [dappInfo.origin, onApprove, onReject, pin, rememberInfo.isRemember, rememberInfo?.value, t, updateSessionInfo],
+    [dappInfo.origin, onApprove, onReject, pin, rememberInfo, t, updateSessionInfo],
   );
 
   return (

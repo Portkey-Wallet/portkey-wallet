@@ -22,7 +22,7 @@ import NFTAvatar from 'components/NFTAvatar';
 import GStyles from 'assets/theme/GStyles';
 import fonts from 'assets/theme/fonts';
 import DoubleAvatar from 'components/DoubleAvatar';
-import { TextL, TextM } from 'components/CommonText';
+import { TextL, TextM, TextS } from 'components/CommonText';
 import { contractStatusEnum } from '@portkey-wallet/constants/constants-ca/common';
 import Lottie from 'lottie-react-native';
 import { makeStyles } from '@rneui/themed';
@@ -83,7 +83,7 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
     const suffix = nftInfo?.alias || symbol || '';
 
     return (
-      <TextL
+      <TextM
         numberOfLines={1}
         ellipsizeMode="tail"
         style={[
@@ -92,7 +92,7 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
           { color: isReceived ? darkColors.textSuccess1 : darkColors.textBase1 },
         ]}>
         {`${prefix}${formatTokenAmountShowWithDecimals(item?.amount, decimals)} ${suffix}`}
-      </TextL>
+      </TextM>
     );
   }, [item, itemStyle.tokenBalance]);
 
@@ -130,9 +130,9 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
       return null;
     }
     return (
-      <TextM numberOfLines={1} ellipsizeMode="tail" style={itemStyle.usdtBalance}>
-        {formatAmountUSDShow(!isMainnet ? item?.currentTxPriceInUsd : '')}
-      </TextM>
+      <TextS numberOfLines={1} ellipsizeMode="tail" style={itemStyle.usdtBalance}>
+        {formatAmountUSDShow(isMainnet ? item?.currentTxPriceInUsd : '')}
+      </TextS>
     );
   }, [isMainnet, item?.currentTxPriceInUsd, itemStyle.usdtBalance]);
 
@@ -234,7 +234,7 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
             <TextM style={itemStyle.centerStatus}>{item?.dappName}</TextM>
           </View>
           <View style={itemStyle.right}>
-            <TextL
+            <TextM
               numberOfLines={1}
               style={[
                 fonts.SGMediumFont,
@@ -246,9 +246,9 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
                 decimals: tokenTop.decimals,
                 digits: Number(tokenTop.decimals),
               })} ${tokenTop.symbol}`}
-            </TextL>
+            </TextM>
             {sameDirection ? (
-              <TextL
+              <TextS
                 numberOfLines={1}
                 style={[
                   fonts.SGMediumFont,
@@ -260,16 +260,16 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
                   decimals: tokenBottom.decimals,
                   digits: Number(tokenBottom.decimals),
                 })} ${tokenBottom.symbol}`}
-              </TextL>
+              </TextS>
             ) : (
-              <TextM numberOfLines={1} style={[{ color: darkColors.textBase2 }]}>
+              <TextS numberOfLines={1} style={[{ color: darkColors.textBase2 }]}>
                 {`${formatWithCommas({
                   sign: tokenBottom.isReceived ? AmountSign.PLUS : AmountSign.MINUS,
                   amount: tokenBottom.amount,
                   decimals: tokenBottom.decimals,
                   digits: Number(tokenBottom.decimals),
                 })} ${tokenBottom.symbol}`}
-              </TextM>
+              </TextS>
             )}
           </View>
         </View>

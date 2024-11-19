@@ -1,4 +1,3 @@
-import GStyles from 'assets/theme/GStyles';
 import { TextS } from 'components/CommonText';
 import React from 'react';
 import { StyleSheet, View, Image } from 'react-native';
@@ -58,7 +57,7 @@ const tabShowItemStyle = StyleSheet.create({
     height: pTd(214),
     marginTop: pTd(16),
     shadowOffset: { width: 2, height: 10 },
-    backgroundColor: darkColors.bgBase1,
+    backgroundColor: darkColors.bgBase2,
     borderWidth: 1,
     borderColor: darkColors.borderBase1,
     shadowOpacity: 0.15,

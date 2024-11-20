@@ -3,15 +3,16 @@ import { MethodsBase, MethodsWallet } from '@portkey/provider-types';
 import { DAPP_WHITELIST } from './network';
 
 export const SessionKeyMap = {
+  [SessionExpiredPlan.always]: 'Always',
   [SessionExpiredPlan.hour1]: '1 hour',
   [SessionExpiredPlan.hour3]: '3 hours',
   [SessionExpiredPlan.hour12]: '12 hours',
   [SessionExpiredPlan.hour24]: '24 hours',
-  [SessionExpiredPlan.always]: 'Never',
+  [SessionExpiredPlan.never]: 'Never',
 };
 
 export const SessionKeyArray = Object.entries(SessionKeyMap).map(([k, v]) => ({
-  value: k === SessionExpiredPlan.always ? k : Number(k),
+  value: k === SessionExpiredPlan.never ? k : Number(k),
   label: v,
   children: v,
 }));

@@ -14,6 +14,7 @@ import Svg from 'components/Svg';
 import React, { memo, useCallback, useMemo } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 import { pTd } from 'utils/unit';
+import CommonToast from 'components/CommonToast';
 
 type addressItemType = {
   address: string;
@@ -152,6 +153,9 @@ const ProfileAddressSectionV2: React.FC<ProfileAddressSectionPropsType> = props 
                 // backgroundColor: darkColors.bgBrand3,
               }}
               size={24}
+              onCopy={() => {
+                CommonToast.success('Address copied');
+              }}
               copyContent={copyContent(ele)}
             />
           </View>

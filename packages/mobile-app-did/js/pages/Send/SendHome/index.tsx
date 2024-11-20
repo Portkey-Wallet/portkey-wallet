@@ -771,6 +771,7 @@ const SendHome: React.FC = () => {
         transferType = TransferType.E_BRIDGE;
 
         await eBridgeActionSheet();
+        OverlayModal.hide();
         console.log('checkCanPreview 17');
         return {
           status: true,

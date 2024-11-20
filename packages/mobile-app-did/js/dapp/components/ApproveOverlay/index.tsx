@@ -28,6 +28,7 @@ import { formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import { makeStyles, useTheme } from '@rneui/themed';
 import CommonTooltip from 'components/CommonTooltip';
 import TitleInfoSection from '../TitleInfoSection';
+import { KeyboardSafeArea } from 'components/KeyboardSafeArea';
 
 type SignModalPropsType = {
   dappInfo: DappStoreItem;
@@ -176,30 +177,32 @@ const ApproveModal = (props: SignModalPropsType) => {
               }}
             />
           </View>
-          <CommonInput
-            type="general"
-            keyboardType="numeric"
-            value={symbolNum}
-            placeholder=" "
-            onChangeText={onChangeText}
-            errorMessage={errorMessage}
-            rightIcon={
-              <View style={[GStyles.flexRow, GStyles.itemCenter]}>
-                <Touchable
-                  onPress={() => {
-                    setSymbolNum('');
-                    setErrorMessage('');
-                  }}>
-                  <Svg icon="clear4" iconStyle={{ marginRight: pTd(8) }} size={pTd(16)} />
-                </Touchable>
-                <Touchable>
-                  <TextL style={[{ color: theme.colors.textBase2 }]}>
-                    {formatStr2EllipsisStr(approveSymbol, 8, 'tail')}
-                  </TextL>
-                </Touchable>
-              </View>
-            }
-          />
+          <KeyboardSafeArea>
+            <CommonInput
+              type="general"
+              keyboardType="numeric"
+              value={symbolNum}
+              placeholder=" "
+              onChangeText={onChangeText}
+              errorMessage={errorMessage}
+              rightIcon={
+                <View style={[GStyles.flexRow, GStyles.itemCenter]}>
+                  <Touchable
+                    onPress={() => {
+                      setSymbolNum('');
+                      setErrorMessage('');
+                    }}>
+                    <Svg icon="clear4" iconStyle={{ marginRight: pTd(8) }} size={pTd(16)} />
+                  </Touchable>
+                  <Touchable>
+                    <TextL style={[{ color: theme.colors.textBase2 }]}>
+                      {formatStr2EllipsisStr(approveSymbol, 8, 'tail')}
+                    </TextL>
+                  </Touchable>
+                </View>
+              }
+            />
+          </KeyboardSafeArea>
           <View
             style={[
               GStyles.flexRow,
@@ -228,7 +231,6 @@ const ApproveModal = (props: SignModalPropsType) => {
 export const showApproveModal = (props: SignModalPropsType) => {
   OverlayModal.show(<ApproveModal {...props} />, {
     position: 'bottom',
-    autoKeyboardInsets: false,
     onCloseRequest: props.onReject,
     containerStyle: [!isIOS && GStyles.paddingBottom(0)],
   });

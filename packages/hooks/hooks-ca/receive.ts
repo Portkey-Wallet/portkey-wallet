@@ -42,7 +42,13 @@ export const useReceive = (token: IUserTokenItemResponse, initToChainId?: ChainI
   const sourceChainList = useMemo(() => {
     if (!destinationMap) return [];
     if (!destinationChain) return [];
-    return destinationMap[destinationChain.chainId];
+    return destinationMap[destinationChain.chainId].filter(item => {
+      return !(
+        item.serviceList &&
+        item.serviceList.length === 1 &&
+        item.serviceList[0].serviceName === ReceiveFromNetworkServiceType.EBridge
+      );
+    });
   }, [destinationChain, destinationMap]);
 
   const isAelfChain = useCallback((chainName?: string) => {

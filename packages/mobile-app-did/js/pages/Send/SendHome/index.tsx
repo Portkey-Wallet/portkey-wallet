@@ -75,7 +75,7 @@ import { EBridge } from '@portkey-wallet/utils/eBridge';
 import ActionSheet from 'components/ActionSheet';
 import OverlayModal from 'components/OverlayModal';
 import { eBridgeActionSheet, getLimitTips, getSendNetworkList, getSmallerValue, isValidAmount } from '../utils';
-import { SEND_RECEIVE_HELP_URL } from 'constants/common';
+import { SEND_HELP_URL } from 'constants/common';
 import { openOutLink } from 'utils/link';
 import SelectAddressTab from '../components/SelectAddressTab';
 import { useRecent } from '@portkey-wallet/hooks/hooks-ca/recent';
@@ -884,7 +884,7 @@ const SendHome: React.FC = () => {
       transactionFee: result?.transactionFee || '0',
       transactionFeeUnit: result?.transactionUnit || '',
       networkFee: result?.networkFee || '0',
-      networkFeeUnit: result?.networkFeeUnit || '',
+      networkFeeUnit: result?.networkFeeUnit || 'ELF',
       receiveAmount: result?.receiveAmount,
       receiveAmountUsd: result?.receiveAmountUsd,
       transferType: result?.transferType || TransferType.GENERAL_SAME_CHAIN,
@@ -1016,7 +1016,7 @@ const SendHome: React.FC = () => {
         step === 2 ? (
           <Touchable
             onPress={async () => {
-              await openOutLink(SEND_RECEIVE_HELP_URL);
+              await openOutLink(SEND_HELP_URL);
             }}>
             <Svg icon="question" size={pTd(24)} color={defaultColors.font2} iconStyle={styles.iconStyle} />
           </Touchable>
@@ -1054,6 +1054,7 @@ const SendHome: React.FC = () => {
               imageUrl={assetInfo.imageUrl}
             />
             <TokenAmountInput
+              showErrorInput
               warningTip={errorMessage}
               value={sendNumber}
               usdValue={sendUsdNumber}

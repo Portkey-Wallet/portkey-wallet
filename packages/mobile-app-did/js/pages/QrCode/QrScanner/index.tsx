@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { View, SafeAreaView } from 'react-native';
+import { View, SafeAreaView, StatusBar } from 'react-native';
 import navigationService from 'utils/navigationService';
 import Svg from 'components/Svg';
 import { pTd } from 'utils/unit';
@@ -137,6 +137,8 @@ export const getStyles = makeStyles(theme => ({
   innerView: {
     width: '100%',
     height: '100%',
+    paddingTop: StatusBar.currentHeight,
+    // backgroundColor: 'red',
   },
   iconWrap: {
     width: '100%',

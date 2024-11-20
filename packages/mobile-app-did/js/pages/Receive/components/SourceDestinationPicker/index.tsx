@@ -28,7 +28,7 @@ export function SourceDestinationItem({
       {title && <Text style={styles.title}>{title}</Text>}
       <View style={styles.itemChianWrapper}>
         <View style={styles.iconAndName}>
-          <CommonAvatar avatarSize={pTd(24)} imageUrl={icon} />
+          <CommonAvatar avatarSize={pTd(16)} imageUrl={icon} height={pTd(16)} />
           <Text style={styles.chainName} numberOfLines={1}>
             {chainName}
           </Text>
@@ -81,35 +81,38 @@ const getStyles = makeStyles(theme => ({
   },
   itemWrapper: {
     flex: 1,
-    justifyContent: 'center',
+    // justifyContent: 'center',
+    paddingVertical: pTd(8),
+    paddingLeft: pTd(8),
+    paddingRight: pTd(8),
   },
   itemChianWrapper: {
-    marginTop: pTd(8),
-    marginLeft: pTd(8),
+    // marginTop: pTd(8),
+    // marginLeft: pTd(8),
     flexDirection: 'row',
-    alignItems: 'center',
+    height: pTd(40),
   },
   title: {
-    lineHeight: pTd(12),
-    marginLeft: pTd(8),
+    marginBottom: pTd(8),
     fontSize: pTd(12),
     color: theme.colors.textBase2,
   },
   iconAndName: {
     flex: 1,
     flexDirection: 'row',
-    alignItems: 'center',
+    // alignItems: 'flex-end',
   },
   chainName: {
-    marginLeft: pTd(6),
-    fontSize: pTd(14),
+    marginLeft: pTd(8),
+    fontSize: pTd(16),
+    lineHeight: pTd(17),
     width: pTd(116),
     color: theme.colors.textBase1,
+    alignItems: 'center',
   },
   arrowIcon: {
     width: pTd(16),
     height: pTd(16),
-    marginRight: pTd(8),
   },
   divider: {
     width: StyleSheet.hairlineWidth,

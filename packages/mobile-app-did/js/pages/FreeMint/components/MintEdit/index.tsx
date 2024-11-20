@@ -191,7 +191,10 @@ const MintEdit = (props: {
             {/* </Touchable> */}
             {value.imageUri && (
               <>
-                <FormItem title="Name" style={styles.formItemContainer} titleStyle={fonts.SGRegularFont}>
+                <FormItem
+                  title="Name"
+                  style={styles.formItemContainer}
+                  titleStyle={[fonts.SGRegularFont, GStyles.fontSize(pTd(16))]}>
                   <CommonInput
                     type="general"
                     value={value.name}
@@ -200,6 +203,7 @@ const MintEdit = (props: {
                     placeholderTextColor={theme.colors.textBase3}
                     maxLength={30}
                     inputContainerStyle={styles.inputWrap}
+                    inputStyle={GStyles.fontSize(pTd(16))}
                     onChangeText={onChangeNameText}
                     containerStyle={styles.contentWrap}
                   />
@@ -207,7 +211,7 @@ const MintEdit = (props: {
                 <FormItem
                   title="Description (Optional)"
                   style={styles.formItemContainer}
-                  titleStyle={fonts.SGRegularFont}>
+                  titleStyle={[fonts.SGRegularFont, GStyles.fontSize(pTd(16))]}>
                   <CommonInput
                     type="general"
                     value={value.description}
@@ -353,6 +357,7 @@ const getStyles = makeStyles(theme => ({
   descriptionInput: {
     height: pTd(120),
     textAlignVertical: 'top',
+    fontSize: pTd(16),
   },
   contentWrap: {
     height: pTd(52),

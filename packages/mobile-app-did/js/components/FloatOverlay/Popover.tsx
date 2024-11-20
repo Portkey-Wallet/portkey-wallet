@@ -205,6 +205,8 @@ const getStyles = makeStyles(theme => ({
     marginLeft: pTd(12),
     color: theme.colors.textBase1,
     ...fonts.SGRegularFont,
+    height: pTd(16),
+    lineHeight: pTd(16),
   },
   leftMargin12: {
     marginLeft: pTd(12),

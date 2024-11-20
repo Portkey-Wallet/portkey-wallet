@@ -99,7 +99,7 @@ function TelegramSign({ onConfirm, onReject }: TelegramSignProps) {
   );
 
   return (
-    <ModalBody title="Continue with Telegram" modalBodyType="bottom" style={{ height: pTd(715) }}>
+    <ModalBody title="Continue with Telegram" modalBodyType="bottom" style={{ height: pTd(550) }}>
       <KeyboardAwareScrollView enableOnAndroid={true} contentContainerStyle={styles.container}>
         {loading && (
           <View style={styles.loadingBox}>

@@ -884,7 +884,7 @@ const SendHome: React.FC = () => {
       transactionFee: result?.transactionFee || '0',
       transactionFeeUnit: result?.transactionUnit || '',
       networkFee: result?.networkFee || '0',
-      networkFeeUnit: result?.networkFeeUnit || '',
+      networkFeeUnit: result?.networkFeeUnit || 'ELF',
       receiveAmount: result?.receiveAmount,
       receiveAmountUsd: result?.receiveAmountUsd,
       transferType: result?.transferType || TransferType.GENERAL_SAME_CHAIN,

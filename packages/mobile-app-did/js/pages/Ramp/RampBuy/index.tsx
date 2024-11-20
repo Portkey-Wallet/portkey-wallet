@@ -36,6 +36,7 @@ export default function RampBuy() {
   const { symbol, network } = useRouterParams<IBuyFormV2Props>();
 
   const textInputRef = useRef<TextInput>(null);
+  const [buttonLoading, setButtonLoading] = useState(false);
 
   const { refreshRampShow } = useAppRampEntryShow();
 
@@ -191,7 +192,7 @@ export default function RampBuy() {
       return;
     }
 
-    Loading.show();
+    setButtonLoading(true);
     let isBuySectionShow = false;
     try {
       const result = await refreshRampShow();
@@ -202,21 +203,21 @@ export default function RampBuy() {
     if (!isBuySectionShow) {
       CommonToast.fail('Sorry, the service you are using is temporarily unavailable.');
       navigationService.navigate('Tab');
-      Loading.hide();
+      setButtonLoading(false);
       return;
     }
 
     let _rate = rate;
     if (isRefreshReceiveValid.current === false) {
       const rst = await refreshReceiveRef.current();
-      Loading.hide();
+      setButtonLoading(false);
       if (!rst) {
         return;
       }
       _rate = rst.rate;
     }
 
-    Loading.hide();
+    setButtonLoading(false);
     navigationService.navigate('RampPreview', {
       amount,
       fiat,
@@ -224,7 +225,7 @@ export default function RampBuy() {
       type: RampType.BUY,
       rate: _rate,
     });
-  }, [amount, fiat, rate, refreshRampShow, crypto]);
+  }, [amount, fiat, rate, refreshRampShow, crypto, setButtonLoading]);
 
   const onChangeCurrency = useCallback(() => {
     if (!fiatList.length) {
@@ -271,6 +272,7 @@ export default function RampBuy() {
       <KeyboardSafeArea>
         <View style={styles.btnWrap}>
           <CommonButton
+            loading={buttonLoading}
             type="primary"
             buttonStyle={styles.btnStyle}
             disabled={!isAllowAmount || amountError.isError}

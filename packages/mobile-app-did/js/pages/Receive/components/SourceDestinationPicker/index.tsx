@@ -8,6 +8,7 @@ import CommonAvatar from 'components/CommonAvatar';
 import Svg from 'components/Svg';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import { ViewStyleType } from 'types/styles';
+import GStyles from 'assets/theme/GStyles';
 
 export function SourceDestinationItem({
   title,
@@ -15,11 +16,13 @@ export function SourceDestinationItem({
   chainName,
   onPress,
   containerStyles,
+  isReceiveNFT,
 }: {
   title?: string;
   icon: string;
   chainName: string;
   containerStyles?: ViewStyleType;
+  isReceiveNFT?: boolean;
   onPress: () => void;
 }) {
   const styles = getStyles();
@@ -29,7 +32,7 @@ export function SourceDestinationItem({
       <View style={styles.itemChianWrapper}>
         <View style={styles.iconAndName}>
           <CommonAvatar avatarSize={pTd(16)} imageUrl={icon} height={pTd(16)} />
-          <Text style={styles.chainName} numberOfLines={1}>
+          <Text style={[styles.chainName, !isReceiveNFT && GStyles.width(pTd(116))]} numberOfLines={1}>
             {chainName}
           </Text>
         </View>
@@ -106,7 +109,7 @@ const getStyles = makeStyles(theme => ({
     marginLeft: pTd(8),
     fontSize: pTd(16),
     lineHeight: pTd(17),
-    width: pTd(116),
+    // width: pTd(116),
     color: theme.colors.textBase1,
     alignItems: 'center',
   },

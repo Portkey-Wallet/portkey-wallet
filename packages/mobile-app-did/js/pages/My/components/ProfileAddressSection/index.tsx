@@ -109,7 +109,7 @@ const ProfileAddressSectionV2: React.FC<ProfileAddressSectionPropsType> = props 
   }, [addressListProps]);
 
   return (
-    <FormItem title={title} style={!noMarginTop && GStyles.marginTop(pTd(24))}>
+    <FormItem title={title} style={!noMarginTop && GStyles.marginTop(pTd(46))}>
       {addressList?.map((ele, index) => (
         <View
           key={index}
@@ -149,7 +149,9 @@ const ProfileAddressSectionV2: React.FC<ProfileAddressSectionPropsType> = props 
             <CopyButton
               style={{
                 right: pTd(16),
+                // backgroundColor: darkColors.bgBrand3,
               }}
+              size={24}
               copyContent={copyContent(ele)}
             />
           </View>
@@ -170,6 +172,7 @@ const styles = StyleSheet.create({
   },
   content: {
     marginBottom: pTd(8),
+    // backgroundColor: darkColors.bgBrand4,
   },
   address: {
     width: pTd(270),
@@ -179,7 +182,7 @@ const styles = StyleSheet.create({
     width: pTd(270),
     color: darkColors.textBase2,
     fontSize: pTd(14),
-    marginTop: pTd(8),
+    marginTop: pTd(5),
   },
   img: {
     width: pTd(16),

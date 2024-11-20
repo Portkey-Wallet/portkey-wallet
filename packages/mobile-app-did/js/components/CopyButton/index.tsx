@@ -11,13 +11,14 @@ export interface CopyButtonProps {
   style?: StyleProp<ViewStyle>;
   tipsStyle?: Pick<FloatTipProps, 'containerStyle' | 'textStyle' | 'content'>;
   onCopy?: () => void;
+  size?: number;
   duration?: number;
 }
 
 export const CopyButton = (props: CopyButtonProps) => {
   const [copyChecked, setCopyChecked] = useState(false);
   const copyForwarder = useRef<NodeJS.Timeout | null>(null);
-  const { style = {}, tipsStyle = {}, onCopy, duration = 2000, copyContent } = props;
+  const { style = {}, tipsStyle = {}, onCopy, duration = 2000, copyContent, size } = props;
   const [wrapperLayoutProps, setWrapperLayoutProps] = useState<{ width: number; height: number }>({
     width: 0,
     height: 0,
@@ -25,7 +26,9 @@ export const CopyButton = (props: CopyButtonProps) => {
   const onLayout = useCallback(
     (event: LayoutChangeEvent) => {
       const { width, height } = event.nativeEvent.layout;
-      if (wrapperLayoutProps.width === width && wrapperLayoutProps.height === height) return;
+      if (wrapperLayoutProps.width === width && wrapperLayoutProps.height === height) {
+        return;
+      }
       setWrapperLayoutProps({ width, height });
     },
     [wrapperLayoutProps],
@@ -56,7 +59,7 @@ export const CopyButton = (props: CopyButtonProps) => {
   return (
     <TouchableOpacity onPress={realCopy} onLayout={onLayout} disabled={copyChecked} style={style}>
       <FloatTip wrapperLayoutProps={wrapperLayoutProps} {...tipsStyle} content={'Copied'} display={copyChecked} />
-      <Svg icon={copyChecked ? 'copy-checked' : 'copy_v2'} size={pTd(32)} iconStyle={styles.copyButtonIcon} />
+      <Svg icon={copyChecked ? 'copy-checked' : 'copy_v2'} size={pTd(size || 32)} iconStyle={styles.copyButtonIcon} />
     </TouchableOpacity>
   );
 };

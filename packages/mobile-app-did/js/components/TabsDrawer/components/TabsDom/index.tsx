@@ -273,8 +273,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: pTd(12),
+    paddingVertical: pTd(16),
     width: screenWidth,
+    height: pTd(72),
   },
 });
 

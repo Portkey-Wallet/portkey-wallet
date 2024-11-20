@@ -150,39 +150,33 @@ const SendPreview: React.FC = () => {
 
     let _amount = sendNumber;
     if (transferType === TransferType.GENERAL_CROSS_CHAIN) {
-      _amount = formatAmountShow(
-        ZERO.plus(_amount)
-          .minus(networkFee || '')
-          .minus(crossDefaultFee),
-        Number(defaultToken.decimals),
-      );
+      _amount =
+        assetInfo.symbol === defaultToken.symbol
+          ? formatAmountShow(
+              ZERO.plus(_amount)
+                .minus(networkFee || '')
+                .minus(crossDefaultFee),
+              Number(defaultToken.decimals),
+            )
+          : formatAmountShow(ZERO.plus(_amount), Number(assetInfo.decimals));
     } else {
-      _amount = formatAmountShow(ZERO.plus(_amount).minus(networkFee || ''), Number(defaultToken.decimals));
+      _amount =
+        assetInfo.symbol === defaultToken.symbol
+          ? formatAmountShow(ZERO.plus(_amount).minus(networkFee || ''), Number(defaultToken.decimals))
+          : formatAmountShow(ZERO.plus(_amount), Number(assetInfo.decimals));
     }
 
-    const amountUsd =
-      transferType === TransferType.GENERAL_CROSS_CHAIN
-        ? amountInUsdShow(
-            ZERO.plus(_amount)
-              .minus(networkFee || '')
-              .toFixed(),
-            0,
-            assetInfo.symbol,
-          )
-        : amountInUsdShow(
-            ZERO.plus(_amount)
-              .minus(networkFee || '')
-              .minus(crossDefaultFee)
-              .toFixed(),
-            0,
-            assetInfo.symbol,
-          );
+    const amountUsd = tokenPriceObject[assetInfo?.symbol]
+      ? amountInUsdShow(ZERO.plus(_amount).times(tokenPriceObject[assetInfo.symbol]).toFixed(), 0, assetInfo.symbol)
+      : '-';
+
     return {
       estimateAmount: `${_amount} ${assetInfo.label || assetInfo.symbol}`,
       estimateAmountUsd: isMainnet ? amountUsd : '',
     };
   }, [
     amountInUsdShow,
+    assetInfo.decimals,
     assetInfo.label,
     assetInfo.symbol,
     crossDefaultFee,
@@ -193,6 +187,7 @@ const SendPreview: React.FC = () => {
     receiveAmount,
     receiveAmountUsd,
     sendNumber,
+    tokenPriceObject,
     transactionFee,
     transferType,
   ]);

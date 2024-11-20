@@ -74,8 +74,13 @@ const MyWallet: React.FC = () => {
 
   const handlePhotoUpload = async () => {
     try {
-      const res = await uploadRef.current?.selectPhotoWithSource();
-      console.log(res);
+      const selectPhotoRes = await uploadRef.current?.selectPhoto();
+      console.log('selectPhotoRes: ', selectPhotoRes);
+      const s3Url = await uploadRef.current?.uploadPhoto();
+      if (s3Url) {
+        setAvatar(s3Url);
+        await setUserInfo({ avatar: s3Url });
+      }
       return true;
     } catch (error) {
       console.log(error);

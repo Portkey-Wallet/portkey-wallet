@@ -164,7 +164,7 @@ const ActivityDetail = (props: ActivityItemType & IActivityApiParams) => {
       <TextXXL
         numberOfLines={1}
         ellipsizeMode="tail"
-        style={[fonts.SGMediumFont, { color: isReceived ? darkColors.textSuccess1 : darkColors.textBase1 }]}>
+        style={[fonts.BGMediumFont, { color: isReceived ? darkColors.textSuccess1 : darkColors.textBase1 }]}>
         {`${prefix}${formatTokenAmountShowWithDecimals(activityItem?.amount, decimals)} ${suffix}`}
       </TextXXL>
     );
@@ -426,7 +426,7 @@ const ActivityDetail = (props: ActivityItemType & IActivityApiParams) => {
             titleStyle={styles.avatarTitleStyle}
             borderStyle={GStyles.hairlineBorder}
           />
-          <TextXXL style={[fonts.SGMediumFont, styles.marginTop8]}>{activityItem.transactionName}</TextXXL>
+          <TextXXL style={[fonts.BGMediumFont, styles.marginTop8]}>{activityItem.transactionName}</TextXXL>
         </View>
       );
     }
@@ -489,9 +489,9 @@ const ActivityDetail = (props: ActivityItemType & IActivityApiParams) => {
             <CommonAvatar {...renderBottomIconInfo} avatarSize={pTd(42)} style={styles.avatar2} />
           </View>
           <View style={[styles.multiTokenTitle]}>
-            <TextXXL style={[fonts.SGMediumFont]}>{tokenBottom.symbol}</TextXXL>
+            <TextXXL style={[fonts.BGMediumFont]}>{tokenBottom.symbol}</TextXXL>
             <CommonAvatar svgName="arrow-down-thin" style={styles.arrowIcon} avatarSize={pTd(16)} />
-            <TextXXL style={[fonts.SGMediumFont]}>{tokenTop.symbol}</TextXXL>
+            <TextXXL style={[fonts.BGMediumFont]}>{tokenTop.symbol}</TextXXL>
           </View>
         </View>
       );
@@ -556,7 +556,7 @@ const ActivityDetail = (props: ActivityItemType & IActivityApiParams) => {
           <TextXXL
             style={[
               styles.tokenCount,
-              fonts.SGMediumFont,
+              fonts.BGMediumFont,
               { color: activityItem?.isReceived ? theme.colors.textSuccess1 : theme.colors.textBase1 },
             ]}>
             {SHOW_FROM_TRANSACTION_TYPES.includes(activityItem?.transactionType as TransactionTypes) && amountShow}

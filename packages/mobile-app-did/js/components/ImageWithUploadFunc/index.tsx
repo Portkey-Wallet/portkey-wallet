@@ -21,7 +21,6 @@ type UploadImageType = {
 export type ImageWithUploadFuncInstance = {
   selectPhoto: () => boolean;
   uploadPhoto: () => string;
-  selectPhotoWithSource: () => any;
 };
 
 const ImageWithUploadFunc = forwardRef(function ImageWithUploadFunc(props: UploadImageType, ref) {
@@ -70,35 +69,6 @@ const ImageWithUploadFunc = forwardRef(function ImageWithUploadFunc(props: Uploa
     }
   }, []);
 
-  const selectPhotoWithSource = useCallback(async () => {
-    try {
-      Loading.show();
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: false,
-        allowsMultipleSelection: false,
-        quality: 0.1,
-      });
-      if (result.cancelled || !result.uri) return;
-
-      if (!isValidAvatarFile(result.uri)) return CommonToast.fail('Unsupported format. Please use jpeg, jpg or png.');
-
-      if (!result?.fileSize) {
-        const info = await getInfo(result.uri);
-        result.fileSize = info.size;
-      }
-      if (!result?.fileSize || result.fileSize > MAX_FILE_SIZE_BYTE) return;
-
-      setLocalPhotoFile(result);
-      return result;
-    } catch (error) {
-      console.log('==', error);
-      return false;
-    } finally {
-      Loading.hide();
-    }
-  }, []);
-
   const uploadPhoto = useCallback(async () => {
     console.log('localPhotoFile', localPhotoFile);
 
@@ -124,7 +94,6 @@ const ImageWithUploadFunc = forwardRef(function ImageWithUploadFunc(props: Uploa
       return {
         selectPhoto,
         uploadPhoto,
-        selectPhotoWithSource,
       };
     },
     [selectPhoto, uploadPhoto],

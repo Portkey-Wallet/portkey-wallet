@@ -11,7 +11,6 @@ import { sleep } from '@portkey-wallet/utils';
 import GStyles from 'assets/theme/GStyles';
 import { DappStoreItem } from '@portkey-wallet/store/store-ca/dapp/type';
 import { CommonButtonProps } from 'components/CommonButton';
-import { RememberInfoType } from 'components/RememberMe';
 import { OverlayBottomSection } from '../OverlayBottomSection';
 import { SessionExpiredPlan } from '@portkey-wallet/types/session';
 import { useUpdateSessionInfo } from '@portkey-wallet/hooks/hooks-ca/dapp';
@@ -23,8 +22,10 @@ import TitleInfoSection from '../TitleInfoSection';
 import { makeStyles, useTheme } from '@rneui/themed';
 import CommonAvatar from 'components/CommonAvatar';
 import CommonTooltip from 'components/CommonTooltip';
-import { SessionKeyMap, showRememberMeModal } from '../RememberMeOverlay';
+import { showRememberMeModal } from '../RememberMeOverlay';
 import Svg from 'components/Svg';
+import { RememberInfoType } from 'components/RememberMe';
+import { SessionKeyMap } from '@portkey-wallet/constants/constants-ca/dapp';
 
 type ConnectModalType = {
   dappInfo: DappStoreItem;
@@ -45,12 +46,6 @@ const ConnectModal = (props: ConnectModalType) => {
     isRemember: false,
     value: SessionExpiredPlan.always,
   });
-  const showAuthText = useMemo(() => {
-    if (!rememberInfo.isRemember) {
-      return 'Always';
-    }
-    return SessionKeyMap[rememberInfo.value];
-  }, [rememberInfo.isRemember, rememberInfo.value]);
 
   const ButtonList = useMemo(
     () => [
@@ -123,7 +118,7 @@ const ConnectModal = (props: ConnectModalType) => {
             <Touchable
               style={[GStyles.flexRow, GStyles.itemCenter]}
               onPress={() => showRememberMeModal({ rememberInfo, setRememberMeInfo })}>
-              <TextL style={[{ lineHeight: pTd(22) }, fonts.SGMediumFont]}>{showAuthText}</TextL>
+              <TextL style={[{ lineHeight: pTd(22) }, fonts.SGMediumFont]}>{SessionKeyMap[rememberInfo.value]}</TextL>
               <Svg iconStyle={styles.arrowIcon} icon="down-arrow" size={pTd(16)} />
             </Touchable>
           </View>

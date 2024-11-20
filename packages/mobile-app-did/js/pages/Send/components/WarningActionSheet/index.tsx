@@ -12,6 +12,7 @@ export const eBridgeWaringShow = (props: { cancel: () => void; confirm: () => vo
   const { confirm, cancel } = props;
 
   ActionSheet.alert({
+    autoClose: false,
     showInfoIcon: true,
     title: 'Confirm transfer with eBridge',
     message: (

@@ -654,7 +654,10 @@ const SendHome: React.FC = () => {
           approveMultiLevelParams: {
             sendTransferPreviewApprove: {
               successNavigateName: 'SendPreview',
-              params: previewParamsWithoutFee,
+              params: {
+                ...previewParamsWithoutFee,
+                transferType: isAELFCross ? TransferType.GENERAL_CROSS_CHAIN : TransferType.GENERAL_SAME_CHAIN,
+              },
             },
           },
         });
@@ -771,6 +774,7 @@ const SendHome: React.FC = () => {
         transferType = TransferType.E_BRIDGE;
 
         await eBridgeActionSheet();
+        OverlayModal.hide();
         console.log('checkCanPreview 17');
         return {
           status: true,
@@ -1011,7 +1015,7 @@ const SendHome: React.FC = () => {
           setStep(2);
         } else {
           inputRef.current?.onInput(
-            i.addressInfo?.isExchange
+            i.addressInfo?.isExchange || !i.addressInfo
               ? i.address || i.addressInfo?.address || ''
               : addressFormat(i.address || i.addressInfo?.address || '', i.chainId || i.addressInfo?.chainId),
           );

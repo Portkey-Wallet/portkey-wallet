@@ -180,7 +180,15 @@ const SelectAddressTab: React.FC<ISelectAddressTabProps> = (props: ISelectAddres
     ];
   }, [t, recentAddressList, chainId, onPress, savedAddressList, myAddressList]);
 
-  return <CommonTopTab hasTabBarBorderRadius={false} hasBottomBorder={false} tabList={tabList} swipeEnabled />;
+  return (
+    <CommonTopTab
+      hasTabBarBorderRadius={false}
+      hasBottomBorder={false}
+      tabList={tabList}
+      swipeEnabled={false}
+      isBlockTab={true}
+    />
+  );
 
   // return (
   //   <View>

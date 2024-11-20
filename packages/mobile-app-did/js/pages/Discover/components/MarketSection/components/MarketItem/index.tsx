@@ -5,23 +5,21 @@ import CommonToast from 'components/CommonToast';
 import PortkeySkeleton from 'components/PortkeySkeleton';
 import Touchable from 'components/Touchable';
 import { useMarketFavorite } from 'hooks/discover';
-import React, { forwardRef, useCallback, useImperativeHandle, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { View, Image, StyleSheet, LayoutChangeEvent } from 'react-native';
 import { pTd } from 'utils/unit';
 import { getDecimalPlaces } from '../SinkableText';
-import { FloatTips } from 'components/FloatTips';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { TextM, TextS } from 'components/CommonText';
+import { showFavoriteModal } from '../FavoriteOverlay';
 export interface IMarketItemProps {
-  idx?: number;
   isLoading: boolean;
   item: ICryptoCurrencyItem;
-  itemRefs: React.MutableRefObject<Map<any, any>>;
   onStarClicked?: (favorite: boolean) => void;
 }
 
-export default forwardRef(function MarketItem(props: IMarketItemProps, _ref: any) {
-  const { isLoading, idx, item, onStarClicked, itemRefs } = props;
+export default function MarketItem(props: IMarketItemProps) {
+  const { isLoading, item, onStarClicked } = props;
   const { markFavorite, unMarkFavorite } = useMarketFavorite();
   const [favorite, setFavorite] = useState(item.collected);
   const [showTips, setShowTips] = useState(false);
@@ -58,22 +56,41 @@ export default forwardRef(function MarketItem(props: IMarketItemProps, _ref: any
     [wrapperLayoutProps],
   );
 
-  const showTip = (isShow: boolean) => {
-    [...itemRefs.current.entries()].forEach(([id, ref]) => {
-      if (id !== item.id && ref) {
-        ref && ref.hideTips();
+  const onLongPress = useCallback(
+    (data: ICryptoCurrencyItem) => {
+      if (isDefaultSymbol) {
+        CommonToast.info(`${item.symbol} can’t be removed from the favorite list.`);
+      } else {
+        showFavoriteModal({
+          title: data.symbol,
+          favorite,
+          onPress: async () => {
+            onStarClicked?.(!data.collected);
+            console.log('wfs=== favorite', favorite);
+            if (favorite) {
+              try {
+                await unMarkFavorite(data.id, data.symbol);
+                CommonToast.success('Removed');
+                setFavorite(false);
+              } catch (e) {
+                CommonToast.failError('Failed to remove favourites');
+              }
+            } else {
+              try {
+                await markFavorite(data.id, data.symbol);
+                CommonToast.success('Added to favourites');
+                setFavorite(true);
+              } catch (e) {
+                CommonToast.failError('Failed to add favourites');
+              }
+            }
+            setShowTips(false);
+          },
+        });
       }
-    });
-    if (isDefaultSymbol) {
-      CommonToast.info(`${item.symbol} can’t be removed from the favorite list.`);
-    } else {
-      setShowTips(isShow);
-    }
-  };
-
-  useImperativeHandle(_ref, () => ({
-    hideTips: () => setShowTips(false),
-  }));
+    },
+    [favorite, isDefaultSymbol, item.symbol, markFavorite, onStarClicked, unMarkFavorite],
+  );
 
   return (
     <View style={styles.mainContainerWrap}>
@@ -86,41 +103,8 @@ export default forwardRef(function MarketItem(props: IMarketItemProps, _ref: any
       ) : (
         <Touchable
           onLayout={onLayout}
-          onPress={() => showTip(false)}
-          onLongPress={() => showTip(true)}
+          onLongPress={() => onLongPress(item)}
           style={[styles.mainContainer, { backgroundColor: showTips ? defaultColors.bgBase2 : darkColors.bgBase1 }]}>
-          <FloatTips
-            wrapperLayoutProps={wrapperLayoutProps}
-            textStyle={{
-              color: defaultColors.textBase2,
-            }}
-            direction={!idx ? 'bottom' : 'top'}
-            icon={favorite ? (isDefaultSymbol ? 'favorite-disable' : 'collected') : 'collect'}
-            onPress={async () => {
-              onStarClicked?.(!item.collected);
-              console.log('wfs=== favorite', favorite);
-              if (favorite) {
-                try {
-                  await unMarkFavorite(item.id, item.symbol);
-                  CommonToast.success('Removed');
-                  setFavorite(false);
-                } catch (e) {
-                  CommonToast.failError('Failed to remove favourites');
-                }
-              } else {
-                try {
-                  await markFavorite(item.id, item.symbol);
-                  CommonToast.success('Added to favourites');
-                  setFavorite(true);
-                } catch (e) {
-                  CommonToast.failError('Failed to add favourites');
-                }
-              }
-              setShowTips(false);
-            }}
-            content={favorite ? 'Remove from favorite' : 'Add to favorite'}
-            display={showTips}
-          />
           <View style={[styles.boxWrapper, styles.section1Width]}>
             <Image
               source={{
@@ -152,7 +136,7 @@ export default forwardRef(function MarketItem(props: IMarketItemProps, _ref: any
       )}
     </View>
   );
-});
+}
 
 const styles = StyleSheet.create({
   mainContainerWrap: {
@@ -182,7 +166,8 @@ const styles = StyleSheet.create({
     width: pTd(42),
     height: pTd(42),
     marginRight: pTd(10),
-    borderRadius: pTd(18),
+    borderRadius: pTd(21),
+    backgroundColor: darkColors.iconBase1,
   },
   iconFavorite: {
     marginRight: pTd(10),

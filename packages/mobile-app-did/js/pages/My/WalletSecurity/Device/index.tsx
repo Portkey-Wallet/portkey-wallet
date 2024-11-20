@@ -19,6 +19,7 @@ import { ApprovalType } from '@portkey-wallet/types/verifier';
 import ActionSheet from 'components/ActionSheet';
 import navigationService from 'utils/navigationService';
 import { sleep } from '@portkey-wallet/utils';
+import Loading from 'components/Loading';
 
 const DeviceList: React.FC = () => {
   const onError = useCallback(() => {
@@ -27,7 +28,6 @@ const DeviceList: React.FC = () => {
   const pageStyles = getStyles();
   const { theme } = useTheme();
   const {
-    deviceAmount,
     deviceList,
     refresh,
     loading: isRefreshing,
@@ -35,9 +35,6 @@ const DeviceList: React.FC = () => {
     isInit: false,
     onError,
   });
-
-  console.log('deviceList:', deviceList, deviceAmount);
-
   const walletInfo = useCurrentWalletInfo();
   const [isRemoving, setIsRemoving] = useState(false);
   const [removeDevices, setRemoveDevices] = useState<IDeviceItem[]>([]);
@@ -139,6 +136,14 @@ const DeviceList: React.FC = () => {
       }),
     [t, removeDevices],
   );
+
+  useEffect(() => {
+    if (isRefreshing) {
+      Loading.show();
+    } else {
+      Loading.hide();
+    }
+  }, [isRefreshing]);
   return (
     <PageContainer
       titleDom={'Manage Devices'}
@@ -151,6 +156,7 @@ const DeviceList: React.FC = () => {
       hideTouchable={true}
       scrollViewProps={{ disabled: true }}>
       <FlatList
+        contentContainerStyle={{ paddingBottom: pTd(20) }}
         style={pageStyles.listWrap}
         refreshing={isRefreshing}
         data={deviceList || []}

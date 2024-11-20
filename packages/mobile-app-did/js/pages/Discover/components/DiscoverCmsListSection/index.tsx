@@ -91,6 +91,7 @@ export function DiscoverCmsListSection() {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     backgroundColor: darkColors.bgBase1,
   },
   scroll: {

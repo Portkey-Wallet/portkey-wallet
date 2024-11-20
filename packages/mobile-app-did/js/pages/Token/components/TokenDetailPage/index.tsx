@@ -13,6 +13,7 @@ import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { ActivityItemType } from '@portkey-wallet/types/types-ca/activity';
 import { getActivityListAsync } from '@portkey-wallet/store/store-ca/activity/action';
 import { getCurrentActivityMapKey } from '@portkey-wallet/utils/activity';
+import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import { IActivitiesApiParams } from '@portkey-wallet/store/store-ca/activity/type';
 import { formatAmountUSDShow, formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import fonts from 'assets/theme/fonts';
@@ -241,7 +242,9 @@ const TokenDetailPage: React.FC<TokenDetailParams> = ({ tokenInfo, tokenSection 
     return (
       <FlashList
         refreshControl={
-          <CustomPullToRefreshHeader refreshing={isLoading === ListLoadingEnum.header} onRefresh={onRefreshList} />
+          isIOS ? (
+            <CustomPullToRefreshHeader refreshing={isLoading === ListLoadingEnum.header} onRefresh={onRefreshList} />
+          ) : undefined
         }
         style={styles.list}
         refreshing={isLoading === ListLoadingEnum.header}

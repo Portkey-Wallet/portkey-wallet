@@ -60,7 +60,7 @@ import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { getAssetsEstimation } from '@portkey-wallet/store/store-ca/assets/api';
 import { addressFormat, getChainIdByAddress } from '@portkey-wallet/utils';
 import { ChainId } from '@portkey-wallet/types';
-import ToAddressInput from '../components/ToAddressInput';
+import ToAddressInput, { IToAddressInputRef } from '../components/ToAddressInput';
 import TokenBalanceShow from 'components/TokenBalanceShow';
 import TokenAmountInput from 'components/TokenAmountInput';
 import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
@@ -91,6 +91,8 @@ const SendHome: React.FC = () => {
     params: { sendType = 'token', toInfo, assetInfo },
   } = useRoute<RouteProp<{ params: IToSendHomeParamsType }>>();
   const { t } = useLanguage();
+  const inputRef = useRef<IToAddressInputRef>(null);
+
   const styles = getStyles();
   useFetchTxFee();
   const defaultToken = useDefaultToken();
@@ -981,12 +983,10 @@ const SendHome: React.FC = () => {
       console.log('onPressTabItem', i);
       try {
         if (i.addressInfo?.address === caAddressInfoList[0].caAddress) {
-          // anther address
-          setSelectedToContact({
-            name: '',
-            address: addressFormat(i.addressInfo?.address, i.addressInfo?.chainId),
-            chainId: i.addressInfo?.chainId,
-          } as TToInfo);
+          // anther chain address
+          inputRef.current?.onInput(
+            addressFormat(i.address || i.addressInfo?.address, i.chainId || i.addressInfo?.chainId),
+          );
         } else if (i.network !== 'aelf' && i.addressInfo?.network !== 'aelf') {
           Loading.show();
           const { data } = await getSendNetworkList({
@@ -1010,11 +1010,11 @@ const SendHome: React.FC = () => {
           setWarning([WarningKey.MAKE_SURE_SUPPORT_PLATFORM]);
           setStep(2);
         } else {
-          setSelectedToContact({
-            name: i?.name,
-            address: i.address || i.addressInfo?.address,
-            chainId: i.chainId || i.addressInfo?.chainId,
-          } as TToInfo);
+          inputRef.current?.onInput(
+            i.addressInfo?.isExchange
+              ? i.address || i.addressInfo?.address || ''
+              : addressFormat(i.address || i.addressInfo?.address || '', i.chainId || i.addressInfo?.chainId),
+          );
         }
       } catch (error) {
         CommonToast.failError(error);
@@ -1043,6 +1043,7 @@ const SendHome: React.FC = () => {
       scrollViewProps={{ disabled: true }}>
       <View style={styles.mainWrap}>
         <ToAddressInput
+          ref={inputRef}
           sendType={sendType}
           step={step}
           warning={warning}

@@ -278,7 +278,6 @@ const styles = StyleSheet.create({
     marginRight: pTd(10),
   },
   cardsContainer: {
-    scrollEnabled: true,
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',

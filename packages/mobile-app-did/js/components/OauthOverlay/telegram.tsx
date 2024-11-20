@@ -99,7 +99,7 @@ function TelegramSign({ onConfirm, onReject }: TelegramSignProps) {
   );
 
   return (
-    <ModalBody title="Continue with Telegram" modalBodyType="bottom" style={{ height: pTd(550) }}>
+    <ModalBody title="Continue with Telegram" modalBodyType="bottom" isMaxHeight>
       <KeyboardAwareScrollView enableOnAndroid={true} contentContainerStyle={styles.container}>
         {loading && (
           <View style={styles.loadingBox}>
@@ -133,6 +133,7 @@ const sign = () => {
   return new Promise<TelegramAuthentication>((resolve, reject) => {
     OverlayModal.show(<TelegramSign onConfirm={resolve} onReject={reject} />, {
       position: 'bottom',
+      autoKeyboardInsets: false,
       onDisappearCompleted: () => reject(new Error(USER_CANCELED)),
     });
   });

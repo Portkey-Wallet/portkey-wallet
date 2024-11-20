@@ -3,7 +3,6 @@ import * as SplashScreen from 'expo-splash-screen';
 import navigationService from 'utils/navigationService';
 import { RootStackParamList } from 'navigation';
 import { useCredentials } from 'hooks/store';
-import CommonButton from 'components/CommonButton';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import Welcome from './components/Welcome';
 import { ImageBackground, View } from 'react-native';
@@ -17,9 +16,9 @@ import useLatestIsFocusedRef from 'hooks/useLatestIsFocusedRef';
 import { useGetLoginControlListAsync } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { makeStyles } from '@rneui/themed';
 import PageContainer from 'components/PageContainer';
-import { TextL } from 'components/CommonText';
 import fonts from 'assets/theme/fonts';
 import { getStatusBarHeight } from 'utils/statusbar';
+import OutlinedTextButton from 'components/OutlinedTextButton';
 
 export default function Referral() {
   const styles = getStyles();
@@ -82,14 +81,12 @@ export default function Referral() {
         <>
           <Welcome />
 
-          <CommonButton
-            buttonStyle={[styles.buttonStyle]}
-            type="transparent"
-            onPress={() => navigationService.reset('LoginPortkey')}>
-            <View style={styles.buttonContainer}>
-              <TextL style={styles.buttonText}>{'Get Started'}</TextL>
-            </View>
-          </CommonButton>
+          <OutlinedTextButton
+            style={styles.buttonStyle}
+            textStyle={styles.buttonText}
+            title={'Get started'}
+            onPress={() => navigationService.reset('LoginPortkey')}
+          />
         </>
       ) : null}
     </PageContainer>
@@ -122,28 +119,15 @@ const getStyles = makeStyles(theme => ({
     height: pTd(407),
     padding: 0,
     margin: 0,
-  },
-  buttonContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: theme.colors.bgBrand1,
-    width: '100%',
-    height: '100%',
-    borderRadius: pTd(38),
+    marginTop: pTd(16),
   },
   buttonStyle: {
     marginHorizontal: pTd(16),
-    height: pTd(48),
     marginBottom: pTd(16),
-    borderWidth: pTd(1.5),
-    paddingVertical: pTd(3.5),
-    paddingHorizontal: pTd(3.5),
   },
   buttonText: {
     color: theme.colors.textNeutral4,
+    fontSize: pTd(16),
     ...fonts.mediumFont,
-  },
-  versionStyle: {
-    marginBottom: pTd(32),
   },
 }));

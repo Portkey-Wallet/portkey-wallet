@@ -175,7 +175,7 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
         .dp(2)
         .toFixed(2)}`;
     }
-  }, [tokenPrice, values.count, values.packetNum]);
+  }, [tokenPrice, type, values.count, values.packetNum]);
 
   const onAmountChange = useCallback(
     (value: string) => {
@@ -403,6 +403,7 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
           chainName={destinationChain.name}
           onPress={showDestinationList}
           containerStyles={styles.selectContainerStyles}
+          isReceiveNFT={true}
         />
         <AmountCard
           amount={values.count}

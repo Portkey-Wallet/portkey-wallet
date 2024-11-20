@@ -35,8 +35,8 @@ export default forwardRef(function EarnPage(_, _ref) {
   return (
     <View style={styles.container}>
       {earnList.length > 0 ? (
-        <ScrollView showsVerticalScrollIndicator={false} bounces={false}>
-          {[...earnList, ...earnList].map((item, index) => (
+        <ScrollView showsVerticalScrollIndicator={false} bounces={false} nestedScrollEnabled>
+          {earnList.map((item, index) => (
             <EarnItem key={index} {...item} />
           ))}
           <View style={styles.gap} />

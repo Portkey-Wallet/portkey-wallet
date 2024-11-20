@@ -515,8 +515,8 @@ export const getStyles = makeStyles(theme => ({
     lineHeight: pTd(361),
     textAlign: 'center',
     fontSize: pTd(100),
-    backgroundColor: theme.colors.bg7,
-    color: theme.colors.font7,
+    // backgroundColor: 'white',
+    // color: theme.colors.font7,
   },
   basicInfoTitle: {
     marginBottom: pTd(8),

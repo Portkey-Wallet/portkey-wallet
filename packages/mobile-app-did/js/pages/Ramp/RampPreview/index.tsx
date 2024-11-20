@@ -13,7 +13,6 @@ import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { useReceive } from '../hooks';
 import navigationService from 'utils/navigationService';
 import CommonToast from 'components/CommonToast';
-import Loading from 'components/Loading';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import ramp, {
@@ -129,6 +128,7 @@ export default function RampPreview() {
   const { refreshRampShow } = useAppRampEntryShow();
   const { userGuardiansList } = useGuardiansInfo();
   const styles = getStyles();
+  const [buttonLoading, setButtonLoading] = useState(false);
 
   useEffectOnce(() => {
     refreshReceive();
@@ -207,13 +207,13 @@ export default function RampPreview() {
         item => item.guardianType === LoginType.Email && item.isLoginAccount,
       );
 
-      Loading.show();
+      setButtonLoading(true);
       const showResult = await refreshRampShow();
       const isSectionShow = type === RampType.BUY ? showResult.isBuySectionShow : showResult.isSellSectionShow;
       if (!isSectionShow) {
         CommonToast.fail('Sorry, the service you are using is temporarily unavailable.');
         navigationService.navigate('Tab');
-        Loading.hide();
+        setButtonLoading(false);
         return;
       }
 
@@ -245,7 +245,7 @@ export default function RampPreview() {
     } catch (error) {
       console.log(error);
     } finally {
-      Loading.hide();
+      setButtonLoading(false);
     }
   }, [
     amount,
@@ -259,6 +259,7 @@ export default function RampPreview() {
     type,
     userGuardiansList,
     wallet?.AELF?.caAddress,
+    setButtonLoading,
   ]);
 
   const receiveAmount = useMemo(() => {
@@ -329,6 +330,7 @@ export default function RampPreview() {
               </TextM>
             </View>
             <CommonButton
+              loading={buttonLoading}
               type="primary"
               disabled={!providerKey}
               onPress={() => {

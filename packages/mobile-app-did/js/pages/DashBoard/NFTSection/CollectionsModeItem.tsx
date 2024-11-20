@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import navigationService from 'utils/navigationService';
-import { pTd } from 'utils/unit';
+import { pTd, pTdFloor } from 'utils/unit';
 import GStyles from 'assets/theme/GStyles';
 import CommonAvatar from 'components/CommonAvatar';
 import { TextL } from 'components/CommonText';
@@ -65,7 +65,7 @@ export default function CollectionItem(props: NFTItemPropsType) {
         }}>
         <View>
           <CommonAvatar
-            avatarSize={pTd(172.5)}
+            avatarSize={pTdFloor(172.5)}
             imageUrl={imageUrl}
             title={collectionName}
             shapeType={'square'}

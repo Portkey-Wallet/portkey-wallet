@@ -91,6 +91,7 @@ export default function ReceiveNFTs() {
           title="Network"
           icon={destinationChain.imageUrl}
           chainName={destinationChain.name}
+          isReceiveNFT
           onPress={showDestinationList}
           containerStyles={styles.selectContainerStyles}
         />

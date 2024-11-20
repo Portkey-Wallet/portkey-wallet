@@ -9,7 +9,7 @@ import PageContainer from 'components/PageContainer';
 import { pTd } from 'utils/unit';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { useAccountNFTCollectionInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
-import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCaAddressInfoList, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { ChainId } from '@portkey-wallet/types';
 import { Skeleton } from '@rneui/base';
 import { PortkeyLinearGradientV2 } from 'components/PortkeyLinearGradient';
@@ -38,6 +38,7 @@ const CollectionDetail = () => {
   const [isFetching, setIsFetching] = useState<boolean>(false);
   const caAddressInfos = useCaAddressInfoList();
   const { fetchAccountNFTItem, accountNFTList } = useAccountNFTCollectionInfo();
+  const { currentNetwork } = useWallet();
   const currentCollectionObj = useMemo(() => {
     const currentCollection = accountNFTList.find(item => item.symbol === symbol && item.chainId === chainId);
     if ((currentCollection?.children?.length || 0) === 0) {
@@ -172,7 +173,7 @@ const CollectionDetail = () => {
                 <CommonAvatar avatarSize={pTd(48)} imageUrl={imageUrl} shapeType={'square'} />
                 <TextXXL style={styles.collectionName}>{collectionName}</TextXXL>
                 <TextM style={styles.collectionCount}>
-                  {formatChainInfoToShow(currentCollectionObj?.chainId)} •{' '}
+                  {formatChainInfoToShow(currentCollectionObj?.chainId, currentNetwork)} •{' '}
                   {itemCount || currentCollectionObj?.totalRecordCount}{' '}
                   {(itemCount || currentCollectionObj?.itemCount || 0) > 1 ? 'items' : 'item'}
                 </TextM>
@@ -198,7 +199,7 @@ const CollectionDetail = () => {
                 <CommonAvatar avatarSize={pTd(48)} imageUrl={imageUrl} shapeType={'square'} />
                 <TextXXL style={styles.collectionName}>{collectionName}</TextXXL>
                 <TextM style={styles.collectionCount}>
-                  {formatChainInfoToShow(currentCollectionObj?.chainId)} •{' '}
+                  {formatChainInfoToShow(currentCollectionObj?.chainId, currentNetwork)} •{' '}
                   {itemCount || currentCollectionObj?.totalRecordCount}{' '}
                   {(itemCount || currentCollectionObj?.itemCount || 0) > 1 ? 'items' : 'item'}
                 </TextM>

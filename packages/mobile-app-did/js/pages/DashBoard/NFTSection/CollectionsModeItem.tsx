@@ -11,6 +11,7 @@ import Touchable from 'components/Touchable';
 import { OpenCollectionObjType } from './index';
 import { ChainId } from '@portkey-wallet/types';
 import { makeStyles } from '@rneui/themed';
+import { isIOS } from '@rneui/base';
 
 export enum NoDataMessage {
   CustomNetWorkNoData = 'No transaction records accessible from the current custom network',
@@ -95,7 +96,7 @@ export default function CollectionItem(props: NFTItemPropsType) {
 }
 const getStyles = makeStyles(theme => ({
   wrap: {
-    width: pTd(173),
+    width: isIOS ? pTd(173) : Math.floor(pTd(173)),
     backgroundColor: theme.colors.bgBase2,
   },
   title: {

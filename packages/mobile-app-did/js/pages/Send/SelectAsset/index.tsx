@@ -17,6 +17,8 @@ import { makeStyles } from '@rneui/themed';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import Loading from 'components/Loading';
 
+const initFilteredListShow = { nftInfos: [], tokenInfos: [] };
+
 const AssetList = () => {
   // when scan qrcode should add toAddress
   const { toAddress = '' } = useRouterParams<{ toAddress?: string }>();
@@ -29,16 +31,16 @@ const AssetList = () => {
   const debounceKeyword = useDebounce(keyword, 800);
   const [isFetching, setIsFetching] = useState(false);
   const [, getTokenPrice] = useGetCurrentAccountTokenPrice();
-  const [filteredListShow, setFilteredListShow] = useState<IAssetItemV2>({ nftInfos: [], tokenInfos: [] });
+  const [filteredListShow, setFilteredListShow] = useState<IAssetItemV2>(initFilteredListShow);
 
   const assetListShow = useMemo(() => {
     if (debounceKeyword) {
       return filteredListShow;
     } else {
+      setFilteredListShow(initFilteredListShow);
       return accountAssetsList;
     }
   }, [accountAssetsList, debounceKeyword, filteredListShow]);
-  console.log('assetListShow', JSON.stringify(assetListShow));
   const getAssetsList = useLockCallback(async () => {
     try {
       setIsFetching(true);

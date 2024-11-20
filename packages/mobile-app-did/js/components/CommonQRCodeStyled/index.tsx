@@ -53,10 +53,10 @@ export default function CommonQRCodeStyled(props: CommonQRCodeStyledPropsType) {
         }}
         outerEyesOptions={{
           strokeWidth: pTd(6),
-          borderRadius: pTd(30),
+          borderRadius: pTd(18),
         }}
         innerEyesOptions={{
-          borderRadius: pTd(12),
+          borderRadius: pTd(8),
         }}
         {...props}
       />

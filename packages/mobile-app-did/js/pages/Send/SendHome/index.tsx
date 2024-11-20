@@ -83,11 +83,12 @@ import { useGetFilterContactList } from '@portkey-wallet/hooks/hooks-ca/contactN
 import { TFormattedRecentItem } from '@portkey-wallet/types/types-ca/contactNew';
 import { IContactItemMyType } from 'components/ContactItemMy';
 import { KeyboardSafeArea } from 'components/KeyboardSafeArea';
+import { isAelfAddress } from 'utils/contacts';
 import { useKeyboardListener } from 'hooks/useKeyboardHeight';
 
 const SendHome: React.FC = () => {
   const {
-    params: { sendType = 'token', toInfo, assetInfo, imTransferInfo },
+    params: { sendType = 'token', toInfo, assetInfo },
   } = useRoute<RouteProp<{ params: IToSendHomeParamsType }>>();
   const { t } = useLanguage();
   const styles = getStyles();
@@ -122,7 +123,7 @@ const SendHome: React.FC = () => {
   const [isSendToExchange, setIsSendToExchange] = useState(true);
   const [isCheckAddressFinish, setIsCheckAddressFinish] = useState(false);
 
-  const isFixedToContact = useMemo(() => !!imTransferInfo?.channelId, [imTransferInfo?.channelId]);
+  const isFixedToContact = useMemo(() => false, []);
   const { max: maxFee, crossChain: crossFee } = useGetTxFee(assetInfo?.chainId);
   const { getEtransferMaxFee } = useEtransferFee(assetInfo?.chainId);
 
@@ -528,10 +529,11 @@ const SendHome: React.FC = () => {
         sendType,
         assetInfo,
         toInfo: selectedToContact,
-        transactionFee: '0',
+        networkFee: '0',
+        networkFeeUnit: defaultToken.symbol,
         sendNumber,
       } as IToSendPreviewParamsType),
-    [assetInfo, selectedToContact, sendNumber, sendType],
+    [assetInfo, defaultToken.symbol, selectedToContact, sendNumber, sendType],
   );
 
   const checkTransferLimitWithJump = useCheckTransferLimitWithJump();
@@ -636,32 +638,36 @@ const SendHome: React.FC = () => {
       console.log('checkCanPreview 9');
       return { status: false };
     }
-    try {
-      const checkTransferLimitResult = await checkTransferLimitWithJump({
-        caContract,
-        symbol: assetInfo.symbol,
-        decimals: assetInfo.decimals,
-        amount: sendNumber,
-        balance: balance,
-        chainId: chainInfo.chainId,
-        approveMultiLevelParams: {
-          sendTransferPreviewApprove: {
-            successNavigateName: 'SendPreview',
-            params: previewParamsWithoutFee,
+
+    // just aelf transfer need limit
+    if (isAelfAddress(selectedToContact.address)) {
+      try {
+        const checkTransferLimitResult = await checkTransferLimitWithJump({
+          caContract,
+          symbol: assetInfo.symbol,
+          decimals: assetInfo.decimals,
+          amount: sendNumber,
+          balance: balance,
+          chainId: chainInfo.chainId,
+          approveMultiLevelParams: {
+            sendTransferPreviewApprove: {
+              successNavigateName: 'SendPreview',
+              params: previewParamsWithoutFee,
+            },
           },
-        },
-      });
-      console.log('checkTransferLimitResult', checkTransferLimitResult);
-      if (!checkTransferLimitResult) {
+        });
+        console.log('checkTransferLimitResult', checkTransferLimitResult);
+        if (!checkTransferLimitResult) {
+          Loading.hide();
+          console.log('checkCanPreview 10');
+          return { status: false };
+        }
+      } catch (error) {
+        CommonToast.failError(error);
         Loading.hide();
-        console.log('checkCanPreview 10');
+        console.log('checkCanPreview 11');
         return { status: false };
       }
-    } catch (error) {
-      CommonToast.failError(error);
-      Loading.hide();
-      console.log('checkCanPreview 11');
-      return { status: false };
     }
 
     // check is SYNCHRONIZING

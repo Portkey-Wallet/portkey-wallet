@@ -1,15 +1,12 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Keyboard, StyleSheet, TextInput, View } from 'react-native';
 import CommonInput from 'components/CommonInput';
-import { SimulatedInput } from 'components/SimulatedInputBoxV2';
 
 import GStyles from 'assets/theme/GStyles';
-import { BGStyles, FontStyles } from 'assets/theme/styles';
 import PageContainer from 'components/PageContainer';
 import navigationService from 'utils/navigationService';
 import { useLanguage } from 'i18n/hooks';
 import { pTd } from 'utils/unit';
-import { TextM } from 'components/CommonText';
 import Svg from 'components/Svg';
 import fonts from 'assets/theme/fonts';
 import RecordSection from '../components/SearchRecordSection';
@@ -26,12 +23,11 @@ import { darkColors, defaultColors } from 'assets/theme';
 import { KeyboardSafeArea } from 'components/KeyboardSafeArea';
 import { useKeyboard } from 'hooks/useKeyboardHeight';
 import { RouteProp, useRoute } from '@react-navigation/native';
-import { ActionType } from 'types/common';
 
 export default function DiscoverSearch() {
   const { t } = useLanguage();
   const { learnGroupList, earnList } = useDiscoverData();
-  const { isKeyboardOpened, setIsKeyboardOpened } = useKeyboard(0);
+  const { isKeyboardOpened } = useKeyboard(0);
 
   const iptRef = useRef<TextInput>();
   useInputFocus(iptRef);
@@ -47,8 +43,6 @@ export default function DiscoverSearch() {
   } = useRoute<RouteProp<{ params: { address?: string; onClose?(): void } }>>();
 
   console.log('address:', address);
-
-  const clearText = useCallback(() => setValue(''), []);
 
   const flatList = useMemo((): DiscoverItem[] => {
     const list = [] as DiscoverItem[];
@@ -71,15 +65,14 @@ export default function DiscoverSearch() {
   }, [discoverGroupList, earnList, learnGroupList]);
 
   useEffect(() => {
-    if (!value) setShowRecord(true);
+    if (!value) {
+      setShowRecord(true);
+    }
   }, [value]);
 
   useEffect(() => {
     if (address?.length) {
       setValue(address);
-      setTimeout(() => {
-        onSearch(address);
-      }, 0);
     }
   }, [address]);
 
@@ -102,7 +95,9 @@ export default function DiscoverSearch() {
   const onSearch = useCallback(
     (inputValue: string) => {
       const newValue = inputValue.replace(/\s+/g, '');
-      if (!newValue) return;
+      if (!newValue) {
+        return;
+      }
 
       console.log('checkIsUrl', checkIsUrl(newValue));
 
@@ -134,7 +129,7 @@ export default function DiscoverSearch() {
           marginVertical: pTd(12),
         }}
         onPress={navigationService.goBack}>
-        <Svg icon={'close'} size={pTd(20)} color={defaultColors.white} />
+        <Svg icon={'discover_close'} size={pTd(20)} color={defaultColors.white} />
       </Touchable>
 
       {showRecord ? (
@@ -147,7 +142,7 @@ export default function DiscoverSearch() {
         <View style={[GStyles.flexRow, styles.inputContainer]}>
           <CommonInput
             // autoFocus
-            grayBorder
+            // grayBorder
             theme="black-bg"
             ref={iptRef}
             value={value}
@@ -155,7 +150,10 @@ export default function DiscoverSearch() {
             clearIcon="clear4"
             type="search"
             clearIconColor={darkColors.bgBase2}
-            onChangeText={v => setValue(v)}
+            onChangeText={v => {
+              setValue(v);
+              onSearch(value);
+            }}
             onSubmitEditing={() => onSearch(value)}
             returnKeyType="search"
             placeholder={t('dApps, Sites, URL')}
@@ -168,7 +166,7 @@ export default function DiscoverSearch() {
             //   ) : undefined
             // }
             rightIconContainerStyle={styles.rightIconContainerStyle}
-            style={styles.rnInputStyle}
+            // style={styles.rnInputStyle}
           />
 
           <Touchable

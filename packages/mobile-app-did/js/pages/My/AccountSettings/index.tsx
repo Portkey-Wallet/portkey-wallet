@@ -154,10 +154,13 @@ export default function AccountSettings() {
         suffixDom: () => <TextM style={styles.setBackupMailText}>{dappList?.length}</TextM>,
       },
       {
-        name: 'ContactsHome',
+        name: 'Address book',
         label: 'Address book',
         icon: 'my_contact',
         showDivider: true,
+        onPress: () => {
+          navigationService.navigate('ContactsHome');
+        },
       },
       {
         name: 'CryptoGift',
@@ -291,7 +294,7 @@ export default function AccountSettings() {
     return (
       <View>
         <TextM style={{ color: darkColors.textWarning1, lineHeight: pTd(20) }}>
-          {t('Use your login account as your wallet name to give it a unique identity.')}
+          Use your login account as your wallet name to give it a unique identity.
         </TextM>
         <Touchable onPress={onSetNewWalletName}>
           <TextM style={[fonts.SGMediumFont, { color: theme.colors.textBrand1, marginTop: pTd(16) }]}>

@@ -57,7 +57,7 @@ export default function SearchRecordSection() {
     <ScrollView style={styles.sectionWrap}>
       <View style={[styles.headerWrap, GStyles.flexRow, GStyles.spaceBetween]}>
         <TextL style={styles.header}>{'Recent'}</TextL>
-        <TextS style={[{ color: darkColors.textBrand1 }, GStyles.alignCenter]} onPress={clearRecord}>
+        <TextS style={[{ color: darkColors.textBrand1, fontSize: pTd(14) }, GStyles.alignCenter]} onPress={clearRecord}>
           {t('Clear')}
         </TextS>
       </View>

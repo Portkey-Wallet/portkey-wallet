@@ -13,6 +13,7 @@ import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { ActivityItemType } from '@portkey-wallet/types/types-ca/activity';
 import { getActivityListAsync } from '@portkey-wallet/store/store-ca/activity/action';
 import { getCurrentActivityMapKey } from '@portkey-wallet/utils/activity';
+import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import { IActivitiesApiParams } from '@portkey-wallet/store/store-ca/activity/type';
 import { formatAmountUSDShow, formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import fonts from 'assets/theme/fonts';
@@ -207,7 +208,16 @@ const TokenDetailPage: React.FC<TokenDetailParams> = ({ tokenInfo, tokenSection 
         )}
       </View>
     );
-  }, [buttonWrapStyle, currentTokenInfo, isBuyButtonShow, isFaucetButtonShow, onReceivePress, tokenInfo]);
+  }, [
+    buttonWrapStyle,
+    currentTokenInfo,
+    isBuyButtonShow,
+    isFaucetButtonShow,
+    isSwapShow,
+    onReceivePress,
+    swap,
+    tokenInfo,
+  ]);
 
   const listHeader = useMemo(() => {
     return (
@@ -232,7 +242,9 @@ const TokenDetailPage: React.FC<TokenDetailParams> = ({ tokenInfo, tokenSection 
     return (
       <FlashList
         refreshControl={
-          <CustomPullToRefreshHeader refreshing={isLoading === ListLoadingEnum.header} onRefresh={onRefreshList} />
+          isIOS ? (
+            <CustomPullToRefreshHeader refreshing={isLoading === ListLoadingEnum.header} onRefresh={onRefreshList} />
+          ) : undefined
         }
         style={styles.list}
         refreshing={isLoading === ListLoadingEnum.header}
@@ -268,7 +280,7 @@ const TokenDetailPage: React.FC<TokenDetailParams> = ({ tokenInfo, tokenSection 
         }}
       />
     );
-  }, [currentActivity?.data, getActivityList, init, isEmpty, isLoading, onRefreshList, renderItem, t]);
+  }, [currentActivity?.data, getActivityList, init, isEmpty, isLoading, listHeader, onRefreshList, renderItem, t]);
 
   return <View style={styles.pageWrap}>{renderActivityList()}</View>;
 };

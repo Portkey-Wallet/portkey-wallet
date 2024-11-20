@@ -22,12 +22,13 @@ import { pTd } from 'utils/unit';
 interface IAddressActivityProps {
   address: string;
   chainId: ChainId;
+  onItemPress?: (item: ActivityItemType) => void;
 }
 
 const MAX_RESULT_COUNT = 20;
 
 const AddressActivity: React.FC<IAddressActivityProps> = props => {
-  const { address, chainId } = props;
+  const { address, chainId, onItemPress } = props;
   const caAddressInfos = useCaAddressInfoList();
 
   const [totalCount, setTotalCount] = useState(0);
@@ -77,7 +78,9 @@ const AddressActivity: React.FC<IAddressActivityProps> = props => {
 
       setTotalCount(result.totalRecordCount);
       setIsLoading(ListLoadingEnum.hide);
-      if (skipActivityNumber !== 0) await sleep(250);
+      if (skipActivityNumber !== 0) {
+        await sleep(250);
+      }
     },
     [activityList, params],
   );
@@ -90,12 +93,15 @@ const AddressActivity: React.FC<IAddressActivityProps> = props => {
           preItem={preItem}
           item={item}
           index={index}
-          onPress={() => showActivityDetail(item)}
+          onPress={() => {
+            showActivityDetail(item);
+            onItemPress?.(item);
+          }}
           style={styles.itemWrap}
         />
       );
     },
-    [styles],
+    [onItemPress, styles],
   );
 
   const isInitRef = useRef(false);
@@ -123,8 +129,12 @@ const AddressActivity: React.FC<IAddressActivityProps> = props => {
         onRefresh={() => init()}
         estimatedItemSize={74}
         onEndReached={() => {
-          if (!isInitRef.current) return;
-          if (activityList?.length >= totalCount) return;
+          if (!isInitRef.current) {
+            return;
+          }
+          if (activityList?.length >= totalCount) {
+            return;
+          }
 
           fetchActivityList(activityList?.length);
         }}
@@ -138,7 +148,9 @@ const AddressActivity: React.FC<IAddressActivityProps> = props => {
           )
         }
         onLoad={() => {
-          if (isInitRef.current) return;
+          if (isInitRef.current) {
+            return;
+          }
           init();
         }}
       />

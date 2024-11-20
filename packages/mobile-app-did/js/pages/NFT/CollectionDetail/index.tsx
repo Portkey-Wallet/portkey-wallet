@@ -17,6 +17,7 @@ import Touchable from 'components/Touchable';
 import navigationService from 'utils/navigationService';
 import { NFTItemBaseType } from '@portkey-wallet/types/types-ca/assets';
 import { divDecimalsToShow } from '@portkey-wallet/utils/converter';
+import { formatChainInfoToShow } from '@portkey-wallet/utils';
 
 export interface ICollectionDetailProps {
   name: string;
@@ -153,7 +154,7 @@ const CollectionDetail = () => {
     outputRange: [0, 1],
     extrapolate: 'clamp',
   });
-
+  console.log('111111111', (itemCount || currentCollectionObj?.itemCount || 0) > 1 ? 'items' : 'item');
   return (
     <PageContainer
       noCenterDom={false}
@@ -170,7 +171,11 @@ const CollectionDetail = () => {
               <View style={styles.topWrapper}>
                 <CommonAvatar avatarSize={pTd(48)} imageUrl={imageUrl} shapeType={'square'} />
                 <TextXXL style={styles.collectionName}>{collectionName}</TextXXL>
-                <TextM style={styles.collectionCount}>{itemCount || currentCollectionObj?.itemCount} items</TextM>
+                <TextM style={styles.collectionCount}>
+                  {formatChainInfoToShow(currentCollectionObj?.chainId)} •{' '}
+                  {itemCount || currentCollectionObj?.totalRecordCount}{' '}
+                  {(itemCount || currentCollectionObj?.itemCount || 0) > 1 ? 'items' : 'item'}
+                </TextM>
               </View>
             );
           }}
@@ -193,7 +198,9 @@ const CollectionDetail = () => {
                 <CommonAvatar avatarSize={pTd(48)} imageUrl={imageUrl} shapeType={'square'} />
                 <TextXXL style={styles.collectionName}>{collectionName}</TextXXL>
                 <TextM style={styles.collectionCount}>
-                  {itemCount || currentCollectionObj?.totalRecordCount} items
+                  {formatChainInfoToShow(currentCollectionObj?.chainId)} •{' '}
+                  {itemCount || currentCollectionObj?.totalRecordCount}{' '}
+                  {(itemCount || currentCollectionObj?.itemCount || 0) > 1 ? 'items' : 'item'}
                 </TextM>
               </View>
             );

@@ -60,7 +60,7 @@ const DappDetail: React.FC = () => {
   }, [sessionInfo]);
 
   const isRememberMe = useMemo(() => {
-    if (!!sessionInfo?.expiredPlan && !isExpired) {
+    if (!!sessionInfo?.expiredPlan && !isExpired && sessionInfo?.expiredPlan !== SessionExpiredPlan.always) {
       return true;
     }
     return false;
@@ -112,10 +112,10 @@ const DappDetail: React.FC = () => {
           origin: getOrigin(dappInfo?.origin || ''),
           expiredPlan: SessionExpiredPlan.hour1,
         });
-        CommonToast.success('Session Key enabled');
+        CommonToast.success('"Remember Me" enabled.');
       } else {
         updateSessionInfo({ origin: getOrigin(dappInfo?.origin || '') });
-        CommonToast.success('Session Key disabled');
+        CommonToast.success('"Remember Me" disabled.');
       }
     },
     [dappInfo?.origin, pin, updateSessionInfo],
@@ -203,7 +203,7 @@ const DappDetail: React.FC = () => {
         <View style={styles.expiresTimeWrap}>
           <TextM style={[FontStyles.font7]}>{t('Expiration time: ')}</TextM>
           <TextM style={[FontStyles.font7]}>
-            {sessionInfo?.expiredPlan === SessionExpiredPlan.always
+            {sessionInfo?.expiredPlan === SessionExpiredPlan.never
               ? '--'
               : formatTimeToStr(sessionInfo?.expiredTime || 0)}
           </TextM>

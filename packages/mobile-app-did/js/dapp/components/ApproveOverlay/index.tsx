@@ -205,7 +205,7 @@ const ApproveModal = (props: SignModalPropsType) => {
               GStyles.flexRow,
               GStyles.spaceBetween,
               styles.clickWrap,
-              { marginTop: pTd(errorMessage ? 28 : 8) },
+              { marginTop: pTd(errorMessage ? 0 : -16) },
             ]}>
             {isEditBatchApprovalInApp ? (
               <TextL> </TextL>

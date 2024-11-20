@@ -17,6 +17,7 @@ export const formatStr2EllipsisStr = (address = '', startDigit = 8, endDigit = 8
 };
 export interface ItemType {
   contact: IContactItemType;
+  ignoreFormat?: boolean;
   style?: TextStyle;
 }
 
@@ -25,10 +26,13 @@ export interface IContactAddressRef {
 }
 
 const ContactAddress = forwardRef<IContactAddressRef, ItemType>((props, ref) => {
-  const { contact, style } = props;
+  const { contact, style, ignoreFormat = false } = props;
 
   const addressFormatStr = useMemo(() => {
     const { address, chainId, network, isExchange } = contact?.addressInfo ?? {};
+    if (ignoreFormat) {
+      return address;
+    }
     if (network === AELF_NETWORK_NAME) {
       if (isExchange && chainId === MAIN_CHAIN_ID) {
         return address;
@@ -36,7 +40,7 @@ const ContactAddress = forwardRef<IContactAddressRef, ItemType>((props, ref) => 
       return addressFormat(address, chainId, network);
     }
     return address;
-  }, [contact]);
+  }, [contact, ignoreFormat]);
 
   const addressEllipsisStr = useMemo(() => {
     const { network } = contact?.addressInfo ?? {};

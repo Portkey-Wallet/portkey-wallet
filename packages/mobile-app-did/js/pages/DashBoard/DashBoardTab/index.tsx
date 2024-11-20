@@ -12,6 +12,7 @@ import Touchable from 'components/Touchable';
 import ModeChangeSelector from '../componets/ModeChangeSelector';
 import { useNFTSection } from '@portkey-wallet/hooks/hooks-ca';
 import navigationService from 'utils/navigationService';
+import GStyles from 'assets/theme/GStyles';
 
 enum TabName {
   Tokens = 'Tokens',
@@ -70,6 +71,7 @@ const DashBoardTab: React.FC = () => {
             ModeChangeSelector.showList({
               list: modeList,
               selectedIndex: nftSectionUiType,
+              topWrapStyle: GStyles.paddingTop(0),
               onSelected: (item, key) => {
                 changeNFTSectionMode(key as 'Collections' | 'NFTs');
               },

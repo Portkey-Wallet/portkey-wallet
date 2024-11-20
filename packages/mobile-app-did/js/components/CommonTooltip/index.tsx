@@ -11,6 +11,7 @@ import { useLanguage } from 'i18n/hooks';
 import { pTd } from 'utils/unit';
 import { openOutLink } from 'utils/link';
 import { TextL } from 'components/CommonText';
+import { screenHeight, screenWidth } from '@portkey-wallet/utils/mobile/device';
 
 export interface ITooltipContentProps {
   title: string;
@@ -65,6 +66,7 @@ const TooltipContent = ({ title, description, learnMoreUrl }: ITooltipContentPro
 
 const showTooltip = (props: ITooltipContentProps) => {
   OverlayModal.show(<TooltipContent {...props} />, {
+    customBounds: { x: screenWidth / 2, y: screenHeight / 2, width: 0, height: 0 },
     position: 'center',
   });
 };

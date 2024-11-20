@@ -6,7 +6,7 @@ import { darkColors } from 'assets/theme';
 import { StyleSheet } from 'react-native';
 
 const EBRIDGE_DOC_URL =
-  'https://medium.com/@ebridge.web3/ebridge-goes-live-on-the-aelf-blockchain-enabling-seamless-token-transfer-between-aelf-and-evm-0f3139390c82';
+  'https://doc.portkey.finance/docs/What-is-eBridge-and-how-does-it-facilitate-cross-chain-transfers-in-Portkey';
 
 export const eBridgeWaringShow = (props: { cancel: () => void; confirm: () => void }) => {
   const { confirm, cancel } = props;

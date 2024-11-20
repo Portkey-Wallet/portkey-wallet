@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { ScrollView, StyleSheet, View, Image } from 'react-native';
+import { StyleSheet, View, Image, TouchableWithoutFeedback } from 'react-native';
 import Touchable from 'components/Touchable';
 import PageContainer from 'components/PageContainer';
 import { useLanguage } from 'i18n/hooks';
@@ -41,7 +41,9 @@ const NoChatContactProfile: React.FC = () => {
 
   const handleCopy = useCallback(async () => {
     const addressFormatStr = contactAddressRef.current?.getAddress();
-    if (!addressFormatStr) return;
+    if (!addressFormatStr) {
+      return;
+    }
     const isCopy = await Clipboard.setStringAsync(addressFormatStr);
     isCopy && CommonToast.success(t('Copy Success'));
   }, [t]);
@@ -52,6 +54,9 @@ const NoChatContactProfile: React.FC = () => {
     const { network } = contact?.addressInfo ?? {};
     return network === AELF_NETWORK_NAME;
   }, [contact]);
+  const hideDropDown = useCallback(() => {
+    setIsViewMoreDropdown(false);
+  }, []);
 
   const activityParams = useMemo(() => {
     return {
@@ -77,45 +82,68 @@ const NoChatContactProfile: React.FC = () => {
           <Svg icon="more-vertical" size={pTd(24)} color={colors.textBase1} />
         </Touchable>
       }>
-      {isSaved && (
-        <ProfileHeaderSection
-          showRemark={false}
-          name={contact?.name || contact?.caHolderInfo?.walletName || ''}
-          avatarUrl={contact?.caHolderInfo?.avatar || ''}
-          style={pageStyles.profileHeader}
-          nameStyle={pageStyles.profileHeaderName}
-        />
-      )}
-      <View style={pageStyles.profileAddress}>
-        <TextL>Address</TextL>
-        <View style={pageStyles.addressWrap}>
-          {contact?.addressInfo?.networkImage && (
-            <Image source={{ uri: contact.addressInfo.networkImage }} style={pageStyles.avatarNetworkIcon} />
+      <TouchableWithoutFeedback
+        onPress={() => {
+          hideDropDown();
+        }}>
+        <View style={GStyles.flex1}>
+          {isSaved && (
+            <ProfileHeaderSection
+              showRemark={false}
+              name={contact?.name || contact?.caHolderInfo?.walletName || ''}
+              avatarUrl={contact?.caHolderInfo?.avatar || ''}
+              style={pageStyles.profileHeader}
+              nameStyle={pageStyles.profileHeaderName}
+            />
           )}
-          <View style={GStyles.flex1}>
-            <TextL style={pageStyles.addressNetworkName}>{contact?.addressInfo?.networkName}</TextL>
-            {contact && <ContactAddress ref={contactAddressRef} contact={contact} style={pageStyles.address} />}
+          <View style={pageStyles.profileAddress}>
+            <TextL>Address</TextL>
+            <View style={pageStyles.addressWrap}>
+              {contact?.addressInfo?.networkImage && (
+                <Image source={{ uri: contact.addressInfo.networkImage }} style={pageStyles.avatarNetworkIcon} />
+              )}
+              <View style={GStyles.flex1}>
+                <TextL style={pageStyles.addressNetworkName}>{contact?.addressInfo?.networkName}</TextL>
+                {contact && (
+                  <ContactAddress
+                    ref={contactAddressRef}
+                    contact={contact}
+                    style={pageStyles.address}
+                    ignoreFormat={!isSaved}
+                  />
+                )}
+              </View>
+              {isSaved ? (
+                <Touchable
+                  style={pageStyles.addressCopy}
+                  onPress={() => {
+                    handleCopy();
+                    hideDropDown();
+                  }}>
+                  <Svg icon="copy" size={pTd(24)} color={colors.iconBase3} />
+                </Touchable>
+              ) : (
+                <Touchable style={pageStyles.addressCopy} onPress={handleAddContact}>
+                  <Svg icon="add-contact1" size={pTd(24)} color={colors.iconBase3} />
+                </Touchable>
+              )}
+            </View>
           </View>
-          {isSaved ? (
-            <Touchable style={pageStyles.addressCopy} onPress={handleCopy}>
-              <Svg icon="copy" size={pTd(24)} color={colors.iconBase3} />
-            </Touchable>
-          ) : (
-            <Touchable style={pageStyles.addressCopy} onPress={handleAddContact}>
-              <Svg icon="add-contact1" size={pTd(24)} color={colors.iconBase3} />
-            </Touchable>
-          )}
+          {isSaved &&
+            (isAelfNetwork ? (
+              activityParams?.address &&
+              activityParams?.chainId && (
+                <AddressActivity
+                  address={activityParams?.address}
+                  chainId={activityParams?.chainId}
+                  onItemPress={hideDropDown}
+                />
+              )
+            ) : (
+              <TextL style={pageStyles.emptyActivity}>Interactions not available</TextL>
+            ))}
         </View>
-      </View>
-      {isSaved &&
-        (isAelfNetwork ? (
-          activityParams?.address &&
-          activityParams?.chainId && (
-            <AddressActivity address={activityParams?.address} chainId={activityParams?.chainId} />
-          )
-        ) : (
-          <TextL style={pageStyles.emptyActivity}>Activity not available</TextL>
-        ))}
+      </TouchableWithoutFeedback>
       {isViewMoreDropdown && (
         <View style={pageStyles.dropDownWrap}>
           {isSaved ? (

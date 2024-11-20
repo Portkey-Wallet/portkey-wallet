@@ -17,7 +17,7 @@ import { ReceiveType } from '@portkey-wallet/types/types-ca/receive';
 import { makeStyles } from '@rneui/themed';
 import EBridgeCard from '../components/EBridgeCard';
 import { ChainId } from '@portkey-wallet/types';
-import { SEND_RECEIVE_HELP_URL } from 'constants/common';
+import { RECEIVE_HELP_URL } from 'constants/common';
 import { openOutLink } from 'utils/link';
 
 export default function Receive() {
@@ -88,7 +88,7 @@ export default function Receive() {
       rightDom={
         <Touchable
           onPress={async () => {
-            await openOutLink(SEND_RECEIVE_HELP_URL);
+            await openOutLink(RECEIVE_HELP_URL);
           }}>
           <Svg icon="question" size={pTd(24)} iconStyle={styles.rightIcon} />
         </Touchable>

@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { View } from 'react-native';
 import Svg from 'components/Svg';
 import PageContainer from 'components/PageContainer';
@@ -35,8 +35,9 @@ const TokenAllowanceDetail: React.FC = () => {
   } = useRoute<RouteProp<{ params: { item: ITokenAllowance } }>>();
   const caInfo = getCurrentCaInfoByChainId(item.chainId);
   const getCAContract = useGetCAContract();
+  const [approveList, setApproveList] = useState<Array<ISymbolApprovedItem>>();
+  const [revokedList, setRevokedList] = useState<Array<ISymbolApprovedItem>>();
 
-  console.log('====item', item.symbolApproveList);
   const { t } = useLanguage();
   const getChain = useGetChain();
 
@@ -47,7 +48,8 @@ const TokenAllowanceDetail: React.FC = () => {
   const [switchMap, setSwitchMap] = useState<{ [k: string]: boolean }>({});
 
   const unApprove = useCallback(
-    async (symbol: string) => {
+    async (approveItem: ISymbolApprovedItem) => {
+      const symbol = approveItem?.symbol;
       try {
         if (!switchMap[symbol]) {
           return CommonToast.warn(
@@ -88,6 +90,13 @@ const TokenAllowanceDetail: React.FC = () => {
         // }
 
         CommonToast.success('Token approval disabled');
+        const newTempApproveList = approveList?.filter(i => i?.symbol !== approveItem?.symbol);
+        const newTempRevokedList = [
+          ...(revokedList || []),
+          { ...approveItem, amount: 0, updateTime: Math.floor(Date.now() / 1000) },
+        ];
+        setApproveList(newTempApproveList);
+        setRevokedList(newTempRevokedList);
         myEvents.refreshAllowanceList.emit();
       } catch (error) {
         setSwitchMap(pre => ({ ...pre, [symbol]: true }));
@@ -96,7 +105,16 @@ const TokenAllowanceDetail: React.FC = () => {
         Loading.hide();
       }
     },
-    [allowanceDetail.contractAddress, caInfo?.caHash, getCAContract, getChain, item.chainId, switchMap],
+    [
+      allowanceDetail.contractAddress,
+      approveList,
+      caInfo?.caHash,
+      getCAContract,
+      getChain,
+      item.chainId,
+      revokedList,
+      switchMap,
+    ],
   );
 
   useEffectOnce(() => {
@@ -108,17 +126,18 @@ const TokenAllowanceDetail: React.FC = () => {
     console.log(tmpMap);
   });
 
-  const approvalList = useMemo(() => {
-    return item?.symbolApproveList?.filter(i => i.amount);
-  }, [item?.symbolApproveList]);
-
-  const revokedList = useMemo(() => {
-    return item?.symbolApproveList?.filter(i => !i.amount);
+  useEffect(() => {
+    setApproveList(item?.symbolApproveList?.filter(i => i.amount));
+    setRevokedList(item?.symbolApproveList?.filter(i => !i.amount));
   }, [item?.symbolApproveList]);
 
   const showRevokedSection = useMemo(() => {
     return (revokedList || []).length > 0;
   }, [revokedList]);
+
+  const showApproveSection = useMemo(() => {
+    return (approveList || []).length > 0;
+  }, [approveList]);
 
   const getIconsPairProps = useCallback(
     (i: ISymbolApprovedItem): IIconPairProps['item'] => {
@@ -150,14 +169,16 @@ const TokenAllowanceDetail: React.FC = () => {
         </Touchable>
       </View>
 
-      <View style={styles.approveModuleTitle}>
-        <TextXXL style={[FontStyles.weight500]}>Approvals</TextXXL>
-        <Text style={styles.approveTitleDesc}>
-          {"The dApp won't ask for your approval for the tokens below until their allowance is used up."}
-        </Text>
-      </View>
+      {showApproveSection && (
+        <View style={styles.approveModuleTitle}>
+          <TextXXL style={[FontStyles.weight500]}>Approvals</TextXXL>
+          <Text style={styles.approveTitleDesc}>
+            {"The dApp won't ask for your approval for the tokens below until their allowance is used up."}
+          </Text>
+        </View>
+      )}
 
-      {approvalList?.map((ele, key) => {
+      {approveList?.map((ele, key) => {
         return (
           <View key={key} style={styles.approvalWrap}>
             <View style={styles.approveTop}>
@@ -168,7 +189,7 @@ const TokenAllowanceDetail: React.FC = () => {
               <Touchable
                 style={styles.approvalRight}
                 onPress={() => {
-                  unApprove(ele.symbol);
+                  unApprove(ele);
                 }}>
                 <View style={styles.revokeWarp}>
                   <Svg

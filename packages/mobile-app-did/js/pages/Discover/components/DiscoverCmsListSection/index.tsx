@@ -48,46 +48,51 @@ export function DiscoverCmsListSection() {
   }, [dappBannerList, getS3ImgUrl]);
 
   return (
-    <ScrollView contentContainerStyle={styles.scroll} style={styles.scroll}>
-      <View style={styles.wrap}>
-        {lists.length > 0 ? <Banner items={lists} /> : <View style={styles.init} />}
-        {GroupList.map((group, index) => (
-          <View key={index} style={styles.groupWrap}>
-            <TextM style={[FontStyles.font5, fonts.mediumFont, styles.groupTitle]}>{group.title}</TextM>
-            <View style={styles.itemsGroup}>
-              {group.items.map((item, i) => (
-                <Touchable key={i} style={styles.itemWrap} onPress={() => onClickJump(item)}>
-                  <Image
-                    style={styles.image}
-                    source={{
-                      uri: item?.imgUrl?.filename_disk
-                        ? `${s3Url}/${item?.imgUrl?.filename_disk}`
-                        : getFaviconUrl(item.url),
-                    }}
-                  />
-                  <View style={styles.right}>
-                    <TextWithProtocolIcon
-                      textFontSize={pTd(16)}
-                      title={item?.title}
-                      url={item.url}
-                      iconSize={12}
-                      showProtocolIcon={false}
+    <View style={styles.container}>
+      <ScrollView contentContainerStyle={styles.scroll} style={styles.scroll}>
+        <View style={styles.wrap}>
+          {lists.length > 0 ? <Banner items={lists} /> : <View style={styles.init} />}
+          {GroupList.map((group, index) => (
+            <View key={index} style={styles.groupWrap}>
+              <TextM style={[FontStyles.font5, fonts.mediumFont, styles.groupTitle]}>{group.title}</TextM>
+              <View style={styles.itemsGroup}>
+                {group.items.map((item, i) => (
+                  <Touchable key={i} style={styles.itemWrap} onPress={() => onClickJump(item)}>
+                    <Image
+                      style={styles.image}
+                      source={{
+                        uri: item?.imgUrl?.filename_disk
+                          ? `${s3Url}/${item?.imgUrl?.filename_disk}`
+                          : getFaviconUrl(item.url),
+                      }}
                     />
-                    <TextS style={DarkFontStyles.textBase2} numberOfLines={1} ellipsizeMode="tail">
-                      {item?.description}
-                    </TextS>
-                  </View>
-                </Touchable>
-              ))}
+                    <View style={styles.right}>
+                      <TextWithProtocolIcon
+                        textFontSize={pTd(16)}
+                        title={item?.title}
+                        url={item.url}
+                        iconSize={12}
+                        showProtocolIcon={false}
+                      />
+                      <TextS style={DarkFontStyles.textBase2} numberOfLines={1} ellipsizeMode="tail">
+                        {item?.description}
+                      </TextS>
+                    </View>
+                  </Touchable>
+                ))}
+              </View>
             </View>
-          </View>
-        ))}
-      </View>
-    </ScrollView>
+          ))}
+        </View>
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    backgroundColor: darkColors.bgBase1,
+  },
   scroll: {
     backgroundColor: darkColors.bgBase1,
   },

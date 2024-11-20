@@ -203,7 +203,7 @@ const DappDetail: React.FC = () => {
         <View style={styles.expiresTimeWrap}>
           <TextM style={[FontStyles.font7]}>{t('Expiration time: ')}</TextM>
           <TextM style={[FontStyles.font7]}>
-            {sessionInfo?.expiredPlan === SessionExpiredPlan.always
+            {sessionInfo?.expiredPlan === SessionExpiredPlan.never
               ? '--'
               : formatTimeToStr(sessionInfo?.expiredTime || 0)}
           </TextM>

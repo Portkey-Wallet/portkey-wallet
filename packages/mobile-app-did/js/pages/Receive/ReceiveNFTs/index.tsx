@@ -5,7 +5,7 @@ import { SourceDestinationItem } from '../components/SourceDestinationPicker';
 import Touchable from 'components/Touchable';
 import Svg from 'components/Svg';
 import { makeStyles } from '@rneui/themed';
-import { SEND_RECEIVE_HELP_URL } from 'constants/common';
+import { RECEIVE_HELP_URL } from 'constants/common';
 import { openOutLink } from 'utils/link';
 import ModeChangeSelector from 'pages/DashBoard/componets/ModeChangeSelector';
 import ReceiveQRCode from '../components/ReceiveQRCode';
@@ -79,7 +79,7 @@ export default function ReceiveNFTs() {
       rightDom={
         <Touchable
           onPress={async () => {
-            await openOutLink(SEND_RECEIVE_HELP_URL);
+            await openOutLink(RECEIVE_HELP_URL);
           }}>
           <Svg icon="question" size={pTd(24)} iconStyle={styles.rightIcon} />
         </Touchable>

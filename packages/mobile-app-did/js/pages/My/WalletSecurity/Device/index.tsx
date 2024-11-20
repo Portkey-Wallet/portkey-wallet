@@ -140,6 +140,7 @@ const DeviceList: React.FC = () => {
   useEffect(() => {
     if (isRefreshing) {
       Loading.show();
+      getDeviceList();
     } else {
       Loading.hide();
     }
@@ -158,11 +159,9 @@ const DeviceList: React.FC = () => {
       <FlatList
         contentContainerStyle={{ paddingBottom: pTd(20) }}
         style={pageStyles.listWrap}
-        refreshing={isRefreshing}
         data={deviceList || []}
         keyExtractor={(_item: IDeviceItem, index: number) => `${index}`}
         renderItem={renderItem}
-        onRefresh={getDeviceList}
         ListHeaderComponent={
           <View style={pageStyles.fromExchangeTipWrap}>
             <Svg icon="warning" size={pTd(22)} color={theme.colors.textBrand3} />

@@ -75,7 +75,7 @@ import { EBridge } from '@portkey-wallet/utils/eBridge';
 import ActionSheet from 'components/ActionSheet';
 import OverlayModal from 'components/OverlayModal';
 import { eBridgeActionSheet, getLimitTips, getSendNetworkList, getSmallerValue, isValidAmount } from '../utils';
-import { SEND_RECEIVE_HELP_URL } from 'constants/common';
+import { SEND_HELP_URL } from 'constants/common';
 import { openOutLink } from 'utils/link';
 import SelectAddressTab from '../components/SelectAddressTab';
 import { useRecent } from '@portkey-wallet/hooks/hooks-ca/recent';
@@ -84,6 +84,7 @@ import { TFormattedRecentItem } from '@portkey-wallet/types/types-ca/contactNew'
 import { IContactItemMyType } from 'components/ContactItemMy';
 import { KeyboardSafeArea } from 'components/KeyboardSafeArea';
 import { isAelfAddress } from 'utils/contacts';
+import { useKeyboardListener } from 'hooks/useKeyboardHeight';
 
 const SendHome: React.FC = () => {
   const {
@@ -149,9 +150,19 @@ const SendHome: React.FC = () => {
   const [step, setStep] = useState<1 | 2>(isFixedToContact ? 2 : 1);
   const [isLoading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [isKeyboardShow, setKeyboardShow] = useState(false);
 
   const checkManagerSyncState = useCheckManagerSyncState();
   const getCAContract = useGetCAContract();
+
+  useKeyboardListener({
+    show: () => {
+      setKeyboardShow(true);
+    },
+    hide: () => {
+      setKeyboardShow(false);
+    },
+  });
 
   // get transfer fee
   const getTransferFee = useGetTransferFee();
@@ -1022,7 +1033,7 @@ const SendHome: React.FC = () => {
         step === 2 ? (
           <Touchable
             onPress={async () => {
-              await openOutLink(SEND_RECEIVE_HELP_URL);
+              await openOutLink(SEND_HELP_URL);
             }}>
             <Svg icon="question" size={pTd(24)} color={defaultColors.font2} iconStyle={styles.iconStyle} />
           </Touchable>
@@ -1089,7 +1100,7 @@ const SendHome: React.FC = () => {
             </View>
           </>
         )}
-        {step === 1 && !selectedToContact.address && (
+        {step === 1 && !selectedToContact.address && !isKeyboardShow && (
           <SelectAddressTab
             recentAddressList={recentList || []}
             savedAddressList={savedList || []}

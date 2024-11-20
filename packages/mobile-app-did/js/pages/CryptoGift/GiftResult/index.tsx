@@ -56,7 +56,7 @@ export default function GiftResult() {
   });
   const onClose = useCallback(() => {
     navigationService.pop(3);
-    navigationService.navigate('AccountSettings');
+    navigationService.navigate('Tab');
   }, []);
   return (
     <PageContainer

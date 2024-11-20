@@ -132,6 +132,7 @@ const getStyles = makeStyles(theme => ({
   },
   img: {
     position: 'absolute',
+    // backgroundColor: theme.colors.bgTransparent,
   },
   title: {
     color: defaultColors.font5,

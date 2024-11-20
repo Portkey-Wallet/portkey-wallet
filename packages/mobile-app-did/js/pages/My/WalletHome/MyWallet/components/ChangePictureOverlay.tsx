@@ -248,6 +248,7 @@ const SelectModal = ({ title = '', avatar = '', nickName, selectPhoto, avatarLis
             <Touchable
               style={[styles.cellWrapper, { marginTop: pTd(12) }]}
               onPress={async () => {
+                OverlayModal.hide();
                 photoUpload();
                 // const isFinished = await selectPhoto();
                 // if (isFinished) {

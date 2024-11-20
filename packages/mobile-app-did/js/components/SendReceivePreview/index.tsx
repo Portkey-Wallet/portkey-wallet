@@ -12,7 +12,7 @@ import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { ChainId } from '@portkey-wallet/types';
 import { getChainSvgName } from 'utils';
 import { pTd } from 'utils/unit';
-import { SEND_RECEIVE_HELP_URL } from 'constants/common';
+import { RECEIVE_HELP_URL, SEND_HELP_URL } from 'constants/common';
 import { getStyles } from './style';
 import { formatAmountUSDShow } from '@portkey-wallet/utils/converter';
 
@@ -109,7 +109,7 @@ const SendReceivePreview: React.FC<ISendReceivePreviewProps> = ({
 
   return (
     <CommonPreviewContainer
-      helpUrl={SEND_RECEIVE_HELP_URL}
+      helpUrl={actionType === 'send' ? SEND_HELP_URL : RECEIVE_HELP_URL}
       poweredIcon={footerType ? FOOTER_CONFIG[footerType] : undefined}
       buttonProps={{ title: buttonText, disabled: isError, onPress }}
       isLoading={isLoading}>

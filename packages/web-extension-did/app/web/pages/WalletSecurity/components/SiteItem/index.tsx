@@ -128,7 +128,7 @@ export default function SiteItem({ siteItem }: ISiteItemProps) {
           <div className="content-item flex-column">
             <div className="label">{t('Session key expires in')}</div>
             <CustomSelect
-              items={SessionKeyArray}
+              items={SessionKeyArray.filter((e) => e.value !== SessionExpiredPlan.always)}
               defaultValue={SessionExpiredPlan.hour1}
               value={sessionInfo?.expiredPlan}
               onChange={handleSessionChange}
@@ -139,7 +139,7 @@ export default function SiteItem({ siteItem }: ISiteItemProps) {
           <div className="content-item flex-column">
             <div className="label">{t('Expiration time')}</div>
             <div className="control flex">
-              {sessionInfo?.expiredPlan === SessionExpiredPlan.always
+              {sessionInfo?.expiredPlan === SessionExpiredPlan.never
                 ? '-'
                 : formatTimeToStr(sessionInfo?.expiredTime || 0)}
             </div>

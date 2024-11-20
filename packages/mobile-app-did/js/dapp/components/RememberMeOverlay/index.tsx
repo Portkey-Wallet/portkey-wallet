@@ -10,21 +10,8 @@ import { pTd } from 'utils/unit';
 import { SessionExpiredPlan } from '@portkey-wallet/types/session';
 import { TextL } from 'components/CommonText';
 import Svg from 'components/Svg';
+import { SessionKeyArray } from '@portkey-wallet/constants/constants-ca/dapp';
 import { RememberInfoType } from 'components/RememberMe';
-
-export const SessionKeyMap = {
-  [SessionExpiredPlan.always]: 'Never',
-  [SessionExpiredPlan.hour1]: 'After 1 hour',
-  [SessionExpiredPlan.hour3]: 'After 3 hours',
-  [SessionExpiredPlan.hour12]: 'After 12 hours',
-  [SessionExpiredPlan.hour24]: 'After 24 hours',
-};
-
-export const SessionKeyArray = Object.entries(SessionKeyMap).map(([k, v]) => ({
-  value: k === SessionExpiredPlan.always ? k : Number(k),
-  label: v,
-  children: v,
-}));
 
 export type RememberMeModalType = {
   rememberInfo: RememberInfoType;
@@ -37,34 +24,23 @@ const RememberMeModal = (props: RememberMeModalType) => {
 
   const onPressItem = useCallback(
     (v: SessionExpiredPlan) => {
-      if (String(rememberInfo.value) === String(v)) {
-        return;
+      if (v === SessionExpiredPlan.always) {
+        setRememberMeInfo({ isRemember: false, value: v });
+      } else {
+        setRememberMeInfo({ isRemember: true, value: v });
       }
-      setRememberMeInfo({ isRemember: true, value: v });
       OverlayModal.hide();
     },
-    [rememberInfo, setRememberMeInfo],
+    [setRememberMeInfo],
   );
-
-  const setRememberMe = useCallback(() => {
-    if (!rememberInfo.isRemember) {
-      return;
-    }
-    setRememberMeInfo({ ...rememberInfo, isRemember: false });
-    OverlayModal.hide();
-  }, [rememberInfo, setRememberMeInfo]);
 
   return (
     <ModalBody modalBodyType="bottom" title={'Require authentication'}>
       <ScrollView>
-        <Touchable key={'-1'} style={styles.itemRow} onPress={setRememberMe}>
-          <TextL>{'Always'}</TextL>
-          {!rememberInfo.isRemember && <Svg icon="selected" size={pTd(24)} />}
-        </Touchable>
         {SessionKeyArray.map(ele => (
           <Touchable key={ele.value} style={styles.itemRow} onPress={() => onPressItem(ele?.value)}>
             <TextL>{ele.label}</TextL>
-            {rememberInfo.isRemember && rememberInfo.value === ele.value && <Svg icon="selected" size={pTd(24)} />}
+            {rememberInfo.value === ele.value && <Svg icon="selected" size={pTd(24)} />}
           </Touchable>
         ))}
       </ScrollView>

@@ -71,7 +71,7 @@ const CarouselComponent: React.FC<BannerProps> = ({ containerStyle, items, onCli
             {items.map((item, index) => (
               <TouchableOpacity
                 onPress={onPress({ index, item })}
-                style={[styles.carouselItemWrap, { marginRight: index === items.length - 1 ? 0 : pTd(16) }]}
+                style={[styles.carouselItemWrap, { marginRight: index === items.length - 1 ? 0 : pTd(8) }]}
                 key={index}>
                 <Image
                   source={{ uri: item.imgUrl }}
@@ -92,15 +92,16 @@ const CarouselComponent: React.FC<BannerProps> = ({ containerStyle, items, onCli
 
 const styles = StyleSheet.create({
   container: {
+    marginRight: pTd(-16),
     paddingVertical: pTd(16),
-    width: '100%',
     height: pTd(163),
   },
   carouselWrap: {
     flexDirection: 'row',
+    justifyContent: 'flex-start',
   },
   carouselItemWrap: {
-    marginRight: pTd(16),
+    marginRight: pTd(8),
     padding: pTd(12),
     width: pTd(176),
     height: pTd(130),

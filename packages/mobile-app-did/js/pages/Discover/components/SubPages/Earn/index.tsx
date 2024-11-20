@@ -95,6 +95,7 @@ const EarnItem = (item: TBaseCardItemType) => {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     flexDirection: 'column',
     justifyContent: 'flex-start',
     alignItems: 'center',
@@ -113,7 +114,7 @@ const styles = StyleSheet.create({
     width: screenWidth - pTd(32),
   },
   bigImage: {
-    width: screenWidth - pTd(34),
+    width: screenWidth - pTd(32),
     height: pTd(152),
   },
   infoWrap: {

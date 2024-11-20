@@ -125,8 +125,12 @@ export default function GuardianApproval() {
 
   const onEmitDapp = useThrottleCallback(
     (guardiansApproved?: GuardiansApproved) => {
-      if ((approvalType !== ApprovalType.managerApprove && approvalType !== ApprovalType.addGuardian) || !approveParams)
+      if (
+        (approvalType !== ApprovalType.managerApprove && approvalType !== ApprovalType.addGuardian) ||
+        !approveParams
+      ) {
         return;
+      }
       approveParams.isDiscover && dispatch(changeDrawerOpenStatus(true));
       approveParams.eventName &&
         DeviceEventEmitter.emit(
@@ -166,7 +170,9 @@ export default function GuardianApproval() {
   });
 
   const userGuardiansList = useMemo(() => {
-    if (paramUserGuardiansList) return paramUserGuardiansList;
+    if (paramUserGuardiansList) {
+      return paramUserGuardiansList;
+    }
     if (EXCLUDE_CURRENT_APPROVAL_TYPES.includes(approvalType)) {
       return storeUserGuardiansList?.filter(item => item.key !== guardianItem?.key);
     }
@@ -207,7 +213,9 @@ export default function GuardianApproval() {
   const guardianExpiredTimeRef = useRef<number>();
   useEffect(() => {
     // init guardianExpiredTimeRef
-    if (!_authenticationInfo) return;
+    if (!_authenticationInfo) {
+      return;
+    }
     if (Object.keys(_authenticationInfo).length) {
       guardianExpiredTimeRef.current = Date.now() + GUARDIAN_EXPIRED_TIME;
     }
@@ -235,8 +243,9 @@ export default function GuardianApproval() {
         setApproved(preGuardiansStatus => ({ ...preGuardiansStatus, [data.key]: data.status }));
       }
 
-      if (!guardianExpiredTimeRef.current && data.status?.status === VerifyStatus.Verified)
+      if (!guardianExpiredTimeRef.current && data.status?.status === VerifyStatus.Verified) {
         guardianExpiredTimeRef.current = Date.now() + GUARDIAN_EXPIRED_TIME;
+      }
     },
     [onTryAgain],
   );
@@ -244,9 +253,13 @@ export default function GuardianApproval() {
   useEffectOnce(() => {
     const listener = myEvents.setGuardianStatus.addListener(onSetGuardianStatus);
     const expiredTimer = setInterval(() => {
-      if (guardianExpiredTimeRef.current && Date.now() > guardianExpiredTimeRef.current) setIsExpired(true);
+      if (guardianExpiredTimeRef.current && Date.now() > guardianExpiredTimeRef.current) {
+        setIsExpired(true);
+      }
     }, 1000);
-    if (verifiedTime) guardianExpiredTimeRef.current = verifiedTime + GUARDIAN_EXPIRED_TIME;
+    if (verifiedTime) {
+      guardianExpiredTimeRef.current = verifiedTime + GUARDIAN_EXPIRED_TIME;
+    }
     return () => {
       listener.remove();
       expiredTimer && clearInterval(expiredTimer);
@@ -316,7 +329,9 @@ export default function GuardianApproval() {
   }, [guardiansStatus, loginAccount, loginType, onRequestOrSetPin, userGuardiansList, verifierInfo]);
 
   const onAddGuardian = useCallback(async () => {
-    if (!managerAddress || !caHash || !verifierInfo || !guardianItem || !guardiansStatus || !userGuardiansList) return;
+    if (!managerAddress || !caHash || !verifierInfo || !guardianItem || !guardiansStatus || !userGuardiansList) {
+      return;
+    }
 
     // Loading.show({ text: t('Processing on the chain...') });
     Loading.show();
@@ -389,7 +404,9 @@ export default function GuardianApproval() {
   ]);
 
   const onDeleteGuardian = useCallback(async () => {
-    if (!managerAddress || !caHash || !guardianItem || !userGuardiansList || !guardiansStatus) return;
+    if (!managerAddress || !caHash || !guardianItem || !userGuardiansList || !guardiansStatus) {
+      return;
+    }
     // Loading.show({ text: t('Processing on the chain...') });
     Loading.show();
     try {
@@ -415,7 +432,9 @@ export default function GuardianApproval() {
   }, [caHash, getCurrentCAContract, guardianItem, guardiansStatus, managerAddress, userGuardiansList]);
 
   const onEditGuardian = useCallback(async () => {
-    if (!managerAddress || !caHash || !preGuardian || !guardianItem || !userGuardiansList || !guardiansStatus) return;
+    if (!managerAddress || !caHash || !preGuardian || !guardianItem || !userGuardiansList || !guardiansStatus) {
+      return;
+    }
     // Loading.show({ text: t('Processing on the chain...') });
     Loading.show();
     try {
@@ -452,7 +471,9 @@ export default function GuardianApproval() {
   ]);
 
   const onRemoveOtherManager = useCallback(async () => {
-    if (!removeManagerAddress || !caHash || !guardiansStatus || !userGuardiansList) return;
+    if (!removeManagerAddress || !caHash || !guardiansStatus || !userGuardiansList) {
+      return;
+    }
     Loading.show();
     try {
       const caContract = await getCurrentCAContract();
@@ -478,7 +499,9 @@ export default function GuardianApproval() {
   }, [caHash, getCurrentCAContract, guardiansStatus, removeManagerAddress, userGuardiansList]);
 
   const onModifyTransferLimit = useCallback(async () => {
-    if (!transferLimitDetail || !managerAddress || !caHash || !guardiansStatus || !userGuardiansList) return;
+    if (!transferLimitDetail || !managerAddress || !caHash || !guardiansStatus || !userGuardiansList) {
+      return;
+    }
     Loading.show();
     try {
       const caContract = await getCurrentCAContract();
@@ -527,7 +550,9 @@ export default function GuardianApproval() {
 
   const getTransferFee = useGetTransferFee();
   const onTransferApprove = useCallback(async () => {
-    if (!guardiansStatus || !userGuardiansList) return;
+    if (!guardiansStatus || !userGuardiansList) {
+      return;
+    }
     const guardiansApproved = getGuardiansApproved(userGuardiansList, guardiansStatus);
 
     if (successNavigate) {
@@ -564,13 +589,15 @@ export default function GuardianApproval() {
       navigationService.navigate(sendTransferPreviewApprove.successNavigateName, {
         ...sendTransferPreviewApprove.params,
         guardiansApproved,
-        transactionFee: transferFee || '0',
+        networkFee: transferFee || '0',
       });
       return;
     }
   }, [getCAContract, getTransferFee, guardiansStatus, sendTransferPreviewApprove, successNavigate, userGuardiansList]);
   const onSetLoginAccount = useCallback(async () => {
-    if (!managerAddress || !caHash || !verifierInfo || !guardianItem || !guardiansStatus || !userGuardiansList) return;
+    if (!managerAddress || !caHash || !verifierInfo || !guardianItem || !guardiansStatus || !userGuardiansList) {
+      return;
+    }
     // Loading.show({ text: t('Processing on the chain...') });
     Loading.show();
     try {
@@ -618,7 +645,9 @@ export default function GuardianApproval() {
   ]);
 
   const onUnsetLoginAccount = useCallback(async () => {
-    if (!managerAddress || !caHash || !verifierInfo || !guardianItem || !guardiansStatus || !userGuardiansList) return;
+    if (!managerAddress || !caHash || !verifierInfo || !guardianItem || !guardiansStatus || !userGuardiansList) {
+      return;
+    }
     // Loading.show({ text: t('Processing on the chain...') });
     Loading.show();
     try {

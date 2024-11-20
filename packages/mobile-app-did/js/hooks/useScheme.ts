@@ -9,33 +9,30 @@ import { SchemeParsedUrl } from 'types/common';
 import { SCHEME_ACTION } from 'constants/scheme';
 import { showAuthLogin } from 'components/AuthLoginOverlay';
 import { checkIsUrl, prefixUrlWithProtocol } from '@portkey-wallet/utils/dapp/browser';
-import { useHandlePortkeyId, useHandleGroupId } from './useQrScan';
-import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 
 export function useHandleParsedUrl() {
   const jumpToWebview = useDiscoverJumpWithNetWork();
-  const handlePortkeyId = useHandlePortkeyId();
-  const handleGroupId = useHandleGroupId();
+  // const handlePortkeyId = useHandlePortkeyId();
+  // const handleGroupId = useHandleGroupId();
 
-  const isChatShow = useIsChatShow();
+  // const isChatShow = useIsChatShow();
+  // const handleAddAction = useCallback(
+  //   (id: string, action: SCHEME_ACTION) => {
+  //     if (SCHEME_ACTION.addContact === action) {
+  //       return handlePortkeyId({
+  //         portkeyId: id,
+  //         showLoading: false,
+  //         goBack: false,
+  //       });
+  //     }
 
-  const handleAddAction = useCallback(
-    (id: string, action: SCHEME_ACTION) => {
-      if (SCHEME_ACTION.addContact === action) {
-        return handlePortkeyId({
-          portkeyId: id,
-          showLoading: false,
-          goBack: false,
-        });
-      }
-
-      handleGroupId({
-        channelId: id,
-        showLoading: false,
-      });
-    },
-    [handleGroupId, handlePortkeyId],
-  );
+  //     handleGroupId({
+  //       channelId: id,
+  //       showLoading: false,
+  //     });
+  //   },
+  //   [handleGroupId, handlePortkeyId],
+  // );
 
   return useCallback(
     (parsedUrl: SchemeParsedUrl) => {
@@ -46,24 +43,28 @@ export function useHandleParsedUrl() {
             let { extraData, data } = query as any;
             extraData = JSON.parse(extraData);
             data = JSON.parse(data);
-            if (checkAuthLoginData(extraData, data)) showAuthLogin({ loginData: data, extraData: extraData, domain });
+            if (checkAuthLoginData(extraData, data)) {
+              showAuthLogin({ loginData: data, extraData: extraData, domain });
+            }
             break;
           }
           case SCHEME_ACTION.linkDapp: {
             const { url } = query;
-            if (typeof url !== 'string' || !checkIsUrl(url)) return;
+            if (typeof url !== 'string' || !checkIsUrl(url)) {
+              return;
+            }
             const fixUrl = prefixUrlWithProtocol(url);
             jumpToWebview({ item: { name: fixUrl, url: fixUrl }, autoApprove: true });
             break;
           }
-          case SCHEME_ACTION.addContact:
-          case SCHEME_ACTION.addGroup: {
-            if (!isChatShow) return;
-            const id = typeof query.id === 'string' ? query.id : Object.values(query).join('');
+          // case SCHEME_ACTION.addContact:
+          // case SCHEME_ACTION.addGroup: {
+          //   if (!isChatShow) return;
+          //   const id = typeof query.id === 'string' ? query.id : Object.values(query).join('');
 
-            handleAddAction(id, action);
-            break;
-          }
+          //   handleAddAction(id, action);
+          //   break;
+          // }
           default:
             console.log('this action is not supported');
         }
@@ -71,7 +72,7 @@ export function useHandleParsedUrl() {
         console.log(error);
       }
     },
-    [handleAddAction, isChatShow, jumpToWebview],
+    [jumpToWebview],
   );
 }
 
@@ -83,7 +84,9 @@ export default function useScheme() {
   const logged = useMemo(() => !!address && caHash, [address, caHash]);
 
   const getInitialURL = useCallback(async () => {
-    if (!logged) return;
+    if (!logged) {
+      return;
+    }
     const url = await Linking.getInitialURL();
     url && setSchemeUrl(url);
   }, [logged]);
@@ -94,7 +97,9 @@ export default function useScheme() {
 
   useEffect(() => {
     const linkingListener = Linking.addEventListener('url', ({ url }) => {
-      if (!logged) return;
+      if (!logged) {
+        return;
+      }
       url && setSchemeUrl(url);
     });
     return () => {
@@ -107,7 +112,9 @@ export default function useScheme() {
     if (pin && schemeUrl) {
       timer = setTimeout(() => {
         const parsedUrl = handleScheme(schemeUrl);
-        if (parsedUrl) handleParsedUrl(parsedUrl);
+        if (parsedUrl) {
+          handleParsedUrl(parsedUrl);
+        }
         setSchemeUrl(undefined);
       }, 500);
     }

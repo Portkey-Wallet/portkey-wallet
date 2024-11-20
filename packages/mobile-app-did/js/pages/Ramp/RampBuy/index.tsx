@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useRef, useCallback, useEffect } from 'react';
 import { View, Text, TextInput } from 'react-native';
-import { makeStyles } from '@rneui/themed';
+import { makeStyles, useTheme } from '@rneui/themed';
 import isEqual from 'lodash/isEqual';
 import { ErrorType, INIT_HAS_ERROR, INIT_NONE_ERROR } from '@portkey-wallet/constants/constants-ca/common';
 import { useBuyCryptoList } from '@portkey-wallet/hooks/hooks-ca/ramp';
@@ -36,6 +36,8 @@ export default function RampBuy() {
   const { symbol, network } = useRouterParams<IBuyFormV2Props>();
 
   const textInputRef = useRef<TextInput>(null);
+  const [buttonLoading, setButtonLoading] = useState(false);
+  const { theme } = useTheme();
 
   const { refreshRampShow } = useAppRampEntryShow();
 
@@ -191,7 +193,7 @@ export default function RampBuy() {
       return;
     }
 
-    Loading.show();
+    setButtonLoading(true);
     let isBuySectionShow = false;
     try {
       const result = await refreshRampShow();
@@ -202,21 +204,21 @@ export default function RampBuy() {
     if (!isBuySectionShow) {
       CommonToast.fail('Sorry, the service you are using is temporarily unavailable.');
       navigationService.navigate('Tab');
-      Loading.hide();
+      setButtonLoading(false);
       return;
     }
 
     let _rate = rate;
     if (isRefreshReceiveValid.current === false) {
       const rst = await refreshReceiveRef.current();
-      Loading.hide();
+      setButtonLoading(false);
       if (!rst) {
         return;
       }
       _rate = rst.rate;
     }
 
-    Loading.hide();
+    setButtonLoading(false);
     navigationService.navigate('RampPreview', {
       amount,
       fiat,
@@ -224,7 +226,7 @@ export default function RampBuy() {
       type: RampType.BUY,
       rate: _rate,
     });
-  }, [amount, fiat, rate, refreshRampShow, crypto]);
+  }, [amount, fiat, rate, refreshRampShow, crypto, setButtonLoading]);
 
   const onChangeCurrency = useCallback(() => {
     if (!fiatList.length) {
@@ -256,6 +258,7 @@ export default function RampBuy() {
       rightDom={rightDom}>
       <View style={styles.fiatWrap}>
         <TextInput
+          placeholderTextColor={theme.colors.textBase3}
           value={amount}
           keyboardType="decimal-pad"
           ref={textInputRef}
@@ -263,7 +266,15 @@ export default function RampBuy() {
           placeholder="0"
           onChangeText={onAmountInput}
         />
-        <Text style={styles.fiatText}>{currency.fiat?.symbol}</Text>
+        <Touchable
+          highlight={false}
+          onPress={() => {
+            if (textInputRef.current) {
+              textInputRef.current.focus();
+            }
+          }}>
+          <Text style={styles.fiatText}>{currency.fiat?.symbol}</Text>
+        </Touchable>
       </View>
       <Text style={styles.receiveAmount}>{receiveAmountText}</Text>
       {amountError.isError && <Text style={styles.warningText}>{amountError.errorMsg}</Text>}
@@ -271,6 +282,7 @@ export default function RampBuy() {
       <KeyboardSafeArea>
         <View style={styles.btnWrap}>
           <CommonButton
+            loading={buttonLoading}
             type="primary"
             buttonStyle={styles.btnStyle}
             disabled={!isAllowAmount || amountError.isError}

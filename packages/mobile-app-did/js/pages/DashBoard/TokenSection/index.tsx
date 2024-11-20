@@ -41,8 +41,12 @@ export default function TokenSection() {
 
   const onExpand = useCallback(
     (tokenItem: ITokenSectionResponse) => {
-      selectedItem.set(tokenItem.symbol, !selectedItem.get(tokenItem.symbol));
-      reload();
+      if (tokenItem.tokens?.length === 1) {
+        onNavigate(tokenItem, 0);
+      } else {
+        selectedItem.set(tokenItem.symbol, !selectedItem.get(tokenItem.symbol));
+        reload();
+      }
     },
     [reload, selectedItem],
   );

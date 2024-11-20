@@ -39,7 +39,7 @@ export const blueStyles = StyleSheet.create({
   },
   title: {
     color: bg1,
-    fontWeight: 'bold',
+    // fontWeight: 'bold',
     ...fonts.mediumFont,
   },
   rightDomWrap: {
@@ -82,7 +82,7 @@ export const whitStyles = StyleSheet.create({
   },
   title: {
     color: darkColors.textBase1,
-    fontWeight: 'bold',
+    // fontWeight: 'bold',
     ...fonts.mediumFont,
   },
   rightDomWrap: {

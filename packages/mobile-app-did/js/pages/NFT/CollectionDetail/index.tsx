@@ -9,7 +9,7 @@ import PageContainer from 'components/PageContainer';
 import { pTd } from 'utils/unit';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { useAccountNFTCollectionInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
-import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCaAddressInfoList, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { ChainId } from '@portkey-wallet/types';
 import { Skeleton } from '@rneui/base';
 import { PortkeyLinearGradientV2 } from 'components/PortkeyLinearGradient';
@@ -17,6 +17,7 @@ import Touchable from 'components/Touchable';
 import navigationService from 'utils/navigationService';
 import { NFTItemBaseType } from '@portkey-wallet/types/types-ca/assets';
 import { divDecimalsToShow } from '@portkey-wallet/utils/converter';
+import { formatChainInfoToShow } from '@portkey-wallet/utils';
 
 export interface ICollectionDetailProps {
   name: string;
@@ -37,6 +38,7 @@ const CollectionDetail = () => {
   const [isFetching, setIsFetching] = useState<boolean>(false);
   const caAddressInfos = useCaAddressInfoList();
   const { fetchAccountNFTItem, accountNFTList } = useAccountNFTCollectionInfo();
+  const { currentNetwork } = useWallet();
   const currentCollectionObj = useMemo(() => {
     const currentCollection = accountNFTList.find(item => item.symbol === symbol && item.chainId === chainId);
     if ((currentCollection?.children?.length || 0) === 0) {
@@ -153,7 +155,7 @@ const CollectionDetail = () => {
     outputRange: [0, 1],
     extrapolate: 'clamp',
   });
-
+  console.log('111111111', (itemCount || currentCollectionObj?.itemCount || 0) > 1 ? 'items' : 'item');
   return (
     <PageContainer
       noCenterDom={false}
@@ -170,7 +172,11 @@ const CollectionDetail = () => {
               <View style={styles.topWrapper}>
                 <CommonAvatar avatarSize={pTd(48)} imageUrl={imageUrl} shapeType={'square'} />
                 <TextXXL style={styles.collectionName}>{collectionName}</TextXXL>
-                <TextM style={styles.collectionCount}>{itemCount || currentCollectionObj?.itemCount} items</TextM>
+                <TextM style={styles.collectionCount}>
+                  {formatChainInfoToShow(currentCollectionObj?.chainId, currentNetwork)} •{' '}
+                  {itemCount || currentCollectionObj?.totalRecordCount}{' '}
+                  {(itemCount || currentCollectionObj?.itemCount || 0) > 1 ? 'items' : 'item'}
+                </TextM>
               </View>
             );
           }}
@@ -193,7 +199,9 @@ const CollectionDetail = () => {
                 <CommonAvatar avatarSize={pTd(48)} imageUrl={imageUrl} shapeType={'square'} />
                 <TextXXL style={styles.collectionName}>{collectionName}</TextXXL>
                 <TextM style={styles.collectionCount}>
-                  {itemCount || currentCollectionObj?.totalRecordCount} items
+                  {formatChainInfoToShow(currentCollectionObj?.chainId, currentNetwork)} •{' '}
+                  {itemCount || currentCollectionObj?.totalRecordCount}{' '}
+                  {(itemCount || currentCollectionObj?.itemCount || 0) > 1 ? 'items' : 'item'}
                 </TextM>
               </View>
             );
@@ -327,7 +335,7 @@ const getStyles = makeStyles(theme => ({
     color: theme.colors.textBase1,
     fontSize: pTd(14),
     ...fonts.SGRegularFont,
-    fontWeight: '400',
+    // fontWeight: '400',
     lineHeight: pTd(14),
     wordWrap: 'break-word',
     marginTop: pTd(8),
@@ -338,7 +346,7 @@ const getStyles = makeStyles(theme => ({
     opacity: 0.4,
     fontSize: pTd(12),
     ...fonts.SGRegularFont,
-    fontWeight: '400',
+    // fontWeight: '400',
     lineHeight: pTd(12),
     marginTop: pTd(4),
   },

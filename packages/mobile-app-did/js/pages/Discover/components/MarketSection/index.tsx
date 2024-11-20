@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
   message: {
     color: darkColors.textBase2,
     fontSize: pTd(14),
-    fontWeight: '400',
+    // fontWeight: '400',
     lineHeight: pTd(22),
     marginBottom: pTd(24),
     width: '100%',

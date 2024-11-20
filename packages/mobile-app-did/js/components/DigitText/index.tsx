@@ -1,11 +1,12 @@
 import { PIN_SIZE } from '@portkey-wallet/constants/misc';
 import { Text } from '@rneui/base';
-import { TextL, TextM } from 'components/CommonText';
+import { TextL } from 'components/CommonText';
 import React, { useCallback, memo, useMemo } from 'react';
 import { View, StyleProp, ViewStyle } from 'react-native';
 import { makeStyles } from '@rneui/themed';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { pTd } from 'utils/unit';
+import fonts from 'assets/theme/fonts';
 
 export type DigitTextProps = {
   maxLength?: number;
@@ -34,7 +35,9 @@ function InputItem({
   iconStyle?: StyleProp<ViewStyle>;
 }) {
   const styles = getStyles();
-  if (secureTextEntry) return <View style={[styles.iconStyle, iconStyle]} />;
+  if (secureTextEntry) {
+    return <View style={[styles.iconStyle, iconStyle]} />;
+  }
   return <Text style={styles.textStyles}>{text}</Text>;
 }
 
@@ -154,7 +157,8 @@ const getStyles = makeStyles(theme => ({
   textStyles: {
     fontSize: pTd(16),
     color: theme.colors.textBase1,
-    fontWeight: 'bold',
+    // fontWeight: 'bold',
+    ...fonts.mediumFont,
   },
   pinPlaceholder: {
     height: pTd(14),

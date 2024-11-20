@@ -164,7 +164,6 @@ const getStyles = makeStyles(theme => ({
     height: pTd(44),
     lineHeight: pTd(44),
     color: theme.colors.textBase1,
-    fontWeight: 'bold',
     ...fonts.mediumFont,
   },
 }));

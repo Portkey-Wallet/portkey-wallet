@@ -4,7 +4,6 @@ import { pTd } from 'utils/unit';
 import { useLanguage } from 'i18n/hooks';
 import { getActivityListAsync } from '@portkey-wallet/store/store-ca/activity/action';
 import { useAppCASelector, useAppCommonDispatch } from '@portkey-wallet/hooks';
-import NoData from 'components/NoData';
 import { IActivitiesApiParams } from '@portkey-wallet/store/store-ca/activity/type';
 import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
@@ -18,10 +17,11 @@ import { ListLoadingEnum } from 'constants/misc';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { FlashList } from '@shopify/flash-list';
 import { showActivityDetail } from 'components/ActivityOverlay';
-import { makeStyles } from '@rneui/themed';
-import { TextH1 } from 'components/CommonText';
+import { makeStyles, useTheme } from '@rneui/themed';
+import { TextH1, TextL } from 'components/CommonText';
 import SafeAreaBox from 'components/SafeAreaBox';
 import LottieLoading from 'components/LottieLoading';
+import GStyles from 'assets/theme/GStyles';
 
 interface RouterParams {
   chainId?: string;
@@ -41,7 +41,8 @@ const ActivityListPage = () => {
   const currentActivityRef = useRef(currentActivity);
   currentActivityRef.current = currentActivity;
   const styles = getStyles();
-  const [isLoading, setIsLoading] = useState(ListLoadingEnum.hide);
+  const [isLoading, setIsLoading] = useState(ListLoadingEnum.header);
+  const { theme } = useTheme();
   const getActivityList = useLockCallback(
     async (isInit: boolean) => {
       const { skipCount = 0, hasNextPage = true } = currentActivity || {};
@@ -104,7 +105,9 @@ const ActivityListPage = () => {
         ListEmptyComponent={
           <>
             {isLoading === ListLoadingEnum.hide && (
-              <NoData message={'You have no transactions.'} topDistance={pTd(160)} oblongSize={[pTd(96), pTd(84)]} />
+              <View style={[GStyles.flexRow, GStyles.alignCenter, { marginTop: pTd(16) }]}>
+                <TextL style={{ color: theme.colors.textBase2 }}>{t('No activity')}</TextL>
+              </View>
             )}
           </>
         }

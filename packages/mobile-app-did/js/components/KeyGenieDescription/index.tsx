@@ -1,4 +1,5 @@
 import { defaultColors } from 'assets/theme';
+import fonts from 'assets/theme/fonts';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { View, Text, StyleSheet } from 'react-native';
@@ -46,14 +47,15 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
     color: defaultColors.primaryTextColor,
     fontSize: pTd(14),
-    fontWeight: '500',
     lineHeight: pTd(22),
+    // fontWeight: '500',
+    ...fonts.mediumFont,
   },
   bodyText: {
     alignSelf: 'stretch',
     color: defaultColors.neutralSecondaryTextColor,
     fontSize: pTd(12),
-    fontWeight: '400',
+    // fontWeight: '400',
     lineHeight: pTd(22),
   },
 });

@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import navigationService from 'utils/navigationService';
-import { pTd } from 'utils/unit';
+import { pTd, pTdSpec } from 'utils/unit';
 import Collapsible from 'components/Collapsible';
 import NFTAvatar from 'components/NFTAvatar';
 import GStyles from 'assets/theme/GStyles';
@@ -107,7 +107,7 @@ export default function NFTItem(props: NFTItemPropsType) {
       pageNum: 0,
     });
   }, [caAddressInfos, chainId, fetchAccountNFTItem, symbol]);
-  console.log('!isFetching && showChildren.length', isFetching, children.length, collectionName);
+
   return (
     <View style={styles.wrap}>
       <Touchable
@@ -182,7 +182,7 @@ export default function NFTItem(props: NFTItemPropsType) {
                 seedType={ele.seedType}
                 badgeSizeType="normal"
                 data={ele}
-                nftSize={Math.floor((screenWidth - pTd(4 * 16)) / 3)}
+                nftSize={Math.floor((screenWidth - pTdSpec(4 * 16)) / 3)}
                 style={[
                   styles.itemAvatarStyle,
                   index < 3 ? styles.marginTop0 : {},
@@ -230,8 +230,8 @@ export default function NFTItem(props: NFTItemPropsType) {
                   // eslint-disable-next-line react-native/no-inline-styles
                   { marginRight: i % 3 === 2 ? 0 : pTd(16), marginTop: i < 3 ? 0 : pTd(16) },
                 ]}
-                height={Math.floor((screenWidth - pTd(4 * 16)) / 3)}
-                width={Math.floor((screenWidth - pTd(4 * 16)) / 3)}
+                height={Math.floor((screenWidth - pTdSpec(4 * 16)) / 3)}
+                width={Math.floor((screenWidth - pTdSpec(4 * 16)) / 3)}
               />
             );
           })}
@@ -248,12 +248,12 @@ const getStyles = makeStyles(theme => ({
   title: {
     color: theme.colors.textBase1,
     flex: 1,
-    fontWeight: '400',
+    // fontWeight: '400',
     marginLeft: pTd(8),
   },
   itemCount: {
     color: theme.colors.textBase1,
-    fontWeight: '400',
+    // fontWeight: '400',
     opacity: 0.7,
   },
   topSeries: {
@@ -263,7 +263,7 @@ const getStyles = makeStyles(theme => ({
   itemWrapper: {
     flexDirection: 'column',
     alignItems: 'flex-start',
-    width: Math.floor((screenWidth - pTd(4 * 16)) / 3),
+    width: Math.floor((screenWidth - pTdSpec(4 * 16)) / 3),
     // backgroundColor: 'red',
   },
   viewAll: {
@@ -300,7 +300,8 @@ const getStyles = makeStyles(theme => ({
   itemAvatarStyle: {
     // marginRight: 20,
     // marginTop: pTd(8),
-    backgroundColor: defaultColors.bg4,
+    // backgroundColor: 'red',
+    // opacity: 0.7,
   },
   noMarginRight: {
     marginRight: 0,

@@ -9,3 +9,9 @@ const uiWidthPx = 393;
 export const pTd = (uiElePx: number) => {
   return Math.round((uiElePx * deviceWidthDp) / uiWidthPx);
 };
+export const pTdSpec = (uiElePx: number) => {
+  return (uiElePx * deviceWidthDp) / uiWidthPx;
+};
+export const pTdFloor = (uiElePx: number) => {
+  return Math.floor((uiElePx * deviceWidthDp) / uiWidthPx);
+};

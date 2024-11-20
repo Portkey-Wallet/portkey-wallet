@@ -12,6 +12,7 @@ import { getDecimalPlaces } from '../SinkableText';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { TextM, TextS } from 'components/CommonText';
 import { showFavoriteModal } from '../FavoriteOverlay';
+import fonts from 'assets/theme/fonts';
 export interface IMarketItemProps {
   isLoading: boolean;
   item: ICryptoCurrencyItem;
@@ -193,23 +194,26 @@ const styles = StyleSheet.create({
   text1: {
     fontSize: pTd(16),
     textAlign: 'left',
-    fontWeight: 'bold',
+    // fontWeight: 'bold',
     color: darkColors.textBase1,
+    ...fonts.mediumFont,
   },
   text2: {
     height: pTd(20),
     lineHeight: pTd(20),
-    fontWeight: '400',
+    // fontWeight: '400',
     textAlign: 'left',
   },
   text3: {
     fontSize: pTd(14),
-    fontWeight: '500',
+    // fontWeight: '500',
     textAlign: 'right',
+    ...fonts.mediumFont,
   },
   snkableText: {
     fontSize: pTd(14),
-    fontWeight: '900',
+    // fontWeight: '900',
+    ...fonts.mediumFont,
   },
   priceSinkText: {
     fontSize: pTd(10),
@@ -218,8 +222,9 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     justifyContent: 'flex-end',
     height: pTd(20),
-    fontWeight: '500',
+    // fontWeight: '500',
     textAlign: 'right',
+    ...fonts.mediumFont,
   },
   section1Width: {
     width: pTd(165),

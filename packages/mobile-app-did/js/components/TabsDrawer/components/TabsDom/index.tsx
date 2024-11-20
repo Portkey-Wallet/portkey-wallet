@@ -1,3 +1,4 @@
+import React from 'react';
 import { useAppCASelector, useAppCommonDispatch, useLatestRef } from '@portkey-wallet/hooks';
 import { changeDrawerOpenStatus, removeAutoApproveItem } from '@portkey-wallet/store/store-ca/discover/slice';
 import { isIOS, screenHeight, screenWidth } from '@portkey-wallet/utils/mobile/device';
@@ -339,7 +340,6 @@ const rightDomStyle = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: pTd(12),
-    paddingVertical: pTd(12),
     flex: 1,
     height: pTd(40),
     borderRadius: pTd(20),
@@ -355,7 +355,6 @@ const rightDomStyle = StyleSheet.create({
   domain: {
     color: darkColors.textBase1,
     textAlign: 'center',
-    lineHeight: pTd(16),
   },
   iconGroupWrap: {
     display: 'flex',

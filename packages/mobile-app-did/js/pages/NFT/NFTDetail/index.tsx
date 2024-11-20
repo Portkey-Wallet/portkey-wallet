@@ -3,7 +3,6 @@ import { StyleSheet, View, ScrollView, GestureResponderEvent, Animated, FlatList
 import { useLanguage } from 'i18n/hooks';
 import GStyles from 'assets/theme/GStyles';
 import { pTd } from 'utils/unit';
-import { darkColors, defaultColors } from 'assets/theme';
 import { TextL, TextM, TextXXL } from 'components/CommonText';
 import { FontStyles } from 'assets/theme/styles';
 import fonts from 'assets/theme/fonts';
@@ -116,6 +115,7 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
         textStyle: {
           fontSize: pTd(16),
           lineHeight: pTd(23),
+          // height: pTd(23),
         },
         iconColor: theme.colors.iconBase1,
         onPress: async () => {
@@ -151,11 +151,15 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
           width: 0,
           height: 0,
         },
-        contentStyle: { color: darkColors.textBase1, width: pTd(212) },
-        containerStyle: { backgroundColor: darkColors.bgBase1, borderColor: darkColors.borderBase1, borderWidth: 1 },
+        contentStyle: { color: theme.colors.textBase1, width: pTd(212) },
+        containerStyle: {
+          backgroundColor: theme.colors.bgBase1,
+          borderColor: theme.colors.borderBase1,
+          borderWidth: 1,
+        },
       });
     },
-    [handleList],
+    [handleList, theme.colors.bgBase1, theme.colors.borderBase1, theme.colors.textBase1],
   );
 
   useEffect(() => {
@@ -181,7 +185,7 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
         </Touchable>
         <Animated.Text style={[styles.title, { opacity: titleOpacity }]}>{alias}</Animated.Text>
         <Touchable onPress={onPressMore}>
-          <Svg icon="more_verti" size={pTd(24)} color={defaultColors.icon2} />
+          <Svg icon="more_verti" size={pTd(24)} color={theme.colors.icon2} />
         </Touchable>
       </View>
 
@@ -480,7 +484,7 @@ export const getStyles = makeStyles(theme => ({
     textAlign: 'center',
   },
   pageWrap: {
-    backgroundColor: defaultColors.bgBase1,
+    backgroundColor: theme.colors.bgBase1,
     ...GStyles.paddingArg(0, 16, 0),
   },
   iconWrap: {
@@ -511,8 +515,8 @@ export const getStyles = makeStyles(theme => ({
     lineHeight: pTd(361),
     textAlign: 'center',
     fontSize: pTd(100),
-    backgroundColor: defaultColors.bg7,
-    color: defaultColors.font7,
+    backgroundColor: theme.colors.bg7,
+    color: theme.colors.font7,
   },
   basicInfoTitle: {
     marginBottom: pTd(8),
@@ -551,11 +555,11 @@ export const getStyles = makeStyles(theme => ({
     marginRight: pTd(5),
   },
   bottomSection: {
-    backgroundColor: defaultColors.bgBase2,
+    backgroundColor: theme.colors.bgBase2,
     position: 'absolute',
     bottom: 0,
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: defaultColors.border6,
+    borderTopColor: theme.colors.border6,
     width: ScreenWidth,
     height: pTd(110) + bottomBarHeight,
     paddingLeft: pTd(20),

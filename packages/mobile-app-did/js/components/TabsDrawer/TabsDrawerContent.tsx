@@ -103,6 +103,8 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
         {
           title: t('Confirm'),
           type: 'solid',
+          style: { backgroundColor: darkColors.textBrand2 },
+          titleStyle: { color: darkColors.iconBrand4 },
           onPress: () => {
             dispatch(closeAllTabs({ networkType }));
             dispatch(changeDrawerOpenStatus(false));
@@ -209,7 +211,7 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
           <Touchable
             style={[handleButtonStyle.handleItem, handleButtonStyle.add]}
             onPress={() => dispatch(changeDrawerOpenStatus(false))}>
-            <Svg icon="add-tab" size={pTd(28)} color={defaultColors.iconBrand1} />
+            <Svg icon="add-tab" size={pTd(24)} color={defaultColors.iconBrand1} />
           </Touchable>
           <Touchable style={handleButtonStyle.handleItem} onPress={onDone}>
             <TextS style={[handleButtonStyle.done, FontStyles.fontBase1]}>{t('Done')}</TextS>
@@ -308,8 +310,9 @@ const handleButtonStyle = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    paddingVertical: pTd(12),
     width: screenWidth,
-    height: pTd(44),
+    height: pTd(48),
     position: 'absolute',
     bottom: 0,
     backgroundColor: darkColors.bgBase1,

@@ -17,11 +17,11 @@ const fonts: {
   },
   BGMediumFont: {
     fontFamily: 'BricolageGrotesque-Bold',
-    fontWeight: 'bold',
+    // fontWeight: 'bold',
   },
   SGMediumFont: {
     fontFamily: 'SchibstedGrotesk-SemiBold',
-    fontWeight: 'bold',
+    // fontWeight: 'bold',
   },
   SGRegularFont: {
     fontFamily: 'SchibstedGrotesk-Regular',
@@ -32,7 +32,7 @@ const fonts: {
   },
   mediumFont: {
     fontFamily: 'SchibstedGrotesk-SemiBold',
-    fontWeight: 'bold',
+    // fontWeight: 'bold',
   },
   regularFont: {
     fontFamily: 'SchibstedGrotesk-Regular',

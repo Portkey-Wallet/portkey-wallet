@@ -160,7 +160,7 @@ const ContactEdit: React.FC = () => {
   const onNameChange = useCallback((value: string) => {
     setEditContact(preEditContact => ({
       ...preEditContact,
-      name: value.trim(),
+      name: value,
     }));
     setFormError(preFormError => ({
       ...preFormError,
@@ -230,10 +230,10 @@ const ContactEdit: React.FC = () => {
       return INIT_NONE_ERROR;
     };
     const checkRegex = (value: string) => {
-      if (!/^[a-zA-Z0-9_]+$/.test(value)) {
+      if (!/^[a-zA-Z0-9_ ]+$/.test(value)) {
         return {
           ...INIT_HAS_ERROR,
-          errorMsg: t('Only a-z, A-Z, 0-9 and "_"  allowed.'),
+          errorMsg: t('Only a-z, A-Z, 0-9, spaces and "_" allowed.'),
         };
       }
       return INIT_NONE_ERROR;
@@ -288,7 +288,7 @@ const ContactEdit: React.FC = () => {
       }
       const { id, name, address, network, isExchange, chainId } = editContact;
       const upsertParams: IAddContactItemApiType = {
-        name,
+        name: name.trim(),
         address,
         network,
       };

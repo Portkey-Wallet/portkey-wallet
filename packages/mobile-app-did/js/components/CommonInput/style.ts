@@ -74,7 +74,7 @@ export const getGeneralStyles = makeStyles(theme => ({
     fontSize: pTd(14),
     lineHeight: pTd(20),
     marginBottom: pTd(8),
-    fontWeight: '400',
+    // fontWeight: '400',
     paddingLeft: pTd(8),
   },
   rightIconContainerStyle: {

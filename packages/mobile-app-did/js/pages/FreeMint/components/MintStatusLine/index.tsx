@@ -1,6 +1,5 @@
 import { FreeMintStatus } from '@portkey-wallet/types/types-ca/freeMint';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
-import { defaultColors } from 'assets/theme';
 import Svg from 'components/Svg';
 import Touchable from 'components/Touchable';
 import React, { useCallback, useMemo } from 'react';
@@ -107,8 +106,9 @@ const getStyles = makeStyles(theme => ({
   mintNowText: {
     color: '#5D42FF',
     fontSize: pTd(14),
-    fontWeight: '500',
+    // fontWeight: '500',
     lineHeight: pTd(22),
+    ...fonts.mediumFont,
   },
   imgStyle: {
     width: pTd(24),

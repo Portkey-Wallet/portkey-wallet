@@ -1,4 +1,4 @@
-import { TextL, TextM, TextS } from 'components/CommonText';
+import { TextL, TextM } from 'components/CommonText';
 import React, { memo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { pTd } from 'utils/unit';
@@ -86,7 +86,7 @@ const getStyles = makeStyles(theme => ({
     paddingHorizontal: pTd(16),
     justifyContent: 'center',
     backgroundColor: theme.colors.bgBase1,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: pTd(1),
     borderColor: theme.colors.borderBase1,
     marginBottom: pTd(24),
     borderRadius: pTd(8),

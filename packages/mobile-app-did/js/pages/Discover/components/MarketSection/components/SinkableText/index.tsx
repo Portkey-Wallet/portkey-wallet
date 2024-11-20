@@ -1,3 +1,4 @@
+import fonts from 'assets/theme/fonts';
 import GStyles from 'assets/theme/GStyles';
 import { DarkFontStyles, FontStyles } from 'assets/theme/styles';
 import React, { useMemo, useRef } from 'react';
@@ -61,8 +62,9 @@ const styles = StyleSheet.create({
   },
   text3: {
     fontSize: pTd(14),
-    fontWeight: '500',
+    // fontWeight: '500',
     textAlign: 'right',
+    ...fonts.mediumFont,
   },
   priceSinkText: {
     fontSize: pTd(12),

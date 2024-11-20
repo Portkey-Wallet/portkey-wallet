@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo, useRef } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, ViewStyle, StyleProp } from 'react-native';
 import SendButton from 'components/SendButton';
 import ReceiveButton from 'components/ReceiveButton';
 import { styles } from './style';
@@ -143,7 +143,7 @@ const TokenDetailPage: React.FC<TokenDetailParams> = ({ tokenInfo, tokenSection 
   }, [getActivityList]);
 
   const buttonCount = useMemo(() => {
-    let count = 3;
+    let count = 2;
     if (isBuyButtonShow) {
       count++;
     }
@@ -157,20 +157,17 @@ const TokenDetailPage: React.FC<TokenDetailParams> = ({ tokenInfo, tokenSection 
     return count;
   }, [isBuyButtonShow, isFaucetButtonShow, isSwapShow, swap]);
 
-  // const buttonGroupWrapStyle = useMemo(() => {
-  //   if (buttonCount >= 5) {
-  //     // styles
-  //     return styles.buttonRow;
-  //   } else {
-  //     return GStyles.flexCenter;
-  //   }
-  // }, [buttonCount]);
+  const buttonWrapStyle: StyleProp<ViewStyle> = useMemo(() => {
+    switch (buttonCount) {
+      case 2:
+        return styles.buttonContainerGap3;
+      case 3:
+        return styles.buttonContainerGap2;
+      case 4:
+        return styles.buttonContainerGap1;
 
-  const buttonWrapStyle = useMemo(() => {
-    if (buttonCount >= 5) {
-      return {};
-    } else {
-      return styles.buttonWrapStyle1;
+      default:
+        return undefined;
     }
   }, [buttonCount]);
 
@@ -188,19 +185,41 @@ const TokenDetailPage: React.FC<TokenDetailParams> = ({ tokenInfo, tokenSection 
   const onReceivePress = useCallback(() => {
     console.log('tokenSection : ', tokenSection);
     navigationService.navigate('Receive', { tokenInfo: tokenSection, chainId: tokenInfo.chainId });
-  }, []);
+  }, [tokenInfo.chainId, tokenSection]);
 
   const renderButtonItems = useCallback(() => {
     return (
       <View style={[styles.buttonGroupWrap]}>
-        <SendButton themeType="innerPage" sentToken={currentTokenInfo} wrapStyle={buttonWrapStyle} />
-        <ReceiveButton onPress={onReceivePress} />
-        {isBuyButtonShow && <BuyButton wrapStyle={buttonWrapStyle} tokenInfo={tokenInfo} />}
-        {isFaucetButtonShow && <FaucetButton themeType="innerPage" wrapStyle={buttonWrapStyle} />}
+        <SendButton
+          themeType="innerPage"
+          sentToken={currentTokenInfo}
+          containerStyle={[styles.buttonContainer, buttonWrapStyle, styles.buttonContainer1st]}
+          buttonWrapStyle={styles.buttonWrap}
+        />
+        <ReceiveButton
+          containerStyle={[styles.buttonContainer, buttonWrapStyle]}
+          buttonWrapStyle={styles.buttonWrap}
+          onPress={onReceivePress}
+        />
+        {isBuyButtonShow && (
+          <BuyButton
+            containerStyle={[styles.buttonContainer, buttonWrapStyle]}
+            buttonWrapStyle={styles.buttonWrap}
+            tokenInfo={tokenInfo}
+          />
+        )}
+        {isFaucetButtonShow && (
+          <FaucetButton
+            containerStyle={[styles.buttonContainer, buttonWrapStyle]}
+            buttonWrapStyle={styles.buttonWrap}
+          />
+        )}
         {isSwapShow && swap && (
           <OutlinedButton
             title="Swap"
             iconName="swap"
+            containerStyle={[styles.buttonContainer, buttonWrapStyle]}
+            buttonWrapStyle={styles.buttonWrap}
             onPress={() => {
               navigationService.navigate('SwapHome');
             }}
@@ -236,7 +255,14 @@ const TokenDetailPage: React.FC<TokenDetailParams> = ({ tokenInfo, tokenSection 
         )}
       </View>
     );
-  }, []);
+  }, [
+    amountTextOverflow,
+    balanceShow,
+    currentActivity?.data?.length,
+    currentTokenInfo?.balanceInUsd,
+    isMainnet,
+    renderButtonItems,
+  ]);
 
   const renderActivityList = useCallback(() => {
     return (

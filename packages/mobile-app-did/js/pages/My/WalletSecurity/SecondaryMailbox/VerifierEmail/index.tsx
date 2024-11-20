@@ -69,7 +69,7 @@ export default function VerifierEmail() {
         if (rst.verifiedResult) {
           CommonToast.success('Successfully');
           myEvents.updateSecondaryEmail.emit({ email });
-          navigationService.goBack();
+          navigationService.navigate('SecondaryMailboxHome');
         } else {
           throw 'Invalid code';
         }

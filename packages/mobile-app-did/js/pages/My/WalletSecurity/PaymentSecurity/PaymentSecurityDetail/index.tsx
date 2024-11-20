@@ -2,7 +2,7 @@ import React, { useCallback, useMemo, useRef, useState } from 'react';
 import PageContainer from 'components/PageContainer';
 import { View } from 'react-native';
 import { defaultColors } from 'assets/theme';
-import CommonSwitch from 'components/CommonSwitch';
+import CustomSwitch from 'components/CustomSwitch';
 import { ITransferLimitItem } from '@portkey-wallet/types/types-ca/paymentSecurity';
 import CommonButton from 'components/CommonButton';
 import navigationService from 'utils/navigationService';
@@ -123,7 +123,6 @@ const PaymentSecurityDetail: React.FC = () => {
   return (
     <PageContainer
       titleDom={'Transaction Limits'}
-      safeAreaColor={['black']}
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}>
       <View>
@@ -146,11 +145,7 @@ const PaymentSecurityDetail: React.FC = () => {
         <View style={pageStyles.switchWrap}>
           <View style={pageStyles.switchContainer}>
             <TextM style={pageStyles.switchLeft}>Transaction limits</TextM>
-            <CommonSwitch
-              style={pageStyles.switchRight}
-              value={detailFormatted?.restricted || false}
-              onValueChange={onRestrictedChange}
-            />
+            <CustomSwitch value={detailFormatted?.restricted || false} onToggle={onRestrictedChange} />
           </View>
           <TextS style={{ color: theme.colors.textBase2, fontSize: pTd(14), lineHeight: pTd(20) }}>
             Transactions over the limit require you to modify the limit settings with guardian approval.
@@ -238,9 +233,6 @@ const getStyles = makeStyles(_ => ({
   switchLeft: {
     flex: 1,
     justifyContent: 'center',
-  },
-  switchRight: {
-    transform: [{ scaleX: 40 / 51 }, { scaleY: 24 / 31 }],
   },
 }));
 

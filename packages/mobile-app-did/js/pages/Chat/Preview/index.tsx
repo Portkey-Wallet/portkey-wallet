@@ -138,7 +138,6 @@ const Preview: React.FC = () => {
         isNewUsersOnly: values.isNewUserOnly,
       });
       reportSendCryptoGiftSuccess();
-      console.log(giftId, 'giftId');
       navigationService.navigate('GiftResult', {
         giftId,
       });

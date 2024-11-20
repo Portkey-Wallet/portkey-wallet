@@ -11,7 +11,7 @@ import { RedPackageTypeEnum } from '@portkey-wallet/im';
 import { INIT_NONE_ERROR, ErrorType } from '@portkey-wallet/constants/constants-ca/common';
 import { useGetRedPackageConfig } from '@portkey-wallet/hooks/hooks-ca/im';
 import { ZERO } from '@portkey-wallet/constants/misc';
-import { divDecimals, divDecimalsStr, formatAmountShow, timesDecimals } from '@portkey-wallet/utils/converter';
+import { divDecimals, divDecimalsStr, timesDecimals } from '@portkey-wallet/utils/converter';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import { RED_PACKAGE_DEFAULT_MEMO } from '@portkey-wallet/constants/constants-ca/im';
 import { FontStyles } from 'assets/theme/styles';
@@ -145,7 +145,7 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
   }, [values, tokenPrice]);
   const amountShowStr = useMemo(() => {
     if (type !== RedPackageTypeEnum.FIXED) {
-      return formatAmountShow(values.count);
+      return values.count;
     }
     if (
       values.packetNum === '' ||
@@ -158,7 +158,7 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
     if (ZERO.plus(values.packetNum).isNaN() || ZERO.plus(values.count).isNaN()) {
       return '';
     }
-    return ZERO.plus(formatAmountShow(values.count))
+    return ZERO.plus(values.count)
       .times(values.packetNum || '1')
       .toFixed();
   }, [type, values.count, values.packetNum]);
@@ -369,7 +369,7 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
       selectedIndex: destinationChain.key,
       iconSize: 20,
       isShowRightCloseIcon: true,
-      title: 'Network',
+      title: 'Select Network',
       onSelected: (_item, key) => {
         const currentSourceChain = networkList.find(item => item.key === key);
         currentSourceChain && setDestinationChain(currentSourceChain);

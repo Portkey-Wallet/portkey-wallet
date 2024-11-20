@@ -287,7 +287,6 @@ const getStyles = makeStyles(theme => ({
   },
   deleteWalletText: {
     color: theme.colors.textBase3,
-    height: pTd(16),
     fontSize: 16,
     textAlign: 'center',
   },

@@ -1,10 +1,10 @@
 import React from 'react';
-import OutlinedButton from 'components/OutlinedButton';
+import OutlinedButton, { TOutlinedStyleProps } from 'components/OutlinedButton';
 import { useLanguage } from 'i18n/hooks';
 
-interface ReceiveButtonType {
+type ReceiveButtonType = TOutlinedStyleProps & {
   onPress: () => void;
-}
+};
 
 export default function ReceiveButton(props: ReceiveButtonType) {
   const { onPress } = props;
@@ -15,5 +15,5 @@ export default function ReceiveButton(props: ReceiveButtonType) {
   //   navigationService.navigate('ReceiveSelectToken');
   // }, [currentTokenInfo, themeType]);
 
-  return <OutlinedButton iconName="receive" title={t('Receive')} onPress={onPress} />;
+  return <OutlinedButton {...props} iconName="receive" title={t('Receive')} onPress={onPress} />;
 }

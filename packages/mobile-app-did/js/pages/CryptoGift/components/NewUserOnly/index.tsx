@@ -59,6 +59,6 @@ const getStyles = makeStyles(theme => ({
   description: {
     color: theme.colors.textBase2,
     fontSize: pTd(14),
-    fontWeight: '400',
+    // fontWeight: '400',
   },
 }));

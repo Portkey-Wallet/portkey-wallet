@@ -325,7 +325,7 @@ const handleButtonStyle = StyleSheet.create({
   },
   close: {
     textAlign: 'left',
-    fontWeight: '600',
+    // fontWeight: '600',
   },
   add: {
     display: 'flex',
@@ -334,7 +334,7 @@ const handleButtonStyle = StyleSheet.create({
   },
   done: {
     textAlign: 'right',
-    fontWeight: '600',
+    // fontWeight: '600',
   },
   noTap: {
     opacity: 0.3,

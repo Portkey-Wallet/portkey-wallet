@@ -101,7 +101,7 @@ const getStyles = makeStyles(theme => ({
   },
   title: {
     color: defaultColors.font16,
-    fontWeight: '400',
+    // fontWeight: '400',
   },
   topSeries: {
     ...GStyles.flexCol,

@@ -56,7 +56,7 @@ export const styles = StyleSheet.create({
     textAlign: 'left',
     width: '100%',
     paddingHorizontal: pTd(16),
-    fontWeight: '700',
+    // fontWeight: '700',
     lineHeight: pTd(24),
     paddingVertical: pTd(8),
   },
@@ -91,6 +91,24 @@ export const styles = StyleSheet.create({
   },
   subTitle: {
     fontSize: pTd(12),
+  },
+  buttonContainer: {
+    flex: 1,
+  },
+  buttonContainer1st: {
+    marginLeft: 0,
+  },
+  buttonContainerGap1: {
+    marginLeft: 8,
+  },
+  buttonContainerGap2: {
+    marginLeft: 12,
+  },
+  buttonContainerGap3: {
+    marginLeft: 24,
+  },
+  buttonWrap: {
+    width: '100%',
   },
   buttonWrapStyle1: {
     marginHorizontal: pTd(16),

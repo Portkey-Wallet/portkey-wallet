@@ -1,17 +1,17 @@
 import React, { memo, useCallback } from 'react';
 import navigationService from 'utils/navigationService';
 import { StyleProp, ViewProps } from 'react-native';
-import OutlinedButton from 'components/OutlinedButton';
+import OutlinedButton, { TOutlinedStyleProps } from 'components/OutlinedButton';
 import { useLanguage } from 'i18n/hooks';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 
-interface SendButtonType {
+type TSendButtonType = TOutlinedStyleProps & {
   wrapStyle?: StyleProp<ViewProps>;
   tokenInfo?: TokenItemShowType;
-}
+};
 
-const BuyButton = (props: SendButtonType) => {
+const BuyButton = (props: TSendButtonType) => {
   const { tokenInfo } = props;
   const isMainnet = useIsMainnet();
   const { t } = useLanguage();
@@ -23,7 +23,7 @@ const BuyButton = (props: SendButtonType) => {
     navigationService.navigate('RampEntry', { symbol: tokenInfo ? tokenInfo.symbol : 'ELF' });
   }, [isMainnet, tokenInfo]);
 
-  return <OutlinedButton iconName="buy" title={t('Buy')} onPress={onPressButton} />;
+  return <OutlinedButton {...props} iconName="buy" title={t('Buy')} onPress={onPressButton} />;
 };
 
 export default memo(BuyButton);

@@ -248,12 +248,12 @@ const getStyles = makeStyles(theme => ({
   title: {
     color: theme.colors.textBase1,
     flex: 1,
-    fontWeight: '400',
+    // fontWeight: '400',
     marginLeft: pTd(8),
   },
   itemCount: {
     color: theme.colors.textBase1,
-    fontWeight: '400',
+    // fontWeight: '400',
     opacity: 0.7,
   },
   topSeries: {

@@ -1,21 +1,32 @@
 import React from 'react';
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, ViewStyle, StyleProp } from 'react-native';
 import Svg, { IconName } from 'components/Svg';
 import { pTd } from 'utils/unit';
 import { darkColors } from 'assets/theme';
 import { makeStyles } from '@rneui/themed';
 
+export type TOutlinedStyleProps = {
+  containerStyle?: StyleProp<ViewStyle>;
+  buttonWrapStyle?: StyleProp<ViewStyle>;
+};
+
 export type OutlinedButtonProps = {
   onPress: () => void;
   iconName: IconName;
   title: string;
-};
+} & TOutlinedStyleProps;
 
-const OutlinedButton: React.FC<OutlinedButtonProps> = ({ iconName, title, onPress }: OutlinedButtonProps) => {
+const OutlinedButton: React.FC<OutlinedButtonProps> = ({
+  iconName,
+  title,
+  onPress,
+  containerStyle,
+  buttonWrapStyle,
+}: OutlinedButtonProps) => {
   const styles = getStyles();
   return (
-    <View style={styles.container}>
-      <TouchableOpacity style={styles.buttonWrap} onPress={onPress}>
+    <View style={[styles.container, containerStyle]}>
+      <TouchableOpacity style={[styles.buttonWrap, buttonWrapStyle]} onPress={onPress}>
         <View style={styles.buttonInnerWrap}>
           <Svg icon={iconName} size={iconName === 'buy' ? pTd(28) : pTd(24)} color={darkColors.bgBase1} />
         </View>
@@ -25,7 +36,7 @@ const OutlinedButton: React.FC<OutlinedButtonProps> = ({ iconName, title, onPres
   );
 };
 
-const getStyles = makeStyles(theme => ({
+const getStyles = makeStyles(_ => ({
   container: {
     flexDirection: 'column',
     alignItems: 'center',

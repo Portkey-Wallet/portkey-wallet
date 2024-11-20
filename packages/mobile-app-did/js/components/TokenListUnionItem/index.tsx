@@ -173,7 +173,6 @@ const itemStyle = StyleSheet.create({
     ...fonts.SGMediumFont,
   },
   dollar: {
-    marginTop: pTd(6),
     lineHeight: pTd(20),
     height: pTd(20),
     fontSize: pTd(14),

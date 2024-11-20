@@ -26,6 +26,7 @@ import { useJumpToChatGroupDetails } from './chat';
 import { ALREADY_JOINED_GROUP_CODE } from '@portkey-wallet/constants/constants-ca/chat';
 import { isAelfAddress } from '@portkey-wallet/utils/aelf';
 import { NetworkType } from '@portkey-wallet/types';
+import { parseLinkPortkeyUrl } from 'utils/scheme';
 
 export const useQrScanPermission = (): [boolean, () => Promise<boolean>] => {
   const [hasPermission, setHasPermission] = useState<any>(null);
@@ -164,6 +165,11 @@ export const useHandleUrl = () => {
   return useCallback(
     async (data: string) => {
       const str = data.replace(/("|'|\s)/g, '');
+
+      const { id, type } = parseLinkPortkeyUrl(str);
+      if (id && type) {
+        throw data;
+      }
 
       jumpToWebview({
         item: {

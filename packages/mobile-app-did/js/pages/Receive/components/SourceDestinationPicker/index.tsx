@@ -109,7 +109,6 @@ const getStyles = makeStyles(theme => ({
     marginLeft: pTd(8),
     fontSize: pTd(16),
     lineHeight: pTd(17),
-    // width: pTd(116),
     color: theme.colors.textBase1,
     alignItems: 'center',
   },

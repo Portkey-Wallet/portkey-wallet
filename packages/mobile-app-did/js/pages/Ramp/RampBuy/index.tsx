@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useRef, useCallback, useEffect } from 'react';
 import { View, Text, TextInput } from 'react-native';
-import { makeStyles } from '@rneui/themed';
+import { makeStyles, useTheme } from '@rneui/themed';
 import isEqual from 'lodash/isEqual';
 import { ErrorType, INIT_HAS_ERROR, INIT_NONE_ERROR } from '@portkey-wallet/constants/constants-ca/common';
 import { useBuyCryptoList } from '@portkey-wallet/hooks/hooks-ca/ramp';
@@ -37,6 +37,7 @@ export default function RampBuy() {
 
   const textInputRef = useRef<TextInput>(null);
   const [buttonLoading, setButtonLoading] = useState(false);
+  const { theme } = useTheme();
 
   const { refreshRampShow } = useAppRampEntryShow();
 
@@ -257,6 +258,7 @@ export default function RampBuy() {
       rightDom={rightDom}>
       <View style={styles.fiatWrap}>
         <TextInput
+          placeholderTextColor={theme.colors.textBase3}
           value={amount}
           keyboardType="decimal-pad"
           ref={textInputRef}
@@ -264,7 +266,15 @@ export default function RampBuy() {
           placeholder="0"
           onChangeText={onAmountInput}
         />
-        <Text style={styles.fiatText}>{currency.fiat?.symbol}</Text>
+        <Touchable
+          highlight={false}
+          onPress={() => {
+            if (textInputRef.current) {
+              textInputRef.current.focus();
+            }
+          }}>
+          <Text style={styles.fiatText}>{currency.fiat?.symbol}</Text>
+        </Touchable>
       </View>
       <Text style={styles.receiveAmount}>{receiveAmountText}</Text>
       {amountError.isError && <Text style={styles.warningText}>{amountError.errorMsg}</Text>}

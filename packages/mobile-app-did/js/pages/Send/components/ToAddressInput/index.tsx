@@ -161,6 +161,7 @@ export const ToAddressInputRef = forwardRef<IToAddressInputRef, IToAddressInput>
       selectedToken?.chainId,
       selectedToken?.symbol,
       setCheckFinish,
+      setSelectedToContact,
       setWarning,
       wallet,
     ],

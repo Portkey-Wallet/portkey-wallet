@@ -16,17 +16,8 @@ import MarketItemSkeleton from './components/MarketItemSkeleton';
 export default forwardRef(function MarketSection(_, _ref) {
   const { marketInfo, refreshing, refreshList, handleSort } = useMarket();
   const flatListRef = useRef<FlatList>(null);
-  const itemRefs = useRef(new Map());
-  const renderItem = useCallback(({ item, index }: { item: ICryptoCurrencyItem; index: number }) => {
-    return (
-      <MarketItem
-        ref={ref => itemRefs.current.set(item.id, ref)}
-        isLoading={false}
-        item={item}
-        itemRefs={itemRefs}
-        idx={index}
-      />
-    );
+  const renderItem = useCallback(({ item }: { item: ICryptoCurrencyItem; index: number }) => {
+    return <MarketItem isLoading={false} item={item} />;
   }, []);
   const onRefresh = useCallback(
     async (callback?: () => void) => {
@@ -50,11 +41,6 @@ export default forwardRef(function MarketSection(_, _ref) {
   useImperativeHandle(
     _ref,
     () => ({
-      closeTips: () => {
-        [...itemRefs.current.entries()].forEach(([id, ref]) => {
-          id && ref && ref.hideTips();
-        });
-      },
       onRefresh,
     }),
     [onRefresh],
@@ -83,31 +69,33 @@ export default forwardRef(function MarketSection(_, _ref) {
 
   return (
     <View style={styles.container}>
-      <MarketHeader style={{ marginTop: pTd(8) }} marketInfo={marketInfo} handleSort={handleSort} />
-      {isSkeleton ? (
-        Array.from({ length: 11 }).map((item, index) => {
-          return <MarketItemSkeleton key={index} />;
-        })
-      ) : (
-        <FlatList
-          ref={flatListRef}
-          contentContainerStyle={{ paddingBottom: pTd(10) }}
-          style={{ minHeight: pTd(512) }}
-          showsVerticalScrollIndicator={false}
-          nestedScrollEnabled
-          refreshing={false}
-          data={Array.isArray(marketInfo?.dataList) ? marketInfo?.dataList : []}
-          renderItem={renderItem}
-          keyExtractor={(item: ICryptoCurrencyItem, index: number) => '' + (item.id || index)}
-          ListEmptyComponent={renderEmpty}
-        />
-      )}
+      <MarketHeader marketInfo={marketInfo} handleSort={handleSort} />
+      <View style={styles.container}>
+        {isSkeleton ? (
+          Array.from({ length: 11 }).map((item, index) => {
+            return <MarketItemSkeleton key={index} />;
+          })
+        ) : (
+          <FlatList
+            ref={flatListRef}
+            contentContainerStyle={{ paddingBottom: pTd(10) }}
+            showsVerticalScrollIndicator={false}
+            nestedScrollEnabled
+            refreshing={false}
+            data={Array.isArray(marketInfo?.dataList) ? marketInfo?.dataList : []}
+            renderItem={renderItem}
+            keyExtractor={(item: ICryptoCurrencyItem, index: number) => '' + (item.id || index)}
+            ListEmptyComponent={renderEmpty}
+          />
+        )}
+      </View>
     </View>
   );
 });
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     backgroundColor: darkColors.bgBase1,
   },
   empty: {

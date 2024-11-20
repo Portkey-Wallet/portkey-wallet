@@ -83,6 +83,7 @@ import { useGetFilterContactList } from '@portkey-wallet/hooks/hooks-ca/contactN
 import { TFormattedRecentItem } from '@portkey-wallet/types/types-ca/contactNew';
 import { IContactItemMyType } from 'components/ContactItemMy';
 import { KeyboardSafeArea } from 'components/KeyboardSafeArea';
+import { useKeyboardListener } from 'hooks/useKeyboardHeight';
 
 const SendHome: React.FC = () => {
   const {
@@ -148,9 +149,19 @@ const SendHome: React.FC = () => {
   const [step, setStep] = useState<1 | 2>(isFixedToContact ? 2 : 1);
   const [isLoading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [isKeyboardShow, setKeyboardShow] = useState(false);
 
   const checkManagerSyncState = useCheckManagerSyncState();
   const getCAContract = useGetCAContract();
+
+  useKeyboardListener({
+    show: () => {
+      setKeyboardShow(true);
+    },
+    hide: () => {
+      setKeyboardShow(false);
+    },
+  });
 
   // get transfer fee
   const getTransferFee = useGetTransferFee();
@@ -1083,7 +1094,7 @@ const SendHome: React.FC = () => {
             </View>
           </>
         )}
-        {step === 1 && !selectedToContact.address && (
+        {step === 1 && !selectedToContact.address && !isKeyboardShow && (
           <SelectAddressTab
             recentAddressList={recentList || []}
             savedAddressList={savedList || []}

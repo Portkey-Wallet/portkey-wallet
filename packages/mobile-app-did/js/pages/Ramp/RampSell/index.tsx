@@ -1,6 +1,6 @@
 import React, { useState, useRef, useMemo, useCallback, useEffect } from 'react';
 import { Text, View, TextInput, StyleSheet } from 'react-native';
-import { makeStyles } from '@rneui/themed';
+import { makeStyles, useTheme } from '@rneui/themed';
 import isEqual from 'lodash/isEqual';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { useEffectOnce } from '@portkey-wallet/hooks';
@@ -50,14 +50,15 @@ export default function RampSell() {
   const styles = getStyles();
 
   const { symbol: routerSymbol, network: routerNetwork } = useRouterParams<ISellFormProps>();
-  console.log('routerNetwork : ', routerNetwork);
 
   const textInputRef = useRef<TextInput>(null);
+  const { theme } = useTheme();
 
   const { sellCryptoList } = useSellCryptoList();
   const { refreshRampShow } = useAppRampEntryShow();
 
   const [fiatList, setFiatList] = useState<IRampFiatItem[]>([]);
+  const [buttonLoading, setButtonLoading] = useState(false);
 
   const [currency, setCurrency] = useState<{
     crypto?: IRampCryptoItem;
@@ -240,7 +241,7 @@ export default function RampSell() {
       return;
     }
 
-    Loading.show();
+    setButtonLoading(true);
     let isSellSectionShow = false;
     try {
       const result = await refreshRampShow();
@@ -251,18 +252,18 @@ export default function RampSell() {
     if (!isSellSectionShow) {
       CommonToast.fail('Sorry, the service you are using is temporarily unavailable.');
       navigationService.navigate('Tab');
-      Loading.hide();
+      setButtonLoading(false);
       return;
     }
 
     try {
       if (!(await securitySafeCheckAndToast(MAIN_CHAIN_ID))) {
-        Loading.hide();
+        setButtonLoading(false);
         return;
       }
     } catch (error) {
       CommonToast.failError(error);
-      Loading.hide();
+      setButtonLoading(false);
       return;
     }
 
@@ -274,7 +275,7 @@ export default function RampSell() {
           isWarning: true,
           errorMsg: 'Synchronizing on-chain account information...',
         });
-        Loading.hide();
+        setButtonLoading(false);
         return;
       }
 
@@ -332,7 +333,7 @@ export default function RampSell() {
         },
       });
       if (!checkTransferLimitResult) {
-        Loading.hide();
+        setButtonLoading(false);
         return;
       }
 
@@ -341,7 +342,7 @@ export default function RampSell() {
       setAmountLocalError({ ...INIT_HAS_ERROR, errorMsg: 'Insufficient funds' });
       console.log('error', error);
     } finally {
-      Loading.hide();
+      setButtonLoading(false);
     }
   }, [
     amount,
@@ -358,6 +359,7 @@ export default function RampSell() {
     getCurrentCAContract,
     checkTransferLimitWithJump,
     wallet,
+    setButtonLoading,
   ]);
 
   const onChangeCurrency = useCallback(() => {
@@ -433,6 +435,7 @@ export default function RampSell() {
       </View>
       <View style={styles.cryptoWrap}>
         <TextInput
+          placeholderTextColor={theme.colors.textBase3}
           value={amount}
           keyboardType="decimal-pad"
           ref={textInputRef}
@@ -440,7 +443,15 @@ export default function RampSell() {
           placeholder="0"
           onChangeText={onAmountInput}
         />
-        <Text style={styles.cryptoText}>{currency.crypto?.symbol}</Text>
+        <Touchable
+          highlight={false}
+          onPress={() => {
+            if (textInputRef.current) {
+              textInputRef.current.focus();
+            }
+          }}>
+          <Text style={styles.cryptoText}>{currency.crypto?.symbol}</Text>
+        </Touchable>
       </View>
       <Text style={styles.receiveAmount}>{receiveAmountText}</Text>
       {amountError.isError && <Text style={styles.warningText}>{amountError.errorMsg}</Text>}
@@ -448,6 +459,7 @@ export default function RampSell() {
       <KeyboardSafeArea>
         <View style={styles.btnWrap}>
           <CommonButton
+            loading={buttonLoading}
             type="primary"
             buttonStyle={styles.btnStyle}
             disabled={!isAllowAmount || amountError.isError}

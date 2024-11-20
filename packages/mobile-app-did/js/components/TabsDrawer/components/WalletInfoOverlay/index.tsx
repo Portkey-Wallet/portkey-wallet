@@ -12,7 +12,7 @@ import { CAInfo } from '@portkey-wallet/types/types-ca/wallet';
 import { addressFormat, formatChainInfoToShow, formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import { ChainId } from '@portkey-wallet/types';
 import { DarkFontStyles } from 'assets/theme/styles';
-import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { useCurrentChainList, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
 import { removeDapp } from '@portkey-wallet/store/store-ca/dapp/actions';
@@ -24,7 +24,6 @@ import { copyText } from 'utils';
 import Touchable from 'components/Touchable';
 import { useAccountTokenInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
 import CommonAvatar from 'components/CommonAvatar';
-import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
 
 type MyWalletModalType = {
   tabInfo: ITabItem;
@@ -39,6 +38,17 @@ const MyWalletModal = ({ tabInfo }: MyWalletModalType) => {
   const userInfo = useCurrentUserInfo();
   const defaultToken = useDefaultToken();
   const { accountTokenList } = useAccountTokenInfo();
+  const currentChainList = useCurrentChainList();
+
+  const getChainInfoByChainId = useCallback(
+    (chainId: string) => {
+      if (!currentChainList) {
+        return undefined;
+      }
+      return currentChainList.find(chain => chain.chainId === chainId);
+    },
+    [currentChainList],
+  );
 
   const caInfoList = useMemo(() => {
     return Object.entries(caInfo || {})
@@ -91,10 +101,10 @@ const MyWalletModal = ({ tabInfo }: MyWalletModalType) => {
           )}
         </View>
         <View style={styles.group}>
-          {caInfoList?.map(item => (
+          {caInfoList?.reverse()?.map(item => (
             <View key={item?.chainId} style={[styles.itemWrap]}>
               <View key={item?.chainId} style={styles.itemContent}>
-                <Svg icon={item?.chainId === DefaultChainId ? 'mainnet' : 'sideChain'} size={pTd(24)} />
+                <CommonAvatar imageUrl={getChainInfoByChainId(item?.chainId)?.chainImageUrl} avatarSize={pTd(24)} />
                 <View style={{ paddingLeft: pTd(12) }}>
                   <TextM>{formatStr2EllipsisStr(addressFormat(item?.caAddress, item?.chainId as ChainId), 8)}</TextM>
                   <TextS style={[styles.itemChainInfo, DarkFontStyles.textBase2]}>

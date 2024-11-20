@@ -1,11 +1,10 @@
-import { defaultColors } from 'assets/theme';
-import { BGStyles, FontStyles } from 'assets/theme/styles';
+import { darkColors } from 'assets/theme';
+import { FontStyles } from 'assets/theme/styles';
 import { TextM } from 'components/CommonText';
 import Svg from 'components/Svg';
 import React from 'react';
 import { StyleSheet, View, TouchableWithoutFeedback } from 'react-native';
 import { pTd } from 'utils/unit';
-import { darkColors, Input, InputProps } from '@rneui/themed';
 import CommonInput from 'components/CommonInput';
 
 interface ISimulatedInputBoxProps {
@@ -41,7 +40,6 @@ style={styles.rnInputStyle}
 export default function SimulatedInputBox({
   placeholder = 'dApps, Sites, URL',
   onClickInput,
-  rightDom,
 }: ISimulatedInputBoxProps) {
   return (
     <View style={[styles.wrap, { backgroundColor: 'transparent' }]}>
@@ -56,21 +54,21 @@ export default function SimulatedInputBox({
   );
 }
 
-export function SimulatedInput({ placeholder = 'dApps, Sites, URL', onClickInput, rightDom }: ISimulatedInputBoxProps) {
+export function SimulatedInput({ placeholder = 'dApps, Sites, URL', onClickInput }: ISimulatedInputBoxProps) {
   return (
     <View style={[styles.wrap, { backgroundColor: 'transparent' }]}>
       <TouchableWithoutFeedback onPress={() => onClickInput?.()}>
         <View style={styles.innerInput}>
           <CommonInput
             autoFocus
-            grayBorder={false}
+            grayBorder
             theme="black-bg"
             // ref={iptRef}
             // value={value}
             // onChangeText={v => setValue(v)}
             // onSubmitEditing={onSearch}
             returnKeyType="search"
-            placeholder={'dApps, Sites, URL'}
+            placeholder={placeholder}
             containerStyle={{
               backgroundColor: darkColors.bgBase1,
               height: pTd(20),
@@ -84,7 +82,7 @@ export function SimulatedInput({ placeholder = 'dApps, Sites, URL', onClickInput
             // }
             rightIconContainerStyle={{}}
             style={{
-              backgroundColor: defaultColors.white,
+              // backgroundColor: defaultColors.white,
               height: pTd(20),
             }}
           />

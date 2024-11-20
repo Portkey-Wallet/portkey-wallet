@@ -40,15 +40,6 @@ const TextWithProtocolIcon = ({
     }
     if (isDanger) {
       return <Svg icon="warning-fill" size={iconSize} iconStyle={styles.iconStyle} color={darkColors.iconDanger2} />;
-    } else {
-      return (
-        <Svg
-          icon="httpsLock"
-          size={iconSize}
-          iconStyle={styles.iconStyle}
-          color={location === 'header' ? darkColors.iconBase1 : darkColors.iconBase2}
-        />
-      );
     }
   }, [iconSize, isDanger, location, showProtocolIcon]);
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import Svg, { IconName } from 'components/Svg';
 import { pTd } from 'utils/unit';
@@ -21,8 +21,15 @@ const OutlinedTextButton: React.FC<OutlinedButtonProps> = ({
   onPress,
 }: OutlinedButtonProps) => {
   const styles = getStyles();
+  const [isPressed, setIsPressed] = useState(false);
+
   return (
-    <TouchableOpacity style={[styles.buttonWrap, style]} onPress={onPress}>
+    <TouchableOpacity
+      activeOpacity={1}
+      style={[styles.buttonWrap, isPressed && styles.buttonPressWrap, style]}
+      onPress={onPress}
+      onPressIn={() => setIsPressed(true)}
+      onPressOut={() => setIsPressed(false)}>
       <View style={styles.buttonInnerWrap}>
         {iconName && <Svg icon={iconName} size={pTd(16)} color={styles.iconColor.color} iconStyle={styles.iconStyle} />}
         <Text style={[styles.title, textStyle]}>{title}</Text>
@@ -41,6 +48,9 @@ const getStyles = makeStyles(theme => ({
     borderRadius: pTd(29),
     borderWidth: pTd(1.5),
     borderColor: theme.colors.borderBrand2,
+  },
+  buttonPressWrap: {
+    backgroundColor: theme.colors.bgBrand3,
   },
   buttonInnerWrap: {
     width: '100%',

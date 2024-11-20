@@ -1,4 +1,4 @@
-import React, { memo, useState } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 import PageContainer from 'components/PageContainer';
 import { FlatList, View, StyleSheet } from 'react-native';
 import { defaultColors } from 'assets/theme';
@@ -106,14 +106,13 @@ const getStyles = makeStyles(() => ({
 
 const PaymentSecurityList: React.FC = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const { list, isNext, next, init } = useTransferLimitList();
+  const { list, next, init } = useTransferLimitList(); // isNext
   const pageStyles = getListStyles();
   const getList = useLockCallback(async () => {
-    if (!isNext) {
-      return;
-    }
+    // if (!isNext) {
+    //   return;
+    // }
     setIsRefreshing(true);
-    Loading.show();
     try {
       await next();
     } catch (error) {
@@ -121,8 +120,7 @@ const PaymentSecurityList: React.FC = () => {
       CommonToast.failError('Failed to fetch data');
     }
     setIsRefreshing(false);
-    Loading.hide();
-  }, [isNext, next]);
+  }, [next]);
 
   useEffectOnce(() => {
     const timer = setTimeout(() => {
@@ -132,6 +130,15 @@ const PaymentSecurityList: React.FC = () => {
       clearTimeout(timer);
     };
   });
+
+  useEffect(() => {
+    if (isRefreshing) {
+      Loading.show();
+      init();
+    } else {
+      Loading.hide();
+    }
+  }, [init, isRefreshing]);
   return (
     <PageContainer
       titleDom={'Transaction Limits'}
@@ -139,11 +146,11 @@ const PaymentSecurityList: React.FC = () => {
       hideTouchable={true}
       scrollViewProps={{ disabled: true }}>
       <FlatList
-        refreshing={isRefreshing}
+        // refreshing={isRefreshing}
         data={list || []}
         keyExtractor={(item: ITransferLimitItem) => `${item.chainId}_${item.symbol}`}
         renderItem={({ item }) => <PaymentSecurityItem item={item} />}
-        onRefresh={() => init()}
+        // onRefresh={() => init()}
         onEndReached={() => getList()}
       />
     </PageContainer>

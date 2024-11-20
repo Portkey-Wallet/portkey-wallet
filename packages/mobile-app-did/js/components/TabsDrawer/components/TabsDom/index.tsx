@@ -22,7 +22,6 @@ import GStyles from 'assets/theme/GStyles';
 import navigationService from 'utils/navigationService';
 import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { showWalletInfo } from '../WalletInfoOverlay';
-import { KeyboardSafeArea } from 'components/KeyboardSafeArea';
 
 enum HANDLE_TYPE {
   REFRESH = 'Refresh',
@@ -207,43 +206,39 @@ function TabsDom({ activeWebViewRef, clickBottomActionBtn }: IProps) {
           onNavigationStateChange={onNavigationStateChange}
         />
         {!isHidden && (
-          <KeyboardSafeArea>
-            <View style={styles.wrap}>
-              <Touchable style={{ paddingHorizontal: pTd(12) }} onPress={() => showWalletInfo({ tabInfo: activeItem })}>
-                <CommonAvatar
-                  hasBorder={!userInfo?.avatar}
-                  title={userInfo?.nickName}
-                  avatarSize={pTd(32)}
-                  imageUrl={userInfo?.avatar || ''}
-                  resizeMode="cover"
-                  titleStyle={{ fontSize: pTd(14) }}
-                />
+          <View style={styles.wrap}>
+            <Touchable style={{ paddingHorizontal: pTd(12) }} onPress={() => showWalletInfo({ tabInfo: activeItem })}>
+              <CommonAvatar
+                hasBorder={!userInfo?.avatar}
+                title={userInfo?.nickName}
+                avatarSize={pTd(32)}
+                imageUrl={userInfo?.avatar || ''}
+                resizeMode="cover"
+                titleStyle={{ fontSize: pTd(14) }}
+              />
+            </Touchable>
+            <View style={rightDomStyle.contentWrap}>
+              <Touchable onPress={event => onTouch(event, ele, canGoBack, canGoForward)} style={rightDomStyle.iconWrap}>
+                <Svg icon="more-circle" size={20} color={darkColors.iconBase1} />
               </Touchable>
-              <View style={rightDomStyle.contentWrap}>
-                <Touchable
-                  onPress={event => onTouch(event, ele, canGoBack, canGoForward)}
-                  style={rightDomStyle.iconWrap}>
-                  <Svg icon="more-circle" size={20} color={darkColors.iconBase1} />
-                </Touchable>
-                <Touchable style={rightDomStyle.inputContent} onPress={handleNaviagte}>
-                  {!activeItem?.url?.includes('https://') && (
-                    <Svg icon="warning-fill" size={12} iconStyle={{ marginRight: pTd(10) }} />
-                  )}
-                  <TextM style={rightDomStyle.domain}>
-                    {activeItem?.url?.replace('https://', '')?.replace('http://', '')}
-                  </TextM>
-                </Touchable>
-                <Touchable onPress={() => activeWebViewRef.current?.reload?.()} style={rightDomStyle.iconWrap}>
-                  <Svg icon="accessory" size={20} color={darkColors.iconBase1} />
-                </Touchable>
-              </View>
-              <Touchable
-                onPress={() => clickBottomActionBtn('showTab')}
-                style={[rightDomStyle.iconWrap, styles.switchButtonWrap]}>
-                <TextM style={styles.switchButton}>{tabs?.length || 0}</TextM>
+              <Touchable style={rightDomStyle.inputContent} onPress={handleNaviagte}>
+                {!activeItem?.url?.includes('https://') && (
+                  <Svg icon="warning-fill" size={12} iconStyle={{ marginRight: pTd(10) }} />
+                )}
+                <TextM style={rightDomStyle.domain}>
+                  {activeItem?.url?.replace('https://', '')?.replace('http://', '')}
+                </TextM>
+              </Touchable>
+              <Touchable onPress={() => activeWebViewRef.current?.reload?.()} style={rightDomStyle.iconWrap}>
+                <Svg icon="accessory" size={20} color={darkColors.iconBase1} />
               </Touchable>
             </View>
-          </KeyboardSafeArea>
+            <Touchable
+              onPress={() => clickBottomActionBtn('showTab')}
+              style={[rightDomStyle.iconWrap, styles.switchButtonWrap]}>
+              <TextM style={styles.switchButton}>{tabs?.length || 0}</TextM>
+            </Touchable>
+          </View>
         )}
       </Fragment>
     );
@@ -275,7 +270,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: pTd(16),
     width: screenWidth,
-    height: pTd(72),
   },
 });
 

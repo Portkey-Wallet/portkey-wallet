@@ -60,6 +60,8 @@ function TabsDom({ activeWebViewRef, clickBottomActionBtn }: IProps) {
   });
 
   const handleNaviagte = useCallback(() => {
+    console.log('1111111111111111111');
+
     navigationService.navigate('DiscoverSearch', { address: activeItem?.url });
     dispatch(changeDrawerOpenStatus(false));
   }, [activeItem?.url, dispatch]);

@@ -56,7 +56,7 @@ export const CommonPromptCard: React.FC<ICommonPromptCardProps> = ({
       {icon}
       <View style={styles.content}>
         {title && <Text style={[styles.title, styles[`${type}Title`]]}>{title}</Text>}
-        <Text style={[styles.description, styles[`${type}Description`]]}>{description}</Text>
+        <View style={[styles.description, styles[`${type}Description`]]}>{description}</View>
       </View>
     </View>
   );
@@ -176,33 +176,45 @@ let element: any;
 
 const CommonPrompt = {
   loading(...args: TostProps) {
-    if (!args[3]) args[3] = PromptCardType.LOADING;
+    if (!args[3]) {
+      args[3] = PromptCardType.LOADING;
+    }
     Overlay.hide(element);
     element = show(...args);
   },
   success(...args: TostProps) {
-    if (!args[3]) args[3] = PromptCardType.SUCCESS;
+    if (!args[3]) {
+      args[3] = PromptCardType.SUCCESS;
+    }
     Overlay.hide(element);
     element = show(...args);
   },
   warn(...args: TostProps) {
-    if (!args[3]) args[3] = PromptCardType.WARNING;
+    if (!args[3]) {
+      args[3] = PromptCardType.WARNING;
+    }
     Overlay.hide(element);
     element = show(...args);
   },
   error(...args: TostProps) {
     args[0] = handleErrorMessage(args[0]);
-    if (!args[3]) args[3] = PromptCardType.ERROR;
+    if (!args[3]) {
+      args[3] = PromptCardType.ERROR;
+    }
     Overlay.hide(element);
     element = show(...args);
   },
   failError(error: any, errorText?: string, duration?: number) {
     Overlay.hide(element);
     const text = handleErrorMessage(error, errorText);
-    if (text) element = show(text, undefined, duration, PromptCardType.ERROR);
+    if (text) {
+      element = show(text, undefined, duration, PromptCardType.ERROR);
+    }
   },
   info(...args: TostProps) {
-    if (!args[3]) args[3] = PromptCardType.INFO;
+    if (!args[3]) {
+      args[3] = PromptCardType.INFO;
+    }
     Overlay.hide(element);
     element = show(...args);
   },

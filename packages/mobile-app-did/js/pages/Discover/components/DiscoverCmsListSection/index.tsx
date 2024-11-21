@@ -52,7 +52,6 @@ export function DiscoverCmsListSection() {
       <ScrollView contentContainerStyle={styles.scroll} style={styles.scroll} nestedScrollEnabled>
         <View style={styles.wrap}>
           {lists.length > 0 ? <Banner items={lists} /> : null}
-          <View style={styles.init} />
           {GroupList.map((group, index) => (
             <View key={index} style={styles.groupWrap}>
               <TextL style={styles.groupTitle}>{group.title}</TextL>
@@ -98,9 +97,6 @@ const getStyles = makeStyles(theme => ({
   },
   scroll: {
     backgroundColor: theme.colors.bgBase1,
-  },
-  init: {
-    height: pTd(16),
   },
   wrap: {
     ...GStyles.paddingArg(0, 16),

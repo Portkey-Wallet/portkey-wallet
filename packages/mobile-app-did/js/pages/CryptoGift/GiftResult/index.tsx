@@ -104,7 +104,7 @@ export default function GiftResult() {
         <CommonButton
           containerStyle={[GStyles.paddingTop(pTd(16))]}
           buttonStyle={styles.copyTGButtonStyle}
-          type="outline"
+          type="primary"
           disabled={false}
           radius={pTd(6)}
           onPress={onCopyTgLinkPress}>

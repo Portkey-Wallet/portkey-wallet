@@ -185,7 +185,7 @@ export const useHandleUrl = () => {
 
 export const useHandleAelfAddress = () => {
   const navigation = useNavigation();
-  const routesArr: RouteInfoType[] = navigation.getState().routes;
+  const routesArr: RouteInfoType[] = navigation?.getState()?.routes;
   const previousRouteInfo = routesArr[routesArr.length - 2];
   return useCallback(
     (data: string) => {

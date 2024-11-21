@@ -56,7 +56,7 @@ export const CommonPromptCard: React.FC<ICommonPromptCardProps> = ({
       {icon}
       <View style={styles.content}>
         {title && <Text style={[styles.title, styles[`${type}Title`]]}>{title}</Text>}
-        <View style={[styles.description, styles[`${type}Description`]]}>{description}</View>
+        <Text style={[styles.description, styles[`${type}Description`]]}>{description}</Text>
       </View>
     </View>
   );

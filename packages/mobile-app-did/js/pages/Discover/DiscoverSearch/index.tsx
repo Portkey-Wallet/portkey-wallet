@@ -23,6 +23,7 @@ import { darkColors, defaultColors } from 'assets/theme';
 import { KeyboardSafeArea } from 'components/KeyboardSafeArea';
 import { useKeyboard } from 'hooks/useKeyboardHeight';
 import { RouteProp, useRoute } from '@react-navigation/native';
+import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 
 export default function DiscoverSearch() {
   const { t } = useLanguage();
@@ -181,6 +182,7 @@ export default function DiscoverSearch() {
               if (isKeyboardOpened) {
                 Keyboard.dismiss();
               }
+              navigationService.goBack();
             }}>
             <Svg
               icon={'chevron_down'}
@@ -219,7 +221,7 @@ const styles = StyleSheet.create({
     backgroundColor: darkColors.bgBase2,
   },
   inputStyle: {
-    width: pTd(280),
+    width: pTd(screenWidth - 16 - 64),
   },
   sectionWrap: {
     ...GStyles.paddingArg(24, 20),

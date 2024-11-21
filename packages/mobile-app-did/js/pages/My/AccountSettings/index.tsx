@@ -309,7 +309,7 @@ export default function AccountSettings() {
     <PageContainer
       containerStyles={styles.containerStyles}
       safeAreaColor={['black']}
-      titleDom={t('Setting')}
+      titleDom={t('Settings')}
       leftIconType="close">
       {shouldShowSetNewWalletNameIcon && (
         <CommonPromptCard
@@ -447,9 +447,10 @@ const getStyles = makeStyles(theme => ({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
+    fontWeight: '600',
   },
   setBackupMailText: {
-    color: theme.colors.textBase1,
+    color: theme.colors.textBase2,
     fontSize: 16,
   },
   newLabelWrap: {

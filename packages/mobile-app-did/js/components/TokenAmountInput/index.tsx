@@ -163,6 +163,7 @@ export const getStyles = makeStyles(theme => ({
     textAlign: 'right',
     fontSize: pTd(32),
     ...fonts.BGMediumFont,
+    fontWeight: 'bold',
     paddingHorizontal: 0,
   },
   errorInput: {

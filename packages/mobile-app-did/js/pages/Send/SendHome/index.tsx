@@ -420,23 +420,6 @@ const SendHome: React.FC = () => {
     warning,
   ]);
 
-  // const isValidOtherChainAddress = useMemo(() => {
-  //   const { address } = selectedToContact || {};
-  //   return (
-  //     checkIsValidEtransferAddress(address) &&
-  //     !(isDIDAelfAddress(address) && isValidChainId(getAddressChainId(selectedToContact.address, assetInfo.chainId)))
-  //   );
-  // }, [assetInfo.chainId, isValidChainId, selectedToContact]);
-
-  // const nextDisable = useMemo(() => {
-  //   if (!selectedToContact?.address) return true;
-  //   if (isValidOtherChainAddress && enableEtransfer) {
-  //     setErrorMessage([]);
-  //     return true;
-  //   }
-  //   return false;
-  // }, [enableEtransfer, isValidOtherChainAddress, selectedToContact?.address]);
-
   const previewDisable = useMemo(() => {
     if (!selectedToContact?.address) {
       return true;

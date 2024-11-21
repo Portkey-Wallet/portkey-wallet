@@ -288,6 +288,10 @@ const SendHome: React.FC = () => {
     initBalance();
   });
 
+  useEffect(() => {
+    setSelectedToContact(toInfo);
+  }, [toInfo]);
+
   const selectTargetNetwork = useCallback((n: INetworkItem) => {
     setSelectedToContact(pre => ({ ...pre, network: n.network }));
     setTargetNetwork(n);

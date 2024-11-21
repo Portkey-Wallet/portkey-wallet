@@ -45,6 +45,7 @@ const DashBoard: React.FC<any> = ({ navigation }) => {
   const [refreshing, setRefreshing] = useState(false);
 
   const onRefresh = useCallback(async () => {
+    myEvents.refreshHomeListStart.emit();
     setRefreshing(true);
     getTokenPrice();
     await Promise.all([

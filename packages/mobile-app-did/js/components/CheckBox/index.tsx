@@ -2,7 +2,7 @@ import React from 'react';
 import { Text, ViewStyle, TextStyle } from 'react-native';
 import Svg from 'components/Svg';
 import { pTd } from 'utils/unit';
-import { makeStyles, useTheme } from '@rneui/themed';
+import { makeStyles } from '@rneui/themed';
 import Touchable from 'components/Touchable';
 interface CheckBoxProps {
   label?: string;
@@ -22,7 +22,7 @@ const CheckBox = ({ label = '', checked, onChange, labelStyle = {}, boxStyle = {
   };
   return (
     <Touchable style={[styles.container, boxStyle]} onPress={onPress}>
-      <Svg size={pTd(16)} icon={checked ? 'checkbox-Checked' : 'checkbox'} />
+      <Svg size={pTd(16)} icon={checked ? 'checkbox-Checked' : 'checkbox-new'} />
       {label && <Text style={[styles.label, labelStyle]}>{label}</Text>}
     </Touchable>
   );

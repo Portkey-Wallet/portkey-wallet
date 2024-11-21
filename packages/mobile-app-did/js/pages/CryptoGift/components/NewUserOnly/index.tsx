@@ -1,10 +1,10 @@
-import CommonSwitch from 'components/CommonSwitch';
 import { TextM } from 'components/CommonText';
 import React, { useState } from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
 import { View, Text } from 'react-native';
 import { pTd } from 'utils/unit';
 import { makeStyles } from '@rneui/themed';
+import CustomSwitch from '../../../../components/CustomSwitch';
 
 export interface INewUserOnlyProps {
   containerStyle?: StyleProp<ViewStyle>;
@@ -23,12 +23,8 @@ export default function NewUserOnly(props: INewUserOnlyProps) {
   return (
     <View style={[styles.container, containerStyle]}>
       <View style={styles.textContainer}>
-        <TextM style={styles.title}>New Users Only</TextM>
-        <CommonSwitch
-          style={{ transform: [{ scaleX: 40 / 51 }, { scaleY: 24 / 31 }] }}
-          value={isEnabled}
-          onValueChange={toggleSwitch}
-        />
+        <TextM style={styles.title}>New users only</TextM>
+        <CustomSwitch value={isEnabled} onToggle={toggleSwitch} />
       </View>
       <Text style={styles.description}>
         Once enabled, only newly registered Portkey users can claim your crypto gift.
@@ -59,6 +55,7 @@ const getStyles = makeStyles(theme => ({
   description: {
     color: theme.colors.textBase2,
     fontSize: pTd(14),
+    width: '100%',
     // fontWeight: '400',
   },
 }));

@@ -3,7 +3,6 @@ import { StyleProp, Text, TextStyle, ViewStyle } from 'react-native';
 import { pTd } from 'utils/unit';
 import GStyles from 'assets/theme/GStyles';
 import { TextM } from 'components/CommonText';
-import fonts from 'assets/theme/fonts';
 import { makeStyles } from '@rneui/themed';
 
 type RedPacketAmountShowPropsType = {
@@ -51,11 +50,11 @@ export default RedPacketAmountShow;
 
 const getStyles = makeStyles(() => ({
   amount: {
-    ...fonts.SGMediumFont,
+    fontFamily: 'BricolageGrotesque-Bold',
     fontSize: pTd(32),
   },
   symbol: {
-    ...fonts.mediumFont,
+    fontFamily: 'BricolageGrotesque-Bold',
     fontSize: pTd(32),
   },
   amountUsd: {

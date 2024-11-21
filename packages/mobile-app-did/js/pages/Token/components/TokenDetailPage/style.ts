@@ -55,7 +55,7 @@ export const styles = StyleSheet.create({
   listFront: {
     textAlign: 'left',
     width: '100%',
-    paddingHorizontal: pTd(16),
+    // paddingHorizontal: pTd(16),
     // fontWeight: '700',
     lineHeight: pTd(24),
     paddingVertical: pTd(8),

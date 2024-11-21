@@ -58,7 +58,8 @@ export default function ReceiveByPortkey({
         },
       });
     }
-  }, [isSupportExchange]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const currentWallet = useCurrentWalletInfo();
   const { chainType } = useCurrentNetwork();

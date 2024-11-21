@@ -21,6 +21,7 @@ const EventList = [
   'updateMintStatus',
   'updateSecondaryEmail',
   'updateSendAddressList',
+  'refreshHomeListStart',
   'refreshHomeList',
 ] as const;
 

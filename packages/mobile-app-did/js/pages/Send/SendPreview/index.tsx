@@ -502,7 +502,7 @@ const SendPreview: React.FC = () => {
     portkeyCrossTrack,
     routerParams,
     sendNumber,
-    targetNetwork.network,
+    targetNetwork?.network,
     toInfo.address,
     toInfo?.chainId,
     toInfo?.network,

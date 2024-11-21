@@ -263,11 +263,6 @@ const ActivityDetail = (props: ActivityItemType & IActivityApiParams) => {
 
   const networkUI = useMemo(() => {
     const { transactionType, fromChainIdUpdated, toChainIdUpdated, fromChainIcon, toChainIcon } = activityItem || {};
-    // if (dappName) {
-    //   if (!transactionType && SHOW_DAPP_TRANSACTION_TYPES.includes(transactionType)) {
-    //     return <></>;
-    //   }
-    // }
     const isNetworkShow = transactionType && SHOW_FROM_TRANSACTION_TYPES.includes(transactionType);
     if (!isNetworkShow) {
       return null;
@@ -276,26 +271,30 @@ const ActivityDetail = (props: ActivityItemType & IActivityApiParams) => {
       <>
         <View style={styles.flexSpaceBetween}>
           <TextL>{t('Source network')}</TextL>
-          <View style={[GStyles.flexRow, GStyles.flexCenter]}>
+          <View style={[GStyles.flexRow, GStyles.flexCenter, GStyles.itemCenter]}>
             <CommonAvatar
               imageUrl={fromChainIcon || ''}
               title={fromChainIdUpdated}
               avatarSize={pTd(18)}
               titleStyle={styles.avatarTitleStyle}
             />
-            <TextL style={[fonts.SGMediumFont, styles.marginLeft4]}>{fromChainIdUpdated}</TextL>
+            <TextL style={[fonts.SGMediumFont, styles.marginLeft4, GStyles.alignCenter, { lineHeight: pTd(22) }]}>
+              {fromChainIdUpdated}
+            </TextL>
           </View>
         </View>
         <View style={styles.flexSpaceBetween}>
           <TextL>{t('Destination network')}</TextL>
-          <View style={[GStyles.flexRow, GStyles.flexCenter]}>
+          <View style={[GStyles.flexRow, GStyles.flexCenter, GStyles.itemCenter]}>
             <CommonAvatar
               imageUrl={toChainIcon || ''}
               title={toChainIdUpdated}
               avatarSize={pTd(18)}
               titleStyle={styles.avatarTitleStyle}
             />
-            <TextL style={[fonts.SGMediumFont, styles.marginLeft4]}>{toChainIdUpdated}</TextL>
+            <TextL style={[fonts.SGMediumFont, styles.marginLeft4, GStyles.alignCenter, { lineHeight: pTd(22) }]}>
+              {toChainIdUpdated}
+            </TextL>
           </View>
         </View>
       </>

@@ -808,11 +808,11 @@ const SendHome: React.FC = () => {
           transferType = TransferType.E_TRANSFER;
         } else {
           transferType = TransferType.GENERAL_CROSS_CHAIN;
-          networkFee = await getTransactionFee(isAELFCross);
+          networkFee = await getTransactionFee(isAELFCross, sendNumber);
           networkFeeUnit = 'ELF';
         }
       } else {
-        networkFee = await getTransactionFee(isAELFCross);
+        networkFee = await getTransactionFee(isAELFCross, sendNumber);
         networkFeeUnit = 'ELF';
         transferType = isAELFCross ? TransferType.GENERAL_CROSS_CHAIN : TransferType.GENERAL_SAME_CHAIN;
       }

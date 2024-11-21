@@ -68,7 +68,7 @@ const DashBoardHeader: React.FC = () => {
     return (
       <View style={styles.rightDomWrap}>
         <Touchable style={styles.svgWrap} onPress={onCopyAddress}>
-          <Svg icon="copy" size={pTd(24)} color={theme.colors.iconBase2} />
+          <Svg icon="copy" size={pTd(24)} />
         </Touchable>
         <Touchable
           style={styles.svgWrap}

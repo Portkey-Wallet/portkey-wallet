@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { View, StyleSheet, GestureResponderEvent, TouchableWithoutFeedback } from 'react-native';
+import { View, Text, GestureResponderEvent, TouchableWithoutFeedback } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
 import navigationService from 'utils/navigationService';
 import SimulatedInputBox from 'components/SimulatedInputBoxV2';
@@ -26,10 +26,12 @@ import DiscoverTab from '../components/DiscoverTopTab';
 import { PullToRefresh } from '@sdcx/pull-to-refresh';
 import { NestedScrollView, NestedScrollViewHeader } from '@sdcx/nested-scroll';
 import CustomPullToRefreshHeader from 'pages/DashBoard/PullToRefresh';
+import { makeStyles } from '@rneui/themed';
 import { setActiveTab } from '@portkey-wallet/store/store-ca/discover/slice';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 
 export default function DiscoverHome() {
+  const styles = getStyles();
   useCheckAndInitNetworkDiscoverMap();
   const { networkType } = useCurrentNetworkInfo();
   const fetchCurrentRememberMeBlackList = useFetchCurrentRememberMeBlackList();
@@ -90,10 +92,10 @@ export default function DiscoverHome() {
           showTabDrawer(DiscoverShowOptions.SHOW_TABS);
         }}
         style={styles.showAllTabsWrap}>
-        <TextM style={[styles.showAllTabsText, fonts.mediumFont]}>{currentTabLength}</TextM>
+        <Text style={styles.showAllTabsText}>{currentTabLength}</Text>
       </Touchable>
     );
-  }, [currentTabLength, showTabDrawer]);
+  }, [currentTabLength, dispatch, networkType, showTabDrawer, styles.showAllTabsText, styles.showAllTabsWrap]);
 
   const showToolsIcon = useMemo(() => {
     return <TouchableIcon icon="more_verti" onPress={onTouch} size={22} color={darkColors.iconBase1} />;
@@ -156,7 +158,6 @@ export default function DiscoverHome() {
               rightDom={scanQRIcon}
             />
             {showAllTabsIcon}
-            {/* {showToolsIcon} */}
           </View>
         </View>
       </TouchableWithoutFeedback>
@@ -175,6 +176,8 @@ function TouchableIcon({
   size?: number;
   color?: string;
 }) {
+  const styles = getStyles();
+
   return (
     <Touchable style={styles.svgWrap} onPress={onPress}>
       <Svg icon={icon} size={pTd(size)} color={color || darkColors.iconBase1} />
@@ -182,7 +185,7 @@ function TouchableIcon({
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = makeStyles(theme => ({
   containerWrap: {
     position: 'relative',
     flex: 1,
@@ -213,7 +216,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    height: pTd(56),
+    height: pTd(72),
     flexDirection: 'row',
     paddingHorizontal: pTd(16),
     paddingVertical: pTd(8),
@@ -221,7 +224,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     fontSize: pTd(32),
     backgroundColor: darkColors.bgBase2,
-    // color: defaultColors.white,
+    borderTopWidth: pTd(1),
+    borderColor: theme.colors.borderBase1,
   },
   pagesBtn: {
     paddingHorizontal: pTd(16),
@@ -232,16 +236,20 @@ const styles = StyleSheet.create({
   showAllTabsWrap: {
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: pTd(4),
-    borderWidth: 1.5,
-    borderColor: darkColors.borderBase1,
-    width: pTd(19),
-    height: pTd(19),
-    marginHorizontal: pTd(16),
+    borderRadius: pTd(2),
+    borderWidth: pTd(2),
+    borderColor: theme.colors.iconBase1,
+    width: pTd(20),
+    height: pTd(20),
+    marginLeft: pTd(16),
+    marginHorizontal: pTd(4),
   },
   showAllTabsText: {
     color: darkColors.textBase1,
     textAlign: 'center',
+    fontSize: pTd(12),
+    lineHeight: pTd(15),
+    ...fonts.mediumFont,
   },
   svgWrap: {
     display: 'flex',
@@ -249,4 +257,4 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-});
+}));

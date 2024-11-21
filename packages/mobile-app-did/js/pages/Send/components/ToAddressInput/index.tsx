@@ -128,7 +128,7 @@ export const ToAddressInputRef = forwardRef<IToAddressInputRef, IToAddressInput>
           setCheckedPass(true);
         }
       } else {
-        // TODO: change it
+        console.log('checkAddressByFE1111');
         const isSameAddress = isSameAddresses(wallet?.[selectedToken?.chainId || 'AELF']?.caAddress || '', v);
         // same address
         if (selectedToken?.chainId === 'AELF' && !isSameAddress && selectedToken?.symbol === defaultToken.symbol) {
@@ -143,6 +143,10 @@ export const ToAddressInputRef = forwardRef<IToAddressInputRef, IToAddressInput>
         } else if (selectedToken?.chainId === 'AELF' && isSameAddress) {
           setCheckedPass(false);
           setWarning([WarningKey.SAME_ADDRESS]);
+        } else if (!isSameAddress && selectedToken?.symbol !== defaultToken.symbol) {
+          setCheckedPass(true);
+          // same chain transfer
+          setSelectedToContact((pre: any) => ({ ...pre, chainId: selectedToken?.chainId }));
         } else {
           setCheckedPass(false);
           setWarning([WarningKey.DAPP_CHAIN_TO_NO_AFFIX_ADDRESS_ELF]);
@@ -157,6 +161,7 @@ export const ToAddressInputRef = forwardRef<IToAddressInputRef, IToAddressInput>
       selectedToken?.chainId,
       selectedToken?.symbol,
       setCheckFinish,
+      setSelectedToContact,
       setWarning,
       wallet,
     ],

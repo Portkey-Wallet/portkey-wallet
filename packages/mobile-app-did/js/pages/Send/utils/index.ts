@@ -18,7 +18,9 @@ export function getSendNetworkList(params: IGetSendNetworkListParams) {
 }
 
 export function getSmallerValue(v1: string, v2: string) {
-  if (!v1 || !v2) throw 'invalid value';
+  if (!v1 || !v2) {
+    throw 'invalid value';
+  }
   return ZERO.plus(v1).isGreaterThan(v2) ? v2 : v1;
 }
 
@@ -32,8 +34,12 @@ export const getEstimatedTime = (targetNetwork: INetworkItem, transferType: Tran
   );
   const bridgeItem = targetNetwork?.serviceList?.find(ele => ele?.serviceName?.toLocaleLowerCase()?.includes('bridge'));
 
-  if (transferType === TransferType.E_TRANSFER) return transferItem?.multiConfirmTime;
-  if (transferType === TransferType.E_BRIDGE) return bridgeItem?.multiConfirmTime;
+  if (transferType === TransferType.E_TRANSFER) {
+    return transferItem?.multiConfirmTime;
+  }
+  if (transferType === TransferType.E_BRIDGE) {
+    return bridgeItem?.multiConfirmTime;
+  }
   return '';
 };
 
@@ -51,9 +57,14 @@ export const eBridgeActionSheet = () => {
 };
 
 export const isValidAmount = (input: string) => {
-  if (input === '0' || !input) return false;
-  if (ZERO.plus(input).isEqualTo(0)) return false;
+  if (input === '0' || !input) {
+    return false;
+  }
+  if (ZERO.plus(input).isEqualTo(0)) {
+    return false;
+  }
 
-  const regex = /^(0|[1-9]\d*)(\.\d+)?$/;
+  const regex = /^(0|([1-9]\d*|0\d+))(\.\d+)?$/;
+
   return regex.test(input);
 };

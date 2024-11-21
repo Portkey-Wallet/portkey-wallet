@@ -28,7 +28,7 @@ const NoDiscoverData = (props: INoDiscoverDataProps) => {
     iconStyle = {},
     iconName,
   } = props;
-  const noDataText = type === 'noBookmarks' ? 'No Bookmarks' : 'No Records';
+  const noDataText = type === 'noBookmarks' ? 'No bookmarks' : 'No history';
 
   const wrapStyle: any = {
     backgroundColor,

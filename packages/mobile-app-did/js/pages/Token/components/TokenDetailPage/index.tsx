@@ -241,7 +241,12 @@ const TokenDetailPage: React.FC<TokenDetailParams> = ({ tokenInfo, tokenSection 
   const listHeader = useMemo(() => {
     return (
       <View style={styles.card}>
-        <Text style={[styles.tokenBalance, amountTextOverflow ? styles.textOverflow : {}]}>{`${balanceShow}`}</Text>
+        <Text
+          style={[
+            styles.tokenBalance,
+            fonts.BGMediumFont,
+            amountTextOverflow ? styles.textOverflow : {},
+          ]}>{`${balanceShow}`}</Text>
         {isMainnet && currentTokenInfo?.balanceInUsd && (
           <TextS style={[styles.dollarBalance]}>{formatAmountUSDShow(currentTokenInfo?.balanceInUsd)}</TextS>
         )}

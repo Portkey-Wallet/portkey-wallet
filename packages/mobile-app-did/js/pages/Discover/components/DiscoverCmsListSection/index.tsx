@@ -51,7 +51,8 @@ export function DiscoverCmsListSection() {
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scroll} style={styles.scroll} nestedScrollEnabled>
         <View style={styles.wrap}>
-          {lists.length > 0 ? <Banner items={lists} /> : <View style={styles.init} />}
+          {lists.length > 0 ? <Banner items={lists} /> : null}
+          <View style={styles.init} />
           {GroupList.map((group, index) => (
             <View key={index} style={styles.groupWrap}>
               <TextM style={[FontStyles.font5, fonts.mediumFont, styles.groupTitle]}>{group.title}</TextM>

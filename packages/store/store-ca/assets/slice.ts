@@ -452,7 +452,11 @@ export const assetsSlice = createSlice({
           skipCount: 0,
           maxResultCount: maxNFTCount,
           totalRecordCount: 0,
-          children: [],
+          children:
+            preAccountNFTCollectionList.find(
+              preItem => preItem.collectionName === item.collectionName && preItem.chainId === item.chainId,
+            )?.children || [],
+          // children: [],
           ...item,
         }));
         const newAllAccountList =

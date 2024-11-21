@@ -23,6 +23,7 @@ const TraitsItem: React.FC<TraitsProps> = (props: TraitsProps) => {
       <TextM style={styles.value} numberOfLines={2}>
         {value}
       </TextM>
+      <View style={GStyles.flex1} />
       <TextS style={styles.percent}>{percent}</TextS>
     </View>
   );
@@ -37,6 +38,7 @@ const getStyles = makeStyles(theme => ({
     borderWidth: pTd(1),
     width: pTd(173),
     height: pTd(116),
+    justifyContent: 'space-between',
   },
   traitType: {
     opacity: 0.7,

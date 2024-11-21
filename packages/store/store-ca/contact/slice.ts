@@ -188,10 +188,9 @@ export const contactSlice = createSlice({
       })
       .addCase(resetContactNew, state => {
         state.contactIndexListNew = getInitContactIndexListV2();
-        state.contactMap = {};
-        // state.contactRelationIdMap = {};
-        state.contactIdMap = {};
-        state.lastModified = 0;
+        state.contactMapNew = {};
+        state.contactIdMapNew = {};
+        state.lastModifiedNew = 0;
       })
       .addCase(refreshContactMapNew, state => {
         state.contactMapNew = transIndexesToContactIdMapV2(state.contactIndexListNew || []);

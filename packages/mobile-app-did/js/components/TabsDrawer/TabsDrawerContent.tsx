@@ -203,7 +203,7 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
         </ScrollView>
         <View style={handleButtonStyle.container}>
           <Touchable style={handleButtonStyle.handleItem} onPress={closeAll}>
-            <TextS style={[FontStyles.fontBase1, tabs?.length === 0 && handleButtonStyle.noTap]}>
+            <TextS style={[FontStyles.fontBase1, fonts.SGMediumFont, tabs?.length === 0 && handleButtonStyle.noTap]}>
               {t('Close all')}
             </TextS>
           </Touchable>
@@ -214,7 +214,7 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
             <Svg icon="add-tab" size={pTd(24)} color={defaultColors.iconBrand1} />
           </Touchable>
           <Touchable style={handleButtonStyle.handleItem} onPress={onDone}>
-            <TextS style={[handleButtonStyle.done, FontStyles.fontBase1]}>{t('Done')}</TextS>
+            <TextS style={[handleButtonStyle.done, fonts.SGMediumFont, FontStyles.fontBase1]}>{t('Done')}</TextS>
           </Touchable>
         </View>
       </>
@@ -229,7 +229,7 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
         type="leftBack"
         noCenterDom={!!activeTabId}
         notHandleHardwareBackPress
-        safeAreaColor={['black', 'black']}
+        safeAreaColor={['black', activeTabId ? 'lightBlack' : 'black']}
         containerStyles={styles.container}
         scrollViewProps={{ disabled: true }}>
         <TabsDom activeWebViewRef={tabRef} clickBottomActionBtn={clickBottomActionBtn} />
@@ -284,7 +284,7 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     paddingLeft: pTd(16),
     paddingRight: pTd(16),
-    paddingBottom: pTd(50),
+    paddingBottom: pTd(64),
   },
   switchButtonWrap: {
     alignItems: 'center',
@@ -309,9 +309,10 @@ const handleButtonStyle = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: pTd(12),
+    paddingTop: pTd(12),
+    paddingBottom: pTd(26),
     width: screenWidth,
-    height: pTd(48),
+    height: pTd(62),
     position: 'absolute',
     bottom: 0,
     backgroundColor: darkColors.bgBase1,

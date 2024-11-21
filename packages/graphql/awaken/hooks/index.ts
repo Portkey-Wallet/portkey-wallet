@@ -12,9 +12,9 @@ const AWAKEN_GRAPHQL_URL_MAP: Record<string, string> = {
 export const useAwakenGraphQLClient = () => {
   const isMainnet = useIsMainnet();
   return useMemo(() => {
-    const url = isMainnet ? AWAKEN_GRAPHQL_URL_MAP['mainnet '] : AWAKEN_GRAPHQL_URL_MAP['test'];
+    const url = isMainnet ? AWAKEN_GRAPHQL_URL_MAP['mainnet'] : AWAKEN_GRAPHQL_URL_MAP['test'];
     return getGraphQLClient(url);
-  }, []);
+  }, [isMainnet]);
 };
 
 export const useGetLimitOrderRemainingUnfilled = () => {

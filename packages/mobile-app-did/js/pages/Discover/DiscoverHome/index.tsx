@@ -13,7 +13,7 @@ import { useCheckAndInitNetworkDiscoverMap } from 'hooks/discover';
 import { useFetchCurrentRememberMeBlackList } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { useFocusEffect } from '@react-navigation/native';
 import Touchable from 'components/Touchable';
-import { useEffectOnce } from '@portkey-wallet/hooks';
+import { useAppCommonDispatch, useEffectOnce } from '@portkey-wallet/hooks';
 import { useCmsBanner } from '@portkey-wallet/hooks/hooks-ca/cms/banner';
 import { useDiscoverData } from '@portkey-wallet/hooks/hooks-ca/cms/discover';
 import { TextM } from 'components/CommonText';
@@ -26,13 +26,17 @@ import DiscoverTab from '../components/DiscoverTopTab';
 import { PullToRefresh } from '@sdcx/pull-to-refresh';
 import { NestedScrollView, NestedScrollViewHeader } from '@sdcx/nested-scroll';
 import CustomPullToRefreshHeader from 'pages/DashBoard/PullToRefresh';
+import { setActiveTab } from '@portkey-wallet/store/store-ca/discover/slice';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 
 export default function DiscoverHome() {
   useCheckAndInitNetworkDiscoverMap();
+  const { networkType } = useCurrentNetworkInfo();
   const fetchCurrentRememberMeBlackList = useFetchCurrentRememberMeBlackList();
   const qrScanPermissionAndToast = useQrScanPermissionAndToast();
   const { fetchDiscoverLearnBannerAsync } = useCmsBanner();
   const { fetchDiscoverEarnAsync, fetchDiscoverLearnAsync } = useDiscoverData();
+  const dispatch = useAppCommonDispatch();
   const { currentTabLength = 0, showTabDrawer } = useTabDrawer();
   const [refreshing, setRefreshing] = useState(false);
   const tabRef = useRef<any>();
@@ -80,7 +84,12 @@ export default function DiscoverHome() {
 
   const showAllTabsIcon = useMemo(() => {
     return (
-      <Touchable onPress={() => showTabDrawer(DiscoverShowOptions.SHOW_TABS)} style={styles.showAllTabsWrap}>
+      <Touchable
+        onPress={() => {
+          dispatch(setActiveTab({ id: undefined, networkType }));
+          showTabDrawer(DiscoverShowOptions.SHOW_TABS);
+        }}
+        style={styles.showAllTabsWrap}>
         <TextM style={[styles.showAllTabsText, fonts.mediumFont]}>{currentTabLength}</TextM>
       </Touchable>
     );

@@ -9,12 +9,12 @@ export interface ICommonSwitchProps {
 }
 
 const CustomSwitch = ({ value, onToggle }: ICommonSwitchProps) => {
-  const [position] = useState(new Animated.Value(value ? 3 : 18));
+  const [position] = useState(new Animated.Value(value ? 3 : 19));
   const styles = getStyles();
 
   useEffect(() => {
     Animated.timing(position, {
-      toValue: value ? 18 : 3,
+      toValue: value ? 19 : 3,
       duration: 200,
       useNativeDriver: false,
     }).start();

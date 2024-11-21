@@ -1,12 +1,13 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, { useCallback, useState } from 'react';
-import { View, Image, StyleSheet, StyleProp, ViewStyle, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Image, StyleSheet, StyleProp, ViewStyle, TouchableOpacity, ScrollView, Text } from 'react-native';
 import { pTd } from 'utils/unit';
 import PortkeySkeleton from 'components/PortkeySkeleton';
 import { TAppLink } from '@portkey-wallet/types/types-ca/cms';
 import useJump from 'hooks/useJump';
 import { darkColors } from 'assets/theme';
-import { TextS, TextXXL } from 'components/CommonText';
+import { TextS } from 'components/CommonText';
+import fonts from 'assets/theme/fonts';
 
 export interface BannerItemProps {
   imgUrl: string;
@@ -79,7 +80,9 @@ const CarouselComponent: React.FC<BannerProps> = ({ containerStyle, items, onCli
                   resizeMode="cover"
                   onLoadEnd={onImageLoadEnd}
                 />
-                <TextXXL style={styles.title}>{item.title || ''}</TextXXL>
+                <Text numberOfLines={1} style={[fonts.BGMediumFont, styles.title]}>
+                  {item.title || ''}
+                </Text>
                 <TextS style={styles.description}>{item.description || ''}</TextS>
               </TouchableOpacity>
             ))}
@@ -118,6 +121,9 @@ const styles = StyleSheet.create({
   title: {
     marginTop: pTd(12),
     marginBottom: pTd(4),
+    fontSize: pTd(20),
+    lineHeight: pTd(24),
+    color: darkColors.textBase1,
   },
   description: {
     color: darkColors.textBase2,

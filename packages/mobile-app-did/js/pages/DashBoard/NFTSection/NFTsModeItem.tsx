@@ -23,6 +23,7 @@ import CommonButton from 'components/CommonButton';
 import fonts from 'assets/theme/fonts';
 import { useAccountNFTCollectionInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
 import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import myEvents from 'utils/deviceEvent';
 
 export enum NoDataMessage {
   CustomNetWorkNoData = 'No transaction records accessible from the current custom network',
@@ -71,7 +72,7 @@ export default function NFTItem(props: NFTItemPropsType) {
   }, [collapsed]);
 
   const showChildren = useMemo(
-    () => (children.length > 8 ? children.slice(0, ((openCollectionInfo?.pageNum ?? 0) + 1) * 8) : children),
+    () => (children?.length > 8 ? children?.slice(0, ((openCollectionInfo?.pageNum ?? 0) + 1) * 8) : children || []),
     [children, openCollectionInfo?.pageNum],
   );
   // const hasMore = useMemo(
@@ -82,6 +83,26 @@ export default function NFTItem(props: NFTItemPropsType) {
   //     !isFetching,
   //   [isFetching, totalRecordCount, showChildren?.length],
   // );
+  useEffect(() => {
+    // myEvents.refreshHomeListStart.addListener(() => {
+    //   // if (!collapsed) {
+    //   //   setRefreshing(true);
+    //   // }
+    // });
+    myEvents.refreshHomeList.addListener(async () => {
+      console.log('wfs===refresh', collectionName, collapsed);
+      if (!collapsed) {
+        // setRefreshing(true);
+        await fetchAccountNFTItem({
+          symbol: symbol,
+          chainId: chainId,
+          caAddressInfos: caAddressInfos.filter(item => item.chainId === chainId),
+          pageNum: 0,
+        });
+        // setRefreshing(false);
+      }
+    });
+  }, [caAddressInfos, chainId, collapsed, collectionName, fetchAccountNFTItem, symbol]);
   const showViewAll = useMemo(
     () =>
       showChildren?.length === 8 &&
@@ -107,7 +128,6 @@ export default function NFTItem(props: NFTItemPropsType) {
       pageNum: 0,
     });
   }, [caAddressInfos, chainId, fetchAccountNFTItem, symbol]);
-
   return (
     <View style={styles.wrap}>
       <Touchable
@@ -151,7 +171,7 @@ export default function NFTItem(props: NFTItemPropsType) {
       </Touchable>
       <Collapsible collapsed={!open}>
         <View style={[styles.listWrap]}>
-          {!isFetching && showChildren.length === 0 && (
+          {!isFetching && showChildren?.length === 0 && (
             <View style={styles.noDataContainer}>
               <TextL style={styles.noDataTitle}>No data</TextL>
               <CommonButton type="outline" buttonStyle={styles.noDataButton} onPress={retry}>

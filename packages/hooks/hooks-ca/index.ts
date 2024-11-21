@@ -4,7 +4,7 @@ import { CACommonState } from '@portkey-wallet/types/types-ca/store';
 import { useAppCommonDispatch } from '../index';
 import { resetRecent } from '@portkey-wallet/store/store-ca/recent/slice';
 import { resetActivity } from '@portkey-wallet/store/store-ca/activity/slice';
-import { resetContact } from '@portkey-wallet/store/store-ca/contact/actions';
+import { resetContact, resetContactNew } from '@portkey-wallet/store/store-ca/contact/actions';
 import { resetGuardiansState } from '@portkey-wallet/store/store-ca/guardians/actions';
 import { resetReferral } from '@portkey-wallet/store/store-ca/referral/slice';
 import { useOtherNetworkLogged, useWallet } from './wallet';
@@ -29,6 +29,7 @@ export function useResetStore() {
     dispatch(resetActivity());
     dispatch(resetGuardiansState());
     dispatch(resetContact());
+    dispatch(resetContactNew());
     dispatch(resetReferral());
   }, [dispatch]);
 }

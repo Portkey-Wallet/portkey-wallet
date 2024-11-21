@@ -100,22 +100,22 @@ export default function NFTSection() {
   const { clearType } = useRoute<any>();
   const { nftSectionUiType } = useNFTSection();
   const styles = getStyles();
-  useEffect(() => {
-    myEvents.refreshHomeList.addListener(() => {
-      const parsedKeys = Object.keys(openCollectionObj).map(key => {
-        const [symbol, chainId] = key.split(CONNECTION_KEY_FLAG);
-        return { symbol, chainId };
-      });
-      parsedKeys.forEach(async parsedKeysItem => {
-        await fetchAccountNFTItem({
-          symbol: parsedKeysItem.symbol,
-          chainId: parsedKeysItem.chainId as ChainId,
-          caAddressInfos: caAddressInfos.filter(item => item.chainId === parsedKeysItem.chainId),
-          pageNum: 0,
-        });
-      });
-    });
-  }, [caAddressInfos, fetchAccountNFTItem, openCollectionObj]);
+  // useEffect(() => {
+  //   myEvents.refreshHomeList.addListener(() => {
+  //     const parsedKeys = Object.keys(openCollectionObj).map(key => {
+  //       const [symbol, chainId] = key.split(CONNECTION_KEY_FLAG);
+  //       return { symbol, chainId };
+  //     });
+  //     parsedKeys.forEach(async parsedKeysItem => {
+  //       await fetchAccountNFTItem({
+  //         symbol: parsedKeysItem.symbol,
+  //         chainId: parsedKeysItem.chainId as ChainId,
+  //         caAddressInfos: caAddressInfos.filter(item => item.chainId === parsedKeysItem.chainId),
+  //         pageNum: 0,
+  //       });
+  //     });
+  //   });
+  // }, [caAddressInfos, fetchAccountNFTItem, openCollectionObj]);
   // const isInitTheFirstFiveItem = useRef<boolean>(false);
   // const collectionItemProp = useMemo(() => {
   //   return accountNFTList.slice(0, 2).map(item => ({

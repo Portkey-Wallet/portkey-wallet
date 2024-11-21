@@ -22,6 +22,7 @@ import GStyles from 'assets/theme/GStyles';
 import navigationService from 'utils/navigationService';
 import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { showWalletInfo } from '../WalletInfoOverlay';
+import { getHost } from '@portkey-wallet/utils/dapp/browser';
 
 enum HANDLE_TYPE {
   REFRESH = 'Refresh',
@@ -224,10 +225,12 @@ function TabsDom({ activeWebViewRef, clickBottomActionBtn }: IProps) {
             </Touchable>
             <Touchable style={rightDomStyle.inputContent} onPress={handleNaviagte}>
               {!activeItem?.url?.includes('https://') && (
-                <Svg icon="warning-fill" size={12} iconStyle={{ marginRight: pTd(10) }} />
+                <View style={rightDomStyle.iconGroupWrap}>
+                  <Svg icon="warning-fill" size={12} iconStyle={{ marginRight: pTd(10) }} />
+                </View>
               )}
               <TextM style={rightDomStyle.domain} numberOfLines={1}>
-                {activeItem?.url?.replace('https://', '')?.replace('http://', '')}
+                {getHost(activeItem?.url)}
               </TextM>
             </Touchable>
             <Touchable onPress={() => activeWebViewRef.current?.reload?.()} style={rightDomStyle.iconWrap}>
@@ -302,14 +305,12 @@ const rightDomStyle = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     maxWidth: pTd(217),
-    height: pTd(20),
-    lineHeight: pTd(20),
-    overflow: 'hidden',
+    height: pTd(30),
   },
   domain: {
     color: darkColors.textBase1,
     textAlign: 'center',
-    lineHeight: pTd(20),
+    lineHeight: pTd(14),
   },
   iconGroupWrap: {
     display: 'flex',

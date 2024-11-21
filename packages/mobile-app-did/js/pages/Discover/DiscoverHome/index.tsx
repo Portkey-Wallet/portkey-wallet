@@ -239,7 +239,7 @@ const getStyles = makeStyles(theme => ({
     borderRadius: pTd(2),
     borderWidth: pTd(2),
     borderColor: theme.colors.iconBase1,
-    width: pTd(20),
+    // width: pTd(20),
     height: pTd(20),
     marginLeft: pTd(16),
     marginHorizontal: pTd(4),

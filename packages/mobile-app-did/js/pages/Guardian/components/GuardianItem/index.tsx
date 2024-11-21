@@ -261,6 +261,7 @@ function GuardianItemButton({
       disabledStyle={styles.disabledItemStyle}
       {...buttonProps}
       buttonStyle={[styles.buttonStyle, buttonProps.buttonStyle]}
+      titleStyle={styles.buttonTitleStyle}
     />
   );
 }
@@ -410,7 +411,10 @@ const getStyles = makeStyles(theme => ({
     height: pTd(40),
     minWidth: pTd(84),
     borderRadius: pTd(20),
+    paddingTop: 0,
+    paddingBottom: 0,
   },
+  buttonTitleStyle: { fontSize: pTd(16), lineHeight: pTd(20) },
   approvedTitleStyles: {
     color: theme.colors.textBase3,
   },

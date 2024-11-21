@@ -522,7 +522,7 @@ const getStyles = makeStyles(theme => ({
   maxButtonText: {
     fontSize: pTd(16),
     color: theme.colors.textBase1,
-    ...fonts.BGMediumFont,
+    ...fonts.SGMediumFont,
   },
   cryptoWrap: {
     marginTop: pTd(24),

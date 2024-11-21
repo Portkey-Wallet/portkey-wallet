@@ -143,7 +143,7 @@ const SendPreview: React.FC = () => {
     }
 
     const fee = networkFee || 0;
-    if (ZERO.plus(sendNumber).isLessThanOrEqualTo(fee)) {
+    if (ZERO.plus(sendNumber).isLessThanOrEqualTo(fee) && assetInfo.symbol === defaultToken.symbol) {
       return {
         estimateAmount: `0 ${assetInfo?.label || assetInfo?.symbol}`,
         estimateAmountUsd: isMainnet ? '$ 0' : '',

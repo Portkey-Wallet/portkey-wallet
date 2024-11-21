@@ -58,7 +58,8 @@ export default function ReceiveByPortkey({
         },
       });
     }
-  }, [isSupportExchange]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const currentWallet = useCurrentWalletInfo();
   const { chainType } = useCurrentNetwork();
@@ -187,9 +188,10 @@ const getStyles = makeStyles(theme => ({
     flexDirection: 'row',
   },
   reminderText: {
-    marginLeft: pTd(12),
-    marginRight: pTd(12),
-    fontSize: pTd(16),
+    marginLeft: pTd(16),
+    marginRight: pTd(16),
+    fontSize: pTd(14),
+    lineHeight: pTd(20),
     color: theme.colors.textBase2,
   },
   reminderHighlightText: {

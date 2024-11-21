@@ -126,11 +126,25 @@ export default function TokenSection() {
     }
   }, [accountBalanceUSD]);
 
+  // const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+  //   const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
+  //   const isCloseToBottom = layoutMeasurement.height + contentOffset.y >= contentSize.height - 20;
+  //   if (isCloseToBottom) {
+  //     getAccountTokenList();
+  //   }
+  // };
+
   return (
     <View style={styles.tokenListPageWrap}>
+      {/* <ScrollView
+        nestedScrollEnabled
+        contentContainerStyle={{ paddingBottom: pTd(192) }}
+        // onScroll={handleScroll}
+        scrollEventThrottle={16}> */}
       <FlatList
         ListHeaderComponent={listHeader}
         nestedScrollEnabled
+        style={{ marginBottom: pTd(100) }}
         refreshing={false}
         extraData={extraIndex}
         data={accountTokenList || []}
@@ -148,6 +162,7 @@ export default function TokenSection() {
           </Touchable>
         }
       />
+      {/* </ScrollView> */}
     </View>
   );
 }

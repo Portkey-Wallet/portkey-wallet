@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { pTd } from 'utils/unit';
 import CommonQRCodeStyled from 'components/CommonQRCodeStyled';
@@ -8,6 +8,7 @@ import Svg from 'components/Svg';
 import { makeStyles } from '@rneui/themed';
 import { formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import { copyText } from 'utils';
+import fonts from 'assets/theme/fonts';
 
 export default function ReceiveQRCode({
   data,
@@ -20,13 +21,20 @@ export default function ReceiveQRCode({
 }) {
   const styles = getStyles();
   const onCopy = useCallback(async () => await copyText(address), [address]);
+  const addressShow = useMemo(() => {
+    let num = 4;
+    if (address.includes('_')) {
+      num = 8;
+    }
+    return formatStr2EllipsisStr(address, num, 'middle');
+  }, [address]);
   return (
     <View style={[styles.container, style]}>
       <View style={styles.qrCodeWrap}>
         <CommonQRCodeStyled qrData={data} width={pTd(289)} style={styles.qrCode} />
       </View>
       <Touchable style={styles.addressWrap} onPress={onCopy}>
-        <TextL>{formatStr2EllipsisStr(address, 8, 'middle')}</TextL>
+        <TextL style={[fonts.SGMediumFont]}>{addressShow}</TextL>
         <View style={styles.copyIcon}>
           <Svg icon="copy" size={pTd(16)} />
         </View>

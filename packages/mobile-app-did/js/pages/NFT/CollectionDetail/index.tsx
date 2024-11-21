@@ -306,7 +306,7 @@ const getStyles = makeStyles(theme => ({
     alignSelf: 'stretch',
     height: pTd(110),
     width: pTd(110),
-    backgroundColor: '#E3E3E3',
+    // backgroundColor: '#E3E3E3',
     borderRadius: 8,
     overflow: 'hidden',
     flexDirection: 'column',

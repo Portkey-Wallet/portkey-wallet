@@ -234,7 +234,7 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
             <TextM style={itemStyle.centerStatus}>{item?.dappName}</TextM>
           </View>
           <View style={itemStyle.right}>
-            <TextM
+            <TextL
               numberOfLines={1}
               style={[
                 fonts.SGMediumFont,
@@ -246,9 +246,9 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
                 decimals: tokenTop.decimals,
                 digits: Number(tokenTop.decimals),
               })} ${tokenTop.symbol}`}
-            </TextM>
+            </TextL>
             {sameDirection ? (
-              <TextS
+              <TextM
                 numberOfLines={1}
                 style={[
                   fonts.SGMediumFont,
@@ -260,16 +260,16 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
                   decimals: tokenBottom.decimals,
                   digits: Number(tokenBottom.decimals),
                 })} ${tokenBottom.symbol}`}
-              </TextS>
+              </TextM>
             ) : (
-              <TextS numberOfLines={1} style={[{ color: darkColors.textBase2 }]}>
+              <TextM numberOfLines={1} style={[{ color: darkColors.textBase2 }]}>
                 {`${formatWithCommas({
                   sign: tokenBottom.isReceived ? AmountSign.PLUS : AmountSign.MINUS,
                   amount: tokenBottom.amount,
                   decimals: tokenBottom.decimals,
                   digits: Number(tokenBottom.decimals),
                 })} ${tokenBottom.symbol}`}
-              </TextS>
+              </TextM>
             )}
           </View>
         </View>

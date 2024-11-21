@@ -3,7 +3,7 @@ import GStyles from 'assets/theme/GStyles';
 import { TextL, TextM } from 'components/CommonText';
 import Svg from 'components/Svg';
 import { useLanguage } from 'i18n/hooks';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useState } from 'react';
 import { View, TextInput } from 'react-native';
 import {
   formatStr2EllipsisStr,
@@ -28,12 +28,16 @@ import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { INetworkItem } from '../SelectNetwork';
 import { getStringAsync } from 'expo-clipboard';
 import { RouteProp, useRoute } from '@react-navigation/native';
-import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network-mainnet-v2';
 import { SendType } from '@portkey-wallet/types/types-ca/send';
 import navigationService from 'utils/navigationService';
 import fonts from 'assets/theme/fonts';
+import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network-mainnet-v2';
 
-interface IToAddressInput {
+export interface IToAddressInputRef {
+  onInput: (address: string) => void;
+}
+
+export interface IToAddressInput {
   isFixedToContact?: boolean;
   selectedToken?: IToSendAssetParamsType;
   selectedToContact: { name: string; address: string };
@@ -51,22 +55,25 @@ interface IToAddressInput {
   sendType?: SendType;
 }
 
-export default function ToAddressInput({
-  isFixedToContact,
-  selectedToken,
-  selectedToContact,
-  setSelectedToContact,
-  step,
-  setStep,
-  setChainList,
-  warning,
-  setWarning,
-  checkFinish,
-  setCheckFinish,
-  setSendNumber,
-  setSendUSDNumber,
-  sendType,
-}: IToAddressInput) {
+export const ToAddressInputRef = forwardRef<IToAddressInputRef, IToAddressInput>(function (
+  {
+    isFixedToContact,
+    selectedToken,
+    selectedToContact,
+    setSelectedToContact,
+    step,
+    setStep,
+    setChainList,
+    warning,
+    setWarning,
+    checkFinish,
+    setCheckFinish,
+    setSendNumber,
+    setSendUSDNumber,
+    sendType,
+  },
+  ref,
+) {
   const {
     params: { toInfo },
   } = useRoute<RouteProp<{ params: IToSendHomeParamsType }>>();
@@ -121,7 +128,7 @@ export default function ToAddressInput({
           setCheckedPass(true);
         }
       } else {
-        // TODO: change it
+        console.log('checkAddressByFE1111');
         const isSameAddress = isSameAddresses(wallet?.[selectedToken?.chainId || 'AELF']?.caAddress || '', v);
         // same address
         if (selectedToken?.chainId === 'AELF' && !isSameAddress && selectedToken?.symbol === defaultToken.symbol) {
@@ -136,6 +143,10 @@ export default function ToAddressInput({
         } else if (selectedToken?.chainId === 'AELF' && isSameAddress) {
           setCheckedPass(false);
           setWarning([WarningKey.SAME_ADDRESS]);
+        } else if (!isSameAddress && selectedToken?.symbol !== defaultToken.symbol) {
+          setCheckedPass(true);
+          // same chain transfer
+          setSelectedToContact((pre: any) => ({ ...pre, chainId: selectedToken?.chainId }));
         } else {
           setCheckedPass(false);
           setWarning([WarningKey.DAPP_CHAIN_TO_NO_AFFIX_ADDRESS_ELF]);
@@ -150,6 +161,7 @@ export default function ToAddressInput({
       selectedToken?.chainId,
       selectedToken?.symbol,
       setCheckFinish,
+      setSelectedToContact,
       setWarning,
       wallet,
     ],
@@ -190,41 +202,28 @@ export default function ToAddressInput({
     [selectedToken?.chainId, selectedToken?.symbol, setChainList, setCheckFinish, setWarning],
   );
 
-  const onInput = useCallback(
-    async (v: string) => {
-      const _v = v.trim();
-      setCheckFinish(false);
-      setSelectedToContact(() => {
-        let chainId = DefaultChainId;
-        if (_v.includes('_') && isDIDAelfAddress(_v)) {
-          chainId = getChainIdByAddress(_v);
-        }
-        return { name: '', address: _v, chainId };
-      });
+  const onInput = useCallback((v: string) => {
+    console.log('!!!aaa', v);
+    const _v = v.trim();
 
-      const FEPass = checkAddressByFE(_v);
-
-      // when send nft other chain is not support
-      if (!FEPass && sendType === 'nft' && !!_v) {
-        return setWarning([WarningKey.INVALID_ADDRESS]);
+    setSelectedToContact((pre: any) => {
+      let chainId = DefaultChainId;
+      if (_v.includes('_') && isDIDAelfAddress(_v)) {
+        chainId = getChainIdByAddress(_v);
       }
-
-      if (!FEPass) {
-        getNetworkList(_v);
-      }
-    },
-    [checkAddressByFE, getNetworkList, sendType, setCheckFinish, setSelectedToContact, setWarning],
-  );
+      return { ...pre, name: '', address: _v, chainId };
+    });
+    // eslint-disable-next-line prettier/prettier, react-hooks/exhaustive-deps
+  }, []);
 
   const pasteAddress = useCallback(async () => {
     try {
       const str = await getStringAsync();
-      console.log('str', str);
-      onInput(str);
+      setSelectedToContact({ name: '', address: str });
     } catch (error) {
       console.log('pasteAddress', error);
     }
-  }, [onInput]);
+  }, [setSelectedToContact]);
 
   const onPressEdit = useCallback(async () => {
     setCheckFinish(true);
@@ -236,9 +235,30 @@ export default function ToAddressInput({
   }, [onInput, selectedToContact.address, setCheckFinish, setSelectedToContact, setStep]);
 
   useEffect(() => {
+    const FEPass = checkAddressByFE(selectedToContact.address);
+
+    // when send nft other chain is not support
+    if (!FEPass && sendType === 'nft' && !!selectedToContact.address) {
+      setCheckFinish(true);
+      return setWarning([WarningKey.INVALID_ADDRESS]);
+    }
+    if (!FEPass) {
+      getNetworkList(selectedToContact.address);
+    }
+  }, [checkAddressByFE, getNetworkList, selectedToContact.address, sendType, setCheckFinish, setWarning]);
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      onInput,
+    }),
+    [onInput],
+  );
+
+  useEffect(() => {
     onInput(toInfo.address);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [toInfo]);
+  }, []);
 
   return (
     <View style={styles.wrap}>
@@ -266,14 +286,12 @@ export default function ToAddressInput({
           <>
             <TextL style={styles.grayColor}>{'To:  '}</TextL>
             <TextInput
+              multiline
               editable={step === 1}
               style={styles.inputStyle}
               placeholder={t('Address')}
               placeholderTextColor={darkColors.textBase3}
-              multiline={true}
-              numberOfLines={2}
-              maxLength={64}
-              value={selectedToContact?.address || ''}
+              value={selectedToContact?.address}
               onChangeText={onInput}
             />
 
@@ -317,7 +335,7 @@ export default function ToAddressInput({
       </View>
 
       <Divider />
-      {!selectedToContact.address && (
+      {!selectedToContact?.address && (
         <View style={[GStyles.flexRow, GStyles.paddingArg(pTd(8), pTd(16))]}>
           <TextM>Enter or </TextM>
           <TextM style={styles.brand2Color} onPress={pasteAddress}>
@@ -327,7 +345,9 @@ export default function ToAddressInput({
       )}
     </View>
   );
-}
+});
+
+export default ToAddressInputRef;
 
 export const getStyles = makeStyles((theme: any) => ({
   wrap: {},

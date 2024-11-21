@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, ViewStyle, StyleProp } from 'react-native';
 import Svg, { IconName } from 'components/Svg';
 import { pTd } from 'utils/unit';
@@ -24,9 +24,16 @@ const OutlinedButton: React.FC<OutlinedButtonProps> = ({
   buttonWrapStyle,
 }: OutlinedButtonProps) => {
   const styles = getStyles();
+  const [isPressed, setIsPressed] = useState(false);
+
   return (
     <View style={[styles.container, containerStyle]}>
-      <TouchableOpacity style={[styles.buttonWrap, buttonWrapStyle]} onPress={onPress}>
+      <TouchableOpacity
+        activeOpacity={1}
+        style={[styles.buttonWrap, isPressed && styles.buttonPressWrap, buttonWrapStyle]}
+        onPress={onPress}
+        onPressIn={() => setIsPressed(true)}
+        onPressOut={() => setIsPressed(false)}>
         <View style={styles.buttonInnerWrap}>
           <Svg icon={iconName} size={iconName === 'buy' ? pTd(28) : pTd(24)} color={darkColors.bgBase1} />
         </View>
@@ -36,20 +43,23 @@ const OutlinedButton: React.FC<OutlinedButtonProps> = ({
   );
 };
 
-const getStyles = makeStyles(_ => ({
+const getStyles = makeStyles(theme => ({
   container: {
     flexDirection: 'column',
     alignItems: 'center',
   },
   buttonWrap: {
-    backgroundColor: '#B8E1FF',
+    backgroundColor: theme.colors.bgBrand1,
     width: pTd(81),
     height: pTd(58),
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: pTd(29),
     borderWidth: pTd(1.5),
-    borderColor: '#68C3FF',
+    borderColor: theme.colors.borderBrand2,
+  },
+  buttonPressWrap: {
+    backgroundColor: theme.colors.bgBrand3,
   },
   buttonInnerWrap: {
     width: '100%',

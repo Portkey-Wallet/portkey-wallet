@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react';
-import { View, Text, FlatList, Image, Animated } from 'react-native';
+import { View, Text, FlatList, Animated } from 'react-native';
 import { makeStyles } from '@rneui/themed';
 import fonts from 'assets/theme/fonts';
 import GStyles from 'assets/theme/GStyles';
@@ -18,6 +18,7 @@ import navigationService from 'utils/navigationService';
 import { NFTItemBaseType } from '@portkey-wallet/types/types-ca/assets';
 import { divDecimalsToShow } from '@portkey-wallet/utils/converter';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
+import NFTAvatar from 'components/NFTAvatar';
 
 export interface ICollectionDetailProps {
   name: string;
@@ -108,7 +109,7 @@ const CollectionDetail = () => {
 
   const renderItem = useCallback(
     (item: NFTItemBaseType, index: number) => {
-      const { alias, balance, decimals, imageUrl: imageUrlLocal } = item;
+      const { alias, balance, decimals, imageUrl: imageUrlLocal, isSeed, seedType, imageLargeUrl, tokenId } = item;
       const isEndColum = index % 3 === 2;
       return (
         <Touchable
@@ -121,7 +122,20 @@ const CollectionDetail = () => {
           {/* eslint-disable-next-line react-native/no-inline-styles */}
           <View style={[styles.itemContainer, { marginRight: isEndColum ? 0 : pTd(16) }]}>
             <View style={styles.imageContainer}>
-              <Image source={{ uri: imageUrlLocal }} style={styles.image} />
+              {/* <Image source={{ uri: imageUrlLocal }} style={styles.image} /> */}
+              <NFTAvatar
+                disabled
+                isSeed={isSeed}
+                seedType={seedType}
+                nftSize={pTd(110)}
+                badgeSizeType="large"
+                data={{
+                  alias,
+                  imageUrl: imageLargeUrl || imageUrlLocal,
+                  tokenId,
+                }}
+                style={styles.image}
+              />
               <View style={styles.overlay}>
                 <View style={styles.overlayInner} />
               </View>
@@ -292,7 +306,7 @@ const getStyles = makeStyles(theme => ({
     alignSelf: 'stretch',
     height: pTd(110),
     width: pTd(110),
-    backgroundColor: '#E3E3E3',
+    // backgroundColor: '#E3E3E3',
     borderRadius: 8,
     overflow: 'hidden',
     flexDirection: 'column',

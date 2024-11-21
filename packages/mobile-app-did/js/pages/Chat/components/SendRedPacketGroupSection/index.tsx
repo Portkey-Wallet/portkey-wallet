@@ -403,7 +403,7 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
           chainName={destinationChain.name}
           onPress={showDestinationList}
           containerStyles={styles.selectContainerStyles}
-          isReceiveNFT={false}
+          isReceiveNFT={true}
         />
         <AmountCard
           amount={values.count}

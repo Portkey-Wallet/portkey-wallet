@@ -14,6 +14,7 @@ export const SafeAreaColorMap = {
   black: darkColors.bgBase1,
   red: defaultColors.bg17,
   gray: defaultColors.bg4,
+  lightBlack: darkColors.bgBase2,
   transparent: 'transparent',
 };
 

@@ -7,7 +7,7 @@ import BrowserTab from 'components/BrowserTab';
 import CommonAvatar from 'components/CommonAvatar';
 import { TextM } from 'components/CommonText';
 import { useCheckAndUpDateRecordItemName, useCheckAndUpDateTabItemName } from 'hooks/discover';
-import { Fragment, useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import Touchable from 'components/Touchable';
 import { View, StyleSheet, GestureResponderEvent, Share } from 'react-native';
 import { pTd } from 'utils/unit';
@@ -187,8 +187,12 @@ function TabsDom({ activeWebViewRef, clickBottomActionBtn }: IProps) {
       }
     };
 
+    if (isHidden) {
+      return null;
+    }
+
     return (
-      <Fragment key={ele.id}>
+      <View key={ele.id} style={styles.webViewContainer}>
         <BrowserTab
           id={ele.id}
           uri={ele.url}
@@ -203,42 +207,40 @@ function TabsDom({ activeWebViewRef, clickBottomActionBtn }: IProps) {
           }}
           onNavigationStateChange={onNavigationStateChange}
         />
-        {!isHidden && (
-          <View style={handleButtonStyle.wrap}>
-            <Touchable style={{ paddingHorizontal: pTd(12) }} onPress={() => showWalletInfo({ tabInfo: activeItem })}>
-              <CommonAvatar
-                hasBorder={!userInfo?.avatar}
-                title={userInfo?.nickName}
-                avatarSize={pTd(32)}
-                imageUrl={userInfo?.avatar || ''}
-                resizeMode="cover"
-                titleStyle={{ fontSize: pTd(14) }}
-              />
+        <View style={styles.wrap}>
+          <Touchable style={{ paddingHorizontal: pTd(12) }} onPress={() => showWalletInfo({ tabInfo: activeItem })}>
+            <CommonAvatar
+              hasBorder={!userInfo?.avatar}
+              title={userInfo?.nickName}
+              avatarSize={pTd(32)}
+              imageUrl={userInfo?.avatar || ''}
+              resizeMode="cover"
+              titleStyle={{ fontSize: pTd(14) }}
+            />
+          </Touchable>
+          <View style={rightDomStyle.contentWrap}>
+            <Touchable onPress={event => onTouch(event, ele, canGoBack, canGoForward)} style={rightDomStyle.iconWrap}>
+              <Svg icon="more-circle" size={20} color={darkColors.iconBase1} />
             </Touchable>
-            <View style={rightDomStyle.contentWrap}>
-              <Touchable onPress={event => onTouch(event, ele, canGoBack, canGoForward)} style={rightDomStyle.iconWrap}>
-                <Svg icon="more-circle" size={20} color={darkColors.iconBase1} />
-              </Touchable>
-              <Touchable style={rightDomStyle.inputContent} onPress={handleNaviagte}>
-                {!activeItem?.url?.includes('https://') && (
-                  <Svg icon="warning-fill" size={12} iconStyle={{ marginRight: pTd(10) }} />
-                )}
-                <TextM style={rightDomStyle.domain}>
-                  {activeItem?.url?.replace('https://', '')?.replace('http://', '')}
-                </TextM>
-              </Touchable>
-              <Touchable onPress={() => activeWebViewRef.current?.reload?.()} style={rightDomStyle.iconWrap}>
-                <Svg icon="accessory" size={20} color={darkColors.iconBase1} />
-              </Touchable>
-            </View>
-            <Touchable
-              onPress={() => clickBottomActionBtn('showTab')}
-              style={[rightDomStyle.iconWrap, styles.switchButtonWrap]}>
-              <TextM style={styles.switchButton}>{tabs?.length || 0}</TextM>
+            <Touchable style={rightDomStyle.inputContent} onPress={handleNaviagte}>
+              {!activeItem?.url?.includes('https://') && (
+                <Svg icon="warning-fill" size={12} iconStyle={{ marginRight: pTd(10) }} />
+              )}
+              <TextM style={rightDomStyle.domain} numberOfLines={1}>
+                {activeItem?.url?.replace('https://', '')?.replace('http://', '')}
+              </TextM>
+            </Touchable>
+            <Touchable onPress={() => activeWebViewRef.current?.reload?.()} style={rightDomStyle.iconWrap}>
+              <Svg icon="accessory" size={20} color={darkColors.iconBase1} />
             </Touchable>
           </View>
-        )}
-      </Fragment>
+          <Touchable
+            onPress={() => clickBottomActionBtn('showTab')}
+            style={[rightDomStyle.iconWrap, styles.switchButtonWrap]}>
+            <TextM style={styles.switchButton}>{tabs?.length || 0}</TextM>
+          </Touchable>
+        </View>
+      </View>
     );
   });
 }
@@ -246,33 +248,10 @@ function TabsDom({ activeWebViewRef, clickBottomActionBtn }: IProps) {
 export default TabsDom;
 
 const styles = StyleSheet.create({
-  container: {
-    paddingLeft: 0,
-    paddingRight: 0,
+  webViewContainer: {
     flex: 1,
-    backgroundColor: darkColors.bgBase1,
-  },
-  inputContainer: {
-    ...GStyles.paddingArg(8, 20),
-  },
-  sectionWrap: {
-    ...GStyles.paddingArg(24, 20),
-  },
-  leftWrap: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingLeft: pTd(16),
-  },
-  backIcon: {
-    marginRight: pTd(4),
-  },
-  cancelButton: {
-    paddingLeft: pTd(12),
-    lineHeight: pTd(36),
-  },
-  rightIconContainerStyle: {
-    marginRight: pTd(10),
+    position: 'relative',
+    paddingBottom: pTd(72),
   },
   switchButtonWrap: {
     alignItems: 'center',
@@ -289,47 +268,20 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     lineHeight: pTd(18),
   },
-});
-
-const handleButtonStyle = StyleSheet.create({
-  container: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    width: screenWidth,
-    height: pTd(44),
+  wrap: {
     position: 'absolute',
     bottom: 0,
-    backgroundColor: darkColors.bgBase1,
-  },
-  handleItem: {
-    flex: 1,
-    lineHeight: pTd(30),
-    paddingLeft: pTd(20),
-    paddingRight: pTd(20),
-  },
-  close: {
-    textAlign: 'left',
-  },
-  add: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  done: {
-    textAlign: 'right',
-  },
-  noTap: {
-    opacity: 0.3,
-  },
-  wrap: {
+    left: 0,
+    right: 0,
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: pTd(12),
+    paddingVertical: pTd(16),
     width: screenWidth,
+    backgroundColor: darkColors.bgBase2,
+    height: pTd(72),
+    zIndex: 10,
   },
 });
 
@@ -350,11 +302,14 @@ const rightDomStyle = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     maxWidth: pTd(217),
+    height: pTd(20),
+    lineHeight: pTd(20),
     overflow: 'hidden',
   },
   domain: {
     color: darkColors.textBase1,
     textAlign: 'center',
+    lineHeight: pTd(20),
   },
   iconGroupWrap: {
     display: 'flex',

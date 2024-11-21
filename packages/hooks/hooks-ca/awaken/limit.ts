@@ -16,6 +16,7 @@ export const useGetPairMaxReserve = () => {
 
   return useCallback(
     async (symbolIn: string, symbolOut: string): Promise<TReserveInfo> => {
+      console.log('1111');
       const {
         data: {
           pairReserve: { syncRecords },

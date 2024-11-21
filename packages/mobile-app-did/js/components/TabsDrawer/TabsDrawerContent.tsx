@@ -306,7 +306,7 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     paddingLeft: pTd(16),
     paddingRight: pTd(16),
-    paddingBottom: pTd(64),
+    paddingBottom: pTd(80),
   },
   switchButtonWrap: {
     alignItems: 'center',

@@ -68,6 +68,7 @@ const getStyles = makeStyles(theme => ({
   inputPreview: {
     color: theme.colors.textBase3,
     flex: 1,
+    lineHeight: pTd(20),
   },
   innerInput: {
     height: pTd(40),

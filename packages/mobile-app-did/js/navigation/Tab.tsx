@@ -10,7 +10,7 @@ import DiscoverHome from 'pages/Discover/DiscoverHome';
 import ActivityListPage from 'pages/Activity/ActivityListPage';
 import { pTd } from 'utils/unit';
 import { useUnreadCount } from '@portkey-wallet/hooks/hooks-ca/im';
-import { useIsChatShow, useTabMenuList } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { setBadge } from 'utils/notifee';
 import { TabRouteNameEnum } from 'types/navigate';
 
@@ -56,37 +56,13 @@ export const defaultTabMenuList = Object.values(tabMenuTypeMap).filter(item => i
 
 export default function TabRoot() {
   const { address } = useCurrentWalletInfo();
-  const tabMenuListStore = useTabMenuList();
   const unreadCount = useUnreadCount();
   const isChatShow = useIsChatShow();
   const logOut = useLogOut();
 
   const tabMenuList = useMemo(() => {
-    if (__DEV__) {
-      return Object.values(tabMenuTypeMap);
-    }
-
-    const _tabMenuListStore = tabMenuListStore.reduce((acc: typeof tabMenuListStore, cur) => {
-      if (!acc.find(item => item.type.value === cur.type.value)) {
-        acc.push(cur);
-      }
-      return acc;
-    }, []);
-
-    if (!_tabMenuListStore.length) {
-      return defaultTabMenuList;
-    }
-
-    return _tabMenuListStore
-      .map(item => ({
-        name: item?.type?.value,
-        label: item?.title,
-        index: item?.index,
-        icon: tabMenuTypeMap?.[item?.type?.value as TabRouteNameEnum]?.icon || 'my',
-        component: tabMenuTypeMap?.[item?.type?.value as TabRouteNameEnum]?.component,
-      }))
-      .filter(item => item.component !== undefined);
-  }, [tabMenuListStore]);
+    return Object.values(tabMenuTypeMap);
+  }, []);
 
   // init data
   useInitData();

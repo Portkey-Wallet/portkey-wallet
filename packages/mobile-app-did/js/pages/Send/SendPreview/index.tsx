@@ -48,12 +48,14 @@ import { getELFChainBalance } from '@portkey-wallet/utils/balance';
 import { useRecent } from '@portkey-wallet/hooks/hooks-ca/recent';
 import { IRecentItem } from '@portkey-wallet/store/store-ca/recent/type';
 
-// import {
-// useEtransferCrossTrack,
-// useEtransferCrossFinishTrack,
-// useCrossChainTransferTrack,
-// usePortkeyCrossTrack,
-// } from 'hooks/amplitude';
+import {
+  useEtransferCrossTrack,
+  useEtransferCrossFinishTrack,
+  useCrossChainTransferTrack,
+  usePortkeyCrossTrack,
+  useEBridgeCrossFinishTrack,
+  useEBridgeCrossTrack,
+} from 'hooks/amplitude';
 
 enum ErrorType {
   NO_TOAST = 'noToast',
@@ -269,11 +271,12 @@ const SendPreview: React.FC = () => {
     toInfo?.chainId,
   ]);
 
-  // TODO: add track
-  // const crossChainTransferTrack = useCrossChainTransferTrack();
-  // const portkeyCrossTrack = usePortkeyCrossTrack();
-  // const etransferCrossTrack = useEtransferCrossTrack();
-  // const etransferCrossFinishTrack = useEtransferCrossFinishTrack();
+  const crossChainTransferTrack = useCrossChainTransferTrack();
+  const portkeyCrossTrack = usePortkeyCrossTrack();
+  const etransferCrossTrack = useEtransferCrossTrack();
+  const etransferCrossFinishTrack = useEtransferCrossFinishTrack();
+  const ebridgeCrossTrack = useEBridgeCrossTrack();
+  const ebridgeCrossFinishTrack = useEBridgeCrossFinishTrack();
 
   const transfer = useCallback(async () => {
     setIsError(false);
@@ -331,6 +334,36 @@ const SendPreview: React.FC = () => {
       }
     }
 
+    let type: any;
+    let trackParams: any;
+
+    switch (transferType) {
+      case TransferType.GENERAL_CROSS_CHAIN:
+        type = 'PortkeyCross';
+        break;
+      case TransferType.E_TRANSFER:
+        type = 'EtransferCross';
+        break;
+      case TransferType.E_BRIDGE:
+        type = 'EbridgeCross';
+        break;
+      default:
+        break;
+    }
+    if (type) {
+      trackParams = {
+        chainId: assetInfo?.chainId,
+        toAddress: toInfo?.address,
+        amount,
+        symbol: assetInfo?.symbol,
+        network: targetNetwork?.network || 'aelf',
+      };
+      crossChainTransferTrack({
+        type,
+        ...trackParams,
+      });
+    }
+
     // TODO:change it, add track
     if (transferType === TransferType.GENERAL_SAME_CHAIN) {
       console.log('sameChainTransfers==sendHandler', tokenInfo);
@@ -351,6 +384,7 @@ const SendPreview: React.FC = () => {
       }
       console.log('sameTransferResult', sameTransferResult);
     } else if (transferType === TransferType.GENERAL_CROSS_CHAIN) {
+      portkeyCrossTrack(trackParams);
       const crossChainTransferResult = await crossChainTransfer({
         tokenContract: tokenContractRef.current,
         contract: portkeyContractRef.current,
@@ -366,6 +400,8 @@ const SendPreview: React.FC = () => {
 
       console.log('crossChainTransferResult', crossChainTransferResult);
     } else if (transferType === TransferType.E_TRANSFER) {
+      etransferCrossTrack(trackParams);
+
       let network = '';
       if (isAelfAddress(toInfo.address)) {
         const arr = toInfo.address.split('_');
@@ -394,7 +430,10 @@ const SendPreview: React.FC = () => {
       }
       const txResult = await getAelfTxResult(chainInfo.endPoint, crossTransferByEtransferResult.transactionId);
       console.log(txResult, 'txResult===etransferCrossTransfer');
+
+      etransferCrossFinishTrack(trackParams);
     } else if (transferType === TransferType.E_BRIDGE) {
+      ebridgeCrossTrack(trackParams);
       const fromChainInfo = getAELFChainInfoConfig(assetInfo.chainId);
       const toChainInfo = getEVMChainInfoConfig(targetNetwork?.network || toInfo?.network || '');
       const tokenEBridgeInfo = getTokenConfig(assetInfo.symbol);
@@ -434,12 +473,14 @@ const SendPreview: React.FC = () => {
         caHash: currentWallet.caHash,
       });
       console.log(createReceiptResult, 'createReceiptResult===EBridge');
+      ebridgeCrossFinishTrack(trackParams);
     }
   }, [
     amount,
     assetInfo,
     chainInfo,
     checkTransferLimitWithJump,
+    crossChainTransferTrack,
     crossDefaultFee,
     crossTransferByEtransfer,
     currentNetwork.walletType,
@@ -447,6 +488,10 @@ const SendPreview: React.FC = () => {
     currentWallet.caHash,
     defaultToken.decimals,
     defaultToken.symbol,
+    ebridgeCrossFinishTrack,
+    ebridgeCrossTrack,
+    etransferCrossFinishTrack,
+    etransferCrossTrack,
     getAELFChainInfoConfig,
     getEVMChainInfoConfig,
     getElfBalance,
@@ -454,9 +499,10 @@ const SendPreview: React.FC = () => {
     guardiansApproved,
     isApproved,
     pin,
+    portkeyCrossTrack,
     routerParams,
     sendNumber,
-    targetNetwork?.network,
+    targetNetwork.network,
     toInfo.address,
     toInfo?.chainId,
     toInfo?.network,

@@ -55,10 +55,10 @@ const DashBoardHeader: React.FC = () => {
             </View>
           </TouchableOpacity>
         ) : (
-          <View style={styles.skeletonWrap}>
+          <TouchableOpacity onPress={onShowAccountSetting} style={styles.skeletonWrap}>
             <View style={styles.skeletonIcon} />
             <View style={styles.skeletonText} />
-          </View>
+          </TouchableOpacity>
         )}
       </Animated.View>
     );

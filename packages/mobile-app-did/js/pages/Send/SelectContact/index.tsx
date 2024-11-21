@@ -18,14 +18,11 @@ import {
 // import ContactsList from 'components/ContactList';
 import NoData from 'components/NoData';
 import { TextS } from 'components/CommonText';
-import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 import useEffectOnce from 'hooks/useEffectOnce';
-import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/actions';
 import { useContact } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { ChainId } from '@portkey-wallet/types';
 import { useCaAddressInfoList, useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useRecent } from '@portkey-wallet/hooks/hooks-ca/useRecent';
-import { fetchRecentListAsync } from '@portkey-wallet/store/store-ca/recent/slice';
 import MyAddressItem from '../components/MyAddressItem';
 import myEvents from 'utils/deviceEvent';
 import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
@@ -39,7 +36,6 @@ export default function SelectContact(props: SelectContactProps) {
   const { chainId, onPress } = props;
 
   const { t } = useLanguage();
-  const dispatch = useAppCommonDispatch();
   const { contactIndexList } = useContact();
   const { walletInfo } = useCurrentWallet();
   const caAddressInfos = useCaAddressInfoList();
@@ -65,25 +61,25 @@ export default function SelectContact(props: SelectContactProps) {
   }, [caAddressInfos, chainId]);
 
   const loadMore = useCallback(() => {
-    dispatch(
-      fetchRecentListAsync({
-        caAddress: caAddress,
-        caAddressInfos: caAddressInfos.filter(item => item.chainId === chainId),
-        isFirstTime: false,
-      }),
-    );
-  }, [caAddress, caAddressInfos, chainId, dispatch]);
+    // dispatch(
+    //   fetchRecentListAsync({
+    //     caAddress: caAddress,
+    //     caAddressInfos: caAddressInfos.filter(item => item.chainId === chainId),
+    //     isFirstTime: false,
+    //   }),
+    // );
+  }, []);
 
   const init = useCallback(() => {
-    dispatch(
-      fetchRecentListAsync({
-        caAddress: caAddress,
-        caAddressInfos: caAddressInfos.filter(item => item.chainId === chainId),
-        isFirstTime: true,
-      }),
-    );
-    dispatch(fetchContactListAsync());
-  }, [caAddress, caAddressInfos, chainId, dispatch]);
+    // dispatch(
+    //   fetchRecentListAsync({
+    //     caAddress: caAddress,
+    //     caAddressInfos: caAddressInfos.filter(item => item.chainId === chainId),
+    //     isFirstTime: true,
+    //   }),
+    // );
+    // dispatch(fetchContactListAsync());
+  }, []);
 
   useEffectOnce(() => {
     init();
@@ -110,7 +106,9 @@ export default function SelectContact(props: SelectContactProps) {
               refreshing={false}
               onRefresh={() => init()}
               onEndReached={() => {
-                if (recentContactList.length >= totalRecordCount) return;
+                if (recentContactList.length >= totalRecordCount) {
+                  return;
+                }
                 loadMore();
               }}
               onEndReachedThreshold={ON_END_REACHED_THRESHOLD}

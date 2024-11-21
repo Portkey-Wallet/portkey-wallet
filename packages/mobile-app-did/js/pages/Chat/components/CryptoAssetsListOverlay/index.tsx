@@ -124,11 +124,7 @@ const CryptoAssetsList = ({
           skipCount: 0,
           keyword: _keyword,
         });
-        if (isInit) {
-          setListShow(filterList(response.data));
-        } else {
-          setListShow(pre => filterList(pre.concat(response.data)));
-        }
+        setListShow(filterList(response.data));
       } catch (err) {
         console.log('fetchCryptoBoxAssetList err:', err);
       }
@@ -219,7 +215,7 @@ const CryptoAssetsList = ({
         onEndReachedThreshold={ON_END_REACHED_THRESHOLD}
         ListEmptyComponent={noData}
         onEndReached={() => {
-          getList();
+          getList(debounceKeyword);
         }}
       />
     </ModalBody>

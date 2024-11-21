@@ -269,7 +269,6 @@ export default function GuardianItem({
   guardianItem,
   isButtonHide,
   renderBtn,
-  isBorderHide = false,
   guardiansStatus,
   setGuardianStatus,
   isExpired,
@@ -287,7 +286,9 @@ export default function GuardianItem({
     if (!AuthTypes.includes(guardianItem.guardianType)) {
       return guardianItem.guardianAccount;
     }
-    if (guardianItem.isPrivate) return PRIVATE_GUARDIAN_ACCOUNT;
+    if (guardianItem.isPrivate) {
+      return PRIVATE_GUARDIAN_ACCOUNT;
+    }
     return guardianItem.thirdPartyEmail || '';
   }, [guardianItem]);
 

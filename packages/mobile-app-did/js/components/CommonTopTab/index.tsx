@@ -272,7 +272,7 @@ const getToolBarStyle = makeStyles(theme => ({
     backgroundColor: theme.colors.bgBase2,
   },
   labelText: {
-    fontSize: pTd(16),
-    lineHeight: pTd(24),
+    fontSize: pTd(18),
+    lineHeight: pTd(22.5),
   },
 }));

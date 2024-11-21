@@ -4,14 +4,14 @@ import { darkColors } from 'assets/theme';
 import { TextM } from 'components/CommonText';
 import Svg from 'components/Svg';
 import React, { memo, useMemo } from 'react';
-import { StyleSheet, View, ViewProps, StyleProp } from 'react-native';
+import { StyleSheet, View, StyleProp, ViewStyle } from 'react-native';
 import { pTd } from 'utils/unit';
 
 interface ITextWithProtocolIconProps {
   title?: string;
   url: string;
   textFontSize?: number;
-  wrapStyle?: StyleProp<ViewProps>;
+  wrapStyle?: StyleProp<ViewStyle>;
   iconSize?: number;
   type?: 'iconLeft' | 'iconRight';
   location?: 'header' | 'other';
@@ -41,7 +41,7 @@ const TextWithProtocolIcon = ({
     if (isDanger) {
       return <Svg icon="warning-fill" size={iconSize} iconStyle={styles.iconStyle} color={darkColors.iconDanger2} />;
     }
-  }, [iconSize, isDanger, location, showProtocolIcon]);
+  }, [iconSize, isDanger, showProtocolIcon]);
 
   return (
     <View style={[styles.wrap, wrapStyle]}>

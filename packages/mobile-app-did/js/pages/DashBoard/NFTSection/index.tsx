@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
-import { View, FlatList, Image, ScrollView } from 'react-native';
+import { View, FlatList, Image, ScrollView, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
 import { pTd } from 'utils/unit';
 import NFTItem from './NFTsModeItem';
 import CollectionItem from './CollectionsModeItem';
@@ -280,13 +280,26 @@ export default function NFTSection() {
     },
     [accountNFTList, caAddressInfos, fetchAccountNFTItem, openCollectionObj],
   );
+
+  const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
+    const isCloseToBottom = layoutMeasurement.height + contentOffset.y >= contentSize.height - 20;
+    if (isCloseToBottom) {
+      console.log('Reached the bottom of the ScrollView');
+      getNFTCollectionsAsync();
+    }
+  };
   return (
     <View style={[styles.wrap, nftSectionUiType === 'NFTs' ? { paddingTop: pTd(8) } : {}]}>
-      <ScrollView nestedScrollEnabled contentContainerStyle={{ paddingBottom: pTd(192) }}>
+      <ScrollView
+        nestedScrollEnabled
+        contentContainerStyle={{ paddingBottom: pTd(192) }}
+        onScroll={handleScroll}
+        scrollEventThrottle={16}>
         <FlatList
           key={nftSectionUiType}
-          // nestedScrollEnabled
-          scrollEnabled={false}
+          nestedScrollEnabled
+          // scrollEnabled={false}
           refreshing={reFreshing}
           contentContainerStyle={styles.contentContainerStyle}
           data={totalRecordCount === 0 ? [] : accountNFTList || []}
@@ -308,7 +321,11 @@ export default function NFTSection() {
             />
           )}
           keyExtractor={(item: NFTCollectionItemShowType) => item?.symbol + item.chainId}
-          onEndReached={() => getNFTCollectionsAsync()}
+          // onEndReached={() => {
+          //   console.log('wfs===onEndReached');
+          //   getNFTCollectionsAsync();
+          // }}
+          onEndReachedThreshold={0.5}
           ListHeaderComponent={
             <ListHeaderComponent recentStatus={recentStatus} itemId={itemId || ''} imageUrl={imageUrl || ''} />
           }

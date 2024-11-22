@@ -58,7 +58,7 @@ import { TextTitle } from 'components/CommonText';
 import { useEtransferFee } from 'hooks/etransfer';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { getAssetsEstimation } from '@portkey-wallet/store/store-ca/assets/api';
-import { addressFormat, getChainIdByAddress } from '@portkey-wallet/utils';
+import { addressFormat, getChainIdByAddress, sleep } from '@portkey-wallet/utils';
 import { ChainId } from '@portkey-wallet/types';
 import ToAddressInput, { IToAddressInputRef } from '../components/ToAddressInput';
 import TokenBalanceShow from 'components/TokenBalanceShow';
@@ -500,7 +500,11 @@ const SendHome: React.FC = () => {
     setStep(2);
   }, [assetInfo.chainId, assetInfo.symbol, defaultToken.symbol]);
 
-  const nextStep = useCallback(() => {
+  const nextStep = useCallback(async () => {
+    Loading.show();
+    await sleep(600);
+    Loading.hide();
+
     if (warning[0] === WarningKey.DAPP_CHAIN_TO_NO_AFFIX_ADDRESS_ELF) {
       return dappChainToNoAffixAddressAction();
     } else if (warning[0] === WarningKey.MAIN_CHAIN_TO_NO_AFFIX_ADDRESS_ELF) {
@@ -719,7 +723,7 @@ const SendHome: React.FC = () => {
             targetNetwork: targetNetwork,
           };
         } else {
-          setErrorMessage(getLimitTips(assetInfo.symbol, minAmount, maxAmount));
+          setErrorMessage(getLimitTips(assetInfo.label || assetInfo.symbol, minAmount, maxAmount));
           throw 'etansfer err';
         }
       } catch (error) {
@@ -784,6 +788,8 @@ const SendHome: React.FC = () => {
       }
     }
 
+    console.log('isAELFCross', isAELFCross, selectedToContact);
+
     // SameChain or CrossChain in aelf
     try {
       if (isAELFCross && isSupportCross) {
@@ -846,6 +852,7 @@ const SendHome: React.FC = () => {
     assetInfo.chainId,
     assetInfo.decimals,
     assetInfo.symbol,
+    assetInfo.label,
     sendNumber,
     sendType,
     checkManagerSyncState,

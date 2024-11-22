@@ -40,6 +40,7 @@ export type CommonTopTabProps = {
   suffixIconDom?: ReactNode;
   suffixIconDomVisible?: boolean;
   labelFocusStyle?: ViewStyle;
+  labelTextStyle?: StyleProp<TextStyle>;
 };
 
 const Tab = createMaterialTopTabNavigator();
@@ -58,6 +59,7 @@ const CommonTopTab: React.FC<CommonTopTabProps> = props => {
     suffixIconDom,
     suffixIconDomVisible,
     labelFocusStyle,
+    labelTextStyle,
   } = props;
 
   const tabBarRef = useRef<any>(null);
@@ -88,6 +90,7 @@ const CommonTopTab: React.FC<CommonTopTabProps> = props => {
           ref={tabBarRef}
           suffixIconDom={suffixIconDom}
           labelFocusStyle={labelFocusStyle}
+          labelTextStyle={labelTextStyle}
         />
       )}
       screenOptions={{
@@ -116,6 +119,7 @@ const CustomizedTopTabBar = forwardRef(
       suffixIconDom,
       onTabChange,
       labelFocusStyle,
+      labelTextStyle,
     }: {
       labelRightNum?: number;
       state: { routes: any[]; index: number };
@@ -128,6 +132,7 @@ const CustomizedTopTabBar = forwardRef(
       suffixIconDom?: ReactNode;
       onTabChange?: (name: string) => void;
       labelFocusStyle?: TextStyle;
+      labelTextStyle?: StyleProp<ViewStyle>;
     },
     ref,
   ) => {
@@ -197,6 +202,7 @@ const CustomizedTopTabBar = forwardRef(
                       {
                         color: isFocused ? darkColors.textBase1 : darkColors.textBase2,
                       },
+                      labelTextStyle,
                     ]}>
                     {label}
                   </Text>
@@ -279,7 +285,7 @@ const getToolBarStyle = makeStyles(theme => ({
     backgroundColor: theme.colors.bgBase2,
   },
   labelText: {
-    fontSize: pTd(18),
-    lineHeight: pTd(22.5),
+    fontSize: pTd(16),
+    lineHeight: pTd(20),
   },
 }));

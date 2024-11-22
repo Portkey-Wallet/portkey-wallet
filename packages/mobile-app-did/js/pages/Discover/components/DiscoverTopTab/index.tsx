@@ -1,11 +1,12 @@
 import React, { forwardRef, useCallback, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import CommonTopTab from 'components/CommonTopTab';
-
+import { StyleSheet } from 'react-native';
 import MarketSection from '../MarketSection';
 import { DiscoverCmsListSection } from '../DiscoverCmsListSection';
 import EarnPage from '../SubPages/Earn';
 import MarketType from '../MarketSection/components/MarketType';
 import { useMarket } from 'hooks/discover';
+import { pTd } from 'utils/unit';
 
 enum TabName {
   Dapp = 'dApps',
@@ -82,7 +83,15 @@ export default forwardRef(function DiscoverTab(_, _ref) {
       hasBottomBorder={false}
       onTabChange={(routeName: string) => handleTabChange(routeName as TabName)}
       suffixIconDomVisible={currentRouteName === 'Market'}
+      labelTextStyle={styles.labelTextStyle}
       suffixIconDom={<MarketType marketInfo={marketInfo} handleType={handleType} />}
     />
   );
+});
+
+const styles = StyleSheet.create({
+  labelTextStyle: {
+    fontSize: pTd(18),
+    lineHeight: pTd(22.5),
+  },
 });

@@ -1,15 +1,15 @@
 import React from 'react';
 import { useAppCASelector, useAppCommonDispatch, useLatestRef } from '@portkey-wallet/hooks';
-import { changeDrawerOpenStatus, removeAutoApproveItem } from '@portkey-wallet/store/store-ca/discover/slice';
+import { removeAutoApproveItem } from '@portkey-wallet/store/store-ca/discover/slice';
 import { isIOS, screenHeight, screenWidth } from '@portkey-wallet/utils/mobile/device';
-import { darkColors, defaultColors } from 'assets/theme';
+import { darkColors } from 'assets/theme';
 import BrowserTab from 'components/BrowserTab';
 import CommonAvatar from 'components/CommonAvatar';
-import { TextM } from 'components/CommonText';
+import { TextS } from 'components/CommonText';
 import { useCheckAndUpDateRecordItemName, useCheckAndUpDateTabItemName } from 'hooks/discover';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import Touchable from 'components/Touchable';
-import { View, StyleSheet, GestureResponderEvent, Share } from 'react-native';
+import { View, GestureResponderEvent, Share, Text } from 'react-native';
 import { pTd } from 'utils/unit';
 import Svg from 'components/Svg';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
@@ -18,11 +18,13 @@ import FloatOverlay from 'components/FloatOverlay';
 import { useBookmarkList } from '@portkey-wallet/hooks/hooks-ca/discover';
 import { request } from '@portkey-wallet/api/api-did';
 import CommonToast from 'components/CommonToast';
-import GStyles from 'assets/theme/GStyles';
-import navigationService from 'utils/navigationService';
 import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { showWalletInfo } from '../WalletInfoOverlay';
 import { getHost } from '@portkey-wallet/utils/dapp/browser';
+import { useKeyboard } from 'hooks/useKeyboardHeight';
+import { TopSpacing } from 'pages/Chat/components/hooks';
+import { makeStyles } from '@rneui/themed';
+import fonts from 'assets/theme/fonts';
 
 enum HANDLE_TYPE {
   REFRESH = 'Refresh',
@@ -35,10 +37,13 @@ enum HANDLE_TYPE {
 
 type IProps = {
   activeWebViewRef: any;
-  clickBottomActionBtn: (type: 'back' | 'forward' | 'showTab' | 'home' | 'more') => void;
+  clickBottomActionBtn: (type: 'back' | 'forward' | 'showTab' | 'home' | 'more' | 'search') => void;
 };
 
 function TabsDom({ activeWebViewRef, clickBottomActionBtn }: IProps) {
+  const styles = getStyles();
+  const rightDomStyle = getRightDomStyles();
+
   const userInfo = useCurrentUserInfo();
   const { networkType } = useCurrentNetworkInfo();
   const { discoverMap = {}, initializedList, activeTabId, autoApproveMap } = useAppCASelector(state => state.discover);
@@ -61,11 +66,21 @@ function TabsDom({ activeWebViewRef, clickBottomActionBtn }: IProps) {
     canGoBack: {},
     canGoForward: {},
   });
+  const { keyboardHeight, isKeyboardOpened } = useKeyboard(TopSpacing);
 
-  const handleNaviagte = useCallback(() => {
-    navigationService.navigate('DiscoverSearch', { address: activeItem?.url });
-    dispatch(changeDrawerOpenStatus(false));
-  }, [activeItem?.url, dispatch]);
+  const webViewContainerStyle = useMemo(
+    () =>
+      isKeyboardOpened
+        ? {
+            paddingBottom: keyboardHeight,
+          }
+        : undefined,
+    [isKeyboardOpened, keyboardHeight],
+  );
+
+  const handleSearch = useCallback(() => {
+    clickBottomActionBtn('search');
+  }, [clickBottomActionBtn]);
 
   const handleMark = useCallback(
     async (browserInfo: ITabItem) => {
@@ -164,6 +179,8 @@ function TabsDom({ activeWebViewRef, clickBottomActionBtn }: IProps) {
     [bookmarkList, clickBottomActionBtn, handleMark, removeMark],
   );
 
+  const tabNumber = useMemo(() => Math.min(tabs?.length || 0, 99), [tabs?.length]);
+
   return tabs?.map(ele => {
     const isHidden = activeTabId !== ele.id;
     const initialized = initializedList?.has(ele.id);
@@ -197,7 +214,7 @@ function TabsDom({ activeWebViewRef, clickBottomActionBtn }: IProps) {
     }
 
     return (
-      <View key={ele.id} style={styles.webViewContainer}>
+      <View key={ele.id} style={[styles.webViewContainer, webViewContainerStyle]}>
         <BrowserTab
           id={ele.id}
           uri={ele.url}
@@ -224,27 +241,25 @@ function TabsDom({ activeWebViewRef, clickBottomActionBtn }: IProps) {
             />
           </Touchable>
           <View style={rightDomStyle.contentWrap}>
-            <Touchable onPress={event => onTouch(event, ele, canGoBack, canGoForward)} style={rightDomStyle.iconWrap}>
-              <Svg icon="more-circle" size={20} color={darkColors.iconBase1} />
+            <Touchable onPress={event => onTouch(event, ele, canGoBack, canGoForward)}>
+              <Svg icon="more-circle" size={16} color={darkColors.iconBase1} />
             </Touchable>
-            <Touchable style={rightDomStyle.inputContent} onPress={handleNaviagte}>
+            <Touchable style={rightDomStyle.inputContent} onPress={handleSearch}>
               {!tabStateMap?.url?.includes('https://') && (
                 <View style={rightDomStyle.iconGroupWrap}>
                   <Svg icon="warning-fill" size={12} iconStyle={{ marginRight: pTd(10) }} />
                 </View>
               )}
-              <TextM style={rightDomStyle.domain} numberOfLines={1}>
+              <TextS style={rightDomStyle.domain} numberOfLines={1}>
                 {getHost(tabStateMap?.url)}
-              </TextM>
+              </TextS>
             </Touchable>
-            <Touchable onPress={() => activeWebViewRef.current?.reload?.()} style={rightDomStyle.iconWrap}>
-              <Svg icon="accessory" size={20} color={darkColors.iconBase1} />
+            <Touchable onPress={() => activeWebViewRef.current?.reload?.()}>
+              <Svg icon="accessory" size={16} color={darkColors.iconBase1} />
             </Touchable>
           </View>
-          <Touchable
-            onPress={() => clickBottomActionBtn('showTab')}
-            style={[rightDomStyle.iconWrap, styles.switchButtonWrap]}>
-            <TextM style={styles.switchButton}>{tabs?.length || 0}</TextM>
+          <Touchable onPress={() => clickBottomActionBtn('showTab')} style={[styles.switchButtonWrap]}>
+            <Text style={styles.switchButton}>{tabNumber}</Text>
           </Touchable>
         </View>
       </View>
@@ -254,26 +269,30 @@ function TabsDom({ activeWebViewRef, clickBottomActionBtn }: IProps) {
 
 export default TabsDom;
 
-const styles = StyleSheet.create({
+const getStyles = makeStyles(theme => ({
   webViewContainer: {
     flex: 1,
     position: 'relative',
     paddingBottom: pTd(72),
   },
   switchButtonWrap: {
-    alignItems: 'center',
     justifyContent: 'center',
-    width: pTd(44),
+    alignItems: 'center',
+    borderRadius: pTd(2),
+    borderWidth: pTd(2),
+    borderColor: theme.colors.iconBase1,
+    width: pTd(20),
+    height: pTd(20),
+    marginLeft: pTd(12),
+    marginRight: pTd(16),
+    marginHorizontal: pTd(2),
   },
   switchButton: {
-    width: pTd(21),
-    height: pTd(21),
-    borderRadius: pTd(4),
-    borderWidth: pTd(1.5),
-    borderColor: darkColors.textBase1,
-    color: defaultColors.textBase1,
+    color: darkColors.textBase1,
     textAlign: 'center',
-    lineHeight: pTd(18),
+    fontSize: pTd(12),
+    lineHeight: pTd(15),
+    ...fonts.mediumFont,
   },
   wrap: {
     position: 'absolute',
@@ -286,13 +305,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: pTd(16),
     width: screenWidth,
-    backgroundColor: darkColors.bgBase2,
+    backgroundColor: theme.colors.bgBase2,
     height: pTd(72),
     zIndex: 10,
   },
-});
+}));
 
-const rightDomStyle = StyleSheet.create({
+const getRightDomStyles = makeStyles(theme => ({
   contentWrap: {
     display: 'flex',
     flexDirection: 'row',
@@ -303,7 +322,7 @@ const rightDomStyle = StyleSheet.create({
     height: pTd(40),
     borderRadius: pTd(20),
     borderWidth: pTd(1),
-    borderColor: darkColors.borderBase1,
+    borderColor: theme.colors.borderBase1,
   },
   inputContent: {
     flexDirection: 'row',
@@ -312,7 +331,7 @@ const rightDomStyle = StyleSheet.create({
     height: pTd(30),
   },
   domain: {
-    color: darkColors.textBase1,
+    color: theme.colors.textBase1,
     textAlign: 'center',
     lineHeight: pTd(14),
   },
@@ -321,7 +340,4 @@ const rightDomStyle = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  iconWrap: {
-    ...GStyles.paddingArg(pTd(4)),
-  },
-});
+}));

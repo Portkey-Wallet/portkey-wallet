@@ -36,8 +36,11 @@ import { ITabContext } from './tools';
 import TabsDom from './components/TabsDom';
 import DiscoverWebsiteImage from 'pages/Discover/components/DiscoverWebsiteImage';
 import { useGetCmsWebsiteInfo } from '@portkey-wallet/hooks/hooks-ca/cms';
+import DiscoverSearchContent from 'pages/Discover/DiscoverSearch/components/DiscoverSearchContent';
+import { makeStyles } from '@rneui/themed';
 
 export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
+  const styles = getStyles();
   const { t } = useLanguage();
   const { networkType } = useCurrentNetworkInfo();
   const nav = useNavigation();
@@ -143,8 +146,10 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
     }, [backToSearchPage, isDrawerOpen]),
   );
 
+  const [isSearchShow, setIsSearchShow] = useState(false);
+
   const clickBottomActionBtn = useCallback(
-    (type: 'back' | 'forward' | 'showTab' | 'home' | 'more') => {
+    (type: 'back' | 'forward' | 'showTab' | 'home' | 'more' | 'search') => {
       switch (type) {
         case 'back':
           tabRef.current?.goBack?.();
@@ -173,6 +178,10 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
             activeWebviewScreenShot,
             setPreActiveTabId,
           });
+          break;
+
+        case 'search':
+          setIsSearchShow(true);
           break;
 
         default:
@@ -222,15 +231,15 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
         </View>
       </>
     );
-  }, [closeAll, dispatch, onDone, t, tabs]);
+  }, [closeAll, dispatch, onDone, styles.cardsContainer, t, tabs]);
 
   return (
     <BrowserContext.Provider value={value}>
       <PageContainer
         hideTouchable
         type="leftBack"
-        hideHeader={!activeTabId}
-        noCenterDom={!activeTabId}
+        hideHeader={!activeTabId || isSearchShow}
+        noCenterDom={!activeTabId || isSearchShow}
         leftDom={
           <View style={styles.leftWrap}>
             <Touchable onPress={backToSearchPage} style={styles.backIcon}>
@@ -239,7 +248,7 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
           </View>
         }
         notHandleHardwareBackPress
-        safeAreaColor={['black', 'black']}
+        safeAreaColor={['lightBlack', 'lightBlack']}
         containerStyles={styles.container}
         scrollViewProps={{ disabled: true }}
         titleDom={
@@ -256,6 +265,11 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
         }>
         <TabsDom activeWebViewRef={tabRef} clickBottomActionBtn={clickBottomActionBtn} />
         {!activeTabId && isDrawerOpen && CardGroupDom}
+        {isSearchShow && (
+          <View style={styles.searchContainer}>
+            <DiscoverSearchContent isInner={true} onBack={() => setIsSearchShow(false)} />
+          </View>
+        )}
       </PageContainer>
     </BrowserContext.Provider>
   );
@@ -263,7 +277,7 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
 
 TabsDrawerContent.displayName = 'TabsDrawerContent';
 
-const styles = StyleSheet.create({
+const getStyles = makeStyles(theme => ({
   container: {
     paddingLeft: 0,
     paddingRight: 0,
@@ -323,7 +337,15 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     lineHeight: pTd(18),
   },
-});
+  searchContainer: {
+    position: 'absolute',
+    backgroundColor: theme.colors.bgBase1,
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
+  },
+}));
 
 const handleButtonStyle = StyleSheet.create({
   container: {

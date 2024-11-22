@@ -18,7 +18,7 @@ export const WarningTips = {
     "The address you've entered appears to be for an exchange. Please confirm before proceeding. Sending tokens to the wrong address may result in the loss of your assets.",
   [WarningKey.MAIN_CHAIN_TO_NO_AFFIX_ADDRESS_ELF]:
     "The address entered seems to be for an exchange. Please confirm if it's one of the supported ones before continuing to avoid losing your asset.",
-  [WarningKey.SAME_ADDRESS]: " You can't send to this address because it's the same as the sending address.",
+  [WarningKey.SAME_ADDRESS]: "You can't send to this address because it's the same as the sending address.",
   [WarningKey.MAKE_SURE_SUPPORT_PLATFORM]: 'Make sure that your receiving platform supports the token and network.',
 };
 

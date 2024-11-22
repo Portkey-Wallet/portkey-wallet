@@ -125,7 +125,6 @@ const getStyles = makeStyles(theme => ({
     borderColor: theme.colors.borderNeutral2,
   },
   ViewBtnText: {
-    lineHeight: pTd(16),
     color: theme.colors.textBase1,
     ...fonts.mediumFont,
   },

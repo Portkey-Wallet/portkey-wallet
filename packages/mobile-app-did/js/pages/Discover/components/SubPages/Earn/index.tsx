@@ -4,7 +4,7 @@ import { TBaseCardItemType } from '@portkey-wallet/types/types-ca/cms';
 import { darkColors } from 'assets/theme';
 import fonts from 'assets/theme/fonts';
 import CommonButton from 'components/CommonButton';
-import { TextXL, TextM } from 'components/CommonText';
+import { TextXL, TextL } from 'components/CommonText';
 import NoData from 'components/NoData';
 import { useDiscoverJumpWithNetWork } from 'hooks/discover';
 import React, { forwardRef, useCallback, useImperativeHandle } from 'react';
@@ -72,12 +72,12 @@ const EarnItem = (item: TBaseCardItemType) => {
       <View style={styles.infoWrap}>
         <View style={styles.infoCol}>
           <View style={styles.textLines}>
-            <TextXL style={[styles.title, fonts.mediumFont]} numberOfLines={1} ellipsizeMode="tail">
+            <TextXL style={[styles.title, fonts.BGMediumFont]} numberOfLines={1} ellipsizeMode="tail">
               {title}
             </TextXL>
-            <TextM style={styles.description} numberOfLines={2} ellipsizeMode="tail">
+            <TextL style={styles.description} numberOfLines={2} ellipsizeMode="tail">
               {description}
-            </TextM>
+            </TextL>
           </View>
           <CommonButton
             type="outline"
@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'flex-start',
-    borderRadius: pTd(12),
+    borderRadius: pTd(16),
     borderWidth: pTd(1),
     borderColor: darkColors.borderBase1,
     backgroundColor: darkColors.bgBase2,
@@ -148,7 +148,7 @@ const styles = StyleSheet.create({
   description: {
     marginTop: pTd(8),
     color: darkColors.textBase2,
-    lineHeight: pTd(16),
+    lineHeight: pTd(22),
     textAlign: 'left',
   },
   btn: {

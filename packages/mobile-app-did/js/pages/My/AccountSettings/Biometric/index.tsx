@@ -6,6 +6,7 @@ import useBiometricsReady, { useSetBiometrics } from 'hooks/useBiometrics';
 import navigationService from 'utils/navigationService';
 import { View } from 'react-native';
 import { checkPin } from 'utils/redux';
+import fonts from 'assets/theme/fonts';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { useLanguage } from 'i18n/hooks';
 import i18n from 'i18n';
@@ -63,8 +64,11 @@ export default function Biometric() {
                 changeCanLock(false);
                 try {
                   const enrolled = await touchAuth();
-                  if (enrolled.success) await setBiometrics(value);
-                  else CommonToast.fail(enrolled.warning || enrolled.error);
+                  if (enrolled.success) {
+                    await setBiometrics(value);
+                  } else {
+                    CommonToast.fail(enrolled.warning || enrolled.error);
+                  }
                 } catch (error) {
                   CommonToast.failError(error, i18n.t('Failed to enable biometrics'));
                 }
@@ -105,7 +109,7 @@ export const getStyles = makeStyles(theme => ({
     padding: pTd(16),
   },
   switchWrap: {
-    height: pTd(40),
+    height: pTd(22),
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -118,6 +122,8 @@ export const getStyles = makeStyles(theme => ({
   },
   tipText: {
     marginTop: pTd(4),
+    lineHeight: pTd(22.4),
     color: theme.colors.textBase2,
+    ...fonts.SGRegularFont,
   },
 }));

@@ -2,7 +2,7 @@ import { darkColors, defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import { TextL } from 'components/CommonText';
 import Svg from 'components/Svg';
-import React, { memo, useCallback, useMemo, useState } from 'react';
+import React, { memo, useCallback, useMemo, useRef, useState } from 'react';
 import { View, Text, TextInput, ViewStyle } from 'react-native';
 import { pTd } from 'utils/unit';
 import { makeStyles, useThemeMode } from '@rneui/themed';
@@ -13,6 +13,8 @@ import { ZERO } from '@portkey-wallet/constants/misc';
 import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useInputFocus } from 'hooks/useInputFocus';
+import { isIOS } from '@portkey-wallet/utils/mobile/device';
 
 export interface ITokenAmountInput {
   value?: string;
@@ -47,6 +49,10 @@ const TokenAmountInput: React.FC<ITokenAmountInput> = props => {
   const [tokenPriceObject, getTokenPrice] = useGetCurrentAccountTokenPrice();
   const isMainnet = useIsMainnet();
   const styles = getStyles();
+
+  const iptRef = useRef<TextInput>(null);
+  useInputFocus(iptRef);
+
   useEffectOnce(() => {
     getTokenPrice(symbol);
   });
@@ -102,6 +108,7 @@ const TokenAmountInput: React.FC<ITokenAmountInput> = props => {
           ) : (
             <>
               <TextInput
+                ref={iptRef}
                 value={value}
                 style={[styles.input, showErrorInput && warningTip && styles.errorInput]}
                 placeholder="0"
@@ -110,7 +117,7 @@ const TokenAmountInput: React.FC<ITokenAmountInput> = props => {
                 onChangeText={onValueInputChange}
                 editable={editable}
               />
-              <Text style={styles.label}>{` ${label || symbol}`}</Text>
+              <Text style={[styles.label, !isIOS && styles.labelPaddingBottom]}>{` ${label || symbol}`}</Text>
             </>
           )}
         </>
@@ -154,6 +161,9 @@ export const getStyles = makeStyles(theme => ({
   label: {
     fontSize: pTd(32),
     ...fonts.BGMediumFont,
+  },
+  labelPaddingBottom: {
+    paddingBottom: 4,
   },
   input: {
     color: theme.colors.textBase1,

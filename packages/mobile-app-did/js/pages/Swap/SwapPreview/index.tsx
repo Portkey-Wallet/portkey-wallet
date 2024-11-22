@@ -387,8 +387,9 @@ const SwapPreview = () => {
         <CommonInfoRow
           label={{ text: 'Network' }}
           value={{ text: 'aelf dAppChain', leftSvgName: getChainSvgName('tDVV') }}
+          isLabelNoTail={true}
         />
-        <CommonInfoRow label={{ text: 'Price' }} value={{ text: priceLabel }} />
+        <CommonInfoRow label={{ text: 'Price' }} value={{ text: priceLabel }} isLabelNoTail={true} />
         <CommonInfoRow
           label={{
             text: 'Slippage tolerance',
@@ -399,6 +400,7 @@ const SwapPreview = () => {
             },
           }}
           value={{ text: userSlippageToleranceStr }}
+          isLabelNoTail={true}
         />
         <CommonInfoRow
           label={{
@@ -409,6 +411,7 @@ const SwapPreview = () => {
             },
           }}
           value={{ text: amountOutMinValue, textBelow: isMainnet ? amountOutMinUsd : '' }}
+          isLabelNoTail={true}
         />
         <CommonInfoRow
           label={{
@@ -419,6 +422,7 @@ const SwapPreview = () => {
             },
           }}
           value={{ text: priceImpact }}
+          isLabelNoTail={true}
         />
         <CommonInfoRow
           label={{
@@ -429,6 +433,7 @@ const SwapPreview = () => {
             },
           }}
           value={{ text: `${userExpiration} minutes` }}
+          isLabelNoTail={true}
         />
         <CommonInfoRow
           label={{
@@ -440,6 +445,7 @@ const SwapPreview = () => {
             },
           }}
           value={{ text: feeValueStr, textBelow: isMainnet ? feeUsd : '' }}
+          isLabelNoTail={true}
         />
         <CommonInfoRow
           label={{
@@ -450,6 +456,7 @@ const SwapPreview = () => {
             },
           }}
           value={{ text: gasFeeValue, textBelow: isMainnet ? gasFeeUsd : '' }}
+          isLabelNoTail={true}
         />
       </View>
     </CommonPreviewContainer>

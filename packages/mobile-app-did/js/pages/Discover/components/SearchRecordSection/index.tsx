@@ -14,7 +14,10 @@ import { ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
 import { useDiscoverJumpWithNetWork } from 'hooks/discover';
 import { darkColors } from 'assets/theme';
 
-export default function SearchRecordSection() {
+export type TSearchRecordSectionProps = {
+  onClick?: () => void;
+};
+export default function SearchRecordSection({ onClick }: TSearchRecordSectionProps) {
   const { t } = useLanguage();
 
   const dispatch = useAppCommonDispatch();
@@ -39,8 +42,9 @@ export default function SearchRecordSection() {
           url: i?.url,
         },
       });
+      onClick?.();
     },
-    [discoverJump],
+    [discoverJump, onClick],
   );
 
   if (showRecordList?.length === 0) {

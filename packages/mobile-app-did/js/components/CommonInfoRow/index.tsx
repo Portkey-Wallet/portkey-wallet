@@ -25,17 +25,21 @@ interface ICommonInfoRowProps {
   label: ILabel;
   value: IValue;
   isError?: boolean;
+  isLabelNoTail?: boolean;
 }
 
-const CommonInfoRow = ({ label, value, isError }: ICommonInfoRowProps) => {
+const CommonInfoRow = ({ label, value, isError, isLabelNoTail = false }: ICommonInfoRowProps) => {
   const { t } = useLanguage();
   const styles = getStyles();
 
   return (
     <View style={styles.infoRow}>
-      <View style={styles.infoLabelColumnWrap}>
+      <View style={[styles.infoLabelColumnWrap, isLabelNoTail && styles.infoLabelColumnWrapNoTail]}>
         <View style={styles.infoLabelWrap}>
-          <Text style={styles.infoLabel} numberOfLines={1} ellipsizeMode={'tail'}>
+          <Text
+            style={styles.infoLabel}
+            numberOfLines={isLabelNoTail ? undefined : 1}
+            ellipsizeMode={isLabelNoTail ? undefined : 'tail'}>
             {t(label.text)}
           </Text>
           {label.tooltipProps && (
@@ -97,6 +101,9 @@ export const getStyles = makeStyles(theme => ({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'flex-start',
+  },
+  infoLabelColumnWrapNoTail: {
+    flexShrink: 0,
   },
   infoLabelWrap: {
     display: 'flex',

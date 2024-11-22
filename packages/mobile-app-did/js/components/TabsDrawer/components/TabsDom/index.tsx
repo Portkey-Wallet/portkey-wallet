@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAppCASelector, useAppCommonDispatch, useLatestRef } from '@portkey-wallet/hooks';
-import { changeDrawerOpenStatus, removeAutoApproveItem } from '@portkey-wallet/store/store-ca/discover/slice';
+import { removeAutoApproveItem } from '@portkey-wallet/store/store-ca/discover/slice';
 import { isIOS, screenHeight, screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { darkColors, defaultColors } from 'assets/theme';
 import BrowserTab from 'components/BrowserTab';
@@ -19,10 +19,11 @@ import { useBookmarkList } from '@portkey-wallet/hooks/hooks-ca/discover';
 import { request } from '@portkey-wallet/api/api-did';
 import CommonToast from 'components/CommonToast';
 import GStyles from 'assets/theme/GStyles';
-import navigationService from 'utils/navigationService';
 import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { showWalletInfo } from '../WalletInfoOverlay';
 import { getHost } from '@portkey-wallet/utils/dapp/browser';
+import { useKeyboard } from 'hooks/useKeyboardHeight';
+import { TopSpacing } from 'pages/Chat/components/hooks';
 
 enum HANDLE_TYPE {
   REFRESH = 'Refresh',
@@ -35,7 +36,7 @@ enum HANDLE_TYPE {
 
 type IProps = {
   activeWebViewRef: any;
-  clickBottomActionBtn: (type: 'back' | 'forward' | 'showTab' | 'home' | 'more') => void;
+  clickBottomActionBtn: (type: 'back' | 'forward' | 'showTab' | 'home' | 'more' | 'search') => void;
 };
 
 function TabsDom({ activeWebViewRef, clickBottomActionBtn }: IProps) {
@@ -61,11 +62,21 @@ function TabsDom({ activeWebViewRef, clickBottomActionBtn }: IProps) {
     canGoBack: {},
     canGoForward: {},
   });
+  const { keyboardHeight, isKeyboardOpened } = useKeyboard(TopSpacing);
 
-  const handleNaviagte = useCallback(() => {
-    navigationService.navigate('DiscoverSearch', { address: activeItem?.url });
-    dispatch(changeDrawerOpenStatus(false));
-  }, [activeItem?.url, dispatch]);
+  const webViewContainerStyle = useMemo(
+    () =>
+      isKeyboardOpened
+        ? {
+            paddingBottom: keyboardHeight,
+          }
+        : undefined,
+    [isKeyboardOpened, keyboardHeight],
+  );
+
+  const handleSearch = useCallback(() => {
+    clickBottomActionBtn('search');
+  }, [clickBottomActionBtn]);
 
   const handleMark = useCallback(
     async (browserInfo: ITabItem) => {
@@ -197,7 +208,7 @@ function TabsDom({ activeWebViewRef, clickBottomActionBtn }: IProps) {
     }
 
     return (
-      <View key={ele.id} style={styles.webViewContainer}>
+      <View key={ele.id} style={[styles.webViewContainer, webViewContainerStyle]}>
         <BrowserTab
           id={ele.id}
           uri={ele.url}
@@ -227,7 +238,7 @@ function TabsDom({ activeWebViewRef, clickBottomActionBtn }: IProps) {
             <Touchable onPress={event => onTouch(event, ele, canGoBack, canGoForward)} style={rightDomStyle.iconWrap}>
               <Svg icon="more-circle" size={20} color={darkColors.iconBase1} />
             </Touchable>
-            <Touchable style={rightDomStyle.inputContent} onPress={handleNaviagte}>
+            <Touchable style={rightDomStyle.inputContent} onPress={handleSearch}>
               {!tabStateMap?.url?.includes('https://') && (
                 <View style={rightDomStyle.iconGroupWrap}>
                   <Svg icon="warning-fill" size={12} iconStyle={{ marginRight: pTd(10) }} />

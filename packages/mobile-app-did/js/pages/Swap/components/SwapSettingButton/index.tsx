@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useMemo, useState, useRef } from 'react';
-import { View, Text, TextInput } from 'react-native';
+import { View, Text, TextInput, Keyboard } from 'react-native';
 import { Input, useTheme } from '@rneui/themed';
 import Touchable from 'components/Touchable';
 import Svg from 'components/Svg';
@@ -199,6 +199,7 @@ const SwapSettingContent = () => {
 };
 
 const showSwapSettingModal = () => {
+  Keyboard.dismiss();
   OverlayModal.show(<SwapSettingContent />, {
     position: 'bottom',
   });

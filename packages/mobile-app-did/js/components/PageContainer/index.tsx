@@ -47,15 +47,14 @@ export default function PageContainer({
   return (
     <View
       {...safeAreaProps}
-      style={[{ backgroundColor: SafeAreaColorMap[safeAreaColor[0]] }, safeAreaProps?.[0]?.style]}>
+      style={[
+        { backgroundColor: SafeAreaColorMap[safeAreaColor[0]], paddingTop: getStatusBarHeight() },
+        safeAreaProps?.[0]?.style,
+      ]}>
       <SafeAreaBox
         edges={['bottom']}
         pageSafeBottomPadding={pageSafeBottomPadding}
-        style={[
-          { backgroundColor: SafeAreaColorMap[safeAreaColor[1]] },
-          safeAreaProps?.[1]?.style,
-          { paddingTop: getStatusBarHeight() },
-        ]}>
+        style={[{ backgroundColor: SafeAreaColorMap[safeAreaColor[1]] }, safeAreaProps?.[1]?.style]}>
         {!hideHeader && <CustomHeader themeType={themeType} {...props} />}
         {/* {themeType === 'white' && <StatusBar barStyle="dark-content" />} */}
         {scrollViewProps?.disabled ? (

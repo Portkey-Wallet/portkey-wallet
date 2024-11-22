@@ -233,6 +233,16 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
     );
   }, [closeAll, dispatch, onDone, styles.cardsContainer, t, tabs]);
 
+  const safeAreaColor: any = useMemo(() => {
+    if (!activeTabId) {
+      return ['black', 'black'];
+    }
+    if (isSearchShow) {
+      return ['black', 'lightBlack'];
+    }
+    return ['lightBlack', 'lightBlack'];
+  }, [activeTabId, isSearchShow]);
+
   return (
     <BrowserContext.Provider value={value}>
       <PageContainer
@@ -248,7 +258,7 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
           </View>
         }
         notHandleHardwareBackPress
-        safeAreaColor={['lightBlack', 'lightBlack']}
+        safeAreaColor={safeAreaColor}
         containerStyles={styles.container}
         scrollViewProps={{ disabled: true }}
         titleDom={

@@ -719,7 +719,7 @@ const SendHome: React.FC = () => {
             targetNetwork: targetNetwork,
           };
         } else {
-          setErrorMessage(getLimitTips(assetInfo.symbol, minAmount, maxAmount));
+          setErrorMessage(getLimitTips(assetInfo.label || assetInfo.symbol, minAmount, maxAmount));
           throw 'etansfer err';
         }
       } catch (error) {
@@ -845,6 +845,7 @@ const SendHome: React.FC = () => {
     assetInfo.chainId,
     assetInfo.decimals,
     assetInfo.symbol,
+    assetInfo.label,
     sendNumber,
     sendType,
     checkManagerSyncState,

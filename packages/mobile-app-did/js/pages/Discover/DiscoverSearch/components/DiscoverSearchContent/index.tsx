@@ -89,26 +89,40 @@ export default function DiscoverSearchContent({ address, onBack, isInner = false
   // }
 
   const onSearch = useCallback(
-    (inputValue: string) => {
+    (inputValue: string, isGo = false) => {
       const newValue = inputValue.replace(/\s+/g, '');
       if (!newValue) {
         return;
       }
 
-      console.log('checkIsUrl', checkIsUrl(newValue));
+      const isUrl = checkIsUrl(newValue);
 
-      if (checkIsUrl(newValue)) {
-        console.log('checkIsUrl', getHost(prefixUrlWithProtocol(newValue)));
-
-        onDiscoverJump(getHost(prefixUrlWithProtocol(newValue)), prefixUrlWithProtocol(newValue));
+      if (isGo) {
+        if (isUrl) {
+          onDiscoverJump(getHost(prefixUrlWithProtocol(newValue)), prefixUrlWithProtocol(newValue));
+        } else {
+          const _filterList = flatList.filter(item =>
+            item.title.replace(/\s+/g, '').toLocaleLowerCase().includes(newValue.toLocaleLowerCase()),
+          );
+          if (_filterList.length) {
+            const item = _filterList[0];
+            onDiscoverJump(item.title, item.url);
+          } else {
+            onDiscoverJump(newValue, `https://www.google.com/search?q=${newValue}`);
+          }
+        }
         isInner && onBack?.();
-      } else {
-        // else search in Discover list
+        return;
+      }
+
+      if (!checkIsUrl(newValue)) {
+        // search in Discover list
         const filterList = flatList.filter(item =>
           item.title.replace(/\s+/g, '').toLocaleLowerCase().includes(newValue.toLocaleLowerCase()),
         );
         setFilteredDiscoverList(filterList);
         setShowRecord(false);
+        return;
       }
     },
     [flatList, isInner, onBack, onDiscoverJump],
@@ -152,8 +166,8 @@ export default function DiscoverSearchContent({ address, onBack, isInner = false
               setValue(v);
               onSearch(value);
             }}
-            onSubmitEditing={() => onSearch(value)}
-            returnKeyType="search"
+            onSubmitEditing={() => onSearch(value, true)}
+            returnKeyType="go"
             placeholder={t('dApps, Sites, URL')}
             rightIconContainerStyle={styles.rightIconContainerStyle}
           />

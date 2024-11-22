@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useRef, useMemo } from 'react';
-import { View } from 'react-native';
+import { RefreshControl, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import { useLanguage } from 'i18n/hooks';
 import { getActivityListAsync } from '@portkey-wallet/store/store-ca/activity/action';
@@ -22,6 +22,8 @@ import { TextH1, TextL } from 'components/CommonText';
 import SafeAreaBox from 'components/SafeAreaBox';
 import LottieLoading from 'components/LottieLoading';
 import GStyles from 'assets/theme/GStyles';
+import CustomPullToRefreshHeader from 'pages/DashBoard/PullToRefresh';
+import { isIOS } from '@portkey-wallet/utils/mobile/device';
 
 interface RouterParams {
   chainId?: string;
@@ -99,7 +101,21 @@ const ActivityListPage = () => {
             )}
           </>
         }
-        refreshing={isLoading === ListLoadingEnum.header}
+        refreshControl={
+          isIOS ? (
+            <CustomPullToRefreshHeader
+              showLoading={false}
+              refreshing={isLoading === ListLoadingEnum.header}
+              onRefresh={() => getActivityList(true)}
+            />
+          ) : (
+            <RefreshControl
+              progressBackgroundColor={'transparent'}
+              refreshing={isLoading === ListLoadingEnum.header}
+              onRefresh={() => getActivityList(true)}
+            />
+          )
+        }
         data={currentActivity?.data || []}
         keyExtractor={(_item, index) => `${index}`}
         ListEmptyComponent={
@@ -112,7 +128,6 @@ const ActivityListPage = () => {
           </>
         }
         renderItem={renderItem}
-        onRefresh={() => getActivityList(true)}
         onEndReached={() => {
           if (!isInitRef.current) {
             return;

@@ -353,6 +353,10 @@ const LimitEnter = () => {
   }, [dAppChainId, expiryValue, getUnfilled, isReserveError, limitInfo, tokenPriceInfo.isReverse, wallet]);
 
   const actionButtonTitle = useMemo(() => {
+    if (!currencyBalances || Object.keys(currencyBalances).length === 0) {
+      return 'Place limit order';
+    }
+
     if (isReserveError) {
       return 'Limit not available';
     } else if (isExceedBalance) {
@@ -362,7 +366,14 @@ const LimitEnter = () => {
     } else {
       return 'Preview';
     }
-  }, [isBtnDisable, isExceedBalance, isReserveError, limitInfo.tokenIn?.label, limitInfo.tokenIn?.symbol]);
+  }, [
+    currencyBalances,
+    isBtnDisable,
+    isExceedBalance,
+    isReserveError,
+    limitInfo.tokenIn?.label,
+    limitInfo.tokenIn?.symbol,
+  ]);
 
   const { ref, value } = useKeyboardSafeArea(pTd(16));
   const [isRateInputting, setIsRateInputting] = useState(false);

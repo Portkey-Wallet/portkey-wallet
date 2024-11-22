@@ -7,10 +7,10 @@ import Svg from 'components/Svg';
 import CommonAvatar from 'components/CommonAvatar';
 import Touchable from 'components/Touchable';
 import GStyles from 'assets/theme/GStyles';
-import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { darkColors } from 'assets/theme';
 import { makeStyles } from '@rneui/themed';
 import CustomSwitch from 'components/CustomSwitch';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 
 type TokenItemProps = {
   item: TokenItemShowType;
@@ -18,7 +18,7 @@ type TokenItemProps = {
 };
 
 const TokenItem = ({ item, onHandleToken }: TokenItemProps) => {
-  const { currentNetwork } = useWallet();
+  const isMainnet = useIsMainnet();
   const itemStyle = getStyles();
   return (
     // if not touchable, can not scroll
@@ -50,7 +50,7 @@ const TokenItem = ({ item, onHandleToken }: TokenItemProps) => {
             {item.label || item.symbol}
           </TextL>
           <TextM numberOfLines={1} ellipsizeMode={'tail'} style={{ color: darkColors.textBase2 }}>
-            {`${item.displayChainName || ''} ${currentNetwork === 'TESTNET' && 'Testnet'}`}
+            {`${item.displayChainName || ''} ${isMainnet ? '' : 'Testnet'}`}
           </TextM>
         </View>
 

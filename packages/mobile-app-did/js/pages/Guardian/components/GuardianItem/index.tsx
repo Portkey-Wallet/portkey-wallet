@@ -261,6 +261,7 @@ function GuardianItemButton({
       disabledStyle={styles.disabledItemStyle}
       {...buttonProps}
       buttonStyle={[styles.buttonStyle, buttonProps.buttonStyle]}
+      titleStyle={styles.buttonTitleStyle}
     />
   );
 }
@@ -269,7 +270,6 @@ export default function GuardianItem({
   guardianItem,
   isButtonHide,
   renderBtn,
-  isBorderHide = false,
   guardiansStatus,
   setGuardianStatus,
   isExpired,
@@ -287,7 +287,9 @@ export default function GuardianItem({
     if (!AuthTypes.includes(guardianItem.guardianType)) {
       return guardianItem.guardianAccount;
     }
-    if (guardianItem.isPrivate) return PRIVATE_GUARDIAN_ACCOUNT;
+    if (guardianItem.isPrivate) {
+      return PRIVATE_GUARDIAN_ACCOUNT;
+    }
     return guardianItem.thirdPartyEmail || '';
   }, [guardianItem]);
 
@@ -409,7 +411,10 @@ const getStyles = makeStyles(theme => ({
     height: pTd(40),
     minWidth: pTd(84),
     borderRadius: pTd(20),
+    paddingTop: 0,
+    paddingBottom: 0,
   },
+  buttonTitleStyle: { fontSize: pTd(16), lineHeight: pTd(20) },
   approvedTitleStyles: {
     color: theme.colors.textBase3,
   },

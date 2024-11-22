@@ -55,10 +55,10 @@ const DashBoardHeader: React.FC = () => {
             </View>
           </TouchableOpacity>
         ) : (
-          <View style={styles.skeletonWrap}>
+          <TouchableOpacity onPress={onShowAccountSetting} style={styles.skeletonWrap}>
             <View style={styles.skeletonIcon} />
             <View style={styles.skeletonText} />
-          </View>
+          </TouchableOpacity>
         )}
       </Animated.View>
     );
@@ -68,7 +68,7 @@ const DashBoardHeader: React.FC = () => {
     return (
       <View style={styles.rightDomWrap}>
         <Touchable style={styles.svgWrap} onPress={onCopyAddress}>
-          <Svg icon="copy" size={pTd(24)} color={theme.colors.iconBase2} />
+          <Svg icon="copy" size={pTd(24)} />
         </Touchable>
         <Touchable
           style={styles.svgWrap}

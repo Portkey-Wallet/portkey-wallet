@@ -18,7 +18,6 @@ import navigationService from 'utils/navigationService';
 import { isValidInteger } from '@portkey-wallet/utils/reg';
 import { ApprovalType } from '@portkey-wallet/types/verifier';
 import { makeStyles, useTheme } from '@rneui/themed';
-import { KeyboardSafeArea } from 'components/KeyboardSafeArea';
 
 interface IProps {
   detail?: ITransferLimitItem | undefined;
@@ -135,52 +134,52 @@ const EditModal: React.FC<IProps> = ({ detail }: IProps) => {
       <ModalBody
         title={t(`${detail?.restricted ? 'Edit' : 'Set'} transaction limits`)}
         modalBodyType="bottom"
-        style={isInputing && { minHeight: pTd(600) }}>
-        <KeyboardSafeArea>
-          <View style={pageStyles.container}>
-            <TextM style={pageStyles.title}>{t('Limit per Transaction')}</TextM>
-            <CommonInput
-              type="general"
-              keyboardType={isIOS ? 'number-pad' : 'numeric'}
-              value={editInfo?.singleLimit || ''}
-              rightIcon={
-                <View style={pageStyles.rightIconContainer}>
-                  <Touchable onPress={() => onSingleLimitInput('')} style={{ marginRight: pTd(8) }}>
-                    <Svg icon="clear4" size={pTd(16)} />
-                  </Touchable>
-                  <TextM style={{ color: theme.colors.textBase2 }}>{detail?.symbol}</TextM>
-                </View>
-              }
-              onChangeText={onSingleLimitInput}
-              maxLength={maxLength}
-              errorMessage={singleLimitError.isError ? singleLimitError.errorMsg : ''}
-              onFocus={() => setIsInputing(true)}
-              onBlur={() => setIsInputing(false)}
-            />
-            <TextM style={pageStyles.title}>{t('Daily limit')}</TextM>
-            <CommonInput
-              type="general"
-              rightIcon={
-                <View style={pageStyles.rightIconContainer}>
-                  <Touchable onPress={() => onDailyLimitInput('')} style={{ marginRight: pTd(8) }}>
-                    <Svg icon="clear4" size={pTd(16)} />
-                  </Touchable>
-                  <TextM style={{ color: theme.colors.textBase2 }}>{detail?.symbol}</TextM>
-                </View>
-              }
-              keyboardType={isIOS ? 'number-pad' : 'numeric'}
-              value={editInfo?.dailyLimit || ''}
-              onChangeText={onDailyLimitInput}
-              maxLength={maxLength}
-              errorMessage={dailyLimitError.isError ? dailyLimitError.errorMsg : ''}
-              onFocus={() => setIsInputing(true)}
-              onBlur={() => setIsInputing(false)}
-            />
-            <CommonButton type="primary" style={pageStyles.button} onPress={save}>
-              Verify with guardian
-            </CommonButton>
-          </View>
-        </KeyboardSafeArea>
+        style={isInputing && { minHeight: pTd(576) }}>
+        {/* <KeyboardSafeArea bottomPad={pTd(16)}> */}
+        <View style={pageStyles.container}>
+          <TextM style={pageStyles.title}>{t('Limit per Transaction')}</TextM>
+          <CommonInput
+            type="general"
+            keyboardType={isIOS ? 'number-pad' : 'numeric'}
+            value={editInfo?.singleLimit || ''}
+            rightIcon={
+              <View style={pageStyles.rightIconContainer}>
+                <Touchable onPress={() => onSingleLimitInput('')} style={{ marginRight: pTd(8) }}>
+                  <Svg icon="clear4" size={pTd(16)} />
+                </Touchable>
+                <TextM style={{ color: theme.colors.textBase2 }}>{detail?.symbol}</TextM>
+              </View>
+            }
+            onChangeText={onSingleLimitInput}
+            maxLength={maxLength}
+            errorMessage={singleLimitError.isError ? singleLimitError.errorMsg : ''}
+            onFocus={() => setIsInputing(true)}
+            onBlur={() => setIsInputing(false)}
+          />
+          <TextM style={pageStyles.title}>{t('Daily limit')}</TextM>
+          <CommonInput
+            type="general"
+            rightIcon={
+              <View style={pageStyles.rightIconContainer}>
+                <Touchable onPress={() => onDailyLimitInput('')} style={{ marginRight: pTd(8) }}>
+                  <Svg icon="clear4" size={pTd(16)} />
+                </Touchable>
+                <TextM style={{ color: theme.colors.textBase2 }}>{detail?.symbol}</TextM>
+              </View>
+            }
+            keyboardType={isIOS ? 'number-pad' : 'numeric'}
+            value={editInfo?.dailyLimit || ''}
+            onChangeText={onDailyLimitInput}
+            maxLength={maxLength}
+            errorMessage={dailyLimitError.isError ? dailyLimitError.errorMsg : ''}
+            onFocus={() => setIsInputing(true)}
+            onBlur={() => setIsInputing(false)}
+          />
+          <CommonButton type="primary" style={pageStyles.button} onPress={save}>
+            Verify with guardian
+          </CommonButton>
+        </View>
+        {/* </KeyboardSafeArea> */}
       </ModalBody>
     </View>
   );

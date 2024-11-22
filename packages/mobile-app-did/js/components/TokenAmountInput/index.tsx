@@ -14,6 +14,7 @@ import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/u
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useInputFocus } from 'hooks/useInputFocus';
+import { isIOS } from '@portkey-wallet/utils/mobile/device';
 
 export interface ITokenAmountInput {
   value?: string;
@@ -116,7 +117,7 @@ const TokenAmountInput: React.FC<ITokenAmountInput> = props => {
                 onChangeText={onValueInputChange}
                 editable={editable}
               />
-              <Text style={styles.label}>{` ${label || symbol}`}</Text>
+              <Text style={[styles.label, !isIOS && styles.labelPaddingBottom]}>{` ${label || symbol}`}</Text>
             </>
           )}
         </>
@@ -161,6 +162,9 @@ export const getStyles = makeStyles(theme => ({
     fontSize: pTd(32),
     ...fonts.BGMediumFont,
   },
+  labelPaddingBottom: {
+    paddingBottom: 4,
+  },
   input: {
     color: theme.colors.textBase1,
     width: 'auto',
@@ -169,6 +173,7 @@ export const getStyles = makeStyles(theme => ({
     textAlign: 'right',
     fontSize: pTd(32),
     ...fonts.BGMediumFont,
+    fontWeight: 'bold',
     paddingHorizontal: 0,
   },
   errorInput: {

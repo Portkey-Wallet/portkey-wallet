@@ -103,7 +103,7 @@ const TokenDetailPage: React.FC<TokenDetailParams> = ({ tokenInfo, tokenSection 
     ...INIT_PAGE_INFO,
   });
 
-  const [isLoading, setIsLoading] = useState(ListLoadingEnum.hide);
+  const [isLoading, setIsLoading] = useState(ListLoadingEnum.header);
   const getActivityList = useLockCallback(
     async (isInit = false) => {
       const maxResultCount = 20;
@@ -183,9 +183,8 @@ const TokenDetailPage: React.FC<TokenDetailParams> = ({ tokenInfo, tokenSection 
   }, [balanceShow]);
 
   const onReceivePress = useCallback(() => {
-    console.log('tokenSection : ', tokenSection);
-    navigationService.navigate('Receive', { tokenInfo: tokenSection, chainId: tokenInfo.chainId });
-  }, [tokenInfo.chainId, tokenSection]);
+    navigationService.navigate('Receive', { tokenInfo: tokenSection });
+  }, [tokenSection]);
 
   const renderButtonItems = useCallback(() => {
     return (
@@ -241,7 +240,12 @@ const TokenDetailPage: React.FC<TokenDetailParams> = ({ tokenInfo, tokenSection 
   const listHeader = useMemo(() => {
     return (
       <View style={styles.card}>
-        <Text style={[styles.tokenBalance, amountTextOverflow ? styles.textOverflow : {}]}>{`${balanceShow}`}</Text>
+        <Text
+          style={[
+            styles.tokenBalance,
+            fonts.BGMediumFont,
+            amountTextOverflow ? styles.textOverflow : {},
+          ]}>{`${balanceShow}`}</Text>
         {isMainnet && currentTokenInfo?.balanceInUsd && (
           <TextS style={[styles.dollarBalance]}>{formatAmountUSDShow(currentTokenInfo?.balanceInUsd)}</TextS>
         )}

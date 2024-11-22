@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useCallback } from 'react';
+import React, { Dispatch, SetStateAction, useCallback, useMemo } from 'react';
 import { Keyboard, ScrollView, StyleSheet, View } from 'react-native';
 import { TextL, TextM } from 'components/CommonText';
 import OverlayModal from 'components/OverlayModal';
@@ -30,6 +30,7 @@ type RememberMeProps = {
 
 type RememberMeOverlayProps = {
   value: SessionExpiredPlan;
+  fromAccountSetting?: boolean;
   onCancel?: () => void;
   onConfirm: (value: SessionExpiredPlan) => void;
 };
@@ -72,7 +73,7 @@ function RememberMeOverlay(props: RememberMeOverlayProps) {
 }
 
 function PeriodOverlay(props: RememberMeOverlayProps) {
-  const { value, onConfirm } = props;
+  const { value, onConfirm, fromAccountSetting = false } = props;
 
   const Overlay = getOverlayStyle();
   const { theme } = useTheme();
@@ -88,10 +89,14 @@ function PeriodOverlay(props: RememberMeOverlayProps) {
     [onConfirm, value],
   );
 
+  const selectPeriodArray = useMemo(() => {
+    return fromAccountSetting ? SessionKeyArray.filter(i => i.value !== SessionExpiredPlan.always) : SessionKeyArray;
+  }, [fromAccountSetting]);
+
   return (
     <ModalBody modalBodyType="bottom" title={'Session expires in'}>
       <ScrollView style={Overlay.periodWrapStyle}>
-        {SessionKeyArray.map(ele => (
+        {selectPeriodArray.map(ele => (
           <Touchable key={ele.value} style={Overlay.periodItemRow} onPress={() => onPressItem(ele?.value)}>
             <TextL>{ele.label}</TextL>
             {value === ele.value && <Svg icon="selected" size={pTd(24)} color={theme.colors.bgBrand1} />}

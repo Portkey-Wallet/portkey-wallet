@@ -171,11 +171,11 @@ export default memo(ProfileAddressSection);
 
 const styles = StyleSheet.create({
   itemWrap: {
-    padding: pTd(16),
+    padding: pTd(12),
     borderRadius: pTd(6),
   },
   content: {
-    marginBottom: pTd(8),
+    // marginBottom: pTd(8),
     // backgroundColor: darkColors.bgBrand4,
   },
   address: {

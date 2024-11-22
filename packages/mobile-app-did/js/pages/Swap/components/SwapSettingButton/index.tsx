@@ -18,6 +18,7 @@ import { getStyles } from './style';
 import { KeyboardSafeArea } from 'components/KeyboardSafeArea';
 import { isStrictInteger, isValidNumberV2 } from '@portkey-wallet/utils/reg';
 import BigNumber from 'bignumber.js';
+import { ZERO } from '@portkey-wallet/constants/misc';
 
 interface ISwapSettingButtonProps {
   style?: ViewStyleType;
@@ -61,7 +62,7 @@ const SwapSettingContent = () => {
         slippageToleranceInputRef.current?.focus();
       }, 100);
     } else {
-      setSlippageTolerance(value);
+      setSlippageTolerance(ZERO.plus(value).times(100).toFixed());
     }
   }, []);
 

@@ -62,7 +62,7 @@ export default function SelectNFT({ nftInfos, noDataMessage, toAddress, loading 
                 numberOfLines={1}
                 ellipsizeMode={'tail'}
                 style={[DarkFontStyles.textBase2, { lineHeight: pTd(20) }]}>
-                {`${nft.displayChainName || ''} ${!isMainnet && 'Testnet'}`}
+                {`${nft.displayChainName || ''} ${isMainnet ? '' : 'Testnet'}`}
               </TextM>
             </View>
             <View>

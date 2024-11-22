@@ -1,12 +1,12 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, { useCallback, useState } from 'react';
-import { View, Image, StyleSheet, StyleProp, ViewStyle, TouchableOpacity, ScrollView, Text } from 'react-native';
+import { View, Image, StyleSheet, StyleProp, ViewStyle, TouchableOpacity, ScrollView } from 'react-native';
 import { pTd } from 'utils/unit';
 import PortkeySkeleton from 'components/PortkeySkeleton';
 import { TAppLink } from '@portkey-wallet/types/types-ca/cms';
 import useJump from 'hooks/useJump';
 import { darkColors } from 'assets/theme';
-import { TextS } from 'components/CommonText';
+import { TextM, TextXXL } from 'components/CommonText';
 import fonts from 'assets/theme/fonts';
 
 export interface BannerItemProps {
@@ -80,10 +80,10 @@ const CarouselComponent: React.FC<BannerProps> = ({ containerStyle, items, onCli
                   resizeMode="cover"
                   onLoadEnd={onImageLoadEnd}
                 />
-                <Text numberOfLines={1} style={[fonts.BGMediumFont, styles.title]}>
+                <TextXXL numberOfLines={1} ellipsizeMode="tail" style={styles.title}>
                   {item.title || ''}
-                </Text>
-                <TextS style={styles.description}>{item.description || ''}</TextS>
+                </TextXXL>
+                <TextM style={styles.description}>{item.description || ''}</TextM>
               </TouchableOpacity>
             ))}
           </View>
@@ -96,8 +96,9 @@ const CarouselComponent: React.FC<BannerProps> = ({ containerStyle, items, onCli
 const styles = StyleSheet.create({
   container: {
     marginRight: pTd(-16),
-    paddingVertical: pTd(16),
-    height: pTd(163),
+    height: pTd(162),
+    alignItems: 'center',
+    flexDirection: 'row',
   },
   carouselWrap: {
     flexDirection: 'row',
@@ -105,12 +106,12 @@ const styles = StyleSheet.create({
   },
   carouselItemWrap: {
     marginRight: pTd(8),
-    padding: pTd(12),
+    padding: pTd(11),
     width: pTd(176),
     height: pTd(130),
     borderWidth: pTd(1),
     borderColor: darkColors.borderBase1,
-    borderRadius: pTd(8),
+    borderRadius: pTd(16),
     backgroundColor: darkColors.bgBase2,
   },
   avatar: {
@@ -119,14 +120,14 @@ const styles = StyleSheet.create({
     borderRadius: pTd(21),
   },
   title: {
-    marginTop: pTd(12),
+    marginTop: pTd(16),
     marginBottom: pTd(4),
-    fontSize: pTd(20),
     lineHeight: pTd(24),
-    color: darkColors.textBase1,
+    ...fonts.BGMediumFont,
   },
   description: {
     color: darkColors.textBase2,
+    lineHeight: pTd(17.5),
   },
 });
 

@@ -87,10 +87,10 @@ export default function TabRoot() {
       initialRouteName="Wallet"
       screenOptions={({ route }) => ({
         tabBarStyle: {
-          paddingTop: 6,
+          paddingTop: 0,
           backgroundColor: defaultColors.bgBase2,
           borderTopColor: defaultColors.borderBase1,
-          borderTopWidth: pTd(1),
+          borderTopWidth: route.name === TabRouteNameEnum.DISCOVER ? 0 : pTd(1),
         },
         tabBarAllowFontScaling: false,
         header: () => null,

@@ -23,6 +23,7 @@ import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { useTransferLimitList } from '@portkey-wallet/hooks/hooks-ca/security';
 import { darkColors } from 'assets/theme';
 import Loading from 'components/Loading';
+import NoData from 'components/NoData';
 
 const _renderPaymentSecurityItem = ({ item }: { item: ITransferLimitItem }) => {
   const defaultToken = useDefaultToken();
@@ -128,6 +129,9 @@ const PaymentSecurityList: React.FC = () => {
     } else {
       Loading.hide();
     }
+    setTimeout(() => {
+      Loading.hide();
+    }, 2000);
   }, [list]);
 
   useEffectOnce(() => {
@@ -152,6 +156,7 @@ const PaymentSecurityList: React.FC = () => {
         renderItem={({ item }) => <PaymentSecurityItem item={item} />}
         onRefresh={() => init()}
         onEndReached={() => getList()}
+        ListEmptyComponent={() => <NoData noPic topDistance={pTd(80)} message="No assets yet" />}
       />
     </PageContainer>
   );

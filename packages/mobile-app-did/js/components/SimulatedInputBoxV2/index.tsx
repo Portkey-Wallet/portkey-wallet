@@ -1,11 +1,11 @@
 import { darkColors } from 'assets/theme';
-import { FontStyles } from 'assets/theme/styles';
-import { TextM } from 'components/CommonText';
+import { TextL } from 'components/CommonText';
 import Svg from 'components/Svg';
 import React from 'react';
-import { StyleSheet, View, TouchableWithoutFeedback } from 'react-native';
+import { View, TouchableWithoutFeedback } from 'react-native';
 import { pTd } from 'utils/unit';
 import CommonInput from 'components/CommonInput';
+import { makeStyles } from '@rneui/themed';
 
 interface ISimulatedInputBoxProps {
   placeholder?: string;
@@ -13,41 +13,18 @@ interface ISimulatedInputBoxProps {
   rightDom?: React.ReactNode;
 }
 
-{
-  /* <CommonInput
-autoFocus
-grayBorder
-theme="black-bg"
-ref={iptRef}
-value={value}
-onChangeText={v => setValue(v)}
-onSubmitEditing={onSearch}
-returnKeyType="search"
-placeholder={t('Search Dapp or enter URL')}
-containerStyle={styles.inputStyle}
-rightIcon={
-  value ? (
-    <Touchable onPress={clearText}>
-      <Svg icon="clear3" size={pTd(16)} />
-    </Touchable>
-  ) : undefined
-}
-rightIconContainerStyle={styles.rightIconContainerStyle}
-style={styles.rnInputStyle}
-/> */
-}
-
 export default function SimulatedInputBox({
   placeholder = 'dApps, Sites, URL',
   onClickInput,
 }: ISimulatedInputBoxProps) {
+  const styles = getStyles();
+
   return (
-    <View style={[styles.wrap, { backgroundColor: 'transparent' }]}>
+    <View style={styles.wrap}>
       <TouchableWithoutFeedback onPress={() => onClickInput?.()}>
         <View style={styles.innerInput}>
-          <TextM style={[FontStyles.font7, styles.content]}>{placeholder}</TextM>
-          {/* {rightDom} */}
-          <Svg icon="search" size={pTd(20)} color="#FFF" />
+          <TextL style={styles.inputPreview}>{placeholder}</TextL>
+          <Svg icon="search" size={pTd(16)} color="#FFF" />
         </View>
       </TouchableWithoutFeedback>
     </View>
@@ -55,65 +32,54 @@ export default function SimulatedInputBox({
 }
 
 export function SimulatedInput({ placeholder = 'dApps, Sites, URL', onClickInput }: ISimulatedInputBoxProps) {
+  const styles = getStyles();
+
   return (
-    <View style={[styles.wrap, { backgroundColor: 'transparent' }]}>
+    <View style={styles.wrap}>
       <TouchableWithoutFeedback onPress={() => onClickInput?.()}>
         <View style={styles.innerInput}>
           <CommonInput
             autoFocus
             grayBorder
             theme="black-bg"
-            // ref={iptRef}
-            // value={value}
-            // onChangeText={v => setValue(v)}
-            // onSubmitEditing={onSearch}
             returnKeyType="search"
             placeholder={placeholder}
             containerStyle={{
               backgroundColor: darkColors.bgBase1,
               height: pTd(20),
             }}
-            // rightIcon={
-            //   value ? (
-            //     <Touchable onPress={clearText}>
-            //       <Svg icon="clear3" size={pTd(16)} />
-            //     </Touchable>
-            //   ) : undefined
-            // }
             rightIconContainerStyle={{}}
             style={{
-              // backgroundColor: defaultColors.white,
               height: pTd(20),
             }}
           />
-          {/* <TextM style={[FontStyles.font7, styles.content]}>{placeholder}</TextM> */}
-          {/* {rightDom} */}
-          <Svg icon="search" size={pTd(20)} color="#FFF" />
+          <Svg icon="search" size={pTd(16)} color="#FFF" />
         </View>
       </TouchableWithoutFeedback>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = makeStyles(theme => ({
   wrap: {
     flex: 1,
+    backgroundColor: 'transparent',
+  },
+  inputPreview: {
+    color: theme.colors.textBase3,
+    flex: 1,
+    lineHeight: pTd(20),
   },
   innerInput: {
-    height: pTd(36),
-    paddingHorizontal: pTd(12),
-    paddingVertical: pTd(8),
+    height: pTd(40),
+    paddingHorizontal: pTd(16),
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    borderRadius: pTd(24),
-    backgroundColor: darkColors.bgBase1,
+    borderRadius: pTd(20),
+    backgroundColor: theme.colors.bgBase1,
     borderWidth: pTd(1),
-    borderColor: darkColors.borderBase1,
+    borderColor: theme.colors.borderBase1,
   },
-  content: {
-    flex: 1,
-    marginHorizontal: pTd(8),
-  },
-});
+}));

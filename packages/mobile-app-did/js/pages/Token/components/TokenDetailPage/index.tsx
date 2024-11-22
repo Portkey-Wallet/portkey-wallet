@@ -183,9 +183,8 @@ const TokenDetailPage: React.FC<TokenDetailParams> = ({ tokenInfo, tokenSection 
   }, [balanceShow]);
 
   const onReceivePress = useCallback(() => {
-    console.log('tokenSection : ', tokenSection);
-    navigationService.navigate('Receive', { tokenInfo: tokenSection, chainId: tokenInfo.chainId });
-  }, [tokenInfo.chainId, tokenSection]);
+    navigationService.navigate('Receive', { tokenInfo: tokenSection });
+  }, [tokenSection]);
 
   const renderButtonItems = useCallback(() => {
     return (

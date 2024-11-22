@@ -1,7 +1,12 @@
 import { request } from '@portkey-wallet/api/api-did';
 import { ITokenSectionResponse } from '@portkey-wallet/types/types-ca/token';
 import { IAssetItemType, IAssetNftCollection, IAssetToken } from './type';
-import { NFT_SMALL_SIZE, NFT_MIDDLE_SIZE, NFT_LARGE_SIZE } from '@portkey-wallet/constants/constants-ca/assets';
+import {
+  NFT_SMALL_SIZE,
+  NFT_MIDDLE_SIZE,
+  NFT_LARGE_SIZE,
+  NFT_MIDDLE_X_SIZE,
+} from '@portkey-wallet/constants/constants-ca/assets';
 import { ICryptoBoxAssetItemType } from '@portkey-wallet/types/types-ca/crypto';
 import { NFTItemBaseType } from '@portkey-wallet/types/types-ca/assets';
 import { ChainId } from '@portkey-wallet/types';
@@ -118,7 +123,7 @@ export function fetchNFTSeriesList({
       caAddressInfos,
       skipCount,
       maxResultCount,
-      width: NFT_SMALL_SIZE,
+      width: NFT_MIDDLE_X_SIZE,
       height: -1,
     },
   });

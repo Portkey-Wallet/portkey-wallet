@@ -30,10 +30,12 @@ import ActionSheet from 'components/ActionSheet';
 import { useNavigation } from '@react-navigation/native';
 import navigationService from 'utils/navigationService';
 import { useCurrentDappList } from '@portkey-wallet/hooks/hooks-ca/dapp';
-import { getOrigin } from '@portkey-wallet/utils/dapp/browser';
+import { getHost, getOrigin } from '@portkey-wallet/utils/dapp/browser';
 import Touchable from 'components/Touchable';
 import { ITabContext } from './tools';
 import TabsDom from './components/TabsDom';
+import DiscoverWebsiteImage from 'pages/Discover/components/DiscoverWebsiteImage';
+import { useGetCmsWebsiteInfo } from '@portkey-wallet/hooks/hooks-ca/cms';
 
 export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
   const { t } = useLanguage();
@@ -44,6 +46,7 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
   const { isDrawerOpen, discoverMap = {}, activeTabId } = useAppCASelector(state => state.discover);
   const { tabs } = discoverMap[networkType] ?? {};
   const activeItem = useMemo(() => tabs?.find(ele => ele.id === activeTabId) as ITabItem, [activeTabId, tabs]);
+  const { getCmsWebsiteInfoImageUrl, getCmsWebsiteInfoName } = useGetCmsWebsiteInfo();
 
   const tabRef = useRef<IBrowserTab | null>(null);
   const [preActiveTabId, setPreActiveTabId] = useState<number | undefined>(activeTabId);
@@ -225,13 +228,32 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
     <BrowserContext.Provider value={value}>
       <PageContainer
         hideTouchable
-        hideHeader
         type="leftBack"
-        noCenterDom={!!activeTabId}
+        hideHeader={!activeTabId}
+        noCenterDom={!activeTabId}
+        leftDom={
+          <View style={styles.leftWrap}>
+            <Touchable onPress={backToSearchPage} style={styles.backIcon}>
+              <Svg icon="left-arrow-v2" size={pTd(20)} color={darkColors.iconBase1} />
+            </Touchable>
+          </View>
+        }
         notHandleHardwareBackPress
-        safeAreaColor={['black', activeTabId ? 'lightBlack' : 'black']}
+        safeAreaColor={['black', 'black']}
         containerStyles={styles.container}
-        scrollViewProps={{ disabled: true }}>
+        scrollViewProps={{ disabled: true }}
+        titleDom={
+          activeTabId ? (
+            <View style={styles.headerWrap}>
+              <DiscoverWebsiteImage size={pTd(24)} imageUrl={getCmsWebsiteInfoImageUrl(activeItem.url)} />
+              <TextS numberOfLines={1} ellipsizeMode="tail" style={styles.header}>
+                {getCmsWebsiteInfoName(activeItem.url) || activeItem?.name || getHost(activeItem?.url)}
+              </TextS>
+            </View>
+          ) : (
+            ''
+          )
+        }>
         <TabsDom activeWebViewRef={tabRef} clickBottomActionBtn={clickBottomActionBtn} />
         {!activeTabId && isDrawerOpen && CardGroupDom}
       </PageContainer>
@@ -255,17 +277,17 @@ const styles = StyleSheet.create({
     ...GStyles.paddingArg(24, 20),
   },
   headerWrap: {
-    height: pTd(22),
-  },
-  header: {
-    ...fonts.mediumFont,
-    lineHeight: pTd(24),
-  },
-  leftWrap: {
-    display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    paddingLeft: pTd(16),
+  },
+  header: {
+    marginLeft: pTd(8),
+    fontSize: pTd(16),
+    lineHeight: pTd(22),
+  },
+  leftWrap: {
+    paddingHorizontal: pTd(16),
+    alignItems: 'center',
   },
   backIcon: {
     marginRight: pTd(4),
@@ -284,7 +306,7 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     paddingLeft: pTd(16),
     paddingRight: pTd(16),
-    paddingBottom: pTd(64),
+    paddingBottom: pTd(80),
   },
   switchButtonWrap: {
     alignItems: 'center',

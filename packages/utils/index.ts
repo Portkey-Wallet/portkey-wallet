@@ -201,12 +201,24 @@ export const formatChainInfoToShow = (
  * @param type
  * @returns
  */
-export const formatStr2EllipsisStr = (address = '', digit = 8, type: 'middle' | 'tail' = 'middle'): string => {
+export const formatStr2EllipsisStr = (
+  address = '',
+  digit = 8,
+  type: 'middle' | 'tail' = 'middle',
+  suffixDigit?: number,
+): string => {
   if (!address) return '';
 
   const len = address.length;
 
   if (type === 'tail') return len > digit ? `${address.slice(0, digit)}...` : address;
+
+  if (suffixDigit) {
+    if (len < digit + suffixDigit) return address;
+    const pre = address.substring(0, digit);
+    const suffix = address.substring(len - suffixDigit);
+    return `${pre}...${suffix}`;
+  }
 
   if (len < 2 * digit) return address;
   const pre = address.substring(0, digit);

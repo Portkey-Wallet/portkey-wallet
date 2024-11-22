@@ -248,8 +248,9 @@ const SwapPreview = () => {
         <CommonInfoRow
           label={{ text: 'Network' }}
           value={{ text: 'aelf dAppChain', leftSvgName: getChainSvgName('tDVV') }}
+          isLabelNoTail={true}
         />
-        <CommonInfoRow label={{ text: 'Limit price' }} value={{ text: price }} />
+        <CommonInfoRow label={{ text: 'Limit price' }} value={{ text: price }} isLabelNoTail={true} />
         <CommonInfoRow
           label={{
             text: 'Expires by',
@@ -259,6 +260,7 @@ const SwapPreview = () => {
             },
           }}
           value={{ text: `${expiryValue} day` }}
+          isLabelNoTail={true}
         />
         <CommonInfoRow
           label={{
@@ -270,6 +272,7 @@ const SwapPreview = () => {
             },
           }}
           value={{ text: limitFeeStr, textBelow: isMainnet ? limitFeeUsd : '' }}
+          isLabelNoTail={true}
         />
         <CommonInfoRow
           label={{
@@ -280,6 +283,7 @@ const SwapPreview = () => {
             },
           }}
           value={{ text: gasFeeValue, textBelow: isMainnet ? gasFeeUsd : '' }}
+          isLabelNoTail={true}
         />
       </View>
       <CommonPromptCard

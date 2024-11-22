@@ -48,7 +48,7 @@ export default function TokenSection() {
         reload();
       }
     },
-    [reload, selectedItem],
+    [onNavigate, reload, selectedItem],
   );
 
   const renderItem = useCallback(
@@ -124,7 +124,7 @@ export default function TokenSection() {
     } else {
       return <View />;
     }
-  }, [accountBalanceUSD]);
+  }, [accountBalanceUSD, styles]);
 
   return (
     <View style={styles.tokenListPageWrap}>

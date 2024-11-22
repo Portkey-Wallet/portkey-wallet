@@ -73,7 +73,7 @@ export default function SelectToken({ tokenInfos, noDataMessage, toAddress, load
                 {item.label || item.symbol}
               </TextL>
               <TextM numberOfLines={1} style={DarkFontStyles.textBase2} ellipsizeMode={'tail'}>
-                {`${item.displayChainName || ''} ${!isMainnet && 'Testnet'}`}
+                {`${item.displayChainName || ''} ${isMainnet ? '' : 'Testnet'}`}
               </TextM>
             </View>
             <View style={itemStyle.rightAmount}>

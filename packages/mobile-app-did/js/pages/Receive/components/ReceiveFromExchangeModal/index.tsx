@@ -3,6 +3,7 @@ import OverlayModal from 'components/OverlayModal';
 import { Keyboard, Text, View } from 'react-native';
 import Touchable from 'components/Touchable';
 import { pTd } from 'utils/unit';
+import fonts from 'assets/theme/fonts';
 import { ModalBody } from 'components/ModalBody';
 import { makeStyles } from '@rneui/themed';
 import ExchangeIcons from 'components/ExchangeIcons';
@@ -75,9 +76,9 @@ const getStyles = makeStyles((theme: any) => ({
     borderRadius: pTd(24),
   },
   positiveText: {
-    fonsweight: '600',
     fontSize: pTd(16),
     color: theme.colors.textBrand4,
+    ...fonts.SGMediumFont,
   },
   negativeButton: {
     marginTop: pTd(16),
@@ -90,8 +91,8 @@ const getStyles = makeStyles((theme: any) => ({
     borderColor: theme.colors.borderNeutral2,
   },
   negativeText: {
-    fonsweight: '600',
     fontSize: pTd(16),
     color: theme.colors.textBase1,
+    ...fonts.SGMediumFont,
   },
 }));

@@ -46,7 +46,9 @@ export default function AmountNFT(props: AmountNFT) {
   const onLayout = useCallback(
     (event: LayoutChangeEvent) => {
       const { width, height } = event.nativeEvent.layout;
-      if (wrapperLayoutProps.width === width && wrapperLayoutProps.height === height) return;
+      if (wrapperLayoutProps.width === width && wrapperLayoutProps.height === height) {
+        return;
+      }
       setWrapperLayoutProps({ width, height });
     },
     [wrapperLayoutProps],
@@ -143,7 +145,7 @@ export const getStyles = makeStyles(theme => ({
   inputStyle: {
     width: 'auto',
     minHeight: pTd(38),
-    textAlign: 'center',
+    textAlign: 'left',
     color: theme.colors.textBase1,
     fontSize: pTd(32),
     ...fonts.BGMediumFont,

@@ -167,7 +167,7 @@ export const ToAddressInputRef = forwardRef<IToAddressInputRef, IToAddressInput>
     ],
   );
 
-  const getNetworkList = useDebounceCallback(
+  const getNetworkList = useCallback(
     async (toAddress: string) => {
       if (!toAddress) {
         setWarning([]);
@@ -219,11 +219,11 @@ export const ToAddressInputRef = forwardRef<IToAddressInputRef, IToAddressInput>
   const pasteAddress = useCallback(async () => {
     try {
       const str = await getStringAsync();
-      setSelectedToContact({ name: '', address: str });
+      onInput(str);
     } catch (error) {
       console.log('pasteAddress', error);
     }
-  }, [setSelectedToContact]);
+  }, [onInput]);
 
   const onPressEdit = useCallback(async () => {
     setCheckFinish(true);
@@ -234,7 +234,7 @@ export const ToAddressInputRef = forwardRef<IToAddressInputRef, IToAddressInput>
     setSelectedToContact((pre: any) => ({ ...pre, name: '' }));
   }, [onInput, selectedToContact.address, setCheckFinish, setSelectedToContact, setStep]);
 
-  useEffect(() => {
+  const checkAddress = useDebounceCallback(async () => {
     const FEPass = checkAddressByFE(selectedToContact.address);
 
     // when send nft other chain is not support
@@ -243,9 +243,13 @@ export const ToAddressInputRef = forwardRef<IToAddressInputRef, IToAddressInput>
       return setWarning([WarningKey.INVALID_ADDRESS]);
     }
     if (!FEPass) {
-      getNetworkList(selectedToContact.address);
+      await getNetworkList(selectedToContact.address);
     }
   }, [checkAddressByFE, getNetworkList, selectedToContact.address, sendType, setCheckFinish, setWarning]);
+
+  useEffect(() => {
+    checkAddress();
+  }, [checkAddress, checkAddressByFE, getNetworkList, selectedToContact.address, sendType, setCheckFinish, setWarning]);
 
   useImperativeHandle(
     ref,
@@ -312,9 +316,9 @@ export const ToAddressInputRef = forwardRef<IToAddressInputRef, IToAddressInput>
             {selectedToContact.address && !isChecking && checkFinish && checkedPass && (
               <Svg
                 icon={'checked'}
-                size={pTd(20)}
+                size={pTd(24)}
                 color={defaultColors.iconSuccess1}
-                iconStyle={GStyles.marginLeft(16)}
+                iconStyle={GStyles.marginLeft(14)}
               />
             )}
 
@@ -402,7 +406,7 @@ export const getStyles = makeStyles((theme: any) => ({
     paddingVertical: 0,
     paddingRight: pTd(6),
     fontSize: pTd(14),
-    width: pTd(260),
+    width: pTd(273),
   },
   right: {
     width: pTd(16),

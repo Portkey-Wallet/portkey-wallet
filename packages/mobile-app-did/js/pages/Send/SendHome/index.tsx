@@ -58,7 +58,7 @@ import { TextTitle } from 'components/CommonText';
 import { useEtransferFee } from 'hooks/etransfer';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { getAssetsEstimation } from '@portkey-wallet/store/store-ca/assets/api';
-import { addressFormat, getChainIdByAddress } from '@portkey-wallet/utils';
+import { addressFormat, getChainIdByAddress, sleep } from '@portkey-wallet/utils';
 import { ChainId } from '@portkey-wallet/types';
 import ToAddressInput, { IToAddressInputRef } from '../components/ToAddressInput';
 import TokenBalanceShow from 'components/TokenBalanceShow';
@@ -500,7 +500,11 @@ const SendHome: React.FC = () => {
     setStep(2);
   }, [assetInfo.chainId, assetInfo.symbol, defaultToken.symbol]);
 
-  const nextStep = useCallback(() => {
+  const nextStep = useCallback(async () => {
+    Loading.show();
+    await sleep(600);
+    Loading.hide();
+
     if (warning[0] === WarningKey.DAPP_CHAIN_TO_NO_AFFIX_ADDRESS_ELF) {
       return dappChainToNoAffixAddressAction();
     } else if (warning[0] === WarningKey.MAIN_CHAIN_TO_NO_AFFIX_ADDRESS_ELF) {
@@ -719,7 +723,7 @@ const SendHome: React.FC = () => {
             targetNetwork: targetNetwork,
           };
         } else {
-          setErrorMessage(getLimitTips(assetInfo.symbol, minAmount, maxAmount));
+          setErrorMessage(getLimitTips(assetInfo.label || assetInfo.symbol, minAmount, maxAmount));
           throw 'etansfer err';
         }
       } catch (error) {
@@ -759,8 +763,9 @@ const SendHome: React.FC = () => {
         transactionFee = divDecimals(f, defaultToken.decimals).toString();
         transactionUnit = 'ELF';
         transferType = TransferType.E_BRIDGE;
-
-        await eBridgeActionSheet();
+        if (ZERO.plus(recommendEBridge.maxAmount).lt(sendNumber)) {
+          await eBridgeActionSheet();
+        }
         OverlayModal.hide();
         console.log('checkCanPreview 17');
         return {
@@ -782,6 +787,8 @@ const SendHome: React.FC = () => {
         Loading.hide();
       }
     }
+
+    console.log('isAELFCross', isAELFCross, selectedToContact);
 
     // SameChain or CrossChain in aelf
     try {
@@ -840,11 +847,11 @@ const SendHome: React.FC = () => {
   }, [
     chainInfo,
     balance,
-    selectedToContact.chainId,
-    selectedToContact.address,
+    selectedToContact,
     assetInfo.chainId,
     assetInfo.decimals,
     assetInfo.symbol,
+    assetInfo.label,
     sendNumber,
     sendType,
     checkManagerSyncState,
@@ -882,7 +889,7 @@ const SendHome: React.FC = () => {
       transactionFee: result?.transactionFee || '0',
       transactionFeeUnit: result?.transactionUnit || '',
       networkFee: result?.networkFee || '0',
-      networkFeeUnit: result?.networkFeeUnit || '',
+      networkFeeUnit: result?.networkFeeUnit || 'ELF',
       receiveAmount: result?.receiveAmount,
       receiveAmountUsd: result?.receiveAmountUsd,
       transferType: result?.transferType || TransferType.GENERAL_SAME_CHAIN,

@@ -22,6 +22,8 @@ import { TextH1, TextL } from 'components/CommonText';
 import SafeAreaBox from 'components/SafeAreaBox';
 import LottieLoading from 'components/LottieLoading';
 import GStyles from 'assets/theme/GStyles';
+import CustomPullToRefreshHeader from 'pages/DashBoard/PullToRefresh';
+import { isIOS } from '@portkey-wallet/utils/mobile/device';
 
 interface RouterParams {
   chainId?: string;
@@ -89,22 +91,33 @@ const ActivityListPage = () => {
       <FlashList
         ListHeaderComponent={
           <>
+            {isIOS ? (
+              <></>
+            ) : (
+              isLoading === ListLoadingEnum.header && (
+                <View style={{ marginBottom: pTd(24) }}>
+                  <LottieLoading style={{ width: pTd(32) }} />
+                </View>
+              )
+            )}
             <View style={styles.title}>
               <TextH1>{t('Activity')}</TextH1>
             </View>
-            {isLoading === ListLoadingEnum.header && (
-              <View style={{ marginBottom: pTd(24), marginTop: pTd(24) }}>
-                <LottieLoading style={{ width: pTd(32) }} />
-              </View>
-            )}
           </>
         }
         refreshControl={
-          <RefreshControl
-            progressBackgroundColor={'transparent'}
-            refreshing={isLoading === ListLoadingEnum.header}
-            onRefresh={() => getActivityList(true)}
-          />
+          isIOS ? (
+            <CustomPullToRefreshHeader
+              refreshing={isLoading === ListLoadingEnum.header}
+              onRefresh={() => getActivityList(true)}
+            />
+          ) : (
+            <RefreshControl
+              progressBackgroundColor={'transparent'}
+              refreshing={isLoading === ListLoadingEnum.header}
+              onRefresh={() => getActivityList(true)}
+            />
+          )
         }
         data={currentActivity?.data || []}
         keyExtractor={(_item, index) => `${index}`}

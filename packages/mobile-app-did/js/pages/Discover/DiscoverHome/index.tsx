@@ -85,6 +85,8 @@ export default function DiscoverHome() {
   );
 
   const showAllTabsIcon = useMemo(() => {
+    const tabNumber = Math.min(currentTabLength, 99);
+
     return (
       <Touchable
         onPress={() => {
@@ -92,7 +94,7 @@ export default function DiscoverHome() {
           showTabDrawer(DiscoverShowOptions.SHOW_TABS);
         }}
         style={styles.showAllTabsWrap}>
-        <Text style={styles.showAllTabsText}>{currentTabLength}</Text>
+        <Text style={styles.showAllTabsText}>{tabNumber}</Text>
       </Touchable>
     );
   }, [currentTabLength, dispatch, networkType, showTabDrawer, styles.showAllTabsText, styles.showAllTabsWrap]);
@@ -193,12 +195,12 @@ const getStyles = makeStyles(theme => ({
   container: {
     paddingBottom: pTd(56),
     flex: 1,
-    backgroundColor: darkColors.bgBase1,
+    backgroundColor: theme.colors.bgBase1,
   },
   header: {
     height: pTd(56),
     flexDirection: 'row',
-    backgroundColor: darkColors.bgBase1,
+    backgroundColor: theme.colors.bgBase1,
     paddingHorizontal: pTd(16),
     paddingVertical: pTd(8),
     justifyContent: 'space-between',
@@ -209,7 +211,7 @@ const getStyles = makeStyles(theme => ({
     fontSize: pTd(32),
     lineHeight: pTd(38),
     height: pTd(38),
-    color: darkColors.textBase1,
+    color: theme.colors.textBase1,
   },
   functionalLine: {
     position: 'absolute',
@@ -223,7 +225,7 @@ const getStyles = makeStyles(theme => ({
     justifyContent: 'center',
     alignItems: 'center',
     fontSize: pTd(32),
-    backgroundColor: darkColors.bgBase2,
+    backgroundColor: theme.colors.bgBase2,
     borderTopWidth: pTd(1),
     borderColor: theme.colors.borderBase1,
   },
@@ -239,13 +241,13 @@ const getStyles = makeStyles(theme => ({
     borderRadius: pTd(2),
     borderWidth: pTd(2),
     borderColor: theme.colors.iconBase1,
-    // width: pTd(20),
+    width: pTd(20),
     height: pTd(20),
     marginLeft: pTd(16),
-    marginHorizontal: pTd(4),
+    marginHorizontal: pTd(2),
   },
   showAllTabsText: {
-    color: darkColors.textBase1,
+    color: theme.colors.textBase1,
     textAlign: 'center',
     fontSize: pTd(12),
     lineHeight: pTd(15),

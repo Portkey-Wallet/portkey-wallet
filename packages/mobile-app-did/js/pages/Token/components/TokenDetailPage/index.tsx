@@ -103,9 +103,10 @@ const TokenDetailPage: React.FC<TokenDetailParams> = ({ tokenInfo, tokenSection 
     ...INIT_PAGE_INFO,
   });
 
-  const [isLoading, setIsLoading] = useState(ListLoadingEnum.hide);
+  const [isLoading, setIsLoading] = useState(ListLoadingEnum.header);
   const getActivityList = useLockCallback(
     async (isInit = false) => {
+      await sleep(250);
       const maxResultCount = 20;
       const { data = [], skipCount = 0, totalRecordCount = 0 } = currentActivity || {};
       if (!isInit && data?.length >= totalRecordCount) {

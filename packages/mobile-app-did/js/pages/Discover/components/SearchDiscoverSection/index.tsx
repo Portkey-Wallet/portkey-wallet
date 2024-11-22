@@ -17,10 +17,11 @@ import Svg from 'components/Svg';
 interface ISearchDiscoverSectionProps {
   searchedDiscoverList: DiscoverItem[];
   inputValue?: string;
+  onClick?: () => void;
 }
 
 export default function SearchDiscoverSection(props: ISearchDiscoverSectionProps) {
-  const { searchedDiscoverList, inputValue } = props;
+  const { searchedDiscoverList, inputValue, onClick } = props;
   console.log('inputValue:', inputValue);
 
   const { s3Url } = useCurrentNetworkInfo();
@@ -34,8 +35,9 @@ export default function SearchDiscoverSection(props: ISearchDiscoverSectionProps
           url: i?.url ?? i?.description,
         },
       });
+      onClick?.();
     },
-    [jumpToWebview],
+    [jumpToWebview, onClick],
   );
 
   return (

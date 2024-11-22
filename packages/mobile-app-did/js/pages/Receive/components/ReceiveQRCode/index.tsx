@@ -22,11 +22,10 @@ export default function ReceiveQRCode({
   const styles = getStyles();
   const onCopy = useCallback(async () => await copyText(address), [address]);
   const addressShow = useMemo(() => {
-    let num = 4;
     if (address.includes('_')) {
-      num = 8;
+      return formatStr2EllipsisStr(address);
     }
-    return formatStr2EllipsisStr(address, num, 'middle');
+    return formatStr2EllipsisStr(address, 6, 'middle', 4);
   }, [address]);
   return (
     <View style={[styles.container, style]}>

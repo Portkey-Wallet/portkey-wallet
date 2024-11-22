@@ -169,9 +169,7 @@ const SendPreview: React.FC = () => {
           : formatAmountShow(ZERO.plus(_amount), Number(assetInfo.decimals));
     }
 
-    const amountUsd = tokenPriceObject[assetInfo?.symbol]
-      ? amountInUsdShow(ZERO.plus(_amount).times(tokenPriceObject[assetInfo.symbol]).toFixed(), 0, assetInfo.symbol)
-      : '-';
+    const amountUsd = tokenPriceObject[assetInfo?.symbol] ? amountInUsdShow(_amount, 0, assetInfo.symbol) : '-';
 
     return {
       estimateAmount: `${_amount} ${assetInfo.label || assetInfo.symbol}`,
@@ -236,7 +234,7 @@ const SendPreview: React.FC = () => {
 
     const recentItem: IRecentItem = {
       address: toInfo?.address || '',
-      chainId: targetNetwork?.network ? undefined : toInfo?.chainId || (_chainId as ChainId),
+      chainId: targetNetwork?.network ? undefined : (_chainId as ChainId),
       network: targetNetwork?.network || 'aelf',
       networkIcon: targetNetwork?.imageUrl || aelfIcon,
       transferTime: Date.now(),
@@ -391,6 +389,7 @@ const SendPreview: React.FC = () => {
       console.log('sameTransferResult', sameTransferResult);
     } else if (transferType === TransferType.GENERAL_CROSS_CHAIN) {
       portkeyCrossTrack(trackParams);
+
       const crossChainTransferResult = await crossChainTransfer({
         tokenContract: tokenContractRef.current,
         contract: portkeyContractRef.current,
@@ -640,13 +639,13 @@ const SendPreview: React.FC = () => {
       case TransferType.E_TRANSFER:
       case TransferType.E_BRIDGE:
         result.feeShow = `${transactionFee} ${transactionFeeUnit}`;
-        result.feeUsdShow = `$ ${unitConverter(
+        result.feeUsdShow = `$${unitConverter(
           ZERO.plus(transactionFee || '').multipliedBy(tokenPriceObject[transactionFeeUnit || '']),
         )}`;
         break;
       case TransferType.GENERAL_CROSS_CHAIN:
         result.feeShow = `${unitConverter(crossDefaultFee)} ${defaultToken.symbol}`;
-        result.feeUsdShow = `$ ${unitConverter(
+        result.feeUsdShow = `$${unitConverter(
           ZERO.plus(crossDefaultFee).multipliedBy(tokenPriceObject[defaultToken.symbol]),
         )}`;
     }
@@ -683,9 +682,9 @@ const SendPreview: React.FC = () => {
       destinationNetworkImageUrl={targetNetwork?.imageUrl}
       transactionFee={transactionFeeShow.feeShow}
       transactionFeeUSD={transactionFeeShow.feeUsdShow}
-      estimatedNetworkFee={`${networkFee} ${networkFeeUnit}`}
-      estimatedNetworkFeeUSD={`$ ${unitConverter(
-        ZERO.plus(networkFee || '').multipliedBy(tokenPriceObject[networkFeeUnit || '']),
+      estimatedNetworkFee={`${networkFee} ${networkFeeUnit || 'ELF'}`}
+      estimatedNetworkFeeUSD={`$${unitConverter(
+        ZERO.plus(networkFee || '').multipliedBy(tokenPriceObject[networkFeeUnit || 'ELF']),
       )}`}
       amountToReceive={EstimateAmount.estimateAmount}
       amountToReceiveUSD={EstimateAmount.estimateAmountUsd}

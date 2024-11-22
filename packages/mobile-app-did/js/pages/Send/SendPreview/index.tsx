@@ -169,9 +169,7 @@ const SendPreview: React.FC = () => {
           : formatAmountShow(ZERO.plus(_amount), Number(assetInfo.decimals));
     }
 
-    const amountUsd = tokenPriceObject[assetInfo?.symbol]
-      ? amountInUsdShow(ZERO.plus(_amount).times(tokenPriceObject[assetInfo.symbol]).toFixed(), 0, assetInfo.symbol)
-      : '-';
+    const amountUsd = tokenPriceObject[assetInfo?.symbol] ? amountInUsdShow(_amount, 0, assetInfo.symbol) : '-';
 
     return {
       estimateAmount: `${_amount} ${assetInfo.label || assetInfo.symbol}`,
@@ -236,7 +234,7 @@ const SendPreview: React.FC = () => {
 
     const recentItem: IRecentItem = {
       address: toInfo?.address || '',
-      chainId: targetNetwork?.network ? undefined : toInfo?.chainId || (_chainId as ChainId),
+      chainId: targetNetwork?.network ? undefined : (_chainId as ChainId),
       network: targetNetwork?.network || 'aelf',
       networkIcon: targetNetwork?.imageUrl || aelfIcon,
       transferTime: Date.now(),
@@ -391,6 +389,7 @@ const SendPreview: React.FC = () => {
       console.log('sameTransferResult', sameTransferResult);
     } else if (transferType === TransferType.GENERAL_CROSS_CHAIN) {
       portkeyCrossTrack(trackParams);
+
       const crossChainTransferResult = await crossChainTransfer({
         tokenContract: tokenContractRef.current,
         contract: portkeyContractRef.current,

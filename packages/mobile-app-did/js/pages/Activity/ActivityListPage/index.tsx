@@ -22,6 +22,8 @@ import { TextH1, TextL } from 'components/CommonText';
 import SafeAreaBox from 'components/SafeAreaBox';
 import LottieLoading from 'components/LottieLoading';
 import GStyles from 'assets/theme/GStyles';
+import CustomPullToRefreshHeader from 'pages/DashBoard/PullToRefresh';
+import { isIOS } from '@portkey-wallet/utils/mobile/device';
 
 interface RouterParams {
   chainId?: string;
@@ -100,11 +102,19 @@ const ActivityListPage = () => {
           </>
         }
         refreshControl={
-          <RefreshControl
-            progressBackgroundColor={'transparent'}
-            refreshing={isLoading === ListLoadingEnum.header}
-            onRefresh={() => getActivityList(true)}
-          />
+          isIOS ? (
+            <CustomPullToRefreshHeader
+              showLoading={false}
+              refreshing={isLoading === ListLoadingEnum.header}
+              onRefresh={() => getActivityList(true)}
+            />
+          ) : (
+            <RefreshControl
+              progressBackgroundColor={'transparent'}
+              refreshing={isLoading === ListLoadingEnum.header}
+              onRefresh={() => getActivityList(true)}
+            />
+          )
         }
         data={currentActivity?.data || []}
         keyExtractor={(_item, index) => `${index}`}

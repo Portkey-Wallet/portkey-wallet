@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Image, StyleSheet, View } from 'react-native';
 import {
   PullToRefreshHeader,
@@ -11,8 +11,12 @@ import {
 import { pTd } from 'utils/unit';
 import loading from 'assets/image/pngs/loading.png';
 
-export default function CustomPullToRefreshHeader(props: PullToRefreshHeaderProps) {
-  const { onRefresh, refreshing } = props;
+export interface ICustomPullToRefreshHeaderProps extends PullToRefreshHeaderProps {
+  showLoading?: boolean;
+}
+
+export default function CustomPullToRefreshHeader(props: ICustomPullToRefreshHeaderProps) {
+  const { onRefresh, refreshing, showLoading = true } = props;
 
   const [text, setText] = useState('pull to refresh');
   const rotateAnim = useRef(new Animated.Value(0)).current;
@@ -51,6 +55,20 @@ export default function CustomPullToRefreshHeader(props: PullToRefreshHeaderProp
     outputRange: ['0deg', '360deg'],
   });
 
+  const loadingImageUI = useMemo(() => {
+    if (showLoading) {
+      return text === 'refreshing...' ? (
+        <View style={styles.container}>
+          <Animated.Image source={loading} style={[styles.image, { transform: [{ rotate }] }]} />
+        </View>
+      ) : (
+        <Image source={loading} style={styles.image} />
+      );
+    } else {
+      return <></>;
+    }
+  }, [rotate, showLoading, text]);
+
   return (
     <PullToRefreshHeader
       style={styles.container}
@@ -58,13 +76,7 @@ export default function CustomPullToRefreshHeader(props: PullToRefreshHeaderProp
       onStateChanged={onStateChanged}
       onRefresh={onRefresh}
       refreshing={refreshing}>
-      {text === 'refreshing...' ? (
-        <View style={styles.container}>
-          <Animated.Image source={loading} style={[styles.image, { transform: [{ rotate }] }]} />
-        </View>
-      ) : (
-        <Image source={loading} style={styles.image} />
-      )}
+      {loadingImageUI}
     </PullToRefreshHeader>
   );
 }

@@ -52,9 +52,11 @@ function TabsDom({ activeWebViewRef, clickBottomActionBtn }: IProps) {
   const { bookmarkList, refresh } = useBookmarkList();
   const isBookmarkLoading = useRef(false);
   const [tabStateMap, setTabStateMap] = useState<{
+    url: string;
     canGoBack: Record<string, boolean>;
     canGoForward: Record<string, boolean>;
   }>({
+    url: activeItem?.url || '',
     canGoBack: {},
     canGoForward: {},
   });
@@ -172,8 +174,10 @@ function TabsDom({ activeWebViewRef, clickBottomActionBtn }: IProps) {
     const canGoForward: boolean = tabStateMap?.canGoForward?.[String(ele?.id)];
 
     const onNavigationStateChange = (navState: any) => {
+      console.log('navState', navState);
       if (ele.id === activeTabId) {
         setTabStateMap(pre => ({
+          url: navState?.url,
           canGoBack: {
             ...pre.canGoBack,
             [ele.id]: navState?.canGoBack,
@@ -222,13 +226,13 @@ function TabsDom({ activeWebViewRef, clickBottomActionBtn }: IProps) {
               <Svg icon="more-circle" size={20} color={darkColors.iconBase1} />
             </Touchable>
             <Touchable style={rightDomStyle.inputContent} onPress={handleSearch}>
-              {!activeItem?.url?.includes('https://') && (
+              {!tabStateMap?.url?.includes('https://') && (
                 <View style={rightDomStyle.iconGroupWrap}>
                   <Svg icon="warning-fill" size={12} iconStyle={{ marginRight: pTd(10) }} />
                 </View>
               )}
               <TextM style={rightDomStyle.domain} numberOfLines={1}>
-                {getHost(activeItem?.url)}
+                {getHost(tabStateMap?.url)}
               </TextM>
             </Touchable>
             <Touchable onPress={() => activeWebViewRef.current?.reload?.()} style={rightDomStyle.iconWrap}>

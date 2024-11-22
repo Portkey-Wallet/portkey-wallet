@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { TextInput, View } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { View } from 'react-native';
 import CommonInput from 'components/CommonInput';
 
 import GStyles from 'assets/theme/GStyles';
@@ -12,7 +12,6 @@ import { checkIsUrl, getHost, prefixUrlWithProtocol } from '@portkey-wallet/util
 import { useDiscoverGroupList } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { DiscoverItem } from '@portkey-wallet/store/store-ca/cms/types';
 import { useDiscoverJumpWithNetWork } from 'hooks/discover';
-import { useInputFocus } from 'hooks/useInputFocus';
 import Touchable from 'components/Touchable';
 import { useDiscoverData } from '@portkey-wallet/hooks/hooks-ca/cms/discover';
 import { TBaseCardItemType } from '@portkey-wallet/types/types-ca/cms';
@@ -30,9 +29,6 @@ export default function DiscoverSearchContent({ address, onBack, isInner = false
 
   const { t } = useLanguage();
   const { learnGroupList, earnList } = useDiscoverData();
-
-  const iptRef = useRef<TextInput>();
-  useInputFocus(iptRef);
 
   const discoverGroupList = useDiscoverGroupList();
   const jumpToWebview = useDiscoverJumpWithNetWork();
@@ -83,10 +79,6 @@ export default function DiscoverSearchContent({ address, onBack, isInner = false
     },
     [jumpToWebview],
   );
-
-  // const onSearchExternalLink = (link: string) => {
-  //   onSearch();
-  // }
 
   const onSearch = useCallback(
     (inputValue: string, isGo = false) => {
@@ -153,10 +145,9 @@ export default function DiscoverSearchContent({ address, onBack, isInner = false
       <KeyboardSafeArea>
         <View style={[GStyles.flexRow, styles.inputContainer]}>
           <CommonInput
-            // autoFocus
+            autoFocus
             // grayBorder
             theme="black-bg"
-            ref={iptRef}
             value={value}
             allowClear
             clearIcon="clear4"

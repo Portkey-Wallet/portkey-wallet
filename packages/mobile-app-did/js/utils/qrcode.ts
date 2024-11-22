@@ -46,6 +46,7 @@ export function handlePortkeyQRCodeData(data: QRData, previousRouteInfo: RouteIn
       const params: IToSendHomeParamsType = {
         ...newData,
         assetInfo: { ...newData.assetInfo, ...previousAssetsInfo },
+        toInfo: { ...newData.toInfo, chainId: getChainIdByAddress(newData?.toInfo?.address) as ChainId },
       };
       navigationService.navigate('SendHome', params);
     }

@@ -39,7 +39,6 @@ export type CommonTopTabProps = {
   onTabChange?: (name: string) => void;
   suffixIconDom?: ReactNode;
   suffixIconDomVisible?: boolean;
-  labelFocusStyle?: ViewStyle;
   labelTextStyle?: StyleProp<TextStyle>;
 };
 
@@ -58,7 +57,6 @@ const CommonTopTab: React.FC<CommonTopTabProps> = props => {
     onTabChange,
     suffixIconDom,
     suffixIconDomVisible,
-    labelFocusStyle,
     labelTextStyle,
   } = props;
 
@@ -89,7 +87,6 @@ const CommonTopTab: React.FC<CommonTopTabProps> = props => {
           onTabChange={onTabChange}
           ref={tabBarRef}
           suffixIconDom={suffixIconDom}
-          labelFocusStyle={labelFocusStyle}
           labelTextStyle={labelTextStyle}
         />
       )}
@@ -118,7 +115,6 @@ const CustomizedTopTabBar = forwardRef(
       containerStyle = {},
       suffixIconDom,
       onTabChange,
-      labelFocusStyle,
       labelTextStyle,
     }: {
       labelRightNum?: number;
@@ -131,7 +127,6 @@ const CustomizedTopTabBar = forwardRef(
       containerStyle?: StyleProp<ViewStyle>;
       suffixIconDom?: ReactNode;
       onTabChange?: (name: string) => void;
-      labelFocusStyle?: TextStyle;
       labelTextStyle?: StyleProp<ViewStyle>;
     },
     ref,
@@ -195,18 +190,16 @@ const CustomizedTopTabBar = forwardRef(
                     ? { marginRight: index !== state.routes.length - 1 ? pTd(10) : 0 }
                     : { paddingRight: index !== state.routes.length - 1 ? (suffix ? pTd(16) : pTd(32)) : 0 },
                 ]}>
-                <View style={[isFocused ? labelFocusStyle : {}]}>
-                  <Text
-                    style={[
-                      toolBarStyle.labelText,
-                      {
-                        color: isFocused ? darkColors.textBase1 : darkColors.textBase2,
-                      },
-                      labelTextStyle,
-                    ]}>
-                    {label}
-                  </Text>
-                </View>
+                <Text
+                  style={[
+                    toolBarStyle.labelText,
+                    {
+                      color: isFocused ? darkColors.textBase1 : darkColors.textBase2,
+                    },
+                    labelTextStyle,
+                  ]}>
+                  {label}
+                </Text>
                 {suffix && (
                   <View style={styles.suffixWrap}>
                     <TextM style={[styles.suffixText, isFocused && styles.suffixTextFocused]}>{suffix}</TextM>

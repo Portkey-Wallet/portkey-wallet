@@ -167,7 +167,7 @@ export const ToAddressInputRef = forwardRef<IToAddressInputRef, IToAddressInput>
     ],
   );
 
-  const getNetworkList = useDebounceCallback(
+  const getNetworkList = useCallback(
     async (toAddress: string) => {
       if (!toAddress) {
         setWarning([]);
@@ -234,7 +234,7 @@ export const ToAddressInputRef = forwardRef<IToAddressInputRef, IToAddressInput>
     setSelectedToContact((pre: any) => ({ ...pre, name: '' }));
   }, [onInput, selectedToContact.address, setCheckFinish, setSelectedToContact, setStep]);
 
-  useEffect(() => {
+  const checkAddress = useDebounceCallback(async () => {
     const FEPass = checkAddressByFE(selectedToContact.address);
 
     // when send nft other chain is not support
@@ -243,9 +243,13 @@ export const ToAddressInputRef = forwardRef<IToAddressInputRef, IToAddressInput>
       return setWarning([WarningKey.INVALID_ADDRESS]);
     }
     if (!FEPass) {
-      getNetworkList(selectedToContact.address);
+      await getNetworkList(selectedToContact.address);
     }
   }, [checkAddressByFE, getNetworkList, selectedToContact.address, sendType, setCheckFinish, setWarning]);
+
+  useEffect(() => {
+    checkAddress();
+  }, [checkAddress, checkAddressByFE, getNetworkList, selectedToContact.address, sendType, setCheckFinish, setWarning]);
 
   useImperativeHandle(
     ref,

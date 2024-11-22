@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Animated, Image, StyleSheet, View } from 'react-native';
 import {
   PullToRefreshHeader,
@@ -11,12 +11,8 @@ import {
 import { pTd } from 'utils/unit';
 import loading from 'assets/image/pngs/loading.png';
 
-export interface ICustomPullToRefreshHeaderProps extends PullToRefreshHeaderProps {
-  showLoading?: boolean;
-}
-
-export default function CustomPullToRefreshHeader(props: ICustomPullToRefreshHeaderProps) {
-  const { onRefresh, refreshing, showLoading = true } = props;
+export default function CustomPullToRefreshHeader(props: PullToRefreshHeaderProps) {
+  const { onRefresh, refreshing } = props;
 
   const [text, setText] = useState('pull to refresh');
   const rotateAnim = useRef(new Animated.Value(0)).current;
@@ -55,20 +51,6 @@ export default function CustomPullToRefreshHeader(props: ICustomPullToRefreshHea
     outputRange: ['0deg', '360deg'],
   });
 
-  const loadingImageUI = useMemo(() => {
-    if (showLoading) {
-      return text === 'refreshing...' ? (
-        <View style={styles.container}>
-          <Animated.Image source={loading} style={[styles.image, { transform: [{ rotate }] }]} />
-        </View>
-      ) : (
-        <Image source={loading} style={styles.image} />
-      );
-    } else {
-      return <></>;
-    }
-  }, [rotate, showLoading, text]);
-
   return (
     <PullToRefreshHeader
       style={styles.container}
@@ -76,7 +58,13 @@ export default function CustomPullToRefreshHeader(props: ICustomPullToRefreshHea
       onStateChanged={onStateChanged}
       onRefresh={onRefresh}
       refreshing={refreshing}>
-      {loadingImageUI}
+      {text === 'refreshing...' ? (
+        <View style={styles.container}>
+          <Animated.Image source={loading} style={[styles.image, { transform: [{ rotate }] }]} />
+        </View>
+      ) : (
+        <Image source={loading} style={styles.image} />
+      )}
     </PullToRefreshHeader>
   );
 }

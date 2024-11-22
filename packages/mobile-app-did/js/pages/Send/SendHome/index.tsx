@@ -719,7 +719,7 @@ const SendHome: React.FC = () => {
             targetNetwork: targetNetwork,
           };
         } else {
-          setErrorMessage(getLimitTips(assetInfo.symbol, minAmount, maxAmount));
+          setErrorMessage(getLimitTips(assetInfo.label || assetInfo.symbol, minAmount, maxAmount));
           throw 'etansfer err';
         }
       } catch (error) {
@@ -808,11 +808,11 @@ const SendHome: React.FC = () => {
           transferType = TransferType.E_TRANSFER;
         } else {
           transferType = TransferType.GENERAL_CROSS_CHAIN;
-          networkFee = await getTransactionFee(isAELFCross);
+          networkFee = await getTransactionFee(isAELFCross, sendNumber);
           networkFeeUnit = 'ELF';
         }
       } else {
-        networkFee = await getTransactionFee(isAELFCross);
+        networkFee = await getTransactionFee(isAELFCross, sendNumber);
         networkFeeUnit = 'ELF';
         transferType = isAELFCross ? TransferType.GENERAL_CROSS_CHAIN : TransferType.GENERAL_SAME_CHAIN;
       }
@@ -845,6 +845,7 @@ const SendHome: React.FC = () => {
     assetInfo.chainId,
     assetInfo.decimals,
     assetInfo.symbol,
+    assetInfo.label,
     sendNumber,
     sendType,
     checkManagerSyncState,

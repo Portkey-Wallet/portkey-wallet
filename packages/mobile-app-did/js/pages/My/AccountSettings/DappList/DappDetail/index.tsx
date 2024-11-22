@@ -86,6 +86,7 @@ const DappDetail: React.FC = () => {
   const showOverlay = useCallback(() => {
     showPeriodOverlay({
       value: dappInfo?.sessionInfo?.expiredPlan || SessionExpiredPlan.hour1,
+      fromAccountSetting: true,
       onConfirm: value => {
         if (!pin) {
           return;

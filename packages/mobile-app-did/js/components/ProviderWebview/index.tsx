@@ -1,5 +1,5 @@
 import React, { forwardRef, memo, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
-import { Linking, StyleSheet } from 'react-native';
+import { Linking, StyleSheet, View } from 'react-native';
 import WebView, { WebViewProps } from 'react-native-webview';
 import useEffectOnce from 'hooks/useEffectOnce';
 import EntryScriptWeb3 from 'utils/EntryScriptWeb3';
@@ -21,7 +21,6 @@ import { useDeepEQMemo } from 'hooks';
 import * as Application from 'expo-application';
 import { ShouldStartLoadRequest } from 'react-native-webview/lib/WebViewTypes';
 import { PROTOCOL_ALLOW_LIST } from 'constants/web';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCMS } from '@portkey-wallet/hooks/hooks-ca/cms/discover';
 
@@ -62,7 +61,9 @@ const ProviderWebview = forwardRef<
       const script = await EntryScriptWeb3.get();
       const scriptWithAudioManager = `${PORTKEY_AUDIO_MANAGER_SCRIPT};${script}`;
       setEntryScriptWeb3(scriptWithAudioManager);
-      if (!isIOS) webViewRef.current?.injectJavaScript(scriptWithAudioManager);
+      if (!isIOS) {
+        webViewRef.current?.injectJavaScript(scriptWithAudioManager);
+      }
     };
 
     getEntryScriptWeb3();
@@ -93,7 +94,9 @@ const ProviderWebview = forwardRef<
   const initOperator = useCallback(
     (origin: string) => {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      if (!isIOS) webViewRef.current?.injectJavaScript(entryScriptWeb3!);
+      if (!isIOS) {
+        webViewRef.current?.injectJavaScript(entryScriptWeb3!);
+      }
 
       operatorRef.current = new DappMobileOperator({
         origin,
@@ -110,7 +113,9 @@ const ProviderWebview = forwardRef<
 
   const onLoadStart = useCallback(
     ({ nativeEvent }: WebViewNavigationEvent) => {
-      if (!loadStartRef.current) loadStartRef.current = true;
+      if (!loadStartRef.current) {
+        loadStartRef.current = true;
+      }
       const { origin } = new URL(nativeEvent.url);
       initOperator(origin);
     },
@@ -177,7 +182,9 @@ const ProviderWebview = forwardRef<
   }, []);
   const onShouldStartLoadWithRequest = ({ url }: ShouldStartLoadRequest) => {
     const { protocol } = new URL(url);
-    if (PROTOCOL_ALLOW_LIST.includes(protocol)) return true;
+    if (PROTOCOL_ALLOW_LIST.includes(protocol)) {
+      return true;
+    }
     // if (SCHEME_ALLOW_LIST.includes(protocol)) {
     // open natively
     Linking.openURL(url).catch(er => {
@@ -205,18 +212,23 @@ const ProviderWebview = forwardRef<
           props.onLoadStart?.(event);
         }}
         onLoadEnd={event => {
-          if (!loadStartRef.current) return;
+          if (!loadStartRef.current) {
+            return;
+          }
           handleUpdate(event);
           props.onLoadEnd?.(event);
         }}
         onLoad={event => {
-          if (!loadStartRef.current) return;
+          if (!loadStartRef.current) {
+            return;
+          }
           handleUpdate(event);
           props.onLoad?.(event);
         }}
         onNavigationStateChange={(event: WebViewNavigation) => {
-          if (prePageUrl.current === BLANK_PAGE && event.url !== BLANK_PAGE && !isIOS)
+          if (prePageUrl.current === BLANK_PAGE && event.url !== BLANK_PAGE && !isIOS) {
             webViewRef.current?.clearHistory?.();
+          }
           prePageUrl.current = event.url;
           props.onNavigationStateChange?.(event);
         }}
@@ -236,15 +248,15 @@ const ProviderWebview = forwardRef<
     ),
     [entryScriptWeb3, handleUpdate, onFileDownload, onLoadStart, props, source],
   );
-  if (!entryScriptWeb3) return null;
+  if (!entryScriptWeb3) {
+    return null;
+  }
 
-  if (isIOS) return webViewDom;
+  if (isIOS) {
+    return webViewDom;
+  }
 
-  return (
-    <KeyboardAwareScrollView enableOnAndroid={true} contentContainerStyle={styles.scrollStyle}>
-      {webViewDom}
-    </KeyboardAwareScrollView>
-  );
+  return <View style={styles.scrollStyle}>{webViewDom}</View>;
 });
 
 export default memo(ProviderWebview);

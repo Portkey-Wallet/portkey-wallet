@@ -1,13 +1,11 @@
 import { useDiscoverGroupList, useGetS3ImageUrl } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { DiscoverItem } from '@portkey-wallet/store/store-ca/cms/types';
-import { darkColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
-import { DarkFontStyles, FontStyles } from 'assets/theme/styles';
-import { TextM, TextS } from 'components/CommonText';
+import { TextL, TextM } from 'components/CommonText';
 import { useDiscoverJumpWithNetWork } from 'hooks/discover';
 import React, { useCallback, useMemo } from 'react';
-import { StyleSheet, View, Image, ScrollView } from 'react-native';
+import { View, Image, ScrollView } from 'react-native';
 import { pTd } from 'utils/unit';
 import TextWithProtocolIcon from 'components/TextWithProtocolIcon';
 import fonts from 'assets/theme/fonts';
@@ -16,8 +14,10 @@ import Touchable from 'components/Touchable';
 import { useCmsBanner } from '@portkey-wallet/hooks/hooks-ca/cms/banner';
 import { parseLink } from '@portkey-wallet/hooks/hooks-ca/cms/util';
 import Banner, { BannerItemProps } from './components/Banner';
+import { makeStyles } from '@rneui/themed';
 
 export function DiscoverCmsListSection() {
+  const styles = getStyles();
   const GroupList = useDiscoverGroupList();
   const { s3Url } = useCurrentNetworkInfo();
   const getS3ImgUrl = useGetS3ImageUrl();
@@ -52,10 +52,9 @@ export function DiscoverCmsListSection() {
       <ScrollView contentContainerStyle={styles.scroll} style={styles.scroll} nestedScrollEnabled>
         <View style={styles.wrap}>
           {lists.length > 0 ? <Banner items={lists} /> : null}
-          <View style={styles.init} />
           {GroupList.map((group, index) => (
             <View key={index} style={styles.groupWrap}>
-              <TextM style={[FontStyles.font5, fonts.mediumFont, styles.groupTitle]}>{group.title}</TextM>
+              <TextL style={styles.groupTitle}>{group.title}</TextL>
               <View style={styles.itemsGroup}>
                 {group.items.map((item, i) => (
                   <Touchable key={i} style={styles.itemWrap} onPress={() => onClickJump(item)}>
@@ -70,14 +69,15 @@ export function DiscoverCmsListSection() {
                     <View style={styles.right}>
                       <TextWithProtocolIcon
                         textFontSize={pTd(16)}
+                        wrapStyle={styles.itemTitleWrap}
                         title={item?.title}
                         url={item.url}
                         iconSize={12}
                         showProtocolIcon={false}
                       />
-                      <TextS style={DarkFontStyles.textBase2} numberOfLines={1} ellipsizeMode="tail">
+                      <TextM style={styles.itemDescription} numberOfLines={1} ellipsizeMode="tail">
                         {item?.description}
-                      </TextS>
+                      </TextM>
                     </View>
                   </Touchable>
                 ))}
@@ -90,21 +90,18 @@ export function DiscoverCmsListSection() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = makeStyles(theme => ({
   container: {
     flex: 1,
-    backgroundColor: darkColors.bgBase1,
+    backgroundColor: theme.colors.bgBase1,
   },
   scroll: {
-    backgroundColor: darkColors.bgBase1,
-  },
-  init: {
-    height: pTd(16),
+    backgroundColor: theme.colors.bgBase1,
   },
   wrap: {
     ...GStyles.paddingArg(0, 16),
     marginBottom: pTd(16),
-    backgroundColor: darkColors.bgBase1,
+    backgroundColor: theme.colors.bgBase1,
   },
   slide: {
     marginLeft: pTd(-16),
@@ -112,33 +109,39 @@ const styles = StyleSheet.create({
     marginBottom: pTd(24),
   },
   groupWrap: {
-    marginBottom: pTd(16),
+    marginTop: pTd(16),
   },
   groupTitle: {
-    marginBottom: pTd(8),
-    color: darkColors.textBase1,
+    color: theme.colors.textBase1,
+    lineHeight: pTd(20),
+    height: pTd(20),
+    ...fonts.mediumFont,
   },
   itemsGroup: {
-    borderRadius: pTd(6),
     overflow: 'hidden',
   },
   itemWrap: {
-    backgroundColor: darkColors.bgBase1,
+    backgroundColor: theme.colors.bgBase1,
     display: 'flex',
     flexDirection: 'row',
     ...GStyles.paddingArg(16, 0),
     width: '100%',
   },
   image: {
-    width: pTd(36),
-    height: pTd(36),
-    marginRight: pTd(10),
-    borderRadius: pTd(18),
+    width: pTd(42),
+    height: pTd(42),
+    marginRight: pTd(8),
+    borderRadius: pTd(21),
   },
   right: {
     flex: 1,
     display: 'flex',
     flexDirection: 'column',
-    justifyContent: 'space-between',
   },
-});
+  itemTitleWrap: {
+    minHeight: pTd(22),
+  },
+  itemDescription: {
+    color: theme.colors.textBase2,
+  },
+}));

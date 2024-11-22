@@ -454,10 +454,10 @@ const SwapEnter = () => {
   }, [priceLabel, swapInfo]);
 
   const isPreviewShow = useMemo(() => {
-    if (swapInfo.isFocusValueIn && !swapInfo.valueIn) {
+    if (swapInfo.isFocusValueIn && (!swapInfo.valueIn || ZERO.gte(swapInfo.valueIn))) {
       return false;
     }
-    if (!swapInfo.isFocusValueIn && !swapInfo.valueOut) {
+    if (!swapInfo.isFocusValueIn && (!swapInfo.valueOut || ZERO.gte(swapInfo.valueOut))) {
       return false;
     }
     return true;
@@ -495,8 +495,9 @@ const SwapEnter = () => {
                   },
                 }}
                 value={{ text: 'AwakenSwap' }}
+                isLabelNoTail={true}
               />
-              <CommonInfoRow label={{ text: 'Price' }} value={{ text: priceLabel }} />
+              <CommonInfoRow label={{ text: 'Price' }} value={{ text: priceLabel }} isLabelNoTail={true} />
             </View>
           )
         )}

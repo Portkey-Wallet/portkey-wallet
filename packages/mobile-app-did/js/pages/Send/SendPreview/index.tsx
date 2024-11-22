@@ -1,6 +1,6 @@
 import React, { memo, useCallback, useMemo, useRef, useState } from 'react';
 import ActionSheet from 'components/ActionSheet';
-import { formatChainInfoToShow } from '@portkey-wallet/utils';
+import { formatChainInfoToShow, getChainIdByAddress } from '@portkey-wallet/utils';
 import { useLanguage } from 'i18n/hooks';
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 import { getContractBasic } from '@portkey-wallet/contracts/utils';
@@ -56,6 +56,7 @@ import {
   useEBridgeCrossFinishTrack,
   useEBridgeCrossTrack,
 } from 'hooks/amplitude';
+import { ChainId } from '@portkey-wallet/types';
 
 enum ErrorType {
   NO_TOAST = 'noToast',
@@ -143,7 +144,7 @@ const SendPreview: React.FC = () => {
     }
 
     const fee = networkFee || 0;
-    if (ZERO.plus(sendNumber).isLessThanOrEqualTo(fee)) {
+    if (ZERO.plus(sendNumber).isLessThanOrEqualTo(fee) && assetInfo.symbol === defaultToken.symbol) {
       return {
         estimateAmount: `0 ${assetInfo?.label || assetInfo?.symbol}`,
         estimateAmountUsd: isMainnet ? '$ 0' : '',
@@ -229,15 +230,19 @@ const SendPreview: React.FC = () => {
   );
 
   const actionAfterTransfer = useCallback(async () => {
-    const aelfIcon = currentChainList?.find(ele => ele?.chainId === toInfo?.chainId)?.chainImageUrl;
+    const _chainId = toInfo?.chainId || getChainIdByAddress(toInfo.address);
+
+    const aelfIcon = currentChainList?.find(ele => ele?.chainId === _chainId)?.chainImageUrl;
 
     const recentItem: IRecentItem = {
       address: toInfo?.address || '',
-      chainId: targetNetwork?.network ? undefined : toInfo?.chainId,
+      chainId: targetNetwork?.network ? undefined : toInfo?.chainId || (_chainId as ChainId),
       network: targetNetwork?.network || 'aelf',
       networkIcon: targetNetwork?.imageUrl || aelfIcon,
       transferTime: Date.now(),
     };
+
+    console.log('recent', routerParams, recentItem);
 
     addRecent({ recentItem });
 
@@ -264,6 +269,7 @@ const SendPreview: React.FC = () => {
     currentChainList,
     fetchAccountNFTCollectionInfoList,
     fetchAccountTokenInfoList,
+    routerParams,
     sendType,
     targetNetwork?.imageUrl,
     targetNetwork?.network,

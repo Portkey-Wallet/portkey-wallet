@@ -1,9 +1,10 @@
 import { View } from 'react-native';
 import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { makeStyles } from '@rneui/themed';
-import { TextL } from 'components/CommonText';
+import { TextTitle } from 'components/CommonText';
 import { CommonProgress } from 'components/CommonProgress';
 import { pTd } from 'utils/unit';
+import fonts from 'assets/theme/fonts';
 
 const MAX_PROGRESS_BEFORE_COMPLETE = 0.95;
 const PROGRESS_STEP = 0.05;
@@ -19,7 +20,9 @@ export const PrepareWalletProgress = forwardRef(function _PrepareWalletProgress(
 
   useEffect(() => {
     const timer = setInterval(() => {
-      if (percentRef.current >= MAX_PROGRESS_BEFORE_COMPLETE) return;
+      if (percentRef.current >= MAX_PROGRESS_BEFORE_COMPLETE) {
+        return;
+      }
       setPercent(pre => pre + PROGRESS_STEP);
     }, 500);
     return () => {
@@ -43,7 +46,7 @@ export const PrepareWalletProgress = forwardRef(function _PrepareWalletProgress(
 
   return (
     <View style={styles.containerStyle}>
-      <TextL style={styles.titleStyle}>{'Preparing your wallet...'}</TextL>
+      <TextTitle style={[styles.titleStyle, fonts.BGMediumFont]}>{'Preparing your wallet...'}</TextTitle>
       <CommonProgress percent={percent} />
     </View>
   );

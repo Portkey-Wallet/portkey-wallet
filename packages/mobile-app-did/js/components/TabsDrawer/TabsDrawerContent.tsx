@@ -30,12 +30,17 @@ import ActionSheet from 'components/ActionSheet';
 import { useNavigation } from '@react-navigation/native';
 import navigationService from 'utils/navigationService';
 import { useCurrentDappList } from '@portkey-wallet/hooks/hooks-ca/dapp';
-import { getOrigin } from '@portkey-wallet/utils/dapp/browser';
+import { getHost, getOrigin } from '@portkey-wallet/utils/dapp/browser';
 import Touchable from 'components/Touchable';
 import { ITabContext } from './tools';
 import TabsDom from './components/TabsDom';
+import DiscoverWebsiteImage from 'pages/Discover/components/DiscoverWebsiteImage';
+import { useGetCmsWebsiteInfo } from '@portkey-wallet/hooks/hooks-ca/cms';
+import DiscoverSearchContent from 'pages/Discover/DiscoverSearch/components/DiscoverSearchContent';
+import { makeStyles } from '@rneui/themed';
 
 export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
+  const styles = getStyles();
   const { t } = useLanguage();
   const { networkType } = useCurrentNetworkInfo();
   const nav = useNavigation();
@@ -44,6 +49,7 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
   const { isDrawerOpen, discoverMap = {}, activeTabId } = useAppCASelector(state => state.discover);
   const { tabs } = discoverMap[networkType] ?? {};
   const activeItem = useMemo(() => tabs?.find(ele => ele.id === activeTabId) as ITabItem, [activeTabId, tabs]);
+  const { getCmsWebsiteInfoImageUrl, getCmsWebsiteInfoName } = useGetCmsWebsiteInfo();
 
   const tabRef = useRef<IBrowserTab | null>(null);
   const [preActiveTabId, setPreActiveTabId] = useState<number | undefined>(activeTabId);
@@ -140,8 +146,10 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
     }, [backToSearchPage, isDrawerOpen]),
   );
 
+  const [isSearchShow, setIsSearchShow] = useState(false);
+
   const clickBottomActionBtn = useCallback(
-    (type: 'back' | 'forward' | 'showTab' | 'home' | 'more') => {
+    (type: 'back' | 'forward' | 'showTab' | 'home' | 'more' | 'search') => {
       switch (type) {
         case 'back':
           tabRef.current?.goBack?.();
@@ -170,6 +178,10 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
             activeWebviewScreenShot,
             setPreActiveTabId,
           });
+          break;
+
+        case 'search':
+          setIsSearchShow(true);
           break;
 
         default:
@@ -219,21 +231,45 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
         </View>
       </>
     );
-  }, [closeAll, dispatch, onDone, t, tabs]);
+  }, [closeAll, dispatch, onDone, styles.cardsContainer, t, tabs]);
 
   return (
     <BrowserContext.Provider value={value}>
       <PageContainer
         hideTouchable
-        hideHeader
         type="leftBack"
-        noCenterDom={!!activeTabId}
+        hideHeader={!activeTabId || isSearchShow}
+        noCenterDom={!activeTabId || isSearchShow}
+        leftDom={
+          <View style={styles.leftWrap}>
+            <Touchable onPress={backToSearchPage} style={styles.backIcon}>
+              <Svg icon="left-arrow-v2" size={pTd(20)} color={darkColors.iconBase1} />
+            </Touchable>
+          </View>
+        }
         notHandleHardwareBackPress
-        safeAreaColor={['black', activeTabId ? 'lightBlack' : 'black']}
+        safeAreaColor={['lightBlack', 'lightBlack']}
         containerStyles={styles.container}
-        scrollViewProps={{ disabled: true }}>
+        scrollViewProps={{ disabled: true }}
+        titleDom={
+          activeTabId ? (
+            <View style={styles.headerWrap}>
+              <DiscoverWebsiteImage size={pTd(24)} imageUrl={getCmsWebsiteInfoImageUrl(activeItem.url)} />
+              <TextS numberOfLines={1} ellipsizeMode="tail" style={styles.header}>
+                {getCmsWebsiteInfoName(activeItem.url) || activeItem?.name || getHost(activeItem?.url)}
+              </TextS>
+            </View>
+          ) : (
+            ''
+          )
+        }>
         <TabsDom activeWebViewRef={tabRef} clickBottomActionBtn={clickBottomActionBtn} />
         {!activeTabId && isDrawerOpen && CardGroupDom}
+        {isSearchShow && (
+          <View style={styles.searchContainer}>
+            <DiscoverSearchContent isInner={true} onBack={() => setIsSearchShow(false)} />
+          </View>
+        )}
       </PageContainer>
     </BrowserContext.Provider>
   );
@@ -241,7 +277,7 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
 
 TabsDrawerContent.displayName = 'TabsDrawerContent';
 
-const styles = StyleSheet.create({
+const getStyles = makeStyles(theme => ({
   container: {
     paddingLeft: 0,
     paddingRight: 0,
@@ -255,17 +291,17 @@ const styles = StyleSheet.create({
     ...GStyles.paddingArg(24, 20),
   },
   headerWrap: {
-    height: pTd(22),
-  },
-  header: {
-    ...fonts.mediumFont,
-    lineHeight: pTd(24),
-  },
-  leftWrap: {
-    display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    paddingLeft: pTd(16),
+  },
+  header: {
+    marginLeft: pTd(8),
+    fontSize: pTd(16),
+    lineHeight: pTd(22),
+  },
+  leftWrap: {
+    paddingHorizontal: pTd(16),
+    alignItems: 'center',
   },
   backIcon: {
     marginRight: pTd(4),
@@ -284,7 +320,7 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     paddingLeft: pTd(16),
     paddingRight: pTd(16),
-    paddingBottom: pTd(64),
+    paddingBottom: pTd(80),
   },
   switchButtonWrap: {
     alignItems: 'center',
@@ -301,7 +337,15 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     lineHeight: pTd(18),
   },
-});
+  searchContainer: {
+    position: 'absolute',
+    backgroundColor: theme.colors.bgBase1,
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
+  },
+}));
 
 const handleButtonStyle = StyleSheet.create({
   container: {

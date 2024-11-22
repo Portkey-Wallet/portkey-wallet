@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import navigationService from 'utils/navigationService';
-import { View, FlatList, Text, Image, ScrollView, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
+import { View, FlatList, Text, Image } from 'react-native';
 import { ITokenSectionResponse } from '@portkey-wallet/types/types-ca/token';
 import fonts from 'assets/theme/fonts';
 import { pTd } from 'utils/unit';
@@ -48,7 +48,7 @@ export default function TokenSection() {
         reload();
       }
     },
-    [reload, selectedItem],
+    [onNavigate, reload, selectedItem],
   );
 
   const renderItem = useCallback(
@@ -124,44 +124,30 @@ export default function TokenSection() {
     } else {
       return <View />;
     }
-  }, [accountBalanceUSD]);
-
-  const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
-    const isCloseToBottom = layoutMeasurement.height + contentOffset.y >= contentSize.height - 20;
-    if (isCloseToBottom) {
-      getAccountTokenList();
-    }
-  };
+  }, [accountBalanceUSD, styles]);
 
   return (
     <View style={styles.tokenListPageWrap}>
-      <ScrollView
+      <FlatList
+        ListHeaderComponent={listHeader}
         nestedScrollEnabled
-        contentContainerStyle={{ paddingBottom: pTd(192) }}
-        onScroll={handleScroll}
-        scrollEventThrottle={16}>
-        <FlatList
-          ListHeaderComponent={listHeader}
-          nestedScrollEnabled
-          refreshing={false}
-          extraData={extraIndex}
-          data={accountTokenList || []}
-          renderItem={renderItem}
-          keyExtractor={(item: ITokenSectionResponse) => item.symbol}
-          // onEndReached={() => getAccountTokenList()}
-          ListFooterComponent={
-            <Touchable
-              style={styles.addWrap}
-              onPress={() => {
-                navigationService.navigate('ManageTokenList');
-              }}>
-              <Svg icon="tune" size={pTd(16)} />
-              <Text style={styles.addTokenText}>{t('Manage token list')}</Text>
-            </Touchable>
-          }
-        />
-      </ScrollView>
+        refreshing={false}
+        extraData={extraIndex}
+        data={accountTokenList || []}
+        renderItem={renderItem}
+        keyExtractor={(item: ITokenSectionResponse) => item.symbol}
+        onEndReached={() => getAccountTokenList()}
+        ListFooterComponent={
+          <Touchable
+            style={styles.addWrap}
+            onPress={() => {
+              navigationService.navigate('ManageTokenList');
+            }}>
+            <Svg icon="tune" size={pTd(16)} />
+            <Text style={styles.addTokenText}>{t('Manage token list')}</Text>
+          </Touchable>
+        }
+      />
     </View>
   );
 }

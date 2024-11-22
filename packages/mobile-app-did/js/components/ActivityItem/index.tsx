@@ -22,7 +22,7 @@ import NFTAvatar from 'components/NFTAvatar';
 import GStyles from 'assets/theme/GStyles';
 import fonts from 'assets/theme/fonts';
 import DoubleAvatar from 'components/DoubleAvatar';
-import { TextL, TextM, TextS } from 'components/CommonText';
+import { TextL, TextM } from 'components/CommonText';
 import { contractStatusEnum } from '@portkey-wallet/constants/constants-ca/common';
 import Lottie from 'lottie-react-native';
 import { makeStyles } from '@rneui/themed';
@@ -83,7 +83,7 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
     const suffix = nftInfo?.alias || symbol || '';
 
     return (
-      <TextM
+      <TextL
         numberOfLines={1}
         ellipsizeMode="tail"
         style={[
@@ -92,7 +92,7 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
           { color: isReceived ? darkColors.textSuccess1 : darkColors.textBase1 },
         ]}>
         {`${prefix}${formatTokenAmountShowWithDecimals(item?.amount, decimals)} ${suffix}`}
-      </TextM>
+      </TextL>
     );
   }, [item, itemStyle.tokenBalance]);
 
@@ -130,9 +130,9 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
       return null;
     }
     return (
-      <TextS numberOfLines={1} ellipsizeMode="tail" style={itemStyle.usdtBalance}>
+      <TextM numberOfLines={1} ellipsizeMode="tail" style={itemStyle.usdtBalance}>
         {formatAmountUSDShow(isMainnet ? item?.currentTxPriceInUsd : '')}
-      </TextS>
+      </TextM>
     );
   }, [isMainnet, item?.currentTxPriceInUsd, itemStyle.usdtBalance]);
 

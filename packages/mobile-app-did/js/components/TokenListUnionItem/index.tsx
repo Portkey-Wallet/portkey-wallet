@@ -38,6 +38,10 @@ const TokenListUnionItem: React.FC<TokenListItemType> = props => {
     }
   }, [item.tokens]);
 
+  const truncateToTwoDecimals = (num: number) => {
+    return Math.trunc(num * 100) / 100;
+  };
+
   return (
     <View>
       <Touchable style={itemStyle.wrap} onPress={() => onExpand?.(item)}>
@@ -68,7 +72,7 @@ const TokenListUnionItem: React.FC<TokenListItemType> = props => {
             </TextL>
             {isMainnet && typeof item.price === 'number' && item.price > 0 && (
               <TextM numberOfLines={1} style={[FontStyles.font11, itemStyle.chainInfo]}>
-                {'$' + item.price}
+                {'$' + truncateToTwoDecimals(item.price)}
               </TextM>
             )}
           </View>

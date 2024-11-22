@@ -846,8 +846,7 @@ const SendHome: React.FC = () => {
   }, [
     chainInfo,
     balance,
-    selectedToContact.chainId,
-    selectedToContact.address,
+    selectedToContact,
     assetInfo.chainId,
     assetInfo.decimals,
     assetInfo.symbol,

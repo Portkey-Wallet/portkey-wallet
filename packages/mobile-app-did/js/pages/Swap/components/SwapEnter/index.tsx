@@ -495,8 +495,9 @@ const SwapEnter = () => {
                   },
                 }}
                 value={{ text: 'AwakenSwap' }}
+                isLabelNoTail={true}
               />
-              <CommonInfoRow label={{ text: 'Price' }} value={{ text: priceLabel }} />
+              <CommonInfoRow label={{ text: 'Price' }} value={{ text: priceLabel }} isLabelNoTail={true} />
             </View>
           )
         )}

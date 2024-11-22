@@ -248,7 +248,7 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
           </View>
         }
         notHandleHardwareBackPress
-        safeAreaColor={['black', 'black']}
+        safeAreaColor={['lightBlack', 'lightBlack']}
         containerStyles={styles.container}
         scrollViewProps={{ disabled: true }}
         titleDom={

@@ -1,4 +1,4 @@
-import React, { memo, useMemo } from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
 import { Text, View } from 'react-native';
 import BigNumber from 'bignumber.js';
 import CommonPreviewContainer from 'components/CommonPreviewContainer';
@@ -107,6 +107,14 @@ const SendReceivePreview: React.FC<ISendReceivePreviewProps> = ({
     return formatAmountUSDShow(amountUSD);
   }, [amountUSD]);
 
+  const addressShowUI = useCallback((ads: string) => {
+    if (ads.includes('_')) {
+      return formatStr2EllipsisStr(ads);
+    } else {
+      return formatStr2EllipsisStr(ads, 6, 'middle', 4);
+    }
+  }, []);
+
   return (
     <CommonPreviewContainer
       helpUrl={actionType === 'send' ? SEND_HELP_URL : RECEIVE_HELP_URL}
@@ -143,8 +151,8 @@ const SendReceivePreview: React.FC<ISendReceivePreviewProps> = ({
       )}
       {/* eslint-disable-next-line react-native/no-inline-styles */}
       <View style={[styles.infoWrap, { marginTop: NFTInfo ? 0 : pTd(16) }]}>
-        {fromAddress && <CommonInfoRow label={{ text: 'From' }} value={{ text: formatStr2EllipsisStr(fromAddress) }} />}
-        {toAddress && <CommonInfoRow label={{ text: 'To' }} value={{ text: formatStr2EllipsisStr(toAddress) }} />}
+        {fromAddress && <CommonInfoRow label={{ text: 'From' }} value={{ text: addressShowUI(fromAddress) }} />}
+        {toAddress && <CommonInfoRow label={{ text: 'To' }} value={{ text: addressShowUI(toAddress) }} />}
         {sourceNetwork && (
           <CommonInfoRow
             label={{ text: 'Source network' }}

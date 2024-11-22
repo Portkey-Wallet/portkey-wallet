@@ -219,11 +219,11 @@ export const ToAddressInputRef = forwardRef<IToAddressInputRef, IToAddressInput>
   const pasteAddress = useCallback(async () => {
     try {
       const str = await getStringAsync();
-      setSelectedToContact({ name: '', address: str });
+      onInput(str);
     } catch (error) {
       console.log('pasteAddress', error);
     }
-  }, [setSelectedToContact]);
+  }, [onInput]);
 
   const onPressEdit = useCallback(async () => {
     setCheckFinish(true);
@@ -316,9 +316,9 @@ export const ToAddressInputRef = forwardRef<IToAddressInputRef, IToAddressInput>
             {selectedToContact.address && !isChecking && checkFinish && checkedPass && (
               <Svg
                 icon={'checked'}
-                size={pTd(20)}
+                size={pTd(24)}
                 color={defaultColors.iconSuccess1}
-                iconStyle={GStyles.marginLeft(16)}
+                iconStyle={GStyles.marginLeft(14)}
               />
             )}
 
@@ -406,7 +406,7 @@ export const getStyles = makeStyles((theme: any) => ({
     paddingVertical: 0,
     paddingRight: pTd(6),
     fontSize: pTd(14),
-    width: pTd(260),
+    width: pTd(273),
   },
   right: {
     width: pTd(16),

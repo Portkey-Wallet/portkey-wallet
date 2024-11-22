@@ -9,7 +9,7 @@ import React, {
   useState,
   ReactNode,
 } from 'react';
-import { StyleSheet, TouchableOpacity, Text, View, StyleProp, ViewStyle } from 'react-native';
+import { StyleSheet, TouchableOpacity, Text, View, StyleProp, ViewStyle, TextStyle } from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { pTd } from 'utils/unit';
@@ -39,6 +39,8 @@ export type CommonTopTabProps = {
   onTabChange?: (name: string) => void;
   suffixIconDom?: ReactNode;
   suffixIconDomVisible?: boolean;
+  labelFocusStyle?: ViewStyle;
+  labelTextStyle?: StyleProp<TextStyle>;
 };
 
 const Tab = createMaterialTopTabNavigator();
@@ -56,6 +58,8 @@ const CommonTopTab: React.FC<CommonTopTabProps> = props => {
     onTabChange,
     suffixIconDom,
     suffixIconDomVisible,
+    labelFocusStyle,
+    labelTextStyle,
   } = props;
 
   const tabBarRef = useRef<any>(null);
@@ -85,6 +89,8 @@ const CommonTopTab: React.FC<CommonTopTabProps> = props => {
           onTabChange={onTabChange}
           ref={tabBarRef}
           suffixIconDom={suffixIconDom}
+          labelFocusStyle={labelFocusStyle}
+          labelTextStyle={labelTextStyle}
         />
       )}
       screenOptions={{
@@ -112,6 +118,8 @@ const CustomizedTopTabBar = forwardRef(
       containerStyle = {},
       suffixIconDom,
       onTabChange,
+      labelFocusStyle,
+      labelTextStyle,
     }: {
       labelRightNum?: number;
       state: { routes: any[]; index: number };
@@ -123,6 +131,8 @@ const CustomizedTopTabBar = forwardRef(
       containerStyle?: StyleProp<ViewStyle>;
       suffixIconDom?: ReactNode;
       onTabChange?: (name: string) => void;
+      labelFocusStyle?: TextStyle;
+      labelTextStyle?: StyleProp<ViewStyle>;
     },
     ref,
   ) => {
@@ -185,15 +195,18 @@ const CustomizedTopTabBar = forwardRef(
                     ? { marginRight: index !== state.routes.length - 1 ? pTd(10) : 0 }
                     : { paddingRight: index !== state.routes.length - 1 ? (suffix ? pTd(16) : pTd(32)) : 0 },
                 ]}>
-                <Text
-                  style={[
-                    toolBarStyle.labelText,
-                    {
-                      color: isFocused ? darkColors.textBase1 : darkColors.textBase2,
-                    },
-                  ]}>
-                  {label}
-                </Text>
+                <View style={[isFocused ? labelFocusStyle : {}]}>
+                  <Text
+                    style={[
+                      toolBarStyle.labelText,
+                      {
+                        color: isFocused ? darkColors.textBase1 : darkColors.textBase2,
+                      },
+                      labelTextStyle,
+                    ]}>
+                    {label}
+                  </Text>
+                </View>
                 {suffix && (
                   <View style={styles.suffixWrap}>
                     <TextM style={[styles.suffixText, isFocused && styles.suffixTextFocused]}>{suffix}</TextM>
@@ -272,7 +285,7 @@ const getToolBarStyle = makeStyles(theme => ({
     backgroundColor: theme.colors.bgBase2,
   },
   labelText: {
-    fontSize: pTd(18),
-    lineHeight: pTd(22.5),
+    fontSize: pTd(16),
+    lineHeight: pTd(20),
   },
 }));

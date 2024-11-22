@@ -69,7 +69,7 @@ const AmountCard: React.FC<IAmountCardProps> = ({
 
   const gasFee = useAwakenGasFee();
   const handleMaxPress = useCallback(() => {
-    if (balance?.isNaN() || !token) {
+    if (balance?.isNaN() || !balance || !token) {
       onAmountChange?.('');
       return;
     }
@@ -83,11 +83,17 @@ const AmountCard: React.FC<IAmountCardProps> = ({
       onAmountChange?.(divDecimals(_valueBN, decimals).toFixed() || '');
       return;
     }
+    if (ZERO.gte(balance)) {
+      onAmountChange?.('');
+      return;
+    }
     onAmountChange?.(divDecimals(balance || ZERO, decimals).toFixed() || '');
   }, [balance, gasFee, onAmountChange, token]);
 
   const balanceStr = useMemo(() => {
-    if (!balance || balance.isNaN() || !token) return '';
+    if (!balance || balance.isNaN() || !token) {
+      return '';
+    }
     const { symbol, decimals } = token;
     return `${divDecimals(balance, decimals).toFixed()} ${formatNameWithNoUnderline(symbol)}`;
   }, [balance, token]);

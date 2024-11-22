@@ -10,7 +10,6 @@ import { useContact } from './contact';
 import { TFormattedRecentItem } from '@portkey-wallet/types/types-ca/contactNew';
 import { getAelfAddress } from '@portkey-wallet/utils/aelf';
 import { useCaAddressInfoList } from './wallet';
-import { getAddressChainId } from '@portkey-wallet/utils';
 
 export const useRecentState = () => useAppCASelector(state => state?.recent);
 

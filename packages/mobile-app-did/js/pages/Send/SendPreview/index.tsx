@@ -123,6 +123,8 @@ const SendPreview: React.FC = () => {
   );
 
   const EstimateAmount = useMemo(() => {
+    let _amount = sendNumber;
+
     // adjust etransfer
     if (
       ZERO.plus(sendNumber).isLessThanOrEqualTo(transactionFee || '') &&
@@ -143,6 +145,19 @@ const SendPreview: React.FC = () => {
       };
     }
 
+    // adjust general transfer
+    if (transferType === TransferType.GENERAL_SAME_CHAIN) {
+      _amount = formatAmountShow(_amount, Number(assetInfo.decimals));
+      const amountUsd = amountInUsdShow(_amount, 0, assetInfo.symbol);
+
+      console.log('GENERAL_SAME_CHAIN', _amount, amountUsd);
+
+      return {
+        estimateAmount: `${_amount} ${assetInfo.label || assetInfo.symbol}`,
+        estimateAmountUsd: isMainnet ? amountUsd : '',
+      };
+    }
+
     const fee = networkFee || 0;
     if (ZERO.plus(sendNumber).isLessThanOrEqualTo(fee) && assetInfo.symbol === defaultToken.symbol) {
       return {
@@ -151,7 +166,6 @@ const SendPreview: React.FC = () => {
       };
     }
 
-    let _amount = sendNumber;
     if (transferType === TransferType.GENERAL_CROSS_CHAIN) {
       _amount =
         assetInfo.symbol === defaultToken.symbol

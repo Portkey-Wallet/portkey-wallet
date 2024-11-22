@@ -36,6 +36,10 @@ import { ITabContext } from './tools';
 import TabsDom from './components/TabsDom';
 import DiscoverWebsiteImage from 'pages/Discover/components/DiscoverWebsiteImage';
 import { useGetCmsWebsiteInfo } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { WebViewNavigation } from 'react-native-webview';
+import { getProtocolAndDomain } from 'utils/svgUriUtils';
+
+export type TabStateMap = { name: string } & Pick<WebViewNavigation, 'url'>;
 
 export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
   const { t } = useLanguage();
@@ -46,6 +50,10 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
   const { isDrawerOpen, discoverMap = {}, activeTabId } = useAppCASelector(state => state.discover);
   const { tabs } = discoverMap[networkType] ?? {};
   const activeItem = useMemo(() => tabs?.find(ele => ele.id === activeTabId) as ITabItem, [activeTabId, tabs]);
+  const [tabStateMap, setTabStateMap] = useState<TabStateMap>({
+    name: activeItem?.name,
+    url: getProtocolAndDomain(activeItem?.url),
+  });
   const { getCmsWebsiteInfoImageUrl, getCmsWebsiteInfoName } = useGetCmsWebsiteInfo();
 
   const tabRef = useRef<IBrowserTab | null>(null);
@@ -182,6 +190,14 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
     [activeItem, activeTabId, activeWebviewScreenShot],
   );
 
+  const onNavigationChange = useCallback((nState: WebViewNavigation) => {
+    console.log('onNavigationChange', nState);
+    setTabStateMap({
+      name: nState?.title,
+      url: getProtocolAndDomain(nState?.url),
+    });
+  }, []);
+
   const provider = useMemo<ITabContext>(() => {
     return {
       currentTabLength: (tabs ?? []).length,
@@ -245,16 +261,20 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
         titleDom={
           activeTabId ? (
             <View style={styles.headerWrap}>
-              <DiscoverWebsiteImage size={pTd(24)} imageUrl={getCmsWebsiteInfoImageUrl(activeItem.url)} />
+              <DiscoverWebsiteImage size={pTd(24)} imageUrl={getCmsWebsiteInfoImageUrl(tabStateMap?.url)} />
               <TextS numberOfLines={1} ellipsizeMode="tail" style={styles.header}>
-                {getCmsWebsiteInfoName(activeItem.url) || activeItem?.name || getHost(activeItem?.url)}
+                {getCmsWebsiteInfoName(tabStateMap?.url) || getHost(tabStateMap?.url) || tabStateMap?.url}
               </TextS>
             </View>
           ) : (
             ''
           )
         }>
-        <TabsDom activeWebViewRef={tabRef} clickBottomActionBtn={clickBottomActionBtn} />
+        <TabsDom
+          activeWebViewRef={tabRef}
+          clickBottomActionBtn={clickBottomActionBtn}
+          onNavigationChange={onNavigationChange}
+        />
         {!activeTabId && isDrawerOpen && CardGroupDom}
       </PageContainer>
     </BrowserContext.Provider>

@@ -23,6 +23,7 @@ import navigationService from 'utils/navigationService';
 import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { showWalletInfo } from '../WalletInfoOverlay';
 import { getHost } from '@portkey-wallet/utils/dapp/browser';
+import { WebViewNavigation } from 'react-native-webview';
 
 enum HANDLE_TYPE {
   REFRESH = 'Refresh',
@@ -36,9 +37,10 @@ enum HANDLE_TYPE {
 type IProps = {
   activeWebViewRef: any;
   clickBottomActionBtn: (type: 'back' | 'forward' | 'showTab' | 'home' | 'more') => void;
+  onNavigationChange: (navState: WebViewNavigation) => void;
 };
 
-function TabsDom({ activeWebViewRef, clickBottomActionBtn }: IProps) {
+function TabsDom({ activeWebViewRef, clickBottomActionBtn, onNavigationChange }: IProps) {
   const userInfo = useCurrentUserInfo();
   const { networkType } = useCurrentNetworkInfo();
   const { discoverMap = {}, initializedList, activeTabId, autoApproveMap } = useAppCASelector(state => state.discover);
@@ -175,8 +177,7 @@ function TabsDom({ activeWebViewRef, clickBottomActionBtn }: IProps) {
     const canGoBack: boolean = tabStateMap?.canGoBack?.[ele.id];
     const canGoForward: boolean = tabStateMap?.canGoForward?.[String(ele?.id)];
 
-    const onNavigationStateChange = (navState: any) => {
-      console.log('navState', navState);
+    const onNavigationStateChange = (navState: WebViewNavigation) => {
       if (ele.id === activeTabId) {
         setTabStateMap(pre => ({
           url: navState?.url,
@@ -189,6 +190,7 @@ function TabsDom({ activeWebViewRef, clickBottomActionBtn }: IProps) {
             [ele.id]: navState?.canGoForward,
           },
         }));
+        onNavigationChange(navState);
       }
     };
 

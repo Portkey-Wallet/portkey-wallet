@@ -95,6 +95,7 @@ const EarnItem = (item: TBaseCardItemType) => {
 
 const styles = StyleSheet.create({
   container: {
+    paddingBottom: pTd(24),
     flex: 1,
     flexDirection: 'column',
     justifyContent: 'flex-start',

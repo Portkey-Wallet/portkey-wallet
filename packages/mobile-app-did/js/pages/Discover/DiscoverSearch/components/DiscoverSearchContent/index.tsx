@@ -101,6 +101,7 @@ export default function DiscoverSearchContent({ address, onBack, isInner = false
         console.log('checkIsUrl', getHost(prefixUrlWithProtocol(newValue)));
 
         onDiscoverJump(getHost(prefixUrlWithProtocol(newValue)), prefixUrlWithProtocol(newValue));
+        isInner && onBack?.();
       } else {
         // else search in Discover list
         const filterList = flatList.filter(item =>
@@ -110,7 +111,7 @@ export default function DiscoverSearchContent({ address, onBack, isInner = false
         setShowRecord(false);
       }
     },
-    [flatList, onDiscoverJump],
+    [flatList, isInner, onBack, onDiscoverJump],
   );
 
   const innerClick = useCallback(() => {

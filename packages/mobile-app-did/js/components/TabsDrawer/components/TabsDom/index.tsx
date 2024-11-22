@@ -22,6 +22,8 @@ import GStyles from 'assets/theme/GStyles';
 import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { showWalletInfo } from '../WalletInfoOverlay';
 import { getHost } from '@portkey-wallet/utils/dapp/browser';
+import { useKeyboard } from 'hooks/useKeyboardHeight';
+import { TopSpacing } from 'pages/Chat/components/hooks';
 
 enum HANDLE_TYPE {
   REFRESH = 'Refresh',
@@ -60,6 +62,17 @@ function TabsDom({ activeWebViewRef, clickBottomActionBtn }: IProps) {
     canGoBack: {},
     canGoForward: {},
   });
+  const { keyboardHeight, isKeyboardOpened } = useKeyboard(TopSpacing);
+
+  const webViewContainerStyle = useMemo(
+    () =>
+      isKeyboardOpened
+        ? {
+            paddingBottom: keyboardHeight,
+          }
+        : undefined,
+    [isKeyboardOpened, keyboardHeight],
+  );
 
   const handleSearch = useCallback(() => {
     clickBottomActionBtn('search');
@@ -195,7 +208,7 @@ function TabsDom({ activeWebViewRef, clickBottomActionBtn }: IProps) {
     }
 
     return (
-      <View key={ele.id} style={styles.webViewContainer}>
+      <View key={ele.id} style={[styles.webViewContainer, webViewContainerStyle]}>
         <BrowserTab
           id={ele.id}
           uri={ele.url}

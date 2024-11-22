@@ -34,6 +34,8 @@ const SelectAssetTab: React.FC<SelectAssetTabProps> = (props: SelectAssetTabProp
     ];
   }, [nftInfos, noDataMessage, t, toAddress, tokenInfos, loading]);
 
-  return <CommonTopTab swipeEnabled hasTabBarBorderRadius={false} hasBottomBorder={false} tabList={tabList} />;
+  return (
+    <CommonTopTab swipeEnabled hasTabBarBorderRadius={false} hasBottomBorder={false} tabList={tabList} isBlockTab />
+  );
 };
 export default SelectAssetTab;

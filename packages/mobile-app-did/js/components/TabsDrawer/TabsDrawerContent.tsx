@@ -36,8 +36,12 @@ import { ITabContext } from './tools';
 import TabsDom from './components/TabsDom';
 import DiscoverWebsiteImage from 'pages/Discover/components/DiscoverWebsiteImage';
 import { useGetCmsWebsiteInfo } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { WebViewNavigation } from 'react-native-webview';
+import { getProtocolAndDomain } from 'utils/svgUriUtils';
 import DiscoverSearchContent from 'pages/Discover/DiscoverSearch/components/DiscoverSearchContent';
 import { makeStyles } from '@rneui/themed';
+
+export type TabStateMap = { name: string } & Pick<WebViewNavigation, 'url'>;
 
 export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
   const styles = getStyles();
@@ -49,6 +53,10 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
   const { isDrawerOpen, discoverMap = {}, activeTabId } = useAppCASelector(state => state.discover);
   const { tabs } = discoverMap[networkType] ?? {};
   const activeItem = useMemo(() => tabs?.find(ele => ele.id === activeTabId) as ITabItem, [activeTabId, tabs]);
+  const [tabStateMap, setTabStateMap] = useState<TabStateMap>({
+    name: activeItem?.name,
+    url: getProtocolAndDomain(activeItem?.url),
+  });
   const { getCmsWebsiteInfoImageUrl, getCmsWebsiteInfoName } = useGetCmsWebsiteInfo();
 
   const tabRef = useRef<IBrowserTab | null>(null);
@@ -191,6 +199,14 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
     [activeItem, activeTabId, activeWebviewScreenShot],
   );
 
+  const onNavigationChange = useCallback((nState: WebViewNavigation) => {
+    console.log('onNavigationChange', nState);
+    setTabStateMap({
+      name: nState?.title,
+      url: getProtocolAndDomain(nState?.url),
+    });
+  }, []);
+
   const provider = useMemo<ITabContext>(() => {
     return {
       currentTabLength: (tabs ?? []).length,
@@ -233,6 +249,16 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
     );
   }, [closeAll, dispatch, onDone, styles.cardsContainer, t, tabs]);
 
+  const safeAreaColor: any = useMemo(() => {
+    if (!activeTabId) {
+      return ['black', 'black'];
+    }
+    if (isSearchShow) {
+      return ['black', 'lightBlack'];
+    }
+    return ['lightBlack', 'lightBlack'];
+  }, [activeTabId, isSearchShow]);
+
   return (
     <BrowserContext.Provider value={value}>
       <PageContainer
@@ -248,22 +274,26 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
           </View>
         }
         notHandleHardwareBackPress
-        safeAreaColor={['lightBlack', 'lightBlack']}
+        safeAreaColor={safeAreaColor}
         containerStyles={styles.container}
         scrollViewProps={{ disabled: true }}
         titleDom={
           activeTabId ? (
             <View style={styles.headerWrap}>
-              <DiscoverWebsiteImage size={pTd(24)} imageUrl={getCmsWebsiteInfoImageUrl(activeItem.url)} />
+              <DiscoverWebsiteImage size={pTd(24)} imageUrl={getCmsWebsiteInfoImageUrl(tabStateMap?.url)} />
               <TextS numberOfLines={1} ellipsizeMode="tail" style={styles.header}>
-                {getCmsWebsiteInfoName(activeItem.url) || activeItem?.name || getHost(activeItem?.url)}
+                {getCmsWebsiteInfoName(tabStateMap?.url) || getHost(tabStateMap?.url) || tabStateMap?.url}
               </TextS>
             </View>
           ) : (
             ''
           )
         }>
-        <TabsDom activeWebViewRef={tabRef} clickBottomActionBtn={clickBottomActionBtn} />
+        <TabsDom
+          activeWebViewRef={tabRef}
+          clickBottomActionBtn={clickBottomActionBtn}
+          onNavigationChange={onNavigationChange}
+        />
         {!activeTabId && isDrawerOpen && CardGroupDom}
         {isSearchShow && (
           <View style={styles.searchContainer}>

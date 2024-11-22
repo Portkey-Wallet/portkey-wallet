@@ -229,7 +229,7 @@ const CollectionDetail = () => {
           onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], {
             useNativeDriver: false,
           })}
-          scrollEventThrottle={16}
+          // scrollEventThrottle={16}
           // eslint-disable-next-line react/no-unstable-nested-components
           ItemSeparatorComponent={() => <View style={GStyles.height(16)} />}
           columnWrapperStyle={styles.columnWrapper}

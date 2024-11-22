@@ -172,7 +172,6 @@ const PaymentSecurityDetail: React.FC = () => {
       </View>
       <CommonButton
         type="primary"
-        style={{ marginBottom: pTd(14) }}
         onPress={() => {
           OverlayModal.show(<EditModal detail={detail} />, {
             position: 'bottom',
@@ -188,6 +187,7 @@ const getStyles = makeStyles(_ => ({
   pageWrap: {
     flex: 1,
     justifyContent: 'space-between',
+    paddingBottom: pTd(14),
   },
   labelWrap: {
     flexDirection: 'row',

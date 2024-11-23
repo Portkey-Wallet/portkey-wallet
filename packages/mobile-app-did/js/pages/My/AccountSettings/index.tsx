@@ -351,7 +351,7 @@ export default function AccountSettings() {
               <View style={styles.svgWrap}>
                 <Svg icon={item.icon} size={pTd(24)} />
               </View>
-              <TextM style={styles.cellText}>{item.label}</TextM>
+              <TextL style={styles.cellText}>{item.label}</TextL>
             </View>
 
             <View style={styles.cellRightWrap}>
@@ -405,7 +405,7 @@ const getStyles = makeStyles(theme => ({
   },
   cellText: {
     color: theme.colors.textBase1,
-    fontSize: 16,
+    lineHeight: pTd(22),
   },
   cellRightWrap: {
     flexDirection: 'row',

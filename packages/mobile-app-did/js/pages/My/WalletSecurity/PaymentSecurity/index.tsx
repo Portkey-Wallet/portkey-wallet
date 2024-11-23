@@ -107,7 +107,7 @@ const getStyles = makeStyles(() => ({
 
 const PaymentSecurityList: React.FC = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const { list, isNext, next, init } = useTransferLimitList(); // isNext
+  const { list, isNext, next, init, fetching } = useTransferLimitList(); // isNext
   const pageStyles = getListStyles();
   const getList = useLockCallback(async () => {
     if (!isNext) {
@@ -156,7 +156,7 @@ const PaymentSecurityList: React.FC = () => {
         renderItem={({ item }) => <PaymentSecurityItem item={item} />}
         onRefresh={() => init()}
         onEndReached={() => getList()}
-        ListEmptyComponent={<NoData noPic topDistance={pTd(80)} message="No assets yet" />}
+        ListEmptyComponent={fetching ? <></> : <NoData noPic topDistance={pTd(80)} message="No assets yet" />}
       />
     </PageContainer>
   );

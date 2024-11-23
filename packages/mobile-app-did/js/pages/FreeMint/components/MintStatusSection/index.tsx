@@ -29,7 +29,7 @@ export enum MintStatus {
 const mintTextObj = {
   [MintStatus.Minting]: 'Your NFT is being minted. You can close this window and view it later in your NFT gallery.',
   [MintStatus.Minted]: 'Your NFT has been successfully minted.',
-  [MintStatus.MintFailed]: `There was an issue minting your NFT. Would you like to try again?`,
+  [MintStatus.MintFailed]: 'There was an issue minting your NFT. Would you like to try again?',
 };
 
 interface MintStatusSectionProps {
@@ -68,7 +68,9 @@ const MintStatusSection = (props: MintStatusSectionProps) => {
   }, []);
 
   const fetchNftItemInfo = useCallback(async () => {
-    if (!confirmMintResponse?.symbol || !mintInfo?.collectionInfo.chainId) return;
+    if (!confirmMintResponse?.symbol || !mintInfo?.collectionInfo.chainId) {
+      return;
+    }
 
     try {
       setBtnLoading(true);
@@ -107,7 +109,7 @@ const MintStatusSection = (props: MintStatusSectionProps) => {
       await setUserInfo({
         avatar: editInfo?.imageUri || '',
       });
-      CommonToast.success('Profile photo is set.');
+      CommonToast.success('Profile photo set successfully.');
       navigationService.navigate('Tab');
     } catch (error) {
       CommonToast.fail('Failed to set profile photo. Please try again.');
@@ -118,7 +120,7 @@ const MintStatusSection = (props: MintStatusSectionProps) => {
   }, [editInfo?.imageUri, setUserInfo]);
 
   const buttonList = useMemo<ButtonRowProps['buttons']>(() => {
-    if (MintStatus.Minting === status)
+    if (MintStatus.Minting === status) {
       return [
         {
           title: 'Close',
@@ -128,8 +130,9 @@ const MintStatusSection = (props: MintStatusSectionProps) => {
           },
         },
       ];
+    }
 
-    if (MintStatus.Minted === status)
+    if (MintStatus.Minted === status) {
       return [
         {
           title: 'Set as Profile Photo',
@@ -145,8 +148,9 @@ const MintStatusSection = (props: MintStatusSectionProps) => {
           },
         },
       ];
+    }
 
-    if (MintStatus.MintFailed === status)
+    if (MintStatus.MintFailed === status) {
       return [
         {
           title: 'Cancel',
@@ -163,6 +167,7 @@ const MintStatusSection = (props: MintStatusSectionProps) => {
           },
         },
       ];
+    }
   }, [btnLoading, changeStep, fetchNftItemInfo, setAvatar, status]);
 
   return (

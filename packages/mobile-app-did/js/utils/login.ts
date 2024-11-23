@@ -10,10 +10,12 @@ export function queryFailAlert(callBack: () => void, isRecovery?: boolean, isRes
   ActionSheet.alert({
     isCloseShow: false,
     isModalCloseDisable: true,
-    message: isRecovery ? 'Wallet Recovery Failed!' : 'Wallet Register Failed!',
+    message: isRecovery
+      ? 'Wallet account recovery failed. Please try again.'
+      : 'Wallet account sign-up failed. Please try again.',
     buttons: [
       {
-        title: isRecovery ? 'Re-login' : 'Re-register',
+        title: isRecovery ? 'Log in again' : 'Sign up again',
         onPress: () => {
           callBack();
           if (isReset) {

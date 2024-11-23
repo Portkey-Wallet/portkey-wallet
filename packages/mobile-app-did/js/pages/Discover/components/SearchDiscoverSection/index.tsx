@@ -4,7 +4,6 @@ import GStyles from 'assets/theme/GStyles';
 import { TextS } from 'components/CommonText';
 import { pTd } from 'utils/unit';
 import fonts from 'assets/theme/fonts';
-import { FontStyles } from 'assets/theme/styles';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { darkColors, defaultColors } from 'assets/theme';
 import { DiscoverItem } from '@portkey-wallet/store/store-ca/cms/types';
@@ -13,6 +12,7 @@ import { useDiscoverJumpWithNetWork } from 'hooks/discover';
 import TextWithProtocolIcon from 'components/TextWithProtocolIcon';
 import Touchable from 'components/Touchable';
 import Svg from 'components/Svg';
+import { makeStyles } from '@rneui/themed';
 
 interface ISearchDiscoverSectionProps {
   searchedDiscoverList: DiscoverItem[];
@@ -26,7 +26,7 @@ export default function SearchDiscoverSection(props: ISearchDiscoverSectionProps
 
   const { s3Url } = useCurrentNetworkInfo();
   const jumpToWebview = useDiscoverJumpWithNetWork();
-
+  const itemStyle = getStyles();
   const onClickJump = useCallback(
     (i: DiscoverItem) => {
       jumpToWebview({
@@ -98,7 +98,7 @@ export default function SearchDiscoverSection(props: ISearchDiscoverSectionProps
                 <View style={itemStyle.infoWrap}>
                   <TextWithProtocolIcon title={item?.title} url={item?.url} textFontSize={pTd(14)} />
                   {item?.description && (
-                    <TextS numberOfLines={1} ellipsizeMode={'tail'} style={[FontStyles.font1, itemStyle.gameInfo]}>
+                    <TextS numberOfLines={1} ellipsizeMode={'tail'} style={[itemStyle.gameInfo]}>
                       {item.description}
                     </TextS>
                   )}
@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const itemStyle = StyleSheet.create({
+const getStyles = makeStyles(theme => ({
   wrap: {
     height: pTd(78),
     display: 'flex',
@@ -163,7 +163,8 @@ const itemStyle = StyleSheet.create({
     lineHeight: pTd(22),
   },
   gameInfo: {
+    color: theme.colors.textBase2,
     lineHeight: pTd(16),
     marginTop: pTd(2),
   },
-});
+}));

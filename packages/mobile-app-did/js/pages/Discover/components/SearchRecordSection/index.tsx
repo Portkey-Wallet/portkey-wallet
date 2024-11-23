@@ -53,7 +53,7 @@ export default function SearchRecordSection({ onClick }: TSearchRecordSectionPro
   }
 
   return (
-    <ScrollView style={styles.sectionWrap}>
+    <ScrollView style={styles.sectionWrap} keyboardShouldPersistTaps="handled">
       <View style={[styles.headerWrap, GStyles.flexRow, GStyles.spaceBetween]}>
         <TextL style={styles.header}>{'Recents'}</TextL>
         <TextM style={styles.clear} onPress={clearRecord}>

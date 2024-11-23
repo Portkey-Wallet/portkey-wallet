@@ -22,7 +22,7 @@ export default function GiftHistory() {
   return (
     <PageContainer
       titleDom={t('Sent Gifts History')}
-      safeAreaColor={['white', 'black']}
+      safeAreaColor={['black']}
       containerStyles={styles.pageStyles}
       scrollViewProps={{
         disabled: false,

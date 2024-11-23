@@ -404,8 +404,9 @@ const getStyles = makeStyles(theme => ({
     marginRight: pTd(12),
   },
   cellText: {
+    lineHeight: pTd(18),
     color: theme.colors.textBase1,
-    lineHeight: pTd(22),
+    fontSize: pTd(16),
   },
   cellRightWrap: {
     flexDirection: 'row',
@@ -427,8 +428,9 @@ const getStyles = makeStyles(theme => ({
     marginTop: pTd(12),
   },
   setBackupMailText: {
+    lineHeight: pTd(18),
     color: theme.colors.textBase2,
-    fontSize: 16,
+    fontSize: pTd(16),
   },
   newLabelWrap: {
     borderRadius: 4,
@@ -440,6 +442,7 @@ const getStyles = makeStyles(theme => ({
   },
   newLabelText: {
     color: theme.colors.textBase1,
-    fontSize: 12,
+    lineHeight: pTd(14),
+    fontSize: pTd(12),
   },
 }));

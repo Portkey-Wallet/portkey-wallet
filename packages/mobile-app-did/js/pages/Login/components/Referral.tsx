@@ -66,7 +66,7 @@ export function useLoginModeMap(
     Loading.hide(loadingKey);
   }, [authenticationSign, onLogin]);
 
-  const onGoogleSign = useLockCallback(async () => {
+  const onGoogleSign = useCallback(async () => {
     Loading.show();
     try {
       const userInfo = await authenticationSign(LoginType.Google);
@@ -96,7 +96,9 @@ export function useLoginModeMap(
         authenticationInfo: { [userInfo.user.id]: userInfo.accessToken },
       });
     } catch (error) {
-      if (!checkIsUserCancel(error)) CommonPrompt.failError(error);
+      if (!checkIsUserCancel(error)) {
+        CommonPrompt.failError(error);
+      }
     }
     Loading.hide(loadingKey);
   }, [authenticationSign, onLogin]);
@@ -111,7 +113,9 @@ export function useLoginModeMap(
         authenticationInfo: { [userInfo.user.id]: userInfo.accessToken },
       });
     } catch (error) {
-      if (!checkIsUserCancel(error)) CommonPrompt.failError(error);
+      if (!checkIsUserCancel(error)) {
+        CommonPrompt.failError(error);
+      }
     }
     Loading.hide(loadingKey);
   }, [authenticationSign, onLogin]);
@@ -126,7 +130,9 @@ export function useLoginModeMap(
         authenticationInfo: { [userInfo.user.userId]: userInfo.accessToken },
       });
     } catch (error) {
-      if (!checkIsUserCancel(error)) CommonPrompt.failError(error);
+      if (!checkIsUserCancel(error)) {
+        CommonPrompt.failError(error);
+      }
     }
     Loading.hide(loadingKey);
   }, [authenticationSign, onLogin]);
@@ -204,14 +210,18 @@ export default function Referral({
   return (
     <View style={[GStyles.flex1, GStyles.spaceBetween]}>
       <View style={pageStyles.titleContainer}>
-        <TextH1>{`Let's set up your wallet`}</TextH1>
+        <TextH1>{"Let's set up your wallet"}</TextH1>
       </View>
       <View style={pageStyles.bottomContainer}>
         <View style={GStyles.width100}>
           {loginModeListToRecommend.map((ele, index) => {
-            if (!ele?.type?.value) return null;
+            if (!ele?.type?.value) {
+              return null;
+            }
             const item = loginModeMap[ele.type.value];
-            if (!item) return null;
+            if (!item) {
+              return null;
+            }
             return (
               <OblongButton
                 key={index}
@@ -230,9 +240,13 @@ export default function Referral({
           />
           <View style={[GStyles.flexRow, GStyles.flexCenter]}>
             {loginModeListToOther.map((ele, index) => {
-              if (!ele?.type?.value) return null;
+              if (!ele?.type?.value) {
+                return null;
+              }
               const item = loginModeMap[ele.type.value];
-              if (!item) return null;
+              if (!item) {
+                return null;
+              }
               return (
                 <Fragment key={index}>
                   {index !== 0 && <View style={pageStyles.blank} />}

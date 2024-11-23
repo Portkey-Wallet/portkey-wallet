@@ -101,21 +101,12 @@ export const useReceive = (token: IUserTokenItemResponse, initToChainId?: ChainI
   useEffect(() => {
     if (!destinationMap) return;
     let toChainId = initToChainId;
-    if (!toChainId) {
-      const destinationMapKeys = Object.keys(destinationMap);
-      toChainId = destinationMapKeys[0] as ChainId;
-      if (token.symbol !== 'ELF' && destinationMapKeys.length > 1) {
-        toChainId = destinationMapKeys[1] as ChainId;
-      }
-    }
+    if (!toChainId) toChainId = Object.keys(destinationMap)[0] as ChainId;
     setDestinationChain(getChainInfoByChainId(toChainId));
     if (destinationMap[toChainId]?.length) {
-      const elfChain = destinationMap[toChainId].find(item => {
-        return item.network === 'AELF';
-      });
-      setSourceChain(token.symbol === 'ELF' ? elfChain : destinationMap[toChainId][0]); // set first network as source chain
+      setSourceChain(destinationMap[toChainId].find(item => item.network == toChainId) ?? destinationMap[toChainId][0]); // set same network as source chain
     }
-  }, [destinationMap, getChainInfoByChainId, initToChainId, isAelfChain, token.symbol]);
+  }, [destinationMap, getChainInfoByChainId, initToChainId]);
 
   const updateDestinationChain = useCallback(
     (targetChain?: IChainItemType) => {

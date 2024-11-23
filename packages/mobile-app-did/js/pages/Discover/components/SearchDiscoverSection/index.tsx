@@ -1,11 +1,9 @@
 import React, { useCallback } from 'react';
-import { StyleSheet, View, ScrollView } from 'react-native';
+import { View, ScrollView } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
-import { TextS } from 'components/CommonText';
+import { TextL, TextM } from 'components/CommonText';
 import { pTd } from 'utils/unit';
-import fonts from 'assets/theme/fonts';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
-import { darkColors, defaultColors } from 'assets/theme';
 import { DiscoverItem } from '@portkey-wallet/store/store-ca/cms/types';
 import DiscoverWebsiteImage from '../DiscoverWebsiteImage';
 import { useDiscoverJumpWithNetWork } from 'hooks/discover';
@@ -22,11 +20,10 @@ interface ISearchDiscoverSectionProps {
 
 export default function SearchDiscoverSection(props: ISearchDiscoverSectionProps) {
   const { searchedDiscoverList, inputValue, onClick } = props;
-  console.log('inputValue:', inputValue);
+  const styles = getStyles();
 
   const { s3Url } = useCurrentNetworkInfo();
   const jumpToWebview = useDiscoverJumpWithNetWork();
-  const itemStyle = getStyles();
   const onClickJump = useCallback(
     (i: DiscoverItem) => {
       jumpToWebview({
@@ -41,13 +38,10 @@ export default function SearchDiscoverSection(props: ISearchDiscoverSectionProps
   );
 
   return (
-    <ScrollView style={styles.sectionWrap}>
+    <ScrollView style={styles.sectionWrap} keyboardShouldPersistTaps="handled">
       {searchedDiscoverList.length === 0 ? (
         <Touchable
-          style={{
-            flexDirection: 'row',
-            marginTop: pTd(16),
-          }}
+          style={styles.wrap}
           onPress={() => {
             jumpToWebview({
               item: {
@@ -56,51 +50,36 @@ export default function SearchDiscoverSection(props: ISearchDiscoverSectionProps
               },
             });
           }}>
-          <View
-            style={{
-              padding: pTd(10),
-              borderRadius: pTd(20),
-              borderWidth: 1,
-              borderColor: darkColors.borderNeutral2,
-              marginRight: pTd(8),
-            }}>
+          <View style={styles.defaultIconWrap}>
             <Svg icon={'search'} size={pTd(20)} />
           </View>
-          <View>
-            <TextS
-              numberOfLines={1}
-              ellipsizeMode={'tail'}
-              style={{
-                color: defaultColors.textBase1,
-                fontSize: 16,
-              }}>
-              {inputValue}
-            </TextS>
-            <TextS
-              numberOfLines={1}
-              ellipsizeMode={'tail'}
-              style={[
-                {
-                  color: darkColors.textBase2,
-                },
-                itemStyle.gameInfo,
-              ]}>
-              Search with Google
-            </TextS>
+          <View style={styles.right}>
+            <View style={styles.gameNameWrap}>
+              <TextL numberOfLines={1} ellipsizeMode={'tail'}>
+                {inputValue}
+              </TextL>
+            </View>
+            <View style={styles.gameInfoWrap}>
+              <TextM numberOfLines={1} ellipsizeMode={'tail'} style={styles.gameInfo}>
+                Search with Google
+              </TextM>
+            </View>
           </View>
         </Touchable>
       ) : (
         <>
           {searchedDiscoverList?.map((item, index) => (
-            <Touchable key={index} style={itemStyle.wrap} onPress={() => onClickJump(item)}>
+            <Touchable key={index} style={styles.wrap} onPress={() => onClickJump(item)}>
               <DiscoverWebsiteImage imageUrl={`${s3Url}/${item?.imgUrl?.filename_disk}`} size={pTd(42)} />
-              <View style={itemStyle.right}>
-                <View style={itemStyle.infoWrap}>
-                  <TextWithProtocolIcon title={item?.title} url={item?.url} textFontSize={pTd(14)} />
+              <View style={styles.right}>
+                <View style={styles.gameNameWrap}>
+                  <TextWithProtocolIcon title={item?.title} url={item?.url} textFontSize={pTd(16)} />
+                </View>
+                <View style={styles.gameInfoWrap}>
                   {item?.description && (
-                    <TextS numberOfLines={1} ellipsizeMode={'tail'} style={[itemStyle.gameInfo]}>
+                    <TextM numberOfLines={1} ellipsizeMode={'tail'} style={styles.gameInfo}>
                       {item.description}
-                    </TextS>
+                    </TextM>
                   )}
                 </View>
               </View>
@@ -112,59 +91,46 @@ export default function SearchDiscoverSection(props: ISearchDiscoverSectionProps
   );
 }
 
-const styles = StyleSheet.create({
-  sectionWrap: {
-    ...GStyles.paddingArg(0, 20),
-  },
-  headerWrap: {
-    height: pTd(22),
-  },
-  header: {
-    ...fonts.mediumFont,
-    lineHeight: pTd(24),
-  },
-  cancelButton: {
-    paddingLeft: pTd(12),
-    lineHeight: pTd(36),
-  },
-});
-
 const getStyles = makeStyles(theme => ({
+  sectionWrap: {
+    ...GStyles.paddingArg(0, 16),
+  },
   wrap: {
-    height: pTd(78),
+    height: pTd(74),
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
   },
   right: {
-    height: pTd(80),
+    height: pTd(74),
     marginLeft: pTd(8),
     paddingRight: pTd(16),
     flex: 1,
     display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  image: {
-    width: pTd(32),
-    height: pTd(32),
-    borderRadius: pTd(16),
-  },
-  infoWrap: {
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'column',
     justifyContent: 'center',
-    alignItems: 'flex-start',
   },
-  gameName: {
-    lineHeight: pTd(22),
+  gameNameWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: pTd(22),
+  },
+  gameInfoWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: pTd(20),
   },
   gameInfo: {
     color: theme.colors.textBase2,
-    lineHeight: pTd(16),
     marginTop: pTd(2),
+    lineHeight: pTd(17.5),
+  },
+  defaultIconWrap: {
+    width: pTd(42),
+    height: pTd(42),
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: pTd(21),
+    borderWidth: pTd(1),
+    borderColor: theme.colors.borderNeutral2,
   },
 }));

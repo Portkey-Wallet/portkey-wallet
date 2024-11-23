@@ -252,7 +252,7 @@ function TabsDom({ activeWebViewRef, clickBottomActionBtn, onNavigationChange }:
                   <Svg icon="warning-fill" size={12} iconStyle={{ marginRight: pTd(10) }} />
                 </View>
               )}
-              <TextS style={rightDomStyle.domain} numberOfLines={1}>
+              <TextS style={[rightDomStyle.domain, fonts.mediumFont]} numberOfLines={1}>
                 {getHost(tabStateMap?.url)}
               </TextS>
             </Touchable>
@@ -329,8 +329,10 @@ const getRightDomStyles = makeStyles(theme => ({
   inputContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    maxWidth: pTd(217),
+    flex: 1,
+    justifyContent: 'center',
     height: pTd(30),
+    marginHorizontal: pTd(8),
   },
   domain: {
     color: theme.colors.textBase1,

@@ -247,6 +247,7 @@ const getStyles = makeStyles(theme => ({
   },
   suffixText: {
     color: theme.colors.textBase2,
+    lineHeight: pTd(14),
     ...fonts.SGRegularFont,
   },
   suffixTextFocused: {

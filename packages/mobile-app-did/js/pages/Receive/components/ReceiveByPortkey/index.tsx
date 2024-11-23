@@ -16,7 +16,7 @@ import ReceiveFromExchangeModal from '../ReceiveFromExchangeModal';
 import ReceiveQRCode from '../ReceiveQRCode';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
-import { TextL } from 'components/CommonText';
+import { TextM } from 'components/CommonText';
 import { defaultColors } from 'assets/theme';
 
 export default function ReceiveByPortkey({
@@ -140,9 +140,9 @@ export default function ReceiveByPortkey({
     return (
       <View style={styles.fromExchangeTipWrap}>
         <Svg icon="warning" size={pTd(22)} color={defaultColors.iconWarning5} />
-        <TextL style={styles.fromExchangeTipText}>
+        <TextM style={styles.fromExchangeTipText}>
           {"If you're transferring from an exchange, set the destination to “aelf MainChain”."}
-        </TextL>
+        </TextM>
       </View>
     );
   }, [styles]);
@@ -209,6 +209,7 @@ const getStyles = makeStyles(theme => ({
   fromExchangeTipText: {
     flex: 1,
     marginLeft: pTd(12),
+    lineHeight: pTd(20),
     color: defaultColors.textWarning3,
   },
 }));

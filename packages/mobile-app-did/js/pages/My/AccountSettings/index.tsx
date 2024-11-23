@@ -3,8 +3,6 @@ import { View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import useLogOut from 'hooks/useLogOut';
 import navigationService from 'utils/navigationService';
-import { StyleSheet } from 'react-native';
-// import { defaultColors } from 'assets/theme';
 import { useLanguage } from 'i18n/hooks';
 import { pTd } from 'utils/unit';
 import { RootStackName } from 'navigation';
@@ -24,7 +22,7 @@ import Svg, { IconName } from 'components/Svg';
 import Touchable from 'components/Touchable';
 import Loading from 'components/Loading';
 import CommonToast from 'components/CommonToast';
-import { TextM } from 'components/CommonText';
+import { TextL, TextM } from 'components/CommonText';
 import { makeStyles, useTheme } from '@rneui/themed';
 import { getDeviceInfo } from 'utils/deviceInfo';
 import ActionSheet from 'components/ActionSheet';
@@ -226,7 +224,7 @@ export default function AccountSettings() {
         },
       },
     ],
-    [fetching, secondaryEmail, showNotSet, styles, theme, updateInfo],
+    [dappList?.length, deviceAmount, fetching, secondaryEmail, showNotSet, styles, theme.colors.textBase2, updateInfo],
   );
 
   const onExitClick = useCallback(
@@ -338,7 +336,7 @@ export default function AccountSettings() {
           </TextM>
         </View>
 
-        <Svg icon="chevron_right" size={pTd(12)} color={darkColors.icon1} />
+        <Svg icon="chevron_right" size={pTd(12)} />
       </Touchable>
       <View style={styles.divider} />
 
@@ -351,7 +349,7 @@ export default function AccountSettings() {
             }}>
             <View style={styles.cellWrap}>
               <View style={styles.svgWrap}>
-                <Svg icon={item.icon} size={pTd(24)} iconStyle={[styles.menuIcon]} />
+                <Svg icon={item.icon} size={pTd(24)} />
               </View>
               <TextM style={styles.cellText}>{item.label}</TextM>
             </View>
@@ -365,7 +363,6 @@ export default function AccountSettings() {
                 }}
                 icon="chevron_right"
                 size={pTd(12)}
-                color={darkColors.icon1}
               />
             </View>
           </Touchable>
@@ -373,7 +370,7 @@ export default function AccountSettings() {
         </>
       ))}
       <Touchable onPress={onSignOut}>
-        <TextM style={styles.signOutText}>Sign out</TextM>
+        <TextL style={[styles.signOutText, fonts.BGMediumFont]}>Sign out</TextL>
       </Touchable>
     </PageContainer>
   );
@@ -415,20 +412,6 @@ const getStyles = makeStyles(theme => ({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  menuIcon: {},
-  menuItemWrap: {
-    backgroundColor: darkColors.black,
-    color: darkColors.white,
-    borderBottomColor: darkColors.border6,
-    borderRadius: 0,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-  },
-  itemWrap: {
-    backgroundColor: darkColors.black,
-    borderBottomColor: darkColors.border6,
-    borderRadius: 0,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-  },
   divider: {
     height: 1,
     borderBottomWidth: 0.5,
@@ -438,16 +421,10 @@ const getStyles = makeStyles(theme => ({
     marginVertical: pTd(12),
   },
   signOutText: {
-    width: '100%',
     textAlign: 'center',
-    color: '#E24505',
+    color: theme.colors.textDanger1,
     height: pTd(48),
     marginTop: pTd(12),
-    fontSize: 16,
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    fontWeight: '600',
   },
   setBackupMailText: {
     color: theme.colors.textBase2,

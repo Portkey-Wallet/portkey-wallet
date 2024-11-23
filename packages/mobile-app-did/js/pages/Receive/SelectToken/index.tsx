@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { FlatList, View } from 'react-native';
 import { IUserTokenItemResponse } from '@portkey-wallet/types/types-ca/token';
+import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import { defaultColors } from 'assets/theme';
 import fonts from 'assets/theme/fonts';
 import { pTd } from 'utils/unit';
@@ -42,7 +43,10 @@ const SelectToken = () => {
       <Touchable
         style={styles.tokenItemWrap}
         onPress={() => {
-          navigationService.navigate('Receive', { tokenInfo: item });
+          navigationService.navigate('Receive', {
+            tokenInfo: item,
+            chainId: item.symbol === 'ELF' ? MAIN_CHAIN_ID : undefined,
+          });
         }}>
         <CommonAvatar
           hasBorder
@@ -63,8 +67,12 @@ const SelectToken = () => {
 
   const getTokenList = useLockCallback(
     async (init?: boolean) => {
-      if (debounceKeyword.trim()) return;
-      if (totalRecordCount && tokenDataShowInMarket?.length >= totalRecordCount && !init) return;
+      if (debounceKeyword.trim()) {
+        return;
+      }
+      if (totalRecordCount && tokenDataShowInMarket?.length >= totalRecordCount && !init) {
+        return;
+      }
 
       await fetchTokenInfoList({
         keyword: '',
@@ -78,7 +86,9 @@ const SelectToken = () => {
   const getTokenListLatest = useLatestRef(getTokenList);
 
   const getTokenListWithKeyword = useLockCallback(async () => {
-    if (!debounceKeyword.trim()) return;
+    if (!debounceKeyword.trim()) {
+      return;
+    }
     try {
       setIsSearch(true);
       const res = await request.token.fetchTokenListBySearchV2({
@@ -117,7 +127,7 @@ const SelectToken = () => {
 
   return (
     <PageContainer
-      titleDom={t(`Select Asset to Receive`)}
+      titleDom={t('Select Asset to Receive')}
       safeAreaColor={['black', 'black']}
       containerStyles={styles.pageWrap}
       scrollViewProps={{ disabled: true }}>

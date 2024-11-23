@@ -7,7 +7,7 @@ import {
   TransactionTypes,
 } from '@portkey-wallet/constants/constants-ca/activity';
 import { useCurrentChain, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
-import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCaAddressInfoList, useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { fetchActivity } from '@portkey-wallet/store/store-ca/activity/api';
 import { ActivityItemType } from '@portkey-wallet/types/types-ca/activity';
 import { addressFormat, getExploreLink, handleLoopFetch } from '@portkey-wallet/utils';
@@ -51,15 +51,21 @@ import { removeFailedActivity } from '@portkey-wallet/store/store-ca/activity/sl
 
 const ActivityDetail = (props: ActivityItemType & IActivityApiParams) => {
   const { transactionId = '', blockHash = '', isReceived: isReceivedParams, activityType } = props;
+  const { caAddress } = useCurrentWalletInfo();
   const { t } = useLanguage();
   const defaultToken = useDefaultToken();
   const isMainnet = useIsMainnet();
   const [resendLoading, setResendLoading] = useState(false);
   const caAddressesInfoList = useCaAddressInfoList();
   const caAddressInfos = useMemo(() => {
-    const result = caAddressesInfoList.filter(item => item.chainId === props?.fromChainId);
+    let result = caAddressesInfoList;
+    if (caAddress === props.fromAddress) {
+      result = caAddressesInfoList.filter(item => item.chainId === props?.fromChainId);
+    } else if (caAddress === props.toAddress) {
+      result = caAddressesInfoList.filter(item => item.chainId === props?.toChainId);
+    }
     return result?.length > 0 ? result : caAddressesInfoList;
-  }, [caAddressesInfoList, props?.fromChainId]);
+  }, [caAddressesInfoList, props, caAddress]);
 
   const [, getTokenPrice] = useGetCurrentAccountTokenPrice();
   const [initializing, setInitializing] = useState(false);

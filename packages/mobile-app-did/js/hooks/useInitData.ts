@@ -22,6 +22,7 @@ import { useGetCryptoGiftConfig } from '@portkey-wallet/hooks/hooks-ca/cryptogif
 import * as Application from 'expo-application';
 import { fetchContactListAsync, fetchContactListV2Async } from '@portkey-wallet/store/store-ca/contact/actions';
 import { useContactNetworkConfig, useTransferNetworkConfig } from '@portkey-wallet/hooks/hooks-ca/config';
+import { resetBadge } from 'utils/notifee';
 
 export default function useInitData() {
   const dispatch = useAppDispatch();
@@ -45,9 +46,13 @@ export default function useInitData() {
   const { init: initGuardianList } = useRefreshGuardianList(true);
 
   const loadIM = useCallback(async () => {
-    if (!pin) return;
+    if (!pin) {
+      return;
+    }
     const account = getManagerAccount(pin);
-    if (!account || !wallet.caHash) return;
+    if (!account || !wallet.caHash) {
+      return;
+    }
 
     try {
       await initIM(account, wallet.caHash);
@@ -61,6 +66,7 @@ export default function useInitData() {
 
   const init = useCallback(async () => {
     try {
+      resetBadge();
       getCurrentCAViewContract();
       dispatch(getCaHolderInfoAsync());
       dispatch(getSymbolImagesAsync());

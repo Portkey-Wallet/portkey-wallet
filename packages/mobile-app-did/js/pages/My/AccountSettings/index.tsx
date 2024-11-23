@@ -370,7 +370,7 @@ export default function AccountSettings() {
         </>
       ))}
       <Touchable onPress={onSignOut}>
-        <TextL style={[styles.signOutText, fonts.BGMediumFont]}>Sign out</TextL>
+        <TextL style={[styles.signOutText, fonts.SGMediumFont]}>Sign out</TextL>
       </Touchable>
     </PageContainer>
   );

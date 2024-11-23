@@ -351,7 +351,7 @@ export default function AccountSettings() {
               <View style={styles.svgWrap}>
                 <Svg icon={item.icon} size={pTd(24)} />
               </View>
-              <TextM style={styles.cellText}>{item.label}</TextM>
+              <TextL style={styles.cellText}>{item.label}</TextL>
             </View>
 
             <View style={styles.cellRightWrap}>
@@ -370,7 +370,7 @@ export default function AccountSettings() {
         </>
       ))}
       <Touchable onPress={onSignOut}>
-        <TextL style={[styles.signOutText, fonts.BGMediumFont]}>Sign out</TextL>
+        <TextL style={[styles.signOutText, fonts.SGMediumFont]}>Sign out</TextL>
       </Touchable>
     </PageContainer>
   );
@@ -404,8 +404,9 @@ const getStyles = makeStyles(theme => ({
     marginRight: pTd(12),
   },
   cellText: {
+    lineHeight: pTd(18),
     color: theme.colors.textBase1,
-    fontSize: 16,
+    fontSize: pTd(16),
   },
   cellRightWrap: {
     flexDirection: 'row',
@@ -427,8 +428,9 @@ const getStyles = makeStyles(theme => ({
     marginTop: pTd(12),
   },
   setBackupMailText: {
+    lineHeight: pTd(18),
     color: theme.colors.textBase2,
-    fontSize: 16,
+    fontSize: pTd(16),
   },
   newLabelWrap: {
     borderRadius: 4,
@@ -440,6 +442,7 @@ const getStyles = makeStyles(theme => ({
   },
   newLabelText: {
     color: theme.colors.textBase1,
-    fontSize: 12,
+    lineHeight: pTd(14),
+    fontSize: pTd(12),
   },
 }));

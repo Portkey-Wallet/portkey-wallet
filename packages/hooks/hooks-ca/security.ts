@@ -184,6 +184,7 @@ export const useTransferLimitList = () => {
   const transferLimitListNetMap = useTransferLimitListNetMap();
   const { networkType } = useCurrentNetworkInfo();
   const [isNext, setIsNext] = useState(false);
+  const [fetching, setFetching] = useState(false);
   const caHash = useCurrentCaHash();
   const dispatch = useAppCommonDispatch();
 
@@ -198,6 +199,7 @@ export const useTransferLimitList = () => {
 
   const next = useCallback(
     async (isInit = false) => {
+      setFetching(true);
       const pagination = {
         page: 0,
         pageSize: PAYMENT_SECURITY_PAGE_LIMIT,
@@ -221,7 +223,7 @@ export const useTransferLimitList = () => {
           maxResultCount: pagination.pageSize,
         },
       });
-
+      setFetching(false);
       if (result.data && Array.isArray(result.data) && result.totalRecordCount !== undefined) {
         if (result.totalRecordCount <= (pagination.page - 1) * pagination.pageSize) {
           setIsNext(false);
@@ -266,6 +268,7 @@ export const useTransferLimitList = () => {
     init,
     next,
     isNext,
+    fetching,
   };
 };
 

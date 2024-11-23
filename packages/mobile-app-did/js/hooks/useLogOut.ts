@@ -90,7 +90,9 @@ export function useCheckManager() {
   return useCallback(
     async ({ chainId, caHash, address }: { chainId?: ChainId; caHash: string; address: string }) => {
       let chainInfo;
-      if (chainId) chainInfo = await getChainInfo(chainId);
+      if (chainId) {
+        chainInfo = await getChainInfo(chainId);
+      }
       const caContract = await getCurrentCAViewContract(chainInfo);
       const info = await caContract?.callViewMethod('GetHolderInfo', { caHash });
       if (info) {
@@ -110,11 +112,15 @@ export function useCheckManagerOnLogout() {
   const latestOriginChainId = useLatestRef(originChainId);
   const logout = useLogOut();
   return useLockCallback(async () => {
-    if (!caHash) return;
+    if (!caHash) {
+      return;
+    }
     try {
       const isManager = await checkManager({ caHash, address, chainId: latestOriginChainId.current });
       const walletInfo = getWalletInfo();
-      if (!isManager && walletInfo?.address === address && isCurrentCaHash(caHash)) logout();
+      if (!isManager && walletInfo?.address === address && isCurrentCaHash(caHash)) {
+        logout();
+      }
     } catch (error) {
       console.log(error, '======error-useCheckManagerOnLogout');
     }

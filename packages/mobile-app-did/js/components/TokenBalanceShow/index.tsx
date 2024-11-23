@@ -9,6 +9,7 @@ import { makeStyles } from '@rneui/themed';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
 import Touchable from 'components/Touchable';
+import fonts from 'assets/theme/fonts';
 
 export interface ITokenBalanceShow {
   label?: string;
@@ -69,6 +70,7 @@ export const getStyles = makeStyles(theme => ({
     color: theme.colors.textBase2,
   },
   max: {
+    ...fonts.SGMediumFont,
     height: pTd(40),
     width: pTd(84),
     lineHeight: pTd(40),

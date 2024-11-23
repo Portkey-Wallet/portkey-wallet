@@ -23,19 +23,17 @@ const SearchRecordItem: React.FC<RecordListItemType> = props => {
     <Touchable style={itemStyle.wrap} onPress={() => onPress?.()}>
       <DiscoverWebsiteImage size={pTd(42)} imageUrl={getCmsWebsiteInfoImageUrl(item?.url || '')} />
       <View style={itemStyle.right}>
-        <View style={itemStyle.infoWrap}>
-          <View style={itemStyle.gameNameWrap}>
-            <TextWithProtocolIcon
-              textFontSize={pTd(16)}
-              title={getCmsWebsiteInfoName(item?.url || '') || item.name || ''}
-              url={item.url || ''}
-            />
-          </View>
-          <View style={itemStyle.gameInfoWrap}>
-            <TextM numberOfLines={1} style={itemStyle.gameInfo}>
-              {item?.url || ''}
-            </TextM>
-          </View>
+        <View style={itemStyle.gameNameWrap}>
+          <TextWithProtocolIcon
+            textFontSize={pTd(16)}
+            title={getCmsWebsiteInfoName(item?.url || '') || item.name || ''}
+            url={item.url || ''}
+          />
+        </View>
+        <View style={itemStyle.gameInfoWrap}>
+          <TextM numberOfLines={1} style={itemStyle.gameInfo}>
+            {item?.url || ''}
+          </TextM>
         </View>
       </View>
     </Touchable>
@@ -49,7 +47,6 @@ const getStyles = makeStyles(theme => ({
     height: pTd(74),
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
   },
   right: {
@@ -58,16 +55,7 @@ const getStyles = makeStyles(theme => ({
     paddingRight: pTd(16),
     flex: 1,
     display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  infoWrap: {
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'column',
     justifyContent: 'center',
-    alignItems: 'flex-start',
   },
   gameNameWrap: {
     flexDirection: 'row',

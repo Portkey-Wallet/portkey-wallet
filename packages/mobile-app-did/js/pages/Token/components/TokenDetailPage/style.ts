@@ -35,10 +35,10 @@ export const styles = StyleSheet.create({
     marginRight: 4,
   },
   tokenBalance: {
-    fontWeight: '700',
     color: darkColors.textBase1,
     fontSize: pTd(32),
     lineHeight: pTd(38),
+    ...fonts.BGMediumFont,
   },
   dollarBalance: {
     ...fonts.SGRegularFont,
@@ -118,8 +118,9 @@ export const styles = StyleSheet.create({
   noData: {
     display: 'flex',
     flexDirection: 'row',
+    height: pTd(490),
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     color: darkColors.textBase2,
   },
 });

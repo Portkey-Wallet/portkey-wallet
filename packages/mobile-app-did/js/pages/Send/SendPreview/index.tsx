@@ -133,7 +133,7 @@ const SendPreview: React.FC = () => {
     ) {
       return {
         estimateAmount: `0 ${assetInfo?.label || assetInfo?.symbol}`,
-        estimateAmountUsd: isMainnet ? '$ 0' : '',
+        estimateAmountUsd: isMainnet ? '$0' : '',
       };
     }
 
@@ -162,7 +162,7 @@ const SendPreview: React.FC = () => {
     if (ZERO.plus(sendNumber).isLessThanOrEqualTo(fee) && assetInfo.symbol === defaultToken.symbol) {
       return {
         estimateAmount: `0 ${assetInfo?.label || assetInfo?.symbol}`,
-        estimateAmountUsd: isMainnet ? '$ 0' : '',
+        estimateAmountUsd: isMainnet ? '$0' : '',
       };
     }
 
@@ -183,7 +183,7 @@ const SendPreview: React.FC = () => {
           : formatAmountShow(ZERO.plus(_amount), Number(assetInfo.decimals));
     }
 
-    const amountUsd = tokenPriceObject[assetInfo?.symbol] ? amountInUsdShow(_amount, 0, assetInfo.symbol) : '-';
+    const amountUsd = tokenPriceObject[assetInfo?.symbol] ? amountInUsdShow(_amount, 0, assetInfo.symbol) : '';
 
     return {
       estimateAmount: `${_amount} ${assetInfo.label || assetInfo.symbol}`,

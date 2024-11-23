@@ -38,6 +38,7 @@ import FaucetButton from 'components/FaucetButton';
 import { darkColors } from 'assets/theme';
 import { showActivityDetail } from 'components/ActivityOverlay';
 import CustomPullToRefreshHeader from 'pages/DashBoard/PullToRefresh';
+import Touchable from 'components/Touchable';
 
 interface TokenDetailParams {
   tokenSection: ITokenSectionResponse;
@@ -240,13 +241,9 @@ const TokenDetailPage: React.FC<TokenDetailParams> = ({ tokenInfo, tokenSection 
 
   const listHeader = useMemo(() => {
     return (
-      <View style={styles.card}>
-        <Text
-          style={[
-            styles.tokenBalance,
-            fonts.BGMediumFont,
-            amountTextOverflow ? styles.textOverflow : {},
-          ]}>{`${balanceShow}`}</Text>
+      <Touchable activeOpacity={1}>
+        <View style={styles.card}>
+        <Text style={[styles.tokenBalance, amountTextOverflow ? styles.textOverflow : {}]}>{`${balanceShow}`}</Text>
         {isMainnet && currentTokenInfo?.balanceInUsd && (
           <TextS style={[styles.dollarBalance]}>{formatAmountUSDShow(currentTokenInfo?.balanceInUsd)}</TextS>
         )}
@@ -259,6 +256,7 @@ const TokenDetailPage: React.FC<TokenDetailParams> = ({ tokenInfo, tokenSection 
           </View>
         )}
       </View>
+      </Touchable>
     );
   }, [
     amountTextOverflow,
@@ -282,13 +280,13 @@ const TokenDetailPage: React.FC<TokenDetailParams> = ({ tokenInfo, tokenSection 
         data={currentActivity?.data || []}
         keyExtractor={(_item, index) => `${index}`}
         ListEmptyComponent={
-          <>
+          <Touchable activeOpacity={1}>
             {isLoading === ListLoadingEnum.hide && (
               <View style={styles.noData}>
                 <TextL>{t('No activity')}</TextL>
               </View>
             )}
-          </>
+          </Touchable>
         }
         renderItem={renderItem}
         onRefresh={onRefreshList}
@@ -300,6 +298,7 @@ const TokenDetailPage: React.FC<TokenDetailParams> = ({ tokenInfo, tokenSection 
         }}
         onEndReachedThreshold={ON_END_REACHED_THRESHOLD}
         ListHeaderComponent={listHeader}
+        stickyHeaderIndices={[0]}
         ListFooterComponent={
           <>{!isEmpty && <FlatListFooterLoading refreshing={isLoading === ListLoadingEnum.footer} />}</>
         }

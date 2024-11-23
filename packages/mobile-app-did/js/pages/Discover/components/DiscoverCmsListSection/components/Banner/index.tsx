@@ -47,7 +47,7 @@ const CarouselComponent: React.FC<BannerProps> = ({ containerStyle, items, onCli
         horizontal={true}
         showsHorizontalScrollIndicator={true}>
         <View style={styles.carouselWrap}>
-          {!showSkeleton &&
+          {showSkeleton &&
             items.map((_, index) => (
               <View style={styles.carouselItemWrap} key={index}>
                 <PortkeySkeleton width={pTd(42)} height={pTd(42)} circle={true} />

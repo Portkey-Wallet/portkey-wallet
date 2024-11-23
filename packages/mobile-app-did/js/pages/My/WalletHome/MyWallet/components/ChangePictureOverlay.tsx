@@ -11,6 +11,7 @@ import FastImage from 'components/FastImage';
 import CommonButton from 'components/CommonButton';
 import CommonAvatar from 'components/CommonAvatar';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
+import GStyles from 'assets/theme/GStyles';
 // import ActionSheet from 'components/ActionSheet';
 
 type SelectModalProps = {
@@ -35,26 +36,22 @@ const AvatarList = (props: AvatarListProps) => {
 
   return (
     <View
-      style={{
-        display: 'flex',
-        flexWrap: 'wrap',
-        flexDirection: 'row',
-        justifyContent: 'flex-start',
-        // backgroundColor: defaultColors.white,
-        marginHorizontal: pTd(4),
-        marginTop: pTd(24),
-        // width: '100%',
-      }}>
+      style={[
+        GStyles.flexRowWrap,
+        {
+          marginTop: pTd(8),
+          marginBottom: pTd(48),
+        },
+      ]}>
       {avatarList.map((uri, idx) => (
         <Touchable
           key={idx}
           style={{
             position: 'relative',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            marginVertical: pTd(12),
-            marginRight: (idx + 1) % 5 === 0 ? 0 : pTd(marginWidth),
+            marginTop: pTd(16),
+            flexGrow: 0,
+            flexShrink: 0,
+            flexBasis: '20%',
           }}
           onPress={() => {
             // setSelectKey(idx);
@@ -210,15 +207,7 @@ const SelectModal = ({ title = '', avatar = '', nickName, selectPhoto, avatarLis
               }}
               itemKey={selectAvatarKey}
             />
-            <CommonButton
-              style={{
-                marginTop: pTd(48),
-              }}
-              disabled={selectAvatarKey === undefined}
-              title={'Save'}
-              type="primary"
-              onPress={onSave}
-            />
+            <CommonButton disabled={selectAvatarKey === undefined} title={'Save'} type="primary" onPress={onSave} />
           </View>
         ) : (
           <View

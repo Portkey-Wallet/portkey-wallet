@@ -49,8 +49,12 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
 
   const getTokenList = useLockCallback(
     async (isInit?: boolean) => {
-      if (debounceWord) return;
-      if (totalRecordCount && tokenDataShowInMarket.length >= totalRecordCount && !isInit) return;
+      if (debounceWord) {
+        return;
+      }
+      if (totalRecordCount && tokenDataShowInMarket.length >= totalRecordCount && !isInit) {
+        return;
+      }
 
       await fetchTokenInfoList({
         keyword: '',
@@ -63,7 +67,9 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
   );
 
   const searchToken = useLockCallback(async () => {
-    if (!debounceWord) return;
+    if (!debounceWord) {
+      return;
+    }
 
     try {
       setIsSearching(true);
@@ -115,7 +121,6 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
             await getTokenList(true);
           }
           Loading.hide();
-          CommonToast.success('Success');
         }, 800);
       } catch (err) {
         Loading.hide();
@@ -134,7 +139,9 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
 
   // search token with keyword
   useEffect(() => {
-    if (!debounceWord) setFilterTokenList([]);
+    if (!debounceWord) {
+      setFilterTokenList([]);
+    }
     searchToken();
   }, [debounceWord, searchToken]);
 
@@ -146,7 +153,9 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
   // clear timer
   useEffect(
     () => () => {
-      if (timerRef.current) clearInterval(timerRef.current);
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
     },
     [],
   );

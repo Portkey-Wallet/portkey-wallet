@@ -17,6 +17,7 @@ import { useOnTouchAndPopUp } from 'components/FloatOverlay/touch';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 import { useRecordsList } from 'hooks/discover';
+import { useTheme } from '@rneui/themed';
 
 function TouchableIcon({
   icon,
@@ -44,6 +45,7 @@ export default function Bookmark() {
   const { networkType } = useCurrentNetworkInfo();
   const bookmarksRef = useRef<any>(null);
   const recordList = useRecordsList(true);
+  const { theme } = useTheme();
 
   const onBookMarksChange = (num: number) => {
     setBookmarksAmount(num);
@@ -62,6 +64,13 @@ export default function Bookmark() {
     },
   ];
 
+  const able = useMemo(() => {
+    return (
+      (selectTab === ArchivedTabEnum.Bookmarks && bookmarksAmount > 0) ||
+      (selectTab === ArchivedTabEnum.History && recordList.length > 0)
+    );
+  }, [bookmarksAmount, recordList.length, selectTab]);
+
   const deleteAll = useCallback(() => {
     if (selectTab === ArchivedTabEnum.Bookmarks) {
       // TODO: delete all bookmarks
@@ -76,31 +85,20 @@ export default function Bookmark() {
       {
         title: 'Delete all',
         iconName: 'delete',
-        iconColor:
-          (selectTab === ArchivedTabEnum.Bookmarks && bookmarksAmount > 0) ||
-          (selectTab === ArchivedTabEnum.History && recordList.length > 0)
-            ? darkColors.iconBase1
-            : darkColors.textDisabled1,
-        onPress:
-          (selectTab === ArchivedTabEnum.Bookmarks && bookmarksAmount > 0) ||
-          (selectTab === ArchivedTabEnum.History && recordList.length > 0)
-            ? deleteAll
-            : undefined,
+        iconColor: able ? theme.colors.iconBase1 : theme.colors.textDisabled1,
+        textStyle: { color: able ? theme.colors.textBase1 : theme.colors.textDisabled1 },
+        onPress: able ? deleteAll : undefined,
       },
     ];
-  }, [bookmarksAmount, deleteAll, recordList.length, selectTab]);
+  }, [deleteAll, theme, able]);
 
   const onTouch = useOnTouchAndPopUp({
     list: popUpList,
     formatType: 'fixedWidth',
     contentStyle: {
-      color:
-        (selectTab === ArchivedTabEnum.Bookmarks && bookmarksAmount > 0) ||
-        (selectTab === ArchivedTabEnum.History && recordList.length > 0)
-          ? darkColors.textBase1
-          : darkColors.textDisabled1,
+      color: able ? theme.colors.textBase1 : theme.colors.textDisabled1,
     },
-    containerStyle: { backgroundColor: darkColors.bgBase1, borderColor: darkColors.borderBase1, borderWidth: 1 },
+    containerStyle: { backgroundColor: theme.colors.bgBase1, borderColor: theme.colors.borderBase1, borderWidth: 1 },
   });
 
   const onTabPress = useCallback((tabType: ArchivedTabEnum) => {

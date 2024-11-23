@@ -5,7 +5,7 @@ import Svg from 'components/Svg';
 import { pTd } from 'utils/unit';
 import { defaultColors } from 'assets/theme';
 import { useLanguage } from 'i18n/hooks';
-import { TextM, TextXXL } from 'components/CommonText';
+import { TextM, TextTitle } from 'components/CommonText';
 import * as Application from 'expo-application';
 import MenuItem, { IMenuItemProps } from '../../components/MenuItem';
 import Divider from 'components/Divider';
@@ -18,6 +18,7 @@ import { useUpdateInfo } from 'store/user/hooks';
 import { makeStyles } from '@rneui/themed';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { FontStyles } from 'assets/theme/styles';
+import fonts from 'assets/theme/fonts';
 
 const AboutUs = () => {
   const { t } = useLanguage();
@@ -77,7 +78,7 @@ const AboutUs = () => {
       <View style={styles.logoWrap}>
         <Svg icon="app-logo-new" size={pTd(80)} />
       </View>
-      <TextXXL style={[FontStyles.weight500]}>Portkey</TextXXL>
+      <TextTitle style={[fonts.BGMediumFont]}>Portkey</TextTitle>
       <TextM style={[styles.version, FontStyles.font7]}>
         {parseVersion([`v${Application.nativeApplicationVersion}`, parseLabel(codePushOperator.localPackage?.label)])}
       </TextM>

@@ -42,7 +42,7 @@ export default function SearchDiscoverSection(props: ISearchDiscoverSectionProps
     <ScrollView style={styles.sectionWrap} keyboardShouldPersistTaps="handled">
       {searchedDiscoverList.length === 0 ? (
         <Touchable
-          style={styles.defaultWrap}
+          style={styles.wrap}
           onPress={() => {
             jumpToWebview({
               item: {
@@ -54,7 +54,7 @@ export default function SearchDiscoverSection(props: ISearchDiscoverSectionProps
           <View style={styles.defaultIconWrap}>
             <Svg icon={'search'} size={pTd(20)} />
           </View>
-          <View>
+          <View style={styles.right}>
             <View style={styles.gameNameWrap}>
               <TextL numberOfLines={1} ellipsizeMode={'tail'}>
                 {inputValue}
@@ -73,17 +73,15 @@ export default function SearchDiscoverSection(props: ISearchDiscoverSectionProps
             <Touchable key={index} style={styles.wrap} onPress={() => onClickJump(item)}>
               <DiscoverWebsiteImage imageUrl={`${s3Url}/${item?.imgUrl?.filename_disk}`} size={pTd(42)} />
               <View style={styles.right}>
-                <View style={styles.infoWrap}>
-                  <View style={styles.gameNameWrap}>
-                    <TextWithProtocolIcon title={item?.title} url={item?.url} textFontSize={pTd(16)} />
-                  </View>
-                  <View style={styles.gameInfoWrap}>
-                    {item?.description && (
-                      <TextM numberOfLines={1} ellipsizeMode={'tail'} style={styles.gameInfo}>
-                        {item.description}
-                      </TextM>
-                    )}
-                  </View>
+                <View style={styles.gameNameWrap}>
+                  <TextWithProtocolIcon title={item?.title} url={item?.url} textFontSize={pTd(16)} />
+                </View>
+                <View style={styles.gameInfoWrap}>
+                  {item?.description && (
+                    <TextM numberOfLines={1} ellipsizeMode={'tail'} style={styles.gameInfo}>
+                      {item.description}
+                    </TextM>
+                  )}
                 </View>
               </View>
             </Touchable>
@@ -99,33 +97,18 @@ const getStyles = makeStyles(theme => ({
     ...GStyles.paddingArg(0, 16),
   },
   wrap: {
-    height: pTd(78),
+    height: pTd(74),
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
   },
   right: {
-    height: pTd(80),
+    height: pTd(74),
     marginLeft: pTd(8),
     paddingRight: pTd(16),
     flex: 1,
     display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  image: {
-    width: pTd(32),
-    height: pTd(32),
-    borderRadius: pTd(16),
-  },
-  infoWrap: {
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'column',
     justifyContent: 'center',
-    alignItems: 'flex-start',
   },
   gameNameWrap: {
     flexDirection: 'row',
@@ -141,10 +124,6 @@ const getStyles = makeStyles(theme => ({
     color: theme.colors.textBase2,
     lineHeight: pTd(17.5),
   },
-  defaultWrap: {
-    flexDirection: 'row',
-    marginTop: pTd(16),
-  },
   defaultIconWrap: {
     width: pTd(42),
     height: pTd(42),
@@ -153,6 +132,5 @@ const getStyles = makeStyles(theme => ({
     borderRadius: pTd(21),
     borderWidth: pTd(1),
     borderColor: theme.colors.borderNeutral2,
-    marginRight: pTd(8),
   },
 }));

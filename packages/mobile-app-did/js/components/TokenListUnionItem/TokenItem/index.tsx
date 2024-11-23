@@ -52,26 +52,28 @@ const TokenItem: React.FC<TokenListItemType> = props => {
             borderStyle={itemStyle.tokenIconBorder}
           />
         </View>
-        <View>
+      </View>
+      <View style={itemStyle.right}>
+        <View style={itemStyle.rightTop}>
           <TextM numberOfLines={1} ellipsizeMode={'tail'} style={itemStyle.symbolText}>
             {item.label || item.symbol}
           </TextM>
+          <TextM numberOfLines={1} ellipsizeMode={'tail'} style={[itemStyle.balanceText, balanceTextStyle]}>
+            {hideBalance ? '******' : formatTokenAmountShowWithDecimals(item.balance, item.decimals)}
+          </TextM>
+        </View>
+        <View style={itemStyle.rightBottom}>
           {item.displayChainName && (
             <TextM numberOfLines={1} ellipsizeMode={'tail'} style={itemStyle.chainText}>
               {formatChainInfoToShow(item.chainId, currentNetwork, item.displayChainName)}
             </TextM>
           )}
+          {item.balanceInUsd && isMainnet && (
+            <TextM numberOfLines={1} ellipsizeMode={'tail'} style={[itemStyle.balanceInUseText, balanceInUseTextStyle]}>
+              {hideBalance ? '******' : formatAmountUSDShow(item.balanceInUsd)}
+            </TextM>
+          )}
         </View>
-      </View>
-      <View style={itemStyle.right}>
-        <TextM numberOfLines={1} ellipsizeMode={'tail'} style={[itemStyle.balanceText, balanceTextStyle]}>
-          {hideBalance ? '******' : formatTokenAmountShowWithDecimals(item.balance, item.decimals)}
-        </TextM>
-        {item.balanceInUsd && isMainnet && (
-          <TextM numberOfLines={1} ellipsizeMode={'tail'} style={[itemStyle.balanceInUseText, balanceInUseTextStyle]}>
-            {hideBalance ? '******' : formatAmountUSDShow(item.balanceInUsd)}
-          </TextM>
-        )}
       </View>
     </Touchable>
   );
@@ -128,14 +130,23 @@ const itemStyle = StyleSheet.create({
     color: darkColors.textBase2,
   },
   right: {
-    marginLeft: pTd(10),
-    display: 'flex',
+    flex: 1,
+    height: pTd(42),
     flexDirection: 'column',
-    alignItems: 'flex-end',
+  },
+  rightTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  rightBottom: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   balanceText: {
     fontSize: pTd(16),
-    lineHeight: pTd(16),
+    lineHeight: pTd(18),
     color: darkColors.textBase1,
     ...fonts.SGMediumFont,
   },
@@ -143,6 +154,5 @@ const itemStyle = StyleSheet.create({
     fontSize: pTd(14),
     lineHeight: pTd(20),
     color: darkColors.textBase2,
-    marginTop: pTd(6),
   },
 });

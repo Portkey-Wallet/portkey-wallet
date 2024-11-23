@@ -214,12 +214,12 @@ const SendHome: React.FC = () => {
 
     // if other tokens
     if (assetInfo.symbol !== defaultToken.symbol) {
-      return setMaxAmountSend(divDecimals(balance, assetInfo.decimals || '0').toString());
+      return setMaxAmountSend(divDecimals(balance, assetInfo.decimals || '0').toFixed());
     }
 
     // elf <= maxFee
     if (divDecimals(balance, assetInfo.decimals).isLessThanOrEqualTo(maxFee)) {
-      return setMaxAmountSend(divDecimals(balance, assetInfo.decimals || '0').toString());
+      return setMaxAmountSend(divDecimals(balance, assetInfo.decimals || '0').toFixed());
     }
 
     const isAELFCross = !!(selectedToContact.chainId && selectedToContact.chainId !== assetInfo.chainId);
@@ -235,7 +235,7 @@ const SendHome: React.FC = () => {
     const _max = fee
       ? balanceBN.minus(etransferFee)
       : ZERO.plus(divDecimals(balance, assetInfo.decimals)).minus(maxFee).minus(etransferFee);
-    setMaxAmountSend(_max.gt(ZERO) ? _max.toString() : '0');
+    setMaxAmountSend(_max.gt(ZERO) ? _max.toFixed() : '0');
   }, [
     balance,
     assetInfo,

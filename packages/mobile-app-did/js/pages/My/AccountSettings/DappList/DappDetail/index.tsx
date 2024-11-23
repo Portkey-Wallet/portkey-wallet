@@ -11,7 +11,7 @@ import { pTd } from 'utils/unit';
 import DappListItem from '../components/DappListItem';
 import { useLanguage } from 'i18n/hooks';
 import Svg from 'components/Svg';
-import CommonSwitch from 'components/CommonSwitch';
+import CustomSwitch from 'components/CustomSwitch';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 import { removeDapp } from '@portkey-wallet/store/store-ca/dapp/actions';
@@ -29,7 +29,7 @@ import { useDiscoverJumpWithNetWork } from 'hooks/discover';
 import { useCheckSiteIsInBlackList } from '@portkey-wallet/hooks/hooks-ca/cms';
 import CommonButton from 'components/CommonButton';
 import Touchable from 'components/Touchable';
-import { makeStyles, useTheme } from '@rneui/themed';
+import { makeStyles } from '@rneui/themed';
 import CommonTooltip from 'components/CommonTooltip';
 
 interface RouterParams {
@@ -41,7 +41,6 @@ const DappDetail: React.FC = () => {
   const pin = usePin();
 
   const checkOriginInBlackList = useCheckSiteIsInBlackList();
-  const { theme } = useTheme();
 
   const { origin } = useRouterParams<RouterParams>();
   const dappInfo = useCurrentDappInfo(origin);
@@ -182,12 +181,7 @@ const DappDetail: React.FC = () => {
             </View>
           </View>
           <View style={styles.rememberSwitchWrap}>
-            <CommonSwitch
-              trackColor={{ true: theme.colors.iconBrand6, false: '' }}
-              value={isRememberMe}
-              onChange={() => switchRememberMe(!isRememberMe)}
-              style={styles.rememberSwitch}
-            />
+            <CustomSwitch value={isRememberMe} onToggle={() => switchRememberMe(!isRememberMe)} />
           </View>
         </View>
       )}

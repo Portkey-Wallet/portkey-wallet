@@ -57,6 +57,7 @@ import {
   useEBridgeCrossTrack,
 } from 'hooks/amplitude';
 import { ChainId } from '@portkey-wallet/types';
+import myEvents from 'utils/deviceEvent';
 
 enum ErrorType {
   NO_TOAST = 'noToast',
@@ -264,6 +265,8 @@ const SendPreview: React.FC = () => {
         skipCount: 0,
         maxResultCount: PAGE_SIZE_IN_ACCOUNT_NFT_COLLECTION,
       });
+      console.log('updateNFT!!!!');
+      myEvents.updateNFT.emit();
     } else {
       await fetchAccountTokenInfoList({
         caAddressInfos,

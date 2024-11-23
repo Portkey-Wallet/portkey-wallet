@@ -447,18 +447,22 @@ export const assetsSlice = createSlice({
           state.accountNFT.isFetching = false;
           return;
         }
-        const newAccountList: NFTCollectionItemShowType[] = list.map(item => ({
-          isFetching: false,
-          skipCount: 0,
-          maxResultCount: maxNFTCount,
-          totalRecordCount: 0,
-          children:
-            preAccountNFTCollectionList.find(
-              preItem => preItem.collectionName === item.collectionName && preItem.chainId === item.chainId,
-            )?.children || [],
-          // children: [],
-          ...item,
-        }));
+        const newAccountList: NFTCollectionItemShowType[] = list.map(item => {
+          const targetItem = preAccountNFTCollectionList.find(
+            preItem => preItem.collectionName === item.collectionName && preItem.chainId === item.chainId,
+          );
+          return {
+            isFetching: false,
+            skipCount: 0,
+            maxResultCount: maxNFTCount,
+            // prevTotalRecordCount: targetItem?.totalRecordCount || targetItem?.children || 0,
+            prevChildren: targetItem?.children || [],
+            totalRecordCount: 0,
+            children: [],
+            // children: [],
+            ...item,
+          };
+        });
         const newAllAccountList =
           skipCount === 0 ? newAccountList : [...preAccountNFTCollectionList, ...newAccountList];
         if (!state.accountNFT.accountNFTInfo) state.accountNFT.accountNFTInfo = {};

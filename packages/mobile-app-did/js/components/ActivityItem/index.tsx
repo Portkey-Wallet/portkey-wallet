@@ -548,7 +548,6 @@ const getStyles = makeStyles(theme => ({
   tokenBalance: {
     textAlign: 'right',
     lineHeight: pTd(16),
-    // fontWeight: '600',
     width: pTd(135),
   },
   usdtBalance: {

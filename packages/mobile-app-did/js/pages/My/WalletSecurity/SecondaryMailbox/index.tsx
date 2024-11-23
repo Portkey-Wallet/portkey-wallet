@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React from 'react';
 import PageContainer from 'components/PageContainer';
 import { View } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
@@ -6,19 +6,22 @@ import { makeStyles, useTheme } from '@rneui/themed';
 import CommonButton from 'components/CommonButton';
 import navigationService from 'utils/navigationService';
 import { TextM, TextL } from 'components/CommonText';
-import { FontStyles } from 'assets/theme/styles';
 import { pTd } from 'utils/unit';
-import fonts from 'assets/theme/fonts';
-import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import Svg from 'components/Svg';
-interface RouterParams {
-  secondaryEmail?: string;
-}
+import useEffectOnce from 'hooks/useEffectOnce';
+import myEvents from 'utils/deviceEvent';
+import { useIsSecondaryMailSet } from '@portkey-wallet/hooks/hooks-ca/useSecondaryMail';
 
 const SecondaryMailboxHome: React.FC = () => {
-  const { secondaryEmail } = useRouterParams<RouterParams>();
   const pageStyles = getStyles();
   const { theme } = useTheme();
+  const { secondaryEmail, getSecondaryMail } = useIsSecondaryMailSet();
+
+  useEffectOnce(() => {
+    myEvents.updateSecondaryEmail.addListener(() => {
+      getSecondaryMail();
+    });
+  });
 
   return (
     <PageContainer
@@ -34,10 +37,11 @@ const SecondaryMailboxHome: React.FC = () => {
         </View>
         <View style={pageStyles.fromExchangeTipWrap}>
           <Svg icon="warning" size={pTd(22)} color={theme.colors.textBrand3} />
-          <TextL
-            style={
-              pageStyles.fromExchangeTipText
-            }>{`Notifications for authorizing or signing transactions will be sent to your guardian's email. If unavailable, they'll go to your backup email.`}</TextL>
+          <TextL style={pageStyles.fromExchangeTipText}>
+            {
+              "Notifications for authorizing or signing transactions will be sent to your guardian's email. If unavailable, they'll go to your backup email."
+            }
+          </TextL>
         </View>
       </View>
       <CommonButton

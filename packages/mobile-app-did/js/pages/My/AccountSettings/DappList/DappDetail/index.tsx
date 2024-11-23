@@ -29,7 +29,7 @@ import { useDiscoverJumpWithNetWork } from 'hooks/discover';
 import { useCheckSiteIsInBlackList } from '@portkey-wallet/hooks/hooks-ca/cms';
 import CommonButton from 'components/CommonButton';
 import Touchable from 'components/Touchable';
-import { makeStyles } from '@rneui/themed';
+import { makeStyles, useTheme } from '@rneui/themed';
 import CommonTooltip from 'components/CommonTooltip';
 
 interface RouterParams {
@@ -41,6 +41,7 @@ const DappDetail: React.FC = () => {
   const pin = usePin();
 
   const checkOriginInBlackList = useCheckSiteIsInBlackList();
+  const { theme } = useTheme();
 
   const { origin } = useRouterParams<RouterParams>();
   const dappInfo = useCurrentDappInfo(origin);
@@ -182,6 +183,7 @@ const DappDetail: React.FC = () => {
           </View>
           <View style={styles.rememberSwitchWrap}>
             <CommonSwitch
+              trackColor={{ true: theme.colors.iconBrand6, false: '' }}
               value={isRememberMe}
               onChange={() => switchRememberMe(!isRememberMe)}
               style={styles.rememberSwitch}
@@ -289,6 +291,7 @@ const getStyles = makeStyles(theme => ({
   rememberSwitchWrap: {
     width: pTd(40),
     height: pTd(24),
+    transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }],
   },
   expiresSection: {
     backgroundColor: theme.colors.bg6,

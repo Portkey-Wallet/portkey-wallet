@@ -153,8 +153,8 @@ export default function SecurityLock() {
       } catch (error: any) {
         if (!isUserBiometricsError(error)) {
           ActionSheet.alert({
-            message: 'Biometric authentication expired.Please re-enable it.',
-            message2: 'After you are logged in, you can set it up in My - Account Setting - Biometric Authentication.',
+            title: 'Biometric authentication expired',
+            message: 'Please re-enable it by going to Settings - Security - Biometric Authentication.',
             buttons: [{ title: 'OK', type: 'primary' }],
           });
         }

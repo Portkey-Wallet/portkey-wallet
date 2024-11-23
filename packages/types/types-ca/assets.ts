@@ -29,6 +29,7 @@ export interface NFTCollectionItemShowType extends NFTCollectionItemBaseType {
   maxResultCount: number;
   totalRecordCount: string | number;
   children: NFTItemBaseType[];
+  prevChildren: NFTItemBaseType[];
 }
 
 // nft item types

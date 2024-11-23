@@ -118,8 +118,9 @@ export const styles = StyleSheet.create({
   noData: {
     display: 'flex',
     flexDirection: 'row',
+    height: pTd(490),
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     color: darkColors.textBase2,
   },
 });

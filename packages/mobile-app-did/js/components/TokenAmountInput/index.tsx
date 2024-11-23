@@ -163,7 +163,7 @@ export const getStyles = makeStyles(theme => ({
     ...fonts.BGMediumFont,
   },
   labelPaddingBottom: {
-    paddingBottom: 4,
+    paddingBottom: pTd(9),
   },
   input: {
     color: theme.colors.textBase1,
@@ -173,7 +173,6 @@ export const getStyles = makeStyles(theme => ({
     textAlign: 'right',
     fontSize: pTd(32),
     ...fonts.BGMediumFont,
-    fontWeight: 'bold',
     paddingHorizontal: 0,
   },
   errorInput: {

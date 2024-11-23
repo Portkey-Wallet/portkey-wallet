@@ -156,7 +156,7 @@ const PaymentSecurityList: React.FC = () => {
         renderItem={({ item }) => <PaymentSecurityItem item={item} />}
         onRefresh={() => init()}
         onEndReached={() => getList()}
-        ListEmptyComponent={() => <NoData noPic topDistance={pTd(80)} message="No assets yet" />}
+        ListEmptyComponent={<NoData noPic topDistance={pTd(80)} message="No assets yet" />}
       />
     </PageContainer>
   );

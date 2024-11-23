@@ -23,3 +23,9 @@ export const getEnabledAttributes =
   enabledAttributes =>
   ({ nodeName }) =>
     enabledAttributes.includes(camelCase(nodeName));
+
+  export const getProtocolAndDomain = (url) => {
+    if (!url) return '';
+    const match = url.match(/^(https?:\/\/[^\/?#]+)(?:[\/?#]|$)/i);
+    return match ? match[1] : url;
+  }

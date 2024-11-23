@@ -48,24 +48,18 @@ const CarouselComponent: React.FC<BannerProps> = ({ containerStyle, items, onCli
         showsHorizontalScrollIndicator={true}>
         <View style={styles.carouselWrap}>
           {showSkeleton &&
-            items.map((item, index) => (
+            items.map((_, index) => (
               <View style={styles.carouselItemWrap} key={index}>
-                <PortkeySkeleton
-                  width={pTd(42)}
-                  height={pTd(42)}
-                  style={{ backgroundColor: darkColors.textBase2 }}
-                  circle={true}
-                />
+                <PortkeySkeleton width={pTd(42)} height={pTd(42)} circle={true} />
                 <PortkeySkeleton
                   width={pTd(120)}
                   height={pTd(20)}
                   style={{
                     marginVertical: pTd(8),
-                    backgroundColor: darkColors.textBase2,
                     marginRight: index === items.length - 1 ? 0 : pTd(16),
                   }}
                 />
-                <PortkeySkeleton width={pTd(80)} height={pTd(18)} style={{ backgroundColor: darkColors.textBase2 }} />
+                <PortkeySkeleton width={pTd(80)} height={pTd(18)} />
               </View>
             ))}
           <View style={{ opacity: showSkeleton ? 0 : 1, flexDirection: 'row' }}>

@@ -91,20 +91,23 @@ const ActivityListPage = () => {
       <FlashList
         ListHeaderComponent={
           <>
+            {isIOS ? (
+              <></>
+            ) : (
+              isLoading === ListLoadingEnum.header && (
+                <View style={{ marginBottom: pTd(24) }}>
+                  <LottieLoading style={{ width: pTd(32) }} />
+                </View>
+              )
+            )}
             <View style={styles.title}>
               <TextH1>{t('Activity')}</TextH1>
             </View>
-            {isLoading === ListLoadingEnum.header && (
-              <View style={{ marginBottom: pTd(24), marginTop: pTd(24) }}>
-                <LottieLoading style={{ width: pTd(32) }} />
-              </View>
-            )}
           </>
         }
         refreshControl={
           isIOS ? (
             <CustomPullToRefreshHeader
-              showLoading={false}
               refreshing={isLoading === ListLoadingEnum.header}
               onRefresh={() => getActivityList(true)}
             />

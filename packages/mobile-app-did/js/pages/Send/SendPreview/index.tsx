@@ -653,13 +653,13 @@ const SendPreview: React.FC = () => {
       case TransferType.E_TRANSFER:
       case TransferType.E_BRIDGE:
         result.feeShow = `${transactionFee} ${transactionFeeUnit}`;
-        result.feeUsdShow = `$ ${unitConverter(
+        result.feeUsdShow = `$${unitConverter(
           ZERO.plus(transactionFee || '').multipliedBy(tokenPriceObject[transactionFeeUnit || '']),
         )}`;
         break;
       case TransferType.GENERAL_CROSS_CHAIN:
         result.feeShow = `${unitConverter(crossDefaultFee)} ${defaultToken.symbol}`;
-        result.feeUsdShow = `$ ${unitConverter(
+        result.feeUsdShow = `$${unitConverter(
           ZERO.plus(crossDefaultFee).multipliedBy(tokenPriceObject[defaultToken.symbol]),
         )}`;
     }
@@ -696,9 +696,9 @@ const SendPreview: React.FC = () => {
       destinationNetworkImageUrl={targetNetwork?.imageUrl}
       transactionFee={transactionFeeShow.feeShow}
       transactionFeeUSD={transactionFeeShow.feeUsdShow}
-      estimatedNetworkFee={`${networkFee} ${networkFeeUnit}`}
-      estimatedNetworkFeeUSD={`$ ${unitConverter(
-        ZERO.plus(networkFee || '').multipliedBy(tokenPriceObject[networkFeeUnit || '']),
+      estimatedNetworkFee={`${networkFee} ${networkFeeUnit || 'ELF'}`}
+      estimatedNetworkFeeUSD={`$${unitConverter(
+        ZERO.plus(networkFee || '').multipliedBy(tokenPriceObject[networkFeeUnit || 'ELF']),
       )}`}
       amountToReceive={EstimateAmount.estimateAmount}
       amountToReceiveUSD={EstimateAmount.estimateAmountUsd}

@@ -763,8 +763,9 @@ const SendHome: React.FC = () => {
         transactionFee = divDecimals(f, defaultToken.decimals).toString();
         transactionUnit = 'ELF';
         transferType = TransferType.E_BRIDGE;
-
-        await eBridgeActionSheet();
+        if (ZERO.plus(recommendEBridge.maxAmount).lt(sendNumber)) {
+          await eBridgeActionSheet();
+        }
         OverlayModal.hide();
         console.log('checkCanPreview 17');
         return {
@@ -888,7 +889,7 @@ const SendHome: React.FC = () => {
       transactionFee: result?.transactionFee || '0',
       transactionFeeUnit: result?.transactionUnit || '',
       networkFee: result?.networkFee || '0',
-      networkFeeUnit: result?.networkFeeUnit || '',
+      networkFeeUnit: result?.networkFeeUnit || 'ELF',
       receiveAmount: result?.receiveAmount,
       receiveAmountUsd: result?.receiveAmountUsd,
       transferType: result?.transferType || TransferType.GENERAL_SAME_CHAIN,

@@ -147,7 +147,6 @@ export enum SelectAddressTabTypeEnum {
 const SelectAddressTab: React.FC<ISelectAddressTabProps> = (props: ISelectAddressTabProps) => {
   const { t } = useLanguage();
   const { recentAddressList, savedAddressList, myAddressList, chainId, onPress } = props;
-  console.log('recentAddressList', recentAddressList);
 
   const tabList = useMemo(() => {
     return [
@@ -189,15 +188,6 @@ const SelectAddressTab: React.FC<ISelectAddressTabProps> = (props: ISelectAddres
       isBlockTab={true}
     />
   );
-
-  // return (
-  //   <View>
-  //     <CommonTopTab hasTabBarBorderRadius={false} hasBottomBorder={false} tabList={tabList} swipeEnabled />
-  //     <View style={styles.emptyWrap}>
-  //       <Text style={styles.emptyText}>{noDataMessage}</Text>
-  //     </View>
-  //   </View>
-  // );
 };
 
 export default SelectAddressTab;

@@ -106,6 +106,7 @@ const TokenDetailPage: React.FC<TokenDetailParams> = ({ tokenInfo, tokenSection 
   const [isLoading, setIsLoading] = useState(ListLoadingEnum.header);
   const getActivityList = useLockCallback(
     async (isInit = false) => {
+      await sleep(250);
       const maxResultCount = 20;
       const { data = [], skipCount = 0, totalRecordCount = 0 } = currentActivity || {};
       if (!isInit && data?.length >= totalRecordCount) {
@@ -183,8 +184,8 @@ const TokenDetailPage: React.FC<TokenDetailParams> = ({ tokenInfo, tokenSection 
   }, [balanceShow]);
 
   const onReceivePress = useCallback(() => {
-    navigationService.navigate('Receive', { tokenInfo: tokenSection });
-  }, [tokenSection]);
+    navigationService.navigate('Receive', { tokenInfo: tokenSection, chainId: tokenInfo.chainId });
+  }, [tokenInfo.chainId, tokenSection]);
 
   const renderButtonItems = useCallback(() => {
     return (

@@ -23,7 +23,7 @@ export default function ReceiveQRCode({
   const onCopy = useCallback(async () => await copyText(address), [address]);
   const addressShow = useMemo(() => {
     if (address.includes('_')) {
-      return formatStr2EllipsisStr(address, 8, 'middle');
+      return formatStr2EllipsisStr(address);
     }
     return formatStr2EllipsisStr(address, 6, 'middle', 4);
   }, [address]);

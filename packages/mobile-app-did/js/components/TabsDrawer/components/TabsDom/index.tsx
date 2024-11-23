@@ -21,6 +21,7 @@ import CommonToast from 'components/CommonToast';
 import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { showWalletInfo } from '../WalletInfoOverlay';
 import { getHost } from '@portkey-wallet/utils/dapp/browser';
+import { WebViewNavigation } from 'react-native-webview';
 import { useKeyboard } from 'hooks/useKeyboardHeight';
 import { TopSpacing } from 'pages/Chat/components/hooks';
 import { makeStyles } from '@rneui/themed';
@@ -38,9 +39,10 @@ enum HANDLE_TYPE {
 type IProps = {
   activeWebViewRef: any;
   clickBottomActionBtn: (type: 'back' | 'forward' | 'showTab' | 'home' | 'more' | 'search') => void;
+  onNavigationChange: (navState: WebViewNavigation) => void;
 };
 
-function TabsDom({ activeWebViewRef, clickBottomActionBtn }: IProps) {
+function TabsDom({ activeWebViewRef, clickBottomActionBtn, onNavigationChange }: IProps) {
   const styles = getStyles();
   const rightDomStyle = getRightDomStyles();
 
@@ -192,8 +194,7 @@ function TabsDom({ activeWebViewRef, clickBottomActionBtn }: IProps) {
     const canGoBack: boolean = tabStateMap?.canGoBack?.[ele.id];
     const canGoForward: boolean = tabStateMap?.canGoForward?.[String(ele?.id)];
 
-    const onNavigationStateChange = (navState: any) => {
-      console.log('navState', navState);
+    const onNavigationStateChange = (navState: WebViewNavigation) => {
       if (ele.id === activeTabId) {
         setTabStateMap(pre => ({
           url: navState?.url,
@@ -206,6 +207,7 @@ function TabsDom({ activeWebViewRef, clickBottomActionBtn }: IProps) {
             [ele.id]: navState?.canGoForward,
           },
         }));
+        onNavigationChange(navState);
       }
     };
 
@@ -250,7 +252,7 @@ function TabsDom({ activeWebViewRef, clickBottomActionBtn }: IProps) {
                   <Svg icon="warning-fill" size={12} iconStyle={{ marginRight: pTd(10) }} />
                 </View>
               )}
-              <TextS style={rightDomStyle.domain} numberOfLines={1}>
+              <TextS style={[rightDomStyle.domain, fonts.mediumFont]} numberOfLines={1}>
                 {getHost(tabStateMap?.url)}
               </TextS>
             </Touchable>

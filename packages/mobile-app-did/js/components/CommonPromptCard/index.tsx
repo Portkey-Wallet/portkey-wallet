@@ -35,6 +35,8 @@ export const CommonPromptCard: React.FC<ICommonPromptCardProps> = ({
     theme: { colors },
   } = useTheme();
 
+  console.log('description:', typeof description);
+
   const icon = useMemo(() => {
     switch (type) {
       case PromptCardType.LOADING:
@@ -56,7 +58,12 @@ export const CommonPromptCard: React.FC<ICommonPromptCardProps> = ({
       {icon}
       <View style={styles.content}>
         {title && <Text style={[styles.title, styles[`${type}Title`]]}>{title}</Text>}
-        <Text style={[styles.description, styles[`${type}Description`]]}>{description}</Text>
+
+        {typeof description === 'string' ? (
+          <Text style={[styles.description, styles[`${type}Description`]]}>{description}</Text>
+        ) : (
+          <View style={[styles.description, styles[`${type}Description`]]}>{description}</View>
+        )}
       </View>
     </View>
   );

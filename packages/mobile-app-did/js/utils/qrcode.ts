@@ -1,12 +1,12 @@
 import { LoginQRData, QRData, SendTokenQRDataType } from '@portkey-wallet/types/types-ca/qrcode';
-import { isAddress } from '@portkey-wallet/utils';
+import { getChainIdByAddress, isAddress } from '@portkey-wallet/utils';
 import CommonPrompt from 'components/CommonPromptCard';
 import navigationService from './navigationService';
-import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
-import AssetsOverlay from 'pages/DashBoard/AssetsOverlay';
+
 import { IToSendHomeParamsType } from '@portkey-wallet/types/types-ca/routeParams';
 import { request } from '@portkey-wallet/api/api-did';
 import Loading from 'components/Loading';
+import { ChainId } from '@portkey-wallet/types';
 
 export interface RouteInfoType {
   name: 'SendHome' | 'Tab';
@@ -25,9 +25,13 @@ export function invalidQRCode(text: InvalidQRCodeText, isBack?: boolean) {
 
 export function handlePortkeyQRCodeData(data: QRData, previousRouteInfo: RouteInfoType) {
   const { type, address, chainType } = data;
-  if (!isAddress(address, chainType) || !type) throw data;
+  if (!isAddress(address, chainType) || !type) {
+    throw data;
+  }
 
-  if (type === 'login') return navigationService.navigate('ScanLogin', { data: data as LoginQRData });
+  if (type === 'login') {
+    return navigationService.navigate('ScanLogin', { data: data as LoginQRData });
+  }
 
   // send event
   const newData: SendTokenQRDataType = { ...data } as SendTokenQRDataType;
@@ -42,6 +46,7 @@ export function handlePortkeyQRCodeData(data: QRData, previousRouteInfo: RouteIn
       const params: IToSendHomeParamsType = {
         ...newData,
         assetInfo: { ...newData.assetInfo, ...previousAssetsInfo },
+        toInfo: { ...newData.toInfo, chainId: getChainIdByAddress(newData?.toInfo?.address) as ChainId },
       };
       navigationService.navigate('SendHome', params);
     }
@@ -57,7 +62,7 @@ export function handleAelfQrCode(data: string, previousRouteInfo: RouteInfoType)
       toInfo: {
         address: data,
         name: '',
-        chainId: MAIN_CHAIN_ID,
+        chainId: getChainIdByAddress(data) as ChainId,
       },
     };
     navigationService.navigate('SendHome', params);
@@ -83,7 +88,9 @@ export async function isWeb3Address(str: string) {
     });
 
     const chainListLen = data?.networkList?.length;
-    if (chainListLen === 0) return false;
+    if (chainListLen === 0) {
+      return false;
+    }
     return true;
   } catch (error) {
     console.log('error', error);

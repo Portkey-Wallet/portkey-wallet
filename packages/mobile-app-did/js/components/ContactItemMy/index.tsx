@@ -13,6 +13,7 @@ import { AELF_NETWORK_NAME } from 'constants/common';
 import { addressFormat } from '@portkey-wallet/utils';
 import { ChainId } from '@portkey-wallet/types';
 import { formatStr2EllipsisStr } from 'components/ContactAddress';
+import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 
 export interface IContactItemMyType {
   address: string;
@@ -30,6 +31,7 @@ export interface ItemTypeMy {
 const ContactItemMy: React.FC<ItemTypeMy> = props => {
   const { addressList, onPress } = props;
   const styles = getStyles();
+  const { avatar, nickName } = useCurrentUserInfo();
 
   const myOtherAddress = useMemo(() => {
     return addressList?.[0];
@@ -65,9 +67,10 @@ const ContactItemMy: React.FC<ItemTypeMy> = props => {
         <View style={styles.itemWrap}>
           <View style={[styles?.avatarWrap]}>
             <CommonAvatar
+              title={nickName}
               resizeMode="cover"
               avatarSize={pTd(42)}
-              imageUrl={myOtherAddress.avatarImg || ''}
+              imageUrl={avatar || ''}
               style={styles.itemAvatar}
               titleStyle={styles.itemAvatarTitle}
             />

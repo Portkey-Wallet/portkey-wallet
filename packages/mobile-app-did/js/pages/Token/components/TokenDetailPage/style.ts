@@ -35,10 +35,10 @@ export const styles = StyleSheet.create({
     marginRight: 4,
   },
   tokenBalance: {
-    fontWeight: '700',
     color: darkColors.textBase1,
     fontSize: pTd(32),
     lineHeight: pTd(38),
+    ...fonts.BGMediumFont,
   },
   dollarBalance: {
     ...fonts.SGRegularFont,

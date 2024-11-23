@@ -329,8 +329,10 @@ const getRightDomStyles = makeStyles(theme => ({
   inputContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    maxWidth: pTd(217),
+    flex: 1,
+    justifyContent: 'center',
     height: pTd(30),
+    marginHorizontal: pTd(8),
   },
   domain: {
     color: theme.colors.textBase1,

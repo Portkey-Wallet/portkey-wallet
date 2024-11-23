@@ -22,10 +22,11 @@ const MintHome = () => {
     try {
       Loading.show();
       const { isLimitExceed, limitCount } = await fetchMintInfo();
-      if (isLimitExceed)
+      if (isLimitExceed) {
         return CommonToast.fail(
           `You have reached the daily limit of ${limitCount || 5} free mint NFTs. Take a rest and come back tomorrow!`,
         );
+      }
       navigationService.navigate('MintProcess');
     } finally {
       Loading.hide();
@@ -34,14 +35,19 @@ const MintHome = () => {
   return (
     <PageContainer
       noCenterDom
-      safeAreaColor={['white', 'black']}
+      safeAreaColor={['black']}
       containerStyles={styles.pageStyles}
       scrollViewProps={{ disabled: true }}>
       <TextH1 style={styles.title}>{t('Mint NFT for Free')}</TextH1>
       <TextM style={styles.subTitle}>{t('Upload any image you like! You can mint up to 5 NFTs per day.')}</TextM>
       <Image source={require('../../../assets/image/pngs/mint_nft_cover.png')} style={[styles.image]} />
       <View style={GStyles.flex1} />
-      <OutlinedTextButton style={styles.button} textStyle={styles.buttonText} title={t('Get started')} onPress={onMintPress} />
+      <OutlinedTextButton
+        style={styles.button}
+        textStyle={styles.buttonText}
+        title={t('Get started')}
+        onPress={onMintPress}
+      />
     </PageContainer>
   );
 };

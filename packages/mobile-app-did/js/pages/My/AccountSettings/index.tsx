@@ -351,7 +351,7 @@ export default function AccountSettings() {
               <View style={styles.svgWrap}>
                 <Svg icon={item.icon} size={pTd(24)} />
               </View>
-              <TextM style={styles.cellText}>{item.label}</TextM>
+              <TextL style={styles.cellText}>{item.label}</TextL>
             </View>
 
             <View style={styles.cellRightWrap}>
@@ -370,7 +370,7 @@ export default function AccountSettings() {
         </>
       ))}
       <Touchable onPress={onSignOut}>
-        <TextL style={[styles.signOutText, fonts.BGMediumFont]}>Sign out</TextL>
+        <TextL style={[styles.signOutText, fonts.SGMediumFont]}>Sign out</TextL>
       </Touchable>
     </PageContainer>
   );

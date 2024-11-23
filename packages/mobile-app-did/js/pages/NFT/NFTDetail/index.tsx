@@ -124,7 +124,7 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
             await setUserInfo({
               avatar: imageUrl,
             });
-            CommonToast.success('Profile photo is set.');
+            CommonToast.success('Profile photo set successfully.');
           } catch (error) {
             CommonToast.fail('Failed to set profile photo. Please try again.');
             console.log('error', error);

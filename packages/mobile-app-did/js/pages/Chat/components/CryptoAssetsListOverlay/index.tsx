@@ -25,6 +25,7 @@ import CurrencyItem from 'components/CurrencyItem';
 import { IAccountCryptoBoxAssetItem } from '@portkey-wallet/types/types-ca/token';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { divDecimals } from '@portkey-wallet/utils/converter';
+import GStyles from 'assets/theme/GStyles';
 
 export type TImTransferInfo = {
   isGroupChat?: boolean;
@@ -244,9 +245,7 @@ export const styles = StyleSheet.create({
     fontSize: pTd(20),
   },
   containerStyle: {
-    marginLeft: pTd(16),
-    width: pTd(343),
-    marginBottom: pTd(8),
+    ...GStyles.paddingArg(0, 16, 8, 16),
   },
   inputContainerStyle: {
     height: pTd(44),

@@ -24,7 +24,6 @@ export default function SearchDiscoverSection(props: ISearchDiscoverSectionProps
 
   const { s3Url } = useCurrentNetworkInfo();
   const jumpToWebview = useDiscoverJumpWithNetWork();
-
   const onClickJump = useCallback(
     (i: DiscoverItem) => {
       jumpToWebview({
@@ -122,6 +121,7 @@ const getStyles = makeStyles(theme => ({
   },
   gameInfo: {
     color: theme.colors.textBase2,
+    marginTop: pTd(2),
     lineHeight: pTd(17.5),
   },
   defaultIconWrap: {

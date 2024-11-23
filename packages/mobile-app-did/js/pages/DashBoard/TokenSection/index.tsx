@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import navigationService from 'utils/navigationService';
-import { View, FlatList, Text, Image } from 'react-native';
+import { View, FlatList, Image } from 'react-native';
 import { ITokenSectionResponse } from '@portkey-wallet/types/types-ca/token';
 import fonts from 'assets/theme/fonts';
 import { pTd } from 'utils/unit';
@@ -17,6 +17,7 @@ import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { makeStyles } from '@rneui/themed';
 import Svg from 'components/Svg';
+import { TextL } from 'components/CommonText';
 
 export default function TokenSection() {
   const { t } = useLanguage();
@@ -144,7 +145,7 @@ export default function TokenSection() {
               navigationService.navigate('ManageTokenList');
             }}>
             <Svg icon="tune" size={pTd(16)} />
-            <Text style={styles.addTokenText}>{t('Manage token list')}</Text>
+            <TextL style={[styles.addTokenText, fonts.SGMediumFont]}>{t('Manage token list')}</TextL>
           </Touchable>
         }
       />
@@ -168,10 +169,7 @@ export const getStyles = makeStyles(theme => ({
   },
   addTokenText: {
     marginLeft: pTd(8),
-    fontSize: pTd(16),
-    lineHeight: pTd(16),
     color: theme.colors.textBrand1,
-    ...fonts.SGMediumFont,
   },
   banner: {
     marginVertical: pTd(16),

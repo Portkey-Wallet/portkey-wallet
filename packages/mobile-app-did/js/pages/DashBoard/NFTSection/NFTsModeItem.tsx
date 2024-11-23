@@ -23,7 +23,6 @@ import CommonButton from 'components/CommonButton';
 import fonts from 'assets/theme/fonts';
 import { useAccountNFTCollectionInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
 import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import myEvents from 'utils/deviceEvent';
 
 export enum NoDataMessage {
   CustomNetWorkNoData = 'No transaction records accessible from the current custom network',
@@ -51,6 +50,7 @@ export default function NFTItem(props: NFTItemPropsType) {
     itemCount,
     totalRecordCount,
     children,
+    prevChildren,
     symbol,
     collapsed,
     openCollectionObj,
@@ -75,51 +75,31 @@ export default function NFTItem(props: NFTItemPropsType) {
     () => (children?.length > 8 ? children?.slice(0, ((openCollectionInfo?.pageNum ?? 0) + 1) * 8) : children || []),
     [children, openCollectionInfo?.pageNum],
   );
-  // const hasMore = useMemo(
-  //   () =>
-  //     showChildren?.length !== 0 &&
-  //     showChildren?.length <
-  //       (typeof totalRecordCount === 'string' ? parseInt(totalRecordCount, 10) : totalRecordCount) &&
-  //     !isFetching,
-  //   [isFetching, totalRecordCount, showChildren?.length],
-  // );
-  useEffect(() => {
-    // myEvents.refreshHomeListStart.addListener(() => {
-    //   // if (!collapsed) {
-    //   //   setRefreshing(true);
-    //   // }
-    // });
-    myEvents.refreshHomeList.addListener(async () => {
-      console.log('wfs===refresh', collectionName, collapsed);
-      if (!collapsed) {
-        // setRefreshing(true);
-        await fetchAccountNFTItem({
-          symbol: symbol,
-          chainId: chainId,
-          caAddressInfos: caAddressInfos.filter(item => item.chainId === chainId),
-          pageNum: 0,
-        });
-        // setRefreshing(false);
-      }
-    });
-  }, [caAddressInfos, chainId, collapsed, collectionName, fetchAccountNFTItem, symbol]);
-  const showViewAll = useMemo(
+  const showPrevChildren = useMemo(
     () =>
+      prevChildren?.length > 8
+        ? prevChildren?.slice(0, ((openCollectionInfo?.pageNum ?? 0) + 1) * 8)
+        : prevChildren || [],
+    [prevChildren, openCollectionInfo?.pageNum],
+  );
+
+  const showViewAll = useMemo(() => {
+    return (
       showChildren?.length === 8 &&
       showChildren?.length <
         (typeof totalRecordCount === 'string' ? parseInt(totalRecordCount, 10) : totalRecordCount) &&
-      !isFetching,
-    [isFetching, totalRecordCount, showChildren?.length],
-  );
+      !isFetching
+    );
+  }, [isFetching, totalRecordCount, showChildren?.length]);
 
   const skeletonList = useMemo(() => {
-    if (!isFetching) {
+    if (!isFetching || (prevChildren.length > 0 && children.length === 0)) {
       return [];
     }
 
     const count = itemCount - showChildren?.length >= 9 ? 9 : itemCount - showChildren?.length;
     return count > 0 ? new Array(count).fill('-') : [];
-  }, [isFetching, itemCount, showChildren?.length]);
+  }, [children.length, isFetching, itemCount, prevChildren.length, showChildren?.length]);
   const retry = useCallback(async () => {
     await fetchAccountNFTItem({
       symbol,
@@ -171,7 +151,7 @@ export default function NFTItem(props: NFTItemPropsType) {
       </Touchable>
       <Collapsible collapsed={!open}>
         <View style={[styles.listWrap]}>
-          {!isFetching && showChildren?.length === 0 && (
+          {!isFetching && showChildren?.length === 0 && showPrevChildren.length === 0 && (
             <View style={styles.noDataContainer}>
               <TextL style={styles.noDataTitle}>No data</TextL>
               <CommonButton type="outline" buttonStyle={styles.noDataButton} onPress={retry}>
@@ -179,7 +159,7 @@ export default function NFTItem(props: NFTItemPropsType) {
               </CommonButton>
             </View>
           )}
-          {showChildren?.map((ele: any, index: number) => (
+          {(showChildren.length > 0 ? showChildren : showPrevChildren)?.map((ele: any, index: number) => (
             <Touchable
               style={[
                 styles.itemWrapper,

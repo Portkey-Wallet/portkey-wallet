@@ -23,6 +23,7 @@ const EventList = [
   'updateSendAddressList',
   'refreshHomeListStart',
   'refreshHomeList',
+  'updateNFT',
 ] as const;
 
 const BookmarkEventList = ['closeSwipeable'] as const;

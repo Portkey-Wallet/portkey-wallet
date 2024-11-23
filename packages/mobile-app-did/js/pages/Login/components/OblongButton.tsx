@@ -58,10 +58,8 @@ const getStyles = makeStyles(theme => ({
     borderRadius: pTd(24),
     minHeight: pTd(32),
   },
-  titleStyle: {
-    lineHeight: pTd(18),
-  },
   text: {
+    lineHeight: pTd(18),
     color: theme.colors.textBase1,
     marginLeft: pTd(8),
   },

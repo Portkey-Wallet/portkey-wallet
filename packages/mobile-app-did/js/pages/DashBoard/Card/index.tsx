@@ -1,13 +1,12 @@
 import React, { useCallback, useMemo } from 'react';
-import { View, Text, StyleProp, ViewProps, TouchableOpacity } from 'react-native';
+import { View, Text, StyleProp, ViewStyle, TouchableOpacity } from 'react-native';
 import { getStyles } from './style';
 import SendButton from 'components/SendButton';
 import ReceiveButton from 'components/ReceiveButton';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCurrentUserInfo, useSetHideAssets } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import FaucetButton from 'components/FaucetButton';
-import GStyles from 'assets/theme/GStyles';
-import SwapButton from 'components/SwapButton';
+import OutlinedButton from 'components/OutlinedButton';
 import BuyButton from 'components/BuyButton';
 import { useAppRampEntryShow } from 'hooks/ramp';
 import { pTd } from 'utils/unit';
@@ -36,10 +35,19 @@ const Card: React.FC<{ title: string }> = ({ title }) => {
     return count;
   }, [isMainnet, isRampShow, isSwapShow]);
 
-  const buttonWrapStyle = useMemo(
-    () => (buttonCount < 5 ? (styles.buttonWrapStyle1 as StyleProp<ViewProps>) : undefined),
-    [buttonCount, styles],
-  );
+  const buttonWrapStyle: StyleProp<ViewStyle> = useMemo(() => {
+    switch (buttonCount) {
+      case 2:
+        return styles.buttonContainerGap3;
+      case 3:
+        return styles.buttonContainerGap2;
+      case 4:
+        return styles.buttonContainerGap1;
+
+      default:
+        return undefined;
+    }
+  }, [buttonCount, styles]);
 
   const onHideAssets = useCallback(() => {
     setHideAssets(!userInfo.hideAssets);
@@ -67,12 +75,36 @@ const Card: React.FC<{ title: string }> = ({ title }) => {
           <View style={styles.titleLoading} />
         )}
       </View>
-      <View style={[GStyles.flexRow, GStyles.spaceBetween, styles.buttonGroupWrap]}>
-        <SendButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />
-        <ReceiveButton onPress={onReceivePress} />
-        {isRampShow && <BuyButton wrapStyle={buttonWrapStyle} />}
-        {isSwapShow && <SwapButton />}
-        {!isMainnet && <FaucetButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />}
+      <View style={styles.buttonGroupWrap}>
+        <SendButton
+          themeType="dashBoard"
+          buttonWrapStyle={styles.buttonWrap}
+          containerStyle={[styles.buttonContainer, buttonWrapStyle, styles.buttonContainer1st]}
+        />
+        <ReceiveButton
+          onPress={onReceivePress}
+          buttonWrapStyle={styles.buttonWrap}
+          containerStyle={[styles.buttonContainer, buttonWrapStyle]}
+        />
+        {isRampShow && (
+          <BuyButton
+            wrapStyle={buttonWrapStyle}
+            buttonWrapStyle={styles.buttonWrap}
+            containerStyle={[styles.buttonContainer, buttonWrapStyle]}
+          />
+        )}
+        {isSwapShow && (
+          <OutlinedButton
+            title="Swap"
+            iconName="swap"
+            containerStyle={[styles.buttonContainer, buttonWrapStyle]}
+            buttonWrapStyle={styles.buttonWrap}
+            onPress={() => {
+              navigationService.navigate('SwapHome');
+            }}
+          />
+        )}
+        {!isMainnet && <FaucetButton containerStyle={[styles.buttonContainer, buttonWrapStyle]} />}
       </View>
     </View>
   );

@@ -60,13 +60,30 @@ export const getStyles = makeStyles(theme => ({
   buttonGroupWrap: {
     marginTop: pTd(32),
     marginBottom: pTd(24),
+    flexDirection: 'row',
     width: '100%',
     paddingHorizontal: pTd(16),
+    justifyContent: 'space-evenly',
   },
   spacerStyle: {
     width: pTd(32),
   },
-  buttonWrapStyle1: {
-    marginHorizontal: screenWidth * 0.03,
+  buttonContainer1st: {
+    marginLeft: 0,
+  },
+  buttonContainer: {
+    flex: 1,
+  },
+  buttonContainerGap1: {
+    marginLeft: 8,
+  },
+  buttonContainerGap2: {
+    marginLeft: 12,
+  },
+  buttonContainerGap3: {
+    marginLeft: 24,
+  },
+  buttonWrap: {
+    width: '100%',
   },
 }));

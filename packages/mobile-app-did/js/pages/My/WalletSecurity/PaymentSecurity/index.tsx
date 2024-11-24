@@ -1,12 +1,12 @@
-import React, { memo, useState } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 import PageContainer from 'components/PageContainer';
-import { StyleSheet, FlatList, View } from 'react-native';
+import { FlatList, View, StyleSheet } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import { TextL, TextM } from 'components/CommonText';
-
+import { makeStyles } from '@rneui/themed';
 import navigationService from 'utils/navigationService';
-import { BGStyles, FontStyles } from 'assets/theme/styles';
+import { FontStyles } from 'assets/theme/styles';
 import { pTd } from 'utils/unit';
 import useEffectOnce from 'hooks/useEffectOnce';
 import CommonToast from 'components/CommonToast';
@@ -19,31 +19,44 @@ import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
 import Svg from 'components/Svg';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
-import NoData from 'components/NoData';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { useTransferLimitList } from '@portkey-wallet/hooks/hooks-ca/security';
+import { darkColors } from 'assets/theme';
+import Loading from 'components/Loading';
+import NoData from 'components/NoData';
 
 const _renderPaymentSecurityItem = ({ item }: { item: ITransferLimitItem }) => {
   const defaultToken = useDefaultToken();
   const symbolImages = useSymbolImages();
   const { networkType } = useCurrentNetworkInfo();
-
+  const ItemStyles = getStyles();
   return (
     <Touchable
       onPress={() => {
         navigationService.navigate('PaymentSecurityDetail', { transferLimitDetail: item });
       }}>
       <View style={ItemStyles.wrap}>
-        <CommonAvatar
-          hasBorder
-          shapeType="circular"
-          title={item.symbol}
-          svgName={item.symbol === defaultToken.symbol ? 'elf-icon' : undefined}
-          imageUrl={item.imageUrl || symbolImages[item.symbol]}
-          avatarSize={pTd(32)}
-          titleStyle={FontStyles.font11}
-          borderStyle={GStyles.hairlineBorder}
-        />
+        <View style={ItemStyles.iconWrap}>
+          <CommonAvatar
+            hasBorder
+            shapeType="circular"
+            title={item.symbol}
+            style={ItemStyles.tokenIcon}
+            svgName={item.symbol === defaultToken.symbol ? 'elf-icon' : undefined}
+            imageUrl={item.imageUrl || symbolImages[item.symbol]}
+            avatarSize={pTd(40)}
+            titleStyle={FontStyles.font11}
+            borderStyle={GStyles.hairlineBorder}
+          />
+          <CommonAvatar
+            hasBorder={true}
+            style={ItemStyles.chainIcon}
+            title={item?.chainId}
+            avatarSize={pTd(20)}
+            imageUrl={item?.chainImageUrl}
+            borderStyle={ItemStyles.tokenIconBorder}
+          />
+        </View>
         <View style={ItemStyles.content}>
           <TextL style={ItemStyles.symbolLabel}>{item.symbol || ''}</TextL>
           <TextM style={FontStyles.font7}>{formatChainInfoToShow(item.chainId, networkType)}</TextM>
@@ -56,14 +69,11 @@ const _renderPaymentSecurityItem = ({ item }: { item: ITransferLimitItem }) => {
 const PaymentSecurityItem = memo(_renderPaymentSecurityItem, (prevProps, nextProps) =>
   isEqual(prevProps.item, nextProps.item),
 );
-
-const ItemStyles = StyleSheet.create({
+const getStyles = makeStyles(() => ({
   wrap: {
     flexDirection: 'row',
-    paddingHorizontal: pTd(16),
-    backgroundColor: defaultColors.bg1,
-    marginBottom: pTd(24),
-    height: pTd(72),
+    paddingVertical: pTd(16),
+    height: pTd(74),
     borderRadius: pTd(6),
     alignItems: 'center',
   },
@@ -74,14 +84,35 @@ const ItemStyles = StyleSheet.create({
   symbolLabel: {
     marginBottom: pTd(2),
   },
-});
+  iconWrap: {
+    width: pTd(45),
+    height: pTd(42),
+    position: 'relative',
+  },
+  tokenIcon: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+  },
+  tokenIconBorder: {
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: darkColors.borderBase1,
+  },
+  chainIcon: {
+    position: 'absolute',
+    right: 0,
+    bottom: 0,
+  },
+}));
 
 const PaymentSecurityList: React.FC = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const { list, isNext, next, init } = useTransferLimitList();
-
+  const { list, isNext, next, init, fetching } = useTransferLimitList(); // isNext
+  const pageStyles = getListStyles();
   const getList = useLockCallback(async () => {
-    if (!isNext) return;
+    if (!isNext) {
+      return;
+    }
     setIsRefreshing(true);
     try {
       await next();
@@ -89,9 +120,19 @@ const PaymentSecurityList: React.FC = () => {
       console.log('PaymentSecurityList: error', error);
       CommonToast.failError('Failed to fetch data');
     }
-
     setIsRefreshing(false);
-  }, [isNext, next]);
+  }, [next]);
+
+  useEffect(() => {
+    if (!list || list.length === 0) {
+      Loading.show();
+    } else {
+      Loading.hide();
+    }
+    setTimeout(() => {
+      Loading.hide();
+    }, 2000);
+  }, [list]);
 
   useEffectOnce(() => {
     const timer = setTimeout(() => {
@@ -104,37 +145,29 @@ const PaymentSecurityList: React.FC = () => {
 
   return (
     <PageContainer
-      titleDom={'Payment Security'}
-      safeAreaColor={['white', 'gray']}
+      titleDom={'Transaction Limits'}
       containerStyles={pageStyles.pageWrap}
       hideTouchable={true}
       scrollViewProps={{ disabled: true }}>
       <FlatList
-        style={pageStyles.listWrap}
         refreshing={isRefreshing}
         data={list || []}
         keyExtractor={(item: ITransferLimitItem) => `${item.chainId}_${item.symbol}`}
         renderItem={({ item }) => <PaymentSecurityItem item={item} />}
         onRefresh={() => init()}
         onEndReached={() => getList()}
-        ListEmptyComponent={() => <NoData style={BGStyles.bg4} topDistance={pTd(95)} message="No asset" />}
+        ListEmptyComponent={fetching ? <></> : <NoData noPic topDistance={pTd(80)} message="No assets yet" />}
       />
     </PageContainer>
   );
 };
 
-const pageStyles = StyleSheet.create({
-  pageWrap: {
-    backgroundColor: defaultColors.bg4,
-    paddingHorizontal: 0,
-  },
-  listWrap: {
-    ...GStyles.paddingArg(24, 20, 18),
-  },
+const getListStyles = makeStyles(() => ({
+  pageWrap: {},
   tipsWrap: {
     lineHeight: pTd(20),
     marginBottom: pTd(24),
   },
-});
+}));
 
 export default PaymentSecurityList;

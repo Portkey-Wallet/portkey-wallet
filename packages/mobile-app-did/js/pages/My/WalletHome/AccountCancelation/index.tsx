@@ -1,7 +1,8 @@
 import { useCurrentWalletInfo, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
-import { BGStyles, FontStyles } from 'assets/theme/styles';
+import { FontStyles } from 'assets/theme/styles';
+import fonts from 'assets/theme/fonts';
 import ActionSheet from 'components/ActionSheet';
 import CommonButton from 'components/CommonButton';
 import { TextL, TextM } from 'components/CommonText';
@@ -14,13 +15,14 @@ import { useGetCurrentCAContract } from 'hooks/contract';
 import useEffectOnce from 'hooks/useEffectOnce';
 import useLogOut from 'hooks/useLogOut';
 import React, { useCallback, useMemo } from 'react';
-import { ScrollView, StyleSheet } from 'react-native';
+import { ScrollView } from 'react-native';
 import { View } from 'react-native';
 import navigationService from 'utils/navigationService';
 import { pTd } from 'utils/unit';
 import { useGetCurrentLoginAccountVerifyFunc } from 'hooks/verification';
 import { useGuardiansInfo } from 'hooks/store';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
+import { darkColors, makeStyles, useTheme } from '@rneui/themed';
 import {
   getSocialLoginAccountToken,
   deleteLoginAccount,
@@ -34,11 +36,13 @@ import {
 } from '@portkey-wallet/constants/constants-ca/wallet';
 import { CONTACT_PRIVACY_TYPE_LABEL_MAP } from '@portkey-wallet/constants/constants-ca/contact';
 
-const safeAreaColor: SafeAreaColorMapKeyUnit[] = ['blue', 'gray'];
+const safeAreaColor: SafeAreaColorMapKeyUnit[] = ['black'];
 
 const ScrollViewProps = { disabled: true };
 
 export default function AccountCancelation() {
+  const styles = getStyles();
+  const { theme } = useTheme();
   const { caHash, address: managerAddress } = useCurrentWalletInfo();
   const getCurrentCAContract = useGetCurrentCAContract();
   const currentLoginAccountVerifyFunc = useGetCurrentLoginAccountVerifyFunc();
@@ -111,11 +115,17 @@ export default function AccountCancelation() {
   const AlertWaring = useCallback(
     (pass?: boolean) => {
       ActionSheet.alert({
-        title: 'Warning',
+        title: <Svg icon="warning" color={'#FFF'} size={pTd(32)} />,
+        title2: <TextM style={styles.title2}>Delete Account Warning</TextM>,
         message: ACCOUNT_CANCELATION_WARNING,
         buttons: [
           { title: 'Cancel', onPress: pass ? undefined : navigationService.goBack, type: 'outline' },
-          { title: 'Continue', onPress: pass ? onDeletion : undefined },
+          {
+            title: 'Continue',
+            onPress: pass ? onDeletion : undefined,
+            style: styles.continue,
+            titleStyle: styles.continueTitle,
+          },
         ],
       });
     },
@@ -158,7 +168,7 @@ export default function AccountCancelation() {
       safeAreaColor={safeAreaColor}>
       <ScrollView>
         <View style={styles.containerStyle}>
-          <Svg icon="warning" color={FontStyles.font13.color} size={pTd(42)} />
+          <Svg icon="warning_v2" color={theme.colors.iconDanger1} size={pTd(42)} />
           <TextM style={styles.tipText}>{ACCOUNT_CANCELATION_TIP}</TextM>
           <View style={styles.boxStyle}>
             <TextM style={FontStyles.font3}>{ACCOUNT_CANCELATION_NOTE}</TextM>
@@ -168,7 +178,7 @@ export default function AccountCancelation() {
                   <TextL style={styles.titleStyle}>
                     {index + 1}. {title}
                   </TextL>
-                  <TextM style={FontStyles.font3}>
+                  <TextM style={styles.contentStyle}>
                     {content.replace(/LOGIN_ACCOUNT/g, CONTACT_PRIVACY_TYPE_LABEL_MAP[guardianType || 0])}
                   </TextM>
                 </View>
@@ -177,39 +187,61 @@ export default function AccountCancelation() {
           </View>
         </View>
       </ScrollView>
-      <CommonButton title="Confirm" type="primary" onPress={onConfirm} />
+      <CommonButton
+        buttonStyle={styles.continue}
+        titleStyle={styles.continueTitle}
+        title="Confirm account deletion"
+        type="primary"
+        onPress={onConfirm}
+      />
     </PageContainer>
   );
 }
 
-const styles = StyleSheet.create({
+export const getStyles = makeStyles(theme => ({
   pageWrap: {
     flex: 1,
-    backgroundColor: defaultColors.bg4,
     ...GStyles.paddingArg(24, 20, 18),
+  },
+  title2: {
+    color: theme.colors.textBase1,
+    fontSize: pTd(20),
+    marginTop: pTd(12),
+  },
+  continue: {
+    backgroundColor: theme.colors.bgDanger1,
+    color: theme.colors.textBase1,
+  },
+  continueTitle: {
+    color: theme.colors.textBase1,
   },
   containerStyle: {
     ...GStyles.itemCenter,
   },
   tipText: {
     marginVertical: 16,
+    textAlign: 'center',
   },
   boxStyle: {
     borderRadius: 6,
     width: '100%',
+    backgroundColor: theme.colors.bgBase2,
     ...GStyles.paddingArg(24, pTd(12)),
-    ...BGStyles.bg1,
   },
   tipItem: {
     marginTop: 24,
   },
   titleStyle: {
-    ...FontStyles.font5,
+    color: theme.colors.textBase1,
     marginBottom: 4,
-    ...FontStyles.weight500,
+    ...fonts.BGMediumFont,
+  },
+  contentStyle: {
+    color: theme.colors.textBase2,
+    marginTop: pTd(12),
   },
   alertMessage: {
     color: defaultColors.font3,
     marginBottom: pTd(12),
   },
-});
+}));

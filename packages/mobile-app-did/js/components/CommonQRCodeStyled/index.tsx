@@ -1,28 +1,29 @@
 import React, { useMemo } from 'react';
 import QRCodeStyled, { SVGQRCodeStyledProps, useQRCodeData } from 'react-native-qrcode-styled';
-import portkeyLogo from 'assets/image/pngs/portkey-v2-new-brand.png';
+import portkeyLogo from 'assets/image/pngs/portkey-v2-new-brand-2.png';
 import { pTd } from 'utils/unit';
-import { StyleSheet, View } from 'react-native';
-import { TextL } from 'components/CommonText';
-import { defaultColors } from 'assets/theme';
+import { View } from 'react-native';
+import { makeStyles } from '@rneui/themed';
+import Lottie from 'lottie-react-native';
 
 type CommonQRCodeStyledPropsType = {
   qrData: string;
   hasMask?: boolean;
 } & SVGQRCodeStyledProps;
 
-const BorderRadiusMap = {
-  style1: {
-    outerBorderRadius: 17,
-    innerBorderRadius: 8,
-  },
-  style2: {
-    outerBorderRadius: 10,
-    innerBorderRadius: 4,
-  },
-};
+// const BorderRadiusMap = {
+//   style1: {
+//     outerBorderRadius: 17,
+//     innerBorderRadius: 8,
+//   },
+//   style2: {
+//     outerBorderRadius: 10,
+//     innerBorderRadius: 4,
+//   },
+// };
 
 export default function CommonQRCodeStyled(props: CommonQRCodeStyledPropsType) {
+  const styles = getStyles();
   const { qrData, hasMask = false, width = pTd(236) } = props;
   const { qrCodeSize } = useQRCodeData(qrData, {});
 
@@ -32,43 +33,30 @@ export default function CommonQRCodeStyled(props: CommonQRCodeStyledPropsType) {
     <View>
       {hasMask && (
         <View style={styles.mask}>
-          <TextL>Updating...</TextL>
+          <Lottie style={styles.loadingIcon} source={require('assets/lottieFiles/spinnerDark.json')} autoPlay loop />
         </View>
       )}
       <QRCodeStyled
         data={qrData}
         padding={0}
         pieceSize={pieceSize}
-        isPiecesGlued
-        pieceBorderRadius={2}
+        isPiecesGlued={false}
+        pieceBorderRadius={pieceSize / 2}
         color={'#000000'}
         logo={{
           href: portkeyLogo,
-          scale: 1.8,
-          padding: pTd(0),
+          // width: pTd(64),
+          // height: pTd(64),
+          // scale: 1.0,
+          // padding: pTd(0),
           hidePieces: false,
         }}
         outerEyesOptions={{
-          topLeft: {
-            borderRadius: BorderRadiusMap.style2.outerBorderRadius,
-          },
-          topRight: {
-            borderRadius: BorderRadiusMap.style2.outerBorderRadius,
-          },
-          bottomLeft: {
-            borderRadius: BorderRadiusMap.style2.outerBorderRadius,
-          },
+          strokeWidth: pTd(6),
+          borderRadius: pTd(18),
         }}
         innerEyesOptions={{
-          topLeft: {
-            borderRadius: BorderRadiusMap.style2.innerBorderRadius,
-          },
-          topRight: {
-            borderRadius: BorderRadiusMap.style2.innerBorderRadius,
-          },
-          bottomLeft: {
-            borderRadius: BorderRadiusMap.style2.innerBorderRadius,
-          },
+          borderRadius: pTd(8),
         }}
         {...props}
       />
@@ -76,7 +64,7 @@ export default function CommonQRCodeStyled(props: CommonQRCodeStyledPropsType) {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = makeStyles((theme: any) => ({
   mask: {
     position: 'absolute',
     zIndex: 99,
@@ -84,9 +72,15 @@ const styles = StyleSheet.create({
     bottom: -pTd(1),
     left: -pTd(1),
     right: -pTd(1),
-    backgroundColor: defaultColors.bg1,
+    backgroundColor: theme.colors.iconBase1,
     opacity: 0.96,
     alignItems: 'center',
     justifyContent: 'center',
   },
-});
+  maskText: {
+    color: theme.colors.bgBase1,
+  },
+  loadingIcon: {
+    width: pTd(32),
+  },
+}));

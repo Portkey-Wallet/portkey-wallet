@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback } from 'react';
 import PageContainer from 'components/PageContainer';
 import { StyleSheet } from 'react-native';
 import { defaultColors } from 'assets/theme';
@@ -61,19 +61,16 @@ const WalletSecurity: React.FC = () => {
       />
       <MenuItem
         style={pageStyles.menuStyle}
-        title="Token Allowance"
-        onPress={() => {
-          navigationService.navigate('TokenAllowanceHome');
-        }}
-      />
-      <MenuItem
-        style={pageStyles.menuStyle}
         title="Set up Backup Mailbox"
         suffix={!fetching && showNotSet ? 'Not Set up' : ''}
         onPress={async () => {
-          navigationService.navigate('SecondaryMailboxHome', {
-            secondaryEmail,
-          });
+          if (showNotSet) {
+            navigationService.navigate('SecondaryMailboxEdit');
+          } else {
+            navigationService.navigate('SecondaryMailboxHome', {
+              secondaryEmail,
+            });
+          }
           // if (!secondaryEmail) {
           //   try {
           //     Loading.show();

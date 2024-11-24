@@ -2,11 +2,11 @@ import { TextS } from 'components/CommonText';
 import React, { memo } from 'react';
 import { View, StyleSheet } from 'react-native';
 
-import Svg from 'components/Svg';
+import Svg, { IconName } from 'components/Svg';
 import GStyles from 'assets/theme/GStyles';
-import { FontStyles } from 'assets/theme/styles';
+import { DarkFontStyles } from 'assets/theme/styles';
 import { pTd } from 'utils/unit';
-import { defaultColors } from 'assets/theme';
+import { darkColors, defaultColors } from 'assets/theme';
 
 export interface INoDiscoverDataProps {
   type?: 'noBookmarks' | 'noRecords';
@@ -15,6 +15,7 @@ export interface INoDiscoverDataProps {
   backgroundColor?: string;
   style?: any;
   iconStyle?: any;
+  iconName?: IconName;
 }
 
 const NoDiscoverData = (props: INoDiscoverDataProps) => {
@@ -25,9 +26,9 @@ const NoDiscoverData = (props: INoDiscoverDataProps) => {
     backgroundColor = defaultColors.bg1,
     style = {},
     iconStyle = {},
+    iconName,
   } = props;
-  const iconName = type === 'noBookmarks' ? 'no-bookmarks' : 'no-records';
-  const noDataText = type === 'noBookmarks' ? 'No Bookmarks' : 'No Records';
+  const noDataText = type === 'noBookmarks' ? 'No bookmarks' : 'No history';
 
   const wrapStyle: any = {
     backgroundColor,
@@ -35,8 +36,8 @@ const NoDiscoverData = (props: INoDiscoverDataProps) => {
 
   return (
     <View style={[GStyles.flex1, GStyles.center, wrapStyle, location === 'top' && styles.topNoDataStyle, style]}>
-      <Svg icon={iconName} size={pTd(size === 'large' ? 56 : 36)} iconStyle={[styles.icon, iconStyle]} />
-      <TextS style={[FontStyles.font7, size === 'large' && styles.largeText]}>{noDataText}</TextS>
+      {iconName && <Svg icon={iconName} size={pTd(size === 'large' ? 56 : 36)} iconStyle={[styles.icon, iconStyle]} />}
+      <TextS style={[DarkFontStyles.textBase2, size === 'large' && styles.largeText]}>{noDataText}</TextS>
     </View>
   );
 };
@@ -50,7 +51,7 @@ const styles = StyleSheet.create({
   topNoDataStyle: {
     justifyContent: 'flex-start',
     paddingTop: pTd(142),
-    backgroundColor: defaultColors.white,
+    backgroundColor: darkColors.bgBase1,
   },
   largeText: {
     fontSize: pTd(16),

@@ -8,18 +8,20 @@ import navigationService from './navigationService';
 export function queryFailAlert(callBack: () => void, isRecovery?: boolean, isReset?: boolean) {
   OverlayModal.hide();
   ActionSheet.alert({
-    message: isRecovery ? 'Wallet Recovery Failed!' : 'Wallet Register Failed!',
+    isCloseShow: false,
+    isModalCloseDisable: true,
+    message: isRecovery
+      ? 'Wallet account recovery failed. Please try again.'
+      : 'Wallet account sign-up failed. Please try again.',
     buttons: [
       {
-        title: isRecovery ? 'Re-login' : 'Re-register',
+        title: isRecovery ? 'Log in again' : 'Sign up again',
         onPress: () => {
           callBack();
-          if (isRecovery) {
-            if (isReset) navigationService.reset('LoginPortkey');
-            else navigationService.navigate('LoginPortkey');
+          if (isReset) {
+            navigationService.reset('LoginPortkey');
           } else {
-            if (isReset) navigationService.reset([{ name: 'LoginPortkey' }, { name: 'SignupPortkey' }]);
-            else navigationService.navigate('SignupPortkey');
+            navigationService.navigate('LoginPortkey');
           }
         },
       },

@@ -1,7 +1,12 @@
 import { request } from '@portkey-wallet/api/api-did';
 import { ITokenSectionResponse } from '@portkey-wallet/types/types-ca/token';
-import { IAssetItemType } from './type';
-import { NFT_SMALL_SIZE, NFT_MIDDLE_SIZE, NFT_LARGE_SIZE } from '@portkey-wallet/constants/constants-ca/assets';
+import { IAssetItemType, IAssetNftCollection, IAssetToken } from './type';
+import {
+  NFT_SMALL_SIZE,
+  NFT_MIDDLE_SIZE,
+  NFT_LARGE_SIZE,
+  NFT_MIDDLE_X_SIZE,
+} from '@portkey-wallet/constants/constants-ca/assets';
 import { ICryptoBoxAssetItemType } from '@portkey-wallet/types/types-ca/crypto';
 import { NFTItemBaseType } from '@portkey-wallet/types/types-ca/assets';
 import { ChainId } from '@portkey-wallet/types';
@@ -20,6 +25,7 @@ export function fetchTokenList({
 }): Promise<{
   data: ITokenSectionResponse[];
   totalRecordCount: number;
+  totalDisplayCount: number;
   totalBalanceInUsd?: string;
 }> {
   return request.assets.fetchAccountTokenListV2({
@@ -44,6 +50,30 @@ export function fetchAssetList({
   caAddressInfos: { chainId: string; caAddress: string }[];
 }): Promise<{ data: IAssetItemType[]; totalRecordCount: number }> {
   return request.assets.fetchAccountAssetsByKeywords({
+    params: {
+      caAddressInfos,
+      skipCount,
+      maxResultCount,
+      keyword,
+      width: NFT_SMALL_SIZE,
+      height: -1,
+    },
+  });
+}
+
+export function fetchAssetListV2({
+  caAddressInfos,
+  maxResultCount = 1000,
+  skipCount = 0,
+  keyword = '',
+}: {
+  maxResultCount?: number;
+  skipCount?: number;
+  keyword: string;
+  caAddressInfos: { chainId: string; caAddress: string }[];
+}): Promise<{ nftInfos: IAssetNftCollection[]; tokenInfos: IAssetToken[]; totalRecordCount: number }> {
+  console.log('fetchAccountAssetsByKeywordsV2');
+  return request.assets.fetchAccountAssetsByKeywordsV2({
     params: {
       caAddressInfos,
       skipCount,
@@ -87,13 +117,13 @@ export function fetchNFTSeriesList({
   skipCount: number;
   maxResultCount?: number;
   caAddressInfos: { chainId: string; caAddress: string }[];
-}): Promise<{ data: any[]; totalRecordCount: number }> {
+}): Promise<{ data: any[]; totalRecordCount: number; totalNftItemCount: number }> {
   return request.assets.fetchAccountNftCollectionList({
     params: {
       caAddressInfos,
       skipCount,
       maxResultCount,
-      width: NFT_SMALL_SIZE,
+      width: NFT_MIDDLE_X_SIZE,
       height: -1,
     },
   });

@@ -11,6 +11,7 @@ import { isValidAvatarFile } from '@portkey-wallet/utils/reg';
 import CommonToast from 'components/CommonToast';
 import { View, StyleSheet } from 'react-native';
 import { defaultColors } from 'assets/theme';
+import { makeStyles } from '@rneui/themed';
 export enum ImageShowType {
   CIRCLE,
   NORMAL,
@@ -33,8 +34,9 @@ export type ImageWithUploadFuncInstance = {
 };
 
 const ImageWithUploadFuncV2 = forwardRef(function ImageWithUploadFuncV2(props: UploadImageType, ref) {
-  const { title, imageUrl, avatarSize = pTd(48), onChangeImage, defaultComponent, onChooseSuccess } = props;
+  const { title, imageUrl, avatarSize = pTd(48), onChangeImage, defaultComponent, type, onChooseSuccess } = props;
   const [localPhotoFile, setLocalPhotoFile] = useState<ImagePicker.ImagePickerAsset>();
+  const styles = getStyles();
   useEffect(() => {
     setLocalPhotoFile({
       uri: imageUrl || '',
@@ -165,12 +167,11 @@ const ImageWithUploadFuncV2 = forwardRef(function ImageWithUploadFuncV2(props: U
 });
 
 export default ImageWithUploadFuncV2;
-
-const styles = StyleSheet.create({
+const getStyles = makeStyles(theme => ({
   avatarWrap: {
     overflow: 'hidden',
-    borderWidth: pTd(1),
-    borderRadius: pTd(12),
-    borderColor: defaultColors.neutralBorder,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: pTd(16),
+    borderColor: theme.colors.borderNeutral2,
   },
-});
+}));

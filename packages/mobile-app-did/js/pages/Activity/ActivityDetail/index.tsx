@@ -334,7 +334,7 @@ const ActivityDetail = () => {
         <View style={styles.space} />
         {explorerUrl && (
           <CommonButton
-            containerStyle={[GStyles.marginTop(8), styles.bottomButton]}
+            containerStyle={[GStyles.marginTop(8)]}
             onPress={() => {
               if (!activityItem?.transactionId) {
                 return;
@@ -346,9 +346,8 @@ const ActivityDetail = () => {
               });
             }}
             title={t('View on Explorer')}
-            type="clear"
+            type="primary"
             style={styles.button}
-            buttonStyle={styles.bottomButton}
           />
         )}
       </>
@@ -362,7 +361,6 @@ const ActivityDetail = () => {
       safeAreaColor={['white']}
       containerStyles={styles.containerStyle}
       scrollViewProps={{ disabled: true }}>
-      <StatusBar barStyle={'dark-content'} />
       <Touchable style={styles.closeWrap} onPress={() => navigationService.goBack()}>
         <Svg icon="close" size={pTd(16)} />
       </Touchable>
@@ -523,9 +521,6 @@ export const styles = StyleSheet.create({
   },
   justifyContentCenter: {
     justifyContent: 'center',
-  },
-  bottomButton: {
-    backgroundColor: defaultColors.bg1,
   },
   networkInfoContent: {
     flexDirection: 'row',

@@ -1,10 +1,10 @@
 import React, { useCallback, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
+import { useTheme } from '@rneui/themed';
 import ProviderWebview, { IWebView } from 'components/ProviderWebview';
 import Progressbar, { IProgressbar } from 'components/Progressbar';
 import SafeAreaBox from 'components/SafeAreaBox';
 import CustomHeader from 'components/CustomHeader';
-import { SafeAreaColorMap } from 'components/PageContainer';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import GStyles from 'assets/theme/GStyles';
 import { BGStyles } from 'assets/theme/styles';
@@ -22,8 +22,9 @@ const ProviderWebPage = () => {
     title: string;
     icon?: IconName;
   }>();
+  const { theme } = useTheme();
   return (
-    <SafeAreaBox edges={['top', 'right', 'left']} style={{ backgroundColor: SafeAreaColorMap.white }}>
+    <SafeAreaBox edges={['top', 'right', 'left']} style={{ backgroundColor: theme.colors.bgBase1 }}>
       <View style={[GStyles.flex1, BGStyles.bg4]}>
         <CustomHeader themeType={'white'} titleDom={title} />
         <ProviderWebPageComponent url={url} title={title} icon={icon} />

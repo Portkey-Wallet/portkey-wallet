@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useCallback } from 'react';
+import React, { Dispatch, SetStateAction, useCallback, useMemo } from 'react';
 import { Keyboard, ScrollView, StyleSheet, View } from 'react-native';
 import { TextL, TextM } from 'components/CommonText';
 import OverlayModal from 'components/OverlayModal';
@@ -15,6 +15,7 @@ import { SessionKeyMap, SessionKeyArray } from '@portkey-wallet/constants/consta
 import GStyles from 'assets/theme/GStyles';
 import { useCheckSiteIsInBlackList } from '@portkey-wallet/hooks/hooks-ca/cms';
 import Touchable from 'components/Touchable';
+import { makeStyles, useTheme } from '@rneui/themed';
 
 export type RememberInfoType = {
   isRemember: boolean;
@@ -29,6 +30,7 @@ type RememberMeProps = {
 
 type RememberMeOverlayProps = {
   value: SessionExpiredPlan;
+  fromAccountSetting?: boolean;
   onCancel?: () => void;
   onConfirm: (value: SessionExpiredPlan) => void;
 };
@@ -36,10 +38,13 @@ type RememberMeOverlayProps = {
 function RememberMeOverlay(props: RememberMeOverlayProps) {
   const { value, onConfirm } = props;
   const { t } = useLanguage();
+  const Overlay = getOverlayStyle();
 
   const onPressItem = useCallback(
     (v: SessionExpiredPlan) => {
-      if (String(value) === String(v)) return;
+      if (String(value) === String(v)) {
+        return;
+      }
       onConfirm(v);
       OverlayModal.hide();
     },
@@ -56,7 +61,7 @@ function RememberMeOverlay(props: RememberMeOverlayProps) {
       <ScrollView style={Overlay.wrapStyle}>
         <TextL style={[fonts.mediumFont, FontStyles.font5]}>{t('Session key expires in')}</TextL>
 
-        {SessionKeyArray.map(ele => (
+        {SessionKeyArray.filter(e => e.value !== SessionExpiredPlan.always).map(ele => (
           <Touchable key={ele.value} style={Overlay.itemRow} onPress={() => onPressItem(ele?.value)}>
             <TextL>{ele.label}</TextL>
             {value === ele.value && <Svg icon="selected" size={pTd(24)} />}
@@ -68,24 +73,33 @@ function RememberMeOverlay(props: RememberMeOverlayProps) {
 }
 
 function PeriodOverlay(props: RememberMeOverlayProps) {
-  const { value, onConfirm } = props;
+  const { value, onConfirm, fromAccountSetting = false } = props;
+
+  const Overlay = getOverlayStyle();
+  const { theme } = useTheme();
 
   const onPressItem = useCallback(
     (v: SessionExpiredPlan) => {
-      if (String(value) === String(v)) return;
+      if (String(value) === String(v)) {
+        return;
+      }
       onConfirm(v);
       OverlayModal.hide();
     },
     [onConfirm, value],
   );
 
+  const selectPeriodArray = useMemo(() => {
+    return fromAccountSetting ? SessionKeyArray.filter(i => i.value !== SessionExpiredPlan.always) : SessionKeyArray;
+  }, [fromAccountSetting]);
+
   return (
-    <ModalBody modalBodyType="bottom" title={'Select Period'}>
-      <ScrollView style={Overlay.wrapStyle}>
-        {SessionKeyArray.map(ele => (
-          <Touchable key={ele.value} style={Overlay.itemRow} onPress={() => onPressItem(ele?.value)}>
+    <ModalBody modalBodyType="bottom" title={'Session expires in'}>
+      <ScrollView style={Overlay.periodWrapStyle}>
+        {selectPeriodArray.map(ele => (
+          <Touchable key={ele.value} style={Overlay.periodItemRow} onPress={() => onPressItem(ele?.value)}>
             <TextL>{ele.label}</TextL>
-            {value === ele.value && <Svg icon="selected" size={pTd(24)} color={defaultColors.primaryColor} />}
+            {value === ele.value && <Svg icon="selected" size={pTd(24)} color={theme.colors.bgBrand1} />}
           </Touchable>
         ))}
       </ScrollView>
@@ -120,7 +134,10 @@ const showRememberMeOverlay = (props: RememberMeProps) => {
 export const RememberMe = (props: RememberMeProps) => {
   const { dappInfo, rememberInfo, setRememberMeInfo } = props;
   const checkOriginInBlackList = useCheckSiteIsInBlackList();
-  if (checkOriginInBlackList(dappInfo.origin)) return null;
+  const styles = getStyles();
+  if (checkOriginInBlackList(dappInfo.origin)) {
+    return null;
+  }
 
   return (
     <View style={styles.rememberWrap}>
@@ -149,7 +166,7 @@ export default {
   showPeriodOverlay,
 };
 
-const styles = StyleSheet.create({
+const getStyles = makeStyles(() => ({
   rememberWrap: {
     display: 'flex',
     flexDirection: 'row',
@@ -163,12 +180,18 @@ const styles = StyleSheet.create({
   label: {
     paddingRight: pTd(100),
   },
-});
+}));
 
-const Overlay = StyleSheet.create({
+const getOverlayStyle = makeStyles(theme => ({
   wrapStyle: {
     paddingHorizontal: pTd(20),
     flex: 1,
+  },
+  periodWrapStyle: {
+    paddingHorizontal: pTd(20),
+    display: 'flex',
+    flexDirection: 'column',
+    // flex: 1,
   },
   title: {
     alignSelf: 'center',
@@ -182,9 +205,16 @@ const Overlay = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: defaultColors.border6,
   },
+  periodItemRow: {
+    height: 48,
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: theme.spacing.md,
+  },
   tips: {
     paddingHorizontal: pTd(20),
     color: defaultColors.font3,
     marginBottom: pTd(24),
   },
-});
+}));

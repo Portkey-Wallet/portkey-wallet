@@ -1,41 +1,39 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { StyleSheet } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import navigationService from 'utils/navigationService';
-import { View, FlatList } from 'react-native';
-// import Svg from 'components/Svg';
-import { TokenItemShowType, ITokenSectionResponse } from '@portkey-wallet/types/types-ca/token';
-import { TextM } from 'components/CommonText';
-import { defaultColors } from 'assets/theme';
+import { View, FlatList, Image } from 'react-native';
+import { ITokenSectionResponse } from '@portkey-wallet/types/types-ca/token';
+import fonts from 'assets/theme/fonts';
 import { pTd } from 'utils/unit';
 import TokenListUnionItem from 'components/TokenListUnionItem';
 import { useLanguage } from 'i18n/hooks';
 import { PAGE_SIZE_IN_ACCOUNT_TOKEN, REFRESH_TIME } from '@portkey-wallet/constants/constants-ca/assets';
-import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
+import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import Touchable from 'components/Touchable';
 import { useAccountTokenInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
+import { useAccountBalanceUSD } from '@portkey-wallet/hooks/hooks-ca/balances';
 import { useLatestRef } from '@portkey-wallet/hooks';
 import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import { makeStyles } from '@rneui/themed';
+import Svg from 'components/Svg';
+import { TextL } from 'components/CommonText';
 
-export interface TokenSectionProps {
-  getAccountBalance?: () => void;
-}
-
-export default function TokenSection({ getAccountBalance }: TokenSectionProps) {
+export default function TokenSection() {
   const { t } = useLanguage();
   const userInfo = useCurrentUserInfo();
+  const styles = getStyles();
 
   const { accountTokenList, totalRecordCount, fetchAccountTokenInfoList } = useAccountTokenInfo();
-  const [, getTokenPrice] = useGetCurrentAccountTokenPrice();
+  const accountBalanceUSD = useAccountBalanceUSD();
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const caAddressInfos = useCaAddressInfoList();
   const caAddressInfosList = useLatestRef(caAddressInfos);
   const [extraIndex, setExtraIndex] = useState<number>(0);
   const [selectedItem] = useState(new Map<string, boolean>());
 
-  const onNavigate = useCallback((tokenItem: TokenItemShowType) => {
-    navigationService.navigate('TokenDetail', { tokenInfo: tokenItem });
+  const onNavigate = useCallback((tokenItem: ITokenSectionResponse, index: number) => {
+    navigationService.navigate('TokenDetail', { tokenSection: tokenItem, index });
   }, []);
 
   const reload = useCallback(() => {
@@ -44,10 +42,14 @@ export default function TokenSection({ getAccountBalance }: TokenSectionProps) {
 
   const onExpand = useCallback(
     (tokenItem: ITokenSectionResponse) => {
-      selectedItem.set(tokenItem.symbol, !selectedItem.get(tokenItem.symbol));
-      reload();
+      if (tokenItem.tokens?.length === 1) {
+        onNavigate(tokenItem, 0);
+      } else {
+        selectedItem.set(tokenItem.symbol, !selectedItem.get(tokenItem.symbol));
+        reload();
+      }
     },
-    [reload, selectedItem],
+    [onNavigate, reload, selectedItem],
   );
 
   const renderItem = useCallback(
@@ -68,7 +70,9 @@ export default function TokenSection({ getAccountBalance }: TokenSectionProps) {
 
   const getAccountTokenList = useLockCallback(
     async (isInit: boolean) => {
-      if (totalRecordCount && accountTokenList.length >= totalRecordCount && !isInit) return;
+      if (totalRecordCount && accountTokenList.length >= totalRecordCount && !isInit) {
+        return;
+      }
 
       try {
         await fetchAccountTokenInfoList({
@@ -89,18 +93,44 @@ export default function TokenSection({ getAccountBalance }: TokenSectionProps) {
   }, [caAddressInfosList]);
 
   useEffect(() => {
-    if (timerRef.current) clearInterval(timerRef.current);
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+    }
     timerRef.current = setInterval(() => {
       getAccountTokenList(true);
     }, REFRESH_TIME);
     return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
     };
   }, [getAccountTokenList]);
+
+  const listHeader = useMemo(() => {
+    const accountBalanceNumber = parseFloat(accountBalanceUSD || '0');
+    if (accountBalanceNumber <= 0) {
+      const bannerWidth = screenWidth - pTd(32);
+      const bannerHeight = (bannerWidth * 152) / 361;
+      return (
+        <Touchable
+          onPress={() => {
+            navigationService.navigate('ReceiveSelectToken');
+          }}>
+          <Image
+            style={[styles.banner, { width: bannerWidth, height: bannerHeight }]}
+            source={require('assets/image/pngs/receive_token_banner.png')}
+          />
+        </Touchable>
+      );
+    } else {
+      return <View />;
+    }
+  }, [accountBalanceUSD, styles]);
 
   return (
     <View style={styles.tokenListPageWrap}>
       <FlatList
+        ListHeaderComponent={listHeader}
         nestedScrollEnabled
         refreshing={false}
         extraData={extraIndex}
@@ -108,18 +138,14 @@ export default function TokenSection({ getAccountBalance }: TokenSectionProps) {
         renderItem={renderItem}
         keyExtractor={(item: ITokenSectionResponse) => item.symbol}
         onEndReached={() => getAccountTokenList()}
-        onRefresh={() => {
-          getAccountBalance?.();
-          getTokenPrice();
-          getAccountTokenList(true);
-        }}
         ListFooterComponent={
           <Touchable
             style={styles.addWrap}
             onPress={() => {
               navigationService.navigate('ManageTokenList');
             }}>
-            <TextM style={styles.addTokenText}>{t('Add Tokens')}</TextM>
+            <Svg icon="tune" size={pTd(16)} />
+            <TextL style={[styles.addTokenText, fonts.SGMediumFont]}>{t('Manage token list')}</TextL>
           </Touchable>
         }
       />
@@ -127,15 +153,15 @@ export default function TokenSection({ getAccountBalance }: TokenSectionProps) {
   );
 }
 
-const styles = StyleSheet.create({
+export const getStyles = makeStyles(theme => ({
   tokenListPageWrap: {
     flex: 1,
-    backgroundColor: defaultColors.bg1,
+    backgroundColor: theme.colors.bgBase2,
   },
   addWrap: {
     shadowColor: 'red',
-    marginTop: pTd(24),
-    marginBottom: pTd(24),
+    marginTop: pTd(20),
+    marginBottom: pTd(20),
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'center',
@@ -143,7 +169,10 @@ const styles = StyleSheet.create({
   },
   addTokenText: {
     marginLeft: pTd(8),
-    marginBottom: pTd(16),
-    color: defaultColors.font4,
+    color: theme.colors.textBrand1,
   },
-});
+  banner: {
+    marginVertical: pTd(16),
+    marginLeft: pTd(16),
+  },
+}));

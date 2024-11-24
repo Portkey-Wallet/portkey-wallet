@@ -37,6 +37,7 @@ import { AssetType } from '@portkey-wallet/constants/constants-ca/assets';
 import NFTAvatar from 'components/NFTAvatar';
 import { checkEnabledFunctionalTypes } from '@portkey-wallet/utils/compass';
 import { useUpdateAssetInfo } from 'hooks/useGetSymbolBalance';
+import { makeStyles } from '@rneui/themed';
 
 export type PaymentAssetInfo = {
   symbol: string;
@@ -65,6 +66,7 @@ const PaymentModal = ({
   calculateTransactionFee,
   onConfirm,
 }: PaymentOverlayProps) => {
+  const styles = getStyles();
   const accountAssetList = useAccountCryptoBoxAssetList();
   const [tokenPriceObject, , getTokensPrice] = useGetCurrentAccountTokenPrice();
 
@@ -343,7 +345,7 @@ const PaymentModal = ({
   return (
     <ModalBody modalBodyType="bottom">
       <View style={styles.containerStyle}>
-        <View style={[GStyles.itemCenter, GStyles.flex1]}>
+        <View style={[GStyles.itemCenter]}>
           <TextM style={styles.titleStyle}> {title}</TextM>
           <RedPacketAmountShow
             assetType={assetInfo.assetType}
@@ -442,19 +444,19 @@ export default {
   showCryptoGift,
 };
 
-export const styles = StyleSheet.create({
+const getStyles = makeStyles(theme => ({
   containerStyle: {
-    paddingTop: pTd(16),
-    paddingBottom: pTd(16),
-    paddingHorizontal: pTd(16),
-    flex: 1,
+    // paddingTop: pTd(16),
+    // paddingBottom: pTd(16),
+    // paddingHorizontal: pTd(16),
+    // flex: 1,
   },
   titleStyle: {
-    color: defaultColors.font5,
+    color: theme.colors.textBase1,
     marginBottom: pTd(12),
   },
   balanceLabelStyle: {
-    color: defaultColors.secondaryTextColor,
+    color: theme.colors.textBase1,
     marginLeft: pTd(8),
   },
   lottieStyle: {
@@ -469,7 +471,7 @@ export const styles = StyleSheet.create({
     borderRadius: pTd(6),
   },
   balanceItemRow: {
-    backgroundColor: defaultColors.bg6,
+    backgroundColor: theme.colors.textBase1,
     paddingVertical: pTd(14),
     paddingHorizontal: pTd(12),
     marginTop: pTd(8),
@@ -487,7 +489,7 @@ export const styles = StyleSheet.create({
   },
   avatarTitle: {
     fontSize: pTd(14),
-    color: defaultColors.font11,
+    color: theme.colors.textBase1,
   },
   marginTop4: {
     marginTop: pTd(4),
@@ -495,4 +497,4 @@ export const styles = StyleSheet.create({
   nftAvatar: {
     borderRadius: pTd(4),
   },
-});
+}));

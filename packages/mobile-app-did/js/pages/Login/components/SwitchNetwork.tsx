@@ -1,29 +1,31 @@
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useRoute } from '@react-navigation/native';
 import GStyles from 'assets/theme/GStyles';
-import { FontStyles } from 'assets/theme/styles';
-import { TextM } from 'components/CommonText';
-import NetworkOverlay from 'components/NetworkOverlay';
+import { TextL } from 'components/CommonText';
 import Svg from 'components/Svg';
 import Touchable from 'components/Touchable';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { pTd } from 'utils/unit';
-import styles from '../styles';
-import { useTheme } from '@rneui/themed';
+import { StyleSheet } from 'react-native';
+import { useChangeNetworkDirectly } from 'hooks/network';
 
 export default function SwitchNetwork() {
   const route = useRoute();
   const currentNetworkInfo = useCurrentNetworkInfo();
-  const { theme } = useTheme();
+  const changeNetworkDirectly = useChangeNetworkDirectly(route);
+
+  const networkName = useMemo(() => (currentNetworkInfo.name || '').replaceAll('aelf ', ''), [currentNetworkInfo.name]);
+
   return (
-    <Touchable
-      onPress={() => {
-        console.log('wfs useTheme SwitchNetwork', theme);
-        NetworkOverlay.showSwitchNetwork(route);
-      }}
-      style={[GStyles.flexRowWrap, GStyles.itemCenter, styles.networkRow]}>
-      <TextM style={[FontStyles.font2, styles.networkTip]}>{currentNetworkInfo.name}</TextM>
-      <Svg size={pTd(16)} icon="down-arrow" color={FontStyles.font2.color} />
+    <Touchable onPress={changeNetworkDirectly} style={[GStyles.flexRow, GStyles.itemCenter, styles.networkSwitchWrap]}>
+      <Svg icon={'change'} size={pTd(24)} iconStyle={GStyles.marginRight(4)} />
+      <TextL>{networkName}</TextL>
     </Touchable>
   );
 }
+
+const styles = StyleSheet.create({
+  networkSwitchWrap: {
+    paddingHorizontal: pTd(16),
+  },
+});

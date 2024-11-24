@@ -1,23 +1,41 @@
 import { useGetS3ImageUrl } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { useDiscoverData } from '@portkey-wallet/hooks/hooks-ca/cms/discover';
 import { TBaseCardItemType } from '@portkey-wallet/types/types-ca/cms';
-import { defaultColors } from 'assets/theme';
+import { darkColors } from 'assets/theme';
 import fonts from 'assets/theme/fonts';
 import CommonButton from 'components/CommonButton';
-import { TextL, TextS } from 'components/CommonText';
+import { TextXL, TextL } from 'components/CommonText';
 import NoData from 'components/NoData';
 import { useDiscoverJumpWithNetWork } from 'hooks/discover';
-import React, { useCallback } from 'react';
+import React, { forwardRef, useCallback, useImperativeHandle } from 'react';
 import { View, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native';
 import { pTd } from 'utils/unit';
 import { isUrl } from '@portkey-wallet/utils';
+import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 
-export const EarnPage = () => {
-  const { earnList = [] } = useDiscoverData();
+export default forwardRef(function EarnPage(_, _ref) {
+  const { earnList = [], fetchDiscoverEarnAsync } = useDiscoverData();
+
+  const onRefresh = useCallback(
+    async (callback?: () => void) => {
+      await fetchDiscoverEarnAsync();
+      callback?.();
+    },
+    [fetchDiscoverEarnAsync],
+  );
+
+  useImperativeHandle(
+    _ref,
+    () => ({
+      onRefresh,
+    }),
+    [onRefresh],
+  );
+
   return (
     <View style={styles.container}>
       {earnList.length > 0 ? (
-        <ScrollView showsVerticalScrollIndicator={false} bounces={false}>
+        <ScrollView showsVerticalScrollIndicator={false} bounces={false} nestedScrollEnabled>
           {earnList.map((item, index) => (
             <EarnItem key={index} {...item} />
           ))}
@@ -28,7 +46,7 @@ export const EarnPage = () => {
       )}
     </View>
   );
-};
+});
 
 const EarnItem = (item: TBaseCardItemType) => {
   const discoverJump = useDiscoverJumpWithNetWork();
@@ -36,7 +54,9 @@ const EarnItem = (item: TBaseCardItemType) => {
   const imageUrl = getS3ImgUrl(item.imgUrl.filename_disk);
   const { title = '', description, url, buttonTitle } = item;
   const onPress = useCallback(() => {
-    if (!isUrl(url)) return;
+    if (!isUrl(url)) {
+      return;
+    }
     discoverJump({
       item: {
         name: title,
@@ -50,18 +70,18 @@ const EarnItem = (item: TBaseCardItemType) => {
         <Image style={styles.bigImage} source={{ uri: imageUrl }} />
       </TouchableOpacity>
       <View style={styles.infoWrap}>
-        <View style={styles.infoLine}>
+        <View style={styles.infoCol}>
           <View style={styles.textLines}>
-            <TextL style={[styles.title, fonts.mediumFont]} numberOfLines={1} ellipsizeMode="tail">
+            <TextXL style={[styles.title, fonts.BGMediumFont]} numberOfLines={1} ellipsizeMode="tail">
               {title}
-            </TextL>
-            <TextS style={styles.description} numberOfLines={2} ellipsizeMode="tail">
+            </TextXL>
+            <TextL style={styles.description} numberOfLines={2} ellipsizeMode="tail">
               {description}
-            </TextS>
+            </TextL>
           </View>
           <CommonButton
-            type="primary"
-            radius={pTd(4)}
+            type="outline"
+            radius={pTd(24)}
             buttonStyle={styles.btn}
             titleStyle={[styles.btnTitle, fonts.mediumFont]}
             title={buttonTitle || 'Earn Now'}
@@ -75,32 +95,39 @@ const EarnItem = (item: TBaseCardItemType) => {
 
 const styles = StyleSheet.create({
   container: {
+    paddingBottom: pTd(24),
     flex: 1,
     flexDirection: 'column',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    backgroundColor: defaultColors.white,
+    backgroundColor: darkColors.bgBase1,
   },
   item: {
     flexDirection: 'column',
     justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: pTd(12),
+    alignItems: 'flex-start',
+    borderRadius: pTd(16),
     borderWidth: pTd(1),
-    borderColor: defaultColors.bg32,
+    borderColor: darkColors.borderBase1,
+    backgroundColor: darkColors.bgBase2,
     marginTop: pTd(16),
     overflow: 'hidden',
+    width: screenWidth - pTd(32),
   },
   bigImage: {
-    width: pTd(343),
-    height: pTd(128),
+    width: screenWidth - pTd(32),
+    height: pTd(152),
   },
   infoWrap: {
     flexDirection: 'row',
     justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: pTd(12),
+    alignItems: 'flex-start',
+    paddingHorizontal: pTd(16),
     paddingVertical: pTd(16),
+  },
+  infoCol: {
+    flexDirection: 'column',
+    alignItems: 'flex-start',
   },
   infoLine: {
     flex: 1,
@@ -115,22 +142,23 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   title: {
-    color: defaultColors.font5,
+    color: darkColors.textBase1,
     lineHeight: pTd(24),
     textAlign: 'left',
   },
   description: {
-    color: defaultColors.font11,
-    lineHeight: pTd(16),
+    marginTop: pTd(8),
+    color: darkColors.textBase2,
+    lineHeight: pTd(22),
     textAlign: 'left',
   },
   btn: {
-    marginLeft: pTd(8),
-    paddingHorizontal: pTd(16),
-    height: pTd(34),
+    marginTop: pTd(16),
+    paddingHorizontal: pTd(24),
+    height: pTd(48),
   },
   btnTitle: {
-    fontSize: pTd(12),
+    fontSize: pTd(14),
     lineHeight: pTd(16),
   },
   gap: {

@@ -1,9 +1,9 @@
 import React, { useMemo } from 'react';
 import { pTd } from 'utils/unit';
-import { StyleSheet } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import Default_Image from 'assets/image/pngs/default_record.png';
 import FastImage from 'components/FastImage';
+import { makeStyles } from '@rneui/themed';
 
 interface DiscoverWebsiteImageProps {
   imageUrl?: string;
@@ -13,6 +13,8 @@ interface DiscoverWebsiteImageProps {
 
 export default function DiscoverWebsiteImage(props: DiscoverWebsiteImageProps) {
   const { size = pTd(32), imageUrl, style } = props;
+
+  const styles = getStyles();
 
   const sizeStyle = useMemo(
     () => ({
@@ -33,7 +35,7 @@ export default function DiscoverWebsiteImage(props: DiscoverWebsiteImageProps) {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = makeStyles(() => ({
   avatarWrap: {
     width: pTd(48),
     height: pTd(48),
@@ -56,4 +58,4 @@ const styles = StyleSheet.create({
     borderWidth: 0,
     color: defaultColors.font7,
   },
-});
+}));

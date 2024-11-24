@@ -8,7 +8,7 @@ import UnReadBadge from '../UnReadBadge';
 import CopyAddressDrawerOrModal, { ICopyAddressDrawerOrModalInstance } from '../CopyAddressDrawerOrModal';
 import { useNavigate } from 'react-router';
 import { useCommonState } from 'store/Provider/hooks';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+// import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import './index.less';
 
 export interface IHomeHeaderProps {
@@ -20,19 +20,17 @@ export default function HomeHeader({ onUserClick, unReadShow }: IHomeHeaderProps
   const copyAddressDrawerOrModalRef = useRef<ICopyAddressDrawerOrModalInstance | null>(null);
   const navigate = useNavigate();
   const { isPrompt } = useCommonState();
-  const isMainnet = useIsMainnet();
+  // const isMainnet = useIsMainnet();
   return (
     <>
       <CommonHeader
         className="portkey-home-header"
         title={<CustomSvg type="PortkeyLogoV2" />}
         rightElementList={[
-          isMainnet
-            ? {
-                customSvgType: 'RedGiftIcon',
-                onClick: () => navigate('/crypto-gifts'),
-              }
-            : null,
+          {
+            customSvgType: 'RedGiftIcon',
+            onClick: () => navigate('/crypto-gifts'),
+          },
           {
             customSvgType: 'Copy5',
             onClick: () => copyAddressDrawerOrModalRef.current?.open(),

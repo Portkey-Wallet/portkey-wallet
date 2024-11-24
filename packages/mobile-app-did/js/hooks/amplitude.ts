@@ -73,10 +73,11 @@ export const useLoginSuccessTrack = () => {
 };
 
 export type TEtransferCrossTrackParams = {
-  chainId: string;
+  chainId?: string;
   toAddress: string;
   amount: string;
   symbol: string;
+  network?: string;
 };
 export const useEtransferCrossTrack = () => {
   const amplitudeTrack = useAmplitudeTrack();
@@ -111,8 +112,47 @@ export const useEtransferCrossFinishTrack = () => {
   );
 };
 
+export type TEBridgeCrossTrackParams = {
+  network: string;
+  toAddress: string;
+  amount: string;
+  symbol: string;
+};
+export const useEBridgeCrossTrack = () => {
+  const amplitudeTrack = useAmplitudeTrack();
+  return useCallback(
+    (params: TEtransferCrossTrackParams) => {
+      amplitudeTrack({
+        event_type: 'EtransferCross',
+        event_properties: params,
+      });
+    },
+    [amplitudeTrack],
+  );
+};
+
+export type TEBridgeCrossFinishTrack = {
+  success: boolean;
+  msg?: string;
+};
+export const useEBridgeCrossFinishTrack = () => {
+  const amplitudeTrack = useAmplitudeTrack();
+  return useCallback(
+    ({ success, msg }: TEtransferCrossFinishTrack) => {
+      amplitudeTrack({
+        event_type: 'EtransferCrossFinish',
+        event_properties: {
+          success,
+          msg: msg || '',
+        },
+      });
+    },
+    [amplitudeTrack],
+  );
+};
+
 export type TCrossChainTransferTrackParams = TEtransferCrossTrackParams & {
-  type: 'EtransferCross' | 'PortkeyCross';
+  type: 'EtransferCross' | 'PortkeyCross' | 'EbridgeCross';
 };
 export const useCrossChainTransferTrack = () => {
   const amplitudeTrack = useAmplitudeTrack();

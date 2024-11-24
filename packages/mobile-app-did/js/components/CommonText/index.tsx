@@ -1,5 +1,5 @@
 import { TextProps } from '@rneui/base';
-import { defaultColors } from 'assets/theme';
+import { darkColors } from 'assets/theme';
 import fonts from 'assets/theme/fonts';
 import React from 'react';
 import { Text, StyleSheet, View } from 'react-native';
@@ -7,37 +7,45 @@ import { TextStyleType, ViewStyleType } from 'types/styles';
 import { pTd } from 'utils/unit';
 const styles = StyleSheet.create({
   TextS: {
-    color: defaultColors.font5,
+    color: darkColors.textBase1,
     fontSize: pTd(12),
   },
   TextM: {
-    color: defaultColors.font5,
+    color: darkColors.textBase1,
     fontSize: pTd(14),
   },
   TextL: {
-    color: defaultColors.font5,
+    color: darkColors.textBase1,
     fontSize: pTd(16),
   },
   TextXL: {
-    color: defaultColors.font5,
+    color: darkColors.textBase1,
     fontSize: pTd(18),
   },
   TextXXL: {
-    color: defaultColors.font5,
+    color: darkColors.textBase1,
     fontSize: pTd(20),
   },
   TextXXXL: {
-    color: defaultColors.font5,
+    color: darkColors.textBase1,
     fontSize: pTd(24),
     ...fonts.mediumFont,
   },
+  TextH1: {
+    color: darkColors.textBase1,
+    fontSize: pTd(32),
+    lineHeight: pTd(38),
+    letterSpacing: pTd(-1),
+    ...fonts.BGMediumFont,
+  },
   TextTitle: {
-    color: defaultColors.font5,
-    fontSize: pTd(18),
-    ...fonts.mediumFont,
+    color: darkColors.textBase1,
+    fontSize: pTd(20),
+    lineHeight: pTd(24),
+    ...fonts.BGMediumFont,
   },
   PrimaryText: {
-    color: defaultColors.primaryColor,
+    color: darkColors.textBrand1,
     fontSize: pTd(16),
   },
 } as const);
@@ -81,4 +89,4 @@ const breakWordTextStyles = StyleSheet.create({
   },
 });
 
-export const { TextS, TextM, TextL, TextXL, TextXXL, TextXXXL, TextTitle, PrimaryText } = obj as CommonText;
+export const { TextS, TextM, TextL, TextXL, TextXXL, TextXXXL, TextTitle, PrimaryText, TextH1 } = obj as CommonText;

@@ -37,6 +37,31 @@ export interface IAssetItemType {
   chainImageUrl?: string;
 }
 
+export interface IAssetToken {
+  address: string; // user chain address
+  balance: string;
+  balanceInUsd: string;
+  chainId: ChainId;
+  chainImageUrl: string;
+  decimals: string;
+  displayChainName: string;
+  imageUrl: string;
+  symbol: string;
+  tokenContractAddress: string;
+  label?: string;
+}
+
+export interface IAssetNftCollection {
+  collectionName: string;
+  imageUrl: string;
+  items: INftInfoType[];
+}
+
+export interface IAssetItemV2 {
+  nftInfos: IAssetNftCollection[];
+  tokenInfos: IAssetToken[];
+}
+
 export enum AddressCheckError {
   invalidAddress = 'Invalid Address',
   recipientAddressIsInvalid = 'Recipient address is invalid',
@@ -48,6 +73,7 @@ export type TAccountTokenInfo = {
   maxResultCount: number;
   accountTokenList: ITokenSectionResponse[];
   totalRecordCount: number;
+  totalDisplayCount: number;
 };
 
 export type TAccountNFTInfo = {
@@ -55,12 +81,20 @@ export type TAccountNFTInfo = {
   maxResultCount: number;
   accountNFTList: NFTCollectionItemShowType[];
   totalRecordCount: number;
+  totalNftItemCount: number;
 };
 
 export type TAccountAssetsInfo = {
   skipCount: number;
   maxResultCount: number;
   accountAssetsList: IAssetItemType[];
+  totalRecordCount: number;
+};
+
+export type TAccountAssetsInfoV2 = {
+  skipCount: number;
+  maxResultCount: number;
+  accountAssetsList: IAssetItemV2;
   totalRecordCount: number;
 };
 
@@ -90,6 +124,12 @@ export type TAssetsState = {
       [key in NetworkType]?: TAccountAssetsInfo;
     };
   };
+  accountAssetsV2: TAccountAssetsInfoV2 & {
+    isFetching: boolean;
+    accountAssetsInfo?: {
+      [key in NetworkType]?: TAccountAssetsInfoV2;
+    };
+  };
   accountBalance: {
     accountBalanceInfo?: {
       [key in NetworkType]?: string;
@@ -102,4 +142,5 @@ export type TAssetsState = {
     accountAssetsList: IAccountCryptoBoxAssetItem[];
     totalRecordCount: number;
   };
+  nftSectionUiType: 'Collections' | 'NFTs';
 };

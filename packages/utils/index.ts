@@ -201,12 +201,24 @@ export const formatChainInfoToShow = (
  * @param type
  * @returns
  */
-export const formatStr2EllipsisStr = (address = '', digit = 8, type: 'middle' | 'tail' = 'middle'): string => {
+export const formatStr2EllipsisStr = (
+  address = '',
+  digit = 8,
+  type: 'middle' | 'tail' = 'middle',
+  suffixDigit?: number,
+): string => {
   if (!address) return '';
 
   const len = address.length;
 
   if (type === 'tail') return len > digit ? `${address.slice(0, digit)}...` : address;
+
+  if (suffixDigit) {
+    if (len < digit + suffixDigit) return address;
+    const pre = address.substring(0, digit);
+    const suffix = address.substring(len - suffixDigit);
+    return `${pre}...${suffix}`;
+  }
 
   if (len < 2 * digit) return address;
   const pre = address.substring(0, digit);
@@ -233,12 +245,13 @@ export const formatAddress2NoPrefix = (address: string): string => {
  */
 export const isMainNet = (network: NetworkType): boolean => network === 'MAINNET';
 
-export const getAddressChainId = (toAddress: string, defaultChainId: ChainId) => {
+export const getAddressChainId = (toAddress: string, defaultChainId?: ChainId) => {
   if (!toAddress.includes('_')) return defaultChainId;
   const arr = toAddress.split('_');
+
   const addressChainId = arr[arr.length - 1];
   // no suffix
-  if (isAelfAddress(addressChainId)) {
+  if (isAelfAddress(addressChainId) && defaultChainId) {
     return defaultChainId;
   }
   return addressChainId;
@@ -275,7 +288,7 @@ export const handleLoopFetch = async <T>({
 }): Promise<T> => {
   try {
     const result = await fetch();
-    console.log('wfs=== handleLoopFetch result', result);
+    console.log('=== handleLoopFetch result', result);
     if (checkIsContinue) {
       const isContinue = checkIsContinue(result);
       if (!isContinue) return result;
@@ -325,6 +338,16 @@ export const formatNameWithRules = (
   });
   return result;
 };
+export const formatNameWithNoUnderline = (tokenName?: string) => {
+  if (!tokenName) return '';
+  return formatNameWithRules(tokenName, [FormatNameRuleList.NO_UNDERLINE]);
+};
+
+export const truncateString = (str = '', maxLength = 6) => {
+  if (!str) return '';
+  return str.length > maxLength ? str.slice(0, maxLength) + '...' : str;
+};
+
 const DEFAULT_USER_ID = '00000000-0000-0000-0000-000000000000';
 export function isValidUserId(id?: string): boolean {
   if (!id) {

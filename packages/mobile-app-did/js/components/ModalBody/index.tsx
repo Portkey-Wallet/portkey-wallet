@@ -4,23 +4,26 @@ import { Keyboard, View, ViewProps } from 'react-native';
 import { StyleSheet } from 'react-native';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { pTd } from 'utils/unit';
-import { defaultColors } from 'assets/theme';
-import { TextXL } from 'components/CommonText';
+import { darkColors, defaultColors } from 'assets/theme';
+import { TextTitle } from 'components/CommonText';
 import Svg from 'components/Svg';
 import GStyles from 'assets/theme/GStyles';
-import fonts from 'assets/theme/fonts';
 import { useGStyles } from 'assets/theme/useGStyles';
 import ButtonRow from 'components/ButtonRow';
 import { CommonButtonProps } from 'components/CommonButton';
 import { ViewStyleType } from 'types/styles';
+import { makeStyles } from '@rneui/themed';
 
 export interface ModalBodyProps extends ViewProps {
   title?: string;
-  isShowLeftBackIcon?: boolean;
+  leftTitleDom?: React.ReactNode;
   preventBack?: boolean;
+  isShowLeftBackIcon?: boolean;
   isShowRightCloseIcon?: boolean;
+  isMaxHeight?: boolean;
   modalBodyType?: 'center' | 'bottom';
   style?: ViewStyleType;
+  topWrapStyle?: ViewStyleType;
   onClose?: () => void;
   onBack?: () => void;
   onTouchStart?: () => void;
@@ -37,47 +40,68 @@ export const ModalBody: React.FC<ModalBodyProps> = props => {
   const {
     modalBodyType,
     isShowRightCloseIcon = true,
-    isShowLeftBackIcon = false,
-    preventBack = false,
     title = '',
+    leftTitleDom,
     children,
     style = {},
-    onBack,
+    topWrapStyle,
     onClose,
     bottomButtonGroup,
     onTouchStart,
+    isMaxHeight = false,
   } = props;
   const gStyles = useGStyles();
+  const styles = getStyles();
+
   if (modalBodyType === 'bottom') {
+    const showTopWrap = !!leftTitleDom || !!title || !!isShowRightCloseIcon;
     return (
-      <View onTouchStart={onTouchStart} style={[styles.commonBox, gStyles.overlayStyle, styles.wrapStyle, style]}>
-        <View style={styles.topWrap}>
-          {isShowLeftBackIcon && (
-            <View
-              style={styles.leftIcon}
-              pointerEvents="box-only"
-              onTouchStart={() => {
-                onBack?.();
-                Keyboard.dismiss();
-                !preventBack && OverlayModal.hide();
-              }}>
-              <Svg icon="left-arrow" size={pTd(20)} />
-            </View>
-          )}
-          <TextXL suppressHighlighting={true} style={[styles.titleStyle, fonts.mediumFont]} onPress={Keyboard.dismiss}>
-            {title}
-          </TextXL>
-          {isShowRightCloseIcon && (
-            <View
-              style={styles.closeIcon}
-              pointerEvents="box-only"
-              onTouchStart={() => {
-                onClose?.();
-                Keyboard.dismiss();
-                OverlayModal.hide();
-              }}>
-              <Svg icon="close3" size={pTd(20)} />
-            </View>
+      <View
+        onTouchStart={onTouchStart}
+        style={[
+          styles.commonBox,
+          gStyles.overlayStyle,
+          isMaxHeight && gStyles.overlayStyleMaxHeight,
+          styles.wrapStyle,
+          style,
+        ]}>
+        <View style={[styles.topWrap, topWrapStyle]}>
+          <View style={styles.slot} />
+          {/* {isShowLeftBackIcon && (
+              <View
+                style={styles.leftIcon}
+                pointerEvents="box-only"
+                onTouchStart={() => {
+                  onBack?.();
+                  Keyboard.dismiss();
+                  !preventBack && OverlayModal.hide();
+                }}>
+                <Svg icon="left-arrow" size={pTd(20)} />
+              </View>
+            )} */}
+          {showTopWrap && (
+            <>
+              {leftTitleDom ? (
+                leftTitleDom
+              ) : (
+                <TextTitle suppressHighlighting={true} style={styles.titleStyle} onPress={Keyboard.dismiss}>
+                  {title}
+                </TextTitle>
+              )}
+
+              {isShowRightCloseIcon && (
+                <View
+                  style={styles.closeIcon}
+                  pointerEvents="box-only"
+                  onTouchStart={() => {
+                    onClose?.();
+                    Keyboard.dismiss();
+                    OverlayModal.hide();
+                  }}>
+                  <Svg icon="close3" size={pTd(20)} color={darkColors.iconBase1} />
+                </View>
+              )}
+            </>
           )}
         </View>
         {children}
@@ -96,15 +120,15 @@ export const ModalBody: React.FC<ModalBodyProps> = props => {
   return <View style={[styles.commonBox, styles.centerBox, style]}>{children}</View>;
 };
 
-export const styles = StyleSheet.create({
+export const getStyles = makeStyles(theme => ({
   commonBox: {
     overflow: 'hidden',
-    borderRadius: 10,
-    backgroundColor: 'white',
+    backgroundColor: darkColors.bgBase1,
   },
   wrapStyle: {
     width: screenWidth,
   },
+
   centerBox: {
     width: screenWidth * 0.85,
   },
@@ -113,6 +137,15 @@ export const styles = StyleSheet.create({
     paddingTop: pTd(16),
     paddingBottom: pTd(16),
   },
+  slot: {
+    width: pTd(32),
+    height: pTd(3),
+    position: 'absolute',
+    top: pTd(6),
+    left: pTd(180.5),
+    backgroundColor: darkColors.bgBase3,
+    borderRadius: pTd(1),
+  },
   leftIcon: {
     ...GStyles.paddingArg(17, 20),
     position: 'absolute',
@@ -120,9 +153,8 @@ export const styles = StyleSheet.create({
     zIndex: 10000,
   },
   titleStyle: {
-    lineHeight: pTd(22),
+    paddingLeft: pTd(16),
     width: '100%',
-    textAlign: 'center',
   },
   closeIcon: {
     position: 'absolute',
@@ -134,6 +166,7 @@ export const styles = StyleSheet.create({
     padding: pTd(8),
     justifyContent: 'center',
     alignItems: 'center',
+    color: darkColors.iconBase1,
   },
   headerRow: {
     paddingTop: pTd(14),
@@ -149,16 +182,14 @@ export const styles = StyleSheet.create({
     width: pTd(48),
   },
   buttonGroup: {
-    backgroundColor: defaultColors.bg1,
-    position: 'absolute',
-    bottom: 0,
-    ...GStyles.paddingArg(10, 20, 16, 20),
+    ...GStyles.paddingArg(0, 16, 14, 16),
+    backgroundColor: theme.colors.bgBase1,
   },
   buttonStyle: {
     height: pTd(48),
-    fontSize: pTd(18),
+    fontSize: pTd(16),
   },
   buttonTitleStyle: {
     fontSize: pTd(16),
   },
-});
+}));

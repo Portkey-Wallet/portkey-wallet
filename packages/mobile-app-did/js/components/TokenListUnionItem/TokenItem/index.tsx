@@ -1,34 +1,79 @@
-import { formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
-import { defaultColors } from 'assets/theme';
+import { formatAmountUSDShow, formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
+import { darkColors } from 'assets/theme';
 import { TextM } from 'components/CommonText';
+import CommonAvatar from 'components/CommonAvatar';
 import Touchable from 'components/Touchable';
 import React, { memo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { pTd } from 'utils/unit';
-import { formatChainInfoToShow } from '@portkey-wallet/utils';
-import Svg from 'components/Svg';
+import { FontStyles } from 'assets/theme/styles';
+import GStyles from 'assets/theme/GStyles';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import fonts from 'assets/theme/fonts';
+import { ViewStyleType, TextStyleType } from 'types/styles';
+import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 
 interface TokenListItemType {
+  wrapStyle?: ViewStyleType;
+  balanceTextStyle?: TextStyleType;
+  balanceInUseTextStyle?: TextStyleType;
   item: TokenItemShowType;
   onPress?: (item: TokenItemShowType) => void;
   hideBalance?: boolean;
-  showTopSeparator?: boolean;
 }
 
 const TokenItem: React.FC<TokenListItemType> = props => {
-  const { onPress, item, hideBalance = false, showTopSeparator } = props;
+  const { onPress, item, hideBalance = false, wrapStyle, balanceTextStyle, balanceInUseTextStyle } = props;
+  const isMainnet = useIsMainnet();
   const { currentNetwork } = useWallet();
-
   return (
-    <Touchable style={[itemStyle.wrap, showTopSeparator && { marginTop: pTd(4) }]} onPress={() => onPress?.(item)}>
-      <TextM style={itemStyle.chainText}>{formatChainInfoToShow(item.chainId, currentNetwork)}</TextM>
+    <Touchable style={[itemStyle.wrap, wrapStyle]} onPress={() => onPress?.(item)}>
+      <View style={itemStyle.left}>
+        <View style={itemStyle.iconWrap}>
+          <CommonAvatar
+            hasBorder
+            style={itemStyle.tokenIcon}
+            title={item?.symbol}
+            avatarSize={pTd(40)}
+            imageUrl={item?.imageUrl}
+            svgName={item?.svgName}
+            titleStyle={FontStyles.font11}
+            borderStyle={GStyles.hairlineBorder}
+          />
+          <CommonAvatar
+            hasBorder={true}
+            style={itemStyle.chainIcon}
+            title={item?.displayChainName}
+            avatarSize={pTd(20)}
+            imageUrl={item?.chainImageUrl}
+            svgName={item?.chainSvgName}
+            borderStyle={itemStyle.tokenIconBorder}
+          />
+        </View>
+      </View>
       <View style={itemStyle.right}>
-        <TextM style={itemStyle.balanceText}>
-          {hideBalance ? '****' : formatTokenAmountShowWithDecimals(item.balance, item.decimals)}
-        </TextM>
-        <Svg icon="token_list_item_right" size={pTd(16)} />
+        <View style={itemStyle.rightTop}>
+          <TextM numberOfLines={1} ellipsizeMode={'tail'} style={itemStyle.symbolText}>
+            {item.label || item.symbol}
+          </TextM>
+          <TextM numberOfLines={1} ellipsizeMode={'tail'} style={[itemStyle.balanceText, balanceTextStyle]}>
+            {hideBalance ? '******' : formatTokenAmountShowWithDecimals(item.balance, item.decimals)}
+          </TextM>
+        </View>
+        <View style={itemStyle.rightBottom}>
+          {item.displayChainName && (
+            <TextM numberOfLines={1} ellipsizeMode={'tail'} style={itemStyle.chainText}>
+              {formatChainInfoToShow(item.chainId, currentNetwork, item.displayChainName)}
+            </TextM>
+          )}
+          {item.balanceInUsd && isMainnet && (
+            <TextM numberOfLines={1} ellipsizeMode={'tail'} style={[itemStyle.balanceInUseText, balanceInUseTextStyle]}>
+              {hideBalance ? '******' : formatAmountUSDShow(item.balanceInUsd)}
+            </TextM>
+          )}
+        </View>
       </View>
     </Touchable>
   );
@@ -38,27 +83,76 @@ export default memo(TokenItem);
 
 const itemStyle = StyleSheet.create({
   wrap: {
-    height: pTd(48),
+    height: pTd(74),
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: defaultColors.neutralContainerBG,
     borderRadius: pTd(8),
     marginHorizontal: pTd(16),
-    paddingHorizontal: pTd(12),
+    paddingLeft: pTd(16),
   },
-  chainText: {
-    color: defaultColors.font18,
-  },
-  right: {
-    height: pTd(72),
-    marginLeft: pTd(10),
-    display: 'flex',
+  left: {
     flexDirection: 'row',
     alignItems: 'center',
   },
+  iconWrap: {
+    width: pTd(45),
+    height: pTd(42),
+    position: 'relative',
+  },
+  tokenIcon: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+  },
+  tokenIconBorder: {
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: darkColors.borderBase1,
+  },
+  chainIcon: {
+    position: 'absolute',
+    right: 0,
+    bottom: 0,
+    borderWidth: pTd(1),
+    borderColor: darkColors.borderBase1,
+  },
+  symbolText: {
+    fontSize: pTd(16),
+    lineHeight: pTd(22),
+    marginLeft: pTd(8),
+    color: darkColors.textBase1,
+  },
+  chainText: {
+    fontSize: pTd(14),
+    lineHeight: pTd(20),
+    marginLeft: pTd(8),
+    color: darkColors.textBase2,
+  },
+  right: {
+    flex: 1,
+    height: pTd(42),
+    flexDirection: 'column',
+  },
+  rightTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  rightBottom: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
   balanceText: {
-    color: defaultColors.primaryTextColor,
+    fontSize: pTd(16),
+    lineHeight: pTd(18),
+    color: darkColors.textBase1,
+    ...fonts.SGMediumFont,
+  },
+  balanceInUseText: {
+    fontSize: pTd(14),
+    lineHeight: pTd(20),
+    color: darkColors.textBase2,
   },
 });

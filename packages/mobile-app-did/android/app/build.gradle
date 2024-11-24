@@ -216,8 +216,7 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 430
-        versionName "2.5.0"
-//        buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
+        versionName "3.0.0"
 
 //        if (isNewArchitectureEnabled()) {
 //            // We configure the NDK build only if you decide to opt-in for the New Architecture.

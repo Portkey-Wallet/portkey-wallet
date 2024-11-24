@@ -15,7 +15,7 @@ export const NEW_CLIENT_MOCK_ELF_LIST: ITokenSectionResponse[] = [
     balanceInUsd: '0.000000',
     price: 0,
     decimals: 8,
-    imageUrl: 'https://portkey-did.s3.ap-northeast-1.amazonaws.com/img/aelf_token_logo.png',
+    imageUrl: 'https://portkey-did.s3.ap-northeast-1.amazonaws.com/img/aelf/Coin-ELF.png',
     symbol: 'ELF',
     tokens: [
       {
@@ -24,7 +24,7 @@ export const NEW_CLIENT_MOCK_ELF_LIST: ITokenSectionResponse[] = [
         balanceInUsd: '0.000000',
         chainId: 'AELF',
         decimals: 8,
-        imageUrl: 'https://portkey-did.s3.ap-northeast-1.amazonaws.com/img/aelf_token_logo.png',
+        imageUrl: 'https://portkey-did.s3.ap-northeast-1.amazonaws.com/img/aelf/Coin-ELF.png',
         symbol: 'ELF',
         tokenContractAddress: 'JRmBduh4nXWi1aXgdUsj5gJrzeZb2LxmrAbf7W99faZSvoAaE',
       },
@@ -32,7 +32,7 @@ export const NEW_CLIENT_MOCK_ELF_LIST: ITokenSectionResponse[] = [
   },
 ];
 
-export const PAGE_SIZE_IN_NFT_ITEM = 9;
+export const PAGE_SIZE_IN_NFT_ITEM = 15;
 
 export const PAGE_SIZE_IN_ACCOUNT_NFT_COLLECTION = 20;
 
@@ -46,6 +46,7 @@ export const ELF_SYMBOL = 'ELF';
 
 export const NFT_SMALL_SIZE = 144;
 export const NFT_MIDDLE_SIZE = 294;
+export const NFT_MIDDLE_X_SIZE = 512;
 export const NFT_LARGE_SIZE = 1008;
 
 export enum BalanceTab {

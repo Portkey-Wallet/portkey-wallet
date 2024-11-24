@@ -59,10 +59,10 @@ const TokenListItem: React.FC<TokenListItemType> = props => {
         {!noBalanceShow && (
           <View style={itemStyle.balanceWrap}>
             <TextL style={itemStyle.token} numberOfLines={1} ellipsizeMode={'tail'}>
-              {hideBalance ? '****' : formatTokenAmountShowWithDecimals(item.balance, item.decimals)}
+              {hideBalance ? '******' : formatTokenAmountShowWithDecimals(item.balance, item.decimals)}
             </TextL>
             <TextS numberOfLines={1} ellipsizeMode={'tail'} style={itemStyle.dollar}>
-              {isMainnet && (hideBalance && item.balanceInUsd ? '****' : formatAmountUSDShow(item.balanceInUsd))}
+              {isMainnet && (hideBalance && item.balanceInUsd ? '******' : formatAmountUSDShow(item.balanceInUsd))}
             </TextS>
           </View>
         )}

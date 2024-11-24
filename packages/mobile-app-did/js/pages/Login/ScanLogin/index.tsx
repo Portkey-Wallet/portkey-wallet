@@ -3,17 +3,14 @@ import PageContainer from 'components/PageContainer';
 import Svg from 'components/Svg';
 import { pTd } from 'utils/unit';
 import { StyleSheet, View } from 'react-native';
-import { defaultColors } from 'assets/theme';
-import { FontStyles } from 'assets/theme/styles';
 import Touchable from 'components/Touchable';
 import navigationService from 'utils/navigationService';
-import { TextXXXL } from 'components/CommonText';
-import GStyles from 'assets/theme/GStyles';
+import { TextH1 } from 'components/CommonText';
 import CommonButton from 'components/CommonButton';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { LoginQRData } from '@portkey-wallet/types/types-ca/qrcode';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import CommonToast from 'components/CommonToast';
+import CommonPrompt from 'components/CommonPromptCard';
 import { useGetCurrentCAContract } from 'hooks/contract';
 import { addManager } from 'utils/wallet';
 import { extraDataEncode, getDeviceInfoFromQR } from '@portkey-wallet/utils/device';
@@ -44,13 +41,15 @@ export default function ScanLogin() {
   });
 
   const onLogin = useCallback(async () => {
-    if (!caHash || loading || !managerAddress) return;
+    if (!caHash || loading || !managerAddress) {
+      return;
+    }
     setLoading(true);
     try {
       if (targetClientId) {
         const isQRCodeExist = await checkQRCodeExist(targetClientId);
         if (isQRCodeExist === false) {
-          CommonToast.warn('The QR code has already been scanned by another device.');
+          CommonPrompt.warn('The QR code has already been scanned by another device.');
           setLoading(false);
           return;
         }
@@ -64,7 +63,9 @@ export default function ScanLogin() {
       const contract = await getCurrentCAContract();
       const extraData = await extraDataEncode(deviceInfo || {}, true);
       const req = await addManager({ contract, caHash, address, managerAddress, extraData });
-      if (req?.error) throw req?.error;
+      if (req?.error) {
+        throw req?.error;
+      }
       managerSpeed({ caHash, address, managerAddress, extraData });
       socket.doOpen({
         url: `${request.defaultConfig.baseURL}/ca`,
@@ -72,7 +73,7 @@ export default function ScanLogin() {
       });
       navigationService.navigate('Tab');
     } catch (error) {
-      CommonToast.failError(error);
+      CommonPrompt.failError(error);
     }
     setLoading(false);
   }, [caHash, loading, managerAddress, targetClientId, qrExtraData, deviceType, getCurrentCAContract, address]);
@@ -80,20 +81,15 @@ export default function ScanLogin() {
     <PageContainer
       scrollViewProps={ScrollViewProps}
       titleDom
-      leftDom
       containerStyles={styles.containerStyles}
-      leftCallback={() => navigationService.navigate('Tab')}
-      rightDom={
+      leftDom={
         <Touchable onPress={() => navigationService.navigate('Tab')}>
-          <Svg size={pTd(14)} color={FontStyles.font3.color} icon="close" iconStyle={styles.svgStyle} />
+          <Svg size={pTd(16)} icon="close4" iconStyle={styles.svgStyle} />
         </Touchable>
       }>
-      <View style={GStyles.itemCenter}>
-        <Svg size={pTd(100)} icon="logo-icon" color={defaultColors.primaryColor} />
-        <TextXXXL style={[styles.title, GStyles.textAlignCenter]}>Confirm Your Log In To Portkey</TextXXXL>
-      </View>
+      <TextH1 style={styles.title}>Confirm your login to Portkey</TextH1>
       <View style={styles.bottomBox}>
-        <CommonButton type="primary" title="Log In" onPress={onLogin} loading={loading} />
+        <CommonButton type="primary" title="Confirm" onPress={onLogin} loading={loading} />
         <CommonButton
           buttonStyle={styles.cancelButtonStyle}
           type="clear"
@@ -109,11 +105,11 @@ const styles = StyleSheet.create({
   containerStyles: {
     justifyContent: 'space-between',
     paddingBottom: 32,
-    paddingTop: 100,
+    paddingTop: 24,
     alignItems: 'center',
   },
   title: {
-    marginTop: 41,
+    alignSelf: 'flex-start',
   },
   bottomBox: {
     width: '100%',
@@ -124,6 +120,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   svgStyle: {
-    paddingRight: pTd(24),
+    paddingLeft: pTd(18),
   },
 });

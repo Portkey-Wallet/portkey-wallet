@@ -1,30 +1,31 @@
-import { IUserTokenItemResponse } from '@portkey-wallet/types/types-ca/token';
+import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import { StyleSheet } from 'react-native';
 import gStyles from 'assets/theme/GStyles';
-import { defaultColors } from 'assets/theme';
+import { darkColors, defaultColors } from 'assets/theme';
 import React, { useCallback } from 'react';
 import { FlatList } from 'react-native';
 import { pTd } from 'utils/unit';
 import { useLanguage } from 'i18n/hooks';
 import TokenItem from '../TokenItem';
-import { TextL, TextM } from 'components/CommonText';
+import { TextL } from 'components/CommonText';
 import CommonButton from 'components/CommonButton';
 import navigationService from 'utils/navigationService';
 import Svg from 'components/Svg';
+import fonts from 'assets/theme/fonts';
 
 enum TipsEnum {
-  NO_RESULT = 'There is no search result.',
-  TRY = "Can't find your token? Please try below.",
+  NO_RESULT = 'No tokens available',
+  TRY = "Don't see your token?",
 }
 
 interface IFilterTokenSectionProps {
-  tokenList: any[];
-  onHandleTokenItem: (item: any, added: boolean) => void;
-  onEditToken?: (item: IUserTokenItemResponse) => void;
+  tokenList: TokenItemShowType[];
+  isSearch?: boolean;
+  onHandleTokenItem: (item: TokenItemShowType, added: boolean) => void;
 }
 
 const FilterTokenSection: React.FC<IFilterTokenSectionProps> = (props: IFilterTokenSectionProps) => {
-  const { tokenList, onHandleTokenItem, onEditToken } = props;
+  const { tokenList, onHandleTokenItem, isSearch } = props;
 
   const { t } = useLanguage();
 
@@ -37,8 +38,8 @@ const FilterTokenSection: React.FC<IFilterTokenSectionProps> = (props: IFilterTo
           containerStyle={customTokenTipsStyle.addButtonWrap}
           buttonStyle={customTokenTipsStyle.addButton}
           onPress={() => navigationService.navigate('CustomToken')}>
-          <Svg icon="add1" size={pTd(16)} color={defaultColors.icon2} />
-          <TextM style={customTokenTipsStyle.addText}>{t('Custom Token')}</TextM>
+          <Svg icon="add1" size={pTd(16)} color={darkColors.iconBrand4} />
+          <TextL style={[customTokenTipsStyle.addText, fonts.SGMediumFont]}>{t('Import token')}</TextL>
         </CommonButton>
       </>
     ),
@@ -49,12 +50,12 @@ const FilterTokenSection: React.FC<IFilterTokenSectionProps> = (props: IFilterTo
     <FlatList
       style={pageStyles.list}
       data={tokenList || []}
-      ListEmptyComponent={() => CustomTokenTips(TipsEnum.NO_RESULT)}
+      ListEmptyComponent={() => (isSearch ? <></> : CustomTokenTips(TipsEnum.NO_RESULT))}
       ListFooterComponent={() => (tokenList?.length > 0 ? CustomTokenTips(TipsEnum.TRY) : null)}
-      renderItem={({ item }: { item: IUserTokenItemResponse }) => (
-        <TokenItem item={item} onHandleToken={onHandleTokenItem} onEditToken={onEditToken} />
+      renderItem={({ item }: { item: TokenItemShowType }) => (
+        <TokenItem item={item} onHandleToken={() => onHandleTokenItem(item, !item?.isAdded)} />
       )}
-      keyExtractor={(item: IUserTokenItemResponse) => item?.symbol}
+      keyExtractor={(item: TokenItemShowType) => `${item?.symbol}_${item?.chainId}`}
     />
   );
 };
@@ -77,14 +78,14 @@ export const pageStyles = StyleSheet.create({
 
 export const customTokenTipsStyle = StyleSheet.create({
   tips: {
-    color: defaultColors.font7,
-    marginTop: pTd(96),
+    color: darkColors.textBase2,
+    marginTop: pTd(24),
     textAlign: 'center',
   },
   addButtonWrap: {
-    marginTop: pTd(24),
+    marginTop: pTd(16),
     width: '100%',
-    height: pTd(44),
+    height: pTd(40),
     display: 'flex',
     justifyContent: 'flex-end',
     alignItems: 'center',
@@ -92,14 +93,15 @@ export const customTokenTipsStyle = StyleSheet.create({
   addButton: {
     paddingLeft: pTd(16),
     paddingRight: pTd(16),
-    borderRadius: pTd(6),
-    height: pTd(44),
+    borderRadius: pTd(20),
+    height: pTd(40),
+    backgroundColor: darkColors.bgBrand1,
   },
   addText: {
     marginLeft: pTd(8),
-    color: defaultColors.font2,
+    color: darkColors.textBrand4,
   },
   try: {
-    marginTop: pTd(32),
+    marginTop: pTd(24),
   },
 });

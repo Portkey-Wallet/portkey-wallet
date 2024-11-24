@@ -1,3 +1,4 @@
+import { IconName } from 'components/Svg';
 import { ChainId, NetworkType } from '..';
 import { ChainItemType } from '../chain';
 import { AccountType } from '../wallet';
@@ -32,6 +33,8 @@ export interface TokenItemShowType extends TokenItemType {
   isAdded?: boolean; // boolean
   tokenContractAddress?: string;
   imageUrl?: string;
+  svgName?: IconName;
+  chainSvgName?: IconName;
   balance?: string;
   balanceInUsd?: string;
   price?: string | number;
@@ -40,6 +43,7 @@ export interface TokenItemShowType extends TokenItemType {
 export type IUserTokenItem = Omit<TokenItemShowType, 'name' | 'address'> & { isDisplay?: boolean; address?: string };
 
 export type ITokenSectionResponse = {
+  chainId?: string;
   symbol: string;
   price?: number;
   balance?: string;
@@ -61,6 +65,8 @@ export type IUserTokenItemResponse = {
   isDefault?: boolean;
   displayStatus?: 'All' | 'Partial' | 'None';
   tokens?: IUserTokenItem[];
+  chainImageUrl?: string;
+  displayChainName?: string;
 };
 
 export type UserTokenItemTokenType = Omit<BaseToken, 'name'> & { chainId: string };

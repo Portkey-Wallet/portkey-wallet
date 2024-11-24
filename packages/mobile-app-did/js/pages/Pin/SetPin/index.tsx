@@ -11,8 +11,9 @@ import myEvents from 'utils/deviceEvent';
 import { AElfWallet } from '@portkey-wallet/types/aelf';
 import PinContainer from 'components/PinContainer';
 import { GuardiansApproved } from 'pages/Guardian/types';
-import { StyleSheet } from 'react-native';
+import { makeStyles } from '@rneui/themed';
 import { useCheckRouteExistInRouteStack } from 'hooks/route';
+import { usePreventHardwareBack } from '@portkey-wallet/hooks/mobile';
 
 type RouterParams = {
   oldPin?: string;
@@ -22,6 +23,7 @@ type RouterParams = {
   verifierInfo?: VerifierInfo;
   guardiansApproved?: GuardiansApproved;
   autoLogin?: boolean;
+  isBackHide?: boolean;
 };
 
 const scrollViewProps = {
@@ -39,18 +41,19 @@ const RouterMap: any = {
   [VerificationType.addManager]: 'LoginPortkey',
 };
 export default function SetPin() {
-  const { oldPin, managerInfo, caInfo, walletInfo, verifierInfo, guardiansApproved, autoLogin } =
+  const styles = getStyles();
+  const { oldPin, managerInfo, caInfo, walletInfo, verifierInfo, guardiansApproved, autoLogin, isBackHide } =
     useRouterParams<RouterParams>();
   const digitInput = useRef<DigitInputInterface>();
-
   const checkRouteExistInRouteStack = useCheckRouteExistInRouteStack();
+  usePreventHardwareBack();
 
   useEffectOnce(() => {
     const listener = myEvents.clearSetPin.addListener(() => digitInput.current?.reset());
     return () => listener.remove();
   });
   const leftCallback = useCallback(() => {
-    if (!oldPin && managerInfo && managerInfo.verificationType !== VerificationType.communityRecovery)
+    if (!oldPin && managerInfo && managerInfo.verificationType !== VerificationType.communityRecovery) {
       return ActionSheet.alert({
         title: 'Leave this page?',
         message: MessageMap[managerInfo.verificationType],
@@ -59,11 +62,16 @@ export default function SetPin() {
           {
             title: 'Yes',
             onPress: () => {
-              if (managerInfo.verificationType === VerificationType.addManager) myEvents.clearQRWallet.emit();
+              if (managerInfo.verificationType === VerificationType.addManager) {
+                myEvents.clearQRWallet.emit();
+              }
               if (managerInfo.verificationType === VerificationType.register) {
-                const isSignUpPageExist = checkRouteExistInRouteStack('SignupPortkey');
-                if (isSignUpPageExist) {
-                  navigationService.navigate('SignupPortkey');
+                const isLoginEmailExist = checkRouteExistInRouteStack('LoginEmail');
+                const isSignUpEmailPageExist = checkRouteExistInRouteStack('SignUpEmail');
+                if (isLoginEmailExist) {
+                  navigationService.navigate('LoginEmail');
+                } else if (isSignUpEmailPageExist) {
+                  navigationService.navigate('SignUpEmail');
                 } else {
                   navigationService.navigate('LoginPortkey');
                 }
@@ -74,24 +82,28 @@ export default function SetPin() {
           },
         ],
       });
+    }
 
-    if (!autoLogin && managerInfo && MessageMap[managerInfo.verificationType])
+    if (!autoLogin && managerInfo && MessageMap[managerInfo.verificationType]) {
       return navigationService.navigate(RouterMap[managerInfo.verificationType]);
+    }
 
     navigationService.goBack();
   }, [autoLogin, checkRouteExistInRouteStack, managerInfo, oldPin]);
+
   return (
     <PageContainer
       scrollViewProps={scrollViewProps}
       titleDom
+      noLeftDom={isBackHide}
       type="leftBack"
-      backTitle={oldPin ? 'Change Pin' : undefined}
       leftCallback={leftCallback}
+      notHandleHardwareBackPress
       containerStyles={styles.container}>
       <PinContainer
         showHeader
         ref={digitInput}
-        title={oldPin ? 'Please enter a new pin' : 'Enter pin to protect your device'}
+        title={oldPin ? 'Create a new PIN to protect your wallet' : 'Create a PIN to protect your wallet'}
         onFinish={pin => {
           navigationService.navigate('ConfirmPin', {
             oldPin,
@@ -108,8 +120,8 @@ export default function SetPin() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = makeStyles(_theme => ({
   container: {
     flex: 1,
   },
-});
+}));

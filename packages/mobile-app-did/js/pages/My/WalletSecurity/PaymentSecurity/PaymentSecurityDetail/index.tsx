@@ -1,13 +1,12 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import PageContainer from 'components/PageContainer';
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 import { defaultColors } from 'assets/theme';
-import GStyles from 'assets/theme/GStyles';
-
+import CustomSwitch from 'components/CustomSwitch';
 import { ITransferLimitItem } from '@portkey-wallet/types/types-ca/paymentSecurity';
 import CommonButton from 'components/CommonButton';
 import navigationService from 'utils/navigationService';
-import { TextM } from 'components/CommonText';
+import { TextL, TextM, TextS } from 'components/CommonText';
 import { FontStyles } from 'assets/theme/styles';
 import { pTd } from 'utils/unit';
 import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/native';
@@ -16,6 +15,17 @@ import { useGetTransferLimit } from '@portkey-wallet/hooks/hooks-ca/security';
 import { useLatestRef } from '@portkey-wallet/hooks';
 import { useGetCurrentCAContract } from 'hooks/contract';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
+import { ApprovalType } from '@portkey-wallet/types/verifier';
+import CommonAvatar from 'components/CommonAvatar';
+import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
+import GStyles from 'assets/theme/GStyles';
+import { formatChainInfoToShow } from '@portkey-wallet/utils';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import OverlayModal from 'components/OverlayModal';
+import EditModal from '../components/EditModal';
+import { makeStyles, useTheme } from '@rneui/themed';
+import fonts from 'assets/theme/fonts';
 
 interface RouterParams {
   transferLimitDetail?: ITransferLimitItem;
@@ -25,8 +35,9 @@ const PaymentSecurityDetail: React.FC = () => {
   const {
     params: { transferLimitDetail },
   } = useRoute<RouteProp<{ params: RouterParams }>>();
+  const pageStyles = getStyles();
+  const { theme } = useTheme();
   const [detail, setDetail] = useState<ITransferLimitItem | undefined>(transferLimitDetail);
-
   const getCurrentCAContract = useGetCurrentCAContract(transferLimitDetail?.chainId);
   const getTransferLimit = useGetTransferLimit();
 
@@ -48,6 +59,7 @@ const PaymentSecurityDetail: React.FC = () => {
         symbol: transferLimitDetail?.symbol || '',
       });
       if (result) {
+        console.log('PaymentSecurityDetail: getDetail', result);
         setDetail(pre => {
           if (pre) {
             return {
@@ -72,7 +84,9 @@ const PaymentSecurityDetail: React.FC = () => {
   );
 
   const detailFormatted = useMemo(() => {
-    if (!detail) return undefined;
+    if (!detail) {
+      return undefined;
+    }
     return {
       ...detail,
       singleLimit: divDecimalsToShow(detail.singleLimit, detail.decimals),
@@ -80,48 +94,87 @@ const PaymentSecurityDetail: React.FC = () => {
     };
   }, [detail]);
 
+  const onRestrictedChange = useCallback((value: boolean) => {
+    if (!value) {
+      // close
+      navigationService.navigate('GuardianApproval', {
+        approvalType: ApprovalType.modifyTransferLimit,
+        transferLimitDetail: {
+          chainId: detail?.chainId,
+          symbol: detail?.symbol,
+          singleLimit: '-1',
+          dailyLimit: '-1',
+          restricted: false,
+          decimals: detail?.decimals,
+        },
+        targetChainId: detail?.chainId,
+      });
+    } else {
+      OverlayModal.show(<EditModal detail={detail} />, {
+        position: 'bottom',
+      });
+    }
+  }, []);
+
+  const defaultToken = useDefaultToken();
+  const symbolImages = useSymbolImages();
+  const { networkType } = useCurrentNetworkInfo();
+
   return (
     <PageContainer
-      titleDom={'Transfer Settings'}
-      safeAreaColor={['white', 'gray']}
+      titleDom={'Transaction Limits'}
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}>
       <View>
+        <View style={pageStyles.infoWrap}>
+          <CommonAvatar
+            hasBorder
+            shapeType="circular"
+            title={detailFormatted?.symbol}
+            svgName={detailFormatted?.symbol === defaultToken.symbol ? 'elf-icon' : undefined}
+            imageUrl={detailFormatted?.imageUrl || symbolImages[detailFormatted?.symbol || '']}
+            avatarSize={pTd(80)}
+            titleStyle={FontStyles.font11}
+            borderStyle={GStyles.hairlineBorder}
+          />
+          <View style={pageStyles.infoContent}>
+            <TextL style={pageStyles.symbolLabel}>{detailFormatted?.symbol || ''}</TextL>
+            <TextM style={FontStyles.font7}>{formatChainInfoToShow(detailFormatted?.chainId, networkType)}</TextM>
+          </View>
+        </View>
+        <View style={pageStyles.switchWrap}>
+          <View style={pageStyles.switchContainer}>
+            <TextM style={pageStyles.switchLeft}>Transaction limits</TextM>
+            <CustomSwitch value={detailFormatted?.restricted || false} onToggle={onRestrictedChange} />
+          </View>
+          <TextS style={{ color: theme.colors.textBase2, fontSize: pTd(14), lineHeight: pTd(20) }}>
+            Transactions over the limit require you to modify the limit settings with guardian approval.
+          </TextS>
+        </View>
         {detailFormatted?.restricted ? (
           <>
             <View style={pageStyles.labelWrap}>
-              <TextM>Limit per Transaction</TextM>
-              <TextM style={FontStyles.font3}>{`${detailFormatted?.singleLimit || ''} ${
+              <TextM style={pageStyles.labelText}>Limit per Transaction</TextM>
+              <TextM style={pageStyles.contentText}>{`${detailFormatted?.singleLimit || ''} ${
                 detailFormatted?.symbol || ''
               }`}</TextM>
             </View>
             <View style={pageStyles.labelWrap}>
-              <TextM>Daily Limit</TextM>
-              <TextM style={FontStyles.font3}>{`${detailFormatted?.dailyLimit || ''} ${
+              <TextM style={pageStyles.labelText}>Daily Limit</TextM>
+              <TextM style={pageStyles.contentText}>{`${detailFormatted?.dailyLimit || ''} ${
                 detailFormatted?.symbol || ''
               }`}</TextM>
             </View>
-            <TextM style={FontStyles.font3}>
-              {
-                'Transfers exceeding the limits cannot be conducted unless you modify the limit settings first, which needs guardian approval.'
-              }
-            </TextM>
           </>
         ) : (
-          <>
-            <View style={pageStyles.labelWrap}>
-              <TextM>Transfer Settings</TextM>
-              <TextM style={FontStyles.font3}>Off</TextM>
-            </View>
-            <TextM style={FontStyles.font3}>{'No limit for transfer'}</TextM>
-          </>
+          <></>
         )}
       </View>
       <CommonButton
         type="primary"
         onPress={() => {
-          navigationService.navigate('PaymentSecurityEdit', {
-            transferLimitDetail: detail,
+          OverlayModal.show(<EditModal detail={detail} />, {
+            position: 'bottom',
           });
         }}>
         Edit
@@ -130,23 +183,57 @@ const PaymentSecurityDetail: React.FC = () => {
   );
 };
 
-const pageStyles = StyleSheet.create({
+const getStyles = makeStyles(_ => ({
   pageWrap: {
     flex: 1,
-    backgroundColor: defaultColors.bg4,
     justifyContent: 'space-between',
-    ...GStyles.paddingArg(24, 20, 18),
+    paddingBottom: pTd(14),
   },
   labelWrap: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingHorizontal: pTd(16),
-    backgroundColor: defaultColors.bg1,
-    marginBottom: pTd(24),
-    height: pTd(56),
+    height: pTd(54),
     alignItems: 'center',
-    borderRadius: pTd(6),
   },
-});
+  labelText: {
+    fontSize: pTd(16),
+  },
+  contentText: {
+    fontSize: pTd(16),
+    ...fonts.mediumFont,
+  },
+  infoWrap: {
+    marginVertical: pTd(24),
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  infoContent: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: pTd(8),
+  },
+  symbolLabel: {
+    fontSize: pTd(16),
+  },
+  switchWrap: {
+    flexDirection: 'column',
+    paddingHorizontal: pTd(16),
+    paddingVertical: pTd(16),
+    backgroundColor: defaultColors.bg43,
+    marginBottom: pTd(12),
+    borderRadius: pTd(8),
+    height: pTd(100),
+  },
+  switchContainer: {
+    flexDirection: 'row',
+    height: pTd(24),
+    marginBottom: pTd(5),
+    alignItems: 'center',
+  },
+  switchLeft: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+}));
 
 export default PaymentSecurityDetail;

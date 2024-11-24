@@ -16,7 +16,6 @@ const ExpoBoostPath = path.resolve(__dirname, '../node_modules/expo-modules-core
 
 // modify rsa file
 const RSAPath = path.resolve(__dirname, '../../../node_modules/@portkey/utils/dist/commonjs/rsa.js');
-console.log('RSAPath is:', RSAPath);
 function fixStr(str, from, to) {
   if (!str.includes(from)) return str;
   return str.replace(from, to);

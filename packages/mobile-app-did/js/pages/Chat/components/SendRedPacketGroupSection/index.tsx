@@ -1,35 +1,37 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import GStyles from 'assets/theme/GStyles';
-import { StyleSheet, View } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
 import FormItem from 'components/FormItem';
 import CommonInput from 'components/CommonInput';
 import CommonButton from 'components/CommonButton';
-import { TextM, TextS } from 'components/CommonText';
-import Svg from 'components/Svg';
-import Touchable from 'components/Touchable';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import RedPacketAmountShow from '../RedPacketAmountShow';
-import CommonAvatar from 'components/CommonAvatar';
-import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
 import { RedPackageTypeEnum } from '@portkey-wallet/im';
 import { INIT_NONE_ERROR, ErrorType } from '@portkey-wallet/constants/constants-ca/common';
 import { useGetRedPackageConfig } from '@portkey-wallet/hooks/hooks-ca/im';
 import { ZERO } from '@portkey-wallet/constants/misc';
-import { convertAmountUSDShow, divDecimalsStr, timesDecimals } from '@portkey-wallet/utils/converter';
+import { divDecimals, divDecimalsStr, timesDecimals } from '@portkey-wallet/utils/converter';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import { RED_PACKAGE_DEFAULT_MEMO } from '@portkey-wallet/constants/constants-ca/im';
 import { FontStyles } from 'assets/theme/styles';
 import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { isEmojiString } from 'pages/Chat/utils';
 import { isPotentialNumber } from '@portkey-wallet/utils/reg';
-import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import CryptoAssetsListOverlay from '../CryptoAssetsListOverlay';
 import { AssetType } from '@portkey-wallet/constants/constants-ca/assets';
 import { ICryptoBoxAssetItemType } from '@portkey-wallet/types/types-ca/crypto';
-import NFTAvatar from 'components/NFTAvatar';
 import NewUserOnly from 'pages/CryptoGift/components/NewUserOnly';
+import { makeStyles, useTheme } from '@rneui/themed';
+import AmountCard from 'components/AmountCard';
+import { networkList } from 'constants/common';
+import { SourceDestinationItem } from 'pages/Receive/components/SourceDestinationPicker';
+import ModeChangeSelector from 'pages/DashBoard/componets/ModeChangeSelector';
+import { useCurrentNetwork as useCurrentNetworkType } from '@portkey-wallet/hooks/hooks-ca/network';
+import { IAccountCryptoBoxAssetItem } from '@portkey-wallet/types/types-ca/token';
+import { useAccountCryptoBoxAssetList } from '@portkey-wallet/hooks/hooks-ca/balances';
+import { merge } from 'lodash';
+import { useUpdateAssetInfo } from 'hooks/useGetSymbolBalance';
 
 export type TInputValue = {
   packetNum?: string;
@@ -40,6 +42,14 @@ export type TInputValue = {
 export type CryptoValuesType = TInputValue & {
   token: ICryptoBoxAssetItemType;
   isNewUserOnly?: boolean;
+  balance: string;
+  amountShowStr: string;
+  amountUsdShowStr: string;
+  tokenPrice?: string | number;
+};
+
+export type TCryptoBoxAssetItem = ICryptoBoxAssetItemType & {
+  chainImageUrl?: string;
 };
 
 export type SendRedPacketGroupSectionPropsType = {
@@ -52,35 +62,121 @@ export type SendRedPacketGroupSectionPropsType = {
 const AMOUNT_LABEL_MAP = {
   [RedPackageTypeEnum.P2P]: 'Amount',
   [RedPackageTypeEnum.FIXED]: 'Amount Each',
-  [RedPackageTypeEnum.RANDOM]: 'Total Amount',
+  [RedPackageTypeEnum.RANDOM]: 'Total amount',
 };
 
 export default function SendRedPacketGroupSection(props: SendRedPacketGroupSectionPropsType) {
-  const { type, groupMemberCount, isCryptoGift, onPressButton } = props;
+  const styles = getStyles();
+  const { theme } = useTheme();
+  // chain
+  const [destinationChain, setDestinationChain] = useState(networkList[0]);
+  const currentNetworkType = useCurrentNetworkType();
+  const destinationChainId = useMemo(() => {
+    return destinationChain.key === 'aelf dAppChain' ? (currentNetworkType === 'MAINNET' ? 'tDVV' : 'tDVW') : 'AELF';
+  }, [destinationChain, currentNetworkType]);
+
+  const { type, groupMemberCount, onPressButton } = props;
+  // token
   const { getTokenInfo } = useGetRedPackageConfig();
   const [tokenPriceObject] = useGetCurrentAccountTokenPrice();
-
   const isNewUserOnly = useRef<boolean>(true);
-
   const defaultToken = useDefaultToken(MAIN_CHAIN_ID);
-
-  const [selectToken, setSelectToken] = useState<ICryptoBoxAssetItemType>({
+  const [selectToken, setSelectToken] = useState<TCryptoBoxAssetItem>({
     ...defaultToken,
-    chainId: MAIN_CHAIN_ID,
+    chainId: destinationChainId,
     assetType: AssetType.ft,
+    chainImageUrl: destinationChain.imageUrl,
   });
+  useEffect(() => {
+    setSelectToken(prev => {
+      return { ...prev, chainId: destinationChainId, chainImageUrl: destinationChain.imageUrl };
+    });
+  }, [destinationChain, destinationChainId]);
+  // values
   const [values, setValues] = useState<TInputValue>({
     packetNum: '',
     count: '',
     memo: '',
   });
 
+  // balance
+  const accountAssetList = useAccountCryptoBoxAssetList();
+  const [assetMap] = useMemo(() => {
+    const currentSymbolList: IAccountCryptoBoxAssetItem[] = [];
+    const map: { [key: string]: IAccountCryptoBoxAssetItem } = accountAssetList.reduce((acc, item) => {
+      if (item?.symbol === selectToken?.symbol) {
+        currentSymbolList.push(item);
+        return merge(acc, { [item?.chainId]: item });
+      }
+      return acc;
+    }, {});
+    return [map];
+  }, [accountAssetList, selectToken?.symbol]);
+  const currentAssetInfo: IAccountCryptoBoxAssetItem | undefined = useMemo(() => {
+    if (assetMap?.[destinationChainId]) {
+      return assetMap?.[destinationChainId];
+    }
+    return accountAssetList.find(ele => ele.symbol === selectToken.symbol);
+  }, [accountAssetList, selectToken.symbol, assetMap, destinationChainId]);
+  const updateAssetInfo = useUpdateAssetInfo(destinationChainId, selectToken, currentAssetInfo);
+
+  // fee
+  // const calculateRedPacketFee = useCalculateRedPacketFee();
+  // const gasFee = useAsync(async () => {
+  //   const fee = calculateRedPacketFee({
+  //     symbol: selectToken.symbol,
+  //     chainId: selectToken.chainId,
+  //     decimals: selectToken.decimals,
+  //     count: values.count,
+  //   });
+  //   return fee;
+  // }, [calculateRedPacketFee, selectToken.symbol, selectToken.chainId, selectToken.decimals]);
+
+  // token price
   const tokenPrice = useMemo<string | number | undefined>(
     () => tokenPriceObject?.[selectToken.symbol],
     [tokenPriceObject, selectToken.symbol],
   );
+  const amountUsd = useMemo(() => {
+    return `$${ZERO.plus(values.count.trim() || 0)
+      .times(tokenPrice || 0)
+      .dp(2)
+      .toFixed()}`;
+  }, [values, tokenPrice]);
+  const amountShowStr = useMemo(() => {
+    if (type !== RedPackageTypeEnum.FIXED) {
+      return values.count;
+    }
+    if (
+      values.packetNum === '' ||
+      values.packetNum === undefined ||
+      values.count === '' ||
+      values.count === undefined
+    ) {
+      return '';
+    }
+    if (ZERO.plus(values.packetNum).isNaN() || ZERO.plus(values.count).isNaN()) {
+      return '';
+    }
+    return ZERO.plus(values.count)
+      .times(values.packetNum || '1')
+      .toFixed();
+  }, [type, values.count, values.packetNum]);
+  const amountUsdShowStr = useMemo(() => {
+    if (type !== RedPackageTypeEnum.FIXED) {
+      return `$${ZERO.plus(values.count || 0)
+        .times(tokenPrice || 0)
+        .dp(2)
+        .toFixed(2)}`;
+    } else {
+      return `$${ZERO.plus(values.count || 0)
+        .times(values.packetNum || '1')
+        .times(tokenPrice || 0)
+        .dp(2)
+        .toFixed(2)}`;
+    }
+  }, [tokenPrice, type, values.count, values.packetNum]);
 
-  const symbolImages = useSymbolImages();
   const onAmountChange = useCallback(
     (value: string) => {
       if (value === '') {
@@ -88,7 +184,10 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
         setCountError({ ...INIT_NONE_ERROR });
         return;
       }
-
+      // for android
+      if (!isPotentialNumber(value)) {
+        return;
+      }
       const decimals = Number(selectToken.decimals || 0);
       if (value === '.') {
         if (decimals !== 0) {
@@ -96,18 +195,23 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
             return { ...pre, count: '0.' };
           });
         }
-
         setCountError({ ...INIT_NONE_ERROR });
         return;
       }
-
       if (decimals === 0) {
-        if (value === '0') return;
-        if (value.split('.').length > 1) return;
+        if (value === '0') {
+          return;
+        }
+        if (value.split('.').length > 1) {
+          return;
+        }
       }
-      if (value.split('.')[1]?.length > decimals) return;
-      if (!isPotentialNumber(value)) return;
-
+      if (value.split('.')[1]?.length > decimals) {
+        return;
+      }
+      if (!isPotentialNumber(value)) {
+        return;
+      }
       setValues(pre => {
         setCountError({ ...INIT_NONE_ERROR });
         return { ...pre, count: value };
@@ -115,6 +219,15 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
     },
     [selectToken],
   );
+
+  // insufficient balance
+  const isInsufficientBalance = useMemo(() => {
+    const balance = updateAssetInfo?.balance || 0;
+    // const fee = gasFee.value || 0;
+    const _valueBN = ZERO.plus(balance);
+    const v = divDecimals(_valueBN, selectToken.decimals);
+    return v.lt(values.count);
+  }, [updateAssetInfo?.balance, selectToken.decimals, values.count]);
 
   const onPacketNumChange = useCallback(
     (value: string) => {
@@ -125,9 +238,13 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
         }
         return;
       }
-
       const reg = /^[1-9]\d*$/;
-      if (!reg.test(value)) return;
+      if (!reg.test(value)) {
+        return;
+      }
+      if (!isPotentialNumber(value)) {
+        return;
+      }
       if (type === RedPackageTypeEnum.RANDOM) {
         setCountError({ ...INIT_NONE_ERROR });
       }
@@ -137,38 +254,42 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
   );
 
   const isGTMax = useMemo(() => {
-    if (type === RedPackageTypeEnum.P2P) return false;
+    if (type === RedPackageTypeEnum.P2P) {
+      return false;
+    }
     return ZERO.plus(values.packetNum ?? 0).gt(1000);
   }, [type, values.packetNum]);
 
   const packetNumTips = useMemo(() => {
-    if (isGTMax) return `The maximum quantity is limited to 1,000.`;
+    if (isGTMax) {
+      return 'The maximum quantity is limited to 1,000.';
+    }
     return groupMemberCount ? `${groupMemberCount} group members` : '';
   }, [groupMemberCount, isGTMax]);
 
   const isAllowPrepare = useMemo(() => {
-    if (isGTMax) return false;
-
-    if (!selectToken.symbol || selectToken.decimals === '' || values.count === '') return false;
-
+    if (isGTMax) {
+      return false;
+    }
+    if (!selectToken.symbol || selectToken.decimals === '' || values.count === '') {
+      return false;
+    }
     if (type !== RedPackageTypeEnum.P2P && !values.packetNum) {
       return false;
     }
     return true;
   }, [isGTMax, selectToken.decimals, selectToken.symbol, type, values.count, values.packetNum]);
 
+  // press btn
   const [countError, setCountError] = useState<ErrorType>(INIT_NONE_ERROR);
+
   const onPreparePress = useCallback(() => {
     const { decimals, chainId, symbol, alias } = selectToken;
     const { packetNum, count } = values;
     let isError = false;
-
-    console.log('onPreparePress', values);
-
     const amount = timesDecimals(count, decimals);
     const tokenConfig = getTokenInfo(chainId, symbol);
     const minAmount = tokenConfig?.minAmount || '1';
-
     if (type !== RedPackageTypeEnum.RANDOM) {
       if (amount.lt(minAmount)) {
         setCountError({
@@ -188,9 +309,10 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
         isError = true;
       }
     }
-
-    if (isError) return;
-
+    if (isError) {
+      return;
+    }
+    // press cb
     onPressButton({
       token: selectToken,
       packetNum: values.packetNum || '1',
@@ -202,125 +324,107 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
               .toFixed()
           : ZERO.plus(values.count).toFixed(),
       isNewUserOnly: isNewUserOnly.current,
+      balance: updateAssetInfo?.balance || '0',
+      amountShowStr,
+      amountUsdShowStr,
+      tokenPrice,
     });
-  }, [getTokenInfo, onPressButton, selectToken, type, values]);
+  }, [
+    amountShowStr,
+    amountUsdShowStr,
+    getTokenInfo,
+    onPressButton,
+    selectToken,
+    tokenPrice,
+    type,
+    updateAssetInfo?.balance,
+    values,
+  ]);
 
   const amountLabel = useMemo(() => AMOUNT_LABEL_MAP[type || RedPackageTypeEnum.P2P], [type]);
 
-  const amountShowStr = useMemo(() => {
-    if (type !== RedPackageTypeEnum.FIXED) return values.count;
-    if (values.packetNum === '' || values.packetNum === undefined || values.count === '' || values.count === undefined)
-      return '';
-    if (ZERO.plus(values.packetNum).isNaN() || ZERO.plus(values.count).isNaN()) return '';
-    return ZERO.plus(values.count)
-      .times(values.packetNum || '1')
-      .toFixed();
-  }, [type, values.count, values.packetNum]);
-
-  const tokenPriceStr = useMemo(() => {
-    if (!tokenPrice) return '';
-    return convertAmountUSDShow(values.count, tokenPrice);
-  }, [tokenPrice, values.count]);
-
   const onMemoChange = useCallback((_value: string) => {
-    if (isEmojiString(_value)) return;
+    if (isEmojiString(_value)) {
+      return;
+    }
     setValues(pre => ({ ...pre, memo: _value }));
   }, []);
 
-  const onTokenChange = useCallback((assetInfo: ICryptoBoxAssetItemType) => {
+  const onTokenChange = useCallback((token: TCryptoBoxAssetItem) => {
     setSelectToken(pre => {
-      if (pre.symbol !== assetInfo.symbol || pre.chainId !== assetInfo.chainId) {
+      if (pre.symbol !== token.symbol || pre.chainId !== token.chainId) {
         setValues(preValue => ({
           ...preValue,
           count: '',
         }));
         setCountError({ ...INIT_NONE_ERROR });
       }
-      return assetInfo;
+      return token;
     });
   }, []);
 
-  const assetName = useMemo(
-    () =>
-      selectToken.assetType === AssetType.nft
-        ? `${selectToken.alias} #${selectToken.tokenId}` || selectToken.symbol
-        : selectToken.label || selectToken.symbol,
-    [selectToken.alias, selectToken.assetType, selectToken.label, selectToken.symbol, selectToken.tokenId],
-  );
+  const showDestinationList = useCallback(() => {
+    ModeChangeSelector.showList({
+      list: networkList,
+      selectedIndex: destinationChain.key,
+      iconSize: 20,
+      isShowRightCloseIcon: true,
+      title: 'Select Network',
+      onSelected: (_item, key) => {
+        const currentSourceChain = networkList.find(item => item.key === key);
+        currentSourceChain && setDestinationChain(currentSourceChain);
+      },
+    });
+  }, [destinationChain]);
 
   return (
     <>
       {type !== RedPackageTypeEnum.P2P && (
-        <FormItem title={isCryptoGift ? 'Quantity of Crypto Gift(s)' : 'Quantity of Crypto Box(es)'}>
+        <FormItem title="Number of gifts" titleStyle={{ fontSize: pTd(16) }}>
           <CommonInput
             type="general"
-            placeholder="Enter quantity"
+            placeholder="Enter number of gifts"
             keyboardType="decimal-pad"
             value={values.packetNum}
             onChangeText={onPacketNumChange}
             inputContainerStyle={styles.inputWrap}
             maxLength={5}
             errorMessage={packetNumTips}
-            errorStyle={!isGTMax && { ...FontStyles.font7, marginTop: pTd(4) }}
+            errorStyle={!isGTMax && FontStyles.font7}
             inputStyle={isGTMax && FontStyles.error}
-            containerStyle={styles.packetQuantityWrap}
+            containerStyle={packetNumTips && styles.packetQuantityWrapError}
+            returnKeyType="done"
           />
         </FormItem>
       )}
-      <FormItem title={amountLabel}>
-        <CommonInput
-          type="general"
-          value={values.count}
-          placeholder="Enter amount"
-          inputContainerStyle={styles.inputWrap}
-          rightIcon={
-            <Touchable
-              style={styles.unitWrap}
-              onPress={() => {
-                CryptoAssetsListOverlay.showCryptoAssetList({
-                  onFinishSelectAssets: onTokenChange,
-                  currentSymbol: selectToken.symbol,
-                  currentChainId: selectToken.chainId,
-                });
-              }}>
-              {selectToken.assetType === AssetType.ft ? (
-                <CommonAvatar
-                  hasBorder
-                  title={selectToken.symbol}
-                  shapeType={'circular'}
-                  resizeMode={'contain'}
-                  titleStyle={styles.avatarTitleStyle}
-                  borderStyle={GStyles.hairlineBorder}
-                  avatarSize={pTd(24)}
-                  // elf token icon is fixed , only use white background color
-                  svgName={selectToken?.symbol === defaultToken.symbol ? 'testnet' : undefined}
-                  imageUrl={selectToken.imageUrl || symbolImages[selectToken.symbol]}
-                />
-              ) : (
-                <NFTAvatar disabled nftSize={pTd(24)} data={selectToken} style={styles.borderRadius4} />
-              )}
-
-              <View style={[styles.assetInfoWrap, GStyles.flex1]}>
-                <TextM numberOfLines={1} style={GStyles.flex1}>
-                  {assetName}
-                </TextM>
-                <TextS style={[GStyles.flex1, FontStyles.font3]} numberOfLines={1}>
-                  {formatChainInfoToShow(selectToken.chainId)}
-                </TextS>
-              </View>
-              <Svg size={pTd(16)} icon="down-arrow" color={defaultColors.icon1} />
-            </Touchable>
-          }
-          maxLength={30}
-          autoCorrect={false}
-          keyboardType="decimal-pad"
-          onChangeText={onAmountChange}
-          errorStyle={!countError.isError && FontStyles.font7}
-          errorMessage={countError.isError ? countError.errorMsg : tokenPriceStr}
-          containerStyle={(countError.isError || !!tokenPriceStr) && styles.amountTipsGap}
+      <FormItem title={amountLabel} titleStyle={{ fontSize: pTd(16) }}>
+        <SourceDestinationItem
+          icon={destinationChain.imageUrl}
+          chainName={destinationChain.name}
+          onPress={showDestinationList}
+          containerStyles={styles.selectContainerStyles}
+          isReceiveNFT={true}
+        />
+        <AmountCard
+          amount={values.count}
+          onAmountChange={onAmountChange}
+          balance={updateAssetInfo?.balance}
+          amountUsd={amountUsd}
+          token={selectToken as any}
+          isMaxShow={true}
+          onShowCryptoAssetList={() => {
+            CryptoAssetsListOverlay.showCryptoAssetList({
+              onFinishSelectAssets: onTokenChange,
+              currentSymbol: selectToken.symbol,
+              currentChainId: destinationChainId,
+              accountAssetList: accountAssetList,
+            });
+          }}
+          isError={isInsufficientBalance}
+          errorMessage={countError.isError ? countError.errorMsg : ''}
         />
       </FormItem>
-      <FormItem title="Wishes">
+      <FormItem title="Gift message" style={{ marginTop: pTd(16) }} titleStyle={{ fontSize: pTd(16) }}>
         <CommonInput
           type="general"
           value={values.memo}
@@ -331,46 +435,28 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
           containerStyle={styles.packetNumWrap}
         />
       </FormItem>
-      {isCryptoGift && (
-        <NewUserOnly
-          onSwitchChanged={selected => {
-            console.log('wfs=== NewUserOnly', selected);
-            isNewUserOnly.current = selected;
-          }}
-          containerStyle={{ marginBottom: pTd(16) }}
-        />
-      )}
-      {selectToken.assetType === AssetType.nft ? (
-        <>
-          <RedPacketAmountShow
-            componentType="sendPacketPage"
-            amountShow={amountShowStr}
-            textColor={defaultColors.font5}
-            wrapStyle={GStyles.marginTop(pTd(8))}
-            assetType={selectToken.assetType}
-          />
-          <View style={[GStyles.flexRow, GStyles.center, styles.nftInfoWrap]}>
-            <NFTAvatar disabled nftSize={pTd(24)} data={selectToken} style={styles.borderRadius4} />
-            <TextM numberOfLines={1} style={styles.nftNameWrap}>
-              {assetName}
-            </TextM>
-          </View>
-        </>
-      ) : (
-        <RedPacketAmountShow
-          componentType="sendPacketPage"
-          amountShow={amountShowStr}
-          symbol={selectToken.symbol}
-          label={selectToken.label}
-          textColor={defaultColors.font5}
-          wrapStyle={GStyles.marginTop(pTd(8))}
-        />
-      )}
+      <NewUserOnly
+        onSwitchChanged={selected => {
+          isNewUserOnly.current = selected;
+        }}
+        containerStyle={{ marginBottom: pTd(16) }}
+      />
+
+      <RedPacketAmountShow
+        componentType="sendPacketPage"
+        amountShow={amountShowStr}
+        amountUsdShowStr={amountUsdShowStr}
+        label={selectToken.label}
+        symbol={selectToken.symbol}
+        wrapStyle={GStyles.marginTop(pTd(8))}
+        usdWrapStyle={GStyles.marginTop(pTd(8))}
+        usdTextColor={theme.colors.textBase2}
+      />
 
       <CommonButton
-        disabled={!isAllowPrepare}
+        disabled={!isAllowPrepare || isInsufficientBalance}
         type="primary"
-        title={isCryptoGift ? 'Send Crypto Gift' : 'Send Crypto Box'}
+        title={isInsufficientBalance ? 'Insufficient balance' : 'Preview'}
         containerStyle={styles.btnStyle}
         onPress={onPreparePress}
       />
@@ -378,40 +464,40 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = makeStyles(theme => ({
   formContainer: {
     height: '100%',
     justifyContent: 'space-between',
   },
   inputWrap: {
-    backgroundColor: defaultColors.bg1,
-    borderColor: defaultColors.neutralBorder,
+    backgroundColor: theme.colors.bgBase1,
+    borderColor: theme.colors.textBase3,
     borderWidth: 0.5,
     borderBottomWidth: 0.5,
-    height: pTd(52),
   },
-  inputContainerStyle: {
-    height: pTd(64),
+  packetQuantityWrapError: {
+    marginBottom: pTd(24),
   },
-  packetQuantityWrap: {
+  selectContainerStyles: {
+    borderWidth: pTd(1),
+    borderColor: theme.colors.borderBase1,
+    borderRadius: pTd(8),
     marginBottom: pTd(16),
-    height: pTd(68),
+    paddingVertical: pTd(12),
+    paddingLeft: pTd(16),
+    paddingRight: pTd(12),
+    height: pTd(40),
   },
   packetNumWrap: {
-    marginBottom: pTd(16),
     height: pTd(52),
   },
   amountTipsGap: {
     marginBottom: pTd(8),
   },
   unitWrap: {
-    width: pTd(156),
+    width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
-    borderLeftColor: defaultColors.border6,
-    borderLeftWidth: StyleSheet.hairlineWidth,
-    paddingLeft: pTd(12),
-    height: pTd(38),
   },
   unitIconStyle: {
     width: pTd(24),
@@ -436,7 +522,7 @@ const styles = StyleSheet.create({
   borderRadius4: {
     borderRadius: pTd(4),
   },
-  assetInfoWrap: {
+  tokenWrap: {
     marginLeft: pTd(8),
     display: 'flex',
     flexDirection: 'column',
@@ -449,4 +535,4 @@ const styles = StyleSheet.create({
     marginLeft: pTd(8),
     maxWidth: pTd(250),
   },
-});
+}));

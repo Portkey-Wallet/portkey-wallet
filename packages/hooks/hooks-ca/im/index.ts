@@ -197,7 +197,7 @@ export const useInitIM = () => {
 
   const setTokenUpdate = useCallback(
     (token: string) => {
-      console.log('setRelationToken', token);
+      // console.log('setRelationToken', token);
       dispatch(
         setRelationToken({
           network: networkType,
@@ -234,6 +234,7 @@ export const useInitIM = () => {
 
       await im.init(account, caHash, relationToken);
       dispatch(fetchContactListAsync());
+
       fetchAndSetBlockList();
 
       await request.es.getCaHolder({

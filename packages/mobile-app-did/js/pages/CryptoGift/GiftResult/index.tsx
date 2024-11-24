@@ -2,15 +2,13 @@ import Svg from 'components/Svg';
 import { useLanguage } from 'i18n/hooks';
 import React, { useCallback, useMemo } from 'react';
 import { pTd } from 'utils/unit';
-import { ImageBackground, Share, StyleSheet, TouchableOpacity } from 'react-native';
+import { Share, TouchableOpacity } from 'react-native';
 import { defaultColors } from 'assets/theme';
-import HeaderCard from '../components/HeaderCard';
+import { Image } from 'react-native';
 import { View } from 'react-native';
-import { screenWidth, statusBarHeight } from '@portkey-wallet/utils/mobile/device';
 import GStyles from 'assets/theme/GStyles';
 import navigationService from 'utils/navigationService';
-import giftResultBg from 'assets/image/pngs/giftResultBg.png';
-import { BGStyles, FontStyles } from 'assets/theme/styles';
+import { FontStyles } from 'assets/theme/styles';
 import { TextL, TextM, TextTitle } from 'components/CommonText';
 import CommonButton from 'components/CommonButton';
 import { copyText } from 'utils';
@@ -20,21 +18,27 @@ import { useEffectOnce } from '@portkey-wallet/hooks';
 import { DeviceEventEmitter } from 'react-native';
 import { CryptoGiftCreateSuccess, useGetCryptoGiftTgLink } from '@portkey-wallet/hooks/hooks-ca/cryptogift';
 import { isIOS } from '@rneui/base';
+import { makeStyles, useTheme } from '@rneui/themed';
+import boxClose from 'assets/image/pngs/box-close.png';
+import PageContainer from 'components/PageContainer';
+import Touchable from 'components/Touchable';
+import fonts from 'assets/theme/fonts';
 
 export interface IGiftResultProps {
   giftId: string;
 }
 
 export default function GiftResult() {
+  const styles = getStyles();
+  const { theme } = useTheme();
   const { giftId } = useRouterParams<IGiftResultProps>();
   const { t } = useLanguage();
-  const getCryptoGiftTgLink = useGetCryptoGiftTgLink();
   const currentNetworkInfo = useCurrentNetworkInfo();
   const shareUrl = useMemo(() => {
     return `${currentNetworkInfo.cryptoGiftUrl}/cryptoGift?id=${giftId}`;
   }, [currentNetworkInfo.cryptoGiftUrl, giftId]);
-  const onDone = useCallback(() => navigationService.navigate('CryptoGift'), []);
   const onCopyPress = useCallback(async () => await copyText(shareUrl || ''), [shareUrl]);
+  const getCryptoGiftTgLink = useGetCryptoGiftTgLink();
   const onCopyTgLinkPress = useCallback(
     async () => await copyText(getCryptoGiftTgLink(giftId || '')),
     [getCryptoGiftTgLink, giftId],
@@ -50,127 +54,126 @@ export default function GiftResult() {
   useEffectOnce(() => {
     DeviceEventEmitter.emit(CryptoGiftCreateSuccess);
   });
+  const onClose = useCallback(() => {
+    navigationService.pop(3);
+    navigationService.navigate('Tab');
+  }, []);
   return (
-    <View style={styles.pageWrap}>
-      <ImageBackground source={giftResultBg} style={styles.topSectionStyle}>
-        <TouchableOpacity onPress={onDone}>
-          <View style={[GStyles.height(pTd(44)), GStyles.itemCenter, GStyles.flexEnd, GStyles.flexRow]}>
-            <TextM style={[FontStyles.brandNormal, GStyles.paddingRight(pTd(16))]}>Done</TextM>
-          </View>
-        </TouchableOpacity>
-        <HeaderCard showViewDetails giftId={giftId} />
-        {/* <Image source={referralTopText} style={styles.referralTopText} /> */}
-      </ImageBackground>
-      <View style={[GStyles.itemCenter, GStyles.flexCenter, GStyles.flexRow, GStyles.marginTop(pTd(40))]}>
-        <TextTitle>Share the surprise with your friends NOW!</TextTitle>
+    <PageContainer
+      noCenterDom
+      scrollViewProps={{ disabled: true }}
+      containerStyles={styles.pageWrap}
+      leftDom={
+        <Touchable onPress={onClose}>
+          <Svg icon="close4" size={pTd(20)} color={theme.colors.iconBase1} iconStyle={{ marginLeft: pTd(16) }} />
+        </Touchable>
+      }>
+      <Image resizeMode="contain" source={boxClose} style={{ width: pTd(171.5), height: pTd(120) }} />
+      <View
+        style={[
+          GStyles.itemCenter,
+          GStyles.flexCenter,
+          GStyles.flexRow,
+          GStyles.marginTop(pTd(8)),
+          { width: pTd(226) },
+        ]}>
+        <TextTitle style={{ textAlign: 'center' }}>Your crypto gift is packaged and ready!</TextTitle>
       </View>
-      <CommonButton
-        containerStyle={styles.buttonContainer}
-        type="primary"
-        disabled={false}
-        radius={pTd(6)}
-        onPress={onCopyPress}>
-        <View style={styles.buttonContentWrapper}>
-          <Svg icon="copy" size={pTd(20)} color={defaultColors.neutralDefaultBG} />
-          <TextL style={styles.buttonText}>{t('Copy Link')}</TextL>
-        </View>
-      </CommonButton>
-      <CommonButton
-        containerStyle={[styles.buttonContainer, GStyles.paddingTop(pTd(16))]}
-        buttonStyle={styles.shareButtonStyle}
-        type="outline"
-        disabled={false}
-        radius={pTd(6)}
-        onPress={onCopyTgLinkPress}>
-        <View style={styles.buttonContentWrapper}>
-          <Svg icon="telegram-mono" size={pTd(20)} color={defaultColors.neutralDefaultBG} />
-          <TextL style={[styles.buttonText, FontStyles.brandNormal]}>{t('Copy Telegram Link')}</TextL>
-        </View>
-      </CommonButton>
-      <CommonButton
-        onPress={onSharePress}
-        containerStyle={[styles.buttonContainer, GStyles.paddingTop(pTd(16))]}
-        buttonStyle={styles.shareButtonStyle}
-        type="outline"
-        disabled={false}
-        radius={pTd(6)}>
-        <View style={styles.buttonContentWrapper}>
-          <Svg icon="share-gift" size={pTd(20)} color={defaultColors.brandNormal} />
-          <TextL style={[styles.buttonText, FontStyles.brandNormal]}>{t('Share')}</TextL>
-        </View>
-      </CommonButton>
-    </View>
+      <TouchableOpacity
+        onPress={() => {
+          navigationService.pop(2);
+          navigationService.navigate('GiftDetail', {
+            id: giftId,
+          });
+        }}>
+        <TextM style={[FontStyles.brandNormal, GStyles.marginTop(pTd(24)), styles.details]}>View Details</TextM>
+      </TouchableOpacity>
+      <View style={styles.buttonContainer}>
+        <TextM style={styles.tip}>Share the surprise with your friends now!</TextM>
+        <CommonButton
+          buttonStyle={styles.copyButtonStyle}
+          type="primary"
+          disabled={false}
+          radius={pTd(6)}
+          onPress={onCopyPress}>
+          <View style={styles.buttonContentWrapper}>
+            <Svg icon="copy-thin" size={pTd(16)} color={theme.colors.bgBase1} />
+            <TextL style={styles.buttonText}>{t('Copy Link')}</TextL>
+          </View>
+        </CommonButton>
+        <CommonButton
+          containerStyle={[GStyles.paddingTop(pTd(16))]}
+          buttonStyle={styles.copyTGButtonStyle}
+          type="primary"
+          disabled={false}
+          radius={pTd(6)}
+          onPress={onCopyTgLinkPress}>
+          <View style={styles.buttonContentWrapper}>
+            <Svg icon="telegram-mono" size={pTd(20)} color={defaultColors.bgBase1} />
+            <TextL style={[styles.buttonText]}>{t('Copy Telegram Link')}</TextL>
+          </View>
+        </CommonButton>
+        <CommonButton
+          onPress={onSharePress}
+          containerStyle={[GStyles.paddingTop(pTd(16))]}
+          buttonStyle={styles.shareButtonStyle}
+          type="outline"
+          disabled={false}
+          radius={pTd(6)}>
+          <View style={styles.buttonContentWrapper}>
+            <Svg icon="share-gift" size={pTd(16)} color={theme.colors.textBase1} />
+            <TextL style={[styles.buttonText, FontStyles.brandNormal, { color: theme.colors.textBase1 }]}>
+              {t('Share')}
+            </TextL>
+          </View>
+        </CommonButton>
+      </View>
+    </PageContainer>
   );
 }
-const styles = StyleSheet.create({
+const getStyles = makeStyles(theme => ({
   pageWrap: {
-    ...BGStyles.neutralDefaultBG,
     flex: 1,
-    display: 'flex',
+    paddingTop: pTd(80),
     alignItems: 'center',
+    backgroundColor: theme.colors.bgBase1,
   },
-  topSectionStyle: {
-    width: screenWidth,
-    height: pTd(305),
-    position: 'relative',
-    paddingTop: statusBarHeight + pTd(27),
-  },
-  title: {
-    flex: 5,
-  },
-  referralTopText: {
-    width: pTd(297),
-    height: pTd(94),
-    position: 'absolute',
-    left: pTd(38),
-    bottom: pTd(244),
-  },
-
-  pageStyles: {
-    backgroundColor: defaultColors.neutralDefaultBG,
-    flex: 1,
-    paddingHorizontal: 0,
-  },
-  container: {
-    position: 'relative',
-    backgroundColor: defaultColors.bg1,
-    flex: 1,
-    ...GStyles.paddingArg(0),
-  },
-  headerWrap: {
-    width: screenWidth,
-    height: pTd(76),
-  },
-  backIconWrap: {
-    paddingLeft: pTd(16),
-    paddingVertical: pTd(16),
-    width: pTd(60),
-  },
-  iconMargin: { marginRight: pTd(16) },
-  itemDivider: {
-    marginTop: pTd(16),
-  },
-  divider: {
-    height: pTd(8),
-    backgroundColor: defaultColors.neutralContainerBG,
-    marginTop: pTd(32),
+  details: {
+    color: theme.colors.textBrand1,
   },
   buttonContainer: {
-    paddingTop: pTd(32),
-    width: screenWidth - pTd(32),
+    position: 'absolute',
+    bottom: pTd(16),
+    width: '100%',
+  },
+  tip: {
+    marginBottom: pTd(16),
+    textAlign: 'center',
+    color: theme.colors.textBase2,
+    width: '100%',
   },
   buttonText: {
     lineHeight: pTd(24),
-    color: defaultColors.neutralContainerBG,
     marginLeft: pTd(8),
+    color: theme.colors.bgBase1,
+    ...fonts.mediumFont,
   },
   buttonContentWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  shareButtonStyle: {
-    borderColor: defaultColors.brandNormal,
-    borderWidth: 1,
+  copyButtonStyle: {
+    backgroundColor: theme.colors.bgBrand1,
+    borderRadius: pTd(48),
   },
-});
+  copyTGButtonStyle: {
+    backgroundColor: theme.colors.bgBrand1,
+    borderRadius: pTd(48),
+  },
+  shareButtonStyle: {
+    borderColor: theme.colors.borderNeutral2,
+    borderWidth: 1,
+    borderRadius: pTd(48),
+  },
+}));

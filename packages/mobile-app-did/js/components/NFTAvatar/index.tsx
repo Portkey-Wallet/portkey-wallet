@@ -1,5 +1,5 @@
 import React, { memo, useMemo } from 'react';
-import { StyleSheet, View, Text, ViewStyle, Image, StyleProp, ImageStyle, TextStyle } from 'react-native';
+import { View, Text, ViewStyle, Image, StyleProp, ImageStyle, TextStyle } from 'react-native';
 import { pTd } from 'utils/unit';
 import { TextM, TextS } from 'components/CommonText';
 import { defaultColors } from 'assets/theme';
@@ -11,6 +11,7 @@ import tokenBadge from 'assets/image/pngs/tokenBadge.png';
 import { SeedTypeEnum } from '@portkey-wallet/types/types-ca/assets';
 import { FontStyles } from 'assets/theme/styles';
 import { formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
+import { makeStyles } from '@rneui/themed';
 
 export type NoDataPropsType = {
   style?: ViewStyle | ViewStyle[];
@@ -42,22 +43,22 @@ const NFTAvatar: React.FC<NoDataPropsType> = props => {
     data: { imageUrl, alias, balance, decimals, tokenId },
     onPress,
   } = props;
-
+  const styles = getStyles();
   const outStyles = Array.isArray(style) ? style : [style];
 
   const badgeSizeStyle = useMemo<StyleProp<ImageStyle>>(() => {
-    if (badgeSizeType === 'small')
+    if (badgeSizeType === 'small') {
       return {
         width: pTd(24),
         height: pTd(12),
       };
-
-    if (badgeSizeType === 'large')
+    }
+    if (badgeSizeType === 'large') {
       return {
         width: pTd(48),
         height: pTd(24),
       };
-
+    }
     return { width: pTd(32), height: pTd(16) };
   }, [badgeSizeType]);
 
@@ -86,7 +87,15 @@ const NFTAvatar: React.FC<NoDataPropsType> = props => {
         />
       )}
       {!imageUrl && !showNftDetailInfo && <Text style={[FontStyles.font7, fontSizeStyle]}>{alias?.[0]}</Text>}
-      {imageUrl && <CommonAvatar avatarSize={nftSize} shapeType="square" imageUrl={imageUrl} style={styles.img} />}
+      {imageUrl && (
+        <CommonAvatar
+          avatarSize={nftSize}
+          shapeType="square"
+          imageUrl={imageUrl}
+          // eslint-disable-next-line react-native/no-inline-styles
+          style={styles.img}
+        />
+      )}
       {showNftDetailInfo && (
         <>
           <TextM
@@ -107,15 +116,14 @@ const NFTAvatar: React.FC<NoDataPropsType> = props => {
   );
 };
 export default memo(NFTAvatar);
-
-const styles = StyleSheet.create({
+const getStyles = makeStyles(theme => ({
   wrap: {
     width: pTd(98),
     height: pTd(98),
     ...GStyles.paddingArg(12, 8),
     borderRadius: pTd(8),
     overflow: 'hidden',
-    backgroundColor: defaultColors.bg4,
+    backgroundColor: theme.colors.bgTransparent,
   },
   wrapContentCenter: {
     display: 'flex',
@@ -124,6 +132,7 @@ const styles = StyleSheet.create({
   },
   img: {
     position: 'absolute',
+    // backgroundColor: theme.colors.bgTransparent,
   },
   title: {
     color: defaultColors.font5,
@@ -174,4 +183,4 @@ const styles = StyleSheet.create({
     height: pTd(12),
     zIndex: 10000,
   },
-});
+}));

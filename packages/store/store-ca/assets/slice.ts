@@ -2,6 +2,7 @@ import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
 import { NFTCollectionItemShowType } from '@portkey-wallet/types/types-ca/assets';
 import {
   fetchAssetList,
+  fetchAssetListV2,
   fetchCryptoBoxAssetList,
   fetchNFTSeriesList,
   fetchNFTList,
@@ -20,6 +21,7 @@ export const INIT_ACCOUNT_TOKEN_INFO = {
   maxResultCount: 10,
   accountTokenList: NEW_CLIENT_MOCK_ELF_LIST,
   totalRecordCount: 0,
+  totalDisplayCount: 0,
 };
 
 export const INIT_ACCOUNT_NFT_INFO = {
@@ -27,12 +29,23 @@ export const INIT_ACCOUNT_NFT_INFO = {
   maxResultCount: 10,
   accountNFTList: [],
   totalRecordCount: 0,
+  totalNftItemCount: 0,
 };
 
 export const INIT_ACCOUNT_ASSETS_INFO = {
   skipCount: 0,
   maxResultCount: 1000,
   accountAssetsList: [],
+  totalRecordCount: 0,
+};
+
+export const INIT_ACCOUNT_ASSETS_INFO_V2 = {
+  skipCount: 0,
+  maxResultCount: 1000,
+  accountAssetsList: {
+    nftInfos: [],
+    tokenInfos: [],
+  },
   totalRecordCount: 0,
 };
 
@@ -49,6 +62,10 @@ const initialState: TAssetsState = {
     ...INIT_ACCOUNT_ASSETS_INFO,
     isFetching: false,
   },
+  accountAssetsV2: {
+    ...INIT_ACCOUNT_ASSETS_INFO_V2,
+    isFetching: false,
+  },
   accountCryptoBoxAssets: {
     isFetching: false,
     skipCount: 0,
@@ -61,6 +78,7 @@ const initialState: TAssetsState = {
     tokenPriceObject: {},
   },
   accountBalance: {},
+  nftSectionUiType: 'Collections',
 };
 
 // fetch tokenList on Dashboard
@@ -89,6 +107,7 @@ export const fetchTokenListAsync = createAsyncThunk(
       return {
         list: NEW_CLIENT_MOCK_ELF_LIST,
         totalRecordCount: NEW_CLIENT_MOCK_ELF_LIST.length,
+        totalDisplayCount: NEW_CLIENT_MOCK_ELF_LIST[0].tokens?.length || 0,
         skipCount,
         maxResultCount,
         currentNetwork,
@@ -99,6 +118,7 @@ export const fetchTokenListAsync = createAsyncThunk(
     return {
       list: response.data,
       totalRecordCount: response.totalRecordCount,
+      totalDisplayCount: response.totalDisplayCount,
       skipCount,
       maxResultCount,
       currentNetwork,
@@ -132,6 +152,7 @@ export const fetchNFTCollectionsAsync = createAsyncThunk(
     return {
       list: response.data,
       totalRecordCount: response.totalRecordCount,
+      totalNftItemCount: response.totalNftItemCount,
       maxNFTCount,
       skipCount,
       maxResultCount,
@@ -171,7 +192,6 @@ export const fetchNFTAsync = createAsyncThunk(
     if (!targetNFTCollection) return;
 
     const { skipCount, maxResultCount, totalRecordCount, children } = targetNFTCollection;
-
     // has cache data
     if ((pageNum + 1) * maxResultCount <= children.length) return;
 
@@ -216,6 +236,38 @@ export const fetchAssetAsync = createAsyncThunk(
     return {
       list: response.data,
       totalRecordCount: response.totalRecordCount,
+      keyword,
+      skipCount,
+      maxResultCount,
+      currentNetwork,
+    };
+  },
+);
+
+export const fetchAssetV2Async = createAsyncThunk(
+  'fetchAssetV2Async',
+  async (
+    {
+      keyword,
+      caAddressInfos,
+      skipCount = 0,
+      maxResultCount = 1000,
+      currentNetwork,
+    }: {
+      keyword: string;
+      caAddressInfos: { chainId: ChainId; caAddress: string }[];
+      skipCount?: number;
+      maxResultCount?: number;
+      currentNetwork?: NetworkType;
+    },
+    { getState },
+  ) => {
+    const { wallet } = getState() as { wallet: WalletState };
+    currentNetwork = currentNetwork || wallet.currentNetwork || 'MAINNET';
+    const response = await fetchAssetListV2({ caAddressInfos, keyword, skipCount, maxResultCount });
+
+    return {
+      ...response,
       keyword,
       skipCount,
       maxResultCount,
@@ -323,6 +375,13 @@ export const assetsSlice = createSlice({
       const assetsInfo = state.accountAssets.accountAssetsInfo;
       if (assetsInfo?.[action.payload]) delete assetsInfo[action.payload];
       state.accountAssets.accountAssetsInfo = assetsInfo;
+      const assetsInfoV2 = state.accountAssetsV2.accountAssetsInfo;
+      if (assetsInfoV2?.[action.payload]) delete assetsInfoV2[action.payload];
+      state.accountAssetsV2.accountAssetsInfo = assetsInfoV2;
+    },
+    changeNftSectionUiType: (state, action: PayloadAction<'Collections' | 'NFTs'>) => {
+      const payload = action.payload;
+      state.nftSectionUiType = payload;
     },
   },
   extraReducers: builder => {
@@ -334,6 +393,7 @@ export const assetsSlice = createSlice({
         const {
           list,
           totalRecordCount,
+          totalDisplayCount,
           skipCount,
           maxResultCount,
           currentNetwork = 'MAINNET',
@@ -365,6 +425,7 @@ export const assetsSlice = createSlice({
           accountTokenList: newTokenList as ITokenSectionResponse[],
           skipCount,
           totalRecordCount,
+          totalDisplayCount,
           maxResultCount,
         };
         state.accountToken.isFetching = false;
@@ -379,20 +440,29 @@ export const assetsSlice = createSlice({
         state.accountNFT.isFetching = false;
       })
       .addCase(fetchNFTCollectionsAsync.fulfilled, (state, action) => {
-        const { list, totalRecordCount, maxNFTCount, skipCount, maxResultCount, currentNetwork } = action.payload;
+        const { list, totalRecordCount, totalNftItemCount, maxNFTCount, skipCount, maxResultCount, currentNetwork } =
+          action.payload;
         const preAccountNFTCollectionList = state.accountNFT.accountNFTInfo?.[currentNetwork]?.accountNFTList || [];
         if (skipCount !== 0 && preAccountNFTCollectionList.length === totalRecordCount) {
           state.accountNFT.isFetching = false;
           return;
         }
-        const newAccountList: NFTCollectionItemShowType[] = list.map(item => ({
-          isFetching: false,
-          skipCount: 0,
-          maxResultCount: maxNFTCount,
-          totalRecordCount: 0,
-          children: [],
-          ...item,
-        }));
+        const newAccountList: NFTCollectionItemShowType[] = list.map(item => {
+          const targetItem = preAccountNFTCollectionList.find(
+            preItem => preItem.collectionName === item.collectionName && preItem.chainId === item.chainId,
+          );
+          return {
+            isFetching: false,
+            skipCount: 0,
+            maxResultCount: maxNFTCount,
+            // prevTotalRecordCount: targetItem?.totalRecordCount || targetItem?.children || 0,
+            prevChildren: targetItem?.children || [],
+            totalRecordCount: 0,
+            children: [],
+            // children: [],
+            ...item,
+          };
+        });
         const newAllAccountList =
           skipCount === 0 ? newAccountList : [...preAccountNFTCollectionList, ...newAccountList];
         if (!state.accountNFT.accountNFTInfo) state.accountNFT.accountNFTInfo = {};
@@ -400,6 +470,7 @@ export const assetsSlice = createSlice({
           accountNFTList: newAllAccountList,
           skipCount,
           totalRecordCount,
+          totalNftItemCount,
           maxResultCount,
         };
         state.accountNFT.isFetching = false;
@@ -455,7 +526,31 @@ export const assetsSlice = createSlice({
         state.accountAssets.isFetching = false;
       })
       .addCase(fetchAssetAsync.rejected, state => {
-        state.accountToken.isFetching = false;
+        state.accountAssets.isFetching = false;
+      })
+      .addCase(fetchAssetV2Async.pending, state => {
+        if (!state.accountAssetsV2) {
+          state.accountAssetsV2 = {
+            ...INIT_ACCOUNT_ASSETS_INFO_V2,
+            isFetching: false,
+          };
+        }
+        state.accountAssetsV2.isFetching = true;
+      })
+      .addCase(fetchAssetV2Async.fulfilled, (state, action) => {
+        const { nftInfos, tokenInfos, totalRecordCount, skipCount, maxResultCount, currentNetwork } = action.payload;
+        if (!state.accountAssetsV2.accountAssetsInfo) state.accountAssetsV2.accountAssetsInfo = {};
+
+        state.accountAssetsV2.accountAssetsInfo[currentNetwork] = {
+          accountAssetsList: { nftInfos, tokenInfos },
+          skipCount,
+          totalRecordCount,
+          maxResultCount,
+        };
+        state.accountAssetsV2.isFetching = false;
+      })
+      .addCase(fetchAssetV2Async.rejected, state => {
+        state.accountAssetsV2.isFetching = false;
       })
       .addCase(fetchCryptoBoxAssetAsync.fulfilled, (state, action) => {
         const { list, totalRecordCount } = action.payload;
@@ -540,6 +635,7 @@ export const {
   clearAccountNftCollectionInfo,
   clearAccountAssetsInfo,
   clearAccountTokenInfo,
+  changeNftSectionUiType,
 } = assetsSlice.actions;
 
 export default assetsSlice;

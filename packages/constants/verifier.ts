@@ -8,6 +8,6 @@ export const LOGIN_TYPE_LABEL_MAP: T_LOGIN_TYPE_LABEL_MAP = {
   [LoginType.Apple]: 'Apple',
   [LoginType.Google]: 'Google',
   [LoginType.Telegram]: 'Telegram',
-  [LoginType.Twitter]: 'Twitter',
+  [LoginType.Twitter]: 'X',
   [LoginType.Facebook]: 'Facebook',
 };

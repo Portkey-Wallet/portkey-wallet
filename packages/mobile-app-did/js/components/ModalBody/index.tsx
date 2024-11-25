@@ -154,6 +154,7 @@ export const getStyles = makeStyles(theme => ({
   },
   titleStyle: {
     paddingLeft: pTd(16),
+    paddingRight: pTd(48),
     width: '100%',
   },
   closeIcon: {

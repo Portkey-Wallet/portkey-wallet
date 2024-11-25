@@ -10,7 +10,6 @@ import { RootStackName } from 'navigation';
 import myEvents from 'utils/deviceEvent';
 import useReportAnalyticsEvent from 'hooks/userExceptionMessage';
 import { useEffectOnce } from '@portkey-wallet/hooks';
-import { useReportingSignalR } from 'hooks/FCM';
 import { useReferral } from '@portkey-wallet/hooks/hooks-ca/referral';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useAccountBalanceUSD } from '@portkey-wallet/hooks/hooks-ca/balances';
@@ -40,7 +39,6 @@ const DashBoard: React.FC<any> = ({ navigation }) => {
   const { fetchDiscoverTabAsync } = useDiscoverData();
   const { theme } = useTheme();
   useInitCmsBanner();
-  useReportingSignalR();
 
   const [refreshing, setRefreshing] = useState(false);
 
@@ -48,6 +46,7 @@ const DashBoard: React.FC<any> = ({ navigation }) => {
     myEvents.refreshHomeListStart.emit();
     setRefreshing(true);
     getTokenPrice();
+    console.log('wfs====fetchAccountNFTCollectionInfoList1');
     await Promise.all([
       fetchAccountTokenInfoList({
         caAddressInfos: caAddressInfosList.current || [],

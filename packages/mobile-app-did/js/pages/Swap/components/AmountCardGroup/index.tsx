@@ -52,7 +52,9 @@ const AmountCardGroup = ({
 
   const usdImpactInfo = useMemo(() => {
     const { tokenIn, tokenOut, valueIn, valueOut } = swapInfo;
-    if (!tokenIn || !tokenOut || !valueIn || !valueOut) return undefined;
+    if (!tokenIn || !tokenOut || !valueIn || !valueOut) {
+      return undefined;
+    }
 
     if (
       !tokenInPrice ||
@@ -61,9 +63,9 @@ const AmountCardGroup = ({
       tokenOutPrice === '0' ||
       ZERO.eq(valueIn) ||
       ZERO.eq(valueOut)
-    )
+    ) {
       return;
-
+    }
     const priceIn = ZERO.plus(valueIn).times(tokenInPrice);
     const priceOut = ZERO.plus(valueOut).times(tokenOutPrice);
     const _impact = priceOut.minus(priceIn).div(priceIn).times(100).dp(2);

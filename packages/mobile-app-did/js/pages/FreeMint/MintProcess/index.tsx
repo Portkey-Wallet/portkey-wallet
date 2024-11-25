@@ -111,7 +111,7 @@ const MintProcess = () => {
           </Touchable>
         ) : null
       }
-      safeAreaColor={['white', 'black']}
+      safeAreaColor={['black']}
       containerStyles={styles.pageStyles}
       scrollViewProps={{ disabled: step !== FreeMintStep.preview }}>
       {step === FreeMintStep.mintNft && (

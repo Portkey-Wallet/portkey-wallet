@@ -69,7 +69,7 @@ const EarnItem = (item: TBaseCardItemType) => {
       <TouchableOpacity onPress={onPress}>
         <Image style={styles.bigImage} source={{ uri: imageUrl }} />
       </TouchableOpacity>
-      <View style={styles.infoWrap}>
+      <TouchableOpacity style={styles.infoWrap} activeOpacity={1}>
         <View style={styles.infoCol}>
           <View style={styles.textLines}>
             <TextXL style={[styles.title, fonts.BGMediumFont]} numberOfLines={1} ellipsizeMode="tail">
@@ -88,7 +88,7 @@ const EarnItem = (item: TBaseCardItemType) => {
             onPress={onPress}
           />
         </View>
-      </View>
+      </TouchableOpacity>
     </View>
   );
 };

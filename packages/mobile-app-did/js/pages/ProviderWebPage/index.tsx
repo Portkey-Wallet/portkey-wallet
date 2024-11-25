@@ -26,7 +26,7 @@ const ProviderWebPage = () => {
   return (
     <SafeAreaBox edges={['top', 'right', 'left']} style={{ backgroundColor: theme.colors.bgBase1 }}>
       <View style={[GStyles.flex1, BGStyles.bg4]}>
-        <CustomHeader themeType={'white'} titleDom={title} />
+        <CustomHeader themeType={'black'} titleDom={title} style={{ backgroundColor: theme.colors.bgBase1 }} />
         <ProviderWebPageComponent url={url} title={title} icon={icon} />
       </View>
     </SafeAreaBox>

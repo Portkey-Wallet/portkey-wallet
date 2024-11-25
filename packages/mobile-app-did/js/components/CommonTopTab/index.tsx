@@ -239,15 +239,17 @@ const getStyles = makeStyles(theme => ({
     fontSize: pTd(14),
   },
   suffixWrap: {
-    paddingVertical: pTd(4),
+    height: pTd(22),
     paddingHorizontal: pTd(6),
     borderRadius: pTd(4),
     marginLeft: pTd(4),
     backgroundColor: theme.colors.bgNeutral2,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   suffixText: {
     color: theme.colors.textBase2,
-    lineHeight: pTd(14),
+    lineHeight: pTd(17),
     ...fonts.SGRegularFont,
   },
   suffixTextFocused: {

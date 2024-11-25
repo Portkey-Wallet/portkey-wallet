@@ -188,7 +188,7 @@ const getStyles = makeStyles(theme => ({
     flexDirection: 'row',
   },
   reminderText: {
-    marginLeft: pTd(16),
+    marginLeft: pTd(12),
     marginRight: pTd(16),
     fontSize: pTd(14),
     lineHeight: pTd(20),

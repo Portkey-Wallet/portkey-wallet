@@ -99,7 +99,7 @@ export default function NFTItem(props: NFTItemPropsType) {
 
     const count = itemCount - showChildren?.length >= 9 ? 9 : itemCount - showChildren?.length;
     return count > 0 ? new Array(count).fill('-') : [];
-  }, [children.length, isFetching, itemCount, prevChildren.length, showChildren?.length]);
+  }, [children, isFetching, itemCount, prevChildren, showChildren]);
   const retry = useCallback(async () => {
     await fetchAccountNFTItem({
       symbol,

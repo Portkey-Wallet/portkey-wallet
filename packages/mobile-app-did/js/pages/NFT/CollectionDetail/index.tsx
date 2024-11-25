@@ -50,6 +50,16 @@ const CollectionDetail = () => {
     }
     return currentCollection;
   }, [accountNFTList, chainId, symbol]);
+  const [realItemCount, setRealItemCount] = useState<number>(itemCount);
+  useEffect(() => {
+    if (currentCollectionObj?.totalRecordCount && currentCollectionObj?.totalRecordCount !== itemCount) {
+      setRealItemCount(
+        typeof currentCollectionObj?.totalRecordCount === 'string'
+          ? parseInt(currentCollectionObj?.totalRecordCount, 10)
+          : currentCollectionObj?.totalRecordCount,
+      );
+    }
+  }, [currentCollectionObj?.totalRecordCount, itemCount]);
   useEffect(() => {
     (async () => {
       if (currentCollectionObj?.children?.length === 0) {
@@ -69,7 +79,7 @@ const CollectionDetail = () => {
 
   const loadMoreItem = useCallback(async () => {
     console.log('loadMoreItem invoke');
-    if (itemCount <= (showChildren?.length || 0)) {
+    if (realItemCount <= (showChildren?.length || 0)) {
       return;
     }
     setIsFetching(true);
@@ -81,7 +91,7 @@ const CollectionDetail = () => {
     });
     setIsFetching(false);
     pageNumRef.current += 1;
-  }, [caAddressInfos, chainId, fetchAccountNFTItem, itemCount, showChildren?.length, symbol]);
+  }, [caAddressInfos, chainId, fetchAccountNFTItem, realItemCount, showChildren?.length, symbol]);
   const skeletonList: number[] = useMemo(() => {
     if (!isFetching && !isInit) {
       return [];
@@ -116,7 +126,7 @@ const CollectionDetail = () => {
           onPress={() => {
             navigationService.navigate('NFTDetail', {
               ...item,
-              collectionInfo: { imageUrl, collectionName, itemCount, symbol, chainId },
+              collectionInfo: { imageUrl, collectionName, realItemCount, symbol, chainId },
             });
           }}>
           {/* eslint-disable-next-line react-native/no-inline-styles */}
@@ -152,7 +162,7 @@ const CollectionDetail = () => {
       chainId,
       collectionName,
       imageUrl,
-      itemCount,
+      realItemCount,
       styles.image,
       styles.imageContainer,
       styles.itemAmount,
@@ -169,7 +179,7 @@ const CollectionDetail = () => {
     outputRange: [0, 1],
     extrapolate: 'clamp',
   });
-  console.log('111111111', (itemCount || currentCollectionObj?.itemCount || 0) > 1 ? 'items' : 'item');
+
   return (
     <PageContainer
       noCenterDom={false}
@@ -187,9 +197,8 @@ const CollectionDetail = () => {
                 <CommonAvatar avatarSize={pTd(48)} imageUrl={imageUrl} shapeType={'square'} />
                 <TextXXL style={styles.collectionName}>{collectionName}</TextXXL>
                 <TextM style={styles.collectionCount}>
-                  {formatChainInfoToShow(currentCollectionObj?.chainId, currentNetwork)} •{' '}
-                  {itemCount || currentCollectionObj?.totalRecordCount}{' '}
-                  {(itemCount || currentCollectionObj?.itemCount || 0) > 1 ? 'items' : 'item'}
+                  {formatChainInfoToShow(currentCollectionObj?.chainId, currentNetwork)} • {realItemCount}{' '}
+                  {realItemCount > 1 ? 'items' : 'item'}
                 </TextM>
               </View>
             );
@@ -213,9 +222,8 @@ const CollectionDetail = () => {
                 <CommonAvatar avatarSize={pTd(48)} imageUrl={imageUrl} shapeType={'square'} />
                 <TextXXL style={styles.collectionName}>{collectionName}</TextXXL>
                 <TextM style={styles.collectionCount}>
-                  {formatChainInfoToShow(currentCollectionObj?.chainId, currentNetwork)} •{' '}
-                  {itemCount || currentCollectionObj?.totalRecordCount}{' '}
-                  {(itemCount || currentCollectionObj?.itemCount || 0) > 1 ? 'items' : 'item'}
+                  {formatChainInfoToShow(currentCollectionObj?.chainId, currentNetwork)} • {realItemCount}{' '}
+                  {realItemCount > 1 ? 'items' : 'item'}
                 </TextM>
               </View>
             );

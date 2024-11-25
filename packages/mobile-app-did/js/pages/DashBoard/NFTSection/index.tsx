@@ -101,35 +101,17 @@ export default function NFTSection() {
   const { nftSectionUiType } = useNFTSection();
   const styles = getStyles();
   useEffect(() => {
-    const parsedKeys = Object.keys(openCollectionObj).map(key => {
-      const [symbol, chainId] = key.split(CONNECTION_KEY_FLAG);
-      return { symbol, chainId };
-    });
     const updateNFTSubscription = myEvents.updateNFT.addListener(async () => {
-      parsedKeys.forEach(async parsedKeysItem => {
-        await fetchAccountNFTItem({
-          symbol: parsedKeysItem.symbol,
-          chainId: parsedKeysItem.chainId as ChainId,
-          caAddressInfos: caAddressInfos.filter(item => item.chainId === parsedKeysItem.chainId),
-          pageNum: 0,
-        });
-      });
+      updateNFTItems();
     });
     const refreshHomeListSubscription = myEvents.refreshHomeList.addListener(() => {
-      parsedKeys.forEach(async parsedKeysItem => {
-        await fetchAccountNFTItem({
-          symbol: parsedKeysItem.symbol,
-          chainId: parsedKeysItem.chainId as ChainId,
-          caAddressInfos: caAddressInfos.filter(item => item.chainId === parsedKeysItem.chainId),
-          pageNum: 0,
-        });
-      });
+      updateNFTItems();
     });
     return () => {
       updateNFTSubscription.remove();
       refreshHomeListSubscription.remove();
     };
-  }, [caAddressInfos, fetchAccountNFTItem, openCollectionObj]);
+  }, [caAddressInfos, fetchAccountNFTItem, nftSectionUiType, openCollectionObj, updateNFTItems]);
   // const isInitTheFirstFiveItem = useRef<boolean>(false);
   // const collectionItemProp = useMemo(() => {
   //   return accountNFTList.slice(0, 2).map(item => ({
@@ -144,7 +126,7 @@ export default function NFTSection() {
       if (totalRecordCount && accountNFTList.length >= totalRecordCount && !isInit) {
         return;
       }
-
+      console.log('wfs====fetchAccountNFTCollectionInfoList2');
       await fetchAccountNFTCollectionInfoList({
         caAddressInfos,
         skipCount: isInit ? 0 : accountNFTList.length,
@@ -153,16 +135,47 @@ export default function NFTSection() {
     },
     [accountNFTList.length, caAddressInfos, fetchAccountNFTCollectionInfoList, totalRecordCount],
   );
+  const updateNFTItems = useCallback(() => {
+    if (nftSectionUiType === 'NFTs') {
+      const parsedKeys = Object.keys(openCollectionObj).map(key => {
+        const [symbol, chainId] = key.split(CONNECTION_KEY_FLAG);
+        return { symbol, chainId };
+      });
+      parsedKeys.forEach(async parsedKeysItem => {
+        await fetchAccountNFTItem({
+          symbol: parsedKeysItem.symbol,
+          chainId: parsedKeysItem.chainId as ChainId,
+          caAddressInfos: caAddressInfos.filter(item => item.chainId === parsedKeysItem.chainId),
+          pageNum: 0,
+        });
+      });
+    }
+  }, [caAddressInfos, fetchAccountNFTItem, nftSectionUiType, openCollectionObj]);
   useEffect(() => {
     const listener = myEvents.updateMintStatus.addListener(async () => {
       const res = await getRecentStatus();
       setRecentStatus(res.status);
       setItemId(res.itemId);
       setImageUrl(res.imageUrl);
+      console.log('wfs====fetchAccountNFTCollectionInfoList4');
       getNFTCollectionsAsync(true);
+      // update open item
+      updateNFTItems();
+      // myEvents.updateNFT.emit();
     });
     return () => listener.remove();
-  }, [getNFTCollectionsAsync, getRecentStatus, setImageUrl, setItemId, setRecentStatus]);
+  }, [
+    caAddressInfos,
+    fetchAccountNFTItem,
+    getNFTCollectionsAsync,
+    getRecentStatus,
+    nftSectionUiType,
+    openCollectionObj,
+    setImageUrl,
+    setItemId,
+    setRecentStatus,
+    updateNFTItems,
+  ]);
 
   useEffect(() => {
     if (timerRef.current) {
@@ -174,6 +187,7 @@ export default function NFTSection() {
       setItemId(res.itemId);
       setImageUrl(res.imageUrl);
       setOpenCollectionObj({});
+      console.log('wfs====fetchAccountNFTCollectionInfoList5');
       getNFTCollectionsAsync(true);
     }, REFRESH_TIME);
     return () => {
@@ -184,6 +198,7 @@ export default function NFTSection() {
   }, [setRecentStatus, setItemId, timerRef, getRecentStatus, getNFTCollectionsAsync, setImageUrl]);
 
   useEffect(() => {
+    console.log('wfs====fetchAccountNFTCollectionInfoList6');
     getNFTCollectionsAsync(true);
   }, [getNFTCollectionsAsync]);
 
@@ -341,6 +356,7 @@ export default function NFTSection() {
         keyExtractor={(item: NFTCollectionItemShowType) => item?.symbol + item.chainId}
         onEndReached={() => {
           console.log('wfs===onEndReached');
+          console.log('wfs====fetchAccountNFTCollectionInfoList7');
           getNFTCollectionsAsync();
         }}
         onEndReachedThreshold={0.5}

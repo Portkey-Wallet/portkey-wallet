@@ -48,6 +48,7 @@ const DashBoard: React.FC<any> = ({ navigation }) => {
     myEvents.refreshHomeListStart.emit();
     setRefreshing(true);
     getTokenPrice();
+    console.log('wfs====fetchAccountNFTCollectionInfoList1');
     await Promise.all([
       fetchAccountTokenInfoList({
         caAddressInfos: caAddressInfosList.current || [],

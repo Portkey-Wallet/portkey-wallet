@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { View } from 'react-native';
+import { Keyboard, View } from 'react-native';
 import CommonInput from 'components/CommonInput';
 
 import GStyles from 'assets/theme/GStyles';
@@ -121,6 +121,7 @@ export default function DiscoverSearchContent({ address, onBack, isInner = false
   );
 
   const innerClick = useCallback(() => {
+    Keyboard.dismiss();
     isInner && onBack?.();
   }, [isInner, onBack]);
 

@@ -260,6 +260,7 @@ const SendPreview: React.FC = () => {
     addRecent({ recentItem });
 
     if (sendType === 'nft') {
+      console.log('wfs====fetchAccountNFTCollectionInfoList3');
       await fetchAccountNFTCollectionInfoList({
         caAddressInfos,
         skipCount: 0,

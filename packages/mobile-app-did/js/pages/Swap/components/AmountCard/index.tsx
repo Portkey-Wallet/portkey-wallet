@@ -16,6 +16,7 @@ import { formatNameWithNoUnderline } from '@portkey-wallet/utils';
 import { isValidNumberV2 } from '@portkey-wallet/utils/reg';
 import { parseInputChange } from '@portkey-wallet/utils/input';
 import { LIMIT_PRICE_DECIMAL } from '@portkey-wallet/constants/constants-ca/awaken/limit';
+import CommonToast from 'components/CommonToast';
 
 interface IAmountCardProps {
   style?: ViewStyleType;
@@ -78,6 +79,7 @@ const AmountCard: React.FC<IAmountCardProps> = ({
       const _valueBN = ZERO.plus(balance).minus(gasFee);
       if (_valueBN.lte(ZERO)) {
         onAmountChange?.('');
+        CommonToast.fail('Insufficient balance to cover gas fee.');
         return;
       }
       onAmountChange?.(divDecimals(_valueBN, decimals).toFixed() || '');

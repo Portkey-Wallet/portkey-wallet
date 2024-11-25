@@ -9,7 +9,8 @@ import { useTransferNetworkConfig } from './config';
 import { useContact } from './contact';
 import { TFormattedRecentItem } from '@portkey-wallet/types/types-ca/contactNew';
 import { getAelfAddress } from '@portkey-wallet/utils/aelf';
-import { useCaAddressInfoList } from './wallet';
+import { useCaAddressInfoList, useCurrentUserInfo } from './wallet';
+import { isSameAddresses } from '@portkey-wallet/utils';
 
 export const useRecentState = () => useAppCASelector(state => state?.recent);
 
@@ -17,6 +18,7 @@ export function useRecent() {
   const dispatch = useAppCommonDispatch();
   const currentNetwork = useCurrentNetwork();
   const caAddressInfos = useCaAddressInfoList();
+  const userInfo = useCurrentUserInfo();
 
   const { contactMapNew } = useContact();
   const { recentMap } = useRecentState();
@@ -84,14 +86,25 @@ export function useRecent() {
 
           if (aelfResult) return { ...aelfResult, ...ele };
           if (otherResult) return { ...otherResult, ...ele };
-
-          return ele;
+          if (isSameAddresses(getAelfAddress(ele.address), caAddressInfos?.[0]?.caAddress)) {
+            return {
+              ...ele,
+              addressInfo: {
+                network: ele.network,
+                networkName: ele.network,
+                chainId: ele.chainId,
+                networkImage: ele.networkIcon || '',
+                address: ele.address,
+              },
+              caHolderInfo: userInfo,
+            };
+          }
         })
         .filter(i => !!i);
 
       return list;
     },
-    [contactMapNew, getFilterRecentList],
+    [caAddressInfos, contactMapNew, getFilterRecentList, userInfo],
   );
 
   const addRecent = useCallback(

@@ -1,6 +1,4 @@
 import React, { memo, useState } from 'react';
-// import { useLanguage } from 'i18n/hooks';
-// import CommonTopTabWithoutContent from 'components/CommonTopTabWithoutContent';
 import PageContainer from 'components/PageContainer';
 import SwapEnter from '../components/SwapEnter/index';
 import LimitEnter from '../components/LimitEnter/index';
@@ -14,24 +12,10 @@ enum SwapHomeTabType {
 }
 
 const SwapHome = () => {
-  // const { t } = useLanguage();
   const styles = getStyles();
   useAwakenTokenList(true);
 
   const [selectTab, _] = useState<SwapHomeTabType>(SwapHomeTabType.SWAP);
-  // const [selectTab, setSelectTab] = useState<SwapHomeTabType>(SwapHomeTabType.SWAP);
-  // const tabList = useMemo(() => {
-  //   return [
-  //     {
-  //       name: t('Swap'),
-  //       key: SwapHomeTabType.SWAP,
-  //     },
-  //     {
-  //       name: t('Limit'),
-  //       key: SwapHomeTabType.LIMIT,
-  //     },
-  //   ];
-  // }, [t]);
 
   return (
     <PageContainer

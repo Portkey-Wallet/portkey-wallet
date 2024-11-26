@@ -23,6 +23,7 @@ import { request } from '@portkey-wallet/api/api-did';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { LoadingBody } from 'components/Loading';
 import CommonAvatar from 'components/CommonAvatar';
+import fonts from 'assets/theme/fonts';
 
 const MyWallet: React.FC = () => {
   const { t } = useLanguage();
@@ -210,7 +211,7 @@ const MyWallet: React.FC = () => {
             justifyContent: 'center',
             flexDirection: 'row',
           }}>
-          <TextXXXL style={pageStyles.nicknameText}>{userInfo.nickName}</TextXXXL>
+          <TextXXXL style={[pageStyles.nicknameText, fonts.BGMediumFont]}>{userInfo.nickName}</TextXXXL>
           <Touchable
             onPress={() => {
               RenameOverlay.showModal({

@@ -104,7 +104,12 @@ const Card: React.FC<{ title: string }> = ({ title }) => {
             }}
           />
         )}
-        {!isMainnet && <FaucetButton containerStyle={[styles.buttonContainer, buttonWrapStyle]} />}
+        {!isMainnet && (
+          <FaucetButton
+            containerStyle={[styles.buttonContainer, buttonWrapStyle]}
+            buttonWrapStyle={styles.buttonWrap}
+          />
+        )}
       </View>
     </View>
   );

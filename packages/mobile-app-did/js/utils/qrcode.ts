@@ -51,7 +51,10 @@ export function handlePortkeyQRCodeData(data: QRData, previousRouteInfo: RouteIn
       navigationService.navigate('SendHome', params);
     }
   } else {
-    navigationService.navigate('SendHome', newData);
+    navigationService.navigate('SendHome', {
+      ...newData,
+      toInfo: { ...newData.toInfo, chainId: getChainIdByAddress(newData?.toInfo?.address) as ChainId },
+    });
   }
 }
 

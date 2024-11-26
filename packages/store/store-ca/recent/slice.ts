@@ -44,17 +44,10 @@ export const recentSlice = createSlice({
         [network]: targetList,
       };
     },
-    resetTargetNetworkRecent: (
-      state,
-      action: PayloadAction<{
-        network: NetworkType;
-      }>,
-    ) => {
-      const { network } = action.payload;
-
+    resetTargetNetworkRecent: (state, action: PayloadAction<NetworkType>) => {
       state.recentMap = {
         ...state.recentMap,
-        [network]: [],
+        [action.payload]: [],
       };
     },
     resetRecent: () => initialState,

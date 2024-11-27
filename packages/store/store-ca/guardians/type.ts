@@ -17,7 +17,7 @@ export interface BaseGuardianItem {
   firstName?: string;
   lastName?: string;
   verifiedByZk?: boolean;
-  type: string;
+  type?: string;
   manuallySupportForZk?: boolean;
   zkLoginInfo?: ZKLoginInfo;
 }

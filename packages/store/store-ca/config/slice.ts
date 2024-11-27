@@ -94,7 +94,7 @@ export const configSlice = createSlice({
           ...result,
         };
       })
-      .addCase(fetchContactSupportNetworkList.rejected, (state, action) => {
+      .addCase(fetchContactSupportNetworkList.rejected, (_state, action) => {
         console.log('fetchContactSupportNetworkItem.rejected: error', action.error.message);
       })
       .addCase(fetchTransferSupportNetworkList.fulfilled, (state, action) => {
@@ -104,7 +104,7 @@ export const configSlice = createSlice({
           ...result,
         };
       })
-      .addCase(fetchTransferSupportNetworkList.rejected, (state, action) => {
+      .addCase(fetchTransferSupportNetworkList.rejected, (_state, action) => {
         console.log('fetchTransferSupportNetworkItem.rejected: error', action.error.message);
       });
   },

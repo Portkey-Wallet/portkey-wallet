@@ -38,7 +38,6 @@ const TokenItem: React.FC<TokenListItemType> = props => {
             title={item?.symbol}
             avatarSize={pTd(40)}
             imageUrl={item?.imageUrl}
-            svgName={item?.svgName}
             titleStyle={FontStyles.font11}
             borderStyle={GStyles.hairlineBorder}
           />
@@ -48,7 +47,6 @@ const TokenItem: React.FC<TokenListItemType> = props => {
             title={item?.displayChainName}
             avatarSize={pTd(20)}
             imageUrl={item?.chainImageUrl}
-            svgName={item?.chainSvgName}
             borderStyle={itemStyle.tokenIconBorder}
           />
         </View>

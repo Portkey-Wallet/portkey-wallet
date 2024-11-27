@@ -71,3 +71,20 @@ export const formatPriceUsd = (price?: BigNumber.Value) => {
   const precisionResult = priceBN.toPrecision(4, BigNumber.ROUND_HALF_CEIL);
   return ZERO.plus(precisionResult).toFixed();
 };
+
+export function formatDateTime(dateString: string): string {
+  const date = new Date(dateString);
+  const year = date.getUTCFullYear();
+  const month = date.toLocaleString('en-US', { month: 'short', timeZone: 'UTC' });
+  const day = date.getUTCDate();
+  let hours = date.getUTCHours() + 2;
+  let minutes = date.getUTCMinutes();
+
+  if (hours >= 24) {
+    hours -= 24;
+  }
+
+  const minutesStr = minutes < 10 ? `0${minutes}` : minutes;
+
+  return `${month} ${day}, ${year}, at ${hours}:${minutesStr}`;
+}

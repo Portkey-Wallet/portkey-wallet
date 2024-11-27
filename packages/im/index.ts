@@ -179,11 +179,11 @@ export class IM {
     this.updateConnectObservers(e);
   };
 
-  onConnectErr = (e: any) => {
+  onConnectErr = () => {
     // console.log('CONNECT_ERR', e);
   };
 
-  onConnectClose = async (e: any) => {
+  onConnectClose = async () => {
     // console.log('CONNECT_CLOSE msg', e);
     if (this.status === IMStatusEnum.DESTROY) {
       console.log('CONNECT_CLOSE DESTROY');

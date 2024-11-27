@@ -136,14 +136,14 @@ export const contactSlice = createSlice({
         const { isInit, lastModified, contactIndexList, eventList } = action.payload;
         if (isInit && contactIndexList !== undefined) {
           state.contactIndexListNew = sortContactIndexListV2(contactIndexList);
-          state.lastModified = lastModified;
+          state.lastModified = lastModified || 0;
         }
 
         if (!isInit && eventList !== undefined) {
           let _contactIndexListNew = [...(state.contactIndexListNew || [])];
           _contactIndexListNew = executeEventToContactIndexListV2(_contactIndexListNew, eventList);
           state.contactIndexListNew = sortContactIndexListV2(_contactIndexListNew);
-          state.lastModified = lastModified;
+          state.lastModified = lastModified || 0;
         }
 
         if (state.contactIndexListNew?.length === 0) {

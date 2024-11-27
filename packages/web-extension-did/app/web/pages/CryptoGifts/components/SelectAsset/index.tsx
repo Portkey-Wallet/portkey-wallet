@@ -16,7 +16,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { useCommonState } from 'store/Provider/hooks';
 import './index.less';
 
-interface ISelectAssetProps extends ModalProps, DrawerProps {
+interface ISelectAssetProps extends Omit<ModalProps, 'getContainer'>, DrawerProps {
   onSelectAsset: (cur: ICryptoBoxAssetItemType, other?: ICryptoBoxAssetItemType) => void;
   onClose: () => void;
 }

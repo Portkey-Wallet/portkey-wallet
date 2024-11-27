@@ -49,6 +49,7 @@ let config = {
       buffer: require.resolve('buffer'),
       fs: false,
       child_process: false,
+      "vm": require.resolve("vm-browserify"),
     },
     modules: [path.resolve(projectRoot, 'node_modules'), path.resolve(workspaceRoot, 'node_modules')],
   },

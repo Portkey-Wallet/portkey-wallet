@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { View, ViewStyle } from 'react-native';
+import { TextStyle, View, ViewStyle } from 'react-native';
 import fonts from 'assets/theme/fonts';
 import { pTd } from 'utils/unit';
 import { TextL, TextM } from 'components/CommonText';
@@ -13,10 +13,11 @@ type TransactionDataSectionType = {
   topTitle?: string;
   dataInfo: { [key: string]: any } | string;
   style?: ViewStyle;
+  topTitleStyle?: TextStyle[];
 };
 
 export const TransactionDataSection = (props: TransactionDataSectionType) => {
-  const { topTitle, dataInfo, style = {} } = props;
+  const { topTitle, dataInfo, style = {}, topTitleStyle = [] } = props;
   const [collapsed, setCollapsed] = useState<boolean>(false);
   const styles = getStyles();
   const { theme } = useTheme();
@@ -26,7 +27,7 @@ export const TransactionDataSection = (props: TransactionDataSectionType) => {
       <Touchable
         style={[styles.topSection, GStyles.flexRow, GStyles.itemCenter]}
         onPress={() => setCollapsed(pre => !pre)}>
-        <TextL style={[fonts.SGMediumFont]}>{topTitle ?? 'Message'}</TextL>
+        <TextL style={[fonts.SGMediumFont, ...topTitleStyle]}>{topTitle ?? 'Message'}</TextL>
         <Svg
           iconStyle={[{ marginLeft: pTd(4), transform: [{ rotate: collapsed ? '0deg' : '-90deg' }] }]}
           size={pTd(16)}
@@ -34,7 +35,7 @@ export const TransactionDataSection = (props: TransactionDataSectionType) => {
         />
       </Touchable>
     ),
-    [collapsed, topTitle, styles],
+    [collapsed, topTitle, styles, topTitleStyle],
   );
 
   const DataSection = useMemo(() => {

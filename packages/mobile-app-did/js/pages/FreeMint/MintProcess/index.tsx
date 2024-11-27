@@ -63,7 +63,7 @@ const MintProcess = () => {
       console.log('error', error);
       CommonToast.failError(error);
     } finally {
-      myEvents.updateMintStatus.emit();
+      myEvents.updateMintStatus.emit({ onlyUpdateRecentStatus: true });
       Loading.hide();
     }
   }, [changeStep, confirmMint, editInfo?.description, editInfo?.imageUri, editInfo?.name]);

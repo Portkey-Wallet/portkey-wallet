@@ -456,7 +456,7 @@ export const assetsSlice = createSlice({
             skipCount: 0,
             maxResultCount: maxNFTCount,
             // prevTotalRecordCount: targetItem?.totalRecordCount || targetItem?.children || 0,
-            prevChildren: targetItem?.children || [],
+            prevChildren: targetItem?.children || targetItem?.prevChildren || [],
             totalRecordCount: 0,
             children: [],
             // children: [],
@@ -496,6 +496,7 @@ export const assetsSlice = createSlice({
         const { list, totalRecordCount, skipCount } = action.payload;
         if (currentNFTSeriesItem) {
           if (currentNFTSeriesItem?.children?.length > skipCount) return;
+          currentNFTSeriesItem.prevChildren = [...currentNFTSeriesItem.children];
           currentNFTSeriesItem.children = [...currentNFTSeriesItem.children, ...list];
           currentNFTSeriesItem.skipCount = currentNFTSeriesItem.children.length;
           currentNFTSeriesItem.totalRecordCount = totalRecordCount;

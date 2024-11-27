@@ -31,6 +31,8 @@ import CommonButton from 'components/CommonButton';
 import Touchable from 'components/Touchable';
 import { makeStyles } from '@rneui/themed';
 import CommonTooltip from 'components/CommonTooltip';
+import { useDappInfo } from '@portkey-wallet/hooks/hooks-ca/discover';
+import { CommonPromptCard, PromptCardType } from 'components/CommonPromptCard';
 
 interface RouterParams {
   origin: string;
@@ -49,6 +51,7 @@ const DappDetail: React.FC = () => {
   const { currentNetwork } = useWallet();
   const updateSessionInfo = useUpdateSessionInfo();
   const discoverJump = useDiscoverJumpWithNetWork();
+  const isInWebSet = useDappInfo(dappInfo?.origin || '', dappInfo?.icon || '');
 
   const styles = getStyles();
 
@@ -150,6 +153,15 @@ const DappDetail: React.FC = () => {
         item={dappInfo}
         onPress={() => onJumpToDapp(dappInfo?.name || '', dappInfo?.origin || '')}
       />
+      {!isInWebSet && (
+        <CommonPromptCard
+          style={{ marginBottom: pTd(12) }}
+          type={PromptCardType.WARNING}
+          description={
+            "The dApp's contract address, logo, or domain may not be authentic. Please proceed with caution."
+          }
+        />
+      )}
       <View style={styles.connectSection}>
         <TextL>{t('Connected time')}</TextL>
         <TextL style={FontStyles.weight500}>{formatTimeToStr(dappInfo?.connectedTime)}</TextL>

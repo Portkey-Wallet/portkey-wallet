@@ -129,7 +129,7 @@ export default function GiftDetail() {
         ) : null
       }
       containerStyles={styles.pageStyles}
-      safeAreaColor={['white', 'black']}>
+      safeAreaColor={['black']}>
       <FlatList
         ListHeaderComponent={() => (
           <>

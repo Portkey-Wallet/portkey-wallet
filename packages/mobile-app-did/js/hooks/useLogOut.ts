@@ -38,6 +38,7 @@ import { useLatestRef } from '@portkey-wallet/hooks';
 import { useMiscSetting } from '@portkey-wallet/hooks/hooks-ca/misc';
 import { reset } from 'utils/amplitude';
 import { resetAwaken } from '@portkey-wallet/store/store-ca/awaken/actions';
+import { resetTargetNetworkRecent } from '@portkey-wallet/store/store-ca/recent/slice';
 
 export default function useLogOut() {
   const dispatch = useAppDispatch();
@@ -51,6 +52,7 @@ export default function useLogOut() {
     try {
       reset();
       resetStore();
+      dispatch(resetTargetNetworkRecent(currentNetwork));
       dispatch(resetDappList(currentNetwork));
       dispatch(resetDiscover(currentNetwork));
       dispatch(resetDisclaimerConfirmedDapp(currentNetwork));

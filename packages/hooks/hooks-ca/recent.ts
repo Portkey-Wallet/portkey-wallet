@@ -114,9 +114,9 @@ export function useRecent() {
     [currentNetwork, dispatch],
   );
 
-  const resetRecent = useCallback(() => {
-    return dispatch(resetTargetNetworkRecent({ network: currentNetwork }));
+  const resetRecentCurrentNetwork = useCallback(() => {
+    return dispatch(resetTargetNetworkRecent(currentNetwork));
   }, [currentNetwork, dispatch]);
 
-  return { getTransformedRecentList, getRecentList, addRecent, resetRecent };
+  return { getTransformedRecentList, getRecentList, addRecent, resetRecentCurrentNetwork };
 }

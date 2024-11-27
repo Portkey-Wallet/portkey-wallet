@@ -456,7 +456,7 @@ export const assetsSlice = createSlice({
             skipCount: 0,
             maxResultCount: maxNFTCount,
             // prevTotalRecordCount: targetItem?.totalRecordCount || targetItem?.children || 0,
-            prevChildren: targetItem?.children || targetItem?.prevChildren || [],
+            prevChildren: targetItem?.children || [],
             totalRecordCount: 0,
             children: [],
             // children: [],

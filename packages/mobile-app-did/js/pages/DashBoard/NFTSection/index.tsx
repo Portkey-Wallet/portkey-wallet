@@ -152,18 +152,15 @@ export default function NFTSection() {
     }
   }, [caAddressInfos, fetchAccountNFTItem, nftSectionUiType, openCollectionObj]);
   useEffect(() => {
-    const listener = myEvents.updateMintStatus.addListener(async params => {
-      const onlyRecentStatus = params?.onlyRecentStatus;
+    const listener = myEvents.updateMintStatus.addListener(async () => {
       const res = await getRecentStatus();
       setRecentStatus(res.status);
       setItemId(res.itemId);
       setImageUrl(res.imageUrl);
       console.log('wfs====fetchAccountNFTCollectionInfoList4');
-      if (!onlyRecentStatus) {
-        getNFTCollectionsAsync(true);
-        // update open item
-        updateNFTItems();
-      }
+      getNFTCollectionsAsync(true);
+      // update open item
+      updateNFTItems();
       // myEvents.updateNFT.emit();
     });
     return () => listener.remove();

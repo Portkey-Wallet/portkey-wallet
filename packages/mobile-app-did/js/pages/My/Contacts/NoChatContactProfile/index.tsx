@@ -45,7 +45,7 @@ const NoChatContactProfile: React.FC = () => {
       return;
     }
     const isCopy = await Clipboard.setStringAsync(addressFormatStr);
-    isCopy && CommonToast.success(t('Copy Success'));
+    isCopy && CommonToast.success(t('Address copied'));
   }, [t]);
   const handleAddContact = useCallback(() => {
     navigationService.navigate('NoChatContactProfileEdit', { willAddContact: contact, from });
@@ -192,6 +192,7 @@ export default NoChatContactProfile;
 export const getPageStyles = makeStyles(theme => ({
   pageWrap: {
     flex: 1,
+    paddingTop: pTd(16),
   },
   dropDownWrap: {
     position: 'absolute',

@@ -43,13 +43,17 @@ export function useCheckUpdate() {
               onPress: () => Linking.openURL(req.downloadUrl),
             },
           ];
-          if (!req.isForceUpdate) buttons.push({ type: 'outline', title: 'Cancel', onPress: OverlayModal.hide });
+          if (!req.isForceUpdate) {
+            buttons.push({ type: 'outline', title: 'Cancel', onPress: OverlayModal.hide });
+          }
           OverlayModal.destroy();
           ActionSheet.alert({
             title: req.title,
             message: req.content,
             buttons,
             autoClose: false,
+            isCloseShow: false,
+            enabledNestScrollView: false,
           });
         }
       }

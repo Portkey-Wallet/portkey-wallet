@@ -269,8 +269,8 @@ const TransactionModal = (props: TransactionModalPropsType) => {
             <View style={[styles.flexSpaceBetween]}>
               <TextL>{t('From')}</TextL>
               <View>
-                <TextL style={[fonts.SGMediumFont]}>{nickName}</TextL>
-                <TextM style={{ color: theme.colors.textBase2 }}>
+                <TextL style={[fonts.SGMediumFont, GStyles.alignEnd]}>{nickName}</TextL>
+                <TextM style={[{ color: theme.colors.textBase2 }, GStyles.alignEnd]}>
                   {formatStr2EllipsisStr(
                     addressFormat(wallet?.[transactionInfo?.chainId]?.caAddress, transactionInfo.chainId),
                   )}
@@ -333,7 +333,10 @@ const TransactionModal = (props: TransactionModalPropsType) => {
                         <TextL style={[fonts.SGMediumFont]}>
                           {isFetchingFee
                             ? defaultToken.symbol
-                            : `${formatTokenAmountShowWithDecimals(fee, defaultToken.decimals)} ${symbol}`}
+                            : `${formatTokenAmountShowWithDecimals(
+                                ZERO.plus(amount).plus(fee),
+                                defaultToken.decimals,
+                              )} ${symbol}`}
                         </TextL>
                       </View>
                       {isMainnet && (

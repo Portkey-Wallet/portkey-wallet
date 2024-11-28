@@ -147,7 +147,7 @@ const getStyles = makeStyles(theme => ({
   contentWrap: {
     paddingLeft: pTd(16),
     paddingRight: pTd(16),
-    paddingBottom: pTd(120),
+    paddingBottom: pTd(128),
   },
   groupWrap: {
     marginTop: pTd(8),

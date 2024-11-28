@@ -525,7 +525,7 @@ const SendHome: React.FC = () => {
         networkFee: '0',
         networkFeeUnit: defaultToken.symbol,
         sendNumber,
-      } as IToSendPreviewParamsType),
+      } as unknown as IToSendPreviewParamsType),
     [assetInfo, defaultToken.symbol, selectedToContact, sendNumber, sendType],
   );
 
@@ -827,9 +827,11 @@ const SendHome: React.FC = () => {
       if (err?.code === 500) {
         setErrorMessage(TransactionError.FEE_NOT_ENOUGH);
         Loading.hide();
-        console.log('checkCanPreview 19', err);
-        return { status: false };
+      } else {
+        CommonToast.failError(err);
       }
+      console.log('checkCanPreview 19', err);
+      return { status: false };
     } finally {
       Loading.hide();
     }

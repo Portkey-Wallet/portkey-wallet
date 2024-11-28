@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import OverlayModal from 'components/OverlayModal';
 import { Keyboard, View } from 'react-native';
 import { pTd } from 'utils/unit';
@@ -57,7 +57,6 @@ const ApproveModal = (props: SignModalPropsType) => {
     isTimeOver12: true,
     formatTime: '',
   });
-  const getContractUpgradeTimeAlready = useRef<boolean>(false);
   useEffectOnce(() => {
     (async () => {
       const result = await getContractUpgradeTime({
@@ -68,7 +67,6 @@ const ApproveModal = (props: SignModalPropsType) => {
           maxResultCount: 10,
         },
       });
-      getContractUpgradeTimeAlready.current = true;
       const blockTime = result.data.contractList.items[0].metadata.block.blockTime;
       setContractUpgradeTimeResult({
         isInit: false,

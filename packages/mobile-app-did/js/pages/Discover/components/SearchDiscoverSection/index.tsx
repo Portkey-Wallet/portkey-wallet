@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { View, ScrollView } from 'react-native';
+import { View, ScrollView, Keyboard } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
 import { TextL, TextM } from 'components/CommonText';
 import { pTd } from 'utils/unit';
@@ -43,6 +43,7 @@ export default function SearchDiscoverSection(props: ISearchDiscoverSectionProps
         <Touchable
           style={styles.wrap}
           onPress={() => {
+            Keyboard.dismiss();
             jumpToWebview({
               item: {
                 name: inputValue || '',

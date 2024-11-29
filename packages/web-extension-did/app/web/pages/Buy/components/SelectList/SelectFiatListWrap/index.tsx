@@ -2,7 +2,7 @@ import { DrawerProps, ModalProps } from 'antd';
 import BaseDrawer from 'components/BaseDrawer';
 import './index.less';
 import { useCommonState } from 'store/Provider/hooks';
-import CustomPromptModal from 'pages/components/CustomPromptModal';
+import CustomPromptModal, { ICustomTokenModalProps } from 'pages/components/CustomPromptModal';
 import SelectFiatList from '../SelectFiatList';
 import { IRampFiatItem } from '@portkey-wallet/ramp';
 
@@ -33,7 +33,11 @@ export default function SelectFiatListWrap({
   const { isPrompt } = useCommonState();
 
   return isPrompt ? (
-    <CustomPromptModal {...props} onClose={onClose} destroyOnClose className="ramp-fiat-modal">
+    <CustomPromptModal
+      {...(props as ICustomTokenModalProps)}
+      onClose={onClose}
+      destroyOnClose
+      className="ramp-fiat-modal">
       <SelectFiatList
         title={title}
         searchPlaceHolder={searchPlaceHolder}

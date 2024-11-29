@@ -26,7 +26,7 @@ export default function ExchangeRate({ fromSymbol, toSymbol, toChainId, slippage
   const [exchange, setExchange] = useState(defaultNullValue);
   const [updateTime, setUpdateTime] = useState(MAX_UPDATE_TIME);
   const updateTimeRef = useRef(MAX_UPDATE_TIME);
-  const updateTimerRef = useRef<NodeJS.Timer | number>();
+  const updateTimerRef = useRef<ReturnType<typeof setInterval>>();
   const slippageFormat = useMemo(() => {
     if (!slippage) return '';
     return Number(slippage) * 100;

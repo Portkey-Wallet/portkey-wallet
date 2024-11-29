@@ -19,4 +19,8 @@ export default {
   unMarkFavorite: {
     target: '/api/app/cryptocurrency/unmark',
   },
+  checkDappInfo: {
+    target: '/api/app/contracts/websiteValild',
+    config: { method: 'GET' },
+  },
 } as const;

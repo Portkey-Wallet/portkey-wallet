@@ -25,7 +25,9 @@ import CommonTooltip from 'components/CommonTooltip';
 import { showRememberMeModal } from '../RememberMeOverlay';
 import Svg from 'components/Svg';
 import { RememberInfoType } from 'components/RememberMe';
-import { SessionKeyMap } from '@portkey-wallet/constants/constants-ca/dapp';
+import { DAPP_SECURITY_DOMAIN_HINT, SessionKeyMap } from '@portkey-wallet/constants/constants-ca/dapp';
+import { CommonPromptCard, PromptCardType } from 'components/CommonPromptCard';
+import { useDappInfo } from '@portkey-wallet/hooks/hooks-ca/discover';
 
 type ConnectModalType = {
   dappInfo: DappStoreItem;
@@ -46,7 +48,7 @@ const ConnectModal = (props: ConnectModalType) => {
     isRemember: false,
     value: SessionExpiredPlan.always,
   });
-
+  const isInWebSet = useDappInfo(dappInfo.origin, dappInfo.icon || '');
   const ButtonList = useMemo(
     () => [
       {
@@ -88,6 +90,13 @@ const ConnectModal = (props: ConnectModalType) => {
       onClose={onReject}>
       <View style={[styles.contentWrap]}>
         <View style={styles.groupWrap}>
+          {!isInWebSet && (
+            <CommonPromptCard
+              style={{ marginBottom: pTd(28) }}
+              type={PromptCardType.WARNING}
+              description={DAPP_SECURITY_DOMAIN_HINT}
+            />
+          )}
           <TextL style={[{ color: theme.colors.textBase2, lineHeight: pTd(22) }]}>
             {t('Connecting will allow this site to view balances and activity in your current account.')}
           </TextL>
@@ -150,8 +159,8 @@ const getStyles = makeStyles(theme => ({
     paddingBottom: pTd(128),
   },
   groupWrap: {
-    marginTop: pTd(8),
-    paddingTop: pTd(8),
+    marginTop: pTd(4),
+    // paddingTop: pTd(8),
   },
   walletInfo: {
     borderWidth: StyleSheet.hairlineWidth,

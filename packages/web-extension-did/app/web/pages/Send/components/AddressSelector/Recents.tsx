@@ -69,7 +69,7 @@ export default function Recents({
 
   return (
     <div className="recents">
-      {currentRecentList.map((item, index) => (
+      {currentRecentList.map((item: any, index: number) => (
         <RecentItem item={item} key={index} onClick={onChange} />
       ))}
       {currentRecentList.length > 0 && (

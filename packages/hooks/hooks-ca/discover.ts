@@ -4,7 +4,7 @@ import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { cleanBookmarkList, addBookmarkList } from '@portkey-wallet/store/store-ca/discover/slice';
 import { IBookmarkItem } from '@portkey-wallet/store/store-ca/discover/type';
 import { DISCOVER_BOOKMARK_MAX_COUNT } from '@portkey-wallet/constants/constants-ca/discover';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState, useEffect } from 'react';
 
 export const useBookmarkList = () => {
   const { networkType } = useCurrentNetworkInfo();
@@ -44,3 +44,22 @@ export const useBookmarkList = () => {
     bookmarkList,
   };
 };
+
+export function useDappInfo(website: string, logo: string) {
+  const [isInWebSet, setIsInWebSet] = useState<boolean>(true);
+  const checkDappIsLegal = useCallback(async (website: string, logo: string) => {
+    const result = await request.discover.checkDappInfo({
+      params: {
+        website,
+        logo,
+      },
+    });
+    setIsInWebSet(result);
+  }, []);
+  useEffect(() => {
+    (async () => {
+      await checkDappIsLegal(website, logo);
+    })();
+  }, [checkDappIsLegal, logo, website]);
+  return isInWebSet;
+}

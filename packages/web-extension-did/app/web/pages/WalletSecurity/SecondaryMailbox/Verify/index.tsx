@@ -25,7 +25,7 @@ export default function SecondaryMailboxVerify() {
   const [code, setCode] = useState<string>();
   const [codeErr, setCodeErr] = useState(false);
   const [timer, setTimer] = useState<number>(0);
-  const timerRef = useRef<NodeJS.Timer>();
+  const timerRef = useRef<ReturnType<typeof setInterval>>();
   const sessionIdRef = useRef(state.sessionid);
   const { sendSecondaryEmailCode } = useSecondaryMail(state.email);
   const { setLoading } = useLoading();

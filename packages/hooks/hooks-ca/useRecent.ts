@@ -1,15 +1,7 @@
 import { useAppCASelector } from './index';
 import { useMemo } from 'react';
 import { useAppCommonDispatch } from '../index';
-import { initCurrentChainRecentData } from '@portkey-wallet/store/store-ca/recent/slice';
-
-export const initialRecentData = {
-  isFetching: false,
-  skipCount: 0,
-  maxResultCount: 10,
-  totalRecordCount: 0,
-  recentContactList: [],
-};
+import { initCurrentChainRecentData, initialRecentData } from '@portkey-wallet/store/store-ca/recent/slice';
 
 export const useRecent = (caAddress: string) => {
   const recentState = useAppCASelector(state => state.recent);

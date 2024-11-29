@@ -552,6 +552,7 @@ export default function AddGuardian() {
         phone: phoneValue,
         social: socialValue,
         zkAuth,
+        type: '',
       };
       dispatch(setCurrentGuardianAction(newGuardian));
       dispatch(setOpGuardianAction(newGuardian));

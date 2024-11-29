@@ -68,6 +68,8 @@ type AlertBodyProps = {
   showInfoIcon?: boolean;
   closeAction?: () => void;
   isModalCloseDisable?: boolean;
+  enabledNestScrollView?: boolean;
+  enabledCloseModalByScroll?: boolean;
 };
 
 export function AlertBody({
@@ -197,6 +199,7 @@ const alert = (props: AlertBodyProps) => {
   OverlayModal.show(<AlertBody {...props} />, {
     modal: true,
     position: 'bottom',
+    enabledCloseModalByScroll: props.enabledCloseModalByScroll,
     onCloseRequest: props.isModalCloseDisable
       ? undefined
       : () => {

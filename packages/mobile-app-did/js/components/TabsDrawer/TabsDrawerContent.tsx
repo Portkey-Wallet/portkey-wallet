@@ -222,7 +222,7 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
   const CardGroupDom = useMemo(() => {
     return (
       <>
-        <ScrollView>
+        <ScrollView showsVerticalScrollIndicator={false}>
           <View style={styles.cardsContainer}>
             {tabs?.map(ele => (
               <Card key={ele.id} item={ele} />

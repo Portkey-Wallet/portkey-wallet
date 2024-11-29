@@ -16,7 +16,7 @@ import {
   fetchContactListAsync,
   refreshContactMap,
 } from '@portkey-wallet/store/store-ca/contact/actions';
-import { useAppCASelector, useAppCommonDispatch, useAppCommonSelector } from '../index';
+import { useAppCommonDispatch, useAppCommonSelector } from '../index';
 import { getAelfAddress, isAelfAddress } from '@portkey-wallet/utils/aelf';
 import { ContactsTab } from '@portkey-wallet/constants/constants-ca/assets';
 import { useAddStranger } from './im';

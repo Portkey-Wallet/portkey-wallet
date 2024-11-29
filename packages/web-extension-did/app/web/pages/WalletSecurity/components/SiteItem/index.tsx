@@ -113,7 +113,7 @@ export default function SiteItem({ siteItem }: ISiteItemProps) {
             <span className="label">{t('Remember me to skip authentication')}</span>
             <span className="value">
               {t(
-                "Once enabled, your session key will automatically approve all requests from this DApp, on this device only. You won't see pop-up notifications asking for your approvals until the session key expires. This feature is automatically off when you disconnect from the DApp or when the session key expires. You can also manually disable it or change the expiration time.",
+                "2Once enabled, your session key will automatically approve all requests from this DApp, on this device only. You won't see pop-up notifications asking for your approvals until the session key expires. This feature is automatically off when you disconnect from the DApp or when the session key expires. You can also manually disable it or change the expiration time.",
               )}
             </span>
           </div>

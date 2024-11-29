@@ -22,4 +22,5 @@ export interface RecentStateType {
   recentMap: {
     [T in NetworkType]?: IRecentItem[];
   };
+  [key: string]: any;
 }

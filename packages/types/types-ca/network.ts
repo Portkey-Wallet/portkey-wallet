@@ -39,3 +39,16 @@ export type NetworkItem = {
   zkLoginVerifyUrl?: string;
   cryptoGiftTgUrl?: string;
 };
+
+export interface INetworkServiceItem {
+  serviceName: string;
+  multiConfirmTime: string;
+  maxAmount: string | number;
+}
+
+export interface INetworkItem {
+  network: string;
+  name: string;
+  imageUrl: string;
+  serviceList: INetworkServiceItem[];
+}

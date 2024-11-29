@@ -35,3 +35,11 @@ export const CHAIN_ADDRESS_RULE: Array<{ syntax: RegExp; chainName: Array<string
 export function checkIsValidEtransferAddress(ads = '') {
   return CHAIN_ADDRESS_RULE.some(item => item.syntax.test(ads));
 }
+
+export const checkTimeOver12 = (inputTime: string) => {
+  const inputDate = new Date(inputTime);
+  const currentDate = new Date();
+  const diffInMilliseconds = currentDate.getTime() - inputDate.getTime();
+  const diffInHours = diffInMilliseconds / (1000 * 60 * 60);
+  return diffInHours > 12;
+};

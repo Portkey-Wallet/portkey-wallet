@@ -27,7 +27,7 @@ export const useUpdateReceiveAndInterval = (type: RampType, params: IUpdateRecei
   // const isShowMsg = useRef<boolean>(false);
   const [updateTime, setUpdateTime] = useState(MAX_UPDATE_TIME);
   const updateTimeRef = useRef(MAX_UPDATE_TIME);
-  const updateTimerRef = useRef<NodeJS.Timer | number>();
+  const updateTimerRef = useRef<ReturnType<typeof setInterval>>();
   const isShowErrorRef = useRef(false);
 
   const { updateBuyReceive, updateSellReceive, handleSetTimer, stopInterval, resetTimer } = useMemo(() => {

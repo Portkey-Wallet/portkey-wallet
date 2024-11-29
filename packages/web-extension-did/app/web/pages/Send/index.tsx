@@ -63,7 +63,7 @@ import { getDisclaimerData } from 'utils/disclaimer';
 import { TradeTypeEnum } from 'constants/trade';
 import { useCrossTransferByEtransfer } from 'hooks/useCrossTransferByEtransfer';
 import { CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL } from '@portkey-wallet/utils/withdraw';
-import { TWithdrawInfo } from '@etransfer/services';
+import { TWithdrawInfo } from '@etransfer/types';
 import { ExtensionContractBasic } from 'utils/sandboxUtil/ExtensionContractBasic';
 import { COMMON_PRIVATE } from '@portkey-wallet/constants';
 import { getAssetsEstimation } from '@portkey-wallet/store/store-ca/assets/api';

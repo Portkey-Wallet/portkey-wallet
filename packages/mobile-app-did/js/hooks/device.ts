@@ -54,7 +54,7 @@ export function useCheckUpdate() {
             autoClose: false,
             isCloseShow: false,
             isModalCloseDisable: true,
-            enabledNestScrollView: true,
+            enabledCloseModalByScroll: false,
           });
         }
       }

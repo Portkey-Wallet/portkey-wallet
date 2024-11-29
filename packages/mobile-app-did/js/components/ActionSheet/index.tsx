@@ -198,7 +198,7 @@ const alert = (props: AlertBodyProps) => {
   OverlayModal.show(<AlertBody {...props} />, {
     modal: true,
     position: 'bottom',
-    enabledNestScrollView: !!props.enabledNestScrollView,
+    enabledNestScrollView: props.enabledNestScrollView,
     onCloseRequest: props.isModalCloseDisable
       ? undefined
       : () => {

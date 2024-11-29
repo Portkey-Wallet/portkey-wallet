@@ -20,7 +20,7 @@ export default {
     target: '/api/app/cryptocurrency/unmark',
   },
   checkDappInfo: {
-    target: '/api/app/contract/info',
+    target: '/api/app/contracts/websiteValild',
     config: { method: 'GET' },
   },
 } as const;

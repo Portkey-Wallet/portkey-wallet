@@ -19,7 +19,7 @@ import { getOrigin } from '@portkey-wallet/utils/dapp/browser';
 import { showPeriodOverlay } from 'components/RememberMe';
 import { useCurrentDappInfo, useUpdateSessionInfo } from '@portkey-wallet/hooks/hooks-ca/dapp';
 import navigationService from 'utils/navigationService';
-import { SessionKeyMap } from '@portkey-wallet/constants/constants-ca/dapp';
+import { DAPP_SECURITY_DOMAIN_HINT, SessionKeyMap } from '@portkey-wallet/constants/constants-ca/dapp';
 import { SessionExpiredPlan } from '@portkey-wallet/types/session';
 import { usePin } from 'hooks/store';
 import { getManagerAccount } from 'utils/redux';
@@ -157,9 +157,7 @@ const DappDetail: React.FC = () => {
         <CommonPromptCard
           style={{ marginBottom: pTd(12) }}
           type={PromptCardType.WARNING}
-          description={
-            "The dApp's contract address, logo, or domain may not be authentic. Please proceed with caution."
-          }
+          description={DAPP_SECURITY_DOMAIN_HINT}
         />
       )}
       <View style={styles.connectSection}>

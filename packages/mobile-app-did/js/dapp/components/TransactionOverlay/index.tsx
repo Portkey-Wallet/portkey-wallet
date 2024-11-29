@@ -38,6 +38,11 @@ import { SessionKeyMap } from '@portkey-wallet/constants/constants-ca/dapp';
 import { showRememberMeModal } from '../RememberMeOverlay';
 import LottieLoading from 'components/LottieLoading';
 import { useTheme } from '@rneui/themed';
+import { useGetContractUpgradeTime } from '@portkey-wallet/graphql/dappSecurity/hooks';
+import { useEffectOnce } from '@portkey-wallet/hooks';
+import { checkTimeOver12 } from '@portkey-wallet/utils/check';
+import { formatDateTime } from '@portkey-wallet/utils/format';
+import { CommonPromptCard, PromptCardType } from 'components/CommonPromptCard';
 
 enum ErrorText {
   ESTIMATE_ERROR = 'Insufficient funds for transaction fee.',
@@ -70,6 +75,35 @@ const TransactionModal = (props: TransactionModalPropsType) => {
   });
   const chainInfo = useCurrentChain(transactionInfo.chainId);
   const [, getTokenPrice, getTokensPrice] = useGetCurrentAccountTokenPrice();
+  const getContractUpgradeTime = useGetContractUpgradeTime();
+  const [contractUpgradeTimeResult, setContractUpgradeTimeResult] = useState<any>({
+    isInit: true,
+    isTimeOver12: true,
+    upgradeTime: '',
+  });
+  useEffectOnce(() => {
+    (async () => {
+      const result = await getContractUpgradeTime({
+        input: {
+          chainId: transactionInfo.chainId,
+          address: transactionInfo.contractAddress || '',
+          skipCount: 0,
+          maxResultCount: 10,
+        },
+      });
+      const blockTime = result.data.contractList.items[0].metadata.block.blockTime;
+      setContractUpgradeTimeResult({
+        isInit: false,
+        isTimeOver12: checkTimeOver12(blockTime),
+        upgradeTime: formatDateTime(blockTime),
+      });
+      console.log('wfs=======', {
+        isInit: false,
+        isTimeOver12: checkTimeOver12(blockTime),
+        upgradeTime: formatDateTime(blockTime),
+      });
+    })();
+  });
 
   const [tokenDecimal, setTokenDecimal] = useState('0');
 
@@ -498,8 +532,15 @@ const TransactionModal = (props: TransactionModalPropsType) => {
         <TitleInfoSection viewStyle={{ paddingLeft: pTd(16) }} dappInfo={dappInfo} title="Approve transaction" />
       }
       onClose={onReject}>
-      <View style={[styles.contentWrap]}>
+      <View style={styles.contentWrap}>
         <ScrollView contentContainerStyle={GStyles.paddingBottom(106)}>
+          {!contractUpgradeTimeResult.isInit && (
+            <CommonPromptCard
+              style={{ marginTop: pTd(8) }}
+              type={contractUpgradeTimeResult.isTimeOver12 ? PromptCardType.INFO : PromptCardType.WARNING}
+              description={`Contract update time: ${contractUpgradeTimeResult.upgradeTime} The dApp's smart contract has been updated. Please proceed with caution.`}
+            />
+          )}
           {showSymbolAmountUI}
           {transferContent}
           {rememberMeUI}

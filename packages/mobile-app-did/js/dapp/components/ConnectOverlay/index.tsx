@@ -25,7 +25,7 @@ import CommonTooltip from 'components/CommonTooltip';
 import { showRememberMeModal } from '../RememberMeOverlay';
 import Svg from 'components/Svg';
 import { RememberInfoType } from 'components/RememberMe';
-import { SessionKeyMap } from '@portkey-wallet/constants/constants-ca/dapp';
+import { DAPP_SECURITY_DOMAIN_HINT, SessionKeyMap } from '@portkey-wallet/constants/constants-ca/dapp';
 import { CommonPromptCard, PromptCardType } from 'components/CommonPromptCard';
 import { useDappInfo } from '@portkey-wallet/hooks/hooks-ca/discover';
 
@@ -94,9 +94,7 @@ const ConnectModal = (props: ConnectModalType) => {
             <CommonPromptCard
               style={{ marginBottom: pTd(28) }}
               type={PromptCardType.WARNING}
-              description={
-                "The dApp's contract address, logo, or domain may not be authentic. Please proceed with caution."
-              }
+              description={DAPP_SECURITY_DOMAIN_HINT}
             />
           )}
           <TextL style={[{ color: theme.colors.textBase2, lineHeight: pTd(22) }]}>

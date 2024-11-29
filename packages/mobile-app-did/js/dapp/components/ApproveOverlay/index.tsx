@@ -55,7 +55,7 @@ const ApproveModal = (props: SignModalPropsType) => {
   const [contractUpgradeTimeResult, setContractUpgradeTimeResult] = useState<any>({
     isInit: true,
     isTimeOver12: true,
-    formatTime: '',
+    upgradeTime: '',
   });
   useEffectOnce(() => {
     (async () => {
@@ -71,7 +71,7 @@ const ApproveModal = (props: SignModalPropsType) => {
       setContractUpgradeTimeResult({
         isInit: false,
         isTimeOver12: checkTimeOver12(blockTime),
-        formatTime: formatDateTime(blockTime),
+        upgradeTime: formatDateTime(blockTime),
       });
     })();
   });

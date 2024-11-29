@@ -45,12 +45,12 @@ export const useBookmarkList = () => {
   };
 };
 
-export function useDappInfo(webset: string, logo: string) {
+export function useDappInfo(website: string, logo: string) {
   const [isInWebSet, setIsInWebSet] = useState<boolean>(true);
-  const checkDappIsLegal = useCallback(async (webset: string, logo: string) => {
+  const checkDappIsLegal = useCallback(async (website: string, logo: string) => {
     const result = await request.discover.checkDappInfo({
       params: {
-        webset,
+        website,
         logo,
       },
     });
@@ -58,8 +58,8 @@ export function useDappInfo(webset: string, logo: string) {
   }, []);
   useEffect(() => {
     (async () => {
-      await checkDappIsLegal(webset, logo);
+      await checkDappIsLegal(website, logo);
     })();
-  }, [checkDappIsLegal, logo, webset]);
+  }, [checkDappIsLegal, logo, website]);
   return isInWebSet;
 }

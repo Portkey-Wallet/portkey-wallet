@@ -35,6 +35,7 @@ export type OverlayModalProps = {
   type?: 'custom' | 'zoomOut';
   autoKeyboardInsets?: boolean;
   animated?: boolean;
+  enabledCloseModalByScroll?: boolean;
   enabledNestScrollView?: boolean;
   onCloseRequest?: () => void;
   customBounds?: CustomBounds;
@@ -81,6 +82,7 @@ export default class OverlayModal extends React.Component {
       style: propsStyle,
       containerStyle: propsContainerStyle,
       enabledNestScrollView,
+      enabledCloseModalByScroll = true,
       ...props
     } = overlayProps;
     const style: StyleProp<ViewStyle> = [];
@@ -112,12 +114,16 @@ export default class OverlayModal extends React.Component {
             elements.push(v);
           }}
           {...props}>
-          <OverlayTransformView
-            onCloseRequest={props.onCloseRequest}
-            containerStyle={containerStyle}
-            enabledNestScrollView={!!enabledNestScrollView}>
-            {component}
-          </OverlayTransformView>
+          {enabledCloseModalByScroll ? (
+            <OverlayTransformView
+              onCloseRequest={props.onCloseRequest}
+              containerStyle={containerStyle}
+              enabledNestScrollView={!!enabledNestScrollView}>
+              {component}
+            </OverlayTransformView>
+          ) : (
+            component
+          )}
         </Overlay.PopView>
       );
     } else {

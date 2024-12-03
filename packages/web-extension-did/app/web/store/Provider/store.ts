@@ -8,17 +8,17 @@ import { DappMiddle } from '@portkey-wallet/utils/dapp/middle';
 
 export const persistedReducer = persistReducer(storeConfig.reduxPersistConfig as any, rootReducer);
 
-const middlewareList: any[] = [];
-
-middlewareList.push(rateApi.middleware);
-// dapp middle
-// DappMiddle.registerEvent(SWEventController);
-middlewareList.push(DappMiddle.middle);
-
 export const store = configureStore({
   reducer: persistedReducer,
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware(storeConfig.defaultMiddlewareOptions).concat(middlewareList),
+  middleware: (getDefaultMiddleware) => [
+    ...getDefaultMiddleware({
+      ...storeConfig.defaultMiddlewareOptions,
+      serializableCheck: {
+        ignoredPaths: ['discover.initializedList'],
+      },
+    }),
+    ...([rateApi.middleware, DappMiddle.middle] as any[]),
+  ],
 });
 
 export type AppDispatch = typeof store.dispatch;

@@ -91,5 +91,5 @@ export function formatDateTime(dateString: string): string {
   const minutesStr = minutes < 10 ? `0${minutes}` : minutes;
   const secondsStr = seconds < 10 ? `0${seconds}` : seconds;
   const ampm = hours >= 12 ? 'PM' : 'AM';
-  return `${monthStr}/${dayStr}/${year} ${hoursStr}:${minutesStr}:${secondsStr} ${ampm} UTC`;
+  return `${monthStr}/${dayStr}/${year} ${hoursStr}:${minutesStr}:${secondsStr} ${ampm} UTC.`;
 }

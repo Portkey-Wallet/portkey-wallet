@@ -1,3 +1,4 @@
+console.log('load webpack.config.js!!!');
 /* eslint-disable */
 const webpack = require('webpack');
 const path = require('path');
@@ -54,6 +55,9 @@ let config = {
       fs: false,
       child_process: false,
       "vm": require.resolve("vm-browserify"),
+      "http": require.resolve("stream-http"),
+      "https": require.resolve("https-browserify"),
+      "zlib": require.resolve("browserify-zlib")
     },
     modules: [path.resolve(projectRoot, 'node_modules'), path.resolve(workspaceRoot, 'node_modules')],
   },
@@ -66,7 +70,10 @@ let config = {
           {
             loader: 'babel-loader',
             options: {
-              presets: ['@babel/preset-env'],
+              presets: [
+                ["@babel/preset-env", { "modules": false }],
+                "@babel/preset-typescript"
+              ]
             },
           },
           {

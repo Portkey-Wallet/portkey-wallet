@@ -1,5 +1,5 @@
 import { ApolloQueryResult } from '@apollo/client';
-import { TGraphQLClient } from './common';
+// import { TGraphQLClient } from './common';
 
 export * from './common';
 

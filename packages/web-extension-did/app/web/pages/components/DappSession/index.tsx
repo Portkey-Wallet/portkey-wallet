@@ -47,7 +47,7 @@ export default function DappSession({ onChange }: IDappSessionProps) {
           />
         </div>
       )}
-      <div className="tip">{`1Once enabled, your session key will automatically approve all requests from this DApp, on this device only. You won't see pop-up notifications asking for your approvals until the session key expires. This feature is automatically off when you disconnect from the DApp or when the session key expires. You can also manually disable it or change the expiration time.`}</div>
+      <div className="tip">{`Once enabled, your session key will automatically approve all requests from this DApp, on this device only. You won't see pop-up notifications asking for your approvals until the session key expires. This feature is automatically off when you disconnect from the DApp or when the session key expires. You can also manually disable it or change the expiration time.`}</div>
     </div>
   );
 }

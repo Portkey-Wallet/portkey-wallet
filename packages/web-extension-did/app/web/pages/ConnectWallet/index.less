@@ -1,6 +1,5 @@
 @import '../../assets/theme/color.less';
 @import '../../assets/theme/constants.less';
-
 .connect-wallet {
   margin: auto;
   padding: 40px 24px;
@@ -91,6 +90,26 @@
     .@{app-prefix}-btn-primary {
       color: @neutral-white-text;
       background-color: @brand-normal;
+    }
+  }
+  .connect-wallet-warning {
+    border-radius: 8px;
+    border: 1px solid#FFD4A2;
+    background: #FFF4E8;  
+    padding: 9px 12px;
+    margin-top: 16px;
+    display: flex;
+    .warning-icon {
+      width: 32px;
+      height: 16px;
+      margin-right: 8px;
+      color: #000;
+    }
+    .warning-title {
+      font-size: 12px;
+      color: @neutral-primary-text;
+      line-height: 16px;
+      font-weight: 400;
     }
   }
 }

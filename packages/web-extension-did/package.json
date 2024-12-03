@@ -66,7 +66,10 @@
     "vm-browserify": "^1.1.2",
     "web3": "^1.8.0",
     "web3-utils": "^1.8.0",
-    "whatwg-fetch": "^3.6.2"
+    "whatwg-fetch": "^3.6.2",
+    "https-browserify": "1.0.0",
+    "browserify-zlib": "0.2.0",
+    "stream-http": "3.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.19.1",
@@ -131,7 +134,8 @@
     "webpack-cli": "^4.10.0",
     "webpack-dev-server": "^4.11.0",
     "webpack-livereload-plugin": "^3.0.2",
-    "zip-folder": "1.0.0"
+    "zip-folder": "1.0.0",
+    "circular-dependency-plugin": "5.2.2"
   },
   "engines": {
     "node": ">=15.9.0"

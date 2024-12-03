@@ -22,8 +22,6 @@ import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { showWalletInfo } from '../WalletInfoOverlay';
 import { getHost } from '@portkey-wallet/utils/dapp/browser';
 import { WebViewNavigation } from 'react-native-webview';
-import { useKeyboard } from 'hooks/useKeyboardHeight';
-import { TopSpacing } from 'pages/Chat/components/hooks';
 import { makeStyles } from '@rneui/themed';
 import fonts from 'assets/theme/fonts';
 
@@ -68,17 +66,6 @@ function TabsDom({ activeWebViewRef, clickBottomActionBtn, onNavigationChange }:
     canGoBack: {},
     canGoForward: {},
   });
-  const { keyboardHeight, isKeyboardOpened } = useKeyboard(TopSpacing);
-
-  const webViewContainerStyle = useMemo(
-    () =>
-      isKeyboardOpened
-        ? {
-            paddingBottom: keyboardHeight,
-          }
-        : undefined,
-    [isKeyboardOpened, keyboardHeight],
-  );
 
   const handleSearch = useCallback(() => {
     clickBottomActionBtn('search');
@@ -216,7 +203,7 @@ function TabsDom({ activeWebViewRef, clickBottomActionBtn, onNavigationChange }:
     }
 
     return (
-      <View key={ele.id} style={[styles.webViewContainer, webViewContainerStyle]}>
+      <View key={ele.id} style={[styles.webViewContainer]}>
         <BrowserTab
           id={ele.id}
           uri={ele.url}

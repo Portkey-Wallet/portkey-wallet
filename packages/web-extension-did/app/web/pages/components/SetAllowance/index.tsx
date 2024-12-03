@@ -165,7 +165,7 @@ export default function SetAllowance({
       </div>
       {!contractUpgradeTimeResult.isInit && (
         <div
-          className={`set-allowance--warning ${
+          className={`set-allowance-warning ${
             !contractUpgradeTimeResult.isTimeOver12 && `set-allowance-warning-hint`
           }`}>
           <CustomSvg
@@ -173,7 +173,7 @@ export default function SetAllowance({
             className={`warning-icon`}
             fillColor={contractUpgradeTimeResult.isTimeOver12 ? '#5D42FF' : '#FF9417'}
           />
-          <div>{`Contract update time: ${
+          <div className={'warning-title'}>{`Contract update time: ${
             contractUpgradeTimeResult?.formatTime || 'Oct 15, 2024, at 17:07'
           } The dApp's smart contract has been updated. Please proceed with caution.`}</div>
         </div>

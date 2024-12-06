@@ -1,0 +1,119 @@
+import React, { forwardRef, useMemo } from 'react';
+import { Input, InputProps, useTheme } from '@rneui/themed';
+import Svg, { IconName } from 'components/Svg';
+import { bgWhiteStyles, commonStyles, getGeneralStyles, getSearchStyles } from './style';
+import { pTd } from 'utils/unit';
+import { useLanguage } from 'i18n/hooks';
+import Touchable from 'components/Touchable';
+import Lottie from 'lottie-react-native';
+
+export type CommonInputProps = InputProps & {
+  type?: 'search' | 'general';
+  theme?: 'white-bg' | 'gray-bg' | 'black-bg';
+  allowClear?: boolean;
+  clearIcon?: IconName;
+  clearIconColor?: string;
+  loading?: boolean;
+  grayBorder?: boolean;
+};
+
+const CommonInput = forwardRef(function CommonInput(props: CommonInputProps, forwardedRef: any) {
+  const { t } = useLanguage();
+  const {
+    loading,
+    grayBorder,
+    allowClear,
+    clearIcon = 'clear3',
+    clearIconColor,
+    placeholder,
+    type = 'search',
+    theme = 'black-bg',
+    inputStyle,
+    containerStyle,
+    inputContainerStyle,
+    labelStyle,
+    rightIconContainerStyle,
+    leftIconContainerStyle,
+    errorStyle,
+    errorMessage,
+    ...inputProps
+  } = props;
+  const { theme: pageTheme } = useTheme();
+  const searchStyles = getSearchStyles();
+  const generalStyles = getGeneralStyles();
+  const rightIconDom = useMemo(() => {
+    if (loading) {
+      return (
+        <Lottie style={commonStyles.loadingStyle} source={require('assets/lottieFiles/loading.json')} autoPlay loop />
+      );
+    } else {
+      return props.value && allowClear ? (
+        <Touchable onPress={() => props.onChangeText?.('')}>
+          <Svg icon={clearIcon} size={pTd(16)} color={clearIconColor || pageTheme.colors.bgNeutral2} />
+        </Touchable>
+      ) : type === 'search' ? (
+        <Svg icon="search" size={pTd(16)} color={pageTheme.colors.iconBase1} />
+      ) : undefined;
+    }
+  }, [
+    allowClear,
+    clearIcon,
+    clearIconColor,
+    loading,
+    pageTheme.colors.bgNeutral2,
+    pageTheme.colors.iconBase1,
+    props,
+    type,
+  ]);
+
+  if (type === 'search') {
+    return (
+      <Input
+        selectionColor={pageTheme.colors.bg13}
+        containerStyle={[searchStyles.containerStyle, containerStyle]}
+        inputContainerStyle={[
+          searchStyles.inputContainerStyle,
+          theme === 'white-bg' && bgWhiteStyles.inputContainerStyle,
+          grayBorder && commonStyles.inputContainerGrayBorderStyle,
+          inputContainerStyle,
+        ]}
+        inputStyle={[searchStyles.inputStyle, inputStyle]}
+        labelStyle={[searchStyles.labelStyle, labelStyle]}
+        rightIconContainerStyle={[commonStyles.rightIconContainerStyle, rightIconContainerStyle]}
+        leftIconContainerStyle={[searchStyles.leftIconContainerStyle, leftIconContainerStyle]}
+        placeholder={placeholder || t('Search')}
+        placeholderTextColor={pageTheme.colors.textBase3}
+        rightIcon={rightIconDom}
+        {...inputProps}
+        ref={forwardedRef}
+      />
+    );
+  }
+
+  return (
+    <Input
+      containerStyle={[generalStyles.containerStyle, containerStyle]}
+      inputContainerStyle={[
+        generalStyles.inputContainerStyle,
+        grayBorder && commonStyles.inputContainerGrayBorderStyle,
+        inputContainerStyle,
+        !!errorMessage && commonStyles.inputContainerErrorBorderStyle,
+      ]}
+      selectionColor={pageTheme.colors.bg13}
+      inputStyle={[generalStyles.inputStyle, inputStyle]}
+      labelStyle={[generalStyles.labelStyle, labelStyle]}
+      rightIconContainerStyle={[generalStyles.rightIconContainerStyle, rightIconContainerStyle]}
+      leftIconContainerStyle={leftIconContainerStyle}
+      errorStyle={[generalStyles.errorStyle, errorStyle]}
+      placeholder={placeholder || t('Please enter')}
+      placeholderTextColor={pageTheme.colors.textBase3}
+      disabledInputStyle={[generalStyles.disabledInputStyle]}
+      rightIcon={rightIconDom}
+      errorMessage={errorMessage}
+      keyboardAppearance="dark"
+      {...inputProps}
+      ref={forwardedRef}
+    />
+  );
+});
+export default CommonInput;

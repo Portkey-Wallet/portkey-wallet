@@ -1,0 +1,247 @@
+import { useCurrentWalletInfo, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { defaultColors } from 'assets/theme';
+import GStyles from 'assets/theme/GStyles';
+import { FontStyles } from 'assets/theme/styles';
+import fonts from 'assets/theme/fonts';
+import ActionSheet from 'components/ActionSheet';
+import CommonButton from 'components/CommonButton';
+import { TextL, TextM } from 'components/CommonText';
+import CommonToast from 'components/CommonToast';
+import Loading from 'components/Loading';
+import PageContainer from 'components/PageContainer';
+import { SafeAreaColorMapKeyUnit } from 'components/PageContainer';
+import Svg from 'components/Svg';
+import { useGetCurrentCAContract } from 'hooks/contract';
+import useEffectOnce from 'hooks/useEffectOnce';
+import useLogOut from 'hooks/useLogOut';
+import React, { useCallback, useMemo } from 'react';
+import { ScrollView } from 'react-native';
+import { View } from 'react-native';
+import navigationService from 'utils/navigationService';
+import { pTd } from 'utils/unit';
+import { useGetCurrentLoginAccountVerifyFunc } from 'hooks/verification';
+import { useGuardiansInfo } from 'hooks/store';
+import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
+import { darkColors, makeStyles, useTheme } from '@rneui/themed';
+import {
+  getSocialLoginAccountToken,
+  deleteLoginAccount,
+  checkIsValidateDeletionAccount,
+} from '@portkey-wallet/utils/deleteAccount';
+import {
+  ACCOUNT_CANCELATION_CONDITIONS,
+  ACCOUNT_CANCELATION_NOTE,
+  ACCOUNT_CANCELATION_TIP,
+  ACCOUNT_CANCELATION_WARNING,
+} from '@portkey-wallet/constants/constants-ca/wallet';
+import { CONTACT_PRIVACY_TYPE_LABEL_MAP } from '@portkey-wallet/constants/constants-ca/contact';
+
+const safeAreaColor: SafeAreaColorMapKeyUnit[] = ['black'];
+
+const ScrollViewProps = { disabled: true };
+
+export default function AccountCancelation() {
+  const styles = getStyles();
+  const { theme } = useTheme();
+  const { caHash, address: managerAddress } = useCurrentWalletInfo();
+  const getCurrentCAContract = useGetCurrentCAContract();
+  const currentLoginAccountVerifyFunc = useGetCurrentLoginAccountVerifyFunc();
+  const logout = useLogOut();
+  const { userGuardiansList } = useGuardiansInfo();
+  const guardianItem = useMemo(() => userGuardiansList?.[0], [userGuardiansList]);
+  const { guardianType, verifier, guardianAccount } = guardianItem || {};
+
+  const originChainId = useOriginChainId();
+
+  const onDeletion = useCallback(async () => {
+    if (!caHash || !managerAddress) return;
+    if (guardianType === undefined) return;
+    Loading.show();
+
+    let socialLoginToken = '';
+    if (guardianType === LoginType.Email) {
+      Loading.hide();
+      return currentLoginAccountVerifyFunc?.();
+    } else {
+      try {
+        const token = await getSocialLoginAccountToken({
+          currentLoginAccount: guardianAccount || '',
+          getAccountUserInfoFunc: currentLoginAccountVerifyFunc,
+        });
+        socialLoginToken = token;
+      } catch (error) {
+        CommonToast.failError(error);
+      }
+    }
+
+    if (!socialLoginToken) return Loading.hide();
+    const caContract = await getCurrentCAContract();
+    const removeManagerParams = {
+      caContract,
+      managerAddress,
+      caHash,
+    };
+    const deleteParams = {
+      type: LoginType[guardianType],
+      chainId: originChainId,
+      token: socialLoginToken,
+      verifierId: verifier?.id || '',
+      guardianIdentifier: guardianAccount,
+    };
+
+    try {
+      await deleteLoginAccount({
+        removeManagerParams,
+        deleteParams,
+      });
+      await logout();
+    } catch (error) {
+      CommonToast.failError(error);
+    } finally {
+      Loading.hide();
+    }
+  }, [
+    caHash,
+    currentLoginAccountVerifyFunc,
+    getCurrentCAContract,
+    guardianAccount,
+    guardianType,
+    logout,
+    managerAddress,
+    originChainId,
+    verifier?.id,
+  ]);
+
+  const AlertWaring = useCallback(
+    (pass?: boolean) => {
+      ActionSheet.alert({
+        title: <Svg icon="warning" color={'#FFF'} size={pTd(32)} />,
+        title2: <TextM style={styles.title2}>Delete Account Warning</TextM>,
+        message: ACCOUNT_CANCELATION_WARNING,
+        buttons: [
+          { title: 'Cancel', onPress: pass ? undefined : navigationService.goBack, type: 'outline' },
+          {
+            title: 'Continue',
+            onPress: pass ? onDeletion : undefined,
+            style: styles.continue,
+            titleStyle: styles.continueTitle,
+          },
+        ],
+      });
+    },
+    [onDeletion],
+  );
+  useEffectOnce(() => {
+    // show alert after transition animation
+    const timer = setTimeout(() => {
+      AlertWaring();
+    }, 500);
+    return () => clearTimeout(timer);
+  });
+  const onConfirm = useCallback(async () => {
+    if (!caHash || !managerAddress) return;
+    Loading.show();
+    try {
+      const list = await checkIsValidateDeletionAccount(LoginType[guardianType || 0]);
+
+      if (list.length > 0) {
+        return ActionSheet.alert({
+          title: 'Unable to Delete Account',
+          messageList: list.map(ele =>
+            ele.replace(/LOGIN_ACCOUNT/g, CONTACT_PRIVACY_TYPE_LABEL_MAP[guardianType || 0]),
+          ),
+          buttons: [{ title: 'OK' }],
+        });
+      }
+      AlertWaring(true);
+    } catch (error) {
+      CommonToast.failError(error);
+    } finally {
+      Loading.hide();
+    }
+  }, [AlertWaring, caHash, guardianType, managerAddress]);
+  return (
+    <PageContainer
+      scrollViewProps={ScrollViewProps}
+      containerStyles={styles.pageWrap}
+      titleDom={'Account Deletion'}
+      safeAreaColor={safeAreaColor}>
+      <ScrollView>
+        <View style={styles.containerStyle}>
+          <Svg icon="warning_v2" color={theme.colors.iconDanger1} size={pTd(42)} />
+          <TextM style={styles.tipText}>{ACCOUNT_CANCELATION_TIP}</TextM>
+          <View style={styles.boxStyle}>
+            <TextM style={FontStyles.font3}>{ACCOUNT_CANCELATION_NOTE}</TextM>
+            {ACCOUNT_CANCELATION_CONDITIONS.map(({ title, content }, index) => {
+              return (
+                <View style={styles.tipItem} key={index}>
+                  <TextL style={styles.titleStyle}>
+                    {index + 1}. {title}
+                  </TextL>
+                  <TextM style={styles.contentStyle}>
+                    {content.replace(/LOGIN_ACCOUNT/g, CONTACT_PRIVACY_TYPE_LABEL_MAP[guardianType || 0])}
+                  </TextM>
+                </View>
+              );
+            })}
+          </View>
+        </View>
+      </ScrollView>
+      <CommonButton
+        buttonStyle={styles.continue}
+        titleStyle={styles.continueTitle}
+        title="Confirm account deletion"
+        type="primary"
+        onPress={onConfirm}
+      />
+    </PageContainer>
+  );
+}
+
+export const getStyles = makeStyles(theme => ({
+  pageWrap: {
+    flex: 1,
+    ...GStyles.paddingArg(24, 20, 18),
+  },
+  title2: {
+    color: theme.colors.textBase1,
+    fontSize: pTd(20),
+    marginTop: pTd(12),
+  },
+  continue: {
+    backgroundColor: theme.colors.bgDanger1,
+    color: theme.colors.textBase1,
+  },
+  continueTitle: {
+    color: theme.colors.textBase1,
+  },
+  containerStyle: {
+    ...GStyles.itemCenter,
+  },
+  tipText: {
+    marginVertical: 16,
+    textAlign: 'center',
+  },
+  boxStyle: {
+    borderRadius: 6,
+    width: '100%',
+    backgroundColor: theme.colors.bgBase2,
+    ...GStyles.paddingArg(24, pTd(12)),
+  },
+  tipItem: {
+    marginTop: 24,
+  },
+  titleStyle: {
+    color: theme.colors.textBase1,
+    marginBottom: 4,
+    ...fonts.BGMediumFont,
+  },
+  contentStyle: {
+    color: theme.colors.textBase2,
+    marginTop: pTd(12),
+  },
+  alertMessage: {
+    color: defaultColors.font3,
+    marginBottom: pTd(12),
+  },
+}));

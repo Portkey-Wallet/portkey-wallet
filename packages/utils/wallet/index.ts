@@ -15,6 +15,7 @@ import { isValidPassword, isValidPin, isValidWalletName } from '@portkey-wallet/
 import { AccountType, Password, WalletInfoType } from '@portkey-wallet/types/wallet';
 import { PIN_SIZE, ZERO } from '@portkey-wallet/constants/misc';
 import { isExtension } from '@portkey-wallet/utils';
+import { TAccountInfo, TWalletInfo } from '@portkey-wallet/types/types-eoa/wallet';
 
 export const handleWalletInfo = (walletInfo: any) => {
   const tmpWallet = { ...walletInfo };
@@ -63,6 +64,56 @@ export const formatWalletInfo = (
     delete accountInfo.AESEncryptMnemonic;
     delete accountInfo.walletName;
     return { walletInfo, accountInfo };
+  } catch (error) {
+    return false;
+  }
+};
+
+export const formatWalletInfoV2 = (
+  walletInfoInput: any,
+  password: Password,
+  walletName?: string,
+  addressName?: string,
+): TWalletInfo | false => {
+  try {
+    if (!walletInfoInput || !password) {
+      return false;
+    }
+    const { mnemonic } = walletInfoInput;
+
+    const AESEncryptMnemonic = aes.encrypt(mnemonic || '', password);
+
+    const nextBIP44Path = getNextBIP44Path(walletInfoInput.BIP44Path);
+    const account = AElf.wallet.getWalletByMnemonic(mnemonic, nextBIP44Path);
+    const accountAESEncryptPrivateKey = aes.encrypt(account.privateKey, password);
+    if (!account?.publicKey) {
+      const publicKey = account.keyPair.getPublic();
+      account.publicKey = {
+        x: publicKey.x.toString('hex'),
+        y: publicKey.y.toString('hex'),
+      };
+    }
+
+    const accountInfo: TAccountInfo = {
+      BIP44Path: nextBIP44Path,
+      address: account.address,
+      AESEncryptPrivateKey: accountAESEncryptPrivateKey,
+      publicKey: account.publicKey,
+      name: addressName || 'Address 1',
+      isHide: false,
+    };
+
+    const walletInfo = {
+      key: walletInfoInput.address,
+      AESEncryptMnemonic,
+      BIP44Path: walletInfoInput.BIP44Path,
+      nextBIP44Path: getNextBIP44Path(nextBIP44Path),
+      name: walletName || 'Wallet 1',
+      accountList: [accountInfo],
+      isBackup: false,
+    };
+
+    return walletInfo;
   } catch (error) {
     return false;
   }

@@ -1,10 +1,12 @@
 import React from 'react';
 import { darkColors, defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import Touchable from 'components/Touchable';
-import { TextL } from 'components/CommonText';
+import { FontStyles } from 'assets/theme/styles';
+import { TextL, TextM } from 'components/CommonText';
+import fonts from 'assets/theme/fonts';
 import { TextStyleType, ViewStyleType } from 'types/styles';
 import { makeStyles } from '@rneui/themed';
 

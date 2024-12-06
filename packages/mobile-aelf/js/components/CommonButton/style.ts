@@ -3,7 +3,7 @@ import { darkColors, defaultColors } from 'assets/theme/index';
 import { pTd } from 'utils/unit';
 import fonts from 'assets/theme/fonts';
 
-const { font2, bg5, bg6 } = defaultColors;
+const { font4, font2, primaryColor, bg5, bg6, bg14 } = defaultColors;
 
 export const styles = StyleSheet.create({
   buttonStyle: {

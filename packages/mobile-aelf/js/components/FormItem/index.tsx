@@ -1,4 +1,4 @@
-import { darkColors } from 'assets/theme';
+import { defaultColors, darkColors } from 'assets/theme';
 import { TextM } from 'components/CommonText';
 import React, { ReactNode } from 'react';
 import { View, StyleSheet } from 'react-native';

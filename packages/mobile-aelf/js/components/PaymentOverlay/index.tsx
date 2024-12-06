@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import OverlayModal from 'components/OverlayModal';
-import { View, Text } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 import { ModalBody } from 'components/ModalBody';
 import { pTd } from 'utils/unit';
 import { ChainId } from '@portkey-wallet/types';

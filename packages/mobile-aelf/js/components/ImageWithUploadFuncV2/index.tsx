@@ -10,6 +10,7 @@ import Loading from 'components/Loading';
 import { isValidAvatarFile } from '@portkey-wallet/utils/reg';
 import CommonToast from 'components/CommonToast';
 import { View, StyleSheet } from 'react-native';
+import { defaultColors } from 'assets/theme';
 import { makeStyles } from '@rneui/themed';
 export enum ImageShowType {
   CIRCLE,
@@ -33,7 +34,7 @@ export type ImageWithUploadFuncInstance = {
 };
 
 const ImageWithUploadFuncV2 = forwardRef(function ImageWithUploadFuncV2(props: UploadImageType, ref) {
-  const { title, imageUrl, avatarSize = pTd(48), onChangeImage, defaultComponent, onChooseSuccess } = props;
+  const { title, imageUrl, avatarSize = pTd(48), onChangeImage, defaultComponent, type, onChooseSuccess } = props;
   const [localPhotoFile, setLocalPhotoFile] = useState<ImagePicker.ImagePickerAsset>();
   const styles = getStyles();
   useEffect(() => {

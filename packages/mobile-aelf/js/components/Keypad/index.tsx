@@ -6,6 +6,7 @@ import { TextH1 } from 'components/CommonText';
 import { pTd } from 'utils/unit';
 import Svg from 'components/Svg';
 import { PIN_SIZE } from '@portkey-wallet/constants/misc';
+import { defaultColors } from 'assets/theme';
 import fonts from 'assets/theme/fonts';
 import { useTheme } from '@rneui/themed';
 

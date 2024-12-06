@@ -27,7 +27,7 @@ type SignModalPropsType = {
   onSign: () => void;
 };
 const SignModal = (props: SignModalPropsType) => {
-  const { dappInfo, signInfo, realMethod, isCipherText, onReject, onSign } = props;
+  const { dappInfo, signInfo, isCipherText, onReject, onSign } = props;
   const { t } = useLanguage();
   const getDecodedTxData = useDecodeTx();
   const [loading, setLoading] = useState(true);
@@ -103,14 +103,18 @@ const SignModal = (props: SignModalPropsType) => {
             <CommonPromptCard
               style={{ marginTop: pTd(8) }}
               type={PromptCardType.WARNING}
-              description={`Unknown authorization. Please proceed with caution.`}
+              description={'Unknown authorization. Please proceed with caution.'}
             />
           )}
           <TextL
             style={{
               marginTop: pTd(24),
               color: theme.colors.textBase2,
-            }}>{`Signing this message will prove you have ownership of the current account. Only sign messages from applications you trust.`}</TextL>
+            }}>
+            {
+              'Signing this message will prove you have ownership of the current account. Only sign messages from applications you trust.'
+            }
+          </TextL>
 
           {clearText ? (
             isManagerForwardCall ? (
@@ -124,7 +128,7 @@ const SignModal = (props: SignModalPropsType) => {
         </ScrollView>
       </View>
       <OverlayBottomSection bottomButtonGroup={ButtonList}>
-        <TextL style={[styles.bottomText, GStyles.alignCenter]}>{t(`Only sign if you trust this website`)}</TextL>
+        <TextL style={[styles.bottomText, GStyles.alignCenter]}>{t('Only sign if you trust this website')}</TextL>
       </OverlayBottomSection>
     </ModalBody>
   );

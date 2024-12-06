@@ -50,6 +50,7 @@ const stylesMap: any = {
 
 const CommonButton: React.FC<CommonButtonProps> = props => {
   const {
+    size,
     radius,
     type,
     buttonStyle,

@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import Svg, { IconName } from 'components/Svg';
 import { pTd } from 'utils/unit';
 import { Text, TextStyle, View, ViewStyle } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import { checkIsSvgUrl } from 'utils';
 import { SvgCssUri } from 'react-native-svg/css';
@@ -130,7 +131,7 @@ export default function CommonAvatar(props: CommonAvatarProps) {
     </View>
   );
 }
-const getStyles = makeStyles(_ => ({
+const getStyles = makeStyles(theme => ({
   avatarWrap: {
     width: pTd(48),
     height: pTd(48),

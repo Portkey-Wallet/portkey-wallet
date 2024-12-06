@@ -525,7 +525,7 @@ const SendHome: React.FC = () => {
         networkFee: '0',
         networkFeeUnit: defaultToken.symbol,
         sendNumber,
-      } as IToSendPreviewParamsType),
+      } as unknown as IToSendPreviewParamsType),
     [assetInfo, defaultToken.symbol, selectedToContact, sendNumber, sendType],
   );
 
@@ -794,26 +794,36 @@ const SendHome: React.FC = () => {
     try {
       if (isAELFCross && isSupportCross) {
         const network = selectedToContact?.chainId || 'AELF';
+        let isEtransferCrossInLimit = false;
 
-        const { withdrawInfo } = await crossTransferByEtransfer.withdrawPreview({
-          symbol: assetInfo.symbol,
-          address: selectedToContact.address,
-          chainId: assetInfo.chainId,
-          amount: sendNumber,
-          network,
-        });
+        try {
+          const { withdrawInfo } = await crossTransferByEtransfer.withdrawPreview({
+            symbol: assetInfo.symbol,
+            address: selectedToContact.address,
+            chainId: assetInfo.chainId,
+            amount: sendNumber,
+            network,
+          });
 
-        transactionFee = withdrawInfo?.aelfTransactionFee;
-        const maxAmount = Number(withdrawInfo?.maxAmount);
-        const minAmount = Number(withdrawInfo?.minAmount);
-        transactionFee = withdrawInfo.transactionFee;
-        transactionUnit = withdrawInfo.transactionUnit;
-        const isEtransferCrossInLimit = Number(sendNumber) >= minAmount && Number(sendNumber) <= maxAmount;
-        if (isEtransferCrossInLimit) {
-          receiveAmount = withdrawInfo?.receiveAmount;
-          receiveAmountUsd = withdrawInfo?.receiveAmountUsd;
-          transferType = TransferType.E_TRANSFER;
-        } else {
+          transactionFee = withdrawInfo?.aelfTransactionFee;
+          const maxAmount = Number(withdrawInfo?.maxAmount);
+          const minAmount = Number(withdrawInfo?.minAmount);
+          transactionFee = withdrawInfo.transactionFee;
+          transactionUnit = withdrawInfo.transactionUnit;
+          isEtransferCrossInLimit = Number(sendNumber) >= minAmount && Number(sendNumber) <= maxAmount;
+
+          // eTransfer
+          if (isEtransferCrossInLimit) {
+            receiveAmount = withdrawInfo?.receiveAmount;
+            receiveAmountUsd = withdrawInfo?.receiveAmountUsd;
+            transferType = TransferType.E_TRANSFER;
+          }
+        } catch (error) {
+          console.log('isEtransferCrossInLimit', error);
+          isEtransferCrossInLimit = false;
+        }
+        // GENERAL_CROSS_CHAIN
+        if (!isEtransferCrossInLimit) {
           transferType = TransferType.GENERAL_CROSS_CHAIN;
           networkFee = await getTransactionFee(isAELFCross, sendNumber);
           networkFeeUnit = 'ELF';
@@ -827,9 +837,8 @@ const SendHome: React.FC = () => {
       if (err?.code === 500) {
         setErrorMessage(TransactionError.FEE_NOT_ENOUGH);
         Loading.hide();
-        console.log('checkCanPreview 19', err);
-        return { status: false };
       }
+      return { status: false };
     } finally {
       Loading.hide();
     }

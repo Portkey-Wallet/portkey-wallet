@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import { View, SafeAreaView, StatusBar } from 'react-native';
 import navigationService from 'utils/navigationService';
 import Svg from 'components/Svg';
@@ -6,7 +6,7 @@ import { pTd } from 'utils/unit';
 import { defaultColors } from 'assets/theme';
 
 import { useLanguage } from 'i18n/hooks';
-import { useIsFocused } from '@react-navigation/native';
+import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
 import { TextM } from 'components/CommonText';
 import GStyles from 'assets/theme/GStyles';
@@ -17,6 +17,7 @@ import { CameraView, Camera } from 'expo-camera';
 import Loading from 'components/Loading';
 import { useHandleDataFromQrCode } from 'hooks/useQrScan';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import { sleep } from '@portkey-wallet/utils';
 import { useLatestRef } from '@portkey-wallet/hooks';
 import Touchable from 'components/Touchable';
 import { makeStyles } from '@rneui/themed';
@@ -30,11 +31,21 @@ const QrScanner: React.FC<QrScannerProps> = () => {
 
   const PageStyle = getStyles();
 
+  const [refresh, setRefresh] = useState<boolean>();
   const handleDataFromQrCode = useHandleDataFromQrCode();
 
   const isFocused = useIsFocused();
 
   const latestIsFocused = useLatestRef(isFocused);
+  useFocusEffect(
+    useCallback(() => {
+      (async () => {
+        setRefresh(true);
+        await sleep(10);
+        setRefresh(false);
+      })();
+    }, []),
+  );
 
   const handleBarCodeScanned = useLockCallback(
     async ({ data = '' }) => {
@@ -81,22 +92,24 @@ const QrScanner: React.FC<QrScannerProps> = () => {
         }}
         style={[PageStyle.barCodeScanner, !isIOS && PageStyle.barCodeScannerAndroid]}
         onBarcodeScanned={handleBarCodeScanned}>
-        <SafeAreaView style={PageStyle.innerView}>
-          <View style={PageStyle.iconWrap}>
-            <Touchable
-              style={PageStyle.svgWrap}
-              onPress={() => {
-                navigationService.goBack();
-              }}>
-              <Svg icon="left-arrow-v2" size={pTd(20)} />
-            </Touchable>
-            <Touchable style={PageStyle.svgWrap} onPress={selectImage}>
-              <Svg icon="photo" size={pTd(24)} />
-            </Touchable>
-          </View>
-          <Svg icon="scan-square" size={pTd(240)} iconStyle={PageStyle.scan} />
-          <TextM style={PageStyle.tips}>{t('Send crypto and connect to dApps \n by scanning a QR code')}</TextM>
-        </SafeAreaView>
+        {!refresh && (
+          <SafeAreaView style={PageStyle.innerView}>
+            <View style={PageStyle.iconWrap}>
+              <Touchable
+                style={PageStyle.svgWrap}
+                onPress={() => {
+                  navigationService.goBack();
+                }}>
+                <Svg icon="left-arrow-v2" size={pTd(20)} />
+              </Touchable>
+              <Touchable style={PageStyle.svgWrap} onPress={selectImage}>
+                <Svg icon="photo" size={pTd(24)} />
+              </Touchable>
+            </View>
+            <Svg icon="scan-square" size={pTd(240)} iconStyle={PageStyle.scan} />
+            <TextM style={PageStyle.tips}>{t('Send crypto and connect to dApps \n by scanning a QR code')}</TextM>
+          </SafeAreaView>
+        )}
       </CameraView>
     </View>
   );

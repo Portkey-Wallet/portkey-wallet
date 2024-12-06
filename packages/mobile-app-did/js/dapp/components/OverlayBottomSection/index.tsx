@@ -1,12 +1,11 @@
 import React from 'react';
 import { View, ViewProps } from 'react-native';
-import { StyleSheet } from 'react-native';
 import { pTd } from 'utils/unit';
-import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import ButtonRow from 'components/ButtonRow';
 import { CommonButtonProps } from 'components/CommonButton';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { makeStyles } from '@rneui/themed';
 
 export interface OverlayBottomSectionProps extends ViewProps {
   children?: React.ReactNode;
@@ -21,36 +20,37 @@ export interface OverlayBottomSectionProps extends ViewProps {
 
 export const OverlayBottomSection: React.FC<OverlayBottomSectionProps> = props => {
   const { children, bottomButtonGroup } = props;
+  const styles = getStyles();
 
   return (
     <View style={styles.groupWrap}>
-      {children}
       <ButtonRow
         style={styles.buttonGroup}
         buttonStyle={styles.buttonStyle}
         titleStyle={styles.buttonTitleStyle}
         buttons={bottomButtonGroup}
       />
+      {children}
     </View>
   );
 };
 
-export const styles = StyleSheet.create({
+export const getStyles = makeStyles(theme => ({
   groupWrap: {
     width: screenWidth,
-    backgroundColor: defaultColors.bg1,
     position: 'absolute',
     bottom: 0,
-    ...GStyles.paddingArg(10, 20, 16, 20),
+    ...GStyles.paddingArg(0, 16, 14, 16),
+    backgroundColor: theme.colors.bgBase1,
   },
   buttonGroup: {
-    backgroundColor: defaultColors.bg1,
+    backgroundColor: theme.colors.bgBase1,
   },
   buttonStyle: {
     height: pTd(48),
-    fontSize: pTd(18),
+    fontSize: pTd(16),
   },
   buttonTitleStyle: {
     fontSize: pTd(16),
   },
-});
+}));

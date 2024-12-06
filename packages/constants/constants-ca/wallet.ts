@@ -30,20 +30,20 @@ export const FAUCET_URL = 'https://testnet-faucet.aelf.io/';
 export const MAX_TRANSACTION_FEE = '0.1';
 export const PORTKEY_PROJECT_CODE = '10000';
 
-export const ACCOUNT_CANCELATION_TIP = `Account deletion is an irreversible operation. Once deleted, your account cannot be recovered. Please carefully consider this before continuing.`;
-export const ACCOUNT_CANCELATION_NOTE = `Please note that your account can only be deleted if it meets the following conditions:`;
+export const ACCOUNT_CANCELATION_TIP = `Deleting your account is a permanent action. Once deleted, your account cannot be recovered. Please consider this carefully before proceeding.`;
+export const ACCOUNT_CANCELATION_NOTE = `To continue with deletion, ensure the following conditions are met:`;
 export const ACCOUNT_CANCELATION_CONDITIONS = [
   {
-    title: `Asset`,
-    content: `Please transfer all of your assets out of your account, including Tokens and NFTs.`,
+    title: `Assets`,
+    content: `Transfer all assets, including Tokens and NFTs, out of your account.`,
   },
   {
-    title: `Guardian`,
-    content: `Please ensure that other users have already disassociated the Guardian from your current LOGIN_ACCOUNT.`,
+    title: `Guardians`,
+    content: `Other users must have disassociated the Guardian from your current email.`,
   },
   {
     title: `Login Device`,
-    content: `Your account is only logged in on this device.`,
+    content: `Ensure your account is only logged in on this device.`,
   },
 ];
 export const ACCOUNT_CANCELATION_ALERT_MAP = {
@@ -51,4 +51,4 @@ export const ACCOUNT_CANCELATION_ALERT_MAP = {
   Guardian: `Your LOGIN_ACCOUNT is set as a guardian by other accounts. To proceed, please first remove your LOGIN_ACCOUNT's linked guardian.`,
   LoginDevice: `Your account is logged in on other devices. To proceed, please first log out there or remove the login device.`,
 };
-export const ACCOUNT_CANCELATION_WARNING = `Are you sure you want to delete your account? Please note that you won't be able to recover your account once it's deleted.`;
+export const ACCOUNT_CANCELATION_WARNING = `Are you sure you want to delete your account? This action is irreversible.`;

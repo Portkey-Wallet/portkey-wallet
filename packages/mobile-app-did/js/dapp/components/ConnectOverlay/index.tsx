@@ -1,25 +1,16 @@
 import React, { useMemo, useState } from 'react';
 import OverlayModal from 'components/OverlayModal';
 import { StyleSheet, View } from 'react-native';
-import { defaultColors } from 'assets/theme';
 import fonts from 'assets/theme/fonts';
 import { pTd } from 'utils/unit';
 import { useLanguage } from 'i18n/hooks';
 import { ModalBody } from 'components/ModalBody';
-import { TextL, TextM, TextS } from 'components/CommonText';
-import { useCurrentCaInfo, useCurrentUserInfo, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { CAInfo } from '@portkey-wallet/types/types-ca/wallet';
-import { addressFormat, formatChainInfoToShow, formatStr2EllipsisStr, sleep } from '@portkey-wallet/utils';
-import { ChainId } from '@portkey-wallet/types';
-import { formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
+import { TextL } from 'components/CommonText';
+import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { sleep } from '@portkey-wallet/utils';
 import GStyles from 'assets/theme/GStyles';
-import { FontStyles } from 'assets/theme/styles';
 import { DappStoreItem } from '@portkey-wallet/store/store-ca/dapp/type';
-import { useGStyles } from 'assets/theme/useGStyles';
 import { CommonButtonProps } from 'components/CommonButton';
-import DappInfoSection from '../DappInfoSection';
-import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
-import { RememberInfoType, RememberMe } from 'components/RememberMe';
 import { OverlayBottomSection } from '../OverlayBottomSection';
 import { SessionExpiredPlan } from '@portkey-wallet/types/session';
 import { useUpdateSessionInfo } from '@portkey-wallet/hooks/hooks-ca/dapp';
@@ -27,48 +18,34 @@ import { usePin } from 'hooks/store';
 import { getManagerAccount } from 'utils/redux';
 import { isIOS } from '@rneui/base';
 import Touchable from 'components/Touchable';
-import { copyText } from 'utils';
+import TitleInfoSection from '../TitleInfoSection';
+import { makeStyles, useTheme } from '@rneui/themed';
+import CommonAvatar from 'components/CommonAvatar';
+import CommonTooltip from 'components/CommonTooltip';
+import { showRememberMeModal } from '../RememberMeOverlay';
 import Svg from 'components/Svg';
-import { useAccountTokenInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
+import { RememberInfoType } from 'components/RememberMe';
+import { SessionKeyMap } from '@portkey-wallet/constants/constants-ca/dapp';
 
 type ConnectModalType = {
   dappInfo: DappStoreItem;
   onReject: () => void;
   onApprove: () => void;
 };
-
+const AUTH_MSG =
+  'When set to any value other than "Always," your session key will automatically approve this dApp\'s requests on this device, suppressing pop-ups until it expires. The feature disables when you disconnect or when the session key expires, and you can manually turn it off or adjust the expiration time.';
 const ConnectModal = (props: ConnectModalType) => {
   const { dappInfo, onReject, onApprove } = props;
   const { t } = useLanguage();
   const pin = usePin();
-  const defaultToken = useDefaultToken();
-  const caInfo = useCurrentCaInfo();
-  const { currentNetwork } = useWallet();
-  const { nickName = '' } = useCurrentUserInfo();
-  const gStyles = useGStyles();
+  const userInfo = useCurrentUserInfo();
   const updateSessionInfo = useUpdateSessionInfo();
-
+  const styles = getStyles();
+  const { theme } = useTheme();
   const [rememberInfo, setRememberMeInfo] = useState<RememberInfoType>({
     isRemember: false,
-    value: SessionExpiredPlan.hour1,
+    value: SessionExpiredPlan.always,
   });
-
-  const { accountTokenList } = useAccountTokenInfo();
-
-  const caInfoList = useMemo(() => {
-    const list: any[] = [];
-    Object.entries(caInfo || {}).map(([key, value]) => {
-      const info = value as CAInfo;
-      if (info?.caAddress) {
-        list.push({
-          chaiId: key,
-          caAddress: info.caAddress,
-          ...accountTokenList.find(token => token.chainId === key && token.symbol === defaultToken.symbol),
-        });
-      }
-    });
-    return list;
-  }, [accountTokenList, caInfo, defaultToken.symbol]);
 
   const ButtonList = useMemo(
     () => [
@@ -81,7 +58,7 @@ const ConnectModal = (props: ConnectModalType) => {
         },
       },
       {
-        title: t('Approve'),
+        title: t('Connect'),
         type: 'primary' as CommonButtonProps['type'],
         onPress: async () => {
           onApprove?.();
@@ -101,40 +78,55 @@ const ConnectModal = (props: ConnectModalType) => {
         },
       },
     ],
-    [dappInfo.origin, onApprove, onReject, pin, rememberInfo.isRemember, rememberInfo?.value, t, updateSessionInfo],
+    [dappInfo.origin, onApprove, onReject, pin, rememberInfo, t, updateSessionInfo],
   );
 
   return (
-    <ModalBody modalBodyType="bottom" title={t('Connect Wallet')} onClose={onReject}>
-      <View style={[styles.contentWrap, gStyles.overlayStyle]}>
-        <DappInfoSection dappInfo={dappInfo} />
-        <TextM style={[styles.walletTitle, FontStyles.font3]}>{t('Wallet')}</TextM>
-        <View style={styles.group}>
-          <TextL style={(FontStyles.font5, fonts.mediumFont)}>{nickName}</TextL>
-          {caInfoList?.map((item, index) => (
-            <View key={item?.chaiId} style={[styles.itemWrap, !!index && styles.itemBorderTop]}>
-              <View>
-                <TextM>{formatStr2EllipsisStr(addressFormat(item?.caAddress, item?.chaiId as ChainId), 8)}</TextM>
-                <TextS style={styles.itemChainInfo}>
-                  {formatChainInfoToShow(item?.chaiId as ChainId, currentNetwork)}
-                </TextS>
-              </View>
-              <View style={styles.copyBtnWrap}>
-                <Touchable onPress={() => copyText(addressFormat(item?.caAddress, item?.chainId as ChainId))}>
-                  <Svg icon="copy" size={pTd(16)} />
-                </Touchable>
-              </View>
-              <View>
-                <TextS>{`${formatTokenAmountShowWithDecimals(item?.balance, item?.decimals)} ${item?.symbol}`}</TextS>
-                <TextS style={styles.itemChainInfo} />
-              </View>
+    <ModalBody
+      modalBodyType="bottom"
+      leftTitleDom={<TitleInfoSection viewStyle={{ paddingLeft: pTd(16) }} dappInfo={dappInfo} title={t('Connect')} />}
+      onClose={onReject}>
+      <View style={[styles.contentWrap]}>
+        <View style={styles.groupWrap}>
+          <TextL style={[{ color: theme.colors.textBase2, lineHeight: pTd(22) }]}>
+            {t('Connecting will allow this site to view balances and activity in your current account.')}
+          </TextL>
+          <View style={[styles.walletInfo, GStyles.flexRow, GStyles.itemCenter]}>
+            <CommonAvatar
+              hasBorder={!userInfo?.avatar}
+              title={userInfo?.nickName}
+              avatarSize={pTd(32)}
+              imageUrl={userInfo?.avatar || ''}
+              resizeMode="cover"
+              titleStyle={{ fontSize: pTd(14) }}
+            />
+            <TextL numberOfLines={1} style={[styles.accountName, GStyles.maxWidth(pTd(280))]}>
+              {userInfo.nickName}
+            </TextL>
+          </View>
+          <View style={[styles.authInfo, GStyles.flexRow, GStyles.itemCenter, GStyles.spaceBetween]}>
+            <View style={[GStyles.flexRow, GStyles.itemCenter]}>
+              <TextL style={{ lineHeight: pTd(22) }}>{t('Require authentication')}</TextL>
+              <CommonTooltip
+                iconStyle={{ marginLeft: pTd(4) }}
+                tooltipProps={{
+                  title: t('Require authentication'),
+                  description: AUTH_MSG,
+                }}
+              />
             </View>
-          ))}
+            <Touchable
+              style={[GStyles.flexRow, GStyles.itemCenter]}
+              onPress={() => showRememberMeModal({ rememberInfo, setRememberMeInfo })}>
+              <TextL style={[{ lineHeight: pTd(22) }, fonts.SGMediumFont]}>{SessionKeyMap[rememberInfo.value]}</TextL>
+              <Svg iconStyle={styles.arrowIcon} icon="down-arrow" size={pTd(16)} />
+            </Touchable>
+          </View>
         </View>
+        <OverlayBottomSection bottomButtonGroup={ButtonList}>
+          <TextL style={[styles.bottomText, GStyles.alignCenter]}>{t('Only connect to websites you trust')}</TextL>
+        </OverlayBottomSection>
       </View>
-      <OverlayBottomSection bottomButtonGroup={ButtonList}>
-        <RememberMe dappInfo={dappInfo} rememberInfo={rememberInfo} setRememberMeInfo={setRememberMeInfo} />
-      </OverlayBottomSection>
     </ModalBody>
   );
 };
@@ -151,71 +143,39 @@ export default {
   showConnectModal,
 };
 
-const styles = StyleSheet.create({
+const getStyles = makeStyles(theme => ({
   contentWrap: {
-    paddingLeft: pTd(20),
-    paddingRight: pTd(20),
+    paddingLeft: pTd(16),
+    paddingRight: pTd(16),
+    paddingBottom: pTd(128),
   },
-  favIcon: {
-    width: pTd(48),
-    height: pTd(48),
-    borderRadius: pTd(24),
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: defaultColors.border6,
-    marginBottom: pTd(8),
-    marginTop: pTd(24),
-  },
-  title: {
-    marginBottom: pTd(2),
-  },
-  group: {
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: defaultColors.border6,
+  groupWrap: {
     marginTop: pTd(8),
-    borderRadius: pTd(6),
-    ...GStyles.paddingArg(16, 16, 0),
+    paddingTop: pTd(8),
   },
-  walletTitle: {
-    marginTop: pTd(24),
-    paddingLeft: pTd(10),
+  walletInfo: {
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: theme.colors.borderBase1,
+    marginTop: pTd(16),
+    borderRadius: pTd(28),
+    ...GStyles.paddingArg(12, 16),
   },
-  itemWrap: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingTop: pTd(16),
-    paddingBottom: pTd(16),
+  accountName: {
+    lineHeight: pTd(22),
+    marginLeft: pTd(8),
   },
-  itemBorderTop: {
-    borderTopColor: defaultColors.border6,
-    borderTopWidth: StyleSheet.hairlineWidth,
+  authInfo: {
+    ...GStyles.paddingArg(16),
+    marginTop: pTd(16),
+    height: pTd(54),
+    borderRadius: pTd(16),
+    backgroundColor: theme.colors.bgBase2,
   },
-  itemChainInfo: {
-    marginTop: pTd(4),
+  arrowIcon: {
+    transform: [{ rotate: '-90deg' }],
   },
-  btn: {
-    width: pTd(160),
-    height: pTd(44),
+  bottomText: {
+    marginTop: pTd(16),
+    color: theme.colors.textBase2,
   },
-
-  buttonGroup: {
-    backgroundColor: defaultColors.bg1,
-    position: 'absolute',
-    bottom: 0,
-    ...GStyles.paddingArg(10, 20, 16, 20),
-  },
-  buttonStyle: {
-    height: pTd(48),
-    fontSize: pTd(18),
-  },
-  buttonTitleStyle: {
-    fontSize: pTd(16),
-  },
-  copyBtnWrap: {
-    flex: 1,
-    height: '100%',
-    paddingTop: pTd(2),
-    paddingLeft: pTd(8),
-  },
-});
+}));

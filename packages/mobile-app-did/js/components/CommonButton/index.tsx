@@ -3,10 +3,10 @@ import { Button, ButtonProps } from '@rneui/themed';
 import { styles } from './style';
 import { pTd } from 'utils/unit';
 import { useThrottleCallback } from '@portkey-wallet/hooks';
+import Lottie from 'lottie-react-native';
 
 export type CommonButtonProps = {
-  buttonType?: 'send' | 'receive';
-  type?: 'solid' | 'clear' | 'outline' | 'primary' | 'transparent';
+  type?: 'solid' | 'clear' | 'outline' | 'primary' | 'transparent' | 'warning' | 'warningNoBorder';
   onPressWithSecond?: number;
   radius?: number;
 } & Omit<ButtonProps, 'type'>;
@@ -29,15 +29,28 @@ const stylesMap: any = {
     buttonStyle: styles.primaryButtonStyle,
     titleStyle: styles.primaryTitleStyle,
     disabledStyle: [styles.primaryButtonStyle, styles.disabledStyle, styles.disabledPrimaryStyle],
-    disabledTitleStyle: styles.primaryTitleStyle,
+    disabledTitleStyle: styles.disabledPrimaryStyle,
   },
   transparent: {
     buttonStyle: styles.transparentButtonStyle,
+  },
+  warning: {
+    buttonStyle: styles.waringButtonStyle,
+    titleStyle: styles.warningTitleStyle,
+    disabledStyle: styles.waringDisabledStyle,
+    disabledTitleStyle: styles.waringDisabledTitleStyle,
+  },
+  warningNoBorder: {
+    buttonStyle: styles.waringNoBorderButtonStyle,
+    titleStyle: styles.warningNoBorderTitleStyle,
+    disabledStyle: styles.waringNoBorderDisabledStyle,
+    disabledTitleStyle: styles.warningNoBorderTitleStyle,
   },
 };
 
 const CommonButton: React.FC<CommonButtonProps> = props => {
   const {
+    size,
     radius,
     type,
     buttonStyle,
@@ -47,6 +60,7 @@ const CommonButton: React.FC<CommonButtonProps> = props => {
     onPress,
     onPressIn,
     onPressWithSecond,
+    loading,
     ...buttonProps
   } = props;
   const mapStyles = type ? stylesMap[type] : undefined;
@@ -56,7 +70,7 @@ const CommonButton: React.FC<CommonButtonProps> = props => {
 
   return (
     <Button
-      radius={radius || pTd(8)}
+      radius={radius || pTd(24)}
       iconPosition="left"
       size="md"
       buttonStyle={[styles.buttonStyle, mapStyles?.buttonStyle, buttonStyle]}
@@ -66,8 +80,18 @@ const CommonButton: React.FC<CommonButtonProps> = props => {
       {...buttonProps}
       onPress={onPress ? handleOnPress : undefined}
       onPressIn={onPressIn ? handleOnPressIn : undefined}
-      type={type === 'primary' || type === 'transparent' ? undefined : type}
-    />
+      type={
+        type === 'primary' || type === 'transparent' || type === 'warning' || type === 'warningNoBorder'
+          ? undefined
+          : type
+      }
+      loading={false}>
+      {loading ? (
+        <Lottie style={styles.loadingIcon} source={require('assets/lottieFiles/spinnerDark.json')} autoPlay loop />
+      ) : (
+        buttonProps.children
+      )}
+    </Button>
   );
 };
 

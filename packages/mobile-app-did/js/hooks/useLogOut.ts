@@ -37,6 +37,8 @@ import { resetBadge } from 'utils/notifee';
 import { useLatestRef } from '@portkey-wallet/hooks';
 import { useMiscSetting } from '@portkey-wallet/hooks/hooks-ca/misc';
 import { reset } from 'utils/amplitude';
+import { resetAwaken } from '@portkey-wallet/store/store-ca/awaken/actions';
+import { resetTargetNetworkRecent } from '@portkey-wallet/store/store-ca/recent/slice';
 
 export default function useLogOut() {
   const dispatch = useAppDispatch();
@@ -50,6 +52,7 @@ export default function useLogOut() {
     try {
       reset();
       resetStore();
+      dispatch(resetTargetNetworkRecent(currentNetwork));
       dispatch(resetDappList(currentNetwork));
       dispatch(resetDiscover(currentNetwork));
       dispatch(resetDisclaimerConfirmedDapp(currentNetwork));
@@ -61,6 +64,7 @@ export default function useLogOut() {
       dispatch(resetIm(currentNetwork));
       dispatch(resetSecurity(currentNetwork));
       dispatch(reSetCheckManagerExceed(currentNetwork));
+      dispatch(resetAwaken(currentNetwork));
       resetCurrentNetworkSetting();
       logoutResetStore();
       if (otherNetworkLogged) {
@@ -88,7 +92,9 @@ export function useCheckManager() {
   return useCallback(
     async ({ chainId, caHash, address }: { chainId?: ChainId; caHash: string; address: string }) => {
       let chainInfo;
-      if (chainId) chainInfo = await getChainInfo(chainId);
+      if (chainId) {
+        chainInfo = await getChainInfo(chainId);
+      }
       const caContract = await getCurrentCAViewContract(chainInfo);
       const info = await caContract?.callViewMethod('GetHolderInfo', { caHash });
       if (info) {
@@ -108,11 +114,15 @@ export function useCheckManagerOnLogout() {
   const latestOriginChainId = useLatestRef(originChainId);
   const logout = useLogOut();
   return useLockCallback(async () => {
-    if (!caHash) return;
+    if (!caHash) {
+      return;
+    }
     try {
       const isManager = await checkManager({ caHash, address, chainId: latestOriginChainId.current });
       const walletInfo = getWalletInfo();
-      if (!isManager && walletInfo?.address === address && isCurrentCaHash(caHash)) logout();
+      if (!isManager && walletInfo?.address === address && isCurrentCaHash(caHash)) {
+        logout();
+      }
     } catch (error) {
       console.log(error, '======error-useCheckManagerOnLogout');
     }

@@ -15,12 +15,14 @@ import { useGetRedPackageConfig, useInitIM } from '@portkey-wallet/hooks/hooks-c
 import { useBookmarkList } from '@portkey-wallet/hooks/hooks-ca/discover';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import im from '@portkey-wallet/im';
-import { useInitRamp } from '@portkey-wallet/hooks/hooks-ca/ramp';
+import { useInitRampV2 } from '@portkey-wallet/hooks/hooks-ca/ramp';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import { codePushOperator } from 'utils/update';
 import { useGetCryptoGiftConfig } from '@portkey-wallet/hooks/hooks-ca/cryptogift';
 import * as Application from 'expo-application';
-import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/actions';
+import { fetchContactListAsync, fetchContactListV2Async } from '@portkey-wallet/store/store-ca/contact/actions';
+import { useContactNetworkConfig, useTransferNetworkConfig } from '@portkey-wallet/hooks/hooks-ca/config';
+import { resetBadge } from 'utils/notifee';
 
 export default function useInitData() {
   const dispatch = useAppDispatch();
@@ -32,18 +34,25 @@ export default function useInitData() {
   useCheckAndInitNetworkDiscoverMap();
   useGetRedPackageConfig(true, true);
 
+  const { fetchContactSupportConfig } = useContactNetworkConfig();
+  const { fetchAssetSupportConfig } = useTransferNetworkConfig();
+
   const { refresh: loadBookmarkList } = useBookmarkList();
   const initIM = useInitIM();
   const { init: initCryptoGiftConfig } = useGetCryptoGiftConfig();
-  const initRamp = useInitRamp({
+  const initRamp = useInitRampV2({
     clientType: isIOS ? 'iOS' : 'Android',
   });
   const { init: initGuardianList } = useRefreshGuardianList(true);
 
   const loadIM = useCallback(async () => {
-    if (!pin) return;
+    if (!pin) {
+      return;
+    }
     const account = getManagerAccount(pin);
-    if (!account || !wallet.caHash) return;
+    if (!account || !wallet.caHash) {
+      return;
+    }
 
     try {
       await initIM(account, wallet.caHash);
@@ -57,9 +66,15 @@ export default function useInitData() {
 
   const init = useCallback(async () => {
     try {
+      resetBadge();
       getCurrentCAViewContract();
       dispatch(getCaHolderInfoAsync());
       dispatch(getSymbolImagesAsync());
+      dispatch(fetchContactListV2Async(true));
+
+      fetchContactSupportConfig();
+      fetchAssetSupportConfig();
+
       initGuardianList();
 
       loadBookmarkList();
@@ -74,7 +89,16 @@ export default function useInitData() {
     } catch (error) {
       console.log(error, '====error');
     }
-  }, [dispatch, getCurrentCAViewContract, initCryptoGiftConfig, initGuardianList, initRamp, loadBookmarkList]);
+  }, [
+    dispatch,
+    fetchAssetSupportConfig,
+    fetchContactSupportConfig,
+    getCurrentCAViewContract,
+    initCryptoGiftConfig,
+    initGuardianList,
+    initRamp,
+    loadBookmarkList,
+  ]);
 
   const isChat = useIsChatShow();
   useEffect(() => {

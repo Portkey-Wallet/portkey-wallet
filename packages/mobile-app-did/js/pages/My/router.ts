@@ -5,7 +5,10 @@ import ContactsNav from './Contacts/index';
 import GuardianNav from './Guardian/index';
 import UserReferral from './UserReferral/index';
 
+import SecurityNav from './Security/router';
+
 const stackNav = [
+  // ...SecurityNav,
   ...WalletSecurityNav,
   ...WalletHomeNav,
   ...accountSettingsNav,

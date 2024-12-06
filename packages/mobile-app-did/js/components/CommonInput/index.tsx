@@ -1,17 +1,18 @@
 import React, { forwardRef, useMemo } from 'react';
-import { Input, InputProps } from '@rneui/themed';
-import Svg from 'components/Svg';
-import { commonStyles, generalStyles, searchStyles, bgWhiteStyles } from './style';
+import { Input, InputProps, useTheme } from '@rneui/themed';
+import Svg, { IconName } from 'components/Svg';
+import { bgWhiteStyles, commonStyles, getGeneralStyles, getSearchStyles } from './style';
 import { pTd } from 'utils/unit';
 import { useLanguage } from 'i18n/hooks';
-import { defaultColors } from 'assets/theme';
 import Touchable from 'components/Touchable';
 import Lottie from 'lottie-react-native';
 
 export type CommonInputProps = InputProps & {
   type?: 'search' | 'general';
-  theme?: 'white-bg' | 'gray-bg';
+  theme?: 'white-bg' | 'gray-bg' | 'black-bg';
   allowClear?: boolean;
+  clearIcon?: IconName;
+  clearIconColor?: string;
   loading?: boolean;
   grayBorder?: boolean;
 };
@@ -22,9 +23,11 @@ const CommonInput = forwardRef(function CommonInput(props: CommonInputProps, for
     loading,
     grayBorder,
     allowClear,
+    clearIcon = 'clear3',
+    clearIconColor,
     placeholder,
     type = 'search',
-    theme = 'gray-bg',
+    theme = 'black-bg',
     inputStyle,
     containerStyle,
     inputContainerStyle,
@@ -32,9 +35,12 @@ const CommonInput = forwardRef(function CommonInput(props: CommonInputProps, for
     rightIconContainerStyle,
     leftIconContainerStyle,
     errorStyle,
+    errorMessage,
     ...inputProps
   } = props;
-
+  const { theme: pageTheme } = useTheme();
+  const searchStyles = getSearchStyles();
+  const generalStyles = getGeneralStyles();
   const rightIconDom = useMemo(() => {
     if (loading) {
       return (
@@ -43,16 +49,27 @@ const CommonInput = forwardRef(function CommonInput(props: CommonInputProps, for
     } else {
       return props.value && allowClear ? (
         <Touchable onPress={() => props.onChangeText?.('')}>
-          <Svg icon="clear3" size={pTd(16)} />
+          <Svg icon={clearIcon} size={pTd(16)} color={clearIconColor || pageTheme.colors.bgNeutral2} />
         </Touchable>
+      ) : type === 'search' ? (
+        <Svg icon="search" size={pTd(16)} color={pageTheme.colors.iconBase1} />
       ) : undefined;
     }
-  }, [allowClear, loading, props]);
+  }, [
+    allowClear,
+    clearIcon,
+    clearIconColor,
+    loading,
+    pageTheme.colors.bgNeutral2,
+    pageTheme.colors.iconBase1,
+    props,
+    type,
+  ]);
 
-  if (type === 'search')
+  if (type === 'search') {
     return (
       <Input
-        selectionColor={defaultColors.bg13}
+        selectionColor={pageTheme.colors.bg13}
         containerStyle={[searchStyles.containerStyle, containerStyle]}
         inputContainerStyle={[
           searchStyles.inputContainerStyle,
@@ -64,34 +81,36 @@ const CommonInput = forwardRef(function CommonInput(props: CommonInputProps, for
         labelStyle={[searchStyles.labelStyle, labelStyle]}
         rightIconContainerStyle={[commonStyles.rightIconContainerStyle, rightIconContainerStyle]}
         leftIconContainerStyle={[searchStyles.leftIconContainerStyle, leftIconContainerStyle]}
-        placeholder={placeholder || t('Please enter')}
-        placeholderTextColor={defaultColors.font7}
-        leftIcon={<Svg icon="search" size={pTd(16)} />}
+        placeholder={placeholder || t('Search')}
+        placeholderTextColor={pageTheme.colors.textBase3}
         rightIcon={rightIconDom}
         {...inputProps}
         ref={forwardedRef}
       />
     );
+  }
 
   return (
     <Input
       containerStyle={[generalStyles.containerStyle, containerStyle]}
       inputContainerStyle={[
         generalStyles.inputContainerStyle,
-        theme === 'white-bg' && bgWhiteStyles.inputContainerStyle,
         grayBorder && commonStyles.inputContainerGrayBorderStyle,
         inputContainerStyle,
+        !!errorMessage && commonStyles.inputContainerErrorBorderStyle,
       ]}
-      selectionColor={defaultColors.bg13}
+      selectionColor={pageTheme.colors.bg13}
       inputStyle={[generalStyles.inputStyle, inputStyle]}
       labelStyle={[generalStyles.labelStyle, labelStyle]}
       rightIconContainerStyle={[generalStyles.rightIconContainerStyle, rightIconContainerStyle]}
       leftIconContainerStyle={leftIconContainerStyle}
       errorStyle={[generalStyles.errorStyle, errorStyle]}
       placeholder={placeholder || t('Please enter')}
-      placeholderTextColor={defaultColors.font7}
+      placeholderTextColor={pageTheme.colors.textBase3}
       disabledInputStyle={[generalStyles.disabledInputStyle]}
       rightIcon={rightIconDom}
+      errorMessage={errorMessage}
+      keyboardAppearance="dark"
       {...inputProps}
       ref={forwardedRef}
     />

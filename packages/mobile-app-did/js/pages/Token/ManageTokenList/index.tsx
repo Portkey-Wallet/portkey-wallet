@@ -1,9 +1,8 @@
 import PageContainer from 'components/PageContainer';
-import { IUserTokenItemResponse, TokenItemShowType, IUserTokenItem } from '@portkey-wallet/types/types-ca/token';
+import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import CommonInput from 'components/CommonInput';
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 import gStyles from 'assets/theme/GStyles';
-import { defaultColors } from 'assets/theme';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import CommonToast from 'components/CommonToast';
 import { useLanguage } from 'i18n/hooks';
@@ -14,7 +13,6 @@ import { useCaAddressInfoList, useChainIdList } from '@portkey-wallet/hooks/hook
 import Loading from 'components/Loading';
 import FilterTokenSection from '../components/FilterToken';
 import PopularTokenSection from '../components/PopularToken';
-import { showManageToken } from '../components/ManageToken';
 import { pTd } from 'utils/unit';
 import navigationService from 'utils/navigationService';
 import Svg from 'components/Svg';
@@ -24,9 +22,10 @@ import {
   PAGE_SIZE_IN_ACCOUNT_ASSETS,
   PAGE_SIZE_IN_ACCOUNT_TOKEN,
 } from '@portkey-wallet/constants/constants-ca/assets';
-import useToken from '@portkey-wallet/hooks/hooks-ca/useToken';
+import { useTokenLegacy } from '@portkey-wallet/hooks/hooks-ca/useToken';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { useAccountTokenInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
+import { makeStyles } from '@rneui/themed';
 
 interface ManageTokenListProps {
   route?: any;
@@ -35,8 +34,8 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
   const { t } = useLanguage();
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const [isSearching, setIsSearching] = useState<boolean>(false);
-  const { tokenDataShowInMarket, totalRecordCount, fetchTokenInfoList } = useToken();
+  const [isSearch, setIsSearching] = useState<boolean>(false);
+  const { tokenDataShowInMarket, totalRecordCount, fetchTokenInfoList } = useTokenLegacy();
   const chainIdArray = useChainIdList();
   const caAddressInfos = useCaAddressInfoList();
 
@@ -46,11 +45,16 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
   const [filterTokenList, setFilterTokenList] = useState<TokenItemShowType[]>([]);
 
   const debounceWord = useDebounce(keyword, 800);
+  const pageStyles = getStyles();
 
   const getTokenList = useLockCallback(
     async (isInit?: boolean) => {
-      if (debounceWord) return;
-      if (totalRecordCount && tokenDataShowInMarket.length >= totalRecordCount && !isInit) return;
+      if (debounceWord) {
+        return;
+      }
+      if (totalRecordCount && tokenDataShowInMarket.length >= totalRecordCount && !isInit) {
+        return;
+      }
 
       await fetchTokenInfoList({
         keyword: '',
@@ -63,12 +67,14 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
   );
 
   const searchToken = useLockCallback(async () => {
-    if (!debounceWord) return;
+    if (!debounceWord) {
+      return;
+    }
 
     try {
       setIsSearching(true);
 
-      const res = await request.token.fetchTokenListBySearchV2({
+      const res = await request.token.fetchTokenListBySearch({
         params: {
           symbol: keyword,
           chainIds: chainIdArray,
@@ -77,7 +83,7 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
           maxResultCount: PAGE_SIZE_DEFAULT,
         },
       });
-      const _target = (res.data || []).map((item: any) => ({
+      const _target = (res || []).map((item: any) => ({
         ...item,
         isAdded: item.isDisplay,
         userTokenId: item.id,
@@ -92,14 +98,14 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
   }, [chainIdArray, debounceWord, keyword]);
 
   const onSwitchTokenDisplay = useCallback(
-    async (ids: string[], isDisplay: boolean) => {
+    async (item: TokenItemShowType, isDisplay: boolean) => {
       Loading.showOnce();
 
       try {
-        await request.token.userTokensDisplaySwitch({
+        await request.token.displayUserToken({
+          resourceUrl: `${item.userTokenId}/display`,
           params: {
-            isDisplay: !isDisplay,
-            ids,
+            isDisplay,
           },
         });
         timerRef.current = setTimeout(async () => {
@@ -115,7 +121,6 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
             await getTokenList(true);
           }
           Loading.hide();
-          CommonToast.success('Success');
         }, 800);
       } catch (err) {
         Loading.hide();
@@ -126,29 +131,17 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
   );
 
   const onHandleToken = useCallback(
-    (item: IUserTokenItemResponse, isDisplay: boolean) => {
-      onSwitchTokenDisplay(item.tokens?.map((token: any) => token.id) ?? [], isDisplay);
+    (item: TokenItemShowType, isDisplay: boolean) => {
+      onSwitchTokenDisplay(item, isDisplay);
     },
     [onSwitchTokenDisplay],
-  );
-
-  const onHandleTokenItem = useCallback(
-    (item: IUserTokenItem, isDisplay: boolean) => {
-      item.id && onSwitchTokenDisplay([item.id], isDisplay);
-    },
-    [onSwitchTokenDisplay],
-  );
-
-  const onEditToken = useCallback(
-    (item: IUserTokenItemResponse) => {
-      showManageToken({ item, onHandleTokenItem });
-    },
-    [onHandleTokenItem],
   );
 
   // search token with keyword
   useEffect(() => {
-    if (!debounceWord) setFilterTokenList([]);
+    if (!debounceWord) {
+      setFilterTokenList([]);
+    }
     searchToken();
   }, [debounceWord, searchToken]);
 
@@ -160,7 +153,9 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
   // clear timer
   useEffect(
     () => () => {
-      if (timerRef.current) clearInterval(timerRef.current);
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
     },
     [],
   );
@@ -172,27 +167,25 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
         onPress={() => {
           navigationService.navigate('CustomToken');
         }}>
-        <Svg icon="add1" size={pTd(20)} color={defaultColors.font18} />
+        <Svg icon="add4" size={pTd(24)} />
       </Touchable>
     ),
-    [],
+    [pageStyles],
   );
 
   return (
     <PageContainer
-      titleDom={t('Add Tokens')}
-      safeAreaColor={['white', 'white']}
+      titleDom={t('Manage Token List')}
+      safeAreaColor={['black', 'black']}
       rightDom={RightDom}
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}>
       <View style={pageStyles.inputWrap}>
         <CommonInput
           allowClear
-          grayBorder
-          theme="white-bg"
-          loading={isSearching}
+          clearIcon="clear4"
           value={keyword}
-          placeholder={t('Token Name')}
+          placeholder={t('Search')}
           onChangeText={v => {
             setKeyword(v.trim());
           }}
@@ -200,13 +193,12 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
       </View>
 
       {debounceWord ? (
-        <FilterTokenSection tokenList={filterTokenList} onHandleTokenItem={onHandleToken} onEditToken={onEditToken} />
+        <FilterTokenSection tokenList={filterTokenList} onHandleTokenItem={onHandleToken} isSearch={isSearch} />
       ) : (
         <PopularTokenSection
           tokenDataShowInMarket={tokenDataShowInMarket}
           getTokenList={getTokenList}
           onHandleTokenItem={onHandleToken}
-          onEditToken={onEditToken}
         />
       )}
     </PageContainer>
@@ -215,14 +207,16 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
 
 export default ManageTokenList;
 
-export const pageStyles = StyleSheet.create({
+export const getStyles = makeStyles(theme => ({
   pageWrap: {
     flex: 1,
+    backgroundColor: theme.colors.bgBase1,
     ...gStyles.paddingArg(0),
   },
   inputWrap: {
-    backgroundColor: defaultColors.bg1,
-    ...gStyles.paddingArg(0, 20, 8),
+    backgroundColor: theme.colors.bgBase1,
+    ...gStyles.paddingArg(0, 16, 0, 16),
+    marginBottom: pTd(8),
   },
   list: {
     flex: 1,
@@ -233,4 +227,4 @@ export const pageStyles = StyleSheet.create({
   rightIconStyle: {
     padding: pTd(16),
   },
-});
+}));

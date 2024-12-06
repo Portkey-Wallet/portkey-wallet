@@ -1,49 +1,61 @@
 import React, { useCallback, useMemo } from 'react';
-import { View, Text, StyleProp, ViewProps, TouchableOpacity } from 'react-native';
-import { styles } from './style';
+import { View, Text, StyleProp, ViewStyle, TouchableOpacity } from 'react-native';
+import { getStyles } from './style';
 import SendButton from 'components/SendButton';
 import ReceiveButton from 'components/ReceiveButton';
-import ActivityButton from 'pages/DashBoard/ActivityButton';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCurrentUserInfo, useSetHideAssets } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import FaucetButton from 'components/FaucetButton';
-import GStyles from 'assets/theme/GStyles';
-import DepositButton from 'components/DepositButton';
+import OutlinedButton from 'components/OutlinedButton';
 import BuyButton from 'components/BuyButton';
 import { useAppRampEntryShow } from 'hooks/ramp';
-import { useAppETransShow } from 'hooks/cms';
-import { PortkeyLinearGradient } from 'components/PortkeyLinearGradient';
 import { pTd } from 'utils/unit';
-import { Skeleton } from '@rneui/base';
 import Svg from 'components/Svg';
-import { DashBoardBanner } from '../Banner';
+import { useAppSwapButtonShow } from 'hooks/cms';
+import navigationService from 'utils/navigationService';
 
 const Card: React.FC<{ title: string }> = ({ title }) => {
   const isMainnet = useIsMainnet();
   const userInfo = useCurrentUserInfo();
   const setHideAssets = useSetHideAssets();
-  const { isETransDepositShow } = useAppETransShow();
   const { isRampShow } = useAppRampEntryShow();
+  const { isSwapShow } = useAppSwapButtonShow();
+  const styles = getStyles();
   const buttonCount = useMemo(() => {
-    let count = 3;
-    if (isETransDepositShow) count++;
-    if (isRampShow) count++;
-    if (!isMainnet) count++; // faucet
+    let count = 2;
+    if (isSwapShow) {
+      count++;
+    }
+    if (isRampShow) {
+      count++;
+    }
+    if (!isMainnet) {
+      count++;
+    } // faucet
     return count;
-  }, [isETransDepositShow, isMainnet, isRampShow]);
+  }, [isMainnet, isRampShow, isSwapShow]);
 
-  const buttonGroupWrapStyle = useMemo(
-    () => (buttonCount < 5 ? (GStyles.flexCenter as StyleProp<ViewProps>) : undefined),
-    [buttonCount],
-  );
-  const buttonWrapStyle = useMemo(
-    () => (buttonCount < 5 ? (styles.buttonWrapStyle1 as StyleProp<ViewProps>) : undefined),
-    [buttonCount],
-  );
+  const buttonWrapStyle: StyleProp<ViewStyle> = useMemo(() => {
+    switch (buttonCount) {
+      case 2:
+        return styles.buttonContainerGap3;
+      case 3:
+        return styles.buttonContainerGap2;
+      case 4:
+        return styles.buttonContainerGap1;
+
+      default:
+        return undefined;
+    }
+  }, [buttonCount, styles]);
 
   const onHideAssets = useCallback(() => {
     setHideAssets(!userInfo.hideAssets);
   }, [setHideAssets, userInfo.hideAssets]);
+
+  const onReceivePress = useCallback(() => {
+    navigationService.navigate('ReceiveSelectToken');
+  }, []);
 
   return (
     <View style={[styles.cardWrap]}>
@@ -55,29 +67,50 @@ const Card: React.FC<{ title: string }> = ({ title }) => {
             </Text>
             {isMainnet && (
               <TouchableOpacity onPress={onHideAssets}>
-                <Svg icon={userInfo.hideAssets ? 'eyeClosed' : 'eye'} size={pTd(16)} iconStyle={styles.eyeIcon} />
+                <Svg icon={userInfo.hideAssets ? 'eyeClosed' : 'eye'} size={pTd(24)} iconStyle={styles.eyeIcon} />
               </TouchableOpacity>
             )}
           </View>
         ) : (
-          <Skeleton
-            animation="wave"
-            LinearGradientComponent={() => <PortkeyLinearGradient />}
-            height={pTd(40)}
-            width={pTd(140)}
-            style={styles.skeletonStyle}
+          <View style={styles.titleLoading} />
+        )}
+      </View>
+      <View style={styles.buttonGroupWrap}>
+        <SendButton
+          themeType="dashBoard"
+          buttonWrapStyle={styles.buttonWrap}
+          containerStyle={[styles.buttonContainer, buttonWrapStyle, styles.buttonContainer1st]}
+        />
+        <ReceiveButton
+          onPress={onReceivePress}
+          buttonWrapStyle={styles.buttonWrap}
+          containerStyle={[styles.buttonContainer, buttonWrapStyle]}
+        />
+        {isRampShow && (
+          <BuyButton
+            wrapStyle={buttonWrapStyle}
+            buttonWrapStyle={styles.buttonWrap}
+            containerStyle={[styles.buttonContainer, buttonWrapStyle]}
+          />
+        )}
+        {isSwapShow && (
+          <OutlinedButton
+            title="Swap"
+            iconName="swap"
+            containerStyle={[styles.buttonContainer, buttonWrapStyle]}
+            buttonWrapStyle={styles.buttonWrap}
+            onPress={() => {
+              navigationService.navigate('SwapHome');
+            }}
+          />
+        )}
+        {!isMainnet && (
+          <FaucetButton
+            containerStyle={[styles.buttonContainer, buttonWrapStyle]}
+            buttonWrapStyle={styles.buttonWrap}
           />
         )}
       </View>
-      <View style={[GStyles.flexRow, GStyles.spaceBetween, styles.buttonGroupWrap, buttonGroupWrapStyle]}>
-        <SendButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />
-        <ReceiveButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />
-        {isRampShow && <BuyButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />}
-        {isETransDepositShow && <DepositButton wrapStyle={buttonWrapStyle} />}
-        {!isMainnet && <FaucetButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />}
-        <ActivityButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />
-      </View>
-      <DashBoardBanner />
     </View>
   );
 };

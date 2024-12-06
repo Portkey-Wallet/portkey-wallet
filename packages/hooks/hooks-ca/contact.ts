@@ -14,7 +14,6 @@ import {
   deleteContactAction,
   editContactAction,
   fetchContactListAsync,
-  readImputationAction,
   refreshContactMap,
 } from '@portkey-wallet/store/store-ca/contact/actions';
 import { useAppCASelector, useAppCommonDispatch, useAppCommonSelector } from '../index';
@@ -137,7 +136,7 @@ export const useContactList = () => {
   }, [contact.contactIndexList]);
 };
 
-export const useIsImputation = () => useAppCASelector(state => state.contact.isImputation);
+export const useIsImputation = () => true;
 
 export const useReadImputation = () => {
   const dispatch = useAppCommonDispatch();
@@ -148,9 +147,6 @@ export const useReadImputation = () => {
         baseURL: currentNetworkInfo.apiUrl,
         params: { contactId: contactItem.id },
       });
-      dispatch(
-        readImputationAction({ ...contactItem, isImputation: false, modificationTime: Date.now() } as ContactItemType),
-      );
       setTimeout(() => {
         dispatch(fetchContactListAsync());
       }, REFRESH_DELAY_TIME);

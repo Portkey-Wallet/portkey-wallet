@@ -1,12 +1,14 @@
+import fonts from 'assets/theme/fonts';
 import GStyles from 'assets/theme/GStyles';
-import { FontStyles } from 'assets/theme/styles';
+import { DarkFontStyles, FontStyles } from 'assets/theme/styles';
 import React, { useMemo, useRef } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, TextStyle, View } from 'react-native';
 import { pTd } from 'utils/unit';
 
 export interface ISinkableTextProps {
   sinkable: boolean;
   value: number;
+  textStyle?: TextStyle;
 }
 export function getDecimalPlaces(num?: number): number {
   if (typeof num !== 'number') {
@@ -23,26 +25,30 @@ export function getDecimalPlaces(num?: number): number {
   );
 }
 function calculateSinkValue(num?: number): { sink: number; validNum: string } {
-  if (typeof num !== 'number') return { sink: 0, validNum: '' };
+  if (typeof num !== 'number') {
+    return { sink: 0, validNum: '' };
+  }
   const match = num.toFixed(getDecimalPlaces(num)).match(/0\.0*(\d+)/);
   return match
     ? { sink: match[0].length - 2 - match[1].length, validNum: match[1] }
     : { sink: 0, validNum: num.toFixed(getDecimalPlaces(num)).toString() };
 }
 export default function SinkableText(props: ISinkableTextProps) {
-  const { value, sinkable } = props;
+  const { value, sinkable, textStyle } = props;
   const { sink: sinkValue, validNum } = useRef(calculateSinkValue(value)).current;
   const showSink = useMemo(() => {
     return sinkable && sinkValue > 4;
   }, [sinkable, sinkValue]);
   return (
     <View style={[styles.priceWrapper, styles.section2Width]}>
-      <Text style={[styles.text3, FontStyles.neutralPrimaryTextColor, GStyles.alignCenter]}>
+      <Text style={[styles.text3, DarkFontStyles.textBase1, GStyles.alignCenter, textStyle]}>
         ${showSink ? '0.0' : value?.toFixed(getDecimalPlaces(value) < 2 ? 2 : getDecimalPlaces(value))?.toString()}
       </Text>
-      {showSink && <Text style={[styles.priceSinkText, GStyles.alignEnd]}>{sinkValue}</Text>}
+      {showSink && <Text style={[styles.priceSinkText, GStyles.alignEnd, textStyle]}>{sinkValue}</Text>}
       {showSink && (
-        <Text style={[styles.text3, FontStyles.neutralPrimaryTextColor, GStyles.alignCenter]}>{validNum}</Text>
+        <Text style={[styles.text3, FontStyles.neutralPrimaryTextColor, GStyles.alignCenter, textStyle]}>
+          {validNum}
+        </Text>
       )}
     </View>
   );
@@ -56,8 +62,9 @@ const styles = StyleSheet.create({
   },
   text3: {
     fontSize: pTd(14),
-    fontWeight: '500',
+    // fontWeight: '500',
     textAlign: 'right',
+    ...fonts.mediumFont,
   },
   priceSinkText: {
     fontSize: pTd(12),

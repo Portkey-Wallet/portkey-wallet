@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
   headerText: {
     color: defaultColors.neutralTertiaryText,
     fontSize: pTd(14),
-    fontWeight: '400',
+    // fontWeight: '400',
     lineHeight: pTd(22),
   },
   mediumText: {
@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: defaultColors.neutralSecondaryTextColor,
     fontSize: pTd(12),
-    fontWeight: '400',
+    // fontWeight: '400',
     lineHeight: pTd(16),
   },
   rowContent: {
@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
   mainText: {
     color: defaultColors.brandNormal,
     fontSize: pTd(14),
-    fontWeight: '500',
+    // fontWeight: '500',
     lineHeight: pTd(22),
   },
   highlightText: {

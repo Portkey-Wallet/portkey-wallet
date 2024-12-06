@@ -1,33 +1,30 @@
-import { useGStyles } from 'assets/theme/useGStyles';
 import React, { useCallback, useEffect, useState } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
 import navigationService from 'utils/navigationService';
 import { RootStackParamList } from 'navigation';
-import SafeAreaBox from 'components/SafeAreaBox';
 import { useCredentials } from 'hooks/store';
-import CommonButton from 'components/CommonButton';
-import { useLanguage } from 'i18n/hooks';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import Welcome from './components/Welcome';
-import { ImageBackground, StyleSheet, View } from 'react-native';
+import { ImageBackground, View } from 'react-native';
 import { isIOS, screenHeight } from '@portkey-wallet/utils/mobile/device';
+import background from './img/getStartedBg.png';
 import splashScreen from './img/splashScreen.png';
-import background from '../Login/img/background.png';
-import * as Application from 'expo-application';
-
-import { BGStyles, FontStyles } from 'assets/theme/styles';
 import { sleep } from '@portkey-wallet/utils';
 import GStyles from 'assets/theme/GStyles';
-import { TextM } from 'components/CommonText';
 import { pTd } from 'utils/unit';
 import useLatestIsFocusedRef from 'hooks/useLatestIsFocusedRef';
 import { useGetLoginControlListAsync } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { makeStyles } from '@rneui/themed';
+import PageContainer from 'components/PageContainer';
+import fonts from 'assets/theme/fonts';
+import { getStatusBarHeight } from 'utils/statusbar';
+import OutlinedTextButton from 'components/OutlinedTextButton';
 
 export default function Referral() {
+  const styles = getStyles();
   const credentials = useCredentials();
   const { address, caHash } = useCurrentWalletInfo();
-  const gStyles = useGStyles();
-  const { t } = useLanguage();
+
   const getLoginControlListAsync = useGetLoginControlListAsync();
   const isFocusedRef = useLatestIsFocusedRef();
   const [isSplashScreen, setIsSplashScreen] = useState(true);
@@ -41,8 +38,6 @@ export default function Referral() {
     } catch (error) {
       console.log(error, '=====error-getLoginControlListAsync');
     }
-    SplashScreen.hideAsync();
-    await sleep(500);
     if (address) {
       let name: keyof RootStackParamList = 'SecurityLock';
       if (credentials && caHash) {
@@ -51,48 +46,88 @@ export default function Referral() {
       navigationService.reset(name);
     }
     await sleep(500);
+    SplashScreen.hideAsync();
+    // await sleep(500);
     setIsSplashScreen(false);
   }, [isFocusedRef, address, getLoginControlListAsync, credentials, caHash]);
+
   useEffect(() => {
     init();
   }, [init]);
+
   return (
-    <ImageBackground
-      style={styles.backgroundContainer}
-      resizeMode="cover"
-      source={isSplashScreen ? splashScreen : background}>
-      <SafeAreaBox pageSafeBottomPadding={!isIOS} style={[gStyles.container, BGStyles.transparent]}>
-        {isSplashScreen && (
-          <View style={[GStyles.flex1, GStyles.flexEnd, GStyles.itemCenter]}>
-            <TextM style={[FontStyles.font22, styles.versionStyle]}>{`V${Application.nativeApplicationVersion}`}</TextM>
-          </View>
-        )}
-        {!isSplashScreen && !address ? (
-          <>
-            <Welcome />
-            <CommonButton
-              buttonStyle={[styles.buttonStyle, BGStyles.bg1]}
-              titleStyle={FontStyles.primaryColor}
-              type="primary"
-              title={t('Get Started')}
-              onPress={() => navigationService.reset('LoginPortkey')}
-            />
-          </>
-        ) : null}
-      </SafeAreaBox>
-    </ImageBackground>
+    <PageContainer
+      scrollViewProps={{ disabled: true }}
+      containerStyles={[styles.referralContainer, GStyles.paddingArg(0, 0)]}
+      leftIconType="close"
+      leftCallback={undefined}
+      rightDom={undefined}
+      titleDom
+      hideTouchable
+      hideHeader>
+      {isSplashScreen ? (
+        <View style={[isIOS ? { marginTop: -1 * getStatusBarHeight() } : styles.backgroundSplashContainerWrap]}>
+          <ImageBackground
+            style={isIOS ? styles.backgroundSplashContainerIOS : styles.backgroundSplashContainer}
+            resizeMode="cover"
+            source={splashScreen}
+          />
+        </View>
+      ) : (
+        <ImageBackground style={styles.backgroundContainer} resizeMode="cover" source={background} />
+      )}
+
+      {!address ? (
+        <>
+          <Welcome />
+
+          <OutlinedTextButton
+            style={styles.buttonStyle}
+            textStyle={styles.buttonText}
+            title={'Get started'}
+            onPress={() => navigationService.reset('LoginPortkey')}
+          />
+        </>
+      ) : null}
+    </PageContainer>
   );
 }
 
-const styles = StyleSheet.create({
-  backgroundContainer: {
+const getStyles = makeStyles(theme => ({
+  referralContainer: {
+    height: screenHeight,
+    backgroundColor: theme.colors.bgBase1,
+    justifyContent: 'flex-start',
+    gap: 0,
+  },
+  backgroundSplashContainerWrap: {
+    width: '100%',
+    height: '100%',
+    padding: 50,
+    paddingTop: 70,
+    backgroundColor: theme.colors.bgBase1,
+  },
+  backgroundSplashContainer: {
+    width: '100%',
+    height: '100%',
+  },
+  backgroundSplashContainerIOS: {
     height: screenHeight,
   },
+  backgroundContainer: {
+    width: '100%',
+    height: pTd(407),
+    padding: 0,
+    margin: 0,
+    marginTop: pTd(16),
+  },
   buttonStyle: {
-    height: 56,
-    marginBottom: 40,
+    marginHorizontal: pTd(16),
+    marginBottom: pTd(16),
   },
-  versionStyle: {
-    marginBottom: pTd(32),
+  buttonText: {
+    color: theme.colors.textNeutral4,
+    fontSize: pTd(16),
+    ...fonts.mediumFont,
   },
-});
+}));

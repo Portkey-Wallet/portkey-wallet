@@ -60,7 +60,9 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   return [super application:application didFinishLaunchingWithOptions:launchOptions];
 }
 
-
+- (void)applicationWillEnterForeground:(UIApplication *)application {
+  application.applicationIconBadgeNumber = 0;
+}
 
 /// This method controls whether the `concurrentRoot`feature of React18 is turned on or off.
 ///

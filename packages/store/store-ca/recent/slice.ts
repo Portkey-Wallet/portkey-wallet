@@ -1,87 +1,59 @@
-import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
-import { RecentContactItemType } from '@portkey-wallet/types/types-ca/contact';
-import { fetchRecentTransactionUsers } from './api';
-import { initialRecentData } from '@portkey-wallet/hooks/hooks-ca/useRecent';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { RecentStateType, IRecentItem } from './type';
+import { NetworkType } from '@portkey-wallet/types';
 
-import { RECENT_LIST_PAGE_SIZE } from '@portkey-wallet/constants/constants-ca/recent';
-import { ChainId } from '@portkey-wallet/types';
+// TODO: BACK TO 100
+const MAX_RECENT_COUNT = 5;
 
-export interface RecentStateType {
-  [caAddress: string]: {
-    isFetching: boolean;
-    totalRecordCount: number;
-    skipCount: number;
-    maxResultCount: number;
-    recentContactList: RecentContactItemType[];
-  };
-}
-
-export const initialState: RecentStateType = {};
-
-export const fetchRecentListAsync = createAsyncThunk(
-  'fetchRecentListAsync',
-  async (
-    {
-      caAddress,
-      caAddressInfos,
-      isFirstTime = true,
-    }: {
-      caAddress: string;
-      isFirstTime: boolean;
-      caAddressInfos: { chainId: ChainId; chainName: string; caAddress: string }[];
-    },
-    { getState },
-  ) => {
-    const { recent } = getState() as { recent: RecentStateType };
-    const { skipCount = 0 } = recent?.[caAddress] || {};
-
-    const response = await fetchRecentTransactionUsers({
-      caAddressInfos,
-      skipCount: isFirstTime ? 0 : skipCount,
-      maxResultCount: RECENT_LIST_PAGE_SIZE,
-    });
-
-    return { isFirstTime, caAddress, response };
-  },
-);
+export const initialState: RecentStateType = {
+  recentMap: {},
+};
 
 export const recentSlice = createSlice({
   name: 'recent',
   initialState,
   reducers: {
-    initCurrentChainRecentData: (
+    addRecentItem: (
       state,
       action: PayloadAction<{
-        caAddress: string;
+        recentItem: IRecentItem;
+        network: NetworkType;
       }>,
     ) => {
-      const { caAddress } = action.payload;
-      state[caAddress] = initialRecentData;
+      const { network, recentItem } = action.payload;
+
+      const targetList = [...(state.recentMap?.[network] || [])];
+
+      const existingIndex = targetList.findIndex(ele => {
+        return recentItem.network && recentItem.network !== 'aelf'
+          ? ele.address === recentItem.address && ele.network === recentItem.network
+          : ele.address === recentItem.address && ele.chainId === recentItem.chainId;
+      });
+
+      if (existingIndex !== -1) {
+        const [existingItem] = targetList.splice(existingIndex, 1);
+        existingItem.transferTime = recentItem.transferTime;
+        targetList.unshift(existingItem);
+      } else {
+        targetList.unshift(recentItem);
+        targetList.length > MAX_RECENT_COUNT && targetList.pop();
+      }
+
+      state.recentMap = {
+        ...state.recentMap,
+        [network]: targetList,
+      };
+    },
+    resetTargetNetworkRecent: (state, action: PayloadAction<NetworkType>) => {
+      state.recentMap = {
+        ...state.recentMap,
+        [action.payload]: [],
+      };
     },
     resetRecent: () => initialState,
   },
-  extraReducers: builder => {
-    builder.addCase(fetchRecentListAsync.fulfilled, (state, action) => {
-      const { caAddress, isFirstTime, response } = action.payload;
-
-      const targetData = state?.[caAddress] ?? {};
-      targetData.isFetching = false;
-      targetData.totalRecordCount = response?.totalRecordCount;
-      targetData.skipCount += RECENT_LIST_PAGE_SIZE;
-
-      if (isFirstTime) {
-        // first Page
-        targetData.skipCount = RECENT_LIST_PAGE_SIZE;
-        targetData.recentContactList = response.data;
-      } else {
-        targetData.recentContactList = [...targetData.recentContactList, ...response.data];
-      }
-
-      state[caAddress] = targetData;
-    });
-  },
 });
 
-export const { resetRecent, initCurrentChainRecentData } = recentSlice.actions;
+export const { addRecentItem, resetRecent, resetTargetNetworkRecent } = recentSlice.actions;
 
 export default recentSlice;

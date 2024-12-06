@@ -2,11 +2,14 @@ import React, { useCallback } from 'react';
 import { View } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
 import navigationService from 'utils/navigationService';
-import styles from '../styles';
 import { OfficialWebsite } from '@portkey-wallet/constants/constants-ca/network';
 import { FontStyles } from 'assets/theme/styles';
-import { TextS } from 'components/CommonText';
+import { TextM } from 'components/CommonText';
+import { makeStyles } from '@rneui/themed';
+import { pTd } from 'utils/unit';
+
 export default function TermsServiceButton() {
+  const buttonStyles = styles();
   const onJump = useCallback((type: 'Privacy Policy' | 'Terms of Service') => {
     const url = type === 'Privacy Policy' ? `${OfficialWebsite}/privacy-policy` : `${OfficialWebsite}/terms-of-service`;
     navigationService.navigate('ViewOnWebView', {
@@ -16,17 +19,35 @@ export default function TermsServiceButton() {
   }, []);
 
   return (
-    <View style={[GStyles.flexRowWrap, GStyles.itemCenter, styles.termsServiceTip]}>
-      <TextS style={[FontStyles.font7, styles.textWrap]}>By proceeding, you agree to the</TextS>
-      <TextS style={[FontStyles.font7, styles.textWrap]}>
-        <TextS onPress={() => onJump('Terms of Service')} style={FontStyles.font4} suppressHighlighting>
+    <View style={[GStyles.flexRowWrap, GStyles.itemCenter, buttonStyles.termsServiceTip]}>
+      <TextM style={[FontStyles.font7, buttonStyles.textWrap]}>
+        {'By continuing, you agree to the '}
+        <TextM onPress={() => onJump('Terms of Service')} style={buttonStyles.link} suppressHighlighting>
           Terms of Service
-        </TextS>
+        </TextM>
         {` and `}
-        <TextS style={FontStyles.font4} suppressHighlighting onPress={() => onJump('Privacy Policy')}>
+        <TextM style={buttonStyles.link} suppressHighlighting onPress={() => onJump('Privacy Policy')}>
           Privacy Policy
-        </TextS>
-      </TextS>
+        </TextM>
+        {`.`}
+      </TextM>
     </View>
   );
 }
+
+const styles = makeStyles(theme => ({
+  termsServiceTip: {
+    position: 'absolute',
+    bottom: 0,
+    textAlign: 'center',
+  },
+  textWrap: {
+    width: '100%',
+    textAlign: 'center',
+    lineHeight: pTd(20),
+  },
+  link: {
+    color: theme.colors.textBrand1,
+    lineHeight: pTd(20),
+  },
+}));

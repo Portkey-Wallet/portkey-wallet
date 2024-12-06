@@ -1,19 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import OverlayModal from '../OverlayModal';
-import { View, Keyboard, StyleSheet } from 'react-native';
-import { defaultColors } from 'assets/theme';
-import { screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { Keyboard, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import { sleep } from '@portkey-wallet/utils';
-import * as Progress from 'react-native-progress';
 import { codePushOperator } from 'utils/update';
-import { TextM, TextXL } from 'components/CommonText';
-import Svg from 'components/Svg';
-import GStyles from 'assets/theme/GStyles';
-import fonts from 'assets/theme/fonts';
+import { TextL } from 'components/CommonText';
+import { ModalBody } from 'components/ModalBody';
+import { ButtonRowProps } from 'components/ButtonRow';
+import { CommonProgress } from 'components/CommonProgress';
+import { makeStyles } from '@rneui/themed';
 
 function UpdateBody() {
   const [progress, setProgress] = useState(0);
+  const styles = getStyles();
   useEffect(() => {
     const listener = codePushOperator.addProgressListener(p => {
       setProgress(p.receivedBytes / p.totalBytes);
@@ -24,25 +23,19 @@ function UpdateBody() {
   }, []);
 
   return (
-    <View style={styles.alertBox}>
-      <View onTouchEnd={() => OverlayModal.hide()} style={styles.closeWrap}>
-        <Svg icon={'close'} size={pTd(12.5)} color={defaultColors.font7} />
+    <ModalBody
+      bottomButtonGroup={[{ type: 'outline', title: 'Close', onPress: () => OverlayModal.hide() }]}
+      modalBodyType="bottom"
+      title={'Downloading...'}>
+      <View style={styles.contentWrap}>
+        <CommonProgress percent={progress} />
+        <TextL
+          style={{
+            lineHeight: pTd(22),
+            marginTop: pTd(12),
+          }}>{`You can close this window, and the new version will continue to download in the background.`}</TextL>
       </View>
-      <Progress.Circle
-        showsText
-        size={pTd(60)}
-        strokeCap="round"
-        thickness={pTd(6)}
-        endAngle={0.5}
-        progress={progress}
-        borderWidth={0}
-        unfilledColor={defaultColors.bg18}
-        color={defaultColors.bg5}
-        textStyle={styles.textStyle}
-      />
-      <TextXL style={[fonts.mediumFont, GStyles.marginTop(pTd(8))]}>Downloading...</TextXL>
-      <TextM style={styles.tips}>You can close the pop-up window and the new version will continue to download.</TextM>
-    </View>
+    </ModalBody>
   );
 }
 
@@ -50,40 +43,67 @@ const show = async () => {
   OverlayModal.hide();
   Keyboard.dismiss();
   OverlayModal.show(<UpdateBody />, {
-    // modal: true,
-    type: 'zoomOut',
-    position: 'center',
+    position: 'bottom',
   });
   await sleep(300);
 };
-export default {
-  show,
+
+function UpdateTipBody({
+  bottomButtonGroup,
+  title,
+  message,
+}: {
+  bottomButtonGroup: ButtonRowProps['buttons'];
+  title?: string;
+  message?: string;
+}) {
+  const styles = getStyles();
+
+  return (
+    <ModalBody
+      bottomButtonGroup={bottomButtonGroup}
+      modalBodyType="bottom"
+      title={title || 'A new Portkey version is available.'}>
+      <TextL style={styles.contentWrap}>{message || `Would you like to download it now?`}</TextL>
+    </ModalBody>
+  );
+}
+
+const showTip = async (props: { bottomButtonGroup: ButtonRowProps['buttons']; title?: string; message?: string }) => {
+  OverlayModal.hide();
+  Keyboard.dismiss();
+  OverlayModal.show(<UpdateTipBody {...props} />, {
+    position: 'bottom',
+  });
 };
 
-export const styles = StyleSheet.create({
-  alertBox: {
-    overflow: 'hidden',
-    borderRadius: 8,
-    alignItems: 'center',
-    width: screenWidth - 48,
-    backgroundColor: 'white',
-    padding: pTd(24),
+function DownloadedBody({ bottomButtonGroup }: { bottomButtonGroup: ButtonRowProps['buttons'] }) {
+  return (
+    <ModalBody
+      bottomButtonGroup={bottomButtonGroup}
+      modalBodyType="bottom"
+      title={`The download is complete. Would you like to update now?`}
+    />
+  );
+}
+
+const showDownloadedTip = async ({ bottomButtonGroup }: { bottomButtonGroup: ButtonRowProps['buttons'] }) => {
+  OverlayModal.hide();
+  Keyboard.dismiss();
+  OverlayModal.show(<DownloadedBody bottomButtonGroup={bottomButtonGroup} />, {
+    position: 'bottom',
+  });
+};
+
+export default {
+  show,
+  showTip,
+  showDownloadedTip,
+};
+
+const getStyles = makeStyles(theme => ({
+  contentWrap: {
+    paddingLeft: pTd(16),
+    paddingRight: pTd(16),
   },
-  textStyle: {
-    fontSize: pTd(14),
-  },
-  tips: {
-    textAlign: 'center',
-    color: defaultColors.font3,
-    marginTop: pTd(16),
-  },
-  closeWrap: {
-    width: pTd(20),
-    height: pTd(20),
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'absolute',
-    right: pTd(12),
-    top: pTd(12),
-  },
-});
+}));

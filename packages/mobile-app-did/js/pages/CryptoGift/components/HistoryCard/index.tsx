@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { TextL, TextM, TextS } from 'components/CommonText';
-import { StyleSheet, Text, TouchableOpacity, View, ViewStyle } from 'react-native';
+import { StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { StyleProp } from 'react-native';
 import Svg from 'components/Svg';
 import { pTd } from 'utils/unit';
@@ -10,10 +10,9 @@ import navigationService from 'utils/navigationService';
 import PortkeySkeleton from 'components/PortkeySkeleton';
 import GStyles from 'assets/theme/GStyles';
 import { formatTransferTime } from '@portkey-wallet/utils/time';
-import { getClaimedShow } from 'pages/Chat/utils/format';
-import { formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import { CryptoGiftItem, CryptoGiftOriginalStatus } from '@portkey-wallet/types/types-ca/cryptogift';
 import fonts from 'assets/theme/fonts';
+import { makeStyles, useTheme } from '@rneui/themed';
 export interface IHistoryCardProps {
   containerStyle?: StyleProp<ViewStyle>;
   showTitle?: boolean;
@@ -22,7 +21,9 @@ export interface IHistoryCardProps {
 }
 export default function HistoryCard(props: IHistoryCardProps) {
   const { showTitle, redPacketDetail, isSkeleton } = props;
+  const styles = getStyles();
   console.log('wfs=== redPacketDetail', redPacketDetail);
+  const { theme } = useTheme();
   const statusStyles = useMemo(() => {
     if (
       redPacketDetail?.status === CryptoGiftOriginalStatus.Init ||
@@ -31,31 +32,37 @@ export default function HistoryCard(props: IHistoryCardProps) {
     ) {
       return {
         bg: {
-          backgroundColor: defaultColors.brandLight,
+          backgroundColor: theme.colors.iconBrand6,
         },
         textColor: {
-          color: defaultColors.brandNormal,
+          color: theme.colors.textBrand5,
         },
       };
     } else if (redPacketDetail?.status === CryptoGiftOriginalStatus.FullyClaimed) {
       return {
         bg: {
-          backgroundColor: defaultColors.neutralContainerBG,
+          backgroundColor: theme.colors.bgBase2,
         },
         textColor: {
-          color: defaultColors.neutralPrimaryTextColor,
+          color: theme.colors.textDisabled2,
         },
       };
     }
     return {
       bg: {
-        backgroundColor: defaultColors.neutralContainerBG,
+        backgroundColor: theme.colors.bgBase2,
       },
       textColor: {
-        color: defaultColors.neutralTertiaryText,
+        color: theme.colors.textDisabled2,
       },
     };
-  }, [redPacketDetail?.status]);
+  }, [
+    redPacketDetail?.status,
+    theme.colors.bgBase2,
+    theme.colors.iconBrand6,
+    theme.colors.textBrand5,
+    theme.colors.textDisabled2,
+  ]);
   return (
     <View style={[styles.historyContainer, props.containerStyle]}>
       {showTitle && (
@@ -84,53 +91,36 @@ export default function HistoryCard(props: IHistoryCardProps) {
           {isSkeleton ? (
             <>
               <View style={styles.cardPart1}>
-                <PortkeySkeleton width={pTd(24)} height={pTd(22)} />
-                <PortkeySkeleton width={pTd(280)} height={pTd(22)} style={[GStyles.marginLeft(pTd(8))]} />
+                <PortkeySkeleton width={pTd(20)} height={pTd(22)} />
+                <PortkeySkeleton width={pTd(280)} height={pTd(22)} style={[GStyles.marginLeft(pTd(12))]} />
               </View>
               <PortkeySkeleton
                 width={pTd(208)}
-                height={pTd(16)}
-                style={[GStyles.marginTop(pTd(2)), GStyles.marginLeft(pTd(32))]}
-              />
-              <PortkeySkeleton
-                width={pTd(280)}
-                height={pTd(16)}
-                style={[GStyles.marginTop(pTd(16)), GStyles.marginLeft(pTd(32))]}
+                height={pTd(20)}
+                style={[GStyles.marginTop(pTd(4)), GStyles.marginLeft(pTd(32))]}
               />
             </>
           ) : (
             <>
               <View style={styles.cardPart1}>
-                <View style={styles.giftIconBg}>
-                  <Svg icon="crypto-gift" size={pTd(12)} />
-                </View>
-                <TextM style={[styles.text, GStyles.lineHeight(pTd(22))]} numberOfLines={1}>
+                <Svg icon="gift" size={pTd(24)} />
+                <TextL style={[styles.text, GStyles.lineHeight(pTd(23)), fonts.SGRegularFont]} numberOfLines={1}>
                   {redPacketDetail?.memo || 'Best Wishes'}
-                </TextM>
+                </TextL>
                 {redPacketDetail?.displayStatus && (
                   <View style={[styles.statusContainer, statusStyles.bg]}>
-                    <TextS style={[styles.statusText, statusStyles.textColor, GStyles.lineHeight(pTd(16))]}>
+                    <TextS style={[styles.statusText, statusStyles.textColor, GStyles.lineHeight(pTd(12))]}>
                       {redPacketDetail?.displayStatus}
                     </TextS>
                   </View>
                 )}
+                <Svg icon="chevron_right" size={pTd(12)} iconStyle={GStyles.marginLeft(12)} />
               </View>
               {/* <Text style={styles.dateText}>May 28 at 4:11 pm</Text> */}
               <View style={styles.dateContainer}>
-                <TextS style={[styles.dateText, GStyles.lineHeight(pTd(16))]}>
+                <TextM style={[styles.dateText, GStyles.lineHeight(pTd(20))]}>
                   {formatTransferTime(redPacketDetail?.createTime || 1)}
-                </TextS>
-              </View>
-              <View style={styles.divider} />
-              <View style={styles.claimContainer}>
-                <TextS style={[styles.claimText, GStyles.lineHeight(pTd(16))]}>Claimed:</TextS>
-                <TextS style={[styles.claimValue, GStyles.lineHeight(pTd(16))]}>
-                  {getClaimedShow(
-                    formatTokenAmountShowWithDecimals(redPacketDetail?.grabbedAmount, redPacketDetail?.decimals),
-                    formatTokenAmountShowWithDecimals(redPacketDetail?.totalAmount, redPacketDetail?.decimals),
-                    redPacketDetail?.label || redPacketDetail?.alias || redPacketDetail?.symbol || '--',
-                  )}
-                </TextS>
+                </TextM>
               </View>
             </>
           )}
@@ -139,7 +129,7 @@ export default function HistoryCard(props: IHistoryCardProps) {
     </View>
   );
 }
-const styles = StyleSheet.create({
+const getStyles = makeStyles(theme => ({
   historyContainer: {},
   titleContainer: {
     flexDirection: 'row',
@@ -159,11 +149,12 @@ const styles = StyleSheet.create({
   },
   historyCard: {
     flexDirection: 'column',
-    height: pTd(98),
-    borderWidth: pTd(1),
-    borderColor: defaultColors.neutralBorder,
+    height: pTd(70),
+    // borderWidth: pTd(1),
+    // borderColor: defaultColors.neutralBorder,
     borderRadius: pTd(6),
-    padding: pTd(12),
+    // paddingHorizontal: pTd(16),
+    paddingVertical: pTd(12),
   },
   cardPart1: {
     flexDirection: 'row',
@@ -176,31 +167,31 @@ const styles = StyleSheet.create({
   },
   text: {
     flex: 1,
-    marginLeft: pTd(8),
+    marginLeft: pTd(12),
   },
   statusContainer: {
     paddingLeft: pTd(6),
     paddingRight: pTd(6),
-    paddingTop: pTd(3),
-    paddingBottom: pTd(3),
-    backgroundColor: defaultColors.brandLight,
+    paddingTop: pTd(4),
+    paddingBottom: pTd(4),
+    backgroundColor: theme.colors.bgBase2,
     borderRadius: pTd(4),
     justifyContent: 'flex-start',
     alignItems: 'center',
   },
   statusText: {
     textAlign: 'right',
-    color: defaultColors.brandNormal,
+    color: theme.colors.textDisabled2,
   },
 
   dateContainer: {
-    paddingLeft: pTd(32),
+    paddingLeft: pTd(36),
     flexDirection: 'row',
     alignItems: 'center',
     marginTop: pTd(2),
   },
   dateText: {
-    color: defaultColors.neutralTertiaryText,
+    color: theme.colors.textBase2,
   },
   divider: {
     marginLeft: pTd(32),
@@ -221,4 +212,4 @@ const styles = StyleSheet.create({
     flex: 1,
     marginLeft: pTd(8),
   },
-});
+}));

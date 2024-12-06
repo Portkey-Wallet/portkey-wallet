@@ -14,14 +14,16 @@ import { useNFTItemDetail } from '../assets';
 export const useRecentStatus = () => {
   const [recentStatus, setRecentStatus] = useState<FreeMintStatus>(FreeMintStatus.NONE);
   const [itemId, setItemId] = useState<string>();
+  const [imageUrl, setImageUrl] = useState<string>();
   useEffect(() => {
     (async () => {
       const result = await request.freeMintApi.getRecentStatus();
       setRecentStatus(result.status);
       setItemId(result.itemId);
+      setImageUrl(result.imageUrl);
     })();
   }, [recentStatus]);
-  return { recentStatus, itemId, setRecentStatus, setItemId };
+  return { recentStatus, itemId, imageUrl, setRecentStatus, setItemId, setImageUrl };
 };
 export const useFreeMinInput = () => {
   const [inputName, setInputName] = useState<string>();

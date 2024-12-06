@@ -105,4 +105,5 @@ export interface CaHolderInfo {
   userId: string;
   caHash: string;
   walletName: string;
+  avatar?: string;
 }

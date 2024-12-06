@@ -26,7 +26,6 @@ import { RequireAtLeastOne } from '@portkey-wallet/types/common';
 import { getCAHolderManagerInfo } from '@portkey-wallet/graphql/contract/queries';
 import { ManagerInfo, Maybe } from '@portkey-wallet/graphql/contract/__generated__/types';
 import { DEFAULT_USER_INFO } from '@portkey-wallet/store/store-ca/wallet/slice';
-import { TypedUseSelectorHook, useSelector } from 'react-redux';
 
 export interface CurrentWalletType extends WalletInfoType, CAInfoType {
   caHash?: string;
@@ -208,6 +207,7 @@ export const useDeviceList = (config?: IUseDeviceListConfig) => {
 
   return { refresh, deviceList, deviceAmount, loading };
 };
+// getIconList
 
 export const useSetUserInfo = () => {
   const dispatch = useAppCommonDispatch();
@@ -299,6 +299,11 @@ export const useCaInfo = () => {
 export const useCurrentCaInfo = () => {
   const { walletInfo, currentNetwork } = useWallet();
   return useMemo(() => walletInfo?.caInfo?.[currentNetwork], [walletInfo, currentNetwork]);
+};
+
+export const useMainChainCaInfo = () => {
+  const { walletInfo, currentNetwork } = useWallet();
+  return useMemo(() => walletInfo?.caInfo?.[currentNetwork].AELF, [walletInfo, currentNetwork]);
 };
 
 export const useOriginChainId = () => {

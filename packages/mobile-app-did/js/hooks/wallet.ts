@@ -27,12 +27,18 @@ export const useCheckManagerSyncState = () => {
       try {
         const currentCaInfo = walletInfo?.[chainId];
 
-        if (!currentCaInfo) return false;
-        if (currentCaInfo?.isSync) return true;
+        if (!currentCaInfo) {
+          return false;
+        }
+        if (currentCaInfo?.isSync) {
+          return true;
+        }
         const chainInfo = await getChainInfo(chainId);
         const info = await getHolderInfoByViewContract({ caHash: currentCaInfo.caHash }, chainInfo);
 
-        if (info.error) return false;
+        if (info.error) {
+          return false;
+        }
 
         const { managerInfos }: { managerInfos: { address: string }[] } = info.data;
         if (managerInfos.some(item => item.address === walletInfo.address)) {
@@ -67,7 +73,9 @@ export const useCheckAllowanceAndApprove = () => {
     const tokenContract = await getViewTokenContractByChainId(chainId);
 
     let allowance: string;
-    if (isShowOnceLoading) Loading.showOnce();
+    if (isShowOnceLoading) {
+      Loading.showOnce();
+    }
     const startTime = Date.now();
     try {
       allowance = await getAvailableAllowance(tokenContract, {
@@ -85,9 +93,11 @@ export const useCheckAllowanceAndApprove = () => {
 
     const eventName = randomId();
     if (bigAmount.gt(allowance)) {
-      if (isShowOnceLoading) Loading.hide();
+      if (isShowOnceLoading) {
+        Loading.hide();
+      }
       const info = await requestManagerApprove(
-        { origin: 'Crypto Box', name: 'Crypto Box', svgIcon: 'crypto-box-with-border' },
+        { origin: 'Crypto gift', name: 'Crypto gift', svgIcon: 'crypto-box-with-border' },
         {
           eventName,
           approveInfo: {
@@ -101,9 +111,13 @@ export const useCheckAllowanceAndApprove = () => {
           batchApproveNFT: true,
         },
       );
-      if (!info) throw new Error(USER_CANCELED);
+      if (!info) {
+        throw new Error(USER_CANCELED);
+      }
       const { guardiansApproved, approveInfo } = info;
-      if (isShowOnceLoading) Loading.showOnce();
+      if (isShowOnceLoading) {
+        Loading.showOnce();
+      }
 
       try {
         const approveReq = await caContract.callSendMethod(ApproveMethod.ca, '', {
@@ -113,14 +127,18 @@ export const useCheckAllowanceAndApprove = () => {
           amount: approveInfo.amount,
           guardiansApproved: getGuardiansApprovedByApprove(guardiansApproved),
         });
-        if (approveReq?.error) throw approveReq?.error;
+        if (approveReq?.error) {
+          throw approveReq?.error;
+        }
         if (approveReq?.data) {
           const confirmationAllowance = await getAvailableAllowance(tokenContract, {
             owner: caInfo?.caAddress || '',
             spender,
             symbol,
           });
-          if (bigAmount.gt(confirmationAllowance)) throw new Error('Allowance Insufficient authorization');
+          if (bigAmount.gt(confirmationAllowance)) {
+            throw new Error('Allowance Insufficient authorization');
+          }
         }
       } catch (error) {
         throw error as any;

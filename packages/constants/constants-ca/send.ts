@@ -5,7 +5,7 @@ export enum AddressError {
 }
 
 export enum TransactionError {
-  TOKEN_NOT_ENOUGH = 'Insufficient funds',
+  TOKEN_NOT_ENOUGH = 'Exceeds available balance',
   NFT_NOT_ENOUGH = 'Insufficient quantity',
   FEE_NOT_ENOUGH = 'Insufficient funds for transaction fee',
   CROSS_NOT_ENOUGH = 'Insufficient funds for cross chain transaction fee',

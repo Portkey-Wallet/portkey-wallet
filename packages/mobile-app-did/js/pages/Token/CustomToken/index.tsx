@@ -4,7 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import gStyles from 'assets/theme/GStyles';
 import { defaultColors } from 'assets/theme';
 import React, { useCallback, useState } from 'react';
-import { TextM } from 'components/CommonText';
+import { TextL } from 'components/CommonText';
 import { pTd } from 'utils/unit';
 import { useLanguage } from 'i18n/hooks';
 import { ChainId } from '@portkey-wallet/types';
@@ -21,6 +21,7 @@ import { sleep } from '@portkey-wallet/utils';
 import CommonToast from 'components/CommonToast';
 import { FontStyles } from 'assets/theme/styles';
 import GStyles from 'assets/theme/GStyles';
+import { makeStyles } from '@rneui/themed';
 
 interface CustomTokenProps {
   route?: any;
@@ -43,14 +44,16 @@ const CustomToken: React.FC<CustomTokenProps> = () => {
   }>({
     symbol: '',
     chainId: originChainId,
-    decimals: '--',
+    decimals: '-',
     id: '',
   });
   const [btnDisable, setBtnDisable] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string>('');
-
+  const pageStyles = getStyles();
   const fetchTokenItem = useCallback(async () => {
-    if (!keyword) return;
+    if (!keyword) {
+      return;
+    }
 
     Loading.show();
 
@@ -128,16 +131,30 @@ const CustomToken: React.FC<CustomTokenProps> = () => {
 
   return (
     <PageContainer
-      titleDom={t('Custom Token')}
-      safeAreaColor={['white', 'gray']}
+      titleDom={t('Import Token')}
+      safeAreaColor={['black', 'black']}
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}>
-      <TextM style={pageStyles.tips}>
-        {t(
-          'To add a token, you need to select the network that it belongs to and enter its symbol for automatic recognition.',
-        )}
-      </TextM>
-      <FormItem title={'Network'} style={pageStyles.networkWrap}>
+      {/* <View style={pageStyles.tipsSection}>
+        <Svg icon="warning" size={pTd(18)} iconStyle={GStyles.marginRight(pTd(12))} />
+        <RichText
+          wrapperStyle={pageStyles.richTextWrap}
+          text={`Anyone can create a token, including fake versions of existing tokens. Learn more about $scams and security risks$.`}
+          commonTextStyle={pageStyles.richTextCommonStyle}
+          specialTextStyle={pageStyles.richTextSpecialStyle}
+          links={[
+            {
+              linkSyntax: 'scams and security risks',
+              linkStyle: pageStyles.richTextSpecialStyle,
+              linkPress: () => {
+                // TODO: change it
+                console.log('!!!');
+              },
+            },
+          ]}
+        />
+      </View> */}
+      <FormItem title={'Network'} style={pageStyles.networkWrap} titleStyle={pageStyles.labelWrap}>
         <SelectChain
           currentNetwork={currentNetwork}
           chainId={tokenItem.chainId || originChainId}
@@ -145,27 +162,25 @@ const CustomToken: React.FC<CustomTokenProps> = () => {
           onChainPress={onChainChange}
         />
       </FormItem>
-      <FormItem title={'Token Symbol'}>
+      <FormItem title={'Token symbol'} titleStyle={pageStyles.labelWrap}>
         <CommonInput
           type="general"
           spellCheck={false}
           autoCorrect={false}
           value={keyword}
           theme={'white-bg'}
-          placeholder={t('Enter Symbol')}
+          placeholder={t('Enter token symbol')}
           onChangeText={onKeywordChange}
           errorMessage={errorMessage}
         />
       </FormItem>
-      <FormItem title={'Token Decimal'}>
-        <TextM style={[pageStyles.tokenDecimal, tokenItem.decimals !== '--' && FontStyles.font5]}>
-          {tokenItem.decimals}
-        </TextM>
+      <FormItem title={'Decimals'} titleStyle={[pageStyles.disableText, pageStyles.labelWrap]}>
+        <TextL style={[pageStyles.tokenDecimal, FontStyles.fontDisabled1]}>{tokenItem.decimals}</TextL>
       </FormItem>
 
       <View style={pageStyles.btnContainer}>
         <CommonButton onPress={addToken} disabled={btnDisable} type="primary">
-          {t('Add')}
+          {t('Import')}
         </CommonButton>
       </View>
     </PageContainer>
@@ -174,26 +189,39 @@ const CustomToken: React.FC<CustomTokenProps> = () => {
 
 export default CustomToken;
 
-export const pageStyles = StyleSheet.create({
+export const getStyles = makeStyles(theme => ({
   pageWrap: {
     flex: 1,
-    backgroundColor: defaultColors.bg4,
-    ...gStyles.paddingArg(24, 20),
+    backgroundColor: theme.colors.bgBase1,
+    ...gStyles.paddingArg(16, 16),
   },
-  tips: {
+  tipsSection: {
     color: defaultColors.font3,
-    marginBottom: pTd(24),
+    borderRadius: pTd(12),
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: theme.colors.borderWarning3,
+    backgroundColor: theme.colors.bgWarning3,
+    padding: pTd(16),
+    display: 'flex',
+    flexDirection: 'row',
+    marginBottom: pTd(16),
+  },
+  richTextWrap: {
+    width: pTd(280),
+  },
+  richTextCommonStyle: {
+    color: theme.colors.textWarning3,
+    fontSize: pTd(16),
+  },
+  richTextSpecialStyle: {
+    color: theme.colors.textBrand1,
+    fontSize: pTd(16),
   },
   networkWrap: {
-    paddingBottom: pTd(24),
+    paddingBottom: pTd(16),
   },
-  list: {
-    flex: 1,
-  },
-  noResult: {
-    marginTop: pTd(40),
-    textAlign: 'center',
-    color: defaultColors.font7,
+  labelWrap: {
+    fontSize: pTd(16),
   },
   btnContainer: {
     position: 'absolute',
@@ -202,11 +230,16 @@ export const pageStyles = StyleSheet.create({
     ...GStyles.paddingArg(20, 16),
   },
   tokenDecimal: {
-    lineHeight: pTd(56),
-    backgroundColor: defaultColors.bg18,
-    color: defaultColors.font7,
+    lineHeight: pTd(40),
+    backgroundColor: theme.colors.bgBase2,
+    color: theme.colors.textDisabled2,
     overflow: 'hidden',
-    borderRadius: pTd(6),
+    borderRadius: pTd(8),
     paddingLeft: pTd(16),
+    borderWidth: pTd(1),
+    borderColor: theme.colors.borderBase1,
   },
-});
+  disableText: {
+    color: theme.colors.textDisabled1,
+  },
+}));

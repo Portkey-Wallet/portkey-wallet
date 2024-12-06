@@ -3,13 +3,23 @@ import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { IconName } from 'components/Svg';
 
 export const LOGIN_GUARDIAN_TYPE_ICON: any = {
-  [LoginType.Email]: 'email',
+  [LoginType.Email]: 'email-white',
   [LoginType.Phone]: 'phone',
   [LoginType.Google]: 'google',
-  [LoginType.Apple]: 'apple',
-  [LoginType.Telegram]: 'telegram',
-  [LoginType.Twitter]: 'twitter',
-  [LoginType.Facebook]: 'facebook',
+  [LoginType.Apple]: 'apple-white',
+  [LoginType.Telegram]: 'telegram-white',
+  [LoginType.Twitter]: 'twitter-white',
+  [LoginType.Facebook]: 'facebook-white',
+};
+
+export const GUARDIAN_ITEM_TYPE_ICON: any = {
+  [LoginType.Email]: 'guardian-email',
+  [LoginType.Phone]: 'guardian-phone',
+  [LoginType.Google]: 'guardian-google',
+  [LoginType.Apple]: 'guardian-apple',
+  [LoginType.Telegram]: 'guardians-telegram',
+  [LoginType.Twitter]: 'guardians-x',
+  [LoginType.Facebook]: 'guardian-facebook',
 };
 
 export type T_LOGIN_TYPE_LIST_ITEM = {

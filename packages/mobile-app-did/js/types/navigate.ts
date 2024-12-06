@@ -1,4 +1,3 @@
-import { ChatTabName } from '@portkey-wallet/constants/constants-ca/chat';
 import { IToSendPreviewParamsType, ImTransferInfoType } from '@portkey-wallet/types/types-ca/routeParams';
 import { NavigateName } from 'utils/navigationService';
 
@@ -27,12 +26,11 @@ export type NavigateMultiLevelParams = {
     isDiscover?: boolean;
     eventName?: string;
   };
+  toAddress?: string;
 };
 
 export enum TabRouteNameEnum {
   WALLET = 'Wallet',
   DISCOVER = 'Discover',
-  TRADE = 'Trade',
-  CHAT = ChatTabName,
-  SETTINGS = 'Settings',
+  ACTIVITY = 'Activity',
 }

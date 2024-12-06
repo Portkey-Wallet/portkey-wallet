@@ -1,13 +1,14 @@
-import { TextM, TextS } from 'components/CommonText';
+import { TextL, TextM } from 'components/CommonText';
 import React, { memo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { pTd } from 'utils/unit';
-import { defaultColors } from 'assets/theme';
 import { FontStyles } from 'assets/theme/styles';
 import Touchable from 'components/Touchable';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { ErrorType } from '@portkey-wallet/constants/constants-ca/common';
 import Svg from 'components/Svg';
+import GStyles from 'assets/theme/GStyles';
+import { makeStyles } from '@rneui/themed';
 
 type GuardianThirdAccountProps = {
   account?: string;
@@ -27,11 +28,11 @@ const LABEL_MAP: Record<any, string> = {
 };
 
 const BUTTON_LABEL_MAP: Record<any, string> = {
-  [LoginType.Google]: 'Click Add Google Account',
-  [LoginType.Apple]: 'Click Add Apple ID',
-  [LoginType.Telegram]: 'Click Add Telegram Account',
-  [LoginType.Twitter]: 'Click Add Twitter Account',
-  [LoginType.Facebook]: 'Click Add Facebook Account',
+  [LoginType.Google]: 'Click to add Google account',
+  [LoginType.Apple]: 'Click to add Apple ID',
+  [LoginType.Telegram]: 'Click to add Telegram account',
+  [LoginType.Twitter]: 'Click to add Twitter account',
+  [LoginType.Facebook]: 'Click to add Facebook account',
 };
 
 const GuardianThirdAccount = ({
@@ -42,28 +43,29 @@ const GuardianThirdAccount = ({
   onPress,
   clearAccount,
 }: GuardianThirdAccountProps) => {
+  const styles = getStyles();
   return (
     <>
-      <TextM style={styles.accountLabel}>{LABEL_MAP[type] || ''}</TextM>
+      <TextL style={styles.accountLabel}>{LABEL_MAP[type] || ''}</TextL>
       {account ? (
         <View style={styles.thirdPartAccountWrap}>
           <View style={styles.thirdPartAccount}>
-            {firstName && <TextM style={styles.firstNameStyle}>{firstName}</TextM>}
-            <TextS style={[!!firstName && FontStyles.font3]} numberOfLines={1}>
+            {firstName && <TextL style={styles.firstNameStyle}>{firstName}</TextL>}
+            <TextM style={[!!firstName && FontStyles.fontBase2]} numberOfLines={1}>
               {account}
-            </TextS>
+            </TextM>
             <Touchable style={styles.iconWrap} onPress={clearAccount}>
-              <Svg icon="clear2" size={pTd(16)} />
+              <Svg icon="clear4" size={pTd(16)} />
             </Touchable>
           </View>
           {guardianAccountError.isError && (
-            <TextS style={styles.thirdPartAccountError}>{guardianAccountError.errorMsg}</TextS>
+            <TextL style={styles.thirdPartAccountError}>{guardianAccountError.errorMsg}</TextL>
           )}
         </View>
       ) : (
         <Touchable onPress={onPress}>
           <View style={styles.oAuthBtn}>
-            <TextM style={[FontStyles.font4, FontStyles.weight500]}>{BUTTON_LABEL_MAP[type] || ''}</TextM>
+            <TextL style={[styles.oAuthBtnText]}>{BUTTON_LABEL_MAP[type] || ''}</TextL>
           </View>
         </Touchable>
       )}
@@ -73,42 +75,48 @@ const GuardianThirdAccount = ({
 
 export default memo(GuardianThirdAccount);
 
-const styles = StyleSheet.create({
+const getStyles = makeStyles(theme => ({
   accountLabel: {
-    color: defaultColors.font3,
-    marginLeft: pTd(8),
+    color: theme.colors.textBase1,
     marginBottom: pTd(8),
-    lineHeight: pTd(20),
+    lineHeight: pTd(22),
   },
   oAuthBtn: {
-    height: pTd(56),
+    height: pTd(40),
     paddingHorizontal: pTd(16),
     justifyContent: 'center',
-    backgroundColor: defaultColors.bg1,
+    backgroundColor: theme.colors.bgBase1,
+    borderWidth: pTd(1),
+    borderColor: theme.colors.borderBase1,
     marginBottom: pTd(24),
-    borderRadius: pTd(6),
+    borderRadius: pTd(8),
+  },
+  oAuthBtnText: {
+    color: theme.colors.textBrand1,
+    lineHeight: pTd(16),
   },
   firstNameStyle: {
-    marginBottom: pTd(2),
+    color: theme.colors.textBase1,
   },
   thirdPartAccount: {
-    height: pTd(56),
-    borderRadius: pTd(6),
-    backgroundColor: defaultColors.bg1,
-    paddingHorizontal: pTd(16),
     justifyContent: 'center',
+    borderRadius: pTd(8),
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: theme.colors.borderBase1,
+    backgroundColor: theme.colors.bgBase1,
+    position: 'relative',
+    ...GStyles.paddingArg(12, 16),
   },
   thirdPartAccountWrap: {
     marginBottom: pTd(24),
   },
   thirdPartAccountError: {
-    marginTop: pTd(4),
-    marginLeft: pTd(8),
-    color: defaultColors.error,
+    paddingTop: pTd(8),
+    color: theme.colors.textDanger2,
   },
   iconWrap: {
     zIndex: 100,
     position: 'absolute',
     right: pTd(16),
   },
-});
+}));

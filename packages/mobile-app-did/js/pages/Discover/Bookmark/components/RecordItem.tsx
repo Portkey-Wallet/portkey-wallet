@@ -1,48 +1,35 @@
 import GStyles from 'assets/theme/GStyles';
 import { TextM, TextS } from 'components/CommonText';
 import Touchable from 'components/Touchable';
-import React, { memo, useCallback, useEffect, useMemo, useRef } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { RenderItemParams, ScaleDecorator } from 'react-native-draggable-flatlist';
-import SwipeableItem, { OpenDirection, SwipeableItemImperativeRef } from 'react-native-swipeable-item';
-import { useBookmark } from '../context/bookmarksContext';
-import usePrevious from 'hooks/usePrevious';
-import { BGStyles, FontStyles } from 'assets/theme/styles';
-import Svg from 'components/Svg';
+import React, { memo, useCallback, useMemo } from 'react';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { RenderItemParams } from 'react-native-draggable-flatlist';
+import { BGStyles, DarkFontStyles } from 'assets/theme/styles';
 import { pTd } from 'utils/unit';
 import DiscoverWebsiteImage from 'pages/Discover/components/DiscoverWebsiteImage';
 import TextWithProtocolIcon from 'components/TextWithProtocolIcon';
-import { defaultColors } from 'assets/theme';
-import myEvents from 'utils/deviceEvent';
-import useEffectOnce from 'hooks/useEffectOnce';
+import { darkColors } from 'assets/theme';
 import { ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
 import { useDiscoverJumpWithNetWork } from 'hooks/discover';
 import { useGetCmsWebsiteInfo } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { isDangerousLink } from '@portkey-wallet/utils/dapp/browser';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 
-type RecordItemType = RenderItemParams<ITabItem> & { onDelete: (item: ITabItem) => void };
+type RecordItemType = RenderItemParams<ITabItem> & {
+  itemRefs: React.MutableRefObject<Map<any, any>>;
+  onDelete: (item: ITabItem) => void;
+};
 
 export default memo(
   function RecordItem(props: RecordItemType) {
-    const { item, onDelete } = props;
+    const { item, itemRefs, onDelete } = props;
 
     const discoverJump = useDiscoverJumpWithNetWork();
     const { getCmsWebsiteInfoImageUrl, getCmsWebsiteInfoName } = useGetCmsWebsiteInfo();
 
-    const swipeableRef = useRef<SwipeableItemImperativeRef>(null);
-    const [{ isEdit }] = useBookmark();
-    const preIsEdit = usePrevious(isEdit);
-    useEffect(() => {
-      if (!isEdit && isEdit !== preIsEdit) swipeableRef.current?.close();
-    }, [preIsEdit, isEdit]);
-    useEffectOnce(() => {
-      const listener = myEvents.bookmark.closeSwipeable.addListener(() => swipeableRef.current?.close());
-      return () => listener.remove();
-    });
-
     const onClickJump = useCallback(
       (i: any) => {
-        if (isEdit) return;
-
         discoverJump({
           item: {
             name: i?.name || '',
@@ -50,7 +37,7 @@ export default memo(
           },
         });
       },
-      [discoverJump, isEdit],
+      [discoverJump],
     );
 
     const renderUnderlayLeft = useCallback(
@@ -60,25 +47,11 @@ export default memo(
           onPress={() => {
             onDelete(item);
           }}>
-          <TextM style={[FontStyles.font2, GStyles.flexCol, GStyles.center]}>Delete</TextM>
+          <TextM style={[DarkFontStyles.textBase1, GStyles.flexCol, GStyles.center]}>Delete</TextM>
         </Touchable>
       ),
       [item, onDelete],
     );
-
-    const EditDom = useMemo(() => {
-      if (!isEdit) return null;
-      return (
-        <Touchable
-          style={styles.deleteIconWrap}
-          onPress={() => {
-            myEvents.bookmark.closeSwipeable.emit();
-            swipeableRef.current?.open(OpenDirection.LEFT);
-          }}>
-          <Svg icon="red-delete" size={pTd(20)} />
-        </Touchable>
-      );
-    }, [isEdit]);
 
     const recordInfo = useMemo(() => {
       return {
@@ -89,44 +62,50 @@ export default memo(
     }, [getCmsWebsiteInfoImageUrl, getCmsWebsiteInfoName, item.name, item.url]);
 
     return (
-      <ScaleDecorator activeScale={1.05}>
-        <SwipeableItem
-          key={item.id}
-          item={props}
-          ref={swipeableRef}
-          swipeEnabled={false}
-          snapPointsLeft={[80]}
-          renderUnderlayLeft={renderUnderlayLeft}>
-          <Touchable
+      <GestureHandlerRootView>
+        <ReanimatedSwipeable
+          friction={2}
+          enableTrackpadTwoFingerGesture
+          rightThreshold={40}
+          ref={ref => {
+            if (ref && !itemRefs.current.get(item.id)) {
+              itemRefs.current.set(item.id, ref);
+            }
+          }}
+          onSwipeableWillOpen={() => {
+            [...itemRefs.current.entries()].forEach(([key, ref]) => {
+              if (key !== item.id && ref) {
+                ref?.close?.();
+              }
+            });
+          }}
+          renderRightActions={renderUnderlayLeft}>
+          <TouchableOpacity
+            activeOpacity={1}
             onPress={() => onClickJump(item)}
-            // disabled={!isEdit || isActive}
             style={[
               GStyles.flexRow,
               GStyles.itemCenter,
               styles.itemRow,
-              BGStyles.bg1,
+              BGStyles.bgBase1,
               // add margin to scale item
               styles.marginContainer,
             ]}>
-            {EditDom}
             <DiscoverWebsiteImage size={pTd(40)} style={styles.websiteIconStyle} imageUrl={recordInfo.imageUrl} />
             <View style={styles.infoWrap}>
               <TextWithProtocolIcon
                 title={recordInfo?.title || item.url}
                 url={recordInfo?.url}
                 textFontSize={pTd(16)}
+                showProtocolIcon={isDangerousLink(recordInfo.url)}
               />
-              <TextS numberOfLines={1} ellipsizeMode="tail" style={[FontStyles.font7]}>
+              <TextS numberOfLines={1} ellipsizeMode="tail" style={[DarkFontStyles.textBase2]}>
                 {item.url || ''}
               </TextS>
             </View>
-
-            {/* <Touchable onPressIn={drag} disabled={!isEdit || isActive}>
-              <TextM>drag</TextM>
-            </Touchable> */}
-          </Touchable>
-        </SwipeableItem>
-      </ScaleDecorator>
+          </TouchableOpacity>
+        </ReanimatedSwipeable>
+      </GestureHandlerRootView>
     );
   },
   (prevProps: RenderItemParams<any>, nextProps: RenderItemParams<any>) => {
@@ -137,14 +116,18 @@ export default memo(
 const styles = StyleSheet.create({
   marginContainer: {},
   underlayLeftBox: {
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'flex-end',
-    paddingRight: pTd(16),
-    backgroundColor: defaultColors.bg17,
-    color: defaultColors.font1,
+    justifyContent: 'center',
+    width: pTd(98),
+    backgroundColor: darkColors.bgDanger1,
+    color: darkColors.iconDanger4,
+  },
+  row: {
+    flexDirection: 'row',
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 15,
   },
   itemRow: {
     padding: pTd(12),

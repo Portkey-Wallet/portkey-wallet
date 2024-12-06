@@ -1,14 +1,13 @@
-import { defaultColors } from 'assets/theme';
-import { FontStyles } from 'assets/theme/styles';
-import { TextS } from 'components/CommonText';
+import { TextM } from 'components/CommonText';
 import React, { memo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 import { pTd } from 'utils/unit';
 import { IRecordsItemType } from '@portkey-wallet/types/types-ca/discover';
 import DiscoverWebsiteImage from '../DiscoverWebsiteImage';
 import TextWithProtocolIcon from 'components/TextWithProtocolIcon';
 import { useGetCmsWebsiteInfo } from '@portkey-wallet/hooks/hooks-ca/cms';
 import Touchable from 'components/Touchable';
+import { makeStyles } from '@rneui/themed';
 
 type RecordListItemType = {
   item: IRecordsItemType;
@@ -18,19 +17,23 @@ type RecordListItemType = {
 const SearchRecordItem: React.FC<RecordListItemType> = props => {
   const { item, onPress } = props;
   const { getCmsWebsiteInfoImageUrl, getCmsWebsiteInfoName } = useGetCmsWebsiteInfo();
+  const itemStyle = getStyles();
 
   return (
     <Touchable style={itemStyle.wrap} onPress={() => onPress?.()}>
-      <DiscoverWebsiteImage imageUrl={getCmsWebsiteInfoImageUrl(item?.url || '')} />
+      <DiscoverWebsiteImage size={pTd(42)} imageUrl={getCmsWebsiteInfoImageUrl(item?.url || '')} />
       <View style={itemStyle.right}>
-        <View style={itemStyle.infoWrap}>
+        <View style={itemStyle.gameNameWrap}>
           <TextWithProtocolIcon
+            textFontSize={pTd(16)}
             title={getCmsWebsiteInfoName(item?.url || '') || item.name || ''}
             url={item.url || ''}
           />
-          <TextS numberOfLines={1} style={[FontStyles.font3, itemStyle.gameInfo]}>
+        </View>
+        <View style={itemStyle.gameInfoWrap}>
+          <TextM numberOfLines={1} style={itemStyle.gameInfo}>
             {item?.url || ''}
-          </TextS>
+          </TextM>
         </View>
       </View>
     </Touchable>
@@ -39,38 +42,33 @@ const SearchRecordItem: React.FC<RecordListItemType> = props => {
 
 export default memo(SearchRecordItem);
 
-const itemStyle = StyleSheet.create({
+const getStyles = makeStyles(theme => ({
   wrap: {
-    height: pTd(70),
+    height: pTd(74),
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
   },
   right: {
-    height: pTd(70),
-    marginLeft: pTd(16),
+    height: pTd(74),
+    marginLeft: pTd(8),
     paddingRight: pTd(16),
     flex: 1,
     display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    borderBottomColor: defaultColors.border6,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-  },
-  infoWrap: {
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'column',
     justifyContent: 'center',
-    alignItems: 'flex-start',
   },
-  gameName: {
-    lineHeight: pTd(22),
+  gameNameWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: pTd(22),
+  },
+  gameInfoWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: pTd(20),
   },
   gameInfo: {
-    lineHeight: pTd(16),
-    marginTop: pTd(2),
+    color: theme.colors.textBase2,
+    lineHeight: pTd(17.5),
   },
-});
+}));

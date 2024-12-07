@@ -26,6 +26,7 @@
     "svg": "yarn handle-svg && yarn generate-svg",
     "build:aab": "cd android && ./gradlew bundleRelease",
     "build:apk": "cd android && ./gradlew assembleRelease",
+    "build:apk-debug": "cd android && ./gradlew assembleDebug",
     "build:ipa": "cd ios && fastlane build_ipa",
     "push:ios": "cd ios && fastlane distribute_firebase",
     "distribute:ios": "yarn build:ipa && yarn push:ios",

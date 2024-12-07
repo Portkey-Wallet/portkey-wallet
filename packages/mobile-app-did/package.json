@@ -28,7 +28,8 @@
     "push:ios": "cd ios && fastlane distribute_firebase",
     "distribute:ios": "yarn build:ipa && yarn push:ios",
     "build:apk-test1": "yarn handle-network network-test1 && yarn build:apk",
-    "build:apk-test2": "yarn handle-network network-test2 && yarn build:apk"
+    "build:apk-test2": "yarn handle-network network-test2 && yarn build:apk",
+    "build:apk-debug": "cd android && ./gradlew assembleDebug"
   },
   "workspaces": {
     "nohoist": [

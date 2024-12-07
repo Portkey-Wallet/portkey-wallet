@@ -1,5 +1,5 @@
 import { Input } from 'antd';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
 import { isValidNumber } from '@portkey-wallet/utils/reg';

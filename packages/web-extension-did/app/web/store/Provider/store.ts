@@ -2,17 +2,12 @@ import { Action, configureStore, ThunkAction } from '@reduxjs/toolkit';
 import { persistReducer } from 'redux-persist';
 import storeConfig from './config';
 import rootReducer from './rootReducer';
-import { rateApi } from '@portkey-wallet/store/rate/api';
-import { DappMiddle } from '@portkey-wallet/utils/dapp/middle';
 import thunk from 'redux-thunk';
+import { loadMiddlewareList } from './middleware';
 
 export const persistedReducer = persistReducer(storeConfig.reduxPersistConfig as any, rootReducer);
 
-const middlewareList: any[] = [];
-
-middlewareList.push(rateApi.middleware);
-// dapp middle
-middlewareList.push(DappMiddle.middle);
+const middlewareList: any[] = loadMiddlewareList();
 
 export const store = configureStore({
   reducer: persistedReducer,

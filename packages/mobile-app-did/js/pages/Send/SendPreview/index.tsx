@@ -8,11 +8,8 @@ import { useCurrentChain, useCurrentChainList, useDefaultToken } from '@portkey-
 import { usePin } from 'hooks/store';
 import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { getManagerAccount } from 'utils/redux';
-import crossChainTransfer, {
-  CrossChainTransferIntervalParams,
-  intervalCrossChainTransfer,
-} from 'utils/transfer/crossChainTransfer';
-import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { CrossChainTransferIntervalParams, intervalCrossChainTransfer } from 'utils/transfer/crossChainTransfer';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { formatAmountShow, timesDecimals, unitConverter } from '@portkey-wallet/utils/converter';
 import sameChainTransfer from 'utils/transfer/sameChainTransfer';
@@ -58,6 +55,7 @@ import {
 } from 'hooks/amplitude';
 import { ChainId } from '@portkey-wallet/types';
 import myEvents from 'utils/deviceEvent';
+import { crossChainTransferV2 } from 'utils/transfer/crossChainTransferV2';
 
 enum ErrorType {
   NO_TOAST = 'noToast',
@@ -96,10 +94,10 @@ const SendPreview: React.FC = () => {
   const dispatch = useAppCommonDispatch();
   const pin = usePin();
   const chainInfo = useCurrentChain(assetInfo.chainId);
+
   const { fetchAccountNFTCollectionInfoList } = useAccountNFTCollectionInfo();
   const { fetchAccountTokenInfoList } = useAccountTokenInfo();
   const currentWallet = useCurrentWalletInfo();
-  const currentNetwork = useCurrentNetworkInfo();
   const caAddressInfos = useCaAddressInfoList();
   const currentChainList = useCurrentChainList();
   const wallet = useCurrentWalletInfo();
@@ -408,20 +406,25 @@ const SendPreview: React.FC = () => {
     } else if (transferType === TransferType.GENERAL_CROSS_CHAIN) {
       portkeyCrossTrack(trackParams);
 
-      const crossChainTransferResult = await crossChainTransfer({
+      const _toChainId = toInfo.address.includes('_') ? getChainIdByAddress(toInfo.address) : toInfo?.chainId;
+
+      const crossChainTransferResult = await crossChainTransferV2({
         tokenContract: tokenContractRef.current,
         contract: portkeyContractRef.current,
-        chainType: currentNetwork.walletType ?? 'aelf',
-        managerAddress: wallet.address,
-        tokenInfo: { ...assetInfo, address: assetInfo.tokenContractAddress } as unknown as BaseToken,
+        tokenInfo: {
+          ...assetInfo,
+          address: assetInfo?.tokenContractAddress || assetInfo?.address,
+        } as unknown as BaseToken,
         caHash: wallet.caHash || '',
         amount,
-        crossDefaultFee,
         toAddress: toInfo.address,
+        toChainId: _toChainId as ChainId,
         guardiansApproved,
       });
 
-      console.log('crossChainTransferResult', crossChainTransferResult);
+      if (crossChainTransferResult.error) {
+        throw crossChainTransferResult;
+      }
     } else if (transferType === TransferType.E_TRANSFER) {
       etransferCrossTrack(trackParams);
 
@@ -447,7 +450,6 @@ const SendPreview: React.FC = () => {
         },
         isCheckSymbol: false,
       });
-      console.log('crossTransferByEtransferResult', crossTransferByEtransferResult);
       if (!crossTransferByEtransferResult?.transactionId) {
         throw 'Transfer error';
       }
@@ -504,9 +506,7 @@ const SendPreview: React.FC = () => {
     chainInfo,
     checkTransferLimitWithJump,
     crossChainTransferTrack,
-    crossDefaultFee,
     crossTransferByEtransfer,
-    currentNetwork.walletType,
     currentWallet.caAddress,
     currentWallet.caHash,
     defaultToken.decimals,
@@ -530,7 +530,6 @@ const SendPreview: React.FC = () => {
     toInfo?.chainId,
     toInfo?.network,
     transferType,
-    wallet.address,
     wallet.caHash,
   ]);
 
@@ -661,14 +660,9 @@ const SendPreview: React.FC = () => {
           ZERO.plus(transactionFee || '').multipliedBy(tokenPriceObject[transactionFeeUnit || '']),
         )}`;
         break;
-      case TransferType.GENERAL_CROSS_CHAIN:
-        result.feeShow = `${unitConverter(crossDefaultFee)} ${defaultToken.symbol}`;
-        result.feeUsdShow = `$${unitConverter(
-          ZERO.plus(crossDefaultFee).multipliedBy(tokenPriceObject[defaultToken.symbol]),
-        )}`;
     }
     return result;
-  }, [crossDefaultFee, defaultToken.symbol, tokenPriceObject, transactionFee, transactionFeeUnit, transferType]);
+  }, [tokenPriceObject, transactionFee, transactionFeeUnit, transferType]);
 
   return (
     <SendReceivePreview

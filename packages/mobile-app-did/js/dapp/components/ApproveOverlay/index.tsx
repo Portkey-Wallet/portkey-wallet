@@ -29,10 +29,9 @@ import { makeStyles, useTheme } from '@rneui/themed';
 import CommonTooltip from 'components/CommonTooltip';
 import TitleInfoSection from '../TitleInfoSection';
 import { KeyboardSafeArea } from 'components/KeyboardSafeArea';
-import { useGetContractUpgradeTime } from '@portkey-wallet/graphql/dappSecurity/hooks';
-import { checkTimeOver12 } from '@portkey-wallet/utils/check';
-import { formatDateTime } from '@portkey-wallet/utils/format';
 import { CommonPromptCard, PromptCardType } from 'components/CommonPromptCard';
+import { useDappSpenderCheck } from '@portkey-wallet/hooks/hooks-ca/discover';
+import { DAPP_SECURITY_SPENDER_INVALID } from '@portkey-wallet/constants/constants-ca/dapp';
 
 type SignModalPropsType = {
   dappInfo: DappStoreItem;
@@ -44,37 +43,14 @@ type SignModalPropsType = {
 const ZERO_MESSAGE = 'Please enter a valid amount.';
 const ApproveModal = (props: SignModalPropsType) => {
   const { dappInfo, approveParams, onReject, isEditBatchApprovalInApp } = props;
-  const { amount, targetChainId, contractAddress } = approveParams.approveInfo;
+  const { amount, targetChainId, spender } = approveParams.approveInfo;
   const dispatch = useAppDispatch();
   const { t } = useLanguage();
   const [errorMessage, setErrorMessage] = useState('');
   const [symbolNum, setSymbolNum] = useState<string>('');
   const styles = getStyles();
   const { theme } = useTheme();
-  const getContractUpgradeTime = useGetContractUpgradeTime();
-  const [contractUpgradeTimeResult, setContractUpgradeTimeResult] = useState<any>({
-    isInit: true,
-    isTimeOver12: true,
-    upgradeTime: '',
-  });
-  useEffectOnce(() => {
-    (async () => {
-      const result = await getContractUpgradeTime({
-        input: {
-          chainId: targetChainId,
-          address: contractAddress || '',
-          skipCount: 0,
-          maxResultCount: 10,
-        },
-      });
-      const blockTime = result.data.contractList.items[0].metadata.block.blockTime;
-      setContractUpgradeTimeResult({
-        isInit: false,
-        isTimeOver12: checkTimeOver12(blockTime),
-        upgradeTime: formatDateTime(blockTime),
-      });
-    })();
-  });
+  const spenderValid = useDappSpenderCheck(dappInfo.origin, spender, dappInfo.icon);
   const decimals = useMemo(() => approveParams.approveInfo.decimals, [approveParams.approveInfo.decimals]);
 
   const approveSymbol = useMemo(
@@ -192,7 +168,7 @@ const ApproveModal = (props: SignModalPropsType) => {
       }
       onClose={onReject}
       onTouchStart={Keyboard.dismiss}>
-      <View style={[styles.contentWrap, !contractUpgradeTimeResult.isInit && GStyles.paddingBottom(86)]}>
+      <View style={[styles.contentWrap, !spenderValid && GStyles.paddingBottom(86)]}>
         <View style={styles.inputWrap}>
           <View style={[GStyles.flexRow, GStyles.itemCenter, { marginBottom: pTd(8) }]}>
             <TextL style={{ lineHeight: pTd(22) }}>{t('Token allowance')}</TextL>
@@ -248,11 +224,11 @@ const ApproveModal = (props: SignModalPropsType) => {
               <TextM style={{ color: theme.colors.textBrand1 }}>Max</TextM>
             </Touchable>
           </View>
-          {!contractUpgradeTimeResult.isInit && (
+          {!spenderValid && (
             <CommonPromptCard
               style={{ marginTop: pTd(8) }}
-              type={contractUpgradeTimeResult.isTimeOver12 ? PromptCardType.INFO : PromptCardType.WARNING}
-              description={`Contract update time: ${contractUpgradeTimeResult.upgradeTime} The dApp's smart contract has been updated. Please proceed with caution.`}
+              type={PromptCardType.WARNING}
+              description={DAPP_SECURITY_SPENDER_INVALID}
             />
           )}
         </View>

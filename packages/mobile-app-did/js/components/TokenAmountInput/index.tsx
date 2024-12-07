@@ -110,14 +110,25 @@ const TokenAmountInput: React.FC<ITokenAmountInput> = props => {
               <TextInput
                 ref={iptRef}
                 value={value}
-                style={[styles.input, showErrorInput && warningTip && styles.errorInput]}
+                style={[
+                  styles.input,
+                  showErrorInput && warningTip && styles.errorInput,
+                  value?.length > 12 && styles.middleText,
+                  value?.length > 18 && styles.smallText,
+                ]}
                 placeholder="0"
                 placeholderTextColor={darkColors.textBase3}
                 keyboardType="numeric"
                 onChangeText={onValueInputChange}
                 editable={editable}
               />
-              <Text style={[styles.label, !isIOS && styles.labelPaddingBottom]}>{` ${label || symbol}`}</Text>
+              <Text
+                style={[
+                  styles.label,
+                  !isIOS && styles.labelPaddingBottom,
+                  value?.length > 12 && styles.middleText,
+                  value?.length > 18 && styles.smallText,
+                ]}>{` ${label || symbol}`}</Text>
             </>
           )}
         </>
@@ -144,7 +155,6 @@ export const getStyles = makeStyles(theme => ({
     backgroundColor: theme.colors.bgBase1,
     paddingTop: pTd(12),
     paddingBottom: pTd(24),
-    paddingHorizontal: pTd(16),
   },
   topSection: {
     width: '100%',
@@ -174,6 +184,12 @@ export const getStyles = makeStyles(theme => ({
     fontSize: pTd(32),
     ...fonts.BGMediumFont,
     paddingHorizontal: 0,
+  },
+  middleText: {
+    fontSize: pTd(24),
+  },
+  smallText: {
+    fontSize: pTd(16),
   },
   errorInput: {
     color: theme.colors.textDanger1,

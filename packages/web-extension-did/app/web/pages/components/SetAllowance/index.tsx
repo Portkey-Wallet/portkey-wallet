@@ -7,13 +7,11 @@ import { parseInputNumberChange } from '@portkey-wallet/utils/input';
 import ThrottleButton from 'components/ThrottleButton';
 import { ALLOWANCE_HEADER_NO_NAME, SET_ALLOWANCE_MULTIPLY_TIP } from '@portkey-wallet/constants/constants-ca/allowance';
 import { isNFT } from '@portkey-wallet/utils/token';
-import { useGetContractUpgradeTime } from '@portkey-wallet/graphql/dappSecurity/hooks';
 import CustomSvg, { SvgType } from 'components/CustomSvg';
 import './index.less';
 import { ChainId } from '@portkey-wallet/types';
-import { getChain } from '@portkey/did-ui-react';
-import { checkTimeOver12 } from '@portkey-wallet/utils/check';
-import { formatDateTime } from '@portkey-wallet/utils/format';
+import { useDappSpenderCheck } from '@portkey-wallet/hooks/hooks-ca/discover';
+import { DAPP_SECURITY_SPENDER_INVALID } from '@portkey-wallet/constants/constants-ca/dapp';
 
 export interface IBaseSetAllowanceProps {
   symbol: string;
@@ -24,6 +22,7 @@ export interface IBaseSetAllowanceProps {
   batchApproveNFT?: boolean;
   dappInfo?: { icon?: string; href?: string; name?: string };
   defaultIcon?: SvgType;
+  spender?: string;
 }
 
 export interface IAllowanceConfirmProps {
@@ -51,8 +50,7 @@ export default function SetAllowance({
   symbol,
   className,
   recommendedAmount = 0,
-  originChainId,
-  targetChainId,
+  spender,
   onCancel,
   onAllowanceChange,
   onConfirm,
@@ -67,39 +65,7 @@ export default function SetAllowance({
   const allowance = useMemo(() => formatAllowanceInput(amount), [amount, formatAllowanceInput]);
 
   const [error, setError] = useState<string>('');
-  const getContractUpgradeTime = useGetContractUpgradeTime();
-  const [contractUpgradeTimeResult, setContractUpgradeTimeResult] = useState<{
-    isInit: boolean;
-    isTimeOver12: boolean;
-    formatTime: string;
-  }>({
-    isInit: true,
-    isTimeOver12: true,
-    formatTime: '',
-  });
-  useEffect(() => {
-    (async () => {
-      if (!originChainId || !targetChainId) {
-        return;
-      }
-      const chainInfo = await getChain(originChainId);
-      const result = await getContractUpgradeTime({
-        input: {
-          chainId: targetChainId,
-          address: chainInfo.caContractAddress || '',
-          skipCount: 0,
-          maxResultCount: 10,
-        },
-      });
-      console.log('wfs===result', result);
-      const blockTime = result.data.contractList.items[0].metadata.block.blockTime;
-      setContractUpgradeTimeResult({
-        isInit: false,
-        isTimeOver12: checkTimeOver12(blockTime),
-        formatTime: formatDateTime(blockTime),
-      });
-    })();
-  }, [getContractUpgradeTime, originChainId, targetChainId]);
+  const spenderValid = useDappSpenderCheck(dappInfo?.href, spender, dappInfo?.icon);
 
   const inputChange = useCallback(
     (amount: string | number) => {
@@ -163,19 +129,10 @@ export default function SetAllowance({
 
         <div className="set-allowance-notice">{SET_ALLOWANCE_MULTIPLY_TIP}</div>
       </div>
-      {!contractUpgradeTimeResult.isInit && (
-        <div
-          className={`set-allowance-warning ${
-            !contractUpgradeTimeResult.isTimeOver12 && `set-allowance-warning-hint`
-          }`}>
-          <CustomSvg
-            type="WarningTriangle"
-            className={`warning-icon`}
-            fillColor={contractUpgradeTimeResult.isTimeOver12 ? '#5D42FF' : '#FF9417'}
-          />
-          <div className={'warning-title'}>{`Contract update time: ${
-            contractUpgradeTimeResult?.formatTime || 'Oct 15, 2024, at 17:07'
-          } The dApp's smart contract has been updated. Please proceed with caution.`}</div>
+      {!spenderValid && (
+        <div className={`set-allowance-warning`}>
+          <CustomSvg type="WarningTriangle" className={`warning-icon`} fillColor={'#FF9417'} />
+          <div className={'warning-title'}>{DAPP_SECURITY_SPENDER_INVALID}</div>
         </div>
       )}
       <div className="set-allowance-btn-wrapper flex-row-between">

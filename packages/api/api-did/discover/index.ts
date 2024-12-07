@@ -23,4 +23,8 @@ export default {
     target: '/api/app/contracts/websiteValild',
     config: { method: 'GET' },
   },
+  checkSpenderValid: {
+    target: '/api/app/contracts/spenderValid',
+    config: { method: 'GET' },
+  },
 } as const;

@@ -63,3 +63,23 @@ export function useDappInfo(website: string, logo: string) {
   }, [checkDappIsLegal, logo, website]);
   return isInWebSet;
 }
+
+export function useDappSpenderCheck(website?: string, spender?: string, logo?: string) {
+  const [spenderValid, setSpenderValid] = useState<boolean>(true);
+  const checkDappSpenderValid = useCallback(async (website?: string, spender?: string, logo?: string) => {
+    const result = await request.discover.checkSpenderValid({
+      params: {
+        website,
+        logo,
+        spender,
+      },
+    });
+    setSpenderValid(result);
+  }, []);
+  useEffect(() => {
+    (async () => {
+      await checkDappSpenderValid(website, spender, logo);
+    })();
+  }, [checkDappSpenderValid, logo, spender, website]);
+  return spenderValid;
+}

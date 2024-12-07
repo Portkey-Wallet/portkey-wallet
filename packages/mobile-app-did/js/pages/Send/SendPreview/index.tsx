@@ -13,7 +13,6 @@ import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { formatAmountShow, timesDecimals, unitConverter } from '@portkey-wallet/utils/converter';
 import sameChainTransfer from 'utils/transfer/sameChainTransfer';
-import { addFailedActivity, removeFailedActivity } from '@portkey-wallet/store/store-ca/activity/slice';
 import { useRouterEffectParams } from '@portkey-wallet/hooks/useRouterParams';
 import CommonToast from 'components/CommonToast';
 import navigationService from 'utils/navigationService';
@@ -596,17 +595,6 @@ const SendPreview: React.FC = () => {
         console.log(error);
         CommonToast.failError(error.error);
         return;
-      } else if (error.type === 'crossChainTransfer') {
-        dispatch(
-          addFailedActivity({
-            transactionId: error.managerTransferTxId,
-            params: error.data,
-          }),
-        );
-        showRetry(() => {
-          retryCrossChain(error.managerTransferTxId, error.data);
-        });
-        return;
       } else if (error.type !== ErrorType.NO_TOAST) {
         CommonToast.failError(error);
       }
@@ -620,7 +608,7 @@ const SendPreview: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [actionAfterTransfer, dispatch, retryCrossChain, showRetry, transfer]);
+  }, [actionAfterTransfer, transfer]);
 
   useFocusEffect(
     useCallback(() => {

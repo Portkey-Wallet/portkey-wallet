@@ -1,19 +1,28 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { TextInput, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { TextInput, View, Text, StyleSheet } from 'react-native';
 import { pTd } from 'utils/unit';
 import { makeStyles, useTheme } from '@rneui/themed';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import Touchable from 'components/Touchable';
 import Svg from 'components/Svg';
 import CommonButton from 'components/CommonButton';
+import CommonToast from 'components/CommonToast';
+const bip39 = require('bip39')
+import * as Clipboard from 'expo-clipboard';
+
+const MnemonicsWordCount = 12;
 
 export default function RecoveryPhrase() {
   const styles = getStyles();
   const { theme } = useTheme();
-  const [mnemonics, setMnemonics] = useState(Array(12).fill(''));
+  const [mnemonics, setMnemonics] = useState(Array(MnemonicsWordCount).fill(''));
 
   const isMnemonicsEmpty = useMemo(() => {
     return mnemonics.every(mnemonic => mnemonic === '');
+  }, [mnemonics]);
+
+  const isMnemonicsValid = useMemo(() => {
+    return bip39.validateMnemonic(mnemonics.join(' '));
   }, [mnemonics]);
 
   const handleChangeText = useCallback(
@@ -25,32 +34,51 @@ export default function RecoveryPhrase() {
     [mnemonics, setMnemonics],
   );
 
+  const onPaste = useCallback(async () => {
+    const clipboardText = (await Clipboard.getStringAsync()).trim();
+    if (bip39.validateMnemonic(clipboardText)) {
+      const clipboardMnemonics = clipboardText.split(' ');
+      if (clipboardMnemonics.length === MnemonicsWordCount) {
+        setMnemonics(clipboardMnemonics);
+      } else {
+        CommonToast.fail('Invalid recovery phrase');
+      }
+    } else {
+      CommonToast.fail('Invalid recovery phrase');
+    }
+  }, [setMnemonics]);
+
+  const onClear = useCallback(() => {
+    setMnemonics(Array(MnemonicsWordCount).fill(''));
+  }, [setMnemonics]);
+
   const inputWidth = useMemo(() => {
     return (screenWidth - pTd(16) * 3) / 2;
   }, []);
 
   const pasteButton = useMemo(() => {
     return (
-      <Touchable style={styles.button}>
+      <Touchable style={styles.button} onPress={onPaste}>
         <Svg icon="paste" size={pTd(20)} />
         <Text style={styles.buttonText}>Paste from clipboard</Text>
       </Touchable>
     );
-  }, []);
+  }, [styles]);
   const clearButton = useMemo(() => {
     return (
-      <Touchable style={styles.button}>
+      <Touchable style={styles.button} onPress={onClear}>
         <Svg icon="clear2" size={pTd(16)} color={theme.colors.iconBase2} />
         <Text style={styles.buttonText}>Clear</Text>
       </Touchable>
     );
-  }, []);
+  }, [styles]);
 
   return (
     <View style={styles.flex}>
       <View style={styles.mnemonicsWrap}>
         {mnemonics.map((mnemonic, index) => (
           <View
+            key={index}
             style={[
               styles.inputWrap,
               { width: inputWidth },
@@ -71,7 +99,7 @@ export default function RecoveryPhrase() {
       </View>
       {isMnemonicsEmpty ? pasteButton : clearButton}
       <View style={styles.flex} />
-      <CommonButton style={styles.importButton} disabledStyle={styles.importButtonDisable} disabled={isMnemonicsEmpty}>
+      <CommonButton style={styles.importButton} disabledStyle={styles.importButtonDisable} disabled={!isMnemonicsValid}>
         Import
       </CommonButton>
     </View>

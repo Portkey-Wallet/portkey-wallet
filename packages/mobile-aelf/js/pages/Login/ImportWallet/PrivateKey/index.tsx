@@ -1,40 +1,84 @@
 import React, { useCallback, useState, useMemo } from 'react';
-import { StyleSheet, TextInput, View, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, TextInput, View, Text } from 'react-native';
 import { pTd } from 'utils/unit';
 import { makeStyles, useTheme } from '@rneui/themed';
 import Touchable from 'components/Touchable';
+import CommonButton from 'components/CommonButton';
 import Svg from 'components/Svg';
+import * as Clipboard from 'expo-clipboard';
 
 export default function RecoveryPhrase() {
   const styles = getStyles();
   const { theme } = useTheme();
-  const [text, setText] = useState('');
-  const onChangeText = useCallback((text: string) => {
-    setText(text);
-  }, [setText]);
+  const [inputText, setInputText] = useState('');
+  const onChangeText = useCallback(
+    (text: string) => {
+      setInputText(text);
+    },
+    [setInputText],
+  );
 
+  const isPrivateKeyValid = useMemo(() => {
+    const privateKey = inputText.trim();
+    if (privateKey.length <= 0) {
+      return false;
+    }
+    let privateKeyWithoutPrefix = privateKey;
+    if (privateKey.startsWith('0x') || privateKey.startsWith('0X')) {
+      privateKeyWithoutPrefix = privateKey.slice(2);
+    }
+    if (privateKeyWithoutPrefix.length !== 64) {
+      return false;
+    }
+    // Regex to match a valid hexadecimal string
+    const hexRegex = /^[0-9a-fA-F]{64}$/;
+    if (!hexRegex.test(privateKeyWithoutPrefix)) {
+      return false;
+    }
+    return true;
+  }, [inputText]);
+
+  const onPaste = useCallback(async () => {
+    const clipboardText = (await Clipboard.getStringAsync()).trim();
+    setInputText(clipboardText);
+  }, [setInputText]);
+
+  const onClear = useCallback(() => {
+    setInputText('');
+  }, [setInputText]);
 
   const pasteButton = useMemo(() => {
     return (
-      <Touchable style={styles.button}>
+      <Touchable style={styles.button} onPress={onPaste}>
         <Svg icon="paste" size={pTd(20)} />
         <Text style={styles.buttonText}>Paste from clipboard</Text>
       </Touchable>
     );
-  }, []);
+  }, [styles]);
   const clearButton = useMemo(() => {
     return (
-      <Touchable style={styles.button}>
+      <Touchable style={styles.button} onPress={onClear}>
         <Svg icon="clear2" size={pTd(16)} color={theme.colors.iconBase2} />
         <Text style={styles.buttonText}>Clear</Text>
       </Touchable>
     );
-  }, []);
+  }, [styles]);
 
   return (
     <View style={styles.flex}>
-      <TextInput value={text} multiline={true} style={styles.input} placeholder="Enter private key" onChangeText={onChangeText} />
-      {text.length <= 0 ? pasteButton : clearButton}
+      <TextInput
+        value={inputText}
+        multiline={true}
+        style={styles.input}
+        placeholder="Enter private key"
+        placeholderTextColor={theme.colors.textBase3}
+        onChangeText={onChangeText}
+      />
+      {inputText.length <= 0 ? pasteButton : clearButton}
+      <View style={styles.flex} />
+      <CommonButton style={styles.importButton} disabledStyle={styles.importButtonDisable} disabled={!isPrivateKeyValid}>
+        Import
+      </CommonButton>
     </View>
   );
 }
@@ -62,5 +106,12 @@ const getStyles = makeStyles(theme => ({
   },
   buttonText: {
     marginLeft: pTd(8),
+  },
+  importButton: {
+    marginBottom: pTd(16),
+    backgroundColor: theme.colors.bgBase1,
+  },
+  importButtonDisable: {
+    backgroundColor: theme.colors.bgBase2,
   },
 }));

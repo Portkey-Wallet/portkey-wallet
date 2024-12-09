@@ -1,99 +1,66 @@
-import { Image } from 'react-native';
+import { View } from 'react-native';
 import React, { useCallback, useEffect, useRef } from 'react';
 import { makeStyles } from '@rneui/themed';
 import PageContainer from 'components/PageContainer';
 import { pTd } from 'utils/unit';
-import { PrepareWalletProgress, PrepareWalletProgressInterface } from './components/PrepareWalletProgress';
-import { CAInfo, ManagerInfo } from '@portkey-wallet/types/types-ca/wallet';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
-import { useIntervalGetResult, useOnResultFail } from 'hooks/login';
-import { useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { TimerResult } from 'utils/wallet';
-import { useAppDispatch } from 'store/hooks';
-import { setCAInfo } from '@portkey-wallet/store/store-ca/wallet/actions';
-import { useLatestRef } from '@portkey-wallet/hooks';
 import navigationService from 'utils/navigationService';
-import { sleep } from '@portkey-wallet/utils';
-import { usePreventHardwareBack } from '@portkey-wallet/hooks/mobile';
+import { TextH1 } from 'components/CommonText';
+import { LottieView } from 'components/LottieView';
+import { useAddWallet } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 
 type RouterParams = {
-  managerInfo: ManagerInfo;
-  isRecovery?: boolean;
-  confirmPin: string;
+  pin: string;
 };
 
+const ScrollViewProps = { disabled: true };
 export default function PrepareWallet() {
   const styles = getStyles();
-  const prepareWalletProgressRef = useRef<PrepareWalletProgressInterface>();
-  const { managerInfo, isRecovery, confirmPin } = useRouterParams<RouterParams>();
-  const timer = useRef<TimerResult>();
-  const dispatch = useAppDispatch();
-  const originChainId = useOriginChainId();
-  const latestOriginChainId = useLatestRef(originChainId);
-  const onResultFail = useOnResultFail();
-  usePreventHardwareBack();
+  const { pin } = useRouterParams<RouterParams>();
 
-  const onIntervalGetResult = useIntervalGetResult();
-
+  const addWallet = useAddWallet();
   const init = useCallback(() => {
-    timer.current = onIntervalGetResult({
-      managerInfo: managerInfo,
-      onPass: async (caInfo: CAInfo) => {
-        prepareWalletProgressRef.current?.complete();
-        await sleep(700);
-
-        // if (isRecovery) CommonToast.success('Wallet Recovered Successfully!');
-
-        try {
-          dispatch(
-            setCAInfo({
-              caInfo,
-              pin: confirmPin,
-              chainId: latestOriginChainId.current,
-            }),
-          );
-          navigationService.reset('Tab');
-        } catch (error) {
-          console.log(error, '=======error');
-        }
-      },
-      onFail: (message: string) => onResultFail(message, isRecovery, true),
-    });
-  }, [confirmPin, dispatch, isRecovery, latestOriginChainId, managerInfo, onIntervalGetResult, onResultFail]);
+    addWallet(pin);
+    navigationService.reset('Tab');
+  }, [addWallet, pin]);
   const initRef = useRef(init);
   initRef.current = init;
 
   useEffect(() => {
     initRef.current();
-    return () => {
-      timer.current?.remove();
-    };
   }, []);
 
   return (
     <PageContainer
-      scrollViewProps={{ disabled: true }}
+      scrollViewProps={ScrollViewProps}
       containerStyles={styles.containerStyle}
       leftIconType="close"
       noLeftDom
       hideHeader
       notHandleHardwareBackPress
       hideTouchable>
-      <Image source={require('assets/image/pngs/prepare-wallet.png')} style={styles.imageStyle} resizeMode="cover" />
-      <PrepareWalletProgress ref={prepareWalletProgressRef} />
+      <TextH1>{'Creating your wallet...'}</TextH1>
+      <View style={styles.loadingWrap}>
+        <LottieView source={require('assets/lottieFiles/loading.json')} style={styles.loadingStyle} autoPlay loop />
+      </View>
     </PageContainer>
   );
 }
 
 const getStyles = makeStyles(_theme => ({
   containerStyle: {
-    paddingBottom: pTd(16),
-    paddingHorizontal: 0,
-    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingTop: pTd(58),
+    paddingBottom: pTd(32),
   },
-  imageStyle: {
+  loadingWrap: {
+    flex: 1,
     width: '100%',
-    height: pTd(409),
-    marginBottom: pTd(48),
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingBottom: pTd(83),
+  },
+  loadingStyle: {
+    width: pTd(32),
   },
 }));

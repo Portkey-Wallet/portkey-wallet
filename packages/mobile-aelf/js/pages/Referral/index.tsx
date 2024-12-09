@@ -1,13 +1,10 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
 import navigationService from 'utils/navigationService';
-// import { RootStackParamList } from 'navigation';
 import { useCredentials } from 'hooks/store';
-// import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import Welcome from './components/Welcome';
 import { ImageBackground, View } from 'react-native';
 import { isIOS, screenHeight } from '@portkey-wallet/utils/mobile/device';
-import background from './img/getStartedBg.png';
+import background from './img/getStartWallet.png';
 import splashScreen from './img/splashScreen.png';
 import { sleep } from '@portkey-wallet/utils';
 import GStyles from 'assets/theme/GStyles';
@@ -18,14 +15,12 @@ import { makeStyles } from '@rneui/themed';
 import PageContainer from 'components/PageContainer';
 import fonts from 'assets/theme/fonts';
 import { getStatusBarHeight } from 'utils/statusbar';
-import OutlinedTextButton from 'components/OutlinedTextButton';
-import { useAddWallet, useIsAccountExist } from '@portkey-wallet/hooks/hooks-eoa/wallet';
-import { useAppDispatch } from 'store/hooks';
-import { setCredentials } from 'store/user/actions';
-import { RootStackParamList } from 'navigation';
+import { useIsAccountExist } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 import { authenticationReady } from '@portkey-wallet/utils/mobile/authentication';
-import { setSecureStoreItem } from '@portkey-wallet/utils/mobile/biometric';
-import { useSetBiometrics } from 'hooks/useBiometrics';
+import { TextH1, TextM } from 'components/CommonText';
+import CommonButton from 'components/CommonButton';
+import { SetBiometricsTypeEnum } from 'pages/Pin/SetBiometrics';
+import { useCheckSecurityLock } from 'hooks/securityLock';
 
 export default function Referral() {
   const styles = getStyles();
@@ -35,6 +30,7 @@ export default function Referral() {
   const getLoginControlListAsync = useGetLoginControlListAsync();
   const isFocusedRef = useLatestIsFocusedRef();
   const [isSplashScreen, setIsSplashScreen] = useState(true);
+  const checkSecurityLock = useCheckSecurityLock();
 
   const init = useCallback(async () => {
     if (!isFocusedRef.current) {
@@ -46,37 +42,34 @@ export default function Referral() {
       console.log(error, '=====error-getLoginControlListAsync');
     }
     if (isAccountExist) {
-      let name: keyof RootStackParamList = 'SecurityLock';
       if (credentials) {
-        name = 'Tab';
+        navigationService.reset('Tab');
+      } else {
+        checkSecurityLock(() => {
+          navigationService.reset('Tab');
+        });
       }
-      navigationService.reset(name);
     }
     await sleep(500);
     SplashScreen.hideAsync();
     setIsSplashScreen(false);
-  }, [isFocusedRef, isAccountExist, getLoginControlListAsync, credentials]);
+  }, [isFocusedRef, isAccountExist, getLoginControlListAsync, credentials, checkSecurityLock]);
 
   useEffect(() => {
     init();
   }, [init]);
 
-  const addWallet = useAddWallet();
-  const dispatch = useAppDispatch();
-  const setBiometrics = useSetBiometrics();
   const createWallet = useCallback(async () => {
     const isReady = await authenticationReady();
-    const pin = '111111';
     if (isReady) {
-      console.log('pin', pin);
-      await setSecureStoreItem('Pin', pin);
-      await setBiometrics(true);
+      navigationService.push('SetBiometrics', {
+        type: SetBiometricsTypeEnum.create,
+      });
+      return;
     }
 
-    addWallet(pin);
-    dispatch(setCredentials({ pin }));
-    navigationService.reset('Tab');
-  }, [addWallet, dispatch, setBiometrics]);
+    navigationService.navigate('SetPin');
+  }, []);
 
   return (
     <PageContainer
@@ -97,23 +90,30 @@ export default function Referral() {
           />
         </View>
       ) : (
-        <ImageBackground style={styles.backgroundContainer} resizeMode="cover" source={background} />
+        <View style={styles.backgroundContainerWrap}>
+          <ImageBackground style={styles.backgroundContainer} resizeMode="cover" source={background} />
+          <TextH1 style={styles.brandLabel}>{'aelf Wallet'}</TextH1>
+          <TextM>{'Smart. Safe. Seamless. Crypto Wallet.'}</TextM>
+        </View>
       )}
 
-      {/* {!address ? (
-        <> */}
-      <Welcome />
-
-      <OutlinedTextButton
+      <CommonButton
         style={styles.buttonStyle}
-        textStyle={styles.buttonText}
-        title={'Get started'}
+        titleStyle={styles.buttonText}
+        title={'Create a new wallet'}
+        type="primary"
+        onPress={createWallet}
+      />
+
+      <CommonButton
+        style={styles.buttonStyle}
+        titleStyle={styles.buttonText}
+        title={'Import an existing wallet'}
+        type="outline"
         onPress={() => {
-          createWallet();
+          //TODO: eoa add import
         }}
       />
-      {/* </>
-      ) : null} */}
     </PageContainer>
   );
 }
@@ -139,19 +139,28 @@ const getStyles = makeStyles(theme => ({
   backgroundSplashContainerIOS: {
     height: screenHeight,
   },
-  backgroundContainer: {
+  backgroundContainerWrap: {
+    flex: 1,
+    marginTop: pTd(100),
     width: '100%',
-    height: pTd(407),
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  backgroundContainer: {
+    width: pTd(240),
+    height: pTd(240),
     padding: 0,
     margin: 0,
     marginTop: pTd(16),
+  },
+  brandLabel: {
+    marginBottom: pTd(16),
   },
   buttonStyle: {
     marginHorizontal: pTd(16),
     marginBottom: pTd(16),
   },
   buttonText: {
-    color: theme.colors.textNeutral4,
     fontSize: pTd(16),
     ...fonts.mediumFont,
   },

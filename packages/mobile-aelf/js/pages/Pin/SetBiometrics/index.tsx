@@ -15,12 +15,25 @@ import Svg from 'components/Svg';
 import { randomId } from 'utils/bridgeUtils';
 import { useAppDispatch } from 'store/hooks';
 import { setCredentials } from 'store/user/actions';
+import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
+import navigationService from 'utils/navigationService';
+
+export enum SetBiometricsTypeEnum {
+  'create' = 'CREATE',
+  'update' = 'UPDATE',
+}
+
+type TRouterParams = {
+  type: SetBiometricsTypeEnum;
+};
 
 const ScrollViewProps = { disabled: true };
 export default function SetBiometrics() {
   const styles = getStyles();
   const { theme } = useTheme();
   usePreventHardwareBack();
+
+  const { type = SetBiometricsTypeEnum.create } = useRouterParams<TRouterParams>();
 
   const setBiometrics = useSetBiometrics();
 
@@ -32,6 +45,7 @@ export default function SetBiometrics() {
       await setSecureStoreItem('Pin', pin);
       dispatch(setCredentials({ pin }));
       await setBiometrics(true);
+      navigationService.reset('PrepareWallet', { pin });
     } catch (error) {
       CommonPrompt.failError(error, 'Failed To Verify');
     }
@@ -40,16 +54,12 @@ export default function SetBiometrics() {
   const onSkip = useCallback(async () => {
     try {
       await setBiometrics(false);
-      // TODO: eoa jump to pin
+      navigationService.reset('SetPin');
     } catch (error) {
       CommonPrompt.failError(error);
     }
   }, [setBiometrics]);
-  // useEffectOnce(() => {
-  //   setTimeout(() => {
-  //     openBiometrics();
-  //   }, 100);
-  // });
+
   return (
     <PageContainer
       hideHeader

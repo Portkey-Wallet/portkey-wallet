@@ -1,20 +1,14 @@
-import React, { useCallback, useEffect, useRef } from 'react';
-import { AppState, AppStateStatus } from 'react-native';
+import React, { useCallback, useRef } from 'react';
 import { useAppDispatch } from 'store/hooks';
 import { setCredentials } from 'store/user/actions';
-import { useUser } from 'hooks/store';
 import PageContainer from 'components/PageContainer';
 import { DigitInputInterface } from 'components/DigitInput';
 import { PIN_SIZE } from '@portkey-wallet/constants/misc';
 import { checkPin } from 'utils/redux';
 import { useNavigation } from '@react-navigation/native';
 import navigationService from 'utils/navigationService';
-import Loading from 'components/Loading';
 import { usePreventHardwareBack } from '@portkey-wallet/hooks/mobile';
-import { TimerResult } from 'utils/wallet';
-import useEffectOnce from 'hooks/useEffectOnce';
 import PinContainer from 'components/PinContainer';
-import { getSecureStoreItem } from '@portkey-wallet/utils/mobile/biometric';
 import { useThrottleCallback } from '@portkey-wallet/hooks';
 import GStyles from 'assets/theme/GStyles';
 import useLatestIsFocusedRef from 'hooks/useLatestIsFocusedRef';
@@ -31,11 +25,10 @@ type RouterParams = {
 
 export default function SecurityLock() {
   const styles = getStyles();
-  const { biometrics } = useUser();
-  const appStateRef = useRef<AppStateStatus>();
+
   const isFocusedRef = useLatestIsFocusedRef();
   usePreventHardwareBack();
-  const timer = useRef<TimerResult>();
+
   const digitInput = useRef<DigitInputInterface>();
   const navigation = useNavigation();
   const locked = useRef<boolean>(false);
@@ -44,7 +37,6 @@ export default function SecurityLock() {
 
   const handleRouter = useThrottleCallback(
     () => {
-      Loading.hide();
       if (!isFocusedRef.current) {
         return;
       }
@@ -66,63 +58,15 @@ export default function SecurityLock() {
   const dispatch = useAppDispatch();
   const handlePassword = useCallback(
     (pwd: string) => {
+      dispatch(setCredentials({ pin: pwd }));
       if (isCheck) {
         checkCallback?.();
         return;
       }
-
-      dispatch(setCredentials({ pin: pwd }));
       handleRouter(pwd);
     },
     [checkCallback, dispatch, handleRouter, isCheck],
   );
-
-  const verifyBiometrics = useThrottleCallback(
-    // TODO: eoa
-    async () => {
-      if (!biometrics) {
-        return;
-      }
-      try {
-        const securePassword = await getSecureStoreItem('Pin');
-        if (!securePassword) {
-          throw new Error('No password');
-        }
-        handlePassword(securePassword);
-      } catch (error: any) {
-        // if (!isUserBiometricsError(error)) {
-        //   ActionSheet.alert({
-        //     title: 'Biometric authentication expired',
-        //     message: 'Please re-enable it by going to Settings - Security - Biometric Authentication.',
-        //     buttons: [{ title: 'OK', type: 'primary' }],
-        //   });
-        // }
-      }
-    },
-    [biometrics, handlePassword],
-    2000,
-  );
-  const handleAppStateChange = useCallback(
-    (nextAppState: AppStateStatus) => {
-      if (nextAppState === 'active' && appStateRef.current !== 'active') {
-        verifyBiometrics();
-        appStateRef.current = nextAppState;
-      }
-    },
-    [verifyBiometrics],
-  );
-  useEffectOnce(() => {
-    if (!navigation.canGoBack()) {
-      verifyBiometrics();
-    }
-  });
-  useEffect(() => {
-    const listener = AppState.addEventListener('change', handleAppStateChange);
-    return () => {
-      timer.current?.remove();
-      listener.remove();
-    };
-  }, [handleAppStateChange]);
 
   const { error: textError, setError: setTextError } = useErrorMessage();
   const onChangeText = useCallback(
@@ -148,8 +92,7 @@ export default function SecurityLock() {
         titleStyle={styles.pinTitle}
         onChangeText={onChangeText}
         errorMessage={textError.errorMsg}
-        isBiometrics={biometrics}
-        onBiometricsPress={verifyBiometrics}
+        isBiometrics={false}
       />
     </PageContainer>
   );

@@ -11,7 +11,6 @@ import CustomSvg, { SvgType } from 'components/CustomSvg';
 import './index.less';
 import { ChainId } from '@portkey-wallet/types';
 import { useDappSpenderCheck } from '@portkey-wallet/hooks/hooks-ca/discover';
-import { DAPP_SECURITY_SPENDER_INVALID } from '@portkey-wallet/constants/constants-ca/dapp';
 
 export interface IBaseSetAllowanceProps {
   symbol: string;
@@ -50,6 +49,8 @@ export default function SetAllowance({
   symbol,
   className,
   recommendedAmount = 0,
+  // originChainId,
+  targetChainId,
   spender,
   onCancel,
   onAllowanceChange,
@@ -65,7 +66,7 @@ export default function SetAllowance({
   const allowance = useMemo(() => formatAllowanceInput(amount), [amount, formatAllowanceInput]);
 
   const [error, setError] = useState<string>('');
-  const spenderValid = useDappSpenderCheck(dappInfo?.href, spender, dappInfo?.icon);
+  const checkResult = useDappSpenderCheck(dappInfo?.href, spender, dappInfo?.icon, targetChainId);
 
   const inputChange = useCallback(
     (amount: string | number) => {
@@ -129,10 +130,19 @@ export default function SetAllowance({
 
         <div className="set-allowance-notice">{SET_ALLOWANCE_MULTIPLY_TIP}</div>
       </div>
-      {!spenderValid && (
-        <div className={`set-allowance-warning`}>
-          <CustomSvg type="WarningTriangle" className={`warning-icon`} fillColor={'#FF9417'} />
-          <div className={'warning-title'}>{DAPP_SECURITY_SPENDER_INVALID}</div>
+      {checkResult.show && (
+        <div className={`set-allowance-warning ${checkResult.type === 'warning' && `set-allowance-warning-hint`}`}>
+          <CustomSvg
+            type="WarningTriangle"
+            className={`warning-icon`}
+            fillColor={checkResult.type === 'info' ? '#5D42FF' : '#FF9417'}
+          />
+          <div
+            className="warning-title"
+            dangerouslySetInnerHTML={{
+              __html: checkResult.text.replace(/\n/g, '<br/>'),
+            }}
+          />
         </div>
       )}
       <div className="set-allowance-btn-wrapper flex-row-between">

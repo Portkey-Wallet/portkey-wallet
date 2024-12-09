@@ -5,6 +5,11 @@ import { cleanBookmarkList, addBookmarkList } from '@portkey-wallet/store/store-
 import { IBookmarkItem } from '@portkey-wallet/store/store-ca/discover/type';
 import { DISCOVER_BOOKMARK_MAX_COUNT } from '@portkey-wallet/constants/constants-ca/discover';
 import { useCallback, useMemo, useState, useEffect } from 'react';
+import { useGetContractUpgradeTime } from '@portkey-wallet/graphql/dappSecurity/hooks';
+import { ChainId } from '@portkey-wallet/types';
+import { DAPP_SECURITY_SPENDER_INVALID } from '@portkey-wallet/constants/constants-ca/dapp';
+import { checkTimeOver12 } from '@portkey-wallet/utils/check';
+import { formatDateTime } from '@portkey-wallet/utils/format';
 
 export const useBookmarkList = () => {
   const { networkType } = useCurrentNetworkInfo();
@@ -63,9 +68,18 @@ export function useDappInfo(website: string, logo: string) {
   }, [checkDappIsLegal, logo, website]);
   return isInWebSet;
 }
-
-export function useDappSpenderCheck(website?: string, spender?: string, logo?: string) {
-  const [spenderValid, setSpenderValid] = useState<boolean>(true);
+export type TResult = {
+  show: boolean;
+  text: string;
+  type: 'warning' | 'info';
+};
+export function useDappSpenderCheck(website?: string, spender?: string, logo?: string, targetChainId?: ChainId) {
+  const [result, setResult] = useState<TResult>({
+    show: false,
+    text: '',
+    type: 'warning',
+  });
+  const getContractUpgradeTime = useGetContractUpgradeTime();
   const checkDappSpenderValid = useCallback(async (website?: string, spender?: string, logo?: string) => {
     const result = await request.discover.checkSpenderValid({
       params: {
@@ -74,12 +88,39 @@ export function useDappSpenderCheck(website?: string, spender?: string, logo?: s
         spender,
       },
     });
-    setSpenderValid(result);
+    return result;
   }, []);
   useEffect(() => {
     (async () => {
-      await checkDappSpenderValid(website, spender, logo);
+      const spenderValidResult = await checkDappSpenderValid(website, spender, logo);
+      const contractResult = await getContractUpgradeTime({
+        input: {
+          chainId: targetChainId || '',
+          address: spender || '',
+          skipCount: 0,
+          maxResultCount: 10,
+        },
+      });
+      const blockTime = contractResult.data.contractList.items[0].metadata.block.blockTime;
+      const result: TResult = {
+        show: false,
+        text: '',
+        type: 'warning',
+      };
+      result.show = !spenderValidResult || !!blockTime;
+      if (!spenderValidResult && !blockTime) {
+        result.text = DAPP_SECURITY_SPENDER_INVALID;
+      } else if (!spenderValidResult && blockTime) {
+        const upgradeTime = formatDateTime(blockTime);
+        result.text = `The dApp's logo, domain, or address you're approving may not be authentic. Please proceed with caution.\nThe dApp's smart contract has been updated. Contract update time: ${upgradeTime}`;
+      } else if (blockTime && spenderValidResult) {
+        const isTimeOver12 = checkTimeOver12(blockTime);
+        const upgradeTime = formatDateTime(blockTime);
+        result.text = `Contract update time: ${upgradeTime} The dApp's smart contract has been updated. Please proceed with caution.`;
+        result.type = isTimeOver12 ? 'info' : 'warning';
+      }
+      setResult(result);
     })();
-  }, [checkDappSpenderValid, logo, spender, website]);
-  return spenderValid;
+  }, [checkDappSpenderValid, getContractUpgradeTime, logo, spender, targetChainId, website]);
+  return result;
 }

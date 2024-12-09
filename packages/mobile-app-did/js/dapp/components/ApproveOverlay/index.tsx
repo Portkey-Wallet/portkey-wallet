@@ -31,7 +31,6 @@ import TitleInfoSection from '../TitleInfoSection';
 import { KeyboardSafeArea } from 'components/KeyboardSafeArea';
 import { CommonPromptCard, PromptCardType } from 'components/CommonPromptCard';
 import { useDappSpenderCheck } from '@portkey-wallet/hooks/hooks-ca/discover';
-import { DAPP_SECURITY_SPENDER_INVALID } from '@portkey-wallet/constants/constants-ca/dapp';
 
 type SignModalPropsType = {
   dappInfo: DappStoreItem;
@@ -50,7 +49,7 @@ const ApproveModal = (props: SignModalPropsType) => {
   const [symbolNum, setSymbolNum] = useState<string>('');
   const styles = getStyles();
   const { theme } = useTheme();
-  const spenderValid = useDappSpenderCheck(dappInfo.origin, spender, dappInfo.icon);
+  const checkResult = useDappSpenderCheck(dappInfo.origin, spender, dappInfo.icon, targetChainId);
   const decimals = useMemo(() => approveParams.approveInfo.decimals, [approveParams.approveInfo.decimals]);
 
   const approveSymbol = useMemo(
@@ -168,7 +167,7 @@ const ApproveModal = (props: SignModalPropsType) => {
       }
       onClose={onReject}
       onTouchStart={Keyboard.dismiss}>
-      <View style={[styles.contentWrap, !spenderValid && GStyles.paddingBottom(86)]}>
+      <View style={[styles.contentWrap, checkResult.show && GStyles.paddingBottom(86)]}>
         <View style={styles.inputWrap}>
           <View style={[GStyles.flexRow, GStyles.itemCenter, { marginBottom: pTd(8) }]}>
             <TextL style={{ lineHeight: pTd(22) }}>{t('Token allowance')}</TextL>
@@ -224,11 +223,11 @@ const ApproveModal = (props: SignModalPropsType) => {
               <TextM style={{ color: theme.colors.textBrand1 }}>Max</TextM>
             </Touchable>
           </View>
-          {!spenderValid && (
+          {checkResult.show && (
             <CommonPromptCard
               style={{ marginTop: pTd(8) }}
-              type={PromptCardType.WARNING}
-              description={DAPP_SECURITY_SPENDER_INVALID}
+              type={checkResult.type === 'warning' ? PromptCardType.WARNING : PromptCardType.INFO}
+              description={checkResult.text}
             />
           )}
         </View>

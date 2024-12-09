@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { AppState, AppStateStatus } from 'react-native';
 import { useAppDispatch } from 'store/hooks';
 import { setCredentials } from 'store/user/actions';
@@ -9,63 +9,41 @@ import { PIN_SIZE } from '@portkey-wallet/constants/misc';
 import { checkPin } from 'utils/redux';
 import { useNavigation } from '@react-navigation/native';
 import navigationService from 'utils/navigationService';
-import { useCurrentWalletInfo, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import Loading from 'components/Loading';
-import useBiometricsReady from 'hooks/useBiometrics';
 import { usePreventHardwareBack } from '@portkey-wallet/hooks/mobile';
 import { TimerResult } from 'utils/wallet';
-import { setCAInfo } from '@portkey-wallet/store/store-ca/wallet/actions';
-import { CAInfo } from '@portkey-wallet/types/types-ca/wallet';
-import { VerificationType } from '@portkey-wallet/types/verifier';
 import useEffectOnce from 'hooks/useEffectOnce';
 import PinContainer from 'components/PinContainer';
-import { useIntervalGetResult, useOnResultFail } from 'hooks/login';
 import { getSecureStoreItem } from '@portkey-wallet/utils/mobile/biometric';
 import { useThrottleCallback } from '@portkey-wallet/hooks';
-import ActionSheet from 'components/ActionSheet';
-import { isUserBiometricsError } from 'utils/biometrics';
 import GStyles from 'assets/theme/GStyles';
 import useLatestIsFocusedRef from 'hooks/useLatestIsFocusedRef';
 import { VERIFY_INVALID_TIME } from '@portkey-wallet/constants/constants-ca/wallet';
 import { useErrorMessage } from '@portkey-wallet/hooks/hooks-ca/misc';
 import { makeStyles } from '@rneui/themed';
 import { pTd } from 'utils/unit';
+import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
+
+type RouterParams = {
+  isCheck?: boolean;
+  checkCallback?: () => void;
+};
+
 export default function SecurityLock() {
   const styles = getStyles();
   const { biometrics } = useUser();
-  const biometricsReady = useBiometricsReady();
-  const [caInfo, setStateCAInfo] = useState<CAInfo>();
   const appStateRef = useRef<AppStateStatus>();
   const isFocusedRef = useLatestIsFocusedRef();
   usePreventHardwareBack();
   const timer = useRef<TimerResult>();
-  const onResultFail = useOnResultFail();
   const digitInput = useRef<DigitInputInterface>();
-  const { managerInfo, address, caHash } = useCurrentWalletInfo();
-  const dispatch = useAppDispatch();
-  const isSyncCAInfo = useMemo(() => address && managerInfo && !caHash, [address, caHash, managerInfo]);
   const navigation = useNavigation();
-  const onIntervalGetResult = useIntervalGetResult();
-  const originChainId = useOriginChainId();
   const locked = useRef<boolean>(false);
-  useEffect(() => {
-    if (isSyncCAInfo) {
-      setTimeout(() => {
-        if (managerInfo) {
-          timer.current?.remove();
-          timer.current = onIntervalGetResult({
-            managerInfo: managerInfo,
-            onPass: setStateCAInfo,
-            onFail: message =>
-              onResultFail(message, managerInfo?.verificationType === VerificationType.communityRecovery, true),
-          });
-        }
-      }, 100);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isSyncCAInfo]);
+
+  const { isCheck, checkCallback } = useRouterParams<RouterParams>();
+
   const handleRouter = useThrottleCallback(
-    (pinInput: string) => {
+    () => {
       Loading.hide();
       if (!isFocusedRef.current) {
         return;
@@ -78,22 +56,27 @@ export default function SecurityLock() {
       if (navigation.canGoBack()) {
         navigation.goBack();
       } else {
-        if (biometrics === undefined && biometricsReady) {
-          navigationService.reset('SetBiometrics', { pin: pinInput });
-        } else {
-          navigationService.reset('Tab');
-        }
+        navigationService.reset('Tab');
       }
     },
-    [biometrics, biometricsReady, isFocusedRef, navigation],
+    [isFocusedRef, navigation],
     2000,
   );
+
+  const dispatch = useAppDispatch();
   const handlePassword = useCallback(
     (pwd: string) => {
+      if (isCheck) {
+        checkCallback?.();
+        return;
+      }
+
+      dispatch(setCredentials({ pin: pwd }));
       handleRouter(pwd);
     },
-    [handleRouter],
+    [checkCallback, dispatch, handleRouter, isCheck],
   );
+
   const verifyBiometrics = useThrottleCallback(
     // TODO: eoa
     async () => {
@@ -107,13 +90,13 @@ export default function SecurityLock() {
         }
         handlePassword(securePassword);
       } catch (error: any) {
-        if (!isUserBiometricsError(error)) {
-          ActionSheet.alert({
-            title: 'Biometric authentication expired',
-            message: 'Please re-enable it by going to Settings - Security - Biometric Authentication.',
-            buttons: [{ title: 'OK', type: 'primary' }],
-          });
-        }
+        // if (!isUserBiometricsError(error)) {
+        //   ActionSheet.alert({
+        //     title: 'Biometric authentication expired',
+        //     message: 'Please re-enable it by going to Settings - Security - Biometric Authentication.',
+        //     buttons: [{ title: 'OK', type: 'primary' }],
+        //   });
+        // }
       }
     },
     [biometrics, handlePassword],
@@ -165,7 +148,7 @@ export default function SecurityLock() {
         titleStyle={styles.pinTitle}
         onChangeText={onChangeText}
         errorMessage={textError.errorMsg}
-        isBiometrics={biometrics && biometricsReady}
+        isBiometrics={biometrics}
         onBiometricsPress={verifyBiometrics}
       />
     </PageContainer>

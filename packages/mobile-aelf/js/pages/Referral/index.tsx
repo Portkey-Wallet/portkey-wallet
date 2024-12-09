@@ -23,6 +23,9 @@ import { useAddWallet, useIsAccountExist } from '@portkey-wallet/hooks/hooks-eoa
 import { useAppDispatch } from 'store/hooks';
 import { setCredentials } from 'store/user/actions';
 import { RootStackParamList } from 'navigation';
+import { authenticationReady } from '@portkey-wallet/utils/mobile/authentication';
+import { setSecureStoreItem } from '@portkey-wallet/utils/mobile/biometric';
+import { useSetBiometrics } from 'hooks/useBiometrics';
 
 export default function Referral() {
   const styles = getStyles();
@@ -60,11 +63,20 @@ export default function Referral() {
 
   const addWallet = useAddWallet();
   const dispatch = useAppDispatch();
-  const createWallet = useCallback(() => {
+  const setBiometrics = useSetBiometrics();
+  const createWallet = useCallback(async () => {
+    const isReady = await authenticationReady();
     const pin = '111111';
+    if (isReady) {
+      console.log('pin', pin);
+      await setSecureStoreItem('Pin', pin);
+      await setBiometrics(true);
+    }
+
     addWallet(pin);
     dispatch(setCredentials({ pin }));
-  }, [addWallet, dispatch]);
+    navigationService.reset('Tab');
+  }, [addWallet, dispatch, setBiometrics]);
 
   return (
     <PageContainer
@@ -98,7 +110,6 @@ export default function Referral() {
         title={'Get started'}
         onPress={() => {
           createWallet();
-          navigationService.reset('Tab');
         }}
       />
       {/* </>

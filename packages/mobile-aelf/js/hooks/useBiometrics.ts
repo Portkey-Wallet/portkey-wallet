@@ -19,10 +19,10 @@ export function useSetBiometrics() {
   const dispatch = useAppDispatch();
   return useCallback(
     async (value: boolean) => {
-      if (value) {
-        const isReady = await authenticationReady();
-        if (!isReady) throw new Error('biometrics is not ready');
-      }
+      // if (value) {
+      //   const isReady = await authenticationReady();
+      //   if (!isReady) throw new Error('biometrics is not ready');
+      // }
       dispatch(setBiometrics(value));
     },
     [dispatch],

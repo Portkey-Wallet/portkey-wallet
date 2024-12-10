@@ -41,6 +41,9 @@ const HomeTab: React.FC<any> = ({ _ }) => {
       <CommonButton type="primary" onPress={() => navigationService.push('ConfirmBackup')} style={{ marginTop: 40 }}>
         Confirm Backup
       </CommonButton>
+      <CommonButton type="primary" onPress={() => navigationService.push('ManualBackup')} style={{ marginTop: 40 }}>
+        Manual Backup
+      </CommonButton>
       <CommonButton type="primary" onPress={checkPin} style={{ marginTop: 40 }}>
         Check Pin
       </CommonButton>

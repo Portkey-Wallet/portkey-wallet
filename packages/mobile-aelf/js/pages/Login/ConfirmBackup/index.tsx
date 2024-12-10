@@ -9,7 +9,7 @@ import fonts from 'assets/theme/fonts';
 import Touchable from 'components/Touchable';
 import Svg from 'components/Svg';
 
-export default function ImportWallet() {
+export default function ConfirmBackup() {
   const styles = getStyles();
   const { theme } = useTheme();
 
@@ -39,7 +39,7 @@ export default function ImportWallet() {
 
   const selectRandomIndex = useCallback(() => {
     if (testedIndexes.current.length === mnemonics.length) {
-      testedIndexes.current = [];
+      testedIndexes.current = checkedIndexes.current;
     }
     const randomIndex = Math.floor(Math.random() * mnemonics.length);
     if (testedIndexes.current.includes(randomIndex)) {
@@ -47,7 +47,7 @@ export default function ImportWallet() {
     } else {
       return randomIndex;
     }
-  }, [testedIndexes]);
+  }, [testedIndexes, checkedIndexes]);
 
   const onPressWord = useCallback((word: string) => {
     const index = mnemonics.indexOf(word);

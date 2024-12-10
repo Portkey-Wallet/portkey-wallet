@@ -1,22 +1,14 @@
 import React, { memo, useCallback, useMemo, useRef, useState } from 'react';
-import ActionSheet from 'components/ActionSheet';
 import { formatChainInfoToShow, getChainIdByAddress } from '@portkey-wallet/utils';
-import { useLanguage } from 'i18n/hooks';
-import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 import { getContractBasic } from '@portkey-wallet/contracts/utils';
 import { useCurrentChain, useCurrentChainList, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { usePin } from 'hooks/store';
 import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { getManagerAccount } from 'utils/redux';
-import crossChainTransfer, {
-  CrossChainTransferIntervalParams,
-  intervalCrossChainTransfer,
-} from 'utils/transfer/crossChainTransfer';
-import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { formatAmountShow, timesDecimals, unitConverter } from '@portkey-wallet/utils/converter';
 import sameChainTransfer from 'utils/transfer/sameChainTransfer';
-import { addFailedActivity, removeFailedActivity } from '@portkey-wallet/store/store-ca/activity/slice';
 import { useRouterEffectParams } from '@portkey-wallet/hooks/useRouterParams';
 import CommonToast from 'components/CommonToast';
 import navigationService from 'utils/navigationService';
@@ -28,7 +20,7 @@ import { ZERO } from '@portkey-wallet/constants/misc';
 import { sleep } from '@portkey-wallet/utils';
 import { useAmountInUsdShow, useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import useEffectOnce from 'hooks/useEffectOnce';
-import { useFetchTxFee, useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
+import { useFetchTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
 import { useCheckTransferLimitWithJump } from 'hooks/security';
 import { useCrossTransferByEtransfer } from '@portkey-wallet/hooks/hooks-ca/useWithdrawByETransfer';
 import { useFocusEffect } from '@react-navigation/native';
@@ -58,13 +50,13 @@ import {
 } from 'hooks/amplitude';
 import { ChainId } from '@portkey-wallet/types';
 import myEvents from 'utils/deviceEvent';
+import { crossChainTransferV2 } from 'utils/transfer/crossChainTransferV2';
 
 enum ErrorType {
   NO_TOAST = 'noToast',
 }
 
 const SendPreview: React.FC = () => {
-  const { t } = useLanguage();
   const isMainnet = useIsMainnet();
   const defaultToken = useDefaultToken();
   const routerParams = useRouterEffectParams<IToSendPreviewParamsType>();
@@ -91,15 +83,13 @@ const SendPreview: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { getAELFChainInfoConfig, getEVMChainInfoConfig, getTokenConfig } = useGetEBridgeConfig();
   const isApproved = useMemo(() => guardiansApproved && guardiansApproved.length > 0, [guardiansApproved]);
-  const { crossChain: crossDefaultFee } = useGetTxFee(assetInfo.chainId);
   const amountInUsdShow = useAmountInUsdShow();
-  const dispatch = useAppCommonDispatch();
   const pin = usePin();
   const chainInfo = useCurrentChain(assetInfo.chainId);
+
   const { fetchAccountNFTCollectionInfoList } = useAccountNFTCollectionInfo();
   const { fetchAccountTokenInfoList } = useAccountTokenInfo();
   const currentWallet = useCurrentWalletInfo();
-  const currentNetwork = useCurrentNetworkInfo();
   const caAddressInfos = useCaAddressInfoList();
   const currentChainList = useCurrentChainList();
   const wallet = useCurrentWalletInfo();
@@ -146,45 +136,8 @@ const SendPreview: React.FC = () => {
       };
     }
 
-    // adjust general transfer
-    if (transferType === TransferType.GENERAL_SAME_CHAIN) {
-      _amount = formatAmountShow(_amount, Number(assetInfo.decimals));
-      const amountUsd = amountInUsdShow(_amount, 0, assetInfo.symbol);
-
-      console.log('GENERAL_SAME_CHAIN', _amount, amountUsd);
-
-      return {
-        estimateAmount: `${_amount} ${assetInfo.label || assetInfo.symbol}`,
-        estimateAmountUsd: isMainnet ? amountUsd : '',
-      };
-    }
-
-    const fee = networkFee || 0;
-    if (ZERO.plus(sendNumber).isLessThanOrEqualTo(fee) && assetInfo.symbol === defaultToken.symbol) {
-      return {
-        estimateAmount: `0 ${assetInfo?.label || assetInfo?.symbol}`,
-        estimateAmountUsd: isMainnet ? '$0' : '',
-      };
-    }
-
-    if (transferType === TransferType.GENERAL_CROSS_CHAIN) {
-      _amount =
-        assetInfo.symbol === defaultToken.symbol
-          ? formatAmountShow(
-              ZERO.plus(_amount)
-                .minus(networkFee || '')
-                .minus(crossDefaultFee),
-              Number(defaultToken.decimals),
-            )
-          : formatAmountShow(ZERO.plus(_amount), Number(assetInfo.decimals));
-    } else {
-      _amount =
-        assetInfo.symbol === defaultToken.symbol
-          ? formatAmountShow(ZERO.plus(_amount).minus(networkFee || ''), Number(defaultToken.decimals))
-          : formatAmountShow(ZERO.plus(_amount), Number(assetInfo.decimals));
-    }
-
-    const amountUsd = tokenPriceObject[assetInfo?.symbol] ? amountInUsdShow(_amount, 0, assetInfo.symbol) : '';
+    _amount = formatAmountShow(_amount, Number(assetInfo.decimals));
+    const amountUsd = amountInUsdShow(_amount, 0, assetInfo.symbol);
 
     return {
       estimateAmount: `${_amount} ${assetInfo.label || assetInfo.symbol}`,
@@ -195,15 +148,11 @@ const SendPreview: React.FC = () => {
     assetInfo.decimals,
     assetInfo.label,
     assetInfo.symbol,
-    crossDefaultFee,
-    defaultToken.decimals,
     defaultToken.symbol,
     isMainnet,
-    networkFee,
     receiveAmount,
     receiveAmountUsd,
     sendNumber,
-    tokenPriceObject,
     transactionFee,
     transferType,
   ]);
@@ -223,24 +172,6 @@ const SendPreview: React.FC = () => {
       throw 'fail';
     }
   }, [assetInfo, defaultToken.symbol, getTokenViewContract, wallet]);
-
-  const showRetry = useCallback(
-    (retryFunc: () => void) => {
-      ActionSheet.alert({
-        title: t('Transaction failed !'),
-        buttons: [
-          {
-            title: t('Resend'),
-            type: 'solid',
-            onPress: () => {
-              retryFunc();
-            },
-          },
-        ],
-      });
-    },
-    [t],
-  );
 
   const actionAfterTransfer = useCallback(async () => {
     const _chainId = toInfo?.chainId || getChainIdByAddress(toInfo.address);
@@ -408,20 +339,25 @@ const SendPreview: React.FC = () => {
     } else if (transferType === TransferType.GENERAL_CROSS_CHAIN) {
       portkeyCrossTrack(trackParams);
 
-      const crossChainTransferResult = await crossChainTransfer({
+      const _toChainId = toInfo.address.includes('_') ? getChainIdByAddress(toInfo.address) : toInfo?.chainId;
+
+      const crossChainTransferResult = await crossChainTransferV2({
         tokenContract: tokenContractRef.current,
         contract: portkeyContractRef.current,
-        chainType: currentNetwork.walletType ?? 'aelf',
-        managerAddress: wallet.address,
-        tokenInfo: { ...assetInfo, address: assetInfo.tokenContractAddress } as unknown as BaseToken,
+        tokenInfo: {
+          ...assetInfo,
+          address: assetInfo?.tokenContractAddress || assetInfo?.address,
+        } as unknown as BaseToken,
         caHash: wallet.caHash || '',
         amount,
-        crossDefaultFee,
         toAddress: toInfo.address,
+        toChainId: _toChainId as ChainId,
         guardiansApproved,
       });
 
-      console.log('crossChainTransferResult', crossChainTransferResult);
+      if (crossChainTransferResult.error) {
+        throw crossChainTransferResult;
+      }
     } else if (transferType === TransferType.E_TRANSFER) {
       etransferCrossTrack(trackParams);
 
@@ -447,7 +383,6 @@ const SendPreview: React.FC = () => {
         },
         isCheckSymbol: false,
       });
-      console.log('crossTransferByEtransferResult', crossTransferByEtransferResult);
       if (!crossTransferByEtransferResult?.transactionId) {
         throw 'Transfer error';
       }
@@ -504,9 +439,7 @@ const SendPreview: React.FC = () => {
     chainInfo,
     checkTransferLimitWithJump,
     crossChainTransferTrack,
-    crossDefaultFee,
     crossTransferByEtransfer,
-    currentNetwork.walletType,
     currentWallet.caAddress,
     currentWallet.caHash,
     defaultToken.decimals,
@@ -530,60 +463,8 @@ const SendPreview: React.FC = () => {
     toInfo?.chainId,
     toInfo?.network,
     transferType,
-    wallet.address,
     wallet.caHash,
   ]);
-
-  const retryCrossChain = useCallback(
-    async (managerTransferTxId: string, data: CrossChainTransferIntervalParams) => {
-      const tokenInfo = {
-        symbol: assetInfo.symbol,
-        decimals: assetInfo.decimals ?? 0,
-        address: assetInfo.tokenContractAddress,
-      };
-      if (!chainInfo || !pin) {
-        return;
-      }
-      const account = getManagerAccount(pin);
-      if (!account) {
-        return;
-      }
-
-      setIsLoading(true);
-      try {
-        if (!tokenContractRef.current) {
-          tokenContractRef.current = await getContractBasic({
-            contractAddress: tokenInfo.address,
-            rpcUrl: chainInfo.endPoint,
-            account,
-          });
-        }
-        const tokenContract = tokenContractRef.current;
-        await intervalCrossChainTransfer(tokenContract, data);
-        dispatch(removeFailedActivity(managerTransferTxId));
-        navigationService.navigate('SendFinishPage', {
-          actionType: ActionType.SEND,
-          address: toInfo.address,
-        });
-      } catch (error) {
-        showRetry(() => {
-          retryCrossChain(managerTransferTxId, data);
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [
-      assetInfo.decimals,
-      assetInfo.symbol,
-      assetInfo.tokenContractAddress,
-      chainInfo,
-      dispatch,
-      pin,
-      showRetry,
-      toInfo.address,
-    ],
-  );
 
   const send = useCallback(async () => {
     setIsLoading(true);
@@ -596,17 +477,6 @@ const SendPreview: React.FC = () => {
       if (error.type === 'managerTransfer') {
         console.log(error);
         CommonToast.failError(error.error);
-        return;
-      } else if (error.type === 'crossChainTransfer') {
-        dispatch(
-          addFailedActivity({
-            transactionId: error.managerTransferTxId,
-            params: error.data,
-          }),
-        );
-        showRetry(() => {
-          retryCrossChain(error.managerTransferTxId, error.data);
-        });
         return;
       } else if (error.type !== ErrorType.NO_TOAST) {
         CommonToast.failError(error);
@@ -621,7 +491,7 @@ const SendPreview: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [actionAfterTransfer, dispatch, retryCrossChain, showRetry, transfer]);
+  }, [actionAfterTransfer, transfer]);
 
   useFocusEffect(
     useCallback(() => {
@@ -661,14 +531,9 @@ const SendPreview: React.FC = () => {
           ZERO.plus(transactionFee || '').multipliedBy(tokenPriceObject[transactionFeeUnit || '']),
         )}`;
         break;
-      case TransferType.GENERAL_CROSS_CHAIN:
-        result.feeShow = `${unitConverter(crossDefaultFee)} ${defaultToken.symbol}`;
-        result.feeUsdShow = `$${unitConverter(
-          ZERO.plus(crossDefaultFee).multipliedBy(tokenPriceObject[defaultToken.symbol]),
-        )}`;
     }
     return result;
-  }, [crossDefaultFee, defaultToken.symbol, tokenPriceObject, transactionFee, transactionFeeUnit, transferType]);
+  }, [tokenPriceObject, transactionFee, transactionFeeUnit, transferType]);
 
   return (
     <SendReceivePreview

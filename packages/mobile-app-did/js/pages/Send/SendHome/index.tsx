@@ -51,7 +51,7 @@ import CommonToast from 'components/CommonToast';
 import Touchable from 'components/Touchable';
 import { useGetCAContract, useGetTokenViewContract } from 'hooks/contract';
 import { useEffectOnce } from '@portkey-wallet/hooks';
-import { useGetTransferFee } from 'hooks/transfer';
+import { useGetTransferFee, useGetCrossChainTransferFee } from 'hooks/transfer';
 import { usePin } from 'hooks/store';
 import GStyles from 'assets/theme/GStyles';
 import { TextTitle } from 'components/CommonText';
@@ -126,7 +126,7 @@ const SendHome: React.FC = () => {
   const [isCheckAddressFinish, setIsCheckAddressFinish] = useState(false);
 
   const isFixedToContact = useMemo(() => false, []);
-  const { max: maxFee, crossChain: crossFee } = useGetTxFee(assetInfo?.chainId);
+  const { max: maxFee } = useGetTxFee(assetInfo?.chainId);
   const { getEtransferMaxFee } = useEtransferFee(assetInfo?.chainId);
 
   const pin = usePin();
@@ -168,6 +168,8 @@ const SendHome: React.FC = () => {
 
   // get transfer fee
   const getTransferFee = useGetTransferFee();
+  const getCrossChainTransferFee = useGetCrossChainTransferFee();
+
   const getTransactionFee = useCallback(
     async (isCross: boolean, sendAmount?: string) => {
       if (!chainInfo) {
@@ -198,6 +200,26 @@ const SendHome: React.FC = () => {
       getCAContract,
     ],
   );
+
+  const getCrossChainTransactionFee = useCallback(async (sendAmount?: string) => {
+    if (!chainInfo) {
+      return;
+    }
+    const caContract = await getCAContract(chainInfo.chainId);
+    const tokenContract = await getTokenViewContract(assetInfo.chainId);
+
+    return getCrossChainTransferFee({
+      tokenContract,
+      sendAmount: sendAmount ?? debounceSendNumber,
+      decimals: assetInfo.decimals,
+      symbol: assetInfo.symbol,
+      caContract,
+      tokenContractAddress: assetInfo.tokenContractAddress,
+      toAddress: getEntireDIDAelfAddress(selectedToContact.address, undefined, assetInfo.chainId),
+      chainId: assetInfo.chainId,
+      toChainId: getChainIdByAddress(toInfo.address, toInfo.chainId),
+    });
+  }, []);
 
   const onGetMaxAmount = useLockCallback(async () => {
     if (!balance) {
@@ -535,7 +557,6 @@ const SendHome: React.FC = () => {
     setErrorMessage('');
 
     if (!chainInfo) {
-      console.log('checkCanPreview 1');
       return { status: false };
     }
 
@@ -550,12 +571,6 @@ const SendHome: React.FC = () => {
         if (sendBigNumber.isGreaterThan(assetBalanceBigNumber)) {
           setErrorMessage(TransactionError.TOKEN_NOT_ENOUGH);
           console.log('checkCanPreview 2');
-          return { status: false };
-        }
-
-        if (isAELFCross && sendBigNumber.isLessThanOrEqualTo(timesDecimals(crossFee, defaultToken.decimals))) {
-          setErrorMessage(TransactionError.CROSS_NOT_ENOUGH);
-          console.log('checkCanPreview 3');
           return { status: false };
         }
       } else {
@@ -825,11 +840,13 @@ const SendHome: React.FC = () => {
         // GENERAL_CROSS_CHAIN
         if (!isEtransferCrossInLimit) {
           transferType = TransferType.GENERAL_CROSS_CHAIN;
-          networkFee = await getTransactionFee(isAELFCross, sendNumber);
+          networkFee = await getCrossChainTransactionFee(sendNumber);
           networkFeeUnit = 'ELF';
         }
       } else {
-        networkFee = await getTransactionFee(isAELFCross, sendNumber);
+        networkFee = isAELFCross
+          ? await getCrossChainTransactionFee(sendNumber)
+          : await getTransactionFee(isAELFCross, sendNumber);
         networkFeeUnit = 'ELF';
         transferType = isAELFCross ? TransferType.GENERAL_CROSS_CHAIN : TransferType.GENERAL_SAME_CHAIN;
       }
@@ -869,7 +886,6 @@ const SendHome: React.FC = () => {
     recommendEBridge,
     defaultToken.symbol,
     defaultToken.decimals,
-    crossFee,
     securitySafeCheckAndToast,
     t,
     getCAContract,

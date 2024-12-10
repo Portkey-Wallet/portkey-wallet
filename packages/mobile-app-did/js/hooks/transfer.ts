@@ -6,6 +6,8 @@ import { request } from '@portkey-wallet/api/api-did';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { CalculateTransactionFeeResponse, ChainId } from '@portkey-wallet/types';
 import { isMyPayTransactionFee } from 'utils/redux';
+import { getChainNumber } from '@portkey-wallet/utils/aelf';
+import { getTokenIssueChainId } from 'utils/transfer/getTokenInfo';
 
 export type GetTransferFeeParams = {
   isCross: boolean;
@@ -16,6 +18,18 @@ export type GetTransferFeeParams = {
   tokenContractAddress: string;
   toAddress: string;
   chainId: ChainId;
+};
+
+export type GetCrossChainTransferFeeParams = {
+  tokenContract: ContractBasic;
+  sendAmount: string;
+  decimals: string;
+  symbol: string;
+  caContract: ContractBasic;
+  tokenContractAddress: string;
+  toAddress: string;
+  chainId: ChainId;
+  toChainId: ChainId;
 };
 export const useGetTransferFee = () => {
   const defaultToken = useDefaultToken();
@@ -72,4 +86,68 @@ export const useGetTransferFee = () => {
   );
 
   return getTransferFee;
+};
+
+export const useGetCrossChainTransferFee = () => {
+  const defaultToken = useDefaultToken();
+  const wallet = useCurrentWalletInfo();
+
+  const getCrossChainTransferFee = useCallback(
+    async ({
+      tokenContract,
+      sendAmount,
+      decimals,
+      symbol,
+      caContract,
+      tokenContractAddress,
+      toAddress,
+      toChainId,
+      chainId,
+    }: GetCrossChainTransferFeeParams) => {
+      const issueChainId = await getTokenIssueChainId({ tokenContract, paramsOption: { symbol: symbol } });
+
+      const methodName = 'ManagerForwardCall';
+
+      const calculateParams = {
+        caHash: wallet.caHash,
+        contractAddress: tokenContractAddress,
+        methodName: 'CrossChainTransfer',
+        args: {
+          symbol,
+          to: toAddress,
+          amount: timesDecimals(sendAmount, decimals).toFixed(),
+          memo: '',
+          toChainId: getChainNumber(toChainId),
+          issueChainId: issueChainId,
+        },
+      };
+
+      const req = await caContract.calculateTransactionFee(methodName, calculateParams);
+
+      console.log('resultttt', req);
+
+      if (req?.error) {
+        request.errorReport('calculateTransactionFee', calculateParams, req.error);
+      }
+
+      const { TransactionFees, TransactionFee } = (req.data as CalculateTransactionFeeResponse) || {};
+      // V2 calculateTransactionFee
+      if (TransactionFees) {
+        const { ChargingAddress, Fee } = TransactionFees;
+        const myPayFee = isMyPayTransactionFee(ChargingAddress, chainId);
+        if (myPayFee) {
+          return divDecimalsStr(Fee?.[defaultToken.symbol], defaultToken.decimals).toString();
+        }
+        return '0';
+      }
+      // V1 calculateTransactionFee
+      if (TransactionFee) {
+        return divDecimalsStr(TransactionFee?.[defaultToken.symbol], defaultToken.decimals).toString();
+      }
+      throw { code: 500, message: 'no enough fee' };
+    },
+    [defaultToken.decimals, defaultToken.symbol, wallet.caHash],
+  );
+
+  return getCrossChainTransferFee;
 };

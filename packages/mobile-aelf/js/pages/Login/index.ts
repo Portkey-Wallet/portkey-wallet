@@ -6,6 +6,7 @@ import LoginEmail from './LoginEmail';
 import SignUpEmail from './SignUpEmail';
 import LoginQRCode from './LoginQRCode';
 import ImportWallet from './ImportWallet';
+import ConfirmBackup from './ConfirmBackup';
 
 const stackNav = [
   { name: 'LoginEmail', component: LoginEmail },
@@ -16,6 +17,7 @@ const stackNav = [
   { name: 'SelectCountry', component: SelectCountry },
   { name: 'PrepareWallet', component: PrepareWallet, options: { gestureEnabled: false } },
   { name: 'ImportWallet', component: ImportWallet },
+  { name: 'ConfirmBackup', component: ConfirmBackup },
 ] as const;
 
 export default stackNav;

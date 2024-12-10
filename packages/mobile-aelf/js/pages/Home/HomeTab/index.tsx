@@ -25,6 +25,9 @@ const HomeTab: React.FC<any> = ({ _ }) => {
       <CommonButton type="primary" onPress={() => navigationService.push('ImportWallet')} style={{ marginTop: 40 }}>
         Import Wallet
       </CommonButton>
+      <CommonButton type="primary" onPress={() => navigationService.push('ConfirmBackup')} style={{ marginTop: 40 }}>
+        Confirm Backup
+      </CommonButton>
     </SafeAreaBox>
   );
 };

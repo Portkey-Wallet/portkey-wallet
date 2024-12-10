@@ -101,7 +101,7 @@ export function useDappSpenderCheck(website?: string, spender?: string, logo?: s
           maxResultCount: 10,
         },
       });
-      const blockTime = contractResult.data.contractList.items[0].metadata.block.blockTime;
+      const blockTime = contractResult?.data?.contractList?.items?.[0]?.metadata?.block?.blockTime;
       const result: TResult = {
         show: false,
         text: '',
@@ -119,6 +119,7 @@ export function useDappSpenderCheck(website?: string, spender?: string, logo?: s
         result.text = `Contract update time: ${upgradeTime} The dApp's smart contract has been updated. Please proceed with caution.`;
         result.type = isTimeOver12 ? 'info' : 'warning';
       }
+      console.log('wfs getContractUpgradeTime result', result);
       setResult(result);
     })();
   }, [checkDappSpenderValid, getContractUpgradeTime, logo, spender, targetChainId, website]);

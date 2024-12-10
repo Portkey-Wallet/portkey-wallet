@@ -32,7 +32,6 @@ export function useRecent() {
     ({ fromChainId, tokenId, isFt }: { fromChainId: ChainId; tokenId: string; isFt: boolean }) => {
       fetchAssetSupportConfig();
       const targetList = recentMap?.[currentNetwork] || [];
-
       // aelf is OK, others need check
       const result = targetList.filter(ele => {
         // itself
@@ -99,6 +98,8 @@ export function useRecent() {
               caHolderInfo: userInfo,
             };
           }
+
+          return ele;
         })
         .filter(i => !!i);
 

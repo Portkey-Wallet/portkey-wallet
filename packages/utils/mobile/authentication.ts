@@ -12,13 +12,13 @@ export async function touchAuth(): Promise<LocalAuthenticationResult> {
     fallbackLabel: 'Use password',
     promptMessage: 'AELF identity authentication',
   };
-  const enrolled = await authenticationReady();
-  if (enrolled !== true) {
-    return {
-      error: 'enrolled error',
-      success: false,
-    };
-  }
+  // const enrolled = await authenticationReady();
+  // if (enrolled !== true) {
+  //   return {
+  //     error: 'enrolled error',
+  //     success: false,
+  //   };
+  // }
   return await authenticateAsync(options);
 }
 

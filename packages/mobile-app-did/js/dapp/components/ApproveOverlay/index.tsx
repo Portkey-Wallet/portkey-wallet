@@ -31,6 +31,7 @@ import TitleInfoSection from '../TitleInfoSection';
 import { KeyboardSafeArea } from 'components/KeyboardSafeArea';
 import { CommonPromptCard, PromptCardType } from 'components/CommonPromptCard';
 import { useDappSpenderCheck } from '@portkey-wallet/hooks/hooks-ca/discover';
+import { getFaviconUrl } from '@portkey-wallet/utils/dapp/browser';
 
 type SignModalPropsType = {
   dappInfo: DappStoreItem;
@@ -49,7 +50,12 @@ const ApproveModal = (props: SignModalPropsType) => {
   const [symbolNum, setSymbolNum] = useState<string>('');
   const styles = getStyles();
   const { theme } = useTheme();
-  const checkResult = useDappSpenderCheck(dappInfo.origin, spender, dappInfo.icon, targetChainId);
+  const checkResult = useDappSpenderCheck(
+    dappInfo.origin,
+    spender,
+    dappInfo.icon || getFaviconUrl(dappInfo.origin),
+    targetChainId,
+  );
   const decimals = useMemo(() => approveParams.approveInfo.decimals, [approveParams.approveInfo.decimals]);
 
   const approveSymbol = useMemo(

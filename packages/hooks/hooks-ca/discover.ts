@@ -92,34 +92,39 @@ export function useDappSpenderCheck(website?: string, spender?: string, logo?: s
   }, []);
   useEffect(() => {
     (async () => {
-      const spenderValidResult = await checkDappSpenderValid(website, spender, logo);
-      const contractResult = await getContractUpgradeTime({
-        input: {
-          chainId: targetChainId || '',
-          address: spender || '',
-          skipCount: 0,
-          maxResultCount: 10,
-        },
-      });
-      const blockTime = contractResult.data.contractList.items[0].metadata.block.blockTime;
-      const result: TResult = {
-        show: false,
-        text: '',
-        type: 'warning',
-      };
-      result.show = !spenderValidResult || !!blockTime;
-      if (!spenderValidResult && !blockTime) {
-        result.text = DAPP_SECURITY_SPENDER_INVALID;
-      } else if (!spenderValidResult && blockTime) {
-        const upgradeTime = formatDateTime(blockTime);
-        result.text = `The dApp's logo, domain, or address you're approving may not be authentic. Please proceed with caution.\nThe dApp's smart contract has been updated. Contract update time: ${upgradeTime}`;
-      } else if (blockTime && spenderValidResult) {
-        const isTimeOver12 = checkTimeOver12(blockTime);
-        const upgradeTime = formatDateTime(blockTime);
-        result.text = `Contract update time: ${upgradeTime} The dApp's smart contract has been updated. Please proceed with caution.`;
-        result.type = isTimeOver12 ? 'info' : 'warning';
+      try {
+        const spenderValidResult = await checkDappSpenderValid(website || '', spender || '', logo || '');
+        const contractResult = await getContractUpgradeTime({
+          input: {
+            chainId: targetChainId || '',
+            address: spender || '',
+            skipCount: 0,
+            maxResultCount: 10,
+          },
+        });
+        const blockTime = contractResult?.data?.contractList?.items?.[0]?.metadata?.block?.blockTime;
+        const result: TResult = {
+          show: false,
+          text: '',
+          type: 'warning',
+        };
+        result.show = !spenderValidResult || !!blockTime;
+        if (!spenderValidResult && !blockTime) {
+          result.text = DAPP_SECURITY_SPENDER_INVALID;
+        } else if (!spenderValidResult && blockTime) {
+          const upgradeTime = formatDateTime(blockTime);
+          result.text = `The dApp's logo, domain, or address you're approving may not be authentic. Please proceed with caution.\nThe dApp's smart contract has been updated. Contract update time: ${upgradeTime}`;
+        } else if (blockTime && spenderValidResult) {
+          const isTimeOver12 = checkTimeOver12(blockTime);
+          const upgradeTime = formatDateTime(blockTime);
+          result.text = `Contract update time: ${upgradeTime} The dApp's smart contract has been updated. Please proceed with caution.`;
+          result.type = isTimeOver12 ? 'info' : 'warning';
+        }
+        console.log('wfs========result', result);
+        setResult(result);
+      } catch (e) {
+        console.log('wfs========error', e);
       }
-      setResult(result);
     })();
   }, [checkDappSpenderValid, getContractUpgradeTime, logo, spender, targetChainId, website]);
   return result;

@@ -8,7 +8,7 @@
   .main-content-wrap {
     gap: 24px;
     padding: 8px 16px 24px;
-    border-bottom: 1px solid @neutral-divider;
+    border-bottom: 1px solid @border-neutral3;
     .balance-amount-wrap {
       gap: 4px;
       .wallet-name-wrap {
@@ -35,7 +35,7 @@
         font-size: 32px;
         line-height: 40px;
         font-weight: 600;
-        color: @neutral-primary-text;
+        color: @text-base1;
         &.balance-amount-long {
           font-size: 28px;
           line-height: 36px;
@@ -63,11 +63,11 @@
   }
 
   .banner-wrap {
-    border-bottom: 1px solid @neutral-divider;
+    border-bottom: 1px solid @border-neutral3;
   }
 
   .@{app-prefix}-tabs {
-    background-color: @neutral-default-bg;
+    background-color: @bg-base1;
     overflow: hidden;
     height: 100%;
     margin-top: 8px;
@@ -78,7 +78,7 @@
       z-index: 9;
       position: sticky;
       top: 0;
-      background: @neutral-default-bg;
+      background: @bg-base1;
 
       &::before {
         content: none;
@@ -107,7 +107,7 @@
 
           .@{app-prefix}-tabs-tab-active {
             .@{app-prefix}-tabs-tab-btn {
-              color: @neutral-primary-text;
+              color: @text-base1;
             }
           }
         }

@@ -63,6 +63,7 @@ import FreeMint from 'pages/FreeMint';
 import SecondaryMailbox from 'pages/WalletSecurity/SecondaryMailbox';
 import SecondaryMailboxEdit from 'pages/WalletSecurity/SecondaryMailbox/Edit';
 import SecondaryMailboxVerify from 'pages/WalletSecurity/SecondaryMailbox/Verify';
+import SwapPage from 'pages/SwapPage';
 
 export const PageRouter = () =>
   useRoutes([
@@ -325,6 +326,10 @@ export const PageRouter = () =>
     {
       path: '/trade',
       element: <TradePage />,
+    },
+    {
+      path: '/swap',
+      element: <SwapPage />,
     },
     {
       path: '/create-chat-group',

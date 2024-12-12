@@ -39,6 +39,7 @@ import { dappSlice } from '@portkey-wallet/store/store-ca/dapp/slice';
 import { discoverSlice } from '@portkey-wallet/store/store-ca/discover/slice';
 import { txFeeSlice } from '@portkey-wallet/store/store-ca/txFee/slice';
 import { imSlice } from '@portkey-wallet/store/store-ca/im/slice';
+import awakenSlice from '@portkey-wallet/store/store-ca/awaken/slice';
 import securitySlice from '@portkey-wallet/store/store-ca/security/slice';
 import { referralSlice } from '@portkey-wallet/store/store-ca/referral/slice';
 
@@ -80,6 +81,7 @@ const rootReducer = customCombineReducers({
   [discoverSlice.name]: discoverReducer,
   [txFeeSlice.name]: txFeeReducer,
   [imSlice.name]: imReducer,
+  [awakenSlice.name]: awakenSlice.reducer,
   [securitySlice.name]: securitySlice.reducer,
   [referralSlice.name]: referralSlice.reducer,
   [cryptoGiftSlice.name]: cryptoGiftSlice.reducer,

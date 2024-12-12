@@ -13,6 +13,7 @@ import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useDisclaimer } from '@portkey-wallet/hooks/hooks-ca/disclaimer';
 import { getDisclaimerData } from 'utils/disclaimer';
 import './index.less';
+import { useNavigateState } from 'hooks/router';
 
 export default function TradePage() {
   const { isPrompt } = useCommonState();
@@ -77,6 +78,7 @@ export default function TradePage() {
       return false;
     }
   }, [checkSecurity, originChainId, setLoading]);
+  const navigate = useNavigateState();
 
   const handleClick = useCallback(
     async (type: TradeTypeEnum) => {
@@ -86,9 +88,11 @@ export default function TradePage() {
       let originUrl = '';
       switch (type) {
         case TradeTypeEnum.Swap:
-          tradeLink = awakenUrl;
-          originUrl = awakenUrl;
-          break;
+          // TODO: swap entrance
+          navigate('/swap');
+          return;
+        // tradeLink = awakenUrl;
+        // originUrl = awakenUrl;
         case TradeTypeEnum.eBridge:
           tradeLink = eBridgeUrl;
           originUrl = eBridgeUrl;

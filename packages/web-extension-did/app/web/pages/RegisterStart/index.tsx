@@ -11,7 +11,6 @@ import { createNewTmpWallet, setOriginChainId } from '@portkey-wallet/store/stor
 import { ChainId, NetworkType } from '@portkey-wallet/types';
 import CommonSelect from 'components/CommonSelect1';
 import { useChangeNetwork } from 'hooks/useChangeNetwork';
-import i18n from 'i18n';
 import { LoginInfo } from 'store/reducers/loginCache/type';
 import { setLoginAccountAction } from 'store/reducers/loginCache/actions';
 import { resetGuardians, setUserGuardianStatus } from '@portkey-wallet/store/store-ca/guardians/actions';
@@ -450,6 +449,7 @@ export default function RegisterStart() {
   const onSocialStart = useCallback((type: ISocialLogin) => {
     googleAnalytics.loginStartEvent(type);
   }, []);
+  console.log('=test');
 
   return (
     <div id="register-start-wrapper">
@@ -457,7 +457,7 @@ export default function RegisterStart() {
       <div className="flex-between register-start-content">
         <div className="text-content">
           <CustomSvg type="PortKey" />
-          <h1>{i18n.t('Welcome to Portkey') as string}</h1>
+          {/* <h1>{i18n.t('Welcome to Portkey') as string}</h1> */}
           <div className="description">{`Your key to play and earn in Web3`}</div>
         </div>
         <div>

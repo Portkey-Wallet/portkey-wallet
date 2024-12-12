@@ -27,7 +27,7 @@ export default function InputLogin({
   const { t } = useTranslation();
   const isMainnet = useIsMainnet();
 
-  const title = useMemo(() => (type === 'Login' ? t('Login') : t('Sign up')), [t, type]);
+  const title = useMemo(() => (type === 'Login' ? t('Log in via email') : t('Create your account')), [t, type]);
 
   const renderTitle = useMemo(() => {
     if (!isMainnet) {
@@ -46,7 +46,7 @@ export default function InputLogin({
   return (
     <div>
       <h1 className="title">
-        <CustomSvg type="BackLeft" onClick={onBack} />
+        {/* <CustomSvg type="BackLeft" onClick={onBack} /> */}
         {renderTitle}
       </h1>
       <InputInfo

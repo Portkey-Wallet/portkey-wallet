@@ -57,7 +57,7 @@ export default function SocialLogin({
   const isLogin = useMemo(() => type === 'Login', [type]);
 
   const renderTitle = useMemo(() => {
-    const title = isLogin ? t('Login') : t('Sign up');
+    const title = isLogin ? t('Let’s set up your wallet') : t('Sign up');
     if (!isMainnet) {
       return (
         <div className="flex-center testnet-flag">
@@ -99,7 +99,7 @@ export default function SocialLogin({
   const allowedLoginGuardianList: LoginGuardianListType[] = useMemo(
     () => [
       {
-        icon: 'Apple',
+        icon: 'Apple' as LoginGuardianListType['icon'],
         type: 'Apple',
         value: LoginType.Apple,
         onClick: () => {
@@ -107,7 +107,7 @@ export default function SocialLogin({
         },
       },
       {
-        icon: 'Google',
+        icon: 'Google' as LoginGuardianListType['icon'],
         type: 'Google',
         value: LoginType.Google,
         onClick: () => {
@@ -115,7 +115,7 @@ export default function SocialLogin({
         },
       },
       {
-        icon: 'Email',
+        icon: 'Email' as LoginGuardianListType['icon'],
         type: 'Email',
         value: LoginType.Email,
         onClick: () => {
@@ -123,7 +123,7 @@ export default function SocialLogin({
         },
       },
       {
-        icon: 'Phone',
+        icon: 'Phone' as LoginGuardianListType['icon'],
         type: 'Phone',
         value: LoginType.Phone,
         onClick: () => {
@@ -131,7 +131,7 @@ export default function SocialLogin({
         },
       },
       {
-        icon: 'Telegram',
+        icon: 'Telegram' as LoginGuardianListType['icon'],
         type: 'Telegram',
         value: LoginType.Telegram,
         onClick: () => {
@@ -139,7 +139,7 @@ export default function SocialLogin({
         },
       },
       {
-        icon: 'Twitter',
+        icon: 'Twitter' as LoginGuardianListType['icon'],
         type: 'Twitter',
         value: LoginType.Twitter,
         onClick: () => {
@@ -147,7 +147,7 @@ export default function SocialLogin({
         },
       },
       {
-        icon: 'Facebook',
+        icon: 'Facebook' as LoginGuardianListType['icon'],
         type: 'Facebook',
         value: LoginType.Facebook,
         onClick: () => {
@@ -181,7 +181,7 @@ export default function SocialLogin({
         <h1 className="title">
           {!isLogin && <CustomSvg type="BackLeft" onClick={onBack} />}
           {renderTitle}
-          {isLogin && <CustomSvg type="QRCode" onClick={() => navigate('/register/start/scan')} />}
+          {/* {isLogin && <CustomSvg type="QRCode" onClick={() => navigate('/register/start/scan')} />} */}
         </h1>
         <div className="social-login-content">
           <SocialContent type={type} showLoginModeListToRecommend={showLoginModeListToRecommend} />
@@ -194,12 +194,12 @@ export default function SocialLogin({
                 </div>
               ))}
             </div>
-            <div className={clsx('go-sign-up', !isLogin && 'hidden-go-sign-up')}>
+            {/* <div className={clsx('go-sign-up', !isLogin && 'hidden-go-sign-up')}>
               <span>{t('No account?')}</span>
               <span className="sign-text" onClick={() => navigate('/register/start/create')}>
                 {t('Sign up')}
               </span>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

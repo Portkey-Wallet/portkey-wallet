@@ -19,6 +19,10 @@ body.en-language-wrapper {
   font-family: Roboto-Regular;
 }
 
+body.theme-dark {
+  background-color: #151318;
+}
+
 #root,
 #portkey-ui-root {
   overflow-y: auto;

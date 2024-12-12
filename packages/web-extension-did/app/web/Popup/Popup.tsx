@@ -5,6 +5,7 @@ import { setPageType } from 'utils/setBody';
 
 const root = ReactDOM.createRoot(document.getElementById('root') as Element);
 document.body.classList.add('popup-body');
+document.body.classList.add('theme-dark');
 setPageType('Popup');
 root.render(
   <>

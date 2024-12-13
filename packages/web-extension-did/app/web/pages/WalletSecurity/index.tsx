@@ -3,9 +3,10 @@ import { useTranslation } from 'react-i18next';
 import { useDeviceList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { MenuItemInfo } from 'pages/components/MenuList';
 import { BaseHeaderProps } from 'types/UI';
-import WalletSecurityPrompt from './Prompt';
+// import WalletSecurityPrompt from './Prompt';
 import WalletSecurityPopup from './Popup';
-import { useCommonState, useDapp, useWalletInfo } from 'store/Provider/hooks';
+// import { useCommonState, useDapp, useWalletInfo } from 'store/Provider/hooks';
+import { useDapp, useWalletInfo } from 'store/Provider/hooks';
 import { useNavigateState } from 'hooks/router';
 import { useIsSecondaryMailSet } from '@portkey-wallet/hooks/hooks-ca/useSecondaryMail';
 
@@ -16,7 +17,7 @@ export interface IWalletSecurityProps extends BaseHeaderProps {
 export default function WalletSecurity() {
   const { t } = useTranslation();
   const navigate = useNavigateState();
-  const { isNotLessThan768 } = useCommonState();
+  // const { isNotLessThan768 } = useCommonState();
   const { deviceAmount } = useDeviceList({
     isAmountOnly: true,
   });
@@ -92,9 +93,10 @@ export default function WalletSecurity() {
   const title = t('Wallet Security');
   const goBack = useCallback(() => navigate('/setting'), [navigate]);
 
-  return isNotLessThan768 ? (
-    <WalletSecurityPrompt headerTitle={title} menuList={MenuListData} />
-  ) : (
-    <WalletSecurityPopup headerTitle={title} menuList={MenuListData} goBack={goBack} />
-  );
+  return <WalletSecurityPopup headerTitle={title} menuList={MenuListData} goBack={goBack} />;
+  // return isNotLessThan768 ? (
+  //   <WalletSecurityPrompt headerTitle={title} menuList={MenuListData} />
+  // ) : (
+  //   <WalletSecurityPopup headerTitle={title} menuList={MenuListData} goBack={goBack} />
+  // );
 }

@@ -9,7 +9,7 @@ import VerifierPair from 'components/VerifierPair';
 import { Button } from 'antd';
 import useVerifierList from 'hooks/useVerifierList';
 import GuardiansPopup from './Popup';
-import GuardiansPrompt from './Prompt';
+// import GuardiansPrompt from './Prompt';
 import InternalMessage from 'messages/InternalMessage';
 import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 import AccountShow from './components/AccountShow';
@@ -109,9 +109,11 @@ export default function Guardians() {
     [headerTitle, renderAddBtn, renderGuardianList],
   );
 
-  return isNotLessThan768 ? (
-    <GuardiansPrompt {...props} />
-  ) : (
-    <GuardiansPopup {...props} showAddBtn={true} onAdd={onAdd} onBack={onBack} />
-  );
+  return <GuardiansPopup {...props} showAddBtn={true} onAdd={onAdd} onBack={onBack} />;
+
+  // return isNotLessThan768 ? (
+  //   <GuardiansPrompt {...props} />
+  // ) : (
+  //   <GuardiansPopup {...props} showAddBtn={true} onAdd={onAdd} onBack={onBack} />
+  // );
 }

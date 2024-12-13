@@ -3,9 +3,9 @@ import { useTranslation } from 'react-i18next';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import aes from '@portkey-wallet/utils/aes';
 import ConfirmPinPopup from './Popup';
-import ConfirmPinPrompt from './Prompt';
+// import ConfirmPinPrompt from './Prompt';
 import { BaseHeaderProps } from 'types/UI';
-import { useCommonState } from 'store/Provider/hooks';
+// import { useCommonState } from 'store/Provider/hooks';
 import { useNavigateState } from 'hooks/router';
 import { TSetNewPinLocationState } from 'types/router';
 
@@ -27,7 +27,7 @@ export default function ConfirmPin() {
   const [pin, setPin] = useState('');
   const [errMsg, setErrMsg] = useState('');
   const walletInfo = useCurrentWalletInfo();
-  const { isNotLessThan768 } = useCommonState();
+  // const { isNotLessThan768 } = useCommonState();
 
   const handleNext = useCallback(() => {
     const privateKey = aes.decrypt(walletInfo.AESEncryptPrivateKey, pin);
@@ -61,20 +61,7 @@ export default function ConfirmPin() {
     navigate('/setting/account-setting');
   };
 
-  return isNotLessThan768 ? (
-    <ConfirmPinPrompt
-      headerTitle={title}
-      pinLabel={pinLabel}
-      pin={pin}
-      placeholder={placeholder}
-      errMsg={errMsg}
-      submitDisable={disable}
-      btnText={btnText}
-      onChangePin={(e) => handleInputChange(e.target.value)}
-      handleNext={handleNext}
-      goBack={goBack}
-    />
-  ) : (
+  return (
     <ConfirmPinPopup
       headerTitle={title}
       pinLabel={pinLabel}
@@ -88,4 +75,32 @@ export default function ConfirmPin() {
       goBack={goBack}
     />
   );
+
+  // return isNotLessThan768 ? (
+  //   <ConfirmPinPrompt
+  //     headerTitle={title}
+  //     pinLabel={pinLabel}
+  //     pin={pin}
+  //     placeholder={placeholder}
+  //     errMsg={errMsg}
+  //     submitDisable={disable}
+  //     btnText={btnText}
+  //     onChangePin={(e) => handleInputChange(e.target.value)}
+  //     handleNext={handleNext}
+  //     goBack={goBack}
+  //   />
+  // ) : (
+  //   <ConfirmPinPopup
+  //     headerTitle={title}
+  //     pinLabel={pinLabel}
+  //     pin={pin}
+  //     placeholder={placeholder}
+  //     errMsg={errMsg}
+  //     submitDisable={disable}
+  //     btnText={btnText}
+  //     onChangePin={(e) => handleInputChange(e.target.value)}
+  //     handleNext={handleNext}
+  //     goBack={goBack}
+  //   />
+  // );
 }

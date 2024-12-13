@@ -26,7 +26,7 @@ import Receive from 'pages/Receive';
 import NFT from 'pages/NFT';
 import ContactDetail from 'pages/Contacts/ContactDetail';
 import AccountSetting from 'pages/AccountSetting';
-import PromptMy from 'pages/PromptMy';
+// import PromptMy from 'pages/PromptMy';
 import Guardians from 'pages/Guardians';
 import Wallet from 'pages/Wallet';
 import Contacts from 'pages/Contacts';
@@ -41,7 +41,7 @@ import Devices from 'pages/WalletSecurity/ManageDevices/Devices';
 import DeviceDetail from 'pages/WalletSecurity/ManageDevices/DeviceDetail';
 import Buy from 'pages/Buy';
 import BuyPreview from 'pages/Buy/Preview';
-import { useCommonState } from 'store/Provider/hooks';
+// import { useCommonState } from 'store/Provider/hooks';
 import My from 'pages/My';
 import RecentDetail from 'pages/Send/components/RecentDetail';
 import Permission from 'pages/Permission';
@@ -78,7 +78,7 @@ import SecondaryMailboxVerify from 'pages/WalletSecurity/SecondaryMailbox/Verify
 // import TokenNetworkList from 'pages/DepositHome/components/TokenNetworkList';
 
 export const PageRouter = () => {
-  const { isNotLessThan768 } = useCommonState();
+  // const { isNotLessThan768 } = useCommonState();
 
   const commonRoutes = [
     {
@@ -248,188 +248,7 @@ export const PageRouter = () => {
       element: <SelectNetwork />,
     },
   ];
-  const settingPromptRoutes = [
-    {
-      path: '/setting',
-      element: <PromptMy />,
-      children: [
-        {
-          path: '/setting/wallet',
-          element: <Wallet />,
-          children: [
-            {
-              path: '/setting/wallet/wallet-name',
-              element: <WalletName />,
-            },
-            {
-              path: '/setting/wallet/account-cancelation',
-              element: <AccountCancelation />,
-            },
-            {
-              path: '/setting/wallet/account-cancelation-code',
-              element: <VerifyAccountCancelation />,
-            },
-            {
-              path: '/setting/wallet/auto-lock',
-              element: <AutoLock />,
-            },
-            {
-              path: '/setting/wallet/switch-networks',
-              element: <SwitchNetworks />,
-            },
-            {
-              path: '/setting/wallet/about-us',
-              element: <AboutUs />,
-            },
-            {
-              path: '/setting/wallet/qrcode',
-              element: <MyQRCode />,
-            },
-          ],
-        },
-        {
-          path: '/setting/contacts',
-          element: <Contacts />,
-          children: [
-            {
-              path: '/setting/contacts/:type',
-              element: <ContactDetail />,
-            },
-            {
-              path: '/setting/contacts/:type/:extra',
-              element: <ContactDetail />,
-            },
-            {
-              path: '/setting/contacts/find-more',
-              element: <FindMore />,
-            },
-            {
-              path: '/setting/contacts/qrcode',
-              element: <MyQRCode />,
-            },
-          ],
-        },
-        {
-          path: '/setting/account-setting',
-          element: <AccountSetting />,
-          children: [
-            {
-              path: '/setting/account-setting/confirm-pin',
-              element: <ConfirmPin />,
-            },
-            {
-              path: '/setting/account-setting/set-new-pin',
-              element: <SetNewPin />,
-            },
-            {
-              path: '/setting/account-setting/chat-privacy',
-              element: <ChatPrivacy />,
-            },
-            {
-              path: '/setting/account-setting/chat-privacy-edit',
-              element: <ChatPrivacyEdit />,
-            },
-          ],
-        },
-        {
-          path: '/setting/guardians',
-          element: <Guardians />,
-          children: [
-            {
-              path: '/setting/guardians/add',
-              element: <AddGuardian />,
-            },
-            {
-              path: '/setting/guardians/edit',
-              element: <GuardiansEdit />,
-            },
-            {
-              path: '/setting/guardians/view',
-              element: <GuardiansView />,
-            },
-            {
-              path: '/setting/guardians/verifier-account',
-              element: <VerifierAccount />,
-            },
-            {
-              path: '/setting/guardians/guardian-approval',
-              element: <GuardianApproval />,
-            },
-          ],
-        },
-        {
-          path: '/setting/wallet-security',
-          element: <WalletSecurity />,
-          children: [
-            {
-              path: '/setting/wallet-security/manage-devices',
-              element: <Devices />,
-            },
-            {
-              path: '/setting/wallet-security/manage-devices/:managerAddress',
-              element: <DeviceDetail />,
-            },
-            {
-              path: '/setting/wallet-security/manage-devices/verifier-account',
-              element: <VerifierAccount />,
-            },
-            {
-              path: '/setting/wallet-security/manage-devices/guardian-approval',
-              element: <GuardianApproval />,
-            },
-            {
-              path: '/setting/wallet-security/connected-sites',
-              element: <ConnectedSites />,
-            },
-            {
-              path: '/setting/wallet-security/connected-sites/:origin',
-              element: <SiteDetail />,
-            },
-            {
-              path: '/setting/wallet-security/payment-security',
-              element: <PaymentSecurity />,
-            },
-            {
-              path: '/setting/wallet-security/payment-security/transfer-settings',
-              element: <TransferSettings />,
-            },
-            {
-              path: '/setting/wallet-security/payment-security/transfer-settings-edit',
-              element: <TransferSettingsEdit />,
-            },
-            {
-              path: '/setting/wallet-security/payment-security/verifier-account',
-              element: <VerifierAccount />,
-            },
-            {
-              path: '/setting/wallet-security/payment-security/guardian-approval',
-              element: <GuardianApproval />,
-            },
-            {
-              path: '/setting/wallet-security/token-allowance',
-              element: <TokenAllowance />,
-            },
-            {
-              path: '/setting/wallet-security/token-allowance-detail',
-              element: <TokenAllowanceDetail />,
-            },
-            {
-              path: '/setting/wallet-security/secondary-mailbox',
-              element: <SecondaryMailbox />,
-            },
-            {
-              path: '/setting/wallet-security/secondary-mailbox-edit',
-              element: <SecondaryMailboxEdit />,
-            },
-            {
-              path: '/setting/wallet-security/secondary-mailbox-verify',
-              element: <SecondaryMailboxVerify />,
-            },
-          ],
-        },
-      ],
-    },
-  ];
+
   const settingPopupRoutes = [
     {
       path: '/setting',
@@ -600,9 +419,192 @@ export const PageRouter = () => {
       element: <SecondaryMailboxVerify />,
     },
   ];
-
-  const promptRoutes = useRoutes([...commonRoutes, ...settingPromptRoutes]);
-  const popupRoutes = useRoutes([...commonRoutes, ...settingPopupRoutes]);
-
-  return isNotLessThan768 ? promptRoutes : popupRoutes;
+  // const promptRoutes = useRoutes([...commonRoutes, ...settingPromptRoutes]);
+  // const popupRoutes = useRoutes([...commonRoutes, ...settingPopupRoutes]);
+  //
+  // return isNotLessThan768 ? promptRoutes : popupRoutes;
+  return useRoutes([...commonRoutes, ...settingPopupRoutes]);
 };
+
+// const settingPromptRoutes = [
+//   {
+//     path: '/setting',
+//     element: <PromptMy />,
+//     children: [
+//       {
+//         path: '/setting/wallet',
+//         element: <Wallet />,
+//         children: [
+//           {
+//             path: '/setting/wallet/wallet-name',
+//             element: <WalletName />,
+//           },
+//           {
+//             path: '/setting/wallet/account-cancelation',
+//             element: <AccountCancelation />,
+//           },
+//           {
+//             path: '/setting/wallet/account-cancelation-code',
+//             element: <VerifyAccountCancelation />,
+//           },
+//           {
+//             path: '/setting/wallet/auto-lock',
+//             element: <AutoLock />,
+//           },
+//           {
+//             path: '/setting/wallet/switch-networks',
+//             element: <SwitchNetworks />,
+//           },
+//           {
+//             path: '/setting/wallet/about-us',
+//             element: <AboutUs />,
+//           },
+//           {
+//             path: '/setting/wallet/qrcode',
+//             element: <MyQRCode />,
+//           },
+//         ],
+//       },
+//       {
+//         path: '/setting/contacts',
+//         element: <Contacts />,
+//         children: [
+//           {
+//             path: '/setting/contacts/:type',
+//             element: <ContactDetail />,
+//           },
+//           {
+//             path: '/setting/contacts/:type/:extra',
+//             element: <ContactDetail />,
+//           },
+//           {
+//             path: '/setting/contacts/find-more',
+//             element: <FindMore />,
+//           },
+//           {
+//             path: '/setting/contacts/qrcode',
+//             element: <MyQRCode />,
+//           },
+//         ],
+//       },
+//       {
+//         path: '/setting/account-setting',
+//         element: <AccountSetting />,
+//         children: [
+//           {
+//             path: '/setting/account-setting/confirm-pin',
+//             element: <ConfirmPin />,
+//           },
+//           {
+//             path: '/setting/account-setting/set-new-pin',
+//             element: <SetNewPin />,
+//           },
+//           {
+//             path: '/setting/account-setting/chat-privacy',
+//             element: <ChatPrivacy />,
+//           },
+//           {
+//             path: '/setting/account-setting/chat-privacy-edit',
+//             element: <ChatPrivacyEdit />,
+//           },
+//         ],
+//       },
+//       {
+//         path: '/setting/guardians',
+//         element: <Guardians />,
+//         children: [
+//           {
+//             path: '/setting/guardians/add',
+//             element: <AddGuardian />,
+//           },
+//           {
+//             path: '/setting/guardians/edit',
+//             element: <GuardiansEdit />,
+//           },
+//           {
+//             path: '/setting/guardians/view',
+//             element: <GuardiansView />,
+//           },
+//           {
+//             path: '/setting/guardians/verifier-account',
+//             element: <VerifierAccount />,
+//           },
+//           {
+//             path: '/setting/guardians/guardian-approval',
+//             element: <GuardianApproval />,
+//           },
+//         ],
+//       },
+//       {
+//         path: '/setting/wallet-security',
+//         element: <WalletSecurity />,
+//         children: [
+//           {
+//             path: '/setting/wallet-security/manage-devices',
+//             element: <Devices />,
+//           },
+//           {
+//             path: '/setting/wallet-security/manage-devices/:managerAddress',
+//             element: <DeviceDetail />,
+//           },
+//           {
+//             path: '/setting/wallet-security/manage-devices/verifier-account',
+//             element: <VerifierAccount />,
+//           },
+//           {
+//             path: '/setting/wallet-security/manage-devices/guardian-approval',
+//             element: <GuardianApproval />,
+//           },
+//           {
+//             path: '/setting/wallet-security/connected-sites',
+//             element: <ConnectedSites />,
+//           },
+//           {
+//             path: '/setting/wallet-security/connected-sites/:origin',
+//             element: <SiteDetail />,
+//           },
+//           {
+//             path: '/setting/wallet-security/payment-security',
+//             element: <PaymentSecurity />,
+//           },
+//           {
+//             path: '/setting/wallet-security/payment-security/transfer-settings',
+//             element: <TransferSettings />,
+//           },
+//           {
+//             path: '/setting/wallet-security/payment-security/transfer-settings-edit',
+//             element: <TransferSettingsEdit />,
+//           },
+//           {
+//             path: '/setting/wallet-security/payment-security/verifier-account',
+//             element: <VerifierAccount />,
+//           },
+//           {
+//             path: '/setting/wallet-security/payment-security/guardian-approval',
+//             element: <GuardianApproval />,
+//           },
+//           {
+//             path: '/setting/wallet-security/token-allowance',
+//             element: <TokenAllowance />,
+//           },
+//           {
+//             path: '/setting/wallet-security/token-allowance-detail',
+//             element: <TokenAllowanceDetail />,
+//           },
+//           {
+//             path: '/setting/wallet-security/secondary-mailbox',
+//             element: <SecondaryMailbox />,
+//           },
+//           {
+//             path: '/setting/wallet-security/secondary-mailbox-edit',
+//             element: <SecondaryMailboxEdit />,
+//           },
+//           {
+//             path: '/setting/wallet-security/secondary-mailbox-verify',
+//             element: <SecondaryMailboxVerify />,
+//           },
+//         ],
+//       },
+//     ],
+//   },
+// ];

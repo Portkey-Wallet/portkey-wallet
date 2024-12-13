@@ -7,9 +7,9 @@ import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/ac
 import { ContactIndexType, ContactItemType } from '@portkey-wallet/types/types-ca/contact';
 import { useEffectOnce } from 'react-use';
 import ContactsPopup from './Popup';
-import ContactsPrompt from './Prompt';
+// import ContactsPrompt from './Prompt';
 import { BaseHeaderProps } from 'types/UI';
-import { useCommonState } from 'store/Provider/hooks';
+// import { useCommonState } from 'store/Provider/hooks';
 import { useGoAddNewContact } from 'hooks/useProfile';
 import { ContactsTab } from '@portkey-wallet/constants/constants-ca/assets';
 import { ExtraTypeEnum } from 'types/Profile';
@@ -72,7 +72,7 @@ export default function Contacts() {
     return curList.reduce((pre, cv) => pre + cv.contacts.length, 0);
   }, [curList]);
 
-  const { isNotLessThan768 } = useCommonState();
+  // const { isNotLessThan768 } = useCommonState();
   const searchPlaceholder = 'Name/address';
   const title = t('Contacts');
   const addText = t('Add contact');
@@ -92,23 +92,7 @@ export default function Contacts() {
     setCurList(searchResult);
   };
 
-  return isNotLessThan768 ? (
-    <ContactsPrompt
-      headerTitle={title}
-      goBack={goBack}
-      searchPlaceholder={searchPlaceholder}
-      addText={addText}
-      isSearch={isSearch}
-      list={curList}
-      contactCount={curTotalContactsNum}
-      initData={initContactItem}
-      showImputation={showImputation}
-      closeImputationTip={closeImputationTip}
-      handleAdd={() => handleAdd(ExtraTypeEnum.ADD_NEW_CHAT, initContactItem)}
-      handleSearch={searchChange}
-      changeTab={changeTab}
-    />
-  ) : (
+  return (
     <ContactsPopup
       headerTitle={title}
       goBack={goBack}
@@ -125,4 +109,38 @@ export default function Contacts() {
       changeTab={changeTab}
     />
   );
+
+  // return isNotLessThan768 ? (
+  //   <ContactsPrompt
+  //     headerTitle={title}
+  //     goBack={goBack}
+  //     searchPlaceholder={searchPlaceholder}
+  //     addText={addText}
+  //     isSearch={isSearch}
+  //     list={curList}
+  //     contactCount={curTotalContactsNum}
+  //     initData={initContactItem}
+  //     showImputation={showImputation}
+  //     closeImputationTip={closeImputationTip}
+  //     handleAdd={() => handleAdd(ExtraTypeEnum.ADD_NEW_CHAT, initContactItem)}
+  //     handleSearch={searchChange}
+  //     changeTab={changeTab}
+  //   />
+  // ) : (
+  //   <ContactsPopup
+  //     headerTitle={title}
+  //     goBack={goBack}
+  //     searchPlaceholder={searchPlaceholder}
+  //     addText={addText}
+  //     isSearch={isSearch}
+  //     list={curList}
+  //     contactCount={curTotalContactsNum}
+  //     initData={initContactItem}
+  //     showImputation={showImputation}
+  //     closeImputationTip={closeImputationTip}
+  //     handleAdd={() => handleAdd(ExtraTypeEnum.ADD_NEW_CHAT, initContactItem)}
+  //     handleSearch={searchChange}
+  //     changeTab={changeTab}
+  //   />
+  // );
 }

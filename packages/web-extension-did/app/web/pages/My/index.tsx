@@ -14,6 +14,8 @@ import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 import { useIsImputation } from '@portkey-wallet/hooks/hooks-ca/contact';
 import svgsList from 'assets/svgs';
 import UnReadBadge from 'pages/components/UnReadBadge';
+import WalletEntry from '../Wallet/components/WalletEntry';
+import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 // import { useClickReferral } from 'hooks/referral';
 
 interface MenuItemInfo {
@@ -72,11 +74,13 @@ export default function My() {
     );
   };
 
+  const { nickName, avatar, userId } = useCurrentUserInfo();
+
   return (
     <div className="flex-column my-frame">
       <CommonHeader
         className="my-header"
-        title={t('My')}
+        title={t('Settings')}
         rightElementList={[
           <div key="lock" className="lock-wrap flex-center cursor-pointer" onClick={lockWallet}>
             <CustomSvg className="lock-icon" type="LockOutlined" />
@@ -87,6 +91,18 @@ export default function My() {
           navigate('/');
         }}
       />
+
+      <div>
+        <WalletEntry
+          walletAvatar={avatar}
+          walletName={nickName}
+          portkeyId={userId}
+          clickAvatar={() => {
+            navigate('/setting/wallet/wallet-name');
+          }}
+        />
+      </div>
+
       <div className="flex my-content">
         <div className="menu-list">
           {MenuList.map((item) => (

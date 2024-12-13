@@ -33,6 +33,16 @@ export default function My() {
   const MenuList: MenuItemInfo[] = useMemo(
     () => [
       {
+        label: 'Guardians',
+        icon: 'Guardians',
+        router: '/setting/guardians',
+      },
+      {
+        label: 'Security',
+        icon: 'Guardians',
+        router: '/setting/security',
+      },
+      {
         label: 'Wallet',
         icon: 'Wallet',
         router: '/setting/wallet',
@@ -46,11 +56,6 @@ export default function My() {
         label: 'Account Setting',
         icon: 'Setting',
         router: '/setting/account-setting',
-      },
-      {
-        label: 'Guardians',
-        icon: 'Guardians',
-        router: '/setting/guardians',
       },
       {
         label: 'Wallet Security',
@@ -101,6 +106,7 @@ export default function My() {
             navigate('/setting/wallet/wallet-name');
           }}
         />
+        <div className="empty-placeholder" />
       </div>
 
       <div className="flex my-content">

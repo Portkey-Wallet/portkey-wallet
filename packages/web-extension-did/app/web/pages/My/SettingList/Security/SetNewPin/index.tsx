@@ -1,0 +1,70 @@
+import { useTranslation } from 'react-i18next';
+import { useAppDispatch } from 'store/Provider/hooks';
+import { ISetNewPinFormProps } from '../components/SetNewPinForm';
+import SetNewPinPopup from './Popup';
+import { useCallback, useEffect } from 'react';
+import { Form } from 'antd';
+import { setPinAction } from 'utils/lib/serviceWorkerAction';
+import { changePin } from '@portkey-wallet/store/store-ca/wallet/actions';
+import { useNavigate } from 'react-router-dom';
+import { setPasswordSeed } from 'store/reducers/user/slice';
+import { BaseHeaderProps } from 'types/UI';
+import singleMessage from 'utils/singleMessage';
+import { useLocationState } from 'hooks/router';
+import { TSetNewPinLocationState } from 'types/router';
+
+export type ISetNewPinProps = ISetNewPinFormProps & BaseHeaderProps;
+
+export default function SetNewPin() {
+  const [form] = Form.useForm();
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const {
+    state: { pin },
+  } = useLocationState<TSetNewPinLocationState>();
+  const { t } = useTranslation();
+  const title = t('Change Pin');
+  const setPinLabel = 'Please enter a new pin';
+  const confirmPinLabel = 'Confirm new pin';
+  const btnText = 'Save';
+
+  useEffect(() => {
+    return form.resetFields();
+  }, [form]);
+
+  const handleSave = useCallback(async () => {
+    const newPin = form.getFieldValue('confirmPassword');
+    dispatch(setPasswordSeed(newPin));
+    dispatch(
+      changePin({
+        pin,
+        newPin,
+      }),
+    );
+    await setPinAction(newPin);
+    singleMessage.success(t('Modified Successfully'));
+    navigate('/setting/security');
+  }, [dispatch, form, navigate, pin, t]);
+
+  const onFinishFailed = useCallback(() => {
+    singleMessage.error('Something error');
+  }, []);
+
+  const handleBack = useCallback(() => {
+    form.resetFields();
+    navigate('/setting/security/confirm-pin');
+  }, [form, navigate]);
+
+  return (
+    <SetNewPinPopup
+      form={form}
+      headerTitle={title}
+      setPinLabel={setPinLabel}
+      confirmPinLabel={confirmPinLabel}
+      btnText={btnText}
+      onFinishFailed={onFinishFailed}
+      onSave={handleSave}
+      goBack={handleBack}
+    />
+  );
+}

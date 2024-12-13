@@ -38,11 +38,17 @@ body.theme-dark {
 #portkey-ui-root {
   overflow-y: auto;
   height: 100vh;
+  width: 100%;
+  max-width: 896px;
+  display: flex;
+  justify-content: center;
 }
 
 body {
   padding: 0;
   margin: 0;
+  display: flex;
+  justify-content: center;
 }
 #loading-content {
   display: flex;

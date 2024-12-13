@@ -91,7 +91,7 @@ export default function SocialLogin({
   const allowedLoginGuardianList: LoginGuardianListType[] = useMemo(
     () => [
       {
-        icon: 'Apple' as LoginGuardianListType['icon'],
+        icon: 'Apple2' as LoginGuardianListType['icon'],
         type: 'Apple',
         value: LoginType.Apple,
         onClick: () => {
@@ -99,7 +99,7 @@ export default function SocialLogin({
         },
       },
       {
-        icon: 'Google' as LoginGuardianListType['icon'],
+        icon: 'Google2' as LoginGuardianListType['icon'],
         type: 'Google',
         value: LoginType.Google,
         onClick: () => {
@@ -107,7 +107,7 @@ export default function SocialLogin({
         },
       },
       {
-        icon: 'Email' as LoginGuardianListType['icon'],
+        icon: 'Email2' as LoginGuardianListType['icon'],
         type: 'Email',
         value: LoginType.Email,
         onClick: () => {
@@ -115,7 +115,7 @@ export default function SocialLogin({
         },
       },
       {
-        icon: 'Phone' as LoginGuardianListType['icon'],
+        icon: 'Phone2' as LoginGuardianListType['icon'],
         type: 'Phone',
         value: LoginType.Phone,
         onClick: () => {
@@ -123,7 +123,7 @@ export default function SocialLogin({
         },
       },
       {
-        icon: 'Telegram' as LoginGuardianListType['icon'],
+        icon: 'Telegram2' as LoginGuardianListType['icon'],
         type: 'Telegram',
         value: LoginType.Telegram,
         onClick: () => {
@@ -131,7 +131,7 @@ export default function SocialLogin({
         },
       },
       {
-        icon: 'Twitter' as LoginGuardianListType['icon'],
+        icon: 'Twitter2' as LoginGuardianListType['icon'],
         type: 'Twitter',
         value: LoginType.Twitter,
         onClick: () => {
@@ -139,7 +139,7 @@ export default function SocialLogin({
         },
       },
       {
-        icon: 'Facebook' as LoginGuardianListType['icon'],
+        icon: 'Facebook2' as LoginGuardianListType['icon'],
         type: 'Facebook',
         value: LoginType.Facebook,
         onClick: () => {

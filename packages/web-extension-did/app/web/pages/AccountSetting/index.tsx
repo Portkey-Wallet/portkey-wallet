@@ -1,11 +1,11 @@
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import AccountSettingPrompt from './Prompt';
+// import AccountSettingPrompt from './Prompt';
 import AccountSettingPopup from './Popup';
 import { MenuItemInfo } from 'pages/components/MenuList';
 import { BaseHeaderProps } from 'types/UI';
-import { useCommonState } from 'store/Provider/hooks';
+// import { useCommonState } from 'store/Provider/hooks';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 
 export interface IAccountSettingProps extends BaseHeaderProps {
@@ -17,7 +17,7 @@ export default function AccountSetting() {
   const showChat = useIsChatShow();
   const navigate = useNavigate();
 
-  const { isNotLessThan768 } = useCommonState();
+  // const { isNotLessThan768 } = useCommonState();
 
   const MenuList: MenuItemInfo[] = useMemo(() => {
     const list = [
@@ -43,9 +43,10 @@ export default function AccountSetting() {
 
   const headerTitle = t('Account Setting');
 
-  return isNotLessThan768 ? (
-    <AccountSettingPrompt headerTitle={headerTitle} menuList={MenuList} />
-  ) : (
-    <AccountSettingPopup headerTitle={headerTitle} menuList={MenuList} />
-  );
+  return <AccountSettingPopup headerTitle={headerTitle} menuList={MenuList} />;
+  // return isNotLessThan768 ? (
+  //   <AccountSettingPrompt headerTitle={headerTitle} menuList={MenuList} />
+  // ) : (
+  //   <AccountSettingPopup headerTitle={headerTitle} menuList={MenuList} />
+  // );
 }

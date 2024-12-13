@@ -1,6 +1,5 @@
 import { useAppDispatch, useCommonState, useLoading } from 'store/Provider/hooks';
 import TransferSettingsEditPopup from './Popup';
-import TransferSettingsEditPrompt from './Prompt';
 import { useTranslation } from 'react-i18next';
 import { useCallback, useRef, useState } from 'react';
 import { ValidData } from 'pages/Contacts/AddContact';
@@ -24,7 +23,7 @@ import { getOperationDetails } from '@portkey-wallet/utils/operation.util';
 import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
 
 export default function TransferSettingsEdit() {
-  const { isPrompt, isNotLessThan768 } = useCommonState();
+  const { isPrompt } = useCommonState();
   const dispatch = useAppDispatch();
   const userGuardianList = useGuardianList();
   const { walletInfo } = useCurrentWallet();
@@ -32,7 +31,7 @@ export default function TransferSettingsEdit() {
   const { state } = useLocationState<TTransferSettingEditLocationState>();
   const navigate = useNavigateState();
   const [form] = Form.useForm();
-  const headerTitle = t('Transfer Settings');
+  const headerTitle = t('Transaction Limits');
   const [restrictedText, setRestrictedText] = useState(!!state?.restricted);
   const restrictedTextRef = useRef(!!state?.restricted);
   const [disable, setDisable] = useState(true);
@@ -196,22 +195,7 @@ export default function TransferSettingsEdit() {
     handleDisableCheck();
   });
 
-  return isNotLessThan768 ? (
-    <TransferSettingsEditPrompt
-      headerTitle={headerTitle}
-      goBack={handleBack}
-      form={form}
-      restrictedValue={restrictedText}
-      state={state}
-      disable={disable}
-      validSingleLimit={validSingleLimit}
-      validDailyLimit={validDailyLimit}
-      onRestrictedChange={handleRestrictedChange}
-      onSingleLimitChange={handleSingleLimitChange}
-      onDailyLimitChange={handleDailyLimitChange}
-      onFinish={onFinish}
-    />
-  ) : (
+  return (
     <TransferSettingsEditPopup
       headerTitle={headerTitle}
       goBack={handleBack}

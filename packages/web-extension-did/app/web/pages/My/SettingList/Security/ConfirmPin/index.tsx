@@ -34,7 +34,7 @@ export default function ConfirmPin() {
     if (privateKey) {
       setErrMsg('');
       setDisable(false);
-      navigate('/setting/account-setting/set-new-pin', { state: { pin: pin } });
+      navigate('/setting/security/set-new-pin', { state: { pin: pin } });
     } else {
       setPin('');
       setErrMsg('Incorrect Pin');
@@ -58,7 +58,7 @@ export default function ConfirmPin() {
   const placeholder = t('Enter Pin');
   const btnText = t('Next');
   const goBack = () => {
-    navigate('/setting/account-setting');
+    navigate('/setting/security');
   };
 
   return (
@@ -75,32 +75,4 @@ export default function ConfirmPin() {
       goBack={goBack}
     />
   );
-
-  // return isNotLessThan768 ? (
-  //   <ConfirmPinPrompt
-  //     headerTitle={title}
-  //     pinLabel={pinLabel}
-  //     pin={pin}
-  //     placeholder={placeholder}
-  //     errMsg={errMsg}
-  //     submitDisable={disable}
-  //     btnText={btnText}
-  //     onChangePin={(e) => handleInputChange(e.target.value)}
-  //     handleNext={handleNext}
-  //     goBack={goBack}
-  //   />
-  // ) : (
-  //   <ConfirmPinPopup
-  //     headerTitle={title}
-  //     pinLabel={pinLabel}
-  //     pin={pin}
-  //     placeholder={placeholder}
-  //     errMsg={errMsg}
-  //     submitDisable={disable}
-  //     btnText={btnText}
-  //     onChangePin={(e) => handleInputChange(e.target.value)}
-  //     handleNext={handleNext}
-  //     goBack={goBack}
-  //   />
-  // );
 }

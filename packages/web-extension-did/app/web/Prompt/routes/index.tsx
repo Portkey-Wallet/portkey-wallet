@@ -7,7 +7,9 @@ import SuccessPage from 'pages/SuccessPage';
 import GuardianApproval from 'pages/GuardianApproval';
 import Unlock from 'pages/Unlock';
 import QueryPage from 'pages/QueryPage';
-import ConfirmPin from 'pages/AccountSetting/ConfirmPin';
+// import ConfirmPin from 'pages/AccountSetting/ConfirmPin';
+import ConfirmPin from 'pages/My/SettingList/Security/ConfirmPin';
+import SetNewPin from 'pages/My/SettingList/Security/SetNewPin';
 import NotFound from 'pages/NotFound';
 // import Example from 'pages/Example';
 // import SignUpUI from 'pages/Example/SignUpUI';
@@ -31,9 +33,10 @@ import Guardians from 'pages/Guardians';
 import Wallet from 'pages/Wallet';
 import Contacts from 'pages/Contacts';
 import WalletSecurity from 'pages/WalletSecurity';
-import SetNewPin from 'pages/AccountSetting/SetNewPin';
+// import SetNewPin from 'pages/AccountSetting/SetNewPin';
 import AboutUs from 'pages/Wallet/AboutUs';
-import AutoLock from 'pages/Wallet/AutoLock';
+// import AutoLock from 'pages/Wallet/AutoLock';
+import AutoLock from 'pages/My/SettingList/Security/AutoLock';
 import SwitchNetworks from 'pages/Wallet/SwitchNetwork';
 import WalletName from 'pages/Wallet/WalletName';
 import MyQRCode from 'pages/MyQRCode';
@@ -74,6 +77,7 @@ import FreeMint from 'pages/FreeMint';
 import SecondaryMailbox from 'pages/WalletSecurity/SecondaryMailbox';
 import SecondaryMailboxEdit from 'pages/WalletSecurity/SecondaryMailbox/Edit';
 import SecondaryMailboxVerify from 'pages/WalletSecurity/SecondaryMailbox/Verify';
+import Security from '../../pages/My/SettingList/Security';
 // import Example from 'pages/Example';
 // import TokenNetworkList from 'pages/DepositHome/components/TokenNetworkList';
 
@@ -350,6 +354,30 @@ export const PageRouter = () => {
       path: '/setting/account-setting/chat-privacy-edit',
       element: <ChatPrivacyEdit />,
     },
+    // Revamp security
+    {
+      path: '/setting/security',
+      element: <Security />,
+    },
+    {
+      path: '/setting/security/auto-lock',
+      element: <AutoLock />,
+    },
+    {
+      path: '/setting/security/confirm-pin',
+      element: <ConfirmPin />,
+    },
+    {
+      path: '/setting/security/set-new-pin',
+      element: <SetNewPin />,
+    },
+    // Revamp security end
+    // Transaction Limits
+    {
+      path: '/setting/transaction-limits',
+      element: <SetNewPin />,
+    },
+    // Revamp Transaction Limits end
     {
       path: '/setting/wallet-security',
       element: <WalletSecurity />,

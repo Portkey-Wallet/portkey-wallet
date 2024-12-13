@@ -10,10 +10,10 @@ import { isValidCAWalletName } from '@portkey-wallet/utils/reg';
 import { useAddContact, useCheckContactName, useEditContact } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
 import { IAddContactFormProps } from '../components/AddContactForm';
-import AddContactPrompt from './Prompt';
+// import AddContactPrompt from './Prompt';
 import AddContactPopup from './Popup';
 import { BaseHeaderProps } from 'types/UI';
-import { useCommonState } from 'store/Provider/hooks';
+// import { useCommonState } from 'store/Provider/hooks';
 import CustomModal from 'pages/components/CustomModal';
 import { useGoProfile } from 'hooks/useProfile';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
@@ -279,31 +279,13 @@ export default function AddContact() {
     setNetOpen(false);
   };
 
-  const { isNotLessThan768 } = useCommonState();
+  // const { isNotLessThan768 } = useCommonState();
 
   const headerTitle = useMemo(
     () => (extra === ExtraTypeEnum.CANT_CHAT ? t('Edit Contact') : t('Add New Contact')),
     [extra, t],
   );
-  return isNotLessThan768 ? (
-    <AddContactPrompt
-      headerTitle={headerTitle}
-      goBack={handleGoBack}
-      form={form}
-      isDisable={disable}
-      validName={validName}
-      state={state}
-      extra={extra || ExtraTypeEnum.ADD_NEW_CHAT}
-      addressArr={addressArr}
-      onFinish={onFinish}
-      handleSelectNetwork={handleSelectNetwork}
-      handleAddressChange={handleAddressChange}
-      handleInputValueChange={handleInputValueChange}
-      isShowDrawer={netOpen}
-      closeDrawer={handleCloseDrawer}
-      handleNetworkChange={handleNetworkChange}
-    />
-  ) : (
+  return (
     <AddContactPopup
       headerTitle={headerTitle}
       goBack={handleGoBack}
@@ -322,4 +304,41 @@ export default function AddContact() {
       handleNetworkChange={handleNetworkChange}
     />
   );
+  // return isNotLessThan768 ? (
+  //   <AddContactPrompt
+  //     headerTitle={headerTitle}
+  //     goBack={handleGoBack}
+  //     form={form}
+  //     isDisable={disable}
+  //     validName={validName}
+  //     state={state}
+  //     extra={extra || ExtraTypeEnum.ADD_NEW_CHAT}
+  //     addressArr={addressArr}
+  //     onFinish={onFinish}
+  //     handleSelectNetwork={handleSelectNetwork}
+  //     handleAddressChange={handleAddressChange}
+  //     handleInputValueChange={handleInputValueChange}
+  //     isShowDrawer={netOpen}
+  //     closeDrawer={handleCloseDrawer}
+  //     handleNetworkChange={handleNetworkChange}
+  //   />
+  // ) : (
+  //   <AddContactPopup
+  //     headerTitle={headerTitle}
+  //     goBack={handleGoBack}
+  //     form={form}
+  //     isDisable={disable}
+  //     validName={validName}
+  //     state={state}
+  //     extra={extra || ExtraTypeEnum.ADD_NEW_CHAT}
+  //     addressArr={addressArr}
+  //     onFinish={onFinish}
+  //     handleSelectNetwork={handleSelectNetwork}
+  //     handleAddressChange={handleAddressChange}
+  //     handleInputValueChange={handleInputValueChange}
+  //     isShowDrawer={netOpen}
+  //     closeDrawer={handleCloseDrawer}
+  //     handleNetworkChange={handleNetworkChange}
+  //   />
+  // );
 }

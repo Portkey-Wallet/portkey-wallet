@@ -372,6 +372,12 @@ export const PageRouter = () => {
       element: <SetNewPin />,
     },
     // Revamp security end
+    // Transaction Limits
+    {
+      path: '/setting/transaction-limits',
+      element: <SetNewPin />,
+    },
+    // Revamp Transaction Limits end
     {
       path: '/setting/wallet-security',
       element: <WalletSecurity />,

@@ -43,6 +43,11 @@ export default function My() {
         router: '/setting/security',
       },
       {
+        label: 'Transaction Limits',
+        icon: 'Guardians',
+        router: '/setting/wallet-security/payment-security',
+      },
+      {
         label: 'Wallet',
         icon: 'Wallet',
         router: '/setting/wallet',

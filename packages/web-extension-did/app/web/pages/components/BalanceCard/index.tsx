@@ -32,7 +32,9 @@ export default function MainCards({
     () =>
       !!onSend && (
         <div className="card-item send-card flex-column-center" onClick={onSend}>
-          <CustomSvg type="DirectionArrow" className="flex-center" />
+          <div className="btn-container">
+            <CustomSvg type="DirectionArrow" className="flex-center" />
+          </div>
           <span className="btn-name">{t('Send')}</span>
         </div>
       ),
@@ -43,7 +45,9 @@ export default function MainCards({
     () =>
       !!onReceive && (
         <div className="card-item receive-card flex-column-center" onClick={onReceive}>
-          <CustomSvg type="DirectionArrow" className="flex-center" />
+          <div className="btn-container">
+            <CustomSvg type="DirectionArrow" className="flex-center" />
+          </div>
           <span className="btn-name">{t('Receive')}</span>
         </div>
       ),
@@ -54,7 +58,9 @@ export default function MainCards({
     () =>
       !!onBuy && (
         <div className="buy-card card-item flex-column-center" onClick={onBuy}>
-          <CustomSvg type="Addition" className="flex-center" />
+          <div className="btn-container">
+            <CustomSvg type="Addition" className="flex-center" />
+          </div>
           <span className="btn-name">{t('Buy')}</span>
         </div>
       ),
@@ -65,7 +71,9 @@ export default function MainCards({
     return (
       !!onClickDeposit && (
         <div className="deposit-card card-item flex-column-center" onClick={onClickDeposit}>
-          <CustomSvg type="Deposit" className="flex-center" />
+          <div className="btn-container">
+            <CustomSvg type="Deposit" className="flex-center" />
+          </div>
           <span className="btn-name">{t('Deposit')}</span>
         </div>
       )
@@ -76,7 +84,9 @@ export default function MainCards({
     return (
       !!onClickSwap && (
         <div className="swap-card card-item flex-column-center" onClick={onClickSwap}>
-          <CustomSvg type="Swap" className="flex-center" />
+          <div className="btn-container">
+            <CustomSvg type="Swap" className="flex-center" />
+          </div>
           <span className="btn-name">{t('Swap')}</span>
         </div>
       )
@@ -94,7 +104,9 @@ export default function MainCards({
     () =>
       isShowFaucet && (
         <div className="faucet-card card-item flex-column-center" onClick={handleClickFaucet}>
-          <CustomSvg type="Faucet" className="flex-center" />
+          <div className="btn-container">
+            <CustomSvg type="Faucet" className="flex-center" />
+          </div>
           <span className="btn-name">{t('Faucet')}</span>
         </div>
       ),

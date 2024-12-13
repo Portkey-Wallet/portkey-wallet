@@ -95,7 +95,7 @@ export default function TokenList() {
     [setOpenPanel],
   );
   const renderItem = useCallback(
-    (item: ITokenSectionResponse, index: number) => {
+    (item: ITokenSectionResponse) => {
       return (
         <Collapse.Panel
           key=""
@@ -116,7 +116,7 @@ export default function TokenList() {
                   {getAmountUSDShow(item)}
                 </div>
               </div>
-              <div
+              {/* <div
                 className={
                   openPanel.includes(index.toString()) ? 'more-wrapper' : 'more-wrapper more-wrapper-transparent'
                 }>
@@ -124,7 +124,7 @@ export default function TokenList() {
                   // className={openPanel.includes(index.toString()) ? 'is-active' : ''}
                   type={openPanel.includes(index.toString()) ? 'ActiveMore' : 'InteractiveMore'}
                 />
-              </div>
+              </div> */}
             </li>
           }>
           {/* <span>{transNetworkText(item.chainId, !isMainnet)}</span> */}
@@ -168,7 +168,7 @@ export default function TokenList() {
   );
   return (
     <div className={clsx('tab-token', !hasMoreTokenList && 'hidden-loading-more')}>
-      <Collapse onChange={handleChange}>{accountTokenList.map((item, index) => renderItem(item, index))}</Collapse>
+      <Collapse onChange={handleChange}>{accountTokenList.map((item) => renderItem(item))}</Collapse>
       <LoadingMore hasMore={hasMoreTokenList} loadMore={getMoreTokenList} className="load-more" />
 
       <div className="add-token-wrapper flex-center" onClick={handleAddToken}>

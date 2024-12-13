@@ -334,6 +334,7 @@ export default function MyBalance() {
             return setTokenOpen(true);
           }}
           onBuy={isRampShow ? handleClickBuy : undefined}
+          onClickSwap={() => handleClickTrade(TradeTypeEnum.Swap)}
           onClickDeposit={isETransShow ? () => handleClickTrade(TradeTypeEnum.ETrans) : undefined}
           isShowFaucet={!isMainNet}
         />

@@ -48,6 +48,11 @@ export default function My() {
         router: '/setting/wallet-security/payment-security',
       },
       {
+        label: 'Token allowances',
+        icon: 'Guardians',
+        router: '/setting/wallet-security/token-allowance',
+      },
+      {
         label: 'Wallet',
         icon: 'Wallet',
         router: '/setting/wallet',

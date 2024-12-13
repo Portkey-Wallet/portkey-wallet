@@ -16,12 +16,14 @@ import svgsList from 'assets/svgs';
 import UnReadBadge from 'pages/components/UnReadBadge';
 import WalletEntry from '../Wallet/components/WalletEntry';
 import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useIsSecondaryMailSet } from '@portkey-wallet/hooks/hooks-ca/useSecondaryMail';
 // import { useClickReferral } from 'hooks/referral';
 
 interface MenuItemInfo {
   label: string;
   icon: IconType;
   router: string;
+  element?: JSX.Element;
 }
 
 export default function My() {
@@ -29,6 +31,7 @@ export default function My() {
   const navigate = useNavigate();
   const { isPrompt } = useCommonState();
   const isImputation = useIsImputation();
+  const { secondaryEmail, fetching } = useIsSecondaryMailSet();
   // const clickReferral = useClickReferral();
   const MenuList: MenuItemInfo[] = useMemo(
     () => [
@@ -53,6 +56,12 @@ export default function My() {
         router: '/setting/wallet-security/token-allowance',
       },
       {
+        label: 'Backup email',
+        icon: 'Guardians',
+        router: '/setting/wallet-security/token-allowance',
+        element: <div className="item-extra-info">{!fetching && !secondaryEmail ? `Not Set up` : ''}</div>,
+      },
+      {
         label: 'Wallet',
         icon: 'Wallet',
         router: '/setting/wallet',
@@ -73,7 +82,7 @@ export default function My() {
         router: '/setting/wallet-security',
       },
     ],
-    [],
+    [t, fetching, secondaryEmail],
   );
 
   const handleExpandView = () => {
@@ -129,7 +138,10 @@ export default function My() {
               onClick={() => {
                 navigate(item.router);
               }}>
-              {t(item.label)}
+              <div className="flex-between">
+                {t(item.label)}
+                {item.element}
+              </div>
             </MenuItem>
           ))}
           {/* <MenuItem key="referral" height={56} icon={<CustomSvg type="Referral" />} onClick={clickReferral}>

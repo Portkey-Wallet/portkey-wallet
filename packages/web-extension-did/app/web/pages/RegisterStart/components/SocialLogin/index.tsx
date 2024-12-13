@@ -21,6 +21,8 @@ import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
 import { useEntranceConfig } from 'hooks/cms';
 import { LOGIN_TYPE_LABEL_MAP } from '@portkey-wallet/constants/verifier';
 import { zkloginGuardianType } from 'constants/guardians';
+import SwitchNetworkButton, { BackAndSwitchNetwork } from '../SwitchNetworkButton';
+import { Row } from 'antd';
 
 export type LoginGuardianListType = {
   icon: SvgType;
@@ -57,19 +59,9 @@ export default function SocialLogin({
   const isLogin = useMemo(() => type === 'Login', [type]);
 
   const renderTitle = useMemo(() => {
-    const title = isLogin ? t('Let’s set up your wallet') : t('Sign up');
-    if (!isMainnet) {
-      return (
-        <div className="flex-center testnet-flag">
-          <span className="content">
-            {title}
-            <span className="flag-text flex-center">{t('TEST')}</span>
-          </span>
-        </div>
-      );
-    }
+    const title = isLogin ? t('Let’s set up your wallet') : t('Create your account');
     return title;
-  }, [isLogin, isMainnet, t]);
+  }, [isLogin, t]);
 
   const onSocialChange = useCallback(
     async (v: ISocialLogin) => {
@@ -165,10 +157,18 @@ export default function SocialLogin({
   }, [allowedLoginGuardianList, loginModeListToRecommend]);
 
   const showLoginModeListToOther = useMemo(() => {
-    return loginModeListToOther
-      ?.map((i) => allowedLoginGuardianList.find((v) => LOGIN_TYPE_LABEL_MAP[v.value] === i.type?.value))
-      .filter((i) => !!i) as LoginGuardianListType[];
-  }, [allowedLoginGuardianList, loginModeListToOther]);
+    return [
+      ...(loginModeListToOther
+        ?.map((i) => allowedLoginGuardianList.find((v) => LOGIN_TYPE_LABEL_MAP[v.value] === i.type?.value))
+        .filter((i) => !!i) as LoginGuardianListType[]),
+      {
+        icon: 'QRCodeIcon' as LoginGuardianListType['icon'],
+        type: 'QRCode',
+        value: 'QRCode',
+        onClick: () => navigate('/register/start/scan'),
+      },
+    ];
+  }, [allowedLoginGuardianList, loginModeListToOther, navigate]);
 
   const loginModeListToOtherClassName = useMemo(
     () => (showLoginModeListToOther.length > 5 ? 'flex-row-center' : 'flex-center'),
@@ -178,11 +178,11 @@ export default function SocialLogin({
   return (
     <>
       <div className="card-content">
-        <h1 className="title">
-          {!isLogin && <CustomSvg type="BackLeft" onClick={onBack} />}
-          {renderTitle}
-          {/* {isLogin && <CustomSvg type="QRCode" onClick={() => navigate('/register/start/scan')} />} */}
-        </h1>
+        {!isLogin && <BackAndSwitchNetwork onClick={onBack} />}
+        <Row className="flex-row-center flex-between width-100-percent">
+          <h1 className={clsx('title', !isLogin && 'register-header-back-title')}>{renderTitle}</h1>
+          {isLogin && <SwitchNetworkButton />}
+        </Row>
         <div className="social-login-content">
           <SocialContent type={type} showLoginModeListToRecommend={showLoginModeListToRecommend} />
           <DividerCenter />
@@ -194,12 +194,6 @@ export default function SocialLogin({
                 </div>
               ))}
             </div>
-            {/* <div className={clsx('go-sign-up', !isLogin && 'hidden-go-sign-up')}>
-              <span>{t('No account?')}</span>
-              <span className="sign-text" onClick={() => navigate('/register/start/create')}>
-                {t('Sign up')}
-              </span>
-            </div> */}
           </div>
         </div>
       </div>

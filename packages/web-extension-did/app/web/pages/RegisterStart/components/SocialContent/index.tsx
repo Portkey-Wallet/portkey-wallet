@@ -15,7 +15,7 @@ export default function SocialContent({ type, showLoginModeListToRecommend }: Go
       {showLoginModeListToRecommend.map((i) => (
         <Button key={`recommend_${i.value}`} onClick={i.onClick}>
           <CustomSvg type={i.icon} />
-          <span>{`${type} with ${i.type}`}</span>
+          <span>{`Continue with ${i.type}`}</span>
           <span className="empty"></span>
         </Button>
       ))}

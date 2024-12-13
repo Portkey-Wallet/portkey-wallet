@@ -15,14 +15,16 @@ export default function LoginCard({
   validatePhone,
   onSocialStart,
   onSocialLoginFinish,
+  isStartInput,
 }: {
   onFinish: (data: LoginInfo) => void;
   validateEmail?: ValidateHandler;
   validatePhone?: ValidateHandler;
   onSocialStart: (type: ISocialLogin) => void;
   onSocialLoginFinish: (data: any) => void;
+  isStartInput?: boolean;
 }) {
-  const [step, setStep] = useState<STEP>(STEP.socialLogin);
+  const [step, setStep] = useState<STEP>(isStartInput ? STEP.inputLogin : STEP.socialLogin);
   const [defaultKey, setDefaultKey] = useState<LoginKey>();
 
   return (

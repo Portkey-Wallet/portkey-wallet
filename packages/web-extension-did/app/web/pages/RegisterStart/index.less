@@ -90,13 +90,8 @@
 }
 
 .register-start-card {
-  color: @text-base1;
-  width: 552px;
-  min-height: 488px;
-  padding: 0 20px 20px;
-  border-radius: 16px;
-  // background-color: @neutral-default-bg;
-  border: 1px solid @border-base1;
+  .register-common-card();
+
   position: relative;
   display: flex;
   flex-direction: column;
@@ -105,22 +100,13 @@
   }
   .title {
     .font-bg();
+
     text-align: left;
-    padding: 32px 0;
     line-height: 40px;
     color: @text-base1;
     font-size: 32px;
     font-weight: 500;
     position: relative;
-    .backleft-icon {
-      cursor: pointer;
-      position: absolute;
-      width: 24px;
-      height: 24px;
-      left: 0;
-      top: 50%;
-      margin-top: -20px;
-    }
     .testnet-flag {
       .content {
         position: relative;
@@ -158,4 +144,12 @@
     background-color: @bg-9;
     border: none;
   }
+}
+
+.register-header-back {
+  margin-top: 32px;
+}
+
+.register-header-back-title {
+  padding-top: 16px;
 }

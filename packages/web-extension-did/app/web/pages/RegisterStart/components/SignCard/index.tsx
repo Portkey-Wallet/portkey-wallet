@@ -23,7 +23,7 @@ export default function SignCard({
   validatePhone?: ValidateHandler;
   onSocialSignFinish: SocialLoginFinishHandler;
 }) {
-  const [step, setStep] = useState<STEP>(STEP.socialLogin);
+  const [step, setStep] = useState<STEP>(STEP.inputLogin);
 
   const navigate = useNavigateState();
 
@@ -38,7 +38,7 @@ export default function SignCard({
           validateEmail={validateEmail}
           validatePhone={validatePhone}
           onFinish={onFinish}
-          onBack={() => setStep(STEP.socialLogin)}
+          onBack={() => navigate('/register/start')}
         />
       ) : (
         <SocialLogin

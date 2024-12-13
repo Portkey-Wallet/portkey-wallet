@@ -3,24 +3,22 @@
 
 .guardian-approval-wrapper {
   .guardian-approval-content {
-    margin-bottom: 40px;
     .title {
+      font-size: 32px;
+      line-height: 38px;
+      color: @text-base1;
       margin-bottom: 16px;
-      font-size: 40px;
-      line-height: 47px;
-      text-align: center;
     }
     .description {
-      margin-bottom: 42px;
+      color: @text-base3;
+      margin-bottom: 24px;
     }
   }
   .approve-count {
     line-height: 20px;
     font-size: 14px;
-    margin-bottom: 8px;
-    padding-bottom: 12px;
+    margin-bottom: 24px;
     color: @neutral-secondary-text;
-    border-bottom: 1px solid @border-neutral3;
     .tooltip-icon {
       margin-left: 8px;
       width: 14px;
@@ -32,13 +30,26 @@
     .common-tooltip {
       max-width: 272px;
     }
+    .all-approval {
+      font-size: 16px;
+      color: @text-base1;
+    }
+    .@{app-prefix}-progress-show-info .@{app-prefix}-progress-outer {
+      margin-top: 4px;
+      margin-right: 0;
+      padding-right: 0;
+    }
+    .@{app-prefix}-progress-inner {
+      background-color: @bg-neutral2;
+    }
+    .@{app-prefix}-progress-text {
+      display: none;
+    }
   }
   .verifier-content {
-    padding-bottom: 24px;
     .verifier-item {
       position: relative;
-      padding: 24px 0;
-      border-bottom: 1px solid @border-neutral3;
+      padding: 16px 0;
       &.verifier-item-disabled {
         &::after {
           content: '';
@@ -51,16 +62,15 @@
         }
       }
       .account-text {
-        margin-left: 12px;
-        line-height: 20px;
+        margin-left: 0;
+        line-height: 22px;
         color: @text-base1;
-        font-size: 14px;
+        font-size: 16px;
         width: 0; // responsive text, to fix overflow
         flex: 1;
         .detail {
-          font-size: 12px;
-          line-height: 16px;
-          color: @neutral-secondary-text;
+          line-height: 19px;
+          color: @text-base3;
         }
       }
       .account-text-one-row {
@@ -106,6 +116,10 @@
           font-size: 14px;
         }
       }
+    }
+    .guardian-items-title{
+      color: @text-base3;
+      margin-bottom: 4px;
     }
   }
   .popup-verifier-content {

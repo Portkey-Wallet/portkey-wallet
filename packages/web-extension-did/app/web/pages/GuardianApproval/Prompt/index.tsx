@@ -15,14 +15,16 @@ const GuardianApprovalPrompt = ({ isBigScreenPrompt, onBack, renderContent }: IG
     <div
       className={clsx(
         'guardian-approval-wrapper flex-column',
-        isBigScreenPrompt ? 'big-screen-guardian-approval' : 'common-page',
+        isBigScreenPrompt ? 'big-screen-guardian-approval' : 'common-page2',
       )}>
       {isBigScreenPrompt ? (
-        <SecondPageHeader className="guardian-header" title="" leftCallBack={onBack} />
+        <>
+          <SecondPageHeader className="guardian-header" title="" leftCallBack={onBack} />
+          {renderContent}
+        </>
       ) : (
-        <PortKeyTitle leftElement leftCallBack={onBack} />
+        <PortKeyTitle leftElement leftCallBack={onBack} renderContent={renderContent} />
       )}
-      {renderContent}
     </div>
   );
 };

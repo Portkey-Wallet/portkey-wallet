@@ -55,6 +55,8 @@ import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 
 export default function RegisterStart() {
   const { type } = useParams();
+  console.log(type, '====type');
+
   const currentNetwork = useCurrentNetworkInfo();
   const dispatch = useAppDispatch();
   const changeNetwork = useChangeNetwork();
@@ -466,8 +468,9 @@ export default function RegisterStart() {
             />
           )}
           {type === 'scan' && <ScanCard />}
-          {(!type || type === 'login') && (
+          {(!type || type === 'login' || type === 'login-input') && (
             <LoginCard
+              isStartInput={type === 'login-input'}
               validatePhone={validateIdentifier}
               validateEmail={validateIdentifier}
               onFinish={onInputClick}

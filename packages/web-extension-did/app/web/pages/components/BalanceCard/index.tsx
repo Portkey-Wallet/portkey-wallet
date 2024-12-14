@@ -32,7 +32,9 @@ export default function MainCards({
     () =>
       !!onSend && (
         <div className="card-item send-card flex-column-center" onClick={onSend}>
-          <div className="btn-container">{/* <CustomSvg type="send" className="flex-center" /> */}</div>
+          <div className="btn-container">
+            <CustomSvg type="Send" className="flex-center" />
+          </div>
           <span className="btn-name">{t('Send')}</span>
         </div>
       ),
@@ -43,7 +45,9 @@ export default function MainCards({
     () =>
       !!onReceive && (
         <div className="card-item receive-card flex-column-center" onClick={onReceive}>
-          <div className="btn-container">{/* <CustomSvg type="receive" className="flex-center" /> */}</div>
+          <div className="btn-container">
+            <CustomSvg type="Receive" className="flex-center" />
+          </div>
           <span className="btn-name">{t('Receive')}</span>
         </div>
       ),
@@ -81,7 +85,7 @@ export default function MainCards({
       !!onClickSwap && (
         <div className="swap-card card-item flex-column-center" onClick={onClickSwap}>
           <div className="btn-container">
-            <CustomSvg type="Swap" className="flex-center" />
+            <CustomSvg type="SwapHome" className="flex-center" />
           </div>
           <span className="btn-name">{t('Swap')}</span>
         </div>

@@ -312,7 +312,7 @@ export default function MyBalance() {
       <BigScreenHeader />
       <div className="main-content-wrap flex-column">
         <div className={clsx('balance-amount-wrap', 'flex-column', isPrompt && 'is-prompt')}>
-          <div className="wallet-name-wrap flex-row-center">
+          {/* <div className="wallet-name-wrap flex-row-center">
             {userInfo.nickName ? (
               <>
                 <div className="wallet-name">{userInfo.nickName}</div>
@@ -321,7 +321,7 @@ export default function MyBalance() {
             ) : (
               <SkeletonCom />
             )}
-          </div>
+          </div> */}
           {renderUsdShow()}
         </div>
         <MainCards

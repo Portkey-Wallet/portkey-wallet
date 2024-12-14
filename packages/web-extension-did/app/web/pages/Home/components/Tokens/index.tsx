@@ -172,6 +172,7 @@ export default function TokenList() {
       <LoadingMore hasMore={hasMoreTokenList} loadMore={getMoreTokenList} className="load-more" />
 
       <div className="add-token-wrapper flex-center" onClick={handleAddToken}>
+        <CustomSvg type="ManageToken" />
         <span className="add-token-text">{t('Add Tokens')}</span>
       </div>
     </div>

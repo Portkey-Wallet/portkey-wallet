@@ -1,0 +1,49 @@
+@import '../../../../assets/theme/color.less';
+
+.select-send-token-list {
+  min-width: 375px;
+  font-size: 16px;
+  line-height: 22px;
+  .token-item {
+    padding: 16px;
+    &:hover {
+      background-color: @bg-hover;
+    }
+    .token-icon-show {
+      position: relative;
+      width: 45px;
+      .icon-chain {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+      }
+    }
+    .token-info-show {
+      .token-info-symbol {
+        .token-chain {
+          font-size: 14px;
+          line-height: 20px;
+          color: @text-base2;
+        }
+      }
+      .token-info-amount {
+        text-align: right;
+        .token-usd {
+          font-size: 14px;
+          line-height: 20px;
+          color: @text-base2;
+        }
+      }
+    }
+  }
+  .circle-loading {
+    margin: 32px auto;
+  }
+  .no-data-message {
+    margin-top: 32px;
+    color: @text-base2;
+  }
+  .gap-8 {
+    gap: 8px;
+  }
+}

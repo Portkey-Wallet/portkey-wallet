@@ -16,20 +16,10 @@ export default function ManualBackup() {
   const { theme } = useTheme();
   const [copied, setCopied] = useState(false);
 
-  const mnemonics = [
-    'seed',
-    'sock',
-    'milk',
-    'update',
-    'focus',
-    'rotate',
-    'barely',
-    'fade',
-    'car',
-    'face',
-    'mechanic',
-    'mercy',
-  ];
+  const mnemonics = useMemo(
+    () => ['seed', 'sock', 'milk', 'update', 'focus', 'rotate', 'barely', 'fade', 'car', 'face', 'mechanic', 'mercy'],
+    [],
+  );
 
   const inputWidth = useMemo(() => {
     return (screenWidth - pTd(16) * 3) / 2;
@@ -52,7 +42,7 @@ export default function ManualBackup() {
         <Text style={styles.buttonText}>Paste from clipboard</Text>
       </Touchable>
     );
-  }, [styles]);
+  }, [onCopy, styles]);
 
   const copiedView = useMemo(() => {
     return (
@@ -61,18 +51,18 @@ export default function ManualBackup() {
         <Text style={styles.copyText}>Copied</Text>
       </View>
     );
-  }, [styles]);
+  }, [styles, theme]);
 
   const reminderUI = useMemo(() => {
     return (
       <View style={styles.reminderWrap}>
         <Svg icon="info" size={pTd(22)} color={theme.colors.bgBrand4} />
         <Text style={styles.reminderText}>
-          Next, you'll be asked to confirm the word at certain positions in your Secret Recovery Phrase.
+          Next, you&apos;ll be asked to confirm the word at certain positions in your Secret Recovery Phrase.
         </Text>
       </View>
     );
-  }, [styles]);
+  }, [styles, theme]);
 
   return (
     <PageContainer
@@ -104,7 +94,7 @@ export default function ManualBackup() {
       {copied ? copiedView : copyButton}
       {reminderUI}
       <CommonButton style={styles.continueButton}>
-        <Text>I've backed up. Continue!</Text>
+        <Text>I&apos;ve backed up. Continue!</Text>
       </CommonButton>
     </PageContainer>
   );

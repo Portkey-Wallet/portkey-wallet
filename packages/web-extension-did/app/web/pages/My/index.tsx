@@ -24,6 +24,7 @@ interface MenuItemInfo {
   icon: IconType;
   router: string;
   element?: JSX.Element;
+  type?: string;
 }
 
 export default function My() {
@@ -62,6 +63,59 @@ export default function My() {
         element: <div className="item-extra-info">{!fetching && !secondaryEmail ? `Not Set up` : ''}</div>,
       },
       {
+        type: 'divider',
+        label: 'divider',
+        icon: 'Guardians',
+        router: '',
+      },
+      {
+        label: 'Manage Devices',
+        icon: 'Wallet',
+        router: '/setting/wallet-security/manage-devices',
+      },
+      {
+        label: 'Connected dApps',
+        icon: 'Wallet',
+        router: '/setting/wallet-security/connected-sites',
+      },
+      {
+        label: 'Address book',
+        icon: 'Wallet',
+        router: '/setting/contacts',
+      },
+      {
+        type: 'divider',
+        label: 'divider',
+        icon: 'Guardians',
+        router: '',
+      },
+      {
+        label: 'Switch network',
+        icon: 'Wallet',
+        router: '/setting/wallet/switch-networks',
+      },
+      {
+        type: 'divider',
+        label: 'divider',
+        icon: 'Guardians',
+        router: '',
+      },
+      {
+        label: 'Help center',
+        icon: 'Wallet',
+        router: '/setting/wallet', //  Todo: new website
+      },
+      {
+        label: 'About Portkey',
+        icon: 'Wallet',
+        router: '/setting/wallet/about-us',
+      },
+      {
+        label: 'Check for updates',
+        icon: 'Wallet',
+        router: '', // Todo: ??? do or not.
+      },
+      {
         label: 'Wallet',
         icon: 'Wallet',
         router: '/setting/wallet',
@@ -82,7 +136,7 @@ export default function My() {
         router: '/setting/wallet-security',
       },
     ],
-    [t, fetching, secondaryEmail],
+    [fetching, secondaryEmail],
   );
 
   const handleExpandView = () => {
@@ -130,20 +184,25 @@ export default function My() {
 
       <div className="flex my-content">
         <div className="menu-list">
-          {MenuList.map((item) => (
-            <MenuItem
-              key={item.label}
-              height={56}
-              icon={menuItemIcon(item.icon, !!(isImputation && item.label === 'Contacts'))}
-              onClick={() => {
-                navigate(item.router);
-              }}>
-              <div className="flex-between">
-                {t(item.label)}
-                {item.element}
-              </div>
-            </MenuItem>
-          ))}
+          {MenuList.map((item, index) => {
+            if (item.type === 'divider') {
+              return <div key={index} className="empty-placeholder" />;
+            }
+            return (
+              <MenuItem
+                key={item.label}
+                height={56}
+                icon={menuItemIcon(item.icon, isImputation && item.label === 'Contacts')}
+                onClick={() => {
+                  navigate(item.router);
+                }}>
+                <div className="flex-between">
+                  {t(item.label)}
+                  {item.element}
+                </div>
+              </MenuItem>
+            );
+          })}
           {/* <MenuItem key="referral" height={56} icon={<CustomSvg type="Referral" />} onClick={clickReferral}>
             <div className="flex-between-center">
               <div>Referral</div>

@@ -7,7 +7,7 @@ import CustomSvg from 'components/CustomSvg';
 import CommonHeader from 'components/CommonHeader';
 import { lockWallet } from 'utils/lib/serviceWorkerAction';
 import { IconType } from 'types/icon';
-import { useCommonState } from 'store/Provider/hooks';
+import { useCommonState, useDapp, useWalletInfo } from 'store/Provider/hooks';
 import './index.less';
 import InternalMessage from 'messages/InternalMessage';
 import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
@@ -33,6 +33,12 @@ export default function My() {
   const { isPrompt } = useCommonState();
   const isImputation = useIsImputation();
   const { secondaryEmail, fetching } = useIsSecondaryMailSet();
+
+  // Connected dApps
+  const { currentNetwork } = useWalletInfo();
+  const { dappMap } = useDapp();
+  const currentDapp = useMemo(() => dappMap[currentNetwork] || [], [currentNetwork, dappMap]);
+
   // const clickReferral = useClickReferral();
   const MenuList: MenuItemInfo[] = useMemo(
     () => [
@@ -77,6 +83,7 @@ export default function My() {
         label: 'Connected dApps',
         icon: 'Wallet',
         router: '/setting/wallet-security/connected-sites',
+        element: <div className="item-extra-info">{currentDapp.length}</div>,
       },
       {
         label: 'Address book',

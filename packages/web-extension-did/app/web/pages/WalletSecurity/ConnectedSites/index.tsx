@@ -1,8 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { useCallback, useMemo } from 'react';
 import SitesPopup from './Popup';
-import SitesPrompt from './Prompt';
-import { useCommonState } from 'store/Provider/hooks';
 import { MenuItemInfo } from 'pages/components/MenuList';
 import ImageDisplay from 'pages/components/ImageDisplay';
 import CustomSvg from 'components/CustomSvg';
@@ -15,7 +13,6 @@ export default function ConnectedSites() {
   const { t } = useTranslation();
   const navigate = useNavigateState();
   const currentDapp = useCurrentDappList();
-  const { isNotLessThan768 } = useCommonState();
 
   const showDappList: MenuItemInfo[] = useMemo(
     () =>
@@ -40,14 +37,10 @@ export default function ConnectedSites() {
     [currentDapp, navigate],
   );
 
-  const title = t('Connected Sites');
+  const title = t('Connected dApps');
   const handleBack = useCallback(() => {
-    navigate('/setting/wallet-security');
+    navigate('/setting');
   }, [navigate]);
 
-  return isNotLessThan768 ? (
-    <SitesPrompt headerTitle={title} goBack={handleBack} list={showDappList} />
-  ) : (
-    <SitesPopup headerTitle={title} goBack={handleBack} list={showDappList} />
-  );
+  return <SitesPopup headerTitle={title} goBack={handleBack} list={showDappList} />;
 }

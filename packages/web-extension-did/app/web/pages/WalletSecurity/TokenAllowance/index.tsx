@@ -1,8 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { useCallback, useMemo, useState } from 'react';
 import TokenAllowancePopup from './Popup';
-import TokenAllowancePrompt from './Prompt';
-import { useCommonState } from 'store/Provider/hooks';
 import { MenuItemInfo } from 'pages/components/MenuList';
 import ImageDisplay from 'pages/components/ImageDisplay';
 import CustomSvg from 'components/CustomSvg';
@@ -24,7 +22,6 @@ export interface ITokenAllowanceProps {
 export default function TokenAllowance() {
   const { t } = useTranslation();
   const navigate = useNavigateState<ITokenAllowance>();
-  const { isNotLessThan768 } = useCommonState();
   const fetchTokenAllowanceList = useFetchTokenAllowanceList();
   const [fetching, setFetching] = useState<boolean>(true);
   const [list, setList] = useState<ITokenAllowance[]>([]);
@@ -78,19 +75,10 @@ export default function TokenAllowance() {
 
   const title = t('Token Allowance');
   const handleBack = useCallback(() => {
-    navigate('/setting/wallet-security');
+    navigate('/setting');
   }, [navigate]);
 
-  return isNotLessThan768 ? (
-    <TokenAllowancePrompt
-      headerTitle={title}
-      goBack={handleBack}
-      list={showDataList}
-      fetching={fetching}
-      hasMore={hasMore}
-      fetchMoreList={fetchList}
-    />
-  ) : (
+  return (
     <TokenAllowancePopup
       headerTitle={title}
       goBack={handleBack}

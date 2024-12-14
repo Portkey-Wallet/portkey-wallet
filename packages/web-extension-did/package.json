@@ -154,7 +154,8 @@
     "pro": "rm -rf app/public && webpack --mode production && yarn copy-lib && node app/compressPublicFolder.js",
     "pro:watch": "webpack watch --mode production && yarn copy-lib",
     "prepare": "husky install",
-    "svg-handle": "node ./app/web/assets/getSvg1.js"
+    "svg-handle": "node ./app/web/assets/getSvg1.js",
+    "svg-handle-v3": "node ./app/web/assets/iconV3/getIconV3Svgs.js"
   },
   "ci": {
     "version": "8"

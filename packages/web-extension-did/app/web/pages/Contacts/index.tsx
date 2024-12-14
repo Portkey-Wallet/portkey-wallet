@@ -74,7 +74,7 @@ export default function Contacts() {
 
   // const { isNotLessThan768 } = useCommonState();
   const searchPlaceholder = 'Name/address';
-  const title = t('Contacts');
+  const title = t('Address Book');
   const addText = t('Add contact');
 
   const goBack = useCallback(() => {

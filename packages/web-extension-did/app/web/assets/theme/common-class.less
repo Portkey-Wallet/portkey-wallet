@@ -250,7 +250,7 @@ td {
     .portkey-body,
     .portkey-header {
       max-width: @max-width;
-      width: @max-width;
+      // width: @max-width;
 
       .portkey-header-body {
         padding-left: 0;
@@ -261,7 +261,8 @@ td {
   // 1280 < screen < 1820, maxContentWidth = 1440, marginLeftAndRight = 190
   @media screen and (max-width: 1819px) and (min-width: @mid-screen) {
     .portkey-header {
-      width: calc(100vw - @max-margin * 2);
+      // width: calc(100vw - @max-margin * 2);
+      width: 868px;
 
       .portkey-header-body {
         padding-left: 0;
@@ -269,14 +270,14 @@ td {
       }
     }
     .portkey-body {
-      width: calc(100vw - @max-margin * 2);
+      // width: calc(100vw - @max-margin * 2);
     }
   }
   // 768 < screen < 1280, maxContentWidth = 1024, marginLeftAndRight = 44
   @media screen and (max-width: 1279px) and (min-width: @min-screen) {
     .portkey-header {
       max-width: @mid-width;
-      width: calc(100vw - @min-margin * 2);
+      // width: calc(100vw - @min-margin * 2);
       .portkey-header-body {
         padding-left: 0;
         padding-right: 0;
@@ -284,7 +285,7 @@ td {
     }
     .portkey-body {
       max-width: @mid-width;
-      width: calc(100vw - @min-margin * 2);
+      // width: calc(100vw - @min-margin * 2);
     }
   }
   // screen < 768, maxContentWidth = screen, minContentWidth = 360, paddingLeftAndRight = 24

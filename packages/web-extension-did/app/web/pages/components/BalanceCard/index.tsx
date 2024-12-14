@@ -32,9 +32,7 @@ export default function MainCards({
     () =>
       !!onSend && (
         <div className="card-item send-card flex-column-center" onClick={onSend}>
-          <div className="btn-container">
-            <CustomSvg type="send" className="flex-center" />
-          </div>
+          <div className="btn-container">{/* <CustomSvg type="send" className="flex-center" /> */}</div>
           <span className="btn-name">{t('Send')}</span>
         </div>
       ),
@@ -45,9 +43,7 @@ export default function MainCards({
     () =>
       !!onReceive && (
         <div className="card-item receive-card flex-column-center" onClick={onReceive}>
-          <div className="btn-container">
-            <CustomSvg type="receive" className="flex-center" />
-          </div>
+          <div className="btn-container">{/* <CustomSvg type="receive" className="flex-center" /> */}</div>
           <span className="btn-name">{t('Receive')}</span>
         </div>
       ),

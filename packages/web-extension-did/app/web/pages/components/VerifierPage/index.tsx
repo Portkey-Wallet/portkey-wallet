@@ -176,6 +176,7 @@ export default function VerifierPage({
 
   return currentGuardian?.verifier ? (
     <PortkeyStyleProvider>
+      {/* TODO: SDK */}
       <CodeVerifyUI
         ref={uiRef}
         className={isNotLessThan768 ? '' : 'popup-page'}

@@ -35,6 +35,7 @@ import {
   setPreGuardianAction,
   setUserGuardianStatus,
 } from '@portkey-wallet/store/store-ca/guardians/actions';
+import CustomSvg from 'components/CustomSvg';
 
 const AllowedGuardianPageArr = [
   FromPageEnum.guardiansAdd,
@@ -46,20 +47,14 @@ const AllowedGuardianPageArr = [
 export default function GuardianApproval() {
   const { userGuardianStatus, guardianExpiredTime, opGuardian, preGuardian } = useGuardiansInfo();
 
-  const firstUserGuardianStatus = useRef(userGuardianStatus);
-
-  console.log(userGuardianStatus, guardianExpiredTime, opGuardian, preGuardian, '====preGuardian');
-
   const { address: managerAddress } = useCurrentWalletInfo();
   const { loginAccount } = useLoginInfo();
   const [isExpired, setIsExpired] = useState<boolean>(false);
   const dispatch = useAppDispatch();
 
-  console.log(isExpired, '====isExpired');
-
   const navigate = useNavigateState<TAddGuardianLocationState | TTransferSettingEditLocationState>();
   const { locationParams } = usePromptLocationParams<TGuardianApprovalLocationState, TGuardianApprovalLocationSearch>();
-  const { isPrompt, isNotLessThan768 } = useCommonState();
+  const { isNotLessThan768 } = useCommonState();
   const { t } = useTranslation();
   const isBigScreenPrompt: boolean = useMemo(() => {
     const from = locationParams.previousPage;
@@ -139,17 +134,17 @@ export default function GuardianApproval() {
     return false;
   }, [guardianExpiredTime]);
 
-  // useEffect(() => {
-  //   if (!guardianExpiredTime) return setIsExpired(false);
-  //   setIsExpired(isExpiredLogic());
+  useEffect(() => {
+    if (!guardianExpiredTime) return setIsExpired(false);
+    setIsExpired(isExpiredLogic());
 
-  //   const timer = setInterval(() => {
-  //     setIsExpired(isExpiredLogic());
-  //   }, 1000);
-  //   return () => {
-  //     clearInterval(timer);
-  //   };
-  // }, [guardianExpiredTime, isExpiredLogic]);
+    const timer = setInterval(() => {
+      setIsExpired(isExpiredLogic());
+    }, 1000);
+    return () => {
+      clearInterval(timer);
+    };
+  }, [guardianExpiredTime, isExpiredLogic]);
 
   useEffect(() => {
     if (alreadyApprovalLength >= approvalLength && !isExpired) recoveryWallet();
@@ -199,6 +194,7 @@ export default function GuardianApproval() {
     return (
       <div className="guardian-approval-content flex-1 flex-column-between margin-top-16">
         <div>
+          {isExpired && <CustomSvg type="WarningIcon" />}
           <div className="title">{t(isExpired ? 'Guardian Approval Expired' : 'Guardian Approval')}</div>
           <p className="description margin-top-16">
             {isExpired
@@ -207,9 +203,6 @@ export default function GuardianApproval() {
                 )
               : t('Complete the required guardian approvals below. Note: approvals expire after 1 hour.')}
           </p>
-          <Button type="primary" className="recovery-wallet-btn" onClick={() => setIsExpired(true)}>
-            {t('Try Again')}
-          </Button>
           {isExpired ? (
             // TODO: button styles
             <>
@@ -232,10 +225,6 @@ export default function GuardianApproval() {
           ) : (
             <>
               <div className="flex-between-center approve-count">
-                {/* <span className="flex-row-center">
-                {t("Guardians' approval")}
-                <CommonTooltip placement="top" title={t('guardianApprovalTip')} />
-              </span> */}
                 <div className="width-100-percent">
                   <span className="all-approval">{`${alreadyApprovalLength} / ${approvalLength} completed`}</span>
                   <Progress
@@ -283,12 +272,14 @@ export default function GuardianApproval() {
       </div>
     );
   }, [
-    t,
+    userVerifiedList,
     isExpired,
+    t,
     alreadyApprovalLength,
     approvalLength,
     isNotLessThan768,
-    userVerifiedList,
+    dispatch,
+    navigate,
     loginAccount,
     targetChainId,
   ]);

@@ -65,7 +65,7 @@ export default function InputLogin({
         defaultKey={defaultKey}
         validatePhone={validatePhone}
         validateEmail={validateEmail}
-        confirmText={title}
+        confirmText={'Continue'}
         onFinish={onFinish}
       />
       {nextEle}

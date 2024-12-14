@@ -9,11 +9,15 @@ export default function PortKeyTitle({
   leftCallBack,
   rightElement,
   renderContent,
+  renderRightContent,
+  hideSubtitle,
 }: {
+  renderRightContent?: ReactNode | boolean;
   renderContent?: ReactNode | boolean;
   leftElement?: ReactNode | boolean;
   rightElement?: ReactNode;
   leftCallBack?: () => void;
+  hideSubtitle?: boolean;
 }) {
   const navigate = useNavigate();
 
@@ -36,13 +40,16 @@ export default function PortKeyTitle({
       </div>
       {renderContent ? (
         <div className="register-common-card margin-auto margin-top-64">
-          <div
-            className={clsx('left-element', !leftElement && 'left-element-hidden')}
-            onClick={() => {
-              leftCallBack ? leftCallBack?.() : navigate(-1);
-            }}>
-            {typeof leftElement === 'boolean' ? defaultEle : leftElement}
-          </div>
+          {hideSubtitle ? null : (
+            <div
+              className={clsx('flex-row-center flex-row-between header-back-element')}
+              onClick={() => {
+                leftCallBack ? leftCallBack?.() : navigate(-1);
+              }}>
+              {typeof leftElement === 'boolean' ? defaultEle : leftElement}
+              {renderRightContent}
+            </div>
+          )}
           {renderContent}
         </div>
       ) : (

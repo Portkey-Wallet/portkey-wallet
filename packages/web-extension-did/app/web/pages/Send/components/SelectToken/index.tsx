@@ -4,7 +4,7 @@ import { IAssetToken } from '@portkey-wallet/store/store-ca/assets/type';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { formatAmountUSDShow, formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import TokenImageDisplay from 'pages/components/TokenImageDisplay';
-import CircleLoading from 'pages/components/CircleLoading';
+import CircleLoading from 'components/CircleLoading';
 import './index.less';
 
 export interface SelectTokenProps {

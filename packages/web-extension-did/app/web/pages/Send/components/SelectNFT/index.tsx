@@ -3,7 +3,7 @@ import { IAssetNftCollection, INftInfoType } from '@portkey-wallet/store/store-c
 import NFTImageDisplay from 'pages/components/NFTImageDisplay';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
-import CircleLoading from 'pages/components/CircleLoading';
+import CircleLoading from 'components/CircleLoading';
 import './index.less';
 
 export interface SelectNFTProps {

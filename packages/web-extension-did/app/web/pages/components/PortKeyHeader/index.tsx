@@ -5,6 +5,7 @@ import './index.less';
 import UnReadBadge from 'pages/components/UnReadBadge';
 import Avatar from '../Avatar';
 import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { CustomSvgV3 } from '../../../components/CustomSvgV3';
 
 interface PortKeyHeaderProps {
   onUserClick?: (e?: any) => void;
@@ -23,7 +24,7 @@ const PortKeyHeader = forwardRef(({ onUserClick, customLogoShow = true, unReadSh
       <div className="portkey-header-body">
         <div className="portkey-area">
           {isPrompt ? (
-            <CustomSvg type="PortKeyPrompt" className="portkey-logo-prompt" />
+            <CustomSvgV3 type="Guardians=Portkey" className="portkey-logo-prompt" />
           ) : (
             <CustomSvg type="PortKey" className="portkey-logo" />
           )}

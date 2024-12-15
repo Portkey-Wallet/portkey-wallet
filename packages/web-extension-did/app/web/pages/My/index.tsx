@@ -110,7 +110,8 @@ export default function My() {
       {
         label: 'Help center',
         icon: 'Wallet',
-        router: '/setting/wallet', //  Todo: new website
+        // router: '/setting/wallet', //  Todo: new website
+        router: 'https://doc.portkey.finance/help', //  Todo: new website
       },
       {
         label: 'About Portkey',
@@ -122,26 +123,26 @@ export default function My() {
         icon: 'Wallet',
         router: '', // Todo: ??? do or not.
       },
-      {
-        label: 'Wallet',
-        icon: 'Wallet',
-        router: '/setting/wallet',
-      },
-      {
-        label: 'Contacts',
-        icon: 'AddressBook2',
-        router: '/setting/contacts',
-      },
-      {
-        label: 'Account Setting',
-        icon: 'Setting',
-        router: '/setting/account-setting',
-      },
-      {
-        label: 'Wallet Security',
-        icon: 'Security',
-        router: '/setting/wallet-security',
-      },
+      // {
+      //   label: 'Wallet',
+      //   icon: 'Wallet',
+      //   router: '/setting/wallet',
+      // },
+      // {
+      //   label: 'Contacts',
+      //   icon: 'AddressBook2',
+      //   router: '/setting/contacts',
+      // },
+      // {
+      //   label: 'Account Setting',
+      //   icon: 'Setting',
+      //   router: '/setting/account-setting',
+      // },
+      // {
+      //   label: 'Wallet Security',
+      //   icon: 'Security',
+      //   router: '/setting/wallet-security',
+      // },
     ],
     [fetching, secondaryEmail],
   );
@@ -201,6 +202,10 @@ export default function My() {
                 height={56}
                 icon={menuItemIcon(item.icon, isImputation && item.label === 'Contacts')}
                 onClick={() => {
+                  if (item.router.match('http')) {
+                    window.open(item.router);
+                    return;
+                  }
                   navigate(item.router);
                 }}>
                 <div className="flex-between">

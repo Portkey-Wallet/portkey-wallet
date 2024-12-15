@@ -2,7 +2,7 @@ import { Input } from 'antd';
 import CustomSvg from 'components/CustomSvg';
 import { useState } from 'react';
 import { IKeyDownParams } from 'types';
-import SelectFiatListWrap from '../SelectList/SelectFiatListWrap';
+import SelectCurrencyListWrap from '../SelectList/SelectCurrencyListWrap';
 import { IRampFiatItem } from '@portkey-wallet/ramp';
 
 export interface ICurrencyInputProps {
@@ -16,7 +16,7 @@ export interface ICurrencyInputProps {
   onSelect: (v: IRampFiatItem) => void;
 }
 
-const SelectFiat = 'Select Currency';
+const SelectCurrency = 'Select Currency';
 const SearchFiat = 'Search currency';
 
 export default function CurrencyInput({
@@ -49,8 +49,8 @@ export default function CurrencyInput({
           </div>
         }
       />
-      <SelectFiatListWrap
-        title={SelectFiat}
+      <SelectCurrencyListWrap
+        title={SelectCurrency}
         searchPlaceHolder={SearchFiat}
         defaultCrypto={defaultCrypto}
         network={network}

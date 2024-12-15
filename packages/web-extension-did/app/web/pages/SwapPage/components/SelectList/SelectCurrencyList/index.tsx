@@ -7,7 +7,7 @@ import { IRampFiatItem } from '@portkey-wallet/ramp';
 import { getSellFiat } from '@portkey-wallet/utils/ramp';
 import CommonHeader, { CustomSvgPlaceholderSize } from 'components/CommonHeader';
 
-export interface ISelectFiatListProps {
+export interface ISelectCurrencyListProps {
   onChange?: (v: IRampFiatItem) => void;
   onClose?: () => void;
   title?: ReactNode;
@@ -16,14 +16,14 @@ export interface ISelectFiatListProps {
   network?: string; // chain-chainId
 }
 
-export default function SelectFiatList({
+export default function SelectCurrencyList({
   onChange,
   onClose,
   title,
   searchPlaceHolder,
   defaultCrypto = '',
   network = '',
-}: ISelectFiatListProps) {
+}: ISelectCurrencyListProps) {
   const { t } = useTranslation();
   const [openDrop, setOpenDrop] = useState<boolean>(false);
   const [filterWord, setFilterWord] = useState<string>('');

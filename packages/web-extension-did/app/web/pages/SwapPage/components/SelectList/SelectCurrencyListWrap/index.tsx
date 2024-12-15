@@ -3,10 +3,10 @@ import BaseDrawer from 'components/BaseDrawer';
 import './index.less';
 import { useCommonState } from 'store/Provider/hooks';
 import CustomPromptModal, { ICustomTokenModalProps } from 'pages/components/CustomPromptModal';
-import SelectFiatList from '../SelectFiatList';
+import SelectCurrencyList from '../SelectCurrencyList';
 import { IRampFiatItem } from '@portkey-wallet/ramp';
 
-interface SelectFiatListWrapPartialProps {
+interface SelectCurrencyListWrapPartialProps {
   title: string;
   searchPlaceHolder?: string;
   defaultCrypto?: string;
@@ -15,13 +15,13 @@ interface SelectFiatListWrapPartialProps {
   onClose: () => void;
 }
 
-type SelectFiatDrawerProps = SelectFiatListWrapPartialProps & DrawerProps;
+type SelectCurrencyDrawerProps = SelectCurrencyListWrapPartialProps & DrawerProps;
 
-type SelectFiatModalProps = SelectFiatListWrapPartialProps & ModalProps;
+type SelectCurrencyModalProps = SelectCurrencyListWrapPartialProps & ModalProps;
 
-type SelectFiatListWrapProps = SelectFiatDrawerProps | SelectFiatModalProps;
+type SelectCurrencyListWrapProps = SelectCurrencyDrawerProps | SelectCurrencyModalProps;
 
-export default function SelectFiatListWrap({
+export default function SelectCurrencyListWrap({
   onChange,
   onClose,
   title,
@@ -29,7 +29,7 @@ export default function SelectFiatListWrap({
   defaultCrypto,
   network,
   ...props
-}: SelectFiatListWrapProps) {
+}: SelectCurrencyListWrapProps) {
   const { isPrompt } = useCommonState();
 
   return isPrompt ? (
@@ -38,7 +38,7 @@ export default function SelectFiatListWrap({
       onClose={onClose}
       destroyOnClose
       className="ramp-fiat-modal">
-      <SelectFiatList
+      <SelectCurrencyList
         title={title}
         searchPlaceHolder={searchPlaceHolder}
         defaultCrypto={defaultCrypto}
@@ -55,7 +55,7 @@ export default function SelectFiatListWrap({
       height={528}
       placement="bottom"
       destroyOnClose>
-      <SelectFiatList
+      <SelectCurrencyList
         title={title}
         searchPlaceHolder={searchPlaceHolder}
         defaultCrypto={defaultCrypto}

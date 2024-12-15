@@ -1,7 +1,7 @@
 import { useReturnLastCallback } from '@portkey-wallet/hooks';
 import { useGetAwakenGasFee, useGetSwapRoutes } from '@portkey-wallet/hooks/hooks-ca/awaken/request';
 import { useAwakenGasFee, useAwakenTokenList } from '@portkey-wallet/hooks/hooks-ca/awaken/state';
-import FiatInput from '../FiatInput';
+import CurrencyInput from '../CurrencyInput';
 
 const SwapEnter = () => {
   const getSwapRoutesInstant = useGetSwapRoutes();
@@ -10,12 +10,7 @@ const SwapEnter = () => {
   const { list } = useAwakenTokenList();
   console.log(list, gasFee, '====list');
 
-  return (
-    <div>
-      {/* <FiatInput value="1" onKeyDown={() => {}}curFiat='' /> */}
-      SWAP
-    </div>
-  );
+  return <div>SWAP</div>;
 };
 
 export default SwapEnter;

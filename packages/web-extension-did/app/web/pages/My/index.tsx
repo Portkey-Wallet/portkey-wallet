@@ -15,7 +15,7 @@ import { useIsImputation } from '@portkey-wallet/hooks/hooks-ca/contact';
 import svgsList from 'assets/svgs';
 import UnReadBadge from 'pages/components/UnReadBadge';
 import WalletEntry from '../Wallet/components/WalletEntry';
-import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentUserInfo, useDeviceList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useIsSecondaryMailSet } from '@portkey-wallet/hooks/hooks-ca/useSecondaryMail';
 // import { useClickReferral } from 'hooks/referral';
 
@@ -33,6 +33,11 @@ export default function My() {
   const { isPrompt } = useCommonState();
   const isImputation = useIsImputation();
   const { secondaryEmail, fetching } = useIsSecondaryMailSet();
+
+  // Mange devices
+  const { deviceAmount } = useDeviceList({
+    isAmountOnly: true,
+  });
 
   // Connected dApps
   const { currentNetwork } = useWalletInfo();
@@ -78,6 +83,7 @@ export default function My() {
         label: 'Manage Devices',
         icon: 'Wallet',
         router: '/setting/wallet-security/manage-devices',
+        element: <div className="item-extra-info">{deviceAmount}</div>,
       },
       {
         label: 'Connected dApps',
@@ -118,11 +124,11 @@ export default function My() {
         icon: 'Wallet',
         router: '/setting/wallet/about-us',
       },
-      {
-        label: 'Check for updates',
-        icon: 'Wallet',
-        router: '', // Todo: ??? do or not.
-      },
+      // {
+      //   label: 'Check for updates',
+      //   icon: 'Wallet',
+      //   router: '', // Todo: ??? do or not.
+      // },
       // {
       //   label: 'Wallet',
       //   icon: 'Wallet',
@@ -144,7 +150,7 @@ export default function My() {
       //   router: '/setting/wallet-security',
       // },
     ],
-    [fetching, secondaryEmail],
+    [currentDapp.length, deviceAmount, fetching, secondaryEmail],
   );
 
   const handleExpandView = () => {

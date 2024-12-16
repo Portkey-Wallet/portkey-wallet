@@ -237,7 +237,7 @@ td {
   }
 
   .portkey-body {
-    height: calc(100vh - 96px);
+    // height: calc(100vh - 96px);
     min-height: 593px;
     margin: 0 auto;
   }
@@ -262,7 +262,7 @@ td {
   @media screen and (max-width: 1819px) and (min-width: @mid-screen) {
     .portkey-header {
       // width: calc(100vw - @max-margin * 2);
-      width: 868px;
+      width: 100%;
 
       .portkey-header-body {
         padding-left: 0;
@@ -306,11 +306,11 @@ td {
 // This style is suitable for detail pages, such as transaction、asset preview page...
 .detail-page-prompt {
   width: inherit;
-  max-width: @detail-width;
-  min-width: @min-width;
+  // max-width: @detail-width;
+  // min-width: @min-width;
   height: calc(100vh - 72px); // height - navHeight
-  max-height: @max-detail-height;
-  min-height: @min-detail-height;
+  // max-height: @max-detail-height;
+  // min-height: @min-detail-height;
 
   @media screen and (max-width: 767px) {
     min-height: calc(100vh - 72px);

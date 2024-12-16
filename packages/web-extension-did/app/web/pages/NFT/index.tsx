@@ -280,7 +280,7 @@ export default function NFT() {
               Send
             </Button>
           </div>
-          {isPrompt && <PromptEmptyElement />}
+          {/* {isPrompt && <PromptEmptyElement />} */}
         </div>
       </div>
     );

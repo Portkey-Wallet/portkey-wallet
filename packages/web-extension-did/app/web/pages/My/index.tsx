@@ -182,6 +182,7 @@ export default function My() {
         onLeftBack={() => {
           navigate('/');
         }}
+        onLeftBackShowClose={true}
       />
 
       <div>

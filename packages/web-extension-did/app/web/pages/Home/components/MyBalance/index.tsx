@@ -45,7 +45,7 @@ import { RampType } from '@portkey-wallet/ramp';
 import { getDisclaimerData } from 'utils/disclaimer';
 import { TradeTypeEnum } from 'constants/trade';
 import CustomSvg from 'components/CustomSvg';
-import SetNewWalletNameIcon from '../SetNewWalletNameIcon';
+// import SetNewWalletNameIcon from '../SetNewWalletNameIcon';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import SkeletonCom from 'pages/components/SkeletonCom';
 import CommonBanner from 'components/CommonBanner';

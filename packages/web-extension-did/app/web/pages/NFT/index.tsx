@@ -9,7 +9,7 @@ import { addressFormat } from '@portkey-wallet/utils';
 import Copy from 'components/Copy';
 import { formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
-import PromptEmptyElement from 'pages/components/PromptEmptyElement';
+// import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useLocationState, useNavigateState } from 'hooks/router';
 import { THomePageLocationState, TNFTLocationState, TSendLocationState } from 'types/router';

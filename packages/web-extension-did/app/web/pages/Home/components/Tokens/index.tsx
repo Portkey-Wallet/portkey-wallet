@@ -15,7 +15,8 @@ import { useEffectOnce } from 'react-use';
 import useGAReport from 'hooks/useGAReport';
 import clsx from 'clsx';
 import { Row, Col, Collapse } from 'antd';
-import CustomSvg from 'components/CustomSvg';
+// import CustomSvg from 'components/CustomSvg';
+import { CustomSvgV3 } from 'components/CustomSvgV3';
 
 export default function TokenList() {
   const { t } = useTranslation();
@@ -96,6 +97,7 @@ export default function TokenList() {
   );
   const renderItem = useCallback(
     (item: ITokenSectionResponse) => {
+      console.log('item', item);
       return (
         <Collapse.Panel
           key=""
@@ -103,9 +105,22 @@ export default function TokenList() {
             <li
               className="token-list-item flex-row-center"
               key={`${item.label}_${item.symbol}`}
-              // onClick={() => onNavigate(item)}
-            >
-              <TokenImageDisplay width={36} className="token-icon" symbol={item.symbol} src={item.imageUrl} />
+              onClick={() => item.tokens && item.tokens.length == 1 && onNavigate(item.tokens[0])}>
+              <div className="logos">
+                <TokenImageDisplay width={36} className="token-icon" symbol={item.symbol} src={item.imageUrl} />
+                <div className="logo-number-box">
+                  {item?.tokens?.length === 1 ? (
+                    <TokenImageDisplay
+                      width={20}
+                      className="token-icon"
+                      symbol={item.symbol}
+                      src={item.tokens[0].chainImageUrl}
+                    />
+                  ) : (
+                    <div className="logo-number">2</div>
+                  )}
+                </div>
+              </div>
               <div className="token-desc">
                 <div className="info flex-between">
                   <span>{item.label ?? item.symbol}</span>
@@ -143,23 +158,39 @@ export default function TokenList() {
               </Row>
             </div>);
             }} */}
-            {item?.tokens?.map((tokenItem, index) => (
-              <div
-                className="container"
-                style={{ marginTop: index !== 0 ? 4 : 0 }}
-                key={`${tokenItem.symbol}_${index}`}
-                onClick={() => onNavigate(tokenItem)}>
-                <Row className="row">
-                  <Col className="text" span={12}>
-                    {transNetworkText(tokenItem.chainId, !isMainnet)}
-                  </Col>
-                  <Col className="amount-container" span={12}>
-                    <div className="amount">{getTokenAmount(tokenItem)}</div>
-                    <CustomSvg type="NewRightArrow" />
-                  </Col>
-                </Row>
-              </div>
-            ))}
+            {item?.tokens &&
+              item?.tokens?.length > 1 &&
+              item?.tokens?.map((tokenItem, index) => (
+                <div
+                  className="container"
+                  style={{ marginTop: index !== 0 ? 4 : 0 }}
+                  key={`${tokenItem.symbol}_${index}`}
+                  onClick={() => onNavigate(tokenItem)}>
+                  <Row className="row">
+                    <Col className="row-first" span={12}>
+                      <div className="symbol-logo">
+                        <TokenImageDisplay width={36} className="token-icon" symbol={item.symbol} src={item.imageUrl} />
+                        <TokenImageDisplay
+                          width={20}
+                          className="token-icon chain-logo"
+                          symbol={item.symbol}
+                          src={tokenItem.chainImageUrl}
+                        />
+                      </div>
+
+                      <div className="text">
+                        <div className="symbol">{tokenItem.symbol}</div>
+                        <div className="chain-desc">{transNetworkText(tokenItem.chainId, !isMainnet)}</div>
+                      </div>
+                    </Col>
+
+                    <Col className="amount-container" span={12}>
+                      <div className="amount">{getTokenAmount(tokenItem)}</div>
+                      {/* <CustomSvg type="NewRightArrow" /> */}
+                    </Col>
+                  </Row>
+                </div>
+              ))}
           </div>
         </Collapse.Panel>
       );
@@ -172,7 +203,7 @@ export default function TokenList() {
       <LoadingMore hasMore={hasMoreTokenList} loadMore={getMoreTokenList} className="load-more" />
 
       <div className="add-token-wrapper flex-center" onClick={handleAddToken}>
-        {/* <CustomSvg type="ManageToken" /> */}
+        <CustomSvgV3 type="manage-token" />
         <span className="add-token-text">{t('Add Tokens')}</span>
       </div>
     </div>

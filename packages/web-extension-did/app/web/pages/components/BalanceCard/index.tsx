@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react';
-import CustomSvg3 from 'components/CustomSvgV3';
+import { CustomSvgV3 } from 'components/CustomSvgV3';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
 import { useCommonState } from 'store/Provider/hooks';
@@ -33,7 +33,7 @@ export default function MainCards({
       !!onSend && (
         <div className="card-item send-card flex-column-center" onClick={onSend}>
           <div className="btn-container">
-            <CustomSvg3 type="Send" className="flex-center" />
+            <CustomSvgV3 type="send" className="flex-center" />
           </div>
           <span className="btn-name">{t('Send')}</span>
         </div>
@@ -46,7 +46,7 @@ export default function MainCards({
       !!onReceive && (
         <div className="card-item receive-card flex-column-center" onClick={onReceive}>
           <div className="btn-container">
-            <CustomSvg3 type="Receive" className="flex-center" />
+            <CustomSvgV3 type="receive" className="flex-center" />
           </div>
           <span className="btn-name">{t('Receive')}</span>
         </div>
@@ -58,8 +58,8 @@ export default function MainCards({
     () =>
       !!onBuy && (
         <div className="buy-card card-item flex-column-center" onClick={onBuy}>
-          <div className="btn-container">
-            <CustomSvg3 type="BuyHome" className="flex-center" />
+          <div className="btn-container buy-container">
+            <CustomSvgV3 type="buy" className="flex-center" />
           </div>
           <span className="btn-name">{t('Buy')}</span>
         </div>
@@ -71,9 +71,7 @@ export default function MainCards({
     return (
       !!onClickDeposit && (
         <div className="deposit-card card-item flex-column-center" onClick={onClickDeposit}>
-          <div className="btn-container">
-            <CustomSvg3 type="Deposit" className="flex-center" />
-          </div>
+          <div className="btn-container">{/* <CustomSvgV3 type="Deposit" className="flex-center" /> */}</div>
           <span className="btn-name">{t('Deposit')}</span>
         </div>
       )
@@ -85,7 +83,7 @@ export default function MainCards({
       !!onClickSwap && (
         <div className="swap-card card-item flex-column-center" onClick={onClickSwap}>
           <div className="btn-container">
-            <CustomSvg3 type="SwapHome" className="flex-center" />
+            <CustomSvgV3 type="swap" className="flex-center" />
           </div>
           <span className="btn-name">{t('Swap')}</span>
         </div>
@@ -105,7 +103,7 @@ export default function MainCards({
       isShowFaucet && (
         <div className="faucet-card card-item flex-column-center" onClick={handleClickFaucet}>
           <div className="btn-container">
-            <CustomSvg3 type="Faucet" className="flex-center" />
+            <CustomSvgV3 type="faucet" className="flex-center" />
           </div>
           <span className="btn-name">{t('Faucet')}</span>
         </div>

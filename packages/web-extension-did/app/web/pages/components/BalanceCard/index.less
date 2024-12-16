@@ -1,33 +1,47 @@
 @import '../../../assets/theme/color.less';
 
 .main-card-list-wrap {
-  gap: 48px;
+  gap: 8px;
   &.popup-card-num-more-than-or-equal-5 {
-    gap: 30px;
+    gap: 8px;
+    justify-content: space-between;
   }
   .card-item {
+    width: 100%;
     gap: 4px;
     font-size: 12px;
     line-height: 16px;
     color: @text-base1;
     cursor: pointer;
-    &.receive-card {
-      svg {
-        transform: rotate(180deg);
-      }
+    .btn-container{
+      width: 100%;
+      height: 58px;
+      border-radius: 30px;
+      border: 1.5px solid @border-brand2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      // background-color:#B8E1FF;
+      // box-shadow: 0px 0px 0px 5px #062A4B inset;
     }
     .custom-svg {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      background-color: @neutral-container-bg;
+      width: calc(100% - 8px);
+      height: 48px;
+      border-radius: 30px;
+      // padding: 4px;
+      background-color: @bg-brand1;
+      // border: 1.5px solid @text-brand1;
       &:hover {
-        background-color: @neutral-hover-bg;
+        background-color: @bg-brand1;
       }
       svg {
-        width: 20px;
-        height: 20px;
+        width: 24px;
+        height: 24px;
       }
     }
+  }
+  .buy-card .btn-container .buy-icon svg {
+    width: 28px;
+    height: 28px;
   }
 }

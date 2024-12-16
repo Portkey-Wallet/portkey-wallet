@@ -7,7 +7,7 @@ import { useCallback, useState, useMemo, useEffect } from 'react';
 import clsx from 'clsx';
 import { useCommonState } from 'store/Provider/hooks';
 import './index.less';
-import { transNetworkText } from '@portkey-wallet/utils/activity';
+// import { transNetworkText } from '@portkey-wallet/utils/activity';
 import {
   PAGE_SIZE_IN_NFT_ITEM,
   PAGE_SIZE_IN_ACCOUNT_NFT_COLLECTION,
@@ -153,7 +153,7 @@ export default function NFT() {
                   <div className="alias">{nft.collectionName}</div>
                   <div className="amount">{nft.itemCount}</div>
                 </div>
-                <p className="network">{transNetworkText(nft.chainId, !isMainnet)}</p>
+                {/* <p className="network">{transNetworkText(nft.chainId, !isMainnet)}</p> */}
               </div>
             </div>
           }>
@@ -288,6 +288,7 @@ export default function NFT() {
           <Collapse
             collapsible={isFetching ? 'disabled' : undefined}
             onChange={handleChange}
+            expandIconPosition={'end'}
             expandIcon={(panelProps) => (
               <CustomSvg className={panelProps.isActive ? 'is-active' : ''} type="NewRightArrow" />
             )}>

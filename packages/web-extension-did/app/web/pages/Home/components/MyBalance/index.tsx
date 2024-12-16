@@ -45,7 +45,7 @@ import { RampType } from '@portkey-wallet/ramp';
 import { getDisclaimerData } from 'utils/disclaimer';
 import { TradeTypeEnum } from 'constants/trade';
 import CustomSvg from 'components/CustomSvg';
-import SetNewWalletNameIcon from '../SetNewWalletNameIcon';
+// import SetNewWalletNameIcon from '../SetNewWalletNameIcon';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import SkeletonCom from 'pages/components/SkeletonCom';
 import CommonBanner from 'components/CommonBanner';
@@ -312,7 +312,7 @@ export default function MyBalance() {
       <BigScreenHeader />
       <div className="main-content-wrap flex-column">
         <div className={clsx('balance-amount-wrap', 'flex-column', isPrompt && 'is-prompt')}>
-          <div className="wallet-name-wrap flex-row-center">
+          {/* <div className="wallet-name-wrap flex-row-center">
             {userInfo.nickName ? (
               <>
                 <div className="wallet-name">{userInfo.nickName}</div>
@@ -321,7 +321,7 @@ export default function MyBalance() {
             ) : (
               <SkeletonCom />
             )}
-          </div>
+          </div> */}
           {renderUsdShow()}
         </div>
         <MainCards
@@ -334,6 +334,7 @@ export default function MyBalance() {
             return setTokenOpen(true);
           }}
           onBuy={isRampShow ? handleClickBuy : undefined}
+          onClickSwap={() => handleClickTrade(TradeTypeEnum.Swap)}
           onClickDeposit={isETransShow ? () => handleClickTrade(TradeTypeEnum.ETrans) : undefined}
           isShowFaucet={!isMainNet}
         />

@@ -48,7 +48,8 @@ function readSvgs() {
 readSvgs()
   .then((data) => {
     // console.log('data: ', data);
-    let svgFile = 'export default ' + JSON.stringify(Object.assign.apply(this, data));
+    let svgFile =
+      '/* eslint-disable prettier/prettier */\n export default ' + JSON.stringify(Object.assign.apply(this, data));
     fs.writeFile(path.resolve(__dirname, './svgs.ts'), svgFile, function (err) {
       if (err) throw new Error(err);
     });

@@ -55,6 +55,8 @@ import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 
 export default function RegisterStart() {
   const { type } = useParams();
+  console.log(type, '====type');
+
   const currentNetwork = useCurrentNetworkInfo();
   const dispatch = useAppDispatch();
   const changeNetwork = useChangeNetwork();
@@ -454,12 +456,7 @@ export default function RegisterStart() {
   return (
     <div id="register-start-wrapper">
       <RegisterHeader />
-      <div className="flex-between register-start-content">
-        <div className="text-content">
-          <CustomSvg type="PortKey" />
-          <h1>{i18n.t('Welcome to Portkey') as string}</h1>
-          <div className="description">{`Your key to play and earn in Web3`}</div>
-        </div>
+      <div className="flex-column-center register-start-content">
         <div>
           {type === 'create' && (
             <SignCard
@@ -471,8 +468,9 @@ export default function RegisterStart() {
             />
           )}
           {type === 'scan' && <ScanCard />}
-          {(!type || type === 'login') && (
+          {(!type || type === 'login' || type === 'login-input') && (
             <LoginCard
+              isStartInput={type === 'login-input'}
               validatePhone={validateIdentifier}
               validateEmail={validateIdentifier}
               onFinish={onInputClick}
@@ -480,7 +478,7 @@ export default function RegisterStart() {
               onSocialLoginFinish={onSocialFinish}
             />
           )}
-          <div className="network-list-wrapper">
+          {/* <div className="network-list-wrapper">
             <CommonSelect
               className="network-list-select"
               value={currentNetwork.networkType}
@@ -489,7 +487,7 @@ export default function RegisterStart() {
               showArrow={false}
               getPopupContainer={(triggerNode) => triggerNode.parentElement}
             />
-          </div>
+          </div> */}
         </div>
       </div>
       <LoginModal

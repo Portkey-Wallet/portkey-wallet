@@ -1,3 +1,5 @@
+@import './constants.less';
+
 .min-height-container {
   font-family: SG;
   min-height: calc(100% - @footer-height);
@@ -71,6 +73,12 @@
 }
 .margin-auto {
   margin: auto;
+}
+.margin-top-64 {
+  margin-top: 64px;
+}
+.margin-top-16 {
+  margin-top: 16px;
 }
 .flex-center {
   display: flex;
@@ -147,6 +155,11 @@ td {
 
 .common-page {
   width: @page-width;
+  margin: auto;
+}
+
+.common-page2 {
+  width: @page-width2;
   margin: auto;
 }
 
@@ -338,6 +351,14 @@ td {
 
 .font-bg {
   font-family: BG, sans-serif;
+}
+
+.register-common-card {
+  color: @text-base1;
+  width: 552px;
+  padding: 32px;
+  border-radius: 16px;
+  border: 1px solid @border-base1;
 }
 // =========================================================
 // ============= Large screen adaptation [end] =============

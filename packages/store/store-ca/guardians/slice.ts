@@ -14,6 +14,8 @@ import {
   setOpGuardianAction,
   resetGuardians,
   setGuardianListAction,
+  resetGuardianExpiredTime,
+  resetUserGuardianStatusState,
 } from './actions';
 import { GuardiansState } from './type';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
@@ -123,6 +125,14 @@ export const guardiansSlice = createSlice({
       })
       .addCase(resetUserGuardianStatus, state => {
         state.userGuardianStatus = {};
+      })
+      .addCase(resetUserGuardianStatusState, state => {
+        Object.keys(state.userGuardianStatus ?? {}).forEach(key => {
+          if (state.userGuardianStatus) state.userGuardianStatus[key].status = undefined;
+        });
+      })
+      .addCase(resetGuardianExpiredTime, state => {
+        state.guardianExpiredTime = undefined;
       })
       .addCase(setUserGuardianSessionIdAction, (state, action) => {
         const { key, verifierInfo } = action.payload;

@@ -29,7 +29,7 @@ export const GuardianTypeIcon: Record<LoginType, IconType> = {
 
 export default function VerifierPair({
   guardianType = LoginType.Email,
-  size = 32,
+  size = 42,
   verifierSrc,
   verifierName,
   wrapperClassName,
@@ -39,22 +39,15 @@ export default function VerifierPair({
     () => guardian?.verifiedByZk || guardian?.manuallySupportForZk,
     [guardian?.manuallySupportForZk, guardian?.verifiedByZk],
   );
-  const isShowZkLoginTag = useMemo(() => {
-    return isZKLoginSupported(guardianType) && !isZK;
-  }, [guardianType, isZK]);
 
   return (
     <div className={clsx('flex-row-center icon-pair', wrapperClassName)}>
+      <div className="verifier-icon-border">
+        <BaseVerifierIcon src={verifierSrc} fallback={isZK ? zkLoginVerifierItem.name : verifierName?.[0]} />
+      </div>
       <div className="guardian-icon flex-center" style={{ width: size, height: size, fontSize: size }}>
         <CustomSvg className="flex" type={GuardianTypeIcon[guardianType]} />
       </div>
-      <div className="verifier-icon-border">
-        <BaseVerifierIcon
-          src={isZK ? zkLoginVerifierItem.imageUrl : verifierSrc}
-          fallback={isZK ? zkLoginVerifierItem.name : verifierName?.[0]}
-        />
-      </div>
-      {isShowZkLoginTag && <div className="zklogin-icon">{`zkLogin`}</div>}
     </div>
   );
 }

@@ -24,6 +24,7 @@ import singleMessage from 'utils/singleMessage';
 import { useNavigateState } from 'hooks/router';
 import googleAnalytics from 'utils/googleAnalytics';
 import { LoginMethod } from '@portkey-wallet/types/types-ca/wallet';
+import { BackAndSwitchNetwork } from '../SwitchNetworkButton';
 
 export default function ScanCard() {
   const navigate = useNavigateState();
@@ -122,7 +123,10 @@ export default function ScanCard() {
   }, [caWallet, currentNetwork, dispatch, navigate, newWallet]);
 
   return (
-    <div className="scan-card">
+    <div className="scan-card register-common-card">
+      <BackAndSwitchNetwork onClick={() => navigate('/register/start')} />
+
+      {/* TODO: SDK */}
       <ScanBase
         wrapperClassName="scan-card-inner"
         // isWaitingAuth={isWaitingAuth}

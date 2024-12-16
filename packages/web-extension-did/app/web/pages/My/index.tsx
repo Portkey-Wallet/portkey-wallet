@@ -7,7 +7,7 @@ import CustomSvg from 'components/CustomSvg';
 import CommonHeader from 'components/CommonHeader';
 import { lockWallet } from 'utils/lib/serviceWorkerAction';
 import { IconType } from 'types/icon';
-import { useCommonState } from 'store/Provider/hooks';
+import { useCommonState, useDapp, useWalletInfo } from 'store/Provider/hooks';
 import './index.less';
 import InternalMessage from 'messages/InternalMessage';
 import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
@@ -15,7 +15,7 @@ import { useIsImputation } from '@portkey-wallet/hooks/hooks-ca/contact';
 import svgsList from 'assets/svgs';
 import UnReadBadge from 'pages/components/UnReadBadge';
 import WalletEntry from '../Wallet/components/WalletEntry';
-import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentUserInfo, useDeviceList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useIsSecondaryMailSet } from '@portkey-wallet/hooks/hooks-ca/useSecondaryMail';
 // import { useClickReferral } from 'hooks/referral';
 
@@ -33,6 +33,17 @@ export default function My() {
   const { isPrompt } = useCommonState();
   const isImputation = useIsImputation();
   const { secondaryEmail, fetching } = useIsSecondaryMailSet();
+
+  // Mange devices
+  const { deviceAmount } = useDeviceList({
+    isAmountOnly: true,
+  });
+
+  // Connected dApps
+  const { currentNetwork } = useWalletInfo();
+  const { dappMap } = useDapp();
+  const currentDapp = useMemo(() => dappMap[currentNetwork] || [], [currentNetwork, dappMap]);
+
   // const clickReferral = useClickReferral();
   const MenuList: MenuItemInfo[] = useMemo(
     () => [
@@ -72,11 +83,13 @@ export default function My() {
         label: 'Manage Devices',
         icon: 'Wallet',
         router: '/setting/wallet-security/manage-devices',
+        element: <div className="item-extra-info">{deviceAmount}</div>,
       },
       {
         label: 'Connected dApps',
         icon: 'Wallet',
         router: '/setting/wallet-security/connected-sites',
+        element: <div className="item-extra-info">{currentDapp.length}</div>,
       },
       {
         label: 'Address book',
@@ -103,40 +116,41 @@ export default function My() {
       {
         label: 'Help center',
         icon: 'Wallet',
-        router: '/setting/wallet', //  Todo: new website
+        // router: '/setting/wallet', //  Todo: new website
+        router: 'https://doc.portkey.finance/help', //  Todo: new website
       },
       {
         label: 'About Portkey',
         icon: 'Wallet',
         router: '/setting/wallet/about-us',
       },
-      {
-        label: 'Check for updates',
-        icon: 'Wallet',
-        router: '', // Todo: ??? do or not.
-      },
-      {
-        label: 'Wallet',
-        icon: 'Wallet',
-        router: '/setting/wallet',
-      },
-      {
-        label: 'Contacts',
-        icon: 'AddressBook2',
-        router: '/setting/contacts',
-      },
-      {
-        label: 'Account Setting',
-        icon: 'Setting',
-        router: '/setting/account-setting',
-      },
-      {
-        label: 'Wallet Security',
-        icon: 'Security',
-        router: '/setting/wallet-security',
-      },
+      // {
+      //   label: 'Check for updates',
+      //   icon: 'Wallet',
+      //   router: '', // Todo: ??? do or not.
+      // },
+      // {
+      //   label: 'Wallet',
+      //   icon: 'Wallet',
+      //   router: '/setting/wallet',
+      // },
+      // {
+      //   label: 'Contacts',
+      //   icon: 'AddressBook2',
+      //   router: '/setting/contacts',
+      // },
+      // {
+      //   label: 'Account Setting',
+      //   icon: 'Setting',
+      //   router: '/setting/account-setting',
+      // },
+      // {
+      //   label: 'Wallet Security',
+      //   icon: 'Security',
+      //   router: '/setting/wallet-security',
+      // },
     ],
-    [fetching, secondaryEmail],
+    [currentDapp.length, deviceAmount, fetching, secondaryEmail],
   );
 
   const handleExpandView = () => {
@@ -194,6 +208,10 @@ export default function My() {
                 height={56}
                 icon={menuItemIcon(item.icon, isImputation && item.label === 'Contacts')}
                 onClick={() => {
+                  if (item.router.match('http')) {
+                    window.open(item.router);
+                    return;
+                  }
                   navigate(item.router);
                 }}>
                 <div className="flex-between">

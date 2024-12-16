@@ -1,6 +1,7 @@
 import CommonHeader from 'components/CommonHeader';
 import AboutUsBody from 'pages/Wallet/components/AboutUsBody';
 import { BaseHeaderProps } from 'types/UI';
+import './index.less';
 
 export default function AboutUsPopup({ headerTitle, goBack }: BaseHeaderProps) {
   return (

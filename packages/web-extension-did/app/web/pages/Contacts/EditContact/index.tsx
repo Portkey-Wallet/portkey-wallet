@@ -5,10 +5,8 @@ import { useTranslation } from 'react-i18next';
 import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
 import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/actions';
 import { useAppDispatch, useLoading } from 'store/Provider/hooks';
-import EditContactPrompt from './Prompt';
 import EditContactPopup from './Popup';
 import { BaseHeaderProps } from 'types/UI';
-import { useCommonState } from 'store/Provider/hooks';
 import { IEditContactFormProps } from '../components/EditContactForm';
 import { ValidData } from '../AddContact';
 import CustomModal from 'pages/components/CustomModal';
@@ -34,7 +32,6 @@ export default function EditContact() {
     };
   }, [state]);
 
-  const { isNotLessThan768 } = useCommonState();
   const appDispatch = useAppDispatch();
   const [cantSave, setCantSave] = useState<boolean>(false);
   const [validName] = useState<ValidData>({ validateStatus: '', errorMsg: '' });
@@ -117,20 +114,7 @@ export default function EditContact() {
 
   const headerTitle = useMemo(() => t('Edit Contact'), [t]);
 
-  return isNotLessThan768 ? (
-    <EditContactPrompt
-      headerTitle={headerTitle}
-      goBack={handleView}
-      form={form}
-      validName={validName}
-      validRemark={validRemark}
-      state={transState}
-      isShowRemark={state.isShowRemark}
-      cantSave={cantSave}
-      onFinish={onFinish}
-      handleInputRemarkChange={handleInputRemarkChange}
-    />
-  ) : (
+  return (
     <EditContactPopup
       headerTitle={headerTitle}
       goBack={handleView}

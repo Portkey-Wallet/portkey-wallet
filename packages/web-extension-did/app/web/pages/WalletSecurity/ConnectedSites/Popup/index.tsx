@@ -2,6 +2,7 @@ import CommonHeader from 'components/CommonHeader';
 import { BaseHeaderProps } from 'types/UI';
 import MenuList, { IMenuItemProps } from 'pages/components/MenuList';
 import { useTranslation } from 'react-i18next';
+import './index.less';
 
 export default function ConnectedSitesPopup({ headerTitle, goBack, list }: BaseHeaderProps & IMenuItemProps) {
   const { t } = useTranslation();

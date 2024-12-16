@@ -8,9 +8,13 @@
   .exit-wallet-btn {
     height: 48px;
     border-radius: 22px;
-    border: 1px solid @border-7;
-    color: @font-14;
+    border: none;
+    color: @text-danger1;
     font-size: 16px;
     line-height: 22px;
+    &:hover, &:focus {
+      background-color: @bg-danger2;
+      border: 1px solid @border-danger3;
+    }
   }
 }

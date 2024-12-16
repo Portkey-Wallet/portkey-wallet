@@ -101,34 +101,4 @@ export default function Wallet() {
       onCancelExit={onCancelExit}
     />
   );
-
-  // return isNotLessThan768 ? (
-  //   <WalletPrompt
-  //     headerTitle={title}
-  //     exitText={exitText}
-  //     exitVisible={exitVisible}
-  //     select={selectedItem}
-  //     walletAvatar={avatar || ''}
-  //     walletName={nickName || ''}
-  //     portkeyId={userId || ''}
-  //     clickAvatar={clickAvatar}
-  //     menuList={MenuList}
-  //     onExit={onExit}
-  //     onCancelExit={onCancelExit}
-  //   />
-  // ) : (
-  //   <WalletPopup
-  //     headerTitle={title}
-  //     exitText={exitText}
-  //     exitVisible={exitVisible}
-  //     walletAvatar={avatar || ''}
-  //     walletName={nickName || ''}
-  //     portkeyId={userId || ''}
-  //     clickAvatar={clickAvatar}
-  //     menuList={MenuList}
-  //     goBack={goBack}
-  //     onExit={onExit}
-  //     onCancelExit={onCancelExit}
-  //   />
-  // );
 }

@@ -4,17 +4,21 @@ import { useTranslation } from 'react-i18next';
 import MenuItem from 'components/MenuItem';
 import CustomSvg from 'components/CustomSvg';
 import CommonHeader from 'components/CommonHeader';
-import { lockWallet } from 'utils/lib/serviceWorkerAction';
+// import { lockWallet } from 'utils/lib/serviceWorkerAction';
 import { useCommonState } from 'store/Provider/hooks';
 import './index.less';
 import InternalMessage from 'messages/InternalMessage';
 import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 import { useIsImputation } from '@portkey-wallet/hooks/hooks-ca/contact';
-import svgsList from 'assets/svgs';
+// import svgsList from 'assets/svgs';
 import UnReadBadge from 'pages/components/UnReadBadge';
 import WalletEntry from '../Wallet/components/WalletEntry';
 import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { IMenuItemInfo, useMenuList } from './useMenuList';
+import { IconTypeV3 } from 'types/icon';
+import { CustomSvgV3 } from 'components/CustomSvgV3';
+import ExitWallet from '../Wallet/components/ExitWallet';
+import { useState } from 'react';
 
 export default function My() {
   const { t } = useTranslation();
@@ -28,10 +32,11 @@ export default function My() {
     InternalMessage.payload(PortkeyMessageTypes.SETTING).send();
   };
 
-  const menuItemIcon = (iconType: keyof typeof svgsList, unReadShow: boolean) => {
+  const menuItemIcon = (iconType: IconTypeV3, unReadShow: boolean) => {
     return (
       <div className="menu-icon-wrap">
-        <CustomSvg type={iconType || 'Aelf'} />
+        {/*<CustomSvg type={iconType || 'Aelf'} />*/}
+        <CustomSvgV3 type={iconType || 'Aelf'} />
         {unReadShow && <UnReadBadge />}
       </div>
     );
@@ -39,17 +44,25 @@ export default function My() {
 
   const { nickName, avatar, userId } = useCurrentUserInfo();
 
+  const [exitVisible, setExitVisible] = useState<boolean>(false);
+  const onExit = () => {
+    setExitVisible(true);
+  };
+  const onCancelExit = () => {
+    setExitVisible(false);
+  };
+
   return (
     <div className="flex-column my-frame">
       <CommonHeader
         className="my-header"
         title={t('Settings')}
-        rightElementList={[
-          <div key="lock" className="lock-wrap flex-center cursor-pointer" onClick={lockWallet}>
-            <CustomSvg className="lock-icon" type="LockOutlined" />
-            <span className="lock-text">{t('Lock')}</span>
-          </div>,
-        ]}
+        // rightElementList={[
+        //   <div key="lock" className="lock-wrap flex-center cursor-pointer" onClick={lockWallet}>
+        //     <CustomSvg className="lock-icon" type="LockOutlined" />
+        //     <span className="lock-text">{t('Lock')}</span>
+        //   </div>,
+        // ]}
         onLeftBack={() => {
           navigate('/');
         }}
@@ -112,6 +125,16 @@ export default function My() {
             </Button>
           </div>
         )}
+      </div>
+
+      <div>
+        <ExitWallet
+          exitText={t('Sign out')}
+          exitVisible={exitVisible}
+          className="exit-btn"
+          onExit={onExit}
+          onCancelExit={onCancelExit}
+        />
       </div>
     </div>
   );

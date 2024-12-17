@@ -9,10 +9,11 @@ import { useIndexAndName, useIsMyContact } from '@portkey-wallet/hooks/hooks-ca/
 import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
 import LoginAccountList from '../LoginAccountList';
 import Avatar from 'pages/components/Avatar';
-import { useNavigate } from 'react-router';
+// import { useNavigate } from 'react-router';
 import { PopoverMenuList } from '@portkey-wallet/im-ui-web';
 import { useBlockAndReport } from '@portkey-wallet/hooks/hooks-ca/im';
 import clsx from 'clsx';
+import { CustomSvgV3 } from 'components/CustomSvgV3';
 
 export default function ViewContactBody({
   data,
@@ -26,7 +27,7 @@ export default function ViewContactBody({
   handleChat,
   handleAdd,
 }: IProfileDetailBodyProps) {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const isMyContactFn = useIsMyContact();
   const [popVisible, setPopVisible] = useState(false);
   const showChat = useIsChatShow();
@@ -69,11 +70,21 @@ export default function ViewContactBody({
     <div className="flex-column-between view-contact-body">
       <div className="view-contact-body-main">
         <div className="info-section name-section">
-          <Avatar avatarUrl={data?.avatar} nameIndex={index} size="large" />
-          <div className="name">{transName}</div>
-          {data?.previousPage === 'my-did' && (
-            <CustomSvg type="QRCode2" onClick={() => navigate('/setting/wallet/qrcode')} />
-          )}
+          <div className="avatar-container">
+            <Avatar avatarUrl={data?.avatar} nameIndex={index} size="xl" />
+            <div className="avatar-sub-icon">
+              <CustomSvgV3 className="edit-thin-icon" type="edit thin" />
+            </div>
+          </div>
+          <div className="name-edit-container">
+            <div className="name">{transName}</div>
+            <div>
+              <CustomSvgV3 className="edit-thin-icon" type="edit thin" />
+            </div>
+          </div>
+          {/*{data?.previousPage === 'my-did' && (*/}
+          {/*  <CustomSvg type="QRCode2" onClick={() => navigate('/setting/wallet/qrcode')} />*/}
+          {/*)}*/}
 
           {/* Section - Remark */}
           {showChat && relationId && isMyContact && isShowRemark && (
@@ -136,7 +147,7 @@ export default function ViewContactBody({
           portkeyId={data?.caHolderInfo?.userId}
           relationId={relationId}
           addresses={data?.addresses || []}
-          addressSectionLabel="Address"
+          addressSectionLabel="My Addresses"
         />
 
         {/* login account info */}

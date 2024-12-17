@@ -4,14 +4,14 @@ import { useNavigate } from 'react-router';
 import { IProfileDetailDataProps, MyProfilePageType } from 'types/Profile';
 import { useTranslation } from 'react-i18next';
 import { useCaAddressInfoList, useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
+// import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { useLocationState } from 'hooks/router';
 import { FromPageEnum, TWalletNameLocationState } from 'types/router';
 
 export default function WalletName() {
   const navigate = useNavigate();
   const { state: locationState } = useLocationState<TWalletNameLocationState>();
-  const showChat = useIsChatShow();
+  // const showChat = useIsChatShow();
   const { avatar = '', nickName = '', userId = '' } = useCurrentUserInfo();
   const caAddressInfos = useCaAddressInfoList();
   const transAddresses = useMemo(() => {
@@ -27,7 +27,8 @@ export default function WalletName() {
   const { t } = useTranslation();
   const editText = t('Edit');
   const [type, setType] = useState<MyProfilePageType>(MyProfilePageType.VIEW);
-  const title = useMemo(() => (showChat ? t('My Wallet') : t('My Profile')), [showChat, t]);
+  // const title = useMemo(() => (showChat ? t('My Wallet') : t('My Wallet')), [showChat, t]);
+  const title = t('My Wallet');
   const [headerTitle, setHeaderTitle] = useState(title);
 
   const state: IProfileDetailDataProps = useMemo(

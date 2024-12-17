@@ -36,14 +36,14 @@
     overflow-y: overlay;
     .menu-list {
       flex: 1;
-      .custom-svg {
-        width: 20px;
-        height: 20px;
-        svg {
-          width: 20px;
-          height: 20px;
-        }
-      }
+      //.custom-svg {
+      //  width: 20px;
+      //  height: 20px;
+      //  svg {
+      //    width: 20px;
+      //    height: 20px;
+      //  }
+      //}
       .leftarrow-icon {
         width: 16px;
         height: 16px;
@@ -74,6 +74,7 @@
         padding-right: 4px;
         max-width: 120px;
         font-size: 14px;
+        line-height: 140%;
         color: @text-opacity1;
         .text-overflow(1);
 
@@ -91,10 +92,24 @@
       }
     }
   }
+
+  .wallet-entry-container {
+    margin: 16px 0 12px;
+  }
 }
 
 .empty-placeholder {
   height: 1px;
+  width: 100%;
+  max-width: 361px;
   background-color: @border-neutral3;
-  margin: 0 16px;
+  margin: 0 7px;
 }
+
+@media screen and (min-width: 375px) {
+  .empty-placeholder {
+    margin: 0 auto;
+  }
+}
+
+

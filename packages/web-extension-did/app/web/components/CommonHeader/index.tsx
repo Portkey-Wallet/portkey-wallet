@@ -3,6 +3,7 @@ import clsx from 'clsx';
 import { Popover, PopoverProps } from 'antd';
 import CustomSvg, { SvgType } from 'components/CustomSvg';
 import './styles.less';
+import { CustomSvgV3 } from '../CustomSvgV3';
 
 export enum CustomSvgPlaceholderSize {
   LG = 'lg',
@@ -25,7 +26,8 @@ export interface ICommonHeaderProps {
   title?: ReactNode;
   rightElementList?: TRightElement[];
   showBottomBorder?: boolean;
-  onLeftBack?: () => void;
+  onLeftBack?: (() => void) | false;
+  onLeftBackShowClose?: boolean;
 }
 
 export default function CommonHeader({
@@ -33,7 +35,8 @@ export default function CommonHeader({
   title,
   rightElementList,
   showBottomBorder,
-  onLeftBack,
+  onLeftBack = false,
+  onLeftBackShowClose = false,
 }: ICommonHeaderProps) {
   const renderRightElement = (element: TRightElement, index: number) => {
     if (!element) return;
@@ -75,12 +78,14 @@ export default function CommonHeader({
       className={clsx(className, 'common-header', 'flex-row-center', {
         ['common-header-bottom-border']: showBottomBorder,
       })}>
-      {!!onLeftBack && (
-        <CustomSvg
-          className="common-header-left-icon cursor-pointer"
-          type="LeftArrowWithRightSideSpacing"
-          onClick={onLeftBack}
-        />
+      {onLeftBack ? (
+        onLeftBackShowClose ? (
+          <CustomSvgV3 className="common-header-left-icon cursor-pointer" type="close" onClick={onLeftBack} />
+        ) : (
+          <CustomSvgV3 className="common-header-left-icon cursor-pointer" type="arrow left" onClick={onLeftBack} />
+        )
+      ) : (
+        ''
       )}
       <div className={clsx('common-header-title', 'flex-1', { ['text-ellipsis']: typeof title === 'string' })}>
         {title}

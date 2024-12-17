@@ -1,8 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 import WalletNamePopup from './Popup';
-import WalletNamePrompt from './Prompt';
 import { useNavigate } from 'react-router';
-import { useCommonState } from 'store/Provider/hooks';
 import { IProfileDetailDataProps, MyProfilePageType } from 'types/Profile';
 import { useTranslation } from 'react-i18next';
 import { useCaAddressInfoList, useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
@@ -11,7 +9,6 @@ import { useLocationState } from 'hooks/router';
 import { FromPageEnum, TWalletNameLocationState } from 'types/router';
 
 export default function WalletName() {
-  const { isNotLessThan768 } = useCommonState();
   const navigate = useNavigate();
   const { state: locationState } = useLocationState<TWalletNameLocationState>();
   const showChat = useIsChatShow();
@@ -76,17 +73,7 @@ export default function WalletName() {
     setType(MyProfilePageType.VIEW);
   }, []);
 
-  return isNotLessThan768 ? (
-    <WalletNamePrompt
-      headerTitle={headerTitle}
-      data={state}
-      type={type}
-      editText={editText}
-      goBack={showView}
-      handleEdit={showEdit}
-      saveCallback={saveCallback}
-    />
-  ) : (
+  return (
     <WalletNamePopup
       headerTitle={headerTitle}
       data={state}

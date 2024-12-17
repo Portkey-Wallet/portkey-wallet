@@ -78,6 +78,7 @@ import SecondaryMailbox from 'pages/WalletSecurity/SecondaryMailbox';
 import SecondaryMailboxEdit from 'pages/WalletSecurity/SecondaryMailbox/Edit';
 import SecondaryMailboxVerify from 'pages/WalletSecurity/SecondaryMailbox/Verify';
 import Security from '../../pages/My/SettingList/Security';
+import { PrepareWallet } from 'pages/PrepareWallet';
 // import Example from 'pages/Example';
 // import TokenNetworkList from 'pages/DepositHome/components/TokenNetworkList';
 
@@ -112,6 +113,10 @@ export const PageRouter = () => {
     {
       path: '/success-page/:type',
       element: <SuccessPage />,
+    },
+    {
+      path: '/prepare-wallet/:type',
+      element: <PrepareWallet />,
     },
     {
       path: '/login/guardian-approval',

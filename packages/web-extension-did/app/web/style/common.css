@@ -1,25 +1,37 @@
 @font-face {
-  font-family: Roboto-Regular;
-  src: url('../assets/fonts/Roboto-Regular.ttf');
+  font-family: BG;
+  src: url('../assets/fonts/BricolageGrotesque-Regular.ttf');
 }
 
 @font-face {
-  font-family: Roboto-Regular;
-  font-weight: 500;
-  src: url('../assets/fonts/Roboto-Medium.ttf');
+  font-family: BG;
+  src: url('../assets/fonts/BricolageGrotesque-Bold.ttf');
+  font-weight: 700;
 }
 
 @font-face {
-  font-family: Roboto-Regular;
+  font-family: SG;
+  src: url('../assets/fonts/SchibstedGrotesk-Regular.ttf');
+}
+
+@font-face {
+  font-family: SG;
+  font-weight: 300;
+  src: url('../assets/fonts/SchibstedGrotesk-Italic.ttf');
+}
+
+@font-face {
+  font-family: SG;
   font-weight: 600;
-  src: url('../assets/fonts/Roboto-Bold.ttf');
+  src: url('../assets/fonts/SchibstedGrotesk-SemiBold.ttf');
 }
 
 body.en-language-wrapper {
-  font-family: Roboto-Regular;
+  font-family: SG, sans-serif;
 }
 
 body.theme-dark {
+  color: #fff;
   background-color: #151318;
 }
 

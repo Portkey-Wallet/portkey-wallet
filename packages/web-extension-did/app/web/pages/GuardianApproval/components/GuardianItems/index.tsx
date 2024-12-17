@@ -275,7 +275,6 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount,
 
   return (
     <li className={clsx('flex-between-center verifier-item', disabled && 'verifier-item-disabled')}>
-      {item.isLoginAccount && <div className="login-icon">{t('Login Account')}</div>}
       <div className="flex-between-center verifier-item-main">
         <VerifierPair
           guardian={item}

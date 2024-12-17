@@ -114,6 +114,7 @@ export default function SetWalletPin() {
     [dispatch, navigate, scanCaWalletInfo, scanWalletInfo, state],
   );
 
+  // TODO: async login
   const onCreate = useDebounceCallback(
     async (value: DIDWalletInfo | string) => {
       try {
@@ -158,7 +159,7 @@ export default function SetWalletPin() {
             chainId: value.chainId,
           }),
         );
-        navigate(`/success-page/${state}`);
+        navigate(`/prepare-wallet/${state}`);
         setLoading(false);
 
         ModalTip({
@@ -284,36 +285,43 @@ export default function SetWalletPin() {
   );
 
   return (
-    <div className="common-page set-wallet-pin" id="set-wallet-pin">
-      <PortKeyTitle leftElement={state !== 'login'} leftCallBack={leftCallBack} />
-      <div className="common-content1 set-pin-content">
-        <SetPinAndAddManager
-          accountType={LoginType[loginAccount?.loginType as LoginType] as AccountType}
-          type={loginType}
-          chainId={originChainId}
-          onlyGetPin={state === 'scan'}
-          guardianApprovedList={approvedList}
-          guardianIdentifier={loginAccount?.guardianAccount}
-          onFinish={onCreate}
-          onCreatePending={onCreatePending}
-          onError={onError}
-        />
-      </div>
+    <div className="set-wallet-pin" id="set-wallet-pin">
+      <PortKeyTitle
+        leftElement={state !== 'login'}
+        leftCallBack={leftCallBack}
+        renderContent={
+          <>
+            <div className="common-content1 set-pin-content">
+              <SetPinAndAddManager
+                accountType={LoginType[loginAccount?.loginType as LoginType] as AccountType}
+                type={loginType}
+                chainId={originChainId}
+                onlyGetPin={state === 'scan'}
+                guardianApprovedList={approvedList}
+                guardianIdentifier={loginAccount?.guardianAccount}
+                onFinish={onCreate}
+                onCreatePending={onCreatePending}
+                onError={onError}
+              />
+            </div>
 
-      <CommonModal
-        closable={false}
-        open={returnOpen}
-        title={t('Leave this page?')}
-        getContainer={'#set-wallet-pin'}
-        width={320}>
-        <p className="modal-content">{t('returnTip')}</p>
-        <div className="btn-wrapper">
-          <Button onClick={() => setReturnOpen(false)}>No</Button>
-          <Button type="primary" onClick={backHandler}>
-            Yes
-          </Button>
-        </div>
-      </CommonModal>
+            <CommonModal
+              closable={false}
+              open={returnOpen}
+              title={t('Leave this page?')}
+              getContainer={'#set-wallet-pin'}
+              width={320}>
+              <p className="modal-content">{t('returnTip')}</p>
+              <div className="btn-wrapper">
+                <Button onClick={() => setReturnOpen(false)}>No</Button>
+                <Button type="primary" onClick={backHandler}>
+                  Yes
+                </Button>
+              </div>
+            </CommonModal>
+          </>
+        }
+      />
     </div>
   );
 }

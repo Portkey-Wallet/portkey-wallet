@@ -10,6 +10,9 @@ interface ImageDisplayProps {
   backupSrc?: IconType;
   key?: string;
   notReady?: boolean;
+  hasBorder?: boolean;
+  borderRadius?: number | string;
+  defaultWidth?: number | string;
   defaultHeight?: number | string;
   name?: string;
 }
@@ -19,6 +22,9 @@ export default function ImageDisplay({
   className,
   backupSrc,
   notReady = false,
+  hasBorder = false,
+  borderRadius,
+  defaultWidth = 'auto',
   defaultHeight = 'auto',
   name = 'A',
 }: ImageDisplayProps) {
@@ -27,7 +33,9 @@ export default function ImageDisplay({
   const isShowDefault = useMemo(() => isError || notReady || !src, [isError, notReady, src]);
 
   return (
-    <div className={clsx('img-loading-wrapper', className)} style={{ height: defaultHeight || 'auto' }}>
+    <div
+      className={clsx('img-loading-wrapper', hasBorder && 'has-border', className)}
+      style={{ width: defaultWidth, height: defaultHeight, borderRadius }}>
       {isShowDefault ? (
         backupSrc ? (
           <div className="flex-center">

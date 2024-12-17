@@ -1,9 +1,7 @@
 import clsx from 'clsx';
 import { useMemo, useState } from 'react';
-import './index.less';
-import { ELF_SYMBOL } from '@portkey-wallet/constants/constants-ca/assets';
-import CustomSvg from 'components/CustomSvg';
 import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
+import './index.less';
 
 interface TokenImageDisplayProps {
   src?: string;
@@ -11,9 +9,16 @@ interface TokenImageDisplayProps {
   key?: string;
   width?: number;
   symbol?: string;
+  hasBorder?: boolean;
 }
 
-export default function TokenImageDisplay({ src, symbol = 'ELF', width = 32, className }: TokenImageDisplayProps) {
+export default function TokenImageDisplay({
+  src,
+  symbol = 'ELF',
+  width = 32,
+  hasBorder = false,
+  className,
+}: TokenImageDisplayProps) {
   const [isError, setError] = useState<boolean>(true);
   const symbolImages = useSymbolImages();
 
@@ -21,14 +26,10 @@ export default function TokenImageDisplay({ src, symbol = 'ELF', width = 32, cla
 
   const isShowDefault = useMemo(() => isError || !tokenSrc, [isError, tokenSrc]);
 
-  return symbol === ELF_SYMBOL ? (
-    <CustomSvg
-      style={{ width, height: width }}
-      className={clsx('token-logo', 'elf-token-logo', className)}
-      type="elf-icon"
-    />
-  ) : (
-    <div className={clsx('token-img-wrapper flex-center', className)} style={{ width, height: width }}>
+  return (
+    <div
+      className={clsx('token-img-wrapper flex-center', hasBorder ? 'has-border' : '', className)}
+      style={{ width, height: width }}>
       <div
         className={clsx('show-name-index', 'flex-center', !isShowDefault && 'hidden')}
         style={{ width, height: width }}>

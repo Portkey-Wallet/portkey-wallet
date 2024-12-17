@@ -14,7 +14,7 @@ export default function BaseVerifierIcon({ fallback, rootClassName, src }: BaseV
 
   return (
     <ImgLoading
-      className={clsx('base-verifier-icon', rootClassName)}
+      className={clsx('base-verifier-icon-root', rootClassName)}
       src={src}
       loadEle={fallbackEle}
       errorEle={fallbackEle}

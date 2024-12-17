@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import CustomSvg, { SvgType } from 'components/CustomSvg';
+import { SvgTypeV3, CustomSvgV3 } from 'components/CustomSvgV3';
 import { useUnreadCount } from '@portkey-wallet/hooks/hooks-ca/im';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { UnreadTip } from '@portkey-wallet/im-ui-web';
@@ -39,8 +39,8 @@ export default function BottomBar({ className }: IBottomBarProps) {
           key={`${fn.title}_${index}`}
           className={clsx('function-item', 'flex-center', fn.link === pathname && 'is-active')}>
           <div className="function-item-click-wrap flex-column-center" onClick={() => navigate(fn.link)}>
-            <CustomSvg className="function-item-icon" type={fn.icon as SvgType} />
-            <div className="function-item-title">{fn.title}</div>
+            <CustomSvgV3 className="function-item-icon" type={fn.icon as SvgTypeV3} />
+            {/* <div className="function-item-title">{fn.title}32321</div> */}
           </div>
         </div>
       ))}
@@ -48,7 +48,7 @@ export default function BottomBar({ className }: IBottomBarProps) {
         <div className={clsx('function-item', 'flex-center', '/chat-list' === pathname && 'is-active')}>
           <div className="function-item-click-wrap flex-column-center" onClick={() => navigate('/chat-list')}>
             <div className="chat-icon-wrap">
-              <CustomSvg className="function-item-icon" type="ChatEntry" />
+              <CustomSvgV3 className="function-item-icon" type="ChatEntry" />
               {unreadCount > 0 && (
                 <div className="chat-entry-unread">
                   <UnreadTip unread={unreadCount} />

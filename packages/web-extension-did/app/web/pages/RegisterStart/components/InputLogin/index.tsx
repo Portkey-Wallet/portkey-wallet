@@ -1,11 +1,12 @@
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
-import CustomSvg from 'components/CustomSvg';
 import { MutableRefObject, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { RegisterType, ValidateHandler } from 'types/wallet';
 import InputInfo, { InputInfoProps, InputInfoRef } from '../InputInfo';
-import './index.less';
 import { LoginKey } from '@portkey-wallet/types/types-ca/wallet';
+import { BackAndSwitchNetwork } from '../SwitchNetworkButton';
+import './index.less';
+import clsx from 'clsx';
+import { useNavigateState } from 'hooks/router';
 
 export default function InputLogin({
   type,
@@ -25,38 +26,49 @@ export default function InputLogin({
   validatePhone?: ValidateHandler;
 }) {
   const { t } = useTranslation();
-  const isMainnet = useIsMainnet();
+  const isLogin = useMemo(() => type === 'Login', [type]);
 
-  const title = useMemo(() => (type === 'Login' ? t('Login') : t('Sign up')), [t, type]);
+  const title = useMemo(() => (isLogin ? t('Log in via email') : t('Create your account')), [t, isLogin]);
 
   const renderTitle = useMemo(() => {
-    if (!isMainnet) {
+    return <span>{title}</span>;
+  }, [title]);
+  const navigate = useNavigateState();
+
+  const nextEle = useMemo(() => {
+    if (isLogin) {
       return (
-        <div className="flex-center testnet-flag">
-          <span className="content">
-            {title}
-            <span className="flag-text flex-center">{t('TEST')}</span>
+        <div className={clsx('go-sign-up')}>
+          <span>{t('Don’t have an account?')}</span>
+          <span className="sign-text" onClick={() => navigate('/register/start/create')}>
+            {t('Sign up')}
           </span>
         </div>
       );
     }
-    return <span>{title}</span>;
-  }, [isMainnet, t, title]);
+    return (
+      <div className={clsx('go-sign-up')}>
+        <span>{t('Already have an account?')}</span>
+        <span className="sign-text" onClick={() => navigate('/register/start/login-input')}>
+          {t('Log in')}
+        </span>
+      </div>
+    );
+  }, [isLogin, navigate, t]);
 
   return (
-    <div>
-      <h1 className="title">
-        <CustomSvg type="BackLeft" onClick={onBack} />
-        {renderTitle}
-      </h1>
+    <div className="login-content-wrapper">
+      <BackAndSwitchNetwork onClick={onBack} />
+      <h1 className="title">{renderTitle}</h1>
       <InputInfo
         ref={inputRef}
         defaultKey={defaultKey}
         validatePhone={validatePhone}
         validateEmail={validateEmail}
-        confirmText={title}
+        confirmText={'Continue'}
         onFinish={onFinish}
       />
+      {nextEle}
     </div>
   );
 }

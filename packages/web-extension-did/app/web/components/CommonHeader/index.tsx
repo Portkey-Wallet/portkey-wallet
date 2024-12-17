@@ -82,7 +82,7 @@ export default function CommonHeader({
         onLeftBackShowClose ? (
           <CustomSvgV3 className="common-header-left-icon cursor-pointer" type="close" onClick={onLeftBack} />
         ) : (
-          <CustomSvgV3 className="common-header-left-icon cursor-pointer" type="arrow left" onClick={onLeftBack} />
+          <CustomSvgV3 className="common-header-left-icon cursor-pointer" type="arrow-left" onClick={onLeftBack} />
         )
       ) : (
         ''

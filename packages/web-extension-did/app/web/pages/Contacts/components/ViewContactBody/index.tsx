@@ -67,7 +67,7 @@ export default function ViewContactBody({
     return () => document.removeEventListener('click', hidePop);
   }, [hidePop]);
   return (
-    <div className="flex-column-between view-contact-body">
+    <div className="view-contact-body">
       <div className="view-contact-body-main">
         <div className="info-section name-section">
           <div className="avatar-container">

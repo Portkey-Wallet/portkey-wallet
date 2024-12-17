@@ -35,7 +35,7 @@ export default function ContactAddressList({ list }: { list: AddressItem[] }) {
                 toCopy={formatAddressShow}
                 iconType="copy"
                 iconClassName="address-copy-icon"
-                fillColor="#FFFFFF40"
+                fillColor="#FFFFFF66"
               />
             </div>
             <div className="address-wrapper">

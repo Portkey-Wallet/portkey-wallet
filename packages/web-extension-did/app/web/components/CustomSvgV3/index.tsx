@@ -19,7 +19,11 @@ export function CustomSvgV3({
   }
   return (
     <div
-      className={clsx('custom-svg-24', `${type.toLocaleLowerCase()}-icon`, className)}
+      className={clsx(
+        'custom-svg-24',
+        `${type.toLocaleLowerCase().replaceAll(' ', '-').replaceAll('=', '-')}-icon`,
+        className,
+      )}
       dangerouslySetInnerHTML={{ __html: svgContent }}
       {...props}></div>
   );

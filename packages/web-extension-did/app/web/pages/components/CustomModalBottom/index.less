@@ -1,0 +1,95 @@
+@import '../../../assets/theme/color.less';
+
+.confirm-modal-bottom,
+.info-modal-bottom,
+.warning-modal-bottom{
+  .@{app-prefix}-modal-content {
+    background: @bg-base1;
+    border-top: 1px solid @border-base1;
+    border-radius: 0;
+    .@{app-prefix}-modal-body {
+      padding: 0;
+      .@{app-prefix}-modal-confirm-content {
+        padding: 16px 16px 0;
+        margin-top: 0 !important;
+        text-align: left;
+        font-size: 14px;
+        line-height: 20px;
+        //color: @neutral-secondary-text;
+        color: @text-base1;
+        .header {
+          font-size: 20px;
+          line-height: 120%;
+          letter-spacing: -0.4px;
+          font-weight: 700;
+          margin-bottom: 12px;
+          display: flex;
+          justify-content: space-between;
+          //align-items: ;
+          .error-icon {
+            height: 32px;
+            width: 32px;
+            svg {
+              width: 100%;
+              height: 100%;
+            }
+          }
+          .close-thin-icon {
+            height: 20px;
+            width: 20px;
+            svg {
+              width: 100%;
+              height: 100%;
+            }
+          }
+        }
+        .title {
+          margin-bottom: 12px;
+          font-size: 20px;
+          line-height: 120%;
+          letter-spacing: -0.4px;
+          font-weight: 700;
+        }
+        .content {
+          font-size: 16px;
+          line-height: 140%;
+        }
+      }
+      .@{app-prefix}-modal-confirm-btns {
+        display: flex;
+        justify-content: space-between;
+        padding: 24px 8px 16px;
+        margin: 0;
+        //border-top: 1px solid @border-neutral3;
+        button {
+          //width: 136px;
+          height: 48px;
+          border-radius: 24px;
+          margin: 0 8px !important;
+          line-height: 22px;
+          font-size: 16px;
+        }
+      }
+    }
+  }
+}
+.confirm-modal {
+  .@{app-prefix}-modal-confirm-btns {
+    display: flex;
+    justify-content: space-between;
+    button {
+      //width: 136px;
+    }
+  }
+}
+.info-modal {
+  .@{app-prefix}-modal-content {
+    .@{app-prefix}-modal-body {
+      .@{app-prefix}-modal-confirm-btns {
+        button {
+          //width: 288px;
+        }
+      }
+    }
+  }
+}

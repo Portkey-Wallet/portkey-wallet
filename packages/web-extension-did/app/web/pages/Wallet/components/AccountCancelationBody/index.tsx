@@ -30,7 +30,7 @@ export default function AccountCancelationBody({ onConfirm, showGuardianType }: 
       </div>
       <div className="account-cancelation-footer">
         <div className="footer">
-          <AsyncButton type="primary" htmlType="submit" className="edit-btn" onClick={onConfirm}>
+          <AsyncButton type="primary" danger={true} htmlType="submit" className="edit-btn" onClick={onConfirm}>
             Confirm account deletion
           </AsyncButton>
         </div>

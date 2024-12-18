@@ -11,6 +11,7 @@ import {
 } from '@portkey-wallet/utils/deleteAccount';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import CustomModal, { ICustomModalProps } from 'pages/components/CustomModal';
+import { CustomModalBottom } from 'pages/components/CustomModalBottom';
 import { useGuardiansInfo, useLoading } from 'store/Provider/hooks';
 import useGuardianList from 'hooks/useGuardianList';
 import { useEffectOnce } from '@portkey-wallet/hooks';
@@ -65,7 +66,8 @@ export default function AccountCancelation() {
       if (!caHash || !managerAddress) return false;
       const list = await checkIsValidateDeletionAccount(uniqueGuardianType);
       if (list.length > 0) {
-        CustomModal({
+        // CustomModal({
+        CustomModalBottom({
           content: (
             <div className="account-cancelation-alert-modal">
               <div className="title">Unable to Delete Account</div>
@@ -205,7 +207,8 @@ export default function AccountCancelation() {
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const modalCommon = {
-    type: 'confirm',
+    // type: 'confirm',
+    type: 'warning',
     content: (
       <div>
         <div className="title">Delete Account Warning</div>
@@ -219,14 +222,17 @@ export default function AccountCancelation() {
   const onConfirm = useCallback(async () => {
     const checkValid = await handleCheck();
     if (!checkValid) return;
-    CustomModal({
+    // CustomModal({
+    CustomModalBottom({
       ...modalCommon,
+      type: 'confirm',
       onOk: handleAccountCancel,
     } as ICustomModalProps);
   }, [handleAccountCancel, handleCheck, modalCommon]);
 
   useEffectOnce(() => {
-    CustomModal({
+    // CustomModal({
+    CustomModalBottom({
       ...modalCommon,
       onCancel: () => navigate('/setting/wallet/wallet-name'),
     } as ICustomModalProps);

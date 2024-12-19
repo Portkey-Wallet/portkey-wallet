@@ -4,7 +4,6 @@ import { useLocation, useNavigate } from 'react-router';
 import { useCommonState } from 'store/Provider/hooks';
 import WalletPopup from './Popup';
 import { MenuItemInfo } from 'pages/components/MenuList';
-// import WalletPrompt from './Prompt';
 import { IExitWalletProps } from './components/ExitWallet';
 import { BaseHeaderProps } from 'types/UI';
 import { IWalletEntryProps } from './components/WalletEntry';

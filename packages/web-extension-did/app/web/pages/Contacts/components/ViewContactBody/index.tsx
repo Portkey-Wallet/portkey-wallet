@@ -1,4 +1,4 @@
-import { Button, Modal, Popover } from 'antd';
+import { Modal, Popover } from 'antd';
 import './index.less';
 import CustomSvg from 'components/CustomSvg';
 import { IProfileDetailBodyProps } from 'types/Profile';
@@ -9,29 +9,27 @@ import { useIndexAndName, useIsMyContact } from '@portkey-wallet/hooks/hooks-ca/
 import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
 import LoginAccountList from '../LoginAccountList';
 import Avatar from 'pages/components/Avatar';
-// import { useNavigate } from 'react-router';
 import { PopoverMenuList } from '@portkey-wallet/im-ui-web';
 import { useBlockAndReport } from '@portkey-wallet/hooks/hooks-ca/im';
 import clsx from 'clsx';
 import { CustomSvgV3 } from 'components/CustomSvgV3';
 import { CustomModalBottom } from '../../../components/CustomModalBottom';
 import EditWalletNameForm from '../../../Wallet/components/EditWalletNameForm';
+import { EditWalletAvatarForm } from '../../../Wallet/components/EditWalletAvatarForm';
 import { useCurrentUserInfo, useSetUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 
 export default function ViewContactBody({
   data,
-  editText = 'Edit',
+  // editText = 'Edit',
   chatText = 'Chat',
   addedText = 'Added',
   addContactText = 'Add Contact',
   isShowRemark = true,
   morePopListData,
-  handleEdit,
   handleChat,
   handleAdd,
 }: IProfileDetailBodyProps) {
-  // const { avatar, nickName } = useCurrentUserInfo();
-  const { nickName } = useCurrentUserInfo();
+  const { avatar, nickName } = useCurrentUserInfo();
   const setUserInfo = useSetUserInfo();
   // const navigate = useNavigate();
   const isMyContactFn = useIsMyContact();
@@ -78,7 +76,29 @@ export default function ViewContactBody({
         <div className="info-section name-section">
           <div className="avatar-container">
             <Avatar avatarUrl={data?.avatar} nameIndex={index} size="xl" />
-            <div className="avatar-sub-icon">
+            <div
+              className="avatar-sub-icon"
+              onClick={() => {
+                CustomModalBottom({
+                  type: 'confirm',
+                  noFooter: true,
+                  content: (
+                    <EditWalletAvatarForm
+                      avatar={avatar}
+                      setUserInfo={setUserInfo}
+                      data={data}
+                      saveCallback={() => {
+                        Modal.destroyAll();
+                      }}
+                    />
+                  ),
+                  onOk: () => {
+                    return;
+                  },
+                  title: 'Change wallet picture',
+                  okText: 'Save',
+                });
+              }}>
               <CustomSvgV3 className="edit-thin-icon" type="edit thin" />
             </div>
           </div>
@@ -186,15 +206,6 @@ export default function ViewContactBody({
           Apple={data?.loginAccountMap?.Apple}
         />
       </div>
-
-      {/* stranger cant edit */}
-      {(data.id || isMyContact || data?.previousPage === 'my-did') && (
-        <div className="footer">
-          <Button type="primary" htmlType="submit" className="edit-btn" onClick={handleEdit}>
-            {editText}
-          </Button>
-        </div>
-      )}
     </div>
   );
 }

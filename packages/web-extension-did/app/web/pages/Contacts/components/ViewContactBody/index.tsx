@@ -7,6 +7,7 @@ import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useIndexAndName, useIsMyContact } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import LoginAccountList from '../LoginAccountList';
 import Avatar from 'pages/components/Avatar';
 import { PopoverMenuList } from '@portkey-wallet/im-ui-web';
@@ -29,6 +30,7 @@ export default function ViewContactBody({
   handleChat,
   handleAdd,
 }: IProfileDetailBodyProps) {
+  const networkInfo = useCurrentNetworkInfo();
   const { avatar, nickName } = useCurrentUserInfo();
   const setUserInfo = useSetUserInfo();
   // const navigate = useNavigate();
@@ -85,6 +87,7 @@ export default function ViewContactBody({
                   content: (
                     <EditWalletAvatarForm
                       avatar={avatar}
+                      networkInfo={networkInfo}
                       setUserInfo={setUserInfo}
                       data={data}
                       saveCallback={() => {

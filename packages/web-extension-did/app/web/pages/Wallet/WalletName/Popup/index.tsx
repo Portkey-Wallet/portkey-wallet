@@ -3,9 +3,11 @@ import ViewContactBody from 'pages/Contacts/components/ViewContactBody';
 import { IProfileDetailProps, MyProfilePageType } from 'types/Profile';
 import './index.less';
 import SetWalletNameForm from 'pages/Wallet/components/SetWalletNameForm';
-import { useCommonState } from 'store/Provider/hooks';
+// import { useCommonState } from 'store/Provider/hooks';
 import { useIsShowDeletion } from '@portkey-wallet/hooks/hooks-ca/account';
 import { useNavigateState } from 'hooks/router';
+// import { useEffect } from 'react';
+// import { CustomModalBottom } from '../../../components/CustomModalBottom';
 
 export default function WalletNamePopup({
   headerTitle,
@@ -18,7 +20,7 @@ export default function WalletNamePopup({
   saveCallback,
 }: IProfileDetailProps) {
   const navigate = useNavigateState();
-  const { isPrompt } = useCommonState();
+  // const { isPrompt } = useCommonState();
   const showDeletion = useIsShowDeletion();
 
   return (
@@ -29,7 +31,8 @@ export default function WalletNamePopup({
       )}
       {type === MyProfilePageType.EDIT && <SetWalletNameForm data={data} saveCallback={saveCallback} />}
 
-      {showDeletion && isPrompt && type === MyProfilePageType.VIEW && (
+      {/*{showDeletion && isPrompt && type === MyProfilePageType.VIEW && (*/}
+      {showDeletion && type === MyProfilePageType.VIEW && (
         <div
           className="account-cancelation flex-center"
           onClick={() => navigate('/setting/wallet/account-cancelation')}>

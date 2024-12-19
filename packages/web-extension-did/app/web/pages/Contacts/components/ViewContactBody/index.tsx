@@ -1,4 +1,4 @@
-import { Button, Popover } from 'antd';
+import { Button, Modal, Popover } from 'antd';
 import './index.less';
 import CustomSvg from 'components/CustomSvg';
 import { IProfileDetailBodyProps } from 'types/Profile';
@@ -14,6 +14,9 @@ import { PopoverMenuList } from '@portkey-wallet/im-ui-web';
 import { useBlockAndReport } from '@portkey-wallet/hooks/hooks-ca/im';
 import clsx from 'clsx';
 import { CustomSvgV3 } from 'components/CustomSvgV3';
+import { CustomModalBottom } from '../../../components/CustomModalBottom';
+import EditWalletNameForm from '../../../Wallet/components/EditWalletNameForm';
+import { useCurrentUserInfo, useSetUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 
 export default function ViewContactBody({
   data,
@@ -27,6 +30,9 @@ export default function ViewContactBody({
   handleChat,
   handleAdd,
 }: IProfileDetailBodyProps) {
+  // const { avatar, nickName } = useCurrentUserInfo();
+  const { nickName } = useCurrentUserInfo();
+  const setUserInfo = useSetUserInfo();
   // const navigate = useNavigate();
   const isMyContactFn = useIsMyContact();
   const [popVisible, setPopVisible] = useState(false);
@@ -78,7 +84,29 @@ export default function ViewContactBody({
           </div>
           <div className="name-edit-container">
             <div className="name">{transName}</div>
-            <div>
+            <div
+              onClick={() => {
+                CustomModalBottom({
+                  type: 'confirm',
+                  noFooter: true,
+                  content: (
+                    <EditWalletNameForm
+                      // avatar={avatar}
+                      nickName={nickName}
+                      setUserInfo={setUserInfo}
+                      data={data}
+                      saveCallback={() => {
+                        Modal.destroyAll();
+                      }}
+                    />
+                  ),
+                  onOk: () => {
+                    return;
+                  },
+                  title: 'Rename wallet',
+                  okText: 'Save',
+                });
+              }}>
               <CustomSvgV3 className="edit-thin-icon" type="edit thin" />
             </div>
           </div>

@@ -10,8 +10,8 @@ import {
   getSocialLoginAccountToken,
 } from '@portkey-wallet/utils/deleteAccount';
 import { handleErrorMessage } from '@portkey-wallet/utils';
-import CustomModal, { ICustomModalProps } from 'pages/components/CustomModal';
-import { CustomModalBottom } from 'pages/components/CustomModalBottom';
+// import CustomModal from 'pages/components/CustomModal';
+import { CustomModalBottom, ICustomModalBottomProps } from 'pages/components/CustomModalBottom';
 import { useGuardiansInfo, useLoading } from 'store/Provider/hooks';
 import useGuardianList from 'hooks/useGuardianList';
 import { useEffectOnce } from '@portkey-wallet/hooks';
@@ -184,7 +184,8 @@ export default function AccountCancelation() {
       handleSocialAccountCancel();
     } else {
       // email guardian
-      CustomModal({
+      // CustomModal({
+      CustomModalBottom({
         type: 'confirm',
         content: (
           <p>
@@ -227,7 +228,7 @@ export default function AccountCancelation() {
       ...modalCommon,
       type: 'confirm',
       onOk: handleAccountCancel,
-    } as ICustomModalProps);
+    } as ICustomModalBottomProps);
   }, [handleAccountCancel, handleCheck, modalCommon]);
 
   useEffectOnce(() => {
@@ -235,7 +236,7 @@ export default function AccountCancelation() {
     CustomModalBottom({
       ...modalCommon,
       onCancel: () => navigate('/setting/wallet/wallet-name'),
-    } as ICustomModalProps);
+    } as ICustomModalBottomProps);
   });
 
   const props: IAccountCancelationProps = useMemo(

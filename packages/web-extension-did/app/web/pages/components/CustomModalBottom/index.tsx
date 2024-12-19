@@ -4,8 +4,9 @@ import './index.less';
 import clsx from 'clsx';
 import { CustomSvgV3 } from 'components/CustomSvgV3';
 
-export interface ICustomModalProps extends ModalFuncProps {
+export interface ICustomModalBottomProps extends ModalFuncProps {
   type?: 'info' | 'confirm' | 'warning';
+  noFooter?: boolean;
   content: ReactNode;
   okText?: string;
   cancelText?: string;
@@ -23,6 +24,7 @@ interface IModal {
 
 export const CustomModalBottom = ({
   type,
+  noFooter = false,
   content,
   okText,
   onCancel,
@@ -31,7 +33,7 @@ export const CustomModalBottom = ({
   className,
   title,
   ...extraProps
-}: ICustomModalProps) => {
+}: ICustomModalBottomProps) => {
   const props = {
     open: true,
     width: '100%',
@@ -65,12 +67,14 @@ export const CustomModalBottom = ({
     </div>
   );
 
+  const noFooterClassName = noFooter ? 'modal-no-footer' : '';
+
   switch (type) {
     case 'confirm': {
       const modal = Modal.confirm({});
       modal.update({
         ...props,
-        className: clsx(['confirm-modal-bottom', className]),
+        className: clsx(['confirm-modal-bottom', noFooterClassName, className]),
         okText: okText || 'OK',
         cancelText: cancelText || 'Cancel',
         content: <ExtendedContent modal={modal} title={title} />,
@@ -84,7 +88,7 @@ export const CustomModalBottom = ({
       const modal = Modal.confirm({});
       modal.update({
         ...props,
-        className: clsx(['warning-modal-bottom', className]),
+        className: clsx(['warning-modal-bottom', noFooterClassName, className]),
         okText: okText || 'OK',
         cancelText: cancelText || 'Cancel',
         content: <ExtendedContent modal={modal} title={title} />,
@@ -100,7 +104,7 @@ export const CustomModalBottom = ({
       const modal = Modal.info({});
       modal.update({
         ...props,
-        className: clsx(['info-modal-bottom', className]),
+        className: clsx(['info-modal-bottom', noFooterClassName, className]),
         okText: okText || 'OK',
         content: <ExtendedContent modal={modal} title={title} />,
         onOk: onOk,

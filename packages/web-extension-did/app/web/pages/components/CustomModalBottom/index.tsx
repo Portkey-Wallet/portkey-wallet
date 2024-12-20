@@ -82,7 +82,7 @@ export const CustomModalBottom = ({
         onCancel: onCancel,
         ...extraProps,
       });
-      return;
+      return modal;
     }
     case 'warning': {
       const modal = Modal.confirm({});
@@ -97,7 +97,7 @@ export const CustomModalBottom = ({
         okButtonProps: { danger: true },
         ...extraProps,
       });
-      return;
+      return modal;
     }
     // case 'info':
     default: {
@@ -110,7 +110,7 @@ export const CustomModalBottom = ({
         onOk: onOk,
         ...extraProps,
       });
-      return;
+      return modal;
     }
   }
 };

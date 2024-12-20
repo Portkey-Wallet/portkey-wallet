@@ -13,6 +13,17 @@
     padding-left: 24px !important;
     padding-right: 24px !important;
 
+    .edit-thin-icon {
+      height: 16px;
+      width: 16px;
+      margin-left: 4px;
+      cursor: pointer;
+      svg {
+        width: 100%;
+        height: 100%;
+      }
+    }
+
     .avatar-container {
       position: relative;
       .avatar-sub-icon {
@@ -30,8 +41,12 @@
         align-items: center;
         justify-content: center;
         padding: 0 4px 0 0;
-        &:hover {
-          cursor: pointer;
+        cursor: pointer;
+        &-disabled {
+          cursor: not-allowed;
+          .edit-thin-icon {
+            cursor: not-allowed;
+          }
         }
       }
     }
@@ -48,18 +63,6 @@
     .name-edit-container {
       display: flex;
       align-items: baseline;
-    }
-    .edit-thin-icon {
-      height: 16px;
-      width: 16px;
-      margin-left: 4px;
-      &:hover {
-        cursor: pointer;
-      }
-      svg {
-        width: 100%;
-        height: 100%;
-      }
     }
     .remark {
       font-size: 12px;

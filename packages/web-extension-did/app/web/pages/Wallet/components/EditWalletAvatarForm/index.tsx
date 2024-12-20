@@ -1,12 +1,12 @@
 import { useCallback, useRef, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'antd';
-import { RequireAtLeastOne } from '@portkey-wallet/types/common';
+// import { RequireAtLeastOne } from '@portkey-wallet/types/common';
 import '../EditWalletNameForm/index.less';
 import { IProfileDetailDataProps } from 'types/Profile';
-import uploadImageToS3 from 'utils/compressAndUploadToS3';
-import { handleErrorMessage } from '@portkey-wallet/utils';
-import singleMessage from 'utils/singleMessage';
+// import uploadImageToS3 from 'utils/compressAndUploadToS3';
+// import { handleErrorMessage } from '@portkey-wallet/utils';
+// import singleMessage from 'utils/singleMessage';
 import { request } from '@portkey-wallet/api/api-did';
 import ImageDisplay from '../../../components/ImageDisplay';
 import clsx from 'clsx';
@@ -17,18 +17,18 @@ import CommonTabs, { TabKey } from '../../../../components/CommonTabs';
 
 export interface IEditWalletAvatarFormProps {
   data: IProfileDetailDataProps;
-  saveCallback?: () => void;
+  saveCallback: (param: { file?: File; selectedAvatar?: string }) => void;
   avatar?: string;
-  setUserInfo: (params: RequireAtLeastOne<{ nickName: string; avatar: string }>) => Promise<void>;
+  // setUserInfo: (params: RequireAtLeastOne<{ nickName: string; avatar: string }>) => Promise<void>;
   networkInfo: any;
 }
 
-export function EditWalletAvatarForm({ saveCallback, avatar, setUserInfo, networkInfo }: IEditWalletAvatarFormProps) {
+export function EditWalletAvatarForm({ saveCallback, avatar, networkInfo }: IEditWalletAvatarFormProps) {
   const { t } = useTranslation();
 
   const [selectedAvatar, setSelectedAvatar] = useState(avatar);
   const newAvatarFile = useRef<File>();
-  const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false);
 
   const [iconList, setIconList] = useState([]);
   useEffect(() => {
@@ -44,23 +44,27 @@ export function EditWalletAvatarForm({ saveCallback, avatar, setUserInfo, networ
   }, [networkInfo.apiUrl]);
 
   const handleUpdate = useCallback(async () => {
-    try {
-      setLoading(true);
-      let s3Url = '';
-      if (newAvatarFile.current) {
-        s3Url = await uploadImageToS3(newAvatarFile.current);
-      }
-
-      await setUserInfo({ avatar: s3Url || (selectedAvatar as string) });
-      saveCallback?.();
-      singleMessage.success(t('Saved Successful'));
-    } catch (error) {
-      singleMessage.error(handleErrorMessage(error, 'set wallet name error'));
-      console.log('setWalletName: error', error);
-    } finally {
-      setLoading(false);
-    }
-  }, [saveCallback, selectedAvatar, setUserInfo, t]);
+    saveCallback({
+      file: newAvatarFile.current,
+      selectedAvatar: selectedAvatar,
+    });
+    // try {
+    //   setLoading(true);
+    //   let s3Url = '';
+    //   if (newAvatarFile.current) {
+    //     s3Url = await uploadImageToS3(newAvatarFile.current);
+    //   }
+    //
+    //   await setUserInfo({ avatar: s3Url || (selectedAvatar as string) });
+    //   saveCallback?.();
+    //   singleMessage.success(t('Saved Successful'));
+    // } catch (error) {
+    //   singleMessage.error(handleErrorMessage(error, 'set wallet name error'));
+    //   console.log('setWalletName: error', error);
+    // } finally {
+    //   setLoading(false);
+    // }
+  }, [saveCallback, selectedAvatar]);
 
   const getFile = useCallback((file: File) => {
     newAvatarFile.current = file;
@@ -104,11 +108,6 @@ export function EditWalletAvatarForm({ saveCallback, avatar, setUserInfo, networ
                     );
                   })}
                 </div>
-                {/*<div className="form-btn">*/}
-                {/*  <Button type="primary" htmlType="submit" loading={loading} onClick={handleUpdate}>*/}
-                {/*    {t('Save')}*/}
-                {/*  </Button>*/}
-                {/*</div>*/}
               </div>
             ),
           },
@@ -133,7 +132,7 @@ export function EditWalletAvatarForm({ saveCallback, avatar, setUserInfo, networ
         ]}
       />
       <div className="form-btn">
-        <Button type="primary" htmlType="submit" loading={loading} onClick={handleUpdate}>
+        <Button type="primary" htmlType="submit" onClick={handleUpdate}>
           {t('Save')}
         </Button>
       </div>

@@ -18,6 +18,7 @@ import { CustomModalBottom } from '../../../components/CustomModalBottom';
 import EditWalletNameForm from '../../../Wallet/components/EditWalletNameForm';
 import { EditWalletAvatarForm } from '../../../Wallet/components/EditWalletAvatarForm';
 import { useCurrentUserInfo, useSetUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import uploadImageToS3 from 'utils/compressAndUploadToS3';
 
 export default function ViewContactBody({
   data,
@@ -72,15 +73,32 @@ export default function ViewContactBody({
     document.addEventListener('click', hidePop);
     return () => document.removeEventListener('click', hidePop);
   }, [hidePop]);
+
+  const [avatarUploading, setAvatarUploading] = useState(false);
+
   return (
     <div className="view-contact-body">
       <div className="view-contact-body-main">
         <div className="info-section name-section">
           <div className="avatar-container">
-            <Avatar avatarUrl={data?.avatar} nameIndex={index} size="xl" />
+            <Avatar
+              avatarUrl={data?.avatar}
+              nameIndex={index}
+              size="xl"
+              loading={{
+                loading: avatarUploading,
+                type: {
+                  height: 32,
+                  width: 32,
+                },
+              }}
+            />
             <div
-              className="avatar-sub-icon"
+              className={clsx('avatar-sub-icon', avatarUploading ? 'avatar-sub-icon-disabled' : '')}
               onClick={() => {
+                if (avatarUploading) {
+                  return;
+                }
                 CustomModalBottom({
                   type: 'confirm',
                   noFooter: true,
@@ -88,10 +106,22 @@ export default function ViewContactBody({
                     <EditWalletAvatarForm
                       avatar={avatar}
                       networkInfo={networkInfo}
-                      setUserInfo={setUserInfo}
                       data={data}
-                      saveCallback={() => {
+                      saveCallback={async (avatar) => {
                         Modal.destroyAll();
+                        try {
+                          setAvatarUploading(true);
+                          let s3Url = '';
+                          if (avatar.file) {
+                            s3Url = await uploadImageToS3(avatar.file);
+                          }
+
+                          await setUserInfo({ avatar: (s3Url || avatar.selectedAvatar) as string });
+                        } catch (error) {
+                          console.log('setWalletName: error', error);
+                        } finally {
+                          setAvatarUploading(false);
+                        }
                       }}
                     />
                   ),
@@ -102,7 +132,7 @@ export default function ViewContactBody({
                   okText: 'Save',
                 });
               }}>
-              <CustomSvgV3 className="edit-thin-icon" type="edit thin" />
+              <CustomSvgV3 className="edit-thin-icon" type="edit thin" disabled={avatarUploading} />
             </div>
           </div>
           <div className="name-edit-container">

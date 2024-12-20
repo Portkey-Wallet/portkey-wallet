@@ -23,10 +23,10 @@ export default function SetNewPin() {
     state: { pin },
   } = useLocationState<TSetNewPinLocationState>();
   const { t } = useTranslation();
-  const title = t('Change Pin');
-  const setPinLabel = 'Please enter a new pin';
-  const confirmPinLabel = 'Confirm new pin';
-  const btnText = 'Save';
+  const title = t('');
+  const setPinLabel = 'New PIN';
+  const confirmPinLabel = 'Confirm PIN';
+  const btnText = 'Continue';
 
   useEffect(() => {
     return form.resetFields();
@@ -42,7 +42,7 @@ export default function SetNewPin() {
       }),
     );
     await setPinAction(newPin);
-    singleMessage.success(t('Modified Successfully'));
+    singleMessage.success(t('PIN updated'));
     navigate('/setting/security');
   }, [dispatch, form, navigate, pin, t]);
 

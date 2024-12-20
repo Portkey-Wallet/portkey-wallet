@@ -15,6 +15,7 @@ export default function SetNewPinPopup({
   return (
     <div className="set-new-pin-popup min-width-max-height">
       <CommonHeader title={headerTitle} onLeftBack={goBack} />
+      <div className="pin-edit-title font-bg">Create a new PIN to protect your wallet</div>
       <SetNewPinForm
         form={form}
         setPinLabel={setPinLabel}

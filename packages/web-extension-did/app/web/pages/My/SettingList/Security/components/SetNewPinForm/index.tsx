@@ -2,7 +2,6 @@ import { Form, Button, FormProps } from 'antd';
 import FormItem from 'antd/es/form/FormItem';
 import clsx from 'clsx';
 import ConfirmPassword from 'components/ConfirmPassword';
-import { useCommonState } from 'store/Provider/hooks';
 import { ReactNode } from 'react';
 import './index.less';
 
@@ -20,11 +19,9 @@ export default function SetNewPinForm({
   confirmPinLabel,
   btnText,
 }: ISetNewPinFormProps) {
-  const { isNotLessThan768 } = useCommonState();
-
   return (
     <Form
-      className={clsx(['set-pin-form', isNotLessThan768 && 'set-pin-form-prompt'])}
+      className={clsx(['set-pin-form'])}
       name="SetPinForm"
       form={form}
       requiredMark={false}

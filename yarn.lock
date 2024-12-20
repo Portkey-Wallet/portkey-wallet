@@ -5202,13 +5202,22 @@
     "@portkey/utils" "^2.13.1"
     "@portkey/validator" "^2.13.1"
 
-"@portkey/chain@^2.2.4", "@portkey/chain@^2.3.4":
+"@portkey/chain@^2.2.4":
   version "2.3.4"
   resolved "https://registry.npmjs.org/@portkey/chain/-/chain-2.3.4.tgz#93d607220a46682abcb404cc717197bb8e9f1d5c"
   integrity sha512-GrcZZWh5Jw8ZX3sdbIK8iWJV7HGnqWSZyczZBcUB6F/aS7m7j1O7KfJHowTzkzIvxqUpvDH9AvlrZ1YC1o+b0Q==
   dependencies:
     "@portkey/contracts" "^2.0.4"
     "@portkey/provider-types" "^2.3.4"
+    aelf-sdk "^3.2.45-beta.0"
+
+"@portkey/chain@^2.3.5":
+  version "2.3.5"
+  resolved "https://registry.yarnpkg.com/@portkey/chain/-/chain-2.3.5.tgz#77136b780a8349f4b49da3e56516dfdf29616d0d"
+  integrity sha512-ftCHAwrBFUXdJnF3QwuQb0PRVCJ0yd6llw2btam58JPjh1xDfwaROfAcTR2+rbxXGKo2Z87ZORqwyg8YfYvDxw==
+  dependencies:
+    "@portkey/contracts" "^2.0.4"
+    "@portkey/provider-types" "^2.3.5"
     aelf-sdk "^3.2.45-beta.0"
 
 "@portkey/contracts@^2.0.4", "@portkey/contracts@^2.13.1", "@portkey/contracts@^2.9.6-alpha.6":
@@ -5285,13 +5294,13 @@
     "@portkey/types" "^2.13.1"
     "@portkey/utils" "^2.13.1"
 
-"@portkey/extension-provider@2.2.4":
-  version "2.2.4"
-  resolved "https://registry.npmjs.org/@portkey/extension-provider/-/extension-provider-2.2.4.tgz#1b7d0f33c81d76f729d0b40609e646303e4f0378"
-  integrity sha512-mya+WXo5Gnl+pNGHlA+WhVUSXwJIAQSE6dWuHj1YmMA9Zjy+CCTYFMZKFZKEDFcxvJFzhHvtpVzFPIYZBtlBtQ==
+"@portkey/extension-provider@2.3.5":
+  version "2.3.5"
+  resolved "https://registry.yarnpkg.com/@portkey/extension-provider/-/extension-provider-2.3.5.tgz#b4acffa9e3a8f02cd91e6ac71db1359341492f81"
+  integrity sha512-5naiJbXS8tDindTvmK92LWsf/JRr/+FV6RzKq3rF1gecFbSyu3SNuuuiQDJiMkrWZjaw2S4QS+pXzYQ3BvE3MQ==
   dependencies:
-    "@portkey/provider-types" "^2.2.4"
-    "@portkey/providers" "^2.2.4"
+    "@portkey/provider-types" "^2.3.5"
+    "@portkey/providers" "^2.3.5"
     "@types/elliptic" "^6.4.14"
     readable-stream "^4.4.0"
 
@@ -5339,6 +5348,14 @@
     "@portkey/types" "^2.0.0-alpha.0"
     "@types/readable-stream" "^2.3.15"
 
+"@portkey/provider-types@2.3.5", "@portkey/provider-types@^2.3.5":
+  version "2.3.5"
+  resolved "https://registry.yarnpkg.com/@portkey/provider-types/-/provider-types-2.3.5.tgz#8b4c40867eb186f5f8f283f6c0d80badcd339ad3"
+  integrity sha512-xQeY3dEz+yFptnKr/mB9eo1rW5hsLMntAjwzzpgNyJEWrV6BGBH4S1s+wiK0mdDhu2BzkJ0yVgJ2MwGhWkeLbw==
+  dependencies:
+    "@portkey/types" "^2.0.0-alpha.0"
+    "@types/readable-stream" "^2.3.15"
+
 "@portkey/provider-types@^2.1.0", "@portkey/provider-types@^2.2.1", "@portkey/provider-types@^2.2.4", "@portkey/provider-types@^2.3.4":
   version "2.3.4"
   resolved "https://registry.npmjs.org/@portkey/provider-types/-/provider-types-2.3.4.tgz#fd21f40e5382cc69b9dfe0a0cf668b4e5fc1774d"
@@ -5361,7 +5378,14 @@
   dependencies:
     "@portkey/provider-types" "^2.2.4"
 
-"@portkey/provider-utils@^2.2.4", "@portkey/provider-utils@^2.3.4":
+"@portkey/provider-utils@2.3.5", "@portkey/provider-utils@^2.3.5":
+  version "2.3.5"
+  resolved "https://registry.yarnpkg.com/@portkey/provider-utils/-/provider-utils-2.3.5.tgz#6ef6b8beac2a8b68240409a52f8c72fed1ebd7c7"
+  integrity sha512-R26BrnTT6mcuvaKs6fnsLCg9f+uai8B1y0bbBlyUblZRcXD247Ujko5dxpISHMuKOu3y/VpLYP809rFeklrlVw==
+  dependencies:
+    "@portkey/provider-types" "^2.3.5"
+
+"@portkey/provider-utils@^2.2.4":
   version "2.3.4"
   resolved "https://registry.npmjs.org/@portkey/provider-utils/-/provider-utils-2.3.4.tgz#5c228d0e8f58225190affe18d13b17781da373bf"
   integrity sha512-m0G+Um4XNsacwTW9Wio0surRYqmOEs6h+j1ejcATbbCgpW63cZgDWjui7pZEeXKSdKwWtcohmG0vI0gnAcAwuw==
@@ -5380,14 +5404,14 @@
     lodash "^4.17.21"
     readable-stream "^4.4.0"
 
-"@portkey/providers@^2.2.4":
-  version "2.3.4"
-  resolved "https://registry.npmjs.org/@portkey/providers/-/providers-2.3.4.tgz#2b2213e8c370a8bdaff5e21bd062225b694c62b7"
-  integrity sha512-ghlbt6gi/1yDpBb+xxkj4Gxff2TmykRFzQ7kpDYRlw9VE3rbq+YgLuFUmwNF61+LRBYMG8F57UQytTJVxv236Q==
+"@portkey/providers@2.3.5", "@portkey/providers@^2.3.5":
+  version "2.3.5"
+  resolved "https://registry.yarnpkg.com/@portkey/providers/-/providers-2.3.5.tgz#6de8e8bfd655d2166d4fe451ba0bbec8531ee799"
+  integrity sha512-f8cQlJ/acBKLuYeffNl/j+OZtprthX1tJsdcf5wTWsUXcARehvNMQTk52BgsG/KxDR6ADn+TqPj2yfbFCB3OBg==
   dependencies:
-    "@portkey/chain" "^2.3.4"
-    "@portkey/provider-types" "^2.3.4"
-    "@portkey/provider-utils" "^2.3.4"
+    "@portkey/chain" "^2.3.5"
+    "@portkey/provider-types" "^2.3.5"
+    "@portkey/provider-utils" "^2.3.5"
     "@types/readable-stream" "^2.3.15"
     lodash "^4.17.21"
     readable-stream "^4.4.0"
@@ -26797,7 +26821,7 @@ string-template@~0.2.1:
   resolved "https://registry.npmjs.org/string-template/-/string-template-0.2.1.tgz#42932e598a352d01fc22ec3367d9d84eec6c9add"
   integrity sha512-Yptehjogou2xm4UJbxJ4CxgZx12HBfeystp0y3x7s4Dj32ltVVG1Gg8YhKjHZkHicuKpZX/ffilA8505VbUbpw==
 
-"string-width-cjs@npm:string-width@^4.2.0", "string-width@^1.0.2 || 2 || 3 || 4", string-width@^4.1.0, string-width@^4.2.0, string-width@^4.2.3:
+"string-width-cjs@npm:string-width@^4.2.0":
   version "4.2.3"
   resolved "https://registry.npmjs.org/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
   integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
@@ -26814,6 +26838,15 @@ string-width@^1.0.1:
     code-point-at "^1.0.0"
     is-fullwidth-code-point "^1.0.0"
     strip-ansi "^3.0.0"
+
+"string-width@^1.0.2 || 2 || 3 || 4", string-width@^4.1.0, string-width@^4.2.0, string-width@^4.2.3:
+  version "4.2.3"
+  resolved "https://registry.npmjs.org/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
+  integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
+  dependencies:
+    emoji-regex "^8.0.0"
+    is-fullwidth-code-point "^3.0.0"
+    strip-ansi "^6.0.1"
 
 string-width@^2.1.0, string-width@^2.1.1:
   version "2.1.1"
@@ -26937,7 +26970,7 @@ stringstream@~0.0.4:
   resolved "https://registry.npmjs.org/stringstream/-/stringstream-0.0.6.tgz#7880225b0d4ad10e30927d167a1d6f2fd3b33a72"
   integrity sha512-87GEBAkegbBcweToUrdzf3eLhWNg06FJTebl4BVJz/JgWy8CvEr9dRtX5qWphiynMSQlxxi+QqN0z5T32SLlhA==
 
-"strip-ansi-cjs@npm:strip-ansi@^6.0.1", strip-ansi@^6.0.0, strip-ansi@^6.0.1:
+"strip-ansi-cjs@npm:strip-ansi@^6.0.1":
   version "6.0.1"
   resolved "https://registry.npmjs.org/strip-ansi/-/strip-ansi-6.0.1.tgz#9e26c63d30f53443e9489495b2105d37b67a85d9"
   integrity sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==
@@ -26971,6 +27004,13 @@ strip-ansi@^5.0.0, strip-ansi@^5.1.0, strip-ansi@^5.2.0:
   integrity sha512-DuRs1gKbBqsMKIZlrffwlug8MHkcnpjs5VPmL1PAh+mA30U0DTotfDZ0d2UUsXpPmPmMMJ6W773MaA3J+lbiWA==
   dependencies:
     ansi-regex "^4.1.0"
+
+strip-ansi@^6.0.0, strip-ansi@^6.0.1:
+  version "6.0.1"
+  resolved "https://registry.npmjs.org/strip-ansi/-/strip-ansi-6.0.1.tgz#9e26c63d30f53443e9489495b2105d37b67a85d9"
+  integrity sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==
+  dependencies:
+    ansi-regex "^5.0.1"
 
 strip-ansi@^7.0.1, strip-ansi@^7.1.0:
   version "7.1.0"
@@ -29481,7 +29521,7 @@ wordwrapjs@^3.0.0:
     reduce-flatten "^1.0.1"
     typical "^2.6.1"
 
-"wrap-ansi-cjs@npm:wrap-ansi@^7.0.0", wrap-ansi@^7.0.0:
+"wrap-ansi-cjs@npm:wrap-ansi@^7.0.0":
   version "7.0.0"
   resolved "https://registry.npmjs.org/wrap-ansi/-/wrap-ansi-7.0.0.tgz#67e145cff510a6a6984bdf1152911d69d2eb9e43"
   integrity sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==
@@ -29511,6 +29551,15 @@ wrap-ansi@^6.0.1, wrap-ansi@^6.2.0:
   version "6.2.0"
   resolved "https://registry.npmjs.org/wrap-ansi/-/wrap-ansi-6.2.0.tgz#e9393ba07102e6c91a3b221478f0257cd2856e53"
   integrity sha512-r6lPcBGxZXlIcymEu7InxDMhdW0KDxpLgoFLcguasxCaJ/SOIZwINatK9KY/tf+ZrlywOKU0UDj3ATXUBfxJXA==
+  dependencies:
+    ansi-styles "^4.0.0"
+    string-width "^4.1.0"
+    strip-ansi "^6.0.0"
+
+wrap-ansi@^7.0.0:
+  version "7.0.0"
+  resolved "https://registry.npmjs.org/wrap-ansi/-/wrap-ansi-7.0.0.tgz#67e145cff510a6a6984bdf1152911d69d2eb9e43"
+  integrity sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==
   dependencies:
     ansi-styles "^4.0.0"
     string-width "^4.1.0"

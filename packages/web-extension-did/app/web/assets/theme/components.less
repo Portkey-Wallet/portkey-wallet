@@ -108,13 +108,15 @@ button.@{app-prefix}-btn-default {
   line-height: 22px;
   //border-color: @neutral-border;
   border-color: @border-base1;
+  background: @bg-base1;
 
   &:hover {
     //border-color: @brand-normal;
-    border-color: @border-focus;
+    border-color: @border-focus !important;
+    box-shadow: none;
   }
   &:focus {
-    border-color: @border-base1;
+    border-color: @border-base1 !important;
     box-shadow: none;
   }
 }

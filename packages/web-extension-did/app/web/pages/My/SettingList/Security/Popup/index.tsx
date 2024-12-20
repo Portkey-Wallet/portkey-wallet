@@ -9,9 +9,7 @@ export default function SecurityPopup({ headerTitle, menuList, goBack }: ISecuri
       <div>
         <CommonHeader title={headerTitle} onLeftBack={goBack} />
 
-        <div className="empty-placeholder" />
-
-        <MenuList list={menuList} />
+        <MenuList list={menuList} height={48} />
       </div>
     </div>
   );

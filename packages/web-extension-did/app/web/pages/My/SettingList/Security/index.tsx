@@ -5,6 +5,7 @@ import { useCommonState } from 'store/Provider/hooks';
 import SecurityPopup from './Popup';
 import { MenuItemInfo } from 'pages/components/MenuList';
 import { BaseHeaderProps } from 'types/UI';
+import { CustomSvgV3 } from 'components/CustomSvgV3';
 
 export interface ISecurityProps extends BaseHeaderProps {
   menuList: MenuItemInfo[];
@@ -25,6 +26,7 @@ export default function Security() {
       {
         element: 'Auto-lock',
         key: AutoLockLabel,
+        icon: <CustomSvgV3 type="my_auto_lock" />,
         click: () => {
           // setSelectedItem(AutoLockLabel);
           navigate('/setting/security/auto-lock');
@@ -33,6 +35,7 @@ export default function Security() {
       {
         key: 'change-pin',
         element: 'Change Pin',
+        icon: <CustomSvgV3 type="my_pin" />,
         click: () => {
           navigate('/setting/security/confirm-pin');
         },

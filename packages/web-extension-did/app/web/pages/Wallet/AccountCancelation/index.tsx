@@ -1,5 +1,4 @@
 import { useCallback, useMemo } from 'react';
-import AccountCancelationPrompt from './Prompt';
 import AccountCancelationPopup from './Popup';
 import { useNavigateState } from 'hooks/router';
 import { useCurrentWalletInfo, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
@@ -11,8 +10,9 @@ import {
   getSocialLoginAccountToken,
 } from '@portkey-wallet/utils/deleteAccount';
 import { handleErrorMessage } from '@portkey-wallet/utils';
-import CustomModal from 'pages/components/CustomModal';
-import { useCommonState, useGuardiansInfo, useLoading } from 'store/Provider/hooks';
+// import CustomModal from 'pages/components/CustomModal';
+import { CustomModalBottom, ICustomModalBottomProps } from 'pages/components/CustomModalBottom';
+import { useGuardiansInfo, useLoading } from 'store/Provider/hooks';
 import useGuardianList from 'hooks/useGuardianList';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { SOCIAL_GUARDIAN_TYPE } from '@portkey-wallet/constants/constants-ca/contact';
@@ -36,7 +36,6 @@ export interface IAccountCancelationProps {
 
 export default function AccountCancelation() {
   const navigate = useNavigateState<TVerifyAccountCancelLocationState>();
-  const { isNotLessThan768 } = useCommonState();
   const { caHash, address: managerAddress } = useCurrentWalletInfo();
   const { setLoading } = useLoading();
   const getGuardianList = useGuardianList();
@@ -67,11 +66,13 @@ export default function AccountCancelation() {
       if (!caHash || !managerAddress) return false;
       const list = await checkIsValidateDeletionAccount(uniqueGuardianType);
       if (list.length > 0) {
-        CustomModal({
+        // CustomModal({
+        CustomModalBottom({
           content: (
             <div className="account-cancelation-alert-modal">
               <div className="title">Unable to Delete Account</div>
               <div className="content condition-content flex-column">
+                <div>Please check the following:</div>
                 {list.map((item, i) => (
                   <div className="condition-item" key={`condition_${i}`}>
                     {item.replace(/LOGIN_ACCOUNT/g, showGuardianType)}
@@ -183,7 +184,8 @@ export default function AccountCancelation() {
       handleSocialAccountCancel();
     } else {
       // email guardian
-      CustomModal({
+      // CustomModal({
+      CustomModalBottom({
         type: 'confirm',
         content: (
           <p>
@@ -204,46 +206,47 @@ export default function AccountCancelation() {
     uniqueGuardian?.verifier?.name,
   ]);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const modalCommon = {
+    // type: 'confirm',
+    type: 'warning',
+    content: (
+      <div>
+        <div className="title">Delete Account Warning</div>
+        <div className="content">{ACCOUNT_CANCELATION_WARNING}</div>
+      </div>
+    ),
+    okText: 'Continue',
+    cancelText: 'Cancel',
+  };
+
   const onConfirm = useCallback(async () => {
     const checkValid = await handleCheck();
     if (!checkValid) return;
-    CustomModal({
+    // CustomModal({
+    CustomModalBottom({
+      ...modalCommon,
       type: 'confirm',
-      content: (
-        <div>
-          <div className="title">Warning</div>
-          <div className="content">{ACCOUNT_CANCELATION_WARNING}</div>
-        </div>
-      ),
-      okText: 'Yes',
-      cancelText: 'No',
       onOk: handleAccountCancel,
-    });
-  }, [handleAccountCancel, handleCheck]);
+    } as ICustomModalBottomProps);
+  }, [handleAccountCancel, handleCheck, modalCommon]);
 
   useEffectOnce(() => {
-    CustomModal({
-      type: 'confirm',
-      content: (
-        <div>
-          <div className="title">Warning</div>
-          <div className="content">{ACCOUNT_CANCELATION_WARNING}</div>
-        </div>
-      ),
-      okText: 'Yes',
-      cancelText: 'No',
+    // CustomModal({
+    CustomModalBottom({
+      ...modalCommon,
       onCancel: () => navigate('/setting/wallet/wallet-name'),
-    });
+    } as ICustomModalBottomProps);
   });
 
   const props: IAccountCancelationProps = useMemo(
     () => ({
-      headerTitle: 'Account Cancelation',
+      headerTitle: 'Account Deletion',
       goBack: () => navigate('/setting/wallet/wallet-name'),
       renderContent: <CancelBody onConfirm={onConfirm} showGuardianType={showGuardianType} />,
     }),
     [navigate, onConfirm, showGuardianType],
   );
 
-  return isNotLessThan768 ? <AccountCancelationPrompt {...props} /> : <AccountCancelationPopup {...props} />;
+  return <AccountCancelationPopup {...props} />;
 }

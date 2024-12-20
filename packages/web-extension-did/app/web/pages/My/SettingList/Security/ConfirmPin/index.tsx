@@ -53,7 +53,7 @@ export default function ConfirmPin() {
     }
   }, []);
 
-  const title = t('Change Pin');
+  const title = t('');
   const pinLabel = t('Pin');
   const placeholder = t('Enter Pin');
   const btnText = t('Next');

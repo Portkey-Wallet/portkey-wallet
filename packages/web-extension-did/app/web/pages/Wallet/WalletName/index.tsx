@@ -1,17 +1,12 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 import WalletNamePopup from './Popup';
 import { useNavigate } from 'react-router';
 import { IProfileDetailDataProps, MyProfilePageType } from 'types/Profile';
 import { useTranslation } from 'react-i18next';
 import { useCaAddressInfoList, useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
-import { useLocationState } from 'hooks/router';
-import { FromPageEnum, TWalletNameLocationState } from 'types/router';
 
 export default function WalletName() {
   const navigate = useNavigate();
-  const { state: locationState } = useLocationState<TWalletNameLocationState>();
-  const showChat = useIsChatShow();
   const { avatar = '', nickName = '', userId = '' } = useCurrentUserInfo();
   const caAddressInfos = useCaAddressInfoList();
   const transAddresses = useMemo(() => {
@@ -26,9 +21,6 @@ export default function WalletName() {
 
   const { t } = useTranslation();
   const editText = t('Edit');
-  const [type, setType] = useState<MyProfilePageType>(MyProfilePageType.VIEW);
-  const title = useMemo(() => (showChat ? t('My Wallet') : t('My Profile')), [showChat, t]);
-  const [headerTitle, setHeaderTitle] = useState(title);
 
   const state: IProfileDetailDataProps = useMemo(
     () => ({
@@ -42,46 +34,16 @@ export default function WalletName() {
     [avatar, nickName, transAddresses, userId],
   );
 
-  const showEdit = useCallback(() => {
-    setHeaderTitle(editText);
-    setType(MyProfilePageType.EDIT);
-  }, [editText]);
-
-  const showView = useCallback(() => {
-    if (type === MyProfilePageType.VIEW) {
-      if (locationState?.previousPage === FromPageEnum.chatGroupInfo)
-        return navigate(`/chat-group-info/${locationState?.channelUuid}`);
-
-      if (locationState?.previousPage === FromPageEnum.chatMemberList)
-        return navigate(`/chat-group-info/${locationState?.channelUuid}/member-list`, { state: locationState });
-
-      if (
-        locationState?.previousPage &&
-        [FromPageEnum.chatBox, FromPageEnum.chatBoxGroup].includes(locationState?.previousPage)
-      )
-        return navigate(`/${locationState.previousPage}/${locationState?.channelUuid}`);
-      return navigate('/setting/wallet');
-    }
-    if (type === MyProfilePageType.EDIT) {
-      setHeaderTitle(title);
-      setType(MyProfilePageType.VIEW);
-    }
-  }, [locationState, navigate, title, type]);
-
-  // const goBack = useCallback(() => navigate('/setting/wallet'), [navigate]);
-  const saveCallback = useCallback(() => {
-    setType(MyProfilePageType.VIEW);
-  }, []);
+  const goBack = useCallback(() => navigate('/setting'), [navigate]);
 
   return (
     <WalletNamePopup
-      headerTitle={headerTitle}
+      headerTitle={t('My Wallet')}
       data={state}
-      type={type}
+      type={MyProfilePageType.VIEW}
       editText={editText}
-      goBack={showView}
-      handleEdit={showEdit}
-      saveCallback={saveCallback}
+      goBack={goBack}
+      handleEdit={() => null}
     />
   );
 }

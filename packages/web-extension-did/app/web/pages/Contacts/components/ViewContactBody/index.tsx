@@ -1,4 +1,4 @@
-import { Button, Popover } from 'antd';
+import { Modal, Popover } from 'antd';
 import './index.less';
 import CustomSvg from 'components/CustomSvg';
 import { IProfileDetailBodyProps } from 'types/Profile';
@@ -7,26 +7,34 @@ import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useIndexAndName, useIsMyContact } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import LoginAccountList from '../LoginAccountList';
 import Avatar from 'pages/components/Avatar';
-import { useNavigate } from 'react-router';
 import { PopoverMenuList } from '@portkey-wallet/im-ui-web';
 import { useBlockAndReport } from '@portkey-wallet/hooks/hooks-ca/im';
 import clsx from 'clsx';
+import { CustomSvgV3 } from 'components/CustomSvgV3';
+import { CustomModalBottom } from '../../../components/CustomModalBottom';
+import EditWalletNameForm from '../../../Wallet/components/EditWalletNameForm';
+import { EditWalletAvatarForm } from '../../../Wallet/components/EditWalletAvatarForm';
+import { useCurrentUserInfo, useSetUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import uploadImageToS3 from 'utils/compressAndUploadToS3';
 
 export default function ViewContactBody({
   data,
-  editText = 'Edit',
+  // editText = 'Edit',
   chatText = 'Chat',
   addedText = 'Added',
   addContactText = 'Add Contact',
   isShowRemark = true,
   morePopListData,
-  handleEdit,
   handleChat,
   handleAdd,
 }: IProfileDetailBodyProps) {
-  const navigate = useNavigate();
+  const networkInfo = useCurrentNetworkInfo();
+  const { avatar, nickName } = useCurrentUserInfo();
+  const setUserInfo = useSetUserInfo();
+  // const navigate = useNavigate();
   const isMyContactFn = useIsMyContact();
   const [popVisible, setPopVisible] = useState(false);
   const showChat = useIsChatShow();
@@ -65,15 +73,99 @@ export default function ViewContactBody({
     document.addEventListener('click', hidePop);
     return () => document.removeEventListener('click', hidePop);
   }, [hidePop]);
+
+  const [avatarUploading, setAvatarUploading] = useState(false);
+
   return (
-    <div className="flex-column-between view-contact-body">
+    <div className="view-contact-body">
       <div className="view-contact-body-main">
         <div className="info-section name-section">
-          <Avatar avatarUrl={data?.avatar} nameIndex={index} size="large" />
-          <div className="name">{transName}</div>
-          {data?.previousPage === 'my-did' && (
-            <CustomSvg type="QRCode2" onClick={() => navigate('/setting/wallet/qrcode')} />
-          )}
+          <div className="avatar-container">
+            <Avatar
+              avatarUrl={data?.avatar}
+              nameIndex={index}
+              size="xl"
+              loading={{
+                loading: avatarUploading,
+                type: {
+                  height: 32,
+                  width: 32,
+                },
+              }}
+            />
+            <div
+              className={clsx('avatar-sub-icon', avatarUploading ? 'avatar-sub-icon-disabled' : '')}
+              onClick={() => {
+                if (avatarUploading) {
+                  return;
+                }
+                CustomModalBottom({
+                  type: 'confirm',
+                  noFooter: true,
+                  content: (
+                    <EditWalletAvatarForm
+                      avatar={avatar}
+                      networkInfo={networkInfo}
+                      data={data}
+                      saveCallback={async (avatar) => {
+                        Modal.destroyAll();
+                        try {
+                          setAvatarUploading(true);
+                          let s3Url = '';
+                          if (avatar.file) {
+                            s3Url = await uploadImageToS3(avatar.file);
+                          }
+
+                          await setUserInfo({ avatar: (s3Url || avatar.selectedAvatar) as string });
+                        } catch (error) {
+                          console.log('setWalletName: error', error);
+                        } finally {
+                          setAvatarUploading(false);
+                        }
+                      }}
+                    />
+                  ),
+                  onOk: () => {
+                    return;
+                  },
+                  title: 'Change wallet picture',
+                  okText: 'Save',
+                });
+              }}>
+              <CustomSvgV3 className="edit-thin-icon" type="edit thin" disabled={avatarUploading} />
+            </div>
+          </div>
+          <div className="name-edit-container">
+            <div className="name">{transName}</div>
+            <div
+              onClick={() => {
+                CustomModalBottom({
+                  type: 'confirm',
+                  noFooter: true,
+                  content: (
+                    <EditWalletNameForm
+                      // avatar={avatar}
+                      nickName={nickName}
+                      setUserInfo={setUserInfo}
+                      data={data}
+                      saveCallback={() => {
+                        Modal.destroyAll();
+                      }}
+                    />
+                  ),
+                  onOk: () => {
+                    return;
+                  },
+                  title: 'Rename wallet',
+                  okText: 'Save',
+                });
+              }}>
+              <CustomSvgV3 className="edit-thin-icon" type="edit thin" />
+            </div>
+          </div>
+          {/*{data?.previousPage === 'my-did' && (*/}
+          {/*  <CustomSvg type="QRCode2" onClick={() => navigate('/setting/wallet/qrcode')} />*/}
+          {/*)}*/}
 
           {/* Section - Remark */}
           {showChat && relationId && isMyContact && isShowRemark && (
@@ -136,7 +228,7 @@ export default function ViewContactBody({
           portkeyId={data?.caHolderInfo?.userId}
           relationId={relationId}
           addresses={data?.addresses || []}
-          addressSectionLabel="Address"
+          addressSectionLabel="My Addresses"
         />
 
         {/* login account info */}
@@ -147,15 +239,6 @@ export default function ViewContactBody({
           Apple={data?.loginAccountMap?.Apple}
         />
       </div>
-
-      {/* stranger cant edit */}
-      {(data.id || isMyContact || data?.previousPage === 'my-did') && (
-        <div className="footer">
-          <Button type="primary" htmlType="submit" className="edit-btn" onClick={handleEdit}>
-            {editText}
-          </Button>
-        </div>
-      )}
     </div>
   );
 }

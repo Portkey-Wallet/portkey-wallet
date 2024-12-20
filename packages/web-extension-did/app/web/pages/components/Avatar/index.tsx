@@ -4,6 +4,7 @@ import { CSSProperties, useCallback, useState } from 'react';
 import { RequireAtLeastOne } from '@portkey-wallet/types/common';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import './index.less';
+import CircleLoading, { LoadingType } from '../../../components/CircleLoading';
 
 export interface IAvatarProps {
   wrapperClass?: string;
@@ -12,6 +13,10 @@ export interface IAvatarProps {
   nameIndex?: string;
   size?: 'xl' | 'large' | 'small' | 'default';
   onClick?: () => void;
+  loading?: {
+    loading: boolean;
+    type: LoadingType;
+  };
 }
 
 export default function Avatar({
@@ -21,6 +26,7 @@ export default function Avatar({
   nameIndex,
   size = 'default',
   onClick,
+  loading,
 }: RequireAtLeastOne<IAvatarProps, 'avatarUrl' | 'nameIndex'>) {
   const [avatarClass, setAvatarClass] = useState<'avatar-xl' | 'avatar-large' | 'avatar-default' | 'avatar-small'>(
     'avatar-default',
@@ -66,6 +72,16 @@ export default function Avatar({
       ) : (
         <div className="flex-center name-index" style={wrapperStyle}>
           {nameIndex}
+        </div>
+      )}
+      {loading && loading.loading && (
+        <div
+          className="avatar-loading-container"
+          style={{
+            height: avatarDefaultHeight + 2,
+            width: avatarDefaultHeight + 2,
+          }}>
+          <CircleLoading height={loading.type.height} width={loading.type.width} />
         </div>
       )}
     </div>

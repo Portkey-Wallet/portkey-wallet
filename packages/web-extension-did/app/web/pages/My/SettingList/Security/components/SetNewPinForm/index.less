@@ -3,18 +3,19 @@
 .set-pin-form {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-end;
 
   .form-content {
-    padding: 14px 24px 24px;
+    padding: 0 16px;
     .new-pin-label {
       margin-top: 16px;
     }
     .@{app-prefix}-form-item-label > label,
     .@{app-prefix}-input-password {
       color: @text-base1;
-      font-size: 14px;
-      line-height: 20px;
+      font-size: 16px;
+      font-weight: 400;
+      line-height: 140%;
     }
     .@{app-prefix}-form-item-label {
       padding-bottom: 8px;
@@ -31,10 +32,11 @@
     }
   }
   .form-footer {
-    padding: 16px;
+    padding: 0 16px;
+    margin: 40px auto 24px;
     width: 100%;
     max-width: 896px;
-    border-top: 1px solid @border-neutral3;
+    //border-top: 1px solid @border-neutral3;
     .@{app-prefix}-form-item {
       margin-bottom: 0;
     }
@@ -45,10 +47,10 @@
     }
   }
 }
-
-.set-pin-form-prompt {
-  .form-footer {
-    position: absolute;
-    bottom: 0;
-  }
-}
+//
+//.set-pin-form-prompt {
+//  .form-footer {
+//    position: absolute;
+//    bottom: 0;
+//  }
+//}

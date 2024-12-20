@@ -14,8 +14,32 @@
 }
 
 button.@{app-prefix}-btn-default {
-  border-color: @neutral-border;
+  border-color: @border-neutral2;
   background-color: @bg-base1;
+  color: @text-base1;
+
+  &:hover,
+  &:focus {
+    color: @text-base1;
+  }
+  &:focus {
+    background-color: @bg-base2;
+    border-color: @border-neutral3;
+  }
+  &:hover {
+    background-color: @bg-base2;
+    border-color: @border-neutral3;
+  }
+
+  &:disabled,
+  &:disabled:hover,
+  &:disabled:focus,
+  &:disabled:active {
+    color: @text-disabled2;
+    background-color: @bg-base2 !important;
+    border-color: @bg-base2 !important;
+    box-shadow: none !important;
+  }
 }
 
 .@{app-prefix}-btn-primary {
@@ -23,7 +47,7 @@ button.@{app-prefix}-btn-default {
 
   &:hover,
   &:focus {
-    color: white;
+    color: @text-neutral4;
   }
   &:focus {
     background-color: @brand-click;
@@ -45,6 +69,34 @@ button.@{app-prefix}-btn-default {
   }
 }
 
+.@{app-prefix}-btn-dangerous.@{app-prefix}-btn-primary {
+    border-width: 0;
+    color: @text-danger4;
+
+    &:hover,
+    &:focus {
+      color: @text-danger4;
+    }
+    &:focus {
+      background-color: @bg-danger4;
+      border-color: @bg-danger4;
+    }
+    &:hover {
+      background-color: @bg-danger4;
+      border-color: @bg-danger4;
+    }
+
+    &:disabled,
+    &:disabled:hover,
+    &:disabled:focus,
+    &:disabled:active {
+      color: @text-disabled2;
+      background-color: @bg-base2 !important;
+      border-color: @bg-base2 !important;
+      box-shadow: none !important;
+    }
+}
+
 /* input */
 
 .@{app-prefix}-input,
@@ -56,10 +108,16 @@ button.@{app-prefix}-btn-default {
   line-height: 22px;
   //border-color: @neutral-border;
   border-color: @border-base1;
+  background: @bg-base1;
 
   &:hover {
     //border-color: @brand-normal;
-    border-color: @border-focus;
+    border-color: @border-focus !important;
+    box-shadow: none;
+  }
+  &:focus {
+    border-color: @border-base1 !important;
+    box-shadow: none;
   }
 }
 
@@ -97,6 +155,7 @@ button.@{app-prefix}-btn-default {
     line-height: 16px;
     height: 16px;
     margin-top: 4px;
+    color: @text-opacity70;
   }
 
   .@{app-prefix}-form-item-has-error {
@@ -115,11 +174,11 @@ button.@{app-prefix}-btn-default {
   }
 
   .@{app-prefix}-input-affix-wrapper-status-error {
-    border-color: @border-7;
+    border-color: @border-danger1;
   }
 
   .@{app-prefix}-form-item-explain-error {
-    color: @font-14;
+    color: @text-danger2;
     font-size: 12px;
   }
 
@@ -151,20 +210,24 @@ button.@{app-prefix}-btn-default {
 .@{app-prefix}-input-affix-wrapper-status-error:not(.@{app-prefix}-input-affix-wrapper-disabled):not(.@{app-prefix}-input-affix-wrapper-borderless).@{app-prefix}-input-affix-wrapper,
 .@{app-prefix}-input-affix-wrapper-status-error:not(.@{app-prefix}-input-affix-wrapper-disabled):not(.@{app-prefix}-input-affix-wrapper-borderless).@{app-prefix}-input-affix-wrapper:hover {
   //border-color: @brand-normal !important;
-  border-color: @border-focus !important;
+  border-color: @border-danger1 !important;
+  background: @bg-base1;
 }
 
 .@{app-prefix}-input-status-error:not(.@{app-prefix}-input-disabled):not(.@{app-prefix}-input-borderless).@{app-prefix}-input,
 .@{app-prefix}-input-affix-wrapper-status-error:not(.@{app-prefix}-input-affix-wrapper-disabled):not(.@{app-prefix}-input-affix-wrapper-borderless).@{app-prefix}-input-affix-wrapper,
 .@{app-prefix}-input-affix-wrapper-status-error:not(.@{app-prefix}-input-affix-wrapper-disabled):not(.@{app-prefix}-input-affix-wrapper-borderless).@{app-prefix}-input-affix-wrapper:focus {
-  border-color: #dcdee1;
+  //border-color: #dcdee1;
+  border-color: @border-danger1;
+  background: @bg-base1;
 }
 
 .@{app-prefix}-input-status-error:not(.@{app-prefix}-input-disabled):not(.@{app-prefix}-input-borderless).@{app-prefix}-input:focus,
 .@{app-prefix}-input-affix-wrapper-status-error:not(.@{app-prefix}-input-affix-wrapper-disabled):not(.@{app-prefix}-input-affix-wrapper-borderless).@{app-prefix}-input-affix-wrapper-focused {
   //border-color: @brand-normal !important;
-  border-color: @border-focus !important;
-  box-shadow: 0 0 0 2px rgb(91 142 244 / 20%);
+  border-color: @border-danger1 !important;
+  //box-shadow: 0 0 0 2px rgb(91 142 244 / 20%);
+  box-shadow: none;
 }
 
 // to change input disable
@@ -385,3 +448,5 @@ button.@{app-prefix}-btn-default {
     text-align: left;
   }
 }
+
+

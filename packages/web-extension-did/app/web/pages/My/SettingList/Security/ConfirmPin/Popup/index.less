@@ -2,11 +2,51 @@
 
 .confirm-pin-popup {
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  //justify-content: space-between;
+
+  .pin-edit-title {
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: -0.64px;
+    line-height: 120%;
+    margin-top: 24px;
+    color: @text-base1;
+    padding: 0 16px;
+  }
+
+  .confirm-pin-edit-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    height: 100%;
+    margin-bottom: 40px;
+  }
   .confirm-pin-form {
     height: 100%;
+    justify-content: end;
+    flex-direction: column;
+    display: flex;
 
     .confirm-pin-btn {
-      border-top: 1px solid @border-neutral3;
+      //border-top: 1px solid @border-neutral3;
     }
   }
+  //.forget-content {
+  //  margin: 32px auto 40px auto;
+  //  display: flex;
+  //  align-items: center;
+  //  font-size: 16px;
+  //  line-height: 140%;
+  //  font-weight: 400;
+  //  color: @text-opacity70;
+  //  .logback {
+  //    margin-left: 4px;
+  //    font-weight: 600;
+  //    color: @text-brand1;
+  //    cursor: pointer;
+  //    line-height: 100%;
+  //  }
+  //}
 }

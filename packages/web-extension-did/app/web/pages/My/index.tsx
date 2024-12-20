@@ -91,7 +91,7 @@ export default function My() {
             return (
               <MenuItem
                 key={item.label}
-                height={56}
+                height={48}
                 icon={menuItemIcon(item.icon, isImputation && item.label === 'Contacts')}
                 onClick={() => {
                   if (item.router.match('http')) {

@@ -35,6 +35,7 @@ export default function AutoLock({ className }: { className?: string }) {
   );
 
   const onLockChange = useCallback((value: string) => {
+    console.log('onLockChange:', value, value in AutoLockData);
     value in AutoLockData &&
       setLocalStorage({
         [storage.lockTime]: value,

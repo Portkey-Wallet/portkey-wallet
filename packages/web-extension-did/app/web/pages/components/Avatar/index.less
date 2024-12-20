@@ -4,6 +4,7 @@
   border-radius: 50%;
   background-color: @bg-brand1;
   overflow: hidden;
+  position: relative;
 
   .avatar-img {
     .show-image {
@@ -18,6 +19,15 @@
     background-color: transparent;
     //border: 1px solid @neutral-border;
     border-radius: 50%;
+  }
+
+  .avatar-loading-container {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 100%;
+    background: @bg-opacity70;
   }
 }
 

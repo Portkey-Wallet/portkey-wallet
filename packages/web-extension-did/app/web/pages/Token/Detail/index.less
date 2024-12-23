@@ -6,6 +6,7 @@
   height: 100%;
   display: flex;
   flex-direction: column;
+  background-color: @bg-base1;
 
   .token-detail-content {
 
@@ -13,16 +14,15 @@
       gap: 24px;
       padding: 24px 16px;
       background-color: @bg-base1;
-      border-bottom: 1px solid @border-neutral3;
       .balance-amount {
         gap: 4px;
         &.is-prompt {
-          align-items: center;
+          align-items: flex-start;
         }
         .amount-number {
           font-size: 32px;
           line-height: 40px;
-          font-weight: 500;
+          font-weight: 700;
           color: @text-base1;
           .@{app-prefix}-skeleton-avatar {
             width: 148px;
@@ -35,9 +35,9 @@
         }
         .amount-convert {
           height: 20px;
-          font-size: 14px;
+          font-size: 16px;
           line-height: 20px;
-          color: @neutral-tertiary-text;
+          color: @text-base1;
           .@{app-prefix}-skeleton-avatar {
             width: 80px;
             height: 20px;
@@ -59,12 +59,11 @@
     }
 
     .banner-wrap {
-      border-bottom: 1px solid @border-neutral3;
+      // border-bottom: 1px solid @border-neutral3;
     }
 
     .token-detail-activity {
       flex: 1;
-      margin-top: 8px;
       background-color: @bg-base1;
       .token-detail-activity-title {
         padding: 10px 16px;
@@ -79,7 +78,7 @@
 
 .portkey-prompt {
   .token-detail-title {
-    border-bottom: 1px solid @border-neutral3;
+    // border-bottom: 1px solid @border-neutral3;
   }
   @media screen and (min-width: 768px) {
     .token-detail {

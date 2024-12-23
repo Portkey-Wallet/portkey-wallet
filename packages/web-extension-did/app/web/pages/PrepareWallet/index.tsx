@@ -2,7 +2,7 @@ import PortKeyTitle from 'pages/components/PortKeyTitle';
 import { PrepareWalletProgress } from './PrepareWalletProgress';
 import CustomSvg from 'components/CustomSvg';
 import './index.less';
-import { useAppDispatch } from 'store/Provider/hooks';
+// import { useAppDispatch } from 'store/Provider/hooks';
 import { Button } from 'antd';
 import { useNavigateState } from 'hooks/router';
 import { useParams } from 'react-router';
@@ -10,7 +10,7 @@ export interface PrepareWalletProgressInterface {
   complete: () => void;
 }
 export const PrepareWallet = () => {
-  const dispatch = useAppDispatch();
+  // const dispatch = useAppDispatch();
   const navigate = useNavigateState();
   const { type: state } = useParams<{ type: 'login' | 'scan' | 'register' }>();
   return (

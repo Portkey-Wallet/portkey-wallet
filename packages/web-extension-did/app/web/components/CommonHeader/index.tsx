@@ -1,9 +1,8 @@
 import React, { ReactNode } from 'react';
 import clsx from 'clsx';
 import { Popover, PopoverProps } from 'antd';
-import CustomSvg, { SvgType } from 'components/CustomSvg';
 import './styles.less';
-import { CustomSvgV3 } from '../CustomSvgV3';
+import { CustomSvgV3, SvgTypeV3 } from '../CustomSvgV3';
 
 export enum CustomSvgPlaceholderSize {
   LG = 'lg',
@@ -13,7 +12,7 @@ export enum CustomSvgPlaceholderSize {
 interface IRightElementObj {
   customSvgWrapClassName?: string;
   customSvgClassName?: string;
-  customSvgType: SvgType;
+  customSvgType: SvgTypeV3;
   customSvgPlaceholderSize?: CustomSvgPlaceholderSize;
   popoverProps?: PopoverProps;
   onClick?: () => void;
@@ -60,7 +59,7 @@ export default function CommonHeader({
           `common-header-right-icon-wrap-${customSvgPlaceholderSize}`,
           customSvgWrapClassName,
         )}>
-        <CustomSvg className={customSvgClassName} type={customSvgType} onClick={onClick} />
+        <CustomSvgV3 className={customSvgClassName} type={customSvgType} onClick={onClick} />
       </div>
     );
     if (popoverProps) {

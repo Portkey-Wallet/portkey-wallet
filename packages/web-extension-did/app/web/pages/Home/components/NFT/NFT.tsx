@@ -3,6 +3,8 @@ import { ChainId } from '@portkey-wallet/types';
 import { NFTCollectionItemShowType, NFTItemBaseType } from '@portkey-wallet/types/types-ca/assets';
 import { Collapse, Skeleton } from 'antd';
 import CustomSvg from 'components/CustomSvg';
+import { CustomSvgV3 } from 'components/CustomSvgV3';
+
 import { useCallback, useState, useMemo, useEffect } from 'react';
 import clsx from 'clsx';
 import { useCommonState } from 'store/Provider/hooks';
@@ -165,9 +167,6 @@ export default function NFT() {
                   index < curNftNum * maxNftNum && (
                     <div
                       key={`${nft.symbol}-${nftItem.symbol}`}
-                      style={{
-                        backgroundImage: `url('${nftItem.imageUrl || ''}')`,
-                      }}
                       className={clsx(['nft-item', nftItem.imageUrl ? '' : 'nft-item-no-img'])}
                       onClick={() => {
                         nav('/nft', {
@@ -178,6 +177,11 @@ export default function NFT() {
                           },
                         });
                       }}>
+                      <div
+                        className="nft-item-img-box"
+                        style={{
+                          backgroundImage: `url('${nftItem.imageUrl || ''}')`,
+                        }}></div>
                       {seedTypeTag && <CustomSvg type={seedTypeTag} />}
                       <div className="mask flex-column">
                         <p className="alias">{nftItem.alias}</p>
@@ -202,7 +206,8 @@ export default function NFT() {
                 onClick={() => {
                   getMoreNFTItem(nft.symbol, nft.chainId);
                 }}>
-                <CustomSvg type="Down" /> More
+                <CustomSvgV3 type="load-more" />
+                <p>View all</p>
               </div>
             )}
           </div>
@@ -238,7 +243,7 @@ export default function NFT() {
         <div className="left-text">{leftText}</div>
         <div className="flex-row-center right-container" onClick={handleClickMint}>
           <span className="right-text">{rightText}</span>
-          <CustomSvg className="flex-center" type="NewRightArrow" />
+          <CustomSvgV3 className="flex-center right-arrow" type="nftArrow" />
         </div>
       </div>
     );
@@ -289,9 +294,7 @@ export default function NFT() {
             collapsible={isFetching ? 'disabled' : undefined}
             onChange={handleChange}
             expandIconPosition={'end'}
-            expandIcon={(panelProps) => (
-              <CustomSvg className={panelProps.isActive ? 'is-active' : ''} type="NewRightArrow" />
-            )}>
+            expandIcon={() => <CustomSvgV3 type="nftArrow" />}>
             {accountNFTList.map((item) => renderItem(item))}
           </Collapse>
           <LoadingMore hasMore={hasMoreNFTCollection} loadMore={getMoreNFTCollection} className="load-more" />

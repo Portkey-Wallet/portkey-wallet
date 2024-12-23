@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router';
 import { Button, Switch } from 'antd';
 import CommonHeader from 'components/CommonHeader';
 import CustomSvg from 'components/CustomSvg';
+import { CustomSvgV3 } from 'components/CustomSvgV3';
+
 import { IUserTokenItemResponse } from '@portkey-wallet/types/types-ca/token';
 import DropdownSearch from 'components/DropdownSearch';
 import { useTranslation } from 'react-i18next';
@@ -178,7 +180,7 @@ export default function AddToken() {
       if (isDefault) {
         return (
           <span className="add-token-btn-icon">
-            <CustomSvg type="GaryLock" />
+            <CustomSvgV3 type="GaryLock" />
           </span>
         );
       }

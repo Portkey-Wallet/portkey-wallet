@@ -44,14 +44,14 @@ import { formatAmountUSDShow } from '@portkey-wallet/utils/converter';
 import { RampType } from '@portkey-wallet/ramp';
 import { getDisclaimerData } from 'utils/disclaimer';
 import { TradeTypeEnum } from 'constants/trade';
-import CustomSvg from 'components/CustomSvg';
+import { CustomSvgV3 } from 'components/CustomSvgV3';
 // import SetNewWalletNameIcon from '../SetNewWalletNameIcon';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import SkeletonCom from 'pages/components/SkeletonCom';
 import CommonBanner from 'components/CommonBanner';
 import { useCmsBanner } from '@portkey-wallet/hooks/hooks-ca/cms/banner';
-import BigScreenHeader from 'pages/components/BigScreenHeader';
-
+// import BigScreenHeader from 'pages/components/BigScreenHeader';
+import HomeHeader from 'pages/components/HomeHeader';
 export interface TransactionResult {
   total: number;
   items: Transaction[];
@@ -279,7 +279,7 @@ export default function MyBalance() {
       text = 'Dev Mode';
     }
     return (
-      <div className="balance-amount-content flex-row-start">
+      <div className="balance-amount-content">
         {showSkeleton ? (
           <SkeletonCom />
         ) : (
@@ -294,7 +294,7 @@ export default function MyBalance() {
             </div>
             {isMainNet && (
               <div className="hide-assets-icon-wrap">
-                <CustomSvg
+                <CustomSvgV3
                   className="hide-assets-icon cursor-pointer"
                   type={userInfo.hideAssets ? 'EyeInvisibleOutlined' : 'EyeOutlined'}
                   onClick={() => setHideAssets(!userInfo.hideAssets)}
@@ -309,7 +309,8 @@ export default function MyBalance() {
 
   return (
     <div className={clsx('balance', detailScroll && 'detail-scroll')} onScroll={onBalanceWrapScroll}>
-      <BigScreenHeader />
+      {/* <BigScreenHeader /> */}
+      <HomeHeader />
       <div className="main-content-wrap flex-column">
         <div className={clsx('balance-amount-wrap', 'flex-column', isPrompt && 'is-prompt')}>
           {/* <div className="wallet-name-wrap flex-row-center">

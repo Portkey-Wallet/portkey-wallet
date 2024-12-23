@@ -10,6 +10,7 @@ interface GoogleBtnProps {
 }
 
 export default function SocialContent({ type, showLoginModeListToRecommend }: GoogleBtnProps) {
+  console.log('type', type);
   return (
     <div className="social-content-wrapper flex-column-between">
       {showLoginModeListToRecommend.map((i) => (

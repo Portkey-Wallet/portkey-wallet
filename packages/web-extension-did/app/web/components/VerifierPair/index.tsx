@@ -1,4 +1,4 @@
-import { LoginType, isZKLoginSupported } from '@portkey-wallet/types/types-ca/wallet';
+import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import clsx from 'clsx';
 import BaseVerifierIcon from 'components/BaseVerifierIcon';
 import CustomSvg from 'components/CustomSvg';

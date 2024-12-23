@@ -2,14 +2,37 @@
 
 .copy-address-drawer,
 .copy-address-modal {
+  .portkey-drawer-content-wrapper {
+    .portkey-drawer-wrapper-body {
+      background-color: @bg-base1;
+    }
+  }
+  .common-header {
+    padding: 16px;
+    line-height: 24px;
+  }
+  .common-header-title {
+    text-align: left;
+    font-size: 20px;
+  }
   .address-list {
-    gap: 16px;
-    padding: 0 16px;
     .address-item {
-      padding: 20px 12px;
-      border: 1px solid @border-neutral3;
-      border-radius: 6px;
+      align-items: flex-start;
+      padding: 12px 16px;
+      .network-item-info {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        .network-item-icon {
+          flex-shrink: 0;
+          svg {
+            width: 26px;
+            height: 26px;
+          }
+        }
+      }
       .address-wrap {
+        display: flex;
         gap: 4px;
         .chain {
           font-size: 14px;
@@ -30,10 +53,17 @@
       }
     }
   }
+  .portkey-modal-content {
+    border-radius: 16px;
+    border: 1px solid @border-base1;
+  }
+  .portkey-modal-body {
+    background-color: @bg-base1;
+  }
 }
 
 .copy-address-modal {
   &.base-modal {
-    height: 280px;
+    height: 200px;
   }
 }

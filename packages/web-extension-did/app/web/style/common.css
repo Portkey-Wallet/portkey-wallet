@@ -32,7 +32,7 @@ body.en-language-wrapper {
 
 body.theme-dark {
   color: #fff;
-  background-color: #1F1F21;
+  background-color: #151318;
 }
 
 #root,
@@ -66,3 +66,12 @@ body {
   width: 44px;
   height: 44px;
 }
+
+@media screen and (min-width: 896px) {
+  body.theme-dark {
+    color: #fff;
+    background-color: #1F1F21;
+  }
+}
+
+

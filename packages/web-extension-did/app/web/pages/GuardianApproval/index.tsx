@@ -1,5 +1,5 @@
 import { Button, Progress } from 'antd';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useLoginInfo, useGuardiansInfo, useCommonState, useAppDispatch } from 'store/Provider/hooks';
 import { VerifyStatus } from '@portkey-wallet/types/verifier';
 import { UserGuardianStatus } from '@portkey-wallet/store/store-ca/guardians/type';
@@ -29,11 +29,11 @@ import { useSetTransferLimit } from './hooks/useSetTransferLimit';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import {
   resetGuardianExpiredTime,
-  resetUserGuardianStatus,
+  // resetUserGuardianStatus,
   resetUserGuardianStatusState,
   setOpGuardianAction,
   setPreGuardianAction,
-  setUserGuardianStatus,
+  // setUserGuardianStatus,
 } from '@portkey-wallet/store/store-ca/guardians/actions';
 import CustomSvg from 'components/CustomSvg';
 

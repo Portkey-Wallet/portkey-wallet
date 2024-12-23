@@ -18,6 +18,7 @@ export enum AutoLockDataType {
   // OneHour = 60, // minutes
   OneDay = 60 * 24,
   Never = Infinity,
+  OneHour,
 }
 
 export type AutoLockDataKey = keyof typeof AutoLockData;

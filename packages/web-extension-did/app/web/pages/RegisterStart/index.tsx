@@ -1,17 +1,17 @@
-import CustomSvg from 'components/CustomSvg';
+// import CustomSvg from 'components/CustomSvg';
 import RegisterHeader from 'pages/components/RegisterHeader';
 import { useParams } from 'react-router';
 import LoginCard from './components/LoginCard';
 import ScanCard from './components/ScanCard';
 import SignCard from './components/SignCard';
-import { useCurrentNetworkInfo, useIsMainnet, useNetworkList } from '@portkey-wallet/hooks/hooks-ca/network';
-import { useCallback, useMemo, useRef, useState, useEffect } from 'react';
+// import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCallback, useRef, useState, useEffect } from 'react';
 import { useAppDispatch, useLoading } from 'store/Provider/hooks';
 import { createNewTmpWallet, setOriginChainId } from '@portkey-wallet/store/store-ca/wallet/actions';
-import { ChainId, NetworkType } from '@portkey-wallet/types';
-import CommonSelect from 'components/CommonSelect1';
-import { useChangeNetwork } from 'hooks/useChangeNetwork';
-import i18n from 'i18n';
+import { ChainId } from '@portkey-wallet/types';
+// import CommonSelect from 'components/CommonSelect1';
+// import { useChangeNetwork } from 'hooks/useChangeNetwork';
+// import i18n from 'i18n';
 import { LoginInfo } from 'store/reducers/loginCache/type';
 import { setLoginAccountAction } from 'store/reducers/loginCache/actions';
 import { resetGuardians, setUserGuardianStatus } from '@portkey-wallet/store/store-ca/guardians/actions';
@@ -30,9 +30,9 @@ import {
 import { ISocialLogin, LoginType, TAllLoginKey } from '@portkey-wallet/types/types-ca/wallet';
 import { useGetRegisterInfo } from '@portkey-wallet/hooks/hooks-ca/guardian';
 import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
-import useChangeNetworkText from 'hooks/useChangeNetworkText';
-import CustomModal from 'pages/components/CustomModal';
-import { IconType } from 'types/icon';
+// import useChangeNetworkText from 'hooks/useChangeNetworkText';
+// import CustomModal from 'pages/components/CustomModal';
+// import { IconType } from 'types/icon';
 import LoginModal from './components/LoginModal';
 import './index.less';
 import { request } from '@portkey-wallet/api/api-did';
@@ -57,14 +57,14 @@ export default function RegisterStart() {
   const { type } = useParams();
   console.log(type, '====type');
 
-  const currentNetwork = useCurrentNetworkInfo();
+  // const currentNetwork = useCurrentNetworkInfo();
   const dispatch = useAppDispatch();
-  const changeNetwork = useChangeNetwork();
+  // const changeNetwork = useChangeNetwork();
   const navigate = useNavigateState<TVerifierAccountLocationState>();
   const { setLoading } = useLoading();
   const fetchUserVerifier = useGuardianList();
-  const changeNetworkModalText = useChangeNetworkText();
-  const isMainnet = useIsMainnet();
+  // const changeNetworkModalText = useChangeNetworkText();
+  // const isMainnet = useIsMainnet();
   const [open, setOpen] = useState<boolean>();
   const { t } = useTranslation();
   const { address: managerAddress } = useCurrentWalletInfo();
@@ -73,53 +73,53 @@ export default function RegisterStart() {
     dispatch(createNewTmpWallet());
   }, [dispatch]);
 
-  const networkList = useNetworkList();
+  // const networkList = useNetworkList();
 
-  const netWorkIcon: Record<NetworkType, IconType> = useMemo(
-    () => ({
-      MAINNET: 'Aelf',
-      TESTNET: 'elf-icon',
-    }),
-    [],
-  );
+  // const netWorkIcon: Record<NetworkType, IconType> = useMemo(
+  //   () => ({
+  //     MAINNET: 'Aelf',
+  //     TESTNET: 'elf-icon',
+  //   }),
+  //   [],
+  // );
 
-  const selectItems = useMemo(
-    () =>
-      networkList?.map((item) => ({
-        value: item.networkType,
-        icon: netWorkIcon[item.networkType],
-        label: item.name,
-        disabled: !item.isActive,
-      })),
-    [netWorkIcon, networkList],
-  );
+  // const selectItems = useMemo(
+  //   () =>
+  //     networkList?.map((item) => ({
+  //       value: item.networkType,
+  //       icon: netWorkIcon[item.networkType],
+  //       label: item.name,
+  //       disabled: !item.isActive,
+  //     })),
+  //   [netWorkIcon, networkList],
+  // );
 
-  const networkChange = useCallback(
-    (value: NetworkType) => {
-      const network = networkList.find((item) => item.networkType === value);
-      if (network) {
-        const { title, content } = changeNetworkModalText(value);
-        CustomModal({
-          type: 'confirm',
-          content: (
-            <div className="change-network-modal">
-              <div className="title">
-                {title}
-                <br />
-                {`aelf ${isMainnet ? 'Testnet' : 'Mainnet'}`}
-              </div>
-              <div className="content">{content}</div>
-            </div>
-          ),
-          onOk: () => {
-            changeNetwork(network);
-          },
-          okText: 'Confirm',
-        });
-      }
-    },
-    [changeNetwork, changeNetworkModalText, networkList, isMainnet],
-  );
+  // const networkChange = useCallback(
+  //   (value: NetworkType) => {
+  //     const network = networkList.find((item) => item.networkType === value);
+  //     if (network) {
+  //       const { title, content } = changeNetworkModalText(value);
+  //       CustomModal({
+  //         type: 'confirm',
+  //         content: (
+  //           <div className="change-network-modal">
+  //             <div className="title">
+  //               {title}
+  //               <br />
+  //               {`aelf ${isMainnet ? 'Testnet' : 'Mainnet'}`}
+  //             </div>
+  //             <div className="content">{content}</div>
+  //           </div>
+  //         ),
+  //         onOk: () => {
+  //           changeNetwork(network);
+  //         },
+  //         okText: 'Confirm',
+  //       });
+  //     }
+  //   },
+  //   [changeNetwork, changeNetworkModalText, networkList, isMainnet],
+  // );
 
   const isHasAccount = useRef<boolean>();
 

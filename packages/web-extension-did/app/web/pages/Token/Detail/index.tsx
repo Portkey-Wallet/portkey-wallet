@@ -147,13 +147,13 @@ function TokenDetail() {
         <CommonTokenHeader
           symbol={currentToken.label ?? currentToken.symbol}
           imgUrl={currentToken.imageUrl}
-          chainId={currentToken.chainId}
+          // chainId={currentToken.chainId}
         />
         <div className={clsx('token-detail-content', isPrompt ? '' : 'token-detail-content-popup')}>
           <div className="token-detail-balance flex-column">
             <div className={clsx('balance-amount', 'flex-column', isPrompt && 'is-prompt')}>
               <div className={clsx('amount-number', AmountShowWithDecimals.length > 18 && 'amount-number-long')}>
-                {AmountShowWithDecimals ?? <SkeletonCom />}
+                {AmountShowWithDecimals ?? <SkeletonCom />} {currentToken.symbol}
               </div>
               <div className={clsx('amount-convert', !isMainNet && 'hidden-amount-convert')}>
                 {formatAmountUSDShow(currentToken?.balanceInUsd) ?? <SkeletonCom />}

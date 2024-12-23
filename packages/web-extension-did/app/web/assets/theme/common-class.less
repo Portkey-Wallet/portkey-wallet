@@ -211,7 +211,7 @@ td {
 }
 
 .popup-body {
-  width: 375px !important;
+  min-width: 360px !important;
   height: 600px;
 }
 
@@ -241,7 +241,6 @@ td {
   min-width: @min-width;
   min-height: 100%;
   height: 100vh;
-  background-color: @bg-20;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -251,10 +250,12 @@ td {
     z-index: 101;
     background-color: @bg-20;
     margin: 0 auto;
+    width: 100%;
   }
 
   .portkey-body {
     // height: calc(100vh - 96px);
+    width: 100%;
     min-height: 593px;
     margin: 0 auto;
   }
@@ -307,6 +308,10 @@ td {
   }
   // screen < 768, maxContentWidth = screen, minContentWidth = 360, paddingLeftAndRight = 24
   @media screen and (max-width: 767px) {
+    .portkey-prompt {
+      background-color: @bg-base2;
+    }
+
     padding-bottom: 0 !important;
     .portkey-header {
       width: 100vw;
@@ -316,6 +321,7 @@ td {
       width: 100vw;
       min-width: @min-width;
       min-height: calc(100vh - 72px);
+      border-radius: 16px;
     }
   }
 }

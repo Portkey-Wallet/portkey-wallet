@@ -5,7 +5,7 @@ import { RegisterType, SocialLoginFinishHandler, VerifyTypeEnum } from 'types/wa
 import DividerCenter from '../DividerCenter';
 import SocialContent from '../SocialContent';
 import TermsOfServiceItem from '../TermsOfServiceItem';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+// import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { socialLoginAction } from 'utils/lib/serviceWorkerAction';
 import { useLoading, useWalletInfo } from 'store/Provider/hooks';
 import { ISocialLogin, LoginType, SocialLoginEnum } from '@portkey-wallet/types/types-ca/wallet';
@@ -46,7 +46,7 @@ export default function SocialLogin({
 }) {
   const navigate = useNavigateState();
   const { t } = useTranslation();
-  const isMainnet = useIsMainnet();
+  // const isMainnet = useIsMainnet();
   const { currentNetwork } = useWalletInfo();
   const { setLoading } = useLoading();
   const config = useEntranceConfig();

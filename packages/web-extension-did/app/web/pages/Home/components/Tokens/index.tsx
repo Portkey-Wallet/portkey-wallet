@@ -201,9 +201,8 @@ export default function TokenList() {
     <div className={clsx('tab-token', !hasMoreTokenList && 'hidden-loading-more')}>
       <Collapse onChange={handleChange}>{accountTokenList.map((item) => renderItem(item))}</Collapse>
       <LoadingMore hasMore={hasMoreTokenList} loadMore={getMoreTokenList} className="load-more" />
-
       <div className="add-token-wrapper flex-center" onClick={handleAddToken}>
-        <CustomSvgV3 type="manage-token" />
+        <CustomSvgV3 type="manage-token" className="manage-token-icon" />
         <span className="add-token-text">{t('Add Tokens')}</span>
       </div>
     </div>

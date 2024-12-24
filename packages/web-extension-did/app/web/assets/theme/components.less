@@ -44,6 +44,7 @@ button.@{app-prefix}-btn-default {
 
 .@{app-prefix}-btn-primary {
   border-width: 0;
+  color: @text-brand4;
 
   &:hover,
   &:focus {
@@ -62,7 +63,7 @@ button.@{app-prefix}-btn-default {
   &:disabled:hover,
   &:disabled:focus,
   &:disabled:active {
-    color: white;
+    color: @text-disabled2 !important;
     background-color: @brand-disable !important;
     border-color: @brand-disable !important;
     box-shadow: none !important;
@@ -260,15 +261,16 @@ button.@{app-prefix}-btn-default {
     padding-right: 16px;
     background: @bg-base1;
     color: @text-base1;
-    border: 1px solid @border-base1;
+    border: 1px solid @border-base1 !important;
+    box-shadow: none;
   }
 }
 
 .@{app-prefix}-switch {
   width: 43px;
   height: 24px;
-  background-color: @bg-13;
-  border: 2px solid @border-neutral3;
+  background-color: @bg-neutral2;
+  border: 2px solid @bg-neutral2;
   position: relative;
 
   &:focus {
@@ -295,10 +297,12 @@ button.@{app-prefix}-btn-default {
 }
 
 .@{app-prefix}-switch-checked {
-  border: 2px solid @brand-normal;
+  border: 2px solid @icon-brand6;
+  background: @icon-brand6;
 
   .@{app-prefix}-switch-handle::before {
-    background-color: @brand-normal;
+    //background-color: @brand-normal;
+    background-color: @text-base1;
   }
 
   .@{app-prefix}-switch-inner {
@@ -309,11 +313,11 @@ button.@{app-prefix}-btn-default {
 .footer-btn-wrap {
   width: 100%;
   padding: 16px;
-  border-top: 1px solid @border-neutral3;
+  //border-top: 1px solid @border-neutral3;
   margin-bottom: 0 !important;
 
   .footer-btn {
-    color: @neutral-white-text;
+    color: #0A4370;
     font-size: 16px;
     line-height: 22px;
     height: 48px;
@@ -448,5 +452,3 @@ button.@{app-prefix}-btn-default {
     text-align: left;
   }
 }
-
-

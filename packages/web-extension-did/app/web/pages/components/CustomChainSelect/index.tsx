@@ -53,7 +53,7 @@ export default function CustomChainSelect({ onChange, onClose, item }: ICustomCh
               <div className="content-text">{transNetworkText(chainItem.chainId, !isMainnet)}</div>
               <Switch
                 defaultChecked={chainItem.isDisplay}
-                className="switch"
+                className={`switch ${chainItem.isDisplay ? 'checked-true' : 'checked-false'}`}
                 onChange={() => {
                   onClose?.();
                   onChange?.(!chainItem.isDisplay, chainItem.id);

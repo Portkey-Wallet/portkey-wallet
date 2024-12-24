@@ -241,8 +241,7 @@ export default function AddToken() {
   const renderNoSearchResult = useMemo(
     () => (
       <div className="flex-column-center no-result">
-        <CustomSvg type="Group" className="no-token-svg" />
-        <p className="desc">{t('There is no search Result.')}</p>
+        <p className="desc">{t('No tokens available')}</p>
         <div className="flex-center">
           <Button className="flex-row-center add-button flex-center" type="text" onClick={handleAddCustomToken}>
             <CustomSvg type="Plus" className="plug-svg" /> {t('Custom Token')}
@@ -334,7 +333,7 @@ export default function AddToken() {
           <CommonHeader
             title={t('Add tokens')}
             onLeftBack={() => navigate('/')}
-            rightElementList={[{ customSvgType: 'SuggestAdd', onClick: handleAddCustomToken }]}
+            rightElementList={[{ customSvgType: 'add-token', onClick: handleAddCustomToken }]}
           />
           <DropdownSearch
             overlay={<></>}

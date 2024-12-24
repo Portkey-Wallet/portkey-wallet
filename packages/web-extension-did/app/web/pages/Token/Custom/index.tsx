@@ -122,13 +122,8 @@ export default function CustomToken() {
   const mainContent = useCallback(() => {
     return (
       <div className={clsx(['page-custom-token', isPrompt && 'detail-page-prompt'])}>
-        <CommonHeader title={t('Custom Token')} onLeftBack={handleBack} />
+        <CommonHeader title={'Import Token'} onLeftBack={handleBack} />
         <div className="page-content flex-column">
-          <div className="tip">
-            {t(
-              'To add a token, you need to select the network that it belongs to and enter its symbol for automatic recognition.',
-            )}
-          </div>
           <div>
             <p className="label">{t('Network')}</p>
             <CustomSelect
@@ -159,7 +154,7 @@ export default function CustomToken() {
         </div>
         <div className="btn-wrap">
           <Button disabled={!curToken.symbol} className="btn" type="primary" onClick={handleAdd}>
-            {t('Add')}
+            {t('Import')}
           </Button>
         </div>
         {isPrompt && <PromptEmptyElement />}

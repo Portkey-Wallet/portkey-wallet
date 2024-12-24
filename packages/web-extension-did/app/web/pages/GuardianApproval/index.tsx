@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 import GuardianItems from './components/GuardianItems';
 import { useGuardianRecovery } from './hooks/useRecovery';
 import { useRemoveOtherManage } from './hooks/useRemoveOtherManage';
-import GuardianApprovalPrompt from './Prompt';
+// import GuardianApprovalPrompt from './Prompt';
 import GuardianApprovalPopup from './Popup';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useOnManagerAddressAndQueryResult } from 'hooks/useOnManagerAddressAndQueryResult';
@@ -56,16 +56,16 @@ export default function GuardianApproval() {
   const { locationParams } = usePromptLocationParams<TGuardianApprovalLocationState, TGuardianApprovalLocationSearch>();
   const { isNotLessThan768 } = useCommonState();
   const { t } = useTranslation();
-  const isBigScreenPrompt: boolean = useMemo(() => {
-    const from = locationParams.previousPage;
-    const isNotFromLoginAndRegister = !!(
-      from &&
-      (AllowedGuardianPageArr.includes(from) ||
-        from === FromPageEnum.removeManage ||
-        from === FromPageEnum.setTransferLimit)
-    );
-    return isNotLessThan768 ? isNotFromLoginAndRegister : false;
-  }, [isNotLessThan768, locationParams.previousPage]);
+  // const isBigScreenPrompt: boolean = useMemo(() => {
+  //   const from = locationParams.previousPage;
+  //   const isNotFromLoginAndRegister = !!(
+  //     from &&
+  //     (AllowedGuardianPageArr.includes(from) ||
+  //       from === FromPageEnum.removeManage ||
+  //       from === FromPageEnum.setTransferLimit)
+  //   );
+  //   return isNotLessThan768 ? isNotFromLoginAndRegister : false;
+  // }, [isNotLessThan768, locationParams.previousPage]);
   const targetChainId: ChainId | undefined = useMemo(
     () => locationParams.targetChainId || undefined,
     [locationParams.targetChainId],
@@ -175,7 +175,7 @@ export default function GuardianApproval() {
         return;
       }
       if (from === FromPageEnum.setTransferLimit) {
-        navigate(`/setting/wallet-security/payment-security/transfer-settings-edit`, {
+        navigate(`/setting/wallet-security/payment-security/transfer-settings`, {
           state: locationParams,
         });
         return;
@@ -292,9 +292,11 @@ export default function GuardianApproval() {
     [handleBack, renderContent],
   );
 
-  return isNotLessThan768 ? (
-    <GuardianApprovalPrompt {...props} isBigScreenPrompt={isBigScreenPrompt} />
-  ) : (
-    <GuardianApprovalPopup {...props} />
-  );
+  return <GuardianApprovalPopup {...props} />;
+
+  // return isNotLessThan768 ? (
+  //   <GuardianApprovalPrompt {...props} isBigScreenPrompt={isBigScreenPrompt} />
+  // ) : (
+  //   <GuardianApprovalPopup {...props} />
+  // );
 }

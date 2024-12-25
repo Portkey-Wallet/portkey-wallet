@@ -17,6 +17,7 @@ import { ChainId } from '@portkey-wallet/types';
 import { request } from '@portkey-wallet/api/api-did';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import singleMessage from 'utils/singleMessage';
+
 import './index.less';
 
 export default function CustomToken() {

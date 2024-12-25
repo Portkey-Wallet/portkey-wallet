@@ -243,7 +243,7 @@ export default function AddToken() {
       <div className="flex-column-center no-result">
         <p className="desc">{t('No tokens available')}</p>
         <div className="flex-center">
-          <Button className="flex-row-center add-button flex-center" type="text" onClick={handleAddCustomToken}>
+          <Button className="flex-row-center add-button flex-center" type="primary" onClick={handleAddCustomToken}>
             <CustomSvg type="Plus" className="plug-svg" /> {t('Custom Token')}
           </Button>
         </div>
@@ -255,9 +255,9 @@ export default function AddToken() {
   const renderSearchResultTip = useMemo(
     () => (
       <div className="flex-column-center search-result-tip">
-        <p className="desc">{t("Can't find your token? Please try below.")}</p>
+        <p className="desc">{t('Don’t see your token?')}</p>
         <div className="flex-center">
-          <Button className="flex-row-center add-button flex-center" type="text" onClick={handleAddCustomToken}>
+          <Button className="flex-row-center add-button flex-center" type="primary" onClick={handleAddCustomToken}>
             <CustomSvg type="Plus" className="plug-svg" /> {t('Custom Token')}
           </Button>
         </div>
@@ -331,13 +331,14 @@ export default function AddToken() {
       <div className={clsx(['add-token', isPrompt && 'detail-page-prompt'])}>
         <div className="add-token-top">
           <CommonHeader
-            title={t('Add tokens')}
+            title={t('Manage Token List')}
             onLeftBack={() => navigate('/')}
             rightElementList={[{ customSvgType: 'add-token', onClick: handleAddCustomToken }]}
           />
           <DropdownSearch
             overlay={<></>}
             value={filterWord}
+            className="search-box"
             inputProps={{
               onChange: (e) => {
                 const _value = e.target.value.replaceAll(' ', '');

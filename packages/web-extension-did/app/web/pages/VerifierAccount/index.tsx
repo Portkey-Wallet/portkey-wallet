@@ -6,11 +6,11 @@ import { useLocationState, useNavigateState } from 'hooks/router';
 import { useCurrentWallet, useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { setRegisterVerifierAction } from 'store/reducers/loginCache/actions';
 import { handleVerificationDoc } from '@portkey-wallet/utils/guardian';
-import VerifierAccountPrompt from './Prompt';
+// import VerifierAccountPrompt from './Prompt';
 import VerifierAccountPopup from './Popup';
 import './index.less';
 import { useOnManagerAddressAndQueryResult } from 'hooks/useOnManagerAddressAndQueryResult';
-import { useCommonState } from 'store/Provider/hooks';
+// import { useCommonState } from 'store/Provider/hooks';
 import InternalMessage from 'messages/InternalMessage';
 import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 import VerifierPage from 'pages/components/VerifierPage';
@@ -36,20 +36,20 @@ export default function VerifierAccount() {
   const navigate = useNavigateState<TGuardianApprovalLocationState | TAddGuardianLocationState>();
   const dispatch = useAppDispatch();
   const { state } = useLocationState<TVerifierAccountLocationState>();
-  const { isNotLessThan768 } = useCommonState();
+  // const { isNotLessThan768 } = useCommonState();
   const { walletInfo } = useCurrentWallet();
   const { address: managerAddress } = useCurrentWalletInfo();
-  const isBigScreenPrompt = useMemo(() => {
-    const bigScreenAllowedArr = [
-      FromPageEnum.guardiansAdd,
-      FromPageEnum.guardiansDel,
-      FromPageEnum.guardiansEdit,
-      FromPageEnum.guardiansLoginGuardian,
-      FromPageEnum.removeManage,
-      FromPageEnum.setTransferLimit,
-    ];
-    return isNotLessThan768 ? (state?.previousPage ? bigScreenAllowedArr.includes(state?.previousPage) : false) : false;
-  }, [isNotLessThan768, state]);
+  // const isBigScreenPrompt = useMemo(() => {
+  //   const bigScreenAllowedArr = [
+  //     FromPageEnum.guardiansAdd,
+  //     FromPageEnum.guardiansDel,
+  //     FromPageEnum.guardiansEdit,
+  //     FromPageEnum.guardiansLoginGuardian,
+  //     FromPageEnum.removeManage,
+  //     FromPageEnum.setTransferLimit,
+  //   ];
+  //   return isNotLessThan768 ? (state?.previousPage ? bigScreenAllowedArr.includes(state?.previousPage) : false) : false;
+  // }, [isNotLessThan768, state]);
   const targetChainId: ChainId | undefined = useMemo(() => state.targetChainId, [state]);
   const onManagerAddressAndQueryResult = useOnManagerAddressAndQueryResult(`${state.previousPage}`);
 
@@ -278,9 +278,5 @@ export default function VerifierAccount() {
     [handleBack, renderContent],
   );
 
-  return isNotLessThan768 ? (
-    <VerifierAccountPrompt {...props} isBigScreenPrompt={isBigScreenPrompt} />
-  ) : (
-    <VerifierAccountPopup {...props} />
-  );
+  return <VerifierAccountPopup {...props} />;
 }

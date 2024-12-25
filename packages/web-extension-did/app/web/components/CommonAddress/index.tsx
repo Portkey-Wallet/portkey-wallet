@@ -21,10 +21,10 @@ export default function CommonAddress({
   copySize,
 }: CommonAddressProps) {
   return (
-    <div className="address-container">
-      {!!label && <div className={`address-title ${labelClassName}`}>{label}</div>}
-      <div className={`address-wrapper ${valueWrapperClassName}`}>
-        <div className={`address ${valueClassName}`}>{value}</div>
+    <div className="extension-common-address-container">
+      {!!label && <div className={`extension-common-address-title ${labelClassName}`}>{label}</div>}
+      <div className={`extension-common-address-wrapper ${valueWrapperClassName}`}>
+        <div className={`extension-common-address ${valueClassName}`}>{value}</div>
         {showCopy && !!value && <Copy toCopy={value || ''} size={copySize} />}
       </div>
     </div>

@@ -6,6 +6,8 @@ import { useGetTransferLimitWithContract } from 'hooks/useSecurity';
 import { Form } from 'antd';
 import { useLocationState, useNavigateState } from 'hooks/router';
 import { TTransferSettingEditLocationState, TTransferSettingLocationState } from 'types/router';
+import { transNetworkText } from '@portkey-wallet/utils/activity';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 
 export default function TransferSettings() {
   const { t } = useTranslation();
@@ -15,6 +17,7 @@ export default function TransferSettings() {
   const headerTitle = t('Transaction Limits');
   const [form] = Form.useForm();
   const getTransferLimit = useGetTransferLimitWithContract(state?.targetChainId || state?.chainId);
+  const isMainnet = useIsMainnet();
 
   useEffectOnce(() => {
     getTransferLimit({ symbol: state?.symbol }).then((res) => {
@@ -31,6 +34,13 @@ export default function TransferSettings() {
   }, [data, navigate]);
 
   return (
-    <TransferSettingsPopup headerTitle={headerTitle} goBack={handleBack} form={form} state={data} onEdit={onEdit} />
+    <TransferSettingsPopup
+      headerTitle={headerTitle}
+      goBack={handleBack}
+      form={form}
+      state={data}
+      onEdit={onEdit}
+      chainName={transNetworkText(state?.targetChainId || state?.chainId, !isMainnet)}
+    />
   );
 }

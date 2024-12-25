@@ -59,6 +59,8 @@ import TradePage from 'pages/Trade';
 import TokenAllowance from 'pages/WalletSecurity/TokenAllowance';
 import TokenAllowanceDetail from 'pages/WalletSecurity/TokenAllowance/TokenAllowanceDetail';
 import DepositHome from 'pages/DepositHome';
+import ReceiveListPage from 'pages/Receive/ReceiveListPage';
+import ReceiveCardPage from 'pages/Receive/ReceiveCardPage';
 import CryptoGifts from 'pages/CryptoGifts/Home';
 import HistoryList from 'pages/CryptoGifts/History';
 import CryptoGiftsDetail from 'pages/CryptoGifts/Detail';
@@ -379,5 +381,13 @@ export const PageRouter = () =>
     {
       path: '/token-detail/deposit-home/:chain/:symbol',
       element: <DepositHome />,
+    },
+    {
+      path: '/receive-list',
+      element: <ReceiveListPage />,
+    },
+    {
+      path: '/receive-card',
+      element: <ReceiveCardPage />,
     },
   ]);

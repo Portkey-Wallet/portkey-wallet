@@ -43,6 +43,7 @@ body.theme-dark {
   max-width: 896px;
   display: flex;
   justify-content: center;
+  background: #151318;
 }
 
 body {

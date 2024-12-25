@@ -4,7 +4,7 @@
   position: relative;
   border-radius: 50%;
   background-color: @bg-base2;
-  overflow: hidden;
+  //overflow: hidden;
   flex-shrink: 0;
 
   &.has-border {
@@ -28,6 +28,25 @@
     flex-shrink: 0;
     &.hidden {
       visibility: hidden;
+    }
+  }
+
+  .sub-icon {
+    position: absolute;
+    bottom: -2px;
+    right: -5px;
+    border-radius: 100%;
+    border: 1px solid @border-base1;
+    height: 22px;
+    width: 22px;
+    .Chain-AELF-Main-icon,.Chain-AELF-Side-icon { /* stylelint-disable-line */
+      width: 100%;
+      height: 100%;
+      display: flex;
+      svg {
+        width: 100%;
+        height: 100%;
+      }
     }
   }
 }

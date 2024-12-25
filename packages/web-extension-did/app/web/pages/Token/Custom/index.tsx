@@ -1,7 +1,7 @@
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useChainIdList, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { Button, Input } from 'antd';
-import CustomSvg from 'components/CustomSvg';
+import { CustomSvgV3 } from 'components/CustomSvgV3';
 import CommonHeader from 'components/CommonHeader';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -32,13 +32,15 @@ export default function CustomToken() {
   const chainList = useChainIdList();
   const isMainnet = useIsMainnet();
 
+  console.log('chainList', chainList);
+
   const chainOptions = useMemo(
     () =>
       chainList?.map((item) => ({
         value: item,
         children: (
           <div className="flex select-custom-token-option">
-            <CustomSvg type={isMainnet ? 'Aelf' : 'elf-icon'} />
+            <CustomSvgV3 type={item == 'AELF' ? 'Aelf' : 'elf-icon'} />
             <span className="title">{transNetworkText(item, !isMainnet)}</span>
           </div>
         ),
@@ -127,7 +129,7 @@ export default function CustomToken() {
           <div>
             <p className="label">{t('Network')}</p>
             <CustomSelect
-              className="select value"
+              className="select-chain"
               value={curChainId}
               onChange={handleChangeChainId}
               items={chainOptions}

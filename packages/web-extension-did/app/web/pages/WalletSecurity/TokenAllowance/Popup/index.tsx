@@ -19,7 +19,7 @@ export default function TokenAllowancePopup({
         <div className="no-data flex-center">No data</div>
       ) : (
         <>
-          <MenuList list={list} height={92} />
+          <MenuList list={list} height={74} />
           <LoadingMore hasMore={hasMore} loadMore={fetchMoreList} className="load-more" />
         </>
       )}

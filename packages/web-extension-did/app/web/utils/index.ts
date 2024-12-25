@@ -83,3 +83,27 @@ export const getImageUrlBySymbol = (symbol: string | undefined) => {
   }
   return '';
 };
+
+export const timeAgo = (timestampInSeconds: number) => {
+  const now = Math.floor(Date.now() / 1000);
+  const diffInSeconds = now - timestampInSeconds;
+
+  if (diffInSeconds < 60) {
+    return '< 1 minute ago';
+  } else if (diffInSeconds < 120) {
+    return '1 minute ago';
+  } else if (diffInSeconds < 3600) {
+    const minutes = Math.floor(diffInSeconds / 60);
+    return `${minutes} minutes ago`;
+  } else if (diffInSeconds < 7200) {
+    return '1 hour ago';
+  } else if (diffInSeconds < 86400) {
+    const hours = Math.floor(diffInSeconds / 3600);
+    return `${hours} hours ago`;
+  } else if (diffInSeconds < 172800) {
+    return '1 day ago';
+  } else {
+    const days = Math.floor(diffInSeconds / 86400);
+    return `${days} days ago`;
+  }
+};

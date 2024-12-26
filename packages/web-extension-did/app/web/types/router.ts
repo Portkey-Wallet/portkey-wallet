@@ -13,6 +13,7 @@ import { GuardianItem } from './guardians';
 import { NFTItemBaseType } from '@portkey-wallet/types/types-ca/assets';
 import { ReceiveTabEnum } from '@portkey-wallet/constants/constants-ca/send';
 import { FreeMintStatus } from '@portkey-wallet/types/types-ca/freeMint';
+import { IAssetToken, INftInfoType } from '@portkey-wallet/store/store-ca/assets/type';
 
 export enum FromPageEnum {
   register = 'register',
@@ -248,7 +249,7 @@ export type TReceiveLocationState = {
 
 // Send
 export type TSendPageType = 'token' | 'nft';
-export type TSendLocationState = BaseToken & {
+export type TSendLocationState = (IAssetToken | INftInfoType) & {
   chainId: ChainId;
   targetChainId?: ChainId;
   toAccount?: ToAccount;

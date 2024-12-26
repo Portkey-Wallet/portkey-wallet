@@ -79,6 +79,7 @@ import SecondaryMailboxEdit from 'pages/WalletSecurity/SecondaryMailbox/Edit';
 import SecondaryMailboxVerify from 'pages/WalletSecurity/SecondaryMailbox/Verify';
 import Security from '../../pages/My/SettingList/Security';
 import { PrepareWallet } from 'pages/PrepareWallet';
+import { SelectAssetListPage } from 'pages/Send/components/SelectAssetList';
 // import Example from 'pages/Example';
 // import TokenNetworkList from 'pages/DepositHome/components/TokenNetworkList';
 
@@ -141,6 +142,10 @@ export const PageRouter = () => {
     {
       path: '/token-detail',
       element: <TokenDetail />,
+    },
+    {
+      path: '/select-asset',
+      element: <SelectAssetListPage />,
     },
     {
       path: '/send/:type/:symbol',

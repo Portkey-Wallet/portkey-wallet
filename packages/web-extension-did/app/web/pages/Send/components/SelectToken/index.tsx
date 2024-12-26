@@ -22,7 +22,10 @@ export default function SelectToken({ tokenInfos = [], noDataMessage, loading, o
   const renderItem = useCallback(
     (item: IAssetToken) => {
       return (
-        <div key={`${item.symbol}_${item.chainId}`} className="token-item flex gap-8" onClick={() => onSelect(item)}>
+        <div
+          key={`${item.symbol}_${item.chainId}`}
+          className="token-item flex gap-8 cursor-pointer"
+          onClick={() => onSelect(item)}>
           <div className="token-icon-show">
             <TokenImageDisplay
               className="icon-symbol"

@@ -111,3 +111,4 @@ export const TransferErrorMessage = {
 };
 
 export const HELP_URL = 'https://doc.portkey.finance/docs/How-to-trade-assets';
+export const SEND_HELP_URL = 'https://doc.portkey.finance/docs/How-to-send-assets';

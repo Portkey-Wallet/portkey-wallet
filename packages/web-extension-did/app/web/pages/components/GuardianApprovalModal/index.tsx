@@ -1,5 +1,4 @@
-import { GuardianApproval, UserGuardianStatus } from '@portkey/did-ui-react';
-import CustomPromptModal from '../CustomPromptModal';
+import { CommonModal, GuardianApproval, UserGuardianStatus } from '@portkey/did-ui-react';
 import { useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useCallback, useEffect, useState } from 'react';
 import { handleErrorMessage } from '@portkey-wallet/utils';
@@ -122,7 +121,7 @@ export default function GuardianApproveModal({
   }, [getData]);
 
   return (
-    <CustomPromptModal open={open} wrapClassName={`${PrefixCls}-wrapper`} destroyOnClose onClose={onClose}>
+    <CommonModal open={open} wrapClassName={`${PrefixCls}-wrapper`} destroyOnClose onClose={onClose}>
       <GuardianApproval
         networkType={currentNetwork}
         className={`${PrefixCls}-content`}
@@ -135,6 +134,6 @@ export default function GuardianApproveModal({
         operationDetails={operationDetails}
         caHash={walletInfo.caHash}
       />
-    </CustomPromptModal>
+    </CommonModal>
   );
 }

@@ -1,6 +1,24 @@
 @import '../../../../assets/theme/color.less';
 
 .send-asset-list {
+  .send-search {
+    margin: 0 16px;
+  }
+  .portkey-input-affix-wrapper {
+    height: 40px;
+    border-radius: 20px;
+    background-color: @bg-base1;
+    border: 1px solid @border-base1;
+    .search-icon,
+    .close-circle-icon {
+      width: 16px;
+      height: 16px;
+      svg {
+        width: 16px;
+        height: 16px;
+      }
+    }
+  }
   .send-asset-tab {
     .portkey-ui-common-tabs-header {
       padding: 16px;
@@ -12,7 +30,8 @@
 }
 
 .select-asset-list-page {
-  .page-header {
+  .select-asset-list-page-header {
+    margin: 16px;
     font-family: BG;
     font-weight: 700;
     font-size: 20px;

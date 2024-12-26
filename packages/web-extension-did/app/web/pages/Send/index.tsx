@@ -67,7 +67,7 @@ import { getOperationDetails } from '@portkey-wallet/utils/operation.util';
 import ToAddressInput, { InputStepEnum } from './components/ToAddressInput';
 import SelectNetwork, { INetworkItem } from './components/SelectNetwork';
 import AddressTypeSelect, { AddressTypeEnum, ExchangeTypeShow } from './components/AddressTypeSelect';
-import { CommonPromptCard } from '@portkey/did-ui-react';
+import { CommonButton, CommonPromptCard } from '@portkey/did-ui-react';
 import SendModalTip, { ButtonGroupType, ButtonType } from './components/SendModalTip';
 import { getLimitTips, getSmallerValue, isValidAmount } from './utils';
 import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
@@ -151,7 +151,6 @@ type TypeStageObj = {
 
 export default function Send() {
   const navigate = useNavigate();
-  // TODO need get data from state and wait for BE data structure
   const { type, symbol } = useParams();
   const { locationParams: state } = usePromptLocationParams<TSendLocationState, TSendLocationState>();
   const chainId: ChainId = useMemo(() => state.targetChainId || state.chainId, [state.chainId, state.targetChainId]);
@@ -1405,14 +1404,15 @@ export default function Send() {
             <div className="stage-ele flex-column flex-1">{StageObj[stage].element}</div>
             {StageObj[stage].btnText ? (
               <div className="btn-wrap">
-                <Button
+                <CommonButton
                   loading={btnLoading}
                   disabled={btnDisabled}
                   className="stage-btn"
                   type="primary"
+                  block
                   onClick={StageObj[stage].handler}>
                   {StageObj[stage].btnText}
-                </Button>
+                </CommonButton>
               </div>
             ) : null}
           </>

@@ -7,16 +7,16 @@ import { fetchAssetListV2 } from '@portkey-wallet/store/store-ca/assets/api';
 import { IAssetItemV2, IAssetToken, INftInfoType } from '@portkey-wallet/store/store-ca/assets/type';
 import useDebounce from 'hooks/useDebounce';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { CommonTabs, CommonInput, CommonModal } from '@portkey/did-ui-react';
+import { CommonTabs, CommonModal } from '@portkey/did-ui-react';
 import SelectToken from '../SelectToken';
 import SelectNFT from '../SelectNFT';
 import { SendPageTypeEnum } from 'pages/Send';
 import { useNavigate } from 'react-router';
-import PageHeader from 'components/PageHeader';
 import { useNavigateState } from 'hooks/router';
 import { TSendLocationState } from 'types/router';
 import { CustomSvgV3 } from 'components/CustomSvgV3';
 import { ChainId } from '@portkey-wallet/types';
+import { Input } from 'antd';
 import './index.less';
 
 const initFilteredListShow = { nftInfos: [], tokenInfos: [] };
@@ -90,21 +90,27 @@ export default function SelectAssetList() {
     return debounceKeyword ? 'No results found' : 'There are currently no assets to send.';
   }, [debounceKeyword]);
 
+  const suffix = useMemo(() => {
+    if (keyword) {
+      return <CustomSvgV3 className="cursor-pointer" type="close-circle" onClick={() => setKeyword('')} />;
+    }
+    return <CustomSvgV3 type="search" />;
+  }, [keyword]);
+
   return (
     <div className="send-asset-list">
-      <CommonInput
-        type="search"
-        placeholder="Search"
-        value={keyword}
-        onChange={(e) => {
-          const v = e.target.value.trim();
-          setKeyword(v);
-        }}
-        className="send-search"
-        onClear={() => {
-          setKeyword('');
-        }}
-      />
+      <div className="send-search">
+        <Input
+          type="search"
+          placeholder="Search"
+          value={keyword}
+          onChange={(e) => {
+            const v = e.target.value.trim();
+            setKeyword(v);
+          }}
+          suffix={suffix}
+        />
+      </div>
       <CommonTabs
         className="send-asset-tab"
         activeKey={curTab}
@@ -148,8 +154,12 @@ export function SelectAssetListPage() {
     navigate('/');
   }, [navigate]);
   return (
-    <div className="select-asset-list-page">
-      <PageHeader onBackCb={onBack} headerTitle={`Select Asset to Send`} />
+    <div className="select-asset-list-page flex-1">
+      <div className="flex-between-center select-asset-list-page-header">
+        <CustomSvgV3 type="arrow-left" className="cursor-pointer" onClick={onBack} />
+        <div>{`Select Asset to Send`}</div>
+        <div></div>
+      </div>
       <SelectAssetList />
     </div>
   );

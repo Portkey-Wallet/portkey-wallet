@@ -336,8 +336,9 @@ export default function MyBalance() {
             }
           }}
           onReceive={() => {
-            setNavTarget('receive');
-            return setTokenOpen(true);
+            navigate('/receive-list');
+            // setNavTarget('receive');
+            // return setTokenOpen(true);
           }}
           onBuy={isRampShow ? handleClickBuy : undefined}
           onClickSwap={() => handleClickTrade(TradeTypeEnum.Swap)}

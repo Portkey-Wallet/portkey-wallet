@@ -4,6 +4,9 @@
   height: 100vh;
   display: flex;
   flex-direction: column;
+  .common-header-title {
+    padding-right: 40px;
+  }
 
   .page-content {
     padding: 24px;
@@ -11,11 +14,13 @@
     gap: 24px;
     overflow: hidden;
     background-color: @bg-base1;
-    border-top: 1px solid @border-neutral3;
     font-size: 14px;
     line-height: 20px;
     font-weight: 400;
     color: @text-base1;
+  }
+  .symbol-input {
+    border-radius: 8px;
   }
 
   .tip {
@@ -27,8 +32,9 @@
     margin-bottom: 8px;
   }
   .@{app-prefix}-input[disabled] {
+    border-radius: 8px;
     color: @text-base1;
-    background-color: @bg-22;
+    background-color: '#848485';
   }
 
   .err-msg {
@@ -41,7 +47,6 @@
   .btn-wrap {
     background-color: @bg-base1;
     padding: 16px;
-    border-top: 1px solid @border-neutral3;
     .btn {
       border-radius: 100px;
       height: 48px;

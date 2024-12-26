@@ -1,15 +1,21 @@
 import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
 import { InitialTxFee } from '@portkey-wallet/constants/constants-ca/wallet';
 import { getCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { AElfWallet } from '@portkey-wallet/types/aelf';
+import aes from '@portkey-wallet/utils/aes';
 import { ChainId } from '@portkey/provider-types';
 import { store } from 'store/Provider/store';
+import AElf from 'aelf-sdk';
 
+const walletMap: { [address: string]: AElfWallet } = {};
 export const getStoreState = () => {
   return store.getState();
 };
 
 export const getWallet = () => getStoreState().wallet;
 export const getWalletInfo = () => getWallet()?.walletInfo;
+export const getUser = () => getStoreState().userInfo;
+export const getPin = () => getUser().passwordSeed;
 
 export const getCurrentCaInfo = () => {
   const wallet = getWallet();
@@ -48,4 +54,16 @@ export const getTxFee = (chainId: ChainId) => {
   const currentNetwork = getStoreState().wallet.currentNetwork;
   const targetTxFee = getStoreState().txFee?.[currentNetwork]?.[chainId];
   return targetTxFee ?? InitialTxFee;
+};
+
+export const getManagerAccount = (password: string): AElfWallet | undefined => {
+  const walletInfo = getWalletInfo();
+  if (!walletInfo) return;
+
+  // get privateKey
+  const privateKey = aes.decrypt(walletInfo.AESEncryptPrivateKey, password);
+  if (!privateKey) return;
+
+  if (!walletMap[walletInfo.address]) walletMap[walletInfo.address] = AElf.wallet.getWalletByPrivateKey(privateKey);
+  return walletMap[walletInfo.address];
 };

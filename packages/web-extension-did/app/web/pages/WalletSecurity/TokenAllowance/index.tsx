@@ -3,15 +3,15 @@ import { useCallback, useMemo, useState } from 'react';
 import TokenAllowancePopup from './Popup';
 import { MenuItemInfo } from 'pages/components/MenuList';
 import ImageDisplay from 'pages/components/ImageDisplay';
-import CustomSvg from 'components/CustomSvg';
 import { useNavigateState } from 'hooks/router';
 import { ITokenAllowance } from '@portkey-wallet/types/types-ca/allowance';
 import { useFetchTokenAllowanceList } from '@portkey-wallet/hooks/hooks-ca/assets';
 import singleMessage from 'utils/singleMessage';
-import { handleErrorMessage } from '@portkey-wallet/utils';
+import { addressFormat, formatStr2EllipsisStr, handleErrorMessage } from '@portkey-wallet/utils';
 import { PAGE_SIZE_DEFAULT } from '@portkey-wallet/constants/constants-ca/assets';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import './index.less';
+import { CustomSvgV3 } from 'components/CustomSvgV3';
 
 export interface ITokenAllowanceProps {
   fetching: boolean;
@@ -52,24 +52,31 @@ export default function TokenAllowance() {
 
   const showDataList: MenuItemInfo[] = useMemo(
     () =>
-      list.map((temp) => ({
-        key: temp.contractAddress,
-        element: (
-          <div className="content flex">
-            <ImageDisplay defaultHeight={32} className="icon" name={temp.name || 'Unknown'} src={temp.icon} />
-            <div className="desc flex-column">
-              <div className="text name">
-                <span className="dapp-name">{temp.name ?? 'Unknown'}</span>
-                <CustomSvg type={temp.url ? 'DappLock' : 'DappWarn'} />
+      list.map((temp) => {
+        const formatAddressShow = addressFormat(temp?.contractAddress, temp?.chainId, 'aelf');
+        const ellipsisAddress = formatStr2EllipsisStr(formatAddressShow);
+        return {
+          key: temp.contractAddress,
+          element: (
+            <div className="content flex">
+              <ImageDisplay defaultHeight={42} className="icon" name={temp.name || 'Unknown'} src={temp.icon} />
+              <div className="desc flex-column">
+                <div className="text name">
+                  <span className="dapp-name">{temp.name ?? 'Unknown'}</span>
+                  {/*<CustomSvg type={temp.url ? 'DappLock' : 'DappWarn'} />*/}
+                  {(!temp.url || !temp.url.startsWith('https://')) && (
+                    <CustomSvgV3 type="warning" className="warning-icon" fillColor="#EB7D50" />
+                  )}
+                </div>
+                <div className="text contract-address">{`Contract address: ${ellipsisAddress}`}</div>
               </div>
-              <div className="text contract-address">{`Contract Address: ${temp.contractAddress}`}</div>
             </div>
-          </div>
-        ),
-        click: () => {
-          navigate(`/setting/wallet-security/token-allowance-detail`, { state: temp });
-        },
-      })),
+          ),
+          click: () => {
+            navigate(`/setting/wallet-security/token-allowance-detail`, { state: temp });
+          },
+        };
+      }),
     [list, navigate],
   );
 

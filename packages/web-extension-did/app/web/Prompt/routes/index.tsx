@@ -80,6 +80,8 @@ import SecondaryMailboxVerify from 'pages/WalletSecurity/SecondaryMailbox/Verify
 import Security from '../../pages/My/SettingList/Security';
 import { PrepareWallet } from 'pages/PrepareWallet';
 import { SelectAssetListPage } from 'pages/Send/components/SelectAssetList';
+import ReceiveListPage from 'pages/Receive/ReceiveListPage';
+import ReceiveCardPage from 'pages/Receive/ReceiveCardPage';
 // import Example from 'pages/Example';
 // import TokenNetworkList from 'pages/DepositHome/components/TokenNetworkList';
 
@@ -455,6 +457,14 @@ export const PageRouter = () => {
     {
       path: '/setting/wallet-security/secondary-mailbox-verify',
       element: <SecondaryMailboxVerify />,
+    },
+    {
+      path: '/receive-list',
+      element: <ReceiveListPage />,
+    },
+    {
+      path: '/receive-card',
+      element: <ReceiveCardPage />,
     },
   ];
   // const promptRoutes = useRoutes([...commonRoutes, ...settingPromptRoutes]);

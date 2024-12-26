@@ -73,6 +73,7 @@ function TokenDetail() {
   const disclaimerData = useRef<IDisclaimerProps>(initDisclaimerData);
   const handleBuy = useCallback(() => {
     if (isMainNet) {
+      // todo goto ramp home
       navigate(`/receive/token/${currentToken.symbol}`, {
         state: { ...currentToken, address: currentToken?.tokenContractAddress, pageSide: ReceiveTabEnum.Buy },
       });
@@ -128,6 +129,12 @@ function TokenDetail() {
 
   const handleSendOrReceive = useCallback(
     (type: 'send' | 'receive', pageSide?: ReceiveTabEnum) => {
+      if (type === 'receive') {
+        navigate('/receive-card', {
+          state: { ...currentToken, address: currentToken?.tokenContractAddress },
+        });
+        return;
+      }
       navigate(`/${type}/token/${currentToken?.symbol}`, {
         state: { ...currentToken, address: currentToken?.tokenContractAddress, pageSide },
       });

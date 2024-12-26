@@ -53,6 +53,8 @@ import { useCmsBanner } from '@portkey-wallet/hooks/hooks-ca/cms/banner';
 // import BigScreenHeader from 'pages/components/BigScreenHeader';
 import HomeHeader from 'pages/components/HomeHeader';
 import { SelectAssetListModal } from 'pages/Send/components/SelectAssetList';
+import { useAccountTokenInfo, useAccountNFTCollectionInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
+
 export interface TransactionResult {
   total: number;
   items: Transaction[];
@@ -79,15 +81,27 @@ export default function MyBalance() {
   const { setLoading } = useLoading();
   const setHideAssets = useSetHideAssets();
 
+  const { totalRecordCount: tokenCount } = useAccountTokenInfo();
+  const { totalRecordCount: nftCount } = useAccountNFTCollectionInfo();
   const renderTabsData = useMemo(
     () => [
       {
-        label: t('Tokens'),
+        label: (
+          <div className="tabItem">
+            <span>{t('Tokens')}</span>
+            <div className="number">{tokenCount}</div>
+          </div>
+        ),
         key: BalanceTab.TOKEN,
         children: <TokenList />,
       },
       {
-        label: t('NFTs'),
+        label: (
+          <div className="tabItem">
+            <span>{t('NFTs')}</span>
+            <div className="number">{nftCount}</div>
+          </div>
+        ),
         key: BalanceTab.NFT,
         children: <NFT />,
       },

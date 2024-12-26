@@ -1,7 +1,12 @@
 import { ToAccount } from 'pages/Send';
 import clsx from 'clsx';
 import { CustomSvgV3 } from 'components/CustomSvgV3';
-import { formatAmountShow, formatAmountUSDShow, formatStr2EllipsisStr } from '@portkey-wallet/utils/converter';
+import {
+  formatAmountShow,
+  formatAmountUSDShow,
+  formatStr2EllipsisStr,
+  unitConverter,
+} from '@portkey-wallet/utils/converter';
 import { BaseToken } from '@portkey-wallet/types/types-ca/token';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { isDIDAelfAddress } from '@portkey-wallet/utils/aelf';
@@ -14,6 +19,7 @@ import { TransferType } from '@portkey-wallet/types/types-ca/routeParams';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { getEstimatedTime } from 'pages/Send/utils';
 import { CommonModalTip } from '@portkey/did-ui-react';
+import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import './index.less';
 export interface ISendPreviewProps {
   amount?: string;
@@ -56,6 +62,7 @@ export default function SendPreview({
     () => chainList?.find((ele) => ele.chainId === toChainId)?.chainImageUrl,
     [chainList, toChainId],
   );
+  const [tokenPriceObject] = useGetCurrentAccountTokenPrice();
   const EstimateAmount = useMemo(() => {
     // adjust etransfer
     if (
@@ -113,7 +120,7 @@ export default function SendPreview({
       <div className="flex-column-center">
         <CustomSvgV3 type="Activity=Send" className="activity-send-icon" />
         <div className="amount-show">{`${formatAmountShow(amount, tokenInfo?.decimals)} ${tokenInfo?.symbol}`}</div>
-        <div className="usd-show">{`${formatAmountUSDShow(usdAmount)}`}</div>
+        {isMainnet && <div className="usd-show">{`${formatAmountUSDShow(usdAmount)}`}</div>}
       </div>
       <div className="flex-between-center content-row-info">
         <div>{`To`}</div>
@@ -147,7 +154,11 @@ export default function SendPreview({
           </div>
           <div className="value-show">
             <div>{`${transactionFee} ${transactionUnit}`}</div>
-            {/* <div className="below-show text-color-danger">{`$ `}</div> */}
+            {isMainnet && (
+              <div className="below-show">{`$${unitConverter(
+                ZERO.plus(transactionFee || '').multipliedBy(tokenPriceObject[transactionUnit || 'ELF']),
+              )}`}</div>
+            )}
           </div>
         </div>
       )}
@@ -162,7 +173,11 @@ export default function SendPreview({
           </div>
           <div className="value-show">
             <div>{`${networkFee} ${networkFeeUnit}`}</div>
-            <div className="below-show">{`$0`}</div>
+            {isMainnet && (
+              <div className="below-show">{`$${unitConverter(
+                ZERO.plus(networkFee || '').multipliedBy(tokenPriceObject[networkFeeUnit || 'ELF']),
+              )}`}</div>
+            )}
           </div>
         </div>
       )}
@@ -170,7 +185,7 @@ export default function SendPreview({
         <div className="flex-row-center gap-4">{`Amount to receive`}</div>
         <div className="value-show">
           <div>{EstimateAmount.estimateAmount}</div>
-          <div className="below-show">{EstimateAmount?.estimateAmountUsd}</div>
+          {isMainnet && <div className="below-show">{`$${EstimateAmount?.estimateAmountUsd}`}</div>}
         </div>
       </div>
       {(transferType === TransferType.E_BRIDGE || transferType === TransferType.E_TRANSFER) && (
@@ -180,9 +195,11 @@ export default function SendPreview({
         </div>
       )}
       {(transferType === TransferType.E_BRIDGE || transferType === TransferType.E_TRANSFER) && (
-        <div className="flex-center powered-by gap-4">
-          <div>{`Powered by`}</div>
-          <CustomSvgV3 type={transferType === TransferType.E_BRIDGE ? 'Provider=eBridge' : 'Provider=ETransfer'} />
+        <div className="flex-center powered-by">
+          <CustomSvgV3
+            className={transferType === TransferType.E_BRIDGE ? 'provider-ebridge-icon' : 'provider-etransfer-icon'}
+            type={transferType === TransferType.E_BRIDGE ? 'Provider=eBridge' : 'Provider=ETransfer'}
+          />
         </div>
       )}
     </div>

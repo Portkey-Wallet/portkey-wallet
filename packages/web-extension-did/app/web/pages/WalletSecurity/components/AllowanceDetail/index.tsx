@@ -72,7 +72,7 @@ export default function AllowanceDetail({ allowanceDetail }: IAllowanceDetailPro
           return { ...v };
         });
         // singleMessage.success('Multiple token approval disabled');
-        singleMessage.success('Token approval revoked');
+        singleMessage.info('Token approval revoked');
       } catch (error) {
         console.log('===multiply set allowance for close error', error);
         singleMessage.error(handleErrorMessage(error || 'Token approval revoked error'));

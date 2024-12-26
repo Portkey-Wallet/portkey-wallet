@@ -1,73 +1,95 @@
+/* stylelint-disable custom-property-pattern */
 @import '../../../assets/theme/color.less';
 
-.preview-frame {
-  height: 100vh;
-  background-color: @bg-base1;
+.portkey-ui-ramp-preview-frame {
+  height: 100%;
 
-  .preview-content {
-    padding: 0 16px;
+  .portkey-ui-ramp-preview-content {
+    padding: 0 24px;
     flex: 1;
-    background-color: @bg-base1;
-    height: 376px;
-    overflow-y: auto;
 
     .transaction {
-      margin: 16px 0 40px;
+      margin: 48px auto;
       .send {
         font-weight: 500;
-        color: @text-base1;
+        color: var(--portkey-ui-text-primary);
         .amount {
+          color: var(--sds-color-text-default-default);
+          font-family: BG;
           font-size: 32px;
-          line-height: 40px;
+          font-style: normal;
+          font-weight: 700;
+          line-height: 120%; /* 38.4px */
+          letter-spacing: -0.64px;
         }
         .currency {
-          margin-left: 8px;
-          font-size: 14px;
-          line-height: 22px;
+          margin-left: 6px;
+          color: var(--sds-color-text-default-default);
+
+          /* Title Page */
+          font-family: BG;
+          font-size: 32px;
+          font-style: normal;
+          font-weight: 700;
+          line-height: 120%; /* 38.4px */
+          letter-spacing: -0.64px;
         }
       }
       .receive {
         margin-top: 8px;
-        font-size: 14px;
-        line-height: 22px;
-        color: @neutral-tertiary-text;
+        color: var(--sds-color-text-default-secondary);
+
+        /* Body Base */
+        font-family: SG;
+        font-size: 16px;
+        font-style: normal;
+        line-height: 140%; /* 22.4px */
       }
     }
 
-    .card {
+    .portkey-ui-ramp-provider-card {
       width: 100%;
-      .label {
-        margin-bottom: 8px;
-        font-size: 12px;
-        line-height: 16px;
-        color: @neutral-tertiary-text;
+      color: var(--portkey-ui-text-secondary);
+      .portkey-ui-ramp-provider-label {
+        margin: 0 0 16px;
+        overflow: hidden;
+        color: var(--sds-color-text-default-secondary);
+        text-overflow: ellipsis;
+        white-space: nowrap;
+
+        /* Body Strong */
+        font-family: SG;
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 600;
+        line-height: 140%; /* 22.4px */
       }
-      .card-item {
+      .portkey-ui-ramp-provider-card-item {
         padding: 16px 12px;
-        border: 1px solid @border-neutral3;
-        border-radius: 6px;
-        margin-bottom: 12px;
+        border: 1px solid var(--Border-Default-Subtle, '#414142');
+        border-radius: 15px;
+        margin-bottom: 16px;
         position: relative;
         overflow: hidden;
-        cursor: pointer;
-        .ramp-provider {
-          height: 20px;
-          .ramp-provider-logo {
+        .portkey-ui-ramp-provider {
+          height: 24px;
+          .portkey-ui-ramp-provider-logo {
             height: 24px;
             margin-right: 16px;
           }
           .rate {
-            padding: 4px 0;
+            padding: 2px 0;
             font-size: 12px;
             line-height: 16px;
-            color: @neutral-tertiary-text;
+            color: var(--portkey-ui-font-8);
           }
         }
-        .ramp-provider-pay {
+        .portkey-ui-ramp-provider-pay {
           margin-top: 24px;
-          .ramp-provider-pay-item {
+          .portkey-ui-ramp-provider-pay-item {
             border-radius: 2px;
-            border: 0.5px solid @border-neutral3;
+            border: 0.5px solid var(--portkey-ui-default-border);
+            background: white;
             min-width: 20px;
             height: 20px;
             margin-right: 6px;
@@ -78,42 +100,78 @@
         }
       }
 
-      .card-item-selected {
-        border: 1px solid @brand-normal;
+      .portkey-ui-ramp-provider-card-item-selected {
+        // border: 1px solid var(--portkey-ui-border-7);
+        border-radius: 15px;
+        border: 1px solid var(--sds-color-border-brand-default);
+        background: var(--sds-color-background-default-secondary);
         .card-selected-icon {
           position: absolute;
-          top: -1px;
-          right: -1px;
+          top: 16px;
+          right: 16px;
           width: 24px;
-          height: 18px;
+          height: 24px;
+          svg {
+            width: 24px;
+            height: 24px;
+            path {
+              fill: var(--sds-color-icon-brand-secondary);
+            }
+          }
         }
       }
     }
   }
 
-  .preview-footer {
+  .portkey-ui-ramp-preview-footer {
     width: 100%;
-    padding: 12px 16px 16px;
-    background-color: @bg-base1;
+    // height: 128px;
+    padding: 16px;
+    // border-top: 1px solid var(--portkey-ui-default-border);
+    // background-color: var(--portkey-ui-bg-5);
 
-    .disclaimer {
-      margin: 0 4px 12px;
-      font-size: 14px;
-      line-height: 22px;
-      color: @neutral-secondary-text;
-      background-color: @bg-base1;
+    .portkey-ui-ramp-preview-disclaimer {
+      margin-bottom: 40px;
       .highlight {
-        color: @brand-normal;
+        color: var(--sds-color-text-brand-default);
         cursor: pointer;
       }
     }
 
-    .@{app-prefix}-btn {
+    .portkey-ant-btn {
       height: 48px;
-      border-radius: 6px;
+      border-radius: 22px;
       font-size: 16px;
       line-height: 22px;
-      font-weight: 500;
+    }
+  }
+}
+.disclaimer-tip-modal {
+  .disclaimer-tip-wrapper {
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+    .disclaimer-tip-title {
+      color: var(--sds-color-text-default-default);
+
+      /* Heading */
+      font-family: BG;
+      font-size: 20px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: 120%; /* 24px */
+      letter-spacing: -0.4px;
+      margin: 0 0 12px;
+    }
+    .disclaimer-tip-content {
+      color: var(--sds-color-text-default-default);
+
+      /* Body Base */
+      font-family: SG;
+      font-size: 16px;
+      font-style: normal;
+      line-height: 140%; /* 22.4px */
+      margin: 0 0 24px;
     }
   }
 }

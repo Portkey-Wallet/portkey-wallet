@@ -13,7 +13,11 @@ export interface ICustomModalBottomProps extends ModalFuncProps {
   className?: string;
   onOk?: () => void;
   onCancel?: () => void;
-  title?: string | ReactNode;
+  title?: ReactNode;
+  isPrompt?: boolean;
+  promptInfo?: {
+    width?: number;
+  };
 }
 
 type ConfigUpdate = ModalFuncProps | ((prevConfig: ModalFuncProps) => ModalFuncProps);
@@ -32,16 +36,22 @@ export const CustomModalBottom = ({
   cancelText,
   className,
   title,
+  isPrompt = false,
+  promptInfo,
   ...extraProps
 }: ICustomModalBottomProps) => {
   const props = {
     open: true,
-    width: '100%',
-    style: {
-      maxWidth: '100%',
-      'max-width': '100%',
-      verticalAlign: 'bottom',
-    },
+    width: isPrompt ? promptInfo?.width || 400 : '100%',
+    style: isPrompt
+      ? {}
+      : {
+          maxWidth: '100%',
+          'max-width': '100%',
+          verticalAlign: 'bottom',
+        },
+    mask: true,
+    maskClosable: true,
     icon: null,
     closable: false,
     centered: true,
@@ -68,13 +78,14 @@ export const CustomModalBottom = ({
   );
 
   const noFooterClassName = noFooter ? 'modal-no-footer' : '';
+  const promptClassName = isPrompt ? 'modal-bottom-prompt' : '';
 
   switch (type) {
     case 'confirm': {
       const modal = Modal.confirm({});
       modal.update({
         ...props,
-        className: clsx(['confirm-modal-bottom', noFooterClassName, className]),
+        className: clsx(['confirm-modal-bottom', noFooterClassName, promptClassName, className]),
         okText: okText || 'OK',
         cancelText: cancelText || 'Cancel',
         content: <ExtendedContent modal={modal} title={title} />,
@@ -88,7 +99,7 @@ export const CustomModalBottom = ({
       const modal = Modal.confirm({});
       modal.update({
         ...props,
-        className: clsx(['warning-modal-bottom', noFooterClassName, className]),
+        className: clsx(['warning-modal-bottom', noFooterClassName, promptClassName, className]),
         okText: okText || 'OK',
         cancelText: cancelText || 'Cancel',
         content: <ExtendedContent modal={modal} title={title} />,
@@ -104,7 +115,7 @@ export const CustomModalBottom = ({
       const modal = Modal.info({});
       modal.update({
         ...props,
-        className: clsx(['info-modal-bottom', noFooterClassName, className]),
+        className: clsx(['info-modal-bottom', noFooterClassName, promptClassName, className]),
         okText: okText || 'OK',
         content: <ExtendedContent modal={modal} title={title} />,
         onOk: onOk,

@@ -1,59 +1,48 @@
-import { useCommonState } from 'store/Provider/hooks';
-import { useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
 import { useNavigateState } from 'hooks/router';
-import { Button, Input } from 'antd';
+import { Button } from 'antd';
 import clsx from 'clsx';
 import CommonHeader from 'components/CommonHeader';
-import SecondPageHeader from 'pages/components/SecondPageHeader';
 import { useIsSecondaryMailSet } from '@portkey-wallet/hooks/hooks-ca/useSecondaryMail';
-import './index.less';
+import { PromptCardType } from '@portkey/did-ui-react/dist/_types/src/components/CommonPromptCard';
+import { CommonPromptCard } from '@portkey/did-ui-react';
+import './Edit/index.less';
+import { CustomSvgV3 } from '../../../components/CustomSvgV3';
 
 export default function SecondaryMailbox() {
-  const { isNotLessThan768 } = useCommonState();
   const navigate = useNavigateState();
   const { secondaryEmail } = useIsSecondaryMailSet();
 
   const goBack = useCallback(() => {
-    navigate('/setting/wallet-security');
+    navigate('/setting');
   }, [navigate]);
   const goEdit = useCallback(() => {
     navigate('/setting/wallet-security/secondary-mailbox-edit', { state: { email: secondaryEmail } });
   }, [navigate, secondaryEmail]);
-  const mainContent = useMemo(() => {
-    return (
-      <div
-        className={clsx(
-          'flex-column-between',
-          'flex-1',
-          'secondary-mailbox-body',
-          isNotLessThan768 ? 'secondary-mailbox-body-prompt' : 'secondary-mailbox-body-popup',
-        )}>
+
+  return (
+    <div className="secondary-mailbox-page flex-column-between secondary-mailbox-popup">
+      <CommonHeader className="popup-header-wrap" title={`Backup Email`} onLeftBack={goBack} />
+      <div className={clsx('flex-column-between', 'flex-1', 'secondary-mailbox-body', 'secondary-mailbox-body-popup')}>
         <div>
           <div className="mailbox-container">
             <div className="mailbox-label">{`Backup Mailbox`}</div>
-            <Input placeholder="Not Set up" value={secondaryEmail} disabled />
+            <div className="common-card">
+              <CustomSvgV3 type="Guardians=Email" className="guardians-email-icon" />
+              <div>{secondaryEmail}</div>
+            </div>
           </div>
-          <div className="mailbox-tip flex-column">
-            <div>{`Before authorising, signing transactions, or performing similar operations, notifications will be sent to the mailbox associated with your guardian.`}</div>
-            <div>{`If your guardian cannot receive emails, they will be sent to the backup mailbox you have set up.`}</div>
-          </div>
+          <CommonPromptCard
+            className="mailbox-tip"
+            title=""
+            type={'info' as PromptCardType}
+            description="Notifications for authorizing or signing transactions will be sent to your guardian's email. If unavailable, they'll go to your backup email."
+          />
         </div>
         <Button type="primary" onClick={goEdit}>
           Edit
         </Button>
       </div>
-    );
-  }, [goEdit, isNotLessThan768, secondaryEmail]);
-
-  return isNotLessThan768 ? (
-    <div className="secondary-mailbox-page flex-column-between secondary-mailbox-prompt">
-      <SecondPageHeader title={`Details`} leftCallBack={goBack} />
-      {mainContent}
-    </div>
-  ) : (
-    <div className="secondary-mailbox-page flex-column-between secondary-mailbox-popup">
-      <CommonHeader className="popup-header-wrap" title={`Details`} onLeftBack={goBack} />
-      {mainContent}
     </div>
   );
 }

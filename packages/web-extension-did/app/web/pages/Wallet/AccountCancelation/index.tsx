@@ -26,6 +26,7 @@ import CancelBody from '../components/AccountCancelationBody';
 import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
 import { verification } from 'utils/api';
 import { useAuthSocialAccountInfo } from 'hooks/authentication';
+import { useCommonState } from 'store/Provider/hooks';
 import './index.less';
 
 export interface IAccountCancelationProps {
@@ -37,6 +38,7 @@ export interface IAccountCancelationProps {
 export default function AccountCancelation() {
   const navigate = useNavigateState<TVerifyAccountCancelLocationState>();
   const { caHash, address: managerAddress } = useCurrentWalletInfo();
+  const { isPrompt } = useCommonState();
   const { setLoading } = useLoading();
   const getGuardianList = useGuardianList();
   const { userGuardiansList } = useGuardiansInfo();
@@ -68,6 +70,7 @@ export default function AccountCancelation() {
       if (list.length > 0) {
         // CustomModal({
         CustomModalBottom({
+          isPrompt,
           content: (
             <div className="account-cancelation-alert-modal">
               <div className="title">Unable to Delete Account</div>
@@ -186,6 +189,7 @@ export default function AccountCancelation() {
       // email guardian
       // CustomModal({
       CustomModalBottom({
+        isPrompt,
         type: 'confirm',
         content: (
           <p>
@@ -209,6 +213,7 @@ export default function AccountCancelation() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const modalCommon = {
     // type: 'confirm',
+    isPrompt,
     type: 'warning',
     content: (
       <div>

@@ -37,6 +37,15 @@ export const getDisclaimerData = ({ type, targetUrl, originUrl }: IGetDisclaimer
         titleText: 'You will be directed to a third-party DApp: eBridge',
       };
       break;
+    case TradeTypeEnum.eForest:
+      data = {
+        targetUrl,
+        originUrl,
+        dappIcon: 'ForestFavicon',
+        originTitle: 'Forest',
+        titleText: 'You will be directed to a third-party DApp: Forest',
+      };
+      break;
   }
   return data;
 };

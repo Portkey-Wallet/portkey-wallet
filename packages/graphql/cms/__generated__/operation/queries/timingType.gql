@@ -1,0 +1,6 @@
+query timingType($filter: timingType_filter, $sort: [String], $limit: Int, $offset: Int, $page: Int, $search: String){
+    timingType(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search){
+        id
+        name
+    }
+}

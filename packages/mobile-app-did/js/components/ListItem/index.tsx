@@ -1,5 +1,6 @@
 import React, { memo, ReactNode, useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
+import { makeStyles } from '@rneui/themed';
 import { pTd } from 'utils/unit';
 import { TextL, TextM, TextS } from 'components/CommonText';
 import Touchable from 'components/Touchable';
@@ -45,13 +46,14 @@ const ListItem: React.FC<ListItemProps> = props => {
     titleLeftElement,
     titleStyle,
   } = props;
+  const styles = getStyles();
   const RightElement = useMemo(() => {
     if (switching) {
       return <CommonSwitch style={switchStyles} value={switchValue} thumbColor="white" onValueChange={onValueChange} />;
     }
 
     return <Svg icon="right-arrow" size={18} color={defaultColors.font7} iconStyle={styles.iconStyle} />;
-  }, [switching, switchStyles, switchValue, onValueChange]);
+  }, [switching, styles, switchStyles, switchValue, onValueChange]);
   return (
     <Touchable disabled={disabled} onPress={onPress} style={[styles.container, style]}>
       {details ? (
@@ -76,15 +78,17 @@ const ListItem: React.FC<ListItemProps> = props => {
   );
 };
 export default memo(ListItem);
-const styles = StyleSheet.create({
+const getStyles = makeStyles(theme => ({
   container: {
     width: '100%',
-    minHeight: pTd(56),
-    backgroundColor: 'white',
+    minHeight: pTd(40),
+    backgroundColor: theme.colors.bgBase1,
     alignItems: 'center',
     flexDirection: 'row',
     paddingHorizontal: pTd(16),
-    borderRadius: pTd(6),
+    borderRadius: pTd(8),
+    borderColor: theme.colors.borderBase1,
+    borderWidth: pTd(1),
   },
   titleTextStyle: {
     flex: 1,
@@ -106,4 +110,4 @@ const styles = StyleSheet.create({
   iconStyle: {
     marginTop: pTd(4),
   },
-});
+}));

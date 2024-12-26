@@ -1,55 +1,64 @@
-import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
-import { defaultColors } from 'assets/theme';
+import { IContactItemType } from '@portkey-wallet/types/types-ca/contactNew';
+import { makeStyles, useTheme } from '@rneui/themed';
 import GStyles from 'assets/theme/GStyles';
-import { FontStyles } from 'assets/theme/styles';
 import CommonAvatar from 'components/CommonAvatar';
-import { TextL, TextS } from 'components/CommonText';
-import Svg from 'components/Svg';
+import { TextL } from 'components/CommonText';
 import Touchable from 'components/Touchable';
 import React, { memo } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, Image, StyleSheet } from 'react-native';
 import { pTd } from 'utils/unit';
-
+import ContactAddress from 'components/ContactAddress';
+import Svg from 'components/Svg';
 export interface ItemType {
-  isShowWarning?: boolean;
-  isShowChat?: boolean;
-  isShowContactIcon?: boolean;
-  contact: ContactItemType;
+  contact: IContactItemType;
   onPress?: (item: any) => void;
-  onPressChat?: (item: any) => void;
+  isSaved?: boolean;
+  showInfoIcon?: boolean;
+  onInfoIconPress?: (item: any) => void;
 }
 
 const ContactItem: React.FC<ItemType> = props => {
-  const { isShowChat = false, isShowWarning, isShowContactIcon = false, contact, onPress, onPressChat } = props;
+  const { contact, onPress, isSaved = true, showInfoIcon = false, onInfoIconPress } = props;
+  const styles = getStyles();
+
+  const {
+    theme: { colors },
+  } = useTheme();
 
   return (
     <Touchable onPress={() => onPress?.(contact)}>
       <View style={styles.itemWrap}>
-        <View style={[styles.itemAvatar, styles.avatarWrap]}>
-          {isShowWarning && <View style={styles.warningCycle} />}
+        <View style={[styles.avatarWrap]}>
           <CommonAvatar
-            hasBorder
             resizeMode="cover"
-            title={(contact?.name || contact?.caHolderInfo?.walletName || contact.imInfo?.name)?.toUpperCase()}
-            avatarSize={pTd(36)}
-            imageUrl={contact.avatar || ''}
+            title={(contact?.name || contact?.caHolderInfo?.walletName)?.toUpperCase()}
+            avatarSize={pTd(42)}
+            imageUrl={contact.caHolderInfo?.avatar || ''}
             style={styles.itemAvatar}
+            titleStyle={styles.itemAvatarTitle}
           />
-        </View>
-        <View style={styles.itemNameWrap}>
-          <TextL numberOfLines={1} style={FontStyles.font5}>
-            {contact?.name || contact?.caHolderInfo?.walletName || contact.imInfo?.name}
-          </TextL>
-          {isShowContactIcon && (
-            <View style={[GStyles.marginTop(pTd(2)), GStyles.flexRow, styles.contactIconWrap]}>
-              <Svg icon="chat-added" size={pTd(14)} color={defaultColors.primaryColor} />
-              <TextS style={[FontStyles.font4, GStyles.marginLeft(pTd(4))]}>Contact</TextS>
-            </View>
+          {contact.addressInfo.networkImage && (
+            <Image source={{ uri: contact.addressInfo.networkImage }} style={styles.avatarNetworkIcon} />
           )}
         </View>
-        {isShowChat && (
-          <Touchable style={styles.chatButton} onPress={() => onPressChat?.(contact)}>
-            <TextS style={[FontStyles.font2, styles.chatText]}>Chat</TextS>
+        <View style={styles.itemNameWrap}>
+          {isSaved ? (
+            <>
+              <TextL numberOfLines={1} style={[styles.primaryText]}>
+                {contact?.name || contact?.caHolderInfo?.walletName}
+              </TextL>
+              <ContactAddress contact={contact} style={styles.secondaryText} />
+            </>
+          ) : (
+            <>
+              <ContactAddress contact={contact} style={styles.primaryText} ignoreFormat={!isSaved} />
+              <TextL style={styles.secondaryText}>{contact?.addressInfo?.networkName}</TextL>
+            </>
+          )}
+        </View>
+        {showInfoIcon && (
+          <Touchable onPress={onInfoIconPress}>
+            <Svg icon="info" size={pTd(24)} color={colors.iconBase1} />
           </Touchable>
         )}
       </View>
@@ -59,55 +68,49 @@ const ContactItem: React.FC<ItemType> = props => {
 
 export default memo(ContactItem);
 
-export const styles = StyleSheet.create({
+export const getStyles = makeStyles(theme => ({
   itemWrap: {
-    backgroundColor: defaultColors.bg1,
-    height: pTd(72),
+    height: pTd(66),
     width: '100%',
     display: 'flex',
     flexDirection: 'row',
-    alignItems: 'center',
-    borderBottomColor: defaultColors.border6,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    marginBottom: StyleSheet.hairlineWidth,
-    ...GStyles.paddingArg(0, 20),
+    alignItems: 'flex-start',
+    ...GStyles.paddingArg(12, 16),
   },
   itemAvatar: {
-    marginRight: pTd(12),
+    backgroundColor: theme.colors.iconBrand2,
+  },
+  itemAvatarTitle: {
+    color: theme.colors.textBrand4,
+    fontSize: pTd(16),
+    lineHeight: pTd(22),
   },
   itemNameWrap: {
     flex: 1,
   },
-  chatButton: {
-    backgroundColor: defaultColors.bg5,
-    borderRadius: pTd(6),
-    overflow: 'hidden',
-    paddingHorizontal: pTd(12),
-    height: pTd(24),
+  primaryText: {
+    color: theme.colors.textBase1,
+    lineHeight: pTd(22),
   },
-  chatText: {
-    lineHeight: pTd(24),
+  secondaryText: {
+    color: theme.colors.textBase2,
+    lineHeight: pTd(20),
+    fontSize: pTd(14),
   },
   avatarWrap: {
     position: 'relative',
+    width: pTd(42),
+    height: pTd(42),
+    marginRight: pTd(10),
   },
-  warningCycle: {
+  avatarNetworkIcon: {
     position: 'absolute',
-    zIndex: 1000,
-    right: 0,
-    top: 0,
-    width: pTd(8),
-    height: pTd(8),
-    borderRadius: pTd(5),
-    backgroundColor: defaultColors.bg17,
-    borderWidth: pTd(1),
-    borderColor: defaultColors.bg1,
+    right: pTd(-5),
+    bottom: pTd(-2),
+    width: pTd(20),
+    height: pTd(20),
+    borderColor: theme.colors.borderBase1,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: pTd(10),
   },
-  contactIconWrap: {
-    width: pTd(76),
-    paddingHorizontal: pTd(8),
-    paddingVertical: pTd(2),
-    borderRadius: pTd(4),
-    backgroundColor: defaultColors.brandLight,
-  },
-});
+}));

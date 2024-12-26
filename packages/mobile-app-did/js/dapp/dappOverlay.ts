@@ -16,6 +16,7 @@ export type ApproveInfo = {
   decimals: number;
   targetChainId: ChainId;
   alias?: string;
+  contractAddress?: string;
 };
 
 export type ApproveParams = {
@@ -33,7 +34,9 @@ export async function requestManagerApprove(
     const listener = DeviceEventEmitter.addListener(approveParams.eventName, data => {
       const { success } = data || {};
       listener.remove();
-      if (!success) return resolve(false);
+      if (!success) {
+        return resolve(false);
+      }
       return resolve(data);
     });
     ApproveOverlay.showApproveModal({
@@ -50,7 +53,12 @@ export async function requestManagerApprove(
 export interface IDappOverlay {
   requestAccounts(dapp: DappStoreItem): Promise<boolean>;
   sendTransaction(dapp: DappStoreItem, params: SendTransactionParams): Promise<boolean>;
-  wallet_getSignature(dapp: DappStoreItem, params: GetSignatureParams): Promise<boolean>;
+  wallet_getSignature(
+    dapp: DappStoreItem,
+    params: GetSignatureParams,
+    realMethod: string,
+    isCipherText?: boolean,
+  ): Promise<boolean>;
   approve(
     dapp: DappStoreItem,
     params: ApproveParams,
@@ -77,11 +85,18 @@ export class DappOverlay implements IDappOverlay {
       });
     });
   }
-  async wallet_getSignature(dappInfo: DappStoreItem, signInfo: GetSignatureParams): Promise<boolean> {
+  async wallet_getSignature(
+    dappInfo: DappStoreItem,
+    signInfo: GetSignatureParams,
+    realMethod: string,
+    isCipherText: boolean,
+  ): Promise<boolean> {
     return new Promise(resolve => {
       SignOverlay.showSignModal({
         dappInfo,
         signInfo,
+        realMethod,
+        isCipherText,
         onSign: () => resolve(true),
         onReject: () => resolve(false),
       });
@@ -94,12 +109,16 @@ export class DappOverlay implements IDappOverlay {
   ): Promise<{ success: boolean; guardiansApproved: GuardiansApproved; approveInfo: ApproveInfo } | false> {
     return new Promise(resolve => {
       // batch approval from dapp forbidden
-      if (approveParams.approveInfo.symbol === BATCH_APPROVAL_SYMBOL) return resolve(false);
+      if (approveParams.approveInfo.symbol === BATCH_APPROVAL_SYMBOL) {
+        return resolve(false);
+      }
 
       const listener = DeviceEventEmitter.addListener(approveParams.eventName, data => {
         const { success } = data || {};
         listener.remove();
-        if (!success) return resolve(false);
+        if (!success) {
+          return resolve(false);
+        }
         return resolve(data);
       });
       ApproveOverlay.showApproveModal({

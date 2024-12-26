@@ -157,7 +157,7 @@ export const handleErrorMessage = (error: any, errorText?: string) => {
   return textProcessor.format(errorText || '') || '';
 };
 
-export const chainShowText = (chain: ChainId) => (chain === 'AELF' ? 'MainChain' : 'SideChain');
+export const chainShowText = (chain: ChainId) => (chain === 'AELF' ? 'MainChain' : 'dAppChain');
 export const handleErrorCode = (error: any) => {
   return handleError(error)?.code;
 };
@@ -168,18 +168,32 @@ export const handleErrorCode = (error: any) => {
  * @param isMainChain
  * @returns
  */
+// export const formatChainInfoToShow = (
+//   chainId: ChainId = 'AELF',
+//   networkType?: NetworkType,
+//   chainType: ChainType = 'aelf',
+// ): string => {
+//   if (chainType !== 'aelf') return chainType;
+//   if (typeof networkType === 'string')
+//     return `${chainId === 'AELF' ? 'MainChain' : 'dAppChain'} ${chainId} ${networkType === 'MAINNET' ? '' : 'Testnet'}`;
+
+//   return `${chainId === 'AELF' ? 'MainChain' : 'dAppChain'} ${chainId}`;
+// };
 export const formatChainInfoToShow = (
   chainId: ChainId = 'AELF',
   networkType?: NetworkType,
+  displayChainName?: string,
   chainType: ChainType = 'aelf',
 ): string => {
   if (chainType !== 'aelf') return chainType;
+  if (displayChainName) {
+    return `${displayChainName} ${networkType === 'MAINNET' ? '' : 'Testnet'}`;
+  }
   if (typeof networkType === 'string')
-    return `${chainId === 'AELF' ? 'MainChain' : 'SideChain'} ${chainId} ${networkType === 'MAINNET' ? '' : 'Testnet'}`;
+    return `aelf ${chainId === 'AELF' ? 'MainChain' : 'dAppChain'} ${networkType === 'MAINNET' ? '' : 'Testnet'}`;
 
-  return `${chainId === 'AELF' ? 'MainChain' : 'SideChain'} ${chainId}`;
+  return `aelf ${chainId === 'AELF' ? 'MainChain' : 'dAppChain'}`;
 };
-
 /**
  * this function is to format address,just like "formatStr2EllipsisStr" ---> "for...ess"
  * @param address
@@ -187,12 +201,24 @@ export const formatChainInfoToShow = (
  * @param type
  * @returns
  */
-export const formatStr2EllipsisStr = (address = '', digit = 8, type: 'middle' | 'tail' = 'middle'): string => {
+export const formatStr2EllipsisStr = (
+  address = '',
+  digit = 8,
+  type: 'middle' | 'tail' = 'middle',
+  suffixDigit?: number,
+): string => {
   if (!address) return '';
 
   const len = address.length;
 
   if (type === 'tail') return len > digit ? `${address.slice(0, digit)}...` : address;
+
+  if (suffixDigit) {
+    if (len < digit + suffixDigit) return address;
+    const pre = address.substring(0, digit);
+    const suffix = address.substring(len - suffixDigit);
+    return `${pre}...${suffix}`;
+  }
 
   if (len < 2 * digit) return address;
   const pre = address.substring(0, digit);
@@ -219,12 +245,13 @@ export const formatAddress2NoPrefix = (address: string): string => {
  */
 export const isMainNet = (network: NetworkType): boolean => network === 'MAINNET';
 
-export const getAddressChainId = (toAddress: string, defaultChainId: ChainId) => {
+export const getAddressChainId = (toAddress: string, defaultChainId?: ChainId) => {
   if (!toAddress.includes('_')) return defaultChainId;
   const arr = toAddress.split('_');
+
   const addressChainId = arr[arr.length - 1];
   // no suffix
-  if (isAelfAddress(addressChainId)) {
+  if (isAelfAddress(addressChainId) && defaultChainId) {
     return defaultChainId;
   }
   return addressChainId;
@@ -261,7 +288,7 @@ export const handleLoopFetch = async <T>({
 }): Promise<T> => {
   try {
     const result = await fetch();
-    console.log('wfs=== handleLoopFetch result', result);
+    console.log('=== handleLoopFetch result', result);
     if (checkIsContinue) {
       const isContinue = checkIsContinue(result);
       if (!isContinue) return result;
@@ -311,12 +338,26 @@ export const formatNameWithRules = (
   });
   return result;
 };
+export const formatNameWithNoUnderline = (tokenName?: string) => {
+  if (!tokenName) return '';
+  return formatNameWithRules(tokenName, [FormatNameRuleList.NO_UNDERLINE]);
+};
+
+export const truncateString = (str = '', maxLength = 6) => {
+  if (!str) return '';
+  return str.length > maxLength ? str.slice(0, maxLength) + '...' : str;
+};
+
 const DEFAULT_USER_ID = '00000000-0000-0000-0000-000000000000';
 export function isValidUserId(id?: string): boolean {
   if (!id) {
     return false;
   }
   return id !== DEFAULT_USER_ID;
+}
+export function checkIsCipherText(input: string): boolean {
+  const sha256Regex = /^[a-zA-Z0-9=]+$/;
+  return sha256Regex.test(input);
 }
 export enum FormatNameRuleList {
   NO_BRACKETS = 'NO_BRACKETS',

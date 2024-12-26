@@ -70,6 +70,11 @@ import HistoryList from 'pages/CryptoGifts/History';
 import CryptoGiftsDetail from 'pages/CryptoGifts/Detail';
 import Create from 'pages/CryptoGifts/Create';
 import Success from 'pages/CryptoGifts/Success';
+import FreeMint from 'pages/FreeMint';
+import SecondaryMailbox from 'pages/WalletSecurity/SecondaryMailbox';
+import SecondaryMailboxEdit from 'pages/WalletSecurity/SecondaryMailbox/Edit';
+import SecondaryMailboxVerify from 'pages/WalletSecurity/SecondaryMailbox/Verify';
+// import Example from 'pages/Example';
 // import TokenNetworkList from 'pages/DepositHome/components/TokenNetworkList';
 
 export const PageRouter = () => {
@@ -151,6 +156,10 @@ export const PageRouter = () => {
     {
       path: '/nft',
       element: <NFT />,
+    },
+    {
+      path: '/free-mint',
+      element: <FreeMint />,
     },
     {
       path: '/unlock',
@@ -404,6 +413,18 @@ export const PageRouter = () => {
               path: '/setting/wallet-security/token-allowance-detail',
               element: <TokenAllowanceDetail />,
             },
+            {
+              path: '/setting/wallet-security/secondary-mailbox',
+              element: <SecondaryMailbox />,
+            },
+            {
+              path: '/setting/wallet-security/secondary-mailbox-edit',
+              element: <SecondaryMailboxEdit />,
+            },
+            {
+              path: '/setting/wallet-security/secondary-mailbox-verify',
+              element: <SecondaryMailboxVerify />,
+            },
           ],
         },
       ],
@@ -565,6 +586,18 @@ export const PageRouter = () => {
     {
       path: '/setting/wallet-security/token-allowance-detail',
       element: <TokenAllowanceDetail />,
+    },
+    {
+      path: '/setting/wallet-security/secondary-mailbox',
+      element: <SecondaryMailbox />,
+    },
+    {
+      path: '/setting/wallet-security/secondary-mailbox-edit',
+      element: <SecondaryMailboxEdit />,
+    },
+    {
+      path: '/setting/wallet-security/secondary-mailbox-verify',
+      element: <SecondaryMailboxVerify />,
     },
   ];
 

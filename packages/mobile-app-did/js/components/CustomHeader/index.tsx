@@ -27,6 +27,7 @@ export type CustomHeaderProps = {
   leftIconType?: 'close' | 'back';
   style?: StyleProp<ViewStyle>;
   notHandleHardwareBackPress?: boolean;
+  isLeftBackDisabled?: boolean;
 };
 
 const CustomHeader: React.FC<CustomHeaderProps> = props => {
@@ -38,7 +39,7 @@ const CustomHeader: React.FC<CustomHeaderProps> = props => {
     leftDom = null,
     titleDom = 'title',
     rightDom = null,
-    backTitle = 'Back',
+    backTitle = '',
     leftCallback,
     type = 'default',
     themeType = 'white',
@@ -46,6 +47,7 @@ const CustomHeader: React.FC<CustomHeaderProps> = props => {
     leftIconType = 'back',
     onGestureStartCallback,
     notHandleHardwareBackPress,
+    isLeftBackDisabled = false,
   } = props;
 
   // theme change
@@ -60,13 +62,13 @@ const CustomHeader: React.FC<CustomHeaderProps> = props => {
     const isClose = leftIconType === 'close';
     return (
       <Svg
-        color={styles.leftBackTitle.color}
-        icon={isClose ? 'close2' : 'left-arrow'}
+        color={isLeftBackDisabled ? styles.leftBackTitleDisabled.color : styles.leftBackTitle.color}
+        icon={isClose ? 'close4' : 'left-arrow-v2'}
         size={pTd(20)}
         iconStyle={GStyles.marginRight(4)}
       />
     );
-  }, [leftIconType, styles.leftBackTitle.color]);
+  }, [isLeftBackDisabled, leftIconType, styles.leftBackTitle.color, styles.leftBackTitleDisabled.color]);
   useHardwareBackPress(
     useMemo(() => {
       if (isFocused && leftCallback && !notHandleHardwareBackPress) {
@@ -90,7 +92,7 @@ const CustomHeader: React.FC<CustomHeaderProps> = props => {
     if (noLeftDom) return null;
     if (leftDom) return leftDom;
     if (!isCanGoBack && !leftCallback) return null;
-    const onPress = leftCallback ? leftCallback : () => navigationService.goBack();
+    const onPress = isLeftBackDisabled ? undefined : leftCallback ? leftCallback : () => navigationService.goBack();
     if (type === 'leftBack') {
       return (
         <Touchable style={[GStyles.flexRow, GStyles.itemCenter, styles.leftTitle]} onPress={onPress}>
@@ -107,6 +109,7 @@ const CustomHeader: React.FC<CustomHeaderProps> = props => {
   }, [
     backTitle,
     isCanGoBack,
+    isLeftBackDisabled,
     leftCallback,
     leftDom,
     leftIcon,

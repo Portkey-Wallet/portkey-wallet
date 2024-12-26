@@ -1,9 +1,9 @@
 query discoverTabData_by_id($id: ID!){
     discoverTabData_by_id(id: $id){
         id
-        status
         index
         name
+        status
         value
     }
 }

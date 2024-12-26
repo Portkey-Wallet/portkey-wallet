@@ -30,6 +30,9 @@ import { useCheckSiteIsInBlackList } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
 import getSeed from 'utils/getSeed';
 import singleMessage from 'utils/singleMessage';
+import { useGetContractUpgradeTime } from '@portkey-wallet/graphql/dappSecurity/hooks';
+import { checkTimeOver12 } from '@portkey-wallet/utils/check';
+import { formatDateTime } from '@portkey-wallet/utils/format';
 
 export default function SendTransactions() {
   const { payload, transactionInfoId, origin } = usePromptSearch<{
@@ -63,6 +66,39 @@ export default function SendTransactions() {
   const [open, setOpen] = useState<boolean>(false);
   const [exp, setExp] = useState<SessionExpiredPlan>(SessionExpiredPlan.hour1);
   const updateSessionInfo = useUpdateSessionInfo();
+  const getContractUpgradeTime = useGetContractUpgradeTime();
+  const [contractUpgradeTimeResult, setContractUpgradeTimeResult] = useState<{
+    isInit: boolean;
+    isTimeOver12: boolean;
+    formatTime: string;
+  }>({
+    isInit: true,
+    isTimeOver12: true,
+    formatTime: '',
+  });
+  useEffect(() => {
+    (async () => {
+      if (!payload?.chainId) {
+        return;
+      }
+      const result = await getContractUpgradeTime({
+        input: {
+          chainId: payload?.chainId,
+          address: payload.contractAddress || '',
+          skipCount: 0,
+          maxResultCount: 10,
+        },
+      });
+      console.log('wfs===result', result);
+      const blockTime = result.data.contractList.items[0].metadata.block.blockTime;
+      setContractUpgradeTimeResult({
+        isInit: false,
+        isTimeOver12: checkTimeOver12(blockTime),
+        formatTime: formatDateTime(blockTime),
+      });
+    })();
+  }, [getContractUpgradeTime, payload?.chainId, payload.contractAddress]);
+
   const formatAmountInUsdShow = useCallback(
     (amount: string | number, decimals: string | number, symbol: string) => {
       return amountInUsdShow(amount, decimals, symbol);
@@ -373,6 +409,21 @@ export default function SendTransactions() {
       {payload?.method.toLowerCase() === 'transfer' ? renderTransfer : renderMessage}
       {errMsg && <div className={clsx(!isManagerSynced && 'error-warning', 'error-message')}>{errMsg}</div>}
       {!checkOriginInBlackList(origin) && <DappSession onChange={handleSessionChange} />}
+      {!contractUpgradeTimeResult.isInit && (
+        <div
+          className={`send-transaction-warning ${
+            !contractUpgradeTimeResult.isTimeOver12 && `send-transaction-warning-hint`
+          }`}>
+          <CustomSvg
+            type="WarningTriangle"
+            className={`warning-icon`}
+            fillColor={contractUpgradeTimeResult.isTimeOver12 ? '#5D42FF' : '#FF9417'}
+          />
+          <div className={'warning-title'}>{`Contract update time: ${
+            contractUpgradeTimeResult?.formatTime || 'Oct 15, 2024, at 17:07'
+          } The dApp's smart contract has been updated. Please proceed with caution.`}</div>
+        </div>
+      )}
       <div className="btn flex-between">
         <Button
           type="text"

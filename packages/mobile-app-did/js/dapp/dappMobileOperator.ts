@@ -20,7 +20,7 @@ import { Operator } from '@portkey/providers';
 import { DappStoreItem } from '@portkey-wallet/store/store-ca/dapp/type';
 import { getContractBasic } from '@portkey-wallet/contracts/utils';
 import { getCurrentCaHash, getManagerAccount, getPin } from 'utils/redux';
-import { handleErrorMessage } from '@portkey-wallet/utils';
+import { checkIsCipherText, handleErrorMessage } from '@portkey-wallet/utils';
 import { isEqDapp } from '@portkey-wallet/utils/dapp/browser';
 import {
   ApproveMethod,
@@ -47,6 +47,7 @@ const SEND_METHOD: { [key: string]: true } = {
   [MethodsBase.SET_WALLET_CONFIG_OPTIONS]: true,
   [MethodsWallet.GET_WALLET_SIGNATURE]: true,
   [MethodsWallet.GET_WALLET_TRANSACTION_SIGNATURE]: true,
+  [MethodsWallet.GET_WALLET_MANAGER_SIGNATURE]: true,
 };
 
 const ACTIVE_VIEW_METHOD: { [key: string]: true } = {
@@ -57,13 +58,17 @@ const ACTIVE_VIEW_METHOD: { [key: string]: true } = {
 
 function getManager() {
   const pin = getPin();
-  if (!pin) return;
+  if (!pin) {
+    return;
+  }
   return getManagerAccount(pin);
 }
 
 function getContract({ rpcUrl, contractAddress }: { rpcUrl: string; contractAddress: string }) {
   const manager = getManager();
-  if (!manager) return;
+  if (!manager) {
+    return;
+  }
   return getContractBasic({ rpcUrl, contractAddress, account: manager });
 }
 
@@ -75,16 +80,18 @@ export type DappMobileOperatorOptions = {
   dappManager: IDappManager;
   dappOverlay: IDappOverlay;
   isDiscover?: boolean;
+  dappWhiteList?: string[];
 };
 export default class DappMobileOperator extends Operator {
   public dapp: DappStoreItem;
   protected stream: IDappInteractionStream;
   protected dappManager: IDappManager;
   protected dappOverlay: IDappOverlay;
+  protected dappWhiteList: string[];
   public isLockDapp?: boolean;
   public isDiscover?: boolean;
   public config: { [key: string]: boolean };
-  constructor({ stream, origin, dappManager, dappOverlay, isDiscover }: DappMobileOperatorOptions) {
+  constructor({ stream, origin, dappManager, dappOverlay, isDiscover, dappWhiteList }: DappMobileOperatorOptions) {
     super(stream);
     this.dapp = { origin };
     this.onCreate();
@@ -93,6 +100,7 @@ export default class DappMobileOperator extends Operator {
     this.dappOverlay = dappOverlay;
     this.isDiscover = isDiscover;
     this.config = {};
+    this.dappWhiteList = dappWhiteList || DAPP_WHITELIST;
   }
   private onCreate = () => {
     DappEventBus.registerOperator(this);
@@ -106,13 +114,19 @@ export default class DappMobileOperator extends Operator {
     eventName,
     params,
     method,
+    isCipherText,
+    realMethod,
   }: {
     eventName: string;
     params: any;
     method: keyof IDappOverlay;
+    isCipherText?: boolean;
+    realMethod: string;
   }): Promise<IResponseType | undefined> => {
-    const authorized = await this.dappOverlay[method](this.dapp, params);
-    if (!authorized) return this.userDenied(eventName);
+    const authorized = await this.dappOverlay[method](this.dapp, params, realMethod, isCipherText || false);
+    if (!authorized) {
+      return this.userDenied(eventName);
+    }
   };
   protected isActive = async () => {
     return this.dappManager.isActive(this.dapp.origin);
@@ -121,7 +135,9 @@ export default class DappMobileOperator extends Operator {
   protected handleActiveViewRequest = async (request: IRequestParams): Promise<IResponseType> => {
     const { eventName, method } = request;
     const isActive = await this.isActive();
-    if (!isActive) return this.unauthenticated(eventName);
+    if (!isActive) {
+      return this.unauthenticated(eventName);
+    }
     switch (method) {
       case MethodsWallet.GET_WALLET_NAME: {
         return generateNormalResponse({
@@ -161,7 +177,7 @@ export default class DappMobileOperator extends Operator {
 
     switch (method) {
       case MethodsBase.ACCOUNTS: {
-        if (DAPP_WHITELIST.includes(this.dapp.origin)) {
+        if (this.dappWhiteList.includes(this.dapp.origin)) {
           await this.autoApprove();
         }
 
@@ -196,7 +212,7 @@ export default class DappMobileOperator extends Operator {
         });
       }
       case MethodsWallet.GET_WALLET_STATE: {
-        if (DAPP_WHITELIST.includes(this.dapp.origin)) {
+        if (this.dappWhiteList.includes(this.dapp.origin)) {
           await this.autoApprove();
         }
 
@@ -237,10 +253,12 @@ export default class DappMobileOperator extends Operator {
       this.dappManager.getChainInfo(params.chainId),
       this.dappManager.getCaInfo(params.chainId),
     ]);
-    if (!chainInfo?.endPoint || !caInfo?.caHash)
+    if (!chainInfo?.endPoint || !caInfo?.caHash) {
       return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS, msg: 'invalid chain id' });
-    if (chainInfo?.endPoint !== params.rpcUrl)
+    }
+    if (chainInfo?.endPoint !== params.rpcUrl) {
       return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS, msg: 'invalid rpcUrl' });
+    }
 
     return {
       chainInfo,
@@ -254,8 +272,9 @@ export default class DappMobileOperator extends Operator {
       this.dappManager.getChainInfo(chainId),
       this.dappManager.getCaInfo(chainId),
     ]);
-    if (!chainInfo?.endPoint || !caInfo?.caHash) return 'invalid chain id';
-
+    if (!chainInfo?.endPoint || !caInfo?.caHash) {
+      return 'invalid chain id';
+    }
     return {
       chainInfo,
       caInfo,
@@ -266,7 +285,9 @@ export default class DappMobileOperator extends Operator {
     try {
       const info: any = await this.getCAContract(params, eventName);
       const { caContract: contract, caInfo, chainInfo } = info || {};
-      if (!contract) return info;
+      if (!contract) {
+        return info;
+      }
 
       const isForward = chainInfo.caContractAddress !== params.contractAddress;
 
@@ -283,12 +304,13 @@ export default class DappMobileOperator extends Operator {
         functionName = 'ManagerForwardCall';
       }
 
-      if (!CA_METHOD_WHITELIST.includes(functionName))
+      if (!CA_METHOD_WHITELIST.includes(functionName)) {
         return generateErrorResponse({
           eventName,
           code: ResponseCode.CONTRACT_ERROR,
           msg: 'method is not in the whitelist',
         });
+      }
       const data = await contract!.callSendMethod(functionName, '', paramsOption, { onMethod: 'transactionHash' });
       if (!data?.error) {
         return generateNormalResponse({
@@ -312,9 +334,13 @@ export default class DappMobileOperator extends Operator {
   };
   protected handleSignature: SendRequest<GetSignatureParams> = async (eventName, params) => {
     try {
-      if (!params.data) return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS });
+      if (!params.data) {
+        return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS });
+      }
       const manager = getManager();
-      if (!manager?.keyPair) return generateErrorResponse({ eventName, code: ResponseCode.INTERNAL_ERROR });
+      if (!manager?.keyPair) {
+        return generateErrorResponse({ eventName, code: ResponseCode.INTERNAL_ERROR });
+      }
       const data = manager.keyPair.sign(params.data);
       return generateNormalResponse({
         eventName,
@@ -330,10 +356,38 @@ export default class DappMobileOperator extends Operator {
   };
   protected handleTransactionSignature: SendRequest<GetSignatureParams> = async (eventName, params) => {
     try {
-      if (!params.data) return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS });
+      if (!params.data) {
+        return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS });
+      }
       const manager = getManager();
-      if (!manager?.keyPair) return generateErrorResponse({ eventName, code: ResponseCode.INTERNAL_ERROR });
+      if (!manager?.keyPair) {
+        return generateErrorResponse({ eventName, code: ResponseCode.INTERNAL_ERROR });
+      }
       const data = manager.keyPair.sign(AElf.utils.sha256(Buffer.from(params.data, 'hex')), {
+        canonical: true,
+      });
+      return generateNormalResponse({
+        eventName,
+        data,
+      });
+    } catch (error) {
+      return generateErrorResponse({
+        eventName,
+        code: ResponseCode.CONTRACT_ERROR,
+        msg: handleErrorMessage(error),
+      });
+    }
+  };
+  protected handleManagerSignature: SendRequest<GetSignatureParams> = async (eventName, params) => {
+    try {
+      if (!params.data) {
+        return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS });
+      }
+      const manager = getManager();
+      if (!manager?.keyPair) {
+        return generateErrorResponse({ eventName, code: ResponseCode.INTERNAL_ERROR });
+      }
+      const data = manager.keyPair.sign(AElf.utils.sha256(params.data), {
         canonical: true,
       });
       return generateNormalResponse({
@@ -353,59 +407,74 @@ export default class DappMobileOperator extends Operator {
     params,
     method,
     callBack,
+    isCipherText,
+    realMethod,
   }: {
     eventName: string;
     params: any;
     method: keyof IDappOverlay;
     callBack: SendRequest;
+    isCipherText?: boolean;
+    realMethod: string;
   }) {
     // is whitelist && is whitelist actions
-    if (DAPP_WHITELIST.includes(this.dapp.origin) && DAPP_WHITELIST_ACTION_WHITELIST.includes(method))
+    if (this.dappWhiteList.includes(this.dapp.origin) && DAPP_WHITELIST_ACTION_WHITELIST.includes(method)) {
       return callBack(eventName, params);
+    }
 
     const validSession = await this.verifySessionInfo();
 
     // valid session && is remember me actions
-    if (validSession && REMEMBER_ME_ACTION_WHITELIST.includes(method)) return callBack(eventName, params);
+    if (validSession && REMEMBER_ME_ACTION_WHITELIST.includes(method)) {
+      return callBack(eventName, params);
+    }
 
     // user confirm
-    const response = await this.userConfirmation({ eventName, method, params });
-    if (response) return response;
+    const response = await this.userConfirmation({ eventName, method, params, isCipherText, realMethod });
+    if (response) {
+      return response;
+    }
     return callBack(eventName, params);
   }
 
   protected handleApprove = async (request: IRequestParams) => {
     const { payload, eventName } = request || {};
-    const { params } = payload || {};
+    const { params, contractAddress } = payload || {};
 
     const { symbol, amount, spender } = params?.paramsOption || {};
     // check approve input && check valid amount
-    if (!(symbol && amount && spender) || ZERO.plus(amount).isNaN() || ZERO.plus(amount).lte(0))
+    if (!(symbol && amount && spender) || ZERO.plus(amount).isNaN() || ZERO.plus(amount).lte(0)) {
       return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS });
+    }
 
     const contractInfo = await this.getTokenContract(payload.chainId);
 
-    if (typeof contractInfo === 'string')
+    if (typeof contractInfo === 'string') {
       return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS, msg: contractInfo });
+    }
 
     const { tokenContract: contract, chainInfo } = contractInfo || {};
 
     const tokenInfo = await contract?.callViewMethod('GetTokenInfo', { symbol });
 
-    if (tokenInfo?.error || isNaN(tokenInfo?.data.decimals))
+    if (tokenInfo?.error || isNaN(tokenInfo?.data.decimals)) {
       return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS, msg: `${symbol} error` });
+    }
     const info = await this.dappOverlay.approve(this.dapp, {
       approveInfo: {
         ...params?.paramsOption,
         decimals: tokenInfo?.data.decimals,
         targetChainId: payload.chainId,
+        contractAddress,
       },
       isDiscover: this.isDiscover,
       eventName,
       batchApproveNFT: this.config?.batchApproveNFT,
     });
 
-    if (!info) return this.userDenied(eventName);
+    if (!info) {
+      return this.userDenied(eventName);
+    }
     const { guardiansApproved, approveInfo } = info;
 
     const finallyApproveSymbol = this.config?.batchApproveNFT ? getApproveSymbol(approveInfo.symbol) : symbol;
@@ -438,13 +507,15 @@ export default class DappMobileOperator extends Operator {
 
   protected handleSendRequest = async (request: IRequestParams): Promise<IResponseType> => {
     const { eventName, origin } = request;
+    const realMethod = request.method;
     let method = request.method;
-    if (this.dapp.origin !== origin)
+    let isCipherText = true;
+    if (this.dapp.origin !== origin) {
       return generateErrorResponse({
         eventName,
         code: ResponseCode.ERROR_IN_PARAMS,
       });
-
+    }
     const isActive = await this.isActive();
 
     let callBack: SendRequest, payload: any;
@@ -460,17 +531,20 @@ export default class DappMobileOperator extends Operator {
         });
       }
       case MethodsBase.REQUEST_ACCOUNTS: {
-        if (isActive)
+        if (isActive) {
           return generateNormalResponse({
             eventName,
             data: await this.dappManager.accounts(this.dapp.origin),
           });
+        }
         callBack = this.handleRequestAccounts;
         payload = this.dapp;
         break;
       }
       case MethodsBase.SEND_TRANSACTION: {
-        if (!isActive) return this.unauthenticated(eventName);
+        if (!isActive) {
+          return this.unauthenticated(eventName);
+        }
 
         payload = request.payload;
         if (
@@ -480,13 +554,16 @@ export default class DappMobileOperator extends Operator {
           !payload.contractAddress ||
           !payload.chainId ||
           !payload.rpcUrl
-        )
+        ) {
           return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS });
+        }
         // is safe
         try {
           const originChainId = await this.dappManager.getOriginChainId();
           const isSafe = await this.securityCheck(payload.chainId, originChainId);
-          if (!isSafe) return this.userDenied(eventName);
+          if (!isSafe) {
+            return this.userDenied(eventName);
+          }
         } catch (error) {
           return generateErrorResponse({
             eventName,
@@ -496,27 +573,55 @@ export default class DappMobileOperator extends Operator {
         }
         // is approve
         const isApprove = await this.isApprove(request);
-        if (isApprove) return this.handleApprove(request);
+        if (isApprove) {
+          return this.handleApprove(request);
+        }
 
         callBack = this.handleSendTransaction;
         break;
       }
       case MethodsWallet.GET_WALLET_SIGNATURE: {
-        if (!isActive) return this.unauthenticated(eventName);
+        if (!isActive) {
+          return this.unauthenticated(eventName);
+        }
         callBack = this.handleSignature;
         payload = { data: request.payload.data };
-        if (!payload || (typeof payload.data !== 'string' && typeof payload.data !== 'number'))
+        isCipherText = checkIsCipherText(payload.data);
+        if (!payload || (typeof payload.data !== 'string' && typeof payload.data !== 'number')) {
           return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS });
+        }
         break;
       }
       case MethodsWallet.GET_WALLET_TRANSACTION_SIGNATURE: {
-        if (request.payload.hexData && !request.payload.data) request.payload.data = request.payload.hexData;
+        if (request.payload.hexData && !request.payload.data) {
+          request.payload.data = request.payload.hexData;
+        }
         method = MethodsWallet.GET_WALLET_SIGNATURE;
-        if (!isActive) return this.unauthenticated(eventName);
+        isCipherText = true;
+        if (!isActive) {
+          return this.unauthenticated(eventName);
+        }
         callBack = this.handleTransactionSignature;
         payload = { data: request.payload.data };
-        if (!payload || (typeof payload.data !== 'string' && typeof payload.data !== 'number'))
+        if (!payload || (typeof payload.data !== 'string' && typeof payload.data !== 'number')) {
           return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS });
+        }
+        break;
+      }
+      case MethodsWallet.GET_WALLET_MANAGER_SIGNATURE: {
+        if (request.payload.hexData && !request.payload.data) {
+          request.payload.data = request.payload.hexData;
+        }
+        method = MethodsWallet.GET_WALLET_SIGNATURE;
+        isCipherText = false;
+        if (!isActive) {
+          return this.unauthenticated(eventName);
+        }
+        callBack = this.handleManagerSignature;
+        payload = { data: request.payload.data };
+        if (!payload || (typeof payload.data !== 'string' && typeof payload.data !== 'number')) {
+          return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS });
+        }
         break;
       }
     }
@@ -525,16 +630,19 @@ export default class DappMobileOperator extends Operator {
       params: payload,
       method: method as any,
       callBack: callBack!,
+      isCipherText,
+      realMethod,
     });
   };
   protected handleNativeDeviceRequest = async (request: IRequestParams): Promise<IResponseType> => {
     const { eventName, origin } = request;
     const method = request.method;
-    if (this.dapp.origin !== origin)
+    if (this.dapp.origin !== origin) {
       return generateErrorResponse({
         eventName,
         code: ResponseCode.ERROR_IN_PARAMS,
       });
+    }
     let callBack: SendRequest, payload: any;
     switch (method) {
       case NATIVE_METHOD_MAP.Share: {
@@ -566,6 +674,7 @@ export default class DappMobileOperator extends Operator {
       params: payload,
       method: method as any,
       callBack: callBack!,
+      realMethod: method,
     });
   };
   public autoApprove = () => {
@@ -579,13 +688,17 @@ export default class DappMobileOperator extends Operator {
   };
 
   handleRequest = async (request: IRequestParams): Promise<IResponseType> => {
-    console.log('handleRequest==== params', request);
+    console.log('handleRequest==== params', JSON.stringify(request));
     // dapp is not in the foreground
-    if (this.isLockDapp) return this.userDenied(request.eventName);
+    if (this.isLockDapp) {
+      return this.userDenied(request.eventName);
+    }
     if (NATIVE_METHOD.includes(request.method)) {
       return this.handleNativeDeviceRequest(request);
     }
-    if (SEND_METHOD[request.method]) return this.handleSendRequest(request);
+    if (SEND_METHOD[request.method]) {
+      return this.handleSendRequest(request);
+    }
     return this.handleViewRequest(request);
   };
 
@@ -605,28 +718,38 @@ export default class DappMobileOperator extends Operator {
   public publishEvent = async (event: IResponseType): Promise<void> => {
     if (event.eventName === NotificationEvents.ACCOUNTS_CHANGED) {
       const isActive = await this.isActive();
-      if (!isActive) return;
+      if (!isActive) {
+        return;
+      }
     }
     this.stream.write(JSON.stringify(event));
   };
 
   public updateDappInfo = async (dapp: DappStoreItem) => {
-    if (isEqDapp(this.dapp, dapp)) return;
+    if (isEqDapp(this.dapp, dapp)) {
+      return;
+    }
     this.dapp = dapp;
     const isActive = await this.isActive();
-    if (isActive) this.dappManager.updateDapp(dapp);
+    if (isActive) {
+      this.dappManager.updateDapp(dapp);
+    }
   };
 
   public verifySessionInfo = async () => {
     try {
       const rememberMeBlackList = await this.dappManager.getRememberMeBlackList();
       // is remember me black list
-      if (checkSiteIsInBlackList(rememberMeBlackList || [], this.dapp.origin)) return false;
+      if (checkSiteIsInBlackList(rememberMeBlackList || [], this.dapp.origin)) {
+        return false;
+      }
 
       const sessionInfo = await this.dappManager.getSessionInfo(this.dapp.origin);
       const manager = getManager();
       const caHash = getCurrentCaHash();
-      if (!manager?.keyPair || !caHash || !sessionInfo) return false;
+      if (!manager?.keyPair || !caHash || !sessionInfo) {
+        return false;
+      }
       const valid = verifySession({
         keyPair: manager.keyPair,
         origin: this.dapp.origin,
@@ -636,7 +759,9 @@ export default class DappMobileOperator extends Operator {
         expiredTime: sessionInfo.expiredTime,
         signature: sessionInfo.signature,
       });
-      if (!valid) return valid;
+      if (!valid) {
+        return valid;
+      }
       return !hasSessionInfoExpired(sessionInfo);
     } catch (error) {
       return false;
@@ -649,7 +774,9 @@ export default class DappMobileOperator extends Operator {
 
   public securityCheck = async (fromChainId: ChainId, originChainId: ChainId) => {
     const caHash = getCurrentCaHash();
-    if (!caHash) return false;
+    if (!caHash) {
+      return false;
+    }
     return checkSecuritySafe({
       caHash,
       originChainId,
@@ -663,13 +790,15 @@ export default class DappMobileOperator extends Operator {
     ]);
     if (!caInfo?.isSync) {
       const chainInfo = await this.dappManager.getChainInfo(chainId);
-      if (!chainInfo?.endPoint || !caInfo?.caHash)
+      if (!chainInfo?.endPoint || !caInfo?.caHash) {
         throw { code: ResponseCode.ERROR_IN_PARAMS, msg: 'invalid chain id' };
+      }
       const contract = await getContract({
         rpcUrl: chainInfo.endPoint,
         contractAddress: chainInfo.caContractAddress,
       });
       const info = await contract?.callViewMethod('GetHolderInfo', { caHash: caInfo.caHash });
+      // eslint-disable-next-line no-unsafe-optional-chaining
       const { managerInfos }: { managerInfos: { address: string }[] } = info?.data;
       if (managerInfos.some(item => item.address === managerAddress)) {
         this.dappManager.updateManagerSyncState(chainId);

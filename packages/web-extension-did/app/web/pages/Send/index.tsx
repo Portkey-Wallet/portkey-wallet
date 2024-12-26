@@ -4,7 +4,7 @@ import { useCurrentUserInfo, useCurrentWalletInfo } from '@portkey-wallet/hooks/
 import { addFailedActivity, removeFailedActivity } from '@portkey-wallet/store/store-ca/activity/slice';
 import { IClickAddressProps } from '@portkey-wallet/types/types-ca/contact';
 import { BaseToken } from '@portkey-wallet/types/types-ca/token';
-import { getAddressChainId, handleErrorMessage, isDIDAddress } from '@portkey-wallet/utils';
+import { getAddressChainId, getChainIdByAddress, handleErrorMessage, isDIDAddress } from '@portkey-wallet/utils';
 import { getAelfAddress, getEntireDIDAelfAddress, isCrossChain, isEqAddress } from '@portkey-wallet/utils/aelf';
 import { divDecimals, timesDecimals } from '@portkey-wallet/utils/converter';
 import { Button, Modal } from 'antd';
@@ -34,7 +34,7 @@ import { ChainId } from '@portkey-wallet/types';
 import { useCheckManagerSyncState } from 'hooks/wallet';
 import './index.less';
 import { useCheckLimit, useCheckSecurity } from 'hooks/useSecurity';
-import { ExceedLimit, WalletIsNotSecure } from 'constants/security';
+import { CrossChainIntercepted, ExceedLimit, WalletIsNotSecure } from 'constants/security';
 import { ICheckLimitBusiness } from '@portkey-wallet/types/types-ca/paymentSecurity';
 import GuardianApproveModal from 'pages/components/GuardianApprovalModal';
 import { GuardianItem } from 'types/guardians';
@@ -43,6 +43,7 @@ import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import CustomModal from 'pages/components/CustomModal';
 import {
+  CROSS_CHAIN_INTERCEPTED_CONTENT,
   SEND_SIDE_CHAIN_TOKEN_TIP_CONTENT,
   SEND_SIDE_CHAIN_TOKEN_TIP_TITLE,
 } from '@portkey-wallet/constants/constants-ca/send';
@@ -62,9 +63,12 @@ import { getDisclaimerData } from 'utils/disclaimer';
 import { TradeTypeEnum } from 'constants/trade';
 import { useCrossTransferByEtransfer } from 'hooks/useCrossTransferByEtransfer';
 import { CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL } from '@portkey-wallet/utils/withdraw';
-import { TWithdrawInfo } from '@etransfer/services';
+import { TWithdrawInfo } from '@etransfer/types';
 import { ExtensionContractBasic } from 'utils/sandboxUtil/ExtensionContractBasic';
 import { COMMON_PRIVATE } from '@portkey-wallet/constants';
+import { getAssetsEstimation } from '@portkey-wallet/store/store-ca/assets/api';
+import { SendType } from '@portkey-wallet/types/types-ca/send';
+import { getOperationDetails } from '@portkey-wallet/utils/operation.util';
 
 export type ToAccount = { address: string; name?: string };
 
@@ -280,9 +284,13 @@ export default function Send() {
         const amountAllowed = withdrawInfo ? isGTMax && isLTMin : false;
 
         if (CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL.includes(crossParams.tokenInfo.symbol) && amountAllowed) {
+          const arr = toAccount.address.split('_');
+          const network = arr[arr.length - 1];
+
           await withdraw({
             chainId,
             toAddress: crossParams.toAddress,
+            network,
             amount,
             tokenInfo,
           });
@@ -365,11 +373,14 @@ export default function Send() {
     async ({ amount }: { amount: string }) => {
       const token = tokenInfo;
       try {
+        const arr = toAccount.address.split('_');
+        const network = arr[arr.length - 1];
         const [{ withdrawInfo }, allowance] = await Promise.all([
           withdrawPreview({
             chainId: token.chainId,
             address: toAccount.address,
             symbol: token.symbol,
+            network,
           }),
           getEtransferCAAllowance(token),
         ]);
@@ -435,6 +446,25 @@ export default function Send() {
   );
 
   const checkSecurity = useCheckSecurity();
+  const showCrossChainAssetsModal = useCallback(() => {
+    const modal = CustomModal({
+      className: 'cross-chain-modal',
+      content: (
+        <div>
+          <div className="modal-title">Notice</div>
+          <div>
+            {[CROSS_CHAIN_INTERCEPTED_CONTENT].map((item, i) => (
+              <div key={`send_modal_${i}`}>{item}</div>
+            ))}
+          </div>
+        </div>
+      ),
+      okText: 'OK',
+      onOk: () => {
+        modal.destroy();
+      },
+    });
+  }, []);
   const handleCheckPreview = useCallback(async () => {
     try {
       setLoading(true);
@@ -443,17 +473,31 @@ export default function Send() {
       const tokenSymbol = tokenInfo.symbol;
       console.log(tokenInfo, 'tokenInfo===handleCheckPreview');
       const caAddress = wallet?.[chainId]?.caAddress || '';
-      // CHECK 1: manager sync
+      // CHECK 1: cross chain whether has assets
+      if (isCrossChain(toAccount.address, chainInfo?.chainId ?? 'AELF')) {
+        const sendChainId = getChainIdByAddress(toAccount.address) as ChainId;
+        const interceptResult = await getAssetsEstimation({
+          symbol: tokenSymbol,
+          chainId: sendChainId,
+          type: type as SendType,
+        });
+        if (!interceptResult) {
+          showCrossChainAssetsModal();
+          return CrossChainIntercepted;
+        }
+      }
+
+      // CHECK 2: manager sync
       const _isManagerSynced = await checkManagerSyncState(chainId);
       if (!_isManagerSynced) {
         return 'Synchronizing on-chain account information...';
       }
 
-      // CHECK 2: wallet security
+      // CHECK 3: wallet security
       const securityRes = await checkSecurity(tokenInfo.chainId);
       if (!securityRes) return WalletIsNotSecure;
 
-      // CHECK 3: balance
+      // CHECK 4: balance
       const result = await getBalance({
         rpcUrl: currentChain.endPoint,
         address: tokenInfo.address,
@@ -485,7 +529,7 @@ export default function Send() {
         return 'input error';
       }
 
-      // CHECK 4: transfer limit
+      // CHECK 5: transfer limit
       const limitRes = await checkLimit({
         chainId: tokenInfo.chainId,
         symbol: tokenInfo.symbol,
@@ -505,18 +549,21 @@ export default function Send() {
         onOneTimeApproval: handleOneTimeApproval,
       });
       if (!limitRes) return ExceedLimit;
-      // CHECK 5: tx fee
+      // CHECK 6: tx fee
       if (
         isCrossChain(toAccount.address, chainInfo?.chainId ?? 'AELF') &&
         CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL.includes(tokenSymbol)
       ) {
         try {
+          const arr = toAccount.address.split('_');
+          const network = arr[arr.length - 1];
           const [{ withdrawInfo }, allowance] = await Promise.all([
             withdrawPreview({
               chainId,
               address: toAccount.address,
               symbol: tokenSymbol,
               amount,
+              network,
             }),
             getEtransferCAAllowance(tokenInfo),
           ]);
@@ -554,7 +601,7 @@ export default function Send() {
 
       return '';
     } catch (error: any) {
-      console.log('checkTransactionValue===', error);
+      console.log('checkTransactionValue===', error, 'typeof');
       return TransactionError.FEE_NOT_ENOUGH;
     } finally {
       setLoading(false);
@@ -566,16 +613,17 @@ export default function Send() {
     tokenInfo,
     wallet,
     chainId,
+    toAccount,
+    chainInfo?.chainId,
     checkManagerSyncState,
     checkSecurity,
     currentNetwork.walletType,
     type,
     checkLimit,
     stage,
-    toAccount,
     handleOneTimeApproval,
-    chainInfo?.chainId,
     getTranslationInfo,
+    showCrossChainAssetsModal,
     symbol,
     defaultToken.symbol,
     crossChainFee,
@@ -626,25 +674,25 @@ export default function Send() {
   const checkSideChainSendModal = useCallback(() => {
     const modal = CustomModal({
       type: 'confirm',
-      className: 'side-chain-modal',
+      className: 'cross-modal side-chain-modal',
       content: (
         <div>
           <div className="modal-title">{SEND_SIDE_CHAIN_TOKEN_TIP_TITLE}</div>
           <div>
-            {SEND_SIDE_CHAIN_TOKEN_TIP_CONTENT.map((item, i) => (
-              <div key={`send_modal_${i}`}>{item}</div>
-            ))}
+            Please note that &nbsp;
+            <span className="strong-text">{`only MainChain ELF can be sent directly to exchanges.`}</span> If you are
+            sending dAppChain ELF, please transfer ELF to the MainChain before sending them to your exchange account. If
+            you are sending another asset, please swap it to ELF first or try the withdrawal function in ETransfer.
           </div>
         </div>
       ),
-      okText: 'Confirm',
+      okText: 'OK',
       onOk: () => {
         modal.destroy();
         sendHandler();
       },
     });
   }, [sendHandler]);
-
   const StageObj: TypeStageObj = useMemo(
     () => ({
       0: {
@@ -692,10 +740,34 @@ export default function Send() {
         btnText: 'Preview',
         handler: async () => {
           const res = await handleCheckPreview();
-          if (res === ExceedLimit || res === WalletIsNotSecure) return;
+          if (res === ExceedLimit || res === WalletIsNotSecure || res === CrossChainIntercepted) return;
           if (!res) {
             setTipMsg('');
-            setStage(SendStage.Preview);
+            if (chainId === MAIN_CHAIN_ID && type === 'token' && symbol !== 'ELF') {
+              Modal.confirm({
+                width: 320,
+                content: (
+                  <div>
+                    <div className="non-elf-title">Send to exchange account?</div>
+                    <div>
+                      Please note that &nbsp;
+                      <span className="strong-text">{`only MainChain ELF can be sent directly to exchanges.`}</span> If
+                      you are sending another asset, please swap it to ELF first or try the withdrawal function in
+                      ETransfer.
+                    </div>
+                  </div>
+                ),
+                className: 'cross-modal delete-modal',
+                autoFocusButton: null,
+                icon: null,
+                centered: true,
+                okText: 'OK',
+                cancelText: 'Cancel',
+                onOk: () => setStage(SendStage.Preview),
+              });
+            } else {
+              setStage(SendStage.Preview);
+            }
           } else {
             setTipMsg(res);
           }
@@ -794,6 +866,7 @@ export default function Send() {
       t,
       navigate,
       handleCheckPreview,
+      symbol,
       isSideChainSend,
       checkSideChainSendModal,
       sendHandler,
@@ -940,6 +1013,13 @@ export default function Send() {
           operationType={OperationTypeEnum.transferApprove}
           onClose={onCloseGuardianApprove}
           getApproveRes={getApproveRes}
+          operationDetails={getOperationDetails(OperationTypeEnum.transferApprove, {
+            symbol: tokenInfo?.symbol,
+            amount,
+            toAddress: toAccount.address,
+            caHash: wallet.caHash,
+            verifyManagerAddress: wallet.address,
+          })}
         />
         <DisclaimerModal open={disclaimerOpen} onClose={() => setDisclaimerOpen(false)} {...disclaimerData.current} />
 
@@ -948,6 +1028,7 @@ export default function Send() {
     );
   }, [
     StageObj,
+    amount,
     btnDisabled,
     disclaimerOpen,
     errorMsg,
@@ -966,8 +1047,11 @@ export default function Send() {
     toAccount,
     tokenInfo.chainId,
     tokenInfo.label,
+    tokenInfo?.symbol,
     type,
     userInfo?.nickName,
+    wallet.address,
+    wallet.caHash,
   ]);
 
   return <>{isPrompt ? <PromptFrame content={mainContent()} /> : mainContent()}</>;

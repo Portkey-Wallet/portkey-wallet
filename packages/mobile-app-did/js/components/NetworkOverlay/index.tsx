@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { Keyboard, StyleSheet, View } from 'react-native';
 import { TextL } from 'components/CommonText';
 import OverlayModal from 'components/OverlayModal';
@@ -34,7 +34,9 @@ function Network({
       disabled={!network.isActive}
       onPress={async () => {
         OverlayModal.hide();
-        if (isSelect) return;
+        if (isSelect) {
+          return;
+        }
         changeNetwork(network);
       }}
       style={[styles.itemRow, !network.isActive ? styles.disableItem : undefined]}
@@ -63,10 +65,10 @@ function SwitchNetwork({ route }: { route: RouteProp<ParamListBase> }) {
     </ModalBody>
   );
 }
-
+const SwitchNetworkWrapper = memo(SwitchNetwork);
 const showSwitchNetwork = (route: RouteProp<ParamListBase>) => {
   Keyboard.dismiss();
-  OverlayModal.show(<SwitchNetwork route={route} />, {
+  OverlayModal.show(<SwitchNetworkWrapper route={route} />, {
     position: 'bottom',
   });
 };

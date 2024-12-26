@@ -1,5 +1,5 @@
 import { ChainId } from '@portkey-wallet/types';
-import { IClientType, IRampProviderInfo, IRampRequest, IRequestConfig, ITransDirectEnum } from '.';
+import { IClientType, IRampProviderInfo, IRampRequest, IRequestConfig, ITransDirectEnum } from './index';
 import { IRampProviderType } from '..';
 
 export type IRampServiceOptions = IRequestConfig & {
@@ -28,6 +28,8 @@ export type IRampCryptoItem = {
   network: string;
   chainId: ChainId;
   address: string;
+  displayChainName: string;
+  chainImageUrl: string;
 };
 
 export type IRampCryptoDefault = {

@@ -18,6 +18,14 @@ export interface SendVerificationConfig extends RequestConfig {
     chainId: string | number;
     operationType: OperationTypeEnum;
     targetChainId?: ChainId;
+    operationDetails?: string;
+  };
+}
+
+export interface SendSecondVerificationConfig extends RequestConfig {
+  params: {
+    secondaryEmail: string;
+    platformType: number;
   };
 }
 

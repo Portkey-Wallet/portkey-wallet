@@ -59,7 +59,11 @@ export function useKeyboard(topSpacing = 0) {
   }, []);
   useKeyboardListener({ show, hide });
   return useMemo(
-    () => ({ keyboardHeight: (keyboardHeight || DefaultKeyboardHeight) - topSpacing, isKeyboardOpened }),
+    () => ({
+      keyboardHeight: (keyboardHeight || DefaultKeyboardHeight) - topSpacing,
+      isKeyboardOpened,
+      setIsKeyboardOpened,
+    }),
     [isKeyboardOpened, keyboardHeight, topSpacing],
   );
 }

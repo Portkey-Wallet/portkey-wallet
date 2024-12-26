@@ -55,6 +55,9 @@ export interface IMStateType {
       [relationId: string]: string;
     };
   };
+  sendingBotRelationIdNetMap: {
+    [T in NetworkType]?: string[];
+  };
 }
 
 export enum UpdateChannelAttributeTypeEnum {

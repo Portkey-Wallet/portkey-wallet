@@ -6,7 +6,7 @@ import GStyles from 'assets/theme/GStyles';
 import CommonInput from 'components/CommonInput';
 import CommonButton from 'components/CommonButton';
 import { useChatContactFlatList, useLocalContactSearch } from '@portkey-wallet/hooks/hooks-ca/contact';
-import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
+import { ContactItemType, ContactType } from '@portkey-wallet/types/types-ca/contact';
 import { ContactsTab } from '@portkey-wallet/constants/constants-ca/assets';
 import { TextM } from 'components/CommonText';
 import Loading from 'components/Loading';
@@ -30,13 +30,16 @@ const ChatGroupDetails = () => {
 
   const [keyword, setKeyword] = useState('');
   const allChatList = useChatContactFlatList();
+  const noChatBotAllChatList = useMemo(() => {
+    return allChatList.filter(item => item.contactType === ContactType.Normal);
+  }, [allChatList]);
   const searchContact = useLocalContactSearch();
 
   const [filterChatContactList, setFilterChatContactList] = useState<ContactItemType[]>([]);
   const [selectedContactMap, setSelectedContactMap] = useState<{ [key: string]: string }>({});
 
   const selectedCount = useMemo((): number => Object.keys(selectedContactMap).length, [selectedContactMap]);
-  const totalCount = useMemo((): number => allChatList.length, [allChatList]);
+  const totalCount = useMemo((): number => noChatBotAllChatList.length, [noChatBotAllChatList]);
   const isButtonDisable = useMemo(() => !groupName || selectedCount === 0, [groupName, selectedCount]);
 
   const onPressConfirm = useCallback(async () => {
@@ -73,11 +76,12 @@ const ChatGroupDetails = () => {
   useEffect(() => {
     if (keyword.trim()) {
       const { contactFilterList } = searchContact(keyword.trim(), ContactsTab.Chats);
-      setFilterChatContactList(contactFilterList || []);
+      const contactNoChatBotFilterList = contactFilterList.filter(item => item.contactType === ContactType.Normal);
+      setFilterChatContactList(contactNoChatBotFilterList || []);
     } else {
-      setFilterChatContactList(allChatList);
+      setFilterChatContactList(noChatBotAllChatList);
     }
-  }, [allChatList, keyword, searchContact]);
+  }, [noChatBotAllChatList, keyword, searchContact]);
 
   return (
     <PageContainer

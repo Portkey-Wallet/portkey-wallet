@@ -18,6 +18,12 @@ const EventList = [
   'chatHomeListCloseSwiped',
   'navToBottomTab',
   'setLoginAccount',
+  'updateMintStatus',
+  'updateSecondaryEmail',
+  'updateSendAddressList',
+  'refreshHomeListStart',
+  'refreshHomeList',
+  'updateNFT',
 ] as const;
 
 const BookmarkEventList = ['closeSwipeable'] as const;
@@ -49,14 +55,14 @@ eventsServer.prototype.parseEvent('base', EventList);
 eventsServer.prototype.parseEvent('bookmark', BookmarkEventList);
 
 export type BookmarkEventsTypes = {
-  [x in typeof BookmarkEventList[number]]: {
+  [x in (typeof BookmarkEventList)[number]]: {
     emit: (...params: any[]) => void;
     addListener: (listener: (data: any) => void) => EmitterSubscription;
   };
 };
 
 export type MyEventsTypes = {
-  [x in typeof EventList[number]]: {
+  [x in (typeof EventList)[number]]: {
     emit: (...params: any[]) => void;
     addListener: (listener: (data: any) => void) => EmitterSubscription;
     name: string;

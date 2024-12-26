@@ -166,7 +166,6 @@ export const useMarket = () => {
         });
         return result;
       } catch (e) {
-        console.log('wfs=== fetchCryptoCurrencyList error', e);
         throw `fetch market data failed,  caused by: ${JSON.stringify(e)}`;
       } finally {
         setRefreshing(false);

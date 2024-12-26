@@ -1,7 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import OverlayModal from 'components/OverlayModal';
-import { Keyboard, StyleSheet, View } from 'react-native';
-import { defaultColors } from 'assets/theme';
+import { Keyboard, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import { useLanguage } from 'i18n/hooks';
 import { ModalBody } from 'components/ModalBody';
@@ -9,8 +8,7 @@ import GStyles from 'assets/theme/GStyles';
 import { DappStoreItem } from '@portkey-wallet/store/store-ca/dapp/type';
 import { CommonButtonProps } from 'components/CommonButton';
 import CommonInput from 'components/CommonInput';
-import DiscoverWebsiteImage from 'pages/Discover/components/DiscoverWebsiteImage';
-import { TextL, TextM, TextS } from 'components/CommonText';
+import { TextL, TextM } from 'components/CommonText';
 import { OverlayBottomSection } from '../OverlayBottomSection';
 import { ApproveParams } from 'dapp/dappOverlay';
 import navigationService from 'utils/navigationService';
@@ -18,36 +16,46 @@ import { useAppDispatch } from 'store/hooks';
 import { changeDrawerOpenStatus } from '@portkey-wallet/store/store-ca/discover/slice';
 import { ApprovalType } from '@portkey-wallet/types/verifier';
 import Touchable from 'components/Touchable';
-import { FontStyles } from 'assets/theme/styles';
-import { getFaviconUrl } from '@portkey-wallet/utils/dapp/browser';
 import { divDecimals, divDecimalsStr, timesDecimals } from '@portkey-wallet/utils/converter';
 import { LANG_MAX, ZERO } from '@portkey-wallet/constants/misc';
 import { parseInputNumberChange } from '@portkey-wallet/utils/input';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { isIOS } from '@rneui/base';
 import { isValidNumber } from '@portkey-wallet/utils/reg';
-import Svg, { IconName } from 'components/Svg';
-import { ALLOWANCE_DESC, SET_ALLOWANCE_MULTIPLY_TIP } from '@portkey-wallet/constants/constants-ca/allowance';
+import Svg from 'components/Svg';
 import { isNFT } from '@portkey-wallet/utils/token';
 import { formatStr2EllipsisStr } from '@portkey-wallet/utils';
+import { makeStyles, useTheme } from '@rneui/themed';
+import CommonTooltip from 'components/CommonTooltip';
+import TitleInfoSection from '../TitleInfoSection';
+import { KeyboardSafeArea } from 'components/KeyboardSafeArea';
+import { CommonPromptCard, PromptCardType } from 'components/CommonPromptCard';
+import { useDappSpenderCheck } from '@portkey-wallet/hooks/hooks-ca/discover';
+import { getFaviconUrl } from '@portkey-wallet/utils/dapp/browser';
+
 type SignModalPropsType = {
   dappInfo: DappStoreItem;
   approveParams: ApproveParams;
   onReject: () => void;
   isEditBatchApprovalInApp?: boolean;
 };
-
-const ZERO_MESSAGE = 'Please enter a nonzero value';
+// Contract update time: Oct 15, 2024, at 17:07 The dApp's smart contract has been updated. Please proceed with caution.
+const ZERO_MESSAGE = 'Please enter a valid amount.';
 const ApproveModal = (props: SignModalPropsType) => {
   const { dappInfo, approveParams, onReject, isEditBatchApprovalInApp } = props;
-  console.log(approveParams, '====approveInfo');
-  const { amount, targetChainId } = approveParams.approveInfo;
+  const { amount, targetChainId, spender } = approveParams.approveInfo;
   const dispatch = useAppDispatch();
   const { t } = useLanguage();
-
   const [errorMessage, setErrorMessage] = useState('');
   const [symbolNum, setSymbolNum] = useState<string>('');
-
+  const styles = getStyles();
+  const { theme } = useTheme();
+  const checkResult = useDappSpenderCheck(
+    dappInfo.origin,
+    spender,
+    dappInfo.icon || getFaviconUrl(dappInfo.origin),
+    targetChainId,
+  );
   const decimals = useMemo(() => approveParams.approveInfo.decimals, [approveParams.approveInfo.decimals]);
 
   const approveSymbol = useMemo(
@@ -80,7 +88,7 @@ const ApproveModal = (props: SignModalPropsType) => {
         },
       },
       {
-        title: t('Pre-authorize'),
+        title: t('Approve'),
         type: 'primary' as CommonButtonProps['type'],
         disabled: !symbolNum.trim(),
         onPress: async () => {
@@ -130,16 +138,22 @@ const ApproveModal = (props: SignModalPropsType) => {
 
   const onChangeText = useCallback(
     (v: string) => {
-      if (isValidNumber(v.trim())) return setSymbolNum(parseInputNumberChange(v.trim(), MAX_NUM, decimals));
+      if (isValidNumber(v.trim())) {
+        return setSymbolNum(parseInputNumberChange(v.trim(), MAX_NUM, decimals));
+      }
 
-      if (!v.trim()) return setSymbolNum('');
+      if (!v.trim()) {
+        return setSymbolNum('');
+      }
     },
     [MAX_NUM, decimals],
   );
 
   const onUseRecommendedValue = useCallback(() => {
     setErrorMessage('');
-    if (LANG_MAX.lt(amount)) return onPressMax();
+    if (LANG_MAX.lt(amount)) {
+      return onPressMax();
+    }
     setSymbolNum(parseInputNumberChange(divDecimalsStr(amount, approveParams.approveInfo.decimals), MAX_NUM, decimals));
   }, [MAX_NUM, amount, approveParams.approveInfo.decimals, decimals, onPressMax]);
 
@@ -148,59 +162,81 @@ const ApproveModal = (props: SignModalPropsType) => {
   });
 
   return (
-    <ModalBody modalBodyType="bottom" title="" onClose={onReject} onTouchStart={Keyboard.dismiss}>
-      <View style={styles.contentWrap}>
-        <View style={[GStyles.center, styles.headerSection]}>
-          {dappInfo.svgIcon ? (
-            <Svg icon={dappInfo.svgIcon as IconName} size={pTd(48)} />
-          ) : (
-            <DiscoverWebsiteImage size={pTd(48)} imageUrl={getFaviconUrl(dappInfo.origin)} />
-          )}
-
-          <TextL
-            style={[
-              FontStyles.font5,
-              GStyles.textAlignCenter,
-              GStyles.marginTop(pTd(8)),
-              GStyles.marginBottom(pTd(8)),
-            ]}>
-            {isEditBatchApprovalInApp
-              ? `Set access token amount`
-              : `${dappInfo.name || dappInfo.origin} is requesting access to your ${approveSymbol}`}
-          </TextL>
-
-          <TextS style={[FontStyles.font7, GStyles.textAlignCenter]}>{`${ALLOWANCE_DESC} ${approveSymbol}`}</TextS>
-        </View>
-
-        <View style={[GStyles.flexRow, GStyles.spaceBetween, styles.inputTitle]}>
-          <TextM style={GStyles.flex1}>Set Allowance</TextM>
-          {!isEditBatchApprovalInApp && (
-            <Touchable onPress={onUseRecommendedValue}>
-              <TextM style={FontStyles.primaryColor}> Use Recommended Value</TextM>
-            </Touchable>
-          )}
-        </View>
-
-        <CommonInput
-          type="general"
-          keyboardType="numeric"
-          value={symbolNum}
-          placeholder=" "
-          onChangeText={onChangeText}
-          errorMessage={errorMessage}
-          rightIcon={
-            <View style={GStyles.flexRow}>
-              <Touchable>
-                <TextM style={FontStyles.font18}>{formatStr2EllipsisStr(approveSymbol, 8, 'tail')}</TextM>
-              </Touchable>
-              <Touchable style={GStyles.marginLeft(pTd(12))} onPress={onPressMax}>
-                <TextM style={FontStyles.primaryColor}>Max</TextM>
-              </Touchable>
-            </View>
-          }
+    <ModalBody
+      modalBodyType="bottom"
+      leftTitleDom={
+        <TitleInfoSection
+          viewStyle={{ paddingLeft: pTd(16) }}
+          title={t('Approve token allowance')}
+          dappInfo={dappInfo}
         />
-
-        <TextM style={[FontStyles.font3]}>{SET_ALLOWANCE_MULTIPLY_TIP}</TextM>
+      }
+      onClose={onReject}
+      onTouchStart={Keyboard.dismiss}>
+      <View style={[styles.contentWrap, checkResult.show && GStyles.paddingBottom(86)]}>
+        <View style={styles.inputWrap}>
+          <View style={[GStyles.flexRow, GStyles.itemCenter, { marginBottom: pTd(8) }]}>
+            <TextL style={{ lineHeight: pTd(22) }}>{t('Token allowance')}</TextL>
+            <CommonTooltip
+              iconStyle={{ marginLeft: pTd(4) }}
+              tooltipProps={{
+                title: t('Token allowance'),
+                description: `For asset security, set a custom allowance for this dApp. ${approveSymbol} approval won't be needed until the allowance is used up. You can change the settings anytime.`,
+              }}
+            />
+          </View>
+          <KeyboardSafeArea>
+            <CommonInput
+              type="general"
+              keyboardType="numeric"
+              value={symbolNum}
+              placeholder=" "
+              onChangeText={onChangeText}
+              errorMessage={errorMessage}
+              rightIcon={
+                <View style={[GStyles.flexRow, GStyles.itemCenter]}>
+                  <Touchable
+                    onPress={() => {
+                      setSymbolNum('');
+                      setErrorMessage('');
+                    }}>
+                    <Svg icon="clear4" iconStyle={{ marginRight: pTd(8) }} size={pTd(16)} />
+                  </Touchable>
+                  <Touchable>
+                    <TextL style={[{ color: theme.colors.textBase2 }]}>
+                      {formatStr2EllipsisStr(approveSymbol, 8, 'tail')}
+                    </TextL>
+                  </Touchable>
+                </View>
+              }
+            />
+          </KeyboardSafeArea>
+          <View
+            style={[
+              GStyles.flexRow,
+              GStyles.spaceBetween,
+              styles.clickWrap,
+              { marginTop: pTd(errorMessage ? 0 : -16) },
+            ]}>
+            {isEditBatchApprovalInApp ? (
+              <TextL> </TextL>
+            ) : (
+              <Touchable onPress={onUseRecommendedValue}>
+                <TextM style={{ color: theme.colors.textBrand1 }}>Use default</TextM>
+              </Touchable>
+            )}
+            <Touchable style={GStyles.marginLeft(pTd(12))} onPress={onPressMax}>
+              <TextM style={{ color: theme.colors.textBrand1 }}>Max</TextM>
+            </Touchable>
+          </View>
+          {checkResult.show && (
+            <CommonPromptCard
+              style={{ marginTop: pTd(8) }}
+              type={checkResult.type === 'warning' ? PromptCardType.WARNING : PromptCardType.INFO}
+              description={checkResult.text}
+            />
+          )}
+        </View>
       </View>
       <OverlayBottomSection bottomButtonGroup={ButtonList} />
     </ModalBody>
@@ -219,44 +255,16 @@ export default {
   showApproveModal,
 };
 
-const styles = StyleSheet.create({
+const getStyles = makeStyles(() => ({
   contentWrap: {
-    paddingLeft: pTd(20),
-    paddingRight: pTd(20),
-  },
-  headerSection: {
-    paddingTop: pTd(8),
-    width: '100%',
+    paddingLeft: pTd(16),
+    paddingRight: pTd(16),
+    paddingBottom: pTd(76),
   },
   inputWrap: {
-    borderColor: 'red',
-    borderWidth: pTd(1),
+    marginTop: pTd(8),
   },
-  inputTitle: {
-    marginTop: pTd(40),
-    marginBottom: pTd(8),
-    paddingHorizontal: pTd(8),
+  clickWrap: {
+    height: pTd(38),
   },
-  title: {
-    marginBottom: pTd(2),
-  },
-  method: {
-    borderRadius: pTd(6),
-    marginTop: pTd(24),
-    textAlign: 'center',
-    color: defaultColors.primaryColor,
-    backgroundColor: defaultColors.brandLight,
-    ...GStyles.paddingArg(2, 8),
-  },
-  signTitle: {
-    marginTop: pTd(24),
-    marginBottom: pTd(24),
-    textAlign: 'center',
-  },
-  batchApprovalWrap: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: pTd(24),
-  },
-});
+}));

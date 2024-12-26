@@ -1,0 +1,72 @@
+@import '../../../../assets/theme/color.less';
+
+.free-mint-preview {
+  .preview-container {
+    gap: 24px;
+    padding: 8px 16px;
+    .mint-detail {
+      gap: 12px;
+      padding: 12px;
+      border: 1px solid @neutral-border;
+      border-radius: 6px;
+      .mint-detail-image {
+        flex-shrink: 0;
+        border-radius: 6px;
+        border: 1px solid @neutral-border;
+        img {
+          object-fit: contain;
+        }
+      }
+      .mint-detail-basic {
+        justify-content: center;
+      }
+      .mint-detail-name {
+        font-size: 16px;
+        line-height: 24px;
+        color: @neutral-primary-text;
+      }
+      .mint-detail-desc {
+        margin-top: 4px;
+        font-size: 12px;
+        line-height: 16px;
+        color: @neutral-tertiary-text;
+        word-break: break-all;
+      }
+      .img-loading-wrapper {
+        width: 64px;
+      }
+    }
+    .other-detail {
+      gap: 16px;
+      font-size: 14px;
+      line-height: 22px;
+      color: @neutral-primary-text;
+      .label {
+        color: @neutral-tertiary-text;
+      }
+      .other-detail-image {
+        &.img-loading-wrapper {
+          border-radius: 4px;
+        }
+
+        flex-shrink: 0;
+        margin-right: 4px;
+      }
+      .fee-usd {
+        text-align: right;
+        font-size: 12px;
+        line-height: 16px;
+        color: @neutral-tertiary-text;
+      }
+    }
+  }
+  .btn-container {
+    padding: 16px;
+    button {
+      flex: 1;
+      height: 48px;
+      border-radius: 6px;
+      font-size: 16px;
+    }
+  }
+}

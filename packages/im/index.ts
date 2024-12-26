@@ -5,8 +5,7 @@ import { IMStatusEnum, MessageCount, SocketMessage } from './types';
 import { sleep } from '@portkey-wallet/utils';
 import { IIMService } from './types/service';
 import { IMConfig } from './config';
-import { FetchRequest } from './request';
-import { IBaseRequest } from '@portkey/types';
+import { FetchRequest, IFetchRequest } from './request';
 import { IMService } from './service';
 import { IM_TOKEN_ERROR_ARRAY } from './constant';
 import { request } from '@portkey-wallet/api/api-did';
@@ -31,7 +30,7 @@ export class IM {
 
   public config: IMConfig;
   public service: IIMService;
-  public fetchRequest: IBaseRequest;
+  public fetchRequest: IFetchRequest;
 
   constructor() {
     this.config = new IMConfig({
@@ -48,7 +47,11 @@ export class IM {
 
     this.rewriteFetch();
   }
-
+  setHeader(key: string, value: string) {
+    if (this.fetchRequest) {
+      this.fetchRequest.setHeader(key, value);
+    }
+  }
   async init(account: AElfWallet, caHash: string, token?: string) {
     this.status = IMStatusEnum.INIT;
     this._account = account;
@@ -176,12 +179,12 @@ export class IM {
     this.updateConnectObservers(e);
   };
 
-  onConnectErr = (e: any) => {
-    console.log('CONNECT_ERR', e);
+  onConnectErr = () => {
+    // console.log('CONNECT_ERR', e);
   };
 
-  onConnectClose = async (e: any) => {
-    console.log('CONNECT_CLOSE msg', e);
+  onConnectClose = async () => {
+    // console.log('CONNECT_CLOSE msg', e);
     if (this.status === IMStatusEnum.DESTROY) {
       console.log('CONNECT_CLOSE DESTROY');
       return;
@@ -368,7 +371,7 @@ export class IM {
 
   refreshMessageCount = async () => {
     const { data: messageCount } = await im.service.getUnreadCount();
-    console.log('refreshMessageCount', messageCount);
+    // console.log('refreshMessageCount', messageCount);
 
     im.updateMessageCount(messageCount);
     return messageCount;

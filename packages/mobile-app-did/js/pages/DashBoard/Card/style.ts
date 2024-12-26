@@ -1,15 +1,10 @@
-import { StyleSheet } from 'react-native';
-import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import fonts from 'assets/theme/fonts';
-import { ScreenWidth } from '@rneui/base';
+import { makeStyles } from '@rneui/themed';
 
-const { font5, white } = defaultColors;
-
-export const styles = StyleSheet.create({
+export const getStyles = makeStyles(theme => ({
   cardWrap: {
-    backgroundColor: white,
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'space-between',
@@ -25,9 +20,6 @@ export const styles = StyleSheet.create({
   block: {
     flex: 1,
   },
-  skeletonStyle: {
-    backgroundColor: defaultColors.bg4,
-  },
   svgWrap: {
     display: 'flex',
     flexDirection: 'row',
@@ -36,8 +28,14 @@ export const styles = StyleSheet.create({
     paddingHorizontal: pTd(16),
     height: pTd(44),
   },
+  titleLoading: {
+    width: pTd(205),
+    height: pTd(38),
+    backgroundColor: theme.colors.bgBase3,
+    borderRadius: pTd(4),
+  },
   textColumn: {
-    marginTop: pTd(8),
+    marginTop: pTd(16),
     display: 'flex',
     width: '100%',
     paddingHorizontal: pTd(16),
@@ -47,27 +45,45 @@ export const styles = StyleSheet.create({
   },
   usdtBalanceWrap: {
     flexDirection: 'row',
+    alignItems: 'center',
   },
   usdtBalance: {
-    ...fonts.mediumFont,
+    ...fonts.BGMediumFont,
     fontSize: pTd(32),
-    lineHeight: pTd(40),
-    height: pTd(40),
-    color: font5,
+    lineHeight: pTd(38),
+    height: pTd(38),
+    color: theme.colors.textBase1,
   },
   eyeIcon: {
-    marginTop: pTd(6),
     marginLeft: pTd(4),
   },
   buttonGroupWrap: {
-    marginTop: 32,
-    width: ScreenWidth,
+    marginTop: pTd(32),
+    marginBottom: pTd(24),
+    flexDirection: 'row',
+    width: '100%',
     paddingHorizontal: pTd(16),
+    justifyContent: 'space-evenly',
   },
   spacerStyle: {
     width: pTd(32),
   },
-  buttonWrapStyle1: {
-    marginHorizontal: screenWidth * 0.03,
+  buttonContainer1st: {
+    marginLeft: 0,
   },
-});
+  buttonContainer: {
+    flex: 1,
+  },
+  buttonContainerGap1: {
+    marginLeft: 8,
+  },
+  buttonContainerGap2: {
+    marginLeft: 12,
+  },
+  buttonContainerGap3: {
+    marginLeft: 24,
+  },
+  buttonWrap: {
+    width: '100%',
+  },
+}));

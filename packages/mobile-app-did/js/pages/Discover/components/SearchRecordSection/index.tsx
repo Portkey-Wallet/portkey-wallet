@@ -1,10 +1,9 @@
 import React, { useCallback, useMemo } from 'react';
-import { StyleSheet, View, ScrollView } from 'react-native';
+import { View, ScrollView } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
-import { FontStyles } from 'assets/theme/styles';
 import { useLanguage } from 'i18n/hooks';
 import { pTd } from 'utils/unit';
-import { TextL, TextS } from 'components/CommonText';
+import { TextL, TextM } from 'components/CommonText';
 import fonts from 'assets/theme/fonts';
 import { useAppCASelector } from '@portkey-wallet/hooks/hooks-ca';
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
@@ -13,9 +12,14 @@ import { clearRecordsList } from '@portkey-wallet/store/store-ca/discover/slice'
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
 import { useDiscoverJumpWithNetWork } from 'hooks/discover';
+import { makeStyles } from '@rneui/themed';
 
-export default function SearchRecordSection() {
+export type TSearchRecordSectionProps = {
+  onClick?: () => void;
+};
+export default function SearchRecordSection({ onClick }: TSearchRecordSectionProps) {
   const { t } = useLanguage();
+  const styles = getStyles();
 
   const dispatch = useAppCommonDispatch();
   const { networkType } = useCurrentNetworkInfo();
@@ -39,19 +43,22 @@ export default function SearchRecordSection() {
           url: i?.url,
         },
       });
+      onClick?.();
     },
-    [discoverJump],
+    [discoverJump, onClick],
   );
 
-  if (showRecordList?.length === 0) return null;
+  if (showRecordList?.length === 0) {
+    return <View style={styles.noRecordWrap} />;
+  }
 
   return (
-    <ScrollView style={styles.sectionWrap}>
+    <ScrollView style={styles.sectionWrap} keyboardShouldPersistTaps="handled">
       <View style={[styles.headerWrap, GStyles.flexRow, GStyles.spaceBetween]}>
-        <TextL style={styles.header}>{'Records'}</TextL>
-        <TextS style={[FontStyles.font4, GStyles.alignCenter]} onPress={clearRecord}>
+        <TextL style={styles.header}>{'Recents'}</TextL>
+        <TextM style={styles.clear} onPress={clearRecord}>
           {t('Clear')}
-        </TextS>
+        </TextM>
       </View>
       {(showRecordList ?? []).map((item, index) => (
         <SearchRecordItem key={index} item={item} onPress={() => onClickJump(item)} />
@@ -60,15 +67,24 @@ export default function SearchRecordSection() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = makeStyles(theme => ({
+  noRecordWrap: {
+    flex: 1,
+  },
   sectionWrap: {
-    ...GStyles.paddingArg(24, 20),
+    ...GStyles.paddingArg(8, 16),
   },
   headerWrap: {
     height: pTd(22),
+    alignItems: 'center',
+    marginBottom: pTd(8),
   },
   header: {
     ...fonts.mediumFont,
-    lineHeight: pTd(24),
+    lineHeight: pTd(20),
   },
-});
+  clear: {
+    color: theme.colors.textBrand1,
+    lineHeight: pTd(17.5),
+  },
+}));

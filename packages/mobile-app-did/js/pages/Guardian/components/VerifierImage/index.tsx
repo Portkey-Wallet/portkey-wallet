@@ -20,7 +20,7 @@ export function VerifierImage({
       width: size,
       height: size,
       borderRadius: size / 2,
-      backgroundColor: defaultColors.bg4,
+      backgroundColor: 'transparent',
     };
   }, [size]);
   const [imgLoading, setImgLoading] = useState(true);

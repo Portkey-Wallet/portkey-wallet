@@ -1,5 +1,5 @@
 import Svg from 'components/Svg';
-import React, { ReactNode, memo, useCallback, useEffect, useRef } from 'react';
+import React, { ReactNode, useCallback, useContext, useEffect, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Actions } from 'react-native-gifted-chat';
 import { pTd } from 'utils/unit';
@@ -27,17 +27,27 @@ import ActionSheet from 'components/ActionSheet';
 import navigationService from 'utils/navigationService';
 import { NO_LONGER_IN_GROUP } from '@portkey-wallet/constants/constants-ca/chat';
 import ReplyContent from '../ReplyContent';
+import ChatDetailsContext from 'pages/Chat/ChatDetailsPage/ChatDetailContext';
+import useBotSendingStatus from '@portkey-wallet/hooks/hooks-ca/im/useBotSendingStatus';
 
-export const ActionsIcon = memo(function ActionsIcon({ onPress }: { onPress?: () => void }) {
-  return (
-    <Actions
-      containerStyle={styles.fileSvg}
-      onPressActionButton={onPress}
-      icon={() => <Svg size={pTd(24)} icon="chat-file" />}
-      optionTintColor="#222B45"
-    />
-  );
-});
+export const ActionsIcon = function ActionsIcon({ onPress, canSend }: { onPress?: () => void; canSend: boolean }) {
+  if (canSend) {
+    return (
+      <Actions
+        containerStyle={styles.fileSvg}
+        onPressActionButton={onPress}
+        icon={() => <Svg size={pTd(24)} icon="chat-file" color={defaultColors.icon1} />}
+        optionTintColor="#222B45"
+      />
+    );
+  } else {
+    return (
+      <View style={styles.fileSvg}>
+        <Svg size={pTd(24)} icon="chat-file" color={defaultColors.neutralTertiaryText} />
+      </View>
+    );
+  }
+};
 
 export function BottomBarContainer({
   children,
@@ -52,12 +62,14 @@ export function BottomBarContainer({
   const text = useChatText();
   const replyMessageInfo = useChatReplyMessageInfo();
   const textInputRef = useRef<ChatInput>(null);
-  const keyboardAnim = useKeyboardAnim({ textInputRef });
+  const { toRelationId, displayName, isBot } = useContext(ChatDetailsContext);
+  const keyboardAnim = useKeyboardAnim({ textInputRef, isBot });
   const timer = useRef<NodeJS.Timeout>();
   const { sendChannelMessage, sendMessageToPeople } = useSendCurrentChannelMessage();
   const hideChannel = useHideCurrentChannel();
   const { currentChannelType } = useCurrentChannel() || {};
 
+  const { canSend, changeToRepliedStatus } = useBotSendingStatus(toRelationId);
   const inputFocus = useCallback(
     (autoHide?: boolean) => {
       textInputRef.current?.focus(autoHide);
@@ -71,6 +83,10 @@ export function BottomBarContainer({
 
   const onPressActionButton = useCallback(
     (status: ChatBottomBarStatus) => {
+      if (status === ChatBottomBarStatus.tools && isBot && !canSend) {
+        CommonToast.message(displayName ? `${displayName} is replying...` : 'replying...', 2000, 'center');
+        return;
+      }
       if (bottomBarStatus === status) {
         inputFocus(bottomBarStatus === ChatBottomBarStatus.tools);
       } else {
@@ -78,7 +94,7 @@ export function BottomBarContainer({
         textInputRef.current?.blur();
       }
     },
-    [bottomBarStatus, dispatch, inputFocus],
+    [bottomBarStatus, canSend, dispatch, displayName, inputFocus, isBot],
   );
 
   useEffectOnce(() => {
@@ -95,6 +111,10 @@ export function BottomBarContainer({
   }, [replyMessageInfo?.message]);
 
   const onSend = useCallback(async () => {
+    if (isBot && !canSend) {
+      CommonToast.message(displayName ? `${displayName} is replying...` : 'replying...', 2000, 'center');
+      return;
+    }
     dispatch(setChatText(''));
     dispatch(setReplyMessageInfo(undefined));
     chatInputRecorder?.reset();
@@ -112,6 +132,9 @@ export function BottomBarContainer({
             });
       }
     } catch (error: any) {
+      if (isBot) {
+        changeToRepliedStatus();
+      }
       if (error?.code === NO_LONGER_IN_GROUP) {
         hideChannel();
         return ActionSheet.alert({
@@ -129,9 +152,13 @@ export function BottomBarContainer({
       CommonToast.fail('Failed to send message');
     }
   }, [
+    canSend,
+    changeToRepliedStatus,
     currentChannelType,
     dispatch,
+    displayName,
     hideChannel,
+    isBot,
     replyMessageInfo?.message?.rawMessage,
     scrollToBottom,
     sendChannelMessage,
@@ -143,9 +170,14 @@ export function BottomBarContainer({
     <View style={styles.wrap}>
       <ReplyContent />
       <View style={[BGStyles.bg6, GStyles.flexRow, GStyles.itemEnd, styles.barWrap]}>
-        <ActionsIcon onPress={() => onPressActionButton(ChatBottomBarStatus.tools)} />
+        {!isBot && <ActionsIcon onPress={() => onPressActionButton(ChatBottomBarStatus.tools)} canSend={canSend} />}
         <ChatInputBar ref={textInputRef} onPressActionButton={onPressActionButton} />
-        <SendMessageButton text={text} containerStyle={styles.sendStyle} onSend={onSend} />
+        <SendMessageButton
+          text={text}
+          containerStyle={styles.sendStyle}
+          onSend={onSend}
+          canSend={isBot ? canSend : true}
+        />
       </View>
       <Animated.View style={{ height: keyboardAnim }}>{children}</Animated.View>
     </View>

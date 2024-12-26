@@ -6,6 +6,10 @@ import { pTd } from 'utils/unit';
 
 export const SendMessageButton: React.FC<SendProps<IMessage>> = props => (
   <Send {...props}>
-    <Svg icon="chat-send" size={pTd(24)} color={defaultColors.primaryColor} />
+    <Svg
+      icon="chat-send"
+      size={pTd(24)}
+      color={props.canSend ? defaultColors.primaryColor : defaultColors.brandDisable}
+    />
   </Send>
 );

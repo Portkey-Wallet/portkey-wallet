@@ -1,5 +1,6 @@
 export default {
   fetchAccountTokenList: '/api/app/user/assets/token',
+  fetchAccountTokenListV2: '/api/app/v2/user/assets/token',
   fetchAccountNftCollectionList: '/api/app/user/assets/nftCollections',
   fetchAccountNftCollectionItemList: '/api/app/user/assets/nftItems',
   fetchAccountNftCollectionItem: {
@@ -11,8 +12,9 @@ export default {
   },
   // nft and tokens
   fetchAccountAssetsByKeywords: '/api/app/user/assets/searchUserAssets',
+  fetchAccountAssetsByKeywordsV2: '/api/app/v2/user/assets/searchUserAssets',
   // nft and token in crypto box
-  fetchCryptoBoxAccountAssetsByKeywords: '/api/app/user/assets/searchUserPackageAssets',
+  fetchCryptoBoxAccountAssetsByKeywords: '/api/app/v2/user/assets/searchUserPackageAssets',
   fetchTokenPrice: {
     target: '/api/app/tokens/prices',
     config: { method: 'GET' },
@@ -24,6 +26,14 @@ export default {
   },
   getTokenBalance: {
     target: '/api/app/user/assets/tokenBalance',
+    config: { method: 'GET' },
+  },
+  getAssetsEstimation: {
+    target: '/api/app/user/assets/asset-estimation',
+    config: { method: 'GET' },
+  },
+  getAwakenTokenList: {
+    target: '/api/app/user/assets/awaken/token',
     config: { method: 'GET' },
   },
 } as const;

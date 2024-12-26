@@ -6,10 +6,14 @@ import { useLoading } from 'store/Provider/hooks';
 import { reCAPTCHAAction, socialLoginAction } from 'utils/lib/serviceWorkerAction';
 import { ISocialLogin } from '@portkey-wallet/types/types-ca/wallet';
 import { sleep } from '@portkey-wallet/utils';
+import { zkloginGuardianType } from 'constants/guardians';
+import { VerifyTypeEnum } from 'types/wallet';
+import { useVerifyManagerAddress } from '@portkey-wallet/hooks/hooks-ca/wallet';
 
 const usePortkeyUIConfig = () => {
   const currentNetwork = useCurrentNetworkInfo();
   const { setLoading } = useLoading();
+  const managerAddress = useVerifyManagerAddress();
   const customReCaptchaHandler: () => Promise<{
     type: ReCaptchaResponseType;
     message?: any;
@@ -23,14 +27,16 @@ const usePortkeyUIConfig = () => {
     async (v: ISocialLogin) => {
       await sleep(10);
       setLoading(true);
-      const result: any = await socialLoginAction(v, currentNetwork.networkType);
+      const _verifyType = zkloginGuardianType.includes(v) ? VerifyTypeEnum.zklogin : undefined;
+      const _verifyExtraParams = { managerAddress: managerAddress ?? '' };
+      const result: any = await socialLoginAction(v, currentNetwork.networkType, _verifyType, _verifyExtraParams);
 
       if (result.error) {
         setLoading(false);
         return { error: Error(result.message) };
       }
       return {
-        data: { ...result.data, accessToken: result.data.access_token },
+        data: { ...result.data, accessToken: result.data.access_token, idToken: result.data.id_token },
         error: result.error,
       };
     },

@@ -2,7 +2,12 @@ import * as React from 'react';
 import { useRef, useCallback } from 'react';
 import { NavigationContainer, NavigationContainerRef } from '@react-navigation/native';
 import { type ParamListBase } from '@react-navigation/core';
-import { createStackNavigator, StackNavigationProp, CardStyleInterpolators } from '@react-navigation/stack';
+import {
+  createStackNavigator,
+  StackNavigationProp,
+  CardStyleInterpolators,
+  TransitionPresets,
+} from '@react-navigation/stack';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { reportPageShow } from 'utils/analysisiReport';
 
@@ -12,18 +17,21 @@ import LoginNav from 'pages/Login';
 import PinNav from 'pages/Pin';
 import TokenNav from 'pages/Token';
 import SendNav from 'pages/Send';
+import ReceiveNav from 'pages/Receive';
 import ActivityNav from 'pages/Activity';
 import Home from 'pages/Home';
 import GuardianNav from 'pages/Guardian';
+import SwapNav from 'pages/Swap';
 
 import Referral from 'pages/Referral';
 import SecurityLock from 'pages/SecurityLock';
-import Receive from 'pages/Receive';
 import NFTDetail from 'pages/NFT/NFTDetail';
+import CollectionDetail from 'pages/NFT/CollectionDetail';
 import QrCodeNav from 'pages/QrCode';
 import MyNav from 'pages/My/router';
 import RampNav from 'pages/Ramp';
 import DiscoverNav from 'pages/Discover/index';
+import FreeMintNav from 'pages/FreeMint/index';
 import Deposit from 'pages/Deposit';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
 
@@ -35,6 +43,9 @@ import CryptoGift from 'pages/CryptoGift';
 import GiftHistory from 'pages/CryptoGift/GiftHistory';
 import GiftDetail from 'pages/CryptoGift/GiftDetail';
 import GiftResult from 'pages/CryptoGift/GiftResult';
+import EbridgeExample from 'pages/EbridgeExample';
+import ProfileSettings from 'pages/My/AccountSettings';
+import SecurityNav from 'pages/My/Security/router';
 
 // key: page route key, value: is page show
 const PageShowMap = new Map<string, boolean>();
@@ -45,40 +56,49 @@ export const productionNav = [
   { name: 'Referral', component: Referral },
   { name: 'Tab', component: Tab },
   { name: 'SecurityLock', component: SecurityLock, options: { gestureEnabled: false } },
-  { name: 'Receive', component: Receive },
   { name: 'NFTDetail', component: NFTDetail },
+  { name: 'CollectionDetail', component: CollectionDetail },
   { name: 'ProviderWebPage', component: ProviderWebPage },
   { name: 'Deposit', component: Deposit },
   { name: 'CryptoGift', component: CryptoGift },
   { name: 'GiftHistory', component: GiftHistory },
   { name: 'GiftDetail', component: GiftDetail },
   { name: 'GiftResult', component: GiftResult },
-
+  { name: 'ProfileSettings', component: ProfileSettings, options: { ...TransitionPresets.ModalSlideFromBottomIOS } },
   ...QrCodeNav,
   ...GuardianNav,
   ...ActivityNav,
   ...LoginNav,
   ...TokenNav,
   ...SendNav,
+  ...ReceiveNav,
   ...PinNav,
   ...MyNav,
   ...RampNav,
   ...ChatNav,
   ...DiscoverNav,
+  ...FreeMintNav,
+  ...SwapNav,
+  ...SecurityNav,
 ] as const;
 
 // dev nav
-export const devNav = [...productionNav, { name: 'Home', component: Home }] as const;
+
+export const devNav = [
+  ...productionNav,
+  { name: 'Home', component: Home },
+  { name: 'EbridgeExample', component: EbridgeExample },
+] as const;
 
 const stackNav = __DEV__ ? devNav : productionNav;
 
 export type RootStackParamList = {
-  [key in typeof devNav[number]['name']]: undefined;
+  [key in (typeof devNav)[number]['name']]: undefined;
 };
 export type TabParamList = {
   [key in IRenderTabMenuItem['name']]: undefined;
 };
-export type RootStackName = typeof devNav[number]['name'];
+export type RootStackName = (typeof devNav)[number]['name'];
 
 export type RootNavigationProp = StackNavigationProp<RootStackParamList>;
 export default function NavigationRoot() {
@@ -91,12 +111,15 @@ export default function NavigationRoot() {
   const onNavigationStateChange = useCallback(async () => {
     const currentRouteName = navigationRef?.current?.getCurrentRoute()?.name;
     const currentRouteKey = navigationRef?.current?.getCurrentRoute()?.key;
-    if (!currentRouteName || !currentRouteKey) return;
-    if (PageShowMap.get(currentRouteKey)) return;
+    if (!currentRouteName || !currentRouteKey) {
+      return;
+    }
+    if (PageShowMap.get(currentRouteKey)) {
+      return;
+    }
     reportPageShow({ page_name: currentRouteName });
     PageShowMap.set(currentRouteKey, true);
   }, []);
-
   return (
     <NavigationContainer ref={refHandler} onStateChange={onNavigationStateChange}>
       <TabsDrawer>

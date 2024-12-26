@@ -32,6 +32,7 @@ export const SecurityVulnerabilityTip =
 export const ExceedLimit = 'ExceedLimit';
 
 export const WalletIsNotSecure = 'WalletIsNotSecure';
+export const CrossChainIntercepted = 'CrossChainIntercepted';
 
 export enum LimitType {
   Single = 'Single',

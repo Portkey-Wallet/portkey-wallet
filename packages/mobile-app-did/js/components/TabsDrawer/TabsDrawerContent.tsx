@@ -1,80 +1,71 @@
 import fonts from 'assets/theme/fonts';
 import GStyles from 'assets/theme/GStyles';
-import { TextM } from 'components/CommonText';
+import { TextS } from 'components/CommonText';
 import PageContainer from 'components/PageContainer';
-import React, { useCallback, useMemo, useRef, useState, Fragment, forwardRef, useImperativeHandle } from 'react';
+import React, { useCallback, useMemo, useRef, useState, forwardRef, useImperativeHandle } from 'react';
 import { StyleSheet, ScrollView, View } from 'react-native';
 import { useAppCASelector } from '@portkey-wallet/hooks/hooks-ca/index';
 import { pTd } from 'utils/unit';
-import { defaultColors } from 'assets/theme';
+import { darkColors, defaultColors } from 'assets/theme';
 import { useLanguage } from 'i18n/hooks';
 import { FontStyles } from 'assets/theme/styles';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import Card from './components/Card';
-import { useAppCommonDispatch, useLatestRef } from '@portkey-wallet/hooks';
+import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 import {
   changeDrawerOpenStatus,
   closeAllTabs,
-  removeAutoApproveItem,
   setActiveTab,
   updateTab,
 } from '@portkey-wallet/store/store-ca/discover/slice';
-import BrowserTab from 'components/BrowserTab';
 import { showBrowserModal } from './components/TabsOverlay';
 
-import { showWalletInfo } from './components/WalletInfoOverlay';
 import { ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
 
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { BrowserContext, IBrowserTab } from './context';
 import { useHardwareBackPress } from '@portkey-wallet/hooks/mobile';
 import Svg from 'components/Svg';
-import TextWithProtocolIcon from 'components/TextWithProtocolIcon';
 import ActionSheet from 'components/ActionSheet';
-import { useCheckAndUpDateRecordItemName, useCheckAndUpDateTabItemName } from 'hooks/discover';
 import { useNavigation } from '@react-navigation/native';
 import navigationService from 'utils/navigationService';
 import { useCurrentDappList } from '@portkey-wallet/hooks/hooks-ca/dapp';
-import { getOrigin } from '@portkey-wallet/utils/dapp/browser';
-import { useGetCmsWebsiteInfo } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { getHost, getOrigin } from '@portkey-wallet/utils/dapp/browser';
 import Touchable from 'components/Touchable';
 import { ITabContext } from './tools';
+import TabsDom from './components/TabsDom';
+import DiscoverWebsiteImage from 'pages/Discover/components/DiscoverWebsiteImage';
+import { useGetCmsWebsiteInfo } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { WebViewNavigation } from 'react-native-webview';
+import { getProtocolAndDomain } from 'utils/svgUriUtils';
+import DiscoverSearchContent from 'pages/Discover/DiscoverSearch/components/DiscoverSearchContent';
+import { makeStyles } from '@rneui/themed';
+
+export type TabStateMap = { name: string } & Pick<WebViewNavigation, 'url'>;
 
 export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
+  const styles = getStyles();
   const { t } = useLanguage();
   const { networkType } = useCurrentNetworkInfo();
   const nav = useNavigation();
   const dappList = useCurrentDappList();
   const dispatch = useAppCommonDispatch();
-  const {
-    isDrawerOpen,
-    discoverMap = {},
-    initializedList,
-    activeTabId,
-    autoApproveMap,
-  } = useAppCASelector(state => state.discover);
+  const { isDrawerOpen, discoverMap = {}, activeTabId } = useAppCASelector(state => state.discover);
   const { tabs } = discoverMap[networkType] ?? {};
   const activeItem = useMemo(() => tabs?.find(ele => ele.id === activeTabId) as ITabItem, [activeTabId, tabs]);
-
-  const checkAndUpDateRecordItemName = useCheckAndUpDateRecordItemName();
-  const checkAndUpDateTabItemName = useCheckAndUpDateTabItemName();
-  const latestCheckAndUpDateRecordItemName = useLatestRef(checkAndUpDateRecordItemName);
-  const latestCheckAndUpDateTabItemName = useLatestRef(checkAndUpDateTabItemName);
-  const { getCmsWebsiteInfoName } = useGetCmsWebsiteInfo();
+  const [tabStateMap, setTabStateMap] = useState<TabStateMap>({
+    name: activeItem?.name,
+    url: getProtocolAndDomain(activeItem?.url),
+  });
+  const { getCmsWebsiteInfoImageUrl, getCmsWebsiteInfoName } = useGetCmsWebsiteInfo();
 
   const tabRef = useRef<IBrowserTab | null>(null);
   const [preActiveTabId, setPreActiveTabId] = useState<number | undefined>(activeTabId);
 
-  const [tabStateMap, setTabStateMap] = useState<{
-    canGoBack: Record<string, boolean>;
-    canGoForward: Record<string, boolean>;
-  }>({
-    canGoBack: {},
-    canGoForward: {},
-  });
-
   const activeWebviewScreenShot = useCallback(async () => {
-    if (!activeTabId) return;
+    if (!activeTabId) {
+      return;
+    }
 
     try {
       const uri = await tabRef.current?.capture?.();
@@ -87,11 +78,11 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
 
   const backToSearchPage = useCallback(() => {
     if (nav) {
-      const routes = nav.getState().routes;
-      const currentRoute = routes[routes.length - 1];
+      const routes = nav?.getState?.()?.routes;
+      const currentRoute = routes?.[routes?.length - 1];
 
       if (
-        currentRoute.name === 'DappDetail' &&
+        currentRoute?.name === 'DappDetail' &&
         !dappList?.find(ele => ele.origin === getOrigin(activeItem?.url || ''))
       ) {
         navigationService.navigate('DappList');
@@ -101,19 +92,6 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
     activeWebviewScreenShot();
     dispatch(changeDrawerOpenStatus(false));
   }, [activeItem?.url, activeWebviewScreenShot, dappList, dispatch, nav]);
-
-  // header right
-  const rightDom = useMemo(() => {
-    if (activeTabId)
-      return (
-        <View style={rightDomStyle.iconGroupWrap}>
-          <Touchable style={rightDomStyle.iconWrap} onPress={() => showWalletInfo({ tabInfo: activeItem })}>
-            <Svg icon="wallet-gray" size={pTd(20)} />
-          </Touchable>
-        </View>
-      );
-    return null;
-  }, [activeItem, activeTabId]);
 
   const value = useMemo(
     () => ({
@@ -125,7 +103,9 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
   );
 
   const closeAll = useCallback(() => {
-    if (tabs?.length === 0) return;
+    if (tabs?.length === 0) {
+      return;
+    }
 
     ActionSheet.alert({
       title: 'Close all tabs?',
@@ -137,6 +117,8 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
         {
           title: t('Confirm'),
           type: 'solid',
+          style: { backgroundColor: darkColors.textBrand2 },
+          titleStyle: { color: darkColors.iconBrand4 },
           onPress: () => {
             dispatch(closeAllTabs({ networkType }));
             dispatch(changeDrawerOpenStatus(false));
@@ -147,8 +129,12 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
   }, [dispatch, networkType, t, tabs?.length]);
 
   const onDone = useCallback(() => {
-    if (tabs?.length === 0) return dispatch(changeDrawerOpenStatus(false));
-    if (!preActiveTabId) return dispatch(changeDrawerOpenStatus(false));
+    if (tabs?.length === 0) {
+      return dispatch(changeDrawerOpenStatus(false));
+    }
+    if (!preActiveTabId) {
+      return dispatch(changeDrawerOpenStatus(false));
+    }
 
     if (tabs?.find(ele => ele.id === preActiveTabId)) {
       dispatch(setActiveTab({ id: preActiveTabId, networkType }));
@@ -168,8 +154,10 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
     }, [backToSearchPage, isDrawerOpen]),
   );
 
+  const [isSearchShow, setIsSearchShow] = useState(false);
+
   const clickBottomActionBtn = useCallback(
-    (type: 'back' | 'forward' | 'showTab' | 'home' | 'more') => {
+    (type: 'back' | 'forward' | 'showTab' | 'home' | 'more' | 'search') => {
       switch (type) {
         case 'back':
           tabRef.current?.goBack?.();
@@ -180,7 +168,9 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
           break;
 
         case 'showTab':
-          if (!activeTabId) return;
+          if (!activeTabId) {
+            return;
+          }
           activeWebviewScreenShot();
           setPreActiveTabId(Number(activeItem?.id));
           break;
@@ -198,12 +188,24 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
           });
           break;
 
+        case 'search':
+          setIsSearchShow(true);
+          break;
+
         default:
           break;
       }
     },
     [activeItem, activeTabId, activeWebviewScreenShot],
   );
+
+  const onNavigationChange = useCallback((nState: WebViewNavigation) => {
+    console.log('onNavigationChange', nState);
+    setTabStateMap({
+      name: nState?.title,
+      url: getProtocolAndDomain(nState?.url),
+    });
+  }, []);
 
   const provider = useMemo<ITabContext>(() => {
     return {
@@ -216,96 +218,11 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
 
   useImperativeHandle(drawerRef, () => provider, [provider]);
 
-  const TabsDom = useMemo(() => {
-    return tabs?.map(ele => {
-      const isHidden = activeTabId !== ele.id;
-      const initialized = initializedList?.has(ele.id);
-      if (isHidden && !initialized) return;
-      const autoApprove = autoApproveMap?.[ele.id];
-
-      const canGoBack: boolean = tabStateMap?.canGoBack?.[ele.id];
-      const canGoForward: boolean = tabStateMap?.canGoForward?.[String(ele?.id)];
-
-      const onNavigationStateChange = (navState: any) => {
-        if (ele.id === activeTabId) {
-          setTabStateMap(pre => ({
-            canGoBack: {
-              ...pre.canGoBack,
-              [ele.id]: navState?.canGoBack,
-            },
-            canGoForward: {
-              ...pre.canGoForward,
-              [ele.id]: navState?.canGoForward,
-            },
-          }));
-        }
-      };
-
-      return (
-        <Fragment key={ele.id}>
-          <BrowserTab
-            key={ele.id}
-            id={ele.id}
-            uri={ele.url}
-            isHidden={isHidden}
-            autoApprove={autoApprove}
-            onLoadEnd={nativeEvent => {
-              if (autoApprove) dispatch(removeAutoApproveItem(ele.id));
-              latestCheckAndUpDateRecordItemName.current({ id: ele.id, name: nativeEvent.title });
-              latestCheckAndUpDateTabItemName.current({ id: ele.id, name: nativeEvent.title });
-            }}
-            onNavigationStateChange={onNavigationStateChange}
-          />
-          {!isHidden && (
-            <View style={handleButtonStyle.wrap}>
-              <Touchable
-                disabled={!canGoBack}
-                onPress={() => clickBottomActionBtn('back')}
-                style={rightDomStyle.iconWrap}>
-                <Svg icon="left-arrow" size={pTd(20)} color={canGoBack ? defaultColors.font5 : defaultColors.bg16} />
-              </Touchable>
-              <Touchable
-                disabled={!canGoForward}
-                onPress={() => clickBottomActionBtn('forward')}
-                style={rightDomStyle.iconWrap}>
-                <Svg
-                  icon="right-arrow"
-                  size={pTd(24)}
-                  color={canGoForward ? defaultColors.font5 : defaultColors.bg16}
-                />
-              </Touchable>
-              <Touchable onPress={() => clickBottomActionBtn('showTab')} style={rightDomStyle.iconWrap}>
-                <TextM style={styles.switchButton}>{tabs?.length || 0}</TextM>
-              </Touchable>
-              <Touchable onPress={() => clickBottomActionBtn('home')} style={rightDomStyle.iconWrap}>
-                <Svg icon="homepage" size={pTd(24)} color={defaultColors.font5} />
-              </Touchable>
-              <Touchable onPress={() => clickBottomActionBtn('more')} style={rightDomStyle.iconWrap}>
-                <Svg icon="more" size={20} color={defaultColors.font5} />
-              </Touchable>
-            </View>
-          )}
-        </Fragment>
-      );
-    });
-  }, [
-    activeTabId,
-    autoApproveMap,
-    clickBottomActionBtn,
-    dispatch,
-    initializedList,
-    latestCheckAndUpDateRecordItemName,
-    latestCheckAndUpDateTabItemName,
-    tabStateMap?.canGoBack,
-    tabStateMap?.canGoForward,
-    tabs,
-  ]);
-
   // card group
   const CardGroupDom = useMemo(() => {
     return (
       <>
-        <ScrollView>
+        <ScrollView showsVerticalScrollIndicator={false}>
           <View style={styles.cardsContainer}>
             {tabs?.map(ele => (
               <Card key={ele.id} item={ele} />
@@ -314,57 +231,75 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
         </ScrollView>
         <View style={handleButtonStyle.container}>
           <Touchable style={handleButtonStyle.handleItem} onPress={closeAll}>
-            <TextM style={[FontStyles.font4, tabs?.length === 0 && handleButtonStyle.noTap]}>{t('Close All')}</TextM>
+            <TextS style={[FontStyles.fontBase1, fonts.SGMediumFont, tabs?.length === 0 && handleButtonStyle.noTap]}>
+              {t('Close all')}
+            </TextS>
           </Touchable>
 
           <Touchable
             style={[handleButtonStyle.handleItem, handleButtonStyle.add]}
             onPress={() => dispatch(changeDrawerOpenStatus(false))}>
-            <Svg icon="add" size={pTd(28)} color={defaultColors.primaryColor} />
+            <Svg icon="add-tab" size={pTd(24)} color={defaultColors.iconBrand1} />
           </Touchable>
           <Touchable style={handleButtonStyle.handleItem} onPress={onDone}>
-            <TextM style={[handleButtonStyle.done, FontStyles.font4]}>{t('Done')}</TextM>
+            <TextS style={[handleButtonStyle.done, fonts.SGMediumFont, FontStyles.fontBase1]}>{t('Done')}</TextS>
           </Touchable>
         </View>
       </>
     );
-  }, [closeAll, dispatch, onDone, t, tabs]);
+  }, [closeAll, dispatch, onDone, styles.cardsContainer, t, tabs]);
+
+  const safeAreaColor: any = useMemo(() => {
+    if (!activeTabId) {
+      return ['black', 'black'];
+    }
+    if (isSearchShow) {
+      return ['black', 'lightBlack'];
+    }
+    return ['lightBlack', 'lightBlack'];
+  }, [activeTabId, isSearchShow]);
 
   return (
     <BrowserContext.Provider value={value}>
       <PageContainer
         hideTouchable
         type="leftBack"
-        noCenterDom={!!activeTabId}
+        hideHeader={!activeTabId || isSearchShow}
+        noCenterDom={!activeTabId || isSearchShow}
         leftDom={
-          activeTabId ? (
-            <View style={styles.leftWrap}>
-              <Touchable onPress={backToSearchPage} style={styles.backIcon}>
-                <Svg icon="left-arrow" size={pTd(20)} color={defaultColors.font18} />
-              </Touchable>
-              <TextWithProtocolIcon
-                type="iconLeft"
-                location="header"
-                title={getCmsWebsiteInfoName(activeItem?.url || '') || activeItem?.name}
-                url={activeItem?.url || ''}
-              />
-            </View>
-          ) : (
-            <View style={styles.leftWrap}>
-              <Touchable onPress={backToSearchPage} style={styles.backIcon}>
-                <Svg icon="left-arrow" size={pTd(20)} color={defaultColors.font18} />
-              </Touchable>
-            </View>
-          )
+          <View style={styles.leftWrap}>
+            <Touchable onPress={backToSearchPage} style={styles.backIcon}>
+              <Svg icon="left-arrow-v2" size={pTd(20)} color={darkColors.iconBase1} />
+            </Touchable>
+          </View>
         }
-        rightDom={rightDom}
         notHandleHardwareBackPress
-        safeAreaColor={['white', 'white']}
+        safeAreaColor={safeAreaColor}
         containerStyles={styles.container}
         scrollViewProps={{ disabled: true }}
-        titleDom={activeTabId ? '' : `${tabs?.length} Tabs`}>
-        {TabsDom}
+        titleDom={
+          activeTabId ? (
+            <View style={styles.headerWrap}>
+              <DiscoverWebsiteImage size={pTd(24)} imageUrl={getCmsWebsiteInfoImageUrl(tabStateMap?.url)} />
+              <TextS numberOfLines={1} ellipsizeMode="tail" style={styles.header}>
+                {getCmsWebsiteInfoName(tabStateMap?.url) || getHost(tabStateMap?.url) || tabStateMap?.url}
+              </TextS>
+            </View>
+          ) : (
+            ''
+          )
+        }>
+        <TabsDom
+          activeWebViewRef={tabRef}
+          clickBottomActionBtn={clickBottomActionBtn}
+          onNavigationChange={onNavigationChange}
+        />
         {!activeTabId && isDrawerOpen && CardGroupDom}
+        {isSearchShow && (
+          <View style={styles.searchContainer}>
+            <DiscoverSearchContent isInner={true} onBack={() => setIsSearchShow(false)} />
+          </View>
+        )}
       </PageContainer>
     </BrowserContext.Provider>
   );
@@ -372,34 +307,31 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
 
 TabsDrawerContent.displayName = 'TabsDrawerContent';
 
-const styles = StyleSheet.create({
+const getStyles = makeStyles(theme => ({
   container: {
     paddingLeft: 0,
     paddingRight: 0,
     flex: 1,
-    backgroundColor: defaultColors.bg6,
+    backgroundColor: darkColors.bgBase1,
   },
   inputContainer: {
     ...GStyles.paddingArg(8, 20),
-  },
-  inputStyle: {
-    width: pTd(280),
   },
   sectionWrap: {
     ...GStyles.paddingArg(24, 20),
   },
   headerWrap: {
-    height: pTd(22),
-  },
-  header: {
-    ...fonts.mediumFont,
-    lineHeight: pTd(24),
-  },
-  leftWrap: {
-    display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    paddingLeft: pTd(16),
+  },
+  header: {
+    marginLeft: pTd(8),
+    fontSize: pTd(16),
+    lineHeight: pTd(22),
+  },
+  leftWrap: {
+    paddingHorizontal: pTd(16),
+    alignItems: 'center',
   },
   backIcon: {
     marginRight: pTd(4),
@@ -412,26 +344,38 @@ const styles = StyleSheet.create({
     marginRight: pTd(10),
   },
   cardsContainer: {
-    scrollEnabled: true,
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
     flexWrap: 'wrap',
-    paddingLeft: pTd(20),
-    paddingRight: pTd(20),
-    paddingBottom: pTd(50),
+    paddingLeft: pTd(16),
+    paddingRight: pTd(16),
+    paddingBottom: pTd(80),
+  },
+  switchButtonWrap: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: pTd(44),
   },
   switchButton: {
     width: pTd(21),
     height: pTd(21),
     borderRadius: pTd(4),
     borderWidth: pTd(1.5),
-    borderColor: defaultColors.font5,
-    color: defaultColors.font5,
+    borderColor: darkColors.textBase1,
+    color: defaultColors.textBase1,
     textAlign: 'center',
     lineHeight: pTd(18),
   },
-});
+  searchContainer: {
+    position: 'absolute',
+    backgroundColor: theme.colors.bgBase1,
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
+  },
+}));
 
 const handleButtonStyle = StyleSheet.create({
   container: {
@@ -439,11 +383,13 @@ const handleButtonStyle = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    paddingTop: pTd(12),
+    paddingBottom: pTd(26),
     width: screenWidth,
-    height: pTd(44),
+    height: pTd(62),
     position: 'absolute',
     bottom: 0,
-    backgroundColor: defaultColors.bg1,
+    backgroundColor: darkColors.bgBase1,
   },
   handleItem: {
     flex: 1,
@@ -453,6 +399,7 @@ const handleButtonStyle = StyleSheet.create({
   },
   close: {
     textAlign: 'left',
+    // fontWeight: '600',
   },
   add: {
     display: 'flex',
@@ -461,6 +408,7 @@ const handleButtonStyle = StyleSheet.create({
   },
   done: {
     textAlign: 'right',
+    // fontWeight: '600',
   },
   noTap: {
     opacity: 0.3,
@@ -470,20 +418,7 @@ const handleButtonStyle = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    paddingVertical: pTd(12),
     width: screenWidth,
-    height: pTd(44),
-    backgroundColor: defaultColors.bg1,
-  },
-});
-
-const rightDomStyle = StyleSheet.create({
-  iconGroupWrap: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  iconWrap: {
-    ...GStyles.paddingArg(pTd(4)),
-    marginHorizontal: pTd(20),
   },
 });

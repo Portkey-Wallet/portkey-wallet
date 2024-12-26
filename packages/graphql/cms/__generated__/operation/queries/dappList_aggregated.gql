@@ -1,0 +1,34 @@
+query dappList_aggregated($groupBy: [String], $filter: dappList_filter, $limit: Int, $offset: Int, $page: Int, $search: String, $sort: [String]){
+    dappList_aggregated(groupBy: $groupBy, filter: $filter, limit: $limit, offset: $offset, page: $page, search: $search, sort: $sort){
+        group
+        countAll
+        count{
+            Dapp_Name
+            domainName
+            id
+        }
+        countDistinct{
+            Dapp_Name
+            domainName
+            id
+        }
+        avg{
+            id
+        }
+        sum{
+            id
+        }
+        avgDistinct{
+            id
+        }
+        sumDistinct{
+            id
+        }
+        min{
+            id
+        }
+        max{
+            id
+        }
+    }
+}

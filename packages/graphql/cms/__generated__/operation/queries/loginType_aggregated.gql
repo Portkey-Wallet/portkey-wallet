@@ -4,14 +4,14 @@ query loginType_aggregated($groupBy: [String], $filter: loginType_filter, $limit
         countAll
         count{
             id
-            status
             label
+            status
             value
         }
         countDistinct{
             id
-            status
             label
+            status
             value
         }
         avg{

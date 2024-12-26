@@ -10,13 +10,14 @@ import { SessionExpiredPlan } from '@portkey-wallet/types/session';
 import { useUpdateSessionInfo } from '@portkey-wallet/hooks/hooks-ca/dapp';
 import { formatTimeToStr, hasSessionInfoExpired } from '@portkey-wallet/utils/session';
 import getManager from 'utils/getManager';
-import { SessionKeyArray } from '@portkey-wallet/constants/constants-ca/dapp';
+import { DAPP_SECURITY_DOMAIN_HINT, SessionKeyArray } from '@portkey-wallet/constants/constants-ca/dapp';
 import ImageDisplay from 'pages/components/ImageDisplay';
 import { useCheckSiteIsInBlackList } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { isSafeOrigin } from 'pages/WalletSecurity/utils';
 import singleMessage from 'utils/singleMessage';
 import { useNavigateState } from 'hooks/router';
 import './index.less';
+import { useDappInfo } from '@portkey-wallet/hooks/hooks-ca/discover';
 
 export interface ISiteItemProps {
   siteItem: DappStoreItem;
@@ -31,6 +32,7 @@ export default function SiteItem({ siteItem }: ISiteItemProps) {
   const [open, setOpen] = useState(!!sessionInfo?.expiredPlan);
   const updateSessionInfo = useUpdateSessionInfo();
   const checkSiteIsInBlackList = useCheckSiteIsInBlackList();
+  const isInWebSet = useDappInfo(siteItem.origin, siteItem.icon || '');
   const isInBlackList = useMemo(
     () => checkSiteIsInBlackList(siteItem.origin),
     [checkSiteIsInBlackList, siteItem.origin],
@@ -92,7 +94,7 @@ export default function SiteItem({ siteItem }: ISiteItemProps) {
   return (
     <div className="site-item-content flex-column-between flex-1">
       <div>
-        <div className="site-dapp flex-column-center">
+        <div className={`site-dapp flex-column-center ${!isInWebSet && `margin-bottom16`}`}>
           <ImageDisplay defaultHeight={64} className="icon" src={siteItem.icon} backupSrc="DappDefault" />
           <span>{siteItem.name}</span>
           <div className="origin flex">
@@ -104,6 +106,12 @@ export default function SiteItem({ siteItem }: ISiteItemProps) {
             </span>
           </div>
         </div>
+        {!isInWebSet && (
+          <div className={`site-item-warning`}>
+            <CustomSvg type="WarningTriangle" className={`warning-icon`} />
+            <div className={`warning-title`}>{DAPP_SECURITY_DOMAIN_HINT}</div>
+          </div>
+        )}
         <div className="content-item flex-column">
           <div className="label">{t('Connected time')}</div>
           <div className="control flex">{siteItem.connectedTime ? formatTimeToStr(siteItem.connectedTime) : '-'}</div>
@@ -128,7 +136,7 @@ export default function SiteItem({ siteItem }: ISiteItemProps) {
           <div className="content-item flex-column">
             <div className="label">{t('Session key expires in')}</div>
             <CustomSelect
-              items={SessionKeyArray}
+              items={SessionKeyArray.filter((e) => e.value !== SessionExpiredPlan.always)}
               defaultValue={SessionExpiredPlan.hour1}
               value={sessionInfo?.expiredPlan}
               onChange={handleSessionChange}
@@ -139,7 +147,7 @@ export default function SiteItem({ siteItem }: ISiteItemProps) {
           <div className="content-item flex-column">
             <div className="label">{t('Expiration time')}</div>
             <div className="control flex">
-              {sessionInfo?.expiredPlan === SessionExpiredPlan.always
+              {sessionInfo?.expiredPlan === SessionExpiredPlan.never
                 ? '-'
                 : formatTimeToStr(sessionInfo?.expiredTime || 0)}
             </div>

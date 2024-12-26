@@ -21,3 +21,10 @@ export type FCMMessageData = {
   };
   network: string;
 };
+
+export enum ActionType {
+  SEND = 'send',
+  RECEIVE = 'receive',
+  SWAP = 'swap',
+  LIMIT = 'limit',
+}

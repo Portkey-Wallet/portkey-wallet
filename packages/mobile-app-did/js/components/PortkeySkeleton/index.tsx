@@ -1,19 +1,18 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
-import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
 import { Skeleton, SkeletonProps } from '@rneui/base';
-import { PortkeyLinearGradient } from 'components/PortkeyLinearGradient';
+import { PortkeyLinearGradientV2 } from 'components/PortkeyLinearGradient';
+import { makeStyles } from '@rneui/themed';
 
 export type TPortkeySkeleton = SkeletonProps;
 
 const PortkeySkeleton: React.FC<TPortkeySkeleton> = props => {
   const { animation = 'wave', width = pTd(140), height = pTd(40), style = {}, ...otherProps } = props;
-
+  const styles = getStyles();
   return (
     <Skeleton
       animation={animation}
-      LinearGradientComponent={() => <PortkeyLinearGradient />}
+      LinearGradientComponent={() => <PortkeyLinearGradientV2 />}
       height={height}
       width={width}
       style={[styles.skeletonStyle, style]}
@@ -23,9 +22,8 @@ const PortkeySkeleton: React.FC<TPortkeySkeleton> = props => {
 };
 
 export default PortkeySkeleton;
-
-export const styles = StyleSheet.create({
+export const getStyles = makeStyles(theme => ({
   skeletonStyle: {
-    backgroundColor: defaultColors.bg4,
+    backgroundColor: theme.colors.bgBase3,
   },
-});
+}));

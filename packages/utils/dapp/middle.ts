@@ -8,7 +8,7 @@ export interface IMiddlewareAPI<T = CACommonState> {
 }
 
 export interface IEvent {
-  emit: (action: string, payload: any) => void;
+  emit: (store: any, action: string, payload: any) => void;
 }
 
 const ActionList = [
@@ -29,8 +29,8 @@ const ActionList = [
 
 export class DappMiddle {
   public static event?: IEvent;
-  public static middle = () => (next: any) => (action: { type: string; payload: any }) => {
-    if (ActionList.includes(action.type)) DappMiddle.event?.emit(action.type, action.payload);
+  public static middle = (store: any) => (next: any) => (action: { type: string; payload: any }) => {
+    if (ActionList.includes(action.type)) DappMiddle.event?.emit(store, action.type, action.payload);
     return next(action);
   };
   public static registerEvent(event: IEvent) {

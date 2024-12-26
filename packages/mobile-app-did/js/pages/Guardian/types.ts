@@ -1,5 +1,5 @@
 import { LoginKeyType, LoginType } from '@portkey-wallet/types/types-ca/wallet';
-import { VerifierInfo, VerifyStatus } from '@portkey-wallet/types/verifier';
+import { VerifierInfo, VerifyStatus, ZKLoginInfo } from '@portkey-wallet/types/verifier';
 
 export type GuardianApproved = {
   guardianType: LoginType;
@@ -8,6 +8,7 @@ export type GuardianApproved = {
   verifierId: string;
   verificationDoc: string;
   signature: string;
+  zkLoginInfo: ZKLoginInfo;
 };
 
 export type GuardiansApproved = GuardianApproved[];

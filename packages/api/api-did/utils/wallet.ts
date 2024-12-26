@@ -1,8 +1,9 @@
 import type { GuardiansApproved } from '@portkey/services';
 import { LoginKeyType } from '@portkey-wallet/types/types-ca/wallet';
-import { VerificationType } from '@portkey-wallet/types/verifier';
+import { VerificationType, ZKLoginInfo } from '@portkey-wallet/types/verifier';
 import { request } from '..';
 import { IContext } from '../types';
+import { RequestSourceEnum } from '@portkey-wallet/constants/constants-ca/device';
 
 interface RegisterDIDWalletParams extends IContext {
   baseUrl?: string;
@@ -11,9 +12,10 @@ interface RegisterDIDWalletParams extends IContext {
   manager: string;
   extraData: string;
   verifierId: string;
-  verificationDoc: string;
-  signature: string;
+  verificationDoc?: string;
+  signature?: string;
   chainId: string;
+  source?: RequestSourceEnum;
 }
 
 export const registerDIDWallet = async (
@@ -29,13 +31,17 @@ export const registerDIDWallet = async (
   });
 };
 
+// TODO Update services
+export type GuardiansApprovedWithZK = GuardiansApproved & { zkLoginInfo?: ZKLoginInfo };
+
 interface RecoveryDIDWalletParams extends IContext {
   baseURL?: string;
   loginGuardianIdentifier: string;
   manager: string;
   extraData: string;
   chainId: string;
-  guardiansApproved: GuardiansApproved[];
+  guardiansApproved: GuardiansApprovedWithZK[];
+  source?: RequestSourceEnum;
 }
 
 export const recoveryDIDWallet = async (

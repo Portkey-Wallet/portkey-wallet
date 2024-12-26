@@ -1,88 +1,92 @@
 import React, { useMemo, useState } from 'react';
-import { StyleSheet, View, ViewStyle } from 'react-native';
-import { defaultColors } from 'assets/theme';
+import { TextStyle, View, ViewStyle } from 'react-native';
 import fonts from 'assets/theme/fonts';
 import { pTd } from 'utils/unit';
-import { TextM, TextS } from 'components/CommonText';
+import { TextL, TextM } from 'components/CommonText';
 import Svg from 'components/Svg';
-import { FontStyles } from 'assets/theme/styles';
 import GStyles from 'assets/theme/GStyles';
 import Touchable from 'components/Touchable';
-import Collapsible from 'components/Collapsible';
 import { showValueToStr } from '@portkey-wallet/utils/byteConversion';
+import { makeStyles, useTheme } from '@rneui/themed';
+
 type TransactionDataSectionType = {
+  topTitle?: string;
   dataInfo: { [key: string]: any } | string;
   style?: ViewStyle;
+  topTitleStyle?: TextStyle[];
 };
 
 export const TransactionDataSection = (props: TransactionDataSectionType) => {
-  const { dataInfo, style = {} } = props;
-
+  const { topTitle, dataInfo, style = {}, topTitleStyle = [] } = props;
   const [collapsed, setCollapsed] = useState<boolean>(false);
+  const styles = getStyles();
+  const { theme } = useTheme();
 
   const TopSection = useMemo(
     () => (
-      <Touchable style={styles.topSection} onPress={() => setCollapsed(pre => !pre)}>
-        <TextM style={[FontStyles.font5, fonts.mediumFont]}>Message</TextM>
-        <Svg size={pTd(20)} icon={collapsed ? 'down-arrow' : 'up-arrow'} />
+      <Touchable
+        style={[styles.topSection, GStyles.flexRow, GStyles.itemCenter]}
+        onPress={() => setCollapsed(pre => !pre)}>
+        <TextL style={[fonts.SGMediumFont, ...topTitleStyle]}>{topTitle ?? 'Message'}</TextL>
+        <Svg
+          iconStyle={[{ marginLeft: pTd(4), transform: [{ rotate: collapsed ? '0deg' : '-90deg' }] }]}
+          size={pTd(16)}
+          icon={'down-arrow'}
+        />
       </Touchable>
     ),
-    [collapsed],
+    [collapsed, topTitle, styles, topTitleStyle],
   );
 
   const DataSection = useMemo(() => {
     if (typeof dataInfo === 'string') {
       return (
         <View style={styles.dataInfoGroup}>
-          <TextS style={[FontStyles.font3, styles.dataValue]}>{dataInfo}</TextS>
+          <TextM style={[styles.dataValue]}>{dataInfo}</TextM>
         </View>
       );
     } else if (typeof dataInfo === 'object') {
       return Object.entries(dataInfo).map(([key, value], index) => (
         <View key={index} style={styles.dataInfoGroup}>
-          <TextM style={FontStyles.font5}>{key}</TextM>
-          <TextS style={[FontStyles.font3, styles.dataValue]}>{showValueToStr(value)}</TextS>
+          <TextM style={{ color: theme.colors.textBase2 }}>{key}</TextM>
+          <TextM style={[styles.dataValue]}>{showValueToStr(value)}</TextM>
         </View>
       ));
     } else {
       return (
         <View style={styles.dataInfoGroup}>
-          <TextS style={[FontStyles.font3, styles.dataValue]}>{showValueToStr(dataInfo)}</TextS>
+          <TextM style={[styles.dataValue]}>{showValueToStr(dataInfo)}</TextM>
         </View>
       );
     }
-  }, [dataInfo]);
+  }, [dataInfo, styles, theme]);
 
   return (
-    <View style={[styles.card, style]}>
+    <View style={[style]}>
       {TopSection}
-      <Collapsible collapsed={collapsed}>{DataSection}</Collapsible>
+      {collapsed && <View style={styles.dataSection}>{DataSection}</View>}
     </View>
   );
 };
 
 export default TransactionDataSection;
 
-const styles = StyleSheet.create({
-  card: {
-    width: pTd(335),
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: defaultColors.border6,
-    borderRadius: pTd(6),
-  },
+const getStyles = makeStyles(theme => ({
   topSection: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    marginTop: pTd(24),
+  },
+  dataSection: {
+    marginTop: pTd(16),
+    backgroundColor: theme.colors.bgBase2,
+    borderRadius: pTd(8),
     ...GStyles.paddingArg(16),
   },
   dataInfoGroup: {
     flex: 1,
     marginBottom: pTd(16),
-    ...GStyles.paddingArg(0, 16),
   },
   dataValue: {
     marginTop: pTd(4),
+    color: theme.colors.textBase3,
   },
-});
+}));

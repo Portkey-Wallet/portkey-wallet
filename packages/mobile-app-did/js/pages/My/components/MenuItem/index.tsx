@@ -76,7 +76,6 @@ export default memo(MenuItem);
 const styles = StyleSheet.create({
   itemWrap: {
     height: pTd(56),
-    backgroundColor: defaultColors.bg1,
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: pTd(16),
@@ -89,12 +88,12 @@ const styles = StyleSheet.create({
   },
   titleWrap: {
     flex: 1,
-    color: defaultColors.font5,
+    color: defaultColors.font2,
     marginRight: pTd(12),
   },
   suffixWrap: {
     marginRight: pTd(4),
-    color: defaultColors.font3,
+    color: defaultColors.neutralTertiaryText,
   },
   svgWrap: {
     position: 'relative',

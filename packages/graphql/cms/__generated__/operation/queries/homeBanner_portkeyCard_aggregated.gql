@@ -3,43 +3,43 @@ query homeBanner_portkeyCard_aggregated($groupBy: [String], $filter: homeBanner_
         group
         countAll
         count{
-            id
             homeBanner_id
+            id
             portkeyCard_id
         }
         countDistinct{
-            id
             homeBanner_id
+            id
             portkeyCard_id
         }
         avg{
-            id
             homeBanner_id
+            id
             portkeyCard_id
         }
         sum{
-            id
             homeBanner_id
+            id
             portkeyCard_id
         }
         avgDistinct{
-            id
             homeBanner_id
+            id
             portkeyCard_id
         }
         sumDistinct{
-            id
             homeBanner_id
+            id
             portkeyCard_id
         }
         min{
-            id
             homeBanner_id
+            id
             portkeyCard_id
         }
         max{
-            id
             homeBanner_id
+            id
             portkeyCard_id
         }
     }

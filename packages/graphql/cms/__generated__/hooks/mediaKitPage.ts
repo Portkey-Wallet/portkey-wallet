@@ -26,7 +26,7 @@ export type MediaKitPageQueryVariables = Types.Exact<{
   offset2?: Types.InputMaybe<Types.Scalars['Int']>;
   page2?: Types.InputMaybe<Types.Scalars['Int']>;
   search2?: Types.InputMaybe<Types.Scalars['String']>;
-  filter3?: Types.InputMaybe<Types.Directus_Files_Filter>;
+  filter3?: Types.InputMaybe<Types.MediaKit_Filter>;
   sort3?: Types.InputMaybe<
     Array<Types.InputMaybe<Types.Scalars['String']>> | Types.InputMaybe<Types.Scalars['String']>
   >;
@@ -34,7 +34,7 @@ export type MediaKitPageQueryVariables = Types.Exact<{
   offset3?: Types.InputMaybe<Types.Scalars['Int']>;
   page3?: Types.InputMaybe<Types.Scalars['Int']>;
   search3?: Types.InputMaybe<Types.Scalars['String']>;
-  filter4?: Types.InputMaybe<Types.MediaKit_Filter>;
+  filter4?: Types.InputMaybe<Types.Directus_Files_Filter>;
   sort4?: Types.InputMaybe<
     Array<Types.InputMaybe<Types.Scalars['String']>> | Types.InputMaybe<Types.Scalars['String']>
   >;
@@ -72,51 +72,41 @@ export type MediaKitPageQuery = {
   __typename?: 'Query';
   mediaKitPage?: {
     __typename?: 'mediaKitPage';
+    boilerplateContent?: string | null;
+    boilerplateTitle?: string | null;
     content: string;
     date_created?: any | null;
     date_updated?: any | null;
     id: string;
+    mediaKitDescription?: string | null;
     status?: string | null;
     title: string;
     user_created?: string | null;
     user_updated?: string | null;
-    boilerplateContent?: string | null;
-    boilerplateTitle?: string | null;
-    mediaKitDescription?: string | null;
     allMediaKitZip?: {
       __typename?: 'directus_files';
-      id: string;
-      storage: string;
-      filename_disk?: string | null;
-      filename_download: string;
-      title?: string | null;
-      type?: string | null;
-      folder?: string | null;
-      uploaded_by?: string | null;
-      uploaded_on?: any | null;
-      modified_by?: string | null;
-      modified_on?: any | null;
       charset?: string | null;
-      filesize?: any | null;
-      width?: number | null;
-      height?: number | null;
+      description?: string | null;
       duration?: number | null;
       embed?: string | null;
-      description?: string | null;
+      filename_disk?: string | null;
+      filename_download: string;
+      filesize?: any | null;
+      folder?: string | null;
+      height?: number | null;
+      id: string;
       location?: string | null;
-      tags?: any | null;
       metadata?: any | null;
-      uploaded_on_func?: {
-        __typename?: 'datetime_functions';
-        year?: number | null;
-        month?: number | null;
-        week?: number | null;
-        day?: number | null;
-        weekday?: number | null;
-        hour?: number | null;
-        minute?: number | null;
-        second?: number | null;
-      } | null;
+      modified_by?: string | null;
+      modified_on?: any | null;
+      storage: string;
+      tags?: any | null;
+      title?: string | null;
+      type?: string | null;
+      uploaded_by?: string | null;
+      uploaded_on?: any | null;
+      width?: number | null;
+      metadata_func?: { __typename?: 'count_functions'; count?: number | null } | null;
       modified_on_func?: {
         __typename?: 'datetime_functions';
         year?: number | null;
@@ -129,7 +119,17 @@ export type MediaKitPageQuery = {
         second?: number | null;
       } | null;
       tags_func?: { __typename?: 'count_functions'; count?: number | null } | null;
-      metadata_func?: { __typename?: 'count_functions'; count?: number | null } | null;
+      uploaded_on_func?: {
+        __typename?: 'datetime_functions';
+        year?: number | null;
+        month?: number | null;
+        week?: number | null;
+        day?: number | null;
+        weekday?: number | null;
+        hour?: number | null;
+        minute?: number | null;
+        second?: number | null;
+      } | null;
     } | null;
     date_created_func?: {
       __typename?: 'datetime_functions';
@@ -156,42 +156,173 @@ export type MediaKitPageQuery = {
     mediaKitList?: Array<{
       __typename?: 'mediaKitPage_mediaKit';
       id: string;
+      mediaKit_id?: {
+        __typename?: 'mediaKit';
+        backgroundColor?: string | null;
+        date_created?: any | null;
+        date_updated?: any | null;
+        id: string;
+        index?: number | null;
+        name: string;
+        sort?: number | null;
+        status?: string | null;
+        user_created?: string | null;
+        user_updated?: string | null;
+        date_created_func?: {
+          __typename?: 'datetime_functions';
+          year?: number | null;
+          month?: number | null;
+          week?: number | null;
+          day?: number | null;
+          weekday?: number | null;
+          hour?: number | null;
+          minute?: number | null;
+          second?: number | null;
+        } | null;
+        date_updated_func?: {
+          __typename?: 'datetime_functions';
+          year?: number | null;
+          month?: number | null;
+          week?: number | null;
+          day?: number | null;
+          weekday?: number | null;
+          hour?: number | null;
+          minute?: number | null;
+          second?: number | null;
+        } | null;
+        png?: {
+          __typename?: 'directus_files';
+          charset?: string | null;
+          description?: string | null;
+          duration?: number | null;
+          embed?: string | null;
+          filename_disk?: string | null;
+          filename_download: string;
+          filesize?: any | null;
+          folder?: string | null;
+          height?: number | null;
+          id: string;
+          location?: string | null;
+          metadata?: any | null;
+          modified_by?: string | null;
+          modified_on?: any | null;
+          storage: string;
+          tags?: any | null;
+          title?: string | null;
+          type?: string | null;
+          uploaded_by?: string | null;
+          uploaded_on?: any | null;
+          width?: number | null;
+          metadata_func?: { __typename?: 'count_functions'; count?: number | null } | null;
+          modified_on_func?: {
+            __typename?: 'datetime_functions';
+            year?: number | null;
+            month?: number | null;
+            week?: number | null;
+            day?: number | null;
+            weekday?: number | null;
+            hour?: number | null;
+            minute?: number | null;
+            second?: number | null;
+          } | null;
+          tags_func?: { __typename?: 'count_functions'; count?: number | null } | null;
+          uploaded_on_func?: {
+            __typename?: 'datetime_functions';
+            year?: number | null;
+            month?: number | null;
+            week?: number | null;
+            day?: number | null;
+            weekday?: number | null;
+            hour?: number | null;
+            minute?: number | null;
+            second?: number | null;
+          } | null;
+        } | null;
+        svg?: {
+          __typename?: 'directus_files';
+          charset?: string | null;
+          description?: string | null;
+          duration?: number | null;
+          embed?: string | null;
+          filename_disk?: string | null;
+          filename_download: string;
+          filesize?: any | null;
+          folder?: string | null;
+          height?: number | null;
+          id: string;
+          location?: string | null;
+          metadata?: any | null;
+          modified_by?: string | null;
+          modified_on?: any | null;
+          storage: string;
+          tags?: any | null;
+          title?: string | null;
+          type?: string | null;
+          uploaded_by?: string | null;
+          uploaded_on?: any | null;
+          width?: number | null;
+          metadata_func?: { __typename?: 'count_functions'; count?: number | null } | null;
+          modified_on_func?: {
+            __typename?: 'datetime_functions';
+            year?: number | null;
+            month?: number | null;
+            week?: number | null;
+            day?: number | null;
+            weekday?: number | null;
+            hour?: number | null;
+            minute?: number | null;
+            second?: number | null;
+          } | null;
+          tags_func?: { __typename?: 'count_functions'; count?: number | null } | null;
+          uploaded_on_func?: {
+            __typename?: 'datetime_functions';
+            year?: number | null;
+            month?: number | null;
+            week?: number | null;
+            day?: number | null;
+            weekday?: number | null;
+            hour?: number | null;
+            minute?: number | null;
+            second?: number | null;
+          } | null;
+        } | null;
+      } | null;
       mediaKitPage_id?: {
         __typename?: 'mediaKitPage';
+        boilerplateContent?: string | null;
+        boilerplateTitle?: string | null;
         content: string;
         date_created?: any | null;
         date_updated?: any | null;
         id: string;
+        mediaKitDescription?: string | null;
         status?: string | null;
         title: string;
         user_created?: string | null;
         user_updated?: string | null;
-        boilerplateContent?: string | null;
-        boilerplateTitle?: string | null;
-        mediaKitDescription?: string | null;
         allMediaKitZip?: {
           __typename?: 'directus_files';
-          id: string;
-          storage: string;
-          filename_disk?: string | null;
-          filename_download: string;
-          title?: string | null;
-          type?: string | null;
-          folder?: string | null;
-          uploaded_by?: string | null;
-          uploaded_on?: any | null;
-          modified_by?: string | null;
-          modified_on?: any | null;
           charset?: string | null;
-          filesize?: any | null;
-          width?: number | null;
-          height?: number | null;
+          description?: string | null;
           duration?: number | null;
           embed?: string | null;
-          description?: string | null;
+          filename_disk?: string | null;
+          filename_download: string;
+          filesize?: any | null;
+          folder?: string | null;
+          height?: number | null;
+          id: string;
           location?: string | null;
-          tags?: any | null;
           metadata?: any | null;
+          modified_by?: string | null;
+          modified_on?: any | null;
+          storage: string;
+          tags?: any | null;
+          title?: string | null;
+          type?: string | null;
+          uploaded_by?: string | null;
+          uploaded_on?: any | null;
+          width?: number | null;
         } | null;
         date_created_func?: {
           __typename?: 'datetime_functions';
@@ -215,141 +346,7 @@ export type MediaKitPageQuery = {
           minute?: number | null;
           second?: number | null;
         } | null;
-        mediaKitList?: Array<{
-          __typename?: 'mediaKitPage_mediaKit';
-          id: string;
-          mediaKit_id?: {
-            __typename?: 'mediaKit';
-            backgroundColor?: string | null;
-            date_created?: any | null;
-            date_updated?: any | null;
-            id: string;
-            index?: number | null;
-            name: string;
-            sort?: number | null;
-            status?: string | null;
-            user_created?: string | null;
-            user_updated?: string | null;
-            date_created_func?: {
-              __typename?: 'datetime_functions';
-              year?: number | null;
-              month?: number | null;
-              week?: number | null;
-              day?: number | null;
-              weekday?: number | null;
-              hour?: number | null;
-              minute?: number | null;
-              second?: number | null;
-            } | null;
-            date_updated_func?: {
-              __typename?: 'datetime_functions';
-              year?: number | null;
-              month?: number | null;
-              week?: number | null;
-              day?: number | null;
-              weekday?: number | null;
-              hour?: number | null;
-              minute?: number | null;
-              second?: number | null;
-            } | null;
-            png?: {
-              __typename?: 'directus_files';
-              id: string;
-              storage: string;
-              filename_disk?: string | null;
-              filename_download: string;
-              title?: string | null;
-              type?: string | null;
-              folder?: string | null;
-              uploaded_by?: string | null;
-              uploaded_on?: any | null;
-              modified_by?: string | null;
-              modified_on?: any | null;
-              charset?: string | null;
-              filesize?: any | null;
-              width?: number | null;
-              height?: number | null;
-              duration?: number | null;
-              embed?: string | null;
-              description?: string | null;
-              location?: string | null;
-              tags?: any | null;
-              metadata?: any | null;
-              uploaded_on_func?: {
-                __typename?: 'datetime_functions';
-                year?: number | null;
-                month?: number | null;
-                week?: number | null;
-                day?: number | null;
-                weekday?: number | null;
-                hour?: number | null;
-                minute?: number | null;
-                second?: number | null;
-              } | null;
-              modified_on_func?: {
-                __typename?: 'datetime_functions';
-                year?: number | null;
-                month?: number | null;
-                week?: number | null;
-                day?: number | null;
-                weekday?: number | null;
-                hour?: number | null;
-                minute?: number | null;
-                second?: number | null;
-              } | null;
-              tags_func?: { __typename?: 'count_functions'; count?: number | null } | null;
-              metadata_func?: { __typename?: 'count_functions'; count?: number | null } | null;
-            } | null;
-            svg?: {
-              __typename?: 'directus_files';
-              id: string;
-              storage: string;
-              filename_disk?: string | null;
-              filename_download: string;
-              title?: string | null;
-              type?: string | null;
-              folder?: string | null;
-              uploaded_by?: string | null;
-              uploaded_on?: any | null;
-              modified_by?: string | null;
-              modified_on?: any | null;
-              charset?: string | null;
-              filesize?: any | null;
-              width?: number | null;
-              height?: number | null;
-              duration?: number | null;
-              embed?: string | null;
-              description?: string | null;
-              location?: string | null;
-              tags?: any | null;
-              metadata?: any | null;
-              uploaded_on_func?: {
-                __typename?: 'datetime_functions';
-                year?: number | null;
-                month?: number | null;
-                week?: number | null;
-                day?: number | null;
-                weekday?: number | null;
-                hour?: number | null;
-                minute?: number | null;
-                second?: number | null;
-              } | null;
-              modified_on_func?: {
-                __typename?: 'datetime_functions';
-                year?: number | null;
-                month?: number | null;
-                week?: number | null;
-                day?: number | null;
-                weekday?: number | null;
-                hour?: number | null;
-                minute?: number | null;
-                second?: number | null;
-              } | null;
-              tags_func?: { __typename?: 'count_functions'; count?: number | null } | null;
-              metadata_func?: { __typename?: 'count_functions'; count?: number | null } | null;
-            } | null;
-          } | null;
-        } | null> | null;
+        mediaKitList?: Array<{ __typename?: 'mediaKitPage_mediaKit'; id: string } | null> | null;
         mediaKitList_func?: { __typename?: 'count_functions'; count?: number | null } | null;
       } | null;
     } | null> | null;
@@ -377,13 +374,13 @@ export const MediaKitPageDocument = gql`
     $offset2: Int
     $page2: Int
     $search2: String
-    $filter3: directus_files_filter
+    $filter3: mediaKit_filter
     $sort3: [String]
     $limit3: Int
     $offset3: Int
     $page3: Int
     $search3: String
-    $filter4: mediaKit_filter
+    $filter4: directus_files_filter
     $sort4: [String]
     $limit4: Int
     $offset4: Int
@@ -410,24 +407,20 @@ export const MediaKitPageDocument = gql`
   ) {
     mediaKitPage {
       allMediaKitZip(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search) {
-        id
-        storage
+        charset
+        description
+        duration
+        embed
         filename_disk
         filename_download
-        title
-        type
+        filesize
         folder
-        uploaded_by
-        uploaded_on
-        uploaded_on_func {
-          year
-          month
-          week
-          day
-          weekday
-          hour
-          minute
-          second
+        height
+        id
+        location
+        metadata
+        metadata_func {
+          count
         }
         modified_by
         modified_on
@@ -441,23 +434,29 @@ export const MediaKitPageDocument = gql`
           minute
           second
         }
-        charset
-        filesize
-        width
-        height
-        duration
-        embed
-        description
-        location
+        storage
         tags
         tags_func {
           count
         }
-        metadata
-        metadata_func {
-          count
+        title
+        type
+        uploaded_by
+        uploaded_on
+        uploaded_on_func {
+          year
+          month
+          week
+          day
+          weekday
+          hour
+          minute
+          second
         }
+        width
       }
+      boilerplateContent
+      boilerplateTitle
       content
       date_created
       date_created_func {
@@ -482,15 +481,143 @@ export const MediaKitPageDocument = gql`
         second
       }
       id
+      mediaKitDescription
       status
       title
       user_created
       user_updated
-      boilerplateContent
-      boilerplateTitle
-      mediaKitDescription
       mediaKitList(filter: $filter7, sort: $sort7, limit: $limit7, offset: $offset7, page: $page7, search: $search7) {
         id
+        mediaKit_id(filter: $filter3, sort: $sort3, limit: $limit3, offset: $offset3, page: $page3, search: $search3) {
+          backgroundColor
+          date_created
+          date_created_func {
+            year
+            month
+            week
+            day
+            weekday
+            hour
+            minute
+            second
+          }
+          date_updated
+          date_updated_func {
+            year
+            month
+            week
+            day
+            weekday
+            hour
+            minute
+            second
+          }
+          id
+          index
+          name
+          png(filter: $filter1, sort: $sort1, limit: $limit1, offset: $offset1, page: $page1, search: $search1) {
+            charset
+            description
+            duration
+            embed
+            filename_disk
+            filename_download
+            filesize
+            folder
+            height
+            id
+            location
+            metadata
+            metadata_func {
+              count
+            }
+            modified_by
+            modified_on
+            modified_on_func {
+              year
+              month
+              week
+              day
+              weekday
+              hour
+              minute
+              second
+            }
+            storage
+            tags
+            tags_func {
+              count
+            }
+            title
+            type
+            uploaded_by
+            uploaded_on
+            uploaded_on_func {
+              year
+              month
+              week
+              day
+              weekday
+              hour
+              minute
+              second
+            }
+            width
+          }
+          sort
+          status
+          svg(filter: $filter2, sort: $sort2, limit: $limit2, offset: $offset2, page: $page2, search: $search2) {
+            charset
+            description
+            duration
+            embed
+            filename_disk
+            filename_download
+            filesize
+            folder
+            height
+            id
+            location
+            metadata
+            metadata_func {
+              count
+            }
+            modified_by
+            modified_on
+            modified_on_func {
+              year
+              month
+              week
+              day
+              weekday
+              hour
+              minute
+              second
+            }
+            storage
+            tags
+            tags_func {
+              count
+            }
+            title
+            type
+            uploaded_by
+            uploaded_on
+            uploaded_on_func {
+              year
+              month
+              week
+              day
+              weekday
+              hour
+              minute
+              second
+            }
+            width
+          }
+          user_created
+          user_updated
+        }
         mediaKitPage_id(
           filter: $filter6
           sort: $sort6
@@ -500,35 +627,37 @@ export const MediaKitPageDocument = gql`
           search: $search6
         ) {
           allMediaKitZip(
-            filter: $filter1
-            sort: $sort1
-            limit: $limit1
-            offset: $offset1
-            page: $page1
-            search: $search1
+            filter: $filter4
+            sort: $sort4
+            limit: $limit4
+            offset: $offset4
+            page: $page4
+            search: $search4
           ) {
-            id
-            storage
-            filename_disk
-            filename_download
-            title
-            type
-            folder
-            uploaded_by
-            uploaded_on
-            modified_by
-            modified_on
             charset
-            filesize
-            width
-            height
+            description
             duration
             embed
-            description
+            filename_disk
+            filename_download
+            filesize
+            folder
+            height
+            id
             location
-            tags
             metadata
+            modified_by
+            modified_on
+            storage
+            tags
+            title
+            type
+            uploaded_by
+            uploaded_on
+            width
           }
+          boilerplateContent
+          boilerplateTitle
           content
           date_created
           date_created_func {
@@ -553,13 +682,11 @@ export const MediaKitPageDocument = gql`
             second
           }
           id
+          mediaKitDescription
           status
           title
           user_created
           user_updated
-          boilerplateContent
-          boilerplateTitle
-          mediaKitDescription
           mediaKitList(
             filter: $filter5
             sort: $sort5
@@ -569,143 +696,6 @@ export const MediaKitPageDocument = gql`
             search: $search5
           ) {
             id
-            mediaKit_id(
-              filter: $filter4
-              sort: $sort4
-              limit: $limit4
-              offset: $offset4
-              page: $page4
-              search: $search4
-            ) {
-              backgroundColor
-              date_created
-              date_created_func {
-                year
-                month
-                week
-                day
-                weekday
-                hour
-                minute
-                second
-              }
-              date_updated
-              date_updated_func {
-                year
-                month
-                week
-                day
-                weekday
-                hour
-                minute
-                second
-              }
-              id
-              index
-              name
-              png(filter: $filter2, sort: $sort2, limit: $limit2, offset: $offset2, page: $page2, search: $search2) {
-                id
-                storage
-                filename_disk
-                filename_download
-                title
-                type
-                folder
-                uploaded_by
-                uploaded_on
-                uploaded_on_func {
-                  year
-                  month
-                  week
-                  day
-                  weekday
-                  hour
-                  minute
-                  second
-                }
-                modified_by
-                modified_on
-                modified_on_func {
-                  year
-                  month
-                  week
-                  day
-                  weekday
-                  hour
-                  minute
-                  second
-                }
-                charset
-                filesize
-                width
-                height
-                duration
-                embed
-                description
-                location
-                tags
-                tags_func {
-                  count
-                }
-                metadata
-                metadata_func {
-                  count
-                }
-              }
-              sort
-              status
-              svg(filter: $filter3, sort: $sort3, limit: $limit3, offset: $offset3, page: $page3, search: $search3) {
-                id
-                storage
-                filename_disk
-                filename_download
-                title
-                type
-                folder
-                uploaded_by
-                uploaded_on
-                uploaded_on_func {
-                  year
-                  month
-                  week
-                  day
-                  weekday
-                  hour
-                  minute
-                  second
-                }
-                modified_by
-                modified_on
-                modified_on_func {
-                  year
-                  month
-                  week
-                  day
-                  weekday
-                  hour
-                  minute
-                  second
-                }
-                charset
-                filesize
-                width
-                height
-                duration
-                embed
-                description
-                location
-                tags
-                tags_func {
-                  count
-                }
-                metadata
-                metadata_func {
-                  count
-                }
-              }
-              user_created
-              user_updated
-            }
           }
           mediaKitList_func {
             count

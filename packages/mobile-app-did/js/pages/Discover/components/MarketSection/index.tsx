@@ -1,7 +1,6 @@
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
-import MarketType from './components/MarketType';
+import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef } from 'react';
 import MarketHeader from './components/MarketHeader';
-import { FlatList, Platform, RefreshControl, View } from 'react-native';
+import { FlatList, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import MarketItem from './components/MarketItem';
 import { useMarket } from 'hooks/discover';
@@ -10,23 +9,27 @@ import CommonToast from 'components/CommonToast';
 import Svg from 'components/Svg';
 import CommonButton from 'components/CommonButton';
 import { StyleSheet } from 'react-native';
-import { defaultColors } from 'assets/theme';
+import { darkColors } from 'assets/theme';
 import { TextM } from 'components/CommonText';
 import MarketItemSkeleton from './components/MarketItemSkeleton';
 
-export default function MarketSection() {
-  const { marketInfo, refreshing, refreshList, handleType, handleSort } = useMarket();
+export default forwardRef(function MarketSection(_, _ref) {
+  const { marketInfo, refreshing, refreshList, handleSort } = useMarket();
   const flatListRef = useRef<FlatList>(null);
   const renderItem = useCallback(({ item }: { item: ICryptoCurrencyItem; index: number }) => {
     return <MarketItem isLoading={false} item={item} />;
   }, []);
-  const onRefresh = useCallback(async () => {
-    try {
-      await refreshList();
-    } catch (e) {
-      CommonToast.failError(`${e}`);
-    }
-  }, [refreshList]);
+  const onRefresh = useCallback(
+    async (callback?: () => void) => {
+      try {
+        await refreshList();
+        callback?.();
+      } catch (e) {
+        CommonToast.failError(`${e}`);
+      }
+    },
+    [refreshList],
+  );
 
   useEffect(() => {
     flatListRef.current?.scrollToOffset({ animated: true, offset: 0 });
@@ -34,9 +37,15 @@ export default function MarketSection() {
   const isSkeleton = useMemo(() => {
     return refreshing && (marketInfo?.dataList?.length || 0) <= 0;
   }, [marketInfo?.dataList?.length, refreshing]);
-  const isLoading = useMemo(() => {
-    return refreshing && (marketInfo?.dataList?.length || 0) > 0;
-  }, [marketInfo?.dataList?.length, refreshing]);
+
+  useImperativeHandle(
+    _ref,
+    () => ({
+      onRefresh,
+    }),
+    [onRefresh],
+  );
+
   const renderEmpty = useCallback(() => {
     return (
       <View style={styles.empty}>
@@ -60,39 +69,34 @@ export default function MarketSection() {
 
   return (
     <View style={styles.container}>
-      <MarketType marketInfo={marketInfo} handleType={handleType} />
-      <MarketHeader style={{ marginTop: pTd(8) }} marketInfo={marketInfo} handleSort={handleSort} />
-      {isSkeleton ? (
-        Array.from({ length: 11 }).map((item, index) => {
-          return <MarketItemSkeleton key={index} />;
-        })
-      ) : (
-        <FlatList
-          ref={flatListRef}
-          contentContainerStyle={{ paddingBottom: pTd(10) }}
-          style={{ minHeight: pTd(512) }}
-          showsVerticalScrollIndicator={false}
-          nestedScrollEnabled
-          refreshing={false}
-          data={Array.isArray(marketInfo?.dataList) ? marketInfo?.dataList : []}
-          renderItem={renderItem}
-          keyExtractor={(item: ICryptoCurrencyItem, index: number) => '' + (item.id || index)}
-          refreshControl={
-            marketInfo?.dataList ? <RefreshControl refreshing={isLoading} onRefresh={onRefresh} /> : undefined
-          }
-          ListEmptyComponent={renderEmpty}
-        />
-      )}
+      <MarketHeader marketInfo={marketInfo} handleSort={handleSort} />
+      <View style={styles.container}>
+        {isSkeleton ? (
+          Array.from({ length: 11 }).map((item, index) => {
+            return <MarketItemSkeleton key={index} />;
+          })
+        ) : (
+          <FlatList
+            ref={flatListRef}
+            contentContainerStyle={{ paddingBottom: pTd(10) }}
+            showsVerticalScrollIndicator={false}
+            nestedScrollEnabled
+            refreshing={false}
+            data={Array.isArray(marketInfo?.dataList) ? marketInfo?.dataList : []}
+            renderItem={renderItem}
+            keyExtractor={(item: ICryptoCurrencyItem, index: number) => '' + (item.id || index)}
+            ListEmptyComponent={renderEmpty}
+          />
+        )}
+      </View>
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: pTd(16),
-    backgroundColor: defaultColors.neutralDefaultBG,
-    paddingTop: pTd(16),
     flex: 1,
+    backgroundColor: darkColors.bgBase1,
   },
   empty: {
     alignItems: 'center',
@@ -109,9 +113,9 @@ const styles = StyleSheet.create({
     marginBottom: pTd(8),
   },
   message: {
-    color: defaultColors.neutralTertiaryText,
+    color: darkColors.textBase2,
     fontSize: pTd(14),
-    fontWeight: '400',
+    // fontWeight: '400',
     lineHeight: pTd(22),
     marginBottom: pTd(24),
     width: '100%',
@@ -120,7 +124,7 @@ const styles = StyleSheet.create({
   nextButtonText: {
     fontSize: pTd(12),
     lineHeight: pTd(20),
-    color: defaultColors.white,
+    color: darkColors.textBase1,
   },
   btnTitleStyle: {
     lineHeight: pTd(16),

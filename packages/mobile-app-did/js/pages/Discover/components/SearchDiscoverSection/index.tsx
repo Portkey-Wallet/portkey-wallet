@@ -1,29 +1,29 @@
 import React, { useCallback } from 'react';
-import { StyleSheet, View, ScrollView } from 'react-native';
+import { View, ScrollView, Keyboard } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
-import { useLanguage } from 'i18n/hooks';
-import { TextS } from 'components/CommonText';
+import { TextL, TextM } from 'components/CommonText';
 import { pTd } from 'utils/unit';
-import fonts from 'assets/theme/fonts';
-import NoData from 'components/NoData';
-import { FontStyles } from 'assets/theme/styles';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
-import { defaultColors } from 'assets/theme';
 import { DiscoverItem } from '@portkey-wallet/store/store-ca/cms/types';
 import DiscoverWebsiteImage from '../DiscoverWebsiteImage';
 import { useDiscoverJumpWithNetWork } from 'hooks/discover';
 import TextWithProtocolIcon from 'components/TextWithProtocolIcon';
 import Touchable from 'components/Touchable';
+import Svg from 'components/Svg';
+import { makeStyles } from '@rneui/themed';
+
 interface ISearchDiscoverSectionProps {
   searchedDiscoverList: DiscoverItem[];
+  inputValue?: string;
+  onClick?: () => void;
 }
 
 export default function SearchDiscoverSection(props: ISearchDiscoverSectionProps) {
-  const { t } = useLanguage();
-  const { searchedDiscoverList } = props;
+  const { searchedDiscoverList, inputValue, onClick } = props;
+  const styles = getStyles();
+
   const { s3Url } = useCurrentNetworkInfo();
   const jumpToWebview = useDiscoverJumpWithNetWork();
-
   const onClickJump = useCallback(
     (i: DiscoverItem) => {
       jumpToWebview({
@@ -32,87 +32,106 @@ export default function SearchDiscoverSection(props: ISearchDiscoverSectionProps
           url: i?.url ?? i?.description,
         },
       });
+      onClick?.();
     },
-    [jumpToWebview],
+    [jumpToWebview, onClick],
   );
 
-  if (searchedDiscoverList.length === 0) return <NoData noPic message={t('There is no search result.')} />;
-
   return (
-    <ScrollView style={styles.sectionWrap}>
-      {searchedDiscoverList?.map((item, index) => (
-        <Touchable key={index} style={itemStyle.wrap} onPress={() => onClickJump(item)}>
-          <DiscoverWebsiteImage imageUrl={`${s3Url}/${item?.imgUrl?.filename_disk}`} size={pTd(32)} />
-          <View style={itemStyle.right}>
-            <View style={itemStyle.infoWrap}>
-              <TextWithProtocolIcon title={item?.title} url={item?.url} />
-              {item?.description && (
-                <TextS numberOfLines={1} ellipsizeMode={'tail'} style={[FontStyles.font3, itemStyle.gameInfo]}>
-                  {item.description}
-                </TextS>
-              )}
+    <ScrollView style={styles.sectionWrap} keyboardShouldPersistTaps="handled">
+      {searchedDiscoverList.length === 0 ? (
+        <Touchable
+          style={styles.wrap}
+          onPress={() => {
+            Keyboard.dismiss();
+            jumpToWebview({
+              item: {
+                name: inputValue || '',
+                url: `https://www.google.com/search?q=${inputValue}`,
+              },
+            });
+          }}>
+          <View style={styles.defaultIconWrap}>
+            <Svg icon={'search'} size={pTd(20)} />
+          </View>
+          <View style={styles.right}>
+            <View style={styles.gameNameWrap}>
+              <TextL numberOfLines={1} ellipsizeMode={'tail'}>
+                {inputValue}
+              </TextL>
+            </View>
+            <View style={styles.gameInfoWrap}>
+              <TextM numberOfLines={1} ellipsizeMode={'tail'} style={styles.gameInfo}>
+                Search with Google
+              </TextM>
             </View>
           </View>
         </Touchable>
-      ))}
+      ) : (
+        <>
+          {searchedDiscoverList?.map((item, index) => (
+            <Touchable key={index} style={styles.wrap} onPress={() => onClickJump(item)}>
+              <DiscoverWebsiteImage imageUrl={`${s3Url}/${item?.imgUrl?.filename_disk}`} size={pTd(42)} />
+              <View style={styles.right}>
+                <View style={styles.gameNameWrap}>
+                  <TextWithProtocolIcon title={item?.title} url={item?.url} textFontSize={pTd(16)} />
+                </View>
+                <View style={styles.gameInfoWrap}>
+                  {item?.description && (
+                    <TextM numberOfLines={1} ellipsizeMode={'tail'} style={styles.gameInfo}>
+                      {item.description}
+                    </TextM>
+                  )}
+                </View>
+              </View>
+            </Touchable>
+          ))}
+        </>
+      )}
     </ScrollView>
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = makeStyles(theme => ({
   sectionWrap: {
-    ...GStyles.paddingArg(0, 20),
+    ...GStyles.paddingArg(0, 16),
   },
-  headerWrap: {
-    height: pTd(22),
-  },
-  header: {
-    ...fonts.mediumFont,
-    lineHeight: pTd(24),
-  },
-  cancelButton: {
-    paddingLeft: pTd(12),
-    lineHeight: pTd(36),
-  },
-});
-
-const itemStyle = StyleSheet.create({
   wrap: {
-    height: pTd(80),
+    height: pTd(74),
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
   },
   right: {
-    height: pTd(80),
-    marginLeft: pTd(16),
+    height: pTd(74),
+    marginLeft: pTd(8),
     paddingRight: pTd(16),
     flex: 1,
     display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    borderBottomColor: defaultColors.border6,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-  },
-  image: {
-    width: pTd(32),
-    height: pTd(32),
-    borderRadius: pTd(16),
-  },
-  infoWrap: {
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'column',
     justifyContent: 'center',
-    alignItems: 'flex-start',
   },
-  gameName: {
-    lineHeight: pTd(22),
+  gameNameWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: pTd(22),
+  },
+  gameInfoWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: pTd(20),
   },
   gameInfo: {
-    lineHeight: pTd(16),
+    color: theme.colors.textBase2,
     marginTop: pTd(2),
+    lineHeight: pTd(17.5),
   },
-});
+  defaultIconWrap: {
+    width: pTd(42),
+    height: pTd(42),
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: pTd(21),
+    borderWidth: pTd(1),
+    borderColor: theme.colors.borderNeutral2,
+  },
+}));

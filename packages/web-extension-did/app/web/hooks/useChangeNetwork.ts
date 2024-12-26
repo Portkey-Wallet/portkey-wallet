@@ -11,6 +11,7 @@ import { sleep } from '@portkey-wallet/utils';
 // import OpenNewTabController from 'controllers/openNewTabController';
 import im from '@portkey-wallet/im';
 import signalrFCM from '@portkey-wallet/socket/socket-fcm';
+import { resetRecent } from '@portkey-wallet/store/store-ca/recent/slice';
 
 export function useChangeNetwork() {
   const dispatch = useAppDispatch();
@@ -23,6 +24,8 @@ export function useChangeNetwork() {
     async (network: NetworkItem) => {
       resetStore();
       im.destroy();
+      // TODO
+      dispatch(resetRecent());
       signalrFCM.switchNetwork();
       dispatch(changeNetworkType(network.networkType));
       if (otherNetworkLogged) {

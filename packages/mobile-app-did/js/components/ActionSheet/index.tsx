@@ -1,19 +1,19 @@
 import React, { ReactNode } from 'react';
 import OverlayModal from '../OverlayModal';
-import { View, Text, Keyboard, ImageBackground, ImageSourcePropType, ScrollView } from 'react-native';
-import { styles } from './style/style';
+import { View, Text, Keyboard, ImageSourcePropType, ScrollView } from 'react-native';
+import { getStyles, styles as showStyles } from './style';
 import { TextL, TextM, TextTitle } from 'components/CommonText';
 import ButtonRow, { ButtonRowProps } from 'components/ButtonRow';
 import ButtonCol from 'components/ButtonCol';
 import { pTd } from 'utils/unit';
 import Svg from 'components/Svg';
-import { defaultColors } from 'assets/theme';
 import { TextStyleType } from 'types/styles';
 import Touchable from 'components/Touchable';
+import { useTheme } from '@rneui/themed';
 
 const show = (
   items: {
-    title: string;
+    title: string | ReactNode;
     onPress?: (v: any) => void;
   }[],
   cancelItem?: {
@@ -21,27 +21,28 @@ const show = (
   },
 ) => {
   Keyboard.dismiss();
+
   OverlayModal.show(
     <>
-      <View style={styles.sheetBox}>
+      <View style={showStyles.sheetBox}>
         {items.map((item, index) => {
           const { title, onPress } = item;
           return (
             <Touchable
               key={index}
-              style={styles.itemBox}
+              style={showStyles.itemBox}
               onPress={() => {
                 OverlayModal.hide();
                 onPress?.(item);
               }}>
-              <Text style={styles.itemText}>{title}</Text>
+              {typeof title === 'string' ? <Text style={showStyles.itemText}>{title}</Text> : title}
             </Touchable>
           );
         })}
       </View>
       {cancelItem && (
-        <Touchable onPress={() => OverlayModal.hide()} style={styles.cancelBox}>
-          <Text style={styles.cancelText}>{cancelItem.title}</Text>
+        <Touchable onPress={() => OverlayModal.hide()} style={showStyles.cancelBox}>
+          <Text style={showStyles.cancelText}>{cancelItem.title}</Text>
         </Touchable>
       )}
     </>,
@@ -52,7 +53,7 @@ const show = (
 };
 
 type AlertBodyProps = {
-  title?: string;
+  title?: string | ReactNode;
   title2?: ReactNode;
   message?: ReactNode;
   message2?: ReactNode;
@@ -64,9 +65,14 @@ type AlertBodyProps = {
   messageStyle?: TextStyleType;
   titleStyle?: TextStyleType;
   bgImage?: ImageSourcePropType;
+  showInfoIcon?: boolean;
+  closeAction?: () => void;
+  isModalCloseDisable?: boolean;
+  enabledNestScrollView?: boolean;
+  enabledCloseModalByScroll?: boolean;
 };
 
-function AlertBody({
+export function AlertBody({
   title,
   message,
   buttons,
@@ -75,44 +81,74 @@ function AlertBody({
   autoClose = true,
   messageList,
   buttonGroupDirection = 'row',
-  isCloseShow = false,
+  isCloseShow = true,
   messageStyle,
   titleStyle,
   bgImage,
+  showInfoIcon = false,
+  closeAction,
 }: AlertBodyProps) {
+  const styles = getStyles();
+  const { theme } = useTheme();
+
   return (
-    <View style={[styles.alertBox, styles.wrapStyle]}>
-      {!!bgImage && <ImageBackground source={bgImage} style={styles.headerBackgroundBg} />}
+    <View style={[styles.wrapStyle]}>
+      {/* {!!bgImage && <ImageBackground source={bgImage} style={styles.headerBackgroundBg} />}
       {isCloseShow && (
         <View
           onTouchEnd={() => {
             OverlayModal.hide();
           }}
           style={styles.closeWrap}>
-          <Svg icon={'close'} size={pTd(12.5)} color={defaultColors.font7} />
+          <Svg icon={'suggest-close'} size={pTd(20)} color={defaultColors.font7} />
         </View>
-      )}
+      )} */}
       <View style={styles.alertBox}>
+        <View style={styles.alertHeader}>
+          <View style={styles.alertHeaderBlock} />
+        </View>
+        {isCloseShow && !bgImage && (
+          <View
+            onTouchEnd={() => {
+              closeAction?.();
+              OverlayModal.hide();
+            }}
+            style={styles.closeWrap}>
+            <Svg icon={'suggest-close'} size={pTd(20)} color={theme.colors.iconBase1} />
+          </View>
+        )}
+        {showInfoIcon && <Svg iconStyle={styles.infoIcon} icon="info" size={pTd(32)} color={theme.colors.iconBase1} />}
         {title ? <TextTitle style={[styles.alertTitle, titleStyle]}>{title}</TextTitle> : null}
-        {typeof title2 === 'string' ? <TextL style={styles.alertTitle2}>{title2}</TextL> : title2}
+
+        {/* {title ? <TextTitle style={[styles.alertTitle, titleStyle]}>{title}</TextTitle> : null} */}
+        {typeof title2 === 'string' ? (
+          title2 ? (
+            <TextTitle style={styles.alertTitle2}>{title2}</TextTitle>
+          ) : null
+        ) : (
+          title2
+        )}
+        {!title && !title2 && <View style={styles.titlePlaceholder} />}
+
         <ScrollView
           showsVerticalScrollIndicator={false}
           style={styles.scrollViewStyle}
           contentContainerStyle={styles.scrollViewContainerStyle}>
           {typeof message === 'string' ? (
             message ? (
-              <TextM style={[styles.alertMessage, messageStyle]}>{message}</TextM>
+              <TextL style={[styles.alertMessage, messageStyle]}>{message}</TextL>
             ) : null
           ) : (
             message
           )}
           {typeof message2 === 'string' ? (
             message2 ? (
-              <TextM style={[styles.alertMessage, messageStyle]}>{message2}</TextM>
+              <TextL style={[styles.alertMessage, messageStyle]}>{message2}</TextL>
             ) : null
           ) : (
             message2
           )}
+
           {messageList?.map((item, index) => {
             return typeof item === 'string' ? (
               item ? (
@@ -127,10 +163,14 @@ function AlertBody({
         </ScrollView>
         {buttonGroupDirection === 'row' ? (
           <ButtonRow
+            style={styles.buttonRowWrap}
             buttons={buttons?.map(i => ({
               ...i,
               onPress: () => {
-                if (autoClose) OverlayModal.hide();
+                if (autoClose) {
+                  closeAction?.();
+                  OverlayModal.hide();
+                }
                 i.onPress?.();
               },
             }))}
@@ -140,7 +180,10 @@ function AlertBody({
             buttons={buttons?.map(i => ({
               ...i,
               onPress: () => {
-                if (autoClose) OverlayModal.hide();
+                if (autoClose) {
+                  closeAction?.();
+                  OverlayModal.hide();
+                }
                 i.onPress?.();
               },
             }))}
@@ -155,8 +198,14 @@ const alert = (props: AlertBodyProps) => {
   Keyboard.dismiss();
   OverlayModal.show(<AlertBody {...props} />, {
     modal: true,
-    type: 'zoomOut',
-    position: 'center',
+    position: 'bottom',
+    enabledCloseModalByScroll: props.enabledCloseModalByScroll,
+    onCloseRequest: props.isModalCloseDisable
+      ? undefined
+      : () => {
+          props?.closeAction?.();
+          OverlayModal.hide();
+        },
   });
 };
 export default {

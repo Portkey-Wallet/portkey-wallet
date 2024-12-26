@@ -1,5 +1,5 @@
 import { IBaseRequest } from '@portkey/types';
-import { BaseService } from '@portkey/services';
+import { BaseService } from './type';
 import {
   AddChannelMembersParams,
   AddStrangerParams,
@@ -100,7 +100,7 @@ export class IMService<T extends IBaseRequest = IBaseRequest> extends BaseServic
       const isContinue = checkIsContinue();
       if (!isContinue) throw new Error('account changed');
       if (times === 1) throw error;
-      console.log('verifySignatureLoop: error', error);
+      // console.log('verifySignatureLoop: error', error);
     }
     // if (times <= 0) await sleep(1000);
     await sleep(1000);

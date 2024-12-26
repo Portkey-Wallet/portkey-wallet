@@ -4,16 +4,16 @@ query discoverTabData_aggregated($groupBy: [String], $filter: discoverTabData_fi
         countAll
         count{
             id
-            status
             index
             name
+            status
             value
         }
         countDistinct{
             id
-            status
             index
             name
+            status
             value
         }
         avg{

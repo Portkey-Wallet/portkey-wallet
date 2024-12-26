@@ -66,13 +66,15 @@ export const useCheckTransferLimitWithJump = () => {
         console.log('isAllowApprove', isAllowApprove, amount, balance);
         if (isAllowApprove) {
           ActionSheet.alert({
-            title: isDailyLimited ? `Maximum daily limit exceeded` : `Maximum limit per transaction exceeded`,
-            message: `To proceed with this specific transaction, you may request a one-time approval from guardians. Alternatively, you have the option to modify the limit, lifting restrictions on all future transactions.`,
+            title: isDailyLimited ? 'Maximum daily limit exceeded' : 'Maximum transaction limit exceeded',
+            message:
+              'Request one-time guardian approval to proceed, or modify the limit to lift restrictions on future transactions.',
             buttonGroupDirection: 'column',
             isCloseShow: true,
+            showInfoIcon: true,
             buttons: [
               {
-                title: 'Request One-Time Approval',
+                title: 'Request one-time approval',
                 onPress: () => {
                   navigationService.navigateByMultiLevelParams('GuardianApproval', {
                     params: {
@@ -83,7 +85,7 @@ export const useCheckTransferLimitWithJump = () => {
                   });
                 },
               },
-              { title: 'Modify Transfer Limit for All', type: 'transparent', onPress: gotoLimitEdit },
+              { title: 'Modify transfer limit for all', type: 'outline', onPress: gotoLimitEdit },
             ],
           });
 
@@ -91,9 +93,11 @@ export const useCheckTransferLimitWithJump = () => {
         }
 
         ActionSheet.alert({
-          title2: isDailyLimited
-            ? 'Maximum daily limit exceeded. To proceed, you need to modify the limit first.'
-            : 'Maximum limit per transaction exceeded. To proceed, you need to modify the limit first.',
+          showInfoIcon: true,
+          title: isDailyLimited ? 'Maximum daily limit exceeded' : 'Maximum transaction limit exceeded',
+          message: isDailyLimited
+            ? 'Please modify the daily limit to proceed.'
+            : 'Please modify the transfer limit to proceed.',
           buttons: [
             {
               title: 'Cancel',

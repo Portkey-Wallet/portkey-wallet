@@ -15,6 +15,8 @@ import getManager from 'utils/getManager';
 import { useCheckSiteIsInBlackList } from '@portkey-wallet/hooks/hooks-ca/cms';
 import AsyncButton from 'components/AsyncButton';
 import './index.less';
+import { DAPP_SECURITY_DOMAIN_HINT } from '@portkey-wallet/constants/constants-ca/dapp';
+import { useDappInfo } from '@portkey-wallet/hooks/hooks-ca/discover';
 
 const allowItem = ['view wallet balance and activities', 'send you transaction requests'];
 
@@ -28,6 +30,7 @@ export default function ConnectWallet() {
   const [exp, setExp] = useState<SessionExpiredPlan>(SessionExpiredPlan.hour1);
   const updateSessionInfo = useUpdateSessionInfo();
   const checkOriginInBlackList = useCheckSiteIsInBlackList();
+  const isInWebSet = useDappInfo(detail.appHref, detail.appLogo || '');
 
   const renderSite = useMemo(
     () =>
@@ -98,6 +101,12 @@ export default function ConnectWallet() {
       <div className="title">{t('Connect with Portkey')}</div>
       {renderAllow}
       {!checkOriginInBlackList(detail.appHref) && <DappSession onChange={handleSessionChange} />}
+      {!isInWebSet && (
+        <div className={`connect-wallet-warning`}>
+          <CustomSvg type="WarningTriangle" className={`warning-icon`} />
+          <div className={`warning-title`}>{DAPP_SECURITY_DOMAIN_HINT}</div>
+        </div>
+      )}
       <div className="btn flex-between">
         <Button
           type="text"

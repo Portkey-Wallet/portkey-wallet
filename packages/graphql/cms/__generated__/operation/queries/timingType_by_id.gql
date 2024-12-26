@@ -1,0 +1,6 @@
+query timingType_by_id($id: ID!){
+    timingType_by_id(id: $id){
+        id
+        name
+    }
+}

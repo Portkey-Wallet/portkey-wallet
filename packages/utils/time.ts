@@ -57,7 +57,34 @@ export const formatActivityTime = (date?: dayjs.ConfigType): string => {
   return activityTimeTime.format('YYYY-MM-DD');
 };
 
+export const formatActivityTimeRevamp = (date?: dayjs.ConfigType): string => {
+  if (!date) return '';
+  const activityTimeTime = dateToDayjs(date);
+  const now = dayjs();
+  const inputDate = dayjs(date);
+  const currentYear = dayjs().year();
+  const dateYear = inputDate.year();
+  if (activityTimeTime.isSame(now, 'day')) return 'Today';
+  if (currentYear === dateYear) {
+    return inputDate.format('MMM D');
+  } else {
+    return inputDate.format('MMM D, YYYY');
+  }
+};
+
+export const formatActivityTimeDetailRevamp = (date?: dayjs.ConfigType): string => {
+  if (!date) return '';
+  const activityTimeTime = dateToDayjs(date);
+  return activityTimeTime.format('MMM D, YYYY [at] h:mm a');
+};
+
 export function formatTimeToHmStr(time?: number): string {
   if (time === undefined || time === null) return '--';
   return dayjs(time).format('HH:mm');
+}
+
+export function formatTimeMinDxStr(time?: number): string {
+  if (time === undefined || time === null) return '0';
+  const diffMinutes = Math.abs(dayjs().diff(dayjs(time), 'minute'));
+  return diffMinutes.toString();
 }

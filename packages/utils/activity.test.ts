@@ -10,11 +10,11 @@ describe('transNetworkText', () => {
     const res = transNetworkText('AELF', false);
     expect(res).toBe(MAIN_CHAIN + ' AELF');
   });
-  test('SideChain and Testnet', () => {
+  test('dAppChain and Testnet', () => {
     const res = transNetworkText('tDVV', true);
     expect(res).toBe(SIDE_CHAIN + ' tDVV ' + TEST_NET);
   });
-  test('SideChain and Mainnet', () => {
+  test('dAppChain and Mainnet', () => {
     const res = transNetworkText('tDVV', false);
     expect(res).toBe(SIDE_CHAIN + ' tDVV');
   });
@@ -29,11 +29,11 @@ describe('getCurrentActivityMapKey', () => {
     const res = getCurrentActivityMapKey('AELF', '');
     expect(res).toBe('AELF_');
   });
-  test('SideChain and ELF', () => {
+  test('dAppChain and ELF', () => {
     const res = getCurrentActivityMapKey('tDVV', 'ELF');
     expect(res).toBe('tDVV_ELF');
   });
-  test('SideChain and empty symbol', () => {
+  test('dAppChain and empty symbol', () => {
     const res = getCurrentActivityMapKey('tDVV', '');
     expect(res).toBe('tDVV_');
   });

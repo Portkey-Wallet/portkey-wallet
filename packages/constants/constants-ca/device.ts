@@ -24,3 +24,12 @@ export const DEVICE_TYPE_INFO: Record<DeviceType, DeviceInfoType> = {
     deviceType: DeviceType.ANDROID,
   },
 };
+
+export enum RequestSourceEnum {
+  UnKnown = 0,
+  Android = 1,
+  IOS = 2,
+  Web = 3,
+  Sdk = 4,
+  Telegram = 5,
+}

@@ -13,19 +13,19 @@ import {
   IResponseType,
   ResponseCode,
   ProviderErrorType,
-  NotificationEvents,
+  // NotificationEvents,
 } from '@portkey/provider-types';
 import { NetworkType } from '@portkey-wallet/types';
 import { isNotificationEvents } from '@portkey/providers';
 import errorHandler from 'utils/errorHandler';
 import { setLocalStorage } from 'utils/storage/chromeStorage';
 import { ConnectionsItem } from 'types/storage';
-import { changeNetworkType, setCAInfo } from '@portkey-wallet/store/store-ca/wallet/actions';
+// import { changeNetworkType, setCAInfo } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { getDappState, getWalletState } from 'utils/lib/SWGetReduxStore';
-import InternalMessage from 'messages/InternalMessage';
-import { handleAccounts, handleChainIds } from '@portkey-wallet/utils/dapp';
-import { addDapp, removeDapp, resetDapp, resetDappList } from '@portkey-wallet/store/store-ca/dapp/actions';
-import { sleep } from '@portkey-wallet/utils';
+// import InternalMessage from 'messages/InternalMessage';
+// import { handleAccounts, handleChainIds } from '@portkey-wallet/utils/dapp';
+// import { addDapp, removeDapp, resetDapp, resetDappList } from '@portkey-wallet/store/store-ca/dapp/actions';
+// import { sleep } from '@portkey-wallet/utils';
 
 export interface DappEventPack<T = DappEvents, D = any> {
   eventName: T;
@@ -130,51 +130,51 @@ export default class SWEventController {
     });
   }
   // Trigger events based on user operations to notify service workers
-  public static async emit(action: string, payload: any) {
-    console.log(action, payload, 'action==action');
-    // Asynchronous updates lead to data exceptions when emitting
-    await sleep(50);
-    switch (action) {
-      case changeNetworkType.toString(): {
-        const { currentNetwork } = await getWalletState();
+  // public static async emit(action: string, payload: any) {
+  //   console.log(action, payload, 'action==action');
+  //   // Asynchronous updates lead to data exceptions when emitting
+  //   await sleep(50);
+  //   switch (action) {
+  //     case changeNetworkType.toString(): {
+  //       const { currentNetwork } = await getWalletState();
 
-        InternalMessage.payload(NotificationEvents.NETWORK_CHANGED, { data: currentNetwork }).send();
-        break;
-      }
-      case setCAInfo.toString(): {
-        const wallet = await getWalletState();
-        await InternalMessage.payload(NotificationEvents.ACCOUNTS_CHANGED, { data: handleAccounts(wallet) }).send();
-        await InternalMessage.payload(NotificationEvents.CHAIN_CHANGED, { data: handleChainIds(wallet) }).send();
-        break;
-      }
-      case removeDapp.toString(): {
-        if (payload.origin) {
-          await InternalMessage.payload(NotificationEvents.DISCONNECTED, {
-            data: { message: 'user disconnected', code: ResponseCode.USER_DENIED },
-            origin: payload.origin,
-          }).send();
-        }
-        break;
-      }
-      case addDapp.toString(): {
-        if (payload.dapp.origin) {
-          const wallet = await getWalletState();
-          await InternalMessage.payload(NotificationEvents.CONNECTED, {
-            data: {
-              chainIds: handleChainIds(wallet),
-            },
-            origin: payload.dapp.origin,
-          }).send();
-        }
-        break;
-      }
-      case resetDapp.toString():
-      case resetDappList.toString(): {
-        await InternalMessage.payload(NotificationEvents.DISCONNECTED, {
-          data: { message: 'user logout', code: ResponseCode.USER_DENIED, origin: '*' },
-        }).send();
-        break;
-      }
-    }
-  }
+  //       InternalMessage.payload(NotificationEvents.NETWORK_CHANGED, { data: currentNetwork }).send();
+  //       break;
+  //     }
+  //     case setCAInfo.toString(): {
+  //       const wallet = await getWalletState();
+  //       await InternalMessage.payload(NotificationEvents.ACCOUNTS_CHANGED, { data: handleAccounts(wallet) }).send();
+  //       await InternalMessage.payload(NotificationEvents.CHAIN_CHANGED, { data: handleChainIds(wallet) }).send();
+  //       break;
+  //     }
+  //     case removeDapp.toString(): {
+  //       if (payload.origin) {
+  //         await InternalMessage.payload(NotificationEvents.DISCONNECTED, {
+  //           data: { message: 'user disconnected', code: ResponseCode.USER_DENIED },
+  //           origin: payload.origin,
+  //         }).send();
+  //       }
+  //       break;
+  //     }
+  //     case addDapp.toString(): {
+  //       if (payload.dapp.origin) {
+  //         const wallet = await getWalletState();
+  //         await InternalMessage.payload(NotificationEvents.CONNECTED, {
+  //           data: {
+  //             chainIds: handleChainIds(wallet),
+  //           },
+  //           origin: payload.dapp.origin,
+  //         }).send();
+  //       }
+  //       break;
+  //     }
+  //     case resetDapp.toString():
+  //     case resetDappList.toString(): {
+  //       await InternalMessage.payload(NotificationEvents.DISCONNECTED, {
+  //         data: { message: 'user logout', code: ResponseCode.USER_DENIED, origin: '*' },
+  //       }).send();
+  //       break;
+  //     }
+  //   }
+  // }
 }

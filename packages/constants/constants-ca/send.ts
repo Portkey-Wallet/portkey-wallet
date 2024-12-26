@@ -5,7 +5,7 @@ export enum AddressError {
 }
 
 export enum TransactionError {
-  TOKEN_NOT_ENOUGH = 'Insufficient funds',
+  TOKEN_NOT_ENOUGH = 'Exceeds available balance',
   NFT_NOT_ENOUGH = 'Insufficient quantity',
   FEE_NOT_ENOUGH = 'Insufficient funds for transaction fee',
   CROSS_NOT_ENOUGH = 'Insufficient funds for cross chain transaction fee',
@@ -17,7 +17,7 @@ export const TransactionErrorArray = Object.values(TransactionError);
 
 export const SEND_SIDE_CHAIN_TOKEN_TIP_TITLE = `Send to exchange account?`;
 export const SEND_SIDE_CHAIN_TOKEN_TIP_CONTENT = [
-  `Please note that assets on the SideChain can't be sent directly to exchanges. You can transfer your SideChain assets to the MainChain before sending them to your exchange account.`,
+  `Please note that assets on the dAppChain can't be sent directly to exchanges. You can transfer your dAppChain assets to the MainChain before sending them to your exchange account.`,
 ];
 
 export const RECEIVE_MAIN_CHAIN_TOKEN_TIP_TITLE = `Receive from exchange account?`;
@@ -27,7 +27,7 @@ export const RECEIVE_MAIN_CHAIN_TOKEN_TIP_CONTENT = [
 
 export const RECEIVE_SIDE_CHAIN_TOKEN_TIP_TITLE = `Receive from exchange account?`;
 export const RECEIVE_SIDE_CHAIN_TOKEN_TIP_CONTENT = [
-  `If you wish to receive assets from exchanges, please note that they will not be credited to your SideChain address, and you cannot make the transfer through QR code scanning.`,
+  `If you wish to receive assets from exchanges, please note that they will not be credited to your dAppChain address, and you cannot make the transfer through QR code scanning.`,
   `To receive, please follow these steps:`,
   ` · Copy your wallet address.`,
   ` · Remove the "ELF_" prefix and "CHAIN_SUFFIX" suffix.`,
@@ -38,7 +38,7 @@ export const RECEIVE_SIDE_CHAIN_TOKEN_TIP_MODAL_REMEMBER_TEXT = `Don't show this
 export const RECEIVE_SIDE_CHAIN_TOKEN_TIP_MODAL_BUTTON_TEXT = `I Know`;
 
 export const RECEIVE_MAIN_CHAIN_ELF_TIP = `If you wish to receive assets from exchanges, please switch to the "Exchanges" tab on the right.`;
-
+export const CROSS_CHAIN_INTERCEPTED_CONTENT = `The asset does not exist on the target chain, so the transfer cannot be completed.`;
 export enum ReceiveTabEnum {
   QRCode = 'QRCode',
   Exchanges = 'Exchanges',

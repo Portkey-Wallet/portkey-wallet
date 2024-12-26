@@ -76,7 +76,8 @@ export const useHandleRampSell = () => {
     async (orderId: string, guardiansApproved?: GuardiansApprovedType[]) => {
       console.log('sell Transfer, Start', Date.now());
       try {
-        Loading.show({ text: 'Payment is being processed and may take around 10 seconds to complete.' });
+        // Loading.show({ text: 'Payment is being processed and may take around 10 seconds to complete.' });
+        Loading.show();
         await ramp.transferCrypto(orderId, orderInfo => paymentSellTransfer(orderInfo, guardiansApproved));
 
         CommonToast.success('Transaction completed.');

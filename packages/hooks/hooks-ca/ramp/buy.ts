@@ -1,12 +1,14 @@
 import { useCallback } from 'react';
 import { useAppCommonDispatch } from '../../index';
 import {
+  setBuyCryptoList,
   setBuyDefaultCrypto,
   setBuyDefaultCryptoList,
   setBuyDefaultFiat,
   setBuyFiatList,
 } from '@portkey-wallet/store/store-ca/ramp/actions';
 import {
+  useBuyCryptoListState,
   useBuyDefaultCryptoListState,
   useBuyDefaultCryptoState,
   useBuyDefaultFiatState,
@@ -74,5 +76,21 @@ export const useBuyFiat = () => {
     buyDefaultCrypto,
     refreshBuyFiat,
     getSpecifiedFiat,
+  };
+};
+
+export const useBuyCryptoList = () => {
+  const dispatch = useAppCommonDispatch();
+  const list = useBuyCryptoListState();
+
+  const refresh = useCallback(async () => {
+    const { buyCryptoList } = await getBuyCrypto({});
+    dispatch(setBuyCryptoList({ list: buyCryptoList }));
+    return buyCryptoList;
+  }, [dispatch]);
+
+  return {
+    buyCryptoList: list,
+    refresh,
   };
 };

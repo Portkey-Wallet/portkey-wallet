@@ -2,14 +2,14 @@ import { useCallback } from 'react';
 import { TypedUseSelectorHook, useSelector } from 'react-redux';
 import { CACommonState } from '@portkey-wallet/types/types-ca/store';
 import { useAppCommonDispatch } from '../index';
-import { resetRecent } from '@portkey-wallet/store/store-ca/recent/slice';
 import { resetActivity } from '@portkey-wallet/store/store-ca/activity/slice';
-import { resetContact } from '@portkey-wallet/store/store-ca/contact/actions';
+import { resetContact, resetContactNew } from '@portkey-wallet/store/store-ca/contact/actions';
 import { resetGuardiansState } from '@portkey-wallet/store/store-ca/guardians/actions';
 import { resetReferral } from '@portkey-wallet/store/store-ca/referral/slice';
 import { useOtherNetworkLogged, useWallet } from './wallet';
 import { resetTokenInfo } from '@portkey-wallet/store/store-ca/tokenManagement/action';
 import {
+  changeNftSectionUiType,
   clearAccountAssetsInfo,
   clearAccountNftCollectionInfo,
   clearAccountTokenInfo,
@@ -19,16 +19,15 @@ import { resetTokenManagement } from '@portkey-wallet/store/store-ca/tokenManage
 import { resetCaInfo, resetCurrentUserInfoAction, resetWallet } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { resetNetwork } from '@portkey-wallet/store/network/actions';
 import { resetSettings } from '@portkey-wallet/store/settings/slice';
-
 export const useAppCASelector: TypedUseSelectorHook<CACommonState> = useSelector;
 
 export function useResetStore() {
   const dispatch = useAppCommonDispatch();
   return useCallback(() => {
-    dispatch(resetRecent());
     dispatch(resetActivity());
     dispatch(resetGuardiansState());
     dispatch(resetContact());
+    dispatch(resetContactNew());
     dispatch(resetReferral());
   }, [dispatch]);
 }
@@ -53,4 +52,18 @@ export function useLogoutResetStore() {
       dispatch(resetSettings());
     }
   }, [currentNetwork, dispatch, otherNetworkLogged]);
+}
+export function useNFTSection() {
+  const dispatch = useAppCommonDispatch();
+  const { nftSectionUiType } = useAppCASelector(state => state.assets);
+  const changeNFTSectionMode = useCallback(
+    (value: 'Collections' | 'NFTs') => {
+      dispatch(changeNftSectionUiType(value));
+    },
+    [dispatch],
+  );
+  return {
+    nftSectionUiType,
+    changeNFTSectionMode,
+  };
 }

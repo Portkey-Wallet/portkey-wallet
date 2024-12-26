@@ -8,7 +8,7 @@ import { TextM, TextXXL } from 'components/CommonText';
 import GStyles from 'assets/theme/GStyles';
 import { LoginQRData } from '@portkey-wallet/types/types-ca/qrcode';
 import { useCurrentWalletInfo, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import CommonToast from 'components/CommonToast';
+import CommonPrompt from 'components/CommonPromptCard';
 import { useGetCurrentCAContract } from 'hooks/contract';
 import { addManager } from 'utils/wallet';
 import { extraDataEncode, getDeviceInfoFromQR } from '@portkey-wallet/utils/device';
@@ -81,7 +81,7 @@ function AuthLogin({ loginData, domain, extraData: websiteInfo }: AuthLoginOverl
       OverlayModal.hide();
       minimizer.goBack();
     } catch (error) {
-      CommonToast.failError(error);
+      CommonPrompt.failError(error);
     }
     setLoading(false);
   }, [

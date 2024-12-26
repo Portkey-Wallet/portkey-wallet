@@ -36,6 +36,8 @@ import { useAppRampEntryShow } from 'hooks/ramp';
 import { AssetType } from '@portkey-wallet/constants/constants-ca/assets';
 import NFTAvatar from 'components/NFTAvatar';
 import { checkEnabledFunctionalTypes } from '@portkey-wallet/utils/compass';
+import { useUpdateAssetInfo } from 'hooks/useGetSymbolBalance';
+import { makeStyles } from '@rneui/themed';
 
 export type PaymentAssetInfo = {
   symbol: string;
@@ -64,6 +66,7 @@ const PaymentModal = ({
   calculateTransactionFee,
   onConfirm,
 }: PaymentOverlayProps) => {
+  const styles = getStyles();
   const accountAssetList = useAccountCryptoBoxAssetList();
   const [tokenPriceObject, , getTokensPrice] = useGetCurrentAccountTokenPrice();
 
@@ -104,6 +107,7 @@ const PaymentModal = ({
     if (assetMap?.[chainId]) return assetMap?.[chainId];
     return accountAssetList.find(ele => ele.symbol === assetInfo.symbol);
   }, [accountAssetList, assetInfo.symbol, assetMap, chainId]);
+  const updateAssetInfo = useUpdateAssetInfo(chainId, assetInfo, currentAssetInfo);
 
   const { isBuySectionShow } = useAppRampEntryShow();
   const { buy } = checkEnabledFunctionalTypes(assetInfo.symbol, chainId === 'AELF');
@@ -307,16 +311,16 @@ const PaymentModal = ({
     return (
       <Text style={styles.marginTop4}>
         <TextS style={FontStyles.neutralTertiaryText}>
-          {formatTokenAmountShowWithDecimals(currentAssetInfo?.balance, currentAssetInfo?.decimals)}
+          {formatTokenAmountShowWithDecimals(updateAssetInfo?.balance, updateAssetInfo?.decimals)}
         </TextS>
         <TextS style={FontStyles.neutralTertiaryText}>{` ${
-          currentAssetInfo?.label || currentAssetInfo?.symbol || ''
+          updateAssetInfo?.label || updateAssetInfo?.symbol || ''
         }`}</TextS>
-        {!!tokenPriceObject[currentAssetInfo?.symbol || ''] && (
+        {!!tokenPriceObject[updateAssetInfo?.symbol || ''] && (
           <TextS style={FontStyles.neutralTertiaryText}>
             {`  ${convertAmountUSDShow(
-              divDecimals(currentAssetInfo?.balance, currentAssetInfo?.decimals),
-              tokenPriceObject[currentAssetInfo?.symbol || ''],
+              divDecimals(updateAssetInfo?.balance, updateAssetInfo?.decimals),
+              tokenPriceObject[updateAssetInfo?.symbol || ''],
             )}`}
           </TextS>
         )}
@@ -324,10 +328,10 @@ const PaymentModal = ({
     );
   }, [
     assetInfo.assetType,
-    currentAssetInfo?.balance,
-    currentAssetInfo?.decimals,
-    currentAssetInfo?.label,
-    currentAssetInfo?.symbol,
+    updateAssetInfo?.balance,
+    updateAssetInfo?.decimals,
+    updateAssetInfo?.label,
+    updateAssetInfo?.symbol,
     currentNft?.balance,
     currentNft?.decimals,
     isInsufficientTransactionFee,
@@ -341,7 +345,7 @@ const PaymentModal = ({
   return (
     <ModalBody modalBodyType="bottom">
       <View style={styles.containerStyle}>
-        <View style={[GStyles.itemCenter, GStyles.flex1]}>
+        <View style={[GStyles.itemCenter]}>
           <TextM style={styles.titleStyle}> {title}</TextM>
           <RedPacketAmountShow
             assetType={assetInfo.assetType}
@@ -351,9 +355,9 @@ const PaymentModal = ({
             symbol={assetInfo.assetType === AssetType.nft ? '' : assetInfo.symbol}
             label={assetInfo.label}
           />
-          {!!tokenPriceObject[currentAssetInfo?.symbol || ''] && assetInfo.assetType === AssetType.ft && (
+          {!!tokenPriceObject[updateAssetInfo?.symbol || ''] && assetInfo.assetType === AssetType.ft && (
             <TextM style={GStyles.marginTop(pTd(2))}>
-              {convertAmountUSDShow(amount, tokenPriceObject[currentAssetInfo?.symbol || ''])}
+              {convertAmountUSDShow(amount, tokenPriceObject[updateAssetInfo?.symbol || ''])}
             </TextM>
           )}
           {assetInfo.assetType === AssetType.nft && (
@@ -440,19 +444,19 @@ export default {
   showCryptoGift,
 };
 
-export const styles = StyleSheet.create({
+const getStyles = makeStyles(theme => ({
   containerStyle: {
-    paddingTop: pTd(16),
-    paddingBottom: pTd(16),
-    paddingHorizontal: pTd(16),
-    flex: 1,
+    // paddingTop: pTd(16),
+    // paddingBottom: pTd(16),
+    // paddingHorizontal: pTd(16),
+    // flex: 1,
   },
   titleStyle: {
-    color: defaultColors.font5,
+    color: theme.colors.textBase1,
     marginBottom: pTd(12),
   },
   balanceLabelStyle: {
-    color: defaultColors.secondaryTextColor,
+    color: theme.colors.textBase1,
     marginLeft: pTd(8),
   },
   lottieStyle: {
@@ -467,7 +471,7 @@ export const styles = StyleSheet.create({
     borderRadius: pTd(6),
   },
   balanceItemRow: {
-    backgroundColor: defaultColors.bg6,
+    backgroundColor: theme.colors.textBase1,
     paddingVertical: pTd(14),
     paddingHorizontal: pTd(12),
     marginTop: pTd(8),
@@ -485,7 +489,7 @@ export const styles = StyleSheet.create({
   },
   avatarTitle: {
     fontSize: pTd(14),
-    color: defaultColors.font11,
+    color: theme.colors.textBase1,
   },
   marginTop4: {
     marginTop: pTd(4),
@@ -493,4 +497,4 @@ export const styles = StyleSheet.create({
   nftAvatar: {
     borderRadius: pTd(4),
   },
-});
+}));

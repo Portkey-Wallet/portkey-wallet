@@ -6,6 +6,8 @@ export interface AddressItem {
   chainName?: string;
   address: string;
   image?: string;
+  displayChainName?: string;
+  chainImageUrl?: string;
 }
 
 export interface RecentAddressItem extends AddressItem {
@@ -18,6 +20,10 @@ export interface IImInfo {
   name?: string;
 }
 
+export enum ContactType {
+  Normal = 0,
+  ChatGptBot = 1,
+}
 export interface ContactItemType {
   id: string;
   index: string;
@@ -30,6 +36,7 @@ export interface ContactItemType {
   caHolderInfo?: Partial<CaHolderInfo>;
   imInfo?: Partial<IImInfo>;
   isImputation?: boolean;
+  contactType?: ContactType;
 }
 
 export interface IContactProfileLoginAccount {

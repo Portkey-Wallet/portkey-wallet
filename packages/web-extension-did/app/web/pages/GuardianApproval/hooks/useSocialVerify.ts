@@ -20,31 +20,45 @@ export const useSocialVerify = () => {
       operationType,
       loginAccount,
       targetChainId,
+      operationDetails,
     }: {
       operateGuardian: UserGuardianItem;
       originChainId: ChainId;
       targetChainId?: ChainId;
       operationType: OperationTypeEnum;
       loginAccount?: LoginInfo;
+      operationDetails?: string;
     }) => {
       try {
         setLoading(true);
         const result = await verifyToken(operateGuardian.guardianType, {
-          accessToken: loginAccount?.authenticationInfo?.[operateGuardian.guardianAccount],
+          accessToken: loginAccount?.authenticationInfo?.[operateGuardian.guardianAccount] as string,
+          idToken: loginAccount?.authenticationInfo?.idToken as string,
+          nonce: loginAccount?.authenticationInfo?.nonce as string,
+          salt: operateGuardian.salt,
+          timestamp: loginAccount?.authenticationInfo?.timestamp as number,
           id: operateGuardian.guardianAccount,
           verifierId: operateGuardian.verifier?.id,
           chainId: originChainId,
           operationType: operationType,
           targetChainId,
+          operationDetails,
         });
-        const verifierInfo: VerifierInfo = { ...result, verifierId: operateGuardian?.verifier?.id };
-        const { guardianIdentifier } = handleVerificationDoc(verifierInfo.verificationDoc);
+        const verifierInfo: VerifierInfo = { ...result, verifierId: operateGuardian?.verifier?.id ?? '' };
+        let identifierHash;
+        if (verifierInfo.verificationDoc) {
+          const { guardianIdentifier } = handleVerificationDoc(verifierInfo.verificationDoc);
+          identifierHash = guardianIdentifier;
+        } else {
+          identifierHash = verifierInfo.zkLoginInfo?.identifierHash;
+        }
         return {
           key: operateGuardian.key,
           signature: verifierInfo.signature,
           verificationDoc: verifierInfo.verificationDoc,
           status: VerifyStatus.Verified,
-          identifierHash: guardianIdentifier,
+          identifierHash,
+          zkLoginInfo: verifierInfo.zkLoginInfo,
         };
       } catch (error) {
         const msg = handleErrorMessage(error);

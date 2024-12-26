@@ -1,6 +1,7 @@
 @import '../../assets/theme/color.less';
 
 .icon-pair {
+  position: relative;
   flex-shrink: 1;
   .guardian-icon {
     background-color: @neutral-container-bg;
@@ -18,5 +19,19 @@
     margin-left: -8px;
     border: 2px solid @neutral-white-border;
     border-radius: 100%;
+  }
+  .zklogin-icon {
+    z-index: 999;
+    position: absolute;
+    top: 24px;
+    left: 2px;
+    padding: 1px 4px;
+    font-size: 10px;
+    line-height: 12px;
+    font-weight: 500;
+    border-radius: 3px;
+    border: 1px solid @neutral-white-border;
+    color: @neutral-white-text;
+    background-color: @brand-normal;
   }
 }

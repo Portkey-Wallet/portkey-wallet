@@ -1,4 +1,4 @@
-import { useAppCASelector } from '.';
+import { useAppCASelector } from './index';
 import { useMemo, useCallback, useState, useEffect } from 'react';
 import { WalletInfoType } from '@portkey-wallet/types/wallet';
 import { CAInfoType } from '@portkey-wallet/types/types-ca/wallet';
@@ -16,6 +16,7 @@ import {
   fetchShouldShowSetNewWalletNameIcon,
   setNewWalletName,
   cancelSetNewWalletNameModal,
+  setAvatarAction,
 } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { DeviceInfoType } from '@portkey-wallet/types/types-ca/device';
 import { extraDataListDecode } from '@portkey-wallet/utils/device';
@@ -42,6 +43,8 @@ export interface ICaAddressInfoListItemType {
   chainId: ChainId;
   chainName: string;
   caAddress: string;
+  displayChainName?: string;
+  chainImageUrl?: string;
 }
 
 export function getCurrentWalletInfo(
@@ -63,7 +66,6 @@ export function getCurrentWalletInfo(
 
   return tmpWalletInfo;
 }
-
 export const useWallet = () => useAppCASelector(state => state.wallet);
 
 export const useCurrentUserInfo = (forceUpdate?: boolean) => {
@@ -205,6 +207,7 @@ export const useDeviceList = (config?: IUseDeviceListConfig) => {
 
   return { refresh, deviceList, deviceAmount, loading };
 };
+// getIconList
 
 export const useSetUserInfo = () => {
   const dispatch = useAppCommonDispatch();
@@ -218,6 +221,23 @@ export const useSetUserInfo = () => {
       dispatch(setNickNameAndAvatarAction({ ...params, networkType: networkInfo.networkType }));
     },
     [dispatch, networkInfo],
+  );
+};
+
+export const useSetUserAvatar = () => {
+  const dispatch = useAppCommonDispatch();
+  const networkInfo = useCurrentNetworkInfo();
+  return useCallback(
+    async (avatar: string) => {
+      await request.wallet.editHolderInfo({
+        baseURL: networkInfo.apiUrl,
+        params: {
+          avatar,
+        },
+      });
+      dispatch(setAvatarAction({ avatar, networkType: networkInfo.networkType }));
+    },
+    [dispatch, networkInfo.apiUrl, networkInfo.networkType],
   );
 };
 
@@ -279,6 +299,11 @@ export const useCaInfo = () => {
 export const useCurrentCaInfo = () => {
   const { walletInfo, currentNetwork } = useWallet();
   return useMemo(() => walletInfo?.caInfo?.[currentNetwork], [walletInfo, currentNetwork]);
+};
+
+export const useMainChainCaInfo = () => {
+  const { walletInfo, currentNetwork } = useWallet();
+  return useMemo(() => walletInfo?.caInfo?.[currentNetwork].AELF, [walletInfo, currentNetwork]);
 };
 
 export const useOriginChainId = () => {

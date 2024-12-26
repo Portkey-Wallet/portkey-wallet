@@ -3,22 +3,25 @@ import CustomHeader, { CustomHeaderProps } from 'components/CustomHeader';
 import SafeAreaBox, { SafeAreaBoxProps } from 'components/SafeAreaBox';
 import { useGStyles } from 'assets/theme/useGStyles';
 import { KeyboardAwareScrollView, KeyboardAwareScrollViewProps } from 'react-native-keyboard-aware-scroll-view';
-import { TouchableWithoutFeedback, View, Keyboard, StatusBar } from 'react-native';
-import { defaultColors } from 'assets/theme';
+import { TouchableWithoutFeedback, View, Keyboard } from 'react-native';
+import { defaultColors, darkColors } from 'assets/theme';
 import { ViewStyleType } from 'types/styles';
+import { getStatusBarHeight } from 'utils/statusbar';
 
 export const SafeAreaColorMap = {
   white: defaultColors.bg1,
   blue: defaultColors.bg5,
+  black: darkColors.bgBase1,
   red: defaultColors.bg17,
   gray: defaultColors.bg4,
+  lightBlack: darkColors.bgBase2,
   transparent: 'transparent',
 };
 
 export type SafeAreaColorMapKeyUnit = keyof typeof SafeAreaColorMap;
 
 export default function PageContainer({
-  safeAreaColor = ['white', 'white'],
+  safeAreaColor = ['black', 'black'],
   children,
   safeAreaProps,
   containerStyles,
@@ -42,16 +45,18 @@ export default function PageContainer({
   const gStyles = useGStyles();
   const themeType = useMemo(() => safeAreaColor[0], [safeAreaColor]);
   return (
-    <SafeAreaBox
+    <View
       {...safeAreaProps}
-      edges={['top', 'right', 'left']}
-      style={[{ backgroundColor: SafeAreaColorMap[safeAreaColor[0]] }, safeAreaProps?.[0]?.style]}>
+      style={[
+        { backgroundColor: SafeAreaColorMap[safeAreaColor[0]], paddingTop: getStatusBarHeight() },
+        safeAreaProps?.[0]?.style,
+      ]}>
       <SafeAreaBox
         edges={['bottom']}
         pageSafeBottomPadding={pageSafeBottomPadding}
         style={[{ backgroundColor: SafeAreaColorMap[safeAreaColor[1]] }, safeAreaProps?.[1]?.style]}>
         {!hideHeader && <CustomHeader themeType={themeType} {...props} />}
-        {themeType === 'white' && <StatusBar barStyle="dark-content" />}
+        {/* {themeType === 'white' && <StatusBar barStyle="dark-content" />} */}
         {scrollViewProps?.disabled ? (
           hideTouchable ? (
             <View style={[gStyles.container, containerStyles]}>{children}</View>
@@ -73,6 +78,6 @@ export default function PageContainer({
           </KeyboardAwareScrollView>
         )}
       </SafeAreaBox>
-    </SafeAreaBox>
+    </View>
   );
 }

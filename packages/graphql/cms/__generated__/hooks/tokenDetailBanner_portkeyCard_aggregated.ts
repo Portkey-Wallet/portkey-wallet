@@ -24,50 +24,50 @@ export type TokenDetailBanner_PortkeyCard_AggregatedQuery = {
     count?: {
       __typename?: 'tokenDetailBanner_portkeyCard_aggregated_count';
       id?: number | null;
-      tokenDetailBanner_id?: number | null;
       portkeyCard_id?: number | null;
+      tokenDetailBanner_id?: number | null;
     } | null;
     countDistinct?: {
       __typename?: 'tokenDetailBanner_portkeyCard_aggregated_count';
       id?: number | null;
-      tokenDetailBanner_id?: number | null;
       portkeyCard_id?: number | null;
+      tokenDetailBanner_id?: number | null;
     } | null;
     avg?: {
       __typename?: 'tokenDetailBanner_portkeyCard_aggregated_fields';
       id?: number | null;
-      tokenDetailBanner_id?: number | null;
       portkeyCard_id?: number | null;
+      tokenDetailBanner_id?: number | null;
     } | null;
     sum?: {
       __typename?: 'tokenDetailBanner_portkeyCard_aggregated_fields';
       id?: number | null;
-      tokenDetailBanner_id?: number | null;
       portkeyCard_id?: number | null;
+      tokenDetailBanner_id?: number | null;
     } | null;
     avgDistinct?: {
       __typename?: 'tokenDetailBanner_portkeyCard_aggregated_fields';
       id?: number | null;
-      tokenDetailBanner_id?: number | null;
       portkeyCard_id?: number | null;
+      tokenDetailBanner_id?: number | null;
     } | null;
     sumDistinct?: {
       __typename?: 'tokenDetailBanner_portkeyCard_aggregated_fields';
       id?: number | null;
-      tokenDetailBanner_id?: number | null;
       portkeyCard_id?: number | null;
+      tokenDetailBanner_id?: number | null;
     } | null;
     min?: {
       __typename?: 'tokenDetailBanner_portkeyCard_aggregated_fields';
       id?: number | null;
-      tokenDetailBanner_id?: number | null;
       portkeyCard_id?: number | null;
+      tokenDetailBanner_id?: number | null;
     } | null;
     max?: {
       __typename?: 'tokenDetailBanner_portkeyCard_aggregated_fields';
       id?: number | null;
-      tokenDetailBanner_id?: number | null;
       portkeyCard_id?: number | null;
+      tokenDetailBanner_id?: number | null;
     } | null;
   }>;
 };
@@ -95,43 +95,43 @@ export const TokenDetailBanner_PortkeyCard_AggregatedDocument = gql`
       countAll
       count {
         id
-        tokenDetailBanner_id
         portkeyCard_id
+        tokenDetailBanner_id
       }
       countDistinct {
         id
-        tokenDetailBanner_id
         portkeyCard_id
+        tokenDetailBanner_id
       }
       avg {
         id
-        tokenDetailBanner_id
         portkeyCard_id
+        tokenDetailBanner_id
       }
       sum {
         id
-        tokenDetailBanner_id
         portkeyCard_id
+        tokenDetailBanner_id
       }
       avgDistinct {
         id
-        tokenDetailBanner_id
         portkeyCard_id
+        tokenDetailBanner_id
       }
       sumDistinct {
         id
-        tokenDetailBanner_id
         portkeyCard_id
+        tokenDetailBanner_id
       }
       min {
         id
-        tokenDetailBanner_id
         portkeyCard_id
+        tokenDetailBanner_id
       }
       max {
         id
-        tokenDetailBanner_id
         portkeyCard_id
+        tokenDetailBanner_id
       }
     }
   }

@@ -1,0 +1,126 @@
+import { StyleSheet } from 'react-native';
+import { defaultColors, darkColors } from 'assets/theme';
+import { pTd } from 'utils/unit';
+import fonts from 'assets/theme/fonts';
+
+const { white, font7 } = defaultColors;
+
+export const styles = StyleSheet.create({
+  pageWrap: {
+    width: '100%',
+    flex: 1,
+    backgroundColor: darkColors.bgBase1,
+  },
+  list: {
+    flex: 1,
+  },
+  card: {
+    flexDirection: 'column',
+    marginTop: pTd(16),
+    marginLeft: pTd(16),
+    marginRight: pTd(16),
+  },
+  tokenImage: {
+    marginTop: pTd(40),
+  },
+  mainTitleLine: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  mainTitleIcon: {
+    height: pTd(18),
+    width: pTd(18),
+    marginRight: 4,
+  },
+  tokenBalance: {
+    color: darkColors.textBase1,
+    fontSize: pTd(32),
+    lineHeight: pTd(38),
+    ...fonts.BGMediumFont,
+  },
+  dollarBalance: {
+    ...fonts.SGRegularFont,
+    marginTop: pTd(4),
+    color: darkColors.textBase1,
+    fontSize: pTd(16),
+    lineHeight: pTd(22),
+    height: pTd(22),
+  },
+  textOverflow: {
+    fontSize: pTd(28),
+    lineHeight: pTd(40),
+  },
+  listFront: {
+    textAlign: 'left',
+    width: '100%',
+    lineHeight: pTd(24),
+    paddingVertical: pTd(8),
+  },
+  buttonGroupWrap: {
+    marginTop: pTd(32),
+    marginBottom: pTd(32),
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
+  },
+  spacerStyle: {
+    width: pTd(36),
+  },
+  transferWrap: {
+    flex: 1,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  noResultWrap: {
+    backgroundColor: white,
+  },
+  noResultText: {
+    textAlign: 'center',
+    marginTop: pTd(8),
+    color: font7,
+    fontSize: pTd(16),
+    lineHeight: pTd(22),
+  },
+  listWrap: {
+    backgroundColor: defaultColors.bg1,
+  },
+  subTitle: {
+    fontSize: pTd(12),
+  },
+  buttonContainer: {
+    flex: 1,
+  },
+  buttonContainer1st: {
+    marginLeft: 0,
+  },
+  buttonContainerGap1: {
+    marginLeft: 8,
+  },
+  buttonContainerGap2: {
+    marginLeft: 12,
+  },
+  buttonContainerGap3: {
+    marginLeft: 24,
+  },
+  buttonWrap: {
+    width: '100%',
+  },
+  buttonWrapStyle1: {
+    marginHorizontal: pTd(16),
+  },
+  buttonRow: { width: '94%', justifyContent: 'space-around' },
+  banner: {
+    marginBottom: pTd(8),
+  },
+  noData: {
+    display: 'flex',
+    flexDirection: 'row',
+    height: pTd(490),
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+    color: darkColors.textBase2,
+  },
+});

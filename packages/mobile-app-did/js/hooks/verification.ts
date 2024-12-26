@@ -11,8 +11,10 @@ import { useCallback, useMemo } from 'react';
 import { verification } from 'utils/api';
 import { OperationTypeEnum, VerificationType } from '@portkey-wallet/types/verifier';
 import { useGuardiansInfo } from '@portkey-wallet/hooks/hooks-ca/guardian';
+import { useVerifyManagerAddress } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import navigationService from 'utils/navigationService';
 import { parseTwitterToken } from '@portkey-wallet/utils/authentication';
+import { getOperationDetails } from '@portkey-wallet/utils/operation.util';
 
 export const useGetCurrentLoginAccountVerifyFunc = () => {
   const { appleSign } = useAppleAuthentication();
@@ -22,6 +24,7 @@ export const useGetCurrentLoginAccountVerifyFunc = () => {
   const { facebookSign } = useFacebookAuthentication();
   const originChainId = useOriginChainId();
   const { userGuardiansList } = useGuardiansInfo();
+  const verifyManagerAddress = useVerifyManagerAddress();
   const guardianType = useMemo(() => userGuardiansList?.[0].guardianType, [userGuardiansList]);
 
   const emailSign = useCallback(async () => {
@@ -42,6 +45,7 @@ export const useGetCurrentLoginAccountVerifyFunc = () => {
           verifierSessionId: req.verifierSessionId,
         },
         verificationType: VerificationType.revokeAccount,
+        operationDetails: getOperationDetails(OperationTypeEnum.revokeAccount),
       });
     } else {
       throw new Error('send email fail');
@@ -53,13 +57,13 @@ export const useGetCurrentLoginAccountVerifyFunc = () => {
     let id = '';
     switch (guardianType) {
       case LoginType.Apple: {
-        const { identityToken, user } = await appleSign();
+        const { identityToken, user } = await appleSign(verifyManagerAddress ?? '');
         token = identityToken;
         id = user.id;
         break;
       }
       case LoginType.Google: {
-        const { accessToken, user } = await googleSign();
+        const { accessToken, user } = await googleSign(verifyManagerAddress ?? '');
         token = accessToken;
         id = user.id;
 
@@ -97,7 +101,7 @@ export const useGetCurrentLoginAccountVerifyFunc = () => {
         id,
       },
     };
-  }, [appleSign, facebookSign, googleSign, guardianType, telegramSign, twitterSign]);
+  }, [appleSign, facebookSign, googleSign, guardianType, telegramSign, twitterSign, verifyManagerAddress]);
 
   return guardianType === LoginType.Email ? emailSign : socialSign;
 };

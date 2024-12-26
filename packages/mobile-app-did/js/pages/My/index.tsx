@@ -11,6 +11,7 @@ import { IconName } from 'components/Svg';
 import { pTd } from 'utils/unit';
 import { useIsImputation } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { useReferral } from '@portkey-wallet/hooks/hooks-ca/referral';
+import { reportReferralClick } from 'utils/analysisiReport';
 import useEffectOnce from 'hooks/useEffectOnce';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
@@ -26,6 +27,7 @@ interface MenuItemType {
 export default function MyMenu() {
   const { t } = useLanguage();
   const isImputation = useIsImputation();
+
   const currentNetworkInfo = useCurrentNetworkInfo();
 
   const { setViewReferralStatusStatus, getReferralLink, referralLink = '' } = useReferral();
@@ -44,6 +46,11 @@ export default function MyMenu() {
 
   const MenuList: Array<MenuItemType> = useMemo(
     () => [
+      // {
+      //   name: 'Security',
+      //   label: 'security',
+      //   icon: 'wallet-security',
+      // },
       {
         name: 'WalletHome',
         label: 'Wallet',
@@ -69,12 +76,14 @@ export default function MyMenu() {
         label: 'Wallet Security',
         icon: 'wallet-security',
       },
+      // remove referral temporarily
       {
         name: 'UserReferral',
         label: 'Referral',
         icon: 'referral',
         suffixDom: <TextS style={styles.newStyle}>New</TextS>,
         onPress: () => {
+          reportReferralClick();
           setViewReferralStatusStatus();
           navigationService.navigate('ProviderWebPage', {
             title: 'Portkey Referral Program',

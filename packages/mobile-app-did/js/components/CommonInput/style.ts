@@ -1,41 +1,43 @@
 import { StyleSheet } from 'react-native';
-import { defaultColors } from 'assets/theme/index';
+import { darkColors, defaultColors } from 'assets/theme/index';
 import GStyles from 'assets/theme/GStyles';
 import { pTd } from 'utils/unit';
-
-const { border1, font3, font5, bg4 } = defaultColors;
+import { makeStyles } from '@rneui/themed';
 
 export const commonStyles = StyleSheet.create({
   rightIconContainerStyle: {
     marginRight: pTd(10),
   },
   loadingStyle: {
-    width: pTd(20),
+    width: pTd(32),
   },
   inputContainerGrayBorderStyle: {
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: defaultColors.border8,
+    borderColor: darkColors.borderBase1,
     borderBottomColor: defaultColors.border8,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
+  inputContainerErrorBorderStyle: {
+    borderColor: darkColors.textDanger2,
+  },
 });
 
-export const searchStyles = StyleSheet.create({
+export const getSearchStyles = makeStyles(theme => ({
   containerStyle: {
     height: pTd(40),
     paddingLeft: 0,
     paddingRight: 0,
   },
   inputContainerStyle: {
-    borderBottomWidth: 0,
-    backgroundColor: bg4,
-    height: pTd(36),
-    borderRadius: pTd(6),
+    borderColor: theme.colors.borderBase1,
+    borderWidth: pTd(1),
+    backgroundColor: theme.colors.bgBase1,
+    height: pTd(40),
+    borderRadius: pTd(20),
   },
   inputStyle: {
-    fontSize: pTd(14),
-    // ...GStyles.marginArg(14, 16),
-    // height: pTd(50),
+    fontSize: pTd(16),
+    paddingLeft: pTd(16),
     marginLeft: pTd(4),
     marginRight: pTd(14),
   },
@@ -46,33 +48,33 @@ export const searchStyles = StyleSheet.create({
   leftIconContainerStyle: {
     marginLeft: pTd(12),
   },
-});
+}));
 
-export const generalStyles = StyleSheet.create({
+export const getGeneralStyles = makeStyles(theme => ({
   containerStyle: {
     ...GStyles.paddingArg(0),
     ...GStyles.marginArg(0),
   },
   inputContainerStyle: {
-    borderColor: border1,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    height: pTd(56),
-    borderRadius: pTd(6),
+    borderColor: theme.colors.borderBase1,
+    borderWidth: pTd(1),
+    // borderBottomWidth: StyleSheet.hairlineWidth,
+    height: pTd(40),
+    borderRadius: pTd(8),
   },
   inputStyle: {
-    fontSize: pTd(14),
-    color: font5,
-    ...GStyles.marginArg(18, 16),
-    minHeight: pTd(60),
-    height: pTd(60),
+    fontSize: pTd(16),
+    color: theme.colors.textBase1,
+    paddingHorizontal: pTd(16),
+    minHeight: pTd(40),
+    height: pTd(40),
   },
   labelStyle: {
-    color: font3,
+    color: theme.colors.textBase1,
     fontSize: pTd(14),
     lineHeight: pTd(20),
     marginBottom: pTd(8),
-    fontWeight: '400',
+    // fontWeight: '400',
     paddingLeft: pTd(8),
   },
   rightIconContainerStyle: {
@@ -80,15 +82,16 @@ export const generalStyles = StyleSheet.create({
   },
   errorStyle: {
     marginLeft: 0,
-    paddingLeft: pTd(8),
-    fontSize: pTd(12),
-    lineHeight: pTd(16),
+    paddingLeft: 0,
+    fontSize: pTd(16),
+    lineHeight: pTd(23),
+    color: theme.colors.textDanger2,
   },
   disabledInputStyle: {
-    color: font5,
+    color: theme.colors.textBase1,
     opacity: 1,
   },
-});
+}));
 
 export const bgWhiteStyles = StyleSheet.create({
   inputContainerStyle: {

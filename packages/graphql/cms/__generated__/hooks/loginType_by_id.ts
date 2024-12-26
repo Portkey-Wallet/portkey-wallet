@@ -12,8 +12,8 @@ export type LoginType_By_IdQuery = {
   loginType_by_id?: {
     __typename?: 'loginType';
     id: string;
-    status?: string | null;
     label: string;
+    status?: string | null;
     value: string;
   } | null;
 };
@@ -22,8 +22,8 @@ export const LoginType_By_IdDocument = gql`
   query loginType_by_id($id: ID!) {
     loginType_by_id(id: $id) {
       id
-      status
       label
+      status
       value
     }
   }

@@ -96,7 +96,9 @@ export class CodePushOperator extends EventEmitter implements ICodePushOperator 
   public async initUpdateInfo() {
     try {
       const data = await this.storage.getItem(this._storageKey + this.version);
-      if (!data) throw new Error('No update info');
+      if (!data) {
+        throw new Error('No update info');
+      }
       this.storageUpdateInfo = JSON.parse(data);
     } catch (error) {
       this.storageUpdateInfo = {};
@@ -129,7 +131,9 @@ export class CodePushOperator extends EventEmitter implements ICodePushOperator 
     deploymentKey?: string | undefined,
     handleBinaryVersionMismatchCallback?: HandleBinaryVersionMismatchCallback | undefined,
   ) {
-    if (this.isValidRemotePackageInfo(this.remotePackageInfo)) return this.remotePackageInfo.remotePackage;
+    if (this.isValidRemotePackageInfo(this.remotePackageInfo)) {
+      return this.remotePackageInfo.remotePackage;
+    }
     const remotePackage = await CodePush.checkForUpdate(
       deploymentKey || this.deploymentKey,
       handleBinaryVersionMismatchCallback,
@@ -141,8 +145,12 @@ export class CodePushOperator extends EventEmitter implements ICodePushOperator 
   public async showUpdatedAlert() {
     try {
       const currentData = await this.getUpdateMetadata(CodePush.UpdateState.RUNNING);
-      if (!currentData) return;
-      if (this.getStorageUpdateInfo(currentData.packageHash)) return;
+      if (!currentData) {
+        return;
+      }
+      if (this.getStorageUpdateInfo(currentData.packageHash)) {
+        return;
+      }
       const info = await this.getUpdateInfo(currentData.label);
       if (info.updatedContent || info.updatedTitle) {
         this.setStorageUpdateInfo(currentData.packageHash);
@@ -150,7 +158,7 @@ export class CodePushOperator extends EventEmitter implements ICodePushOperator 
           messageStyle: { textAlign: 'left' },
           title: info.updatedTitle || '',
           message: info.updatedContent,
-          buttons: [{ title: 'I Know' }],
+          buttons: [{ title: 'OK' }],
         });
       }
     } catch (error) {
@@ -162,14 +170,20 @@ export class CodePushOperator extends EventEmitter implements ICodePushOperator 
     try {
       const updateInfo = await this.checkForUpdate();
       const [currentData] = await Promise.all([this.getUpdateMetadata(CodePush.UpdateState.RUNNING)]);
-      if (updateInfo?.packageHash === currentData?.packageHash) return;
-      if (!updateInfo) return;
+      if (updateInfo?.packageHash === currentData?.packageHash) {
+        return;
+      }
+      if (!updateInfo) {
+        return;
+      }
       const info = await this.getUpdateInfo(updateInfo.label);
       if (info.isForceUpdate) {
         this.syncData(updateInfo, true);
         return;
       }
-      if (info.label && info.version) return info;
+      if (info.label && info.version) {
+        return info;
+      }
     } catch (error) {
       console.log(error, '======showCheckUpdate-error');
     }
@@ -183,7 +197,9 @@ export class CodePushOperator extends EventEmitter implements ICodePushOperator 
     }
   }
   public async getLabel() {
-    if (this.localPackage !== undefined) return this.localPackage?.label;
+    if (this.localPackage !== undefined) {
+      return this.localPackage?.label;
+    }
     return (await this.initLocalPackage())?.label;
   }
 
@@ -192,8 +208,11 @@ export class CodePushOperator extends EventEmitter implements ICodePushOperator 
     const buttons: ButtonRowProps['buttons'] = [];
     if (!isForceUpdate) {
       buttons.push({
-        title: 'Not Now',
+        title: 'Not now',
         type: 'outline',
+        onPress: () => {
+          OverlayModal.hide();
+        },
       });
     }
     buttons.push({
@@ -209,14 +228,13 @@ export class CodePushOperator extends EventEmitter implements ICodePushOperator 
         }
       },
     });
-    ActionSheet.alert({
-      title: 'The download is complete. Is the update immediate?',
-      buttons,
-    });
+    UpdateOverlay.showDownloadedTip({ bottomButtonGroup: buttons });
   }
   public async syncData(updateInfo: RemotePackage | null, isForceUpdate?: boolean) {
     try {
-      if (!isForceUpdate) UpdateOverlay.show();
+      if (!isForceUpdate) {
+        UpdateOverlay.show();
+      }
       const syncStatus = await this.sync(
         {
           deploymentKey: this.deploymentKey,
@@ -224,15 +242,21 @@ export class CodePushOperator extends EventEmitter implements ICodePushOperator 
         },
         status => {
           this.syncStatus = status;
-          if (status === CodePush.SyncStatus.INSTALLING_UPDATE) this.restartApp(isForceUpdate);
+          if (status === CodePush.SyncStatus.INSTALLING_UPDATE) {
+            this.restartApp(isForceUpdate);
+          }
         },
         progress => {
-          if (isForceUpdate) return;
+          if (isForceUpdate) {
+            return;
+          }
           this.emit(this._progressEventName, progress);
           this.progress = progress;
         },
       );
-      if (syncStatus === CodePush.SyncStatus.SYNC_IN_PROGRESS) throw Error(CODE_PUSH_ERROR.Downloading);
+      if (syncStatus === CodePush.SyncStatus.SYNC_IN_PROGRESS) {
+        throw Error(CODE_PUSH_ERROR.Downloading);
+      }
 
       if (updateInfo && syncStatus === CodePush.SyncStatus.UP_TO_DATE) {
         // CodePush.clearUpdates
@@ -241,13 +265,17 @@ export class CodePushOperator extends EventEmitter implements ICodePushOperator 
       }
     } catch (error) {
       const message = handleErrorMessage(error);
-      if (message === CODE_PUSH_ERROR.Downloading) throw error;
+      if (message === CODE_PUSH_ERROR.Downloading) {
+        throw error;
+      }
       throw Error(CODE_PUSH_ERROR.ReCheck);
     }
   }
   public async checkToUpdate() {
     try {
-      if (this.syncStatus === CodePush.SyncStatus.DOWNLOADING_PACKAGE) throw Error(CODE_PUSH_ERROR.Downloading);
+      if (this.syncStatus === CodePush.SyncStatus.DOWNLOADING_PACKAGE) {
+        throw Error(CODE_PUSH_ERROR.Downloading);
+      }
 
       if (this.syncStatus === CodePush.SyncStatus.UPDATE_INSTALLED) {
         this.restartApp();
@@ -265,30 +293,34 @@ export class CodePushOperator extends EventEmitter implements ICodePushOperator 
         return;
       }
 
-      if (updateInfo.packageHash === currentData?.packageHash) throw Error(CODE_PUSH_ERROR.Installed);
+      if (updateInfo.packageHash === currentData?.packageHash) {
+        throw Error(CODE_PUSH_ERROR.Installed);
+      }
 
       if (updateInfo.packageHash === pendingData?.packageHash) {
         return this.restartApp();
       }
       const info = await this.getUpdateInfo(updateInfo.label);
-      ActionSheet.alert({
-        messageStyle: { textAlign: 'left' },
-        title: info.title || 'New version found. Is an update made?',
-        message: info.content,
-        buttons: [
-          { title: 'Later', type: 'outline' },
-          {
-            title: 'Download',
-            onPress: async () => {
-              try {
-                await this.syncData(updateInfo, !!info.isForceUpdate);
-              } catch (error) {
-                CommonToast.failError(error);
-              }
-            },
+      const buttons: ButtonRowProps['buttons'] = [
+        {
+          title: 'Remind me later',
+          type: 'outline',
+          onPress: () => {
+            OverlayModal.hide();
           },
-        ],
-      });
+        },
+        {
+          title: 'Download now',
+          onPress: async () => {
+            try {
+              await this.syncData(updateInfo, !!info.isForceUpdate);
+            } catch (error) {
+              CommonToast.failError(error);
+            }
+          },
+        },
+      ];
+      UpdateOverlay.showTip({ bottomButtonGroup: buttons, title: info.title || '', message: info.content || '' });
     } catch (error) {
       const message = handleErrorMessage(error);
       if (message === CODE_PUSH_ERROR.Installed || message === CODE_PUSH_ERROR.Installed) {

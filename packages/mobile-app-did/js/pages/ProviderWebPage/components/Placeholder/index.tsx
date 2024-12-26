@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
   },
   title: {
     color: defaultColors.font16,
-    fontWeight: '500',
+    // fontWeight: '500',
     marginTop: pTd(32),
   },
   desc: {

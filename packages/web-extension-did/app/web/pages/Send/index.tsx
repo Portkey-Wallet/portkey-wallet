@@ -12,7 +12,7 @@ import {
 } from '@portkey-wallet/utils';
 import { getWallet, isCrossChain, isDIDAelfAddress } from '@portkey-wallet/utils/aelf';
 import { divDecimals, formatAmountShow, timesDecimals } from '@portkey-wallet/utils/converter';
-import { Button, Modal } from 'antd';
+import { Modal } from 'antd';
 import CustomSvg from 'components/CustomSvg';
 import CommonHeader from 'components/CommonHeader';
 import { ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -43,13 +43,7 @@ import { GuardianItem } from 'types/guardians';
 import { getBalance } from 'utils/sandboxUtil/getBalance';
 import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
-import CustomModal from 'pages/components/CustomModal';
-import {
-  CROSS_CHAIN_INTERCEPTED_CONTENT,
-  SEND_HELP_URL,
-  TransactionError,
-  WarningKey,
-} from '@portkey-wallet/constants/constants-ca/send';
+import { SEND_HELP_URL, TransactionError, WarningKey } from '@portkey-wallet/constants/constants-ca/send';
 import getSeed from 'utils/getSeed';
 import singleMessage from 'utils/singleMessage';
 import { usePromptLocationParams } from 'hooks/router';
@@ -700,6 +694,7 @@ export default function Send() {
 
     setAmount(maxAmount);
     setUSDAmount(maxUsdAmount);
+    setAmountErrMsg('');
   }, [chainId, checkManagerSyncState, maxAmount, maxUsdAmount]);
 
   const checkLimit = useCheckLimit(tokenInfo.chainId);
@@ -743,25 +738,6 @@ export default function Send() {
   );
 
   const checkSecurity = useCheckSecurity();
-  const showCrossChainAssetsModal = useCallback(() => {
-    const modal = CustomModal({
-      className: 'cross-chain-modal',
-      content: (
-        <div>
-          <div className="modal-title">Notice</div>
-          <div>
-            {[CROSS_CHAIN_INTERCEPTED_CONTENT].map((item, i) => (
-              <div key={`send_modal_${i}`}>{item}</div>
-            ))}
-          </div>
-        </div>
-      ),
-      okText: 'OK',
-      onOk: () => {
-        modal.destroy();
-      },
-    });
-  }, []);
 
   const previewCheck = useCallback(async () => {
     setAmountErrMsg('');

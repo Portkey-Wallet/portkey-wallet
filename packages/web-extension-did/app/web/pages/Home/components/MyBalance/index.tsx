@@ -87,7 +87,7 @@ export default function MyBalance() {
     () => [
       {
         label: (
-          <div className="tabItem">
+          <div className="tab-item">
             <span>{t('Tokens')}</span>
             <div className="number">{tokenCount}</div>
           </div>
@@ -97,7 +97,7 @@ export default function MyBalance() {
       },
       {
         label: (
-          <div className="tabItem">
+          <div className="tab-item">
             <span>{t('NFTs')}</span>
             <div className="number">{nftCount}</div>
           </div>

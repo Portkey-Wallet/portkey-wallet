@@ -24,6 +24,8 @@ export interface INftInfoType {
   tokenContractAddress?: string;
   displayChainName?: string;
   chainImageUrl?: string;
+  symbol: string;
+  label?: string;
 }
 
 export interface IAssetItemType {

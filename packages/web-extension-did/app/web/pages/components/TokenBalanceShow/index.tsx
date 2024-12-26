@@ -10,7 +10,7 @@ export interface ITokenBalanceShowProps {
   symbol: string;
   imageUrl?: string;
   balance: string;
-  decimals: string;
+  decimals: string | number;
   className?: string;
   onClickMax: () => void;
 }

@@ -1,9 +1,10 @@
 @import '../../../../assets/theme/color.less';
 
-.to-address-input-wrap {
+.address-input-wrap {
   min-width: 375px;
   font-size: 16px;
   line-height: 22px;
+  background-color: @bg-base1;
   .address-input-container {
     border-bottom: 1px solid @border-base1;
     .address-show {
@@ -73,6 +74,9 @@
         }
         .error-icon svg path {
           fill: @icon-warning3;
+        }
+        .error-icon.danger-warning svg path {
+          fill: @icon-danger3;
         }
       }
     }

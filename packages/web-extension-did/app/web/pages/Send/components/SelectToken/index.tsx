@@ -12,23 +12,17 @@ export interface SelectTokenProps {
   noDataMessage: string;
   toAddress?: string;
   loading: boolean;
+  onSelect: (v: IAssetToken) => void;
 }
 
-export default function SelectToken({ tokenInfos = [], noDataMessage, toAddress, loading }: SelectTokenProps) {
+export default function SelectToken({ tokenInfos = [], noDataMessage, loading, onSelect }: SelectTokenProps) {
   const userInfo = useCurrentUserInfo();
   const isMainnet = useIsMainnet();
-  const onNavigate = useCallback(
-    (tokenItem: IAssetToken) => {
-      // TODO-SA
-      console.log(tokenItem, toAddress);
-    },
-    [toAddress],
-  );
 
   const renderItem = useCallback(
     (item: IAssetToken) => {
       return (
-        <div key={`${item.symbol}_${item.chainId}`} className="token-item flex gap-8" onClick={() => onNavigate(item)}>
+        <div key={`${item.symbol}_${item.chainId}`} className="token-item flex gap-8" onClick={() => onSelect(item)}>
           <div className="token-icon-show">
             <TokenImageDisplay
               className="icon-symbol"
@@ -63,7 +57,7 @@ export default function SelectToken({ tokenInfos = [], noDataMessage, toAddress,
         </div>
       );
     },
-    [isMainnet, onNavigate, userInfo.hideAssets],
+    [isMainnet, onSelect, userInfo.hideAssets],
   );
 
   return (

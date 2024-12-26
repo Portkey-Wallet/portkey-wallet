@@ -1,0 +1,55 @@
+@import '../../../../assets/theme/color.less';
+
+.support-exchange {
+  width: 100%;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid @border-base1;
+  border-radius: 16px;
+  background-color: @bg-base2;
+  .info-circle-icon {
+    width: 24px;
+    height: 24px;
+    svg {
+      width: 100%;
+      height: 100%;
+    }
+  }
+  .text-show {
+    font-family: SG;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 22px;
+  }
+}
+
+.exchange-list {
+  margin-top: 10px;
+  gap: 2px;
+  .custom-svg {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+.address-type-select-wrap {
+  gap: 16px;
+  width: 100%;
+  font-size: 16px;
+  line-height: 22px;
+  color: @text-base2;
+  .address-type-item {
+    padding: 16px;
+    border: 1px solid @border-base1;
+    border-radius: 16px;
+    cursor: pointer;
+    &:hover {
+      background-color: @bg-hover;
+    }
+    &.selected-item {
+      background-color: @bg-base2;
+      border-color: @border-brand1;
+      color: @text-base1;
+    }
+  }
+}

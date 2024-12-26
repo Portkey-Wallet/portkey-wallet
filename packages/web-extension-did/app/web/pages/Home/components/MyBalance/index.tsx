@@ -52,6 +52,7 @@ import CommonBanner from 'components/CommonBanner';
 import { useCmsBanner } from '@portkey-wallet/hooks/hooks-ca/cms/banner';
 // import BigScreenHeader from 'pages/components/BigScreenHeader';
 import HomeHeader from 'pages/components/HomeHeader';
+import { SelectAssetListModal } from 'pages/Send/components/SelectAssetList';
 export interface TransactionResult {
   total: number;
   items: Transaction[];
@@ -66,6 +67,7 @@ export default function MyBalance() {
   const [activeKey, setActiveKey] = useState<string>(BalanceTab.TOKEN);
   const [navTarget, setNavTarget] = useState<'send' | 'receive'>('send');
   const [tokenOpen, setTokenOpen] = useState(false);
+  const [assetOpen, setAssetOpen] = useState(false);
   const navigate = useNavigateState<TSendLocationState | TRampLocationState>();
   const { state } = useLocationState<TMyBalanceState>();
   const { passwordSeed } = useUserInfo();
@@ -327,8 +329,11 @@ export default function MyBalance() {
         </div>
         <MainCards
           onSend={async () => {
-            setNavTarget('send');
-            return setTokenOpen(true);
+            if (isPrompt) {
+              setAssetOpen(true);
+            } else {
+              navigate('/select-asset');
+            }
           }}
           onReceive={() => {
             navigate('/receive-list');
@@ -345,6 +350,7 @@ export default function MyBalance() {
       {!isNotLessThan768 && <CommonBanner wrapClassName="banner-wrap" bannerList={homeBannerList} />}
       <Tabs activeKey={activeKey} onChange={onChange} items={renderTabsData} className="balance-tab" />
       <DisclaimerModal open={disclaimerOpen} onClose={() => setDisclaimerOpen(false)} {...disclaimerData.current} />
+      <SelectAssetListModal open={assetOpen} onCancel={() => setAssetOpen(false)} />
     </div>
   );
 }

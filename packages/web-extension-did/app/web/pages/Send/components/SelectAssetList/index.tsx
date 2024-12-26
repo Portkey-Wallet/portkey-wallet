@@ -4,9 +4,17 @@ import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/u
 import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { fetchAssetListV2 } from '@portkey-wallet/store/store-ca/assets/api';
-import { IAssetItemV2 } from '@portkey-wallet/store/store-ca/assets/type';
+import { IAssetItemV2, IAssetToken, INftInfoType } from '@portkey-wallet/store/store-ca/assets/type';
 import useDebounce from 'hooks/useDebounce';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { CommonTabs, CommonInput, CommonModal } from '@portkey/did-ui-react';
+import SelectToken from '../SelectToken';
+import SelectNFT from '../SelectNFT';
+import { SendPageTypeEnum } from 'pages/Send';
+import { useNavigate } from 'react-router';
+import PageHeader from 'components/PageHeader';
+import { useNavigateState } from 'hooks/router';
+import { TSendLocationState } from 'types/router';
 
 const initFilteredListShow = { nftInfos: [], tokenInfos: [] };
 
@@ -18,6 +26,15 @@ export default function SelectAssetList() {
   const [isFetching, setIsFetching] = useState(false);
   const [, getTokenPrice] = useGetCurrentAccountTokenPrice();
   const [filteredListShow, setFilteredListShow] = useState<IAssetItemV2>(initFilteredListShow);
+  const [curTab, setCurTab] = useState<SendPageTypeEnum>(SendPageTypeEnum.token);
+  const navigate = useNavigateState<TSendLocationState>();
+
+  const onSelect = useCallback(
+    (v: IAssetToken | INftInfoType, t: SendPageTypeEnum) => {
+      navigate(`/send/${t}/${v.symbol}`, { state: v });
+    },
+    [navigate],
+  );
 
   const assetListShow = useMemo(() => {
     if (debounceKeyword) {
@@ -70,14 +87,76 @@ export default function SelectAssetList() {
     return debounceKeyword ? 'No results found' : 'There are currently no assets to send.';
   }, [debounceKeyword]);
 
-  // TODO
-  const test = useCallback(() => {
-    console.log(noDataMessage, isFetching, assetListShow, setKeyword);
-  }, [assetListShow, isFetching, noDataMessage]);
-
   return (
-    <div>
-      <div onClick={test}>{noDataMessage}</div>
+    <div className="send-asset-list">
+      <CommonInput
+        type="search"
+        placeholder="Search"
+        value={keyword}
+        onChange={(e) => {
+          const v = e.target.value.trim();
+          setKeyword(v);
+        }}
+        className="send-search"
+        onClear={() => {
+          setKeyword('');
+        }}
+      />
+      <CommonTabs
+        className="send-asset"
+        activeKey={curTab}
+        onChange={(v) => {
+          setCurTab(v);
+        }}
+        items={[
+          {
+            label: 'Tokens',
+            key: SendPageTypeEnum.token,
+            children: (
+              <SelectToken
+                onSelect={(v) => onSelect(v, SendPageTypeEnum.token)}
+                tokenInfos={assetListShow.tokenInfos || []}
+                loading={isFetching}
+                noDataMessage={noDataMessage}
+              />
+            ),
+          },
+          {
+            label: 'NFTs',
+            key: SendPageTypeEnum.nft,
+            children: (
+              <SelectNFT
+                onSelect={(v) => onSelect(v, SendPageTypeEnum.nft)}
+                nftInfos={assetListShow?.nftInfos || []}
+                loading={isFetching}
+                noDataMessage={noDataMessage}
+              />
+            ),
+          },
+        ]}
+      />
     </div>
+  );
+}
+
+export function SelectAssetListPage() {
+  const navigate = useNavigate();
+  const onBack = useCallback(() => {
+    navigate('/');
+  }, [navigate]);
+  return (
+    <div className="select-asset-list-page">
+      <PageHeader onBackCb={onBack} headerTitle={`Select Asset to Send`} />
+      <SelectAssetList />
+    </div>
+  );
+}
+
+export function SelectAssetListModal({ open, onCancel }: { open: boolean; onCancel: () => void }) {
+  return (
+    <CommonModal open={open}>
+      <PageHeader onBackCb={onCancel} headerTitle={`Select Asset to Send`} />
+      <SelectAssetList />
+    </CommonModal>
   );
 }

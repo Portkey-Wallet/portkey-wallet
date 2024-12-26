@@ -12,7 +12,7 @@ export interface INFTBalanceShowProps {
   symbol: string;
   imageUrl?: string;
   balance: string;
-  decimals: string;
+  decimals: string | number;
   isSeed?: boolean;
   seedType?: SeedTypeEnum;
   seedTypeTagSize?: NFTSizeEnum;

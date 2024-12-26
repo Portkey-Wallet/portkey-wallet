@@ -9,18 +9,18 @@ import './index.less';
 export interface SelectNFTProps {
   nftInfos: IAssetNftCollection[];
   noDataMessage: string;
-  toAddress?: string;
   loading: boolean;
+  toAddress?: string;
+  onSelect: (v: INftInfoType) => void;
 }
 
-export default function SelectNFT({ nftInfos = [], noDataMessage, toAddress, loading }: SelectNFTProps) {
+export default function SelectNFT({ nftInfos = [], noDataMessage, loading, onSelect }: SelectNFTProps) {
   const isMainnet = useIsMainnet();
-  // TODO-SA
-  console.log(toAddress);
+
   const renderItem = useCallback(
     (nft: INftInfoType) => {
       return (
-        <div className="nft-item flex-row-center gap-8">
+        <div className="nft-item flex-row-center gap-8" onClick={() => onSelect(nft)}>
           <NFTImageDisplay
             src={nft.imageUrl}
             width={42}
@@ -38,7 +38,7 @@ export default function SelectNFT({ nftInfos = [], noDataMessage, toAddress, loa
         </div>
       );
     },
-    [isMainnet],
+    [isMainnet, onSelect],
   );
   const renderCollection = useCallback(
     (item: IAssetNftCollection) => {

@@ -111,7 +111,7 @@ export default function SendPreview({
   return (
     <div className={clsx('send-preview-wrap', className)}>
       <div className="flex-column-center">
-        <CustomSvgV3 type="Activity=Send" />
+        <CustomSvgV3 type="Activity=Send" className="activity-send-icon" />
         <div className="amount-show">{`${formatAmountShow(amount, tokenInfo?.decimals)} ${tokenInfo?.symbol}`}</div>
         <div className="usd-show">{`${formatAmountUSDShow(usdAmount)}`}</div>
       </div>

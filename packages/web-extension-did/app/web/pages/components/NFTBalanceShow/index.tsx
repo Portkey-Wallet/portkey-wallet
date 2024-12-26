@@ -37,7 +37,6 @@ export default function NFTBalanceShow(props: INFTBalanceShowProps) {
         <div>{`${alias} #${tokenId}`}</div>
         <div className="balance-text">{`${formatTokenAmountShowWithDecimals(balance, decimals)} available`}</div>
       </div>
-      {/* TODO-SA */}
       <Button className="max-button" onClick={onClickMax}>
         MAX
       </Button>

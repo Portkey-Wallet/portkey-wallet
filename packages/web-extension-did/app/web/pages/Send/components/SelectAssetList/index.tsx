@@ -15,6 +15,9 @@ import { useNavigate } from 'react-router';
 import PageHeader from 'components/PageHeader';
 import { useNavigateState } from 'hooks/router';
 import { TSendLocationState } from 'types/router';
+import { CustomSvgV3 } from 'components/CustomSvgV3';
+import { ChainId } from '@portkey-wallet/types';
+import './index.less';
 
 const initFilteredListShow = { nftInfos: [], tokenInfos: [] };
 
@@ -31,7 +34,7 @@ export default function SelectAssetList() {
 
   const onSelect = useCallback(
     (v: IAssetToken | INftInfoType, t: SendPageTypeEnum) => {
-      navigate(`/send/${t}/${v.symbol}`, { state: v });
+      navigate(`/send/${t}/${v.symbol}`, { state: { ...v, chainId: v.chainId as ChainId } });
     },
     [navigate],
   );
@@ -103,7 +106,7 @@ export default function SelectAssetList() {
         }}
       />
       <CommonTabs
-        className="send-asset"
+        className="send-asset-tab"
         activeKey={curTab}
         onChange={(v) => {
           setCurTab(v);
@@ -154,8 +157,11 @@ export function SelectAssetListPage() {
 
 export function SelectAssetListModal({ open, onCancel }: { open: boolean; onCancel: () => void }) {
   return (
-    <CommonModal open={open}>
-      <PageHeader onBackCb={onCancel} headerTitle={`Select Asset to Send`} />
+    <CommonModal open={open} className="select-asset-list-modal">
+      <div className="flex-between-center select-asset-list-modal-header">
+        <div>{`Select Asset to Send`}</div>
+        <CustomSvgV3 type="close thin" className="cursor-pointer" onClick={onCancel} />
+      </div>
       <SelectAssetList />
     </CommonModal>
   );

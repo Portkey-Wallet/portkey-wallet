@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useState } f
 import { CustomSvgV3 } from 'components/CustomSvgV3';
 import CircleLoading from 'components/CircleLoading';
 import { Input } from 'antd';
-import { SendPageTypeEnum, ToAccount } from 'pages/Send';
+import { SendPageTypeEnum, SendStage, ToAccount } from 'pages/Send';
 import { IAssetToken, INftInfoType } from '@portkey-wallet/store/store-ca/assets/type';
 import { Warning1Arr, WarningKey } from '@portkey-wallet/constants/constants-ca/send';
 import { INetworkItem } from '../SelectNetwork';
@@ -33,6 +33,7 @@ export interface IToAddressInputProps {
   caAddress: string;
   warning: WarningKey | undefined;
   checkFinish: boolean;
+  setStage: (v: SendStage) => void;
   setWarning: Dispatch<SetStateAction<WarningKey | undefined>>;
   setCheckFinish: Dispatch<SetStateAction<boolean>>;
   setSendAmount: Dispatch<SetStateAction<string>>;
@@ -49,6 +50,7 @@ export default function ToAddressInput({
   sendType,
   warning,
   checkFinish,
+  setStage,
   setStep,
   setWarning,
   setCheckFinish,
@@ -81,7 +83,8 @@ export default function ToAddressInput({
     setStep(InputStepEnum.input);
     setCheckFinish(true);
     setCheckedPass(true);
-  }, [setCheckFinish, setStep]);
+    setStage(SendStage.Address);
+  }, [setCheckFinish, setStage, setStep]);
 
   const pastValue = useCallback(async () => {
     try {
@@ -258,10 +261,12 @@ export default function ToAddressInput({
       <div className="address-input-container">
         {step === InputStepEnum.input ? renderAddressInput : renderAddressShow}
       </div>
-      <div className="paste-container">
-        <span className="show-text">{`Enter or `}</span>
-        <span className="paste-text cursor-pointer" onClick={pastValue}>{`paste a wallet address`}</span>
-      </div>
+      {step === InputStepEnum.input && !toAccount.address && (
+        <div className="paste-container">
+          <span className="show-text">{`Enter or `}</span>
+          <span className="paste-text cursor-pointer" onClick={pastValue}>{`paste a wallet address`}</span>
+        </div>
+      )}
     </div>
   );
 }

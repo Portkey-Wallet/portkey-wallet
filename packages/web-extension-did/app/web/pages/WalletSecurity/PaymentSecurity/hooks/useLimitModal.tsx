@@ -12,7 +12,7 @@ export function useTransferLimitApprovalModal() {
   const navigate = useNavigateState<TTransferSettingEditLocationState>();
 
   return useCallback(
-    (state: ITransferLimitRouteState, type: LimitType, onOneTimeApproval: () => void, isPrompt: boolean) => {
+    (state: ITransferLimitRouteState, _type: LimitType, onOneTimeApproval: () => void, isPrompt: boolean) => {
       const transferLimitModal = CustomModalBottom({
         type: 'confirm',
         noFooter: true,
@@ -56,7 +56,7 @@ export function useTransferLimitModal() {
   const navigate = useNavigateState<TTransferSettingEditLocationState>();
 
   return useCallback(
-    (state: ITransferLimitRouteState, type: LimitType, isPrompt: boolean) => {
+    (state: ITransferLimitRouteState, _type: LimitType, isPrompt: boolean) => {
       const transferLimitModal = CustomModalBottom({
         type: 'confirm',
         noFooter: true,

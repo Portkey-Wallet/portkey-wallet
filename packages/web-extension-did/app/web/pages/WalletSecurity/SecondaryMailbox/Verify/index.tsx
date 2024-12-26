@@ -1,9 +1,7 @@
 import CommonHeader from 'components/CommonHeader';
 import { useLocationState, useNavigateState } from 'hooks/router';
-import SecondPageHeader from 'pages/components/SecondPageHeader';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useCommonState, useLoading } from 'store/Provider/hooks';
-import BaseGuardianTypeIcon from 'components/BaseGuardianTypeIcon';
+import { useLoading } from 'store/Provider/hooks';
 import clsx from 'clsx';
 import { PasscodeInput } from 'antd-mobile';
 import { DIGIT_CODE } from '@portkey-wallet/constants/misc';
@@ -19,7 +17,6 @@ import './index.less';
 const MAX_TIMER = 60;
 
 export default function SecondaryMailboxVerify() {
-  const { isNotLessThan768 } = useCommonState();
   const navigate = useNavigateState();
   const { state } = useLocationState<TSecondaryMailboxVerifyState>();
   const [code, setCode] = useState<string>();
@@ -76,7 +73,7 @@ export default function SecondaryMailboxVerify() {
   }, [sendSecondaryEmailCode]);
   const btnText = useMemo(() => {
     if (codeErr) return 'Invalid code';
-    return timer ? `Resend after (${timer}s)` : 'Resend';
+    return timer ? `Resend after (${timer}s)` : 'Resend verification code';
   }, [codeErr, timer]);
   const onCodeFinish = useCallback(
     async (code: string) => {
@@ -104,17 +101,20 @@ export default function SecondaryMailboxVerify() {
     },
     [navigate, onCodeChange, setLoading],
   );
-  const mainContent = useMemo(() => {
-    return (
+
+  return (
+    <div className="secondary-mailbox-verify-page flex-column secondary-mailbox-verify-popup">
+      <CommonHeader className="popup-header-wrap" onLeftBack={goBack} />
       <div className="secondary-mailbox-verify-body">
         <div className="verify-email flex-row-center">
-          <BaseGuardianTypeIcon type="Email" />
-          <div>{state.email}</div>
+          {/*<BaseGuardianTypeIcon type="Email" />*/}
+          {/*<div>{state.email}</div>*/}
+          Verify your email
         </div>
         <div className="verify-tip">
-          {`A 6-digit code was sent to `}
+          {`Your assigned Guardian Verifier has sent a verification email to `}
           <span>{state.email}</span>
-          {`. Enter it within 10 minutes.`}
+          {` . Please enter the 6-digit code from the email to continue.`}
         </div>
         <div className={clsx('verify-code', codeErr && 'verify-code-error')}>
           <PasscodeInput
@@ -134,17 +134,6 @@ export default function SecondaryMailboxVerify() {
           </ThrottleButton>
         </div>
       </div>
-    );
-  }, [btnText, code, codeErr, onCodeChange, onCodeFinish, reSendCode, state.email, timer]);
-  return isNotLessThan768 ? (
-    <div className="secondary-mailbox-verify-page flex-column secondary-mailbox-verify-prompt">
-      <SecondPageHeader leftCallBack={goBack} />
-      {mainContent}
-    </div>
-  ) : (
-    <div className="secondary-mailbox-verify-page flex-column secondary-mailbox-verify-popup">
-      <CommonHeader className="popup-header-wrap" onLeftBack={goBack} />
-      {mainContent}
     </div>
   );
 }

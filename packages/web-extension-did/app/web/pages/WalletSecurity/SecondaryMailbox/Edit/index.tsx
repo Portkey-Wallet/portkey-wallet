@@ -1,10 +1,7 @@
-import { useCommonState } from 'store/Provider/hooks';
 import { useCallback, useMemo, useState } from 'react';
 import { useLocationState, useNavigateState } from 'hooks/router';
 import { Input } from 'antd';
-import clsx from 'clsx';
 import CommonHeader from 'components/CommonHeader';
-import SecondPageHeader from 'pages/components/SecondPageHeader';
 import { EmailReg } from '@portkey-wallet/utils/reg';
 import { EmailError } from '@portkey-wallet/utils/check';
 import { TSecondaryMailboxEditState, TSecondaryMailboxVerifyState } from 'types/router';
@@ -15,10 +12,11 @@ import AsyncButton from 'components/AsyncButton';
 import { verification } from 'utils/api';
 import { SendSecondVerificationConfig } from '@portkey-wallet/api/api-did/verification/utils';
 import { PlatformType } from '@portkey-wallet/types/verifier';
+import { CommonPromptCard } from '@portkey/did-ui-react';
+import { PromptCardType } from '@portkey/did-ui-react/dist/_types/src/components/CommonPromptCard';
 import './index.less';
 
 export default function SecondaryMailboxEdit() {
-  const { isNotLessThan768 } = useCommonState();
   const navigate = useNavigateState<TSecondaryMailboxVerifyState>();
   const { state } = useLocationState<TSecondaryMailboxEditState>();
   const [val, setVal] = useState(state?.email || '');
@@ -27,7 +25,11 @@ export default function SecondaryMailboxEdit() {
 
   const btnDisabled = useMemo(() => !(val && !errMsg && val !== secondaryEmail), [errMsg, secondaryEmail, val]);
   const goBack = useCallback(() => {
-    navigate('/setting/wallet-security/secondary-mailbox');
+    if (state.email) {
+      navigate('/setting/wallet-security/secondary-mailbox');
+    } else {
+      navigate('/setting');
+    }
   }, [navigate]);
   const handleEmailInputChange = useCallback((v: string) => {
     setErrMsg('');
@@ -62,43 +64,34 @@ export default function SecondaryMailboxEdit() {
       singleMessage.error(handleErrorMessage(error || 'send fail'));
     }
   }, [navigate, val]);
-  const mainContent = useMemo(() => {
-    return (
-      <div
-        className={clsx(
-          'flex-column-between',
-          'flex-1',
-          'secondary-mailbox-body',
-          isNotLessThan768 ? 'secondary-mailbox-body-prompt' : 'secondary-mailbox-body-popup',
-        )}>
+
+  return (
+    <div className="secondary-mailbox-page flex-column-between secondary-mailbox-popup">
+      <CommonHeader className="popup-header-wrap" title={`Backup Email`} onLeftBack={goBack} />
+      <div className="flex-column-between flex-1 secondary-mailbox-body secondary-mailbox-body-popup customer-form">
         <div className="mailbox-container">
-          <div className="mailbox-label">{`Backup Mailbox`}</div>
+          <div className="mailbox-label">{`Add a backup email address`}</div>
           <Input
             className="email-input"
             value={val}
             placeholder={`Enter email`}
+            // allowClear
             onChange={(e) => {
               handleEmailInputChange(e.target.value);
             }}
           />
           <div className="err-msg">{errMsg}</div>
+          <CommonPromptCard
+            className="mailbox-tip"
+            title=""
+            type={'info' as PromptCardType}
+            description="Notifications for authorizing or signing transactions will be sent to your guardian's email. If unavailable, they'll go to your backup email."
+          />
         </div>
         <AsyncButton type="primary" onClick={onSave} disabled={btnDisabled}>
-          Save
+          Verify email
         </AsyncButton>
       </div>
-    );
-  }, [isNotLessThan768, val, errMsg, onSave, btnDisabled, handleEmailInputChange]);
-
-  return isNotLessThan768 ? (
-    <div className="secondary-mailbox-edit-page flex-column-between secondary-mailbox-edit-prompt">
-      <SecondPageHeader title={`Set Secondary Mailbox`} leftCallBack={goBack} />
-      {mainContent}
-    </div>
-  ) : (
-    <div className="secondary-mailbox-edit-page flex-column-between secondary-mailbox-edit-popup">
-      <CommonHeader className="popup-header-wrap" title={`Set Secondary Mailbox`} onLeftBack={goBack} />
-      {mainContent}
     </div>
   );
 }

@@ -1,15 +1,8 @@
 import { ITransferLimitRouteState } from '@portkey-wallet/types/types-ca/paymentSecurity';
-import { Modal } from 'antd';
-import CustomSvg from 'components/CustomSvg';
-import {
-  ApproveExceedDailyLimit,
-  ApproveExceedSingleLimit,
-  ExceedDailyLimit,
-  ExceedSingleLimit,
-  LimitType,
-} from 'constants/security';
+import { LimitType } from 'constants/security';
 import { useNavigateState } from 'hooks/router';
-import CustomModal from 'pages/components/CustomModal';
+import { CustomModalBottom } from 'pages/components/CustomModalBottom';
+import ModalContent from 'pages/components/ModalContent';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TTransferSettingEditLocationState } from 'types/router';
@@ -19,29 +12,38 @@ export function useTransferLimitApprovalModal() {
   const navigate = useNavigateState<TTransferSettingEditLocationState>();
 
   return useCallback(
-    (state: ITransferLimitRouteState, type: LimitType, onOneTimeApproval: () => void) => {
-      const transferLimitModal = CustomModal({
+    (state: ITransferLimitRouteState, type: LimitType, onOneTimeApproval: () => void, isPrompt: boolean) => {
+      const transferLimitModal = CustomModalBottom({
         type: 'confirm',
+        noFooter: true,
+        isPrompt,
         content: (
-          <div>
-            <div className="flex-center close-icon" onClick={() => transferLimitModal.destroy()}>
-              <CustomSvg type="SuggestClose" />
-            </div>
-
-            <span>{type === LimitType.Daily ? ApproveExceedDailyLimit : ApproveExceedSingleLimit}</span>
-          </div>
+          <ModalContent
+            title="Maximum transaction limit exceeded"
+            content="Request one-time guardian approval to proceed, or modify the limit to lift restrictions on future transactions."
+            buttonGroupType="col"
+            buttons={[
+              {
+                content: t('Request one-time approval'),
+                type: 'primary',
+                onClick: () => {
+                  transferLimitModal.destroy();
+                  onOneTimeApproval();
+                },
+              },
+              {
+                content: t('Modify transfer limit for all'),
+                type: 'default',
+                onClick: () => {
+                  transferLimitModal.destroy();
+                  navigate('/setting/wallet-security/payment-security/transfer-settings-edit', {
+                    state: { ...state, initStateBackUp: state, ...state.extra },
+                  });
+                },
+              },
+            ]}
+          />
         ),
-        className: 'transfer-limit-modal',
-        autoFocusButton: null,
-        icon: null,
-        centered: true,
-        okText: t(`Request One-Time Approval`),
-        cancelText: t('Modify Transfer Limit for All'),
-        onOk: onOneTimeApproval,
-        onCancel: () =>
-          navigate('/setting/wallet-security/payment-security/transfer-settings-edit', {
-            state: { ...state, initStateBackUp: state, ...state.extra },
-          }),
       });
       return transferLimitModal;
     },
@@ -54,21 +56,39 @@ export function useTransferLimitModal() {
   const navigate = useNavigateState<TTransferSettingEditLocationState>();
 
   return useCallback(
-    (state: ITransferLimitRouteState, type: LimitType) => {
-      return Modal.confirm({
-        width: 320,
-        content: type === LimitType.Daily ? ExceedDailyLimit : ExceedSingleLimit,
-        className: 'cross-modal',
-        autoFocusButton: null,
-        icon: null,
-        centered: true,
-        okText: t('Modify'),
-        cancelText: t('Cancel'),
-        onOk: () =>
-          navigate('/setting/wallet-security/payment-security/transfer-settings-edit', {
-            state: { ...state, initStateBackUp: state, ...state.extra },
-          }),
+    (state: ITransferLimitRouteState, type: LimitType, isPrompt: boolean) => {
+      const transferLimitModal = CustomModalBottom({
+        type: 'confirm',
+        noFooter: true,
+        isPrompt,
+        content: (
+          <ModalContent
+            title="Maximum transaction limit exceeded"
+            content="Please modify the transfer limit to proceed."
+            buttonGroupType="row"
+            buttons={[
+              {
+                content: t('Cancel'),
+                type: 'default',
+                onClick: () => {
+                  transferLimitModal.destroy();
+                },
+              },
+              {
+                content: t('Modify'),
+                type: 'primary',
+                onClick: () => {
+                  transferLimitModal.destroy();
+                  navigate('/setting/wallet-security/payment-security/transfer-settings-edit', {
+                    state: { ...state, initStateBackUp: state, ...state.extra },
+                  });
+                },
+              },
+            ]}
+          />
+        ),
       });
+      return transferLimitModal;
     },
     [navigate, t],
   );

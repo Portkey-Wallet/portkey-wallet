@@ -70,6 +70,7 @@ import SecondaryMailbox from 'pages/WalletSecurity/SecondaryMailbox';
 import SecondaryMailboxEdit from 'pages/WalletSecurity/SecondaryMailbox/Edit';
 import SecondaryMailboxVerify from 'pages/WalletSecurity/SecondaryMailbox/Verify';
 import Security from '../../pages/My/SettingList/Security';
+import { SelectAssetListPage } from 'pages/Send/components/SelectAssetList';
 
 export const PageRouter = () =>
   useRoutes([
@@ -144,6 +145,10 @@ export const PageRouter = () =>
     {
       path: '/token-detail',
       element: <TokenDetail />,
+    },
+    {
+      path: '/select-asset',
+      element: <SelectAssetListPage />,
     },
     {
       path: '/send/:type/:symbol',

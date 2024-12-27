@@ -6,25 +6,16 @@ import {
 } from '@portkey-wallet/hooks/hooks-ca/security';
 import { useCurrentWallet, useCurrentWalletInfo, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { handleErrorMessage } from '@portkey-wallet/utils';
-import { Image } from 'antd';
-import {
-  SecurityVulnerabilityTip,
-  SecurityVulnerabilityTitle,
-  SecurityAccelerateTitle,
-  SecurityAccelerateContent,
-  SecurityAccelerateErrorTip,
-  LimitType,
-} from 'constants/security';
+import { SecurityAccelerateErrorTip, LimitType } from 'constants/security';
 import {
   useTransferLimitApprovalModal,
   useTransferLimitModal,
 } from 'pages/WalletSecurity/PaymentSecurity/hooks/useLimitModal';
-import CustomModal from 'pages/components/CustomModal';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ExtensionContractBasic } from 'utils/sandboxUtil/ExtensionContractBasic';
 import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
-import { useLoading } from 'store/Provider/hooks';
+import { useCommonState, useLoading } from 'store/Provider/hooks';
 import { ChainId } from '@portkey/provider-types';
 import { ICheckLimitBusiness, ITransferLimitRouteState } from '@portkey-wallet/types/types-ca/paymentSecurity';
 import { handleGuardianByContract } from 'utils/sandboxUtil/handleGuardianByContract';
@@ -33,7 +24,6 @@ import { fixedGuardianParams, fixedGuardianApprovedParams } from '@portkey-walle
 import { CheckSecurityResult, getAccelerateGuardianTxId } from '@portkey-wallet/utils/securityTest';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { getCurrentChainInfo } from 'utils/lib/SWGetReduxStore';
-import CustomSvg from 'components/CustomSvg';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { divDecimals } from '@portkey-wallet/utils/converter';
 import { MAX_TRANSACTION_FEE } from '@portkey-wallet/constants/constants-ca/wallet';
@@ -45,11 +35,14 @@ import getSeed from 'utils/getSeed';
 import singleMessage from 'utils/singleMessage';
 import { useNavigateState } from './router';
 import { TGuardiansLocationState } from 'types/router';
+import { CustomModalBottom } from 'pages/components/CustomModalBottom';
+import ModalContent from 'pages/components/ModalContent';
 
 export const useCheckSecurity = () => {
   const wallet = useCurrentWalletInfo();
   const addGuardiansModal = useAddGuardiansModal();
   const synchronizingModal = useSynchronizingModal();
+  const { isPrompt } = useCommonState();
 
   return useCallback(
     async (targetChainId: ChainId, onCancel?: () => void): Promise<boolean> => {
@@ -62,7 +55,7 @@ export const useCheckSecurity = () => {
 
         if (wallet.originChainId === targetChainId) {
           if (res.isOriginChainSafe) return true;
-          addGuardiansModal(targetChainId, onCancel);
+          addGuardiansModal(targetChainId, isPrompt, onCancel);
           return false;
         } else {
           if (res.isSynchronizing && res.isOriginChainSafe) {
@@ -76,10 +69,11 @@ export const useCheckSecurity = () => {
             synchronizingModal({
               accelerateChainId: targetChainId,
               accelerateGuardiansTxId: _txId,
+              isPrompt,
             });
             return false;
           }
-          addGuardiansModal(targetChainId, onCancel);
+          addGuardiansModal(targetChainId, isPrompt, onCancel);
           return false;
         }
       } catch (error) {
@@ -87,7 +81,7 @@ export const useCheckSecurity = () => {
         throw singleMessage.error(msg);
       }
     },
-    [addGuardiansModal, synchronizingModal, wallet?.caHash, wallet.originChainId],
+    [addGuardiansModal, synchronizingModal, isPrompt, wallet?.caHash, wallet.originChainId],
   );
 };
 
@@ -178,32 +172,41 @@ export function useSynchronizingModal() {
   return useCallback(
     ({
       accelerateChainId,
+      isPrompt,
       accelerateGuardiansTxId,
     }: {
       accelerateChainId: ChainId;
+      isPrompt: boolean;
       accelerateGuardiansTxId?: string;
     }) => {
-      const modal = CustomModal({
-        type: 'info',
+      const modal = CustomModalBottom({
+        type: 'confirm',
+        noFooter: true,
+        isPrompt,
         content: (
-          <div className="security-modal">
-            <CustomSvg type="SuggestClose" onClick={() => modal.destroy()} />
-            <Image
-              width={180}
-              height={108}
-              src="assets/images/securityTip.png"
-              className="modal-logo"
-              preview={false}
-            />
-            <div className="modal-title">{SecurityAccelerateTitle}</div>
-            <div>{SecurityAccelerateContent}</div>
-          </div>
+          <ModalContent
+            title="Wallet security level upgrade in progress"
+            content={`Click “Complete now” to immediately complete the addition of a guardian, or close this window and wait for completion, which will take about 1-3 minutes.`}
+            buttonGroupType="row"
+            buttons={[
+              {
+                content: t('Close'),
+                type: 'default',
+                onClick: () => {
+                  modal.destroy();
+                },
+              },
+              {
+                content: t('Complete now'),
+                type: 'primary',
+                onClick: () => {
+                  modal.destroy();
+                  checkAccelerateIsReady({ accelerateChainId, accelerateGuardiansTxId });
+                },
+              },
+            ]}
+          />
         ),
-        okText: t('OK'),
-        onOk: () => {
-          modal.destroy();
-          checkAccelerateIsReady({ accelerateChainId, accelerateGuardiansTxId });
-        },
       });
     },
     [checkAccelerateIsReady, t],
@@ -214,29 +217,36 @@ export function useAddGuardiansModal() {
   const { t } = useTranslation();
   const navigate = useNavigateState<TGuardiansLocationState>();
   return useCallback(
-    (accelerateChainId: ChainId, onCancel?: () => void) => {
-      const modal = CustomModal({
+    (accelerateChainId: ChainId, isPrompt: boolean, onCancel?: () => void) => {
+      const modal = CustomModalBottom({
         type: 'confirm',
+        noFooter: true,
+        isPrompt,
         content: (
-          <div className="security-modal">
-            <Image
-              width={180}
-              height={108}
-              src="assets/images/securityTip.png"
-              className="modal-logo"
-              preview={false}
-            />
-            <div className="modal-title">{SecurityVulnerabilityTitle}</div>
-            <div>{SecurityVulnerabilityTip}</div>
-          </div>
+          <ModalContent
+            title="Upgrade wallet security level"
+            content="You have too few guardians to protect your wallet. Please add at least one more guardian before proceeding."
+            buttonGroupType="row"
+            buttons={[
+              {
+                content: t('Not now'),
+                type: 'default',
+                onClick: () => {
+                  onCancel?.();
+                  modal.destroy();
+                },
+              },
+              {
+                content: t('Add guardians'),
+                type: 'primary',
+                onClick: () => {
+                  modal.destroy();
+                  navigate('/setting/guardians', { state: { accelerateChainId } });
+                },
+              },
+            ]}
+          />
         ),
-        cancelText: t('Not Now'),
-        okText: t('Add Guardians'),
-        onCancel: () => {
-          onCancel?.();
-          modal.destroy();
-        },
-        onOk: () => navigate('/setting/guardians', { state: { accelerateChainId } }),
       });
     },
     [navigate, t],
@@ -276,6 +286,7 @@ export const useCheckLimit = (targetChainId: ChainId) => {
   const checkTransferLimit = useCheckTransferLimit();
   const transferLimitApprovalModal = useTransferLimitApprovalModal();
   const transferLimitModal = useTransferLimitModal();
+  const { isPrompt } = useCommonState();
 
   return useCallback(
     async ({
@@ -340,12 +351,13 @@ export const useCheckLimit = (targetChainId: ChainId) => {
             .plus(MAX_TRANSACTION_FEE)
             .gte(ZERO.plus(divDecimals(balance, decimals)))
         ) {
-          transferLimitModal(settingParams, limitRes?.isSingleLimited ? LimitType.Single : LimitType.Daily);
+          transferLimitModal(settingParams, limitRes?.isSingleLimited ? LimitType.Single : LimitType.Daily, isPrompt);
         } else {
           transferLimitApprovalModal(
             settingParams,
             limitRes?.isSingleLimited ? LimitType.Single : LimitType.Daily,
             onOneTimeApproval,
+            isPrompt,
           );
         }
         return false;
@@ -360,6 +372,7 @@ export const useCheckLimit = (targetChainId: ChainId) => {
       transferLimitApprovalModal,
       transferLimitModal,
       walletInfo,
+      isPrompt,
     ],
   );
 };

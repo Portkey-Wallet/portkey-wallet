@@ -47,7 +47,7 @@ export const AddressTypeSelect: React.FC<IAddressTypeSelectProps> = (props) => {
         onClick={() => onChangeValue(AddressTypeEnum.EXCHANGE)}>
         <div className="flex-between-center">
           <div>{`Yes, send to an exchange`}</div>
-          {value === AddressTypeEnum.EXCHANGE && <CustomSvgV3 type="check_circle" />}
+          {value === AddressTypeEnum.EXCHANGE && <CustomSvgV3 fillColor="#B8E1FF" type="check_circle" />}
         </div>
         <ExchangeList />
       </div>
@@ -60,7 +60,7 @@ export const AddressTypeSelect: React.FC<IAddressTypeSelectProps> = (props) => {
         )}
         onClick={() => onChangeValue(AddressTypeEnum.NON_EXCHANGE)}>
         <div>{`No, it's a non-exchange address`}</div>
-        {value === AddressTypeEnum.NON_EXCHANGE && <CustomSvgV3 type="check_circle" />}
+        {value === AddressTypeEnum.NON_EXCHANGE && <CustomSvgV3 fillColor="#B8E1FF" type="check_circle" />}
       </div>
     </div>
   );

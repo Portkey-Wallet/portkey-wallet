@@ -50,7 +50,10 @@ export const useMenuList = () => {
       {
         label: 'Backup email',
         icon: 'my_mail_thin',
-        router: '/setting/wallet-security/token-allowance',
+        router:
+          !fetching && !secondaryEmail
+            ? '/setting/wallet-security/secondary-mailbox-edit'
+            : '/setting/wallet-security/secondary-mailbox',
         element: <div className="item-extra-info">{!fetching && !secondaryEmail ? `Not Set up` : ''}</div>,
       },
       {

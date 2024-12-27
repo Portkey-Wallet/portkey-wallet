@@ -1,6 +1,70 @@
 @import '../../../../assets/theme/color.less';
 
 .input-token-wrap {
-  font-size: 20px;
-  line-height: 24px;
+  padding: 24px;
+  font-size: 16px;
+  line-height: 22px;
+  color: @text-base2;
+  .amount-error {
+    .portkey-input {
+      color: @text-danger1 !important;
+    }
+  }
+  .portkey-input-affix-wrapper {
+    background-color: @bg-base1;
+    border: none;
+    align-items: baseline;
+    .portkey-input {
+      max-width: 343px !important;
+      border: none;
+      font-size: 32px;
+      line-height: 38px;
+      font-family: BG;
+      font-weight: 700;
+      color: @text-base1;
+      &::placeholder {
+        color: @text-base3;
+        font-size: 32px;
+        line-height: 38px;
+        font-family: BG;
+        font-weight: 700;
+      }
+    }
+    &.amount-input {
+      .portkey-input {
+        text-align: right;
+      }
+    }
+    .portkey-input-suffix,
+    .portkey-input-prefix {
+      margin-left: 6px;
+      font-size: 32px;
+      line-height: 38px;
+      font-family: BG;
+      font-weight: 700;
+      color: @text-base1;
+    }
+    &.portkey-input-affix-wrapper-focused {
+      box-shadow: none;
+    }
+  }
+  .swap-vert {
+    gap: 2px;
+    margin-top: 8px;
+  }
+  .swap-vert-thin-icon {
+    width: 16px;
+    height: 16px;
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
+  .error-msg {
+    font-size: 14px;
+    line-height: 20px;
+    text-align: center;
+    color: @text-danger2;
+  }
+
 }

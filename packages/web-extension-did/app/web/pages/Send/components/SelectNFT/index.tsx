@@ -20,7 +20,10 @@ export default function SelectNFT({ nftInfos = [], noDataMessage, loading, onSel
   const renderItem = useCallback(
     (nft: INftInfoType) => {
       return (
-        <div className="nft-item flex-row-center gap-8" onClick={() => onSelect(nft)}>
+        <div
+          className="nft-item flex-row-center gap-8"
+          key={`${nft.alias}-${nft.tokenId}`}
+          onClick={() => onSelect(nft)}>
           <NFTImageDisplay
             src={nft.imageUrl}
             width={42}
@@ -43,13 +46,13 @@ export default function SelectNFT({ nftInfos = [], noDataMessage, loading, onSel
   const renderCollection = useCallback(
     (item: IAssetNftCollection) => {
       return (
-        <>
-          <div className="nft-collection flex-row-center gap-8" key={item.collectionName}>
+        <div key={item.collectionName}>
+          <div className="nft-collection flex-row-center gap-8">
             <NFTImageDisplay src={item.imageUrl} width={24} alias={item.collectionName} />
             <div>{item.collectionName}</div>
           </div>
           {item.items.map((nft) => renderItem(nft))}
-        </>
+        </div>
       );
     },
     [renderItem],

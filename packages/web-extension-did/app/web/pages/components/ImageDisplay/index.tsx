@@ -1,13 +1,13 @@
 import clsx from 'clsx';
-import CustomSvg from 'components/CustomSvg';
+import { CustomSvgV3 } from 'components/CustomSvgV3';
 import { useMemo, useState } from 'react';
-import { IconType } from 'types/icon';
+import { IconTypeV3 } from 'types/icon';
 import './index.less';
 
 interface ImageDisplayProps {
   src?: string;
   className?: string;
-  backupSrc?: IconType;
+  backupSrc?: IconTypeV3;
   key?: string;
   notReady?: boolean;
   hasBorder?: boolean;
@@ -39,7 +39,7 @@ export default function ImageDisplay({
       {isShowDefault ? (
         backupSrc ? (
           <div className="flex-center">
-            <CustomSvg type={backupSrc} />
+            <CustomSvgV3 type={backupSrc} style={{ width: defaultWidth, height: defaultHeight }} />
           </div>
         ) : (
           <div className="image-backup flex-center">{name?.[0]}</div>
@@ -58,6 +58,7 @@ export default function ImageDisplay({
           onError={() => {
             setError(true);
           }}
+          alt={src}
         />
       )}
     </div>

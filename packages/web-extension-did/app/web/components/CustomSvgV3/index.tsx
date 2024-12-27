@@ -1,7 +1,7 @@
 import clsx from 'clsx';
-// import { CSSProperties } from 'react';
 import svgsList from '../../assets/iconV3/iconV3Svgs';
 import svgAvatarsList from '../../assets/iconV3/iconV3AvatarSvgs';
+import { CSSProperties } from 'react';
 
 export type SvgTypeV3 = keyof typeof svgsList;
 export type SvgAvatarTypeV3 = keyof typeof svgAvatarsList;
@@ -11,6 +11,7 @@ export function CustomSvgV3({
   className,
   fillColor,
   disabled,
+  style,
   ...props
 }: {
   type: SvgTypeV3;
@@ -18,11 +19,13 @@ export function CustomSvgV3({
   fillColor?: string;
   onClick?: () => void;
   disabled?: boolean;
+  style?: CSSProperties;
 }) {
   const svgContent = svgsList[type];
   return (
     <CustomSvgBase
       type={type}
+      style={style}
       svgContent={svgContent}
       className={className}
       fillColor={fillColor}
@@ -37,6 +40,7 @@ export function CustomSvgAvatarV3({
   className,
   fillColor,
   disabled,
+  style,
   ...props
 }: {
   type: SvgAvatarTypeV3;
@@ -44,6 +48,7 @@ export function CustomSvgAvatarV3({
   fillColor?: string;
   onClick?: () => void;
   disabled?: boolean;
+  style?: CSSProperties;
 }) {
   const svgContent = svgAvatarsList[type];
   return (
@@ -63,6 +68,7 @@ function CustomSvgBase({
   className,
   fillColor,
   svgContent,
+  style,
   ...props
 }: {
   type: string;
@@ -71,6 +77,7 @@ function CustomSvgBase({
   onClick?: () => void;
   svgContent: string;
   disabled?: boolean;
+  style?: CSSProperties;
 }) {
   if (fillColor) {
     svgContent = svgContent.replace(/fill="[^"]*"/g, `fill="${fillColor}"`);
@@ -81,6 +88,7 @@ function CustomSvgBase({
   return (
     <div
       className={clsx('custom-svg', `${type.toLocaleLowerCase()}-icon`, className)}
+      style={style}
       dangerouslySetInnerHTML={{ __html: svgContent }}
       {...props}></div>
   );

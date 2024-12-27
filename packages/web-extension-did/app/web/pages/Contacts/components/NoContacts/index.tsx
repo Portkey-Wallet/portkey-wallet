@@ -1,12 +1,11 @@
 import { Button } from 'antd';
 import CustomSvg from 'components/CustomSvg';
 import { useTranslation } from 'react-i18next';
-import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
 import './index.less';
 import { useGoAddNewContact } from 'hooks/useProfile';
-import { ExtraTypeEnum } from 'types/Profile';
+import { ContactHandleActionTypeEnum } from 'types/Profile';
 
-export default function NoContacts({ initData }: { initData: Partial<ContactItemType> }) {
+export default function NoContacts() {
   const { t } = useTranslation();
   const handleAdd = useGoAddNewContact();
 
@@ -18,7 +17,7 @@ export default function NoContacts({ initData }: { initData: Partial<ContactItem
       <Button
         className="flex-row-center add-button"
         type="text"
-        onClick={() => handleAdd(ExtraTypeEnum.ADD_NEW_CHAT, initData)}>
+        onClick={() => handleAdd(ContactHandleActionTypeEnum.ADD_CONTACT)}>
         <CustomSvg type="Plus" className="plug-svg" /> {t('Add New Contact')}
       </Button>
     </div>

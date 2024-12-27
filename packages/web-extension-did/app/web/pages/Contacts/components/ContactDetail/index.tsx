@@ -108,7 +108,7 @@ export default function ViewContactBody({ data }: IProfileDetailBodyProps) {
             </div>
           </div>
           <div className="name-edit-container">
-            <div className="name">{data.caHolderInfo?.walletName}</div>
+            <div className="name">{transName}</div>
             <div
               onClick={() => {
                 CustomModalBottom({

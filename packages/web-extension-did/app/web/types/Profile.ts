@@ -2,16 +2,16 @@ import { ILoginAccountListProps } from 'pages/Contacts/components/LoginAccountLi
 import { BaseHeaderProps } from './UI';
 import { IContactProfile } from '@portkey-wallet/types/types-ca/contact';
 import { IPopoverMenuListData } from '@portkey-wallet/im-ui-web';
-
-// used for route parameters
-export type ExtraType = 'can-chat-edit' | 'cant-chat-edit' | 'add-new-chat';
+import { IContactItemType } from '@portkey-wallet/types/types-ca/contactNew';
 
 // related to ExtraType
-export enum ExtraTypeEnum {
-  CAN_CHAT = 'can-chat-edit',
-  CANT_CHAT = 'cant-chat-edit',
-  ADD_NEW_CHAT = 'add-new-chat', // no status（add new chat）
+export enum ContactHandleActionTypeEnum {
+  EDIT_CONTACT = 'edit-contact',
+  ADD_CONTACT = 'new-contact',
 }
+
+// route type
+export type ContactHandleActionType = `${ContactHandleActionTypeEnum}`;
 
 export interface IProfileDetailDataProps extends Partial<IContactProfile> {
   relationId?: string;
@@ -22,16 +22,6 @@ export interface IProfileDetailDataProps extends Partial<IContactProfile> {
 
 export interface IProfileDetailBodyProps {
   data: IProfileDetailDataProps;
-  showChat?: boolean; // cms control
-  editText?: string;
-  chatText?: string;
-  addedText?: string;
-  addContactText?: string;
-  isShowRemark?: boolean;
-  morePopListData?: IPopoverMenuListData[];
-  handleEdit: () => void;
-  handleChat?: () => void;
-  handleAdd?: () => void;
 }
 
 export type IProfileDetailProps = BaseHeaderProps &

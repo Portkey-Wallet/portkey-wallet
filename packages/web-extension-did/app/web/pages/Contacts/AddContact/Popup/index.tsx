@@ -9,40 +9,46 @@ export default function AddContactPopup({
   isDisable,
   state,
   extra,
-  addressArr,
   validName,
   headerTitle,
-  isShowDrawer,
   goBack,
   onFinish,
-  handleInputValueChange,
-  handleSelectNetwork,
-  handleAddressChange,
-  closeDrawer,
-  handleNetworkChange,
+  handleAddressInfoChange,
+  isNetworkModalOpen,
+  handleNetworkModalState,
+  deleteContact,
 }: IAddContactProps) {
   return (
     <div className="add-contact-popup min-width-max-height">
-      <CommonHeader title={headerTitle} onLeftBack={goBack} />
+      <CommonHeader
+        title={headerTitle}
+        onLeftBack={goBack}
+        rightElementList={[
+          <div key={'delete'} onClick={deleteContact}>
+            delete
+          </div>,
+        ]}
+      />
       <AddContactForm
         form={form}
         isDisable={isDisable}
         validName={validName}
         state={state}
         extra={extra}
-        addressArr={addressArr}
         onFinish={onFinish}
-        handleSelectNetwork={handleSelectNetwork}
-        handleAddressChange={handleAddressChange}
-        handleInputValueChange={handleInputValueChange}
+        handleAddressInfoChange={handleAddressInfoChange}
+        handleNetworkModalState={handleNetworkModalState}
       />
       <NetworkDrawer
-        open={isShowDrawer}
+        open={isNetworkModalOpen}
         height={528}
         maskClosable={true}
         placement="bottom"
-        onChange={handleNetworkChange}
-        onClose={closeDrawer}
+        onChange={(v) => {
+          const _addressInfo = form?.getFieldValue('addressInfo');
+          handleAddressInfoChange({ ..._addressInfo, network: v });
+        }}
+        onClose={() => handleNetworkModalState(false)}
       />
     </div>
   );

@@ -3,11 +3,11 @@ import { useCallback, useMemo } from 'react';
 import SitesPopup from './Popup';
 import { MenuItemInfo } from 'pages/components/MenuList';
 import ImageDisplay from 'pages/components/ImageDisplay';
-import CustomSvg from 'components/CustomSvg';
 import { useCurrentDappList } from '@portkey-wallet/hooks/hooks-ca/dapp';
 import './index.less';
 import { isSafeOrigin } from '../utils';
 import { useNavigateState } from 'hooks/router';
+import { CustomSvgV3 } from 'components/CustomSvgV3';
 
 export default function ConnectedSites() {
   const { t } = useTranslation();
@@ -20,11 +20,13 @@ export default function ConnectedSites() {
         key: dapp.origin,
         element: (
           <div className="content flex">
-            <ImageDisplay defaultHeight={32} className="icon" src={dapp.icon} backupSrc="DappDefault" />
+            <ImageDisplay defaultHeight={42} className="icon" src={dapp.icon} backupSrc="DappDefault" />
             <div className="desc flex-column">
               <div className="text name">
-                <span className="dapp-name">{dapp.name}</span>
-                <CustomSvg type={isSafeOrigin(dapp.origin) ? 'DappLock' : 'DappWarn'} />
+                <span className="dapp-name">{dapp.name ?? 'Unknown'}</span>
+                {!isSafeOrigin(dapp.origin) && (
+                  <CustomSvgV3 type="warning" className="warning-icon" fillColor="#EB7D50" />
+                )}
               </div>
               <div className="text origin">{dapp.origin}</div>
             </div>

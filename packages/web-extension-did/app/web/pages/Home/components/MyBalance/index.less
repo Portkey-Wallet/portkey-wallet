@@ -4,6 +4,93 @@
 .balance {
   overflow-y: overlay;
   height: 100%;
+  
+
+  .@{app-prefix}-tabs {
+    background-color: @bg-base1;
+    overflow: hidden;
+    height: 100%;
+    margin-top: 8px;
+
+    .@{app-prefix}-tabs-nav {
+      margin: 0;
+      padding: 0 16px;
+      z-index: 9;
+      position: sticky;
+      top: 0;
+      background: @bg-base1;
+
+      &::before {
+        content: none;
+      }
+
+      .@{app-prefix}-tabs-nav-wrap {
+        .@{app-prefix}-tabs-nav-list {
+          flex: 1;
+          gap: 32px;
+          .@{app-prefix}-tabs-tab {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px 0;
+            margin: 0;
+
+            .@{app-prefix}-tabs-tab-btn {
+              font-size: 16px;
+              line-height: 24px;
+              font-weight: 500;
+              text-align: center;
+              color: @neutral-tertiary-text;
+              text-shadow: unset;
+            }
+          }
+
+          .@{app-prefix}-tabs-tab-active {
+            .@{app-prefix}-tabs-tab-btn {
+              color: @text-base1;
+            }
+          }
+        }
+      }
+    }
+  }
+  &.detail-scroll {
+    .@{app-prefix}-tabs-content-holder {
+      overflow-x: scroll;
+    }
+  }
+
+  .portkey-tabs-nav-list {
+    gap: 16px!important;
+  }
+ 
+
+  .tab-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    .number {
+      background-color: @bg-neutral2;
+      color: @neutral-white-text;
+      padding: 4px 6px;
+      border-radius: 4px;
+      font-size: 14px;
+      line-height: normal;
+      opacity: 0.7;
+    }
+  }
+
+  .portkey-tabs-tab-active {
+    .tab-item {
+      .number {
+        opacity: 1;
+      }
+    }
+
+  }
+  .portkey-tabs-ink-bar {
+    display: none;
+  }
 
   .main-content-wrap {
     gap: 24px;
@@ -65,60 +152,6 @@
 
   .banner-wrap {
     border-bottom: 1px solid @border-neutral3;
-  }
-
-  .@{app-prefix}-tabs {
-    background-color: @bg-base1;
-    overflow: hidden;
-    height: 100%;
-    margin-top: 8px;
-
-    .@{app-prefix}-tabs-nav {
-      margin: 0;
-      padding: 0 16px;
-      z-index: 9;
-      position: sticky;
-      top: 0;
-      background: @bg-base1;
-
-      &::before {
-        content: none;
-      }
-
-      .@{app-prefix}-tabs-nav-wrap {
-        .@{app-prefix}-tabs-nav-list {
-          flex: 1;
-          gap: 32px;
-          .@{app-prefix}-tabs-tab {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 10px 0;
-            margin: 0;
-
-            .@{app-prefix}-tabs-tab-btn {
-              font-size: 16px;
-              line-height: 24px;
-              font-weight: 500;
-              text-align: center;
-              color: @neutral-tertiary-text;
-              text-shadow: unset;
-            }
-          }
-
-          .@{app-prefix}-tabs-tab-active {
-            .@{app-prefix}-tabs-tab-btn {
-              color: @text-base1;
-            }
-          }
-        }
-      }
-    }
-  }
-  &.detail-scroll {
-    .@{app-prefix}-tabs-content-holder {
-      overflow-x: scroll;
-    }
   }
 
   .empty-element {

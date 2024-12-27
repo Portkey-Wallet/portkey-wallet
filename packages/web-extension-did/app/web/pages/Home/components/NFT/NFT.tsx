@@ -298,7 +298,7 @@ export default function NFT() {
             {accountNFTList.map((item) => renderItem(item))}
           </Collapse>
           <LoadingMore hasMore={hasMoreNFTCollection} loadMore={getMoreNFTCollection} className="load-more" />
-          {renderFreeMintTip}
+          {/* {renderFreeMintTip} */}
         </div>
       )}
     </div>

@@ -14,7 +14,7 @@ import LoadingMore from 'components/LoadingMore/LoadingMore';
 import { Button, Modal } from 'antd';
 import { useAppCASelector } from '@portkey-wallet/hooks/hooks-ca';
 import { formatActivityTime, isSameDay } from '@portkey-wallet/utils/time';
-import { useTranslation } from 'react-i18next';
+import { useSSR, useTranslation } from 'react-i18next';
 import { intervalCrossChainTransfer } from 'utils/sandboxUtil/crossChainTransfer';
 import { useAppDispatch, useCommonState, useLoading } from 'store/Provider/hooks';
 import { removeFailedActivity } from '@portkey-wallet/store/store-ca/activity/slice';
@@ -32,6 +32,10 @@ import dayjs from 'dayjs';
 import ImageForTwo from '../ImageForTwo';
 import ImageDisplay from '../ImageDisplay';
 import { contractStatusEnum } from '@portkey-wallet/constants/constants-ca/common';
+import { CommonBaseModal } from '@portkey/did-ui-react';
+import { useState } from 'react';
+// import CommonHeader, { CustomSvgPlaceholderSize } from 'components/CommonHeader';
+import Transaction from 'components/Transaction';
 
 export interface IActivityListProps {
   data?: ActivityItemType[];
@@ -58,12 +62,15 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
   const currentNetwork = useCurrentNetworkInfo();
   const nav = useNavigateState<ITransactionLocationState>();
   const { isPrompt } = useCommonState();
-  const navToDetail = useCallback(
-    (item: ActivityItemType) => {
-      nav('/transaction', { state: { item, chainId, previousPage: chainId ? '' : BalanceTab.ACTIVITY } });
-    },
-    [chainId, nav],
-  );
+
+  const [selectItem, setSelectItem] = useState<any>();
+  const [open, setOpen] = useState(false);
+  const navToDetail = (item: ActivityItemType) => {
+    setSelectItem({ item, chainId, previousPage: chainId ? '' : BalanceTab.ACTIVITY });
+    console.log('32132132321312');
+    setOpen(true);
+    // nav('/transaction', { state: { item, chainId, previousPage: chainId ? '' : BalanceTab.ACTIVITY } });
+  };
 
   const showErrorModal = useCallback(
     (error: the2ThFailedActivityItemType) => {
@@ -450,6 +457,11 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
     <div className={clsx('activity-list', !hasMore && 'hidden-loading-more')}>
       {renderActivityList}
       <LoadingMore hasMore={hasMore} loadMore={loadMore} className="load-more" />
+      {open && (
+        <CommonBaseModal open={open}>
+          <Transaction state={selectItem} closeFun={setOpen} />
+        </CommonBaseModal>
+      )}
     </div>
   );
 }

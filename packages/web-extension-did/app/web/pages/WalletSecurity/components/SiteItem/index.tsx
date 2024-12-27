@@ -95,7 +95,7 @@ export default function SiteItem({ siteItem }: ISiteItemProps) {
     <div className="site-item-content flex-column-between flex-1">
       <div>
         <div className={`site-dapp flex-column-center ${!isInWebSet && `margin-bottom16`}`}>
-          <ImageDisplay defaultHeight={64} className="icon" src={siteItem.icon} backupSrc="DappDefault" />
+          <ImageDisplay defaultHeight={64} className="icon" src={siteItem.icon} backupSrc="Dapp=Others" />
           <span>{siteItem.name}</span>
           <div className="origin flex">
             <CustomSvg type={isSafeOrigin(siteItem.origin) ? 'DappLock' : 'DappWarn'} />

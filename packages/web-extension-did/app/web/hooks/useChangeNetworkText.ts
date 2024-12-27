@@ -13,7 +13,7 @@ export default function useChangeNetworkText() {
       const hasTargetCa = tmpCaInfo?.managerInfo && tmpCaInfo?.[originChainId]?.caAddress;
       const networkText = network === 'TESTNET' ? 'Testnet' : 'Mainnet';
       const title = 'You are about to switch to';
-      let content = `Your account on the current network can not be used on aelf ${networkText}, so you will need to register a new account or log in to your existing ${networkText} account there.`;
+      let content = `Your account on the current network can not be used on aelf ${networkText}. You'll need to register a new account or log in to your existing ${networkText} account.`;
       if (hasTargetCa) {
         content = `After confirmation, you will enter the ${networkText}.`;
       }

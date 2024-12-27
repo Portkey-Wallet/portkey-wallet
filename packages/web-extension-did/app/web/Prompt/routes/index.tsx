@@ -83,6 +83,8 @@ import { PrepareWallet } from 'pages/PrepareWallet';
 import { SelectAssetListPage } from 'pages/Send/components/SelectAssetList';
 import ReceiveListPage from 'pages/Receive/ReceiveListPage';
 import ReceiveCardPage from 'pages/Receive/ReceiveCardPage';
+import RampBuy from 'pages/Buy/RampBuy';
+import RampSell from 'pages/Buy/RampSell';
 // import Example from 'pages/Example';
 // import TokenNetworkList from 'pages/DepositHome/components/TokenNetworkList';
 
@@ -165,6 +167,14 @@ export const PageRouter = () => {
     {
       path: '/buy',
       element: <Buy />,
+    },
+    {
+      path: '/buy/ramp-buy',
+      element: <RampBuy />,
+    },
+    {
+      path: '/buy/ramp-sell',
+      element: <RampSell />,
     },
     {
       path: '/buy/preview',

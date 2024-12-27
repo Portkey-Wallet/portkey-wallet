@@ -12,7 +12,6 @@ import { useExtensionETransShow } from 'hooks/cms';
 import { useCheckSecurity } from 'hooks/useSecurity';
 import { useDisclaimer } from '@portkey-wallet/hooks/hooks-ca/disclaimer';
 import DisclaimerModal, { IDisclaimerProps, initDisclaimerData } from 'pages/components/DisclaimerModal';
-import './index.less';
 import { useLocationState, useNavigateState } from 'hooks/router';
 import { TReceiveLocationState, TSendLocationState, TTokenDetailLocationState } from 'types/router';
 import { useExtensionRampEntryShow } from 'hooks/ramp';
@@ -28,6 +27,7 @@ import SkeletonCom from 'pages/components/SkeletonCom';
 import CommonBanner from 'components/CommonBanner';
 import { useCmsBanner } from '@portkey-wallet/hooks/hooks-ca/cms/banner';
 import { TBaseCardItemType } from '@portkey-wallet/types/types-ca/cms';
+import './index.less';
 
 export enum TokenTransferStatus {
   CONFIRMED = 'Confirmed',
@@ -73,17 +73,17 @@ function TokenDetail() {
   const disclaimerData = useRef<IDisclaimerProps>(initDisclaimerData);
   const handleBuy = useCallback(() => {
     if (isMainNet) {
-      // todo goto ramp home
-      navigate(`/receive/token/${currentToken.symbol}`, {
-        state: { ...currentToken, address: currentToken?.tokenContractAddress, pageSide: ReceiveTabEnum.Buy },
-      });
+      navigate('/buy');
+      // navigate(`/receive/token/${currentToken.symbol}`, {
+      //   state: { ...currentToken, address: currentToken?.tokenContractAddress, pageSide: ReceiveTabEnum.Buy },
+      // });
     } else {
       const openWinder = window.open(FAUCET_URL, '_blank');
       if (openWinder) {
         openWinder.opener = null;
       }
     }
-  }, [currentToken, isMainNet, navigate]);
+  }, [isMainNet, navigate]);
   const AmountShowWithDecimals = useMemo(
     () => formatTokenAmountShowWithDecimals(currentToken.balance, currentToken.decimals),
     [currentToken.balance, currentToken.decimals],

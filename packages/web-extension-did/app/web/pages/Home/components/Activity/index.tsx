@@ -117,15 +117,26 @@ export default function Activity({ chainId, symbol, pageKey = 'Home-Activity' }:
     }
   }, [currentActivity, chainId, caAddressInfos, symbol, dispatch]);
 
+  console.log('initLoading', initLoading);
+
   return (
     <div className="activity-wrapper">
-      {currentActivity?.totalRecordCount ? (
-        <ActivityList data={currentActivity.data} chainId={chainId} hasMore={hasMore} loadMore={loadMoreActivities} />
-      ) : (
-        <div className="no-activity-data flex-column-center">
-          <CustomSvg type="NoActivity" />
-          {t(EmptyTipMessage.NO_TRANSACTIONS)}
-        </div>
+      {!initLoading && (
+        <>
+          {currentActivity?.totalRecordCount ? (
+            <ActivityList
+              data={currentActivity.data}
+              chainId={chainId}
+              hasMore={hasMore}
+              loadMore={loadMoreActivities}
+            />
+          ) : (
+            <div className="no-activity-data flex-column-center">
+              {/* <CustomSvg type="NoActivity" /> */}
+              {t('No activity')}
+            </div>
+          )}
+        </>
       )}
     </div>
   );

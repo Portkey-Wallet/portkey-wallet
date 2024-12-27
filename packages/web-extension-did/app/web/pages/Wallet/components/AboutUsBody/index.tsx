@@ -1,6 +1,6 @@
 // import { Image } from 'antd';
 import { useMemo } from 'react';
-import CustomSvg from 'components/CustomSvg';
+import { CustomSvgV3 } from 'components/CustomSvgV3';
 import MenuItem from 'components/MenuItem';
 import { useTranslation } from 'react-i18next';
 import { IconType } from 'types/icon';
@@ -40,7 +40,7 @@ export default function AboutUsBody() {
     <div className="about-us-body">
       <div className="flex-column-center logo-wrapper">
         <div className="flex-center logo">
-          <CustomSvg type="PortkeyAboutUs" />
+          <CustomSvgV3 type="Guardians=Portkey" className="portkey-icon" />
         </div>
         <span className="name">{t('Portkey')}</span>
         <span className="version">{`${process.env.SDK_VERSION?.toUpperCase()}`}</span>
@@ -49,36 +49,19 @@ export default function AboutUsBody() {
         <div className="content-item social">
           {socialMediaList.map((item) => (
             <a key={item.title} href={item.link} target="_blank" rel="noreferrer">
-              <MenuItem
-                height={56}
-                // icon={
-                //   <Image
-                //     src={s3Url && item.svgUrl?.filename_disk ? `${s3Url}/${item.svgUrl.filename_disk}` : ''}
-                //     preview={false}
-                //     width={28}
-                //     height={28}
-                //   />
-                // }
-              >
-                {t(item.title)}
-              </MenuItem>
+              <MenuItem height={54}>{t(item.title)}</MenuItem>
             </a>
           ))}
           <a href="https://portkey.finance/" target="_blank" rel="noreferrer">
-            <MenuItem height={56}>{t('View website')}</MenuItem>
+            <MenuItem height={54}>{t('View website')}</MenuItem>
           </a>
         </div>
+        <div className="divider" />
         <div className="content-item service">
           {serviceList.map((item) => (
-            <MenuItem
-              key={item.label}
-              height={56}
-              // icon={<CustomSvg type={item.icon || 'Aelf'} />}
-            >
-              <a href={item.link} target="_blank" rel="noreferrer">
-                {t(item.label)}
-              </a>
-            </MenuItem>
+            <a key={item.label} href={item.link} target="_blank" rel="noreferrer">
+              <MenuItem height={54}>{t(item.label)}</MenuItem>
+            </a>
           ))}
         </div>
       </div>

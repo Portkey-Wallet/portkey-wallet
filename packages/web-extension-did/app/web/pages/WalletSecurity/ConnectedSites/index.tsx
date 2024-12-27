@@ -20,7 +20,7 @@ export default function ConnectedSites() {
         key: dapp.origin,
         element: (
           <div className="content flex">
-            <ImageDisplay defaultHeight={42} className="icon" src={dapp.icon} backupSrc="DappDefault" />
+            <ImageDisplay defaultHeight={42} className="icon" src={dapp.icon} backupSrc="Dapp=Others" />
             <div className="desc flex-column">
               <div className="text name">
                 <span className="dapp-name">{dapp.name ?? 'Unknown'}</span>

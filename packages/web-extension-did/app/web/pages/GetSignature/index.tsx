@@ -79,7 +79,7 @@ export default function GetSignature() {
     () =>
       curDapp && (
         <div className="site flex-center">
-          <ImageDisplay defaultHeight={24} className="icon" src={curDapp?.icon} backupSrc="DappDefault" />
+          <ImageDisplay defaultHeight={24} className="icon" src={curDapp?.icon} backupSrc="Dapp=Others" />
           <span className="origin">{curDapp.origin}</span>
         </div>
       ),

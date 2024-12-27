@@ -73,7 +73,7 @@ const Collection = () => {
                     })
                   }>
                   <img src={list.imageUrl} alt="" width={32} height={32} />
-                  <div>{list.tokenName}</div>
+                  <div className="token-name">{list.tokenName}</div>
                   <div className="balance-of">{formatTokenAmountShowWithDecimals(list.balance, list.decimals)}</div>
                 </div>
               );

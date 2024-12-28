@@ -1,15 +1,15 @@
 import { Button, Form, Input, FormProps } from 'antd';
 import { useTranslation } from 'react-i18next';
-import CustomSvg from 'components/CustomSvg';
+// import CustomSvg from 'components/CustomSvg';
 import './index.less';
 import { ContactInfoError, CustomAddressItem, ValidData } from 'pages/Contacts/AddContact';
-import EditButtonGroup from '../EditButtonGroup';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useContactNetworkConfig } from '@portkey-wallet/hooks/hooks-ca/config';
-import { useEffectOnce } from '@portkey-wallet/hooks';
-import { IContactSupportNetworkItem } from '@portkey-wallet/types/types-ca/config';
-import { IContactItemType, IEditContactItemApiType } from '@portkey-wallet/types/types-ca/contactNew';
+// import EditButtonGroup from '../EditButtonGroup';
+// import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+// import { useCallback, useEffect, useMemo, useState } from 'react';
+// import { useContactNetworkConfig } from '@portkey-wallet/hooks/hooks-ca/config';
+// import { useEffectOnce } from '@portkey-wallet/hooks';
+// import { IContactSupportNetworkItem } from '@portkey-wallet/types/types-ca/config';
+// import { IContactItemType, IEditContactItemApiType } from '@portkey-wallet/types/types-ca/contactNew';
 import { defaultContactFormData, useContactAction, useDefaultContactFormValue } from '../../AddContact/hooks';
 import { IEditContactItemFormType } from 'pages/Contacts/AddContact/types';
 import { ContactHandleActionTypeEnum } from 'types/Profile';
@@ -81,7 +81,7 @@ export default function AddContactForm({
 
       <FormItem className="form-btn">
         <Button className="add-btn" type="primary" htmlType="submit" disabled={isDisable}>
-          {t(extra === ContactHandleActionTypeEnum.ADD_CONTACT ? 'Add' : 'Save')}
+          {t('Save address')}
         </Button>
       </FormItem>
 

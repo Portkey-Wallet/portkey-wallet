@@ -97,10 +97,8 @@ export default function AddContact() {
 
   // go back previous page
   const handleGoBack = useCallback(() => {
-    extra === ContactHandleActionTypeEnum.ADD_CONTACT
-      ? navigate('/setting/contacts')
-      : navigate('/setting/contacts/view', { state: state });
-  }, [extra, navigate, state]);
+    navigate('/setting/contacts');
+  }, [navigate]);
 
   const headerTitle = useMemo(
     () => (extra === ContactHandleActionTypeEnum.EDIT_CONTACT ? t('Edit Contact') : t('Add Address')),
@@ -140,11 +138,14 @@ export default function AddContact() {
   const deleteContact = useCallback(async () => {
     try {
       await deleteContactApi(state);
-      console.log('delete finish');
+      singleMessage.success(t('Delete Finish'));
+      setTimeout(() => {
+        navigate('/setting/contacts');
+      }, 1000);
     } catch (error) {
       console.log('error');
     }
-  }, [deleteContactApi, state]);
+  }, [deleteContactApi, navigate, state, t]);
 
   return (
     <AddContactPopup

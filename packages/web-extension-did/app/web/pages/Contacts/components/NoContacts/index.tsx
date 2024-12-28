@@ -11,7 +11,6 @@ export default function NoContacts() {
 
   return (
     <div className="flex-column no-contacts">
-      <CustomSvg type="AddressBook" className="no-contact-svg" />
       <p className="title">{t('No Contacts')}</p>
       <p className="desc">{t("Contacts you've added will appear here")}</p>
       <Button

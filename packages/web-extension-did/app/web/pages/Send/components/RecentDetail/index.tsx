@@ -153,7 +153,7 @@ export default function RecentDetail() {
 
   const mainContent = () => {
     return (
-      <div className={clsx(['recent-detail', isPrompt && 'detail-page-prompt'])}>
+      <div className={clsx(['recent-detail', isPrompt && 'recent-detail-prompt'])}>
         <CommonHeader
           className="recent-detail-header"
           title="Address Details"

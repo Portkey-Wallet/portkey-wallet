@@ -20,7 +20,8 @@ interface CustomSelectProps extends SelectProps {
   customChild?: React.ReactNode;
 }
 
-export default function CustomSelect({ items = [], className, value, onChange, ...props }: CustomSelectProps) {
+// export default function CustomSelect({ items = [], className, value, onChange, ...props }: CustomSelectProps) {
+export default function CustomSelect({ items = [], value, onChange, ...props }: CustomSelectProps) {
   const { isNotLessThan768 } = useCommonState();
 
   const [show, setShow] = useState(false);
@@ -68,7 +69,7 @@ export default function CustomSelect({ items = [], className, value, onChange, .
               {items.map((op, index) => {
                 return (
                   <div className="select-list" key={index} onClick={() => selectOption(op)}>
-                    {op.children}
+                    <>{op.children}</>
                     {op.value == value && <CustomSvgV3 type="selected" />}
                   </div>
                 );
@@ -90,7 +91,7 @@ export default function CustomSelect({ items = [], className, value, onChange, .
               {items.map((op, index) => {
                 return (
                   <div className="select-list" key={index} onClick={() => selectOption(op)}>
-                    {op.children}
+                    <>{op.children}</>
                     {op.value == value && <CustomSvgV3 type="selected" />}
                   </div>
                 );

@@ -18,11 +18,12 @@ export default function ContactsPopup({
     <div className="flex-column contacts-popup min-width-max-height">
       <div className="flex-column">
         <CommonHeader
+          className="contacts-popup-header"
           title={headerTitle}
           onLeftBack={goBack}
           rightElementList={[
             {
-              customSvgType: 'SuggestAdd',
+              customSvgType: 'add',
               onClick: handleAdd,
             },
           ]}

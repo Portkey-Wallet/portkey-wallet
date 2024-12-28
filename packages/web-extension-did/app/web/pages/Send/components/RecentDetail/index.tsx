@@ -1,4 +1,6 @@
 import CustomSvg from 'components/CustomSvg';
+import { CustomSvgV3 } from 'components/CustomSvgV3';
+
 import { useNavigate } from 'react-router';
 import clsx from 'clsx';
 import { useCommonState, useUserInfo } from 'store/Provider/hooks';
@@ -27,6 +29,7 @@ import Avatar from 'pages/components/Avatar';
 import { useLocationState } from 'hooks/router';
 import { TRecentDetailLocationState } from 'types/router';
 import { IContactItemType } from '@portkey-wallet/types/types-ca/contactNew';
+import { formatStr2EllipsisStr } from '@portkey-wallet/utils';
 
 const MAX_RESULT_COUNT = 10;
 const SKIP_COUNT = 0;
@@ -121,46 +124,89 @@ export default function RecentDetail() {
     return !!activityInfo.hasNextPage;
   }, [activityInfo.hasNextPage]);
 
+  const [popVisible, setPopVisible] = useState(false);
+
+  const PopoverMenuList = () => {
+    return (
+      <div className="action-list">
+        <div
+          className="list"
+          onClick={() => {
+            console.log('321312321312');
+            goToNewContact(
+              state.id ? ContactHandleActionTypeEnum.EDIT_CONTACT : ContactHandleActionTypeEnum.ADD_CONTACT,
+              state,
+            );
+          }}>
+          <CustomSvgV3 type={'edit'} />
+          <span>Edit address</span>
+        </div>
+        <div className="list" onClick={viewOnExplorer}>
+          <CustomSvgV3 type={'external'} />
+          <span>View On Explorer</span>
+        </div>
+      </div>
+    );
+  };
+
+  console.log('state', state);
+
   const mainContent = () => {
     return (
       <div className={clsx(['recent-detail', isPrompt && 'detail-page-prompt'])}>
-        <CommonHeader className="recent-detail-header" title="Details" onLeftBack={onClose} />
+        <CommonHeader
+          className="recent-detail-header"
+          title="Address Details"
+          onLeftBack={onClose}
+          rightElementList={[
+            {
+              customSvgWrapClassName: 'nft-detail-more',
+              customSvgType: 'moreHome',
+              popoverProps: {
+                overlayClassName: `nft-detail-popover ${isPrompt ? '' : 'nft-detail-popover-popup'}`,
+                open: popVisible,
+                trigger: 'click',
+                showArrow: false,
+                placement: 'bottomLeft',
+                getPopupContainer: (triggerNode: any) => triggerNode.parentNode,
+                content: <PopoverMenuList />,
+              },
+              onClick: () => setPopVisible(!popVisible),
+            },
+          ]}
+        />
         <div className="recent-detail-body">
           <div className="recent-detail-address-wrap">
-            <div
-              onClick={() => {
-                goToNewContact(
-                  state.id ? ContactHandleActionTypeEnum.EDIT_CONTACT : ContactHandleActionTypeEnum.ADD_CONTACT,
-                  state,
-                );
-              }}>
-              add contact
-            </div>
             {state?.name && (
-              <div className="recent-detail-contact flex-row-center">
+              <div className="recent-detail-contact">
                 <Avatar avatarUrl={state?.caHolderInfo?.avatar || ''} nameIndex={state?.index} size="large" />
-                <div className="name">{state?.caHolderInfo?.walletName}</div>
+                <div className="name">{state?.name}</div>
               </div>
             )}
+            <div className="address-title">{'Address'}</div>
 
             <div className="recent-detail-address-row">
-              <span className="address">{state?.addressInfo?.address}</span>
-              <span className="network">{state?.addressInfo?.networkName}</span>
-            </div>
+              <div className="info-left">
+                <img src={state?.addressInfo?.networkImage} width={24} height={24} />
+                <div className="info-left-top">
+                  <div className="network">{state?.addressInfo?.networkName}</div>
 
-            <div className="recent-detail-action-row">
-              <Copy iconType={'Copy3'} iconClassName="copy-address" toCopy={state?.addressInfo?.address} />
-              <CustomSvg type={'Share'} onClick={viewOnExplorer} />
+                  <div className="address">{formatStr2EllipsisStr(state?.addressInfo?.address)}</div>
+                </div>
+              </div>
+              <Copy iconType={'copy'} toCopy={state?.addressInfo?.address} fillColor="#FFFFFF66" />
             </div>
           </div>
           {/* TODO : not aelf address no activity */}
-          {activityInfo?.data?.length > 0 && (
+          {activityInfo?.data?.length > 0 ? (
             <ActivityList
               data={activityInfo.data}
               chainId={state?.addressInfo?.chainId}
               hasMore={isHasMore}
               loadMore={loadMoreActivities}
             />
+          ) : (
+            <div className="no-data">{'No recent interactions'}</div>
           )}
         </div>
       </div>

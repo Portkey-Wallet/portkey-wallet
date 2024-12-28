@@ -103,7 +103,7 @@ export default function AddContact() {
   }, [extra, navigate, state]);
 
   const headerTitle = useMemo(
-    () => (extra === ContactHandleActionTypeEnum.EDIT_CONTACT ? t('Edit Contact') : t('Add New Contact!')),
+    () => (extra === ContactHandleActionTypeEnum.EDIT_CONTACT ? t('Edit Contact') : t('Add Address')),
     [extra, t],
   );
 

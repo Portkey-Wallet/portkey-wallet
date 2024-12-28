@@ -11,6 +11,7 @@ import AccountSetting from 'pages/AccountSetting';
 import My from 'pages/My';
 import Send from 'pages/Send';
 import NFT from 'pages/NFT';
+import Collection from 'pages/Collection';
 import Transaction from 'pages/Transaction';
 import Guardians from 'pages/Guardians';
 import AddGuardian from 'pages/Guardians/GuardiansAdd';
@@ -172,6 +173,10 @@ export const PageRouter = () =>
     {
       path: '/nft',
       element: <NFT />,
+    },
+    {
+      path: '/collection',
+      element: <Collection />,
     },
     {
       path: '/free-mint',

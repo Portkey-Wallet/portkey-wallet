@@ -40,14 +40,16 @@ export default function CustomSelect({ items = [], value, onChange, ...props }: 
     }
   };
 
-  const displayItem = useMemo(() => {
-    return items.find((item) => item.value === value);
+  const selectedItem: any = useMemo(() => {
+    return items.filter((list) => list.value == value)[0];
   }, [items, value]);
+
+  console.log('selectedItem', selectedItem);
 
   return (
     <>
       <div className="select-btn" onClick={() => setShow(true)}>
-        <div>{displayItem?.children || value}</div>
+        <div>{selectedItem.children}</div>
         <CustomSvgV3 type="nftArrow" />
       </div>
 

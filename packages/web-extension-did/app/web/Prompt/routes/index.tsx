@@ -26,6 +26,7 @@ import TokenDetail from 'pages/Token/Detail';
 import Send from 'pages/Send';
 import Receive from 'pages/Receive';
 import NFT from 'pages/NFT';
+import Collection from 'pages/Collection';
 import ContactDetail from 'pages/Contacts/ContactDetail';
 import AccountSetting from 'pages/AccountSetting';
 // import PromptMy from 'pages/PromptMy';
@@ -172,6 +173,10 @@ export const PageRouter = () => {
     {
       path: '/nft',
       element: <NFT />,
+    },
+    {
+      path: '/collection',
+      element: <Collection />,
     },
     {
       path: '/free-mint',

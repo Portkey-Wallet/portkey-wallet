@@ -2,12 +2,11 @@
 @import '../../../assets/theme/constants.less';
 
 .activity-list {
-  border-bottom: solid 0.5px @border-neutral3;
+  // border-bottom: solid 0.5px @border-neutral3;
   .activity-date-wrap {
     .activity-date-item {
       margin: 4px 16px;
       padding-top: 20px;
-      border-top: 0.5px solid @border-neutral3;
       font-size: 12px;
       line-height: 18px;
       color: @neutral-tertiary-text;
@@ -25,6 +24,10 @@
     height: 76px;
     padding: 0;
     justify-content: center;
+    .token-activity-icon {
+      width: 32px !important;
+      height: 32px !important;
+    }
 
     .suggestcheck-icon,
     .suggestclose2-icon,
@@ -38,10 +41,10 @@
     }
     @keyframes rotate {
       from {
-          transform: rotate(0deg);
+        transform: rotate(0deg);
       }
       to {
-          transform: rotate(360deg);
+        transform: rotate(360deg);
       }
     }
     .status-icon {
@@ -91,6 +94,9 @@
           width: 32px;
           height: 32px;
         }
+      }
+      .nft-activity-icon {
+        overflow: hidden;
       }
       .system-activity-icon,
       .token-activity-icon,
@@ -183,6 +189,9 @@
         line-height: 16px;
         font-weight: 400;
       }
+    }
+    .transaction-dapp-name {
+      font-size: 14px;
     }
   }
 

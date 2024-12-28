@@ -18,17 +18,11 @@ import './index.less';
 
 const { TextArea } = Input;
 
-export enum InputStepEnum {
-  input = 'input',
-  show = 'show',
-}
-
 export interface IToAddressInputProps {
   sendType: SendPageTypeEnum;
   toAccount: ToAccount;
   setToAccount: Dispatch<SetStateAction<ToAccount>>;
-  step: InputStepEnum;
-  setStep: (step: InputStepEnum) => void;
+  stage: SendStage;
   selectedToken?: IAssetToken | INftInfoType;
   caAddress: string;
   warning: WarningKey | undefined;
@@ -44,14 +38,13 @@ export interface IToAddressInputProps {
 export default function ToAddressInput({
   toAccount,
   setToAccount,
-  step = InputStepEnum.input,
+  stage,
   selectedToken,
   caAddress,
   sendType,
   warning,
   checkFinish,
   setStage,
-  setStep,
   setWarning,
   setCheckFinish,
   setSendAmount,
@@ -73,18 +66,16 @@ export default function ToAddressInput({
 
   const clearValue = useCallback(() => {
     setToAccount({ name: '', address: '' });
-    setStep(InputStepEnum.input);
     setSendAmount('');
     setSendUSDAmount('');
     setWarning(undefined);
-  }, [setSendAmount, setSendUSDAmount, setStep, setToAccount, setWarning]);
+  }, [setSendAmount, setSendUSDAmount, setToAccount, setWarning]);
 
   const onClickEdit = useCallback(() => {
-    setStep(InputStepEnum.input);
     setCheckFinish(true);
     setCheckedPass(true);
     setStage(SendStage.Address);
-  }, [setCheckFinish, setStage, setStep]);
+  }, [setCheckFinish, setStage]);
 
   const pastValue = useCallback(async () => {
     try {
@@ -259,9 +250,9 @@ export default function ToAddressInput({
   return (
     <div className="address-input-wrap">
       <div className="address-input-container">
-        {step === InputStepEnum.input ? renderAddressInput : renderAddressShow}
+        {stage === SendStage.Address ? renderAddressInput : renderAddressShow}
       </div>
-      {step === InputStepEnum.input && !toAccount.address && (
+      {stage === SendStage.Address && !toAccount.address && (
         <div className="paste-container">
           <span className="show-text">{`Enter or `}</span>
           <span className="paste-text cursor-pointer" onClick={pastValue}>{`paste a wallet address`}</span>

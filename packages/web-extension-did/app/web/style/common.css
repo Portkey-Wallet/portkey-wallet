@@ -46,6 +46,12 @@ body.theme-dark {
   background: #151318;
 }
 
+body.popup-body #root,
+body.popup-body #portkey-ui-root {
+  width: 375px;
+  max-width: 375px;
+}
+
 body {
   padding: 0;
   margin: 0;

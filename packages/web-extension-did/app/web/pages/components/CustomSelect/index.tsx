@@ -49,7 +49,7 @@ export default function CustomSelect({ items = [], value, onChange, ...props }: 
   return (
     <>
       <div className="select-btn" onClick={() => setShow(true)}>
-        <div>{selectedItem.children}</div>
+        <div>{selectedItem?.children}</div>
         <CustomSvgV3 type="nftArrow" />
       </div>
 

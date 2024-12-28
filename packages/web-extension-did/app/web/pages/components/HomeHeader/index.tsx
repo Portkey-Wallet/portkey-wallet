@@ -9,9 +9,14 @@ import CopyAddressDrawerOrModal, { ICopyAddressDrawerOrModalInstance } from '../
 // import { useNavigate } from 'react-router';
 // import { useCommonState } from 'store/Provider/hooks';
 // import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { lockWallet } from 'utils/lib/serviceWorkerAction';
+
 import './index.less';
 import { CustomSvgV3 } from 'components/CustomSvgV3';
 import { useNavigate } from 'react-router';
+import { Popover } from 'antd';
+import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
+import InternalMessage from 'messages/InternalMessage';
 
 export interface IHomeHeaderProps {
   onUserClick?: (e?: any) => void;
@@ -28,6 +33,10 @@ export default function HomeHeader({ onUserClick, unReadShow }: IHomeHeaderProps
   // const isMainnet = useIsMainnet();
   const navigate = useNavigate();
 
+  const handleExpandView = () => {
+    InternalMessage.payload(PortkeyMessageTypes.SETTING).send();
+  };
+
   return (
     <>
       <div className="portkey-home-header">
@@ -41,11 +50,31 @@ export default function HomeHeader({ onUserClick, unReadShow }: IHomeHeaderProps
             onClick={() => copyAddressDrawerOrModalRef.current?.open()}
           />
         </div>
-        <CustomSvgV3
-          type="copyAddress"
-          className="portkey-logo-prompt"
-          onClick={() => copyAddressDrawerOrModalRef.current?.open()}
-        />
+        <div className="header-right">
+          <CustomSvgV3
+            type="copyAddress"
+            className="portkey-logo-prompt"
+            onClick={() => copyAddressDrawerOrModalRef.current?.open()}
+          />
+          <Popover
+            content={
+              <div className="home-popover-content">
+                <div className="popover-list" onClick={lockWallet}>
+                  <CustomSvgV3 type="lock-home" className="portkey-logo-prompt" />
+                  <span>Lock</span>
+                </div>
+                <div className="popover-list" onClick={handleExpandView}>
+                  <CustomSvgV3 type="expand" className="portkey-logo-prompt" />
+                  <span>Expand view</span>
+                </div>
+              </div>
+            }
+            overlayClassName="home-popover"
+            placement="bottomRight"
+            trigger="click">
+            <CustomSvgV3 type="moreHome" className="portkey-logo-prompt" />
+          </Popover>
+        </div>
       </div>
       {/* <CommonHeader
         className="portkey-home-header"

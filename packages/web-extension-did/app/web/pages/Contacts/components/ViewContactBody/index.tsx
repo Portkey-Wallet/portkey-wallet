@@ -19,6 +19,7 @@ import EditWalletNameForm from '../../../Wallet/components/EditWalletNameForm';
 import { EditWalletAvatarForm } from '../../../Wallet/components/EditWalletAvatarForm';
 import { useCurrentUserInfo, useSetUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import uploadImageToS3 from 'utils/compressAndUploadToS3';
+import { useCommonState } from 'store/Provider/hooks';
 
 export default function ViewContactBody({ data }: IProfileDetailBodyProps) {
   const networkInfo = useCurrentNetworkInfo();
@@ -47,6 +48,7 @@ export default function ViewContactBody({ data }: IProfileDetailBodyProps) {
   }, [hidePop]);
 
   const [avatarUploading, setAvatarUploading] = useState(false);
+  const { isPrompt } = useCommonState();
 
   return (
     <div className="view-contact-body">
@@ -74,6 +76,7 @@ export default function ViewContactBody({ data }: IProfileDetailBodyProps) {
                 CustomModalBottom({
                   type: 'confirm',
                   noFooter: true,
+                  isPrompt,
                   content: (
                     <EditWalletAvatarForm
                       avatar={avatar}
@@ -114,6 +117,7 @@ export default function ViewContactBody({ data }: IProfileDetailBodyProps) {
                 CustomModalBottom({
                   type: 'confirm',
                   noFooter: true,
+                  isPrompt,
                   content: (
                     <EditWalletNameForm
                       // avatar={avatar}

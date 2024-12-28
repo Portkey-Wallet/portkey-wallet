@@ -9,7 +9,7 @@ import { useCommonState } from 'store/Provider/hooks';
 // import { ModalBody } from 'components/ModalBody';
 
 // import BaseDrawer from 'components/BaseDrawer';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import BaseModal from 'components/BaseModal';
 import BaseDrawer from 'components/BaseDrawer';
 import CommonCloseHeader from 'components/CommonCloseHeader';
@@ -39,10 +39,16 @@ export default function CustomSelect({ items = [], className, value, onChange, .
     }
   };
 
+  const selectedItem: any = useMemo(() => {
+    return items.filter((list) => list.value == value)[0];
+  }, [items, value]);
+
+  console.log('selectedItem', selectedItem);
+
   return (
     <>
       <div className="select-btn" onClick={() => setShow(true)}>
-        <div>{value}</div>
+        <div>{selectedItem.children}</div>
         <CustomSvgV3 type="nftArrow" />
       </div>
 

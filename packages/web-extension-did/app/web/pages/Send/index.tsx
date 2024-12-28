@@ -12,7 +12,7 @@ import {
 } from '@portkey-wallet/utils';
 import { getWallet, isCrossChain, isDIDAelfAddress } from '@portkey-wallet/utils/aelf';
 import { divDecimals, formatAmountShow, timesDecimals } from '@portkey-wallet/utils/converter';
-import { Button, Modal } from 'antd';
+import { Modal } from 'antd';
 import CustomSvg from 'components/CustomSvg';
 import CommonHeader from 'components/CommonHeader';
 import { ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -43,13 +43,7 @@ import { GuardianItem } from 'types/guardians';
 import { getBalance } from 'utils/sandboxUtil/getBalance';
 import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
-import CustomModal from 'pages/components/CustomModal';
-import {
-  CROSS_CHAIN_INTERCEPTED_CONTENT,
-  SEND_HELP_URL,
-  TransactionError,
-  WarningKey,
-} from '@portkey-wallet/constants/constants-ca/send';
+import { SEND_HELP_URL, TransactionError, WarningKey } from '@portkey-wallet/constants/constants-ca/send';
 import getSeed from 'utils/getSeed';
 import singleMessage from 'utils/singleMessage';
 import { usePromptLocationParams } from 'hooks/router';
@@ -67,7 +61,7 @@ import { getOperationDetails } from '@portkey-wallet/utils/operation.util';
 import ToAddressInput, { InputStepEnum } from './components/ToAddressInput';
 import SelectNetwork, { INetworkItem } from './components/SelectNetwork';
 import AddressTypeSelect, { AddressTypeEnum, ExchangeTypeShow } from './components/AddressTypeSelect';
-import { CommonPromptCard } from '@portkey/did-ui-react';
+import { CommonButton, CommonPromptCard } from '@portkey/did-ui-react';
 import SendModalTip, { ButtonGroupType, ButtonType } from './components/SendModalTip';
 import { getLimitTips, getSmallerValue, isValidAmount } from './utils';
 import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
@@ -151,7 +145,6 @@ type TypeStageObj = {
 
 export default function Send() {
   const navigate = useNavigate();
-  // TODO need get data from state and wait for BE data structure
   const { type, symbol } = useParams();
   const { locationParams: state } = usePromptLocationParams<TSendLocationState, TSendLocationState>();
   const chainId: ChainId = useMemo(() => state.targetChainId || state.chainId, [state.chainId, state.targetChainId]);
@@ -701,6 +694,7 @@ export default function Send() {
 
     setAmount(maxAmount);
     setUSDAmount(maxUsdAmount);
+    setAmountErrMsg('');
   }, [chainId, checkManagerSyncState, maxAmount, maxUsdAmount]);
 
   const checkLimit = useCheckLimit(tokenInfo.chainId);
@@ -744,25 +738,6 @@ export default function Send() {
   );
 
   const checkSecurity = useCheckSecurity();
-  const showCrossChainAssetsModal = useCallback(() => {
-    const modal = CustomModal({
-      className: 'cross-chain-modal',
-      content: (
-        <div>
-          <div className="modal-title">Notice</div>
-          <div>
-            {[CROSS_CHAIN_INTERCEPTED_CONTENT].map((item, i) => (
-              <div key={`send_modal_${i}`}>{item}</div>
-            ))}
-          </div>
-        </div>
-      ),
-      okText: 'OK',
-      onOk: () => {
-        modal.destroy();
-      },
-    });
-  }, []);
 
   const previewCheck = useCallback(async () => {
     setAmountErrMsg('');
@@ -1405,14 +1380,15 @@ export default function Send() {
             <div className="stage-ele flex-column flex-1">{StageObj[stage].element}</div>
             {StageObj[stage].btnText ? (
               <div className="btn-wrap">
-                <Button
+                <CommonButton
                   loading={btnLoading}
                   disabled={btnDisabled}
                   className="stage-btn"
                   type="primary"
+                  block
                   onClick={StageObj[stage].handler}>
                   {StageObj[stage].btnText}
-                </Button>
+                </CommonButton>
               </div>
             ) : null}
           </>

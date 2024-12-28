@@ -1,15 +1,20 @@
 @import '../../assets/theme/constants.less';
 
-.transaction-detail-modal {
+.transaction-detail-modal-new {
   background-color: @bg-base1;
-  height: 100%;
+  height: auto;
+  max-height: 80vh;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  .common-header-title {
+    text-align: left;
+    font-size: 20px;
+  }
 
   .transaction-detail-body {
     background: @bg-base1;
-    padding: 0 24px 24px;
+    padding: 0 16px;
 
     .transaction-info {
       display: flex;
@@ -78,15 +83,12 @@
           height: 8px;
         }
         .nft-amount {
-          padding: 0 16px;
-          width: 100vw;
+          width: 100%;
           display: flex;
+          flex-direction: column;
           align-items: center;
-          gap: 16px;
-          margin-left: -24px;
-          margin-right: -24px;
-          padding-bottom: 20px;
-          margin-bottom: 15px;
+          gap: 8px;
+          padding: 10px 0;
           .assets {
             position: relative;
             width: 64px;
@@ -116,13 +118,13 @@
             flex: 1;
             display: flex;
             flex-direction: column;
+            align-items: center;
             justify-content: space-between;
-            gap: 12px;
             padding: 5px 0;
             width: 100%;
-            .index {
+            .quantity {
               line-height: 22px;
-              font-size: 16px;
+              font-size: 20px;
               font-weight: 500;
               color: @text-base1;
               word-wrap: break-word;
@@ -132,42 +134,49 @@
                 font-weight: 400;
               }
             }
-            .quantity {
+            .index {
               color: @neutral-secondary-text;
               line-height: 20px;
               font-size: 14px;
             }
           }
         }
+        
+      }
+      .status-wrap {
+        .right {
+          color: @text-base1;
+        }
+        .confirmed {
+          color: @text-success1;
+        }
+        .failed {
+          color: @text-danger2;
+        }
+       
       }
       .status-wrap,
       .account-wrap,
       .network-wrap,
       .money-wrap {
         width: 100%;
-        display: flex;
-        flex-direction: column;
-        gap: 2px;
-      }
-      .status-wrap {
-        margin-bottom: 24px;
-        .value {
+        > p {
+          color: @text-base1;
+          padding: 16px 0;
           .left {
-            font-weight: 500;
-          }
-          .confirmed {
-            color: @functional-success-default;
-          }
-          .failed {
-            color: @font-14;
+            font-size: 16px;
+            font-weight: 400;
           }
           .right {
-            color: @text-base1;
+            font-size: 16px;
+            font-weight: 600;
           }
         }
       }
+
+    
+      
       .account-wrap {
-        margin-bottom: 34px;
         gap: 8px;
         position: relative;
         .value {
@@ -194,17 +203,7 @@
 
               word-break: break-all;
             }
-            .address-wrap {
-              display: flex;
-              gap: 4px;
-              &.right {
-                justify-content: flex-end;
-              }
-              .copy-address {
-                width: 12px;
-                height: 12px;
-              }
-            }
+            
           }
           .right-arrow {
             position: absolute;
@@ -220,9 +219,24 @@
             }
           }
         }
+        .address-wrap {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          &.right {
+            justify-content: flex-end;
+          }
+          .copy-icon {
+            width: 16px;
+            height: 16px;
+          }
+          .copy-address {
+            width: 16px;
+            height: 16px;
+          }
+        }
       }
       .network-wrap {
-        margin-bottom: 24px;
         .value {
           line-height: 16px;
           font-size: 12px;
@@ -248,6 +262,8 @@
               font-weight: 500;
               .right-item {
                 margin-bottom: 8px;
+                font-size: 16px;
+                font-weight: 600;
                 span {
                   text-align: right;
                   flex-wrap: wrap;
@@ -260,18 +276,7 @@
                 }
               }
             }
-            .tx-id {
-              display: flex;
-              font-weight: 400;
-              gap: 4px;
-              .copy-wrapper {
-                align-items: flex-start;
-                .custom-svg {
-                  width: 12px;
-                  height: 12px;
-                }
-              }
-            }
+            
             &.total-amount {
               .right {
                 display: flex;
@@ -289,18 +294,37 @@
             }
           }
         }
+        .tx-id {
+          display: flex;
+          align-items: center;
+          font-weight: 400;
+          gap: 4px;
+          .copy-wrapper {
+            align-items: flex-start;
+            .custom-svg {
+              width: 16px;
+              height: 16px;
+            }
+          }
+        }
       }
     }
   }
   .transaction-footer {
-    .link {
-      display: block;
+    padding: 16px;
+    .btn-link {
       width: 100%;
-      background: @bg-base1;
-      text-align: center;
-      line-height: 20px;
-      padding-bottom: 40px;
-      color: @brand-normal;
+      height: 48px;
+      border-radius: 50px;
+    }
+    .link {
+      // display: block;
+      // width: 100%;
+      // background: @bg-base1;
+      // text-align: center;
+      // line-height: 20px;
+      // padding-bottom: 40px;
+      // color: @brand-normal;
     }
   }
 }

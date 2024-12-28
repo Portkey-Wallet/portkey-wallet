@@ -11,9 +11,9 @@ export default function ConnectedSitesPopup({ headerTitle, goBack, list }: BaseH
     <div className="connected-sites-popup min-width-max-height connected-sites">
       <CommonHeader className="popup-header-wrap" title={headerTitle} onLeftBack={goBack} />
       {list.length === 0 ? (
-        <div className="no-data flex-center">{t('No Connected Sites')}</div>
+        <div className="no-data flex-center">{t('No connected dApps')}</div>
       ) : (
-        <MenuList list={list} height={92} />
+        <MenuList list={list} height={74} />
       )}
     </div>
   );

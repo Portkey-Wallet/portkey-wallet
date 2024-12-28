@@ -1,8 +1,8 @@
 import { formatStr2EllipsisStr } from '@portkey-wallet/utils';
-import { Button } from 'antd';
 import { CustomSvgV3 } from 'components/CustomSvgV3';
 import { useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router';
+import { CommonButton } from '@portkey/did-ui-react';
 import './index.less';
 
 export interface ICompletedProps {
@@ -29,8 +29,7 @@ export default function Completed({ toAddress = '', onClose }: ICompletedProps) 
         <div className="content-desc">{`Your request to send to ${addressShow} has been successfully submitted.`}</div>
       </div>
       <div className="completed-button flex">
-        {/* TODO-SA */}
-        <Button onClick={onClickClose}>{`Close`}</Button>
+        <CommonButton type="primary" onClick={onClickClose} block>{`Close`}</CommonButton>
       </div>
     </div>
   );

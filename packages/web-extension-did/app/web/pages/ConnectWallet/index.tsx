@@ -36,7 +36,7 @@ export default function ConnectWallet() {
     () =>
       detail && (
         <div className="site flex-center">
-          <ImageDisplay defaultHeight={24} className="icon" src={detail.appLogo} backupSrc="DappDefault" />
+          <ImageDisplay defaultHeight={24} className="icon" src={detail.appLogo} backupSrc="Dapp=Others" />
           <span className="origin">{detail.appHref}</span>
         </div>
       ),

@@ -7,6 +7,10 @@
   justify-content: space-between;
   padding: 16px;
   cursor: pointer;
+  position: sticky;
+  top: 0;
+  left: 0;
+  background-color: @bg-base1;
   .header-left {
     display: flex;
     align-items: center;
@@ -26,6 +30,13 @@
       margin-top: 4px;
     }
   }
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+ 
+  
   .portkeylogov2-icon {
     width: 28px;
     height: 28px;
@@ -48,3 +59,28 @@
     }
   }
 }
+
+.home-popover {
+  .portkey-popover-content {
+    .portkey-popover-arrow {
+      display: none;
+    }
+    .portkey-popover-inner {
+      background-color: @bg-base1;
+      border: 1px solid @border-base1;
+      border-radius: 8px;
+      .home-popover-content {
+        color: @text-base1;
+        .popover-list {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding: 12px 0;
+          font-size: 16px;
+          cursor: pointer;
+        }
+      }
+    }
+  }
+}
+

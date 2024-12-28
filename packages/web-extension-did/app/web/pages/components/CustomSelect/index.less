@@ -4,6 +4,7 @@
   width: 100%;
   background: @bg-base1;
   color: @text-base1;
+  
   &.@{app-prefix}-select-focused:not(.@{app-prefix}-select-disabled).@{app-prefix}-select:not(.@{app-prefix}-select-customize-input)
     .@{app-prefix}-select-selector {
     border-color: @brand-normal !important;
@@ -112,6 +113,12 @@
   border-radius: 8px;
   height: 50px;
   padding: 0 16px;
+  .elf-icon-icon,
+  .aelf-icon {
+    width: 25px!important;
+    height: 25px!important;
+    // display: none;
+  }
 }
 .select-network {
   height: auto!important;

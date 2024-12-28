@@ -2,14 +2,6 @@
 
 .network-list {
   .network-item {
-    display: flex;
-    align-items: center;
-    padding: 16px;
-    height: 64px;
-    background-color: @bg-base1;
-    border-bottom: 1px solid @border-neutral3;
-    font-size: 16px;
-    cursor: pointer;
 
     .network-item-checked {
       width: 16px;
@@ -23,19 +15,30 @@
       margin-left: 8px;
       margin-right: 8px;
       .custom-svg {
-        width: 32px;
-        height: 32px;
+        width: 42px;
+        height: 42px;
         svg {
-          width: 32px;
-          height: 32px;
+          width: 42px;
+          height: 42px;
         }
       }
+    }
+    .network-current-tag {
+      margin-left: 4px;
+      height: 20px;
+      padding: 4px 6px;
+      color: @text-success5;
+      background: @bg-success2;
+      border-radius: 4px;
+      font-size: 12px;
+      line-height: 100%;
     }
   }
 
   .disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
+    //opacity: 0.6;
+    //cursor: not-allowed;
+    cursor: default;
   }
 }
 

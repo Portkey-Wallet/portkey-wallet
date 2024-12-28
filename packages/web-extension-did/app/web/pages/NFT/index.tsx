@@ -24,6 +24,7 @@ import { PopoverMenuList } from '@portkey-wallet/im-ui-web';
 import { useSetUserAvatar } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import singleMessage from 'utils/singleMessage';
 import './index.less';
+import { CustomSvgV3 } from 'components/CustomSvgV3';
 
 export default function NFT() {
   const navigate = useNavigateState<TSendLocationState | THomePageLocationState>();
@@ -78,7 +79,7 @@ export default function NFT() {
           <div className="label">Contract Address</div>
           <div className="contract-title flex">
             {formatTokenContractAds.replace(/(?<=^\w{8})\w+(?=\w{9})/, '...')}
-            <Copy toCopy={formatTokenContractAds} />
+            <Copy toCopy={formatTokenContractAds} iconType="copy" />
           </div>
         </div>
         <div className="chain info-item flex-between">
@@ -142,22 +143,17 @@ export default function NFT() {
     return traitsPercentages ? (
       <div className="info traits-info">
         <div className="info-title">Traits</div>
-        {traitsPercentages.length === 0
-          ? new Array(3).fill('').map((_item, index) => (
-              <div key={`skeleton_${index}`} className="flex-column traits-info-skeleton">
-                <Skeleton.Avatar className="skeleton-title" shape="square" active />
-                <Skeleton.Avatar className="skeleton-desc" shape="square" active />
+        <div className="traits-items">
+          {traitsPercentages.map((trait, i) => (
+            <div key={`${trait.traitType}_${i}`} className="info-item">
+              <div className="label">
+                <div>{trait.traitType}</div>
+                <div className="label-bold">{trait.value}</div>
               </div>
-            ))
-          : traitsPercentages.map((trait, i) => (
-              <div key={`${trait.traitType}_${i}`} className="info-item flex-between-center">
-                <div className="label">
-                  <div>{trait.traitType}</div>
-                  <div className="label-bold">{trait.value}</div>
-                </div>
-                <div className="content">{trait.percent}</div>
-              </div>
-            ))}
+              <div className="content">{trait.percent}</div>
+            </div>
+          ))}
+        </div>
       </div>
     ) : null;
   }, [nftDetail]);
@@ -222,7 +218,7 @@ export default function NFT() {
             rightElementList={[
               {
                 customSvgWrapClassName: 'nft-detail-more',
-                customSvgType: 'More',
+                customSvgType: 'moreHome',
                 popoverProps: {
                   overlayClassName: `nft-detail-popover ${isPrompt ? '' : 'nft-detail-popover-popup'}`,
                   open: popVisible,
@@ -236,17 +232,6 @@ export default function NFT() {
               },
             ]}
           />
-          <div className="collection flex-start-center">
-            <div className="img">
-              {collectionImageUrl ? (
-                <img src={collectionImageUrl} />
-              ) : (
-                <div className="img-text flex-center">{collectionName?.slice(0, 1)}</div>
-              )}
-            </div>
-            <div className="name">{collectionName}</div>
-          </div>
-          <div className="token-id">{`${alias} #${tokenId}`}</div>
           <div className="picture flex-center">
             {seedTypeTag && <CustomSvg type={seedTypeTag} />}
             {imageUrl ? (
@@ -255,17 +240,8 @@ export default function NFT() {
               <div className="picture-text picture-common flex-center">{symbol?.slice(0, 1)}</div>
             )}
           </div>
-          <div className="nft-info flex-column">
-            {renderBasicInfo}
-            {renderIsSeedInfo}
-            {renderTraitsInfo}
-            {renderGenerationInfo}
-            {renderInscriptionInfo}
-          </div>
-        </div>
-        <div>
           <div className="btn-wrap flex-column-center">
-            <div className="balance">{`You have: ${formatTokenAmountShowWithDecimals(balance, decimals)}`}</div>
+            <div className="balance">{`You own: ${formatTokenAmountShowWithDecimals(balance, decimals)}`}</div>
             <Button
               type="primary"
               onClick={() =>
@@ -280,7 +256,27 @@ export default function NFT() {
               Send
             </Button>
           </div>
-          {/* {isPrompt && <PromptEmptyElement />} */}
+          <div className="token-id">{`${alias} #${tokenId}`}</div>
+          <div
+            className="collection flex-start-center"
+            onClick={() => navigate('/collection', { state: { ...nftDetail } })}>
+            <div className="img">
+              {collectionImageUrl ? (
+                <img src={collectionImageUrl} />
+              ) : (
+                <div className="img-text flex-center">{collectionName?.slice(0, 1)}</div>
+              )}
+            </div>
+            <div className="name">{collectionName}</div>
+            <CustomSvgV3 type="collection-arrow" />
+          </div>
+          <div className="nft-info flex-column">
+            {renderBasicInfo}
+            {renderIsSeedInfo}
+            {renderTraitsInfo}
+            {renderGenerationInfo}
+            {renderInscriptionInfo}
+          </div>
         </div>
       </div>
     );

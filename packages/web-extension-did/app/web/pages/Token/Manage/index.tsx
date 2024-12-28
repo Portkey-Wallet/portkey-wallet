@@ -187,7 +187,7 @@ export default function AddToken() {
 
       return (
         <div className="flex-row-center">
-          <span className="edit-btn-icon">
+          {/* <span className="edit-btn-icon">
             <CustomSvg
               type="InteractiveEdit"
               onClick={() => {
@@ -195,7 +195,7 @@ export default function AddToken() {
                 setCurrentToken(item);
               }}
             />
-          </span>
+          </span> */}
           <Switch
             checked={isAdded}
             className={isAdded ? 'checked-true' : 'checked-false'}

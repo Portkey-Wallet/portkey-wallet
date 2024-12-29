@@ -8,13 +8,12 @@ import {
 } from '@portkey-wallet/utils/converter';
 import CustomSvg, { SvgType } from 'components/CustomSvg';
 import { useCallback, useMemo } from 'react';
-import { useNavigateState } from 'hooks/router';
 import './index.less';
 import LoadingMore from 'components/LoadingMore/LoadingMore';
 import { Button, Modal } from 'antd';
 import { useAppCASelector } from '@portkey-wallet/hooks/hooks-ca';
 import { formatActivityTime, isSameDay } from '@portkey-wallet/utils/time';
-import { useSSR, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { intervalCrossChainTransfer } from 'utils/sandboxUtil/crossChainTransfer';
 import { useAppDispatch, useCommonState, useLoading } from 'store/Provider/hooks';
 import { removeFailedActivity } from '@portkey-wallet/store/store-ca/activity/slice';
@@ -24,7 +23,6 @@ import { useFreshTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPric
 import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
 import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import getSeed from 'utils/getSeed';
-import { ITransactionLocationState } from 'types/router';
 import clsx from 'clsx';
 import NFTImageDisplay from '../NFTImageDisplay';
 import TokenImageDisplay from '../TokenImageDisplay';
@@ -60,7 +58,6 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
   const chainList = useCurrentChainList();
   useFreshTokenPrice();
   const currentNetwork = useCurrentNetworkInfo();
-  const nav = useNavigateState<ITransactionLocationState>();
   const { isPrompt } = useCommonState();
 
   const [selectItem, setSelectItem] = useState<any>();

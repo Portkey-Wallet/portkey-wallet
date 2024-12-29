@@ -21,10 +21,10 @@ export class EVMBridgeOperator implements IBridgeOperator {
   constructor(chainInfo: IEBridgeEVMChainInfo) {
     this.chainInfo = chainInfo;
   }
-  checkAllowanceAndApprove(params: ICheckAndApproveParams): Promise<boolean> {
+  checkAllowanceAndApprove(): Promise<boolean> {
     throw new Error('Method not implemented.');
   }
-  createReceipt(params: ICreateReceiptHandlerParams): Promise<any> {
+  createReceipt(_params: ICreateReceiptHandlerParams): Promise<any> {
     throw new Error('Method not implemented.');
   }
 

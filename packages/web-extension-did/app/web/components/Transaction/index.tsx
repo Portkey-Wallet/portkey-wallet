@@ -21,7 +21,6 @@ import './index.less';
 import { formatTransferTime } from '@portkey-wallet/utils/time';
 import { useCurrentChain, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { addressFormat } from '@portkey-wallet/utils';
-import { useCommonState } from 'store/Provider/hooks';
 // import PromptFrame from 'pages/components/PromptFrame';
 import { useFreshTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 // import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
@@ -170,7 +169,7 @@ export default function Transaction(props: {
 
   const currentNetwork = useCurrentNetworkInfo();
   const fromToUI = useCallback(() => {
-    const { from, fromAddress, fromChainId, to, toAddress, toChainId, transactionType } = activityItem;
+    const { fromAddress, fromChainId, toAddress, toChainId, transactionType } = activityItem;
     const transFromAddress = addressFormat(fromAddress, fromChainId, currentNetwork.walletType);
     const transToAddress = addressFormat(toAddress, toChainId, currentNetwork.walletType);
 
@@ -293,8 +292,6 @@ export default function Transaction(props: {
       </a>
     );
   }, [openOnExplorer, t]);
-
-  const { isPrompt } = useCommonState();
 
   const mainContent = useCallback(() => {
     return (

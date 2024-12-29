@@ -43,7 +43,7 @@ export type NFTItemBaseType = {
   imageUrl: string;
   tokenContractAddress: string;
   totalSupply: string | number;
-  decimals?: string;
+  decimals?: string | number;
   isSeed?: boolean;
   seedType?: SeedTypeEnum;
   inscriptionName?: string;

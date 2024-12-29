@@ -1,4 +1,4 @@
-import { Input } from 'antd';
+import { Button, Input, Tooltip } from 'antd';
 import { useCallback, useMemo, useState } from 'react';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
@@ -11,6 +11,9 @@ import CustomSvg, { SvgType } from 'components/CustomSvg';
 import './index.less';
 import { ChainId } from '@portkey-wallet/types';
 import { useDappSpenderCheck } from '@portkey-wallet/hooks/hooks-ca/discover';
+import { DappSiteInfo } from '../DappSiteInfo';
+import { CustomSvgV3 } from 'components/CustomSvgV3';
+import { CommonTooltip } from '@portkey/did-ui-react';
 
 export interface IBaseSetAllowanceProps {
   symbol: string;
@@ -45,6 +48,7 @@ export default function SetAllowance({
   amount,
   decimals,
   dappInfo,
+  // TODO: revamp defaultIcon
   defaultIcon,
   symbol,
   className,
@@ -65,6 +69,7 @@ export default function SetAllowance({
 
   const allowance = useMemo(() => formatAllowanceInput(amount), [amount, formatAllowanceInput]);
 
+  // TODO: revamp error
   const [error, setError] = useState<string>('');
   const checkResult = useDappSpenderCheck(dappInfo?.href, spender, dappInfo?.icon, targetChainId);
 
@@ -80,83 +85,68 @@ export default function SetAllowance({
     [formatAllowanceInput, onAllowanceChange],
   );
 
+  const isTipWarning = useMemo(() => checkResult.type === 'warning', [checkResult.type]);
+
   return (
     <div className={clsx('set-allowance-page-wrapper', className)}>
-      <div className="flex-center set-allowance-dapp-info">
-        {dappInfo?.href || dappInfo?.icon ? (
-          <div className="set-allowance-dapp-info-inner">
-            {dappInfo.icon && <img className="set-allowance-dapp-icon" src={dappInfo.icon} />}
-            {dappInfo.href && <span className="set-allowance-dapp-href">{dappInfo.href}</span>}
+      <div className="set-allowance-page-body">
+        <DappSiteInfo title="Approve token allowance" dappInfo={dappInfo} />
+
+        <div className="set-allowance-title-wrap">
+          <span className="set-allowance-title">Token allowance</span>
+          <CommonTooltip title={SET_ALLOWANCE_MULTIPLY_TIP} placement="bottom">
+            <CustomSvgV3 type="help" className="set-allowance-title-icon" />
+          </CommonTooltip>
+        </div>
+
+        <Input
+          value={allowance}
+          onChange={(e) => {
+            inputChange(e.target.value);
+          }}
+          // TODO: revamp allowClear
+          // allowClear
+          suffix={<span className={`set-allowance-approve-symbol`}>{approveSymbol}</span>}
+        />
+
+        <div className="set-allowance-action">
+          <div className="set-allowance-action-button" onClick={() => inputChange(recommendedAmount)}>
+            Use default
           </div>
-        ) : defaultIcon ? (
-          <CustomSvg type={defaultIcon} className="dapp-default-icon" />
-        ) : null}
-      </div>
-      <div className="set-allowance-header flex-column">
-        <div className="text-center set-allowance-title">
-          {dappInfo?.name
-            ? `${dappInfo?.name} is requesting access to your ${approveSymbol}`
-            : ALLOWANCE_HEADER_NO_NAME}
-        </div>
-        <div className="text-center set-allowance-description">
-          To ensure asset security, please customise an allowance for this dApp. Until this allowance is exhausted, the
-          dApp will not request your approval to utilise&nbsp;{approveSymbol}
+          <div className="set-allowance-action-button" onClick={() => inputChange(max)}>
+            Max
+          </div>
         </div>
       </div>
 
-      <div className="set-allowance-body">
-        <div className="flex-between-center set-allowance-body-title">
-          <span className="set-allowance-set">{`Set Allowance`}</span>
-          <span className="set-allowance-use-recommended" onClick={() => inputChange(recommendedAmount)}>
-            Use Recommended Value
-          </span>
+      {/* {typeof error !== 'undefined' && <div className="error-text">{error}</div>} */}
+      <div className="set-allowance-page-footer">
+        {checkResult.show && (
+          <div className={clsx('set-allowance-tip', isTipWarning && 'set-allowance-tip-hint')}>
+            <CustomSvgV3 type={isTipWarning ? 'error' : 'info'} className="warning-icon" />
+            <div
+              className="warning-title"
+              dangerouslySetInnerHTML={{
+                __html: checkResult.text.replace(/\n/g, '<br/>'),
+              }}
+            />
+          </div>
+        )}
+        <div className="set-allowance-btn-wrapper">
+          <ThrottleButton onClick={onCancel}>Reject</ThrottleButton>
+          <ThrottleButton
+            type="primary"
+            disabled={BigNumber(allowance).isNaN()}
+            onClick={() => {
+              if (!isValidNumber(allowance)) return setError('Please enter a positive whole number');
+              if (BigNumber(allowance).lte(0)) return setError('Please enter a non-zero value');
+              onConfirm?.({ allowance });
+            }}>
+            Pre-authorize
+          </ThrottleButton>
         </div>
-        <div className="set-allowance-input-wrapper">
-          <Input
-            value={allowance}
-            onChange={(e) => {
-              inputChange(e.target.value);
-            }}
-            suffix={
-              <span>
-                <span className={`set-allowance-approve-symbol`}>{approveSymbol}</span>
-                <span onClick={() => inputChange(max)}>Max</span>
-              </span>
-            }
-          />
 
-          {typeof error !== 'undefined' && <div className="error-text">{error}</div>}
-        </div>
-
-        <div className="set-allowance-notice">{SET_ALLOWANCE_MULTIPLY_TIP}</div>
-      </div>
-      {checkResult.show && (
-        <div className={`set-allowance-warning ${checkResult.type === 'warning' && `set-allowance-warning-hint`}`}>
-          <CustomSvg
-            type="WarningTriangle"
-            className={`warning-icon`}
-            fillColor={checkResult.type === 'info' ? '#5D42FF' : '#FF9417'}
-          />
-          <div
-            className="warning-title"
-            dangerouslySetInnerHTML={{
-              __html: checkResult.text.replace(/\n/g, '<br/>'),
-            }}
-          />
-        </div>
-      )}
-      <div className="set-allowance-btn-wrapper flex-row-between">
-        <ThrottleButton onClick={onCancel}>Reject</ThrottleButton>
-        <ThrottleButton
-          type="primary"
-          disabled={BigNumber(allowance).isNaN()}
-          onClick={() => {
-            if (!isValidNumber(allowance)) return setError('Please enter a positive whole number');
-            if (BigNumber(allowance).lte(0)) return setError('Please enter a non-zero value');
-            onConfirm?.({ allowance });
-          }}>
-          Pre-authorize
-        </ThrottleButton>
+        <div className="set-allowance-footer-tip">{'Only approve if you trust this website'}</div>
       </div>
     </div>
   );

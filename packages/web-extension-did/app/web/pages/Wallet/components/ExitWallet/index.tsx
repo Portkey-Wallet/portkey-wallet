@@ -3,6 +3,7 @@ import clsx from 'clsx';
 import './index.less';
 import { CustomModalBottom } from '../../../components/CustomModalBottom';
 import { useExitWallet } from '../ExitWalletModal/useExitWallet';
+import { useCommonState } from 'store/Provider/hooks';
 
 export interface IExitWalletProps {
   exitText: string;
@@ -14,6 +15,7 @@ export interface IExitWalletProps {
 
 export default function ExitWallet({ exitText, className, onCancelExit }: IExitWalletProps) {
   const { exitWallet } = useExitWallet();
+  const { isPrompt } = useCommonState();
 
   return (
     <>
@@ -23,11 +25,14 @@ export default function ExitWallet({ exitText, className, onCancelExit }: IExitW
           onClick={() => {
             CustomModalBottom({
               type: 'warning',
+              isPrompt,
               content: (
                 <div>
-                  <div className="title">Are you sure you want to exit your account?</div>
+                  {/*<div className="title">Are you sure you want to exit your account?</div>*/}
+                  <div className="title">Confirm sign out</div>
                   <div className="content">
-                    After you exit, your assets remain in your account and you can access them through social recovery.
+                    Your assets will remain safe in your account and accessible next time you log in via social
+                    recovery.
                   </div>
                 </div>
               ),
@@ -35,8 +40,8 @@ export default function ExitWallet({ exitText, className, onCancelExit }: IExitW
               onCancel: () => {
                 onCancelExit();
               },
-              title: 'Sign out',
-              okText: 'Exit Anyway',
+              // title: 'Sign out',
+              okText: 'Sign out',
               cancelText: 'Cancel',
             });
           }}

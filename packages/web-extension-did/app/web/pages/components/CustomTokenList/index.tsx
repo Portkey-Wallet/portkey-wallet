@@ -200,7 +200,7 @@ export default function CustomTokenList({
         tokenInfo: {
           imageUrl: token.imageUrl,
           balance: token.balance || '',
-          decimals: token.decimals,
+          decimals: Number(token.decimals),
           balanceInUsd: token.balanceInUsd || '',
           tokenContractAddress: token.address,
         },

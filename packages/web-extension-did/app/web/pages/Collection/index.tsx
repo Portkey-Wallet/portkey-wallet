@@ -2,7 +2,7 @@ import clsx from 'clsx';
 import CommonHeader from 'components/CommonHeader';
 import { useLocationState, useNavigateState } from 'hooks/router';
 import PromptFrame from 'pages/components/PromptFrame';
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useCommonState } from 'store/Provider/hooks';
 import { THomePageLocationState, TSendLocationState, TNFTLocationState } from 'types/router';
 import { useAccountNFTCollectionInfo } from '@portkey-wallet/hooks/hooks-ca/assets';

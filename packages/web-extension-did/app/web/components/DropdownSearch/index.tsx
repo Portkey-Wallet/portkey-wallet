@@ -2,7 +2,6 @@ import { Dropdown, DropdownProps, Input, InputProps } from 'antd';
 import clsx from 'clsx';
 import { CustomSvgV3 } from 'components/CustomSvgV3';
 import './index.less';
-import { ChangeEvent } from 'react';
 
 interface DropdownSearchProps extends DropdownProps {
   inputProps: InputProps;

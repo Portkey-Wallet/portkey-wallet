@@ -1,10 +1,12 @@
 import { IEditContactItemFormType } from 'pages/Contacts/AddContact/types';
 import './index.less';
 import { FormInstance } from 'antd';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 // import { useContactNetworkConfig } from '@portkey-wallet/hooks/hooks-ca/config';
 import { CustomSvgV3 } from 'components/CustomSvgV3';
 import { Input } from 'antd';
+import { CommonModal } from '@portkey/did-ui-react';
+import CommonHeader from 'components/CommonHeader';
 
 export type TChangeAddressInfoParams = Partial<IEditContactItemFormType['addressInfo']>;
 // packages/web-extension-did/app/web/pages/components/CustomSelect/index.tsx
@@ -13,12 +15,19 @@ interface AddressInfoFormProps {
   form: FormInstance<IEditContactItemFormType>;
   value?: IEditContactItemFormType['addressInfo'];
   onChange: (v: IEditContactItemFormType['addressInfo']) => void;
+  isNetworkModalOpen: boolean | undefined;
   handleNetworkModalState: (isShow: boolean) => void;
 }
-export default function AddressInfoForm({ form, value, onChange, handleNetworkModalState }: AddressInfoFormProps) {
+export default function AddressInfoForm({
+  form,
+  value,
+  onChange,
+  isNetworkModalOpen,
+  handleNetworkModalState,
+}: AddressInfoFormProps) {
   // const { supportNetworkList } = useContactNetworkConfig();
 
-  const supportNetworkList = [
+  const [supportNetworkList] = useState([
     {
       network: 'aelf',
       name: 'aelf dAppChain',
@@ -34,22 +43,22 @@ export default function AddressInfoForm({ form, value, onChange, handleNetworkMo
     {
       network: 'SETH',
       name: 'Ethereum',
-      chainId: null,
+      chainId: '1',
       imageUrl: 'https://portkey-did.s3.ap-northeast-1.amazonaws.com/img/chain/ChainEthereum.png',
     },
     {
       network: 'TBSC',
       name: 'BNB Smart Chain',
-      chainId: null,
+      chainId: '56',
       imageUrl: 'https://portkey-did.s3.ap-northeast-1.amazonaws.com/img/chain/ChainBinance.png',
     },
     {
       network: 'Base',
       name: 'Base',
-      chainId: null,
+      chainId: '8453',
       imageUrl: 'https://portkey-did.s3.ap-northeast-1.amazonaws.com/img/chain/ChainBase.png',
     },
-  ];
+  ]);
 
   const selectedNetworkInfo = useMemo(
     () => supportNetworkList.find((ele) => ele.network === value?.network),
@@ -112,6 +121,32 @@ export default function AddressInfoForm({ form, value, onChange, handleNetworkMo
         <span className="show-text">{`Enter or `}</span>
         <span className="paste-text cursor-pointer" onClick={pasteClipBoard}>{`paste a wallet address`}</span>
       </div>
+
+      <CommonModal
+        className="select-chain-modal"
+        open={isNetworkModalOpen}
+        onClose={() => handleNetworkModalState(false)}>
+        <CommonHeader title={'Select network'} onLeftBackShowClose={true} />
+        <div className="chain-content">
+          {supportNetworkList.map((list) => {
+            return (
+              <div
+                key={list.network}
+                className="chain-list"
+                onClick={() => {
+                  onChangeAddressInfo({ network: list.network, chainId: list.chainId });
+                  handleNetworkModalState(false);
+                }}>
+                <div className="chain-list-info">
+                  <img src={list.imageUrl} width={24} height={24} alt="" />
+                  <div>{list.name}</div>
+                </div>
+                {list.network == value?.network && <CustomSvgV3 type="selected" />}
+              </div>
+            );
+          })}
+        </div>
+      </CommonModal>
     </div>
   );
 }

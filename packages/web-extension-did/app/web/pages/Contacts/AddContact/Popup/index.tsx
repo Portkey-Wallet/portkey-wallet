@@ -1,5 +1,5 @@
 import './index.less';
-import NetworkDrawer from '../../NetworkDrawer';
+// import NetworkDrawer from '../../NetworkDrawer';
 import CommonHeader from 'components/CommonHeader';
 import AddContactForm from '../../components/AddContactForm';
 import { IAddContactProps } from '..';
@@ -7,6 +7,7 @@ import { CustomSvgV3 } from 'components/CustomSvgV3';
 import { useState } from 'react';
 import { CommonModal } from '@portkey/did-ui-react';
 import { Button } from 'antd';
+// import { useContactNetworkConfig } from '@portkey-wallet/hooks/hooks-ca/config';
 
 export default function AddContactPopup({
   form,
@@ -24,7 +25,8 @@ export default function AddContactPopup({
 }: IAddContactProps) {
   console.log('extra', extra);
   const [removeTip, setRemoveTip] = useState(false);
-  //
+  // const { supportNetworkList } = useContactNetworkConfig();
+
   return (
     <div className="add-contact-popup min-width-max-height">
       <CommonHeader
@@ -43,10 +45,11 @@ export default function AddContactPopup({
         state={state}
         extra={extra}
         onFinish={onFinish}
+        isNetworkModalOpen={isNetworkModalOpen}
         handleAddressInfoChange={handleAddressInfoChange}
         handleNetworkModalState={handleNetworkModalState}
       />
-      <NetworkDrawer
+      {/* <NetworkDrawer
         open={isNetworkModalOpen}
         height={528}
         maskClosable={true}
@@ -56,7 +59,8 @@ export default function AddContactPopup({
           handleAddressInfoChange({ ..._addressInfo, network: v });
         }}
         onClose={() => handleNetworkModalState(false)}
-      />
+      /> */}
+
       <CommonModal className="remove-tip-modal" open={removeTip} onClose={() => setRemoveTip(false)}>
         <CommonHeader title={<CustomSvgV3 type="error" />} onLeftBackShowClose={true} />
         <div className="remove-content">

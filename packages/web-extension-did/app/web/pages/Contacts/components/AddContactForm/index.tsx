@@ -33,6 +33,7 @@ export default function AddContactForm({
   validName,
   extra,
   onFinish,
+  isNetworkModalOpen,
   handleAddressInfoChange,
   handleNetworkModalState,
 }: IAddContactFormProps) {
@@ -73,6 +74,7 @@ export default function AddContactForm({
           help={validName.errorMsg}>
           <AddContactAddressInfoSection
             form={form}
+            isNetworkModalOpen={isNetworkModalOpen}
             onChange={handleAddressInfoChange}
             handleNetworkModalState={handleNetworkModalState}
           />

@@ -1,4 +1,4 @@
-// import clsx from 'clsx';
+import clsx from 'clsx';
 import { SelectProps } from 'antd';
 import { OptionProps } from 'antd/lib/select';
 import { CustomSvgV3 } from 'components/CustomSvgV3';
@@ -34,6 +34,9 @@ export default function CustomSelect({ items = [], value, onChange, ...props }: 
   };
 
   const selectOption = (option: any) => {
+    if (option.disabled) {
+      return;
+    }
     if (onChange) {
       setShow(false);
       onChange(option.value, option);
@@ -68,7 +71,10 @@ export default function CustomSelect({ items = [], value, onChange, ...props }: 
             <div className="modal-content">
               {items.map((op, index) => {
                 return (
-                  <div className="select-list" key={index} onClick={() => selectOption(op)}>
+                  <div
+                    className={clsx('select-list', op.disabled && 'disabled')}
+                    key={index}
+                    onClick={() => selectOption(op)}>
                     <>{op.children}</>
                     {op.value == value && <CustomSvgV3 type="selected" />}
                   </div>
@@ -90,7 +96,10 @@ export default function CustomSelect({ items = [], value, onChange, ...props }: 
             <div className="modal-content">
               {items.map((op, index) => {
                 return (
-                  <div className="select-list" key={index} onClick={() => selectOption(op)}>
+                  <div
+                    className={clsx('select-list', op.disabled && 'disabled')}
+                    key={index}
+                    onClick={() => selectOption(op)}>
                     <>{op.children}</>
                     {op.value == value && <CustomSvgV3 type="selected" />}
                   </div>

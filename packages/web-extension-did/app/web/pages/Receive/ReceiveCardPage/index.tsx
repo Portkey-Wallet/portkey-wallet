@@ -137,19 +137,22 @@ export default function ReceiveCardMain() {
 
   const onSelectedChange = useCallback(
     (item: TokenItem) => {
-      console.log('selectedType is:::', selectedType, 'item', item);
-      if (selectedType === SELECTION_TYPE.SOURCE || selectedType === SELECTION_TYPE.NFT) {
+      if (selectedType === SELECTION_TYPE.SOURCE) {
         setSourceChain(item as TReceiveFromNetworkItem);
         setSelectedSource(item as TReceiveFromNetworkItem);
         return;
       }
-      setSelectedDestination(item as ChainInfo);
-
-      if (!selectToken.isNFT) {
+      if (selectedType === SELECTION_TYPE.NFT) {
+        setSelectedSource(item as TReceiveFromNetworkItem);
+        setSelectedDestination(item as ChainInfo);
+        return;
+      }
+      if (selectedType === SELECTION_TYPE.DESITNATION) {
+        setSelectedDestination(item as ChainInfo);
         updateDestinationChain(item as ChainInfo);
       }
     },
-    [selectToken.isNFT, selectedType, setSourceChain, updateDestinationChain],
+    [selectedType, setSourceChain, updateDestinationChain],
   );
 
   const renderSelected = useCallback(

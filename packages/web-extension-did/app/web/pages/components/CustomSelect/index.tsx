@@ -51,9 +51,16 @@ export default function CustomSelect({ items = [], value, onChange, ...props }: 
 
   return (
     <>
-      <div className="select-btn" onClick={() => setShow(true)}>
+      <div
+        className={clsx('select-btn', props.disabled && 'select-btn-disabled')}
+        onClick={() => {
+          if (props.disabled) {
+            return;
+          }
+          setShow(true);
+        }}>
         <div>{selectedItem?.children}</div>
-        <CustomSvgV3 type="nftArrow" />
+        {!props.disabled && <CustomSvgV3 type="nftArrow" />}
       </div>
 
       {isNotLessThan768 ? (

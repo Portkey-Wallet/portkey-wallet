@@ -18,7 +18,7 @@ import { useDecodeTx } from 'hooks/dapp';
 import './index.less';
 import { CommonPromptCard } from '@portkey/did-ui-react';
 import { PromptCardType } from 'pages/Send';
-import { ToggleContent } from './components/ToggleContent';
+import { ToggleContent } from 'pages/components/ToggleContent';
 import { DappSiteInfo } from 'pages/components/DappSiteInfo';
 
 export default function GetSignature() {
@@ -35,7 +35,6 @@ export default function GetSignature() {
   const { currentNetwork } = useWalletInfo();
   const [showData, setShowData] = useState<string | { methodName: string; params: object }>(payload?.data);
   const { dappMap } = useDapp();
-  console.log('dappMap', dappMap);
 
   const curDapp = useMemo(
     () => dappMap[currentNetwork]?.find((item) => item.origin === payload?.origin),
@@ -161,7 +160,7 @@ export default function GetSignature() {
       });
 
       if (showData.params && typeof showData.params === 'object') {
-        Object.entries(showData.params).map(([key, value]) => {
+        Object.entries(showData.params).forEach(([key, value]) => {
           if (!value) return;
 
           let formattedDate = value;

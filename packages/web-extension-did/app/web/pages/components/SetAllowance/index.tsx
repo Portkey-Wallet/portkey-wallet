@@ -1,19 +1,18 @@
-import { Button, Input, Tooltip } from 'antd';
+import { Input } from 'antd';
 import { useCallback, useMemo, useState } from 'react';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
 import { isValidNumber } from '@portkey-wallet/utils/reg';
 import { parseInputNumberChange } from '@portkey-wallet/utils/input';
 import ThrottleButton from 'components/ThrottleButton';
-import { ALLOWANCE_HEADER_NO_NAME, SET_ALLOWANCE_MULTIPLY_TIP } from '@portkey-wallet/constants/constants-ca/allowance';
 import { isNFT } from '@portkey-wallet/utils/token';
-import CustomSvg, { SvgType } from 'components/CustomSvg';
+import { SvgType } from 'components/CustomSvg';
 import './index.less';
 import { ChainId } from '@portkey-wallet/types';
 import { useDappSpenderCheck } from '@portkey-wallet/hooks/hooks-ca/discover';
 import { DappSiteInfo } from '../DappSiteInfo';
-import { CustomSvgV3 } from 'components/CustomSvgV3';
-import { CommonTooltip } from '@portkey/did-ui-react';
+import { CommonModalTip, CommonPromptCard } from '@portkey/did-ui-react';
+import { PromptCardType } from 'pages/Send';
 
 export interface IBaseSetAllowanceProps {
   symbol: string;
@@ -94,9 +93,10 @@ export default function SetAllowance({
 
         <div className="set-allowance-title-wrap">
           <span className="set-allowance-title">Token allowance</span>
-          <CommonTooltip title={SET_ALLOWANCE_MULTIPLY_TIP} placement="bottom">
-            <CustomSvgV3 type="help" className="set-allowance-title-icon" />
-          </CommonTooltip>
+          <CommonModalTip
+            title="Token allowance"
+            content={`For asset security, set a custom allowance for this dApp. ${approveSymbol} approval won't be needed until the allowance is used up. You can change the settings anytime.`}
+          />
         </div>
 
         <Input
@@ -121,17 +121,22 @@ export default function SetAllowance({
 
       {/* {typeof error !== 'undefined' && <div className="error-text">{error}</div>} */}
       <div className="set-allowance-page-footer">
+        {/* TODO-SA */}
         {checkResult.show && (
-          <div className={clsx('set-allowance-tip', isTipWarning && 'set-allowance-tip-hint')}>
-            <CustomSvgV3 type={isTipWarning ? 'error' : 'info'} className="warning-icon" />
-            <div
-              className="warning-title"
-              dangerouslySetInnerHTML={{
-                __html: checkResult.text.replace(/\n/g, '<br/>'),
-              }}
-            />
-          </div>
+          <CommonPromptCard
+            className="set-allowance-tip"
+            type={isTipWarning ? PromptCardType.WARNING : PromptCardType.INFO}
+            description={
+              <div
+                className="warning-title"
+                dangerouslySetInnerHTML={{
+                  __html: checkResult.text.replace(/\n/g, '<br/>'),
+                }}
+              />
+            }
+          />
         )}
+
         <div className="set-allowance-btn-wrapper">
           <ThrottleButton onClick={onCancel}>Reject</ThrottleButton>
           <ThrottleButton
@@ -145,7 +150,6 @@ export default function SetAllowance({
             Pre-authorize
           </ThrottleButton>
         </div>
-
         <div className="set-allowance-footer-tip">{'Only approve if you trust this website'}</div>
       </div>
     </div>

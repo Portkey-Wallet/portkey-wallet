@@ -1,9 +1,22 @@
+@import '../../assets/theme/color.less';
+
 .manager-approve-page {
   width: 100%;
-  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  background: @bg-base2;
+
+  .manager-approve-page-body {
+    flex: 1;
+    overflow: hidden;
+    background: @bg-base1;
+    border-radius: 12px 12px 0 0;
+  }
 
   .manager-approval-wrapper {
     height: 100%;
+    padding: 24px;
+    overflow: auto;
 
     .manager-approval-guardian-approve {
       .verifier-account-wrapper {

@@ -153,14 +153,12 @@ export default function RegisterStart() {
     (data: LoginInfo) => {
       // update page data
       loginAccountRef.current = data;
-      setLoginAccount(data);
       // update store data
       dispatch(setLoginAccountAction(data));
     },
     [dispatch],
   );
   const loginAccountRef = useRef<LoginInfo>();
-  const [loginAccount, setLoginAccount] = useState<LoginInfo>();
   const [checkAuth, sendVerifyCodeHandler] = useCheckVerifier();
 
   // According to the login type, execute different verifier judgment logic

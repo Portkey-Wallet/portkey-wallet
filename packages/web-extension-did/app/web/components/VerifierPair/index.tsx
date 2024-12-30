@@ -48,6 +48,7 @@ export default function VerifierPair({
       <div className="guardian-icon flex-center" style={{ width: size, height: size, fontSize: size }}>
         <CustomSvgV3 className="flex" type={GuardianTypeIcon[guardianType]} />
       </div>
+      {isZK && <div className="zk-login-icon">zkLogin</div>}
     </div>
   );
 }

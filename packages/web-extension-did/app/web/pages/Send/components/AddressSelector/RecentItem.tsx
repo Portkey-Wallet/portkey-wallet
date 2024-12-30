@@ -1,50 +1,57 @@
-import { IClickAddressProps, RecentContactItemType } from '@portkey-wallet/types/types-ca/contact';
+import { IClickAddressProps } from '@portkey-wallet/types/types-ca/contact';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
-import { formatStr2EllipsisStr } from '@portkey-wallet/utils/converter';
-import ContactCard from './ContactCard';
 import CustomSvg from 'components/CustomSvg';
 import { useNavigate } from 'react-router';
 import clsx from 'clsx';
-import { ChainId } from '@portkey-wallet/types';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { IContactItemType, TFormattedRecentItem } from '@portkey-wallet/types/types-ca/contactNew';
 
 export default function RecentItem({
   item,
   onClick,
 }: {
-  item: RecentContactItemType;
+  item: TFormattedRecentItem;
   onClick: (account: IClickAddressProps) => void;
 }) {
   const isMainnet = useIsMainnet();
   const navigate = useNavigate();
 
-  const goRecentDetail = (
-    chainId: ChainId,
-    targetAddress: string,
-    targetChainId: ChainId,
-    name: string,
-    index: string,
-  ) => {
-    navigate('/recent-detail', { state: { chainId, targetAddress, targetChainId, name, index } });
+  const goRecentDetail = (item: IContactItemType) => {
+    navigate('/recent-detail', { state: item });
   };
 
-  return item.name ? (
-    <ContactCard user={item} onChange={onClick} className="contact-card-in-recent" chainId={item.chainId} />
-  ) : (
+  // const caAddresses = useCaAddresses();
+  // const isMyAddress = item.addressInfo?.address === caAddresses?.[0];
+  // const isMyContact = item.name && !item?.addressInfo;
+
+  // if (isMyAddress) return <MyAddress chainId={item.chainId || item.addressInfo?.chainId || 'AELF'} onClick={onClick} />;
+
+  // if (isMyContact)
+  //   return (
+  //     <ContactCard
+  //       onChange={onClick}
+  //       className="contact-card-in-recent"
+  //       chainId={item.chainId || item.addressInfo?.chainId || 'AELF'}
+  //     />
+  //   );
+
+  return (
     // In order to keep the format of Recents and Contacts consistent, this can use like {item.addresses[0]}
     <div className={clsx(['flex-between-center', 'recent-item'])}>
       <div
         className="main-info"
         onClick={() => {
-          onClick({ ...item });
+          onClick(item as IClickAddressProps);
         }}>
-        <p className="address">{`ELF_${formatStr2EllipsisStr(item.address, [6, 6])}_${item.addressChainId}`}</p>
-        <p className="network">{transNetworkText(item.addressChainId, !isMainnet)}</p>
+        <p className="address">{item.address || item.addressInfo?.address}</p>
+        <p className="network">
+          {item.addressInfo?.network === 'aelf'
+            ? transNetworkText(item.addressInfo.address, !isMainnet)
+            : item.addressInfo?.networkName}
+        </p>
       </div>
 
-      <div
-        className="go-detail"
-        onClick={() => goRecentDetail(item.chainId, item.address, item.addressChainId, item.name, item?.index)}>
+      <div className="go-detail" onClick={() => goRecentDetail(item as IContactItemType)}>
         <CustomSvg className="go-detail-icon" type={'Info'} />
       </div>
     </div>

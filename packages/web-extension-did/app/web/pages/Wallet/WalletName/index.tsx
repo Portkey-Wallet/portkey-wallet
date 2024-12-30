@@ -20,7 +20,6 @@ export default function WalletName() {
   }, [caAddressInfos]);
 
   const { t } = useTranslation();
-  const editText = t('Edit');
 
   const state: IProfileDetailDataProps = useMemo(
     () => ({

@@ -2,7 +2,7 @@ import './index.less';
 import ContactAddressList from 'pages/Contacts/components/ContactAddressList';
 import { AddressItem } from '@portkey-wallet/types/types-ca/contact';
 import clsx from 'clsx';
-import Copy from 'components/Copy';
+// import Copy from 'components/Copy';
 
 interface IIdAndAddressProps {
   addresses: AddressItem[];

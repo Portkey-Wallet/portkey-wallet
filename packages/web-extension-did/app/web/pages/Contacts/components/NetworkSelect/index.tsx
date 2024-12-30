@@ -1,13 +1,11 @@
 import CustomSvg from 'components/CustomSvg';
 import DropdownSearch from 'components/DropdownSearch';
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { transNetworkText } from '@portkey-wallet/utils/activity';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import './index.less';
 import { useContactNetworkConfig } from '@portkey-wallet/hooks/hooks-ca/config';
 import { IContactSupportNetworkItem } from '@portkey-wallet/types/types-ca/config';
+import { useEffectOnce } from '@portkey-wallet/hooks';
 
 export interface INetworkSelectProps {
   onClose: () => void;
@@ -18,7 +16,6 @@ export default function NetworkSelect({ onClose, onChange }: INetworkSelectProps
   const { t } = useTranslation();
   const [filterWord, setFilterWord] = useState<string>('');
   const [showNetworkLists, setShowNetworkLists] = useState<IContactSupportNetworkItem[]>([]);
-  const isMainnet = useIsMainnet();
 
   const { supportNetworkList, fetchContactSupportConfig } = useContactNetworkConfig();
 
@@ -30,6 +27,10 @@ export default function NetworkSelect({ onClose, onChange }: INetworkSelectProps
       setShowNetworkLists(filter);
     }
   }, [filterWord, showNetworkLists, supportNetworkList]);
+
+  useEffectOnce(() => {
+    fetchContactSupportConfig();
+  });
 
   return (
     <div className="network-select">

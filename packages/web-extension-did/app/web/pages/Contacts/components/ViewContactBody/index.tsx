@@ -1,17 +1,12 @@
-import { Modal, Popover } from 'antd';
+import { Modal } from 'antd';
 import './index.less';
-import CustomSvg from 'components/CustomSvg';
 import { IProfileDetailBodyProps } from 'types/Profile';
 import IdAndAddress from '../IdAndAddress';
-import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useIndexAndName, useIsMyContact } from '@portkey-wallet/hooks/hooks-ca/contact';
+import { useCallback, useEffect, useState } from 'react';
+import { useIndexAndName } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
-import LoginAccountList from '../LoginAccountList';
 import Avatar from 'pages/components/Avatar';
-import { PopoverMenuList } from '@portkey-wallet/im-ui-web';
-import { useBlockAndReport } from '@portkey-wallet/hooks/hooks-ca/im';
 import clsx from 'clsx';
 import { CustomSvgV3 } from 'components/CustomSvgV3';
 import { CustomModalBottom } from '../../../components/CustomModalBottom';
@@ -26,7 +21,7 @@ export default function ViewContactBody({ data }: IProfileDetailBodyProps) {
   const { avatar, nickName } = useCurrentUserInfo();
   const setUserInfo = useSetUserInfo();
   // const navigate = useNavigate();
-  const [popVisible, setPopVisible] = useState(false);
+  // const [popVisible, setPopVisible] = useState(false);
 
   const { index } = useIndexAndName(data as Partial<ContactItemType>);
 
@@ -36,7 +31,7 @@ export default function ViewContactBody({ data }: IProfileDetailBodyProps) {
       const _className = _target?.className;
       const isFunc = _className.includes instanceof Function;
       if (isFunc && !_className.includes('contact-operation-more')) {
-        setPopVisible(false);
+        // setPopVisible(false);
       }
     } catch (e) {
       console.log('===contact-operation-more hidePop error', e);

@@ -1,9 +1,7 @@
 import { IContactItemType } from '@portkey-wallet/types/types-ca/contactNew';
-import UnReadBadge from 'pages/components/UnReadBadge';
 import './index.less';
 import { useIndexAndName } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { formatStr2EllipsisStr } from '@portkey-wallet/utils';
-// import ImageDisplay from 'pages/components/ImageDisplay';
 import TokenImageDisplay from 'pages/components/TokenImageDisplay';
 
 export interface IContactItemProps {
@@ -12,6 +10,8 @@ export interface IContactItemProps {
 
 export default function ContactItem({ item }: IContactItemProps) {
   const { name, index } = useIndexAndName(item);
+
+  console.log('index', index);
 
   return (
     <div className="flex-between-center contact-item">

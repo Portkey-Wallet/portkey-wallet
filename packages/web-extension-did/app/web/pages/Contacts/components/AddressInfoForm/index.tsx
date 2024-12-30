@@ -1,18 +1,20 @@
 import { IEditContactItemFormType } from 'pages/Contacts/AddContact/types';
 import './index.less';
 import { FormInstance } from 'antd';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 // import { useContactNetworkConfig } from '@portkey-wallet/hooks/hooks-ca/config';
 import { CustomSvgV3 } from 'components/CustomSvgV3';
 import { Input } from 'antd';
 import { CommonModal } from '@portkey/did-ui-react';
 import CommonHeader from 'components/CommonHeader';
+import { useContactNetworkConfig } from '@portkey-wallet/hooks/hooks-ca/config';
+import { useEffectOnce } from '@portkey-wallet/hooks';
 
 export type TChangeAddressInfoParams = Partial<IEditContactItemFormType['addressInfo']>;
 // packages/web-extension-did/app/web/pages/components/CustomSelect/index.tsx
 
 interface AddressInfoFormProps {
-  form: FormInstance<IEditContactItemFormType>;
+  form?: FormInstance<IEditContactItemFormType>;
   value?: IEditContactItemFormType['addressInfo'];
   onChange: (v: IEditContactItemFormType['addressInfo']) => void;
   isNetworkModalOpen: boolean | undefined;
@@ -25,40 +27,7 @@ export default function AddressInfoForm({
   isNetworkModalOpen,
   handleNetworkModalState,
 }: AddressInfoFormProps) {
-  // const { supportNetworkList } = useContactNetworkConfig();
-
-  const [supportNetworkList] = useState([
-    {
-      network: 'aelf',
-      name: 'aelf dAppChain',
-      chainId: 'tDVW',
-      imageUrl: 'https://portkey-did.s3.ap-northeast-1.amazonaws.com/img/aelf/dappChain.png',
-    },
-    {
-      network: 'aelf',
-      name: 'aelf MainChain',
-      chainId: 'AELF',
-      imageUrl: 'https://portkey-did.s3.ap-northeast-1.amazonaws.com/img/aelf/mainChain.png',
-    },
-    {
-      network: 'SETH',
-      name: 'Ethereum',
-      chainId: '1',
-      imageUrl: 'https://portkey-did.s3.ap-northeast-1.amazonaws.com/img/chain/ChainEthereum.png',
-    },
-    {
-      network: 'TBSC',
-      name: 'BNB Smart Chain',
-      chainId: '56',
-      imageUrl: 'https://portkey-did.s3.ap-northeast-1.amazonaws.com/img/chain/ChainBinance.png',
-    },
-    {
-      network: 'Base',
-      name: 'Base',
-      chainId: '8453',
-      imageUrl: 'https://portkey-did.s3.ap-northeast-1.amazonaws.com/img/chain/ChainBase.png',
-    },
-  ]);
+  const { supportNetworkList, fetchContactSupportConfig } = useContactNetworkConfig();
 
   const selectedNetworkInfo = useMemo(
     () => supportNetworkList.find((ele) => ele.network === value?.network),
@@ -80,7 +49,9 @@ export default function AddressInfoForm({
     onChangeAddressInfo({ address: text });
   }, [onChangeAddressInfo]);
 
-  console.log('value', value, supportNetworkList);
+  useEffectOnce(() => {
+    fetchContactSupportConfig();
+  });
 
   return (
     <div className="address-info-from">

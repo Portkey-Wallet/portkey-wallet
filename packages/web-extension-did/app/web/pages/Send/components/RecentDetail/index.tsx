@@ -1,16 +1,11 @@
-import CustomSvg from 'components/CustomSvg';
 import { CustomSvgV3 } from 'components/CustomSvgV3';
-
 import { useNavigate } from 'react-router';
 import clsx from 'clsx';
 import { useCommonState, useUserInfo } from 'store/Provider/hooks';
 import { useCallback, useMemo, useState } from 'react';
 import PromptFrame from 'pages/components/PromptFrame';
 import Copy from 'components/Copy';
-import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
-import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
-import { transNetworkText } from '@portkey-wallet/utils/activity';
-import { addressFormat, getExploreLink } from '@portkey-wallet/utils';
+import { getExploreLink } from '@portkey-wallet/utils';
 import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import CommonHeader from 'components/CommonHeader';
 import './index.less';
@@ -20,14 +15,12 @@ import {
   IActivityListWithAddressApiParams,
 } from '@portkey-wallet/store/store-ca/activity/type';
 import { fetchRecentContactActivities } from '@portkey-wallet/store/store-ca/activity/api';
-import { useCaAddressInfoList, useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useEffectOnce } from 'react-use';
-import { ChainId } from '@portkey-wallet/types';
 import { useGoAddNewContact } from 'hooks/useProfile';
 import { ContactHandleActionTypeEnum } from 'types/Profile';
 import Avatar from 'pages/components/Avatar';
 import { useLocationState } from 'hooks/router';
-import { TRecentDetailLocationState } from 'types/router';
 import { IContactItemType } from '@portkey-wallet/types/types-ca/contactNew';
 import { formatStr2EllipsisStr } from '@portkey-wallet/utils';
 
@@ -36,13 +29,10 @@ const SKIP_COUNT = 0;
 
 export default function RecentDetail() {
   const { state } = useLocationState<IContactItemType>();
-  const currentWallet = useCurrentWallet();
-  const { walletInfo } = currentWallet;
 
   const goToNewContact = useGoAddNewContact();
 
   const chainInfo = useCurrentChain(state?.addressInfo?.chainId);
-  const currentNetwork = useCurrentNetworkInfo();
 
   const [activityInfo, setActivityList] = useState<IActivitiesApiResponse>({
     data: [],
@@ -50,7 +40,6 @@ export default function RecentDetail() {
   });
   const { passwordSeed } = useUserInfo();
   const { isPrompt } = useCommonState();
-  const isMainnet = useIsMainnet();
   const caAddressInfos = useCaAddressInfoList();
 
   const [loading, setLoading] = useState<boolean>(false);

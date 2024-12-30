@@ -1,4 +1,4 @@
-import { useCurrentChain, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { useCurrentChain, useCurrentChainList, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCurrentWallet, useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { addFailedActivity, removeFailedActivity } from '@portkey-wallet/store/store-ca/activity/slice';
@@ -76,6 +76,7 @@ import NFTInput from './components/AmountInputNFT';
 import TokenInput from './components/AmountInputToken';
 import { usePin } from 'hooks/usePin';
 import { CrossEBridgeExtension } from 'utils/sandboxUtil/extension-cross-chain';
+import { useRecent } from '@portkey-wallet/hooks/hooks-ca/recent';
 
 export enum SendPageTypeEnum {
   token = 'token',
@@ -147,6 +148,9 @@ export default function Send() {
   const { type, symbol } = useParams();
   const { locationParams: state } = usePromptLocationParams<TSendLocationState, TSendLocationState>();
   const chainId: ChainId = useMemo(() => state.targetChainId || state.chainId, [state.chainId, state.targetChainId]);
+
+  const { addRecent } = useRecent();
+
   const tokenInfo: BaseToken = useMemo(() => {
     if (type === SendPageTypeEnum.token) {
       const _asset = state as IAssetToken;
@@ -208,6 +212,7 @@ export default function Send() {
   const { withdraw, withdrawPreview } = useCrossTransferByEtransfer();
   const { getTokenConfig, getAELFChainInfoConfig, getEVMChainInfoConfig } = useGetEBridgeConfig();
   const [warning, setWarning] = useState<WarningKey | undefined>();
+  const aelfChainList = useCurrentChainList();
   // network list
   const [chainList, setChainList] = useState<INetworkItem[]>([]);
   const [targetNetwork, setTargetNetwork] = useState<INetworkItem>();
@@ -501,6 +506,20 @@ export default function Send() {
         console.log(createReceiptResult, 'createReceiptResult===EBridge');
       }
       setStage(SendStage.Completed);
+
+      const _chainId = getChainIdByAddress(toAccount?.address);
+      const isAelfTransfer =
+        transferType === TransferType.GENERAL_CROSS_CHAIN || transferType === TransferType.GENERAL_SAME_CHAIN;
+      const aelfIcon = aelfChainList?.find((ele) => ele?.chainId === _chainId)?.chainImageUrl;
+      addRecent({
+        recentItem: {
+          network: isAelfTransfer ? 'aelf' : targetNetwork?.network || '',
+          chainId: (isAelfTransfer ? getAddressChainId(toAccount?.address, 'AELF') : '') as ChainId,
+          networkIcon: isAelfTransfer ? aelfIcon : targetNetwork?.imageUrl,
+          address: toAccount.address,
+          transferTime: Date.now(),
+        },
+      });
     } catch (error: any) {
       setBtnLoading(false);
       if (error && error.type === 'crossChainTransfer') {
@@ -520,17 +539,20 @@ export default function Send() {
     currentChain,
     tokenInfo,
     transferType,
+    toAccount.address,
+    aelfChainList,
+    addRecent,
+    targetNetwork?.network,
+    targetNetwork?.imageUrl,
     currentNetwork.walletType,
     wallet.caHash,
     wallet.address,
     amount,
-    toAccount.address,
     networkFee,
     defaultToken.decimals,
     defaultToken.symbol,
     withdraw,
     chainId,
-    targetNetwork?.network,
     caAddress,
     getAELFChainInfoConfig,
     getEVMChainInfoConfig,
@@ -1208,16 +1230,18 @@ export default function Send() {
           </div>
         ) : (
           <AddressSelector
+            isFt={type === SendPageTypeEnum.token}
+            chainId={tokenInfo?.chainId}
+            tokenId={tokenInfo?.symbol || tokenInfo?.tokenId || ''}
             onClick={(account: IClickAddressProps) => {
               // from RecentList: Not recent contacts, not clickable
-              if (account.isDisable) return;
-              const value = {
-                name: account.name,
-                address: `ELF_${account.address}_${account?.addressChainId || account?.chainId}`,
-              };
-              setToAccount(value);
+              // if (account.isDisable) return;
+              // const value = {
+              //   name: account.name,
+              //   address: `ELF_${account.address}_${account?.addressChainId || account?.chainId}`,
+              // };
+              console.log('account', account);
             }}
-            chainId={tokenInfo.chainId}
           />
         ),
       },

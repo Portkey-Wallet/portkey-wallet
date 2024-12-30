@@ -34,7 +34,7 @@ export default function MyAddress({
             className="my-address-item"
             key={idx + _address}
             onClick={() => {
-              onClick({ chainId: item.chainId, address: item.caAddress, chainName: item.chainName });
+              onClick({ chainId: item.chainId, address: item.caAddress });
             }}>
             <p className="address">{_address}</p>
             <p className="network">{transNetworkText(item.chainId, !isMainnet)}</p>

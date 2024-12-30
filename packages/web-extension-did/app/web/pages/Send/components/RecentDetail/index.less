@@ -2,13 +2,10 @@
 
 .recent-detail {
   background-color: @bg-base1;
+  width: 100%;
   height: 100%;
   display: flex;
   flex-direction: column;
-
-  .recent-detail-header {
-    margin-bottom: 16px;
-  }
 
   .recent-detail-body {
     background: @bg-base1;
@@ -17,33 +14,56 @@
     flex: 1;
 
     .recent-detail-address-wrap {
-      background: @bg-13;
+      background: @bg-base1;
       padding: 24px 16px;
       margin-bottom: 8px;
       .recent-detail-contact {
         font-weight: 400;
         color: @text-base1;
         margin-bottom: 16px;
-        .name {
-          font-size: 20px;
-          margin-left: 10px;
-          line-height: 24px;
-        }
-      }
-      .recent-detail-address-row {
         display: flex;
         flex-direction: column;
+        align-items: center;
+        .avatar-large,
+        .avatar-img {
+          width: 80px !important;
+          height: 80px !important;
+        }
+        .name {
+          font-size: 20px;
+          line-height: 24px;
+          padding-top: 8px;
+        }
+      }
+      .address-title {
+        font-size: 16px;
+        color: @text-base1;
+        padding-bottom: 8px;
+      }
+      .recent-detail-address-row {
+        background-color: @bg-base2;
+        padding: 12px 16px;
+        border-radius: 8px;
         word-break: break-all;
         gap: 4px;
-        margin: 0 4px;
-        .address {
-          color: @text-base1;
-          line-height: 16px;
+        display: flex;
+        align-items: start;
+        justify-content: space-between;
+        .info-left {
+          display: flex;
+          align-items: start;
+          gap: 12px;
         }
         .network {
-          font-size: 12px;
-          color: @neutral-secondary-text;
-          line-height: 16px;
+          color: @text-base1;
+          font-size: 16px;
+          line-height: 26px;
+        }
+        .address {
+          color: @text-base1;
+          opacity: 0.7;
+          font-size: 14px;
+          line-height: 24px;
         }
       }
     }
@@ -66,5 +86,21 @@
         border-top: none;
       }
     }
+  }
+  .action-list {
+    .list {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: @text-base1;
+      font-size: 16px;
+      padding: 10px 0;
+    }
+  }
+  .no-data {
+    text-align: center;
+    font-size: 16px;
+    color: @text-base1;
+    opacity: 0.7;
   }
 }

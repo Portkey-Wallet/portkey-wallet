@@ -94,7 +94,7 @@ export default function CustomSelect({ items = [], value, onChange, ...props }: 
         <BaseDrawer
           open={show}
           destroyOnClose
-          className="common-drawer select-network"
+          className={`common-drawer select-network ${props.className}-drawer`}
           height="580"
           maskClosable
           placement="bottom">

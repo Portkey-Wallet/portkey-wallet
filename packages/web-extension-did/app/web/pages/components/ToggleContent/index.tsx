@@ -24,7 +24,7 @@ export const ToggleContent = ({ bodyClassName, title = '', children }: TToggleCo
           <CustomSvgV3 type={isOpen ? 'chevron_down' : 'chevron_right'} className="toggle-content-header-icon" />
         </div>
       </div>
-      {isOpen && <div className={clsx('toggle-content-body')}>{children}</div>}
+      {isOpen && <div className={clsx('toggle-content-body', bodyClassName)}>{children}</div>}
     </div>
   );
 };

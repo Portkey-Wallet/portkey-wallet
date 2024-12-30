@@ -48,7 +48,7 @@ export default function SetAllowance({
   decimals,
   dappInfo,
   // TODO: revamp defaultIcon
-  defaultIcon,
+  // defaultIcon,
   symbol,
   className,
   recommendedAmount = 0,
@@ -68,7 +68,6 @@ export default function SetAllowance({
 
   const allowance = useMemo(() => formatAllowanceInput(amount), [amount, formatAllowanceInput]);
 
-  // TODO: revamp error
   const [error, setError] = useState<string>('');
   const checkResult = useDappSpenderCheck(dappInfo?.href, spender, dappInfo?.icon, targetChainId);
 
@@ -100,14 +99,19 @@ export default function SetAllowance({
         </div>
 
         <Input
+          className={clsx(error !== '' && 'set-allowance-input-error')}
           value={allowance}
           onChange={(e) => {
             inputChange(e.target.value);
           }}
-          // TODO: revamp allowClear
-          // allowClear
+          // TODO: clear
+          // allowClear={{
+          //   clearIcon: <CustomSvgV3 className="set-allowance-input-clear-icon" type="Clear Text" />,
+          // }}
           suffix={<span className={`set-allowance-approve-symbol`}>{approveSymbol}</span>}
         />
+
+        {error !== '' && <div className="set-allowance-error-text">{error}</div>}
 
         <div className="set-allowance-action">
           <div className="set-allowance-action-button" onClick={() => inputChange(recommendedAmount)}>
@@ -119,7 +123,6 @@ export default function SetAllowance({
         </div>
       </div>
 
-      {/* {typeof error !== 'undefined' && <div className="error-text">{error}</div>} */}
       <div className="set-allowance-page-footer">
         {/* TODO-SA */}
         {checkResult.show && (

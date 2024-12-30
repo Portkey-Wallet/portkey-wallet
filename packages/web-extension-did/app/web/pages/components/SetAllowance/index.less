@@ -9,42 +9,34 @@
   .set-allowance-page-body {
     display: flex;
     flex-direction: column;
-    gap: 8px;
   }
 
   .set-allowance-title-wrap {
     display: flex;
     gap: 4px;
     align-items: center;
+    margin-top: 24px;
+    margin-bottom: 8px;
 
     .set-allowance-title {
       font-size: 16px;
       line-height: 22px;
       color: @text-base1;
     }
-    .set-allowance-title-icon {
-      width: 16px;
-      height: 16px;
-
-      svg {
-        width: 100%;
-        height: 100%;
-        path {
-          fill: @icon-base2;
-        }
-      }
-    }
   }
 
   .@{app-prefix}-input-affix-wrapper {
-    height: 48px;
-    border-radius: 6px;
+    height: 40px;
     padding-left: 16px;
     padding-right: 16px;
     background: @bg-base1;
     color: @text-base1;
     border: 1px solid @border-base1 !important;
     box-shadow: none;
+    border-radius: 16px;
+  }
+  .@{app-prefix}-input-affix-wrapper.set-allowance-input-error {
+    border-color: @border-danger1 !important;
   }
 
   .set-allowance-approve-symbol {
@@ -53,7 +45,15 @@
     color: @text-base2;
   }
 
+  .set-allowance-error-text {
+    color: @text-danger2;
+    font-size: 16px;
+    line-height: 22px;
+    margin-top: 8px;
+  }
+
   .set-allowance-action {
+    margin-top: 8px;
     display: flex;
     width: 100%;
     justify-content: space-between;
@@ -113,5 +113,28 @@
     color: @text-base2;
     font-size: 16px;
     line-height: 22px;
+  }
+}
+
+.set-allowance-title-icon {
+  width: 16px;
+  height: 16px;
+
+  svg {
+    width: 100%;
+    height: 100%;
+    path {
+      fill: @icon-base2;
+    }
+  }
+}
+
+.set-allowance-input-clear-icon {
+  width: 16px;
+  height: 16px;
+
+  svg {
+    width: 100%;
+    height: 100%;
   }
 }

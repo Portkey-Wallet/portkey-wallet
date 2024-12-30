@@ -37,6 +37,7 @@ import { PromptCardType } from 'pages/Send';
 import { CommonPromptCard, formatStr2EllipsisStr } from '@portkey/did-ui-react';
 import { CustomSvgV3 } from 'components/CustomSvgV3';
 import { ToggleContent } from 'pages/components/ToggleContent';
+import { CommonPage } from 'components/CommonPage';
 
 type TInfoItem = {
   title: string;
@@ -445,70 +446,72 @@ export default function SendTransactions() {
   }, [txParams.paramsOption]);
 
   return (
-    <div className="send-transaction flex">
-      <div className="send-transaction-body">
-        <DappSiteInfo className="send-transaction-site" title="Approve transaction" dappInfo={curDapp} />
+    <CommonPage>
+      <div className="send-transaction">
+        <div className="send-transaction-body">
+          <DappSiteInfo className="send-transaction-site" title="Approve transaction" dappInfo={curDapp} />
 
-        {contractUpgradeTimeResult?.formatTime && (
-          <CommonPromptCard
-            className="send-transaction-warning-tip"
-            type={contractUpgradeTimeResult.isTimeOver12 ? PromptCardType.INFO : PromptCardType.WARNING}
-            description={`Contract update time: ${
-              contractUpgradeTimeResult?.formatTime || ''
-            } The dApp's smart contract has been updated. Please proceed with caution.`}
-          />
-        )}
+          {contractUpgradeTimeResult?.formatTime && (
+            <CommonPromptCard
+              className="send-transaction-warning-tip"
+              type={contractUpgradeTimeResult.isTimeOver12 ? PromptCardType.INFO : PromptCardType.WARNING}
+              description={`Contract update time: ${
+                contractUpgradeTimeResult?.formatTime || ''
+              } The dApp's smart contract has been updated. Please proceed with caution.`}
+            />
+          )}
 
-        {isTransfer && (
-          <div className="send-transaction-transfer-amount-wrap">
-            <div className="send-transaction-transfer-amount">{transferAmount}</div>
-            {isMainnet && <div className="send-transaction-transfer-usd">{transferAmountUsd}</div>}
+          {isTransfer && (
+            <div className="send-transaction-transfer-amount-wrap">
+              <div className="send-transaction-transfer-amount">{transferAmount}</div>
+              {isMainnet && <div className="send-transaction-transfer-usd">{transferAmountUsd}</div>}
+            </div>
+          )}
+
+          <div className="send-transaction-info-list-wrap">
+            {infoList.map((item) => (
+              <div key={item.title} className="send-transaction-info-item-wrap">
+                <div className="send-transaction-info-item-title">{item.title}</div>
+                <div className="send-transaction-info-item-content">{item.content}</div>
+              </div>
+            ))}
           </div>
-        )}
 
-        <div className="send-transaction-info-list-wrap">
-          {infoList.map((item) => (
-            <div key={item.title} className="send-transaction-info-item-wrap">
-              <div className="send-transaction-info-item-title">{item.title}</div>
-              <div className="send-transaction-info-item-content">{item.content}</div>
-            </div>
-          ))}
+          {!isTransfer && (
+            <ToggleContent title="Data" bodyClassName="send-transaction-data-body">
+              <div className="send-transaction-data-list-container">
+                {dataList.map((item) => (
+                  <div key={item.title} className="send-transaction-data-item">
+                    <span className="send-transaction-data-item-title">{item.title}</span>
+                    <span className="send-transaction-data-item-value">{item.value}</span>
+                  </div>
+                ))}
+              </div>
+            </ToggleContent>
+          )}
+
+          {errMsg && <div className={clsx('error-message', !isManagerSynced && 'error-warning')}>{errMsg}</div>}
+
+          {!checkOriginInBlackList(origin) && (
+            <DappSession className="send-transaction-session" onChange={handleSessionChange} />
+          )}
         </div>
 
-        {!isTransfer && (
-          <ToggleContent title="Data" bodyClassName="send-transaction-data-body">
-            <div className="send-transaction-data-list-container">
-              {dataList.map((item) => (
-                <div key={item.title} className="send-transaction-data-item">
-                  <span className="send-transaction-data-item-title">{item.title}</span>
-                  <span className="send-transaction-data-item-value">{item.value}</span>
-                </div>
-              ))}
-            </div>
-          </ToggleContent>
-        )}
-
-        {errMsg && <div className={clsx('error-message', !isManagerSynced && 'error-warning')}>{errMsg}</div>}
-
-        {!checkOriginInBlackList(origin) && (
-          <DappSession className="send-transaction-session" onChange={handleSessionChange} />
-        )}
-      </div>
-
-      <div className="send-transaction-footer">
-        <div className="send-transaction-footer-body">
-          <Button
-            onClick={() => {
-              closePrompt(errorHandler(200003));
-            }}>
-            {t('Reject')}
-          </Button>
-          <Button type="primary" onClick={sendHandler}>
-            {t('Sign')}
-          </Button>
+        <div className="send-transaction-footer">
+          <div className="send-transaction-footer-body">
+            <Button
+              onClick={() => {
+                closePrompt(errorHandler(200003));
+              }}>
+              {t('Reject')}
+            </Button>
+            <Button type="primary" onClick={sendHandler}>
+              {t('Sign')}
+            </Button>
+          </div>
+          <div className="send-transaction-footer-tip">{'Only approve if you trust this website'}</div>
         </div>
-        <div className="send-transaction-footer-tip">{'Only approve if you trust this website'}</div>
       </div>
-    </div>
+    </CommonPage>
   );
 }

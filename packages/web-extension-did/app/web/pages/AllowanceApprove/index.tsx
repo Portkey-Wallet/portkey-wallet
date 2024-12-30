@@ -18,8 +18,7 @@ import getSeed from 'utils/getSeed';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
 import { useCurrentNetwork } from '@portkey-wallet/hooks/hooks-ca/network';
 import './index.less';
-import { useCommonState } from 'store/Provider/hooks';
-import PortKeyHeader from 'pages/components/PortKeyHeader';
+import { CommonPage } from 'components/CommonPage';
 
 export default function AllowanceApprove() {
   const { origin, chainId, icon, method, transactionInfoId, batchApproveNFT } = usePromptSearch<{
@@ -35,11 +34,7 @@ export default function AllowanceApprove() {
   const chainInfo = useCurrentChain(chainId);
   const currentNetwork = useCurrentNetwork();
 
-  const { isPrompt, isNotLessThan768 } = useCommonState();
-
   const [txParams, setTxParams] = useState<any>();
-
-  console.log(txParams, '===txParams');
 
   const privateKeyRef = useRef<string>('');
 
@@ -143,35 +138,31 @@ export default function AllowanceApprove() {
   }, [getTxPayload]);
 
   return (
-    <div className="manager-approve-page">
-      {isPrompt && isNotLessThan768 ? <PortKeyHeader /> : <></>}
-
-      <div className="manager-approve-page-body">
-        {txParams && (
-          <ManagerApproveInner
-            networkType={currentNetwork}
-            originChainId={originChainId}
-            spender={txParams?.params?.paramsOption?.spender}
-            targetChainId={chainId}
-            caHash={caHash || ''}
-            amount={txParams.params.paramsOption.amount}
-            symbol={txParams.params.paramsOption.symbol}
-            batchApproveNFT={batchApproveNFT}
-            dappInfo={{
-              icon,
-              href: origin,
-              name: new URL(origin).hostname,
-            }}
-            onCancel={() => {
-              closeTabPrompt(errorHandler(200003));
-            }}
-            onFinish={onFinish}
-            onError={(error) => {
-              singleMessage.error(handleErrorMessage(error));
-            }}
-          />
-        )}
-      </div>
-    </div>
+    <CommonPage>
+      {txParams && (
+        <ManagerApproveInner
+          networkType={currentNetwork}
+          originChainId={originChainId}
+          spender={txParams?.params?.paramsOption?.spender}
+          targetChainId={chainId}
+          caHash={caHash || ''}
+          amount={txParams.params.paramsOption.amount}
+          symbol={txParams.params.paramsOption.symbol}
+          batchApproveNFT={batchApproveNFT}
+          dappInfo={{
+            icon,
+            href: origin,
+            name: new URL(origin).hostname,
+          }}
+          onCancel={() => {
+            closeTabPrompt(errorHandler(200003));
+          }}
+          onFinish={onFinish}
+          onError={(error) => {
+            singleMessage.error(handleErrorMessage(error));
+          }}
+        />
+      )}
+    </CommonPage>
   );
 }

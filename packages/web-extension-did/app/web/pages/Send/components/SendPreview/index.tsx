@@ -36,6 +36,8 @@ export interface ISendPreviewProps {
   networkFeeUnit?: string;
   receiveAmount?: string;
   receiveAmountUsd?: string;
+  seedType?: string;
+  isSeed?: boolean;
 }
 
 export default function SendPreview({

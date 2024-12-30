@@ -20,7 +20,7 @@ import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { getEstimatedTime } from 'pages/Send/utils';
 import { CommonModalTip } from '@portkey/did-ui-react';
 import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
-import { SeedTypeEnum } from '@portkey-wallet/types/types-ca/assets';
+// import { SeedTypeEnum } from '@portkey-wallet/types/types-ca/assets';
 import './index.less';
 export interface ISendPreviewProps {
   amount?: string;

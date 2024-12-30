@@ -25,3 +25,5 @@ export const socialInit: ISocialInput = {
 };
 
 export const zkloginGuardianType: ISocialLogin[] = ['Google', 'Apple'];
+
+export const GuardianApproveHelpUrl = `https://doc.portkey.finance/docs/What-are-guardians-and-verifiers`;

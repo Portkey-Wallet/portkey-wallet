@@ -285,26 +285,20 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount,
         {accountShow(item)}
       </div>
       {isExpired && item.status !== VerifyStatus.Verified ? (
-        <Button className="expired" type="text" disabled>
-          {t('Expired')}
-        </Button>
+        <span className="btn expired"> {t('Expired')}</span>
       ) : (
         <>
           {(!item.status || item.status === VerifyStatus.NotVerified) && !isSocialLogin && (
-            <Button className="not-verified" type="primary" onClick={() => SendCode(item)}>
+            <Button className="btn not-verified" type="primary" onClick={() => SendCode(item)}>
               {t('Send')}
             </Button>
           )}
           {(item.status === VerifyStatus.Verifying || (!item.status && isSocialLogin)) && (
-            <Button type="primary" className="verifying" onClick={() => verifyingHandler(item)}>
+            <Button type="primary" className="btn verifying" onClick={() => verifyingHandler(item)}>
               {t('Verify')}
             </Button>
           )}
-          {item.status === VerifyStatus.Verified && (
-            <Button className="verified" type="text" disabled>
-              {t('Confirmed')}
-            </Button>
-          )}
+          {item.status === VerifyStatus.Verified && <span className="btn verified"> {t('Approved')}</span>}
         </>
       )}
     </li>

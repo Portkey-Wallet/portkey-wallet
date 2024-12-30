@@ -59,7 +59,11 @@ export default function CustomSelect({ items = [], value, onChange, ...props }: 
           }
           setShow(true);
         }}>
-        <div>{selectedItem?.children}</div>
+        {selectedItem?.children ? (
+          <div>{selectedItem?.children}</div>
+        ) : (
+          <div className="placeholder">{props.placeholder || ''}</div>
+        )}
         {!props.disabled && <CustomSvgV3 type="nftArrow" />}
       </div>
 

@@ -7,12 +7,15 @@ import { useNavigate } from 'react-router';
 import clsx from 'clsx';
 import { ChainId } from '@portkey-wallet/types';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { TFormattedRecentItem } from '@portkey-wallet/types/types-ca/contactNew';
+import { useCaAddresses } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import MyAddress from './MyAddress';
 
 export default function RecentItem({
   item,
   onClick,
 }: {
-  item: RecentContactItemType;
+  item: TFormattedRecentItem;
   onClick: (account: IClickAddressProps) => void;
 }) {
   const isMainnet = useIsMainnet();
@@ -28,9 +31,23 @@ export default function RecentItem({
     navigate('/recent-detail', { state: { chainId, targetAddress, targetChainId, name, index } });
   };
 
-  return item.name ? (
-    <ContactCard user={item} onChange={onClick} className="contact-card-in-recent" chainId={item.chainId} />
-  ) : (
+  const caAddresses = useCaAddresses();
+  const isMyAddress = item.addressInfo?.address === caAddresses?.[0];
+  const isMyContact = item.name && !item?.addressInfo;
+
+  if (isMyAddress) return <MyAddress chainId={item.chainId || item.addressInfo?.chainId || 'AELF'} onClick={onClick} />;
+
+  if (isMyContact)
+    return (
+      <ContactCard
+        onChange={onClick}
+        className="contact-card-in-recent"
+        chainId={item.chainId || item.addressInfo?.chainId || 'AELF'}
+        user={undefined}
+      />
+    );
+
+  return (
     // In order to keep the format of Recents and Contacts consistent, this can use like {item.addresses[0]}
     <div className={clsx(['flex-between-center', 'recent-item'])}>
       <div
@@ -38,8 +55,12 @@ export default function RecentItem({
         onClick={() => {
           onClick({ ...item });
         }}>
-        <p className="address">{`ELF_${formatStr2EllipsisStr(item.address, [6, 6])}_${item.addressChainId}`}</p>
-        <p className="network">{transNetworkText(item.addressChainId, !isMainnet)}</p>
+        <p className="address">{item.address || item.addressInfo?.address}</p>
+        <p className="network">
+          {item.addressInfo?.network === 'aelf'
+            ? transNetworkText(item.addressInfo.address, !isMainnet)
+            : item.addressInfo?.networkName}
+        </p>
       </div>
 
       <div

@@ -71,6 +71,8 @@ import SecondaryMailboxEdit from 'pages/WalletSecurity/SecondaryMailbox/Edit';
 import SecondaryMailboxVerify from 'pages/WalletSecurity/SecondaryMailbox/Verify';
 import Security from '../../pages/My/SettingList/Security';
 import { SelectAssetListPage } from 'pages/Send/components/SelectAssetList';
+import RampBuy from 'pages/Buy/RampBuy';
+import RampSell from 'pages/Buy/RampSell';
 
 export const PageRouter = () =>
   useRoutes([
@@ -165,6 +167,14 @@ export const PageRouter = () =>
     {
       path: '/buy',
       element: <Buy />,
+    },
+    {
+      path: '/buy/ramp-buy',
+      element: <RampBuy />,
+    },
+    {
+      path: '/buy/ramp-sell',
+      element: <RampSell />,
     },
     {
       path: '/buy/preview',

@@ -18,10 +18,11 @@ import CommonCloseHeader from 'components/CommonCloseHeader';
 interface CustomSelectProps extends SelectProps {
   items?: OptionProps[];
   customChild?: React.ReactNode;
+  title?: string;
 }
 
 // export default function CustomSelect({ items = [], className, value, onChange, ...props }: CustomSelectProps) {
-export default function CustomSelect({ items = [], value, onChange, ...props }: CustomSelectProps) {
+export default function CustomSelect({ items = [], value, onChange, title, ...props }: CustomSelectProps) {
   const { isNotLessThan768 } = useCommonState();
 
   const [show, setShow] = useState(false);
@@ -29,7 +30,7 @@ export default function CustomSelect({ items = [], value, onChange, ...props }: 
     setShow(false);
   };
   const modalCloseHeaderProps = {
-    title: 'Select Network',
+    title: title || 'Select Network',
     onClose: onClose,
   };
 
@@ -59,7 +60,11 @@ export default function CustomSelect({ items = [], value, onChange, ...props }: 
           }
           setShow(true);
         }}>
-        <div>{selectedItem?.children}</div>
+        {selectedItem?.children ? (
+          <div>{selectedItem?.children}</div>
+        ) : (
+          <div className="placeholder">{props.placeholder || ''}</div>
+        )}
         {!props.disabled && <CustomSvgV3 type="nftArrow" />}
       </div>
 

@@ -1,6 +1,7 @@
 @import '../../../assets/theme/color.less';
 
 .lock-page-wrapper {
+  width: 100%;
   margin: 0 auto;
   .lock-page-header {
     .portkeylogov2-icon {
@@ -13,48 +14,26 @@
     }
   }
   .lock-page-content {
-    width: 300px;
-    margin: 0 auto;
-    .portkey-icon {
-      width: 85px;
-      height: 88px;
+    width: 552px;
+    padding: 32px;
+    margin: 64px auto;
+    border: 1px solid @border-base1;
+    border-radius: 16px;
+    .portkeyprompt-icon {
+      width: 208px;
+      height: 48px;
+      margin: 120px auto;
     }
-    .@{app-prefix}-form-item-label {
-      padding-bottom: 0;
-      height: 16px;
-      line-height: 16px;
-
-      & > label {
-        font-size: 12px;
-        color: @text-base1;
-        height: 16px;
-        line-height: 16px;
-      }
+    .unlock-form {
+      width: 100%;
     }
-
     .customer-password {
       &.@{app-prefix}-form-item-has-error {
         padding-bottom: 32px;
       }
-      .@{app-prefix}-form-item-control-input {
-        .@{app-prefix}-input-password {
-          padding: 7px 0 5px;
-        }
-      }
     }
 
     .custom-password {
-      &.@{app-prefix}-input-affix-wrapper,
-      .@{app-prefix}-input-affix-wrapper-focused,
-      .@{app-prefix}-input-affix-wrapper:hover {
-        border-top: none;
-        border-left: none;
-        border-right: none;
-        box-shadow: none !important;
-        border-width: 2px;
-        border-radius: 0;
-      }
-
       .@{app-prefix}-input {
         font-size: 16px;
         color: @text-base1;
@@ -62,47 +41,21 @@
     }
 
     .submit-btn {
-      width: 300px;
-      padding: 16px 0;
-      border-radius: 28px;
-      font-size: 14px;
-      line-height: unset;
-
-      & > span {
-        height: 20px;
-        line-height: 20px;
-      }
-    }
-  }
-  .logo-wrapper {
-    padding: 72px 0 56px;
-    text-align: center;
-    & > h1 {
       margin-top: 24px;
-      font-size: 32px;
-      color: @neutral-secondary-text;
-      font-family: Roboto-Bold;
-      height: 38px;
-      line-height: 38px;
-    }
-    .portkey-icon {
-      margin: 0 auto;
+      width: 100%;
+      height: 48px;
+      border-radius: 24px;
     }
   }
-
-  .recover-wrapper {
-    height: 16px;
-    line-height: 16px;
-    font-size: 12px;
-    color: @brand-normal;
-    justify-content: center;
-    font-weight: 500;
-    cursor: pointer;
-
-    .recover-icon {
-      margin-right: 9px;
-      width: 16px;
-      height: 16px;
+}
+.lock-page-wrapper.lock-page-wrapper-popup {
+  .lock-page-content {
+    width: 100%;
+    padding: 16px;
+    margin: 0 auto;
+    border: none;
+    .portkeyprompt-icon {
+      margin: 160px auto 170px;
     }
   }
 }

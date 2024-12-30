@@ -1,9 +1,8 @@
 import { WalletError } from '@portkey-wallet/store/wallet/type';
-import { Button, Form, FormProps } from 'antd';
+import { Form, FormProps } from 'antd';
 import { FormItem } from 'components/BaseAntd';
 import CustomPassword from 'components/CustomPassword';
 import CustomSvg from 'components/CustomSvg';
-import CommonHeader from 'components/CommonHeader';
 import InternalMessage from 'messages/InternalMessage';
 import InternalMessageTypes from 'messages/InternalMessageTypes';
 import { useCallback, useState } from 'react';
@@ -18,6 +17,8 @@ import singleMessage from 'utils/singleMessage';
 import { useSetTokenConfig } from 'hooks/useSetTokenConfig';
 import { useCommonState } from 'store/Provider/hooks';
 import RegisterHeader from '../RegisterHeader';
+import { CommonButton } from '@portkey/did-ui-react';
+import clsx from 'clsx';
 
 interface LockPageProps extends FormProps {
   onUnLockHandler?: (pwd: string) => void;
@@ -30,8 +31,10 @@ export default function LockPage({ onUnLockHandler, ...props }: LockPageProps) {
   const [form] = Form.useForm();
   const [isPassword, setIsPassword] = useState<-1 | 0 | 1>(-1);
   const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
   const onFinish = useCallback(
     async (values: any) => {
+      setLoading(true);
       const { password } = values;
       setIsPassword(-1);
       const wallet = await getWalletState();
@@ -46,7 +49,7 @@ export default function LockPage({ onUnLockHandler, ...props }: LockPageProps) {
 
         InternalMessage.payload(InternalMessageTypes.SET_SEED, password).send();
         await sleep(100);
-
+        setLoading(false);
         onUnLockHandler?.(password);
       } else {
         setIsPassword(0);
@@ -56,59 +59,51 @@ export default function LockPage({ onUnLockHandler, ...props }: LockPageProps) {
   );
 
   return (
-    <>
-      <div className="lock-page-wrapper">
-        {isPrompt && isNotLessThan768 ? (
-          <RegisterHeader />
-        ) : (
-          <CommonHeader className="lock-page-header" title={<CustomSvg type="PortkeyLogoV2" />} />
-        )}
-        <div className="lock-page-content">
-          <div className="logo-wrapper">
-            <CustomSvg type="PortKey" />
-            <h1>{t('Welcome back!')}</h1>
-          </div>
-          <Form
-            {...props}
-            className="unlock-form"
-            onValuesChange={(v) => {
-              if ('password' in v) {
-                if (!v.password) return setIsPassword(0);
-                setIsPassword(-1);
-              }
-            }}
-            form={form}
-            name="unlock"
-            onFinish={onFinish}
-            layout="vertical"
-            autoComplete="off">
-            <FormItem
-              className="customer-password"
-              label={t('Enter Pin')}
-              name="password"
-              validateStatus={isPassword === 0 ? 'error' : undefined}
-              help={isPassword === 0 ? t('Incorrect pin') : undefined}
-              validateTrigger={false}>
-              <CustomPassword className="custom-password" placeholder={t('Enter Pin')} />
-            </FormItem>
+    <div className={clsx('lock-page-wrapper', isNotLessThan768 ? '' : 'lock-page-wrapper-popup')}>
+      {isPrompt && isNotLessThan768 && <RegisterHeader />}
+      <div className="lock-page-content flex-column-center">
+        <CustomSvg type="PortKeyPrompt" />
+        <Form
+          {...props}
+          className="unlock-form"
+          onValuesChange={(v) => {
+            if ('password' in v) {
+              if (!v.password) return setIsPassword(0);
+              setIsPassword(-1);
+            }
+          }}
+          form={form}
+          name="unlock"
+          onFinish={onFinish}
+          layout="vertical"
+          autoComplete="off">
+          <FormItem
+            className="customer-password"
+            name="password"
+            validateStatus={isPassword === 0 ? 'error' : undefined}
+            help={isPassword === 0 ? t(`Incorrect PIN, please try again.`) : undefined}
+            validateTrigger={false}>
+            <CustomPassword className="custom-password" placeholder={t('Enter Pin')} />
+          </FormItem>
 
-            <FormItem shouldUpdate>
-              {() => (
-                <Button
-                  className="submit-btn"
-                  type="primary"
-                  htmlType="submit"
-                  disabled={
-                    // !form.isFieldsTouched(true) || !!form.getFieldsError().filter(({ errors }) => errors.length).length
-                    !form.isFieldsTouched(true) || isPassword === 0
-                  }>
-                  {t('Unlock')}
-                </Button>
-              )}
-            </FormItem>
-          </Form>
-        </div>
+          <FormItem shouldUpdate>
+            {() => (
+              <CommonButton
+                className="submit-btn"
+                type="primary"
+                block
+                htmlType="submit"
+                loading={loading}
+                disabled={
+                  // !form.isFieldsTouched(true) || !!form.getFieldsError().filter(({ errors }) => errors.length).length
+                  !form.isFieldsTouched(true) || isPassword === 0
+                }>
+                {t('Unlock')}
+              </CommonButton>
+            )}
+          </FormItem>
+        </Form>
       </div>
-    </>
+    </div>
   );
 }

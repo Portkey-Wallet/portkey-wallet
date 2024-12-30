@@ -83,14 +83,7 @@ export type ContactIndexType = Pick<ContactItemType, 'index'> & { contacts: Cont
 
 export type ContactMapType = { [key: string]: ContactItemType[] };
 
-export interface IClickAddressProps {
-  name?: string;
-  isDisable?: boolean;
-  chainId: ChainId;
-  chainName?: string;
-  addressChainId?: string;
-  address: string;
-}
+export type IClickAddressProps = RecentAddressItem;
 
 export interface IContactPrivacy {
   id?: string;

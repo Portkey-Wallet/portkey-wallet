@@ -30,6 +30,7 @@ import { useSetTokenConfig } from 'hooks/useSetTokenConfig';
 import { useInitLoginModeList } from 'hooks/loginModal';
 import { useUserInfo } from './hooks';
 import { useInitCmsBanner } from '@portkey-wallet/hooks/hooks-ca/cms/banner';
+import { useInitRampV2 } from '@portkey-wallet/hooks/hooks-ca/ramp';
 
 keepAliveOnPages({});
 request.setExceptionManager(exceptionManager);
@@ -42,6 +43,7 @@ export default function Updater() {
   const isMainnet = useIsMainnet();
   const initLoginModeList = useInitLoginModeList();
   const { passwordSeed } = useUserInfo();
+  const initRamp = useInitRampV2({ clientType: 'Extension' });
 
   const { apiUrl, imApiUrl, imWsUrl, imS3Bucket } = useCurrentNetworkInfo();
   useMemo(async () => {
@@ -105,6 +107,11 @@ export default function Updater() {
     initConfig();
     initRequest();
     initLoginModeList();
+  });
+  useEffectOnce(() => {
+    // init ramp
+    const timer = setTimeout(initRamp, 500);
+    return () => clearTimeout(timer);
   });
   return null;
 }

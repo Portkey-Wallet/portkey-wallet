@@ -65,7 +65,7 @@ export function useRecent() {
       const list = result
         .map(ele => {
           // nft adjust
-          if (!isFt && !!ele.network && ele.network !== 'aelf') return;
+          if (!isFt && !!ele.network && ele.network !== 'aelf') return null;
 
           const addr = getAelfAddress(ele.address);
 
@@ -99,10 +99,11 @@ export function useRecent() {
               caHolderInfo: userInfo,
             };
           }
+          return ele;
         })
         .filter(i => !!i);
 
-      return list;
+      return (list || []) as TFormattedRecentItem[];
     },
     [caAddressInfos, contactMapNew, getFilterRecentList, userInfo],
   );

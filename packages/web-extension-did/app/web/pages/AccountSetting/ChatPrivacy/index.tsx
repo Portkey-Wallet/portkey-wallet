@@ -6,13 +6,11 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 import { MenuItemInfo } from 'pages/components/MenuList';
 import { useEffect, useMemo } from 'react';
-import BaseGuardianTypeIcon from 'components/BaseGuardianTypeIcon';
 import {
   CONTACT_PERMISSION_LABEL_MAP,
   CONTACT_PRIVACY_TYPE_LABEL_MAP,
 } from '@portkey-wallet/constants/constants-ca/contact';
 import './index.less';
-import { GuardianTypeIcon } from 'components/VerifierPair';
 import { useContactPrivacyList } from '@portkey-wallet/hooks/hooks-ca/security';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import singleMessage from 'utils/singleMessage';
@@ -38,7 +36,7 @@ export default function ChatPrivacy() {
     return list.map((item) => {
       return {
         key: item.identifier + item.privacyType,
-        icon: <BaseGuardianTypeIcon type={GuardianTypeIcon[item.privacyType]} className="info-privacy-icon" />,
+        icon: <div />,
         element: (
           <div className="flex-between-center info-privacy">
             <div className="info-left">

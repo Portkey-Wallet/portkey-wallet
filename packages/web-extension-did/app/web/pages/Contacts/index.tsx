@@ -1,25 +1,19 @@
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { ChangeEvent, ChangeEventHandler, useCallback, useEffect, useMemo, useState } from 'react';
-import { useIsImputation, useLocalContactSearch } from '@portkey-wallet/hooks/hooks-ca/contact';
+import { useLocalContactSearch } from '@portkey-wallet/hooks/hooks-ca/contactNew';
 import { useAppDispatch } from 'store/Provider/hooks';
-import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/actions';
-import { ContactIndexType, ContactItemType } from '@portkey-wallet/types/types-ca/contact';
+import { fetchContactListV2Async } from '@portkey-wallet/store/store-ca/contact/actions';
+import { IContactIndexType } from '@portkey-wallet/types/types-ca/contactNew';
 import { useEffectOnce } from 'react-use';
 import ContactsPopup from './Popup';
 // import ContactsPrompt from './Prompt';
 import { BaseHeaderProps } from 'types/UI';
 // import { useCommonState } from 'store/Provider/hooks';
 import { useGoAddNewContact } from 'hooks/useProfile';
-import { ContactsTab } from '@portkey-wallet/constants/constants-ca/assets';
-import { ExtraTypeEnum } from 'types/Profile';
-import { useBlockAndReport } from '@portkey-wallet/hooks/hooks-ca/im';
-
-const initContactItem: Partial<ContactItemType> = {
-  id: '-1',
-  name: '',
-  addresses: [{ chainId: 'AELF', address: '', chainName: 'aelf' }],
-};
+import { ContactHandleActionTypeEnum } from 'types/Profile';
+import { defaultContactFormData } from './AddContact/hooks';
+import { IEditContactItemFormType } from './AddContact/types';
 
 export interface IContactsProps extends BaseHeaderProps {
   searchPlaceholder?: string;
@@ -27,12 +21,9 @@ export interface IContactsProps extends BaseHeaderProps {
   handleAdd: () => void;
   isSearch: boolean;
   handleSearch: ChangeEventHandler<HTMLInputElement>;
-  list: ContactIndexType[];
+  list: IContactIndexType[];
   contactCount: number;
-  initData: Partial<ContactItemType>;
-  showImputation?: boolean;
-  closeImputationTip: () => void;
-  changeTab: (key: ContactsTab) => void;
+  initData: Partial<IEditContactItemFormType>;
 }
 
 export default function Contacts() {
@@ -40,20 +31,15 @@ export default function Contacts() {
   const navigate = useNavigate();
   const appDispatch = useAppDispatch();
   const localSearch = useLocalContactSearch();
-  const [curList, setCurList] = useState<ContactIndexType[]>([]);
+  const [curList, setCurList] = useState<IContactIndexType[]>([]);
   const [isSearch, setIsSearch] = useState<boolean>(false);
-  const isImputation = useIsImputation();
-  const [isCloseImputationManually, setIsCloseImputationManually] = useState(false);
-  const showImputation = isImputation && !isCloseImputationManually;
-  const { fetchAndSetBlockList } = useBlockAndReport();
 
   useEffectOnce(() => {
-    appDispatch(fetchContactListAsync());
-    fetchAndSetBlockList();
+    appDispatch(fetchContactListV2Async());
   });
 
   useEffect(() => {
-    const { contactIndexFilterList: searchResult } = localSearch('', ContactsTab.ALL);
+    const { contactIndexFilterList: searchResult } = localSearch('');
     setCurList(searchResult);
     setIsSearch(false);
   }, [localSearch]);
@@ -62,7 +48,7 @@ export default function Contacts() {
     (e: ChangeEvent<HTMLInputElement>) => {
       setIsSearch(!!e.target.value);
 
-      const { contactIndexFilterList: searchResult } = localSearch(e.target.value, ContactsTab.ALL);
+      const { contactIndexFilterList: searchResult } = localSearch(e.target.value);
       setCurList(searchResult);
     },
     [localSearch],
@@ -73,7 +59,7 @@ export default function Contacts() {
   }, [curList]);
 
   // const { isNotLessThan768 } = useCommonState();
-  const searchPlaceholder = 'Name/address';
+  const searchPlaceholder = 'Name, address';
   const title = t('Address Book');
   const addText = t('Add contact');
 
@@ -83,17 +69,9 @@ export default function Contacts() {
 
   const handleAdd = useGoAddNewContact();
 
-  const closeImputationTip = () => {
-    setIsCloseImputationManually(true);
-  };
-
-  const changeTab = (key: ContactsTab) => {
-    const { contactIndexFilterList: searchResult } = localSearch('', key);
-    setCurList(searchResult);
-  };
-
   return (
     <ContactsPopup
+      initData={defaultContactFormData}
       headerTitle={title}
       goBack={goBack}
       searchPlaceholder={searchPlaceholder}
@@ -101,12 +79,8 @@ export default function Contacts() {
       isSearch={isSearch}
       list={curList}
       contactCount={curTotalContactsNum}
-      initData={initContactItem}
-      showImputation={showImputation}
-      closeImputationTip={closeImputationTip}
-      handleAdd={() => handleAdd(ExtraTypeEnum.ADD_NEW_CHAT, initContactItem)}
+      handleAdd={() => handleAdd(ContactHandleActionTypeEnum.ADD_CONTACT)}
       handleSearch={searchChange}
-      changeTab={changeTab}
     />
   );
 

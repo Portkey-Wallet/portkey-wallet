@@ -15,7 +15,6 @@ export default function InputLogin({
   defaultKey,
   onFinish,
   validateEmail,
-  validatePhone,
 }: {
   type: RegisterType;
   inputRef?: MutableRefObject<InputInfoRef | undefined>;
@@ -39,7 +38,7 @@ export default function InputLogin({
     if (isLogin) {
       return (
         <div className={clsx('go-sign-up')}>
-          <span>{t('Don’t have an account?')}</span>
+          <span>{t(`Don't have an account?`)}</span>
           <span className="sign-text" onClick={() => navigate('/register/start/create')}>
             {t('Sign up')}
           </span>
@@ -63,7 +62,6 @@ export default function InputLogin({
       <InputInfo
         ref={inputRef}
         defaultKey={defaultKey}
-        validatePhone={validatePhone}
         validateEmail={validateEmail}
         confirmText={'Continue'}
         onFinish={onFinish}

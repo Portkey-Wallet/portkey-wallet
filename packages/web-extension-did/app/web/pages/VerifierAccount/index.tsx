@@ -269,7 +269,7 @@ export default function VerifierAccount() {
 
   const renderContent = useMemo(
     () => (
-      <div className="common-content1 verifier-account-content">
+      <div className="verifier-account-content">
         <VerifierPage
           loginAccount={loginAccount}
           isInitStatus={isInitStatus}

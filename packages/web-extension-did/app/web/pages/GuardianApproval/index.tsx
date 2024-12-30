@@ -1,4 +1,4 @@
-import { Button, Progress } from 'antd';
+import { Progress } from 'antd';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useLoginInfo, useGuardiansInfo, useCommonState, useAppDispatch } from 'store/Provider/hooks';
 import { VerifyStatus } from '@portkey-wallet/types/verifier';

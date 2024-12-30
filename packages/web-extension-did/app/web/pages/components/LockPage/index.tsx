@@ -1,9 +1,8 @@
 import { WalletError } from '@portkey-wallet/store/wallet/type';
-import { Button, Form, FormProps } from 'antd';
+import { Form, FormProps } from 'antd';
 import { FormItem } from 'components/BaseAntd';
 import CustomPassword from 'components/CustomPassword';
 import CustomSvg from 'components/CustomSvg';
-import CommonHeader from 'components/CommonHeader';
 import InternalMessage from 'messages/InternalMessage';
 import InternalMessageTypes from 'messages/InternalMessageTypes';
 import { useCallback, useState } from 'react';

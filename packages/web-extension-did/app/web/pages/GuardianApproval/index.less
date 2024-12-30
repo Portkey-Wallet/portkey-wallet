@@ -1,39 +1,42 @@
 @import '../../assets/theme/color.less';
 @import '../../assets/theme/constants.less';
 
+.guardian-approve-login-page {
+  margin-top: 64px;
+  width: 552px;
+  min-height: 632px;
+  height: fit-content;
+  padding: 16px;
+  border: 1px solid @border-base1;
+  border-radius: 16px;
+}
+
 .guardian-approval-wrapper {
   .guardian-approval-content {
+    .error-icon {
+      height: 32px;
+      width: 32px;
+    }
     .title {
       font-size: 32px;
       line-height: 38px;
       color: @text-base1;
-      margin-bottom: 16px;
+      font-weight: 700;
+      font-family: BG;
     }
     .description {
       color: @text-base3;
-      margin-bottom: 24px;
-    }
-    .warningicon-icon {
-      height: 32px;
-      width: 32px;
-      margin-bottom: 16px;
     }
   }
   .approve-count {
+    margin-top: 24px;
     line-height: 20px;
     font-size: 14px;
-    margin-bottom: 24px;
     color: @neutral-secondary-text;
-    .tooltip-icon {
+    .check-icon {
       margin-left: 8px;
-      width: 14px;
-      height: 14px;
-    }
-    .already-approval {
-      color: @brand-normal;
-    }
-    .common-tooltip {
-      max-width: 272px;
+      width: 22px;
+      height: 22px;
     }
     .all-approval {
       font-size: 16px;
@@ -52,80 +55,16 @@
     }
   }
   .verifier-content {
-    .verifier-item {
-      position: relative;
-      padding: 16px 0;
-      &.verifier-item-disabled {
-        &::after {
-          content: '';
-          position: absolute;
-          width: 100%;
-          height: 100%;
-          background-color: @bg-base1;
-          opacity: 0.3;
-          cursor: not-allowed;
-        }
-      }
-      .account-text {
-        margin-left: 0;
-        line-height: 22px;
-        color: @text-base1;
-        font-size: 16px;
-        width: 0; // responsive text, to fix overflow
-        flex: 1;
-        .detail {
-          line-height: 19px;
-          color: @text-base3;
-        }
-      }
-      .account-text-one-row {
-        word-wrap: break-word;
-        .text-overflow(2);
-      }
-      .account-text-two-row {
-        .name,
-        .detail {
-          word-wrap: break-word;
-          .text-overflow(1);
-        }
-      }
-      .not-verified,
-      .verifying,
-      .@{app-prefix}-btn-text {
-        width: auto;
-        display: block;
-      }
-      .not-verified,
-      .verifying {
-        border-radius: 6px;
-        line-height: 24px;
-        font-size: 12px;
-        padding: 0 12px;
-        margin-left: 16px;
-      }
-      .@{app-prefix}-btn-text {
-        color: @brand-normal;
-        padding: 0;
-        margin-left: 16px;
-        &.verified {
-          color: @functional-success-default;
-        }
-        &.expired {
-          color: @neutral-disable-text;
-        }
-        &:hover {
-          background-color: transparent;
-        }
-        span {
-          line-height: 20px;
-          font-size: 14px;
-        }
-      }
-    }
+    margin-top: 24px;
     .guardian-items-title {
-      color: @text-base3;
-      margin-bottom: 4px;
+      margin: 16px 0 8px;
+      font-size: 14px;
+      line-height: 20px;
+      color: @text-base2;
     }
+  }
+  .circle-loading {
+    margin-top: 150px;
   }
   .popup-verifier-content {
     // max-height: 320px;
@@ -134,23 +73,12 @@
   .popup-verifier-content::-webkit-scrollbar {
     display: none;
   }
-  .login-icon {
-    position: absolute;
-    top: 0;
-    left: 0;
-    border-bottom-right-radius: 9px;
-    border-top-left-radius: 9px;
-    line-height: 18px;
-    background-color: @bg-4;
-    padding: 0 8px;
-    text-align: center;
-    color: @functional-warning-default;
-    font-size: 12px;
-  }
 
   .recovery-wallet-btn {
+    width: 100%;
+    height: 48px;
     line-height: 44px;
-    border-radius: 22px;
+    border-radius: 24px;
   }
 }
 .popup-page.guardian-approval-wrapper {
@@ -160,7 +88,7 @@
   }
   .guardian-approval-content {
     padding-top: 0;
-    margin: 0 24px;
+    margin: 0 16px;
     width: auto;
     height: calc(100% - 64px);
     .title {
@@ -169,43 +97,12 @@
       color: @text-base1;
       font-size: 24px;
       margin-bottom: 4px;
-      text-align: center;
     }
     .description {
       line-height: 20px;
       color: @neutral-secondary-text;
       font-size: 14px;
       margin-bottom: 32px;
-    }
-  }
-  .approve-count {
-    .tooltip-icon {
-      margin-left: 8px;
-      width: 14px;
-      height: 14px;
-    }
-    .already-approval {
-      color: @brand-normal;
-    }
-    .common-tooltip {
-      max-width: 272px;
-    }
-  }
-  .verifier-content {
-    .verifier-item {
-      border-bottom: 1px solid @border-neutral3;
-    }
-  }
-  .btn-wrap {
-    position: fixed;
-    bottom: 0;
-    margin-left: -24px;
-    width: 100vw;
-    border-top: 1px solid @border-neutral3;
-    padding: 16px;
-    background-color: @bg-base1;
-    button {
-      height: 48px;
     }
   }
   .recovery-wallet-btn-wrap {

@@ -1,12 +1,12 @@
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import clsx from 'clsx';
 import BaseVerifierIcon from 'components/BaseVerifierIcon';
-import { CustomSvgV3 } from 'components/CustomSvgV3';
-import { IconTypeV3 } from 'types/icon';
 import { zkLoginVerifierItem } from '@portkey-wallet/types/verifier';
 import { useMemo } from 'react';
-import './index.less';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
+import { CustomSvgV3 } from 'components/CustomSvgV3';
+import { IconTypeV3 } from 'types/icon';
+import './index.less';
 
 interface VerifierPairProps {
   guardianType?: LoginType;

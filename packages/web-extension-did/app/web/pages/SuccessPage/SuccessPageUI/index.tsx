@@ -1,8 +1,8 @@
-import { Button } from 'antd';
 import CustomSvg from 'components/CustomSvg';
 import PortKeyTitle from 'pages/components/PortKeyTitle';
 import { useTranslation } from 'react-i18next';
 import { SuccessPageType } from 'types/UI';
+import { CommonButton } from '@portkey/did-ui-react';
 import './index.less';
 
 export default function SuccessPageUI({ type, onConfirm }: { type?: SuccessPageType; onConfirm?: () => void }) {
@@ -16,10 +16,9 @@ export default function SuccessPageUI({ type, onConfirm }: { type?: SuccessPageT
             <CustomSvg type="ActivitySuccess" className="congratulations-icon" />
             {type === SuccessPageType.Created && <h1>{t('You have successfully logged into your wallet!')}</h1>}
             {type === SuccessPageType.Login && <h1>{t('You are now logged in to your Portkey!')}</h1>}
-            {/* TODO：Button styles */}
-            <Button className="open-btn" type="primary" onClick={onConfirm}>
+            <CommonButton className="open-btn" type="primaryOutline" onClick={onConfirm}>
               Open Portkey
-            </Button>
+            </CommonButton>
           </div>
         }
       />

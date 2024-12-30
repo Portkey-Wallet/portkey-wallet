@@ -5,19 +5,20 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  .scan-card-inner {
-    flex: 1;
-    .scan-title {
-      padding-top: 80px;
-      padding-bottom: 8px;
-      .back-icon-wrapper {
-        right: -16px;
-      }
-    }
-    .pc-icon {
-      width: 80px;
-      height: 80px;
-      border-radius: 8px;
-    }
+  .scan-text-inner {
+    display: none;
+  }
+  .scan-text-header {
+    margin-top: 16px;
+    font-size: 32px;
+    line-height: 38px;
+    font-weight: 700;
+    font-family: BG;
+  }
+  .scan-text-desc {
+    margin: 16px 0 64px;
+    font-size: 14px;
+    line-height: 20px;
+    color: @text-base2;
   }
 }

@@ -435,6 +435,7 @@ export default function GuardiansEdit() {
               items={selectOptions}
               customChild={OptionTip()}
               disabled={isZK}
+              title={t('Select verifier')}
             />
             {verifierExist && <div className="error">{verifierExistTip}</div>}
           </div>

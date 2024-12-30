@@ -32,10 +32,6 @@ const Unlock = () => {
     }
   }, [currentNetwork, navigate, walletInfo?.caInfo]);
 
-  return (
-    <div>
-      <LockPage onUnLockHandler={handleNavigate} />
-    </div>
-  );
+  return <LockPage onUnLockHandler={handleNavigate} />;
 };
 export default Unlock;

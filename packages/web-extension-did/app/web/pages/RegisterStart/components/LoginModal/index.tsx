@@ -1,34 +1,41 @@
-import CommonModal from 'components/CommonModal';
-import { Button } from 'antd';
+import { CommonButton, CommonModal } from '@portkey/did-ui-react';
+import { CustomSvgV3 } from 'components/CustomSvgV3';
+import './index.less';
 
 export default function LoginModal({
   open,
   type = 'login',
+  email = '',
   onCancel,
   onConfirm,
 }: {
   open?: boolean;
   type?: string;
+  email?: string;
   onCancel?: () => void;
   onConfirm?: () => void;
 }) {
   return (
-    <CommonModal
-      getContainer={'#register-start-wrapper'}
-      closable={false}
-      open={open}
-      width={320}
-      title={'Continue with this account?'}
-      onCancel={onCancel}>
-      <p className="modal-content">
-        {type === 'login' && 'This account has not been registered yet. Click "Confirm" to complete the registration.'}
-        {type === 'create' && 'This account already exists. Click "Confirm" to log in.'}
-      </p>
-      <div className="btn-wrapper">
-        <Button onClick={onCancel}>Cancel</Button>
-        <Button type="primary" onClick={onConfirm}>
-          Confirm
-        </Button>
+    <CommonModal getContainer={'#register-start-wrapper'} open={open}>
+      <div className="register-start-modal">
+        <div className="flex-between-center login-header">
+          <div>
+            {type === 'login' && `You don't have an account`}
+            {type === 'create' && `You already have an account`}
+          </div>
+          <CustomSvgV3 className="cursor-pointer" type="close thin" />
+        </div>
+        <div>
+          {type === 'login' && `Would you like to create one with ${email} ?`}
+          {type === 'create' && `Do you want to log in with ${email} instead?`}
+        </div>
+        <div className="flex-row-center login-btn-warp">
+          <CommonButton type="outline" onClick={onCancel}>{`Cancel`}</CommonButton>
+          <CommonButton type="primary" onClick={onConfirm}>
+            {type === 'login' && `Sign up`}
+            {type === 'create' && `Log in`}
+          </CommonButton>
+        </div>
       </div>
     </CommonModal>
   );

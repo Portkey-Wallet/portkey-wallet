@@ -17,7 +17,6 @@ import { setLoginAccountAction } from 'store/reducers/loginCache/actions';
 import { resetGuardians, setUserGuardianStatus } from '@portkey-wallet/store/store-ca/guardians/actions';
 import useGuardianList from 'hooks/useGuardianList';
 import { handleErrorCode, handleErrorMessage, sleep } from '@portkey-wallet/utils';
-import { Button } from 'antd';
 import { getHolderInfo } from 'utils/sandboxUtil/getHolderInfo';
 import { SocialLoginFinishHandler } from 'types/wallet';
 import {
@@ -37,8 +36,6 @@ import LoginModal from './components/LoginModal';
 import './index.less';
 import { request } from '@portkey-wallet/api/api-did';
 import useCheckVerifier from 'hooks/useVerifier';
-import CommonModal from 'components/CommonModal';
-import { useTranslation } from 'react-i18next';
 import { OperationTypeEnum, VerifierItem, VerifyStatus } from '@portkey-wallet/types/verifier';
 import { AssignVerifierLoading } from '@portkey-wallet/constants/constants-ca/wallet';
 import { useSocialVerify } from 'pages/GuardianApproval/hooks/useSocialVerify';
@@ -66,8 +63,8 @@ export default function RegisterStart() {
   // const changeNetworkModalText = useChangeNetworkText();
   // const isMainnet = useIsMainnet();
   const [open, setOpen] = useState<boolean>();
-  const { t } = useTranslation();
   const { address: managerAddress } = useCurrentWalletInfo();
+  const [email, setEmail] = useState('');
 
   useEffect(() => {
     dispatch(createNewTmpWallet());
@@ -162,13 +159,6 @@ export default function RegisterStart() {
     },
     [dispatch],
   );
-
-  const [openSendVerifyCode, setOpenSendVerifyCode] = useState<boolean>(false);
-  const [verifierItem, setVerifierItem] = useState<VerifierItem>({
-    id: '',
-    name: '',
-    imageUrl: '',
-  });
   const loginAccountRef = useRef<LoginInfo>();
   const [loginAccount, setLoginAccount] = useState<LoginInfo>();
   const [checkAuth, sendVerifyCodeHandler] = useCheckVerifier();
@@ -185,11 +175,11 @@ export default function RegisterStart() {
           checkAuth(verifierItem, data);
           break;
         default:
-          setOpenSendVerifyCode(true);
+          sendVerifyCodeHandler(verifierItem, loginAccountRef.current);
           break;
       }
     },
-    [checkAuth],
+    [checkAuth, sendVerifyCodeHandler],
   );
 
   const onSignFinish = useCallback(
@@ -210,8 +200,6 @@ export default function RegisterStart() {
           },
         });
         setLoading(false);
-
-        setVerifierItem(verifierReq);
         confirmRegisterOrLogin(data, verifierReq);
       } catch (error) {
         setLoading(false);
@@ -371,6 +359,7 @@ export default function RegisterStart() {
   const onInputFinish = useCallback(
     async (loginInfo: LoginInfo) => {
       loginInfoRef.current = loginInfo;
+      setEmail(loginInfo.guardianAccount);
       if (isHasAccount?.current) {
         if (type === 'create') {
           setLoading(false);
@@ -493,6 +482,7 @@ export default function RegisterStart() {
       <LoginModal
         open={open}
         type={type}
+        email={email}
         onCancel={() => setOpen(false)}
         onConfirm={() => {
           if (!loginInfoRef.current) return setOpen(false);
@@ -501,26 +491,6 @@ export default function RegisterStart() {
           setOpen(false);
         }}
       />
-      {loginAccount && (
-        <CommonModal
-          className="verify-confirm-modal"
-          closable={false}
-          open={openSendVerifyCode}
-          width={320}
-          onCancel={() => setOpenSendVerifyCode(false)}>
-          <p className="modal-content">
-            {`${t('verificationCodeTip1', { verifier: verifierItem?.name })} `}
-            <strong>{loginAccount.guardianAccount}</strong>
-            {` ${t('verificationCodeTip2', { type: LoginType[loginAccount.loginType] })}`}
-          </p>
-          <div className="btn-wrapper">
-            <Button onClick={() => setOpenSendVerifyCode(false)}>{t('Cancel')}</Button>
-            <Button type="primary" onClick={() => sendVerifyCodeHandler(verifierItem, loginAccountRef.current)}>
-              {t('Confirm')}
-            </Button>
-          </div>
-        </CommonModal>
-      )}
     </div>
   );
 }

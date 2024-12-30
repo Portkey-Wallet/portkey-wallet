@@ -7,7 +7,7 @@ import './index.less';
 export default function ContactsSearchInput({
   handleChange,
   className,
-  placeholder = 'Name or Address',
+  placeholder = 'Name, Address',
 }: {
   handleChange: ChangeEventHandler<HTMLInputElement>;
   className?: string;
@@ -16,8 +16,8 @@ export default function ContactsSearchInput({
   return (
     <Input
       className={clsx(['contacts-search-input', className])}
-      prefix={<CustomSvg type="SearchBlur" className="search-svg" />}
-      allowClear
+      suffix={<CustomSvg type="SearchBlur" className="search-svg" />}
+      // allowClear
       placeholder={placeholder}
       onChange={handleChange}
     />

@@ -1,16 +1,5 @@
 import { ChainId, NetworkType } from '@portkey-wallet/types';
-
-export interface IContactSupportNetworkItem {
-  network: 'aelf' | string;
-  name: string;
-  chainId: ChainId;
-  imageUrl: string;
-}
-
-export interface ITransferSupportNetworkItem {
-  network: 'aelf' | string;
-  name: string;
-}
+import { IContactSupportNetworkItem, ITransferSupportNetworkItem } from '@portkey-wallet/types/types-ca/config';
 
 export interface ConfigStateType {
   contactSupportNetworkMap: {

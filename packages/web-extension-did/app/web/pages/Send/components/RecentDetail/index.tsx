@@ -1,4 +1,6 @@
 import CustomSvg from 'components/CustomSvg';
+import { CustomSvgV3 } from 'components/CustomSvgV3';
+
 import { useNavigate } from 'react-router';
 import clsx from 'clsx';
 import { useCommonState, useUserInfo } from 'store/Provider/hooks';
@@ -18,30 +20,30 @@ import {
   IActivityListWithAddressApiParams,
 } from '@portkey-wallet/store/store-ca/activity/type';
 import { fetchRecentContactActivities } from '@portkey-wallet/store/store-ca/activity/api';
-import { useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCaAddressInfoList, useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useEffectOnce } from 'react-use';
 import { ChainId } from '@portkey-wallet/types';
 import { useGoAddNewContact } from 'hooks/useProfile';
-import { ExtraTypeEnum } from 'types/Profile';
+import { ContactHandleActionTypeEnum } from 'types/Profile';
 import Avatar from 'pages/components/Avatar';
 import { useLocationState } from 'hooks/router';
 import { TRecentDetailLocationState } from 'types/router';
+import { IContactItemType } from '@portkey-wallet/types/types-ca/contactNew';
+import { formatStr2EllipsisStr } from '@portkey-wallet/utils';
 
 const MAX_RESULT_COUNT = 10;
 const SKIP_COUNT = 0;
 
 export default function RecentDetail() {
-  const { state } = useLocationState<TRecentDetailLocationState>();
-  const targetAddress = state?.targetAddress || ''; // get contact address from url state
-  const targetChainId = state?.targetChainId; // get contact chainId from url state
-  const myChainId = state?.chainId; // get my chainId from url state
+  const { state } = useLocationState<IContactItemType>();
   const currentWallet = useCurrentWallet();
   const { walletInfo } = currentWallet;
-  const myAddress = myChainId ? walletInfo?.[myChainId as ChainId]?.caAddress || '' : ''; // get my address from url state
 
-  const chainInfo = useCurrentChain(targetChainId);
+  const goToNewContact = useGoAddNewContact();
+
+  const chainInfo = useCurrentChain(state?.addressInfo?.chainId);
   const currentNetwork = useCurrentNetworkInfo();
-  const transTargetAddress = addressFormat(targetAddress, targetChainId, currentNetwork.walletType);
+
   const [activityInfo, setActivityList] = useState<IActivitiesApiResponse>({
     data: [],
     totalRecordCount: 0,
@@ -49,52 +51,38 @@ export default function RecentDetail() {
   const { passwordSeed } = useUserInfo();
   const { isPrompt } = useCommonState();
   const isMainnet = useIsMainnet();
+  const caAddressInfos = useCaAddressInfoList();
+
   const [loading, setLoading] = useState<boolean>(false);
   const nav = useNavigate();
   const onClose = useCallback(() => {
     nav(-1);
   }, [nav]);
 
-  const handleAdd = useGoAddNewContact();
-  const goAddContact = useCallback(() => {
-    const initContactItem: Partial<ContactItemType> = {
-      id: '-1',
-      name: '',
-      addresses: [{ chainId: targetChainId || 'AELF', address: targetAddress || '', chainName: 'aelf' }],
-    };
-    handleAdd(ExtraTypeEnum.ADD_NEW_CHAT, initContactItem);
-  }, [targetChainId, targetAddress, handleAdd]);
-
   const viewOnExplorer = useCallback(() => {
     const openWinder = window.open(
-      getExploreLink(chainInfo?.explorerUrl || '', transTargetAddress, 'address'),
+      getExploreLink(chainInfo?.explorerUrl || '', state.addressInfo?.address, 'address'),
       '_blank',
     );
     if (openWinder) {
       openWinder.opener = null;
     }
-  }, [chainInfo?.explorerUrl, transTargetAddress]);
+  }, [chainInfo?.explorerUrl, state.addressInfo?.address]);
 
   const fetchParams = useMemo(() => {
     return {
       maxResultCount: MAX_RESULT_COUNT,
       skipCount: SKIP_COUNT,
-      caAddressInfos: [
-        {
-          caAddress: myAddress,
-          chainId: myChainId,
-          chainName: chainInfo?.chainName || 'aelf',
-        },
-      ],
+      caAddressInfos,
       targetAddressInfos: [
         {
-          caAddress: targetAddress,
-          chainId: targetChainId,
+          caAddress: state?.addressInfo?.address || '',
+          chainId: state?.addressInfo?.chainId || 'AELF',
           chainName: chainInfo?.chainName || 'aelf',
         },
       ],
     };
-  }, [chainInfo?.chainName, myAddress, myChainId, targetAddress, targetChainId]);
+  }, [caAddressInfos, chainInfo?.chainName, state?.addressInfo?.address, state?.addressInfo?.chainId]);
 
   useEffectOnce(() => {
     if (passwordSeed) {
@@ -136,37 +124,89 @@ export default function RecentDetail() {
     return !!activityInfo.hasNextPage;
   }, [activityInfo.hasNextPage]);
 
+  const [popVisible, setPopVisible] = useState(false);
+
+  const PopoverMenuList = () => {
+    return (
+      <div className="action-list">
+        <div
+          className="list"
+          onClick={() => {
+            console.log('321312321312');
+            goToNewContact(
+              state.id ? ContactHandleActionTypeEnum.EDIT_CONTACT : ContactHandleActionTypeEnum.ADD_CONTACT,
+              state,
+            );
+          }}>
+          <CustomSvgV3 type={'edit'} />
+          <span>Edit address</span>
+        </div>
+        <div className="list" onClick={viewOnExplorer}>
+          <CustomSvgV3 type={'external'} />
+          <span>View On Explorer</span>
+        </div>
+      </div>
+    );
+  };
+
+  console.log('state', state);
+
   const mainContent = () => {
     return (
-      <div className={clsx(['recent-detail', isPrompt && 'detail-page-prompt'])}>
-        <CommonHeader className="recent-detail-header" title="Details" onLeftBack={onClose} />
+      <div className={clsx(['recent-detail', isPrompt && 'recent-detail-prompt'])}>
+        <CommonHeader
+          className="recent-detail-header"
+          title="Address Details"
+          onLeftBack={onClose}
+          rightElementList={[
+            {
+              customSvgWrapClassName: 'nft-detail-more',
+              customSvgType: 'moreHome',
+              popoverProps: {
+                overlayClassName: `nft-detail-popover ${isPrompt ? '' : 'nft-detail-popover-popup'}`,
+                open: popVisible,
+                trigger: 'click',
+                showArrow: false,
+                placement: 'bottomLeft',
+                getPopupContainer: (triggerNode: any) => triggerNode.parentNode,
+                content: <PopoverMenuList />,
+              },
+              onClick: () => setPopVisible(!popVisible),
+            },
+          ]}
+        />
         <div className="recent-detail-body">
           <div className="recent-detail-address-wrap">
             {state?.name && (
-              <div className="recent-detail-contact flex-row-center">
-                <Avatar avatarUrl={state?.avatar || ''} nameIndex={state?.index} size="large" />
+              <div className="recent-detail-contact">
+                <Avatar avatarUrl={state?.caHolderInfo?.avatar || ''} nameIndex={state?.index} size="large" />
                 <div className="name">{state?.name}</div>
               </div>
             )}
+            <div className="address-title">{'Address'}</div>
 
             <div className="recent-detail-address-row">
-              <span className="address">{transTargetAddress}</span>
-              <span className="network">{transNetworkText(targetChainId, !isMainnet)}</span>
-            </div>
+              <div className="info-left">
+                <img src={state?.addressInfo?.networkImage} width={24} height={24} />
+                <div className="info-left-top">
+                  <div className="network">{state?.addressInfo?.networkName}</div>
 
-            <div className="recent-detail-action-row">
-              {!state?.name && <CustomSvg type={'AddContact'} onClick={goAddContact} />}
-              <Copy iconType={'Copy3'} iconClassName="copy-address" toCopy={transTargetAddress} />
-              <CustomSvg type={'Share'} onClick={viewOnExplorer} />
+                  <div className="address">{formatStr2EllipsisStr(state?.addressInfo?.address)}</div>
+                </div>
+              </div>
+              <Copy iconType={'copy'} toCopy={state?.addressInfo?.address} fillColor="#FFFFFF66" />
             </div>
           </div>
-          {activityInfo?.data?.length > 0 && (
+          {/* TODO : not aelf address no activity */}
+          {activityInfo?.data?.length > 0 ? (
             <ActivityList
               data={activityInfo.data}
-              chainId={targetChainId}
+              chainId={state?.addressInfo?.chainId}
               hasMore={isHasMore}
               loadMore={loadMoreActivities}
             />
+          ) : (
+            <div className="no-data">{'No recent interactions'}</div>
           )}
         </div>
       </div>

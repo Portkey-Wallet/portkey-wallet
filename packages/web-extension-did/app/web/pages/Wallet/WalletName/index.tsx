@@ -36,14 +36,5 @@ export default function WalletName() {
 
   const goBack = useCallback(() => navigate('/setting'), [navigate]);
 
-  return (
-    <WalletNamePopup
-      headerTitle={t('My Wallet')}
-      data={state}
-      type={MyProfilePageType.VIEW}
-      editText={editText}
-      goBack={goBack}
-      handleEdit={() => null}
-    />
-  );
+  return <WalletNamePopup headerTitle={t('My Wallet')} data={state} type={MyProfilePageType.VIEW} goBack={goBack} />;
 }

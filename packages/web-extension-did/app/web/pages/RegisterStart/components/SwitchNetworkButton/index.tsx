@@ -6,13 +6,13 @@ import { useChangeNetwork } from 'hooks/useChangeNetwork';
 import { useNetworkList } from '@portkey-wallet/hooks/hooks-ca/network';
 import { Row } from 'antd';
 
-export default function SwitchNetworkButton() {
+export default function SwitchNetworkButton({ redirect = true }: { redirect?: boolean }) {
   const { currentNetwork } = useWalletInfo();
   const changeNetwork = useChangeNetwork();
   const networkList = useNetworkList();
   const networkChange = useThrottleCallback(() => {
-    changeNetwork(networkList.filter((item) => item.networkType !== currentNetwork)[0]);
-  }, [changeNetwork, currentNetwork, networkList]);
+    changeNetwork(networkList.filter((item) => item.networkType !== currentNetwork)[0], redirect);
+  }, [changeNetwork, currentNetwork, networkList, redirect]);
   return (
     <div className="flex-row-center switch-network-button" onClick={networkChange}>
       <CustomSvg type="Change" />
@@ -21,11 +21,11 @@ export default function SwitchNetworkButton() {
   );
 }
 
-export function BackAndSwitchNetwork({ onClick }: { onClick?: () => void }) {
+export function BackAndSwitchNetwork({ onClick, redirect = true }: { onClick?: () => void; redirect?: boolean }) {
   return (
     <Row className="flex-row-center flex-between">
       <CustomSvg type="BackLeft" onClick={onClick} />
-      <SwitchNetworkButton />
+      <SwitchNetworkButton redirect={redirect} />
     </Row>
   );
 }

@@ -1,8 +1,6 @@
 import { ILoginAccountListProps } from 'pages/Contacts/components/LoginAccountList';
 import { BaseHeaderProps } from './UI';
 import { IContactProfile } from '@portkey-wallet/types/types-ca/contact';
-import { IPopoverMenuListData } from '@portkey-wallet/im-ui-web';
-import { IContactItemType } from '@portkey-wallet/types/types-ca/contactNew';
 
 // related to ExtraType
 export enum ContactHandleActionTypeEnum {

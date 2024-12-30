@@ -12,11 +12,15 @@ import Recents from './Recents';
 import MyAddress from './MyAddress';
 
 export default function AddressSelector({
+  isFt,
   onClick,
   chainId,
+  tokenId,
 }: {
+  isFt: boolean;
   onClick: (account: IClickAddressProps) => void;
   chainId: ChainId;
+  tokenId: string;
 }) {
   const dispatch = useAppCommonDispatch();
 
@@ -33,7 +37,7 @@ export default function AddressSelector({
         {
           label: t('Recents'),
           key: 'recents',
-          children: <Recents onChange={onClick} chainId={chainId} />,
+          children: <Recents isFt={isFt} onChange={onClick} chainId={chainId} tokenId={tokenId} />,
         },
         {
           label: t('Contacts'),

@@ -149,7 +149,7 @@ export default function Send() {
   const { locationParams: state } = usePromptLocationParams<TSendLocationState, TSendLocationState>();
   const chainId: ChainId = useMemo(() => state.targetChainId || state.chainId, [state.chainId, state.targetChainId]);
 
-  const { addRecent, getTransformedRecentList } = useRecent();
+  const { addRecent } = useRecent();
 
   const tokenInfo: BaseToken = useMemo(() => {
     if (type === SendPageTypeEnum.token) {
@@ -1230,16 +1230,18 @@ export default function Send() {
           </div>
         ) : (
           <AddressSelector
+            isFt={type === SendPageTypeEnum.token}
+            chainId={tokenInfo?.chainId}
+            tokenId={tokenInfo?.symbol || tokenInfo?.tokenId || ''}
             onClick={(account: IClickAddressProps) => {
               // from RecentList: Not recent contacts, not clickable
-              if (account.isDisable) return;
-              const value = {
-                name: account.name,
-                address: `ELF_${account.address}_${account?.addressChainId || account?.chainId}`,
-              };
-              setToAccount(value);
+              // if (account.isDisable) return;
+              // const value = {
+              //   name: account.name,
+              //   address: `ELF_${account.address}_${account?.addressChainId || account?.chainId}`,
+              // };
+              console.log('account', account);
             }}
-            chainId={tokenInfo.chainId}
           />
         ),
       },

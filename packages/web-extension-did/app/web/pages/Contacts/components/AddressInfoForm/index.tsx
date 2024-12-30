@@ -1,7 +1,7 @@
 import { IEditContactItemFormType } from 'pages/Contacts/AddContact/types';
 import './index.less';
 import { FormInstance } from 'antd';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 // import { useContactNetworkConfig } from '@portkey-wallet/hooks/hooks-ca/config';
 import { CustomSvgV3 } from 'components/CustomSvgV3';
 import { Input } from 'antd';
@@ -14,7 +14,7 @@ export type TChangeAddressInfoParams = Partial<IEditContactItemFormType['address
 // packages/web-extension-did/app/web/pages/components/CustomSelect/index.tsx
 
 interface AddressInfoFormProps {
-  form: FormInstance<IEditContactItemFormType>;
+  form?: FormInstance<IEditContactItemFormType>;
   value?: IEditContactItemFormType['addressInfo'];
   onChange: (v: IEditContactItemFormType['addressInfo']) => void;
   isNetworkModalOpen: boolean | undefined;

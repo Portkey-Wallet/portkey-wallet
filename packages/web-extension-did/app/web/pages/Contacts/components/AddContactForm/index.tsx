@@ -1,16 +1,8 @@
 import { Button, Form, Input, FormProps } from 'antd';
 import { useTranslation } from 'react-i18next';
-// import CustomSvg from 'components/CustomSvg';
 import './index.less';
-import { ContactInfoError, CustomAddressItem, ValidData } from 'pages/Contacts/AddContact';
-// import EditButtonGroup from '../EditButtonGroup';
-// import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
-// import { useCallback, useEffect, useMemo, useState } from 'react';
-// import { useContactNetworkConfig } from '@portkey-wallet/hooks/hooks-ca/config';
-// import { useEffectOnce } from '@portkey-wallet/hooks';
-// import { IContactSupportNetworkItem } from '@portkey-wallet/types/types-ca/config';
-// import { IContactItemType, IEditContactItemApiType } from '@portkey-wallet/types/types-ca/contactNew';
-import { defaultContactFormData, useContactAction, useDefaultContactFormValue } from '../../AddContact/hooks';
+import { ContactInfoError, ValidData } from 'pages/Contacts/AddContact';
+import { defaultContactFormData } from '../../AddContact/hooks';
 import { IEditContactItemFormType } from 'pages/Contacts/AddContact/types';
 import { ContactHandleActionTypeEnum } from 'types/Profile';
 import AddContactAddressInfoSection from '../AddressInfoForm';
@@ -20,7 +12,7 @@ const { Item: FormItem } = Form;
 export interface IAddContactFormProps extends FormProps {
   isDisable?: boolean;
   validName: ValidData;
-  state: any;
+  state?: any;
   extra?: ContactHandleActionTypeEnum;
   handleAddressInfoChange: (v: IEditContactItemFormType['addressInfo']) => void;
   isNetworkModalOpen?: boolean;
@@ -31,7 +23,7 @@ export default function AddContactForm({
   form,
   isDisable,
   validName,
-  extra,
+  // extra,
   onFinish,
   isNetworkModalOpen,
   handleAddressInfoChange,

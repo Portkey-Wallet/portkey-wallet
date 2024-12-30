@@ -5,12 +5,7 @@ import { useEffectOnce } from 'react-use';
 import RecentItem from './RecentItem';
 import { ChainId } from '@portkey-wallet/types';
 import { useRecent } from '@portkey-wallet/hooks/hooks-ca/recent';
-import { IRecentItem } from '@portkey-wallet/store/store-ca/recent/type';
 import { TFormattedRecentItem } from '@portkey-wallet/types/types-ca/contactNew';
-import { useWalletInfo } from 'store/Provider/hooks';
-import { useCaAddresses } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import MyAddress from './MyAddress';
-import ContactCard from './ContactCard';
 
 export default function Recents({
   onChange,

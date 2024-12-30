@@ -4,7 +4,7 @@ import { ChangeEvent, ChangeEventHandler, useCallback, useEffect, useMemo, useSt
 import { useLocalContactSearch } from '@portkey-wallet/hooks/hooks-ca/contactNew';
 import { useAppDispatch } from 'store/Provider/hooks';
 import { fetchContactListV2Async } from '@portkey-wallet/store/store-ca/contact/actions';
-import { IContactIndexType, IContactItemType } from '@portkey-wallet/types/types-ca/contactNew';
+import { IContactIndexType } from '@portkey-wallet/types/types-ca/contactNew';
 import { useEffectOnce } from 'react-use';
 import ContactsPopup from './Popup';
 // import ContactsPrompt from './Prompt';
@@ -12,6 +12,8 @@ import { BaseHeaderProps } from 'types/UI';
 // import { useCommonState } from 'store/Provider/hooks';
 import { useGoAddNewContact } from 'hooks/useProfile';
 import { ContactHandleActionTypeEnum } from 'types/Profile';
+import { defaultContactFormData } from './AddContact/hooks';
+import { IEditContactItemFormType } from './AddContact/types';
 
 export interface IContactsProps extends BaseHeaderProps {
   searchPlaceholder?: string;
@@ -21,7 +23,7 @@ export interface IContactsProps extends BaseHeaderProps {
   handleSearch: ChangeEventHandler<HTMLInputElement>;
   list: IContactIndexType[];
   contactCount: number;
-  initData: Partial<IContactItemType>;
+  initData: Partial<IEditContactItemFormType>;
 }
 
 export default function Contacts() {
@@ -69,6 +71,7 @@ export default function Contacts() {
 
   return (
     <ContactsPopup
+      initData={defaultContactFormData}
       headerTitle={title}
       goBack={goBack}
       searchPlaceholder={searchPlaceholder}

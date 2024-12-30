@@ -12,3 +12,76 @@
     height: calc(100% - @common-header-height);
   }
 }
+.remove-tip-modal {
+  .close-icon {
+    width: 24px;
+    height: 24px;
+  }
+  .common-header-title {
+    margin-top: 10px;
+  }
+  .remove-content {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    .title {
+      font-size: 20px;
+      font-weight: 700;
+    }
+    .desc {
+      font-size: 16px;
+      line-height: 1.5;
+    }
+    .btn-box {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      button {
+        height: 48px;
+        border-radius: 40px;
+        font-size: 16px;
+        font-weight: 600;
+      }
+      .cancel {
+        width: 100%;
+      }
+      .delete {
+        background-color: @bg-danger1;
+        border: none;
+        width: 100%;
+      }
+    }
+  }
+}
+.select-chain-modal {
+  .close-icon {
+    width: 24px;
+    height: 24px;
+  }
+  .common-header-title {
+    margin-top: 10px;
+    text-align: left;
+    font-size: 20px;
+  }
+  .chain-content {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    .chain-list {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0;
+      .chain-list-info {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+    }
+  }
+}

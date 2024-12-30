@@ -6,38 +6,30 @@ import { useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import './index.less';
+import { useContactNetworkConfig } from '@portkey-wallet/hooks/hooks-ca/config';
+import { IContactSupportNetworkItem } from '@portkey-wallet/types/types-ca/config';
 
 export interface INetworkSelectProps {
   onClose: () => void;
-  onChange: (v: Record<string, string>) => void;
+  onChange: (v: string) => void;
 }
 
 export default function NetworkSelect({ onClose, onChange }: INetworkSelectProps) {
   const { t } = useTranslation();
   const [filterWord, setFilterWord] = useState<string>('');
-  const [showNetworkLists, setShowNetworkLists] = useState<any[]>([]);
-  const { chainList, currentNetwork } = useCurrentWallet();
+  const [showNetworkLists, setShowNetworkLists] = useState<IContactSupportNetworkItem[]>([]);
   const isMainnet = useIsMainnet();
 
-  const networkLists = useMemo(
-    () =>
-      chainList?.map((chain) => ({
-        networkType: currentNetwork,
-        chainId: chain.chainId,
-        chainName: chain.chainName,
-        networkName: transNetworkText(chain.chainId, !isMainnet),
-      })),
-    [chainList, currentNetwork, isMainnet],
-  );
+  const { supportNetworkList, fetchContactSupportConfig } = useContactNetworkConfig();
 
   useEffect(() => {
     if (!filterWord) {
-      setShowNetworkLists(networkLists || []);
+      setShowNetworkLists(supportNetworkList || []);
     } else {
-      const filter = (networkLists || []).filter((l) => l.networkName.toLowerCase() === filterWord.toLowerCase());
+      const filter = (supportNetworkList || []).filter((l) => l.name.toLowerCase() === filterWord.toLowerCase());
       setShowNetworkLists(filter);
     }
-  }, [filterWord, networkLists]);
+  }, [filterWord, showNetworkLists, supportNetworkList]);
 
   return (
     <div className="network-select">
@@ -61,12 +53,13 @@ export default function NetworkSelect({ onClose, onChange }: INetworkSelectProps
         {showNetworkLists.map((net) => (
           <div
             className="item"
-            key={`${net.networkType}_${net.chainId}`}
+            key={`${net.network}_${net.chainId}`}
             onClick={() => {
-              onChange(net);
+              onChange?.(net?.network);
+              onClose?.();
             }}>
-            <CustomSvg type={isMainnet ? 'Aelf' : 'elf-icon'} />
-            <div className="info">{net?.networkName}</div>
+            <img src={net.imageUrl} />
+            <span>{net?.name}</span>
           </div>
         ))}
         {!!filterWord && !showNetworkLists.length && (

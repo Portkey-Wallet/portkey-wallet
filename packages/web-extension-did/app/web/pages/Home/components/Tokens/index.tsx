@@ -66,7 +66,7 @@ export default function TokenList() {
   }, [navigate]);
 
   const getTokenAmount = useCallback(
-    (item: { balance?: string; decimals?: number }) =>
+    (item: { balance?: string; decimals?: number | string }) =>
       userInfo.hideAssets ? '****' : formatTokenAmountShowWithDecimals(item.balance, item.decimals),
     [userInfo.hideAssets],
   );

@@ -74,5 +74,8 @@
       "pre-commit": "yarn run test && istanbul-badges-readme && git add 'README.md'"
     }
   },
-  "version": "1.0.0"
+  "version": "1.0.0",
+  "resolutions": {
+    "@types/react": "18.3.11"
+  }
 }

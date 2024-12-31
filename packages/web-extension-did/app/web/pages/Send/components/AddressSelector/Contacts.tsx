@@ -65,7 +65,11 @@ export default function Contacts({
                   />
                   <div className="info-box">
                     <div className="name">{list.contacts[0].caHolderInfo.walletName}</div>
-                    <div className="address">{formatStr2EllipsisStr(list.contacts[0].addressInfo.address)}</div>
+                    <div className="address">
+                      {formatStr2EllipsisStr(
+                        `ELF_${list.contacts[0].addressInfo.address}_${list.contacts[0].addressInfo.chainId}`,
+                      )}
+                    </div>
                   </div>
                   <CustomSvgV3 type="info" className="info-icon" />
                 </div>

@@ -23,6 +23,7 @@ import Avatar from 'pages/components/Avatar';
 import { useLocationState } from 'hooks/router';
 import { IContactItemType } from '@portkey-wallet/types/types-ca/contactNew';
 import { formatStr2EllipsisStr } from '@portkey-wallet/utils';
+import { getShowAddress } from 'pages/Contacts/components/ContactItem';
 
 const MAX_RESULT_COUNT = 10;
 const SKIP_COUNT = 0;
@@ -181,10 +182,14 @@ export default function RecentDetail() {
                 <div className="info-left-top">
                   <div className="network">{state?.addressInfo?.networkName}</div>
 
-                  <div className="address">{formatStr2EllipsisStr(state?.addressInfo?.address)}</div>
+                  <div className="address">{getShowAddress(state)}</div>
                 </div>
               </div>
-              <Copy iconType={'copy'} toCopy={state?.addressInfo?.address} fillColor="#FFFFFF66" />
+              <Copy
+                iconType={'copy'}
+                toCopy={`ELF_${state?.addressInfo?.address}_${state?.addressInfo?.chainId}`}
+                fillColor="#FFFFFF66"
+              />
             </div>
           </div>
           {/* TODO : not aelf address no activity */}

@@ -47,7 +47,7 @@ export const useReceive = ({
   const [rateRefreshTime, setRateRefreshTime] = useState<number>(MAX_REFRESH_TIME);
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   const refreshReceiveRef = useRef<() => void>(() => {});
-  const refreshReceiveTimerRef = useRef<ReturnType<typeof setInterval>>(undefined);
+  const refreshReceiveTimerRef = useRef<ReturnType<typeof setInterval> | undefined>(undefined);
   const isFocusedRef = useRef(false);
 
   const [providerPriceList, setProviderPriceList] = useState<IBuyProviderPrice[] | ISellProviderPrice[]>([]);
@@ -93,7 +93,7 @@ export const useReceive = ({
     refreshReceiveTimerRef.current = timer;
   }, [clearRefreshReceive]);
 
-  const lastParams = useRef<IGetBuyDetailRequest | IGetSellDetailRequest>(null);
+  const lastParams = useRef<IGetBuyDetailRequest | IGetSellDetailRequest | null>(null);
   const refreshReceive = useCallback(async () => {
     if (amount === '') {
       setRate('');
@@ -243,7 +243,7 @@ export const useReceive = ({
   ]);
   refreshReceiveRef.current = refreshReceive;
 
-  const timer = useRef<ReturnType<typeof setInterval>>(undefined);
+  const timer = useRef<ReturnType<typeof setInterval> | undefined>(undefined);
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   const debounceRefreshReceiveRef = useRef<() => void>(() => {});
   const debounceRefreshReceive = useCallback(() => {

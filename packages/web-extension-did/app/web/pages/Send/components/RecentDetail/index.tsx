@@ -22,7 +22,6 @@ import { ContactHandleActionTypeEnum } from 'types/Profile';
 import Avatar from 'pages/components/Avatar';
 import { useLocationState } from 'hooks/router';
 import { IContactItemType } from '@portkey-wallet/types/types-ca/contactNew';
-import { formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import { getShowAddress } from 'pages/Contacts/components/ContactItem';
 
 const MAX_RESULT_COUNT = 10;

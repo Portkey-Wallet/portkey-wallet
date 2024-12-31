@@ -121,7 +121,6 @@ export default function RecentDetail() {
         <div
           className="list"
           onClick={() => {
-            console.log('321312321312');
             goToNewContact(
               state.id ? ContactHandleActionTypeEnum.EDIT_CONTACT : ContactHandleActionTypeEnum.ADD_CONTACT,
               state,
@@ -130,10 +129,12 @@ export default function RecentDetail() {
           <CustomSvgV3 type={'edit'} />
           <span>Edit address</span>
         </div>
-        <div className="list" onClick={viewOnExplorer}>
-          <CustomSvgV3 type={'external'} />
-          <span>View On Explorer</span>
-        </div>
+        {state?.addressInfo?.network === 'aelf' && (
+          <div className="list" onClick={viewOnExplorer}>
+            <CustomSvgV3 type={'external'} />
+            <span>View On Explorer</span>
+          </div>
+        )}
       </div>
     );
   };

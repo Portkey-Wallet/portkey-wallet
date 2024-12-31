@@ -13,6 +13,7 @@ import { useDappSpenderCheck } from '@portkey-wallet/hooks/hooks-ca/discover';
 import { DappSiteInfo } from '../DappSiteInfo';
 import { CommonModalTip, CommonPromptCard } from '@portkey/did-ui-react';
 import { PromptCardType } from 'pages/Send';
+import { CustomSvgV3 } from 'components/CustomSvgV3';
 
 export interface IBaseSetAllowanceProps {
   symbol: string;
@@ -104,10 +105,9 @@ export default function SetAllowance({
           onChange={(e) => {
             inputChange(e.target.value);
           }}
-          // TODO: clear
-          // allowClear={{
-          //   clearIcon: <CustomSvgV3 className="set-allowance-input-clear-icon" type="Clear Text" />,
-          // }}
+          allowClear={{
+            clearIcon: <CustomSvgV3 className="set-allowance-input-clear-icon" type="close-circle" />,
+          }}
           suffix={<span className={`set-allowance-approve-symbol`}>{approveSymbol}</span>}
         />
 

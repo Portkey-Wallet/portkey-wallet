@@ -1,13 +1,12 @@
 import CustomSvg, { SvgType } from 'components/CustomSvg';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { RegisterType, SocialLoginFinishHandler, VerifyTypeEnum } from 'types/wallet';
 import DividerCenter from '../DividerCenter';
 import SocialContent from '../SocialContent';
 import TermsOfServiceItem from '../TermsOfServiceItem';
-// import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { socialLoginAction } from 'utils/lib/serviceWorkerAction';
-import { useLoading, useWalletInfo } from 'store/Provider/hooks';
+import { useWalletInfo } from 'store/Provider/hooks';
 import { ISocialLogin, LoginType, SocialLoginEnum } from '@portkey-wallet/types/types-ca/wallet';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import singleMessage from 'utils/singleMessage';
@@ -23,6 +22,7 @@ import { LOGIN_TYPE_LABEL_MAP } from '@portkey-wallet/constants/verifier';
 import { zkloginGuardianType } from 'constants/guardians';
 import SwitchNetworkButton, { BackAndSwitchNetwork } from '../SwitchNetworkButton';
 import { Row } from 'antd';
+import CircleLoading from 'components/CircleLoading';
 
 export type LoginGuardianListType = {
   icon: SvgType;
@@ -33,12 +33,14 @@ export type LoginGuardianListType = {
 
 export default function SocialLogin({
   type,
+  loading,
   onBack,
   onFinish,
   onSocialStart,
   switchLogin,
 }: {
   type: RegisterType;
+  loading: boolean;
   onBack?: () => void;
   onFinish: SocialLoginFinishHandler;
   onSocialStart: (type: ISocialLogin) => void;
@@ -46,9 +48,8 @@ export default function SocialLogin({
 }) {
   const navigate = useNavigateState();
   const { t } = useTranslation();
-  // const isMainnet = useIsMainnet();
   const { currentNetwork } = useWalletInfo();
-  const { setLoading } = useLoading();
+  const [authing, setAuthing] = useState(false);
   const config = useEntranceConfig();
   const { loginModeListToRecommend, loginModeListToOther } = useGetFormattedLoginModeList(
     config,
@@ -57,35 +58,37 @@ export default function SocialLogin({
   const verifyManagerAddress = useVerifyManagerAddress();
   const latestVerifyManagerAddress = useLatestRef(verifyManagerAddress);
   const isLogin = useMemo(() => type === 'Login', [type]);
+  const [accountType, setAccountType] = useState<string>();
 
   const renderTitle = useMemo(() => {
     const title = isLogin ? t('Let’s set up your wallet') : t('Create your account');
     return title;
   }, [isLogin, t]);
+  console.log('loading===', loading, authing, type);
 
   const onSocialChange = useCallback(
     async (v: ISocialLogin) => {
       try {
         onSocialStart(v);
-        setLoading(true);
+        setAuthing(true);
         const _verifyType = zkloginGuardianType.includes(v) ? VerifyTypeEnum.zklogin : undefined;
         const _verifyExtraParams = zkloginGuardianType.includes(v)
           ? { managerAddress: latestVerifyManagerAddress.current ?? '' }
           : undefined;
         const result = await socialLoginAction(v, currentNetwork, _verifyType, _verifyExtraParams);
-        setLoading(false);
+        setAuthing(false);
         if (result.error) throw result.message ?? result.Error;
         onFinish?.({
           type: v,
           data: result.data,
         });
       } catch (error) {
-        setLoading(false);
+        setAuthing(false);
         const msg = handleErrorMessage(error);
         singleMessage.error(msg);
       }
     },
-    [currentNetwork, latestVerifyManagerAddress, onFinish, onSocialStart, setLoading],
+    [currentNetwork, latestVerifyManagerAddress, onFinish, onSocialStart, setAuthing],
   );
 
   const allowedLoginGuardianList: LoginGuardianListType[] = useMemo(
@@ -95,6 +98,7 @@ export default function SocialLogin({
         type: 'Apple',
         value: LoginType.Apple,
         onClick: () => {
+          setAccountType('Apple');
           onSocialChange(SocialLoginEnum.Apple);
         },
       },
@@ -103,6 +107,7 @@ export default function SocialLogin({
         type: 'Google',
         value: LoginType.Google,
         onClick: () => {
+          setAccountType('Google');
           onSocialChange(SocialLoginEnum.Google);
         },
       },
@@ -111,6 +116,7 @@ export default function SocialLogin({
         type: 'Email',
         value: LoginType.Email,
         onClick: () => {
+          setAccountType('Email');
           switchLogin?.('Email');
         },
       },
@@ -119,6 +125,7 @@ export default function SocialLogin({
         type: 'Phone',
         value: LoginType.Phone,
         onClick: () => {
+          setAccountType('Phone');
           switchLogin?.('Phone');
         },
       },
@@ -127,6 +134,7 @@ export default function SocialLogin({
         type: 'Telegram',
         value: LoginType.Telegram,
         onClick: () => {
+          setAccountType('Telegram');
           onSocialChange(SocialLoginEnum.Telegram);
         },
       },
@@ -135,6 +143,7 @@ export default function SocialLogin({
         type: 'Twitter',
         value: LoginType.Twitter,
         onClick: () => {
+          setAccountType('Twitter');
           onSocialChange(SocialLoginEnum.Twitter);
         },
       },
@@ -143,6 +152,7 @@ export default function SocialLogin({
         type: 'Facebook',
         value: LoginType.Facebook,
         onClick: () => {
+          setAccountType('Facebook');
           onSocialChange(SocialLoginEnum.Facebook);
         },
       },
@@ -184,13 +194,22 @@ export default function SocialLogin({
           {isLogin && <SwitchNetworkButton />}
         </Row>
         <div className="social-login-content">
-          <SocialContent type={type} showLoginModeListToRecommend={showLoginModeListToRecommend} />
+          <SocialContent
+            loading={loading || authing}
+            accountType={accountType}
+            type={type}
+            showLoginModeListToRecommend={showLoginModeListToRecommend}
+          />
           <DividerCenter />
           <div className="extra-guardian-type-content-wrapper">
             <div className={clsx('extra-guardian-type-content', loginModeListToOtherClassName)}>
               {showLoginModeListToOther.map((item) => (
                 <div key={item.type} className="guardian-type-icon flex-center" onClick={item.onClick}>
-                  <CustomSvg type={item.icon} />
+                  {(loading || authing) && item.type === accountType ? (
+                    <CircleLoading width={20} />
+                  ) : (
+                    <CustomSvg type={item.icon} />
+                  )}
                 </div>
               ))}
             </div>

@@ -14,11 +14,13 @@ export default function InputLogin({
   inputRef,
   defaultKey,
   onFinish,
+  loading,
   validateEmail,
 }: {
   type: RegisterType;
   inputRef?: MutableRefObject<InputInfoRef | undefined>;
   defaultKey?: LoginKey;
+  loading: boolean;
   onBack?: () => void;
   onFinish: InputInfoProps['onFinish'];
   validateEmail?: ValidateHandler;
@@ -61,6 +63,7 @@ export default function InputLogin({
       <h1 className="title">{renderTitle}</h1>
       <InputInfo
         ref={inputRef}
+        loading={loading}
         defaultKey={defaultKey}
         validateEmail={validateEmail}
         confirmText={'Continue'}

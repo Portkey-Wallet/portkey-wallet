@@ -34,7 +34,8 @@ export default function Contacts({
   // const [curList] = useState<any>([]);
 
   const showContactList = useMemo(() => {
-    return searchResult.filter((list: any) => list.contacts[0].addressInfo.network == 'aelf');
+    return searchResult;
+    // .filter((list: any) => list.contacts[0].addressInfo.network == 'aelf');
   }, []);
 
   console.log(chainId, onChange);
@@ -58,19 +59,39 @@ export default function Contacts({
             {showContactList.map((list: any, index) => {
               return (
                 <div className="contact-list" key={index}>
-                  <TokenImageDisplay
-                    src={list.contacts[0].caHolderInfo.avatar}
-                    subDisplay={true}
-                    chain={list.contacts[0].addressInfo.chainId == 'AELF' ? 'main' : 'dApp'}
-                  />
-                  <div className="info-box">
-                    <div className="name">{list.contacts[0].caHolderInfo.walletName}</div>
-                    <div className="address">
-                      {formatStr2EllipsisStr(
-                        `ELF_${list.contacts[0].addressInfo.address}_${list.contacts[0].addressInfo.chainId}`,
-                      )}
-                    </div>
-                  </div>
+                  {list?.contacts[0]?.addressInfo?.network === 'aelf' ? (
+                    <>
+                      <TokenImageDisplay
+                        src={list?.contacts[0]?.caHolderInfo?.avatar}
+                        subDisplay={true}
+                        chain={list?.contacts[0]?.addressInfo?.chainId === 'AELF' ? 'main' : 'dApp'}
+                      />
+                      <div className="info-box">
+                        <div className="name">{list?.contacts[0]?.caHolderInfo?.walletName}</div>
+                        <div className="address">
+                          {formatStr2EllipsisStr(
+                            `ELF_${list?.contacts[0]?.addressInfo?.address}_${list.contacts[0]?.addressInfo?.chainId}`,
+                          )}
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="chain-box">
+                        <TokenImageDisplay className="show-name" symbol={list?.contacts[0]?.name} subDisplay={false} />
+                        <TokenImageDisplay
+                          className="chain-logo"
+                          src={list?.contacts[0]?.addressInfo.networkImage}
+                          subDisplay={false}
+                        />
+                      </div>
+
+                      <div className="info-box">
+                        <div className="name">{list?.contacts[0]?.name}</div>
+                        <div className="address">{formatStr2EllipsisStr(list?.contacts[0]?.addressInfo?.address)}</div>
+                      </div>
+                    </>
+                  )}
                   <CustomSvgV3 type="info" className="info-icon" />
                 </div>
               );

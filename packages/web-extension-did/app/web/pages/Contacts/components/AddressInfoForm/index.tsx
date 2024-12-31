@@ -30,8 +30,15 @@ export default function AddressInfoForm({
   const { supportNetworkList, fetchContactSupportConfig } = useContactNetworkConfig();
 
   const selectedNetworkInfo = useMemo(
-    () => supportNetworkList.find((ele) => ele.network === value?.network),
-    [supportNetworkList, value?.network],
+    () =>
+      supportNetworkList.find((ele) => {
+        if (ele.network == 'aelf') {
+          return ele.chainId === value?.chainId;
+        } else {
+          return ele.network === value?.network;
+        }
+      }),
+    [supportNetworkList, value?.chainId, value?.network],
   );
 
   const isAelfMainChain = useMemo(() => value?.network === 'aelf', [value?.network]);
@@ -83,11 +90,6 @@ export default function AddressInfoForm({
         value={value?.address || ''}
         onChange={(e) => onChangeAddressInfo({ address: e.target.value })}
       />
-      {/* <input
-        type="textarea"
-        value={value?.address || ''}
-        onChange={(e) => onChangeAddressInfo({ address: e.target.value })}
-      /> */}
       <div className="paste-container">
         <span className="show-text">{`Enter or `}</span>
         <span className="paste-text cursor-pointer" onClick={pasteClipBoard}>{`paste a wallet address`}</span>
@@ -99,10 +101,10 @@ export default function AddressInfoForm({
         onClose={() => handleNetworkModalState(false)}>
         <CommonHeader title={'Select network'} onLeftBackShowClose={true} />
         <div className="chain-content">
-          {supportNetworkList.map((list) => {
+          {supportNetworkList.map((list, index) => {
             return (
               <div
-                key={list.network}
+                key={index}
                 className="chain-list"
                 onClick={() => {
                   onChangeAddressInfo({ network: list.network, chainId: list.chainId });
@@ -112,7 +114,11 @@ export default function AddressInfoForm({
                   <img src={list.imageUrl} width={24} height={24} alt="" />
                   <div>{list.name}</div>
                 </div>
-                {list.network == value?.network && <CustomSvgV3 type="selected" />}
+                {list.network == 'aelf' ? (
+                  <>{list.chainId == value?.chainId && <CustomSvgV3 type="selected" />}</>
+                ) : (
+                  <>{list.network == value?.network && <CustomSvgV3 type="selected" />}</>
+                )}
               </div>
             );
           })}

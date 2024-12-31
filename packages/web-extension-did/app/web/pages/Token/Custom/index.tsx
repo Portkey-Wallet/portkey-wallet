@@ -130,7 +130,7 @@ export default function CustomToken() {
           <div>
             <p className="label">{t('Network')}</p>
             <CustomSelect
-              className="select-chain"
+              className="select-chain-box"
               value={curChainId}
               onChange={handleChangeChainId}
               items={chainOptions}

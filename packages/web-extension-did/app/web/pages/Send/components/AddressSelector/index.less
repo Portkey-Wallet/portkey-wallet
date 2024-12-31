@@ -12,60 +12,27 @@
     justify-content: center;
     font-size: 14px;
   }
-  &.@{app-prefix}-tabs {
-    overflow: auto;
-    flex: 1;
-
-    .@{app-prefix}-tabs-nav {
-      margin: 0;
-      box-shadow: none;
-      z-index: 10;
-      position: sticky;
-      background: @bg-base1;
-      border-bottom: 1px solid @border-neutral3;
-
-      .@{app-prefix}-tabs-nav-wrap {
-        min-width: 100%;
-        max-width: 100%;
-
-        .@{app-prefix}-tabs-nav-list {
-          flex: 1;
-          justify-content: space-between;
-          padding: 0 24px;
-          .@{app-prefix}-tabs-tab {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 13px 0;
-            margin: 0;
-
-            .@{app-prefix}-tabs-tab-btn {
-              font-weight: 400;
-              font-size: 16px;
-              height: 22px;
-              line-height: 22px;
-              text-align: center;
-              color: @neutral-secondary-text !important;
-              text-shadow: unset;
-            }
-          }
-
-          .@{app-prefix}-tabs-tab-active {
-            .@{app-prefix}-tabs-tab-btn {
-              color: @text-base1 !important;
-            }
-          }
-
-          .@{app-prefix}-tabs-ink-bar {
-            width: 50%;
-          }
-        }
-      }
+  .tab-list {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    color: @text-base1;
+    font-size: 16px;
+    margin-bottom: 16px;
+    button {
+      width: auto;
+      height: auto;
+      padding: 8px;
+      background-color: transparent;
+      border-radius: 8px;
+      border: none;
+      opacity: 0.4;
     }
-    .@{app-prefix}-tabs-content {
-      overflow: auto;
-      height: 100%;
+    .active-tab {
+      color: @text-base1;
+      opacity: 1;
+      background-color: @bg-base2;
+      border: none;
     }
   }
 
@@ -131,6 +98,30 @@
     height: 100%;
     display: flex;
     flex-direction: column;
+    .contact-list {
+      display: flex;
+      align-items: start;
+      gap: 16px;
+      padding: 16px 0;
+      .info-box {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        .name {
+          font-size: 16px;
+          color: @text-base1;
+          opacity: 0.7;
+        }
+        .address {
+          font-size: 16px;
+          color: @text-base1;
+          opacity: 0.4;
+        }
+      }
+      .info-icon {
+        margin-left: auto;
+      }
+    }
 
     .contacts-body {
       flex: 1;
@@ -261,8 +252,43 @@
   .my-address {
     .my-address-item {
       border-top: none !important;
-      border-bottom: 1px solid @border-neutral3;
-      padding: 13px 24px 11px;
+      display: flex;
+      align-items: center;
+      flex-direction: row !important;
+      gap: 16px !important;
+      padding: 16px 0;
+      .info-box {
+        position: relative;
+        .chain-icon {
+          width: 20px !important;
+          height: 20px !important;
+          position: absolute;
+          right: -5px;
+          bottom: -3px;
+          .show-name-index {
+            width: 20px !important;
+            height: 20px !important;
+          }
+        }
+      }
+      .info-detail {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        font-feature-settings: normal;
+        font-variant: normal;
+        .address {
+          font-size: 16px;
+          color: @text-base1;
+          opacity: 0.7;
+        }
+        .network {
+          font-size: 16px;
+          color: @text-base1!important;
+          opacity: 0.4;
+        }
+      }
+
       .address-item();
     }
     .loading {

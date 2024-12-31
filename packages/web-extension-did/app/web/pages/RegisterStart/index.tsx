@@ -409,7 +409,10 @@ export default function RegisterStart() {
         open={open}
         type={type}
         email={email}
-        onCancel={() => setOpen(false)}
+        onCancel={() => {
+          setOpen(false);
+          setLoading(false);
+        }}
         onConfirm={() => {
           if (!loginInfoRef.current) return setOpen(false);
           if (isHasAccount?.current) return onLoginFinish(loginInfoRef.current);

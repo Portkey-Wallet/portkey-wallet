@@ -306,7 +306,7 @@ export default function GuardianApproval() {
   );
 
   return isFromLogin ? (
-    <div>
+    <div className="flex-1 flex-column-center guardian-approve-login-wrap">
       <RegisterHeader />
       <div className="guardian-approve-login-page">
         <GuardianApprovalPopup {...props} />

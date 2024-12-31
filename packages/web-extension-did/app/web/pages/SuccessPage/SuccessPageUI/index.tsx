@@ -9,7 +9,7 @@ export default function SuccessPageUI({ type, onConfirm }: { type?: SuccessPageT
   const { t } = useTranslation();
 
   return (
-    <div className="success-page-wrapper">
+    <div className="success-page-wrapper flex-1">
       <PortKeyTitle
         renderContent={
           <div className="success-page-content">

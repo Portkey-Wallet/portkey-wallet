@@ -23,7 +23,7 @@ export default function LoginModal({
             {type === 'login' && `You don't have an account`}
             {type === 'create' && `You already have an account`}
           </div>
-          <CustomSvgV3 className="cursor-pointer" type="close thin" />
+          <CustomSvgV3 onClick={onCancel} className="cursor-pointer" type="close thin" />
         </div>
         <div>
           {type === 'login' && `Would you like to create one with ${email} ?`}

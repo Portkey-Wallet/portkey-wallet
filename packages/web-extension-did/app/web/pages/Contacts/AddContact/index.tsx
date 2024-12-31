@@ -124,7 +124,7 @@ export default function AddContact() {
 
   const buttonDisable = useMemo<boolean>(() => {
     const { addressInfo, contactName } = form.getFieldsValue();
-    return !contactName.trim() || !addressInfo.address.trim();
+    return !contactName?.trim() || !addressInfo?.address?.trim();
   }, [form]);
 
   return (

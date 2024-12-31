@@ -41,7 +41,10 @@ export default function AddressInfoForm({
     [supportNetworkList, value?.chainId, value?.network],
   );
 
-  const isAelfMainChain = useMemo(() => value?.network === 'aelf', [value?.network]);
+  const isAelfMainChain = useMemo(
+    () => value?.network === 'aelf' && value.chainId === 'AELF',
+    [value?.chainId, value?.network],
+  );
 
   const onChangeAddressInfo = useCallback(
     (v: TChangeAddressInfoParams) => {

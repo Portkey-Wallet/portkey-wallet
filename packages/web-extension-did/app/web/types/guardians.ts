@@ -1,5 +1,5 @@
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
-import { IconType } from './icon';
+import { IconTypeV3 } from './icon';
 import { ZKLoginInfoInContract } from '@portkey-wallet/types/verifier';
 
 export enum GuardianMth {
@@ -10,10 +10,16 @@ export enum GuardianMth {
   UnsetGuardianTypeForLogin = 'UnsetGuardianForLogin',
 }
 
-export interface IGuardianType {
+// export interface IGuardianType {
+//   label: string;
+//   value: LoginType;
+//   icon: IconType;
+// }
+
+export interface IGuardianTypeV3 {
   label: string;
   value: LoginType;
-  icon: IconType;
+  icon: IconTypeV3;
 }
 
 export interface VerifierType {

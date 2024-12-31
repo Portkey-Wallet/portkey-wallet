@@ -5,12 +5,10 @@ import { handleErrorMessage } from '@portkey-wallet/utils';
 import { handleVerificationDoc } from '@portkey-wallet/utils/guardian';
 import { useVerifyToken } from 'hooks/authentication';
 import { useCallback } from 'react';
-import { useLoading } from 'store/Provider/hooks';
 import { LoginInfo } from 'store/reducers/loginCache/type';
 import singleMessage from 'utils/singleMessage';
 
 export const useSocialVerify = () => {
-  const { setLoading } = useLoading();
   const verifyToken = useVerifyToken();
 
   return useCallback(
@@ -30,7 +28,6 @@ export const useSocialVerify = () => {
       operationDetails?: string;
     }) => {
       try {
-        setLoading(true);
         const result = await verifyToken(operateGuardian.guardianType, {
           accessToken: loginAccount?.authenticationInfo?.[operateGuardian.guardianAccount] as string,
           idToken: loginAccount?.authenticationInfo?.idToken as string,
@@ -63,11 +60,9 @@ export const useSocialVerify = () => {
       } catch (error) {
         const msg = handleErrorMessage(error);
         singleMessage.error(msg);
-      } finally {
-        setLoading(false);
       }
       return;
     },
-    [setLoading, verifyToken],
+    [verifyToken],
   );
 };

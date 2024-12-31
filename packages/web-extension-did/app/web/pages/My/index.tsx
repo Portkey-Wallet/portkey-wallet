@@ -1,14 +1,14 @@
-import { Button } from 'antd';
+// import { Button } from 'antd';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import MenuItem from 'components/MenuItem';
-import CustomSvg from 'components/CustomSvg';
+// import CustomSvg from 'components/CustomSvg';
 import CommonHeader from 'components/CommonHeader';
 // import { lockWallet } from 'utils/lib/serviceWorkerAction';
-import { useCommonState } from 'store/Provider/hooks';
+// import { useCommonState } from 'store/Provider/hooks';
 import './index.less';
-import InternalMessage from 'messages/InternalMessage';
-import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
+// import InternalMessage from 'messages/InternalMessage';
+// import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 import { useIsImputation } from '@portkey-wallet/hooks/hooks-ca/contact';
 // import svgsList from 'assets/svgs';
 import UnReadBadge from 'pages/components/UnReadBadge';
@@ -23,14 +23,14 @@ import { useState } from 'react';
 export default function My() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { isPrompt } = useCommonState();
+  // const { isPrompt } = useCommonState();
   const isImputation = useIsImputation();
 
   const MenuList: IMenuItemInfo[] = useMenuList();
 
-  const handleExpandView = () => {
-    InternalMessage.payload(PortkeyMessageTypes.SETTING).send();
-  };
+  // const handleExpandView = () => {
+  //   InternalMessage.payload(PortkeyMessageTypes.SETTING).send();
+  // };
 
   const menuItemIcon = (iconType: IconTypeV3, unReadShow: boolean) => {
     return (
@@ -114,17 +114,17 @@ export default function My() {
             </div>
           </MenuItem> */}
         </div>
-        {!isPrompt && (
-          <div className="btn flex-center">
-            <Button type="link" onClick={handleExpandView}>
-              <div className="flex-center">
-                <CustomSvg type="ExpandBlue" />
-                &nbsp;&nbsp;
-                <span>{t('Expand View')}</span>
-              </div>
-            </Button>
-          </div>
-        )}
+        {/*{!isPrompt && (*/}
+        {/*  <div className="btn flex-center">*/}
+        {/*    <Button type="link" onClick={handleExpandView}>*/}
+        {/*      <div className="flex-center">*/}
+        {/*        <CustomSvg type="ExpandBlue" />*/}
+        {/*        &nbsp;&nbsp;*/}
+        {/*        <span>{t('Expand View')}</span>*/}
+        {/*      </div>*/}
+        {/*    </Button>*/}
+        {/*  </div>*/}
+        {/*)}*/}
       </div>
 
       <div>

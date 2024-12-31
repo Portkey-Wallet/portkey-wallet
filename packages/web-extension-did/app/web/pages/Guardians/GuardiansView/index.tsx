@@ -329,18 +329,16 @@ export default function GuardiansView() {
             </div>
           </MenuItem>
         </div>
-        {!isZK && (
-          <div className="btn-wrap" style={{ display: editable ? '' : 'none' }}>
-            <Button
-              onClick={() => {
-                dispatch(setPreGuardianAction(opGuardian));
-                navigate('/setting/guardians/edit');
-              }}
-              type="primary">
-              {t('Edit')}
-            </Button>
-          </div>
-        )}
+        <div className="btn-wrap" style={{ display: editable ? '' : 'none' }}>
+          <Button
+            onClick={() => {
+              dispatch(setPreGuardianAction(opGuardian));
+              navigate('/setting/guardians/edit');
+            }}
+            type="primary">
+            {t('Edit')}
+          </Button>
+        </div>
       </div>
     ),
     [

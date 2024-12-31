@@ -119,6 +119,7 @@ export default function AllowanceDetail({ allowanceDetail }: IAllowanceDetailPro
         <ImageDisplay
           src={allowanceDetail?.icon}
           name={allowanceDetail?.name || 'Unknown'}
+          defaultWidth={80}
           defaultHeight={80}
           className="dapp-icon"
         />
@@ -206,7 +207,7 @@ export default function AllowanceDetail({ allowanceDetail }: IAllowanceDetailPro
               <div className="divider-height-8" />
             </div>
           )}
-          {revokedList.length && (
+          {!!revokedList.length && (
             <div className="history-list">
               <div>
                 <div className="title">Revoked</div>

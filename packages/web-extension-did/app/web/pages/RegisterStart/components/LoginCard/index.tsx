@@ -16,6 +16,7 @@ export default function LoginCard({
   onSocialStart,
   onSocialLoginFinish,
   isStartInput,
+  loading = false,
 }: {
   onFinish: (data: LoginInfo) => void;
   validateEmail?: ValidateHandler;
@@ -23,6 +24,7 @@ export default function LoginCard({
   onSocialStart: (type: ISocialLogin) => void;
   onSocialLoginFinish: (data: any) => void;
   isStartInput?: boolean;
+  loading: boolean;
 }) {
   const [step, setStep] = useState<STEP>(isStartInput ? STEP.inputLogin : STEP.socialLogin);
   const [defaultKey, setDefaultKey] = useState<LoginKey>();
@@ -37,6 +39,7 @@ export default function LoginCard({
           validatePhone={validatePhone}
           onFinish={onFinish}
           onBack={() => setStep(STEP.socialLogin)}
+          loading={loading}
         />
       ) : (
         <SocialLogin
@@ -47,6 +50,7 @@ export default function LoginCard({
             setStep(STEP.inputLogin);
             setDefaultKey(type);
           }}
+          loading={loading}
         />
       )}
     </div>

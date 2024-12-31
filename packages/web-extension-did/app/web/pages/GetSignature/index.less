@@ -2,103 +2,79 @@
 @import '../../assets/theme/constants.less';
 
 .get-signature {
-  width: 328px;
-  margin: auto;
-  padding: 40px 0;
+  min-height: 100%;
+  width: 100%;
+  padding: 24px 0;
+  display: flex;
   flex-direction: column;
-  font-size: 12px;
-  line-height: 16px;
-  color: @neutral-secondary-text;
-  .site {
-    align-self: center;
-    margin-bottom: 24px;
-    width: fit-content;
-    padding: 8px 16px;
-    border: 1px solid @border-neutral3;
-    border-radius: 24px;
-    font-size: 14px;
-    line-height: 20px;
-    color: @neutral-secondary-text;
-    .icon {
-      flex-shrink: 0;
-      width: 24px;
-      border-radius: 50%;
-      margin-right: 8px;
-      .dappdefault-icon {
-        width: 24px;
-        height: 24px;
-      }
-    }
-    .origin {
+  justify-content: space-between;
+
+  .get-signature-body {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 30px;
+  }
+
+  .warning-tip {
+    margin-top: 24px;
+  }
+
+  .message-tip-wrap {
+    font-size: 16px;
+    line-height: 22px;
+    color: @text-base2;
+    margin-top: 24px;
+  }
+
+  .message-list-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    .message-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
       font-size: 14px;
       line-height: 20px;
-      color: @neutral-secondary-text;
-      line-break: anywhere;
-      .text-overflow(1)
-    }
-  }
-  .title {
-    font-size: 24px;
-    line-height: 28px;
-    font-weight: 700;
-    color: @text-base1;
-  }
-  .warning-tip {
-    margin-top: 16px;
-    padding: 12px;
-    gap: 4px;
-    background-color: @functional-warning-light;
-    border: 1px solid @functional-warning-disable;
-    border-radius: 8px;
-    font-size: 12px;
-    line-height: 16px;
-    color: @text-base1;
-  }
-  .message {
-    margin-top: 16px;
-    .msg-title {
-      font-weight: bold;
-    }
-    .data {
-      .method-name {
-        font-size: 14px;
-        line-height: 20px;
-        font-weight: 500;
-      }
 
-      margin-top: 4px;
-      padding: 16px;
-      border: 1px solid @border-neutral3;
-      border-radius: 6px;
-      white-space: pre-wrap;
-      word-break: break-all;
-    }
-    .method {
-      margin-top: 4px;
-      white-space: pre-wrap;
-      word-break: break-all;
+      .message-item-title {
+        color: @text-base2;
+      }
+      .message-item-value {
+        color: @text-base3;
+        word-break: break-all;
+      }
     }
   }
-  .btn {
+
+  .get-signature-footer {
     width: 100%;
+    padding-top: 16px;
+    display: flex;
+    flex-direction: column;
     gap: 16px;
-    margin-top: 40px;
-    .@{app-prefix}-btn {
-      width: 156px;
-      height: 48px;
-      font-size: 14px;
+
+    .get-signature-footer-body {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .get-signature-footer-tip {
+      color: @text-base2;
+      font-size: 16px;
       line-height: 22px;
       text-align: center;
+    }
+
+    .@{app-prefix}-btn {
+      flex: 1;
+      height: 48px;
+      font-size: 16px;
       border-radius: 24px;
-    }
-    .@{app-prefix}-btn-text {
-      border: 1px solid @brand-normal;
-      color: @brand-normal;
-      background-color: @bg-base1;
-    }
-    .@{app-prefix}-btn-primary {
-      color: @neutral-white-text;
-      background-color: @brand-normal;
+      font-weight: 600;
     }
   }
 }

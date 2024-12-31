@@ -1,15 +1,23 @@
 @import '../../assets/theme/constants.less';
 @import '../../assets/theme/common-class.less';
 .prepare-wallet-page {
+  .register-header-wrapper {
+    margin-left: 0;
+    margin-bottom: 64px;
+    align-self: flex-start;
+  }
+  .prepare-wallet-content {
+    width: 552px;
+    border: 1px solid @border-base1;
+    border-radius: 16px;
+  }
   .welcome-logo {
-    margin: -32px;
     margin-bottom: 0;
     width: 552px;
     height: 310px;
   }
   .prepare-wallet-progress {
-    margin-bottom: 52px;
-    margin-top: 32px;
+    margin: 32px 32px 52px;
     h2 {
       .font-bg();
 

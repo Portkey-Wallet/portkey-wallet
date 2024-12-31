@@ -1,17 +1,12 @@
-// import CustomSvg from 'components/CustomSvg';
 import RegisterHeader from 'pages/components/RegisterHeader';
 import { useParams } from 'react-router';
 import LoginCard from './components/LoginCard';
 import ScanCard from './components/ScanCard';
 import SignCard from './components/SignCard';
-// import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCallback, useRef, useState, useEffect } from 'react';
-import { useAppDispatch, useLoading } from 'store/Provider/hooks';
+import { useAppDispatch } from 'store/Provider/hooks';
 import { createNewTmpWallet, setOriginChainId } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { ChainId } from '@portkey-wallet/types';
-// import CommonSelect from 'components/CommonSelect1';
-// import { useChangeNetwork } from 'hooks/useChangeNetwork';
-// import i18n from 'i18n';
 import { LoginInfo } from 'store/reducers/loginCache/type';
 import { setLoginAccountAction } from 'store/reducers/loginCache/actions';
 import { resetGuardians, setUserGuardianStatus } from '@portkey-wallet/store/store-ca/guardians/actions';
@@ -29,15 +24,11 @@ import {
 import { ISocialLogin, LoginType, TAllLoginKey } from '@portkey-wallet/types/types-ca/wallet';
 import { useGetRegisterInfo } from '@portkey-wallet/hooks/hooks-ca/guardian';
 import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
-// import useChangeNetworkText from 'hooks/useChangeNetworkText';
-// import CustomModal from 'pages/components/CustomModal';
-// import { IconType } from 'types/icon';
 import LoginModal from './components/LoginModal';
 import './index.less';
 import { request } from '@portkey-wallet/api/api-did';
 import useCheckVerifier from 'hooks/useVerifier';
 import { OperationTypeEnum, VerifierItem, VerifyStatus } from '@portkey-wallet/types/verifier';
-import { AssignVerifierLoading } from '@portkey-wallet/constants/constants-ca/wallet';
 import { useSocialVerify } from 'pages/GuardianApproval/hooks/useSocialVerify';
 import { getStoreState } from 'store/utils/getStore';
 import { UserGuardianItem, UserGuardianStatus } from '@portkey-wallet/store/store-ca/guardians/type';
@@ -53,15 +44,10 @@ import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 export default function RegisterStart() {
   const { type } = useParams();
   console.log(type, '====type');
-
-  // const currentNetwork = useCurrentNetworkInfo();
   const dispatch = useAppDispatch();
-  // const changeNetwork = useChangeNetwork();
   const navigate = useNavigateState<TVerifierAccountLocationState>();
-  const { setLoading } = useLoading();
+  const [loading, setLoading] = useState(false);
   const fetchUserVerifier = useGuardianList();
-  // const changeNetworkModalText = useChangeNetworkText();
-  // const isMainnet = useIsMainnet();
   const [open, setOpen] = useState<boolean>();
   const { address: managerAddress } = useCurrentWalletInfo();
   const [email, setEmail] = useState('');
@@ -69,54 +55,6 @@ export default function RegisterStart() {
   useEffect(() => {
     dispatch(createNewTmpWallet());
   }, [dispatch]);
-
-  // const networkList = useNetworkList();
-
-  // const netWorkIcon: Record<NetworkType, IconType> = useMemo(
-  //   () => ({
-  //     MAINNET: 'Aelf',
-  //     TESTNET: 'elf-icon',
-  //   }),
-  //   [],
-  // );
-
-  // const selectItems = useMemo(
-  //   () =>
-  //     networkList?.map((item) => ({
-  //       value: item.networkType,
-  //       icon: netWorkIcon[item.networkType],
-  //       label: item.name,
-  //       disabled: !item.isActive,
-  //     })),
-  //   [netWorkIcon, networkList],
-  // );
-
-  // const networkChange = useCallback(
-  //   (value: NetworkType) => {
-  //     const network = networkList.find((item) => item.networkType === value);
-  //     if (network) {
-  //       const { title, content } = changeNetworkModalText(value);
-  //       CustomModal({
-  //         type: 'confirm',
-  //         content: (
-  //           <div className="change-network-modal">
-  //             <div className="title">
-  //               {title}
-  //               <br />
-  //               {`aelf ${isMainnet ? 'Testnet' : 'Mainnet'}`}
-  //             </div>
-  //             <div className="content">{content}</div>
-  //           </div>
-  //         ),
-  //         onOk: () => {
-  //           changeNetwork(network);
-  //         },
-  //         okText: 'Confirm',
-  //       });
-  //     }
-  //   },
-  //   [changeNetwork, changeNetworkModalText, networkList, isMainnet],
-  // );
 
   const isHasAccount = useRef<boolean>();
 
@@ -186,7 +124,7 @@ export default function RegisterStart() {
       saveState(data);
       dispatch(resetGuardians());
 
-      setLoading(true, AssignVerifierLoading);
+      setLoading(true);
 
       await sleep(2000);
 
@@ -447,41 +385,34 @@ export default function RegisterStart() {
         <div>
           {type === 'create' && (
             <SignCard
-              validatePhone={validateIdentifier}
               validateEmail={validateIdentifier}
               onFinish={onInputClick}
               onSocialStart={onSocialStart}
               onSocialSignFinish={onSocialFinish}
+              loading={loading}
             />
           )}
           {type === 'scan' && <ScanCard />}
           {(!type || type === 'login' || type === 'login-input') && (
             <LoginCard
               isStartInput={type === 'login-input'}
-              validatePhone={validateIdentifier}
               validateEmail={validateIdentifier}
               onFinish={onInputClick}
               onSocialStart={onSocialStart}
               onSocialLoginFinish={onSocialFinish}
+              loading={loading}
             />
           )}
-          {/* <div className="network-list-wrapper">
-            <CommonSelect
-              className="network-list-select"
-              value={currentNetwork.networkType}
-              items={selectItems}
-              onChange={networkChange}
-              showArrow={false}
-              getPopupContainer={(triggerNode) => triggerNode.parentElement}
-            />
-          </div> */}
         </div>
       </div>
       <LoginModal
         open={open}
         type={type}
         email={email}
-        onCancel={() => setOpen(false)}
+        onCancel={() => {
+          setOpen(false);
+          setLoading(false);
+        }}
         onConfirm={() => {
           if (!loginInfoRef.current) return setOpen(false);
           if (isHasAccount?.current) return onLoginFinish(loginInfoRef.current);

@@ -18,10 +18,9 @@ import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { sleep } from '@portkey-wallet/utils';
 import singleMessage from 'utils/singleMessage';
 import { useLocationState } from 'hooks/router';
-import { TRampPreviewLocationState, TReceiveLocationState } from 'types/router';
+import { TRampPreviewLocationState } from 'types/router';
 import { chromeStorage } from 'store/utils';
 import { useExtensionRampEntryShow } from 'hooks/ramp';
-import { ReceiveTabEnum } from '@portkey-wallet/constants/constants-ca/send';
 import {
   CommonModal,
   CommonButton,
@@ -187,29 +186,30 @@ export default function Preview() {
   }, []);
   const handleBack = useCallback(() => {
     // from receive buy
-    if (state.mainPageInfo?.pageName === ReceiveTabEnum.Buy) {
-      const _tokenInfo = state.tokenInfo;
-      const receiveInfo: TReceiveLocationState = {
-        chainId: _tokenInfo?.chainId ?? 'AELF',
-        symbol: _tokenInfo?.symbol ?? '',
-        balance: _tokenInfo?.balance ?? '',
-        imageUrl: _tokenInfo?.imageUrl ?? '',
-        address: _tokenInfo?.tokenContractAddress ?? '',
-        decimals: _tokenInfo?.decimals ?? '',
-        pageSide: ReceiveTabEnum.Buy,
-        extraData: {
-          fiat: state.fiat,
-          crypto: state.crypto,
-          amount: state.amount,
-        },
-      };
-      navigate(`/receive/token/${state.crypto}`, {
-        state: receiveInfo,
-      });
-      return;
-    }
-    navigate('/buy', { state: state });
-  }, [navigate, state]);
+    // if (state.mainPageInfo?.pageName === ReceiveTabEnum.Buy) {
+    //   const _tokenInfo = state.tokenInfo;
+    //   const receiveInfo: TReceiveLocationState = {
+    //     chainId: _tokenInfo?.chainId ?? 'AELF',
+    //     symbol: _tokenInfo?.symbol ?? '',
+    //     balance: _tokenInfo?.balance ?? '',
+    //     imageUrl: _tokenInfo?.imageUrl ?? '',
+    //     address: _tokenInfo?.tokenContractAddress ?? '',
+    //     decimals: _tokenInfo?.decimals ?? '',
+    //     pageSide: ReceiveTabEnum.Buy,
+    //     extraData: {
+    //       fiat: state.fiat,
+    //       crypto: state.crypto,
+    //       amount: state.amount,
+    //     },
+    //   };
+    //   navigate(`/receive/token/${state.crypto}`, {
+    //     state: receiveInfo,
+    //   });
+    //   return;
+    // }
+    // navigate('/buy', { state: state });
+    navigate(-1);
+  }, [navigate]);
 
   const renderProviderList = useMemo(() => {
     return providerList.length > 0 ? (

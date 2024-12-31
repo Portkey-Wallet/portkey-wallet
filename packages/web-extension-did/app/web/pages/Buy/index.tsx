@@ -1,19 +1,13 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Radio, RadioChangeEvent } from 'antd';
-import CommonHeader from 'components/CommonHeader';
+import { RadioChangeEvent } from 'antd';
 import { useNavigate } from 'react-router';
 import { useCommonState, useLoading } from 'store/Provider/hooks';
 import PromptFrame from 'pages/components/PromptFrame';
-import clsx from 'clsx';
-import './index.less';
-import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 import { useFetchTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
-import BuyForm from './components/BuyForm';
-import SellForm from './components/SellForm';
 import { useEffectOnce } from 'react-use';
 import CustomTipModal from 'pages/components/CustomModal';
-import { RampType } from '@portkey-wallet/ramp';
+import { IRampCryptoItem, RampType } from '@portkey-wallet/ramp';
 import { BUY_SOON_TEXT, SELL_SOON_TEXT } from '@portkey-wallet/constants/constants-ca/ramp';
 import { useCheckSecurity } from 'hooks/useSecurity';
 import { handleErrorMessage } from '@portkey-wallet/utils';
@@ -22,6 +16,9 @@ import singleMessage from 'utils/singleMessage';
 import { usePromptLocationParams } from 'hooks/router';
 import { TRampLocationState } from 'types/router';
 import { useExtensionRampEntryShow } from 'hooks/ramp';
+import { RampHomePureComponent } from '@portkey/did-ui-react';
+import { useBuyCryptoList, useSellCryptoList } from '@portkey-wallet/hooks/hooks-ca/ramp';
+import './index.less';
 
 export default function Buy() {
   const { t } = useTranslation();
@@ -82,40 +79,85 @@ export default function Buy() {
     [checkSecurity, isBuySectionShow, isSellSectionShow, refreshRampShow, setLoading, t],
   );
 
-  const handleBack = useCallback(() => {
-    if (state) {
-      if (state.mainPageInfo?.pageName === 'crypto-gift') {
-        navigate('/crypto-gifts/create');
-        return;
-      }
-      if (state.tokenInfo) {
-        navigate('/token-detail', {
-          state: state.tokenInfo,
-        });
-        return;
-      }
-    }
-    navigate('/');
-  }, [navigate, state]);
+  // const handleBack = useCallback(() => {
+  //   if (state) {
+  //     if (state.mainPageInfo?.pageName === 'crypto-gift') {
+  //       navigate('/crypto-gifts/create');
+  //       return;
+  //     }
+  //     if (state.tokenInfo) {
+  //       navigate('/token-detail', {
+  //         state: state.tokenInfo,
+  //       });
+  //       return;
+  //     }
+  //   }
+  //   navigate('/');
+  // }, [navigate, state]);
 
+  const { buyCryptoList } = useBuyCryptoList();
+  const { sellCryptoList } = useSellCryptoList();
+  const list = useMemo(() => {
+    if (page === RampType.BUY) {
+      return buyCryptoList;
+    }
+    if (page === RampType.SELL) {
+      return sellCryptoList;
+    }
+    return [];
+  }, [buyCryptoList, page, sellCryptoList]);
+  useEffect(() => {
+    if (list) {
+      setLoading(false);
+    } else {
+      setLoading(true);
+    }
+  }, [list, setLoading]);
+  const onCryptoClick = useCallback(
+    (item: Omit<IRampCryptoItem, 'displayChainName' | 'chainImageUrl'>) => {
+      if (page === RampType.BUY) {
+        // navigate('buy/', { symbol: item.symbol, network: item.network });
+        navigate('/buy/ramp-buy', {
+          state: {
+            symbol: item.symbol,
+            network: item.network,
+            chainId: item.chainId,
+            decimals: item.decimals,
+            icon: item.icon,
+            address: item.address,
+          },
+        });
+      }
+      if (page === RampType.SELL) {
+        // navigate('RampSell', { symbol: item.symbol, network: item.network });
+        navigate('/buy/ramp-sell', {
+          state: {
+            symbol: item.symbol,
+            network: item.network,
+            chainId: item.chainId,
+            decimals: item.decimals,
+            icon: item.icon,
+            address: item.address,
+          },
+        });
+      }
+      return;
+    },
+    [page],
+  );
   const mainContent = useMemo(
     () => (
-      <div className={clsx(['buy-frame flex-column', isPrompt ? 'detail-page-prompt' : ''])}>
-        <CommonHeader title={t('Buy')} onLeftBack={handleBack} />
-        <div className="buy-content flex-column-center">
-          <div className="buy-radio">
-            <Radio.Group defaultValue={RampType.BUY} buttonStyle="solid" value={page} onChange={handlePageChange}>
-              <Radio.Button value={RampType.BUY}>{t('Buy')}</Radio.Button>
-              <Radio.Button value={RampType.SELL}>{t('Sell')}</Radio.Button>
-            </Radio.Group>
-          </div>
-          {page === RampType.BUY && <BuyForm />}
-          {page === RampType.SELL && <SellForm />}
-        </div>
-        {isPrompt && <PromptEmptyElement />}
-      </div>
+      <RampHomePureComponent
+        page={page}
+        list={list || []}
+        handlePageChange={handlePageChange}
+        onBack={() => {
+          navigate(-1);
+        }}
+        onItemClick={onCryptoClick}
+      />
     ),
-    [handleBack, handlePageChange, isPrompt, page, t],
+    [handlePageChange, list, navigate, onCryptoClick, page],
   );
 
   return <>{isPrompt ? <PromptFrame content={mainContent} /> : mainContent}</>;

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useAppDispatch, useLoading } from 'store/Provider/hooks';
+import { useAppDispatch } from 'store/Provider/hooks';
 import { LoginInfo } from 'store/reducers/loginCache/type';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 import { useTranslation } from 'react-i18next';
@@ -16,6 +16,8 @@ import { AccountType } from '@portkey/services';
 import { ChainId } from '@portkey-wallet/types';
 import singleMessage from 'utils/singleMessage';
 import { useLatestRef } from '@portkey-wallet/hooks';
+import clsx from 'clsx';
+import './index.less';
 
 const MAX_TIMER = 60;
 
@@ -48,7 +50,6 @@ export default function VerifierPage({
   operationDetails,
   onSuccess,
 }: VerifierPageProps) {
-  const { setLoading } = useLoading();
   const { isNotLessThan768 } = useCommonState();
   const { pathname } = useLocation();
   const [isFromLoginOrRegister, setIsFromLoginOrRegister] = useState(true);
@@ -60,6 +61,8 @@ export default function VerifierPage({
   const verifyManagerAddress = useVerifyManagerAddress();
   const latestVerifyManagerAddress = useLatestRef(verifyManagerAddress);
   const { caHash } = useCurrentWalletInfo();
+  const [checking, setChecking] = useState(false);
+  const [err, setErr] = useState('');
 
   useEffect(() => {
     setIsFromLoginOrRegister(pathname.includes('register') || pathname.includes('login'));
@@ -73,7 +76,7 @@ export default function VerifierPage({
         if (code && code.length === 6) {
           if (!guardianType && guardianType !== 0) return singleMessage.error('Missing guardiansType');
           if (!currentGuardian?.verifierInfo) throw 'Missing verifierInfo!!!';
-          setLoading(true);
+          setChecking(true);
           const _operationDetails = operationDetails ? JSON.parse(operationDetails) : {};
           const res = await verification.checkVerificationCode({
             params: {
@@ -94,28 +97,28 @@ export default function VerifierPage({
             },
           });
 
-          setLoading(false);
+          setChecking(false);
           if (res.signature) return onSuccess?.({ ...res, verifierId: currentGuardian.verifier?.id || '' });
 
           if (res?.error?.message) {
-            singleMessage.error(t(res.error.message));
+            setErr(t(res.error.message));
           } else {
-            singleMessage.error(t(VerificationError.InvalidCode));
+            setErr(t(VerificationError.InvalidCode));
           }
           setPinVal('');
         }
       } catch (error: any) {
         console.log(error, 'error====');
-        setLoading(false);
+        setChecking(false);
         setPinVal('');
         const _error = verifyErrorHandler(error);
-        singleMessage.error(_error);
+        setErr(_error);
       }
     },
     [
       guardianType,
       currentGuardian,
-      setLoading,
+      setChecking,
       operationDetails,
       originChainId,
       operationType,
@@ -131,7 +134,7 @@ export default function VerifierPage({
     try {
       if (!currentGuardian?.guardianAccount) throw 'Missing loginGuardianType';
       if (!guardianType && guardianType !== 0) throw 'Missing guardiansType';
-      setLoading(true);
+      setChecking(true);
 
       const res = await verification.sendVerificationCode({
         params: {
@@ -144,7 +147,7 @@ export default function VerifierPage({
           operationDetails,
         },
       });
-      setLoading(false);
+      setChecking(false);
       if (res.verifierSessionId) {
         uiRef.current?.setTimer(MAX_TIMER);
         dispatch(
@@ -159,14 +162,14 @@ export default function VerifierPage({
       }
     } catch (error: any) {
       console.log(error, 'error===');
-      setLoading(false);
+      setChecking(false);
       const _error = verifyErrorHandler(error);
       singleMessage.error(_error);
     }
   }, [
     currentGuardian,
     guardianType,
-    setLoading,
+    setChecking,
     originChainId,
     operationType,
     targetChainId,
@@ -176,20 +179,24 @@ export default function VerifierPage({
 
   return currentGuardian?.verifier ? (
     <PortkeyStyleProvider>
-      {/* TODO: SDK */}
       <CodeVerifyUI
         ref={uiRef}
-        className={isNotLessThan768 ? '' : 'popup-page'}
+        className={clsx(isNotLessThan768 ? '' : 'popup-page')}
         verifier={currentGuardian.verifier as any}
         guardianIdentifier={currentGuardian?.guardianAccount || ''}
         isCountdownNow={isInitStatus}
         isLoginGuardian={currentGuardian?.isLoginAccount}
         accountType={LoginType[currentGuardian?.guardianType as LoginType] as AccountType}
         code={pinVal}
-        tipExtra={!isFromLoginOrRegister && 'Please contact your guardians, and enter '}
+        error={!!err}
+        isLoading={checking}
+        tipExtra={'Please contact your guardians, and enter '}
         onReSend={resendCode}
         onCodeFinish={onFinish}
-        onCodeChange={setPinVal}
+        onCodeChange={(v) => {
+          setErr('');
+          setPinVal(v);
+        }}
       />
     </PortkeyStyleProvider>
   ) : (

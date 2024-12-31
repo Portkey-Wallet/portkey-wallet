@@ -11,6 +11,7 @@ import TransferSettingsEditBody from '../TransferSettingsEditBody';
 import { ValidData } from 'pages/Contacts/AddContact';
 import { LimitFormatTip, SingleExceedDaily } from 'constants/security';
 import { isValidInteger } from '@portkey-wallet/utils/reg';
+import { useCommonState } from 'store/Provider/hooks';
 
 export interface ITransferSettingsBodyProps extends FormProps {
   state: ITransferLimitRouteState;
@@ -30,6 +31,7 @@ export default function TransferSettingsBody({
   chainName,
 }: ITransferSettingsBodyProps) {
   const { t } = useTranslation();
+  const { isPrompt } = useCommonState();
   const [limitData, setLimitData] = useState<{
     singleLimit: string;
     dailyLimit: string;
@@ -193,6 +195,7 @@ export default function TransferSettingsBody({
             type="primary"
             onClick={() => {
               CustomModalBottom({
+                isPrompt,
                 type: 'confirm',
                 noFooter: true,
                 content: (

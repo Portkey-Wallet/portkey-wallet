@@ -10,10 +10,6 @@
     .contact-search-list {
       .adm-list-body {
         border-top: none;
-
-        .adm-list-item{
-          padding-left: 24px;
-        }
       }
     }
 
@@ -29,14 +25,25 @@
 
     .testnet-list {
       height: 100%;
+    }
+    .adm-index-bar {
+      background: @bg-base1!important;
+      color: @text-base1;
 
-      .adm-index-bar {
+      .adm-index-bar-anchor-title {
         background: @bg-base1;
-        color: @text-base1;
-        .adm-index-bar-anchor-title, .adm-list-item {
-          background: @bg-base1;
-        }
+      }
+
+      .adm-list-item {
+        background: @bg-base1;
+        padding-left: 24px;
       }
     }
+  }
+}
+.contacts-popup-header {
+  .add-icon {
+    width: 24px !important;
+    height: 24px !important;
   }
 }

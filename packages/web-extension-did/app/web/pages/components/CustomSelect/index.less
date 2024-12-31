@@ -4,7 +4,7 @@
   width: 100%;
   background: @bg-base1;
   color: @text-base1;
-  
+
   &.@{app-prefix}-select-focused:not(.@{app-prefix}-select-disabled).@{app-prefix}-select:not(.@{app-prefix}-select-customize-input)
     .@{app-prefix}-select-selector {
     border-color: @brand-normal !important;
@@ -119,6 +119,16 @@
     height: 25px!important;
     // display: none;
   }
+  .placeholder {
+    color: @text-opacity40;
+    font-size: 16px;
+    line-height: 100%;
+  }
+}
+.select-btn-disabled {
+  background: @bg-base2;
+  color: @text-disabled1;
+  cursor: not-allowed;
 }
 .select-network {
   height: auto!important;
@@ -150,6 +160,9 @@
       width: 24px;
       height: 24px;
     }
+  }
+  .disabled {
+    cursor: not-allowed;
   }
 }
 

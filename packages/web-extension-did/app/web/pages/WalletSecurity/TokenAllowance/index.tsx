@@ -59,7 +59,13 @@ export default function TokenAllowance() {
           key: temp.contractAddress,
           element: (
             <div className="content flex">
-              <ImageDisplay defaultHeight={42} className="icon" name={temp.name || 'Unknown'} src={temp.icon} />
+              <ImageDisplay
+                defaultWidth={42}
+                defaultHeight={42}
+                className="icon"
+                name={temp.name || 'Unknown'}
+                src={temp.icon}
+              />
               <div className="desc flex-column">
                 <div className="text name">
                   <span className="dapp-name">{temp.name ?? 'Unknown'}</span>

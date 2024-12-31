@@ -1,4 +1,4 @@
-import { Button, Progress } from 'antd';
+import { Progress } from 'antd';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useLoginInfo, useGuardiansInfo, useCommonState, useAppDispatch } from 'store/Provider/hooks';
 import { VerifyStatus } from '@portkey-wallet/types/verifier';
@@ -35,7 +35,11 @@ import {
   setPreGuardianAction,
   // setUserGuardianStatus,
 } from '@portkey-wallet/store/store-ca/guardians/actions';
-import CustomSvg from 'components/CustomSvg';
+import { CustomSvgV3 } from 'components/CustomSvgV3';
+import CircleLoading from 'components/CircleLoading';
+import { CommonButton } from '@portkey/did-ui-react';
+import { useLocation } from 'react-router-dom';
+import RegisterHeader from 'pages/components/RegisterHeader';
 
 const AllowedGuardianPageArr = [
   FromPageEnum.guardiansAdd,
@@ -51,9 +55,10 @@ export default function GuardianApproval() {
   const { loginAccount } = useLoginInfo();
   const [isExpired, setIsExpired] = useState<boolean>(false);
   const dispatch = useAppDispatch();
-
   const navigate = useNavigateState<TAddGuardianLocationState | TTransferSettingEditLocationState>();
   const { locationParams } = usePromptLocationParams<TGuardianApprovalLocationState, TGuardianApprovalLocationSearch>();
+  const { pathname } = useLocation();
+  const isFromLogin = useMemo(() => pathname.includes('login'), [pathname]);
   const { isNotLessThan768 } = useCommonState();
   const { t } = useTranslation();
   // const isBigScreenPrompt: boolean = useMemo(() => {
@@ -192,50 +197,58 @@ export default function GuardianApproval() {
     const loginAccountList = userVerifiedList.filter((i) => i.isLoginAccount);
     const otherAccountList = userVerifiedList.filter((i) => !i.isLoginAccount);
     return (
-      <div className="guardian-approval-content flex-1 flex-column-between margin-top-16">
-        <div>
-          {isExpired && <CustomSvg type="WarningIcon" />}
-          <div className="title">{t(isExpired ? 'Guardian Approval Expired' : 'Guardian Approval')}</div>
-          <p className="description margin-top-16">
-            {isExpired
-              ? t(
-                  'Your guardian approvals have expired. Please request new approvals to continue or cancel the process.',
-                )
-              : t('Complete the required guardian approvals below. Note: approvals expire after 1 hour.')}
-          </p>
-          {isExpired ? (
-            // TODO: button styles
-            <>
-              <Button
-                type="primary"
-                className="recovery-wallet-btn"
-                onClick={() => {
-                  setIsExpired(false);
-                  dispatch(setOpGuardianAction());
-                  dispatch(setPreGuardianAction());
-                  dispatch(resetGuardianExpiredTime());
-                  dispatch(resetUserGuardianStatusState());
-                }}>
-                {t('Try Again')}
-              </Button>
-              <Button type="dashed" className="recovery-wallet-btn" onClick={() => navigate('/register/start')}>
-                {t('Cancel')}
-              </Button>
-            </>
-          ) : (
-            <>
-              <div className="flex-between-center approve-count">
-                <div className="width-100-percent">
+      <div className={clsx('guardian-approval-content', 'flex-1', 'margin-top-16', isExpired && 'flex-column-between')}>
+        {isExpired && <CustomSvgV3 fillColor="#F1A282" className="margin-top-16" type="error" />}
+        <div className="title margin-top-16">{t(isExpired ? 'Guardian Approval Expired' : 'Guardian Approval')}</div>
+        <p className="description margin-top-16">
+          {isExpired
+            ? t('Your guardian approvals have expired. Please request new approvals to continue or cancel the process.')
+            : t('Complete the required guardian approvals below. Note: approvals expire after 1 hour.')}
+        </p>
+        {isExpired ? (
+          <>
+            <div className="flex-1"></div>
+            <CommonButton
+              type="primary"
+              className="recovery-wallet-btn"
+              onClick={() => {
+                setIsExpired(false);
+                dispatch(setOpGuardianAction());
+                dispatch(setPreGuardianAction());
+                dispatch(resetGuardianExpiredTime());
+                dispatch(resetUserGuardianStatusState());
+              }}>
+              {t('Try Again')}
+            </CommonButton>
+            <CommonButton
+              type="outline"
+              className="recovery-wallet-btn margin-top-16"
+              onClick={() => navigate('/register/start')}>
+              {t('Cancel')}
+            </CommonButton>
+          </>
+        ) : (
+          <>
+            <div className="flex-between-center approve-count">
+              <div className="width-100-percent">
+                <div className="flex-row-center">
                   <span className="all-approval">{`${alreadyApprovalLength} / ${approvalLength} completed`}</span>
-                  <Progress
-                    percent={
-                      alreadyApprovalLength
-                        ? ZERO.plus(alreadyApprovalLength).div(approvalLength).times(100).toNumber()
-                        : alreadyApprovalLength
-                    }
-                  />
+                  <span>{alreadyApprovalLength === approvalLength ? <CustomSvgV3 type="check" /> : null}</span>
                 </div>
+                <Progress
+                  percent={
+                    alreadyApprovalLength
+                      ? ZERO.plus(alreadyApprovalLength).div(approvalLength).times(100).toNumber()
+                      : alreadyApprovalLength
+                  }
+                />
               </div>
+            </div>
+            {alreadyApprovalLength === approvalLength ? (
+              <div className="flex-center">
+                <CircleLoading width={32} />
+              </div>
+            ) : (
               <ul className={clsx('verifier-content', !isNotLessThan768 && 'popup-verifier-content')}>
                 <div className="guardian-items-title">Login account{loginAccountList.length > 1 ? '(s)' : null}</div>
                 {loginAccountList?.map((item) => (
@@ -266,9 +279,9 @@ export default function GuardianApproval() {
                   </>
                 ) : null}
               </ul>
-            </>
-          )}
-        </div>
+            )}
+          </>
+        )}
       </div>
     );
   }, [
@@ -292,7 +305,16 @@ export default function GuardianApproval() {
     [handleBack, renderContent],
   );
 
-  return <GuardianApprovalPopup {...props} />;
+  return isFromLogin ? (
+    <div className="flex-1 flex-column-center guardian-approve-login-wrap">
+      <RegisterHeader />
+      <div className="guardian-approve-login-page">
+        <GuardianApprovalPopup {...props} />
+      </div>
+    </div>
+  ) : (
+    <GuardianApprovalPopup {...props} />
+  );
 
   // return isNotLessThan768 ? (
   //   <GuardianApprovalPrompt {...props} isBigScreenPrompt={isBigScreenPrompt} />

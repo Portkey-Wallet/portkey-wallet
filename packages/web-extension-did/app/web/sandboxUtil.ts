@@ -13,6 +13,10 @@ import { IStorageSuite } from '@portkey/types';
 import AElf from 'aelf-sdk';
 import { handleErrorMessage } from '@portkey/did-ui-react';
 import { getRawParams } from '@portkey-wallet/utils/dapp/decodeTx';
+import { EBridge, TEBridgeOptions } from '@portkey-wallet/utils/eBridge';
+import { ICreateReceiptParams } from '@portkey-wallet/utils/eBridge/types/bridge';
+import { IChainItemType } from '@portkey-wallet/types/types-ca/chain';
+import { CurrentWalletType } from '@portkey-wallet/hooks/hooks-ca/wallet';
 const localStore: Record<string, string> = {};
 
 export class BaseAsyncStorage implements IStorageSuite {
@@ -95,6 +99,9 @@ class SandboxUtil {
           break;
         case SandboxEventTypes.etransferCrossTransfer:
           SandboxUtil.etransferCrossTransfer(event, SandboxUtil.callback);
+          break;
+        case SandboxEventTypes.eBridgeCrossTransfer:
+          SandboxUtil.eBridgeCrossTransfer(event, SandboxUtil.callback);
           break;
         case SandboxEventTypes.getDecodedTxData:
           SandboxUtil.getDecodedTxData(event, SandboxUtil.callback);
@@ -421,6 +428,62 @@ class SandboxUtil {
       console.log(e, 'etransferCrossTransfer==error');
       const message = handleErrorMessage(e, 'Transfer error');
       console.log(message, 'message==etransferCrossTransfer');
+      return callback(event, {
+        code: SandboxErrorCode.error,
+        message,
+        sid: data.sid,
+      });
+    }
+  }
+
+  static async eBridgeCrossTransfer(event: MessageEvent<any>, callback: SendBack) {
+    const data = event.data.data ?? {};
+    try {
+      const {
+        options: _options,
+        params: _params,
+        pin,
+        walletInfo: _walletInfo,
+        chainInfo: _chainInfo,
+        chainType,
+      } = data;
+      console.log(data, 'eBridgeCrossTransfer===', _options, _params);
+      if (chainType !== 'aelf') throw 'Not support';
+      const options: TEBridgeOptions = JSON.parse(_options);
+      const chainInfo: IChainItemType = JSON.parse(_chainInfo);
+      const walletInfo: CurrentWalletType = JSON.parse(_walletInfo);
+      const params: Omit<ICreateReceiptParams, 'tokenContract' | 'portkeyContract'> = JSON.parse(_params);
+      const eBridgeTransfer = new EBridge(options);
+      const rpcUrl = chainInfo?.endPoint;
+      if (!rpcUrl) throw 'Can not get rpcUrl';
+      const privateKey = AElf.wallet.AESDecrypt(walletInfo.AESEncryptPrivateKey, pin);
+      const tokenContract = await SandboxUtil._getELFSendContract(
+        rpcUrl,
+        chainInfo.defaultToken.address || '',
+        privateKey,
+      );
+
+      const portkeyContract = await SandboxUtil._getELFSendContract(
+        rpcUrl,
+        chainInfo.caContractAddress || '',
+        privateKey,
+      );
+      const result = await eBridgeTransfer.createReceipt({ ...params, tokenContract, portkeyContract });
+      if (!result?.transactionId) throw 'Transfer error';
+      const aelf = getAelfInstance(rpcUrl);
+
+      const txResult = await getTxResult(aelf, result.transactionId);
+      console.log(txResult, 'txResult===eBridgeCrossTransfer');
+
+      return callback(event, {
+        code: SandboxErrorCode.success,
+        message: result,
+        sid: data.sid,
+      });
+    } catch (e) {
+      console.log(e, 'eBridgeCrossTransfer==error');
+      const message = handleErrorMessage(e, 'Transfer error');
+      console.log(message, 'message==eBridgeCrossTransfer');
       return callback(event, {
         code: SandboxErrorCode.error,
         message,

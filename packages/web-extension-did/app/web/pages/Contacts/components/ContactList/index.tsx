@@ -1,25 +1,29 @@
-import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
+import { IContactItemType } from '@portkey-wallet/types/types-ca/contactNew';
 import { List } from 'antd-mobile';
+import type { ListProps } from 'antd-mobile/es/components/list';
+import type { ListItemProps } from 'antd-mobile/es/components/list/list-item';
+
 import ContactItem from '../ContactItem';
 import './index.less';
 import clsx from 'clsx';
 
 export interface IContactListProps {
   className?: string;
-  list: ContactItemType[];
-  hasChatEntry?: boolean;
-  clickItem: (item: ContactItemType) => void;
-  clickChat?: (e: any, item: Partial<ContactItemType>) => void;
+  list: IContactItemType[];
+  clickItem: (item: IContactItemType) => void;
 }
 
-export default function ContactList({ className, list, hasChatEntry, clickItem, clickChat }: IContactListProps) {
+const AntList = List as React.FC<ListProps>;
+const ListItem = List.Item as React.FC<ListItemProps>;
+
+export default function ContactList({ className, list, clickItem }: IContactListProps) {
   return (
-    <List className={clsx(['contact-list', className])}>
+    <AntList className={clsx(['contact-list', className])}>
       {list.map((item) => (
-        <List.Item key={`${item.id}_${item.name}`} onClick={() => clickItem(item)}>
-          <ContactItem item={item} hasChatEntry={hasChatEntry} clickChat={clickChat} />
-        </List.Item>
+        <ListItem key={`${item.id}_${item.name}`} onClick={() => clickItem(item)}>
+          <ContactItem item={item} />
+        </ListItem>
       ))}
-    </List>
+    </AntList>
   );
 }

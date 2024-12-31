@@ -1,6 +1,5 @@
 import './index.less';
 import CustomSvg from 'components/CustomSvg';
-import { GuardianTypeIcon } from 'components/VerifierPair';
 import { ContactPermissionEnum, IContactPrivacy } from '@portkey-wallet/types/types-ca/contact';
 import {
   CONTACT_PERMISSION_LIST,
@@ -10,7 +9,6 @@ import MenuItem from 'components/MenuItem';
 import clsx from 'clsx';
 import { useMemo } from 'react';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
-import BaseGuardianTypeIcon from 'components/BaseGuardianTypeIcon';
 
 interface IChatPrivacyEditFromProps {
   state: IContactPrivacy;
@@ -33,7 +31,6 @@ export default function ChatPrivacyEditFrom({
     <div className="chat-privacy-edit-form">
       <div className="info-privacy-label">{`My Login ${CONTACT_PRIVACY_TYPE_LABEL_MAP[state.privacyType]}`}</div>
       <div className="info-privacy">
-        <BaseGuardianTypeIcon type={GuardianTypeIcon[state.privacyType]} className="info-privacy-icon" />
         <span className="info-identifier">{state.identifier}</span>
       </div>
 

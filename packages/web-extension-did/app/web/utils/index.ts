@@ -67,7 +67,7 @@ export const getPortkeyFinanceUrl = (currentNetwork: NetworkType) => {
 
   return {
     JOIN_AUTH_URL: `${host}/join`,
-    JOIN_TELEGRAM_URL: `${webPageUrl}/social-login/Telegram?from=portkey&network=${networkType}`,
+    JOIN_TELEGRAM_URL: `${webPageUrl}/social-login/Telegram?from=portkey&network=${networkType}&theme=dark`,
     AUTH_APPLE_URL: `${host}/apple-auth`,
     RECAPTCHA_URL: `${host}/recaptcha-check`,
     OPEN_LOGIN_URL: webPageUrl,

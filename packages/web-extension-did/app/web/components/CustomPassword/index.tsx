@@ -1,19 +1,19 @@
 import { Input } from 'antd';
 import { PasswordProps } from 'antd/lib/input';
-import CustomSvg from 'components/CustomSvg';
+import { CustomSvgV3 } from 'components/CustomSvgV3';
 import { useCallback } from 'react';
 
 const { Password } = Input;
 
-export default function CustomPassword({ maxLength, placeholder, iconRender, ...props }: PasswordProps) {
+export default function CustomPassword({ maxLength, placeholder, iconRender, value, ...props }: PasswordProps) {
   const defaultIconRender = useCallback(
     (visible: boolean) =>
       visible ? (
         // eslint-disable-next-line no-inline-styles/no-inline-styles
-        <CustomSvg style={{ cursor: 'pointer' }} type="EyeOutlined" />
+        <CustomSvgV3 style={{ width: 16 }} fillColor="#FFFFFFB2" className="cursor-pointer" type="visibility" />
       ) : (
         // eslint-disable-next-line no-inline-styles/no-inline-styles
-        <CustomSvg style={{ cursor: 'pointer' }} type="EyeInvisibleOutlined" />
+        <CustomSvgV3 style={{ width: 16 }} fillColor="#FFFFFFB2" className="cursor-pointer" type="visibility_off" />
       ),
     [],
   );
@@ -21,6 +21,7 @@ export default function CustomPassword({ maxLength, placeholder, iconRender, ...
   return (
     <Password
       {...props}
+      value={value}
       maxLength={maxLength ?? 16}
       placeholder={placeholder ?? 'Must be at least 6 characters'}
       iconRender={iconRender ?? defaultIconRender}

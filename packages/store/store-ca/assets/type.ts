@@ -12,11 +12,11 @@ export interface ITokenInfoType {
 
 export interface INftInfoType {
   imageUrl: string;
-  alias: string;
-  tokenId: string;
+  alias?: string;
+  tokenId?: string;
   tokenName?: string;
   collectionName?: string;
-  balance: string;
+  balance?: string;
   chainId: string;
   decimals: number;
   seedType?: SeedTypeEnum;

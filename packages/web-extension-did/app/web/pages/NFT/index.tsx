@@ -1,4 +1,4 @@
-import { Button, Skeleton } from 'antd';
+import { Button } from 'antd';
 import PromptFrame from 'pages/components/PromptFrame';
 import CommonHeader from 'components/CommonHeader';
 import { useCommonState } from 'store/Provider/hooks';
@@ -259,7 +259,10 @@ export default function NFT() {
           <div className="token-id">{`${alias} #${tokenId}`}</div>
           <div
             className="collection flex-start-center"
-            onClick={() => navigate('/collection', { state: { ...nftDetail } })}>
+            onClick={() => {
+              const params: any = { state: { ...nftDetail } };
+              navigate('/collection', params);
+            }}>
             <div className="img">
               {collectionImageUrl ? (
                 <img src={collectionImageUrl} />

@@ -1,5 +1,5 @@
+import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
 import { TLimitData, TokenInfo } from './index';
-import { ContractBasic } from '@portkey/contracts';
 
 export interface ICreateReceiptParams {
   tokenContract: ContractBasic;

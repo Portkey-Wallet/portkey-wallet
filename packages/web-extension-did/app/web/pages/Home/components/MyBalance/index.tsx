@@ -67,7 +67,7 @@ export type TMyBalanceState = {
 export default function MyBalance() {
   const { t } = useTranslation();
   const [activeKey, setActiveKey] = useState<string>(BalanceTab.TOKEN);
-  const [navTarget, setNavTarget] = useState<'send' | 'receive'>('send');
+  const [navTarget] = useState<'send' | 'receive'>('send');
   const [tokenOpen, setTokenOpen] = useState(false);
   const [assetOpen, setAssetOpen] = useState(false);
   const navigate = useNavigateState<TSendLocationState | TRampLocationState>();
@@ -166,7 +166,7 @@ export default function MyBalance() {
         address: isNFT ? `${v?.nftInfo?.tokenContractAddress}` : `${v?.tokenInfo?.tokenContractAddress}`,
         symbol: v.symbol,
         name: v.symbol,
-        imageUrl: isNFT ? v.nftInfo?.imageUrl : v.tokenInfo?.imageUrl,
+        imageUrl: isNFT ? v.nftInfo?.imageUrl || '' : v.tokenInfo?.imageUrl || '',
         alias: isNFT ? v.nftInfo?.alias : '',
         tokenId: isNFT ? v.nftInfo?.tokenId : '',
         isSeed: isNFT ? v.nftInfo?.isSeed : false,

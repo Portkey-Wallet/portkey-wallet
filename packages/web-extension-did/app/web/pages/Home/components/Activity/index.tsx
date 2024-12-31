@@ -8,7 +8,6 @@ import { useLoading, useUserInfo } from 'store/Provider/hooks';
 import { IActivitiesApiParams } from '@portkey-wallet/store/store-ca/activity/type';
 import { getCurrentActivityMapKey } from '@portkey-wallet/utils/activity';
 import { ChainId } from '@portkey-wallet/types';
-import CustomSvg from 'components/CustomSvg';
 import './index.less';
 import useGAReport from 'hooks/useGAReport';
 

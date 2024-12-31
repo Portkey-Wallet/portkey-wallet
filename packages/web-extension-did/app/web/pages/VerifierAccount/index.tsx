@@ -23,6 +23,7 @@ import {
   TAddGuardianLocationState,
 } from 'types/router';
 import { getOperationDetails } from '@portkey-wallet/utils/operation.util';
+import RegisterHeader from 'pages/components/RegisterHeader';
 
 const AllowedGuardianPageArr = [
   FromPageEnum.guardiansAdd,
@@ -39,6 +40,20 @@ export default function VerifierAccount() {
   // const { isNotLessThan768 } = useCommonState();
   const { walletInfo } = useCurrentWallet();
   const { address: managerAddress } = useCurrentWalletInfo();
+  const classNameWrap = useMemo(() => {
+    const from = state.previousPage;
+    if (from === FromPageEnum.register) {
+      return 'verify-register-page';
+    }
+    if (from == FromPageEnum.login) {
+      return 'verify-login-page';
+    }
+    return '';
+  }, [state.previousPage]);
+  const showRegisterHeader = useMemo(() => {
+    const from = state.previousPage;
+    return from === FromPageEnum.register || from == FromPageEnum.login;
+  }, [state.previousPage]);
   // const isBigScreenPrompt = useMemo(() => {
   //   const bigScreenAllowedArr = [
   //     FromPageEnum.guardiansAdd,
@@ -254,7 +269,7 @@ export default function VerifierAccount() {
 
   const renderContent = useMemo(
     () => (
-      <div className="common-content1 verifier-account-content">
+      <div className="verifier-account-content">
         <VerifierPage
           loginAccount={loginAccount}
           isInitStatus={isInitStatus}
@@ -278,5 +293,12 @@ export default function VerifierAccount() {
     [handleBack, renderContent],
   );
 
-  return <VerifierAccountPopup {...props} />;
+  return showRegisterHeader ? (
+    <div className={classNameWrap}>
+      <RegisterHeader />
+      <VerifierAccountPopup {...props} />
+    </div>
+  ) : (
+    <VerifierAccountPopup {...props} />
+  );
 }

@@ -124,14 +124,13 @@ export default function ScanCard() {
 
   return (
     <div className="scan-card register-common-card">
-      <BackAndSwitchNetwork onClick={() => navigate('/register/start')} />
-
-      {/* TODO: SDK */}
+      <BackAndSwitchNetwork onClick={() => navigate('/register/start')} redirect={false} />
+      <div className="scan-text-header">{`Log in with QR code`}</div>
+      <div className="scan-text-desc">{`Use the Portkey Wallet app on another device to scan the QR code.`}</div>
       <ScanBase
         wrapperClassName="scan-card-inner"
         // isWaitingAuth={isWaitingAuth}
         backIcon={<CustomSvg type="PC" />}
-        onBack={() => navigate('/register/start')}
         qrData={qrData}
       />
     </div>

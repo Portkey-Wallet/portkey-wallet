@@ -1,4 +1,4 @@
-// import clsx from 'clsx';
+import clsx from 'clsx';
 import { SelectProps } from 'antd';
 import { OptionProps } from 'antd/lib/select';
 import { CustomSvgV3 } from 'components/CustomSvgV3';
@@ -18,9 +18,11 @@ import CommonCloseHeader from 'components/CommonCloseHeader';
 interface CustomSelectProps extends SelectProps {
   items?: OptionProps[];
   customChild?: React.ReactNode;
+  title?: string;
 }
 
-export default function CustomSelect({ items = [], className, value, onChange, ...props }: CustomSelectProps) {
+// export default function CustomSelect({ items = [], className, value, onChange, ...props }: CustomSelectProps) {
+export default function CustomSelect({ items = [], value, onChange, title, ...props }: CustomSelectProps) {
   const { isNotLessThan768 } = useCommonState();
 
   const [show, setShow] = useState(false);
@@ -28,11 +30,14 @@ export default function CustomSelect({ items = [], className, value, onChange, .
     setShow(false);
   };
   const modalCloseHeaderProps = {
-    title: 'Select Network',
+    title: title || 'Select Network',
     onClose: onClose,
   };
 
   const selectOption = (option: any) => {
+    if (option.disabled) {
+      return;
+    }
     if (onChange) {
       setShow(false);
       onChange(option.value, option);
@@ -47,9 +52,20 @@ export default function CustomSelect({ items = [], className, value, onChange, .
 
   return (
     <>
-      <div className="select-btn" onClick={() => setShow(true)}>
-        <div>{selectedItem.children}</div>
-        <CustomSvgV3 type="nftArrow" />
+      <div
+        className={clsx('select-btn', props.disabled && 'select-btn-disabled')}
+        onClick={() => {
+          if (props.disabled) {
+            return;
+          }
+          setShow(true);
+        }}>
+        {selectedItem?.children ? (
+          <div>{selectedItem?.children}</div>
+        ) : (
+          <div className="placeholder">{props.placeholder || ''}</div>
+        )}
+        {!props.disabled && <CustomSvgV3 type="nftArrow" />}
       </div>
 
       {isNotLessThan768 ? (
@@ -67,8 +83,11 @@ export default function CustomSelect({ items = [], className, value, onChange, .
             <div className="modal-content">
               {items.map((op, index) => {
                 return (
-                  <div className="select-list" key={index} onClick={() => selectOption(op)}>
-                    {op.children}
+                  <div
+                    className={clsx('select-list', op.disabled && 'disabled')}
+                    key={index}
+                    onClick={() => selectOption(op)}>
+                    <>{op.children}</>
                     {op.value == value && <CustomSvgV3 type="selected" />}
                   </div>
                 );
@@ -80,7 +99,7 @@ export default function CustomSelect({ items = [], className, value, onChange, .
         <BaseDrawer
           open={show}
           destroyOnClose
-          className="common-drawer select-network"
+          className={`common-drawer select-network ${props.className}-drawer`}
           height="580"
           maskClosable
           placement="bottom">
@@ -89,8 +108,11 @@ export default function CustomSelect({ items = [], className, value, onChange, .
             <div className="modal-content">
               {items.map((op, index) => {
                 return (
-                  <div className="select-list" key={index} onClick={() => selectOption(op)}>
-                    {op.children}
+                  <div
+                    className={clsx('select-list', op.disabled && 'disabled')}
+                    key={index}
+                    onClick={() => selectOption(op)}>
+                    <>{op.children}</>
                     {op.value == value && <CustomSvgV3 type="selected" />}
                   </div>
                 );

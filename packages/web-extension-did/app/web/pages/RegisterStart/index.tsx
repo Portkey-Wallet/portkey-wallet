@@ -1,23 +1,17 @@
-// import CustomSvg from 'components/CustomSvg';
 import RegisterHeader from 'pages/components/RegisterHeader';
 import { useParams } from 'react-router';
 import LoginCard from './components/LoginCard';
 import ScanCard from './components/ScanCard';
 import SignCard from './components/SignCard';
-// import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCallback, useRef, useState, useEffect } from 'react';
-import { useAppDispatch, useLoading } from 'store/Provider/hooks';
+import { useAppDispatch } from 'store/Provider/hooks';
 import { createNewTmpWallet, setOriginChainId } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { ChainId } from '@portkey-wallet/types';
-// import CommonSelect from 'components/CommonSelect1';
-// import { useChangeNetwork } from 'hooks/useChangeNetwork';
-// import i18n from 'i18n';
 import { LoginInfo } from 'store/reducers/loginCache/type';
 import { setLoginAccountAction } from 'store/reducers/loginCache/actions';
 import { resetGuardians, setUserGuardianStatus } from '@portkey-wallet/store/store-ca/guardians/actions';
 import useGuardianList from 'hooks/useGuardianList';
 import { handleErrorCode, handleErrorMessage, sleep } from '@portkey-wallet/utils';
-import { Button } from 'antd';
 import { getHolderInfo } from 'utils/sandboxUtil/getHolderInfo';
 import { SocialLoginFinishHandler } from 'types/wallet';
 import {
@@ -30,17 +24,11 @@ import {
 import { ISocialLogin, LoginType, TAllLoginKey } from '@portkey-wallet/types/types-ca/wallet';
 import { useGetRegisterInfo } from '@portkey-wallet/hooks/hooks-ca/guardian';
 import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
-// import useChangeNetworkText from 'hooks/useChangeNetworkText';
-// import CustomModal from 'pages/components/CustomModal';
-// import { IconType } from 'types/icon';
 import LoginModal from './components/LoginModal';
 import './index.less';
 import { request } from '@portkey-wallet/api/api-did';
 import useCheckVerifier from 'hooks/useVerifier';
-import CommonModal from 'components/CommonModal';
-import { useTranslation } from 'react-i18next';
 import { OperationTypeEnum, VerifierItem, VerifyStatus } from '@portkey-wallet/types/verifier';
-import { AssignVerifierLoading } from '@portkey-wallet/constants/constants-ca/wallet';
 import { useSocialVerify } from 'pages/GuardianApproval/hooks/useSocialVerify';
 import { getStoreState } from 'store/utils/getStore';
 import { UserGuardianItem, UserGuardianStatus } from '@portkey-wallet/store/store-ca/guardians/type';
@@ -56,70 +44,17 @@ import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 export default function RegisterStart() {
   const { type } = useParams();
   console.log(type, '====type');
-
-  // const currentNetwork = useCurrentNetworkInfo();
   const dispatch = useAppDispatch();
-  // const changeNetwork = useChangeNetwork();
   const navigate = useNavigateState<TVerifierAccountLocationState>();
-  const { setLoading } = useLoading();
+  const [loading, setLoading] = useState(false);
   const fetchUserVerifier = useGuardianList();
-  // const changeNetworkModalText = useChangeNetworkText();
-  // const isMainnet = useIsMainnet();
   const [open, setOpen] = useState<boolean>();
-  const { t } = useTranslation();
   const { address: managerAddress } = useCurrentWalletInfo();
+  const [email, setEmail] = useState('');
 
   useEffect(() => {
     dispatch(createNewTmpWallet());
   }, [dispatch]);
-
-  // const networkList = useNetworkList();
-
-  // const netWorkIcon: Record<NetworkType, IconType> = useMemo(
-  //   () => ({
-  //     MAINNET: 'Aelf',
-  //     TESTNET: 'elf-icon',
-  //   }),
-  //   [],
-  // );
-
-  // const selectItems = useMemo(
-  //   () =>
-  //     networkList?.map((item) => ({
-  //       value: item.networkType,
-  //       icon: netWorkIcon[item.networkType],
-  //       label: item.name,
-  //       disabled: !item.isActive,
-  //     })),
-  //   [netWorkIcon, networkList],
-  // );
-
-  // const networkChange = useCallback(
-  //   (value: NetworkType) => {
-  //     const network = networkList.find((item) => item.networkType === value);
-  //     if (network) {
-  //       const { title, content } = changeNetworkModalText(value);
-  //       CustomModal({
-  //         type: 'confirm',
-  //         content: (
-  //           <div className="change-network-modal">
-  //             <div className="title">
-  //               {title}
-  //               <br />
-  //               {`aelf ${isMainnet ? 'Testnet' : 'Mainnet'}`}
-  //             </div>
-  //             <div className="content">{content}</div>
-  //           </div>
-  //         ),
-  //         onOk: () => {
-  //           changeNetwork(network);
-  //         },
-  //         okText: 'Confirm',
-  //       });
-  //     }
-  //   },
-  //   [changeNetwork, changeNetworkModalText, networkList, isMainnet],
-  // );
 
   const isHasAccount = useRef<boolean>();
 
@@ -156,21 +91,12 @@ export default function RegisterStart() {
     (data: LoginInfo) => {
       // update page data
       loginAccountRef.current = data;
-      setLoginAccount(data);
       // update store data
       dispatch(setLoginAccountAction(data));
     },
     [dispatch],
   );
-
-  const [openSendVerifyCode, setOpenSendVerifyCode] = useState<boolean>(false);
-  const [verifierItem, setVerifierItem] = useState<VerifierItem>({
-    id: '',
-    name: '',
-    imageUrl: '',
-  });
   const loginAccountRef = useRef<LoginInfo>();
-  const [loginAccount, setLoginAccount] = useState<LoginInfo>();
   const [checkAuth, sendVerifyCodeHandler] = useCheckVerifier();
 
   // According to the login type, execute different verifier judgment logic
@@ -185,11 +111,11 @@ export default function RegisterStart() {
           checkAuth(verifierItem, data);
           break;
         default:
-          setOpenSendVerifyCode(true);
+          sendVerifyCodeHandler(verifierItem, loginAccountRef.current);
           break;
       }
     },
-    [checkAuth],
+    [checkAuth, sendVerifyCodeHandler],
   );
 
   const onSignFinish = useCallback(
@@ -198,7 +124,7 @@ export default function RegisterStart() {
       saveState(data);
       dispatch(resetGuardians());
 
-      setLoading(true, AssignVerifierLoading);
+      setLoading(true);
 
       await sleep(2000);
 
@@ -210,8 +136,6 @@ export default function RegisterStart() {
           },
         });
         setLoading(false);
-
-        setVerifierItem(verifierReq);
         confirmRegisterOrLogin(data, verifierReq);
       } catch (error) {
         setLoading(false);
@@ -371,6 +295,7 @@ export default function RegisterStart() {
   const onInputFinish = useCallback(
     async (loginInfo: LoginInfo) => {
       loginInfoRef.current = loginInfo;
+      setEmail(loginInfo.guardianAccount);
       if (isHasAccount?.current) {
         if (type === 'create') {
           setLoading(false);
@@ -460,40 +385,34 @@ export default function RegisterStart() {
         <div>
           {type === 'create' && (
             <SignCard
-              validatePhone={validateIdentifier}
               validateEmail={validateIdentifier}
               onFinish={onInputClick}
               onSocialStart={onSocialStart}
               onSocialSignFinish={onSocialFinish}
+              loading={loading}
             />
           )}
           {type === 'scan' && <ScanCard />}
           {(!type || type === 'login' || type === 'login-input') && (
             <LoginCard
               isStartInput={type === 'login-input'}
-              validatePhone={validateIdentifier}
               validateEmail={validateIdentifier}
               onFinish={onInputClick}
               onSocialStart={onSocialStart}
               onSocialLoginFinish={onSocialFinish}
+              loading={loading}
             />
           )}
-          {/* <div className="network-list-wrapper">
-            <CommonSelect
-              className="network-list-select"
-              value={currentNetwork.networkType}
-              items={selectItems}
-              onChange={networkChange}
-              showArrow={false}
-              getPopupContainer={(triggerNode) => triggerNode.parentElement}
-            />
-          </div> */}
         </div>
       </div>
       <LoginModal
         open={open}
         type={type}
-        onCancel={() => setOpen(false)}
+        email={email}
+        onCancel={() => {
+          setOpen(false);
+          setLoading(false);
+        }}
         onConfirm={() => {
           if (!loginInfoRef.current) return setOpen(false);
           if (isHasAccount?.current) return onLoginFinish(loginInfoRef.current);
@@ -501,26 +420,6 @@ export default function RegisterStart() {
           setOpen(false);
         }}
       />
-      {loginAccount && (
-        <CommonModal
-          className="verify-confirm-modal"
-          closable={false}
-          open={openSendVerifyCode}
-          width={320}
-          onCancel={() => setOpenSendVerifyCode(false)}>
-          <p className="modal-content">
-            {`${t('verificationCodeTip1', { verifier: verifierItem?.name })} `}
-            <strong>{loginAccount.guardianAccount}</strong>
-            {` ${t('verificationCodeTip2', { type: LoginType[loginAccount.loginType] })}`}
-          </p>
-          <div className="btn-wrapper">
-            <Button onClick={() => setOpenSendVerifyCode(false)}>{t('Cancel')}</Button>
-            <Button type="primary" onClick={() => sendVerifyCodeHandler(verifierItem, loginAccountRef.current)}>
-              {t('Confirm')}
-            </Button>
-          </div>
-        </CommonModal>
-      )}
     </div>
   );
 }

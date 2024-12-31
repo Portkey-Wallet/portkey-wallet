@@ -58,6 +58,7 @@ export function CustomSvgAvatarV3({
       className={className}
       fillColor={fillColor}
       disabled={disabled}
+      style={style}
       {...props}
     />
   );

@@ -236,6 +236,7 @@ export default function GetSignature() {
               {t('Sign')}
             </AsyncButton>
           </div>
+
           <div className="get-signature-footer-tip">{'Only sign if you trust this website'}</div>
         </div>
       </div>

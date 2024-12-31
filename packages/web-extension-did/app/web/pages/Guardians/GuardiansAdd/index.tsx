@@ -771,13 +771,13 @@ export default function AddGuardian() {
     }
   }, [
     guardianType,
-    selectVerifierItem,
     checkAccountIsExist,
     emailVal,
-    setLoading,
+    selectVerifierItem,
     userGuardianList,
     walletInfo.caHash,
     handleSocialVerify,
+    isPrompt,
     verifierName,
     accountShow,
     isPhoneType,
@@ -854,6 +854,7 @@ export default function AddGuardian() {
       guardianTypeOptions,
       handleCheck,
       loading,
+      noAvailableVerifier,
       renderGuardianAccount,
       t,
       verifierChange,

@@ -15,7 +15,7 @@ export default function ScreenOpeningPage() {
           <CustomSvg type="PortKeyPrompt" className="welcome-portkey-prompt" />
           <h1>Your Gateway to the World of Web3</h1>
           <CommonButton type="primaryOutline" block onClick={() => navigate('/register/start')}>
-            Get Start
+            Get started
           </CommonButton>
         </div>
       </div>

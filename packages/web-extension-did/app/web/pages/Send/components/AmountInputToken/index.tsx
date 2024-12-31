@@ -66,31 +66,35 @@ export default function TokenInput({
   return (
     <div className={clsx('input-token-wrap', 'flex-column-center', className)}>
       {revert ? (
-        <Input
-          type="number"
-          placeholder={`0`}
-          value={amount}
-          onChange={(e) => {
-            setAmountErrMsg('');
-            onValueInputChange(e.target.value);
-          }}
-          className={clsx('amount-input', amountErrMsg && 'amount-error')}
-          style={{ width: (amount.length || 2) * 20 + 100 }}
-          suffix={token.label || token.symbol}
-        />
+        <div>
+          <Input
+            type="number"
+            placeholder={`0`}
+            value={amount}
+            onChange={(e) => {
+              setAmountErrMsg('');
+              onValueInputChange(e.target.value);
+            }}
+            className={clsx('amount-input', amountErrMsg && 'amount-error')}
+            style={{ width: `${amount.length || 1}ch` }}
+          />
+          <span className="amount-input-suffix">{token.label || token.symbol}</span>
+        </div>
       ) : (
-        <Input
-          prefix={`$ `}
-          type="number"
-          placeholder={`0`}
-          className={clsx('usd-input', amountErrMsg && 'amount-error')}
-          value={usdAmount}
-          style={{ width: (usdAmount.length || 2) * 20 + 100 }}
-          onChange={(e) => {
-            setAmountErrMsg('');
-            onUsdValueInputChange(e.target.value);
-          }}
-        />
+        <div>
+          <span className="amount-input-suffix">{`$ `}</span>
+          <Input
+            type="number"
+            placeholder={`0`}
+            className={clsx('amount-input', 'usd-input', amountErrMsg && 'amount-error')}
+            value={usdAmount}
+            style={{ width: `${usdAmount.length || 1}ch` }}
+            onChange={(e) => {
+              setAmountErrMsg('');
+              onUsdValueInputChange(e.target.value);
+            }}
+          />
+        </div>
       )}
       {isMainnet && existTokenPrice ? (
         <div className="swap-vert flex-row-center">

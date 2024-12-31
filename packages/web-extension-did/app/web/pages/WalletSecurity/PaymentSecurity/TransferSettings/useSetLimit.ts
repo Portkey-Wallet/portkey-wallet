@@ -47,6 +47,9 @@ export const useSetLimit = () => {
           targetChainId: state.targetChainId || state.chainId,
           initStateBackUp: state,
           extra: state.extra,
+          chainImageUrl: state.chainImageUrl,
+          imageUrl: state.imageUrl,
+          displayChainName: state.displayChainName,
         };
         // setLoading(false);
         const operationDetails = getOperationDetails(OperationTypeEnum.modifyTransferLimit, {

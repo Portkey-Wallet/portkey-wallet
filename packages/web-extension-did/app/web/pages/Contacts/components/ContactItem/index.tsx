@@ -18,12 +18,21 @@ export default function ContactItem({ item }: IContactItemProps) {
       <div className="flex-center contact-item-right">
         <div className="flex-center contact-index-logo-wrap">
           {/* TODO: add chainImg  item.addressInfo?.networkImage */}
-          <TokenImageDisplay
-            src={item?.caHolderInfo?.avatar}
-            size={'medium'}
-            subDisplay={true}
-            chain={item?.addressInfo?.chainId === 'AELF' ? 'main' : 'dApp'}
-          />
+
+          {item?.addressInfo?.network == 'aelf' ? (
+            <TokenImageDisplay
+              src={item?.caHolderInfo?.avatar}
+              size={'medium'}
+              subDisplay={true}
+              chain={item?.addressInfo?.chainId === 'AELF' ? 'main' : 'dApp'}
+            />
+          ) : (
+            <div className="chain-box">
+              {/* <TokenImageDisplay src={item?.addressInfo?.networkImage} size={'medium'} /> */}
+              <TokenImageDisplay width={40} className="token-icon" symbol={item?.addressInfo?.networkName} />
+              <TokenImageDisplay width={20} className="token-icon chain-logo" src={item?.addressInfo?.networkImage} />
+            </div>
+          )}
         </div>
         <div className="contact-item-info">
           <span className="contact-item-name">{name}</span>

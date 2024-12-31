@@ -6,6 +6,7 @@ import { defaultContactFormData } from '../../AddContact/hooks';
 import { IEditContactItemFormType } from 'pages/Contacts/AddContact/types';
 import { ContactHandleActionTypeEnum } from 'types/Profile';
 import AddContactAddressInfoSection from '../AddressInfoForm';
+import { useCallback, useState } from 'react';
 
 const { Item: FormItem } = Form;
 
@@ -21,7 +22,6 @@ export interface IAddContactFormProps extends FormProps {
 
 export default function AddContactForm({
   form,
-  isDisable,
   validName,
   // extra,
   onFinish,
@@ -31,9 +31,18 @@ export default function AddContactForm({
 }: IAddContactFormProps) {
   // TODO: change it to real data
   const { t } = useTranslation();
+  const [disabled, setDisabled] = useState<boolean>(false);
+
+  const changeDisabled = useCallback(() => {
+    if (!form) return;
+    const { addressInfo, contactName } = form.getFieldsValue();
+    const _disabled = !contactName?.trim() || !addressInfo?.address?.trim();
+    setDisabled(_disabled);
+  }, [form]);
 
   return (
     <Form
+      onChange={changeDisabled}
       form={form}
       initialValues={defaultContactFormData}
       autoComplete="off"
@@ -74,13 +83,10 @@ export default function AddContactForm({
       </div>
 
       <FormItem className="form-btn">
-        <Button className="add-btn" type="primary" htmlType="submit" disabled={isDisable}>
+        <Button className="add-btn" type="primary" htmlType="submit" disabled={disabled}>
           {t('Save address')}
         </Button>
       </FormItem>
-
-      {/* 
-      {extra !== ExtraTypeEnum.ADD_NEW_CHAT && <EditButtonGroup className="form-btn" />} */}
     </Form>
   );
 }

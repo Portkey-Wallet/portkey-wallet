@@ -112,6 +112,7 @@ export default function AddContact() {
 
   const deleteContact = useCallback(async () => {
     try {
+      setLoading(true);
       await deleteContactApi(state);
       singleMessage.success(t('Delete Finish'));
       setTimeout(() => {
@@ -119,17 +120,14 @@ export default function AddContact() {
       }, 1000);
     } catch (error) {
       console.log('error');
+      singleMessage.error(handleErrorMessage(error));
+    } finally {
+      setLoading(false);
     }
-  }, [deleteContactApi, navigate, state, t]);
-
-  const buttonDisable = useMemo<boolean>(() => {
-    const { addressInfo, contactName } = form.getFieldsValue();
-    return !contactName?.trim() || !addressInfo?.address?.trim();
-  }, [form]);
+  }, [deleteContactApi, navigate, setLoading, state, t]);
 
   return (
     <AddContactPopup
-      isDisable={buttonDisable}
       headerTitle={headerTitle}
       goBack={handleGoBack}
       form={form}

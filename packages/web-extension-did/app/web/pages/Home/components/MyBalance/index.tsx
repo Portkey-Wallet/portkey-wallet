@@ -324,12 +324,14 @@ export default function MyBalance() {
   }, [isMainNet, setHideAssets, usdShow, userInfo.hideAssets]);
 
   return (
-    <div className={clsx('balance', detailScroll && 'detail-scroll')} onScroll={onBalanceWrapScroll}>
-      {/* <BigScreenHeader /> */}
+    <>
       <HomeHeader />
-      <div className="main-content-wrap flex-column">
-        <div className={clsx('balance-amount-wrap', 'flex-column', isPrompt && 'is-prompt')}>
-          {/* <div className="wallet-name-wrap flex-row-center">
+      <div className={clsx('balance', detailScroll && 'detail-scroll')} onScroll={onBalanceWrapScroll}>
+        {/* <BigScreenHeader /> */}
+
+        <div className="main-content-wrap flex-column">
+          <div className={clsx('balance-amount-wrap', 'flex-column', isPrompt && 'is-prompt')}>
+            {/* <div className="wallet-name-wrap flex-row-center">
             {userInfo.nickName ? (
               <>
                 <div className="wallet-name">{userInfo.nickName}</div>
@@ -339,32 +341,33 @@ export default function MyBalance() {
               <SkeletonCom />
             )}
           </div> */}
-          {renderUsdShow()}
+            {renderUsdShow()}
+          </div>
+          <MainCards
+            onSend={async () => {
+              if (isPrompt) {
+                setAssetOpen(true);
+              } else {
+                navigate('/select-asset');
+              }
+            }}
+            onReceive={() => {
+              navigate('/receive-list');
+              // setNavTarget('receive');
+              // return setTokenOpen(true);
+            }}
+            onBuy={isRampShow ? handleClickBuy : undefined}
+            onClickSwap={() => handleClickTrade(TradeTypeEnum.Swap)}
+            onClickDeposit={isETransShow ? () => handleClickTrade(TradeTypeEnum.ETrans) : undefined}
+            isShowFaucet={!isMainNet}
+          />
         </div>
-        <MainCards
-          onSend={async () => {
-            if (isPrompt) {
-              setAssetOpen(true);
-            } else {
-              navigate('/select-asset');
-            }
-          }}
-          onReceive={() => {
-            navigate('/receive-list');
-            // setNavTarget('receive');
-            // return setTokenOpen(true);
-          }}
-          onBuy={isRampShow ? handleClickBuy : undefined}
-          onClickSwap={() => handleClickTrade(TradeTypeEnum.Swap)}
-          onClickDeposit={isETransShow ? () => handleClickTrade(TradeTypeEnum.ETrans) : undefined}
-          isShowFaucet={!isMainNet}
-        />
+        {SelectTokenELe}
+        {!isNotLessThan768 && <CommonBanner wrapClassName="banner-wrap" bannerList={homeBannerList} />}
+        <Tabs activeKey={activeKey} onChange={onChange} items={renderTabsData} className="balance-tab" />
+        <DisclaimerModal open={disclaimerOpen} onClose={() => setDisclaimerOpen(false)} {...disclaimerData.current} />
+        <SelectAssetListModal open={assetOpen} onCancel={() => setAssetOpen(false)} />
       </div>
-      {SelectTokenELe}
-      {!isNotLessThan768 && <CommonBanner wrapClassName="banner-wrap" bannerList={homeBannerList} />}
-      <Tabs activeKey={activeKey} onChange={onChange} items={renderTabsData} className="balance-tab" />
-      <DisclaimerModal open={disclaimerOpen} onClose={() => setDisclaimerOpen(false)} {...disclaimerData.current} />
-      <SelectAssetListModal open={assetOpen} onCancel={() => setAssetOpen(false)} />
-    </div>
+    </>
   );
 }

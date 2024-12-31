@@ -1,7 +1,7 @@
 import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useAppDispatch, useGuardiansInfo, useLoginInfo } from 'store/Provider/hooks';
+import { useAppDispatch, useCommonState, useGuardiansInfo, useLoginInfo } from 'store/Provider/hooks';
 import CustomSelect from 'pages/components/CustomSelect';
 import { useCurrentWallet, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import {
@@ -11,15 +11,14 @@ import {
   setUserGuardianItemStatus,
 } from '@portkey-wallet/store/store-ca/guardians/actions';
 import useGuardianList from 'hooks/useGuardianList';
-import { LoginType, isZKLoginSupported } from '@portkey-wallet/types/types-ca/wallet';
+import { isZKLoginSupported, LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { setLoginAccountAction } from 'store/reducers/loginCache/actions';
 import { OperationTypeEnum, VerifierItem, zkLoginVerifierItem } from '@portkey-wallet/types/verifier';
 import BaseVerifierIcon from 'components/BaseVerifierIcon';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import GuardianEditPopup from './Popup';
-import { useCommonState } from 'store/Provider/hooks';
 import AccountShow from '../components/AccountShow';
-import { VerifierStatusItem, getVerifierStatusMap, guardianIconMap } from '../utils';
+import { getVerifierStatusMap, guardianIconMap, VerifierStatusItem } from '../utils';
 import { verification } from 'utils/api';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 import { useSocialVerify } from 'pages/GuardianApproval/hooks/useSocialVerify';
@@ -77,7 +76,7 @@ export default function GuardiansEdit() {
   const selectOptions = useMemo(
     () =>
       Object.values(verifierStatusMap ?? {})?.map((item: VerifierStatusItem) => {
-        let disabled = false;
+        let disabled: boolean;
         if (isZKLoginSupported(preGuardian?.guardianType || 0)) {
           const enabled = item.id === preGuardian?.verifier?.id || item.name === zkLoginVerifierItem.name;
           disabled = !enabled;
@@ -97,7 +96,7 @@ export default function GuardiansEdit() {
           disabled,
         };
       }),
-    [preGuardian?.guardianType, preGuardian?.verifier?.id, selectVal, t, verifierStatusMap],
+    [preGuardian?.guardianType, preGuardian?.verifier?.id, t, verifierStatusMap],
   );
   const originChainId = useOriginChainId();
   const { loginAccount } = useLoginInfo();
@@ -137,10 +136,7 @@ export default function GuardiansEdit() {
     }
     const { verifierMap, userGuardiansList } = guardiansSaveRef.current;
     const _verifierStatusMap = getVerifierStatusMap(verifierMap, userGuardiansList);
-    const _verifierIsExist = Object.values(_verifierStatusMap).some(
-      (verifier) => verifier.id === selectVal && verifier.isUsed,
-    );
-    return _verifierIsExist;
+    return Object.values(_verifierStatusMap).some((verifier) => verifier.id === selectVal && verifier.isUsed);
   }, [selectVal, setLoading, userGuardianList, walletInfo.caHash]);
 
   const guardiansChangeHandler = useCallback(async () => {
@@ -361,6 +357,7 @@ export default function GuardiansEdit() {
     handleCommonVerify,
     handleSocialVerify,
     isPhoneType,
+    isPrompt,
     isSocialGuardian,
     opGuardian?.guardianAccount,
     opGuardian?.verifier?.name,
@@ -408,7 +405,7 @@ export default function GuardiansEdit() {
         onOk: removeHandler,
       });
     }
-  }, [opGuardian?.isLoginAccount, removeHandler, unsetLoginGuardian, t, userGuardiansList]);
+  }, [userGuardiansList, opGuardian?.isLoginAccount, t, isPrompt, unsetLoginGuardian, removeHandler]);
 
   const renderContent = useMemo(
     () => (

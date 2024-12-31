@@ -1,7 +1,7 @@
 import PortKeyTitle from 'pages/components/PortKeyTitle';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useParams } from 'react-router';
-import { useAppDispatch, useGuardiansInfo, useLoading, useLoginInfo } from 'store/Provider/hooks';
+import { useAppDispatch, useGuardiansInfo, useLoginInfo } from 'store/Provider/hooks';
 import { setPinAction } from 'utils/lib/serviceWorkerAction';
 import {
   useCurrentWallet,
@@ -45,7 +45,6 @@ export default function SetWalletPin() {
   const loginType: AddManagerType = useMemo(() => (state === 'register' ? 'register' : 'recovery'), [state]);
   const navigate = useNavigateState();
   const dispatch = useAppDispatch();
-  const { setLoading } = useLoading();
   const { walletInfo } = useCurrentWallet();
   const [returnOpen, setReturnOpen] = useState<boolean>();
   const { scanWalletInfo, scanCaWalletInfo, loginAccount, registerVerifier } = useLoginInfo();
@@ -158,20 +157,16 @@ export default function SetWalletPin() {
             chainId: value.chainId,
           }),
         );
-        setLoading(false);
         navigate(`/success-page/${state}`);
       } catch (error: any) {
         dispatch(resetWallet());
-        setLoading(false);
 
         const walletError = isWalletError(error);
         if (walletError) return singleMessage.error(walletError);
         singleMessage.error(handleErrorMessage(error, 'Create wallet failed'));
-      } finally {
-        setLoading(false);
       }
     },
-    [state, originChainId, dispatch, navigate, setLoading, createByScan],
+    [state, originChainId, dispatch, navigate, createByScan],
     500,
   );
 

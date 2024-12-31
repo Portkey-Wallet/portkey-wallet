@@ -1,25 +1,24 @@
-import { Button } from 'antd';
 import { useCallback, useRef, useState } from 'react';
 import { ValidateHandler } from 'types/wallet';
 import EmailInput, { EmailInputInstance } from '../EmailInput';
-import { useLoading } from 'store/Provider/hooks';
 import { handleErrorMessage } from '@portkey-wallet/utils';
-import { CheckAccountLoading } from '@portkey-wallet/constants/constants-ca/wallet';
+import { CommonButton } from '@portkey/did-ui-react';
 
 interface EmailTabProps {
   confirmText: string;
   validateEmail?: ValidateHandler;
   onFinish?: (email: string) => void;
+  loading: boolean;
 }
 
-export default function EmailTab({ confirmText, validateEmail, onFinish }: EmailTabProps) {
+export default function EmailTab({ confirmText, validateEmail, onFinish, loading: btnLoading }: EmailTabProps) {
   const [val, setVal] = useState<string>();
   const [error, setError] = useState<string>();
   const emailInputInstance = useRef<EmailInputInstance>();
-  const { setLoading } = useLoading();
+  const [loading, setLoading] = useState(false);
   const onClick = useCallback(async () => {
     try {
-      setLoading(true, CheckAccountLoading);
+      setLoading(true);
       await emailInputInstance?.current?.validateEmail(val);
       if (val && onFinish) {
         val && onFinish(val);
@@ -45,9 +44,14 @@ export default function EmailTab({ confirmText, validateEmail, onFinish }: Email
           setVal(v);
         }}
       />
-      <Button className="login-primary-btn" type="primary" disabled={!val || !!error} onClick={onClick}>
+      <CommonButton
+        loading={loading || btnLoading}
+        className="login-primary-btn"
+        type="primary"
+        disabled={!val || !!error}
+        onClick={onClick}>
         {confirmText}
-      </Button>
+      </CommonButton>
     </div>
   );
 }

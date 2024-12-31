@@ -1,23 +1,18 @@
-import PortKeyTitle from 'pages/components/PortKeyTitle';
 import { PrepareWalletProgress } from './PrepareWalletProgress';
 import CustomSvg from 'components/CustomSvg';
+import RegisterHeader from 'pages/components/RegisterHeader';
 import './index.less';
 export interface PrepareWalletProgressInterface {
   complete: () => void;
 }
 export const PrepareWallet = () => {
   return (
-    <div className="prepare-wallet-page flex-column">
-      <PortKeyTitle
-        hideSubtitle
-        leftElement
-        renderContent={
-          <>
-            <CustomSvg type="WelcomeLogo" className="welcome-logo" />
-            <PrepareWalletProgress />
-          </>
-        }
-      />
+    <div className="flex-1 prepare-wallet-page flex-column-center ">
+      <RegisterHeader />
+      <div className="flex-column prepare-wallet-content">
+        <CustomSvg type="WelcomeLogo" className="welcome-logo" />
+        <PrepareWalletProgress />
+      </div>
     </div>
   );
 };

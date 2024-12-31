@@ -64,7 +64,6 @@ export default function SocialLogin({
     const title = isLogin ? t('Let’s set up your wallet') : t('Create your account');
     return title;
   }, [isLogin, t]);
-  console.log('loading===', loading, authing, type);
 
   const onSocialChange = useCallback(
     async (v: ISocialLogin) => {

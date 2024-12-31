@@ -29,6 +29,8 @@ export default function EmailTab({ confirmText, validateEmail, onFinish, loading
       const msg = handleErrorMessage(error);
       setError(msg);
       setLoading(false);
+    } finally {
+      setLoading(false);
     }
   }, [onFinish, setLoading, val]);
 

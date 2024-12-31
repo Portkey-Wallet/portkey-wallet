@@ -2,9 +2,10 @@ import { useCurrentChain, useCurrentChainList, useDefaultToken } from '@portkey-
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCurrentWallet, useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { addFailedActivity, removeFailedActivity } from '@portkey-wallet/store/store-ca/activity/slice';
-import { IClickAddressProps } from '@portkey-wallet/types/types-ca/contact';
+
 import { BaseToken } from '@portkey-wallet/types/types-ca/token';
 import {
+  addressFormat,
   formatStr2EllipsisStr,
   getAddressChainId,
   getChainIdByAddress,
@@ -58,12 +59,12 @@ import { COMMON_PRIVATE } from '@portkey-wallet/constants';
 import { getAssetsEstimation } from '@portkey-wallet/store/store-ca/assets/api';
 import { SendType } from '@portkey-wallet/types/types-ca/send';
 import { getOperationDetails } from '@portkey-wallet/utils/operation.util';
-import ToAddressInput from './components/ToAddressInput';
+import ToAddressInput, { IToAddressInputRef } from './components/ToAddressInput';
 import SelectNetwork, { INetworkItem } from './components/SelectNetwork';
 import AddressTypeSelect, { AddressTypeEnum, ExchangeTypeShow } from './components/AddressTypeSelect';
 import { CommonButton, CommonPromptCard } from '@portkey/did-ui-react';
 import SendModalTip, { ButtonGroupType, ButtonType } from './components/SendModalTip';
-import { getLimitTips, getSmallerValue, isValidAmount } from './utils';
+import { getLimitTips, getSendNetworkList, getSmallerValue, isValidAmount } from './utils';
 import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { TransferType } from '@portkey-wallet/types/types-ca/routeParams';
@@ -77,6 +78,7 @@ import TokenInput from './components/AmountInputToken';
 import { usePin } from 'hooks/usePin';
 import { CrossEBridgeExtension } from 'utils/sandboxUtil/extension-cross-chain';
 import { useRecent } from '@portkey-wallet/hooks/hooks-ca/recent';
+import { TFormattedRecentItem } from '@portkey-wallet/types/types-ca/contactNew';
 
 export enum SendPageTypeEnum {
   token = 'token',
@@ -150,6 +152,7 @@ export default function Send() {
   const chainId: ChainId = useMemo(() => state.targetChainId || state.chainId, [state.chainId, state.targetChainId]);
 
   const { addRecent } = useRecent();
+  const toAddressInputRef = useRef<IToAddressInputRef>();
 
   const tokenInfo: BaseToken = useMemo(() => {
     if (type === SendPageTypeEnum.token) {
@@ -1192,6 +1195,56 @@ export default function Send() {
     return false;
   }, [amount, amountErrMsg, stage, toAccount?.address, warning]);
 
+  const onPressContactItem = useCallback(
+    async (i: TFormattedRecentItem) => {
+      console.log('onPressTabItem', i);
+      try {
+        if (i.addressInfo?.address === caAddress) {
+          // anther chain address
+          toAddressInputRef.current?.onInput(
+            addressFormat(i.address || i.addressInfo?.address, i.chainId || i.addressInfo?.chainId),
+          );
+        } else if (i.network !== 'aelf' && i.addressInfo?.network !== 'aelf') {
+          setBtnLoading(true);
+          const { data } = await getSendNetworkList({
+            symbol: tokenInfo?.symbol || '',
+            chainId: tokenInfo?.chainId || 'AELF',
+            toAddress: i?.address || i?.addressInfo?.address || '',
+          });
+
+          console.log('getSendNetworkList', data, i);
+          const tmpNetwork = data?.networkList?.find(
+            (ele: any) => ele.network === (i?.network || i.addressInfo?.network),
+          );
+
+          if (!tmpNetwork) {
+            throw 'not supported';
+          }
+          console.log('tmpNetwork', tmpNetwork);
+          setTargetNetwork(tmpNetwork);
+          setChainList(data?.networkList);
+          // setSelectedToContact({ name: i?.name, address: i.address || i.addressInfo?.address } as TToInfo);
+          setToAccount({
+            address: i.address || '',
+          });
+          setStage(SendStage.Amount);
+          setWarning(WarningKey.MAKE_SURE_SUPPORT_PLATFORM);
+        } else {
+          toAddressInputRef.current?.onInput(
+            i.addressInfo?.isExchange || !i.addressInfo
+              ? i.address || i.addressInfo?.address || ''
+              : addressFormat(i.address || i.addressInfo?.address || '', i.chainId || i.addressInfo?.chainId),
+          );
+        }
+      } catch (error) {
+        console.log('err', error);
+      } finally {
+        setBtnLoading(false);
+      }
+    },
+    [caAddress, tokenInfo?.chainId, tokenInfo?.symbol],
+  );
+
   const StageObj: TypeStageObj = useMemo(
     () => ({
       [SendStage.Address]: {
@@ -1233,15 +1286,7 @@ export default function Send() {
             isFt={type === SendPageTypeEnum.token}
             chainId={tokenInfo?.chainId}
             tokenId={tokenInfo?.symbol || tokenInfo?.tokenId || ''}
-            onClick={(account: IClickAddressProps) => {
-              // from RecentList: Not recent contacts, not clickable
-              // if (account.isDisable) return;
-              // const value = {
-              //   name: account.name,
-              //   address: `ELF_${account.address}_${account?.addressChainId || account?.chainId}`,
-              // };
-              console.log('account', account);
-            }}
+            onClick={onPressContactItem}
           />
         ),
       },
@@ -1399,6 +1444,7 @@ export default function Send() {
             />
             {(stage === SendStage.Address || stage === SendStage.Amount) && (
               <ToAddressInput
+                ref={toAddressInputRef}
                 caAddress={caAddress}
                 toAccount={toAccount}
                 setToAccount={setToAccount}

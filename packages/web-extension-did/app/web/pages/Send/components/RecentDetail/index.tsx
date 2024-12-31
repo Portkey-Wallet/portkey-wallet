@@ -23,6 +23,7 @@ import Avatar from 'pages/components/Avatar';
 import { useLocationState } from 'hooks/router';
 import { IContactItemType } from '@portkey-wallet/types/types-ca/contactNew';
 import { formatStr2EllipsisStr } from '@portkey-wallet/utils';
+import { getShowAddress } from 'pages/Contacts/components/ContactItem';
 
 const MAX_RESULT_COUNT = 10;
 const SKIP_COUNT = 0;
@@ -121,7 +122,6 @@ export default function RecentDetail() {
         <div
           className="list"
           onClick={() => {
-            console.log('321312321312');
             goToNewContact(
               state.id ? ContactHandleActionTypeEnum.EDIT_CONTACT : ContactHandleActionTypeEnum.ADD_CONTACT,
               state,
@@ -130,10 +130,12 @@ export default function RecentDetail() {
           <CustomSvgV3 type={'edit'} />
           <span>Edit address</span>
         </div>
-        <div className="list" onClick={viewOnExplorer}>
-          <CustomSvgV3 type={'external'} />
-          <span>View On Explorer</span>
-        </div>
+        {state?.addressInfo?.network === 'aelf' && (
+          <div className="list" onClick={viewOnExplorer}>
+            <CustomSvgV3 type={'external'} />
+            <span>View On Explorer</span>
+          </div>
+        )}
       </div>
     );
   };
@@ -180,10 +182,14 @@ export default function RecentDetail() {
                 <div className="info-left-top">
                   <div className="network">{state?.addressInfo?.networkName}</div>
 
-                  <div className="address">{formatStr2EllipsisStr(state?.addressInfo?.address)}</div>
+                  <div className="address">{getShowAddress(state)}</div>
                 </div>
               </div>
-              <Copy iconType={'copy'} toCopy={state?.addressInfo?.address} fillColor="#FFFFFF66" />
+              <Copy
+                iconType={'copy'}
+                toCopy={`ELF_${state?.addressInfo?.address}_${state?.addressInfo?.chainId}`}
+                fillColor="#FFFFFF66"
+              />
             </div>
           </div>
           {/* TODO : not aelf address no activity */}

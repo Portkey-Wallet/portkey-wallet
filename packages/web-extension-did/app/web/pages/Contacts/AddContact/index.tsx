@@ -122,8 +122,14 @@ export default function AddContact() {
     }
   }, [deleteContactApi, navigate, state, t]);
 
+  const buttonDisable = useMemo<boolean>(() => {
+    const { addressInfo, contactName } = form.getFieldsValue();
+    return !contactName?.trim() || !addressInfo?.address?.trim();
+  }, [form]);
+
   return (
     <AddContactPopup
+      isDisable={buttonDisable}
       headerTitle={headerTitle}
       goBack={handleGoBack}
       form={form}

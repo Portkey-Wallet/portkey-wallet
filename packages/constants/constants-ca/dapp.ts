@@ -4,10 +4,10 @@ import { DAPP_WHITELIST } from './network';
 
 export const SessionKeyMap = {
   [SessionExpiredPlan.always]: 'Always',
-  [SessionExpiredPlan.hour1]: '1 hour',
-  [SessionExpiredPlan.hour3]: '3 hours',
-  [SessionExpiredPlan.hour12]: '12 hours',
-  [SessionExpiredPlan.hour24]: '24 hours',
+  [SessionExpiredPlan.hour1]: 'After 1 hour',
+  [SessionExpiredPlan.hour3]: 'After 3 hours',
+  [SessionExpiredPlan.hour12]: 'After 12 hours',
+  [SessionExpiredPlan.hour24]: 'After 24 hours',
   [SessionExpiredPlan.never]: 'Never',
 };
 

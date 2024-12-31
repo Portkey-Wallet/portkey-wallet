@@ -8,18 +8,17 @@ function readfile(filename) {
 
   return new Promise((resolve, reject) => {
     fs.readFile(path.join(svgDir, filename), 'utf8', function (err, data) {
+      const key = filename.slice(0, nameNeedLength);
       let viewBox = data.match(/viewBox="\d*\s\d*\s\d*\s\d*"/g)[0];
       let svgMatch = data.match(/[width|height]="\d*px"/g);
       // data = data.replace(/^(<svg)(.*)(xlink)">$/g, `<svg viewBox="${viewBox}" version="1.1">`);
       data = data.replace(/(width|height)="\d*px"/g, '');
-      data = data.replace(/xmlns[^>]*/g, '');
-      // data = data.replace(/stroke-width/g, 'strokeWidth');
-      // data = data.replace(/fill-rule/g, 'fill-Rule');
+      data = data.replace(/\s+xmlns(:\w+)?="[^"]*"/g, '');
 
       console.log(data, viewBox, svgMatch);
       if (err) reject(err);
       resolve({
-        [filename.slice(0, nameNeedLength)]: data,
+        [key]: data,
       });
     });
   });

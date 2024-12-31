@@ -378,17 +378,20 @@ export default function RampSell() {
     if (Number.isNaN(maxAmountNumber)) {
       return;
     }
-    if (ZERO.plus(amount).isLessThanOrEqualTo(achFee)) {
+    if (ZERO.plus(maxAmountNumber).isLessThanOrEqualTo(achFee)) {
       singleMessage.error('Insufficient funds');
       return;
     }
     onAmountInput(`${maxAmountNumber - achFee}`);
-  }, [maxAmount, amount, achFee, onAmountInput]);
+  }, [maxAmount, achFee, onAmountInput]);
   const receiveAmountText = useMemo(() => {
-    if (receiveAmount === '') {
-      return `0 ${currency?.fiat?.symbol}`;
+    if (!currency?.fiat?.symbol) {
+      return '';
     }
-    return `≈ ${receiveAmount} ${currency?.fiat?.symbol}`;
+    if (receiveAmount === '') {
+      return `0 ${currency.fiat.symbol}`;
+    }
+    return `≈ ${receiveAmount} ${currency.fiat.symbol}`;
   }, [receiveAmount, currency]);
   const selectedItem = useMemo(() => currency.fiat || fiatList[0], [currency.fiat, fiatList]);
   const onApprovalSuccess = useCallback(

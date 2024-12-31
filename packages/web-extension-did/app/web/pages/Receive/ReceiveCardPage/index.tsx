@@ -20,7 +20,8 @@ import './index.less';
 import { useCommonState } from 'store/Provider/hooks';
 import PromptFrame from 'pages/components/PromptFrame';
 import { QRCodeDataObjType, shrinkSendQrData } from '@portkey-wallet/utils/qrCode';
-import { useCurrentNetwork, useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentNetwork } from '@portkey-wallet/hooks/network';
 
 enum CHAIN_ID {
   AELF = 'AELF',

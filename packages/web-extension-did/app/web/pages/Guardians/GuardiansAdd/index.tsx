@@ -784,7 +784,16 @@ export default function AddGuardian() {
     handleVerify,
   ]);
 
-  // const headerTitle = useMemo(() => 'Add Guardians', []);
+  const [noAvailableVerifier, setNoAvailableVerifier] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (verifierOptions.length === 0 || verifierOptions.every((item) => item.disabled)) {
+      setNoAvailableVerifier(true);
+    } else {
+      setNoAvailableVerifier(false);
+    }
+  }, [verifierOptions]);
+
   const renderContent = useMemo(
     () => (
       <div className="add-guardian-body flex-column-between flex-1">
@@ -818,15 +827,16 @@ export default function AddGuardian() {
                 'select-network',
                 verifierVal === zkLoginVerifierItem.name && 'select-zklogin-verify',
               )}
-              disabled={verifierVal === zkLoginVerifierItem.name}
+              disabled={verifierVal === zkLoginVerifierItem.name || noAvailableVerifier}
               value={verifierVal}
-              placeholder={t('Select guardian verifier')}
+              placeholder={noAvailableVerifier ? t('No available verifier') : t('Select guardian verifier')}
               onChange={verifierChange}
               items={verifierOptions}
               customChild={OptionTip()}
               title={t('Select verifier')}
             />
             {verifierExist && <div className="error">{verifierExistTip}</div>}
+            {noAvailableVerifier && <div className="error">All applicable verifiers have already been used.</div>}
           </div>
         </div>
         <div className="btn-wrap">
@@ -843,6 +853,7 @@ export default function AddGuardian() {
       guardianTypeChange,
       guardianTypeOptions,
       handleCheck,
+      loading,
       renderGuardianAccount,
       t,
       verifierChange,

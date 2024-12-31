@@ -18,6 +18,7 @@ import getSeed from 'utils/getSeed';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
 import { useCurrentNetwork } from '@portkey-wallet/hooks/hooks-ca/network';
 import './index.less';
+import { CommonPage } from 'components/CommonPage';
 
 export default function AllowanceApprove() {
   const { origin, chainId, icon, method, transactionInfoId, batchApproveNFT } = usePromptSearch<{
@@ -34,8 +35,6 @@ export default function AllowanceApprove() {
   const currentNetwork = useCurrentNetwork();
 
   const [txParams, setTxParams] = useState<any>();
-
-  console.log(txParams, '===txParams');
 
   const privateKeyRef = useRef<string>('');
 
@@ -139,7 +138,7 @@ export default function AllowanceApprove() {
   }, [getTxPayload]);
 
   return (
-    <div className="manager-approve-page">
+    <CommonPage>
       {txParams && (
         <ManagerApproveInner
           networkType={currentNetwork}
@@ -164,6 +163,6 @@ export default function AllowanceApprove() {
           }}
         />
       )}
-    </div>
+    </CommonPage>
   );
 }

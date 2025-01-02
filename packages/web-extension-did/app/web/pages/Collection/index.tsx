@@ -42,7 +42,7 @@ const Collection = () => {
 
   useEffect(() => {
     getNFTItems();
-  }, [currentCollection.itemCount]);
+  }, []);
 
   const content = () => {
     return (

@@ -260,7 +260,7 @@ export default function NFT() {
           <div
             className="collection flex-start-center"
             onClick={() => {
-              const params: any = { state: { ...nftDetail, itemCount: 100 } };
+              const params: any = { state: { ...nftDetail } };
 
               console.log('params', params);
               navigate('/collection', params);

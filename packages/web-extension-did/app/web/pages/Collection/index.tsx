@@ -12,7 +12,7 @@ import { formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/convert
 import './index.less';
 
 const Collection = () => {
-  const { isPrompt } = useCommonState();
+  const { isPrompt, isNotLessThan768 } = useCommonState();
   const navigate = useNavigateState<TSendLocationState | THomePageLocationState>();
 
   const { state } = useLocationState<TNFTLocationState>();
@@ -84,7 +84,7 @@ const Collection = () => {
     );
   };
 
-  return <>{isPrompt ? <PromptFrame content={content()} /> : content()}</>;
+  return <>{isPrompt && isNotLessThan768 ? <PromptFrame content={content()} /> : content()}</>;
 };
 
 export default Collection;

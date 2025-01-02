@@ -145,6 +145,7 @@ export default function NFT() {
       return (
         <Collapse.Panel
           key={nftColKey}
+          showArrow={true}
           header={
             <div className="nft-collection flex-row-center">
               <div className={clsx('nft-collection-avatar', 'flex-center', !nft.imageUrl && 'show-nft-default')}>
@@ -291,10 +292,21 @@ export default function NFT() {
       ) : (
         <div className={clsx('nft-list', !hasMoreNFTCollection && 'hidden-loading-more')}>
           <Collapse
+            bordered={false}
             collapsible={isFetching ? 'disabled' : undefined}
             onChange={handleChange}
             expandIconPosition={'end'}
-            expandIcon={() => <CustomSvgV3 type="nftArrow" />}>
+            expandIcon={(panelProps) => {
+              return (
+                <div className="arrow-box">
+                  {panelProps.isActive ? (
+                    <CustomSvgV3 type="nftArrow" />
+                  ) : (
+                    <CustomSvgV3 className="arrow-rotate" type="nftArrow" />
+                  )}
+                </div>
+              );
+            }}>
             {accountNFTList.map((item) => renderItem(item))}
           </Collapse>
           <LoadingMore hasMore={hasMoreNFTCollection} loadMore={getMoreNFTCollection} className="load-more" />

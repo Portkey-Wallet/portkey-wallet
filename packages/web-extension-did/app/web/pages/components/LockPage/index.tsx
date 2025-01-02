@@ -54,6 +54,7 @@ export default function LockPage({ onUnLockHandler, ...props }: LockPageProps) {
       } else {
         setIsPassword(0);
       }
+      setLoading(false);
     },
     [dispatch, onUnLockHandler, setTokenConfig],
   );

@@ -25,12 +25,12 @@ export default function SecondaryMailboxEdit() {
 
   const btnDisabled = useMemo(() => !(val && !errMsg && val !== secondaryEmail), [errMsg, secondaryEmail, val]);
   const goBack = useCallback(() => {
-    if (state.email) {
+    if (state?.email) {
       navigate('/setting/wallet-security/secondary-mailbox');
     } else {
       navigate('/setting');
     }
-  }, [navigate]);
+  }, [navigate, state?.email]);
   const handleEmailInputChange = useCallback((v: string) => {
     setErrMsg('');
     setVal(v);

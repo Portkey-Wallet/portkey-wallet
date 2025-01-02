@@ -181,6 +181,7 @@ const ToAddressInput = forwardRef(
           });
 
           if (code === '40001') {
+            setCheckedPass(false);
             setWarning(WarningKey.INVALID_ADDRESS);
           } else {
             setCheckedPass(true);

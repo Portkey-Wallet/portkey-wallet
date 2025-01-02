@@ -33,7 +33,7 @@ const errorCodeMessageMap: Record<number, any> = {
     errorMsg: ContactInfoError.alreadyExists,
   },
   40022: {
-    name: 'addressInfo',
+    name: 'addressInfoInput',
     errorMsg: ContactInfoError.invalidAddress,
   },
 } as const;
@@ -124,7 +124,7 @@ export default function AddContact() {
         form.setFields([
           {
             name: formItemError.name,
-            errors: formItemError.errorMsg,
+            errors: [formItemError.errorMsg],
           },
         ]);
       } else {

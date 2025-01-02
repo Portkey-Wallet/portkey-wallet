@@ -116,10 +116,10 @@ export default function MainCards({
       (renderSend ? 1 : 0) +
       (renderReceive ? 1 : 0) +
       (renderBuy ? 1 : 0) +
-      (renderSwap ? 1 : 0) +
+      // (renderSwap ? 1 : 0) +
       (renderDeposit ? 1 : 0) +
       (renderFaucet ? 1 : 0),
-    [renderBuy, renderDeposit, renderFaucet, renderReceive, renderSend, renderSwap],
+    [renderBuy, renderDeposit, renderFaucet, renderReceive, renderSend],
   );
 
   const cardNumClassName = useMemo(() => {
@@ -133,7 +133,7 @@ export default function MainCards({
       {renderSend}
       {renderReceive}
       {renderBuy}
-      {renderSwap}
+      {/* {renderSwap} */}
       {/* {renderDeposit} */}
       {renderFaucet}
     </div>

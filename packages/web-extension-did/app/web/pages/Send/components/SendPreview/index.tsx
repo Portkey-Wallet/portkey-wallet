@@ -191,10 +191,10 @@ export default function SendPreview({
           {isMainnet && <div className="below-show">{`$${EstimateAmount?.estimateAmountUsd}`}</div>}
         </div>
       </div>
-      {(transferType === TransferType.E_BRIDGE || transferType === TransferType.E_TRANSFER) && (
+      {!!estimatedTime && (
         <div className="flex-between-center content-row-info">
           <div>{`Estimated duration`}</div>
-          <div className="value-show">{estimatedTime}</div>
+          <div className="value-show">{`~${estimatedTime}`}</div>
         </div>
       )}
       {(transferType === TransferType.E_BRIDGE || transferType === TransferType.E_TRANSFER) && (

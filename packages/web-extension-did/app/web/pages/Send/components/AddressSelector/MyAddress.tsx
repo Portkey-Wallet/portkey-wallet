@@ -26,11 +26,9 @@ export default function MyAddress({
   const [info] = useState(useCurrentUserInfo());
 
   useEffect(() => {
-    const list = caAddressInfos.filter((item) => item.chainId !== chainId);
+    const list = caAddressInfos.filter((item) => item.chainId === chainId);
     setAddressList(list);
   }, [caAddressInfos, chainId]);
-
-  console.log('addressList', addressList);
 
   return (
     <div className="my-address">

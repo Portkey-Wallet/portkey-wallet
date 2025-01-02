@@ -9,8 +9,10 @@ import Contacts from './Contacts';
 import './index.less';
 import Recents from './Recents';
 import MyAddress from './MyAddress';
+import { useMemo, useState } from 'react';
+import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 
-import { useState } from 'react';
+const tabs = ['Recents', 'Contacts', 'My address'];
 
 export default function AddressSelector({
   isFt,
@@ -25,6 +27,12 @@ export default function AddressSelector({
 }) {
   const dispatch = useAppCommonDispatch();
 
+  const caAddressInfos = useCaAddressInfoList();
+  const anotherChainId = useMemo(
+    () => caAddressInfos.filter((item) => item.chainId !== chainId)?.[0]?.chainId,
+    [caAddressInfos, chainId],
+  );
+
   // const { t } = useTranslation();
   useEffectOnce(() => {
     // refetch();
@@ -36,8 +44,6 @@ export default function AddressSelector({
   const changeTab = (index: number) => {
     setTabIndex(index);
   };
-
-  const tabs = ['Recents', 'Contacts', 'My address'];
 
   return (
     <div className="address-selector">
@@ -52,8 +58,8 @@ export default function AddressSelector({
       </div>
       <div>
         {tabIndex == 0 && <Recents isFt={isFt} onChange={onClick} chainId={chainId} tokenId={tokenId} />}
-        {tabIndex == 1 && <Contacts onChange={onClick} chainId={chainId} />}
-        {tabIndex == 2 && <MyAddress onClick={onClick} chainId={chainId} />}
+        {tabIndex == 1 && <Contacts fromChainId={chainId} tokenId={tokenId} onChange={onClick} isFt={isFt} />}
+        {tabIndex == 2 && <MyAddress onClick={onClick} chainId={anotherChainId} />}
       </div>
     </div>
   );

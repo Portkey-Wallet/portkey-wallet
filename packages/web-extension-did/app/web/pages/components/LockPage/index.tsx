@@ -16,7 +16,6 @@ import { getWalletState } from 'utils/lib/SWGetReduxStore';
 import singleMessage from 'utils/singleMessage';
 import { useSetTokenConfig } from 'hooks/useSetTokenConfig';
 import { useCommonState } from 'store/Provider/hooks';
-import RegisterHeader from '../RegisterHeader';
 import { CommonButton } from '@portkey/did-ui-react';
 import clsx from 'clsx';
 
@@ -25,7 +24,7 @@ interface LockPageProps extends FormProps {
 }
 
 export default function LockPage({ onUnLockHandler, ...props }: LockPageProps) {
-  const { isPrompt, isNotLessThan768 } = useCommonState();
+  const { isNotLessThan768 } = useCommonState();
   const { t } = useTranslation();
   const setTokenConfig = useSetTokenConfig();
   const [form] = Form.useForm();
@@ -60,7 +59,6 @@ export default function LockPage({ onUnLockHandler, ...props }: LockPageProps) {
 
   return (
     <div className={clsx('lock-page-wrapper', isNotLessThan768 ? '' : 'lock-page-wrapper-popup')}>
-      {isPrompt && isNotLessThan768 && <RegisterHeader />}
       <div className="lock-page-content flex-column-center">
         <CustomSvg type="PortKeyPrompt" />
         <Form

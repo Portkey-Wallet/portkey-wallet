@@ -7,14 +7,14 @@ import { CustomSvgV3 } from 'components/CustomSvgV3';
 
 import { useCallback, useState, useMemo, useEffect } from 'react';
 import clsx from 'clsx';
-import { useCommonState } from 'store/Provider/hooks';
+// import { useCommonState } from 'store/Provider/hooks';
 import './index.less';
 // import { transNetworkText } from '@portkey-wallet/utils/activity';
 import {
-  PAGE_SIZE_IN_NFT_ITEM,
+  // PAGE_SIZE_IN_NFT_ITEM,
   PAGE_SIZE_IN_ACCOUNT_NFT_COLLECTION,
 } from '@portkey-wallet/constants/constants-ca/assets';
-import { PAGE_SIZE_IN_NFT_ITEM_PROMPT } from 'constants/index';
+// import { PAGE_SIZE_IN_NFT_ITEM_PROMPT } from 'constants/index';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { getSeedTypeTag } from 'utils/assets';
 import LoadingMore from 'components/LoadingMore/LoadingMore';
@@ -37,12 +37,20 @@ export default function NFT() {
   const [openOp, setOpenOp] = useState<boolean>(true);
   // const { eForestUrl = '' } = useCurrentNetworkInfo();
   const isMainnet = useIsMainnet();
-  const { accountNFTList, totalRecordCount, fetchAccountNFTCollectionInfoList, fetchAccountNFTItem, isFetching } =
-    useAccountNFTCollectionInfo();
-  const { isPrompt } = useCommonState();
+  const {
+    accountNFTList,
+    totalRecordCount,
+    totalNftItemCount,
+    fetchAccountNFTCollectionInfoList,
+    fetchAccountNFTItem,
+    isFetching,
+  } = useAccountNFTCollectionInfo();
+  // const { isPrompt } = useCommonState();
   const caAddressInfos = useCaAddressInfoList();
   const [getMoreFlag, setGetMoreFlag] = useState(false);
-  const maxNftNum = useMemo(() => (isPrompt ? PAGE_SIZE_IN_NFT_ITEM_PROMPT : PAGE_SIZE_IN_NFT_ITEM), [isPrompt]);
+  // const maxNftNum = useMemo(() => (isPrompt ? PAGE_SIZE_IN_NFT_ITEM_PROMPT : PAGE_SIZE_IN_NFT_ITEM), [isPrompt]);
+
+  const maxNftNum = totalNftItemCount;
   const hasMoreNFTCollection = useMemo(
     () => accountNFTList.length < totalRecordCount,
     [accountNFTList.length, totalRecordCount],

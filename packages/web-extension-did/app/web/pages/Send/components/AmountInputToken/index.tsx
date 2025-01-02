@@ -99,7 +99,7 @@ export default function TokenInput({
       {isMainnet && existTokenPrice ? (
         <div className="swap-vert flex-row-center">
           {revert ? (
-            <div>{usdAmount ? `$0` : `$${usdAmount}`}</div>
+            <div>{usdAmount ? `$${usdAmount}` : `$0`}</div>
           ) : (
             <div>{`${amount} ${token.label || token.symbol}`}</div>
           )}

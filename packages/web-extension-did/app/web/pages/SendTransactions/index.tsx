@@ -115,12 +115,6 @@ export default function SendTransactions() {
     })();
   }, [getContractUpgradeTime, payload?.chainId, payload.contractAddress]);
 
-  const formatAmountInUsdShow = useCallback(
-    (amount: string | number, decimals: string | number, symbol: string) => {
-      return amountInUsdShow(amount, decimals, symbol);
-    },
-    [amountInUsdShow],
-  );
   const checkOriginInBlackList = useCheckSiteIsInBlackList();
 
   const getFee = useCallback(
@@ -331,7 +325,7 @@ export default function SendTransactions() {
             <span>{`${formatAmountShow(fee, defaultToken.decimals)} ${defaultToken.symbol}`}</span>
             {isMainnet && (
               <span className="send-transaction-info-item-content-sub">
-                {fee === '0' ? '$0' : formatAmountInUsdShow(fee, 0, defaultToken.symbol)}
+                {fee === '0' ? '$0' : amountInUsdShow(fee, 0, defaultToken.symbol)}
               </span>
             )}
           </>
@@ -353,7 +347,7 @@ export default function SendTransactions() {
               )} ${symbol}`}</span>
               {isMainnet && (
                 <span className="send-transaction-info-item-content-sub">
-                  {formatAmountInUsdShow(divDecimals(amount, decimals).plus(fee).toNumber(), 0, symbol)}
+                  {amountInUsdShow(divDecimals(amount, decimals).plus(fee).toNumber(), 0, symbol)}
                 </span>
               )}
             </>
@@ -369,7 +363,7 @@ export default function SendTransactions() {
               <span>{`${formatAmountShow(fee, defaultToken.decimals)} ${defaultToken.symbol}`}</span>
               {isMainnet && (
                 <span className="send-transaction-info-item-content-sub">
-                  {fee === '0' ? '$ 0' : formatAmountInUsdShow(fee, 0, defaultToken.symbol)}
+                  {fee === '0' ? '$ 0' : amountInUsdShow(fee, 0, defaultToken.symbol)}
                 </span>
               )}
             </>
@@ -383,7 +377,7 @@ export default function SendTransactions() {
                 <span>{`${formatTokenAmountShowWithDecimals(amount, decimals)} ${symbol}`}</span>
                 {isMainnet && (
                   <span className="send-transaction-info-item-content-sub">
-                    {formatAmountInUsdShow(amount, 0, symbol)}
+                    {amountInUsdShow(amount, decimals, symbol)}
                   </span>
                 )}
               </>
@@ -398,7 +392,7 @@ export default function SendTransactions() {
     defaultToken.decimals,
     defaultToken.symbol,
     fee,
-    formatAmountInUsdShow,
+    amountInUsdShow,
     isMainnet,
     isTransfer,
     loading,
@@ -416,15 +410,16 @@ export default function SendTransactions() {
 
     return (
       <>
-        <span>{loading ? <CircleLoading /> : `${formatTokenAmountShowWithDecimals(amount, decimals)}`}</span>
+        <span>{loading ? <CircleLoading /> : `-${formatTokenAmountShowWithDecimals(amount, decimals)}`}</span>
         <span>&nbsp;{symbol}</span>
       </>
     );
   }, [defaultToken.decimals, defaultToken.symbol, loading, tokenDecimals, txParams.paramsOption]);
   const transferAmountUsd = useMemo(() => {
     const { symbol, amount } = txParams.paramsOption || {};
-    return formatAmountInUsdShow(amount, 0, symbol);
-  }, [formatAmountInUsdShow, txParams.paramsOption]);
+    const decimals = symbol === defaultToken.symbol ? defaultToken.decimals : tokenDecimals;
+    return amountInUsdShow(amount, decimals, symbol);
+  }, [defaultToken.decimals, defaultToken.symbol, amountInUsdShow, tokenDecimals, txParams.paramsOption]);
 
   const dataList = useMemo(() => {
     const list: Array<{ title: string; value: string }> = [];
@@ -462,7 +457,7 @@ export default function SendTransactions() {
         {isTransfer && (
           <div className="send-transaction-transfer-amount-wrap">
             <div className="send-transaction-transfer-amount">{transferAmount}</div>
-            {isMainnet && <div className="send-transaction-transfer-usd">{transferAmountUsd}</div>}
+            {isMainnet && !loading && <div className="send-transaction-transfer-usd">{transferAmountUsd}</div>}
           </div>
         )}
 

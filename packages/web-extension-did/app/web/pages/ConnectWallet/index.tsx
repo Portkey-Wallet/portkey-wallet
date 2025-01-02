@@ -14,7 +14,6 @@ import { useCheckSiteIsInBlackList } from '@portkey-wallet/hooks/hooks-ca/cms';
 import AsyncButton from 'components/AsyncButton';
 import './index.less';
 import { useDappInfo } from '@portkey-wallet/hooks/hooks-ca/discover';
-import { CommonPage } from 'components/CommonPage';
 import { DappSiteInfo } from 'pages/components/DappSiteInfo';
 import { CommonPromptCard } from '@portkey/did-ui-react';
 import { PromptCardType } from 'pages/Send';
@@ -80,53 +79,51 @@ export default function ConnectWallet() {
   const userInfo = useCurrentUserInfo();
 
   return (
-    <CommonPage>
-      <div className="connect-wallet">
-        <div className="connect-wallet-body">
-          <DappSiteInfo title="Connect" dappInfo={curDapp} />
+    <div className="connect-wallet">
+      <div className="connect-wallet-body">
+        <DappSiteInfo title="Connect" dappInfo={curDapp} />
 
-          {!isInWebSet && (
-            <CommonPromptCard
-              className="warning-tip"
-              type={PromptCardType.WARNING}
-              description={`The dApp's contract address, logo, or domain may not be authentic. Please proceed with caution.`}
+        {!isInWebSet && (
+          <CommonPromptCard
+            className="warning-tip"
+            type={PromptCardType.WARNING}
+            description={`The dApp's contract address, logo, or domain may not be authentic. Please proceed with caution.`}
+          />
+        )}
+
+        <div className="connect-wallet-content">
+          <div className="connect-wallet-title">
+            {`Connecting will allow this site to view balances and activity in your current account.`}
+          </div>
+
+          <div className="connect-wallet-user">
+            <Avatar
+              wrapperClass={'connect-wallet-user-avatar'}
+              avatarUrl={userInfo.avatar}
+              nameIndex={userInfo.nickName?.substring(0, 1).toLocaleUpperCase()}
             />
-          )}
-
-          <div className="connect-wallet-content">
-            <div className="connect-wallet-title">
-              {`Connecting will allow this site to view balances and activity in your current account.`}
-            </div>
-
-            <div className="connect-wallet-user">
-              <Avatar
-                wrapperClass={'connect-wallet-user-avatar'}
-                avatarUrl={userInfo.avatar}
-                nameIndex={userInfo.nickName?.substring(0, 1).toLocaleUpperCase()}
-              />
-              <span className="connect-wallet-user-name">{userInfo.nickName}</span>
-            </div>
-
-            {!checkOriginInBlackList(detail.appHref) && <DappSession onChange={handleSessionChange} />}
-          </div>
-        </div>
-
-        <div className="connect-wallet-footer">
-          <div className="connect-wallet-footer-body">
-            <Button
-              onClick={() => {
-                closePrompt({ ...errorHandler(200003) });
-              }}>
-              {t('Reject')}
-            </Button>
-            <AsyncButton disabled={disabled} type="primary" onClick={handleSign}>
-              {t('Connect')}
-            </AsyncButton>
+            <span className="connect-wallet-user-name">{userInfo.nickName}</span>
           </div>
 
-          <div className="connect-wallet-footer-tip">{'Only approve if you trust this website'}</div>
+          {!checkOriginInBlackList(detail.appHref) && <DappSession onChange={handleSessionChange} />}
         </div>
       </div>
-    </CommonPage>
+
+      <div className="connect-wallet-footer">
+        <div className="connect-wallet-footer-body">
+          <Button
+            onClick={() => {
+              closePrompt({ ...errorHandler(200003) });
+            }}>
+            {t('Reject')}
+          </Button>
+          <AsyncButton disabled={disabled} type="primary" onClick={handleSign}>
+            {t('Connect')}
+          </AsyncButton>
+        </div>
+
+        <div className="connect-wallet-footer-tip">{'Only approve if you trust this website'}</div>
+      </div>
+    </div>
   );
 }

@@ -26,6 +26,8 @@ import { useEffectOnce } from 'react-use';
 // import { useRecentStatus } from '@portkey-wallet/hooks/hooks-ca/freeMint';
 // import { FreeMintStatus } from '@portkey-wallet/types/types-ca/freeMint';
 import { useNavigate } from 'react-router';
+import TokenImageDisplay from 'pages/components/TokenImageDisplay';
+// import chain from '@portkey-wallet/api/api-did/chain';
 
 export default function NFT() {
   const nav = useNavigate();
@@ -148,9 +150,17 @@ export default function NFT() {
           showArrow={true}
           header={
             <div className="nft-collection flex-row-center">
-              <div className={clsx('nft-collection-avatar', 'flex-center', !nft.imageUrl && 'show-nft-default')}>
-                {nft.imageUrl ? <img src={nft.imageUrl} /> : nft.collectionName?.slice(0, 1)}
+              <div className="nft-img-box">
+                <div className={clsx('nft-collection-avatar', 'flex-center', !nft.imageUrl && 'show-nft-default')}>
+                  {nft.imageUrl ? <img src={nft.imageUrl} /> : nft.collectionName?.slice(0, 1)}
+                </div>
+                <div className="nft-chain-img">
+                  {nft.displayChainImage && (
+                    <TokenImageDisplay width={16} className="token-icon" src={nft.chainImageUrl} />
+                  )}
+                </div>
               </div>
+
               <div className="info flex-column">
                 <div className="flex-between info-top">
                   <div className="alias">{nft.collectionName}</div>
@@ -205,7 +215,24 @@ export default function NFT() {
               <div
                 className="load-more"
                 onClick={() => {
-                  getMoreNFTItem(nft.symbol, nft.chainId);
+                  // getMoreNFTItem(nft.symbol, nft.chainId);
+
+                  const params = {
+                    chainId: nft.chainId,
+                    chainImageUrl: nft.chainImageUrl,
+                    collectionName: nft.collectionName,
+                    displayChainName: nft?.displayChainName,
+                    itemCount: nft.itemCount,
+                    isSeed: nft.isSeed,
+                    symbol: nft.symbol,
+                    collectionImageUrl: nft.imageUrl,
+                    maxResultCount: nft.maxResultCount,
+                    totalRecordCount: nft.totalRecordCount,
+                  };
+
+                  nav('/collection', { state: params });
+
+                  console.log('nft', params, nft);
                 }}>
                 <CustomSvgV3 type="load-more" />
                 <p>View all</p>

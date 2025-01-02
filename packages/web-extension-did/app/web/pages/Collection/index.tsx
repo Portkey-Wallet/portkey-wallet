@@ -29,6 +29,8 @@ const Collection = () => {
     )[0];
   }, [accountNFTList, state]);
 
+  console.log('currentCollection.itemCount', currentCollection, currentCollection.itemCount);
+
   const getNFTItems = useCallback(async () => {
     await fetchAccountNFTItem({
       symbol: state.symbol,
@@ -40,7 +42,7 @@ const Collection = () => {
 
   useEffect(() => {
     getNFTItems();
-  }, []);
+  }, [currentCollection.itemCount]);
 
   const content = () => {
     return (

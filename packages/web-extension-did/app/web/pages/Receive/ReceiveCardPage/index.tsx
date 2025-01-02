@@ -13,12 +13,15 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { ChainId } from '@portkey/provider-types';
 import { ChainInfo, ReceiveType, TDepositInfo, TReceiveFromNetworkItem } from '@portkey/services';
-import { useCurrentCaInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentCaInfo, useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { getManagerAccount, getPin } from 'store/utils/getStore';
 import { CAInfo } from '@portkey/did';
 import './index.less';
 import { useCommonState } from 'store/Provider/hooks';
 import PromptFrame from 'pages/components/PromptFrame';
+import { QRCodeDataObjType, shrinkSendQrData } from '@portkey-wallet/utils/qrCode';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentNetwork } from '@portkey-wallet/hooks/network';
 
 enum CHAIN_ID {
   AELF = 'AELF',
@@ -94,6 +97,14 @@ export default function ReceiveCardMain() {
   const [isReceivedExchangeModalOpen, setIsReceivedExchangeModalOpen] = useState(false);
   const [currentDepositInfo, setCurrentDepositInfo] = useState<TDepositInfo>();
   const caInfo = useCurrentCaInfo();
+  const currentWallet = useCurrentWalletInfo();
+  const { chainType } = useCurrentNetwork();
+  const currentNetWork = useCurrentNetworkInfo();
+  const currentCaAddress = currentWallet?.[destinationChain?.chainId || 'AELF']?.caAddress;
+  const toCaAddress = useMemo(
+    () => `ELF_${currentCaAddress}_${destinationChain?.chainId || 'AELF'}`,
+    [currentCaAddress, destinationChain?.chainId],
+  );
 
   const { loading: eTransferLoading, depositInfo } = useReceiveByETransfer({
     manager: getManagerAccount(getPin() ?? ''),
@@ -143,8 +154,10 @@ export default function ReceiveCardMain() {
         return;
       }
       if (selectedType === SELECTION_TYPE.NFT) {
-        setSelectedSource(item as TReceiveFromNetworkItem);
-        setSelectedDestination(item as ChainInfo);
+        // setSelectedSource(item as TReceiveFromNetworkItem);
+        setSourceChain(item as TReceiveFromNetworkItem);
+        // setSelectedDestination(item as ChainInfo);
+        updateDestinationChain(item as ChainInfo);
         return;
       }
       if (selectedType === SELECTION_TYPE.DESITNATION) {
@@ -236,7 +249,9 @@ export default function ReceiveCardMain() {
     selectedDestination?.displayChainName,
     selectedSource?.name,
   ]);
-
+  const tokenItem = useMemo(() => {
+    return selectToken.tokens?.find((item) => item.chainId === destinationChain?.chainId);
+  }, [destinationChain?.chainId, selectToken.tokens]);
   const generateAddress = useCallback(() => {
     const address = caInfo?.[destinationChain?.chainId as ChainId]?.caAddress;
     if (currentDepositInfo && selectedSource && !Object.keys(CHAIN_ID).includes(selectedSource?.network)) {
@@ -266,10 +281,32 @@ export default function ReceiveCardMain() {
           };
         }
       }
+      const info: QRCodeDataObjType = {
+        address: toCaAddress,
+        networkType: currentNetWork.networkType,
+        chainType,
+        type: 'send',
+        toInfo: {
+          name: '',
+          address: toCaAddress,
+        },
+        assetInfo: {
+          symbol: selectToken?.symbol,
+          label: selectToken.label,
+          tokenContractAddress: tokenItem?.tokenContractAddress || tokenItem?.address || '',
+          chainId: tokenItem?.chainId || destinationChain?.chainId,
+          decimals: tokenItem?.decimals || 0,
+        },
+      };
       return {
-        value: `ELF_${address}_${selectedDestination.chainId}`,
+        value: JSON.stringify(shrinkSendQrData(info)),
+        addressValue: toCaAddress,
         label: `ELF_${formatStr2EllipsisStr(address, [4, 4])}_${selectedDestination.chainId}`,
       };
+      // return {
+      //   value: `ELF_${address}_${selectedDestination.chainId}`,
+      //   label: `ELF_${formatStr2EllipsisStr(address, [4, 4])}_${selectedDestination.chainId}`,
+      // };
     }
     return {
       value: '',
@@ -277,13 +314,22 @@ export default function ReceiveCardMain() {
     };
   }, [
     caInfo,
+    chainType,
     currentDepositInfo,
+    currentNetWork.networkType,
     destinationChain?.chainId,
     isExchangeSelected,
     isMainChainToMainChain,
     selectToken.isNFT,
+    selectToken.label,
+    selectToken?.symbol,
     selectedDestination,
     selectedSource,
+    toCaAddress,
+    tokenItem?.address,
+    tokenItem?.chainId,
+    tokenItem?.decimals,
+    tokenItem?.tokenContractAddress,
   ]);
   const mainContent = useMemo(
     () => (

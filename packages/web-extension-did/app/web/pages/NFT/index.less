@@ -2,13 +2,22 @@
 @import '../../assets/theme/constants.less';
 
 .nft-detail {
-  height: 100%;
+  height: 100vh !important;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 
+  @media screen and (min-width: 768px) {
+    height: calc(100vh - 72px) !important;
+  }
+
   .nft-detail-body {
     background: @bg-base1;
+    height: calc(100% - 48px);
+    overflow: overlay;
+    &::-webkit-scrollbar {
+      display: none;
+    }
     .more-icon {
       transform: rotate(90deg);
     }
@@ -20,7 +29,8 @@
       width: 24px;
       height: 24px;
       flex-shrink: 0;
-      img, .img-text {
+      img,
+      .img-text {
         width: 100%;
         height: 100%;
         border-radius: 8px;
@@ -163,7 +173,7 @@
             font-size: 12px;
             gap: 30px;
             .label {
-              color: @neutral-secondary-text;;
+              color: @neutral-secondary-text;
             }
             .label-bold {
               font-size: 14px;
@@ -174,7 +184,7 @@
             }
           }
         }
-       
+
         .traits-info-skeleton {
           margin-top: 12px;
           gap: 4px;
@@ -188,8 +198,12 @@
                 .@{app-prefix}-skeleton-active {
                   .@{app-prefix}-skeleton-avatar {
                     &::after {
-                      /* stylelint-disable-next-line color-function-notation */
-                      background: linear-gradient(90deg, hsla(0deg, 0%, 96%, 20%) 25%,hsla(0deg, 0%, 92%, 24%) 37%,hsla(0deg, 0%, 96%, 20%) 63%);
+                      background: linear-gradient(
+                        90deg,
+                        hsl(0deg 0% 96% / 20%) 25%,
+                        hsl(0deg 0% 92% / 24%) 37%,
+                        hsl(0deg 0% 96% / 20%) 63%
+                      );
                     }
                   }
                 }
@@ -258,17 +272,15 @@
       width: 16px;
       height: 16px;
     }
-    
+
     .portkey-popover-inner-content {
       padding: 6px 16px;
       .popover-menu-list .menu-item {
         .menu-item-container {
           min-width: 130px;
           color: @text-base1;
-          
         }
       }
     }
   }
 }
-

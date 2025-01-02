@@ -88,6 +88,7 @@
     }
   }
   .nft-list {
+    border: none!important;
     .@{app-prefix}-collapse {
       background-color: @bg-base1;
       border: none;
@@ -104,6 +105,7 @@
           .@{app-prefix}-collapse-expand-icon {
             width: 24px;
             height: 24px;
+            flex-shrink: 0;
             // transform: rotate(180deg);
             .is-active {
               transform: rotate(0deg);
@@ -143,7 +145,7 @@
           flex: 1;
           overflow: hidden;
           .info-top {
-            gap: 2px;
+            gap: 8px;
             font-size: 16px;
             line-height: 24px;
             color: @text-base1;
@@ -151,6 +153,11 @@
               flex: 1;
               word-break: break-all;
               .text-overflow(1);
+            }
+            .amount {
+              flex-shrink: 0;
+              color: @text-base1;
+              opacity: 0.7;
             }
           }
           .network {
@@ -280,6 +287,11 @@
         }
       }
     }
+    .arrow-box{
+      .arrow-rotate{
+        transform: rotate(180deg)
+      }
+    }
     &.hidden-loading-more {
       .adm-infinite-scroll {
         display: none;
@@ -301,15 +313,25 @@
 
   @media screen and (min-width: 768px) {
     .nft-list {
+      border: none!important;
       padding-bottom: 18px;
-     
     }
     .@{app-prefix}-collapse{
+      border: none!important;
       .@{app-prefix}-collapse-item{
+        border: none!important;
         .@{app-prefix}-collapse-header {
           padding: 24px;
         }
       }
+      .@{app-prefix}-collapse-content {
+        border: none!important;
+        .@{app-prefix}-collapse-content-box {
+          border: none!important;
+          padding: 0;
+        }
+      }
+     
 
       .nft-item-list{
         // gap: 18px;
@@ -318,6 +340,7 @@
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
         gap: 16px;
+        border: none;
         // .nft-item{
         //   // width: 120px;
         //   // height: 120px;

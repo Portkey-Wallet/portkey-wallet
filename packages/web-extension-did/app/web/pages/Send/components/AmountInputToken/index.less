@@ -5,48 +5,39 @@
   font-size: 16px;
   line-height: 22px;
   color: @text-base2;
-  .amount-error {
-    .portkey-input {
-      color: @text-danger1 !important;
+  .amount-input {
+    background-color: @bg-base1;
+    align-items: baseline;
+    max-width: 200px !important;
+    padding: 0;
+    border: none;
+    font-size: 32px;
+    line-height: 38px;
+    font-family: BG;
+    font-weight: 700;
+    color: @text-base1;
+    text-align: right;
+    &::placeholder {
+      color: @text-base3;
+      font-size: 32px;
+      line-height: 38px;
+      font-family: BG;
+      font-weight: 700;
+    }
+    &.usd-input {
+      text-align: left;
     }
   }
-  .portkey-input-affix-wrapper {
-    background-color: @bg-base1;
-    border: none;
-    align-items: baseline;
-    .portkey-input {
-      max-width: 343px !important;
-      border: none;
-      font-size: 32px;
-      line-height: 38px;
-      font-family: BG;
-      font-weight: 700;
-      color: @text-base1;
-      &::placeholder {
-        color: @text-base3;
-        font-size: 32px;
-        line-height: 38px;
-        font-family: BG;
-        font-weight: 700;
-      }
-    }
-    &.amount-input {
-      .portkey-input {
-        text-align: right;
-      }
-    }
-    .portkey-input-suffix,
-    .portkey-input-prefix {
-      margin-left: 6px;
-      font-size: 32px;
-      line-height: 38px;
-      font-family: BG;
-      font-weight: 700;
-      color: @text-base1;
-    }
-    &.portkey-input-affix-wrapper-focused {
-      box-shadow: none;
-    }
+  .amount-error {
+    color: @text-danger1 !important;
+  }
+  .amount-input-suffix {
+    margin-left: 6px;
+    font-size: 32px;
+    line-height: 38px;
+    font-family: BG;
+    font-weight: 700;
+    color: @text-base1;
   }
   .swap-vert {
     gap: 2px;
@@ -66,5 +57,4 @@
     text-align: center;
     color: @text-danger2;
   }
-
 }

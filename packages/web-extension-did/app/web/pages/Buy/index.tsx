@@ -95,8 +95,8 @@ export default function Buy() {
   //   navigate('/');
   // }, [navigate, state]);
 
-  const { buyCryptoList } = useBuyCryptoList();
-  const { sellCryptoList } = useSellCryptoList();
+  const { buyCryptoList, refresh: refreshBuyCryptoList } = useBuyCryptoList();
+  const { sellCryptoList, refresh: refreshSellCryptoList } = useSellCryptoList();
   const list = useMemo(() => {
     if (page === RampType.BUY) {
       return buyCryptoList;
@@ -107,12 +107,14 @@ export default function Buy() {
     return [];
   }, [buyCryptoList, page, sellCryptoList]);
   useEffect(() => {
-    if (list) {
+    if (list && list.length > 0) {
       setLoading(false);
     } else {
       setLoading(true);
+      refreshBuyCryptoList();
+      refreshSellCryptoList();
     }
-  }, [list, setLoading]);
+  }, [list, refreshBuyCryptoList, refreshSellCryptoList, setLoading]);
   const onCryptoClick = useCallback(
     (item: Omit<IRampCryptoItem, 'displayChainName' | 'chainImageUrl'>) => {
       if (page === RampType.BUY) {

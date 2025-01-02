@@ -3,7 +3,7 @@
 .transaction-detail-modal-new {
   background-color: @bg-base1;
   height: auto;
-  max-height: 80vh;
+  max-height: calc(100vh - 30px);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -13,8 +13,13 @@
   }
 
   .transaction-detail-body {
+    height: calc(100% - 128px);
     background: @bg-base1;
     padding: 0 16px;
+    overflow: auto;
+    &::-webkit-scrollbar {
+      display: none;
+    }
 
     .transaction-info {
       display: flex;
@@ -36,13 +41,31 @@
         justify-content: space-between;
         font-size: 14px;
       }
+      .wallet-activity-header {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+      }
       .method-wrap {
         width: 100%;
         display: flex;
         flex-direction: column;
         align-items: center;
         gap: 16px;
-        margin-bottom: 0;
+        padding-bottom: 20px;
+        .operations {
+          position: relative;
+          margin-right: 20px;
+          .show-image {
+            border-radius: 50%;
+          }
+          .operations-1 {
+            position: absolute;
+            bottom: -20px;
+            right: -20px;
+          }
+        }
         .custom-svg {
           width: 56px;
           height: 56px;
@@ -51,8 +74,36 @@
             height: 56px;
           }
         }
+        .swap-text-box {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          font-size: 18px;
+          color: @text-base1;
+          padding-top: 20px;
+          .arrow-right {
+            width: 20px !important;
+            height: 16px !important;
+            svg {
+              width: 20px !important;
+              height: 16px !important;
+            }
+          }
+        }
+
+        .token-icon-box {
+          width: 60px;
+          height: 60px;
+          position: relative;
+          .source-icon {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+          }
+        }
+
         .method-name {
-          font-size: 20px;
+          font-size: 18px;
           color: @text-base1;
           font-weight: 500;
           line-height: 24px;
@@ -68,7 +119,7 @@
             .token-amount-number {
               flex: 1;
               word-break: break-all;
-              text-align: center
+              text-align: center;
             }
           }
           .usd {
@@ -101,7 +152,7 @@
             .tokentagmedium-icon,
             .tokentagmedium-icon svg,
             .nfttagmedium-icon,
-            .nfttagmedium-icon svg{
+            .nfttagmedium-icon svg {
               position: absolute;
               width: 32px;
               height: 16px;
@@ -141,7 +192,6 @@
             }
           }
         }
-        
       }
       .status-wrap {
         .right {
@@ -153,7 +203,6 @@
         .failed {
           color: @text-danger2;
         }
-       
       }
       .status-wrap,
       .account-wrap,
@@ -170,12 +219,13 @@
           .right {
             font-size: 16px;
             font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 2px;
           }
         }
       }
 
-    
-      
       .account-wrap {
         gap: 8px;
         position: relative;
@@ -203,7 +253,6 @@
 
               word-break: break-all;
             }
-            
           }
           .right-arrow {
             position: absolute;
@@ -243,6 +292,27 @@
           color: @neutral-secondary-text;
         }
       }
+      .swap-wrap {
+        width: 100%;
+        border-top: 1px solid @border-base1;
+        font-size: 16px;
+        font-weight: 400;
+        padding-top: 16px;
+        margin-top: 16px;
+        color: @text-base1;
+        > div {
+          padding: 16px 0;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          span:last-child {
+            font-weight: 600;
+          }
+        }
+        .received {
+          color: @text-success1;
+        }
+      }
       .money-wrap {
         flex: 1;
         gap: 16px;
@@ -276,7 +346,7 @@
                 }
               }
             }
-            
+
             &.total-amount {
               .right {
                 display: flex;

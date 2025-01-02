@@ -9,13 +9,18 @@
       padding-top: 20px;
       font-size: 12px;
       line-height: 18px;
-      color: @neutral-tertiary-text;
+      color: @text-base1;
+      font-variant: normal;
+      font-feature-settings: normal;
     }
     &:first-of-type {
       .activity-date-item {
         margin-top: 0;
         padding-top: 16px;
         border-top: none;
+        color: @text-base1;
+        font-variant: normal;
+        font-feature-settings: normal;
       }
     }
   }
@@ -24,6 +29,17 @@
     height: 76px;
     padding: 0;
     justify-content: center;
+
+    .token-activity-icon-box {
+      position: relative;
+      .token-status-icon {
+        width: 16px !important;
+        height: 16px !important;
+        position: absolute;
+        bottom: 0;
+        right: -2px;
+      }
+    }
     .token-activity-icon {
       width: 32px !important;
       height: 32px !important;
@@ -39,6 +55,7 @@
         height: 100%;
       }
     }
+
     @keyframes rotate {
       from {
         transform: rotate(0deg);
@@ -95,6 +112,7 @@
           height: 32px;
         }
       }
+
       .nft-activity-icon {
         overflow: hidden;
       }
@@ -136,6 +154,8 @@
             line-height: 24px;
             color: @text-base1;
             word-break: break-all;
+            font-variant: normal;
+            font-feature-settings: normal;
             .text-overflow(1);
             &.received-amount {
               color: @functional-success-default;
@@ -177,6 +197,24 @@
         color: @text-base1;
         word-break: break-all;
         .text-overflow(1);
+      }
+      .icon-box {
+        position: relative;
+        .source-icon {
+          width: 16px !important;
+          height: 16px !important;
+          position: absolute;
+          bottom: 0;
+          right: -2px;
+          .custom-svg {
+            width: 16px !important;
+            height: 16px !important;
+            svg {
+              width: 16px !important;
+              height: 16px !important;
+            }
+          }
+        }
       }
     }
     .activity-item-resend-btn {

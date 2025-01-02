@@ -21,7 +21,8 @@ export interface ITransferSettingsEditBodyProps extends FormProps {
   onRestrictedChange?: (checked: boolean) => void;
   onSingleLimitChange: (v: string) => void;
   onDailyLimitChange: (v: string) => void;
-  onFinish: () => void;
+  // onFinish: () => void;
+  onFinish: (() => void) | ((param: { restrictedValue?: boolean }) => Promise<boolean>);
 }
 
 export default function TransferSettingsEditBody({
@@ -85,7 +86,7 @@ export default function TransferSettingsEditBody({
       requiredMark={false}
       onFinish={async () => {
         setLoading(true);
-        await onFinish();
+        await onFinish({});
         setLoading(false);
       }}>
       <div className="customer-form form-content">
@@ -99,7 +100,10 @@ export default function TransferSettingsEditBody({
               },
               {
                 validator: (_, value) => {
-                  if (BigNumber(value).isGreaterThan(divDecimals(state.dailyLimit, state.decimals))) {
+                  const formValues = form?.getFieldsValue() || {};
+
+                  if (BigNumber(value).isGreaterThan(formValues.dailyLimit || 0)) {
+                    // if (BigNumber(value).isGreaterThan(divDecimals(state.dailyLimit, state.decimals))) {
                     return Promise.reject(new Error(t('Cannot exceed the daily limit.')));
                   }
                   return Promise.resolve();

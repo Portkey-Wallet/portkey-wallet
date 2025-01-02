@@ -81,8 +81,9 @@ export default function MyBalance() {
   const { setLoading } = useLoading();
   const setHideAssets = useSetHideAssets();
 
-  const { totalRecordCount: tokenCount } = useAccountTokenInfo();
-  const { totalRecordCount: nftCount } = useAccountNFTCollectionInfo();
+  const { totalDisplayCount: tokenCount } = useAccountTokenInfo();
+  const { totalNftItemCount: nftCount } = useAccountNFTCollectionInfo();
+
   const renderTabsData = useMemo(
     () => [
       {
@@ -111,7 +112,7 @@ export default function MyBalance() {
         children: <Activity pageKey="Home-Activity" />,
       },
     ],
-    [t],
+    [t, tokenCount, nftCount],
   );
   const getGuardianList = useGuardianList();
   useFreshTokenPrice();

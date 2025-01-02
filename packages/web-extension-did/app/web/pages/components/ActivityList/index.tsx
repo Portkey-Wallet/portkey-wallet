@@ -453,7 +453,7 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
   return (
     <div className={clsx('activity-list', !hasMore && 'hidden-loading-more')}>
       {renderActivityList}
-      <LoadingMore hasMore={hasMore} loadMore={loadMore} className="load-more" />
+      <LoadingMore hasMore={hasMore} loadMore={loadMore} className="load-more" loadingText="" />
       {open && (
         <CommonBaseModal open={open}>
           <Transaction state={selectItem} closeFun={setOpen} />

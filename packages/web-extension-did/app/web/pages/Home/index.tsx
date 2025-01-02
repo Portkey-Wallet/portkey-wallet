@@ -62,11 +62,8 @@ export default function Home() {
 
   return (
     <div className={clsx(['portkey-home', 'flex-column', isPrompt && 'portkey-prompt'])}>
-      {isPrompt && isNotLessThan768 ? (
+      {isPrompt && isNotLessThan768 && (
         <PortKeyHeader unReadShow={isImputation || (!hideReferral && !viewReferralStatus)} onUserClick={onUserClick} />
-      ) : (
-        <></>
-        // <HomeHeader unReadShow={isImputation || (!hideReferral && !viewReferralStatus)} onUserClick={onUserClick} />
       )}
       <div className={clsx('portkey-body', isPrompt ? '' : 'flex-1')}>
         <MyBalance />

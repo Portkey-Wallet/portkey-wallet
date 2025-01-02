@@ -10,6 +10,7 @@ import { getCurrentActivityMapKey } from '@portkey-wallet/utils/activity';
 import { ChainId } from '@portkey-wallet/types';
 import './index.less';
 import useGAReport from 'hooks/useGAReport';
+import { Loading } from '@portkey/did-ui-react';
 
 export interface ActivityProps {
   appendData?: Function;
@@ -120,7 +121,7 @@ export default function Activity({ chainId, symbol, pageKey = 'Home-Activity' }:
 
   return (
     <div className="activity-wrapper">
-      {!initLoading && (
+      {!initLoading ? (
         <>
           {currentActivity?.totalRecordCount ? (
             <ActivityList
@@ -136,6 +137,10 @@ export default function Activity({ chainId, symbol, pageKey = 'Home-Activity' }:
             </div>
           )}
         </>
+      ) : (
+        <div className="loading-box">
+          <Loading width={30} height={30} />
+        </div>
       )}
     </div>
   );

@@ -29,7 +29,7 @@ import { CustomSvgV3 } from 'components/CustomSvgV3';
 export default function NFT() {
   const navigate = useNavigateState<TSendLocationState | THomePageLocationState>();
   const { state } = useLocationState<TNFTLocationState>();
-  const { isPrompt } = useCommonState();
+  const { isPrompt, isNotLessThan768 } = useCommonState();
   const isMainNet = useIsMainnet();
   const currentNetwork = useCurrentNetworkInfo();
   const [nftDetail, setNftDetail] = useState<TNFTLocationState>(state);
@@ -212,26 +212,26 @@ export default function NFT() {
 
     return (
       <div id="nft-detail" className={clsx(['nft-detail', isPrompt && 'detail-page-prompt'])}>
-        <div className="nft-detail-body">
-          <CommonHeader
-            onLeftBack={() => navigate('/', { state: { key: BalanceTab.NFT } })}
-            rightElementList={[
-              {
-                customSvgWrapClassName: 'nft-detail-more',
-                customSvgType: 'moreHome',
-                popoverProps: {
-                  overlayClassName: `nft-detail-popover ${isPrompt ? '' : 'nft-detail-popover-popup'}`,
-                  open: popVisible,
-                  trigger: 'click',
-                  showArrow: false,
-                  placement: 'bottomLeft',
-                  getPopupContainer: (triggerNode: any) => triggerNode.parentNode,
-                  content: <PopoverMenuList data={moreData} />,
-                },
-                onClick: () => setPopVisible(!popVisible),
+        <CommonHeader
+          onLeftBack={() => navigate('/', { state: { key: BalanceTab.NFT } })}
+          rightElementList={[
+            {
+              customSvgWrapClassName: 'nft-detail-more',
+              customSvgType: 'moreHome',
+              popoverProps: {
+                overlayClassName: `nft-detail-popover ${isPrompt ? '' : 'nft-detail-popover-popup'}`,
+                open: popVisible,
+                trigger: 'click',
+                showArrow: false,
+                placement: 'bottomLeft',
+                getPopupContainer: (triggerNode: any) => triggerNode.parentNode,
+                content: <PopoverMenuList data={moreData} />,
               },
-            ]}
-          />
+              onClick: () => setPopVisible(!popVisible),
+            },
+          ]}
+        />
+        <div className="nft-detail-body">
           <div className="picture flex-center">
             {seedTypeTag && <CustomSvg type={seedTypeTag} />}
             {imageUrl ? (
@@ -296,5 +296,13 @@ export default function NFT() {
     navigate,
   ]);
 
-  return <>{isPrompt ? <PromptFrame content={mainContent()} className="nft-detail-prompt" /> : mainContent()}</>;
+  return (
+    <>
+      {isPrompt && isNotLessThan768 ? (
+        <PromptFrame content={mainContent()} className="nft-detail-prompt" />
+      ) : (
+        mainContent()
+      )}
+    </>
+  );
 }

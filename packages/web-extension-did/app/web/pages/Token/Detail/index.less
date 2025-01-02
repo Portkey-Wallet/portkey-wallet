@@ -9,6 +9,14 @@
   background-color: @bg-base1;
 
   .token-detail-content {
+    height: calc(100% - 48px);
+    overflow: overlay;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    .common-header-title {
+      padding-right: 32px;
+    }
 
     .token-detail-balance {
       gap: 24px;

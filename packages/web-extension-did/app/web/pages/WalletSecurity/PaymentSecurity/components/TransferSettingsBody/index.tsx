@@ -41,27 +41,7 @@ export default function TransferSettingsBody({
   const [restrictedText, setRestrictedText] = useState(!!state?.restricted);
   const { handleSetLimit } = useSetLimit();
   const [switchLoading, setSwitchLoading] = useState(false);
-  const handleRestrictedChange = useCallback(
-    async (checked: boolean) => {
-      setSwitchLoading(true);
-      try {
-        const singleLimit = state.singleLimit === '-1' ? state.defaultSingleLimit : state.singleLimit;
-        const dailyLimit = state.dailyLimit === '-1' ? state.defaultDailyLimit : state.dailyLimit;
-        await handleSetLimit({
-          state,
-          singleLimit: divDecimals(singleLimit, state.decimals),
-          dailyLimit: divDecimals(dailyLimit, state.decimals),
-          restricted: checked,
-        });
-        setRestrictedText(checked);
-      } catch (error) {
-        console.log(error);
-      }
-      setSwitchLoading(false);
-      // setRestrictedText(checked);
-    },
-    [handleSetLimit, state],
-  );
+
   useEffect(() => {
     setRestrictedText(!!state?.restricted);
   }, [state?.restricted]);
@@ -139,18 +119,90 @@ export default function TransferSettingsBody({
     setValidDailyLimit({ validateStatus: '', errorMsg: '' });
   }, []);
 
-  const onFinish = useCallback(async () => {
-    const errorCount = handleFormChange();
-    if (errorCount > 0) return;
-    const { singleLimit, dailyLimit } = form.getFieldsValue();
-    await handleSetLimit({
+  const onFinish = useCallback(
+    async ({ restrictedValue = false }: { restrictedValue?: boolean }) => {
+      const errorCount = handleFormChange();
+      if (errorCount > 0) return false;
+      const { singleLimit, dailyLimit } = form.getFieldsValue();
+
+      await handleSetLimit({
+        state,
+        singleLimit,
+        dailyLimit,
+        restricted: restrictedValue || restrictedText,
+      });
+      Modal.destroyAll();
+      return true;
+    },
+    [form, handleFormChange, handleSetLimit, restrictedText, state],
+  );
+
+  const handleRestrictedChange = useCallback(
+    async (checked: boolean) => {
+      setSwitchLoading(true);
+      try {
+        if (!checked) {
+          const singleLimit = state.singleLimit === '-1' ? state.defaultSingleLimit : state.singleLimit;
+          const dailyLimit = state.dailyLimit === '-1' ? state.defaultDailyLimit : state.dailyLimit;
+          await handleSetLimit({
+            state,
+            singleLimit: divDecimals(singleLimit, state.decimals),
+            dailyLimit: divDecimals(dailyLimit, state.decimals),
+            restricted: checked,
+          });
+          setRestrictedText(checked);
+        } else {
+          CustomModalBottom({
+            isPrompt,
+            type: 'confirm',
+            noFooter: true,
+            content: (
+              <TransferSettingsEditBody
+                form={form}
+                restrictedValue={restrictedText}
+                state={state}
+                disable={false}
+                validSingleLimit={validSingleLimit}
+                validDailyLimit={validDailyLimit}
+                onRestrictedChange={handleRestrictedChange}
+                onSingleLimitChange={onSingleLimitChange}
+                onDailyLimitChange={onDailyLimitChange}
+                onFinish={async () => {
+                  const result = await onFinish({
+                    restrictedValue: true,
+                  });
+                  if (result) {
+                    setRestrictedText(checked);
+                  }
+                }}
+              />
+            ),
+            onOk: () => {
+              return;
+            },
+            title: 'Set transaction limits',
+            okText: 'Save',
+          });
+        }
+      } catch (error) {
+        console.log(error);
+      }
+      setSwitchLoading(false);
+      // setRestrictedText(checked);
+    },
+    [
+      form,
+      handleSetLimit,
+      isPrompt,
+      onDailyLimitChange,
+      onFinish,
+      onSingleLimitChange,
+      restrictedText,
       state,
-      singleLimit,
-      dailyLimit,
-      restricted: restrictedText,
-    });
-    Modal.destroyAll();
-  }, [form, handleFormChange, handleSetLimit, restrictedText, state]);
+      validDailyLimit,
+      validSingleLimit,
+    ],
+  );
 
   return (
     <div className="transfer-settings-container">

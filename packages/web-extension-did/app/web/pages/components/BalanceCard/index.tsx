@@ -22,7 +22,7 @@ export default function MainCards({
   onSend,
   onReceive,
   onBuy,
-  onClickSwap,
+  // onClickSwap,
   onClickDeposit,
 }: MainCardsProps) {
   const { t } = useTranslation();
@@ -78,18 +78,18 @@ export default function MainCards({
     );
   }, [onClickDeposit, t]);
 
-  const renderSwap = useMemo(() => {
-    return (
-      !!onClickSwap && (
-        <div className="swap-card card-item flex-column-center" onClick={onClickSwap}>
-          <div className="btn-container">
-            <CustomSvgV3 type="swap" className="flex-center" />
-          </div>
-          <span className="btn-name">{t('Swap')}</span>
-        </div>
-      )
-    );
-  }, [onClickSwap, t]);
+  // const renderSwap = useMemo(() => {
+  //   return (
+  //     !!onClickSwap && (
+  //       <div className="swap-card card-item flex-column-center" onClick={onClickSwap}>
+  //         <div className="btn-container">
+  //           <CustomSvgV3 type="swap" className="flex-center" />
+  //         </div>
+  //         <span className="btn-name">{t('Swap')}</span>
+  //       </div>
+  //     )
+  //   );
+  // }, [onClickSwap, t]);
 
   const handleClickFaucet = useCallback(() => {
     const openWinder = window.open(FAUCET_URL, '_blank');

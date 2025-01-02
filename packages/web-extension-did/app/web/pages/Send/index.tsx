@@ -1199,7 +1199,7 @@ export default function Send() {
     async (i: TFormattedRecentItem) => {
       console.log('onPressTabItem', i);
       try {
-        if (i.addressInfo?.address === caAddress) {
+        if (i.addressInfo?.address === caAddress || i.address === caAddress) {
           // anther chain address
           toAddressInputRef.current?.onInput(
             addressFormat(i.address || i.addressInfo?.address, i.chainId || i.addressInfo?.chainId),

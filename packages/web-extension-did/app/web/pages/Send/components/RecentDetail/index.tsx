@@ -139,7 +139,7 @@ export default function RecentDetail() {
     );
   };
 
-  console.log('state', state);
+  console.log('recent state', state);
 
   const mainContent = () => {
     return (
@@ -180,7 +180,6 @@ export default function RecentDetail() {
                 <img src={state?.addressInfo?.networkImage} width={24} height={24} />
                 <div className="info-left-top">
                   <div className="network">{state?.addressInfo?.networkName}</div>
-
                   <div className="address">{getShowAddress(state)}</div>
                 </div>
               </div>

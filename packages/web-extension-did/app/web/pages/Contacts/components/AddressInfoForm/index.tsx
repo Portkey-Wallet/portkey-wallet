@@ -97,7 +97,6 @@ export default function AddressInfoForm({
         <span className="show-text">{`Enter or `}</span>
         <span className="paste-text cursor-pointer" onClick={pasteClipBoard}>{`paste a wallet address`}</span>
       </div>
-
       <CommonModal
         className="select-chain-modal"
         open={isNetworkModalOpen}

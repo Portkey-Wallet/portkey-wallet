@@ -26,7 +26,7 @@ export const ContactListItem = ({
   const navigate = useNavigate();
 
   const goRecentDetail = (item: IContactItemType) => {
-    navigate('/recent-detail', { state: item });
+    navigate('/recent-detail', { state: { ...item, isFromSend: true } });
   };
 
   console.log('ContactListItem', item);

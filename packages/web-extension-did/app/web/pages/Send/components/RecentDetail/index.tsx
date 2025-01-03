@@ -29,7 +29,7 @@ const MAX_RESULT_COUNT = 10;
 const SKIP_COUNT = 0;
 
 export default function RecentDetail() {
-  const { state } = useLocationState<IContactItemType>();
+  const { state } = useLocationState<IContactItemType & { isFromSend: boolean }>();
 
   const goToNewContact = useGoAddNewContact();
 

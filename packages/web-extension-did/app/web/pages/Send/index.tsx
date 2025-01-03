@@ -69,7 +69,7 @@ import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/u
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { TransferType } from '@portkey-wallet/types/types-ca/routeParams';
 import useGetEBridgeConfig from 'hooks/ebridge';
-import { EBridge } from '@portkey-wallet/utils/eBridge';
+// import { EBridge } from '@portkey-wallet/utils/eBridge';
 import Completed from './components/Completed';
 import TokenBalanceShow from 'pages/components/TokenBalanceShow';
 import NFTBalanceShow from 'pages/components/NFTBalanceShow';
@@ -511,14 +511,14 @@ export default function Send() {
       setStage(SendStage.Completed);
 
       const _chainId = getChainIdByAddress(toAccount?.address);
-      const isAelfTransfer =
-        transferType === TransferType.GENERAL_CROSS_CHAIN || transferType === TransferType.GENERAL_SAME_CHAIN;
+
       const aelfIcon = aelfChainList?.find((ele) => ele?.chainId === _chainId)?.chainImageUrl;
+
       addRecent({
         recentItem: {
-          network: isAelfTransfer ? 'aelf' : targetNetwork?.network || '',
-          chainId: (isAelfTransfer ? getAddressChainId(toAccount?.address, 'AELF') : '') as ChainId,
-          networkIcon: isAelfTransfer ? aelfIcon : targetNetwork?.imageUrl,
+          chainId: targetNetwork?.network ? undefined : (_chainId as ChainId),
+          network: targetNetwork?.network || 'aelf',
+          networkIcon: targetNetwork?.imageUrl || aelfIcon || '',
           address: toAccount.address,
           transferTime: Date.now(),
         },
@@ -928,12 +928,17 @@ export default function Send() {
           setBtnLoading(true);
           const fromChainInfo = getAELFChainInfoConfig(tokenInfo.chainId);
           const toChainInfo = getEVMChainInfoConfig(targetNetwork?.network || '');
-          const _tokenInfo = getTokenConfig(tokenInfo.symbol);
-          const bridge = new EBridge({
-            fromChainInfo,
-            toChainInfo,
-            tokenInfo: _tokenInfo,
-          });
+          const tokenEBridgeInfo = getTokenConfig(tokenInfo.symbol);
+          const bridge = new CrossEBridgeExtension(
+            {
+              fromChainInfo,
+              toChainInfo,
+              tokenInfo: tokenEBridgeInfo,
+            },
+            pin,
+            walletInfo,
+            currentChain,
+          );
 
           receiveAmount = amount;
           receiveAmountUsd = ZERO.plus(amount).times(tokenPriceObject[tokenInfo.symbol]).toString();
@@ -943,6 +948,7 @@ export default function Send() {
 
           // limit
           const limit = await bridge.getLimit();
+          console.log('getELFFee', f, 'getLimit', limit);
           const targetLimit = getSmallerValue(limit.remain, limit.currentCapacity);
           if (limit.isEnable && timesDecimals(amount, tokenInfo.decimals || '0').isGreaterThan(targetLimit)) {
             setAmountErrMsg(getLimitTips(tokenInfo.symbol, '0', formatAmountShow(targetLimit)));
@@ -1101,6 +1107,8 @@ export default function Send() {
     getAELFChainInfoConfig,
     getEVMChainInfoConfig,
     getTokenConfig,
+    pin,
+    walletInfo,
     tokenPriceObject,
   ]);
   const toPreviewStage = useCallback(async () => {
@@ -1199,7 +1207,7 @@ export default function Send() {
     async (i: TFormattedRecentItem) => {
       console.log('onPressTabItem', i);
       try {
-        if (i.addressInfo?.address === caAddress) {
+        if (i.addressInfo?.address === caAddress || i.address === caAddress) {
           // anther chain address
           toAddressInputRef.current?.onInput(
             addressFormat(i.address || i.addressInfo?.address, i.chainId || i.addressInfo?.chainId),
@@ -1385,19 +1393,20 @@ export default function Send() {
     [
       adsInputBtnTitle,
       toAccount,
+      warning,
       isCheckAddressFinish,
       adsCheckWarningRender,
-      warning,
       addressType,
       chainList,
-      tokenInfo,
-      toPreviewStage,
       type,
+      tokenInfo,
+      onPressContactItem,
+      amountErrMsg,
+      toPreviewStage,
       balance,
       onClickMax,
       amount,
       usdAmount,
-      amountErrMsg,
       sendHandler,
       targetNetwork,
       transferType,

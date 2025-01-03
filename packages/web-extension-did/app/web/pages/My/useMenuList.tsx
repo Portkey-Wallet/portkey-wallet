@@ -62,12 +62,13 @@ export const useMenuList = () => {
         icon: 'my_guardians',
         router: '',
       },
-      {
-        label: 'Manage Devices',
-        icon: 'my_device',
-        router: '/setting/wallet-security/manage-devices',
-        element: <div className="item-extra-info">{deviceAmount}</div>,
-      },
+      // TODO: next version
+      // {
+      //   label: 'Manage Devices',
+      //   icon: 'my_device',
+      //   router: '/setting/wallet-security/manage-devices',
+      //   element: <div className="item-extra-info">{deviceAmount}</div>,
+      // },
       {
         label: 'Connected dApps',
         icon: 'my_connect site',

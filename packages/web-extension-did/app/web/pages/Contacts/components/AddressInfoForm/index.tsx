@@ -1,6 +1,6 @@
 import { IEditContactItemFormType } from 'pages/Contacts/AddContact/types';
 import './index.less';
-import { FormInstance } from 'antd';
+import { FormInstance, Form } from 'antd';
 import { useCallback, useMemo } from 'react';
 // import { useContactNetworkConfig } from '@portkey-wallet/hooks/hooks-ca/config';
 import { CustomSvgV3 } from 'components/CustomSvgV3';
@@ -9,6 +9,8 @@ import { CommonModal } from '@portkey/did-ui-react';
 import CommonHeader from 'components/CommonHeader';
 import { useContactNetworkConfig } from '@portkey-wallet/hooks/hooks-ca/config';
 import { useEffectOnce } from '@portkey-wallet/hooks';
+
+const { Item: FormItem } = Form;
 
 export type TChangeAddressInfoParams = Partial<IEditContactItemFormType['addressInfo']>;
 // packages/web-extension-did/app/web/pages/components/CustomSelect/index.tsx
@@ -85,19 +87,20 @@ export default function AddressInfoForm({
           </div>
         </div>
       )}
-      <Input.TextArea
-        // eslint-disable-next-line no-inline-styles/no-inline-styles
-        style={{ resize: 'none', height: 80 }}
-        rows={3}
-        maxLength={1000}
-        value={value?.address || ''}
-        onChange={(e) => onChangeAddressInfo({ address: e.target.value })}
-      />
+      <FormItem name="addressInfoInput">
+        <Input.TextArea
+          // eslint-disable-next-line no-inline-styles/no-inline-styles
+          style={{ resize: 'none', height: 80 }}
+          rows={3}
+          maxLength={1000}
+          value={value?.address || ''}
+          onChange={(e) => onChangeAddressInfo({ address: e.target.value })}
+        />
+      </FormItem>
       <div className="paste-container">
         <span className="show-text">{`Enter or `}</span>
         <span className="paste-text cursor-pointer" onClick={pasteClipBoard}>{`paste a wallet address`}</span>
       </div>
-
       <CommonModal
         className="select-chain-modal"
         open={isNetworkModalOpen}

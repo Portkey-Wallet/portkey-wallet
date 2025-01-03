@@ -21,12 +21,22 @@ import { IEditContactItemFormType } from './types';
 import { IContactItemType } from '@portkey-wallet/types/types-ca/contactNew';
 
 export enum ContactInfoError {
-  invalidAddress = 'Invalid address',
+  invalidAddress = 'Please enter a valid address.',
   recipientAddressIsInvalid = 'Recipient address is invalid',
-  noName = 'Please enter contact name',
-  alreadyExists = 'This name already exists.',
-  inValidName = '3-16 characters, only a-z, A-Z, 0-9 and "_" allowed',
+  alreadyExists = 'Name already in use.',
+  inValidName = 'Only a-z, A-Z, 0-9, spaces and "_" allowed.',
 }
+
+const errorCodeMessageMap: Record<number, any> = {
+  40021: {
+    name: 'contactName',
+    errorMsg: ContactInfoError.alreadyExists,
+  },
+  40022: {
+    name: 'addressInfoInput',
+    errorMsg: ContactInfoError.invalidAddress,
+  },
+} as const;
 
 type ValidateStatus = Parameters<typeof Form.Item>[0]['validateStatus'];
 export type ValidData = {
@@ -100,11 +110,27 @@ export default function AddContact() {
       await action(params);
       dispatch(fetchContactListV2Async());
       singleMessage.success(tips);
-    } catch (e: any) {
-      // TODO: Add Message Check
-      console.log('onFinish==contact error', e);
-      const msg = handleErrorMessage(e, 'handle contact error');
-      singleMessage.error(msg);
+    } catch (err: any) {
+      console.log('errrr', err);
+      const errorCode: number = err?.error?.code;
+
+      const formItemError = errorCodeMessageMap?.[errorCode];
+      console.log('formItemError', err, {
+        name: formItemError.name,
+        errors: [formItemError.errorMsg],
+      });
+
+      if (formItemError) {
+        form.setFields([
+          {
+            name: formItemError.name,
+            errors: [formItemError.errorMsg],
+          },
+        ]);
+      } else {
+        const msg = handleErrorMessage(err, 'handle contact error');
+        singleMessage.error(msg);
+      }
     } finally {
       setLoading(false);
     }
@@ -112,6 +138,7 @@ export default function AddContact() {
 
   const deleteContact = useCallback(async () => {
     try {
+      setLoading(true);
       await deleteContactApi(state);
       singleMessage.success(t('Delete Finish'));
       setTimeout(() => {
@@ -119,17 +146,14 @@ export default function AddContact() {
       }, 1000);
     } catch (error) {
       console.log('error');
+      singleMessage.error(handleErrorMessage(error));
+    } finally {
+      setLoading(false);
     }
-  }, [deleteContactApi, navigate, state, t]);
-
-  const buttonDisable = useMemo<boolean>(() => {
-    const { addressInfo, contactName } = form.getFieldsValue();
-    return !contactName?.trim() || !addressInfo?.address?.trim();
-  }, [form]);
+  }, [deleteContactApi, navigate, setLoading, state, t]);
 
   return (
     <AddContactPopup
-      isDisable={buttonDisable}
       headerTitle={headerTitle}
       goBack={handleGoBack}
       form={form}

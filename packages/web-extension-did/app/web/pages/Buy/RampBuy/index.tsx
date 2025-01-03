@@ -29,6 +29,7 @@ export default function RampBuy() {
   const { refreshRampShow } = useExtensionRampEntryShow();
   const { buyCryptoList } = useBuyCryptoList();
   const [fiatList, setFiatList] = useState<IRampFiatItem[]>([]);
+  const [init, setInit] = useState(false);
 
   const [currency, setCurrency] = useState<{
     crypto?: IRampCryptoItem;
@@ -62,6 +63,7 @@ export default function RampBuy() {
       console.log('buyForm refreshList error', error);
     } finally {
       setLoading(false);
+      setInit(true);
       if (textInputRef.current) {
         textInputRef.current.focus();
       }
@@ -262,6 +264,7 @@ export default function RampBuy() {
       isAllowAmount={isAllowAmount}
       filteredList={filteredList}
       selectedItem={selectedItem}
+      init={init}
       setOpenFiatModal={setOpenFiatModal}
       onBack={() => {
         navigate(-1);

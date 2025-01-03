@@ -53,7 +53,7 @@ export const ContactListItem = ({
             <TokenImageDisplay className="chain-logo" src={item?.addressInfo.networkImage} subDisplay={false} />
           </div>
           <div className="info-box">
-            <div className="name">{item?.caHolderInfo?.walletName}</div>
+            <div className="name">{item.name || item?.caHolderInfo?.walletName}</div>
             <div className="address">{formatStr2EllipsisStr(item?.addressInfo?.address)}</div>
           </div>
         </>

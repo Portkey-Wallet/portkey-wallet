@@ -169,7 +169,7 @@ export default function Transaction(props: {
           </>
         );
       }
-      if (transactionType === TransactionTypes.BATCH_BUY_NOW) {
+      if (transactionType === TransactionTypes.BATCH_BUY_NOW || transactionType === TransactionTypes.DEAL) {
         return (
           <>
             {operations && (
@@ -193,9 +193,47 @@ export default function Transaction(props: {
           </>
         );
       }
+
+      if (transactionType === TransactionTypes.PALY) {
+        return (
+          <div className="token-amount flex-column-center">
+            <div className="token-icon-box">
+              <ImageDisplay src={activityItem.dappIcon} defaultHeight={60} defaultWidth={60} />
+            </div>
+            <div className="token-amount-symbol">{activityItem.dappName}</div>
+          </div>
+        );
+      }
+      if (transactionType === TransactionTypes.JOIN) {
+        return (
+          <div className="token-amount flex-column-center">
+            <div className="token-icon-box">
+              <ImageDisplay name={activityItem.dappName} defaultHeight={60} defaultWidth={60} />
+            </div>
+            <div className="token-amount-symbol">{activityItem.transactionName}</div>
+          </div>
+        );
+      }
       return (
         <div className="token-amount flex-column-center">
-          <ImageDisplay src={activityItem.listIcon} name={activityItem.dappName || 'Unknown'} defaultHeight={60} />
+          <div className="token-icon-box">
+            <ImageDisplay
+              src={activityItem.listIcon}
+              name={activityItem.dappName || 'Unknown'}
+              defaultHeight={60}
+              defaultWidth={60}
+            />
+            {activityItem.statusIcon && (
+              <ImageDisplay
+                src={activityItem.statusIcon}
+                name={activityItem.dappName || 'Unknown'}
+                defaultHeight={20}
+                defaultWidth={20}
+                className="source-icon"
+              />
+            )}
+          </div>
+
           <div className="token-amount-text flex-center">
             <div className="token-amount-number">
               {formatWithCommas({ amount, decimals, sign, digits: Number(decimals) })}
@@ -451,13 +489,15 @@ export default function Transaction(props: {
       </div>
     );
   }, [
-    activityItem,
+    activityItem.transactionName,
+    activityItem.transactionType,
     fromToUI,
     isNft,
     networkUI,
     nftHeaderUI,
     onClose,
     statusAndDateUI,
+    swapUI,
     tokenHeaderUI,
     transactionUI,
     viewOnExplorerUI,

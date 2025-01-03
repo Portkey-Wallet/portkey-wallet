@@ -6,6 +6,10 @@ export enum TransactionTypes {
   CROSS_CHAIN_RECEIVE = 'ReleaseToken', // CrossChain Receive
   SWAP = 'SwapExactTokensForTokens', // Awaken
   BATCH_BUY_NOW = 'BatchBuyNow',
+  DEAL = 'Deal',
+  PALY = 'Play',
+  ADDTREEPOINTS = 'AddTreePoints',
+  JOIN = 'Join',
 }
 
 export const DEFAULT_AMOUNT = 0;
@@ -30,6 +34,10 @@ export const SHOW_FROM_TRANSACTION_TYPES = [
   TransactionTypes.SWAP,
   TransactionTypes.CROSS_CHAIN_RECEIVE,
   TransactionTypes.BATCH_BUY_NOW,
+  TransactionTypes.DEAL,
+  TransactionTypes.PALY,
+  TransactionTypes.ADDTREEPOINTS,
+  TransactionTypes.JOIN,
 ];
 
 export const SHOW_DAPP_TRANSACTION_TYPES = [TransactionTypes.SWAP];

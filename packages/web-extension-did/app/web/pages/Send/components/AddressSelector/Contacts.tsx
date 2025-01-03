@@ -28,6 +28,8 @@ export const ContactListItem = ({
   const goRecentDetail = (item: IContactItemType) => {
     navigate('/recent-detail', { state: item });
   };
+
+  console.log('ContactListItem', item);
   return (
     <div className="contact-list" onClick={() => onChange(item)}>
       {item?.addressInfo?.network === 'aelf' ? (
@@ -38,7 +40,7 @@ export const ContactListItem = ({
             chain={item?.addressInfo?.chainId === 'AELF' ? 'main' : 'dApp'}
           />
           <div className="info-box">
-            <div className="name">{item?.caHolderInfo?.walletName}</div>
+            <div className="name">{item.name || item?.caHolderInfo?.walletName}</div>
             <div className="address">
               {formatStr2EllipsisStr(`ELF_${item?.addressInfo?.address}_${item.addressInfo?.chainId}`)}
             </div>

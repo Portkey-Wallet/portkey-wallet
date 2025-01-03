@@ -24,7 +24,7 @@ export enum ContactInfoError {
   invalidAddress = 'Please enter a valid address.',
   recipientAddressIsInvalid = 'Recipient address is invalid',
   alreadyExists = 'Name already in use.',
-  inValidName = '3-16 characters, only a-z, A-Z, 0-9 and "_" allowed',
+  inValidName = 'Only a-z, A-Z, 0-9, spaces and "_" allowed.',
 }
 
 const errorCodeMessageMap: Record<number, any> = {

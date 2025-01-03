@@ -29,10 +29,8 @@ import getTransferFee from './utils/getTransferFee';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { the2ThFailedActivityItemType } from '@portkey-wallet/types/types-ca/activity';
 import { useFetchTxFee, useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
-import PromptFrame from 'pages/components/PromptFrame';
 import clsx from 'clsx';
 import { IAssetToken, INftInfoType } from '@portkey-wallet/store/store-ca/assets/type';
-import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 import { ChainId } from '@portkey-wallet/types';
 import { useCheckManagerSyncState } from 'hooks/wallet';
 import './index.less';
@@ -117,7 +115,7 @@ export const AdsCheckWarningTip = {
   },
   [WarningKey.CROSS_CHAIN]: {
     type: PromptCardType.WARNING,
-    desc: `You have not used this address recently. Ensure it is the correct address before proceeding.`,
+    desc: `This is a cross-chain transfer. Sending will incur transfer fees.`,
   },
   [WarningKey.SAME_ADDRESS]: {
     type: PromptCardType.ERROR,
@@ -151,7 +149,7 @@ export default function Send() {
   const { locationParams: state } = usePromptLocationParams<TSendLocationState, TSendLocationState>();
   const chainId: ChainId = useMemo(() => state.targetChainId || state.chainId, [state.chainId, state.targetChainId]);
 
-  const { addRecent } = useRecent();
+  const { addRecent, checkAddressIsRecent } = useRecent();
   const toAddressInputRef = useRef<IToAddressInputRef>();
 
   const tokenInfo: BaseToken = useMemo(() => {
@@ -511,14 +509,14 @@ export default function Send() {
       setStage(SendStage.Completed);
 
       const _chainId = getChainIdByAddress(toAccount?.address);
-      const isAelfTransfer =
-        transferType === TransferType.GENERAL_CROSS_CHAIN || transferType === TransferType.GENERAL_SAME_CHAIN;
+
       const aelfIcon = aelfChainList?.find((ele) => ele?.chainId === _chainId)?.chainImageUrl;
+
       addRecent({
         recentItem: {
-          network: isAelfTransfer ? 'aelf' : targetNetwork?.network || '',
-          chainId: (isAelfTransfer ? getAddressChainId(toAccount?.address, 'AELF') : '') as ChainId,
-          networkIcon: isAelfTransfer ? aelfIcon : targetNetwork?.imageUrl,
+          chainId: targetNetwork?.network ? undefined : (_chainId as ChainId),
+          network: targetNetwork?.network || 'aelf',
+          networkIcon: targetNetwork?.imageUrl || aelfIcon || '',
           address: toAccount.address,
           transferTime: Date.now(),
         },
@@ -1164,11 +1162,33 @@ export default function Send() {
     }
   }, [amount, balance, checkLimit, handleOneTimeApproval, sendTransfer, stage, toAccount, tokenInfo]);
 
+  const showStrangerAddress = useMemo(() => {
+    if (toAccount.address) {
+      return checkAddressIsRecent({
+        fromChainId: chainId,
+        tokenId: tokenInfo.symbol || tokenInfo.tokenId || '',
+        isFt: type === SendPageTypeEnum.nft,
+        address: toAccount.address,
+      });
+    }
+    return false;
+  }, [chainId, checkAddressIsRecent, toAccount.address, tokenInfo.symbol, tokenInfo.tokenId, type]);
+
   const adsCheckWarningRender = useMemo(() => {
-    if (!warning) return null;
+    if (!warning) {
+      if (showStrangerAddress) {
+        return (
+          <CommonPromptCard
+            type={AdsCheckWarningTip[WarningKey.STRANGE_ADDRESS].type}
+            description={AdsCheckWarningTip[WarningKey.STRANGE_ADDRESS].desc}
+          />
+        );
+      }
+      return null;
+    }
     const _tip = AdsCheckWarningTip[warning];
     return <CommonPromptCard type={_tip.type} description={_tip.desc} />;
-  }, [warning]);
+  }, [showStrangerAddress, warning]);
 
   const adsInputBtnTitle = useMemo(() => {
     if (
@@ -1511,7 +1531,6 @@ export default function Send() {
             buttons={modalTipContent[curModalTipKey].buttons}
           />
         )}
-        {isPrompt && <PromptEmptyElement />}
       </div>
     );
   }, [
@@ -1540,5 +1559,5 @@ export default function Send() {
     warning,
   ]);
 
-  return <>{isPrompt ? <PromptFrame content={mainContent} /> : mainContent}</>;
+  return <>{mainContent}</>;
 }

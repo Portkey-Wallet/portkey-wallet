@@ -18,7 +18,6 @@ import { setManagerInfo } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import useFetchDidWallet from './useFetchDidWallet';
 import { isWalletError } from '@portkey-wallet/store/wallet/utils';
-import ModalTip from 'pages/components/ModalTip';
 import { getLoginAccount, getLoginCache } from 'utils/lib/SWGetReduxStore';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 import { useNavigate } from 'react-router';
@@ -203,9 +202,6 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
           managerUniqueId: sessionInfo.sessionId,
           pwd: pin,
           managerAddress: _walletInfo.address,
-        });
-        ModalTip({
-          content: 'Requested successfully',
         });
       } catch (error: any) {
         console.log(error, 'onCreate==error');

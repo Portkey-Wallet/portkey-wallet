@@ -222,7 +222,7 @@ export default function SendPreview({
             {eBridgeFeeNotEnough && <div className="below-show text-color-danger">{`Not enough ELF`}</div>}
           </div>
           <div className="value-show">
-            <div>{`${transactionFeeShow.feeShow} ${transactionUnit}`}</div>
+            <div>{`${transactionFeeShow.feeShow}`}</div>
             {isMainnet && <div className="below-show">{transactionFeeShow.feeUsdShow}</div>}
           </div>
         </div>

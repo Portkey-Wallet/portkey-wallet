@@ -327,19 +327,14 @@ export default function ReceiveCardMain() {
     chainType,
     currentDepositInfo,
     currentNetWork.networkType,
-    destinationChain?.chainId,
+    destinationChain,
     isExchangeSelected,
     isMainChainToMainChain,
-    selectToken.isNFT,
-    selectToken.label,
-    selectToken?.symbol,
+    selectToken,
     selectedDestination,
     selectedSource,
     toCaAddress,
-    tokenItem?.address,
-    tokenItem?.chainId,
-    tokenItem?.decimals,
-    tokenItem?.tokenContractAddress,
+    tokenItem,
   ]);
   const mainContent = useMemo(
     () => (

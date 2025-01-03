@@ -11,8 +11,6 @@ import { useEffectOnce, useLatestRef } from '@portkey-wallet/hooks';
 import { request } from '@portkey-wallet/api/api-did';
 import { IUserTokenItemResponse } from '@portkey-wallet/types/types-ca/token';
 import './index.less';
-import PromptFrame from 'pages/components/PromptFrame';
-import { useCommonState } from 'store/Provider/hooks';
 
 export interface BaseToken {
   id?: string; // id
@@ -26,7 +24,6 @@ export interface BaseToken {
   isNFT?: boolean;
 }
 export default function ReceiveList() {
-  const { isPrompt } = useCommonState();
   const { tokenDataShowInMarket = [], totalRecordCount, fetchTokenInfoList } = useToken();
   const [filteredShowList, setFilteredShowList] = useState<IUserTokenItemResponse[]>([]);
   const chainIdList = useChainIdList();
@@ -113,5 +110,5 @@ export default function ReceiveList() {
     ),
     [debounceKeyword, filteredShowList, isLoading, navigate, tokenDataShowInMarket],
   );
-  return <>{isPrompt ? <PromptFrame content={mainContent} /> : mainContent}</>;
+  return <>{mainContent}</>;
 }

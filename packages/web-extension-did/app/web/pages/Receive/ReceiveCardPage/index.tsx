@@ -17,8 +17,6 @@ import { useCurrentCaInfo, useCurrentWalletInfo } from '@portkey-wallet/hooks/ho
 import { getManagerAccount, getPin } from 'store/utils/getStore';
 import { CAInfo } from '@portkey/did';
 import './index.less';
-import { useCommonState } from 'store/Provider/hooks';
-import PromptFrame from 'pages/components/PromptFrame';
 import { QRCodeDataObjType, shrinkSendQrData } from '@portkey-wallet/utils/qrCode';
 import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCurrentNetwork } from '@portkey-wallet/hooks/network';
@@ -67,7 +65,6 @@ const getNetworkList = (isMainnet: boolean) => {
 };
 export default function ReceiveCardMain() {
   const navigate = useNavigate();
-  const { isPrompt } = useCommonState();
   const { state: selectToken } = useLocationState<
     IUserTokenItemResponse & {
       isNFT: boolean;
@@ -164,9 +161,7 @@ export default function ReceiveCardMain() {
         return;
       }
       if (selectedType === SELECTION_TYPE.NFT) {
-        // setSelectedSource(item as TReceiveFromNetworkItem);
         setSourceChain(item as TReceiveFromNetworkItem);
-        // setSelectedDestination(item as ChainInfo);
         updateDestinationChain(item as ChainInfo);
         return;
       }
@@ -444,5 +439,5 @@ export default function ReceiveCardMain() {
   //     />
   //   </PortkeyStyleProvider>
   // );
-  return <>{isPrompt ? <PromptFrame content={mainContent} /> : mainContent}</>;
+  return <>{mainContent}</>;
 }

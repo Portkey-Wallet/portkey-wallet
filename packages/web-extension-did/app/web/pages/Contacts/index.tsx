@@ -24,6 +24,7 @@ export interface IContactsProps extends BaseHeaderProps {
   list: IContactIndexType[];
   contactCount: number;
   initData: Partial<IEditContactItemFormType>;
+  loading?: boolean;
 }
 
 export default function Contacts() {
@@ -34,22 +35,27 @@ export default function Contacts() {
   const [curList, setCurList] = useState<IContactIndexType[]>([]);
   const [isSearch, setIsSearch] = useState<boolean>(false);
 
+  const [loading, setLoading] = useState(true);
+
   useEffectOnce(() => {
     appDispatch(fetchContactListV2Async());
   });
 
   useEffect(() => {
+    setLoading(true);
     const { contactIndexFilterList: searchResult } = localSearch('');
     setCurList(searchResult);
+    setLoading(false);
     setIsSearch(false);
   }, [localSearch]);
 
   const searchChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
       setIsSearch(!!e.target.value);
-
+      setLoading(true);
       const { contactIndexFilterList: searchResult } = localSearch(e.target.value);
       setCurList(searchResult);
+      setLoading(false);
     },
     [localSearch],
   );
@@ -81,6 +87,7 @@ export default function Contacts() {
       contactCount={curTotalContactsNum}
       handleAdd={() => handleAdd(ContactHandleActionTypeEnum.ADD_CONTACT)}
       handleSearch={searchChange}
+      loading={loading}
     />
   );
 

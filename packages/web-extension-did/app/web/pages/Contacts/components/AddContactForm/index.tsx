@@ -7,6 +7,7 @@ import { IEditContactItemFormType } from 'pages/Contacts/AddContact/types';
 import { ContactHandleActionTypeEnum } from 'types/Profile';
 import AddContactAddressInfoSection from '../AddressInfoForm';
 import { useCallback, useState } from 'react';
+import { useEffectOnce } from '@portkey-wallet/hooks';
 
 const { Item: FormItem } = Form;
 
@@ -39,6 +40,10 @@ export default function AddContactForm({
     const _disabled = !contactName?.trim() || !addressInfo?.address?.trim();
     setDisabled(_disabled);
   }, [form]);
+
+  useEffectOnce(() => {
+    changeDisabled();
+  });
 
   return (
     <Form

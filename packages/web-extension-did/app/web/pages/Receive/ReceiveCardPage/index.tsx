@@ -20,7 +20,7 @@ import './index.less';
 import { useCommonState } from 'store/Provider/hooks';
 import PromptFrame from 'pages/components/PromptFrame';
 import { QRCodeDataObjType, shrinkSendQrData } from '@portkey-wallet/utils/qrCode';
-import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCurrentNetwork } from '@portkey-wallet/hooks/network';
 
 enum CHAIN_ID {
@@ -55,7 +55,16 @@ const NETWORK_LIST: NetworkItem[] = [
     key: 'aelf MainChain',
   },
 ];
-
+const getNetworkList = (isMainnet: boolean) => {
+  NETWORK_LIST.forEach((item) => {
+    if (item.key === 'aelf dAppChain') {
+      item.chainId = isMainnet ? 'tDVV' : 'tDVW';
+    } else {
+      item.chainId = 'AELF';
+    }
+  });
+  return NETWORK_LIST;
+};
 export default function ReceiveCardMain() {
   const navigate = useNavigate();
   const { isPrompt } = useCommonState();
@@ -100,6 +109,7 @@ export default function ReceiveCardMain() {
   const currentWallet = useCurrentWalletInfo();
   const { chainType } = useCurrentNetwork();
   const currentNetWork = useCurrentNetworkInfo();
+  const isMainnet = useIsMainnet();
   const currentCaAddress = currentWallet?.[destinationChain?.chainId || 'AELF']?.caAddress;
   const toCaAddress = useMemo(
     () => `ELF_${currentCaAddress}_${destinationChain?.chainId || 'AELF'}`,
@@ -147,7 +157,7 @@ export default function ReceiveCardMain() {
   );
 
   const onSelectedChange = useCallback(
-    (item: TokenItem) => {
+    (item: any) => {
       if (selectedType === SELECTION_TYPE.SOURCE) {
         setSourceChain(item as TReceiveFromNetworkItem);
         setSelectedSource(item as TReceiveFromNetworkItem);
@@ -169,7 +179,7 @@ export default function ReceiveCardMain() {
   );
 
   const renderSelected = useCallback(
-    (item: TokenItem | NetworkItem) => {
+    (item: any) => {
       const selection = (
         <div className="icon-wrapper">
           <CustomSvg type="Check" fillColor="var(--sds-color-background-default-default)" className="selected-icon" />
@@ -196,14 +206,14 @@ export default function ReceiveCardMain() {
 
   const renderSelectionList = useMemo(() => {
     if (selectedType === SELECTION_TYPE.NFT) {
-      return NETWORK_LIST;
+      return getNetworkList(isMainnet);
     }
     if (selectedType === SELECTION_TYPE.SOURCE) {
       return sourceChainList;
     }
 
     return (destinationChainList as ChainInfo[]) || [];
-  }, [destinationChainList, selectedType, sourceChainList]);
+  }, [destinationChainList, isMainnet, selectedType, sourceChainList]);
 
   const renderTip = useCallback(() => {
     if (selectToken.isNFT) {

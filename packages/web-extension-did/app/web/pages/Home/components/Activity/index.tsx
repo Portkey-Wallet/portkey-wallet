@@ -10,7 +10,6 @@ import { getCurrentActivityMapKey } from '@portkey-wallet/utils/activity';
 import { ChainId } from '@portkey-wallet/types';
 import './index.less';
 import useGAReport from 'hooks/useGAReport';
-import { Loading } from '@portkey/did-ui-react';
 
 export interface ActivityProps {
   appendData?: Function;
@@ -117,30 +116,12 @@ export default function Activity({ chainId, symbol, pageKey = 'Home-Activity' }:
     }
   }, [currentActivity, chainId, caAddressInfos, symbol, dispatch]);
 
-  console.log('initLoading', initLoading);
-
   return (
     <div className="activity-wrapper">
-      {!initLoading ? (
-        <>
-          {currentActivity?.totalRecordCount ? (
-            <ActivityList
-              data={currentActivity.data}
-              chainId={chainId}
-              hasMore={hasMore}
-              loadMore={loadMoreActivities}
-            />
-          ) : (
-            <div className="no-activity-data flex-column-center">
-              {/* <CustomSvg type="NoActivity" /> */}
-              {t('No activity')}
-            </div>
-          )}
-        </>
+      {currentActivity?.totalRecordCount ? (
+        <ActivityList data={currentActivity.data} chainId={chainId} hasMore={hasMore} loadMore={loadMoreActivities} />
       ) : (
-        <div className="loading-box">
-          <Loading width={30} height={30} />
-        </div>
+        <div className="no-activity-data flex-column-center">{!initLoading && t('No activity')}</div>
       )}
     </div>
   );

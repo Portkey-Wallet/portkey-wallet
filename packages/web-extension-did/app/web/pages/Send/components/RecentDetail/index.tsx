@@ -5,7 +5,7 @@ import { useCommonState, useUserInfo } from 'store/Provider/hooks';
 import { useCallback, useMemo, useState } from 'react';
 import PromptFrame from 'pages/components/PromptFrame';
 import Copy from 'components/Copy';
-import { getExploreLink } from '@portkey-wallet/utils';
+import { addressFormat, getExploreLink } from '@portkey-wallet/utils';
 import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import CommonHeader from 'components/CommonHeader';
 import './index.less';
@@ -23,6 +23,7 @@ import Avatar from 'pages/components/Avatar';
 import { useLocationState } from 'hooks/router';
 import { IContactItemType } from '@portkey-wallet/types/types-ca/contactNew';
 import { getShowAddress } from 'pages/Contacts/components/ContactItem';
+import { ChainType } from '@portkey/provider-types';
 
 const MAX_RESULT_COUNT = 10;
 const SKIP_COUNT = 0;
@@ -139,9 +140,14 @@ export default function RecentDetail() {
     );
   };
 
-  console.log('state', state);
+  console.log('recent state', state);
 
   const mainContent = () => {
+    const formatAddress = addressFormat(
+      state?.addressInfo?.address,
+      state?.addressInfo?.chainId,
+      state?.addressInfo?.network as ChainType,
+    );
     return (
       <div className={clsx(['recent-detail', isPrompt && 'recent-detail-prompt'])}>
         <CommonHeader
@@ -180,15 +186,10 @@ export default function RecentDetail() {
                 <img src={state?.addressInfo?.networkImage} width={24} height={24} />
                 <div className="info-left-top">
                   <div className="network">{state?.addressInfo?.networkName}</div>
-
                   <div className="address">{getShowAddress(state)}</div>
                 </div>
               </div>
-              <Copy
-                iconType={'copy'}
-                toCopy={`ELF_${state?.addressInfo?.address}_${state?.addressInfo?.chainId}`}
-                fillColor="#FFFFFF66"
-              />
+              <Copy iconType={'copy'} toCopy={formatAddress} fillColor="#FFFFFF66" />
             </div>
           </div>
           {/* TODO : not aelf address no activity */}

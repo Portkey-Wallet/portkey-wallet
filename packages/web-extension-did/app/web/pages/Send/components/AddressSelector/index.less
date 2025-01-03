@@ -67,15 +67,76 @@
 
   // ================ Recent component style ================
   .recents {
+    .contact-list {
+      display: flex;
+      align-items: start;
+      gap: 16px;
+      padding: 16px 0;
+      cursor: pointer;
+      .info-box {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        .name {
+          font-size: 16px;
+          color: @text-base1;
+          opacity: 0.7;
+        }
+        .address {
+          font-size: 16px;
+          color: @text-base1;
+          opacity: 0.4;
+        }
+      }
+      .info-icon {
+        margin-left: auto;
+      }
+      .chain-box {
+        position: relative;
+        .chain-logo {
+          width: 20px !important;
+          height: 20px !important;
+          position: absolute;
+          bottom: -2px;
+          right: -5px;
+          .show-name-index {
+            width: 20px !important;
+            height: 20px !important;
+          }
+        }
+        .show-name {
+          background-color: @bg-brand1;
+          color: @text-brand4;
+          border-radius: 50%;
+        }
+      }
+    }
+
     .recent-item {
       border-top: none !important;
-      border-bottom: 1px solid @border-neutral3;
-      padding: 13px 16px 11px 24px;
-      .main-info {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 16px 0;
+
+      .center {
+        padding-left: 16px;
         flex: 1;
-        margin-right: 24px;
-        cursor: pointer;
-        .address-item();
+
+        .address {
+          font-size: 16px;
+          color: @text-base1;
+          opacity: 0.7;
+        }
+        .gap{
+          height: 4px;
+        }
+        .network {
+          font-size: 16px;
+          color: @text-base1;
+          opacity: 0.4;
+        }
+   
       }
       .go-detail {
         .go-detail-common();
@@ -98,11 +159,13 @@
     height: 100%;
     display: flex;
     flex-direction: column;
+
     .contact-list {
       display: flex;
       align-items: start;
       gap: 16px;
       padding: 16px 0;
+      cursor: pointer;
       .info-box {
         display: flex;
         flex-direction: column;
@@ -120,6 +183,25 @@
       }
       .info-icon {
         margin-left: auto;
+      }
+      .chain-box {
+        position: relative;
+        .chain-logo {
+          width: 20px !important;
+          height: 20px !important;
+          position: absolute;
+          bottom: -2px;
+          right: -5px;
+          .show-name-index {
+            width: 20px !important;
+            height: 20px !important;
+          }
+        }
+        .show-name {
+          background-color: @bg-brand1;
+          color: @text-brand4;
+          border-radius: 50%;
+        }
       }
     }
 

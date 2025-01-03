@@ -86,6 +86,16 @@
         }
       }
     }
+   
+  }
+  .no-nft {
+    height: 200px;
+    color: @text-base1;
+    opacity: 0.7;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   .nft-list {
     border: none!important;
@@ -124,6 +134,15 @@
       }
       .nft-collection {
         gap: 12px;
+        .nft-img-box{
+          position: relative;
+          padding-bottom: 2px;
+          .nft-chain-img {
+            position: absolute;
+            bottom: 0;
+            right: -2px;
+          }
+        }
         .nft-collection-avatar {
           width: 24px;
           height: 24px;

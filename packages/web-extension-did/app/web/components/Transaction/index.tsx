@@ -1,4 +1,4 @@
-import { SHOW_FROM_TRANSACTION_TYPES } from '@portkey-wallet/constants/constants-ca/activity';
+import { SHOW_FROM_TRANSACTION_TYPES, TransactionTypes } from '@portkey-wallet/constants/constants-ca/activity';
 import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { fetchActivity } from '@portkey-wallet/store/store-ca/activity/api';
 import { ActivityItemType, TransactionStatus } from '@portkey-wallet/types/types-ca/activity';
@@ -14,6 +14,7 @@ import {
 import clsx from 'clsx';
 import Copy from 'components/Copy';
 import CustomSvg from 'components/CustomSvg';
+import { CustomSvgV3 } from 'components/CustomSvgV3';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useEffectOnce } from 'react-use';
@@ -80,7 +81,7 @@ export default function Transaction(props: {
   const status = useMemo(() => {
     if (activityItem?.status === TransactionStatus.Mined)
       return {
-        text: 'Confirmed',
+        text: 'Success',
         style: 'confirmed',
       };
     return {
@@ -131,10 +132,67 @@ export default function Transaction(props: {
   }, [activityItem]);
 
   const tokenHeaderUI = useCallback(() => {
-    const { amount, isReceived, decimals, symbol, transactionType, currentTxPriceInUsd = '' } = activityItem;
+    console.log('activityItem', activityItem);
+    const {
+      amount,
+      isReceived,
+      decimals,
+      symbol,
+      transactionType,
+      operations,
+      currentTxPriceInUsd = '',
+    } = activityItem;
     const sign = isReceived ? AmountSign.PLUS : AmountSign.MINUS;
     /* Hidden during [SocialRecovery, AddManager, RemoveManager] */
     if (transactionType && SHOW_FROM_TRANSACTION_TYPES.includes(transactionType)) {
+      if (transactionType === TransactionTypes.SWAP) {
+        return (
+          <>
+            {operations && (
+              <>
+                <div className="operations">
+                  <ImageDisplay src={operations[0].icon} defaultWidth={40} defaultHeight={40} />
+                  <ImageDisplay
+                    className="operations-1"
+                    src={operations[1].icon}
+                    defaultWidth={40}
+                    defaultHeight={40}
+                  />
+                </div>
+                <div className="swap-text-box">
+                  <span>{operations[0].symbol}</span>
+                  <CustomSvgV3 className="arrow-right" type={'arrow right thin'} />
+                  <span>{operations[1].symbol}</span>
+                </div>
+              </>
+            )}
+          </>
+        );
+      }
+      if (transactionType === TransactionTypes.BATCH_BUY_NOW) {
+        return (
+          <>
+            {operations && (
+              <>
+                <div className="operations">
+                  <ImageDisplay src={operations[1]?.nftInfo?.imageUrl} defaultWidth={40} defaultHeight={40} />
+                  <ImageDisplay
+                    className="operations-1"
+                    src={operations[0].icon}
+                    defaultWidth={40}
+                    defaultHeight={40}
+                  />
+                </div>
+                <div className="swap-text-box">
+                  <span>{operations[1]?.nftInfo?.alias}</span>
+                  <CustomSvgV3 className="arrow-right" type={'arrow right thin'} />
+                  <span>{operations[0].symbol}</span>
+                </div>
+              </>
+            )}
+          </>
+        );
+      }
       return (
         <div className="token-amount flex-column-center">
           <ImageDisplay src={activityItem.listIcon} name={activityItem.dappName || 'Unknown'} defaultHeight={60} />
@@ -148,7 +206,28 @@ export default function Transaction(props: {
         </div>
       );
     } else {
-      return <p className="no-amount"></p>;
+      return (
+        <div className="wallet-activity-header">
+          <div className="token-icon-box">
+            <ImageDisplay
+              src={activityItem.listIcon}
+              name={activityItem.transactionName || 'Unknown'}
+              defaultHeight={60}
+              defaultWidth={60}
+            />
+            {activityItem.sourceIcon && (
+              <ImageDisplay
+                className="source-icon"
+                src={activityItem.sourceIcon}
+                defaultHeight={20}
+                defaultWidth={20}
+              />
+            )}
+          </div>
+
+          <div className="method-name">{activityItem.transactionName}</div>
+        </div>
+      );
     }
   }, [activityItem, isMainnet]);
 
@@ -176,7 +255,9 @@ export default function Transaction(props: {
     /* Hidden during [SocialRecovery, AddManager, RemoveManager] */
     return (
       transactionType &&
-      SHOW_FROM_TRANSACTION_TYPES.includes(transactionType) && (
+      SHOW_FROM_TRANSACTION_TYPES.includes(transactionType) &&
+      transactionType !== TransactionTypes.SWAP &&
+      transactionType !== TransactionTypes.BATCH_BUY_NOW && (
         <div className="account-wrap">
           <p className="label">
             <span className="left">{t('From')}</span>
@@ -207,21 +288,28 @@ export default function Transaction(props: {
 
   const networkUI = useCallback(() => {
     /* Hidden during [SocialRecovery, AddManager, RemoveManager] */
-    const { transactionType, fromChainId, toChainId } = activityItem;
+    const { transactionType, fromChainId, toChainId, fromChainIcon, toChainIcon } = activityItem;
     const from = transNetworkText(fromChainId, !isMainnet);
     const to = transNetworkText(toChainId, !isMainnet);
 
     return (
       transactionType &&
-      SHOW_FROM_TRANSACTION_TYPES.includes(transactionType) && (
+      SHOW_FROM_TRANSACTION_TYPES.includes(transactionType) &&
+      transactionType !== TransactionTypes.BATCH_BUY_NOW && (
         <div className="network-wrap">
           <p className="label">
             <span className="left">{t('Source network')}</span>
-            <span className="right">{from}</span>
+            <span className="right">
+              <ImageDisplay src={fromChainIcon} defaultHeight={14} defaultWidth={14} />
+              <span>{from}</span>
+            </span>
           </p>
           <p className="label">
             <span className="left">{t('Destination network')}</span>
-            <span className="right">{to}</span>
+            <span className="right">
+              <ImageDisplay src={toChainIcon} defaultHeight={14} defaultWidth={14} />
+              <span>{to}</span>
+            </span>
           </p>
         </div>
       )
@@ -239,12 +327,12 @@ export default function Transaction(props: {
   const feeUI = useCallback(() => {
     return activityItem.isDelegated ? (
       <div className="value">
-        <span className="left">{t('Transaction Fee')}</span>
+        <span className="left">{t('Network fee')}</span>
         {noFeeUI()}
       </div>
     ) : (
       <div className="value">
-        <span className="left">{t('Transaction Fee')}</span>
+        <span className="left">{t('Network fee')}</span>
         <span className="right">
           {(!feeInfo || feeInfo?.length === 0) && noFeeUI()}
           {feeInfo?.length > 0 &&
@@ -293,12 +381,48 @@ export default function Transaction(props: {
     );
   }, [openOnExplorer, t]);
 
+  const swapUI = useCallback(() => {
+    const { operations, dappName, transactionType } = activityItem;
+    return (
+      <>
+        {transactionType === TransactionTypes.SWAP && operations ? (
+          <div className="swap-wrap">
+            <div>
+              <span>Provider</span>
+              <span>{dappName}</span>
+            </div>
+            <div>
+              <span>You paid</span>
+              <span>
+                - {Number(operations[0].amount) / 10 ** Number(operations[0].decimals)} {operations[0].symbol}
+              </span>
+            </div>
+            <div>
+              <span>You received</span>
+              <span className="received">
+                + {Number(operations[1].amount) / 10 ** Number(operations[1].decimals)} {operations[1].symbol}
+              </span>
+            </div>
+          </div>
+        ) : (
+          <></>
+        )}
+      </>
+    );
+  }, [activityItem]);
+
   const mainContent = useCallback(() => {
     return (
       <div className={clsx(['transaction-detail-modal-new'])}>
         <div>
           <CommonHeader
-            title={activityItem.transactionName}
+            title={
+              isNft
+                ? activityItem.transactionName
+                : SHOW_FROM_TRANSACTION_TYPES.includes(activityItem.transactionType)
+                ? activityItem.transactionName
+                : 'Wallet activity'
+            }
             rightElementList={[
               {
                 customSvgType: 'SuggestClose',
@@ -314,6 +438,7 @@ export default function Transaction(props: {
               {fromToUI()}
               {networkUI()}
               {transactionUI()}
+              {swapUI()}
             </div>
           </div>
         </div>

@@ -34,7 +34,7 @@ export const DEVICE_TYPE = (() => {
 })();
 
 // NFT
-export const PAGE_SIZE_IN_NFT_ITEM_PROMPT = 6;
+export const PAGE_SIZE_IN_NFT_ITEM_PROMPT = 8;
 
 // after ach-sell, redirect url, then wake up extension.
 export const ACH_WITHDRAW_URL = `${ThirdParty}/extension-bridge?method=${walletMessage.ACH_SELL_REDIRECT}&version=v2`;

@@ -66,6 +66,7 @@ export default function RampSell() {
   const { ach: achFee } = useGetTxFee(MAIN_CHAIN_ID);
   const [amount, setAmount] = useState<string>('');
   const [amountLocalError, setAmountLocalError] = useState<ErrorType>(INIT_NONE_ERROR);
+  const [init, setInit] = useState(false);
 
   // const chainInfo = useCurrentChain(MAIN_CHAIN_ID);
   // const pin = usePin();
@@ -96,6 +97,7 @@ export default function RampSell() {
       console.log('sellForm refreshList error', error);
     } finally {
       setLoading(false);
+      setInit(true);
       if (textInputRef.current) {
         textInputRef.current.focus();
       }
@@ -427,6 +429,7 @@ export default function RampSell() {
       openFiatModal={openFiatModal}
       filteredList={filteredList}
       selectedItem={selectedItem}
+      init={init}
       onBack={() => {
         navigate(-1);
       }}

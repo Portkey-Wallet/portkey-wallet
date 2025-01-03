@@ -3,16 +3,19 @@ import './index.less';
 import { useIndexAndName } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import TokenImageDisplay from 'pages/components/TokenImageDisplay';
+import { getAelfAddress } from '@portkey-wallet/utils/aelf';
 
 export interface IContactItemProps {
   item: Partial<IContactItemType>;
 }
 
 export const getShowAddress = (item: any) => {
-  if (item.addressInfo.network == 'aelf') {
-    return formatStr2EllipsisStr(`ELF_${item.addressInfo.address}_${item.addressInfo.chainId}`);
+  if (item.network === 'aelf' || item.addressInfo.network === 'aelf') {
+    return formatStr2EllipsisStr(
+      `ELF_${getAelfAddress(item.address || item.addressInfo.address)}_${item.chainId || item.addressInfo.chainId}`,
+    );
   }
-  return formatStr2EllipsisStr(item.addressInfo.address);
+  return formatStr2EllipsisStr(item.address || item.addressInfo.address);
 };
 
 export default function ContactItem({ item }: IContactItemProps) {

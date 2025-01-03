@@ -1,5 +1,5 @@
 import { Button, Switch } from 'antd';
-import { useAppDispatch, useGuardiansInfo, useLoading, useLoginInfo } from 'store/Provider/hooks';
+import { useAppDispatch, useGuardiansInfo, useLoginInfo } from 'store/Provider/hooks';
 import { useMemo, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getHolderInfo } from 'utils/sandboxUtil/getHolderInfo';
@@ -42,7 +42,7 @@ export default function GuardiansView() {
   const originChainId = useOriginChainId();
   const { isPrompt } = useCommonState();
   const dispatch = useAppDispatch();
-  const { setLoading } = useLoading();
+  // const { setLoading } = useLoading();
   const { walletInfo } = useCurrentWallet();
   const editable = useMemo(() => Object.keys(userGuardiansList ?? {}).length > 1, [userGuardiansList]);
   const isPhoneType = useMemo(() => opGuardian?.guardianType === LoginType.Phone, [opGuardian?.guardianType]);
@@ -91,7 +91,7 @@ export default function GuardiansView() {
 
   const handleSocialVerify = useCallback(async () => {
     try {
-      setLoading(true);
+      // setLoading(true);
       const operationDetails = getOperationDetails(operationType, {
         identifierHash: opGuardian?.identifierHash as string,
         guardianType: LoginType[opGuardian?.guardianType as LoginType],
@@ -108,7 +108,7 @@ export default function GuardiansView() {
       });
       verifiedInfo && dispatch(setUserGuardianItemStatus(verifiedInfo));
 
-      setLoading(false);
+      // setLoading(false);
       navigate('/setting/guardians/guardian-approval', {
         state: {
           previousPage: FromPageEnum.guardiansLoginGuardian,
@@ -116,16 +116,16 @@ export default function GuardiansView() {
         },
       });
     } catch (error) {
-      setLoading(false);
+      // setLoading(false);
       const _error = handleErrorMessage(error);
       singleMessage.error(_error);
       console.log('===handleSocialVerify error', error);
     }
-  }, [setLoading, socialVerify, opGuardian, operationType, originChainId, loginAccount, dispatch, navigate]);
+  }, [socialVerify, opGuardian, operationType, originChainId, loginAccount, dispatch, navigate]);
 
   const handleCommonVerify = useCallback(async () => {
     try {
-      setLoading(true);
+      // setLoading(true);
       const operationDetails = getOperationDetails(operationType, {
         identifierHash: opGuardian?.identifierHash as string,
         guardianType: LoginType[opGuardian?.guardianType as LoginType],
@@ -142,7 +142,7 @@ export default function GuardiansView() {
         },
       });
 
-      setLoading(false);
+      // setLoading(false);
       if (result.verifierSessionId) {
         dispatch(
           setCurrentGuardianAction({
@@ -166,12 +166,12 @@ export default function GuardiansView() {
         console.log('===handleCommonVerify error', result);
       }
     } catch (error) {
-      setLoading(false);
+      // setLoading(false);
       const _error = handleErrorMessage(error);
       singleMessage.error(_error);
       console.log('===handleCommonVerify error', error);
     }
-  }, [dispatch, navigate, opGuardian, operationType, originChainId, setLoading]);
+  }, [dispatch, navigate, opGuardian, operationType, originChainId]);
 
   const handleSwitch = useCallback(async () => {
     dispatch(

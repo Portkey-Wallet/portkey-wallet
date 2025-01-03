@@ -801,7 +801,7 @@ export default function AddGuardian() {
           <div className="input-item">
             <p className="label">{t('Guardian Type')}</p>
             <CustomSelect
-              className="select select-network"
+              className="select select-network guardian-type-select"
               value={guardianType}
               placeholder={t('Select guardian types')}
               onChange={guardianTypeChange}

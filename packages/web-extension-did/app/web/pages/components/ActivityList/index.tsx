@@ -363,6 +363,7 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
           <ImageDisplay
             src={item.dappIcon}
             name={item.dappName || 'Unknown'}
+            defaultWidth={32}
             defaultHeight={32}
             className="system-activity-icon"
           />
@@ -381,6 +382,7 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
             src={item.listIcon}
             backupSrc="SystemActivity"
             defaultHeight={32}
+            defaultWidth={32}
             className="system-activity-icon"
           />
           <ImageDisplay src={item.sourceIcon} backupSrc="SystemActivity" defaultHeight={16} className="source-icon" />

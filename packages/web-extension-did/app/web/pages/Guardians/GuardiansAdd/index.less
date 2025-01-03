@@ -1,6 +1,16 @@
 @import '../../../assets/theme/color.less';
 @import '../../../assets/theme/constants.less';
 
+.guardian-type-select,.guardian-type-select-drawer {
+  .guardian-type-icon {
+    &.custom-svg,
+    &.custom-svg svg {
+      width: 24px;
+      height: 24px;
+    }
+  }
+}
+
 .add-guardian-page {
   width: 100%;
   //padding: 16px;
@@ -10,6 +20,16 @@
     display: inline-block;
     line-height: 46px !important;
     width: 0; // responsive placeholder, to fix overflow
+  }
+  .add-guardian-body {
+    margin-top: 14px;
+    .guardian-type-icon {
+      &.custom-svg,
+      &.custom-svg svg {
+        width: 16px;
+        height: 16px;
+      }
+    }
   }
   .input-item {
     margin-bottom: 24px;
@@ -134,9 +154,6 @@
     .err-text {
       color: @text-danger2;
     }
-  }
-  .add-guardian-body {
-    margin-top: 14px;
   }
   .btn-wrap {
     padding: 16px;

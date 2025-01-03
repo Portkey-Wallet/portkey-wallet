@@ -1,7 +1,7 @@
 import CommonHeader from 'components/CommonHeader';
 import { useLocationState, useNavigateState } from 'hooks/router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useLoading } from 'store/Provider/hooks';
+// import { useLoading } from 'store/Provider/hooks';
 import clsx from 'clsx';
 import { PasscodeInput } from 'antd-mobile';
 import { DIGIT_CODE } from '@portkey-wallet/constants/misc';
@@ -25,7 +25,7 @@ export default function SecondaryMailboxVerify() {
   const timerRef = useRef<ReturnType<typeof setInterval>>();
   const sessionIdRef = useRef(state.sessionid);
   const { sendSecondaryEmailCode } = useSecondaryMail(state.email);
-  const { setLoading } = useLoading();
+  // const { setLoading } = useLoading();
 
   const goBack = useCallback(() => {
     navigate('/setting/wallet-security/secondary-mailbox-edit', { state: { email: state.email } });
@@ -77,7 +77,7 @@ export default function SecondaryMailboxVerify() {
   }, [codeErr, timer]);
   const onCodeFinish = useCallback(
     async (code: string) => {
-      setLoading(true);
+      // setLoading(true);
       try {
         const rst = await request.security.secondaryEmailCodeCheck({
           params: {
@@ -96,10 +96,10 @@ export default function SecondaryMailboxVerify() {
         singleMessage.error(handleErrorMessage(error || 'Invalid code'));
         onCodeChange('');
       } finally {
-        setLoading(false);
+        // setLoading(false);
       }
     },
-    [navigate, onCodeChange, setLoading],
+    [navigate, onCodeChange],
   );
 
   return (

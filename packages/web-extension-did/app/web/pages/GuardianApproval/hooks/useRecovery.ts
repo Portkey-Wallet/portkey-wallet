@@ -7,9 +7,8 @@ import {
   setPreGuardianAction,
 } from '@portkey-wallet/store/store-ca/guardians/actions';
 import useGuardianList from 'hooks/useGuardianList';
-import ModalTip from 'pages/components/ModalTip';
 import { useCallback, useMemo } from 'react';
-import { useAppDispatch, useGuardiansInfo, useLoading } from 'store/Provider/hooks';
+import { useAppDispatch, useGuardiansInfo } from 'store/Provider/hooks';
 import { resetLoginInfoAction } from 'store/reducers/loginCache/actions';
 import { GuardianMth } from 'types/guardians';
 import { handleGuardianByContract } from 'utils/sandboxUtil/handleGuardianByContract';
@@ -26,7 +25,8 @@ import { FromPageEnum, TGuardianRecoveryLocationState } from 'types/router';
 import { useReportUnsetLoginGuardian } from 'hooks/authentication';
 
 export const useGuardianRecovery = () => {
-  const { setLoading } = useLoading();
+  // const { setLoading } = useLoading();
+  // const [loading, setLoading] = useState();
   const { walletInfo } = useCurrentWallet();
   const getGuardianList = useGuardianList();
   const originChainId = useOriginChainId();
@@ -42,7 +42,7 @@ export const useGuardianRecovery = () => {
 
   return useCallback(async () => {
     try {
-      setLoading(true, 'Processing on the chain...');
+      // setLoading(true, 'Processing on the chain...');
       const { privateKey } = await getSeed();
 
       if (!currentChain?.endPoint || !privateKey) {
@@ -76,7 +76,7 @@ export const useGuardianRecovery = () => {
           value = {};
       }
       if (value?.guardiansApproved?.length === 0) {
-        setLoading(false);
+        // setLoading(false);
         return;
       }
       console.log('handleGuardianByContract', methodName, value);
@@ -128,30 +128,27 @@ export const useGuardianRecovery = () => {
       dispatch(resetLoginInfoAction());
       dispatch(resetUserGuardianStatus());
       getGuardianList({ caHash: walletInfo.caHash });
-      setLoading(false);
+      // setLoading(false);
       from === FromPageEnum.guardiansAdd && singleMessage.success('Guardians Added');
-      ModalTip({
-        content: 'Requested successfully',
-        onClose: () => {
-          setLoading(false);
-          console.log('transfer error', from, state);
-          if (from === FromPageEnum.guardiansLoginGuardian) {
-            if (state.extra === 'edit') {
-              navigate('/setting/guardians/edit');
-            } else {
-              dispatch(setPreGuardianAction());
-              navigate('/setting/guardians/view');
-            }
-            return;
+      singleMessage.success('Requested successfully');
+      setTimeout(() => {
+        console.log('transfer error', from, state);
+        if (from === FromPageEnum.guardiansLoginGuardian) {
+          if (state.extra === 'edit') {
+            navigate('/setting/guardians/edit');
+          } else {
+            dispatch(setPreGuardianAction());
+            navigate('/setting/guardians/view');
           }
+          return;
+        }
 
-          dispatch(setPreGuardianAction());
-          dispatch(setOpGuardianAction());
-          navigate('/setting/guardians');
-        },
-      });
+        dispatch(setPreGuardianAction());
+        dispatch(setOpGuardianAction());
+        navigate('/setting/guardians');
+      }, 1000);
     } catch (error: any) {
-      setLoading(false);
+      // setLoading(false);
       console.log('===handleGuardianByContract error', error);
       const _error = handleErrorMessage(error, 'handleGuardianByContract error');
       singleMessage.error(_error);
@@ -169,7 +166,7 @@ export const useGuardianRecovery = () => {
     originChainId,
     preGuardian,
     reportUnsetLoginAccount,
-    setLoading,
+    // setLoading,
     state,
     userGuardianStatus,
     walletInfo.caHash,

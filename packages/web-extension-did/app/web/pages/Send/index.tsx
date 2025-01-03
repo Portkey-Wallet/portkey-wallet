@@ -1107,6 +1107,8 @@ export default function Send() {
     getAELFChainInfoConfig,
     getEVMChainInfoConfig,
     getTokenConfig,
+    pin,
+    walletInfo,
     tokenPriceObject,
   ]);
   const toPreviewStage = useCallback(async () => {

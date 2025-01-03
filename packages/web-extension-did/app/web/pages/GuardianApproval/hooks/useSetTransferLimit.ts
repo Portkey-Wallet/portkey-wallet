@@ -2,11 +2,10 @@ import { useCallback } from 'react';
 import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { useGuardiansInfo, useLoading } from 'store/Provider/hooks';
+import { useGuardiansInfo } from 'store/Provider/hooks';
 import { formatGuardianValue } from '../utils/formatGuardianValue';
 import { setTransferLimit } from 'utils/sandboxUtil/setTransferLimit';
-import ModalTip from 'pages/components/ModalTip';
-import { handleErrorMessage, sleep } from '@portkey-wallet/utils';
+import { handleErrorMessage } from '@portkey-wallet/utils';
 import { ICheckLimitBusiness, ITransferLimitRouteState } from '@portkey-wallet/types/types-ca/paymentSecurity';
 import { ChainId } from '@portkey-wallet/types';
 import getSeed from 'utils/getSeed';
@@ -21,7 +20,7 @@ import {
 } from 'types/router';
 
 export const useSetTransferLimit = (targetChainId?: ChainId) => {
-  const { setLoading } = useLoading();
+  // const { setLoading } = useLoading();
   const { walletInfo } = useCurrentWallet();
 
   const currentChain = useCurrentChain(targetChainId);
@@ -53,7 +52,7 @@ export const useSetTransferLimit = (targetChainId?: ChainId) => {
     try {
       if (!targetChainId) throw Error('No chainId');
 
-      setLoading(true);
+      // setLoading(true);
       const { privateKey } = await getSeed();
       if (!currentChain?.endPoint || !privateKey) return singleMessage.error('set TransferLimit error');
       const { guardiansApproved } = formatGuardianValue(userGuardianStatus);
@@ -75,21 +74,31 @@ export const useSetTransferLimit = (targetChainId?: ChainId) => {
         },
       });
 
-      setLoading(false);
-      ModalTip({
-        content: 'Requested successfully',
-        onClose: async () => {
-          await sleep(1000);
-          checkBackPath({
-            ...locationParams.initStateBackUp,
-            ...locationParams,
-            dailyLimit: dailyLimit,
-            singleLimit: singleLimit,
-          });
-        },
-      });
+      // setLoading(false);
+      singleMessage.success('Requested successfully');
+      setTimeout(() => {
+        // await sleep(1000);
+        checkBackPath({
+          ...locationParams.initStateBackUp,
+          ...locationParams,
+          dailyLimit: dailyLimit,
+          singleLimit: singleLimit,
+        });
+      }, 2000);
+      // ModalTip({
+      //   content: 'Requested successfully',
+      //   onClose: async () => {
+      //     await sleep(1000);
+      //     checkBackPath({
+      //       ...locationParams.initStateBackUp,
+      //       ...locationParams,
+      //       dailyLimit: dailyLimit,
+      //       singleLimit: singleLimit,
+      //     });
+      //   },
+      // });
     } catch (error) {
-      setLoading(false);
+      // setLoading(false);
 
       const _error = handleErrorMessage(error, 'Try again later');
       singleMessage.error(_error);
@@ -99,7 +108,7 @@ export const useSetTransferLimit = (targetChainId?: ChainId) => {
     currentChain,
     currentNetwork.walletType,
     locationParams,
-    setLoading,
+    // setLoading,
     targetChainId,
     userGuardianStatus,
     walletInfo?.caHash,

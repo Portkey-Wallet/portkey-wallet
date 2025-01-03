@@ -25,6 +25,7 @@ import { useSetUserAvatar } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import singleMessage from 'utils/singleMessage';
 import './index.less';
 import { CustomSvgV3 } from 'components/CustomSvgV3';
+import { CommonButton } from '@portkey/did-ui-react';
 
 export default function NFT() {
   const navigate = useNavigateState<TSendLocationState | THomePageLocationState>();
@@ -242,7 +243,24 @@ export default function NFT() {
           </div>
           <div className="btn-wrap flex-column-center">
             <div className="balance">{`You own: ${formatTokenAmountShowWithDecimals(balance, decimals)}`}</div>
-            <Button
+
+            <CommonButton
+              className="common-button"
+              type="primaryOutline"
+              block
+              onClick={() =>
+                navigate(`/send/nft/${symbol}`, {
+                  state: {
+                    ...nftDetail,
+                    address: nftDetail.tokenContractAddress,
+                    decimals: Number(nftDetail.decimals),
+                  },
+                })
+              }>
+              <CustomSvgV3 type="send" className="send-icon" />
+              <span>Send</span>
+            </CommonButton>
+            {/* <Button
               type="primary"
               onClick={() =>
                 navigate(`/send/nft/${symbol}`, {
@@ -254,7 +272,7 @@ export default function NFT() {
                 })
               }>
               Send
-            </Button>
+            </Button> */}
           </div>
           <div className="token-id">{`${alias} #${tokenId}`}</div>
           <div

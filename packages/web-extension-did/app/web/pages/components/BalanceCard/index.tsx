@@ -5,6 +5,7 @@ import clsx from 'clsx';
 import { useCommonState } from 'store/Provider/hooks';
 import { FAUCET_URL } from '@portkey-wallet/constants/constants-ca/wallet';
 import './index.less';
+import { CommonButton } from '@portkey/did-ui-react';
 
 export interface MainCardsProps {
   className?: string;
@@ -32,9 +33,14 @@ export default function MainCards({
     () =>
       !!onSend && (
         <div className="card-item send-card flex-column-center" onClick={onSend}>
-          <div className="btn-container">
+          {/* <div className="btn-container">
             <CustomSvgV3 type="send" className="flex-center" />
           </div>
+          <span className="btn-name">{t('Send')}</span> */}
+
+          <CommonButton className="common-button" type="primaryOutline" block>
+            <CustomSvgV3 type="send" className="flex-center" />
+          </CommonButton>
           <span className="btn-name">{t('Send')}</span>
         </div>
       ),
@@ -45,9 +51,9 @@ export default function MainCards({
     () =>
       !!onReceive && (
         <div className="card-item receive-card flex-column-center" onClick={onReceive}>
-          <div className="btn-container">
+          <CommonButton className="common-button" type="primaryOutline" block>
             <CustomSvgV3 type="receive" className="flex-center" />
-          </div>
+          </CommonButton>
           <span className="btn-name">{t('Receive')}</span>
         </div>
       ),
@@ -58,9 +64,9 @@ export default function MainCards({
     () =>
       !!onBuy && (
         <div className="buy-card card-item flex-column-center" onClick={onBuy}>
-          <div className="btn-container buy-container">
+          <CommonButton className="common-button" type="primaryOutline" block>
             <CustomSvgV3 type="buy" className="flex-center" />
-          </div>
+          </CommonButton>
           <span className="btn-name">{t('Buy')}</span>
         </div>
       ),
@@ -102,9 +108,9 @@ export default function MainCards({
     () =>
       isShowFaucet && (
         <div className="faucet-card card-item flex-column-center" onClick={handleClickFaucet}>
-          <div className="btn-container">
+          <CommonButton className="common-button" type="primaryOutline" block>
             <CustomSvgV3 type="faucet" className="flex-center" />
-          </div>
+          </CommonButton>
           <span className="btn-name">{t('Faucet')}</span>
         </div>
       ),

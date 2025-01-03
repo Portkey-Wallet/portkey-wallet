@@ -4,7 +4,7 @@ import MainCards from 'pages/components/BalanceCard';
 import CustomTokenDrawer from 'pages/components/CustomTokenDrawer';
 import { useTranslation } from 'react-i18next';
 import TokenList from '../Tokens';
-import Activity from '../Activity/index';
+// import Activity from '../Activity/index';
 import { Transaction } from '@portkey-wallet/types/types-ca/trade';
 import NFT from '../NFT/NFT';
 import { useAppDispatch, useUserInfo, useCommonState, useLoading } from 'store/Provider/hooks';
@@ -106,11 +106,11 @@ export default function MyBalance() {
         key: BalanceTab.NFT,
         children: <NFT />,
       },
-      {
-        label: t('Activity'),
-        key: BalanceTab.ACTIVITY,
-        children: <Activity pageKey="Home-Activity" />,
-      },
+      // {
+      //   label: t('Activity'),
+      //   key: BalanceTab.ACTIVITY,
+      //   children: <Activity pageKey="Home-Activity" />,
+      // },
     ],
     [t, tokenCount, nftCount],
   );

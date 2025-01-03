@@ -511,14 +511,14 @@ export default function Send() {
       setStage(SendStage.Completed);
 
       const _chainId = getChainIdByAddress(toAccount?.address);
-      const isAelfTransfer =
-        transferType === TransferType.GENERAL_CROSS_CHAIN || transferType === TransferType.GENERAL_SAME_CHAIN;
+
       const aelfIcon = aelfChainList?.find((ele) => ele?.chainId === _chainId)?.chainImageUrl;
+
       addRecent({
         recentItem: {
-          network: isAelfTransfer ? 'aelf' : targetNetwork?.network || '',
-          chainId: (isAelfTransfer ? getAddressChainId(toAccount?.address, 'AELF') : '') as ChainId,
-          networkIcon: isAelfTransfer ? aelfIcon : targetNetwork?.imageUrl,
+          chainId: targetNetwork?.network ? undefined : (_chainId as ChainId),
+          network: targetNetwork?.network || 'aelf',
+          networkIcon: targetNetwork?.imageUrl || aelfIcon || '',
           address: toAccount.address,
           transferTime: Date.now(),
         },

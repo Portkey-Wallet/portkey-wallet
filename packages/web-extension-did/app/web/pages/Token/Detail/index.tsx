@@ -40,7 +40,7 @@ export type TTokenDetailNavigateState = {
 
 function TokenDetail() {
   const navigate = useNavigateState<TTokenDetailNavigateState | Partial<TSendLocationState> | TReceiveLocationState>();
-  const { state: currentToken } = useLocationState<TTokenDetailLocationState>();
+  const { state } = useLocationState<any>();
   const isMainNet = useIsMainnet();
   const { checkDappIsConfirmed } = useDisclaimer();
   const checkSecurity = useCheckSecurity();
@@ -51,6 +51,16 @@ function TokenDetail() {
   const { isPrompt, isNotLessThan768 } = useCommonState();
   const { isRampShow } = useExtensionRampEntryShow();
   const { setLoading } = useLoading();
+
+  const [currentChain, setCurrentChain] = useState(state.chainId);
+
+  const currentToken = useMemo(() => {
+    if (state?.tokenInfo.length == 1) {
+      return state.tokenInfo[0];
+    } else {
+      return state.tokenInfo.filter((list: { chainId: string }) => list.chainId == currentChain)[0];
+    }
+  }, [state, currentChain]);
 
   useEffect(() => {
     const list = getTokenDetailBannerList(currentToken.chainId, currentToken.symbol);
@@ -131,7 +141,7 @@ function TokenDetail() {
     (type: 'send' | 'receive', pageSide?: ReceiveTabEnum) => {
       if (type === 'receive') {
         navigate('/receive-card', {
-          state: { ...currentToken, address: currentToken?.tokenContractAddress },
+          state: { ...currentToken, address: currentToken?.tokenContractAddress, tokens: state.tokenInfo },
         });
         return;
       }
@@ -139,7 +149,7 @@ function TokenDetail() {
         state: { ...currentToken, address: currentToken?.tokenContractAddress, pageSide },
       });
     },
-    [currentToken, navigate],
+    [currentToken, navigate, state.tokenInfo],
   );
 
   useEffectOnce(() => {
@@ -156,6 +166,20 @@ function TokenDetail() {
           imgUrl={currentToken.imageUrl}
           // chainId={currentToken.chainId}
         />
+
+        <div className="token-detail-tabs">
+          {state.tokenInfo.map((list: any) => {
+            return (
+              <div
+                key={list.chainId}
+                className={`${list.chainId == currentToken.chainId ? 'active' : 'token-detail-tab'}`}
+                onClick={() => setCurrentChain(list.chainId)}>
+                {list.displayChainName}
+              </div>
+            );
+          })}
+        </div>
+
         <div className={clsx('token-detail-content', isPrompt ? '' : 'token-detail-content-popup')}>
           <div className="token-detail-balance flex-column">
             <div className={clsx('balance-amount', 'flex-column', isPrompt && 'is-prompt')}>
@@ -189,8 +213,9 @@ function TokenDetail() {
     currentToken.label,
     currentToken.symbol,
     currentToken.imageUrl,
-    currentToken.chainId,
     currentToken?.balanceInUsd,
+    currentToken.chainId,
+    state.tokenInfo,
     AmountShowWithDecimals,
     isMainNet,
     isShowBuy,

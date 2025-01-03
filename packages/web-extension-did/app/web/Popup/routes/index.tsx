@@ -73,6 +73,7 @@ import Security from '../../pages/My/SettingList/Security';
 import { SelectAssetListPage } from 'pages/Send/components/SelectAssetList';
 import RampBuy from 'pages/Buy/RampBuy';
 import RampSell from 'pages/Buy/RampSell';
+import ActivityList from 'pages/Activity';
 
 export const PageRouter = () =>
   useRoutes([
@@ -323,9 +324,14 @@ export const PageRouter = () =>
       element: <SecondaryMailboxVerify />,
     },
     {
+      path: '/activity-list',
+      element: <ActivityList />,
+    },
+    {
       path: '/chat-list',
       element: <ChatList />,
     },
+
     {
       path: '/chat-list-search',
       element: <ChatListSearch />,

@@ -1,4 +1,4 @@
-import { TokenItemShowType, ITokenSectionResponse } from '@portkey-wallet/types/types-ca/token';
+import { ITokenSectionResponse } from '@portkey-wallet/types/types-ca/token';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
 import { formatAmountUSDShow, formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -29,7 +29,7 @@ export default function TokenList() {
     () => accountTokenList.length < totalRecordCount,
     [accountTokenList.length, totalRecordCount],
   );
-  const [openPanel, setOpenPanel] = useState<string[]>([]);
+  const [, setOpenPanel] = useState<string[]>([]);
 
   const { startReport, endReport } = useGAReport();
 
@@ -44,8 +44,8 @@ export default function TokenList() {
   }, [caAddressInfos, endReport, fetchAccountTokenInfoList]);
 
   const onNavigate = useCallback(
-    (tokenInfo: TokenItemShowType) => {
-      navigate('/token-detail', { state: tokenInfo });
+    (tokenInfo: any, chainId?: string) => {
+      navigate('/token-detail', { state: { tokenInfo, chainId } });
     },
     [navigate],
   );
@@ -105,7 +105,7 @@ export default function TokenList() {
             <li
               className="token-list-item flex-row-center"
               key={`${item.label}_${item.symbol}`}
-              onClick={() => item.tokens && item.tokens.length == 1 && onNavigate(item.tokens[0])}>
+              onClick={() => item.tokens && item.tokens.length == 1 && onNavigate(item.tokens, item.chainId)}>
               <div className="logos">
                 <TokenImageDisplay width={36} className="token-icon" symbol={item.symbol} src={item.imageUrl} />
                 <div className="logo-number-box">
@@ -165,7 +165,7 @@ export default function TokenList() {
                   className="container"
                   style={{ marginTop: index !== 0 ? 4 : 0 }}
                   key={`${tokenItem.symbol}_${index}`}
-                  onClick={() => onNavigate(tokenItem)}>
+                  onClick={() => onNavigate(item?.tokens, tokenItem.chainId)}>
                   <Row className="row">
                     <Col className="row-first" span={12}>
                       <div className="symbol-logo">
@@ -195,7 +195,7 @@ export default function TokenList() {
         </Collapse.Panel>
       );
     },
-    [getAmountUSDShow, getTokenAmount, isMainnet, onNavigate, openPanel],
+    [getAmountUSDShow, getTokenAmount, isMainnet, onNavigate],
   );
   return (
     <div className={clsx('tab-token', !hasMoreTokenList && 'hidden-loading-more')}>

@@ -108,6 +108,14 @@ export function useRecent() {
     [caAddressInfos, contactMapNew, getFilterRecentList, userInfo],
   );
 
+  const checkIsStranger = useCallback(
+    (props: { fromChainId: ChainId; tokenId: string; isFt: boolean; address: string }) => {
+      const _list = getFilterRecentList(props);
+      return !_list.find(ele => ele.address === props.address);
+    },
+    [getFilterRecentList],
+  );
+
   const addRecent = useCallback(
     (params: { recentItem: IRecentItem }) => {
       return dispatch(addRecentItem({ ...params, network: currentNetwork }));
@@ -119,5 +127,5 @@ export function useRecent() {
     return dispatch(resetTargetNetworkRecent(currentNetwork));
   }, [currentNetwork, dispatch]);
 
-  return { getTransformedRecentList, getRecentList, addRecent, resetRecentCurrentNetwork };
+  return { getTransformedRecentList, getRecentList, addRecent, checkIsStranger, resetRecentCurrentNetwork };
 }

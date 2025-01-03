@@ -271,7 +271,12 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
               className="nft-activity-icon"
             />
           ) : (
-            <TokenImageDisplay className="token-activity-icon" src={item.listIcon} symbol={item.symbol} />
+            <div className="token-activity-icon-box">
+              <TokenImageDisplay className="token-activity-icon" src={item.listIcon} symbol={item.symbol} />
+              {item.statusIcon && (
+                <TokenImageDisplay className="token-status-icon" src={item.statusIcon} symbol={item.symbol} />
+              )}
+            </div>
           )}
           <div className="activity-item-detail flex-between-center">
             {renderActivityTitle(item)}
@@ -385,7 +390,9 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
             defaultWidth={32}
             className="system-activity-icon"
           />
-          <ImageDisplay src={item.sourceIcon} backupSrc="SystemActivity" defaultHeight={16} className="source-icon" />
+          {item.sourceIcon && (
+            <ImageDisplay src={item.sourceIcon} backupSrc="SystemActivity" defaultHeight={16} className="source-icon" />
+          )}
         </div>
 
         <div className="activity-item-system-detail">
@@ -432,8 +439,6 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
       navToDetail,
     ],
   );
-
-  console.log('data321312321321', data);
 
   const renderActivityList = useMemo(() => {
     return (

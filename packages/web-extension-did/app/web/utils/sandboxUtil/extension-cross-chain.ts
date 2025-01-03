@@ -42,6 +42,30 @@ export class CrossEBridgeExtension extends EBridge {
     this.chainInfo = chainInfo;
   }
 
+  getLimit = async () => {
+    const resMessage = await SandboxEventService.dispatchAndReceive(SandboxEventTypes.eBridgeCrossTransferLimit, {
+      chainType: 'aelf',
+      rpcUrl: '',
+      chainInfo: JSON.stringify(this.chainInfo),
+      options: JSON.stringify(this.options),
+    });
+
+    if (resMessage.code === SandboxErrorCode.error) throw resMessage.message;
+    return resMessage.message;
+  };
+
+  getELFFee = async () => {
+    const resMessage = await SandboxEventService.dispatchAndReceive(SandboxEventTypes.eBridgeCrossTransferELFFee, {
+      chainType: 'aelf',
+      rpcUrl: '',
+      chainInfo: JSON.stringify(this.chainInfo),
+      options: JSON.stringify(this.options),
+    });
+
+    if (resMessage.code === SandboxErrorCode.error) throw resMessage.message;
+    return resMessage.message;
+  };
+
   createReceipt = async (params: Omit<ICreateReceiptParams, 'tokenContract' | 'portkeyContract'>) => {
     const resMessage = await SandboxEventService.dispatchAndReceive(SandboxEventTypes.eBridgeCrossTransfer, {
       chainType: 'aelf',

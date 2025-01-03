@@ -10,7 +10,7 @@ import {
 import { BaseToken } from '@portkey-wallet/types/types-ca/token';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { isDIDAelfAddress } from '@portkey-wallet/utils/aelf';
-import { useCurrentChainList } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { useCurrentChainList, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useMemo } from 'react';
 import { getAddressChainId } from '@portkey-wallet/utils';
 import { INetworkItem } from '../SelectNetwork';
@@ -19,9 +19,10 @@ import { TransferType } from '@portkey-wallet/types/types-ca/routeParams';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { getEstimatedTime } from 'pages/Send/utils';
 import { CommonModalTip } from '@portkey/did-ui-react';
-import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
-// import { SeedTypeEnum } from '@portkey-wallet/types/types-ca/assets';
+import { useAmountInUsdShow, useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
+import { useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
 import './index.less';
+
 export interface ISendPreviewProps {
   amount?: string;
   usdAmount?: string;
@@ -65,8 +66,13 @@ export default function SendPreview({
     () => chainList?.find((ele) => ele.chainId === toChainId)?.chainImageUrl,
     [chainList, toChainId],
   );
+  const amountInUsdShow = useAmountInUsdShow();
+  const { crossChain: crossDefaultFee } = useGetTxFee(tokenInfo.chainId);
+  const defaultToken = useDefaultToken();
   const [tokenPriceObject] = useGetCurrentAccountTokenPrice();
   const EstimateAmount = useMemo(() => {
+    let _amount = amount;
+
     // adjust etransfer
     if (
       ZERO.plus(amount).isLessThanOrEqualTo(transactionFee || '') &&
@@ -87,23 +93,68 @@ export default function SendPreview({
       };
     }
 
-    // _amount = formatAmountShow(_amount, Number(tokenInfo?.decimals));
-    // const amountUsd = formatAmountShow(ZERO.plus(_amount).div(price));
+    // adjust general transfer
+    if (transferType === TransferType.GENERAL_SAME_CHAIN) {
+      _amount = formatAmountShow(_amount, Number(tokenInfo.decimals));
+      const amountUsd = amountInUsdShow(_amount, 0, tokenInfo.symbol);
+
+      console.log('GENERAL_SAME_CHAIN', _amount, amountUsd);
+
+      return {
+        estimateAmount: `${_amount} ${tokenInfo.label || tokenInfo.symbol}`,
+        estimateAmountUsd: isMainnet ? amountUsd : '',
+      };
+    }
+
+    //
+    const fee = networkFee || 0;
+    if (ZERO.plus(amount).isLessThanOrEqualTo(fee) && tokenInfo.symbol === defaultToken.symbol) {
+      return {
+        estimateAmount: `0 ${tokenInfo?.label || tokenInfo?.symbol}`,
+        estimateAmountUsd: isMainnet ? '$0' : '',
+      };
+    }
+
+    // adjust cross chain in aelf
+    if (transferType === TransferType.GENERAL_CROSS_CHAIN) {
+      _amount =
+        tokenInfo.symbol === defaultToken.symbol
+          ? formatAmountShow(
+              ZERO.plus(_amount)
+                .minus(networkFee || '')
+                .minus(crossDefaultFee),
+              Number(defaultToken.decimals),
+            )
+          : formatAmountShow(ZERO.plus(_amount), Number(tokenInfo.decimals));
+    } else {
+      _amount =
+        tokenInfo.symbol === defaultToken.symbol
+          ? formatAmountShow(ZERO.plus(_amount).minus(networkFee || ''), Number(defaultToken.decimals))
+          : formatAmountShow(ZERO.plus(_amount), Number(tokenInfo.decimals));
+    }
+
+    const amountUsd = tokenPriceObject[tokenInfo?.symbol] ? amountInUsdShow(_amount, 0, tokenInfo.symbol) : '';
 
     return {
-      estimateAmount: `${amount} ${tokenInfo?.label || tokenInfo?.symbol}`,
-      estimateAmountUsd: isMainnet ? usdAmount : '',
+      estimateAmount: `${_amount} ${tokenInfo.label || tokenInfo.symbol}`,
+      estimateAmountUsd: isMainnet ? amountUsd : '',
     };
   }, [
     amount,
+    amountInUsdShow,
+    crossDefaultFee,
+    defaultToken.decimals,
+    defaultToken.symbol,
     isMainnet,
+    networkFee,
     receiveAmount,
     receiveAmountUsd,
-    tokenInfo?.label,
-    tokenInfo?.symbol,
+    tokenInfo.decimals,
+    tokenInfo.label,
+    tokenInfo.symbol,
+    tokenPriceObject,
     transactionFee,
     transferType,
-    usdAmount,
   ]);
 
   const estimatedTime = useMemo(
@@ -111,12 +162,27 @@ export default function SendPreview({
     [targetNetwork, transferType],
   );
 
-  const [isShowNetworkFee, isShowTransactionFee] = useMemo(() => {
-    return [
-      transferType === TransferType.GENERAL_CROSS_CHAIN || transferType === TransferType.GENERAL_SAME_CHAIN,
-      transferType === TransferType.E_BRIDGE || transferType === TransferType.E_TRANSFER,
-    ];
-  }, [transferType]);
+  const transactionFeeShow = useMemo(() => {
+    const result = {
+      feeShow: '',
+      feeUsdShow: '',
+    };
+    switch (transferType) {
+      case TransferType.E_TRANSFER:
+      case TransferType.E_BRIDGE:
+        result.feeShow = `${transactionFee} ${transactionUnit}`;
+        result.feeUsdShow = `$${unitConverter(
+          ZERO.plus(transactionFee || '').multipliedBy(tokenPriceObject[transactionUnit || '']),
+        )}`;
+        break;
+      case TransferType.GENERAL_CROSS_CHAIN:
+        result.feeShow = `${unitConverter(crossDefaultFee)} ${defaultToken.symbol}`;
+        result.feeUsdShow = `$${unitConverter(
+          ZERO.plus(crossDefaultFee).multipliedBy(tokenPriceObject[defaultToken.symbol]),
+        )}`;
+    }
+    return result;
+  }, [crossDefaultFee, defaultToken.symbol, tokenPriceObject, transactionFee, transactionUnit, transferType]);
 
   return (
     <div className={clsx('send-preview-wrap', className)}>
@@ -143,7 +209,7 @@ export default function SendPreview({
           </>
         </div>
       </div>
-      {isShowTransactionFee && (
+      {!!transactionFeeShow.feeShow && (
         <div className="flex-between-center content-row-info">
           <div>
             <div className="flex-row-center gap-4">
@@ -156,16 +222,12 @@ export default function SendPreview({
             {eBridgeFeeNotEnough && <div className="below-show text-color-danger">{`Not enough ELF`}</div>}
           </div>
           <div className="value-show">
-            <div>{`${transactionFee} ${transactionUnit}`}</div>
-            {isMainnet && (
-              <div className="below-show">{`$${unitConverter(
-                ZERO.plus(transactionFee || '').multipliedBy(tokenPriceObject[transactionUnit || 'ELF']),
-              )}`}</div>
-            )}
+            <div>{`${transactionFeeShow.feeShow} ${transactionUnit}`}</div>
+            {isMainnet && <div className="below-show">{transactionFeeShow.feeUsdShow}</div>}
           </div>
         </div>
       )}
-      {isShowNetworkFee && (
+      {!!networkFee && (
         <div className="flex-between-center content-row-info">
           <div className="flex-row-center gap-4">
             {`Estimated network fee`}
@@ -191,10 +253,10 @@ export default function SendPreview({
           {isMainnet && <div className="below-show">{`$${EstimateAmount?.estimateAmountUsd}`}</div>}
         </div>
       </div>
-      {(transferType === TransferType.E_BRIDGE || transferType === TransferType.E_TRANSFER) && (
+      {!!estimatedTime && (
         <div className="flex-between-center content-row-info">
           <div>{`Estimated duration`}</div>
-          <div className="value-show">{estimatedTime}</div>
+          <div className="value-show">{`~${estimatedTime}`}</div>
         </div>
       )}
       {(transferType === TransferType.E_BRIDGE || transferType === TransferType.E_TRANSFER) && (

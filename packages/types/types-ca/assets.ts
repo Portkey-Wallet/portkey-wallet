@@ -21,6 +21,7 @@ export type NFTCollectionItemBaseType = {
   seedOwnedSymbol?: string;
   chainImageUrl?: string;
   displayChainImage?: boolean;
+  displayChainName?: string;
 };
 
 export interface NFTCollectionItemShowType extends NFTCollectionItemBaseType {

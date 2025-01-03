@@ -71,7 +71,7 @@ const CopyAddressDrawerOrModal = forwardRef((_, ref) => {
   };
 
   const renderAddressList = () => (
-    <div className="address-list flex-column">
+    <div className="address-list">
       {caAddressInfos.map((item, index) => (
         <Fragment key={index}>
           {renderAddressItem({

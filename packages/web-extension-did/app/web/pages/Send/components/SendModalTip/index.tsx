@@ -45,8 +45,8 @@ export default function SendModalTip({
   onClose,
   buttonGroupType = 'row',
 }: ISendModalTip) {
-  const [b1, b2] = buttons;
   const renderButton = useMemo(() => {
+    const [b1, b2] = buttons;
     return buttons.length === 1 ? (
       <Button type={b1.type} onClick={b1.onClick} block>
         {b1.content}
@@ -61,7 +61,7 @@ export default function SendModalTip({
         </Button>
       </div>
     );
-  }, [b1.content, b1.onClick, b1.type, b2.content, b2.onClick, b2.type, buttonGroupType, buttons.length]);
+  }, [buttonGroupType, buttons]);
   return (
     <CommonModal open={open}>
       <div className="send-modal-tip">

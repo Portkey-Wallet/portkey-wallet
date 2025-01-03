@@ -2,7 +2,7 @@ import clsx from 'clsx';
 import CommonHeader from 'components/CommonHeader';
 import { useLocationState, useNavigateState } from 'hooks/router';
 import PromptFrame from 'pages/components/PromptFrame';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useCallback } from 'react';
 import { useCommonState } from 'store/Provider/hooks';
 import { THomePageLocationState, TSendLocationState, TNFTLocationState } from 'types/router';
 import { useAccountNFTCollectionInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
@@ -21,33 +21,26 @@ const Collection = () => {
 
   const caAddressInfos = useCaAddressInfoList();
 
+  console.log('accountNFTList', accountNFTList);
+
   const currentCollection: any = useMemo(() => {
-    return accountNFTList.filter((list) => list.collectionName === state.collectionName)[0];
+    return accountNFTList.filter(
+      (list) => list.collectionName === state.collectionName && state.chainId === list.chainId,
+    )[0];
   }, [accountNFTList, state]);
 
-  console.log(
-    '32131321321',
-    // accountNFTList,
-    // totalRecordCount,
-    // fetchAccountNFTCollectionInfoList,
-    // fetchAccountNFTItem,
-    // isFetching,
-    // state,
-    currentCollection,
-  );
-
-  const getNFTItems = () => {
-    fetchAccountNFTItem({
+  const getNFTItems = useCallback(async () => {
+    await fetchAccountNFTItem({
       symbol: state.symbol,
       chainId: state.chainId,
-      pageNum: 0,
+      pageNum: currentCollection.itemCount,
       caAddressInfos: caAddressInfos.filter((item) => item.chainId === state.chainId),
     });
-  };
+  }, []);
 
   useEffect(() => {
     getNFTItems();
-  }, [currentCollection]);
+  }, []);
 
   const content = () => {
     return (

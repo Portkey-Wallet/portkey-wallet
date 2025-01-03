@@ -23,7 +23,7 @@ import { useBlockAndReport } from '@portkey-wallet/hooks/hooks-ca/im';
 
 export default function Home() {
   // const navigate = useNavigate();
-  const { isPrompt } = useCommonState();
+  const { isPrompt, isNotLessThan768 } = useCommonState();
   // const isImputation = useIsImputation();
   const { getViewReferralStatusStatus, getReferralLink } = useReferral();
   // const onUserClick = useCallback(() => {
@@ -61,7 +61,7 @@ export default function Home() {
   initIm();
 
   return (
-    <div className={clsx(['portkey-home', 'flex-column', isPrompt && 'portkey-prompt'])}>
+    <div className={clsx(['portkey-home', 'flex-column', isPrompt && !isNotLessThan768 && 'portkey-prompt'])}>
       {/* {isPrompt && isNotLessThan768 && (
         <PortKeyHeader unReadShow={isImputation || (!hideReferral && !viewReferralStatus)} onUserClick={onUserClick} />
       )} */}

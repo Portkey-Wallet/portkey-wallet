@@ -2,6 +2,7 @@ import CommonHeader from 'components/CommonHeader';
 import { IContactsProps } from '..';
 import ContactsBody from '../components/ContactsBody';
 import ContactsSearchInput from '../components/ContactsSearchInput';
+import CircleLoading from 'components/CircleLoading';
 import './index.less';
 
 export default function ContactsPopup({
@@ -13,6 +14,7 @@ export default function ContactsPopup({
   handleSearch,
   list,
   contactCount,
+  loading,
 }: IContactsProps) {
   return (
     <div className="flex-column contacts-popup min-width-max-height">
@@ -30,7 +32,13 @@ export default function ContactsPopup({
         />
         <ContactsSearchInput placeholder={searchPlaceholder} handleChange={handleSearch} />
       </div>
-      <ContactsBody isSearch={isSearch} list={list} contactCount={contactCount} />
+      {loading ? (
+        <div className="loading-container">
+          <CircleLoading width={24} height={24} />
+        </div>
+      ) : (
+        <ContactsBody isSearch={isSearch} list={list} contactCount={contactCount} />
+      )}
     </div>
   );
 }

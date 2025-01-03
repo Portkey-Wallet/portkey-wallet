@@ -26,7 +26,7 @@ export default function PortKeyTitle({
   const defaultEle = useMemo(
     () => (
       <div className="flex-row-center default-left-ele">
-        <CustomSvg type="BackLeft" className="left-arrow" />
+        <CustomSvg type="BackLeft" className="left-arrow cursor-pointer" />
       </div>
     ),
     [],
@@ -47,12 +47,14 @@ export default function PortKeyTitle({
       {renderContent ? (
         <div className="register-common-card margin-auto margin-top-64">
           {hideSubtitle ? null : (
-            <div
-              className={clsx('flex-row-center flex-row-between header-back-element')}
-              onClick={() => {
-                leftCallBack ? leftCallBack?.() : navigate(-1);
-              }}>
-              {typeof leftElement === 'boolean' ? defaultEle : leftElement}
+            <div className={clsx('flex-row-center flex-row-between header-back-element')}>
+              <div
+                onClick={() => {
+                  leftCallBack ? leftCallBack?.() : navigate(-1);
+                }}>
+                {typeof leftElement === 'boolean' ? defaultEle : leftElement}
+              </div>
+
               {renderRightContent}
             </div>
           )}

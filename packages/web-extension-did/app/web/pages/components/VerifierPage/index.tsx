@@ -1,8 +1,7 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAppDispatch } from 'store/Provider/hooks';
 import { LoginInfo } from 'store/reducers/loginCache/type';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
-import { useTranslation } from 'react-i18next';
 import { setUserGuardianSessionIdAction } from '@portkey-wallet/store/store-ca/guardians/actions';
 import { verifyErrorHandler } from 'utils/tryErrorHandler';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
@@ -20,11 +19,6 @@ import clsx from 'clsx';
 import './index.less';
 
 const MAX_TIMER = 60;
-
-enum VerificationError {
-  InvalidCode = 'Invalid code',
-  codeExpired = 'The code has expired. Please resend it.',
-}
 
 interface VerifierPageProps {
   operationType: OperationTypeEnum;
@@ -54,7 +48,6 @@ export default function VerifierPage({
   const { pathname } = useLocation();
   const [isFromLoginOrRegister, setIsFromLoginOrRegister] = useState(true);
   const [pinVal, setPinVal] = useState<string>();
-  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const originChainId = useOriginChainId();
   const uiRef = useRef<ICodeVerifyUIInterface>();
@@ -101,9 +94,9 @@ export default function VerifierPage({
           if (res.signature) return onSuccess?.({ ...res, verifierId: currentGuardian.verifier?.id || '' });
 
           if (res?.error?.message) {
-            setErr(t(res.error.message));
+            setErr(res.error.message);
           } else {
-            setErr(t(VerificationError.InvalidCode));
+            setErr('Invalid code');
           }
           setPinVal('');
         }
@@ -126,9 +119,23 @@ export default function VerifierPage({
       caHash,
       latestVerifyManagerAddress,
       onSuccess,
-      t,
     ],
   );
+
+  const errorMsg = useMemo(() => {
+    switch (err) {
+      case 'Invalid code':
+        return 'Incorrect code, please try again.';
+      case 'Too Many Retries':
+        return 'Too many retries. Please request a new verification code to continue.';
+      case 'Timeout':
+        return 'The code has expired. Please resend it.';
+      case '':
+        return '';
+      default:
+        return err;
+    }
+  }, [err]);
 
   const resendCode = useCallback(async () => {
     try {
@@ -189,6 +196,7 @@ export default function VerifierPage({
         accountType={LoginType[currentGuardian?.guardianType as LoginType] as AccountType}
         code={pinVal}
         error={!!err}
+        errorMsg={errorMsg}
         isLoading={checking}
         tipExtra={'Please contact your guardians, and enter '}
         onReSend={resendCode}

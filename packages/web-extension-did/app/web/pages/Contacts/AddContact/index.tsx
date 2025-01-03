@@ -56,7 +56,7 @@ export interface IAddContactProps extends IAddContactFormProps, BaseHeaderProps 
 export default function AddContact() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [form] = Form.useForm<IEditContactItemFormType>();
+  const [form] = Form.useForm<IEditContactItemFormType & { addressInfoInput: string }>();
   const { state } = useLocationState<IContactItemType>();
   const defaultContactFormData = useDefaultContactFormValue(state);
   const { extra }: { extra?: ContactHandleActionType } = useParams();
@@ -76,7 +76,7 @@ export default function AddContact() {
 
   // setDefault value
   useEffect(() => {
-    form.setFieldsValue(defaultContactFormData);
+    form.setFieldsValue({ ...defaultContactFormData, addressInfoInput: defaultContactFormData.addressInfo.address });
   }, [defaultContactFormData, form, isMainnet, state]);
 
   // go back previous page

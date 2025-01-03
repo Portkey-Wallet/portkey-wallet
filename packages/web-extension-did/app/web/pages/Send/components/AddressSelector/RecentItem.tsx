@@ -42,7 +42,7 @@ export default function RecentItem({
   }, []);
 
   const goRecentDetail = (item: IContactItemType) => {
-    navigate('/recent-detail', { state: item });
+    navigate('/recent-detail', { state: { ...item, isFromSend: true } });
   };
 
   const caAddresses = useCaAddresses();

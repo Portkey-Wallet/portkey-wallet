@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useEffect, useState } from 'react';
 import { Form } from 'antd';
-import { useNavigate, useParams } from 'react-router';
+import { useLocation, useNavigate, useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { fetchContactListV2Async } from '@portkey-wallet/store/store-ca/contact/actions';
 import { useAppDispatch, useLoading } from 'store/Provider/hooks';
@@ -56,8 +56,10 @@ export interface IAddContactProps extends IAddContactFormProps, BaseHeaderProps 
 export default function AddContact() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [form] = Form.useForm<IEditContactItemFormType>();
-  const { state } = useLocationState<IContactItemType>();
+
+  const [form] = Form.useForm<IEditContactItemFormType & { addressInfoInput: string }>();
+  const { state } = useLocationState<IContactItemType & { isFromSend?: boolean }>();
+  const isFromSend = !!state?.isFromSend;
   const defaultContactFormData = useDefaultContactFormValue(state);
   const { extra }: { extra?: ContactHandleActionType } = useParams();
   const isEdit = useMemo(() => extra === 'edit-contact', [extra]);
@@ -76,13 +78,13 @@ export default function AddContact() {
 
   // setDefault value
   useEffect(() => {
-    form.setFieldsValue(defaultContactFormData);
+    form.setFieldsValue({ ...defaultContactFormData, addressInfoInput: defaultContactFormData.addressInfo.address });
   }, [defaultContactFormData, form, isMainnet, state]);
 
   // go back previous page
   const handleGoBack = useCallback(() => {
-    navigate('/setting/contacts');
-  }, [navigate]);
+    isFromSend ? navigate(-2) : navigate('/setting/contacts');
+  }, [isFromSend, navigate]);
 
   const headerTitle = useMemo(
     () => (extra === ContactHandleActionTypeEnum.EDIT_CONTACT ? t('Edit Contact') : t('Add Address')),
@@ -110,6 +112,7 @@ export default function AddContact() {
       await action(params);
       dispatch(fetchContactListV2Async());
       singleMessage.success(tips);
+      handleGoBack();
     } catch (err: any) {
       console.log('errrr', err);
       const errorCode: number = err?.error?.code;

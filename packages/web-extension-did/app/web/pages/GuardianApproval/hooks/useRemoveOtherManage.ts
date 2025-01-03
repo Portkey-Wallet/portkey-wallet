@@ -6,7 +6,7 @@ import { DEVICE_TYPE } from 'constants/index';
 import { useCallback } from 'react';
 import { useGuardiansInfo } from 'store/Provider/hooks';
 import { removeOtherManager } from 'utils/sandboxUtil/removeOtherManager';
-import { handleErrorMessage } from '@portkey-wallet/utils';
+import { handleErrorMessage, sleep } from '@portkey-wallet/utils';
 import { formatGuardianValue } from '../utils/formatGuardianValue';
 import getSeed from 'utils/getSeed';
 import { usePromptLocationParams, useNavigateState } from 'hooks/router';

@@ -3,6 +3,7 @@
 
 .balance {
   // overflow-y: overlay;
+  width: 100%;
   height: calc(100% - 56px);
   overflow: auto;
   &::-webkit-scrollbar {
@@ -60,6 +61,9 @@
       overflow-x: scroll;
     }
   }
+  .portkey-tabs-nav {
+    padding: 0 !important;
+  }
 
   .portkey-tabs-nav-list {
     gap: 16px !important;
@@ -93,7 +97,7 @@
 
   .main-content-wrap {
     gap: 24px;
-    padding: 8px 16px 24px;
+    padding: 8px 0 24px;
     .balance-amount-wrap {
       gap: 4px;
       .wallet-name-wrap {

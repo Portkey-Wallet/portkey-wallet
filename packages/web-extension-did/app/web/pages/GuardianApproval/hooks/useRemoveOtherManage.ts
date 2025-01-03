@@ -48,16 +48,8 @@ export const useRemoveOtherManage = () => {
       });
       // setLoading(false);
       singleMessage.success('Requested successfully');
-      setTimeout(() => {
-        navigate('/setting/wallet-security/manage-devices');
-      }, 2000);
-      // ModalTip({
-      //   content: 'Requested successfully',
-      //   onClose: async () => {
-      //     await sleep(1000);
-      //     navigate('/setting/wallet-security/manage-devices');
-      //   },
-      // });
+      await sleep(1000);
+      navigate('/setting/wallet-security/manage-devices');
     } catch (error: any) {
       // setLoading(false);
       console.log('---remove-other-manage-error', error);

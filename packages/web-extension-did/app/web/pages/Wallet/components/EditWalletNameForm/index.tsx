@@ -111,7 +111,7 @@ export default function EditWalletNameForm({ saveCallback, nickName, setUserInfo
   return (
     <Form
       form={form}
-      className="edit-wallet-name-form"
+      className="edit-wallet-name-form customer-form"
       colon={false}
       layout="vertical"
       initialValues={{ walletName: nickName }}
@@ -126,6 +126,7 @@ export default function EditWalletNameForm({ saveCallback, nickName, setUserInfo
             help={validName.errorMsg || `${validName.length}/16`}
             validateTrigger="onBlur">
             <Input
+              allowClear
               autoComplete="off"
               onChange={(e) => handleInputChange(e.target.value)}
               placeholder={t('Only a-z, A-Z, 0-9, space and "_" allowed')}

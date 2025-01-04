@@ -137,7 +137,7 @@ export default function AddContact() {
     } finally {
       setLoading(false);
     }
-  }, [addContactApi, dispatch, editContactApi, form, isEdit, setLoading]);
+  }, [addContactApi, dispatch, editContactApi, form, handleGoBack, isEdit, setLoading]);
 
   const deleteContact = useCallback(async () => {
     try {

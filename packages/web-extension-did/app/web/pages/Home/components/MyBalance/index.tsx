@@ -55,6 +55,9 @@ import HomeHeader from 'pages/components/HomeHeader';
 import { SelectAssetListModal } from 'pages/Send/components/SelectAssetList';
 import { useAccountTokenInfo, useAccountNFTCollectionInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
 import Activity from '../Activity';
+import { PAGE_SIZE_IN_ACCOUNT_NFT_COLLECTION } from '@portkey-wallet/constants/constants-ca/assets';
+import useGAReport from 'hooks/useGAReport';
+import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 
 export interface TransactionResult {
   total: number;
@@ -83,62 +86,67 @@ export default function MyBalance() {
   const setHideAssets = useSetHideAssets();
 
   const { totalDisplayCount: tokenCount } = useAccountTokenInfo();
-  const { totalNftItemCount: nftCount } = useAccountNFTCollectionInfo();
+  const {
+    totalNftItemCount: nftCount,
+    fetchAccountNFTCollectionInfoList,
+    totalNftItemCount,
+  } = useAccountNFTCollectionInfo();
   const { isNotLessThan768, isPrompt } = useCommonState();
 
+  console.log('nftCount', nftCount);
+
+  const { startReport, endReport } = useGAReport();
+
+  useEffectOnce(() => {
+    startReport('Home-NFTsList');
+  });
+  const maxNftNum = totalNftItemCount;
+
+  const caAddressInfos = useCaAddressInfoList();
+
+  useEffect(() => {
+    fetchAccountNFTCollectionInfoList({
+      maxNFTCount: maxNftNum,
+      caAddressInfos,
+      skipCount: 0,
+      maxResultCount: PAGE_SIZE_IN_ACCOUNT_NFT_COLLECTION,
+    }).then(() => endReport('Home-NFTsList'));
+  }, [caAddressInfos, endReport, fetchAccountNFTCollectionInfoList, maxNftNum]);
+
   const renderTabsData = useMemo(() => {
+    const tabsData = [
+      {
+        label: (
+          <div className="tab-item">
+            <span>{t('Tokens')}</span>
+            <div className="number">{tokenCount}</div>
+          </div>
+        ),
+        key: BalanceTab.TOKEN,
+        children: <TokenList />,
+      },
+      {
+        label: (
+          <div className="tab-item">
+            <span>{t('NFTs')}</span>
+            <div className="number">{nftCount}</div>
+          </div>
+        ),
+        key: BalanceTab.NFT,
+        children: <NFT />,
+      },
+    ];
     if (isNotLessThan768) {
       return [
-        {
-          label: (
-            <div className="tab-item">
-              <span>{t('Tokens')}</span>
-              <div className="number">{tokenCount}</div>
-            </div>
-          ),
-          key: BalanceTab.TOKEN,
-          children: <TokenList />,
-        },
-        {
-          label: (
-            <div className="tab-item">
-              <span>{t('NFTs')}</span>
-              <div className="number">{nftCount}</div>
-            </div>
-          ),
-          key: BalanceTab.NFT,
-          children: <NFT />,
-        },
+        ...tabsData,
         {
           label: t('Activity'),
           key: BalanceTab.ACTIVITY,
           children: <Activity pageKey="Home-Activity" />,
         },
       ];
-    } else {
-      return [
-        {
-          label: (
-            <div className="tab-item">
-              <span>{t('Tokens')}</span>
-              <div className="number">{tokenCount}</div>
-            </div>
-          ),
-          key: BalanceTab.TOKEN,
-          children: <TokenList />,
-        },
-        {
-          label: (
-            <div className="tab-item">
-              <span>{t('NFTs')}</span>
-              <div className="number">{nftCount}</div>
-            </div>
-          ),
-          key: BalanceTab.NFT,
-          children: <NFT />,
-        },
-      ];
     }
+    return tabsData;
   }, [t, tokenCount, nftCount, isNotLessThan768]);
   const getGuardianList = useGuardianList();
   useFreshTokenPrice();

@@ -236,7 +236,8 @@ export default function NFT() {
           <div className="picture flex-center">
             {seedTypeTag && <CustomSvg type={seedTypeTag} />}
             {imageUrl ? (
-              <img className="picture-common" src={imageUrl} />
+              // <img className="picture-common" src={imageUrl} />
+              <div className="picture-common" style={{ backgroundImage: `url(${imageUrl})` }}></div>
             ) : (
               <div className="picture-text picture-common flex-center">{symbol?.slice(0, 1)}</div>
             )}

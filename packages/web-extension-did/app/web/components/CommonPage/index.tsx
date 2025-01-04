@@ -9,6 +9,7 @@ export type TCommonPageProps = {
   children?: ReactNode;
   className?: string;
   contentClassName?: string;
+  isHeaderShow?: boolean;
 };
 
 enum CommonPageClassName {
@@ -28,7 +29,18 @@ const COMMON_PAGE_CLASS_NAME_MAP: Record<string, string> = {
   '/success-page': `${CommonPageClassName.LARGE_LOGO_PAGE} ${CommonPageClassName.DARK_FULL_PAGE}`,
 };
 
-export const CommonPage = ({ children, className, contentClassName }: TCommonPageProps) => {
+export const BaseCommonPage = ({ children, className, contentClassName, isHeaderShow }: TCommonPageProps) => {
+  return (
+    <div className={clsx('common-page-wrap', className)}>
+      {isHeaderShow ? <PortKeyHeader className="common-page-header" /> : <></>}
+      <div className={clsx('common-page-content', contentClassName)}>
+        <div className="common-page-inner">{children}</div>
+      </div>
+    </div>
+  );
+};
+
+export const CommonPage = ({ className, isHeaderShow, ...props }: TCommonPageProps) => {
   const { pathname } = useLocation();
 
   const extraClassName = useMemo(() => {
@@ -40,6 +52,9 @@ export const CommonPage = ({ children, className, contentClassName }: TCommonPag
     return '';
   }, [pathname]);
 
+  const { isPrompt } = useCommonState();
+  const isBaseHeaderShow = useMemo(() => isHeaderShow ?? isPrompt, [isHeaderShow, isPrompt]);
+
   useEffect(() => {
     if (extraClassName.includes(CommonPageClassName.DARK_FULL_PAGE)) {
       document.body.classList.add(CommonBodyClassName.THEME_DARK_FULL);
@@ -48,13 +63,5 @@ export const CommonPage = ({ children, className, contentClassName }: TCommonPag
     }
   }, [extraClassName]);
 
-  const { isPrompt, isNotLessThan768 } = useCommonState();
-  return (
-    <div className={clsx('common-page-wrap', extraClassName, className)}>
-      {isPrompt && isNotLessThan768 ? <PortKeyHeader /> : <></>}
-      <div className={clsx('common-page-content', contentClassName)}>
-        <div className="common-page-inner">{children}</div>
-      </div>
-    </div>
-  );
+  return <BaseCommonPage isHeaderShow={isBaseHeaderShow} className={clsx(extraClassName, className)} {...props} />;
 };

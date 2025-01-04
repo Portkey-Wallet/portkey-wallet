@@ -1175,11 +1175,12 @@ export default function Send() {
       });
     }
     return false;
-  }, [chainId, checkAddressIsRecent, toAccount.address, tokenInfo.symbol, tokenInfo.tokenId, type]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [toAccount.address]);
 
   const adsCheckWarningRender = useMemo(() => {
     if (!warning) {
-      if (showStrangerAddress) {
+      if (!showStrangerAddress) {
         return (
           <CommonPromptCard
             type={AdsCheckWarningTip[WarningKey.STRANGE_ADDRESS].type}

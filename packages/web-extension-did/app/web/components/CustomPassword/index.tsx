@@ -23,6 +23,7 @@ export default function CustomPassword({ maxLength, placeholder, iconRender, val
       {...props}
       value={value}
       maxLength={maxLength ?? 16}
+      allowClear={{ clearIcon: <CustomSvgV3 type="close-circle" /> }}
       placeholder={placeholder ?? 'Must be at least 6 characters'}
       iconRender={iconRender ?? defaultIconRender}
     />

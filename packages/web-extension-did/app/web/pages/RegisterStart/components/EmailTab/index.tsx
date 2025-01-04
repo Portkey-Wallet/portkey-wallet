@@ -48,7 +48,7 @@ export default function EmailTab({ confirmText, validateEmail, onFinish, loading
       />
       <CommonButton
         loading={loading || btnLoading}
-        className="login-primary-btn"
+        className="login-primary-button"
         type="primary"
         disabled={!val || !!error}
         onClick={onClick}>

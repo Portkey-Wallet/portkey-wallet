@@ -60,7 +60,7 @@ export default function SelectNFT({ nftInfos = [], noDataMessage, loading, onSel
   return (
     <div className="send-select-nft">
       {loading ? (
-        <CircleLoading />
+        <CircleLoading width={32} height={32} />
       ) : nftInfos.length === 0 ? (
         <div className="no-data-message flex-center">{noDataMessage}</div>
       ) : (

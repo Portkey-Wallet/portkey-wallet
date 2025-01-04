@@ -39,7 +39,7 @@ export default function InputLogin({
   const nextEle = useMemo(() => {
     if (isLogin) {
       return (
-        <div className={clsx('go-sign-up')}>
+        <div className={clsx('go-sign-up-text')}>
           <span>{t(`Don't have an account?`)}</span>
           <span className="sign-text" onClick={() => navigate('/register/start/create')}>
             {t('Sign up')}
@@ -48,7 +48,7 @@ export default function InputLogin({
       );
     }
     return (
-      <div className={clsx('go-sign-up')}>
+      <div className={clsx('go-sign-up-text')}>
         <span>{t('Already have an account?')}</span>
         <span className="sign-text" onClick={() => navigate('/register/start/login-input')}>
           {t('Log in')}

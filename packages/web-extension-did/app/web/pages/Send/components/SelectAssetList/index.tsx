@@ -172,7 +172,9 @@ export function SelectAssetListModal({ open, onCancel }: { open: boolean; onCanc
         <div>{`Select Asset to Send`}</div>
         <CustomSvgV3 type="close thin" className="cursor-pointer" onClick={onCancel} />
       </div>
-      <SelectAssetList />
+      <div className="token-list-wrap">
+        <SelectAssetList />
+      </div>
     </CommonModal>
   );
 }

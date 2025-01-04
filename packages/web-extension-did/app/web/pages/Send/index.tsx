@@ -1461,7 +1461,11 @@ export default function Send() {
         ) : (
           <>
             <CommonHeader
-              title={`Send ${type === SendPageTypeEnum.token ? tokenInfo.label ?? symbol : ''}`}
+              title={
+                stage === SendStage.Preview
+                  ? 'Preview'
+                  : `Send ${type === SendPageTypeEnum.token ? tokenInfo.label ?? symbol : ''}`
+              }
               onLeftBack={() => {
                 StageObj[stage].backFun();
               }}
@@ -1495,7 +1499,15 @@ export default function Send() {
                 setStage={setStage}
               />
             )}
-            <div className="stage-ele flex-column flex-1">{StageObj[stage].element}</div>
+            <div
+              className={clsx(
+                'stage-ele',
+                'flex-column',
+                'flex-1',
+                stage === SendStage.Preview && 'stage-ele-preview',
+              )}>
+              {StageObj[stage].element}
+            </div>
             {StageObj[stage].btnText ? (
               <div className="btn-wrap">
                 <CommonButton

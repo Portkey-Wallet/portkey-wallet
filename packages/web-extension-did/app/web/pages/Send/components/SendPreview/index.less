@@ -6,12 +6,18 @@
   line-height: 22px;
   color: @text-base1;
   overflow: auto;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  .icon-amount {
+    padding: 32px 0 24px;
+  }
   .chain-image {
     width: 18px;
     height: 18px;
   }
   .activity-send-icon {
-    margin-top: 32px;
     width: 64px;
     height: 64px;
   }

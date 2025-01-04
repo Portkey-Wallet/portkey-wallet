@@ -24,12 +24,15 @@ import { useLocationState } from 'hooks/router';
 import { IContactItemType } from '@portkey-wallet/types/types-ca/contactNew';
 import { getShowAddress } from 'pages/Contacts/components/ContactItem';
 import { ChainType } from '@portkey/provider-types';
+import { singleMessage } from '@portkey/did-ui-react';
 
 const MAX_RESULT_COUNT = 10;
 const SKIP_COUNT = 0;
 
 export default function RecentDetail() {
   const { state } = useLocationState<IContactItemType & { isFromSend: boolean }>();
+
+  const isMyContact = useMemo(() => !!state?.name, [state?.name]);
 
   const goToNewContact = useGoAddNewContact();
 
@@ -119,21 +122,41 @@ export default function RecentDetail() {
   const PopoverMenuList = () => {
     return (
       <div className="action-list">
-        <div
-          className="list"
-          onClick={() => {
-            goToNewContact(
-              state.id ? ContactHandleActionTypeEnum.EDIT_CONTACT : ContactHandleActionTypeEnum.ADD_CONTACT,
-              state,
-            );
-          }}>
-          <CustomSvgV3 type={'edit'} />
-          <span>Edit address</span>
-        </div>
-        {state?.addressInfo?.network === 'aelf' && (
-          <div className="list" onClick={viewOnExplorer}>
-            <CustomSvgV3 type={'external'} />
-            <span>View On Explorer</span>
+        {isMyContact ? (
+          <>
+            <div
+              className="list"
+              onClick={() => {
+                goToNewContact(
+                  state.id ? ContactHandleActionTypeEnum.EDIT_CONTACT : ContactHandleActionTypeEnum.ADD_CONTACT,
+                  state,
+                );
+              }}>
+              <CustomSvgV3 type={'edit'} />
+              <span>Edit Address</span>
+            </div>
+            {state?.addressInfo?.network === 'aelf' && (
+              <div className="list" onClick={viewOnExplorer}>
+                <CustomSvgV3 type={'external'} />
+                <span>View On Explorer</span>
+              </div>
+            )}
+          </>
+        ) : (
+          <div
+            className="list"
+            onClick={async () => {
+              await navigator.clipboard.writeText(
+                addressFormat(
+                  state?.addressInfo?.address,
+                  state?.addressInfo?.chainId,
+                  state?.addressInfo?.network as ChainType,
+                ),
+              );
+              singleMessage.success('Copy success');
+            }}>
+            <CustomSvgV3 type={'copyAddress'} />
+            <span>Copy Address</span>
           </div>
         )}
       </div>
@@ -189,7 +212,13 @@ export default function RecentDetail() {
                   <div className="address">{getShowAddress(state)}</div>
                 </div>
               </div>
-              <Copy iconType={'copy'} toCopy={formatAddress} fillColor="#FFFFFF66" />
+              {state.name ? (
+                <Copy iconType={'copy'} toCopy={formatAddress} fillColor="#FFFFFF66" />
+              ) : (
+                <div onClick={() => goToNewContact(ContactHandleActionTypeEnum.ADD_CONTACT, state)}>
+                  <CustomSvgV3 type={'add-person'} className="add-icon" />
+                </div>
+              )}
             </div>
           </div>
           {/* TODO : not aelf address no activity */}

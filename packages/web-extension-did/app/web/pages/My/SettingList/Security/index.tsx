@@ -34,7 +34,7 @@ export default function Security() {
       },
       {
         key: 'change-pin',
-        element: 'Change Pin',
+        element: 'Change PIN',
         icon: <CustomSvgV3 type="my_pin" />,
         click: () => {
           navigate('/setting/security/confirm-pin');

@@ -8,9 +8,19 @@
     margin-bottom: 8px;
   }
   .error-msg {
-    margin-top: 4px;
-    font-size: 12px;
-    line-height: 16px;
+    margin-top: 8px;
+    font-size: 14px;
+    line-height: 140%;
     color: @text-danger2;
+  }
+
+  .@{app-prefix}-input-password {
+    box-shadow: none !important;
+  }
+}
+
+.input-pin-error {
+  .@{app-prefix}-input-password {
+    border-color: @text-danger2;
   }
 }

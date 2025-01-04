@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router';
 import clsx from 'clsx';
 import { useCommonState, useUserInfo } from 'store/Provider/hooks';
 import { useCallback, useMemo, useState } from 'react';
-import PromptFrame from 'pages/components/PromptFrame';
 import Copy from 'components/Copy';
 import { addressFormat, getExploreLink } from '@portkey-wallet/utils';
 import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
@@ -163,79 +162,74 @@ export default function RecentDetail() {
     );
   };
 
-  console.log('recent state', state);
+  const formatAddress = useMemo(
+    () =>
+      addressFormat(state?.addressInfo?.address, state?.addressInfo?.chainId, state?.addressInfo?.network as ChainType),
+    [state?.addressInfo?.address, state?.addressInfo?.chainId, state?.addressInfo?.network],
+  );
 
-  const mainContent = () => {
-    const formatAddress = addressFormat(
-      state?.addressInfo?.address,
-      state?.addressInfo?.chainId,
-      state?.addressInfo?.network as ChainType,
-    );
-    return (
-      <div className={clsx(['recent-detail', isPrompt && 'recent-detail-prompt'])}>
-        <CommonHeader
-          className="recent-detail-header"
-          title="Address Details"
-          onLeftBack={onClose}
-          rightElementList={[
-            {
-              customSvgWrapClassName: 'nft-detail-more',
-              customSvgType: 'moreHome',
-              popoverProps: {
-                overlayClassName: `nft-detail-popover ${isPrompt ? '' : 'nft-detail-popover-popup'}`,
-                open: popVisible,
-                trigger: 'click',
-                showArrow: false,
-                placement: 'bottomLeft',
-                getPopupContainer: (triggerNode: any) => triggerNode.parentNode,
-                content: <PopoverMenuList />,
-              },
-              onClick: () => setPopVisible(!popVisible),
+  return (
+    <div className={clsx(['recent-detail', isPrompt && 'recent-detail-prompt'])}>
+      <CommonHeader
+        className="recent-detail-header"
+        title="Address Details"
+        onLeftBack={onClose}
+        rightElementList={[
+          {
+            customSvgWrapClassName: 'nft-detail-more',
+            customSvgType: 'moreHome',
+            popoverProps: {
+              overlayClassName: `nft-detail-popover ${isPrompt ? '' : 'nft-detail-popover-popup'}`,
+              open: popVisible,
+              trigger: 'click',
+              showArrow: false,
+              placement: 'bottomLeft',
+              getPopupContainer: (triggerNode: any) => triggerNode.parentNode,
+              content: <PopoverMenuList />,
             },
-          ]}
-        />
-        <div className="recent-detail-body">
-          <div className="recent-detail-address-wrap">
-            {state?.name && (
-              <div className="recent-detail-contact">
-                <Avatar avatarUrl={state?.caHolderInfo?.avatar || ''} nameIndex={state?.index} size="large" />
-                <div className="name">{state?.name}</div>
+            onClick: () => setPopVisible(!popVisible),
+          },
+        ]}
+      />
+      <div className="recent-detail-body">
+        <div className="recent-detail-address-wrap">
+          {state?.name && (
+            <div className="recent-detail-contact">
+              <Avatar avatarUrl={state?.caHolderInfo?.avatar || ''} nameIndex={state?.index} size="large" />
+              <div className="name">{state?.name}</div>
+            </div>
+          )}
+          <div className="address-title">{'Address'}</div>
+
+          <div className="recent-detail-address-row">
+            <div className="info-left">
+              <img src={state?.addressInfo?.networkImage} width={24} height={24} />
+              <div className="info-left-top">
+                <div className="network">{state?.addressInfo?.networkName}</div>
+                <div className="address">{getShowAddress(state)}</div>
+              </div>
+            </div>
+            {state.name ? (
+              <Copy iconType={'copy'} toCopy={formatAddress} fillColor="#FFFFFF66" />
+            ) : (
+              <div onClick={() => goToNewContact(ContactHandleActionTypeEnum.ADD_CONTACT, state)}>
+                <CustomSvgV3 type={'add-person'} className="add-icon" />
               </div>
             )}
-            <div className="address-title">{'Address'}</div>
-
-            <div className="recent-detail-address-row">
-              <div className="info-left">
-                <img src={state?.addressInfo?.networkImage} width={24} height={24} />
-                <div className="info-left-top">
-                  <div className="network">{state?.addressInfo?.networkName}</div>
-                  <div className="address">{getShowAddress(state)}</div>
-                </div>
-              </div>
-              {state.name ? (
-                <Copy iconType={'copy'} toCopy={formatAddress} fillColor="#FFFFFF66" />
-              ) : (
-                <div onClick={() => goToNewContact(ContactHandleActionTypeEnum.ADD_CONTACT, state)}>
-                  <CustomSvgV3 type={'add-person'} className="add-icon" />
-                </div>
-              )}
-            </div>
           </div>
-          {/* TODO : not aelf address no activity */}
-          {activityInfo?.data?.length > 0 ? (
-            <ActivityList
-              data={activityInfo.data}
-              chainId={state?.addressInfo?.chainId}
-              hasMore={isHasMore}
-              loadMore={loadMoreActivities}
-            />
-          ) : (
-            <div className="no-data">{'No recent interactions'}</div>
-          )}
         </div>
+        {/* TODO : not aelf address no activity */}
+        {activityInfo?.data?.length > 0 ? (
+          <ActivityList
+            data={activityInfo.data}
+            chainId={state?.addressInfo?.chainId}
+            hasMore={isHasMore}
+            loadMore={loadMoreActivities}
+          />
+        ) : (
+          <div className="no-data">{'No recent interactions'}</div>
+        )}
       </div>
-    );
-  };
-
-  return <>{isPrompt ? <PromptFrame content={mainContent()} className="transaction-detail" /> : mainContent()}</>;
+    </div>
+  );
 }

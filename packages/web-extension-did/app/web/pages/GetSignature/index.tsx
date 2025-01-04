@@ -20,7 +20,6 @@ import { CommonPromptCard } from '@portkey/did-ui-react';
 import { PromptCardType } from 'pages/Send';
 import { ToggleContent } from 'pages/components/ToggleContent';
 import { DappSiteInfo } from 'pages/components/DappSiteInfo';
-import { CommonPage } from 'components/CommonPage';
 
 export default function GetSignature() {
   const { payload, autoSha256, isManagerSignature } = usePromptSearch<{
@@ -191,55 +190,53 @@ export default function GetSignature() {
   }, [showData, signature]);
 
   return (
-    <CommonPage>
-      <div className="get-signature">
-        <div className="get-signature-body">
-          <DappSiteInfo title="Sign message" dappInfo={curDapp} />
+    <div className="get-signature">
+      <div className="get-signature-body">
+        <DappSiteInfo title="Sign message" dappInfo={curDapp} />
 
-          {showWarning && (
-            // TODO-SA
-            <CommonPromptCard
-              className="warning-tip"
-              type={PromptCardType.WARNING}
-              description="Unknown authorization. Please proceed with caution."
-            />
-          )}
+        {showWarning && (
+          // TODO-SA
+          <CommonPromptCard
+            className="warning-tip"
+            type={PromptCardType.WARNING}
+            description="Unknown authorization. Please proceed with caution."
+          />
+        )}
 
-          <div className="message-tip-wrap">
-            {
-              'Signing this message will prove you have ownership of the current account. Only sign messages from applications you trust.'
-            }
-          </div>
-
-          <ToggleContent title="Message">
-            <div className="message-list-container">
-              {messageList.map((item) => (
-                <div key={item.title} className="message-item">
-                  <span className="message-item-title">{item.title}</span>
-                  <span className="message-item-value">{item.value}</span>
-                </div>
-              ))}
-            </div>
-          </ToggleContent>
+        <div className="message-tip-wrap">
+          {
+            'Signing this message will prove you have ownership of the current account. Only sign messages from applications you trust.'
+          }
         </div>
 
-        <div className="get-signature-footer">
-          <div className="get-signature-footer-body">
-            <Button
-              type="default"
-              onClick={() => {
-                closePrompt(errorHandler(200003));
-              }}>
-              {t('Reject')}
-            </Button>
-            <AsyncButton type="primary" onClick={sendHandler}>
-              {t('Sign')}
-            </AsyncButton>
+        <ToggleContent title="Message">
+          <div className="message-list-container">
+            {messageList.map((item) => (
+              <div key={item.title} className="message-item">
+                <span className="message-item-title">{item.title}</span>
+                <span className="message-item-value">{item.value}</span>
+              </div>
+            ))}
           </div>
-
-          <div className="get-signature-footer-tip">{'Only sign if you trust this website'}</div>
-        </div>
+        </ToggleContent>
       </div>
-    </CommonPage>
+
+      <div className="get-signature-footer">
+        <div className="get-signature-footer-body">
+          <Button
+            type="default"
+            onClick={() => {
+              closePrompt(errorHandler(200003));
+            }}>
+            {t('Reject')}
+          </Button>
+          <AsyncButton type="primary" onClick={sendHandler}>
+            {t('Sign')}
+          </AsyncButton>
+        </div>
+
+        <div className="get-signature-footer-tip">{'Only sign if you trust this website'}</div>
+      </div>
+    </div>
   );
 }

@@ -1,5 +1,5 @@
 // import { Button } from 'antd';
-import PromptFrame from 'pages/components/PromptFrame';
+// import PromptFrame from 'pages/components/PromptFrame';
 import CommonHeader from 'components/CommonHeader';
 import { useCommonState } from 'store/Provider/hooks';
 import clsx from 'clsx';
@@ -30,7 +30,7 @@ import { CommonButton } from '@portkey/did-ui-react';
 export default function NFT() {
   const navigate = useNavigateState<TSendLocationState | THomePageLocationState>();
   const { state } = useLocationState<TNFTLocationState>();
-  const { isPrompt, isNotLessThan768 } = useCommonState();
+  const { isPrompt } = useCommonState();
   const isMainNet = useIsMainnet();
   const currentNetwork = useCurrentNetworkInfo();
   const [nftDetail, setNftDetail] = useState<TNFTLocationState>(state);
@@ -314,13 +314,5 @@ export default function NFT() {
     navigate,
   ]);
 
-  return (
-    <>
-      {isPrompt && isNotLessThan768 ? (
-        <PromptFrame content={mainContent()} className="nft-detail-prompt" />
-      ) : (
-        mainContent()
-      )}
-    </>
-  );
+  return <>{mainContent()}</>;
 }

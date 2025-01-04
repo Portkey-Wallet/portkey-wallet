@@ -1,4 +1,3 @@
-import RegisterHeader from 'pages/components/RegisterHeader';
 import { useParams } from 'react-router';
 import LoginCard from './components/LoginCard';
 import ScanCard from './components/ScanCard';
@@ -380,7 +379,6 @@ export default function RegisterStart() {
 
   return (
     <div id="register-start-wrapper">
-      <RegisterHeader />
       <div className="flex-column-center register-start-content">
         <div>
           {type === 'create' && (

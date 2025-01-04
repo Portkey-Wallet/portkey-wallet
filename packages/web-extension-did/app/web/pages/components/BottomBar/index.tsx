@@ -24,9 +24,9 @@ export default function BottomBar({ className }: IBottomBarProps) {
         link: '/',
       },
       {
-        title: 'Trade',
+        title: 'Activity',
         icon: 'TradeBar',
-        link: '/trade',
+        link: '/activity-list',
       },
     ],
     [],

@@ -4,7 +4,7 @@ import Activity from 'pages/Home/components/Activity';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import clsx from 'clsx';
 import { useCommonState, useLoading } from 'store/Provider/hooks';
-import PromptFrame from 'pages/components/PromptFrame';
+// import PromptFrame from 'pages/components/PromptFrame';
 import { useFreshTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { FAUCET_URL } from '@portkey-wallet/constants/constants-ca/wallet';
 import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
@@ -160,7 +160,7 @@ function TokenDetail() {
 
   const mainContent = useCallback(() => {
     return (
-      <div className={clsx(['token-detail', isPrompt && isNotLessThan768 ? 'portkey-body' : ''])}>
+      <div className={clsx(['token-detail'])}>
         <CommonTokenHeader
           symbol={currentToken.label ?? currentToken.symbol}
           imgUrl={currentToken.imageUrl}
@@ -232,7 +232,7 @@ function TokenDetail() {
 
   return (
     <>
-      {isPrompt && isNotLessThan768 ? <PromptFrame content={mainContent()} /> : mainContent()}
+      {mainContent()}
       <DisclaimerModal open={disclaimerOpen} onClose={() => setDisclaimerOpen(false)} {...disclaimerData.current} />
     </>
   );

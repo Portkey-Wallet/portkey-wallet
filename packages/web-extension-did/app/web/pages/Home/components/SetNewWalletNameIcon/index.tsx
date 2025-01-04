@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { useSetNewWalletName } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import singleMessage from 'utils/singleMessage';
@@ -7,12 +7,14 @@ import { PromptCardType } from '@portkey/did-ui-react/dist/_types/src/components
 import { CommonPromptCard } from '@portkey/did-ui-react';
 
 export default function SetNewWalletNameIcon() {
-  const { shouldShowSetNewWalletNameIcon, handleSetNewWalletName } = useSetNewWalletName();
+  const { shouldShowSetNewWalletNameModal, handleSetNewWalletName } = useSetNewWalletName();
+  const [hidden, setHidden] = useState(false);
 
   const handlePopoverConfirm = useCallback(async () => {
     await handleSetNewWalletName()
       .then(() => {
         singleMessage.success('Wallet name updated.');
+        setHidden(true);
       })
       .catch((error) => {
         const msg = handleErrorMessage(error);
@@ -20,7 +22,8 @@ export default function SetNewWalletNameIcon() {
       });
   }, [handleSetNewWalletName]);
 
-  if (!shouldShowSetNewWalletNameIcon) return null;
+  if (!shouldShowSetNewWalletNameModal || hidden) return null;
+  // if (hidden) return null;
 
   return (
     <CommonPromptCard

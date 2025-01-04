@@ -17,7 +17,7 @@ import { useDiscoverGroupList } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { useReferral } from '@portkey-wallet/hooks/hooks-ca/referral';
 // import HomeHeader from 'pages/components/HomeHeader';
 import BottomBar from 'pages/components/BottomBar';
-import SetNewWalletNameModal from './components/SetNewWalletNameModal';
+// import SetNewWalletNameModal from './components/SetNewWalletNameModal';
 import { useBlockAndReport } from '@portkey-wallet/hooks/hooks-ca/im';
 // import { hideReferral } from '@portkey-wallet/constants/referral';
 
@@ -67,7 +67,7 @@ export default function Home() {
       )} */}
       <MyBalance />
       {!isPrompt && <BottomBar />}
-      <SetNewWalletNameModal />
+      {/*<SetNewWalletNameModal />*/}
     </div>
   );
 }

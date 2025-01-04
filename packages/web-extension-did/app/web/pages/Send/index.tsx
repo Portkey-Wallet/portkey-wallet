@@ -1257,7 +1257,8 @@ export default function Send() {
           setChainList(data?.networkList);
           // setSelectedToContact({ name: i?.name, address: i.address || i.addressInfo?.address } as TToInfo);
           setToAccount({
-            address: i.address || '',
+            address: i.address || i.addressInfo?.address || '',
+            name: i.name || '',
           });
           setStage(SendStage.Amount);
           setWarning(WarningKey.MAKE_SURE_SUPPORT_PLATFORM);

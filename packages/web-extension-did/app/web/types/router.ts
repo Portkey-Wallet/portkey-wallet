@@ -33,6 +33,7 @@ export enum FromPageEnum {
   cryptoGiftHome = 'cryptoGiftHome',
   cryptoGiftHistory = 'cryptoGiftHistory',
   cryptoGiftSuccess = 'cryptoGiftSuccess',
+  activityList = 'activity-list',
 }
 
 // Guardians

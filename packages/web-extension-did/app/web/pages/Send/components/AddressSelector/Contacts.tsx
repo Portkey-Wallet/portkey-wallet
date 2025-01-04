@@ -26,7 +26,7 @@ export const ContactListItem = ({
   const navigate = useNavigate();
 
   const goRecentDetail = (item: IContactItemType) => {
-    navigate('/recent-detail', { state: item });
+    navigate('/recent-detail', { state: { ...item, isFromSend: true } });
   };
 
   console.log('ContactListItem', item);
@@ -53,7 +53,7 @@ export const ContactListItem = ({
             <TokenImageDisplay className="chain-logo" src={item?.addressInfo.networkImage} subDisplay={false} />
           </div>
           <div className="info-box">
-            <div className="name">{item?.caHolderInfo?.walletName}</div>
+            <div className="name">{item.name || item?.caHolderInfo?.walletName}</div>
             <div className="address">{formatStr2EllipsisStr(item?.addressInfo?.address)}</div>
           </div>
         </>

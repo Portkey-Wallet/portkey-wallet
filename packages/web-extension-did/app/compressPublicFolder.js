@@ -15,10 +15,10 @@ const formattedTime = `${now.getFullYear()}${String(now.getMonth() + 1).padStart
 const outputFileName = `Portkey-v${version}-${formattedTime}.zip`;
 const outputPath = path.join(__dirname, outputFileName);
 
-zipFolder(path.join(__dirname, 'public'), outputPath, function(err) {
+zipFolder(path.join(__dirname, 'public'), outputPath, function (err) {
   if (err) {
     console.log('Error compressing public folder:', err);
   } else {
-    console.log(`Compression successful: ${outputFileName}`);
+    console.log(`Compression successful: ${outputPath}`);
   }
 });

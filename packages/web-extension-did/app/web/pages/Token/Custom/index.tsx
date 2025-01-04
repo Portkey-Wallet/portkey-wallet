@@ -7,9 +7,9 @@ import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 import { useCommonState, useLoading } from 'store/Provider/hooks';
-import PromptFrame from 'pages/components/PromptFrame';
+// import PromptFrame from 'pages/components/PromptFrame';
 import clsx from 'clsx';
-import PromptEmptyElement from 'pages/components/PromptEmptyElement';
+// import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 import CustomSelect from 'pages/components/CustomSelect';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
@@ -160,7 +160,6 @@ export default function CustomToken() {
             {t('Import')}
           </Button>
         </div>
-        {isPrompt && <PromptEmptyElement />}
       </div>
     );
   }, [
@@ -177,5 +176,5 @@ export default function CustomToken() {
     value,
   ]);
 
-  return <>{isPrompt ? <PromptFrame content={mainContent()} /> : mainContent()}</>;
+  return <>{mainContent()}</>;
 }

@@ -10,7 +10,7 @@
   }
 
   .page-content {
-    padding: 24px;
+    padding: 24px 0;
     flex: 1;
     gap: 24px;
     overflow: hidden;
@@ -47,7 +47,7 @@
 
   .btn-wrap {
     background-color: @bg-base1;
-    padding: 16px;
+    padding: 16px 0;
     .btn {
       border-radius: 100px;
       height: 48px;
@@ -60,15 +60,16 @@
     align-items: center;
     gap: 8px;
     /* stylelint-disable-next-line no-descending-specificity */
-    .custom-svg,
-    svg {
-      width: 32px;
-      height: 32px;
+    .custom-svg {
+      display: none;
     }
   }
 }
 
 .select-chain-box-drawer {
+  .select-network-header {
+    padding: 0 16px !important;
+  }
   .modal-content {
     .select-custom-token-option {
       align-items: center;
@@ -82,6 +83,9 @@
 
 .select-chain-box {
   width: 420px !important;
+  .select-network-header {
+    padding: 0 16px !important;
+  }
   .common-header-title {
     text-align: left;
   }

@@ -10,7 +10,7 @@ import DropdownSearch from 'components/DropdownSearch';
 import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useCommonState, useLoading, useUserInfo } from 'store/Provider/hooks';
 import { useChainIdList } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import PromptFrame from 'pages/components/PromptFrame';
+// import PromptFrame from 'pages/components/PromptFrame';
 import clsx from 'clsx';
 import { request } from '@portkey-wallet/api/api-did';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
@@ -23,8 +23,8 @@ import { PAGE_SIZE_DEFAULT, PAGE_SIZE_IN_ACCOUNT_ASSETS } from '@portkey-wallet/
 import './index.less';
 import CustomChainSelectDrawer from 'pages/components/CustomChainSelectDrawer';
 import CustomChainSelectModal from 'pages/components/CustomChainSelectModal';
-import { transNetworkText } from '@portkey-wallet/utils/activity';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+// import { transNetworkText } from '@portkey-wallet/utils/activity';
+// import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 
 export default function AddToken() {
   const { t } = useTranslation();
@@ -34,7 +34,7 @@ export default function AddToken() {
   const { passwordSeed } = useUserInfo();
   const appDispatch = useAppDispatch();
   const chainIdArray = useChainIdList();
-  const isMainnet = useIsMainnet();
+  // const isMainnet = useIsMainnet();
   const { setLoading } = useLoading();
   const [tokenShowList, setTokenShowList] = useState<IUserTokenItemResponse[]>(tokenDataShowInMarket);
   const hasMoreToken = useMemo(
@@ -104,40 +104,40 @@ export default function AddToken() {
     500,
   );
 
-  const handleUserTokenDisplay = useCallback(
-    async (item: IUserTokenItemResponse) => {
-      try {
-        setLoading(true);
-        const displayParam = item.displayStatus === 'None' ? true : false;
-        await request.token.userTokensDisplaySwitch({
-          params: {
-            isDisplay: displayParam,
-            ids: [item?.tokens?.[0].id, item?.tokens?.[1].id],
-          },
-        });
-        await sleep(1000);
-        if (!filterWord) {
-          await fetchTokenInfoList({
-            chainIdArray,
-            keyword: '',
-            skipCount: 0,
-            maxResultCount: PAGE_SIZE_IN_ACCOUNT_ASSETS,
-          });
-        } else {
-          await handleSearch(filterWord);
-        }
-        singleMessage.success('success');
-        // setTokenShowList((prev)=> {...prev, })
-      } catch (error: any) {
-        const err = handleErrorMessage(error, 'handle display error');
-        singleMessage.error(err);
-        console.log('=== userToken display', error);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [chainIdArray, fetchTokenInfoList, filterWord, handleSearch, setLoading],
-  );
+  // const handleUserTokenDisplay = useCallback(
+  //   async (item: IUserTokenItemResponse) => {
+  //     try {
+  //       setLoading(true);
+  //       const displayParam = item.displayStatus === 'None' ? true : false;
+  //       await request.token.userTokensDisplaySwitch({
+  //         params: {
+  //           isDisplay: displayParam,
+  //           ids: [item?.tokens?.[0].id, item?.tokens?.[1].id],
+  //         },
+  //       });
+  //       await sleep(1000);
+  //       if (!filterWord) {
+  //         await fetchTokenInfoList({
+  //           chainIdArray,
+  //           keyword: '',
+  //           skipCount: 0,
+  //           maxResultCount: PAGE_SIZE_IN_ACCOUNT_ASSETS,
+  //         });
+  //       } else {
+  //         await handleSearch(filterWord);
+  //       }
+  //       singleMessage.success('success');
+  //       // setTokenShowList((prev)=> {...prev, })
+  //     } catch (error: any) {
+  //       const err = handleErrorMessage(error, 'handle display error');
+  //       singleMessage.error(err);
+  //       console.log('=== userToken display', error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   },
+  //   [chainIdArray, fetchTokenInfoList, filterWord, handleSearch, setLoading],
+  // );
   const handleUserTokenSingleDisplay = useCallback(
     async (display: boolean, id: string) => {
       if (!id) {
@@ -174,9 +174,9 @@ export default function AddToken() {
     [chainIdArray, fetchTokenInfoList, filterWord, handleSearch, setLoading],
   );
   const renderTokenItemBtn = useCallback(
-    (item: IUserTokenItemResponse) => {
-      const isDefault = item?.isDefault || item?.tokens?.[0].isDefault || false;
-      const isAdded = item.displayStatus !== 'None' || false;
+    (item: any) => {
+      const isDefault = item.isDefault;
+      const isAdded = item.isDisplay;
       if (isDefault) {
         return (
           <span className="add-token-btn-icon">
@@ -199,43 +199,62 @@ export default function AddToken() {
           <Switch
             checked={isAdded}
             className={isAdded ? 'checked-true' : 'checked-false'}
-            onChange={() => handleUserTokenDisplay(item)}
+            onChange={async () => {
+              await handleUserTokenSingleDisplay(!isAdded, item.id);
+            }}
           />
         </div>
       );
     },
-    [handleUserTokenDisplay],
+    [handleUserTokenSingleDisplay],
   );
-  const calDisplayStatusText = useCallback(
-    (item: IUserTokenItemResponse) => {
-      let partialChainId = undefined;
-      if (item?.tokens && item?.tokens.length > 1) {
-        partialChainId = item?.tokens?.[0]?.isDisplay ? item?.tokens?.[0]?.chainId : item?.tokens?.[1]?.chainId;
-      } else {
-        partialChainId = item?.tokens?.[0]?.chainId;
-      }
-      return item.displayStatus === 'All'
-        ? 'All Networks'
-        : item.displayStatus === 'Partial'
-        ? transNetworkText(partialChainId || 'AELF', !isMainnet)
-        : 'Balance Hidden';
-    },
-    [isMainnet],
-  );
+  // const calDisplayStatusText = useCallback(
+  //   (item: IUserTokenItemResponse) => {
+  //     let partialChainId = undefined;
+  //     if (item?.tokens && item?.tokens.length > 1) {
+  //       partialChainId = item?.tokens?.[0]?.isDisplay ? item?.tokens?.[0]?.chainId : item?.tokens?.[1]?.chainId;
+  //     } else {
+  //       partialChainId = item?.tokens?.[0]?.chainId;
+  //     }
+  //     return item.displayStatus === 'All'
+  //       ? 'All Networks'
+  //       : item.displayStatus === 'Partial'
+  //       ? transNetworkText(partialChainId || 'AELF', !isMainnet)
+  //       : 'Balance Hidden';
+  //   },
+  //   [isMainnet],
+  // );
   const renderTokenItem = useCallback(
-    (item: IUserTokenItemResponse) => (
-      <div className="token-item" key={`${item.symbol}-${item.imageUrl}`}>
-        <div className="token-item-content">
-          <TokenImageDisplay className="custom-logo" width={28} symbol={item.symbol} src={item.imageUrl} />
-          <p className="token-info">
-            <span className="token-item-symbol">{item.label ?? item.symbol}</span>
-            <span className="token-item-net">{calDisplayStatusText(item)}</span>
-          </p>
-        </div>
-        <div className="token-item-action">{renderTokenItemBtn(item)}</div>
-      </div>
-    ),
-    [calDisplayStatusText, renderTokenItemBtn],
+    (item: IUserTokenItemResponse) => {
+      return (
+        item?.tokens &&
+        item?.tokens
+          .map((list) => {
+            return (
+              <div className="token-item" key={list.id}>
+                <div className="token-item-content">
+                  <div className="token-icon-box">
+                    <TokenImageDisplay className="custom-logo" width={40} symbol={list.symbol} src={list.imageUrl} />
+                    <TokenImageDisplay
+                      className="custom-chain"
+                      width={20}
+                      symbol={list.symbol}
+                      src={list.chainImageUrl}
+                    />
+                  </div>
+                  <p className="token-info">
+                    <span className="token-item-symbol">{list.label ?? list.symbol}</span>
+                    <span className="token-item-net">{list.displayChainName}</span>
+                  </p>
+                </div>
+                <div className="token-item-action">{renderTokenItemBtn(list)}</div>
+              </div>
+            );
+          })
+          .reverse()
+      );
+    },
+    [renderTokenItemBtn],
   );
 
   const renderNoSearchResult = useMemo(
@@ -292,7 +311,7 @@ export default function AddToken() {
     ],
   );
 
-  const { isNotLessThan768, isPrompt } = useCommonState();
+  const { isNotLessThan768 } = useCommonState();
   const [chainOpen, setChainOpen] = useState(false);
   const [currentToken, setCurrentToken] = useState<IUserTokenItemResponse | undefined>(undefined);
   const SelectChainELe = useMemo(() => {
@@ -328,7 +347,7 @@ export default function AddToken() {
 
   const mainContent = useCallback(() => {
     return (
-      <div className={clsx(['add-token', isPrompt && 'detail-page-prompt'])}>
+      <div className={clsx(['add-token'])}>
         <div className="add-token-top">
           <CommonHeader
             title={t('Manage Token List')}
@@ -353,7 +372,7 @@ export default function AddToken() {
         {SelectChainELe}
       </div>
     );
-  }, [SelectChainELe, filterWord, handleAddCustomToken, isPrompt, navigate, renderTokenList, searchDebounce, t]);
+  }, [SelectChainELe, filterWord, handleAddCustomToken, navigate, renderTokenList, searchDebounce, t]);
 
-  return <>{isPrompt ? <PromptFrame content={mainContent()} /> : mainContent()}</>;
+  return <>{mainContent()}</>;
 }

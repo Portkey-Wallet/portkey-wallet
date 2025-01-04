@@ -54,6 +54,7 @@ import { useCmsBanner } from '@portkey-wallet/hooks/hooks-ca/cms/banner';
 import HomeHeader from 'pages/components/HomeHeader';
 import { SelectAssetListModal } from 'pages/Send/components/SelectAssetList';
 import { useAccountTokenInfo, useAccountNFTCollectionInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
+import Activity from '../Activity';
 
 export interface TransactionResult {
   total: number;
@@ -83,37 +84,62 @@ export default function MyBalance() {
 
   const { totalDisplayCount: tokenCount } = useAccountTokenInfo();
   const { totalNftItemCount: nftCount } = useAccountNFTCollectionInfo();
+  const { isNotLessThan768, isPrompt } = useCommonState();
 
-  const renderTabsData = useMemo(
-    () => [
-      {
-        label: (
-          <div className="tab-item">
-            <span>{t('Tokens')}</span>
-            <div className="number">{tokenCount}</div>
-          </div>
-        ),
-        key: BalanceTab.TOKEN,
-        children: <TokenList />,
-      },
-      {
-        label: (
-          <div className="tab-item">
-            <span>{t('NFTs')}</span>
-            <div className="number">{nftCount}</div>
-          </div>
-        ),
-        key: BalanceTab.NFT,
-        children: <NFT />,
-      },
-      // {
-      //   label: t('Activity'),
-      //   key: BalanceTab.ACTIVITY,
-      //   children: <Activity pageKey="Home-Activity" />,
-      // },
-    ],
-    [t, tokenCount, nftCount],
-  );
+  const renderTabsData = useMemo(() => {
+    if (isNotLessThan768) {
+      return [
+        {
+          label: (
+            <div className="tab-item">
+              <span>{t('Tokens')}</span>
+              <div className="number">{tokenCount}</div>
+            </div>
+          ),
+          key: BalanceTab.TOKEN,
+          children: <TokenList />,
+        },
+        {
+          label: (
+            <div className="tab-item">
+              <span>{t('NFTs')}</span>
+              <div className="number">{nftCount}</div>
+            </div>
+          ),
+          key: BalanceTab.NFT,
+          children: <NFT />,
+        },
+        {
+          label: t('Activity'),
+          key: BalanceTab.ACTIVITY,
+          children: <Activity pageKey="Home-Activity" />,
+        },
+      ];
+    } else {
+      return [
+        {
+          label: (
+            <div className="tab-item">
+              <span>{t('Tokens')}</span>
+              <div className="number">{tokenCount}</div>
+            </div>
+          ),
+          key: BalanceTab.TOKEN,
+          children: <TokenList />,
+        },
+        {
+          label: (
+            <div className="tab-item">
+              <span>{t('NFTs')}</span>
+              <div className="number">{nftCount}</div>
+            </div>
+          ),
+          key: BalanceTab.NFT,
+          children: <NFT />,
+        },
+      ];
+    }
+  }, [t, tokenCount, nftCount, isNotLessThan768]);
   const getGuardianList = useGuardianList();
   useFreshTokenPrice();
   useVerifierList();
@@ -127,7 +153,6 @@ export default function MyBalance() {
   const { checkDappIsConfirmed } = useDisclaimer();
   const { isETransShow } = useExtensionETransShow();
   const reportFCMStatus = useReportFCMStatus();
-  const { isNotLessThan768, isPrompt } = useCommonState();
   const userInfo = useCurrentUserInfo();
   const accountBalanceUSD = useAccountBalanceUSD();
   const usdShow = useMemo(() => formatAmountUSDShow(accountBalanceUSD), [accountBalanceUSD]);

@@ -72,7 +72,7 @@ export default function TokenList() {
   );
 
   const getAmountUSDShow = useCallback(
-    (item: ITokenSectionResponse) => {
+    (item: any) => {
       const formatAmount = formatAmountUSDShow(item?.balanceInUsd);
       let text = '';
       if (isMainnet && formatAmount) {
@@ -107,7 +107,7 @@ export default function TokenList() {
               key={`${item.label}_${item.symbol}`}
               onClick={() => item.tokens && item.tokens.length == 1 && onNavigate(item.tokens, item.chainId)}>
               <div className="logos">
-                <TokenImageDisplay width={36} className="token-icon" symbol={item.symbol} src={item.imageUrl} />
+                <TokenImageDisplay width={40} className="token-icon" symbol={item.symbol} src={item.imageUrl} />
                 <div className="logo-number-box">
                   {item?.tokens?.length === 1 ? (
                     <TokenImageDisplay
@@ -169,7 +169,7 @@ export default function TokenList() {
                   <Row className="row">
                     <Col className="row-first" span={12}>
                       <div className="symbol-logo">
-                        <TokenImageDisplay width={36} className="token-icon" symbol={item.symbol} src={item.imageUrl} />
+                        <TokenImageDisplay width={40} className="token-icon" symbol={item.symbol} src={item.imageUrl} />
                         <TokenImageDisplay
                           width={20}
                           className="token-icon chain-logo"
@@ -185,7 +185,10 @@ export default function TokenList() {
                     </Col>
 
                     <Col className="amount-container" span={12}>
-                      <div className="amount">{getTokenAmount(tokenItem)}</div>
+                      <div className="amount">
+                        <div>{getTokenAmount(tokenItem)}</div>
+                        <span>{getAmountUSDShow(tokenItem)}</span>
+                      </div>
                       {/* <CustomSvg type="NewRightArrow" /> */}
                     </Col>
                   </Row>

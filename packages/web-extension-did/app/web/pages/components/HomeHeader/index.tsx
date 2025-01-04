@@ -18,6 +18,7 @@ import { useNavigate } from 'react-router';
 import { Popover } from 'antd';
 import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 import InternalMessage from 'messages/InternalMessage';
+import SkeletonCom from 'pages/components/SkeletonCom';
 
 export interface IHomeHeaderProps {
   onUserClick?: (e?: any) => void;
@@ -46,13 +47,22 @@ export default function HomeHeader({ onUserClick, unReadShow }: IHomeHeaderProps
         {/* <CustomSvgV3 type="Guardians=Portkey" className="portkey-logo-prompt" /> */}
         <div className="header-left" onClick={() => navigate('/setting')}>
           {/* <img src={userInfo.avatar} alt="" /> */}
-          <TokenImageDisplay symbol={userInfo.nickName} src={userInfo.avatar} width={20} subDisplay={false} />
-          <span>{userInfo.nickName}</span>
-          <CustomSvgV3
-            type="arrow-down"
-            className="portkey-logo-prompt"
-            onClick={() => copyAddressDrawerOrModalRef.current?.open()}
-          />
+          {userInfo.nickName ? (
+            <>
+              <TokenImageDisplay symbol={userInfo.nickName} src={userInfo.avatar} width={20} subDisplay={false} />
+              <span>{userInfo.nickName}</span>
+              <CustomSvgV3
+                type="arrow-down"
+                className="portkey-logo-prompt"
+                onClick={() => copyAddressDrawerOrModalRef.current?.open()}
+              />
+            </>
+          ) : (
+            <>
+              <SkeletonCom className="skeleton-com-avatar" />
+              <SkeletonCom className="skeleton-com-name" />
+            </>
+          )}
         </div>
         <div className="header-right">
           <CustomSvgV3

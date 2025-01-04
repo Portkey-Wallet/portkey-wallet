@@ -15,7 +15,7 @@ import {
   PAGE_SIZE_IN_ACCOUNT_NFT_COLLECTION,
 } from '@portkey-wallet/constants/constants-ca/assets';
 // import { PAGE_SIZE_IN_NFT_ITEM_PROMPT } from 'constants/index';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+// import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { getSeedTypeTag } from 'utils/assets';
 import LoadingMore from 'components/LoadingMore/LoadingMore';
 import { useAccountNFTCollectionInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
@@ -36,7 +36,7 @@ export default function NFT() {
   const [nftNum, setNftNum] = useState<Record<string, number>>({});
   const [openOp, setOpenOp] = useState<boolean>(true);
   // const { eForestUrl = '' } = useCurrentNetworkInfo();
-  const isMainnet = useIsMainnet();
+  // const isMainnet = useIsMainnet();
   const {
     accountNFTList,
     totalRecordCount,
@@ -47,7 +47,7 @@ export default function NFT() {
   } = useAccountNFTCollectionInfo();
   // const { isPrompt } = useCommonState();
   const caAddressInfos = useCaAddressInfoList();
-  const [getMoreFlag, setGetMoreFlag] = useState(false);
+  // const [getMoreFlag, setGetMoreFlag] = useState(false);
   // const maxNftNum = useMemo(() => (isPrompt ? PAGE_SIZE_IN_NFT_ITEM_PROMPT : PAGE_SIZE_IN_NFT_ITEM), [isPrompt]);
 
   const maxNftNum = totalNftItemCount;
@@ -86,28 +86,28 @@ export default function NFT() {
     }
   }, [accountNFTList.length, caAddressInfos, fetchAccountNFTCollectionInfoList, maxNftNum, totalRecordCount]);
 
-  const getMoreNFTItem = useCallback(
-    async (symbol: string, chainId: ChainId) => {
-      if (getMoreFlag) return;
-      const nftColKey = `${symbol}_${chainId}`;
-      const curNftNum = nftNum[nftColKey];
-      setGetMoreFlag(true);
-      try {
-        setNftNum((pre) => ({ ...pre, [nftColKey]: curNftNum + 1 }));
-        await fetchAccountNFTItem({
-          symbol,
-          chainId: chainId as ChainId,
-          pageNum: curNftNum,
-          caAddressInfos: caAddressInfos.filter((item) => item.chainId === chainId),
-        });
-      } catch (error) {
-        console.log('===getMoreNFTItem error', error);
-      } finally {
-        setGetMoreFlag(false);
-      }
-    },
-    [getMoreFlag, nftNum, fetchAccountNFTItem, caAddressInfos],
-  );
+  // const getMoreNFTItem = useCallback(
+  //   async (symbol: string, chainId: ChainId) => {
+  //     if (getMoreFlag) return;
+  //     const nftColKey = `${symbol}_${chainId}`;
+  //     const curNftNum = nftNum[nftColKey];
+  //     setGetMoreFlag(true);
+  //     try {
+  //       setNftNum((pre) => ({ ...pre, [nftColKey]: curNftNum + 1 }));
+  //       await fetchAccountNFTItem({
+  //         symbol,
+  //         chainId: chainId as ChainId,
+  //         pageNum: curNftNum,
+  //         caAddressInfos: caAddressInfos.filter((item) => item.chainId === chainId),
+  //       });
+  //     } catch (error) {
+  //       console.log('===getMoreNFTItem error', error);
+  //     } finally {
+  //       setGetMoreFlag(false);
+  //     }
+  //   },
+  //   [getMoreFlag, nftNum, fetchAccountNFTItem, caAddressInfos],
+  // );
 
   const handleChange = useCallback(
     (arr: string[] | string) => {
@@ -250,7 +250,7 @@ export default function NFT() {
         </Collapse.Panel>
       );
     },
-    [nftNum, calSkeletonLength, maxNftNum, isMainnet, openOp, nav, getMoreNFTItem],
+    [nftNum, calSkeletonLength, maxNftNum, openOp, nav],
   );
 
   // const handleClickMint = useCallback(() => {

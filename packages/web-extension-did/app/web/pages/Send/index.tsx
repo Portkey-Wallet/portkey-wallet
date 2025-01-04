@@ -79,6 +79,7 @@ import { usePin } from 'hooks/usePin';
 import { CrossEBridgeExtension } from 'utils/sandboxUtil/extension-cross-chain';
 import { useRecent } from '@portkey-wallet/hooks/hooks-ca/recent';
 import { TFormattedRecentItem } from '@portkey-wallet/types/types-ca/contactNew';
+import { useContactNetworkConfig } from '@portkey-wallet/hooks/hooks-ca/config';
 
 export enum SendPageTypeEnum {
   token = 'token',
@@ -214,6 +215,7 @@ export default function Send() {
   const caAddress = useMemo(() => wallet?.[chainId]?.caAddress || '', [chainId, wallet]);
   const { withdraw, withdrawPreview } = useCrossTransferByEtransfer();
   const { getTokenConfig, getAELFChainInfoConfig, getEVMChainInfoConfig } = useGetEBridgeConfig();
+  const { fetchContactSupportConfig } = useContactNetworkConfig();
   const [warning, setWarning] = useState<WarningKey | undefined>();
   const aelfChainList = useCurrentChainList();
   // network list
@@ -245,6 +247,7 @@ export default function Send() {
   const defaultToken = useDefaultToken(chainId);
   useEffectOnce(() => {
     getTokenPrice(tokenInfo.symbol);
+    fetchContactSupportConfig();
   });
   const modalTipContent = useMemo(() => {
     return {

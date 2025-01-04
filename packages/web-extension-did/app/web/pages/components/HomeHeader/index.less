@@ -82,6 +82,7 @@
 }
 
 .home-popover {
+  padding-top: 8px;
   .portkey-popover-content {
     .portkey-popover-arrow {
       display: none;
@@ -90,15 +91,18 @@
       background-color: @bg-base1;
       border: 1px solid @border-base1;
       border-radius: 8px;
-      .home-popover-content {
-        color: @text-base1;
-        .popover-list {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          padding: 12px 0;
-          font-size: 16px;
-          cursor: pointer;
+      .portkey-popover-inner-content {
+        padding: 8px 16px;
+        .home-popover-content {
+          color: @text-base1;
+          .popover-list {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 0;
+            font-size: 16px;
+            cursor: pointer;
+          }
         }
       }
     }

@@ -6,7 +6,7 @@ import {
   formatStr2EllipsisStr,
   formatAmountUSDShow,
 } from '@portkey-wallet/utils/converter';
-import CustomSvg, { SvgType } from 'components/CustomSvg';
+import CustomSvg from 'components/CustomSvg';
 import { useCallback, useMemo } from 'react';
 import './index.less';
 import LoadingMore from 'components/LoadingMore/LoadingMore';
@@ -29,7 +29,7 @@ import TokenImageDisplay from '../TokenImageDisplay';
 import dayjs from 'dayjs';
 import ImageForTwo from '../ImageForTwo';
 import ImageDisplay from '../ImageDisplay';
-import { contractStatusEnum } from '@portkey-wallet/constants/constants-ca/common';
+// import { contractStatusEnum } from '@portkey-wallet/constants/constants-ca/common';
 import { CommonBaseModal } from '@portkey/did-ui-react';
 import { useState } from 'react';
 // import CommonHeader, { CustomSvgPlaceholderSize } from 'components/CommonHeader';
@@ -64,7 +64,6 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
   const [open, setOpen] = useState(false);
   const navToDetail = (item: ActivityItemType) => {
     setSelectItem({ item, chainId, previousPage: chainId ? '' : BalanceTab.ACTIVITY });
-    console.log('32132132321312');
     setOpen(true);
     // nav('/transaction', { state: { item, chainId, previousPage: chainId ? '' : BalanceTab.ACTIVITY } });
   };
@@ -158,26 +157,26 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
     [currentNetwork.walletType],
   );
 
-  const renderStatusIcon = useCallback((item: ActivityItemType) => {
-    let svg = '';
-    if (item.status === contractStatusEnum.MINED) svg = 'SuggestCheck';
-    if (item.status === contractStatusEnum.FAILED) svg = 'SuggestClose2';
-    if (item.status === contractStatusEnum.PENDING) svg = 'Status';
-    if (svg) return <CustomSvg className="flex-center" type={svg as SvgType} />;
-    return null;
-  }, []);
+  // const renderStatusIcon = useCallback((item: ActivityItemType) => {
+  //   let svg = '';
+  //   if (item.status === contractStatusEnum.MINED) svg = 'SuggestCheck';
+  //   if (item.status === contractStatusEnum.FAILED) svg = 'SuggestClose2';
+  //   if (item.status === contractStatusEnum.PENDING) svg = 'Status';
+  //   if (svg) return <CustomSvg className="flex-center" type={svg as SvgType} />;
+  //   return null;
+  // }, []);
 
   const renderActivityTitleForDapp = useCallback(
     (item: ActivityItemType) => (
       <div className={clsx('activity-item-title', isPrompt && 'prompt-activity-item-title')}>
         <div className="flex-row-center gap-4">
           <div className="transaction-name">{item.transactionName}</div>
-          {renderStatusIcon(item)}
+          {/* {renderStatusIcon(item)} */}
         </div>
         <div className="transaction-dapp-name">{item.dappName}</div>
       </div>
     ),
-    [isPrompt, renderStatusIcon],
+    [isPrompt],
   );
 
   const renderActivityTitle = useCallback(
@@ -187,7 +186,7 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
         <div className={clsx('activity-item-title', isPrompt && 'prompt-activity-item-title')}>
           <div className="flex-row-center gap-4">
             <div className="transaction-name">{transactionName}</div>
-            {renderStatusIcon(item)}
+            {/* {renderStatusIcon(item)} */}
           </div>
 
           <div className="transaction-address">{formatAddressShow(item)}</div>
@@ -197,7 +196,7 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
         </div>
       );
     },
-    [formatAddressShow, isPrompt, renderStatusIcon],
+    [formatAddressShow, isPrompt],
   );
 
   const renderActivityAmountForMulToken = useCallback(
@@ -386,24 +385,30 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
           <ImageDisplay
             src={item.listIcon}
             backupSrc="SystemActivity"
-            defaultHeight={32}
-            defaultWidth={32}
+            defaultHeight={40}
+            defaultWidth={40}
             className="system-activity-icon"
           />
           {item.sourceIcon && (
-            <ImageDisplay src={item.sourceIcon} backupSrc="SystemActivity" defaultHeight={16} className="source-icon" />
+            <ImageDisplay
+              src={item.sourceIcon}
+              backupSrc="SystemActivity"
+              defaultHeight={20}
+              defaultWidth={20}
+              className="source-icon"
+            />
           )}
         </div>
 
         <div className="activity-item-system-detail">
           <span className="flex-row-center gap-4">
             {item?.transactionName}
-            {renderStatusIcon(item)}
+            {/* {renderStatusIcon(item)} */}
           </span>
         </div>
       </>
     ),
-    [renderStatusIcon],
+    [],
   );
 
   const renderActivityItem = useCallback(

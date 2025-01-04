@@ -28,7 +28,12 @@
 .activity-wrapper {
   height: calc(100vh - 60px);
   overflow: auto;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
   .activity-title {
+    font-family: BG;
     font-size: 32px;
     color: @text-base1;
     padding: 8px 0;

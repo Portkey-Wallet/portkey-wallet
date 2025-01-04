@@ -148,7 +148,7 @@ export default function NFT() {
           {traitsPercentages.map((trait, i) => (
             <div key={`${trait.traitType}_${i}`} className="info-item">
               <div className="label">
-                <div>{trait.traitType}</div>
+                <div className="trait-type">{trait.traitType}</div>
                 <div className="label-bold">{trait.value}</div>
               </div>
               <div className="content">{trait.percent}</div>
@@ -177,7 +177,7 @@ export default function NFT() {
     return [
       {
         key: 'profile',
-        leftIcon: <CustomSvg type="Profile" />,
+        leftIcon: <CustomSvgV3 type="profile" />,
         children: 'Set as Profile Photo',
         onClick: async () => {
           try {
@@ -226,7 +226,7 @@ export default function NFT() {
                 showArrow: false,
                 placement: 'bottomLeft',
                 getPopupContainer: (triggerNode: any) => triggerNode.parentNode,
-                content: <PopoverMenuList data={moreData} />,
+                content: <PopoverMenuList className="profile-popover" data={moreData} />,
               },
               onClick: () => setPopVisible(!popVisible),
             },

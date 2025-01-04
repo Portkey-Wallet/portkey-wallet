@@ -7,11 +7,18 @@
   display: flex;
   flex-direction: column;
   background-color: @bg-base1;
+  .common-header-title {
+    .token-img-wrapper {
+      width: 24px !important;
+      height: 24px !important;
+    }
+  }
   .token-detail-tabs {
     padding: 8px 0;
     display: flex;
     align-items: center;
     gap: 8px;
+    cursor: pointer;
     .token-detail-tab {
       color: @text-base1;
       height: 32px;
@@ -39,7 +46,7 @@
 
     .token-detail-balance {
       gap: 24px;
-      padding: 24px 0;
+      padding: 8px 0 24px;
       background-color: @bg-base1;
       .balance-amount {
         gap: 4px;
@@ -47,6 +54,7 @@
           align-items: flex-start;
         }
         .amount-number {
+          font-family: BG;
           font-size: 32px;
           line-height: 40px;
           font-weight: 700;
@@ -70,33 +78,34 @@
             height: 20px;
           }
           &.hidden-amount-convert {
-            visibility: hidden;
+            display: none;
           }
         }
       }
     }
 
-    &.token-detail-content-popup {
-      overflow: scroll;
-      .token-detail-balance {
-        position: sticky;
-        top: -100px;
-        z-index: 5;
-      }
-    }
+    // &.token-detail-content-popup {
+    //   // overflow: scroll;
+    //   // .token-detail-balance {
+    //   //   // position: sticky;
+    //   //   // top: -100px;
+    //   //   // z-index: 5;
+    //   // }
+    // }
 
-    .banner-wrap {
-      // border-bottom: 1px solid @border-neutral3;
-    }
+    // .banner-wrap {
+    // border-bottom: 1px solid @border-neutral3;
+    // }
 
     .token-detail-activity {
       flex: 1;
       background-color: @bg-base1;
       .token-detail-activity-title {
+        font-family: BG;
         padding: 10px 0;
-        font-size: 16px;
+        font-size: 20px;
         line-height: 24px;
-        font-weight: 500;
+        font-weight: 700;
         color: @text-base1;
       }
     }

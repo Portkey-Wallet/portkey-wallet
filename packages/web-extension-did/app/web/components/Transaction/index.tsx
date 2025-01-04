@@ -165,10 +165,11 @@ export default function Transaction(props: {
         <ImageDisplay
           src={item.dappIcon}
           name={item.dappName || 'Unknown'}
-          defaultWidth={32}
-          defaultHeight={32}
+          defaultWidth={40}
+          defaultHeight={40}
           className="system-activity-icon"
         />
+        <div className="dapp-name">{item.dappName || item.transactionName}</div>
       </>
     );
   }, []);
@@ -711,32 +712,30 @@ export default function Transaction(props: {
   const mainContent = useCallback(() => {
     return (
       <div className={clsx(['transaction-detail-modal-new'])}>
-        <div>
-          <CommonHeader
-            title={
-              isNft
-                ? activityItem.transactionName
-                : SHOW_FROM_TRANSACTION_TYPES.includes(activityItem.transactionType)
-                ? activityItem.transactionName
-                : 'Wallet activity'
-            }
-            rightElementList={[
-              {
-                customSvgType: 'SuggestClose',
-                customSvgPlaceholderSize: CustomSvgPlaceholderSize.MD,
-                onClick: onClose,
-              },
-            ]}
-          />
-          <div className="transaction-detail-body">
-            <div className="transaction-info">
-              <div className="method-wrap">{isNft ? nftHeaderUI() : tokenHeaderUI()}</div>
-              {statusAndDateUI()}
-              {fromToUI()}
-              {networkUI()}
-              {transactionUI()}
-              {swapUI()}
-            </div>
+        <CommonHeader
+          title={
+            isNft
+              ? activityItem.transactionName
+              : SHOW_FROM_TRANSACTION_TYPES.includes(activityItem.transactionType)
+              ? activityItem.transactionName
+              : 'Wallet activity'
+          }
+          rightElementList={[
+            {
+              customSvgType: 'SuggestClose',
+              customSvgPlaceholderSize: CustomSvgPlaceholderSize.MD,
+              onClick: onClose,
+            },
+          ]}
+        />
+        <div className="transaction-detail-body">
+          <div className="transaction-info">
+            <div className="method-wrap">{isNft ? nftHeaderUI() : tokenHeaderUI()}</div>
+            {statusAndDateUI()}
+            {fromToUI()}
+            {networkUI()}
+            {transactionUI()}
+            {swapUI()}
           </div>
         </div>
         <div className="transaction-footer">

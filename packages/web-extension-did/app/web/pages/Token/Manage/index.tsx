@@ -243,7 +243,7 @@ export default function AddToken() {
                     />
                   </div>
                   <p className="token-info">
-                    <span className="token-item-symbol">{list.label ?? list.symbol}</span>
+                    <span className="token-item-symbol">{list.label || item.label || list.symbol}</span>
                     <span className="token-item-net">{list.displayChainName}</span>
                   </p>
                 </div>

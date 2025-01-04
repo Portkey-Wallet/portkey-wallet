@@ -29,10 +29,8 @@ import getTransferFee from './utils/getTransferFee';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { the2ThFailedActivityItemType } from '@portkey-wallet/types/types-ca/activity';
 import { useFetchTxFee, useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
-import PromptFrame from 'pages/components/PromptFrame';
 import clsx from 'clsx';
 import { IAssetToken, INftInfoType } from '@portkey-wallet/store/store-ca/assets/type';
-import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 import { ChainId } from '@portkey-wallet/types';
 import { useCheckManagerSyncState } from 'hooks/wallet';
 import './index.less';
@@ -1533,7 +1531,6 @@ export default function Send() {
             buttons={modalTipContent[curModalTipKey].buttons}
           />
         )}
-        {isPrompt && <PromptEmptyElement />}
       </div>
     );
   }, [
@@ -1562,5 +1559,5 @@ export default function Send() {
     warning,
   ]);
 
-  return <>{isPrompt ? <PromptFrame content={mainContent} /> : mainContent}</>;
+  return <>{mainContent}</>;
 }

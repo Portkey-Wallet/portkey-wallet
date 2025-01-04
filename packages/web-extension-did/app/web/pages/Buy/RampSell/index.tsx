@@ -220,7 +220,6 @@ export default function RampSell() {
     fiatSelectedRef,
     cryptoAmountRef,
   });
-  // console.log('exchange is:', exchange);
   const getCurrentChain = useGetChain();
   const checkSecurity = useCheckSecurity();
   const currentNetwork = useCurrentNetworkInfo();

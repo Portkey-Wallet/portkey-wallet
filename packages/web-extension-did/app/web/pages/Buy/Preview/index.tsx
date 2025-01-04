@@ -5,7 +5,6 @@ import { useNavigate } from 'react-router';
 import { InitProviderSelected, MAX_UPDATE_TIME } from '../const';
 import { formatAmountShow } from '@portkey-wallet/utils/converter';
 import { useCommonState, useGuardiansInfo, useLoading } from 'store/Provider/hooks';
-import PromptFrame from 'pages/components/PromptFrame';
 import { DISCLAIMER_TEXT, SERVICE_UNAVAILABLE_TEXT } from '@portkey-wallet/constants/constants-ca/ramp';
 import clsx from 'clsx';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
@@ -329,5 +328,5 @@ export default function Preview() {
       state.crypto,
     ],
   );
-  return <>{isPrompt ? <PromptFrame content={mainContent} /> : mainContent}</>;
+  return <>{mainContent}</>;
 }

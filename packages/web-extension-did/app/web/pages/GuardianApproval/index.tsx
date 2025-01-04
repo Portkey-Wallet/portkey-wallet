@@ -39,7 +39,6 @@ import { CustomSvgV3 } from 'components/CustomSvgV3';
 import CircleLoading from 'components/CircleLoading';
 import { CommonButton } from '@portkey/did-ui-react';
 import { useLocation } from 'react-router-dom';
-import RegisterHeader from 'pages/components/RegisterHeader';
 
 const AllowedGuardianPageArr = [
   FromPageEnum.guardiansAdd,
@@ -307,7 +306,6 @@ export default function GuardianApproval() {
 
   return isFromLogin ? (
     <div className="flex-1 flex-column-center guardian-approve-login-wrap">
-      <RegisterHeader />
       <div className="guardian-approve-login-page">
         <GuardianApprovalPopup {...props} />
       </div>

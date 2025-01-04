@@ -74,7 +74,7 @@ body {
 }
 
 @media screen and (min-width: 896px) {
-  body.theme-dark {
+  body.theme-dark:not(.theme-dark-full) {
     color: #fff;
     background-color: #1F1F21;
   }

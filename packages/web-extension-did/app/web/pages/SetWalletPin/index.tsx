@@ -261,6 +261,7 @@ export default function SetWalletPin() {
   return (
     <div className="set-wallet-pin" id="set-wallet-pin">
       <PortKeyTitle
+        hidePortKeyLogo
         leftElement={state !== 'login'}
         leftCallBack={leftCallBack}
         renderContent={

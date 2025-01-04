@@ -23,8 +23,6 @@ import {
   TAddGuardianLocationState,
 } from 'types/router';
 import { getOperationDetails } from '@portkey-wallet/utils/operation.util';
-import RegisterHeader from 'pages/components/RegisterHeader';
-
 const AllowedGuardianPageArr = [
   FromPageEnum.guardiansAdd,
   FromPageEnum.guardiansDel,
@@ -295,7 +293,6 @@ export default function VerifierAccount() {
 
   return showRegisterHeader ? (
     <div className={classNameWrap}>
-      <RegisterHeader />
       <VerifierAccountPopup {...props} />
     </div>
   ) : (

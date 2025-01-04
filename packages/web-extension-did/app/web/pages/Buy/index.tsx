@@ -2,8 +2,6 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { RadioChangeEvent } from 'antd';
 import { useNavigate } from 'react-router';
-import { useCommonState, useLoading } from 'store/Provider/hooks';
-import PromptFrame from 'pages/components/PromptFrame';
 import { useFetchTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
 import { useEffectOnce } from 'react-use';
 import CustomTipModal from 'pages/components/CustomModal';
@@ -16,7 +14,7 @@ import singleMessage from 'utils/singleMessage';
 import { usePromptLocationParams } from 'hooks/router';
 import { TRampLocationState } from 'types/router';
 import { useExtensionRampEntryShow } from 'hooks/ramp';
-import { RampHomePureComponent } from '@portkey/did-ui-react';
+import { RampHomePureComponent, setLoading } from '@portkey/did-ui-react';
 import { useBuyCryptoList, useSellCryptoList } from '@portkey-wallet/hooks/hooks-ca/ramp';
 import './index.less';
 
@@ -24,8 +22,6 @@ export default function Buy() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { locationParams: state } = usePromptLocationParams<TRampLocationState, TRampLocationState>();
-  const { isPrompt } = useCommonState();
-  const { setLoading } = useLoading();
   const checkSecurity = useCheckSecurity();
 
   const [page, setPage] = useState<RampType>(state?.side || RampType.BUY);
@@ -76,7 +72,7 @@ export default function Buy() {
       // stopInterval();
       setPage(side);
     },
-    [checkSecurity, isBuySectionShow, isSellSectionShow, refreshRampShow, setLoading, t],
+    [checkSecurity, isBuySectionShow, isSellSectionShow, refreshRampShow, t],
   );
 
   // const handleBack = useCallback(() => {
@@ -114,7 +110,7 @@ export default function Buy() {
       refreshBuyCryptoList();
       refreshSellCryptoList();
     }
-  }, [list, refreshBuyCryptoList, refreshSellCryptoList, setLoading]);
+  }, [list, refreshBuyCryptoList, refreshSellCryptoList]);
   const onCryptoClick = useCallback(
     (item: Omit<IRampCryptoItem, 'displayChainName' | 'chainImageUrl'>) => {
       if (page === RampType.BUY) {
@@ -145,7 +141,7 @@ export default function Buy() {
       }
       return;
     },
-    [page],
+    [navigate, page],
   );
   const mainContent = useMemo(
     () => (
@@ -162,5 +158,5 @@ export default function Buy() {
     [handlePageChange, list, navigate, onCryptoClick, page],
   );
 
-  return <>{isPrompt ? <PromptFrame content={mainContent} /> : mainContent}</>;
+  return <>{mainContent}</>;
 }

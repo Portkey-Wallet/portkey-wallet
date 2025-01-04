@@ -11,6 +11,7 @@ export default function PortKeyTitle({
   renderContent,
   renderRightContent,
   hideSubtitle,
+  hidePortKeyLogo,
 }: {
   renderRightContent?: ReactNode | boolean;
   renderContent?: ReactNode | boolean;
@@ -18,6 +19,7 @@ export default function PortKeyTitle({
   rightElement?: ReactNode;
   leftCallBack?: () => void;
   hideSubtitle?: boolean;
+  hidePortKeyLogo?: boolean;
 }) {
   const navigate = useNavigate();
 
@@ -32,12 +34,16 @@ export default function PortKeyTitle({
 
   return (
     <>
-      <div className="flex-row-center portkey-title-wrapper">
-        <div className="flex-row-center title-left">
-          <CustomSvg type="PortKeyPrompt" className="portkey-logo" />
+      {!hidePortKeyLogo && rightElement && (
+        <div className="flex-row-center portkey-title-wrapper">
+          {!hidePortKeyLogo && (
+            <div className="flex-row-center title-left">
+              <CustomSvg type="PortKeyPrompt" className="portkey-logo" />
+            </div>
+          )}
+          <div className="right-element">{rightElement}</div>
         </div>
-        <div className="right-element">{rightElement}</div>
-      </div>
+      )}
       {renderContent ? (
         <div className="register-common-card margin-auto margin-top-64">
           {hideSubtitle ? null : (

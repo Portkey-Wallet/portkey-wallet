@@ -54,7 +54,7 @@ export default function ConfirmPin() {
   }, []);
 
   const title = t('');
-  const pinLabel = t('Pin');
+  const pinLabel = t('');
   const placeholder = t('Enter Pin');
   const btnText = t('Next');
   const goBack = () => {

@@ -8,10 +8,15 @@
   height: @common-header-height;
   padding: 0 16px;
   background-color: @bg-base1;
+  position: relative;
   &.common-header-bottom-border {
     border-bottom: 1px solid @border-neutral3;
   }
   .common-header-left-icon {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
     width: 20px;
     height: 20px;
     svg {
@@ -31,6 +36,10 @@
     }
   }
   .common-header-right-wrapper {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
     gap: 12px;
   }
   .common-header-right-icon-wrap {

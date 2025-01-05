@@ -1,4 +1,5 @@
 @import '../../../../assets/theme/color.less';
+@import '../../../../assets/theme/constants.less';
 
 .input-token-wrap {
   padding: 24px;
@@ -8,7 +9,7 @@
   .amount-input {
     background-color: @bg-base1;
     align-items: baseline;
-    max-width: 200px !important;
+    max-width: 303px !important;
     padding: 0;
     border: none;
     font-size: 32px;
@@ -17,6 +18,7 @@
     font-weight: 700;
     color: @text-base1;
     text-align: right;
+    .text-overflow(1);
     &::placeholder {
       color: @text-base3;
       font-size: 32px;
@@ -26,6 +28,12 @@
     }
     &.usd-input {
       text-align: left;
+    }
+    &.font20 {
+      font-size: 20px;
+    }
+    &.font24 {
+      font-size: 24px;
     }
   }
   .amount-error {
@@ -38,6 +46,12 @@
     font-family: BG;
     font-weight: 700;
     color: @text-base1;
+    &.font20 {
+      font-size: 20px;
+    }
+    &.font24 {
+      font-size: 24px;
+    }
   }
   .swap-vert {
     gap: 2px;

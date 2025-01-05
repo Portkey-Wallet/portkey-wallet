@@ -23,7 +23,7 @@ export default function AccountSetting() {
     const list = [
       {
         key: 'change-pin',
-        element: 'Change Pin',
+        element: 'Change PIN',
         click: () => {
           navigate('/setting/account-setting/confirm-pin');
         },

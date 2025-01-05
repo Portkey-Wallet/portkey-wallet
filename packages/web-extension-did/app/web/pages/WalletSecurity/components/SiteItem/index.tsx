@@ -166,6 +166,7 @@ export default function SiteItem({ siteItem }: ISiteItemProps) {
           <div className="content-item flex-column">
             <div className="label">{t('Session expires in')}</div>
             <CustomSelect
+              className="site-item-select select-network"
               items={SessionKeyArray.filter((e) => e.value !== SessionExpiredPlan.always)}
               defaultValue={SessionExpiredPlan.hour1}
               value={sessionInfo?.expiredPlan}

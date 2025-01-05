@@ -12,7 +12,11 @@ export default function ScreenOpeningPage() {
         <div className="get-start-content">
           <CustomSvg type="PortKeyPrompt" className="welcome-portkey-prompt" />
           <h1>Your Gateway to the World of Web3</h1>
-          <CommonButton type="primaryOutline" block onClick={() => navigate('/register/start')}>
+          <CommonButton
+            className="primary-outline"
+            type="primaryOutline"
+            block
+            onClick={() => navigate('/register/start')}>
             Get started
           </CommonButton>
         </div>

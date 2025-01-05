@@ -63,10 +63,16 @@ export default function TokenInput({
     return tokenPriceObject[token.symbol] !== 0;
   }, [tokenPriceObject, token.symbol]);
 
+  const amountLength = useMemo(() => {
+    if (amount.length > 18) return 'font20';
+    if (amount.length > 12) return 'font24';
+    return '';
+  }, [amount.length]);
+
   return (
     <div className={clsx('input-token-wrap', 'flex-column-center', className)}>
       {revert ? (
-        <div>
+        <div className="flex">
           <Input
             type="number"
             placeholder={`0`}
@@ -75,10 +81,10 @@ export default function TokenInput({
               setAmountErrMsg('');
               onValueInputChange(e.target.value);
             }}
-            className={clsx('amount-input', amountErrMsg && 'amount-error')}
+            className={clsx('amount-input', amountLength, amountErrMsg && 'amount-error')}
             style={{ width: `${amount.length || 1}ch` }}
           />
-          <span className="amount-input-suffix">{token.label || token.symbol}</span>
+          <span className={clsx('amount-input-suffix', amountLength)}>{token.label || token.symbol}</span>
         </div>
       ) : (
         <div>

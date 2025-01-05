@@ -75,6 +75,10 @@ button.@{app-prefix}-btn-default {
   }
 }
 
+.@{app-prefix}-btn-loading > span:not(.@{app-prefix}-btn-loading-icon) {
+  display: none;
+}
+
 .@{app-prefix}-btn-dangerous.@{app-prefix}-btn-primary {
     border-width: 0;
     color: @text-danger4;
@@ -160,7 +164,7 @@ button.@{app-prefix}-btn-default {
   .@{app-prefix}-form-item-explain {
     line-height: 16px;
     height: 16px;
-    margin-top: 4px;
+    margin-top: 8px;
     color: @text-opacity70;
   }
 
@@ -185,7 +189,7 @@ button.@{app-prefix}-btn-default {
 
   .@{app-prefix}-form-item-explain-error {
     color: @text-danger2;
-    font-size: 12px;
+    font-size: 14px;
   }
 
   .@{app-prefix}-form-item {
@@ -260,14 +264,32 @@ button.@{app-prefix}-btn-default {
   }
 
   .@{app-prefix}-input-affix-wrapper {
-    height: 48px;
+    //height: 48px;
+    height: 40px;
     border-radius: 6px;
-    padding-left: 16px;
+    //padding: 0 16px !important;
+    padding-left: 0;
     padding-right: 16px;
     background: @bg-base1;
     color: @text-base1;
     border: 1px solid @border-base1 !important;
     box-shadow: none;
+
+    .@{app-prefix}-input-suffix {
+      .@{app-prefix}-input-clear-icon {
+        height: 16px;
+      }
+      .anticon-close-circle {
+        width: 16px;
+        height: 16px;
+        background: url('../../assets/iconV3/icons/close-circle.svg') no-repeat center;
+        background-size: inherit;
+
+        & > svg {
+          display: none;
+        }
+      }
+    }
   }
 }
 

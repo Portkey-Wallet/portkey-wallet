@@ -1,7 +1,6 @@
 @import '../../../../assets/theme/color.less';
 
 .address-input-wrap {
-  min-width: 375px;
   font-size: 16px;
   line-height: 22px;
   background-color: @bg-base1;
@@ -29,7 +28,7 @@
     }
     .address-input {
       height: 56px;
-      padding: 0 16px;
+      padding: 0;
       gap: 6px;
       .label {
         color: @text-base2;
@@ -39,7 +38,7 @@
           font-size: 14px;
           line-height: 16px;
           min-height: 16px !important;
-          max-height: 42px !important;
+          max-height: 51px !important;
           padding: 0;
           padding-left: 2px;
           border: none;
@@ -49,6 +48,11 @@
             border: none;
             box-shadow: none;
             outline: none;
+          }
+          &::placeholder {
+            font-size: 16px;
+            line-height: 16px;
+            font-weight: 600;
           }
         }
       }
@@ -83,11 +87,11 @@
     }
   }
   .paste-container {
-    padding: 8px 16px;
+    padding: 8px 0;
     font-size: 14px;
     line-height: 14px;
     .show-text {
-      color: @text-base1;
+      color: @text-base2;
     }
     .paste-text {
       color: @text-brand2;

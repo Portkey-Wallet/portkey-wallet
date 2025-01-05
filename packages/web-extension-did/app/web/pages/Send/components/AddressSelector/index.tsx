@@ -12,7 +12,7 @@ import MyAddress from './MyAddress';
 import { useMemo, useState } from 'react';
 import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 
-const tabs = ['Recents', 'Contacts', 'My address'];
+const tabs = ['Recents', 'Saved', 'My address'];
 
 export default function AddressSelector({
   isFt,

@@ -24,7 +24,7 @@ import useGuardianList from 'hooks/useGuardianList';
 import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
 import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useUnreadCount } from '@portkey-wallet/hooks/hooks-ca/im';
-import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/actions';
+import { fetchContactListV2Async } from '@portkey-wallet/store/store-ca/contact/actions';
 import { useCheckSecurity } from 'hooks/useSecurity';
 import { useDisclaimer } from '@portkey-wallet/hooks/hooks-ca/disclaimer';
 import { useExtensionETransShow } from 'hooks/cms';
@@ -186,7 +186,7 @@ export default function MyBalance() {
   }, [isMainNet]);
 
   useEffect(() => {
-    appDispatch(fetchContactListAsync());
+    appDispatch(fetchContactListV2Async());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

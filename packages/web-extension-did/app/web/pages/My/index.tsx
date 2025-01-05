@@ -70,7 +70,7 @@ export default function My() {
 
       <div className="empty-placeholder" />
 
-      <div className="flex my-content">
+      <div className="flex my-content my-list-container">
         <div className="menu-list">
           {MenuList.map((item, index) => {
             if (item.type === 'divider') {

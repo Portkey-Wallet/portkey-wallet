@@ -77,6 +77,7 @@ import { usePin } from 'hooks/usePin';
 import { CrossEBridgeExtension } from 'utils/sandboxUtil/extension-cross-chain';
 import { useRecent } from '@portkey-wallet/hooks/hooks-ca/recent';
 import { TFormattedRecentItem } from '@portkey-wallet/types/types-ca/contactNew';
+import { useContactNetworkConfig } from '@portkey-wallet/hooks/hooks-ca/config';
 
 export enum SendPageTypeEnum {
   token = 'token',
@@ -212,6 +213,7 @@ export default function Send() {
   const caAddress = useMemo(() => wallet?.[chainId]?.caAddress || '', [chainId, wallet]);
   const { withdraw, withdrawPreview } = useCrossTransferByEtransfer();
   const { getTokenConfig, getAELFChainInfoConfig, getEVMChainInfoConfig } = useGetEBridgeConfig();
+  const { fetchContactSupportConfig } = useContactNetworkConfig();
   const [warning, setWarning] = useState<WarningKey | undefined>();
   const aelfChainList = useCurrentChainList();
   // network list
@@ -243,6 +245,7 @@ export default function Send() {
   const defaultToken = useDefaultToken(chainId);
   useEffectOnce(() => {
     getTokenPrice(tokenInfo.symbol);
+    fetchContactSupportConfig();
   });
   const modalTipContent = useMemo(() => {
     return {
@@ -1172,11 +1175,12 @@ export default function Send() {
       });
     }
     return false;
-  }, [chainId, checkAddressIsRecent, toAccount.address, tokenInfo.symbol, tokenInfo.tokenId, type]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [toAccount.address]);
 
   const adsCheckWarningRender = useMemo(() => {
     if (!warning) {
-      if (showStrangerAddress) {
+      if (!showStrangerAddress) {
         return (
           <CommonPromptCard
             type={AdsCheckWarningTip[WarningKey.STRANGE_ADDRESS].type}
@@ -1253,7 +1257,8 @@ export default function Send() {
           setChainList(data?.networkList);
           // setSelectedToContact({ name: i?.name, address: i.address || i.addressInfo?.address } as TToInfo);
           setToAccount({
-            address: i.address || '',
+            address: i.address || i.addressInfo?.address || '',
+            name: i.name || '',
           });
           setStage(SendStage.Amount);
           setWarning(WarningKey.MAKE_SURE_SUPPORT_PLATFORM);
@@ -1456,7 +1461,11 @@ export default function Send() {
         ) : (
           <>
             <CommonHeader
-              title={`Send ${type === SendPageTypeEnum.token ? tokenInfo.label ?? symbol : ''}`}
+              title={
+                stage === SendStage.Preview
+                  ? 'Preview'
+                  : `Send ${type === SendPageTypeEnum.token ? tokenInfo.label ?? symbol : ''}`
+              }
               onLeftBack={() => {
                 StageObj[stage].backFun();
               }}
@@ -1490,7 +1499,15 @@ export default function Send() {
                 setStage={setStage}
               />
             )}
-            <div className="stage-ele flex-column flex-1">{StageObj[stage].element}</div>
+            <div
+              className={clsx(
+                'stage-ele',
+                'flex-column',
+                'flex-1',
+                stage === SendStage.Preview && 'stage-ele-preview',
+              )}>
+              {StageObj[stage].element}
+            </div>
             {StageObj[stage].btnText ? (
               <div className="btn-wrap">
                 <CommonButton

@@ -64,9 +64,9 @@ export default function SelectToken({ tokenInfos = [], noDataMessage, loading, o
   );
 
   return (
-    <div className="select-send-token-list">
+    <div className="select-send-tokens-list">
       {loading ? (
-        <CircleLoading />
+        <CircleLoading width={32} height={32} />
       ) : tokenInfos.length === 0 ? (
         <div className="no-data-message flex-center">{noDataMessage}</div>
       ) : (

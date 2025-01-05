@@ -840,7 +840,7 @@ export default function AddGuardian() {
           </div>
         </div>
         <div className="btn-wrap">
-          <Button type="primary" onClick={handleCheck} disabled={disabled} loading={loading}>
+          <Button type="primary" onClick={handleCheck} disabled={loading ? false : disabled} loading={loading}>
             {t('Confirm')}
           </Button>
         </div>

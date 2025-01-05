@@ -60,8 +60,8 @@ export default function LockPage({ onUnLockHandler, ...props }: LockPageProps) {
 
   return (
     <div className={clsx('lock-page-wrapper', isNotLessThan768 ? '' : 'lock-page-wrapper-popup')}>
-      <div className="lock-page-content flex-column-center">
-        <CustomSvg type="PortKeyPrompt" />
+      <div className={clsx('lock-page-content', isNotLessThan768 ? 'flex-column-center' : 'flex-column-between')}>
+        <CustomSvg type="PortKeyPrompt" fillColor="#FFF" />
         <Form
           {...props}
           className="unlock-form"
@@ -85,7 +85,7 @@ export default function LockPage({ onUnLockHandler, ...props }: LockPageProps) {
             <CustomPassword className="custom-password" placeholder={t('Enter Pin')} />
           </FormItem>
 
-          <FormItem shouldUpdate>
+          <FormItem shouldUpdate className="customer-password-button">
             {() => (
               <CommonButton
                 className="submit-btn"

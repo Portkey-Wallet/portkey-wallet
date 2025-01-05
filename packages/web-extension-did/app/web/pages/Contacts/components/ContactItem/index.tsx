@@ -12,7 +12,9 @@ export interface IContactItemProps {
 export const getShowAddress = (item: any) => {
   if (item.network === 'aelf' || item.addressInfo.network === 'aelf') {
     return formatStr2EllipsisStr(
-      `ELF_${getAelfAddress(item.address || item.addressInfo.address)}_${item.chainId || item.addressInfo.chainId}`,
+      item?.addressInfo?.isExchange
+        ? item.address || item.addressInfo.address
+        : `ELF_${getAelfAddress(item.address || item.addressInfo.address)}_${item.chainId || item.addressInfo.chainId}`,
     );
   }
   return formatStr2EllipsisStr(item.address || item.addressInfo.address);

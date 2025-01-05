@@ -119,7 +119,10 @@ export default function Activity({ chainId, symbol, pageKey = 'Home-Activity' }:
   return (
     <div className="activity-wrapper">
       {currentActivity?.totalRecordCount ? (
-        <ActivityList data={currentActivity.data} chainId={chainId} hasMore={hasMore} loadMore={loadMoreActivities} />
+        <>
+          <div className="token-detail-activity-title">Activity</div>
+          <ActivityList data={currentActivity.data} chainId={chainId} hasMore={hasMore} loadMore={loadMoreActivities} />
+        </>
       ) : (
         <div className="no-activity-data flex-column-center">{!initLoading && t('No activity')}</div>
       )}

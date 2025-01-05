@@ -163,7 +163,6 @@ export default function TokenList() {
               item?.tokens?.map((tokenItem, index) => (
                 <div
                   className="container"
-                  style={{ marginTop: index !== 0 ? 4 : 0 }}
                   key={`${tokenItem.symbol}_${index}`}
                   onClick={() => onNavigate(item?.tokens, tokenItem.chainId)}>
                   <Row className="row">

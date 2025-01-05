@@ -3,7 +3,7 @@
 import CommonHeader from 'components/CommonHeader';
 import { useCommonState } from 'store/Provider/hooks';
 import clsx from 'clsx';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState, useRef } from 'react';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
 import { addressFormat } from '@portkey-wallet/utils';
 import Copy from 'components/Copy';
@@ -26,6 +26,7 @@ import singleMessage from 'utils/singleMessage';
 import './index.less';
 import { CustomSvgV3 } from 'components/CustomSvgV3';
 import { CommonButton } from '@portkey/did-ui-react';
+import TokenImageDisplay from 'pages/components/TokenImageDisplay';
 
 export default function NFT() {
   const navigate = useNavigateState<TSendLocationState | THomePageLocationState>();
@@ -71,8 +72,10 @@ export default function NFT() {
   });
 
   const renderBasicInfo = useMemo(() => {
-    const { tokenContractAddress, chainId } = nftDetail;
+    const { tokenContractAddress, chainId, chainImageUrl } = nftDetail;
     const formatTokenContractAds = addressFormat(tokenContractAddress, chainId, currentNetwork.walletType);
+
+    console.log('nftDetail', nftDetail);
     return (
       <div className="info basic-info">
         <div className="info-title">Basic Info</div>
@@ -84,8 +87,11 @@ export default function NFT() {
           </div>
         </div>
         <div className="chain info-item flex-between">
-          <div className="label">Blockchain</div>
-          <div>{transNetworkText(nftDetail.chainId, !isMainNet)}</div>
+          <div className="label">Network</div>
+          <div className="flex">
+            <TokenImageDisplay src={chainImageUrl} width={18} />
+            {transNetworkText(nftDetail.chainId, !isMainNet)}
+          </div>
         </div>
         <div className="info-item flex-between">
           <div className="label">Symbol</div>
@@ -171,6 +177,12 @@ export default function NFT() {
       </div>
     ) : null;
   }, [nftDetail]);
+
+  const renderDescInfo = useMemo(() => {
+    const { description } = nftDetail;
+    return description && <div className="info description-info">{description}</div>;
+  }, [nftDetail]);
+
   const [popVisible, setPopVisible] = useState(false);
 
   const moreData = useMemo(() => {
@@ -218,7 +230,7 @@ export default function NFT() {
           rightElementList={[
             {
               customSvgWrapClassName: 'nft-detail-more',
-              customSvgType: 'moreHome',
+              customSvgType: 'more_verti',
               popoverProps: {
                 overlayClassName: `nft-detail-popover ${isPrompt ? '' : 'nft-detail-popover-popup'}`,
                 open: popVisible,
@@ -292,6 +304,7 @@ export default function NFT() {
             <div className="name">{collectionName}</div>
             <CustomSvgV3 type="collection-arrow" />
           </div>
+          {renderDescInfo}
           <div className="nft-info flex-column">
             {renderBasicInfo}
             {renderIsSeedInfo}

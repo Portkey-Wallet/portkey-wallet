@@ -22,9 +22,16 @@
       transform: rotate(90deg);
     }
   }
+  .nft-detail-more {
+    .custom-svg {
+      width: 24px;
+      height: 24px;
+    }
+  }
 
   .collection {
     margin: 8px 0 0;
+    cursor: pointer;
     .img {
       width: 24px;
       height: 24px;
@@ -61,7 +68,7 @@
   }
 
   .token-id {
-    margin: 6px 0 0;
+    margin: 24px 0 0;
     font-size: 20px;
     line-height: 24px;
     font-weight: 700;
@@ -108,11 +115,11 @@
   }
 
   .nft-info {
-    margin: 24px 0;
+    margin: 16px 0;
     gap: 16px;
     .info {
       border-bottom: 1px solid @border-base1;
-      padding: 10px 0;
+      padding-bottom: 10px;
       &:last-child {
         border-bottom: none;
       }
@@ -120,6 +127,7 @@
         font-size: 16px;
         line-height: 22px;
         font-weight: 500;
+        padding: 12px 0 8px;
         color: @text-base1;
         opacity: 0.4;
         .text-overflow(1);
@@ -231,17 +239,29 @@
       }
     }
   }
+  .description-info {
+    font-family: SG;
+    color: @text-base1;
+    opacity: 0.7;
+    font-size: 16px;
+    margin-top: 12px;
+    font-weight: 400;
+  }
+  .chain {
+    .flex {
+      gap: 4px;
+    }
+  }
   .btn-wrap {
     background: @bg-base1;
     width: 100%;
-    padding: 0 0 16px;
     .balance {
       word-break: break-all;
       flex-wrap: wrap;
-      margin: 10px auto 16px;
+      margin: 24px auto 12px;
       font-size: 14px;
       line-height: 20px;
-      font-weight: 500;
+      font-weight: 400;
       color: @text-base1;
       opacity: 0.7;
       text-align: center;
@@ -290,7 +310,7 @@
     background-color: @bg-base1;
 
     .portkey-popover-inner-content {
-      padding: 8px 16px;
+      padding: 16px;
       .popover-menu-list .menu-item {
         gap: 12px;
         padding: 0;

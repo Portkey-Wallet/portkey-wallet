@@ -3,7 +3,7 @@
 import CommonHeader from 'components/CommonHeader';
 import { useCommonState } from 'store/Provider/hooks';
 import clsx from 'clsx';
-import { useCallback, useEffect, useMemo, useState, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
 import { addressFormat } from '@portkey-wallet/utils';
 import Copy from 'components/Copy';

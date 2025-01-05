@@ -722,7 +722,7 @@ export default function Transaction(props: {
           }
           rightElementList={[
             {
-              customSvgType: 'SuggestClose',
+              customSvgType: 'close thin',
               customSvgPlaceholderSize: CustomSvgPlaceholderSize.MD,
               onClick: onClose,
             },

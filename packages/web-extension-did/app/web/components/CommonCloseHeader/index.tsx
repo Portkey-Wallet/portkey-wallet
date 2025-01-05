@@ -16,7 +16,7 @@ export default function CommonCloseHeader({ className, title, onClose, onLeftBac
       title={title}
       rightElementList={[
         {
-          customSvgType: 'SuggestClose',
+          customSvgType: 'close thin',
           customSvgPlaceholderSize: CustomSvgPlaceholderSize.MD,
           onClick: onClose,
         },

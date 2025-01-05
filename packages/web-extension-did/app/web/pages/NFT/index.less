@@ -79,7 +79,6 @@
   }
 
   .picture {
-    position: relative;
     margin: 8px auto 0;
     width: 100%;
     aspect-ratio: 1 / 1;
@@ -87,7 +86,7 @@
     max-height: 400px;
     .tokentaglarge-icon,
     .nfttaglarge-icon {
-      position: absolute;
+      // position: absolute;
       width: 48px;
       height: 24px;
       top: 0;
@@ -112,6 +111,9 @@
     background-position: center;
     background-repeat: no-repeat;
     background-size: contain;
+    display: flex;
+    justify-content: flex-end;
+    padding-right: 10px;
   }
 
   .nft-info {

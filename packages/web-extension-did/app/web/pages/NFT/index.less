@@ -22,9 +22,16 @@
       transform: rotate(90deg);
     }
   }
+  .nft-detail-more {
+    .custom-svg {
+      width: 24px;
+      height: 24px;
+    }
+  }
 
   .collection {
     margin: 8px 0 0;
+    cursor: pointer;
     .img {
       width: 24px;
       height: 24px;
@@ -61,23 +68,25 @@
   }
 
   .token-id {
-    margin: 6px 0 0;
+    margin: 24px 0 0;
     font-size: 20px;
     line-height: 24px;
-    font-weight: 500;
+    font-weight: 700;
     color: @text-base1;
     word-wrap: break-word;
     word-break: break-all;
+    font-family: BG;
   }
 
   .picture {
-    position: relative;
-    margin: 16px auto 0;
-    width: 264px;
-    height: 264px;
+    margin: 8px auto 0;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    max-width: 400px;
+    max-height: 400px;
     .tokentaglarge-icon,
     .nfttaglarge-icon {
-      position: absolute;
+      // position: absolute;
       width: 48px;
       height: 24px;
       top: 0;
@@ -86,7 +95,7 @@
     /* stylelint-disable-next-line no-descending-specificity */
     img {
       object-fit: contain;
-      border-radius: 6px;
+      border-radius: 8px;
     }
     .picture-text {
       background-color: @border-neutral3;
@@ -98,15 +107,21 @@
   .picture-common {
     width: 100%;
     height: 100%;
-    border-radius: 6px;
+    border-radius: 8px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    display: flex;
+    justify-content: flex-end;
+    padding-right: 10px;
   }
 
   .nft-info {
-    margin: 24px 0;
+    margin: 16px 0;
     gap: 16px;
     .info {
       border-bottom: 1px solid @border-base1;
-      padding: 10px 0;
+      padding-bottom: 10px;
       &:last-child {
         border-bottom: none;
       }
@@ -114,17 +129,18 @@
         font-size: 16px;
         line-height: 22px;
         font-weight: 500;
+        padding: 12px 0 8px;
         color: @text-base1;
         opacity: 0.4;
         .text-overflow(1);
       }
       .info-item {
         padding: 16px 0;
-        gap: 8px;
         font-size: 16px;
         line-height: 20px;
         font-weight: 400;
         color: @text-base1;
+        gap: 16px;
         .label {
           color: @text-base1;
           .label-bold {
@@ -160,7 +176,7 @@
         }
         .traits-items {
           display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+          grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
           gap: 16px;
           padding: 20px 0;
           .info-item {
@@ -171,16 +187,22 @@
             border: 1px solid @border-base1;
             border-radius: 16px;
             font-size: 12px;
-            gap: 30px;
+            justify-content: space-between;
+
+            .trait-type {
+              color: @text-base1;
+              opacity: 0.7;
+              .text-overflow(1);
+            }
             .label {
-              color: @neutral-secondary-text;
+              color: @text-base1;
             }
             .label-bold {
+              height: 40px;
+              line-height: 20px;
               font-size: 14px;
               font-weight: 600;
-              overflow: hidden;
-              text-overflow: ellipsis;
-              white-space: nowrap;
+              .text-overflow(2);
             }
           }
         }
@@ -219,17 +241,29 @@
       }
     }
   }
+  .description-info {
+    font-family: SG;
+    color: @text-base1;
+    opacity: 0.7;
+    font-size: 16px;
+    margin-top: 12px;
+    font-weight: 400;
+  }
+  .chain {
+    .flex {
+      gap: 4px;
+    }
+  }
   .btn-wrap {
     background: @bg-base1;
     width: 100%;
-    padding: 0 0 16px;
     .balance {
       word-break: break-all;
       flex-wrap: wrap;
-      margin: 10px auto 16px;
+      margin: 24px auto 12px;
       font-size: 14px;
       line-height: 20px;
-      font-weight: 500;
+      font-weight: 400;
       color: @text-base1;
       opacity: 0.7;
       text-align: center;
@@ -270,21 +304,33 @@
 }
 
 .nft-detail-popover {
+  padding-top: 0;
   .portkey-popover-inner {
-    min-width: 170px;
+    min-width: 200px;
     border-radius: 8px;
     border: 1px solid @border-base1;
     background-color: @bg-base1;
-    .profile-icon {
-      width: 16px;
-      height: 16px;
-    }
 
     .portkey-popover-inner-content {
-      padding: 6px 16px;
+      padding: 16px;
       .popover-menu-list .menu-item {
+        gap: 12px;
+        padding: 0;
+        height: auto;
+        .profile-icon {
+          width: 24px;
+          height: 24px;
+          svg {
+            width: 100%;
+            height: 100%;
+            path {
+              fill: @text-base1;
+            }
+          }
+        }
         .menu-item-container {
-          min-width: 130px;
+          font-size: 16px;
+          min-width: 150px;
           color: @text-base1;
         }
       }

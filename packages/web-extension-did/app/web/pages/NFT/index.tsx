@@ -26,6 +26,7 @@ import singleMessage from 'utils/singleMessage';
 import './index.less';
 import { CustomSvgV3 } from 'components/CustomSvgV3';
 import { CommonButton } from '@portkey/did-ui-react';
+import TokenImageDisplay from 'pages/components/TokenImageDisplay';
 
 export default function NFT() {
   const navigate = useNavigateState<TSendLocationState | THomePageLocationState>();
@@ -71,8 +72,10 @@ export default function NFT() {
   });
 
   const renderBasicInfo = useMemo(() => {
-    const { tokenContractAddress, chainId } = nftDetail;
+    const { tokenContractAddress, chainId, chainImageUrl } = nftDetail;
     const formatTokenContractAds = addressFormat(tokenContractAddress, chainId, currentNetwork.walletType);
+
+    console.log('nftDetail', nftDetail);
     return (
       <div className="info basic-info">
         <div className="info-title">Basic Info</div>
@@ -84,8 +87,11 @@ export default function NFT() {
           </div>
         </div>
         <div className="chain info-item flex-between">
-          <div className="label">Blockchain</div>
-          <div>{transNetworkText(nftDetail.chainId, !isMainNet)}</div>
+          <div className="label">Network</div>
+          <div className="flex">
+            <TokenImageDisplay src={chainImageUrl} width={18} />
+            {transNetworkText(nftDetail.chainId, !isMainNet)}
+          </div>
         </div>
         <div className="info-item flex-between">
           <div className="label">Symbol</div>
@@ -148,7 +154,7 @@ export default function NFT() {
           {traitsPercentages.map((trait, i) => (
             <div key={`${trait.traitType}_${i}`} className="info-item">
               <div className="label">
-                <div>{trait.traitType}</div>
+                <div className="trait-type">{trait.traitType}</div>
                 <div className="label-bold">{trait.value}</div>
               </div>
               <div className="content">{trait.percent}</div>
@@ -171,13 +177,19 @@ export default function NFT() {
       </div>
     ) : null;
   }, [nftDetail]);
+
+  const renderDescInfo = useMemo(() => {
+    const { description } = nftDetail;
+    return description && <div className="info description-info">{description}</div>;
+  }, [nftDetail]);
+
   const [popVisible, setPopVisible] = useState(false);
 
   const moreData = useMemo(() => {
     return [
       {
         key: 'profile',
-        leftIcon: <CustomSvg type="Profile" />,
+        leftIcon: <CustomSvgV3 type="profile" />,
         children: 'Set as Profile Photo',
         onClick: async () => {
           try {
@@ -218,7 +230,7 @@ export default function NFT() {
           rightElementList={[
             {
               customSvgWrapClassName: 'nft-detail-more',
-              customSvgType: 'moreHome',
+              customSvgType: 'more_verti',
               popoverProps: {
                 overlayClassName: `nft-detail-popover ${isPrompt ? '' : 'nft-detail-popover-popup'}`,
                 open: popVisible,
@@ -226,7 +238,7 @@ export default function NFT() {
                 showArrow: false,
                 placement: 'bottomLeft',
                 getPopupContainer: (triggerNode: any) => triggerNode.parentNode,
-                content: <PopoverMenuList data={moreData} />,
+                content: <PopoverMenuList className="profile-popover" data={moreData} />,
               },
               onClick: () => setPopVisible(!popVisible),
             },
@@ -234,9 +246,11 @@ export default function NFT() {
         />
         <div className="nft-detail-body">
           <div className="picture flex-center">
-            {seedTypeTag && <CustomSvg type={seedTypeTag} />}
             {imageUrl ? (
-              <img className="picture-common" src={imageUrl} />
+              // <img className="picture-common" src={imageUrl} />
+              <div className="picture-common" style={{ backgroundImage: `url(${imageUrl})` }}>
+                {seedTypeTag && <CustomSvg type={seedTypeTag} />}
+              </div>
             ) : (
               <div className="picture-text picture-common flex-center">{symbol?.slice(0, 1)}</div>
             )}
@@ -291,6 +305,7 @@ export default function NFT() {
             <div className="name">{collectionName}</div>
             <CustomSvgV3 type="collection-arrow" />
           </div>
+          {renderDescInfo}
           <div className="nft-info flex-column">
             {renderBasicInfo}
             {renderIsSeedInfo}

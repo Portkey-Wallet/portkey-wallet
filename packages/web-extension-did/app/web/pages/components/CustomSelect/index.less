@@ -5,10 +5,11 @@
   background: @bg-base1;
   color: @text-base1;
 
-  &.@{app-prefix}-select-focused:not(.@{app-prefix}-select-disabled).@{app-prefix}-select:not(.@{app-prefix}-select-customize-input)
+  &.@{app-prefix}-select-focused:not(.@{app-prefix}-select-disabled).@{app-prefix}-select:not(
+      .@{app-prefix}-select-customize-input
+    )
     .@{app-prefix}-select-selector {
     border-color: @brand-normal !important;
-
   }
 
   .@{app-prefix}-select-selector {
@@ -41,7 +42,6 @@
       rotate: 180deg;
     }
   }
-
 }
 
 .custom-select-option {
@@ -115,8 +115,8 @@
   padding: 0 16px;
   .elf-icon-icon,
   .aelf-icon {
-    width: 25px!important;
-    height: 25px!important;
+    width: 25px !important;
+    height: 25px !important;
     // display: none;
   }
   .placeholder {
@@ -131,9 +131,9 @@
   cursor: not-allowed;
 }
 .select-network {
-  height: auto!important;
+  height: auto !important;
   .portkey-drawer-content-wrapper {
-    height: auto!important;
+    height: auto !important;
   }
   .portkey-drawer-body,
   .portkey-modal-content {
@@ -174,5 +174,3 @@
     cursor: not-allowed;
   }
 }
-
-

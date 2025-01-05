@@ -124,7 +124,7 @@ export default function CustomToken() {
 
   const mainContent = useCallback(() => {
     return (
-      <div className={clsx(['page-custom-token', isPrompt && 'detail-page-prompt'])}>
+      <div className={clsx(['page-custom-token'])}>
         <CommonHeader title={'Import Token'} onLeftBack={handleBack} />
         <div className="page-content flex-column">
           <div>

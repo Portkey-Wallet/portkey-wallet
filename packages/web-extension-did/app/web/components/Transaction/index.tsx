@@ -5,16 +5,18 @@ import { ActivityItemType, TransactionStatus } from '@portkey-wallet/types/types
 import { getExploreLink } from '@portkey-wallet/utils';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
 import {
-  formatStr2EllipsisStr,
   AmountSign,
+  formatStr2EllipsisStr,
   formatWithCommas,
   formatAmountUSDShow,
   formatTokenAmountShowWithDecimals,
 } from '@portkey-wallet/utils/converter';
 import clsx from 'clsx';
 import Copy from 'components/Copy';
-import CustomSvg from 'components/CustomSvg';
-import { CustomSvgV3 } from 'components/CustomSvgV3';
+import CustomSvg, { SvgType } from 'components/CustomSvg';
+// import { CustomSvgV3 } from 'components/CustomSvgV3';
+import ImageForTwo from 'pages/components/ImageForTwo';
+
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useEffectOnce } from 'react-use';
@@ -34,6 +36,21 @@ import { getSeedTypeTag } from 'utils/assets';
 import CommonHeader, { CustomSvgPlaceholderSize } from 'components/CommonHeader';
 import { Button } from 'antd';
 import ImageDisplay from 'pages/components/ImageDisplay';
+
+import { CustomSvgV3 } from 'components/CustomSvgV3';
+
+import { contractStatusEnum } from '@portkey-wallet/constants/constants-ca/common';
+
+import NFTImageDisplay from 'pages/components/NFTImageDisplay';
+import TokenImageDisplay from 'pages/components/TokenImageDisplay';
+
+export interface IActivityMultiplyToken {
+  symbol: string;
+  url?: string;
+  isReceived: boolean;
+  amount: string;
+  decimals: string;
+}
 
 export default function Transaction(props: {
   state: { item: any; previousPage: string; chainId: string };
@@ -106,6 +123,8 @@ export default function Transaction(props: {
 
   const isNft = useMemo(() => !!activityItem?.nftInfo?.nftId, [activityItem?.nftInfo?.nftId]);
 
+  const currentNetwork = useCurrentNetworkInfo();
+
   const nftHeaderUI = useCallback(() => {
     const { nftInfo, amount, decimals } = activityItem;
     const seedTypeTag = nftInfo ? getSeedTypeTag(nftInfo) : '';
@@ -131,142 +150,384 @@ export default function Transaction(props: {
     );
   }, [activityItem]);
 
+  const renderStatusIcon = useCallback((item: ActivityItemType) => {
+    let svg = '';
+    if (item.status === contractStatusEnum.MINED) svg = 'SuggestCheck';
+    if (item.status === contractStatusEnum.FAILED) svg = 'SuggestClose2';
+    if (item.status === contractStatusEnum.PENDING) svg = 'Status';
+    if (svg) return <CustomSvg className="flex-center" type={svg as SvgType} />;
+    return null;
+  }, []);
+
+  const renderEmptyTokenForDapp = useCallback((item: ActivityItemType) => {
+    return (
+      <>
+        <ImageDisplay
+          src={item.dappIcon}
+          name={item.dappName || 'Unknown'}
+          defaultWidth={40}
+          defaultHeight={40}
+          className="system-activity-icon"
+        />
+        <div className="dapp-name">{item.dappName || item.transactionName}</div>
+      </>
+    );
+  }, []);
+
+  const renderSystemActivityItem = useCallback(
+    (item: ActivityItemType) => (
+      <>
+        <div className="icon-box">
+          <ImageDisplay
+            src={item.listIcon}
+            backupSrc="SystemActivity"
+            defaultHeight={40}
+            defaultWidth={40}
+            className="system-activity-icon"
+          />
+          {item.sourceIcon && (
+            <ImageDisplay
+              src={item.sourceIcon}
+              backupSrc="SystemActivity"
+              defaultHeight={20}
+              defaultWidth={20}
+              className="source-icon"
+            />
+          )}
+        </div>
+
+        <div className="activity-item-system-detail">
+          <span className="flex-row-center gap-4">{item?.transactionName}</span>
+        </div>
+      </>
+    ),
+    [renderStatusIcon],
+  );
+  const renderActivityAmount = useCallback(
+    (item: ActivityItemType) => {
+      const { isReceived, amount, decimals, symbol, currentTxPriceInUsd, nftInfo } = item;
+      const sign = isReceived ? AmountSign.PLUS : AmountSign.MINUS;
+
+      const amountShow = formatWithCommas({
+        sign,
+        amount,
+        decimals,
+        digits: Number(decimals),
+      });
+      return (
+        <div className={clsx('activity-item-amount')}>
+          <div
+            className={clsx(
+              'transaction-amount',
+              isReceived && 'received-amount',
+              Number(amountShow) > 0 ? 'success' : 'fail',
+            )}>
+            <span className="amount-show">{`${amountShow} `}</span>
+            {(nftInfo?.alias || symbol) && <span className="amount-symbol">{` ${nftInfo?.alias || symbol}`}</span>}
+          </div>
+          <div className={clsx('transaction-convert', !isMainnet && 'hidden-transaction-convert')}>
+            {formatAmountUSDShow(currentTxPriceInUsd)}
+          </div>
+        </div>
+      );
+    },
+    [isMainnet],
+  );
+
+  const renderTxActivityItemForDefault = useCallback(
+    (item: ActivityItemType) => {
+      return (
+        <>
+          {item.nftInfo ? (
+            <NFTImageDisplay
+              src={item.listIcon}
+              isSeed={item.nftInfo.isSeed}
+              seedType={item.nftInfo.seedType}
+              alias={item.nftInfo.alias}
+              className="nft-activity-icon"
+            />
+          ) : (
+            <div className="token-activity-icon-box">
+              <TokenImageDisplay className="token-activity-icon" src={item.listIcon} symbol={item.symbol} />
+              {item.statusIcon && (
+                <TokenImageDisplay className="token-status-icon" src={item.statusIcon} symbol={item.symbol} />
+              )}
+            </div>
+          )}
+          <div className="activity-item-detail flex-between-center">{renderActivityAmount(item)}</div>
+        </>
+      );
+    },
+    [renderActivityAmount],
+  );
+
+  const renderActivityAmountForMulToken = useCallback((item: IActivityMultiplyToken[]) => {
+    const [tokenTop, tokenBottom] = item;
+    const sameDirection = tokenTop.isReceived === tokenBottom.isReceived;
+    return (
+      <div className={clsx('activity-item-amount', sameDirection ? 'same-direction' : 'opposite-direction')}>
+        {item.map((_token, index) => (
+          <div
+            key={`transaction-mul-token-amount_${index}`}
+            className={clsx(
+              'transaction-amount',
+              _token.isReceived && 'received-amount',
+              `transaction-amount-${index}`,
+            )}>
+            {_token.symbol && <span className="amount-symbol">{` ${_token.symbol}`}</span>}
+            {!_token.isReceived && <CustomSvgV3 type="arrow right thin" />}
+          </div>
+        ))}
+      </div>
+    );
+  }, []);
+
+  const renderMulTokenForDapp = useCallback(
+    (item: ActivityItemType) => {
+      const { operations = [] } = item;
+      if (operations.length < 2) return null;
+      let [tokenTop, tokenBottom] = operations.map((_token) => ({
+        symbol: _token.nftInfo ? _token.nftInfo.alias : _token.symbol,
+        url: _token.nftInfo ? _token.nftInfo.imageUrl : _token.icon,
+        isReceived: _token.isReceived,
+        amount: _token.amount,
+        decimals: _token.decimals,
+      }));
+      const sameDirection = tokenTop.isReceived === tokenBottom.isReceived;
+      if (!sameDirection && !tokenTop.isReceived) {
+        [tokenBottom, tokenTop] = [tokenTop, tokenBottom];
+      }
+      let renderTopIconInfo = { url: tokenTop.url, symbol: tokenTop.symbol };
+      let renderBottomIconInfo = { url: tokenBottom.url, symbol: tokenBottom.symbol };
+      if (!sameDirection) {
+        [renderTopIconInfo, renderBottomIconInfo] = [renderBottomIconInfo, renderTopIconInfo];
+      }
+      return (
+        <>
+          <ImageForTwo className="token-activity-icon" iconTop={renderTopIconInfo} iconBottom={renderBottomIconInfo} />
+          <div className="activity-item-detail flex-between-center">
+            {renderActivityAmountForMulToken([tokenTop, tokenBottom])}
+          </div>
+        </>
+      );
+    },
+    [renderActivityAmountForMulToken],
+  );
+
+  const renderSingleTokenForDapp = useCallback(
+    (item: ActivityItemType) => {
+      return (
+        <>
+          {item.nftInfo ? (
+            <NFTImageDisplay
+              src={item.nftInfo.imageUrl}
+              isSeed={item.nftInfo.isSeed}
+              seedType={item.nftInfo.seedType}
+              alias={item.nftInfo.alias}
+              className="nft-activity-icon"
+            />
+          ) : (
+            <div className="token-activity-icon-box">
+              <TokenImageDisplay className="token-activity-icon" src={item.listIcon} symbol={item.symbol} />
+              {item.statusIcon && (
+                <TokenImageDisplay className="token-status-icon" src={item.statusIcon} symbol={item.symbol} />
+              )}
+            </div>
+          )}
+          <div className="activity-item-detail flex-between-center">{renderActivityAmount(item)}</div>
+        </>
+      );
+    },
+    [renderActivityAmount],
+  );
+
+  const renderTxActivityItem = useCallback(
+    (item: ActivityItemType) => {
+      const { operations = [], dappName } = item;
+      if (operations.length !== 0) return renderMulTokenForDapp(item);
+      if (dappName) return renderSingleTokenForDapp(item);
+      return renderTxActivityItemForDefault(item);
+    },
+    [renderMulTokenForDapp, renderSingleTokenForDapp, renderTxActivityItemForDefault],
+  );
+
   const tokenHeaderUI = useCallback(() => {
     console.log('activityItem', activityItem);
-    const {
-      amount,
-      isReceived,
-      decimals,
-      symbol,
-      transactionType,
-      operations,
-      currentTxPriceInUsd = '',
-    } = activityItem;
-    const sign = isReceived ? AmountSign.PLUS : AmountSign.MINUS;
+    // const {
+    //   amount,
+    //   isReceived,
+    //   decimals,
+    //   symbol,
+    //   transactionType,
+    //   operations,
+    //   currentTxPriceInUsd = '',
+    // } = activityItem;
+    // const sign = isReceived ? AmountSign.PLUS : AmountSign.MINUS;
     /* Hidden during [SocialRecovery, AddManager, RemoveManager] */
-    if (transactionType && SHOW_FROM_TRANSACTION_TYPES.includes(transactionType)) {
-      if (transactionType === TransactionTypes.SWAP) {
-        return (
-          <>
-            {operations && (
-              <>
-                <div className="operations">
-                  <ImageDisplay src={operations[0].icon} defaultWidth={40} defaultHeight={40} />
-                  <ImageDisplay
-                    className="operations-1"
-                    src={operations[1].icon}
-                    defaultWidth={40}
-                    defaultHeight={40}
-                  />
-                </div>
-                <div className="swap-text-box">
-                  <span>{operations[0].symbol}</span>
-                  <CustomSvgV3 className="arrow-right" type={'arrow right thin'} />
-                  <span>{operations[1].symbol}</span>
-                </div>
-              </>
-            )}
-          </>
-        );
-      }
-      if (transactionType === TransactionTypes.BATCH_BUY_NOW || transactionType === TransactionTypes.DEAL) {
-        return (
-          <>
-            {operations && (
-              <>
-                <div className="operations">
-                  <ImageDisplay src={operations[1]?.nftInfo?.imageUrl} defaultWidth={40} defaultHeight={40} />
-                  <ImageDisplay
-                    className="operations-1"
-                    src={operations[0].icon}
-                    defaultWidth={40}
-                    defaultHeight={40}
-                  />
-                </div>
-                <div className="swap-text-box">
-                  <span>{operations[1]?.nftInfo?.alias}</span>
-                  <CustomSvgV3 className="arrow-right" type={'arrow right thin'} />
-                  <span>{operations[0].symbol}</span>
-                </div>
-              </>
-            )}
-          </>
-        );
-      }
+    // if (transactionType && SHOW_FROM_TRANSACTION_TYPES.includes(transactionType)) {
+    //   if (transactionType === TransactionTypes.SWAP) {
+    //     return (
+    //       <>
+    //         {operations && (
+    //           <>
+    //             <div className="operations">
+    //               <ImageDisplay src={operations[0].icon} defaultWidth={40} defaultHeight={40} />
+    //               <ImageDisplay
+    //                 className="operations-1"
+    //                 src={operations[1].icon}
+    //                 defaultWidth={40}
+    //                 defaultHeight={40}
+    //               />
+    //             </div>
+    //             <div className="swap-text-box">
+    //               <span>{operations[0].symbol}</span>
+    //               <CustomSvgV3 className="arrow-right" type={'arrow right thin'} />
+    //               <span>{operations[1].symbol}</span>
+    //             </div>
+    //           </>
+    //         )}
+    //       </>
+    //     );
+    //   }
+    //   if (transactionType === TransactionTypes.BATCH_BUY_NOW) {
+    //     return (
+    //       <>
+    //         {operations && (
+    //           <>
+    //             <div className="operations">
+    //               <ImageDisplay src={operations[1]?.nftInfo?.imageUrl} defaultWidth={40} defaultHeight={40} />
+    //               <ImageDisplay
+    //                 className="operations-1"
+    //                 src={operations[0].icon}
+    //                 defaultWidth={40}
+    //                 defaultHeight={40}
+    //               />
+    //             </div>
+    //             <div className="swap-text-box">
+    //               <span>{operations[1].nftInfo?.alias}</span>
+    //               <CustomSvgV3 className="arrow-right" type={'arrow right thin'} />
+    //               <span>{operations[0].symbol}</span>
+    //             </div>
+    //           </>
+    //         )}
+    //       </>
+    //     );
+    //   }
 
-      if (transactionType === TransactionTypes.PALY) {
-        return (
-          <div className="token-amount flex-column-center">
-            <div className="token-icon-box">
-              <ImageDisplay src={activityItem.dappIcon} defaultHeight={60} defaultWidth={60} />
-            </div>
-            <div className="token-amount-symbol">{activityItem.dappName}</div>
-          </div>
-        );
-      }
-      if (transactionType === TransactionTypes.JOIN) {
-        return (
-          <div className="token-amount flex-column-center">
-            <div className="token-icon-box">
-              <ImageDisplay name={activityItem.dappName} defaultHeight={60} defaultWidth={60} />
-            </div>
-            <div className="token-amount-symbol">{activityItem.transactionName}</div>
-          </div>
-        );
-      }
-      return (
-        <div className="token-amount flex-column-center">
-          <div className="token-icon-box">
-            <ImageDisplay
-              src={activityItem.listIcon}
-              name={activityItem.dappName || 'Unknown'}
-              defaultHeight={60}
-              defaultWidth={60}
-            />
-            {activityItem.statusIcon && (
-              <ImageDisplay
-                src={activityItem.statusIcon}
-                name={activityItem.dappName || 'Unknown'}
-                defaultHeight={20}
-                defaultWidth={20}
-                className="source-icon"
-              />
-            )}
-          </div>
+    //   if (transactionType === TransactionTypes.DEAL) {
+    //     return (
+    //       <>
+    //         {operations && (
+    //           <>
+    //             <div className="operations">
+    //               <ImageDisplay src={operations[0].icon} defaultWidth={40} defaultHeight={40} />
+    //               <ImageDisplay
+    //                 className="operations-1"
+    //                 src={operations[1]?.nftInfo?.imageUrl}
+    //                 defaultWidth={40}
+    //                 defaultHeight={40}
+    //               />
+    //             </div>
+    //             <div className="swap-text-box">
+    //               <span>{operations[0].symbol}</span>
+    //               <CustomSvgV3 className="arrow-right" type={'arrow right thin'} />
+    //               <span>{operations[1].nftInfo?.alias}</span>
+    //             </div>
+    //           </>
+    //         )}
+    //       </>
+    //     );
+    //   }
 
-          <div className="token-amount-text flex-center">
-            <div className="token-amount-number">
-              {formatWithCommas({ amount, decimals, sign, digits: Number(decimals) })}
-            </div>
-            <div className="token-amount-symbol">{symbol ?? ''}</div>
-          </div>
-          {isMainnet && <div className="usd">{formatAmountUSDShow(currentTxPriceInUsd)}</div>}
-        </div>
-      );
-    } else {
-      return (
-        <div className="wallet-activity-header">
-          <div className="token-icon-box">
-            <ImageDisplay
-              src={activityItem.listIcon}
-              name={activityItem.transactionName || 'Unknown'}
-              defaultHeight={60}
-              defaultWidth={60}
-            />
-            {activityItem.sourceIcon && (
-              <ImageDisplay
-                className="source-icon"
-                src={activityItem.sourceIcon}
-                defaultHeight={20}
-                defaultWidth={20}
-              />
-            )}
-          </div>
+    //   if (transactionType === TransactionTypes.PALY) {
+    //     return (
+    //       <div className="token-amount flex-column-center">
+    //         <div className="token-icon-box">
+    //           <ImageDisplay src={activityItem.dappIcon} defaultHeight={60} defaultWidth={60} />
+    //         </div>
+    //         <div className="token-amount-symbol">{activityItem.dappName}</div>
+    //       </div>
+    //     );
+    //   }
+    //   if (transactionType === TransactionTypes.JOIN) {
+    //     return (
+    //       <div className="token-amount flex-column-center">
+    //         <div className="token-icon-box">
+    //           <ImageDisplay name={activityItem.dappName} defaultHeight={60} defaultWidth={60} />
+    //         </div>
+    //         <div className="token-amount-symbol">{activityItem.transactionName}</div>
+    //       </div>
+    //     );
+    //   }
+    //   return (
+    //     <div className="token-amount flex-column-center">
+    //       <div className="token-icon-box">
+    //         <ImageDisplay
+    //           src={activityItem.listIcon}
+    //           name={activityItem.dappName || 'Unknown'}
+    //           defaultHeight={60}
+    //           defaultWidth={60}
+    //         />
+    //         {activityItem.statusIcon && (
+    //           <ImageDisplay
+    //             src={activityItem.statusIcon}
+    //             name={activityItem.dappName || 'Unknown'}
+    //             defaultHeight={20}
+    //             defaultWidth={20}
+    //             className="source-icon"
+    //           />
+    //         )}
+    //       </div>
 
-          <div className="method-name">{activityItem.transactionName}</div>
-        </div>
-      );
-    }
+    //       <div className="token-amount-text flex-center">
+    //         <div className="token-amount-number">
+    //           {formatWithCommas({ amount, decimals, sign, digits: Number(decimals) })}
+    //         </div>
+    //         <div className="token-amount-symbol">{symbol ?? ''}</div>
+    //       </div>
+    //       {isMainnet && <div className="usd">{formatAmountUSDShow(currentTxPriceInUsd)}</div>}
+    //     </div>
+    //   );
+    // } else {
+    //   return (
+    //     <div className="wallet-activity-header">
+    //       <div className="token-icon-box">
+    //         <ImageDisplay
+    //           src={activityItem.listIcon}
+    //           name={activityItem.transactionName || 'Unknown'}
+    //           defaultHeight={60}
+    //           defaultWidth={60}
+    //         />
+    //         {activityItem.sourceIcon && (
+    //           <ImageDisplay
+    //             className="source-icon"
+    //             src={activityItem.sourceIcon}
+    //             defaultHeight={20}
+    //             defaultWidth={20}
+    //           />
+    //         )}
+    //       </div>
+
+    //       <div className="method-name">{activityItem.transactionName}</div>
+    //     </div>
+    //   );
+    // }
+
+    const isEmptyToken = !(activityItem.nftInfo || activityItem.symbol || activityItem.operations?.length);
+    const isDappTx = !!activityItem.dappName;
+    // show login
+    const isShowEmptyTokenForDapp = isEmptyToken && isDappTx;
+    const isShowSystemForDefault = isEmptyToken && !isDappTx;
+    const isShowTx = !isEmptyToken;
+
+    console.log('isShowSystemForDefault', isShowSystemForDefault);
+    return (
+      <>
+        {isShowEmptyTokenForDapp && renderEmptyTokenForDapp(activityItem)}
+        {isShowSystemForDefault && renderSystemActivityItem(activityItem)}
+        {isShowTx && renderTxActivityItem(activityItem)}
+      </>
+    );
   }, [activityItem, isMainnet]);
 
   const statusAndDateUI = useCallback(() => {
@@ -284,7 +545,6 @@ export default function Transaction(props: {
     );
   }, [activityItem.timestamp, status.style, status.text, t]);
 
-  const currentNetwork = useCurrentNetworkInfo();
   const fromToUI = useCallback(() => {
     const { fromAddress, fromChainId, toAddress, toChainId, transactionType } = activityItem;
     const transFromAddress = addressFormat(fromAddress, fromChainId, currentNetwork.walletType);
@@ -452,32 +712,30 @@ export default function Transaction(props: {
   const mainContent = useCallback(() => {
     return (
       <div className={clsx(['transaction-detail-modal-new'])}>
-        <div>
-          <CommonHeader
-            title={
-              isNft
-                ? activityItem.transactionName
-                : SHOW_FROM_TRANSACTION_TYPES.includes(activityItem.transactionType)
-                ? activityItem.transactionName
-                : 'Wallet activity'
-            }
-            rightElementList={[
-              {
-                customSvgType: 'SuggestClose',
-                customSvgPlaceholderSize: CustomSvgPlaceholderSize.MD,
-                onClick: onClose,
-              },
-            ]}
-          />
-          <div className="transaction-detail-body">
-            <div className="transaction-info">
-              <div className="method-wrap">{isNft ? nftHeaderUI() : tokenHeaderUI()}</div>
-              {statusAndDateUI()}
-              {fromToUI()}
-              {networkUI()}
-              {transactionUI()}
-              {swapUI()}
-            </div>
+        <CommonHeader
+          title={
+            isNft
+              ? activityItem.transactionName
+              : SHOW_FROM_TRANSACTION_TYPES.includes(activityItem.transactionType)
+              ? activityItem.transactionName
+              : 'Wallet activity'
+          }
+          rightElementList={[
+            {
+              customSvgType: 'close thin',
+              customSvgPlaceholderSize: CustomSvgPlaceholderSize.MD,
+              onClick: onClose,
+            },
+          ]}
+        />
+        <div className="transaction-detail-body">
+          <div className="transaction-info">
+            <div className="method-wrap">{isNft ? nftHeaderUI() : tokenHeaderUI()}</div>
+            {statusAndDateUI()}
+            {fromToUI()}
+            {networkUI()}
+            {transactionUI()}
+            {swapUI()}
           </div>
         </div>
         <div className="transaction-footer">

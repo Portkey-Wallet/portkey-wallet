@@ -10,6 +10,9 @@
   .collection-detail-box {
     height: calc(100% - 48px);
     overflow: auto;
+    &::-webkit-scrollbar {
+      display: none;
+    }
     .collection-detail-title {
       text-align: center;
       display: flex;
@@ -18,7 +21,9 @@
       gap: 8px;
       color: @text-base1;
       .collection-name {
+        font-family: BG;
         padding-top: 8px;
+        font-weight: 700;
         font-size: 20px;
         opacity: 1;
       }
@@ -51,6 +56,7 @@
           text-overflow: ellipsis;
           overflow: hidden;
           white-space: nowrap;
+          padding-top: 4px;
         }
         .balance-of {
           font-size: 12px;

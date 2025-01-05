@@ -5,10 +5,11 @@
   .portkey-drawer-content-wrapper {
     .portkey-drawer-wrapper-body {
       background-color: @bg-base1;
+      padding: 16px;
     }
   }
   .common-header {
-    padding: 16px !important;
+    height: auto;
     line-height: 24px;
   }
   .common-header-title {
@@ -20,7 +21,8 @@
     flex-direction: column;
     .address-item {
       align-items: flex-start;
-      padding: 12px 16px;
+      padding: 12px 0;
+      margin-top: 12px;
       .network-item-info {
         display: flex;
         align-items: flex-start;
@@ -61,12 +63,10 @@
   }
   .portkey-modal-body {
     background-color: @bg-base1;
+    padding: 16px !important;
   }
 }
 
 .copy-address-modal {
   width: 400px !important;
-  &.base-modal {
-    height: 200px;
-  }
 }

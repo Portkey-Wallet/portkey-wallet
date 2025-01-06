@@ -553,32 +553,32 @@ export default function Transaction(props: {
     /* Hidden during [SocialRecovery, AddManager, RemoveManager] */
     return (
       transactionType &&
-      SHOW_FROM_TRANSACTION_TYPES.includes(transactionType) &&
-      transactionType !== TransactionTypes.SWAP &&
-      transactionType !== TransactionTypes.BATCH_BUY_NOW && (
+      SHOW_FROM_TRANSACTION_TYPES.includes(transactionType) && (
         <div className="account-wrap">
           <p className="label">
             <span className="left">{t('From')}</span>
-            <span className="right">{formatStr2EllipsisStr(transFromAddress, [7, 4])}</span>
+            <span className="right">{formatStr2EllipsisStr(transFromAddress, [7, 7])}</span>
           </p>
-          <p className="label">
-            <div className="content">
-              {/* <span className="left name">{from}</span> */}
-              {fromAddress && (
-                <span className="left address-wrap">
-                  <span className="right">{t('To')}</span>
-                </span>
-              )}
-            </div>
-            <div className="content">
-              {/* <span className="right name">{to}</span> */}
-              {toAddress && (
-                <span className="right address-wrap">
-                  <span>{formatStr2EllipsisStr(transToAddress, [7, 4])}</span>
-                </span>
-              )}
-            </div>
-          </p>
+          {toAddress && (
+            <p className="label">
+              <div className="content">
+                {/* <span className="left name">{from}</span> */}
+                {fromAddress && (
+                  <span className="left address-wrap">
+                    <span className="right">{t('To')}</span>
+                  </span>
+                )}
+              </div>
+              <div className="content">
+                {/* <span className="right name">{to}</span> */}
+                {toAddress && (
+                  <span className="right address-wrap">
+                    <span>{formatStr2EllipsisStr(transToAddress, [7, 7])}</span>
+                  </span>
+                )}
+              </div>
+            </p>
+          )}
         </div>
       )
     );
@@ -598,14 +598,14 @@ export default function Transaction(props: {
           <p className="label">
             <span className="left">{t('Source network')}</span>
             <span className="right">
-              <ImageDisplay src={fromChainIcon} defaultHeight={14} defaultWidth={14} />
+              <ImageDisplay src={fromChainIcon} defaultHeight={18} defaultWidth={18} />
               <span>{from}</span>
             </span>
           </p>
           <p className="label">
             <span className="left">{t('Destination network')}</span>
             <span className="right">
-              <ImageDisplay src={toChainIcon} defaultHeight={14} defaultWidth={14} />
+              <ImageDisplay src={toChainIcon} defaultHeight={18} defaultWidth={18} />
               <span>{to}</span>
             </span>
           </p>
@@ -617,7 +617,7 @@ export default function Transaction(props: {
   const noFeeUI = useCallback(() => {
     return (
       <div className="right">
-        <span>{`0 ELF`}</span> {isMainnet && <span className="right-usd">{`$ 0`}</span>}
+        <div>{`0 ELF`}</div> {isMainnet && <div className="right-usd">{`$ 0`}</div>}
       </div>
     );
   }, [isMainnet]);
@@ -631,18 +631,18 @@ export default function Transaction(props: {
     ) : (
       <div className="value">
         <span className="left">{t('Network fee')}</span>
-        <span className="right">
+        <span className="right flex-column">
           {(!feeInfo || feeInfo?.length === 0) && noFeeUI()}
           {feeInfo?.length > 0 &&
             feeInfo.map((item, idx) => {
               return (
-                <div key={'transactionFee' + idx} className="right flex-column">
-                  <span>{`${formatWithCommas({
+                <div key={'transactionFee' + idx} className="right-item">
+                  <div>{`${formatWithCommas({
                     amount: item.fee,
                     decimals: item.decimals || defaultToken.decimals,
                     digits: Number(item.decimals),
-                  })} ${item.symbol ?? ''}`}</span>
-                  {isMainnet && <span className="right-usd">{formatAmountUSDShow(item?.feeInUsd ?? 0)}</span>}
+                  })} ${item.symbol ?? ''}`}</div>
+                  {isMainnet && <div className="right-usd">{formatAmountUSDShow(item?.feeInUsd ?? 0)}</div>}
                 </div>
               );
             })}
@@ -658,7 +658,7 @@ export default function Transaction(props: {
         <p className="label">
           <span className="left">{t('Txn ID')}</span>
           <span className="right tx-id">
-            {`${formatStr2EllipsisStr(activityItem.transactionId, [7, 4])} `}
+            {`${formatStr2EllipsisStr(activityItem.transactionId, [10, 0])} `}
             <Copy toCopy={activityItem.transactionId} iconType="copy" />
           </span>
         </p>

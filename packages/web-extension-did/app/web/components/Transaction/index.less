@@ -151,6 +151,7 @@
         }
 
         .transaction-convert {
+          color: @text-base1;
           text-align: center;
           opacity: 0.7;
         }
@@ -315,7 +316,7 @@
             font-weight: 600;
             display: flex;
             align-items: center;
-            gap: 2px;
+            gap: 4px;
           }
         }
       }
@@ -409,55 +410,48 @@
       }
       .money-wrap {
         flex: 1;
-        gap: 16px;
-
-        > div {
-          display: flex;
-          flex-direction: column;
-          gap: 12px;
-          .value {
-            /* stylelint-disable-next-line no-descending-specificity */
-            .left {
-              color: @neutral-secondary-text;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        .value {
+          /* stylelint-disable-next-line no-descending-specificity */
+          .left {
+            color: @text-base1;
+          }
+          /* stylelint-disable-next-line no-descending-specificity */
+          .right {
+            color: @text-base1;
+            font-weight: 500;
+            display: block;
+            .right-item {
+              text-align: right;
             }
-            /* stylelint-disable-next-line no-descending-specificity */
-            .right {
+            .right-usd {
               color: @text-base1;
-              font-weight: 500;
-              .right-item {
-                margin-bottom: 8px;
-                font-size: 16px;
-                font-weight: 600;
-                span {
-                  text-align: right;
-                  flex-wrap: wrap;
-                  word-break: break-all;
-                }
-                .right-usd {
-                  color: @neutral-secondary-text;
-                  font-size: 12px;
-                  font-weight: 400;
-                }
-              }
+              opacity: 0.7;
+              font-size: 12px;
+              font-weight: 400;
+              text-align: right;
             }
+          }
 
-            &.total-amount {
-              .right {
-                display: flex;
-                flex-direction: column;
-                span {
-                  text-align: right;
-                  &.convert {
-                    color: @neutral-secondary-text;
-                    font-weight: 400;
-                    font-size: 12px;
-                    line-height: 16px;
-                  }
+          &.total-amount {
+            .right {
+              display: flex;
+              flex-direction: column;
+              span {
+                text-align: right;
+                &.convert {
+                  color: @neutral-secondary-text;
+                  font-weight: 400;
+                  font-size: 12px;
+                  line-height: 16px;
                 }
               }
             }
           }
         }
+
         .tx-id {
           display: flex;
           align-items: center;
@@ -482,13 +476,9 @@
       border-radius: 50px;
     }
     .link {
-      // display: block;
-      // width: 100%;
-      // background: @bg-base1;
-      // text-align: center;
-      // line-height: 20px;
-      // padding-bottom: 40px;
-      // color: @brand-normal;
+      color: @text-brand4;
+      font-weight: 600;
+      font-size: 16px;
     }
   }
 }

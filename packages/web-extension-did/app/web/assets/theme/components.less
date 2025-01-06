@@ -80,31 +80,31 @@ button.@{app-prefix}-btn-default {
 }
 
 .@{app-prefix}-btn-dangerous.@{app-prefix}-btn-primary {
-    border-width: 0;
+  border-width: 0;
+  color: @text-danger4;
+
+  &:hover,
+  &:focus {
     color: @text-danger4;
+  }
+  &:focus {
+    background-color: @bg-danger4;
+    border-color: @bg-danger4;
+  }
+  &:hover {
+    background-color: @bg-danger4;
+    border-color: @bg-danger4;
+  }
 
-    &:hover,
-    &:focus {
-      color: @text-danger4;
-    }
-    &:focus {
-      background-color: @bg-danger4;
-      border-color: @bg-danger4;
-    }
-    &:hover {
-      background-color: @bg-danger4;
-      border-color: @bg-danger4;
-    }
-
-    &:disabled,
-    &:disabled:hover,
-    &:disabled:focus,
-    &:disabled:active {
-      color: @text-disabled2;
-      background-color: @bg-base2 !important;
-      border-color: @bg-base2 !important;
-      box-shadow: none !important;
-    }
+  &:disabled,
+  &:disabled:hover,
+  &:disabled:focus,
+  &:disabled:active {
+    color: @text-disabled2;
+    background-color: @bg-base2 !important;
+    border-color: @bg-base2 !important;
+    box-shadow: none !important;
+  }
 }
 
 /* input */
@@ -134,7 +134,7 @@ button.@{app-prefix}-btn-default {
 .@{app-prefix}-input {
   font-size: 16px;
   line-height: 24px;
-  color:@text-base1;
+  color: @text-base1;
   background: @bg-base1;
 
   &::placeholder {
@@ -216,24 +216,40 @@ button.@{app-prefix}-btn-default {
 }
 
 // to change  border color of the errored input
-.@{app-prefix}-input-status-error:not(.@{app-prefix}-input-disabled):not(.@{app-prefix}-input-borderless).@{app-prefix}-input:hover,
-.@{app-prefix}-input-affix-wrapper-status-error:not(.@{app-prefix}-input-affix-wrapper-disabled):not(.@{app-prefix}-input-affix-wrapper-borderless).@{app-prefix}-input-affix-wrapper,
-.@{app-prefix}-input-affix-wrapper-status-error:not(.@{app-prefix}-input-affix-wrapper-disabled):not(.@{app-prefix}-input-affix-wrapper-borderless).@{app-prefix}-input-affix-wrapper:hover {
+.@{app-prefix}-input-status-error:not(.@{app-prefix}-input-disabled):not(
+    .@{app-prefix}-input-borderless
+  ).@{app-prefix}-input:hover,
+.@{app-prefix}-input-affix-wrapper-status-error:not(.@{app-prefix}-input-affix-wrapper-disabled):not(
+    .@{app-prefix}-input-affix-wrapper-borderless
+  ).@{app-prefix}-input-affix-wrapper,
+.@{app-prefix}-input-affix-wrapper-status-error:not(.@{app-prefix}-input-affix-wrapper-disabled):not(
+    .@{app-prefix}-input-affix-wrapper-borderless
+  ).@{app-prefix}-input-affix-wrapper:hover {
   //border-color: @brand-normal !important;
   border-color: @border-danger1 !important;
   background: @bg-base1;
 }
 
-.@{app-prefix}-input-status-error:not(.@{app-prefix}-input-disabled):not(.@{app-prefix}-input-borderless).@{app-prefix}-input,
-.@{app-prefix}-input-affix-wrapper-status-error:not(.@{app-prefix}-input-affix-wrapper-disabled):not(.@{app-prefix}-input-affix-wrapper-borderless).@{app-prefix}-input-affix-wrapper,
-.@{app-prefix}-input-affix-wrapper-status-error:not(.@{app-prefix}-input-affix-wrapper-disabled):not(.@{app-prefix}-input-affix-wrapper-borderless).@{app-prefix}-input-affix-wrapper:focus {
+.@{app-prefix}-input-status-error:not(.@{app-prefix}-input-disabled):not(
+    .@{app-prefix}-input-borderless
+  ).@{app-prefix}-input,
+.@{app-prefix}-input-affix-wrapper-status-error:not(.@{app-prefix}-input-affix-wrapper-disabled):not(
+    .@{app-prefix}-input-affix-wrapper-borderless
+  ).@{app-prefix}-input-affix-wrapper,
+.@{app-prefix}-input-affix-wrapper-status-error:not(.@{app-prefix}-input-affix-wrapper-disabled):not(
+    .@{app-prefix}-input-affix-wrapper-borderless
+  ).@{app-prefix}-input-affix-wrapper:focus {
   //border-color: #dcdee1;
   border-color: @border-danger1;
   background: @bg-base1;
 }
 
-.@{app-prefix}-input-status-error:not(.@{app-prefix}-input-disabled):not(.@{app-prefix}-input-borderless).@{app-prefix}-input:focus,
-.@{app-prefix}-input-affix-wrapper-status-error:not(.@{app-prefix}-input-affix-wrapper-disabled):not(.@{app-prefix}-input-affix-wrapper-borderless).@{app-prefix}-input-affix-wrapper-focused {
+.@{app-prefix}-input-status-error:not(.@{app-prefix}-input-disabled):not(
+    .@{app-prefix}-input-borderless
+  ).@{app-prefix}-input:focus,
+.@{app-prefix}-input-affix-wrapper-status-error:not(.@{app-prefix}-input-affix-wrapper-disabled):not(
+    .@{app-prefix}-input-affix-wrapper-borderless
+  ).@{app-prefix}-input-affix-wrapper-focused {
   //border-color: @brand-normal !important;
   border-color: @border-danger1 !important;
   //box-shadow: 0 0 0 2px rgb(91 142 244 / 20%);
@@ -253,7 +269,7 @@ button.@{app-prefix}-btn-default {
   }
 
   .@{app-prefix}-form-item-label > label {
-    color:@text-base1;
+    color: @text-base1;
     font-size: 14px;
     line-height: 20px;
   }
@@ -342,7 +358,7 @@ button.@{app-prefix}-btn-default {
   margin-bottom: 0 !important;
 
   .footer-btn {
-    color: #0A4370;
+    color: #0a4370;
     font-size: 16px;
     line-height: 22px;
     height: 48px;
@@ -466,7 +482,7 @@ button.@{app-prefix}-btn-default {
     min-width: 360px;
   }
   .@{app-prefix}-drawer-content {
-    border-radius: 8px 8px 0 0;
+    border-radius: 0;
   }
 }
 

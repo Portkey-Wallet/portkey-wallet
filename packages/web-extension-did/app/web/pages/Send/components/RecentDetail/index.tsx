@@ -187,16 +187,17 @@ export default function RecentDetail() {
         onLeftBack={onClose}
         rightElementList={[
           {
-            customSvgWrapClassName: 'nft-detail-more',
-            customSvgType: 'moreHome',
+            customSvgWrapClassName: 'recent-detail-more',
+            customSvgType: 'more_verti',
             popoverProps: {
-              overlayClassName: `nft-detail-popover ${isPrompt ? '' : 'nft-detail-popover-popup'}`,
+              overlayClassName: `recent-detail-popover`,
               open: popVisible,
               trigger: 'click',
               showArrow: false,
               placement: 'bottomLeft',
               getPopupContainer: (triggerNode: any) => triggerNode.parentNode,
               content: <PopoverMenuList />,
+              onOpenChange: () => setPopVisible(!popVisible),
             },
             onClick: () => setPopVisible(!popVisible),
           },

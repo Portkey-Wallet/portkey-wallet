@@ -478,7 +478,11 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
       {renderActivityList}
       <LoadingMore hasMore={hasMore} loadMore={loadMore} className="load-more" loadingText="" />
       {open && (
-        <CommonBaseModal open={open} maskClosable={true} className="transaction-modal-drawer">
+        <CommonBaseModal
+          open={open}
+          maskClosable={true}
+          onClose={() => setOpen(false)}
+          className="transaction-modal-drawer">
           <Transaction state={selectItem} closeFun={setOpen} />
         </CommonBaseModal>
       )}

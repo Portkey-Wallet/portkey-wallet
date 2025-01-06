@@ -481,6 +481,15 @@ button.@{app-prefix}-btn-default {
 }
 
 /* modal */
-.@{app-prefix}-modal-mask {
-  background: @bg-opacity80;
+.@{app-prefix}-modal-mask,
+.@{app-prefix}-drawer-mask,
+.portkey-ant-modal-mask,
+.portkey-ant-drawer-mask {
+  background: @bg-opacity80 !important;
+}
+
+@media screen and (max-width: 600px) {
+  .portkey-ant-message {
+    top: 16px !important;
+  }
 }

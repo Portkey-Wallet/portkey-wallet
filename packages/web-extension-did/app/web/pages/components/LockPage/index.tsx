@@ -82,7 +82,7 @@ export default function LockPage({ onUnLockHandler, ...props }: LockPageProps) {
             validateStatus={isPassword === 0 ? 'error' : undefined}
             help={isPassword === 0 ? t(`Incorrect PIN, please try again.`) : undefined}
             validateTrigger={false}>
-            <CustomPassword className="custom-password" placeholder={t('Enter Pin')} />
+            <CustomPassword autoFocus className="custom-password" placeholder={t('Enter Pin')} />
           </FormItem>
 
           <FormItem shouldUpdate className="customer-password-button">

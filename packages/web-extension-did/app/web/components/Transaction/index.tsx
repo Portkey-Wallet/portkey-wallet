@@ -599,14 +599,14 @@ export default function Transaction(props: {
             <span className="left">{t('Source network')}</span>
             <span className="right">
               <ImageDisplay src={fromChainIcon} defaultHeight={18} defaultWidth={18} />
-              <span>{from}</span>
+              <div>{from}</div>
             </span>
           </p>
           <p className="label">
             <span className="left">{t('Destination network')}</span>
             <span className="right">
               <ImageDisplay src={toChainIcon} defaultHeight={18} defaultWidth={18} />
-              <span>{to}</span>
+              <div>{to}</div>
             </span>
           </p>
         </div>

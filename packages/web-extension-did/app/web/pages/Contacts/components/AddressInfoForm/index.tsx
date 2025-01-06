@@ -6,7 +6,7 @@ import { useCallback, useMemo } from 'react';
 import { CustomSvgV3 } from 'components/CustomSvgV3';
 import { Input } from 'antd';
 import { CommonModal } from '@portkey/did-ui-react';
-import CommonHeader from 'components/CommonHeader';
+import CommonCloseHeader from 'components/CommonCloseHeader';
 import { useContactNetworkConfig } from '@portkey-wallet/hooks/hooks-ca/config';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 
@@ -101,11 +101,8 @@ export default function AddressInfoForm({
         <span className="show-text">{`Enter or `}</span>
         <span className="paste-text cursor-pointer" onClick={pasteClipBoard}>{`paste a wallet address`}</span>
       </div>
-      <CommonModal
-        className="select-chain-modal"
-        open={isNetworkModalOpen}
-        onClose={() => handleNetworkModalState(false)}>
-        <CommonHeader title={'Select network'} onLeftBackShowClose={true} />
+      <CommonModal className="select-chain-modal" open={isNetworkModalOpen}>
+        <CommonCloseHeader title="Select network" onClose={() => handleNetworkModalState(false)} />
         <div className="chain-content">
           {supportNetworkList.map((list, index) => {
             return (

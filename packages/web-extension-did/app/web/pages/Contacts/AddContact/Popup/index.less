@@ -56,21 +56,33 @@
   }
 }
 .select-chain-modal {
+  padding: 16px !important;
+  .portkey-ant-drawer-content {
+    background: @bg-base1!important;
+    padding: 16px 16px 0 !important;
+  }
   .close-icon {
     width: 24px;
     height: 24px;
   }
+  .common-header {
+    height: auto !important;
+  }
   .common-header-title {
-    margin-top: 10px;
     text-align: left;
     font-size: 20px;
   }
   .chain-content {
-    padding: 16px;
+    padding: 16px 0;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 12px;
+    max-height: calc(100vh - 80px);
+    overflow: auto;
+    &::-webkit-scrollbar {
+      display: none;
+    }
     .chain-list {
       width: 100%;
       display: flex;

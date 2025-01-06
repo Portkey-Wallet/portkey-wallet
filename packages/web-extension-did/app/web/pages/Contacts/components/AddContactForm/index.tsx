@@ -1,4 +1,4 @@
-import { Button, Form, Input, FormProps } from 'antd';
+import { Form, Input, FormProps } from 'antd';
 import { useTranslation } from 'react-i18next';
 import './index.less';
 import { ContactInfoError, ValidData } from 'pages/Contacts/AddContact';
@@ -8,6 +8,7 @@ import { ContactHandleActionTypeEnum } from 'types/Profile';
 import AddContactAddressInfoSection from '../AddressInfoForm';
 import { useCallback, useState } from 'react';
 import { useEffectOnce } from '@portkey-wallet/hooks';
+import { CommonButton } from '@portkey/did-ui-react';
 
 const { Item: FormItem } = Form;
 
@@ -70,7 +71,7 @@ export default function AddContactForm({
               message: ContactInfoError.inValidName,
             },
           ]}>
-          <Input placeholder={t('Enter name')} maxLength={16} />
+          <Input className="name-input" placeholder={t('Enter name')} maxLength={16} />
         </FormItem>
 
         <FormItem
@@ -88,9 +89,9 @@ export default function AddContactForm({
       </div>
 
       <FormItem className="form-btn">
-        <Button className="add-btn" type="primary" htmlType="submit" disabled={disabled}>
+        <CommonButton className="add-btn" type="primary" htmlType="submit" disabled={disabled}>
           {t('Save address')}
-        </Button>
+        </CommonButton>
       </FormItem>
     </Form>
   );

@@ -11,13 +11,12 @@ export default function NoContacts() {
 
   return (
     <div className="flex-column no-contacts">
-      <p className="title">{t('No Contacts')}</p>
-      <p className="desc">{t("Contacts you've added will appear here")}</p>
+      <p className="desc">{t('Don’t see your token?')}</p>
       <Button
         className="flex-row-center add-button"
         type="text"
         onClick={() => handleAdd(ContactHandleActionTypeEnum.ADD_CONTACT)}>
-        <CustomSvg type="Plus" className="plug-svg" /> {t('Add New Contact')}
+        <CustomSvg type="Plus" className="plug-svg" /> {t('Import token')}
       </Button>
     </div>
   );

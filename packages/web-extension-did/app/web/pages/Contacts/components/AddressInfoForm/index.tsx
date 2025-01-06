@@ -103,7 +103,11 @@ export default function AddressInfoForm({
         <span className="show-text">{`Enter or `}</span>
         <span className="paste-text cursor-pointer" onClick={pasteClipBoard}>{`paste a wallet address`}</span>
       </div>
-      <CommonModal className="select-chain-modal" open={isNetworkModalOpen}>
+      <CommonModal
+        className="select-chain-modal"
+        maskClosable
+        onClose={() => handleNetworkModalState(false)}
+        open={isNetworkModalOpen}>
         <CommonCloseHeader title="Select network" onClose={() => handleNetworkModalState(false)} />
         <div className="chain-content">
           {supportNetworkList.map((list, index) => {

@@ -164,8 +164,19 @@ export default function RecentDetail() {
 
   const formatAddress = useMemo(
     () =>
-      addressFormat(state?.addressInfo?.address, state?.addressInfo?.chainId, state?.addressInfo?.network as ChainType),
-    [state?.addressInfo?.address, state?.addressInfo?.chainId, state?.addressInfo?.network],
+      state?.addressInfo?.isExchange
+        ? state?.addressInfo?.address
+        : addressFormat(
+            state?.addressInfo?.address,
+            state?.addressInfo?.chainId,
+            state?.addressInfo?.network as ChainType,
+          ),
+    [
+      state?.addressInfo?.address,
+      state?.addressInfo?.chainId,
+      state?.addressInfo?.isExchange,
+      state?.addressInfo?.network,
+    ],
   );
 
   return (

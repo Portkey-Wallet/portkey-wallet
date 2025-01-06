@@ -598,14 +598,14 @@ export default function Transaction(props: {
           <p className="label">
             <span className="left">{t('Source network')}</span>
             <span className="right">
-              <ImageDisplay src={fromChainIcon} defaultHeight={14} defaultWidth={14} />
+              <ImageDisplay src={fromChainIcon} defaultHeight={18} defaultWidth={18} />
               <span>{from}</span>
             </span>
           </p>
           <p className="label">
             <span className="left">{t('Destination network')}</span>
             <span className="right">
-              <ImageDisplay src={toChainIcon} defaultHeight={14} defaultWidth={14} />
+              <ImageDisplay src={toChainIcon} defaultHeight={18} defaultWidth={18} />
               <span>{to}</span>
             </span>
           </p>
@@ -658,7 +658,7 @@ export default function Transaction(props: {
         <p className="label">
           <span className="left">{t('Txn ID')}</span>
           <span className="right tx-id">
-            {`${formatStr2EllipsisStr(activityItem.transactionId, [7, 4])} `}
+            {`${formatStr2EllipsisStr(activityItem.transactionId, [10, 0])} `}
             <Copy toCopy={activityItem.transactionId} iconType="copy" />
           </span>
         </p>

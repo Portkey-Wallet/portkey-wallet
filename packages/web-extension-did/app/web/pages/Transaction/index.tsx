@@ -264,7 +264,7 @@ export default function Transaction() {
           <div className="value">
             <span className="left">{t('Transaction ID')}</span>
             <span className="right tx-id">
-              {`${formatStr2EllipsisStr(activityItem.transactionId, [7, 4])} `}
+              {`${formatStr2EllipsisStr(activityItem.transactionId, [10, 0])} `}
               <Copy toCopy={activityItem.transactionId} />
             </span>
           </div>

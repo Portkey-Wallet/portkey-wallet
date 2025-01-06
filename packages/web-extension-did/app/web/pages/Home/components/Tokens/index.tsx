@@ -17,8 +17,11 @@ import clsx from 'clsx';
 import { Row, Col, Collapse } from 'antd';
 // import CustomSvg from 'components/CustomSvg';
 import { CustomSvgV3 } from 'components/CustomSvgV3';
+import { useCommonState } from 'store/Provider/hooks';
 
 export default function TokenList() {
+  const { isPrompt } = useCommonState();
+
   const { t } = useTranslation();
   const navigate = useNavigate();
   const isMainnet = useIsMainnet();
@@ -203,7 +206,9 @@ export default function TokenList() {
     <div className={clsx('tab-token', !hasMoreTokenList && 'hidden-loading-more')}>
       <Collapse onChange={handleChange}>{accountTokenList.map((item) => renderItem(item))}</Collapse>
       <LoadingMore hasMore={hasMoreTokenList} loadMore={getMoreTokenList} className="load-more" />
-      <div className="add-token-wrapper flex-center" onClick={handleAddToken}>
+      <div
+        className={clsx(['add-token-wrapper flex-center', !isPrompt && 'add-token-wrapper-margin'])}
+        onClick={handleAddToken}>
         <CustomSvgV3 type="manage-token" className="manage-token-icon" />
         <span className="add-token-text">{t('Add Tokens')}</span>
       </div>

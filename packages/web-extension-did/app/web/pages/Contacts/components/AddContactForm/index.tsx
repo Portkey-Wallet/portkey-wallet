@@ -9,6 +9,7 @@ import AddContactAddressInfoSection from '../AddressInfoForm';
 import { useCallback, useState } from 'react';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { CommonButton } from '@portkey/did-ui-react';
+import { CustomSvgV3 } from 'components/CustomSvgV3';
 
 const { Item: FormItem } = Form;
 
@@ -71,7 +72,12 @@ export default function AddContactForm({
               message: ContactInfoError.inValidName,
             },
           ]}>
-          <Input className="name-input" placeholder={t('Enter name')} maxLength={16} />
+          <Input
+            allowClear={{ clearIcon: <CustomSvgV3 type="close-circle" className="clear-svg" /> }}
+            className="name-input"
+            placeholder={t('Enter name')}
+            maxLength={16}
+          />
         </FormItem>
 
         <FormItem

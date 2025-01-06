@@ -118,10 +118,6 @@ export default function AddContact() {
       const errorCode: number = err?.error?.code;
 
       const formItemError = errorCodeMessageMap?.[errorCode];
-      console.log('formItemError', err, {
-        name: formItemError.name,
-        errors: [formItemError.errorMsg],
-      });
 
       if (formItemError) {
         form.setFields([

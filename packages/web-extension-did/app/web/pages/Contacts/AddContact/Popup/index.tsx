@@ -61,7 +61,7 @@ export default function AddContactPopup({
         onClose={() => handleNetworkModalState(false)}
       /> */}
 
-      <CommonModal className="remove-tip-modal" open={removeTip}>
+      <CommonModal className="remove-tip-modal" open={removeTip} maskClosable onClose={() => setRemoveTip(false)}>
         <CommonHeader
           title={<CustomSvgV3 type="error" />}
           rightElementList={[

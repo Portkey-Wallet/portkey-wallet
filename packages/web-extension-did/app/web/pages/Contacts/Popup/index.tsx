@@ -11,6 +11,7 @@ export default function ContactsPopup({
   searchPlaceholder,
   handleAdd,
   isSearch,
+  isEmpty,
   handleSearch,
   list,
   contactCount,
@@ -30,7 +31,7 @@ export default function ContactsPopup({
             },
           ]}
         />
-        <ContactsSearchInput placeholder={searchPlaceholder} handleChange={handleSearch} />
+        <ContactsSearchInput placeholder={searchPlaceholder} handleChange={handleSearch} isEmpty={!!isEmpty} />
       </div>
       {loading ? (
         <div className="loading-container">

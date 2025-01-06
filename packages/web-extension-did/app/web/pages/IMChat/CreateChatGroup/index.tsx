@@ -166,6 +166,7 @@ export default function CreateChatGroup() {
                 </div>
               </div>
               <ContactsSearchInput
+                isEmpty={false}
                 className="find-more-search"
                 placeholder="Wallet Name/Remark/Address"
                 handleChange={handleSearch}

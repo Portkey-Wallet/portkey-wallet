@@ -6,7 +6,7 @@ import { useCallback, useMemo } from 'react';
 import { CustomSvgV3 } from 'components/CustomSvgV3';
 import { Input } from 'antd';
 import { CommonModal } from '@portkey/did-ui-react';
-import CommonHeader from 'components/CommonHeader';
+import CommonCloseHeader from 'components/CommonCloseHeader';
 import { useContactNetworkConfig } from '@portkey-wallet/hooks/hooks-ca/config';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 
@@ -68,7 +68,8 @@ export default function AddressInfoForm({
   return (
     <div className="address-info-from">
       <div className="select-chain" onClick={() => handleNetworkModalState(true)}>
-        <span>{selectedNetworkInfo?.name}</span>
+        <img src={selectedNetworkInfo?.imageUrl} width={16} height={16} alt="" />
+        <span className="network-name-show">{selectedNetworkInfo?.name}</span>
         <CustomSvgV3 type="chevron_down" />
       </div>
       {isAelfMainChain && (
@@ -77,20 +78,21 @@ export default function AddressInfoForm({
             onClick={() => onChangeAddressInfo({ isExchange: true })}
             className={`${value?.isExchange ? 'active' : ''}`}>
             {value?.isExchange && <CustomSvgV3 type="check" fillColor="@text-brand4" />}
-            <span>exchange</span>
+            <span>Exchange</span>
           </div>
           <div
             className={`${value?.isExchange ? '' : 'active'}`}
             onClick={() => onChangeAddressInfo({ isExchange: false })}>
             {!value?.isExchange && <CustomSvgV3 type="check" fillColor="@text-brand4" />}
-            <span>non-exchange</span>
+            <span>Non-exchange</span>
           </div>
         </div>
       )}
-      <FormItem name="addressInfoInput">
+      <FormItem name="addressInfoInput" className="address-input-wrap">
         <Input.TextArea
           // eslint-disable-next-line no-inline-styles/no-inline-styles
           style={{ resize: 'none', height: 80 }}
+          placeholder="Enter address"
           rows={3}
           maxLength={1000}
           value={value?.address || ''}
@@ -101,11 +103,8 @@ export default function AddressInfoForm({
         <span className="show-text">{`Enter or `}</span>
         <span className="paste-text cursor-pointer" onClick={pasteClipBoard}>{`paste a wallet address`}</span>
       </div>
-      <CommonModal
-        className="select-chain-modal"
-        open={isNetworkModalOpen}
-        onClose={() => handleNetworkModalState(false)}>
-        <CommonHeader title={'Select network'} onLeftBackShowClose={true} />
+      <CommonModal className="select-chain-modal" open={isNetworkModalOpen}>
+        <CommonCloseHeader title="Select network" onClose={() => handleNetworkModalState(false)} />
         <div className="chain-content">
           {supportNetworkList.map((list, index) => {
             return (

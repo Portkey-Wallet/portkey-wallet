@@ -16,6 +16,7 @@ import { formatApproveSymbolShow } from '@portkey-wallet/utils/token';
 import TokenImageDisplay from '../../../components/TokenImageDisplay';
 import { timeAgo } from '../../../../utils';
 import CircleLoading from '../../../../components/CircleLoading';
+import clsx from 'clsx';
 
 export interface IAllowanceDetailProps {
   allowanceDetail: ITokenAllowance;
@@ -208,7 +209,7 @@ export default function AllowanceDetail({ allowanceDetail }: IAllowanceDetailPro
             </div>
           )}
           {!!revokedList.length && (
-            <div className="history-list">
+            <div className={clsx('history-list', !approvalsList.length && 'history-list-only')}>
               <div>
                 <div className="title">Revoked</div>
                 <div className="desc">

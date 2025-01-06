@@ -263,7 +263,8 @@ export default function AddToken() {
         <p className="desc">{t('No tokens available')}</p>
         <div className="flex-center">
           <Button className="flex-row-center add-button flex-center" type="primary" onClick={handleAddCustomToken}>
-            <CustomSvg type="Plus" className="plug-svg" /> {t('Custom Token')}
+            <CustomSvg type="Plus" className="plug-svg" />
+            {t('Import token')}
           </Button>
         </div>
       </div>
@@ -277,7 +278,8 @@ export default function AddToken() {
         <p className="desc">{t('Don’t see your token?')}</p>
         <div className="flex-center">
           <Button className="flex-row-center add-button flex-center" type="primary" onClick={handleAddCustomToken}>
-            <CustomSvg type="Plus" className="plug-svg" /> {t('Custom Token')}
+            <CustomSvg type="Plus" className="plug-svg" />
+            {t('Import token')}
           </Button>
         </div>
       </div>

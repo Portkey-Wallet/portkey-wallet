@@ -184,7 +184,7 @@ function TokenDetail() {
           <div className="token-detail-balance flex-column">
             <div className={clsx('balance-amount', 'flex-column', isPrompt && 'is-prompt')}>
               <div className={clsx('amount-number', AmountShowWithDecimals.length > 18 && 'amount-number-long')}>
-                {AmountShowWithDecimals ?? <SkeletonCom />} {currentToken.symbol}
+                {AmountShowWithDecimals ?? <SkeletonCom />} {currentToken.label || currentToken.symbol}
               </div>
               <div className={clsx('amount-convert', !isMainNet && 'hidden-amount-convert')}>
                 {formatAmountUSDShow(currentToken?.balanceInUsd) ?? <SkeletonCom />}

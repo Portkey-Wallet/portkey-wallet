@@ -2,24 +2,35 @@
 
 .page-custom-token {
   width: 100%;
-  height: 100vh;
+  height: calc(100vh - 72px);
   display: flex;
   flex-direction: column;
+  overflow: auto;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  @media screen and (max-width: 768px) {
+    height: 100vh;
+  }
 
   .page-content {
     padding: 24px 0;
     flex: 1;
-    gap: 24px;
+    gap: 16px;
     overflow: hidden;
     background-color: @bg-base1;
-    font-size: 14px;
+    font-size: 16px;
     line-height: 20px;
     font-weight: 400;
     color: @text-base1;
   }
   .symbol-input {
+    font-size: 16px;
     height: 40px;
     border-radius: 8px;
+    &::placeholder {
+      font-size: 16px;
+    }
   }
   .decimals-input {
     height: 40px;
@@ -31,6 +42,7 @@
   }
 
   .label {
+    font-size: 16px;
     margin-bottom: 8px;
   }
   .@{app-prefix}-input[disabled] {
@@ -52,6 +64,8 @@
     .btn {
       border-radius: 100px;
       height: 48px;
+      font-weight: 600;
+      font-size: 16px;
     }
   }
 }
@@ -70,14 +84,12 @@
 }
 
 .select-chain-box-drawer {
-  .select-network-header {
-    padding: 0 16px !important;
-  }
   .modal-content {
     .select-custom-token-option {
       align-items: center;
       gap: 8px;
       .title {
+        font-size: 16px;
         line-height: normal;
       }
     }
@@ -86,20 +98,28 @@
 
 .select-chain-box {
   width: 420px !important;
+  .portkey-modal-content {
+    padding: 0 16px;
+  }
   .select-network-header {
-    padding: 0 16px !important;
+    // padding: 0 16px !important;
   }
   .common-header-title {
+    font-size: 20px;
     text-align: left;
   }
   .select-list {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 16px;
+    padding: 16px 0;
     .select-custom-token-option {
+      font-size: 16px;
       align-items: center;
       gap: 8px;
+      .title {
+        font-size: 16px;
+      }
     }
   }
 }

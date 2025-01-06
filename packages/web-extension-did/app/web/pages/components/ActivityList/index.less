@@ -153,6 +153,11 @@
             word-break: break-all;
             .text-overflow(1);
           }
+          .transaction-address {
+            font-size: 14px;
+            color: @text-base1;
+            opacity: 0.7;
+          }
           &.prompt-activity-item-title {
             flex: 2;
             min-width: 160px;
@@ -171,13 +176,20 @@
             word-break: break-all;
             font-variant: normal;
             font-feature-settings: normal;
+            font-weight: 600;
             .text-overflow(1);
             &.received-amount {
               color: @functional-success-default;
             }
+            .amount-show,
+            .amount-symbol {
+              font-weight: 600;
+            }
           }
           .transaction-nft-symbol,
           .transaction-convert {
+            color: @text-base1;
+            opacity: 0.7;
             height: 16px;
             word-break: break-all;
             .text-overflow(1);
@@ -197,9 +209,10 @@
           }
           &.opposite-direction {
             .transaction-amount-1 {
-              font-size: 12px;
+              font-size: 14px;
               line-height: 16px;
-              color: @neutral-tertiary-text;
+              color: @text-base1;
+              opacity: 0.7;
             }
           }
         }
@@ -245,6 +258,8 @@
     }
     .transaction-dapp-name {
       font-size: 14px;
+      color: @text-base1;
+      opacity: 0.7;
     }
   }
 
@@ -292,5 +307,11 @@
         font-size: 16px;
       }
     }
+  }
+}
+.transaction-modal-drawer {
+  .portkey-ant-drawer-content {
+    border-top: 1px solid @border-base1;
+    border-radius: 0 !important;
   }
 }

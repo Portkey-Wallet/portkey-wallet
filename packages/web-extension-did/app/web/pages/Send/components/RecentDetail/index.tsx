@@ -4,7 +4,7 @@ import clsx from 'clsx';
 import { useCommonState, useUserInfo } from 'store/Provider/hooks';
 import { useCallback, useMemo, useState } from 'react';
 import Copy from 'components/Copy';
-import { addressFormat, getExploreLink } from '@portkey-wallet/utils';
+import { addressFormat, chainShowText, getExploreLink } from '@portkey-wallet/utils';
 import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import CommonHeader from 'components/CommonHeader';
 import './index.less';
@@ -164,8 +164,19 @@ export default function RecentDetail() {
 
   const formatAddress = useMemo(
     () =>
-      addressFormat(state?.addressInfo?.address, state?.addressInfo?.chainId, state?.addressInfo?.network as ChainType),
-    [state?.addressInfo?.address, state?.addressInfo?.chainId, state?.addressInfo?.network],
+      state?.addressInfo?.isExchange
+        ? state?.addressInfo?.address
+        : addressFormat(
+            state?.addressInfo?.address,
+            state?.addressInfo?.chainId,
+            state?.addressInfo?.network as ChainType,
+          ),
+    [
+      state?.addressInfo?.address,
+      state?.addressInfo?.chainId,
+      state?.addressInfo?.isExchange,
+      state?.addressInfo?.network,
+    ],
   );
 
   return (
@@ -205,7 +216,11 @@ export default function RecentDetail() {
             <div className="info-left">
               <img src={state?.addressInfo?.networkImage} width={24} height={24} />
               <div className="info-left-top">
-                <div className="network">{state?.addressInfo?.networkName}</div>
+                <div className="network">
+                  {state.addressInfo?.network === 'aelf'
+                    ? `aelf ${chainShowText(state.addressInfo?.chainId || 'AELF')}`
+                    : state?.addressInfo?.networkName}
+                </div>
                 <div className="address">{getShowAddress(state)}</div>
               </div>
             </div>
@@ -220,12 +235,15 @@ export default function RecentDetail() {
         </div>
         {/* TODO : not aelf address no activity */}
         {activityInfo?.data?.length > 0 ? (
-          <ActivityList
-            data={activityInfo.data}
-            chainId={state?.addressInfo?.chainId}
-            hasMore={isHasMore}
-            loadMore={loadMoreActivities}
-          />
+          <>
+            <div className="recent-title">Recent interactions</div>
+            <ActivityList
+              data={activityInfo.data}
+              chainId={state?.addressInfo?.chainId}
+              hasMore={isHasMore}
+              loadMore={loadMoreActivities}
+            />
+          </>
         ) : (
           <div className="no-data">{'No recent interactions'}</div>
         )}

@@ -99,7 +99,7 @@ export default function EditContact() {
         } else {
           // CANT CHAT
           handleView();
-          singleMessage.success('Edit Contact Successful');
+          singleMessage.success('Edit Address Successful');
         }
       } catch (e: any) {
         console.log('onFinish==contact error', e);
@@ -112,7 +112,7 @@ export default function EditContact() {
     [appDispatch, editContactApi, handleView, setLoading, state],
   );
 
-  const headerTitle = useMemo(() => t('Edit Contact'), [t]);
+  const headerTitle = useMemo(() => t('Edit Address'), [t]);
 
   return (
     <EditContactPopup

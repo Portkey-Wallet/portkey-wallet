@@ -23,7 +23,7 @@ enum CommonBodyClassName {
 
 const COMMON_PAGE_CLASS_NAME_MAP: Record<string, string> = {
   '/unlock': `${CommonPageClassName.LARGE_LOGO_PAGE} ${CommonPageClassName.DARK_FULL_PAGE}`,
-  '/register': `${CommonPageClassName.LARGE_LOGO_PAGE} ${CommonPageClassName.DARK_FULL_PAGE}`,
+  '/register': `${CommonPageClassName.LARGE_LOGO_PAGE} ${CommonPageClassName.DARK_FULL_PAGE} register-page`,
   '/login': `${CommonPageClassName.LARGE_LOGO_PAGE} ${CommonPageClassName.DARK_FULL_PAGE}`,
   '/prepare-wallet': `${CommonPageClassName.LARGE_LOGO_PAGE} ${CommonPageClassName.DARK_FULL_PAGE}`,
   '/success-page': `${CommonPageClassName.LARGE_LOGO_PAGE} ${CommonPageClassName.DARK_FULL_PAGE}`,

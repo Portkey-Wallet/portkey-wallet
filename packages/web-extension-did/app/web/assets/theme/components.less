@@ -193,7 +193,7 @@ button.@{app-prefix}-btn-default {
   }
 
   .@{app-prefix}-form-item {
-    margin-bottom: 24px;
+    margin-bottom: 16px;
   }
 
   .@{app-prefix}-form-item-label {
@@ -283,9 +283,7 @@ button.@{app-prefix}-btn-default {
     //height: 48px;
     height: 40px;
     border-radius: 6px;
-    //padding: 0 16px !important;
-    padding-left: 0;
-    padding-right: 16px;
+    padding: 0 16px !important;
     background: @bg-base1;
     color: @text-base1;
     border: 1px solid @border-base1 !important;
@@ -497,6 +495,15 @@ button.@{app-prefix}-btn-default {
 }
 
 /* modal */
-.@{app-prefix}-modal-mask {
-  background: @bg-opacity80;
+.@{app-prefix}-modal-mask,
+.@{app-prefix}-drawer-mask,
+.portkey-ant-modal-mask,
+.portkey-ant-drawer-mask {
+  background: @bg-opacity80 !important;
+}
+
+@media screen and (max-width: 600px) {
+  .portkey-ant-message {
+    top: 16px !important;
+  }
 }

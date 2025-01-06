@@ -141,7 +141,13 @@ export const AdsCheckWarningTip = {
 };
 
 type TypeStageObj = {
-  [key in SendStage]: { btnText: string; handler: () => void; backFun: () => void; element: ReactElement };
+  [key in SendStage]: {
+    headerText: string;
+    btnText: string;
+    handler: () => void;
+    backFun: () => void;
+    element: ReactElement;
+  };
 };
 
 export default function Send() {
@@ -1281,6 +1287,7 @@ export default function Send() {
   const StageObj: TypeStageObj = useMemo(
     () => ({
       [SendStage.Address]: {
+        headerText: `Send ${type === SendPageTypeEnum.token ? tokenInfo.label ?? symbol : ''}`,
         btnText: adsInputBtnTitle,
         handler: () => {
           if (warning === WarningKey.DAPP_CHAIN_TO_NO_AFFIX_ADDRESS_ELF && addressType === AddressTypeEnum.EXCHANGE) {
@@ -1324,6 +1331,7 @@ export default function Send() {
         ),
       },
       [SendStage.Amount]: {
+        headerText: 'Enter Amount',
         btnText: amountErrMsg || 'Preview',
         handler: toPreviewStage,
         backFun: () => {
@@ -1379,6 +1387,7 @@ export default function Send() {
           ),
       },
       [SendStage.Preview]: {
+        headerText: 'Preview',
         btnText: 'Send',
         handler: sendHandler,
         backFun: () => {
@@ -1404,6 +1413,7 @@ export default function Send() {
         ),
       },
       [SendStage.Completed]: {
+        headerText: '',
         btnText: '',
         handler: () => {
           //
@@ -1416,6 +1426,9 @@ export default function Send() {
       },
     }),
     [
+      type,
+      tokenInfo,
+      symbol,
       adsInputBtnTitle,
       toAccount,
       warning,
@@ -1423,8 +1436,6 @@ export default function Send() {
       adsCheckWarningRender,
       addressType,
       chainList,
-      type,
-      tokenInfo,
       onPressContactItem,
       amountErrMsg,
       toPreviewStage,
@@ -1461,11 +1472,7 @@ export default function Send() {
         ) : (
           <>
             <CommonHeader
-              title={
-                stage === SendStage.Preview
-                  ? 'Preview'
-                  : `Send ${type === SendPageTypeEnum.token ? tokenInfo.label ?? symbol : ''}`
-              }
+              title={StageObj[stage].headerText}
               onLeftBack={() => {
                 StageObj[stage].backFun();
               }}
@@ -1567,7 +1574,6 @@ export default function Send() {
     onCloseGuardianApprove,
     openGuardiansApprove,
     stage,
-    symbol,
     toAccount,
     tokenInfo,
     type,

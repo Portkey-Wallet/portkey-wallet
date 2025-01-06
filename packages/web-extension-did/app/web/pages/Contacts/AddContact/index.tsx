@@ -87,7 +87,7 @@ export default function AddContact() {
   }, [isFromSend, navigate]);
 
   const headerTitle = useMemo(
-    () => (extra === ContactHandleActionTypeEnum.EDIT_CONTACT ? t('Edit Contact') : t('Add Address')),
+    () => (extra === ContactHandleActionTypeEnum.EDIT_CONTACT ? t('Edit Address') : t('Add Address')),
     [extra, t],
   );
 
@@ -108,7 +108,7 @@ export default function AddContact() {
       setLoading(true);
       const params = { name: contactName, ...addressInfo };
       const action = isEdit ? editContactApi : addContactApi;
-      const tips = isEdit ? 'Edit Contact Successful' : 'Add Contact Successful';
+      const tips = isEdit ? 'Edit Address Successful' : 'Add Address Successful';
       await action(params);
       dispatch(fetchContactListV2Async());
       singleMessage.success(tips);
@@ -118,10 +118,6 @@ export default function AddContact() {
       const errorCode: number = err?.error?.code;
 
       const formItemError = errorCodeMessageMap?.[errorCode];
-      console.log('formItemError', err, {
-        name: formItemError.name,
-        errors: [formItemError.errorMsg],
-      });
 
       if (formItemError) {
         form.setFields([

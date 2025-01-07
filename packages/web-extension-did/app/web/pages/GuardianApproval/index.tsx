@@ -245,7 +245,7 @@ export default function GuardianApproval() {
             </div>
             {alreadyApprovalLength === approvalLength ? (
               <div className="flex-center">
-                <CircleLoading width={32} />
+                <CircleLoading width={32} height={32} />
               </div>
             ) : (
               <ul className={clsx('verifier-content', !isNotLessThan768 && 'popup-verifier-content')}>

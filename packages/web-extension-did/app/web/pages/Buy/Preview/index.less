@@ -65,7 +65,7 @@
         line-height: 140%; /* 22.4px */
       }
       .portkey-ui-ramp-provider-card-item {
-        padding: 16px 12px;
+        padding: 16px;
         border: 1px solid var(--Border-Default-Subtle, '#414142');
         border-radius: 15px;
         margin-bottom: 16px;
@@ -77,15 +77,15 @@
             height: 24px;
             margin-right: 16px;
           }
-          .rate {
-            padding: 2px 0;
-            font-size: 12px;
-            line-height: 16px;
-            color: var(--portkey-ui-font-8);
-          }
+          // .rate {
+          //   padding: 2px 0;
+          //   font-size: 12px;
+          //   line-height: 16px;
+          //   color: var(--portkey-ui-font-8);
+          // }
         }
         .portkey-ui-ramp-provider-pay {
-          margin-top: 24px;
+          margin: 12px 0;
           .portkey-ui-ramp-provider-pay-item {
             border-radius: 2px;
             border: 0.5px solid var(--portkey-ui-default-border);
@@ -97,6 +97,13 @@
         }
         &:nth-last-child(1) {
           margin-bottom: 24px;
+        }
+        .rate {
+          color: var(--sds-color-text-default-secondary);
+          font-family: SG;
+          font-size: 16px;
+          font-style: normal;
+          line-height: 140%; /* 22.4px */
         }
       }
 
@@ -131,7 +138,7 @@
     // background-color: var(--portkey-ui-bg-5);
 
     .portkey-ui-ramp-preview-disclaimer {
-      margin-bottom: 40px;
+      margin-bottom: 48px;
       .highlight {
         color: var(--sds-color-text-brand-default);
         cursor: pointer;

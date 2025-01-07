@@ -264,6 +264,7 @@ export default function Transaction(props: {
   const renderActivityAmountForMulToken = useCallback((item: IActivityMultiplyToken[]) => {
     const [tokenTop, tokenBottom] = item;
     const sameDirection = tokenTop.isReceived === tokenBottom.isReceived;
+
     return (
       <div className={clsx('activity-item-amount', sameDirection ? 'same-direction' : 'opposite-direction')}>
         {item.map((_token, index) => (
@@ -275,7 +276,8 @@ export default function Transaction(props: {
               `transaction-amount-${index}`,
             )}>
             {_token.symbol && <span className="amount-symbol">{` ${_token.symbol}`}</span>}
-            {!_token.isReceived && <CustomSvgV3 type="arrow right thin" />}
+            {/* {!_token.isReceived && <CustomSvgV3 type="arrow right thin" />} */}
+            <CustomSvgV3 type="arrow right thin" />
           </div>
         ))}
       </div>
@@ -528,7 +530,7 @@ export default function Transaction(props: {
         {isShowTx && renderTxActivityItem(activityItem)}
       </>
     );
-  }, [activityItem, isMainnet]);
+  }, [activityItem, renderEmptyTokenForDapp, renderSystemActivityItem, renderTxActivityItem]);
 
   const statusAndDateUI = useCallback(() => {
     return (

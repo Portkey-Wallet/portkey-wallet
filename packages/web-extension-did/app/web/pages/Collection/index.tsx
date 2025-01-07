@@ -1,7 +1,6 @@
 import clsx from 'clsx';
 import CommonHeader from 'components/CommonHeader';
 import { useLocationState, useNavigateState } from 'hooks/router';
-import PromptFrame from 'pages/components/PromptFrame';
 import { useEffect, useMemo, useCallback } from 'react';
 import { useCommonState } from 'store/Provider/hooks';
 import { THomePageLocationState, TSendLocationState, TNFTLocationState } from 'types/router';
@@ -12,7 +11,7 @@ import { formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/convert
 import './index.less';
 
 const Collection = () => {
-  const { isPrompt, isNotLessThan768 } = useCommonState();
+  const { isPrompt } = useCommonState();
   const navigate = useNavigateState<TSendLocationState | THomePageLocationState>();
 
   const { state } = useLocationState<TNFTLocationState>();
@@ -77,7 +76,7 @@ const Collection = () => {
     );
   };
 
-  return <>{isPrompt && isNotLessThan768 ? <PromptFrame content={content()} /> : content()}</>;
+  return <>{content()}</>;
 };
 
 export default Collection;

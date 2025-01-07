@@ -15,11 +15,14 @@ import { EditWalletAvatarForm } from '../../../Wallet/components/EditWalletAvata
 import { useCurrentUserInfo, useSetUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import uploadImageToS3 from 'utils/compressAndUploadToS3';
 import { useCommonState } from 'store/Provider/hooks';
+import { singleMessage } from '@portkey/did-ui-react';
+import { useTranslation } from 'react-i18next';
 
 export default function ViewContactBody({ data }: IProfileDetailBodyProps) {
   const networkInfo = useCurrentNetworkInfo();
   const { avatar, nickName } = useCurrentUserInfo();
   const setUserInfo = useSetUserInfo();
+  const { t } = useTranslation();
   // const navigate = useNavigate();
   // const [popVisible, setPopVisible] = useState(false);
 
@@ -87,6 +90,7 @@ export default function ViewContactBody({ data }: IProfileDetailBodyProps) {
                           }
 
                           await setUserInfo({ avatar: (s3Url || avatar.selectedAvatar) as string });
+                          singleMessage.success(t('Avatar changed'));
                         } catch (error) {
                           console.log('setWalletName: error', error);
                         } finally {

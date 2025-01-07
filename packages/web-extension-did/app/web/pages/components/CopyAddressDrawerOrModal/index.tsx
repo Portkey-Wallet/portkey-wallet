@@ -64,6 +64,7 @@ const CopyAddressDrawerOrModal = forwardRef((_, ref) => {
           onClick={() => {
             setCopied(formatAddress);
             singleMessage.success('Copy Success');
+            handleClose();
           }}
         />
       </div>

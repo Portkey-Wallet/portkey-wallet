@@ -3,7 +3,11 @@
 .transaction-detail-modal-new {
   background-color: @bg-base1;
   height: auto;
-  max-height: calc(100vh - 30px);
+  max-height: 700px;
+  @media screen and (max-width: 767px) {
+    max-height: calc(100vh - 30px);
+  }
+
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -115,13 +119,6 @@
             bottom: -2px;
           }
         }
-        .opposite-direction {
-          display: flex;
-          align-items: center;
-          .received-amount {
-            order: 99;
-          }
-        }
         .custom-svg {
           width: 56px;
           height: 56px;
@@ -130,7 +127,6 @@
             height: 56px;
           }
         }
-
         .transaction-amount {
           color: @text-base1;
           display: flex;
@@ -150,10 +146,31 @@
           }
         }
 
+        .opposite-direction {
+          display: flex;
+          align-items: center;
+          .received-amount {
+            order: 99;
+          }
+          .transaction-amount-0 {
+            .thin-icon {
+              display: none;
+            }
+          }
+        }
+        .same-direction {
+          display: flex;
+          align-items: center;
+          .transaction-amount-1 {
+            .thin-icon {
+              display: none;
+            }
+          }
+        }
+
         .transaction-convert {
-          color: @text-base1;
+          color: @text-opacity70;
           text-align: center;
-          opacity: 0.7;
         }
         .hidden-transaction-convert {
           display: none;
@@ -218,8 +235,7 @@
           .usd {
             line-height: 16px;
             font-size: 12px;
-            color: @text-base1;
-            opacity: 0.7;
+            color: @text-opacity70;
             word-break: break-all;
             text-align: center;
           }
@@ -280,8 +296,7 @@
               }
             }
             .index {
-              color: @text-base1;
-              opacity: 0.7;
+              color: @text-opacity70;
               line-height: 20px;
               font-size: 14px;
             }
@@ -428,8 +443,7 @@
               text-align: right;
             }
             .right-usd {
-              color: @text-base1;
-              opacity: 0.7;
+              color: @text-opacity70;
               font-size: 12px;
               font-weight: 400;
               text-align: right;

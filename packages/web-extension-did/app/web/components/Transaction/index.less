@@ -3,11 +3,6 @@
 .transaction-detail-modal-new {
   background-color: @bg-base1;
   height: auto;
-  max-height: 700px;
-  @media screen and (max-width: 767px) {
-    max-height: calc(100vh - 30px);
-  }
-
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -22,7 +17,12 @@
   }
 
   .transaction-detail-body {
-    height: calc(100% - 128px);
+    max-height: 624px;
+
+    @media screen and (max-width: 767px) {
+      max-height: 400px;
+    }
+
     background: @bg-base1;
     overflow: auto;
     &::-webkit-scrollbar {

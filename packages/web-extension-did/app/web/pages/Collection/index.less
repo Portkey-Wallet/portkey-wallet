@@ -46,11 +46,24 @@
         gap: 4px;
         color: @text-base1;
         font-size: 14px;
-        img {
+        .img-box {
+          position: relative;
           width: 100%;
           height: 100%;
           border-radius: 8px;
+          background-repeat: no-repeat;
+          background-size: contain;
+          background-color: @bg-base4;
+          background-position: center;
+          .seed-tag {
+            width: 32px;
+            height: 16px;
+            position: absolute;
+            right: 10px;
+            top: 0;
+          }
         }
+
         .token-name {
           text-overflow: ellipsis;
           overflow: hidden;

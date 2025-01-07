@@ -181,7 +181,7 @@ export default function TokenList() {
                       </div>
 
                       <div className="text">
-                        <div className="symbol">{tokenItem.symbol}</div>
+                        <div className="symbol">{tokenItem.label || tokenItem.symbol}</div>
                         <div className="chain-desc">{transNetworkText(tokenItem.chainId, !isMainnet)}</div>
                       </div>
                     </Col>

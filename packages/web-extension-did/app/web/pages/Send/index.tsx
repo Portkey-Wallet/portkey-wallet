@@ -1530,20 +1530,23 @@ export default function Send() {
             ) : null}
           </>
         )}
-        <GuardianApproveModal
-          open={openGuardiansApprove}
-          targetChainId={tokenInfo.chainId}
-          operationType={OperationTypeEnum.transferApprove}
-          onClose={onCloseGuardianApprove}
-          getApproveRes={getOneTimeApproveRes}
-          operationDetails={getOperationDetails(OperationTypeEnum.transferApprove, {
-            symbol: tokenInfo?.symbol,
-            amount,
-            toAddress: toAccount.address,
-            caHash: wallet.caHash,
-            verifyManagerAddress: wallet.address,
-          })}
-        />
+        {openGuardiansApprove && (
+          <GuardianApproveModal
+            open={openGuardiansApprove}
+            targetChainId={tokenInfo.chainId}
+            operationType={OperationTypeEnum.transferApprove}
+            onClose={onCloseGuardianApprove}
+            getApproveRes={getOneTimeApproveRes}
+            operationDetails={getOperationDetails(OperationTypeEnum.transferApprove, {
+              symbol: tokenInfo?.symbol,
+              amount,
+              toAddress: toAccount.address,
+              caHash: wallet.caHash,
+              verifyManagerAddress: wallet.address,
+            })}
+          />
+        )}
+
         <DisclaimerModal open={disclaimerOpen} onClose={() => setDisclaimerOpen(false)} {...disclaimerData.current} />
         {!!curModalTipKey && (
           <SendModalTip

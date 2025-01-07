@@ -9,6 +9,8 @@ import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 
 import './index.less';
+import CustomSvg from 'components/CustomSvg';
+import { getSeedTypeTag, NFTSizeEnum } from 'utils/assets';
 
 const Collection = () => {
   const { isPrompt } = useCommonState();
@@ -55,6 +57,7 @@ const Collection = () => {
           </div>
           <div className="collection-detail-lists">
             {currentCollection.children.map((list: any) => {
+              const seedTypeTag = getSeedTypeTag(list, NFTSizeEnum.large);
               return (
                 <div
                   className="collection-detail-list"
@@ -64,7 +67,9 @@ const Collection = () => {
                       state: { ...list, collectionName: state.collectionName, collectionImageUrl: state.imageUrl },
                     })
                   }>
-                  <img src={list.imageUrl} alt="" width={32} height={32} />
+                  <div className="img-box" style={{ backgroundImage: `url(${list.imageUrl})` }}>
+                    {seedTypeTag && <CustomSvg className="seed-tag" type={seedTypeTag} />}
+                  </div>
                   <div className="token-name">{list.tokenName}</div>
                   <div className="balance-of">{formatTokenAmountShowWithDecimals(list.balance, list.decimals)}</div>
                 </div>

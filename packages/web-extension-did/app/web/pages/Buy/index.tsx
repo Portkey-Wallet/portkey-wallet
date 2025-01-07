@@ -145,15 +145,17 @@ export default function Buy() {
   );
   const mainContent = useMemo(
     () => (
-      <RampHomePureComponent
-        page={page}
-        list={list || []}
-        handlePageChange={handlePageChange}
-        onBack={() => {
-          navigate(-1);
-        }}
-        onItemClick={onCryptoClick}
-      />
+      <div className="ramp-home-list">
+        <RampHomePureComponent
+          page={page}
+          list={list || []}
+          handlePageChange={handlePageChange}
+          onBack={() => {
+            navigate(-1);
+          }}
+          onItemClick={onCryptoClick}
+        />
+      </div>
     ),
     [handlePageChange, list, navigate, onCryptoClick, page],
   );

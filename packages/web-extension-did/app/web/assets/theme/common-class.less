@@ -417,11 +417,22 @@ td {
   background-color: var(--sds-color-background-default-default);
 }
 
-.back-header-page-wrapper,
 .back-header,
 .common-header,
 .portkey-ui-ramp-preview-content,
 .portkey-ui-ramp-content {
   padding-left: 0 !important;
   padding-right: 0 !important;
+}
+// .portkey-ui-ramp-content {
+//   &:not(.ramp-home-list .portkey-ui-ramp-content) {
+//     padding-left: 0 !important;
+//     padding-right: 0 !important;
+//   }
+// }
+.back-header-page-wrapper {
+  &:not(.ramp-home-list .back-header-page-wrapper) {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
 }

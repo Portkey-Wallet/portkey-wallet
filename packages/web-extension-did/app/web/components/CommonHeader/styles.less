@@ -30,7 +30,6 @@
     font-weight: 600;
     color: @text-base1;
     text-align: center;
-    font-family: BG;
     &.text-ellipsis {
       .text-overflow(1);
     }
@@ -71,5 +70,11 @@
 .common-page-content {
   .common-header {
     padding: 0;
+  }
+}
+
+@media screen and (min-width: 768px) {
+  .common-header {
+    height: @common-header-height-large;
   }
 }

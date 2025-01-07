@@ -18,7 +18,7 @@ export default function TokenAllowancePopup({
       <CommonHeader className="popup-header-wrap" title={headerTitle} onLeftBack={goBack} />
       {fetching && (
         <div className="no-data flex-center">
-          <CircleLoading width={32} />
+          <CircleLoading width={32} height={32} />
         </div>
       )}
       {!fetching && list.length === 0 ? (

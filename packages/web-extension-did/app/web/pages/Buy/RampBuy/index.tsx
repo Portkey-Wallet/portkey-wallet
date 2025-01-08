@@ -14,6 +14,7 @@ import { useLocationState } from 'hooks/router';
 import useDebounce from 'hooks/useDebounce';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
+import './index.less';
 
 export default function RampBuy() {
   const { state: selectedCrypto } = useLocationState<{

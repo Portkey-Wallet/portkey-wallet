@@ -1,4 +1,3 @@
-import { Modal } from 'antd';
 import './index.less';
 import { IProfileDetailBodyProps } from 'types/Profile';
 import IdAndAddress from '../IdAndAddress';
@@ -9,7 +8,7 @@ import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import Avatar from 'pages/components/Avatar';
 import clsx from 'clsx';
 import { CustomSvgV3 } from 'components/CustomSvgV3';
-import { CustomModalBottom } from '../../../components/CustomModalBottom';
+import { CustomModal, CustomModalBottom } from '../../../components/CustomModalBottom';
 import EditWalletNameForm from '../../../Wallet/components/EditWalletNameForm';
 import { EditWalletAvatarForm } from '../../../Wallet/components/EditWalletAvatarForm';
 import { useCurrentUserInfo, useSetUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
@@ -81,7 +80,7 @@ export default function ViewContactBody({ data }: IProfileDetailBodyProps) {
                       networkInfo={networkInfo}
                       data={data}
                       saveCallback={async (avatar) => {
-                        Modal.destroyAll();
+                        CustomModal.destroyAll();
                         try {
                           setAvatarUploading(true);
                           let s3Url = '';
@@ -124,7 +123,7 @@ export default function ViewContactBody({ data }: IProfileDetailBodyProps) {
                       setUserInfo={setUserInfo}
                       data={data}
                       saveCallback={() => {
-                        Modal.destroyAll();
+                        CustomModal.destroyAll();
                       }}
                     />
                   ),

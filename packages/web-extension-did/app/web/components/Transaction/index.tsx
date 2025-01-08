@@ -126,7 +126,7 @@ export default function Transaction(props: {
   const currentNetwork = useCurrentNetworkInfo();
 
   const nftHeaderUI = useCallback(() => {
-    const { nftInfo, amount, decimals } = activityItem;
+    const { nftInfo, amount, decimals, isReceived } = activityItem;
     const seedTypeTag = nftInfo ? getSeedTypeTag(nftInfo) : '';
 
     return (
@@ -140,7 +140,9 @@ export default function Transaction(props: {
           )}
         </div>
         <div className="info">
-          <p className="quantity">{`${formatTokenAmountShowWithDecimals(amount, decimals)} NFT`}</p>
+          <p className={`quantity ${isReceived ? 'is-received' : 'is-sent'}`}>{`${
+            isReceived ? '+' : '-'
+          } ${formatTokenAmountShowWithDecimals(amount, decimals)} NFT`}</p>
           <p className="index">
             <span>{nftInfo?.alias}</span>
             <span className="token-id">#{nftInfo?.nftId}</span>
@@ -559,7 +561,7 @@ export default function Transaction(props: {
         <div className="account-wrap">
           <p className="label">
             <span className="left">{t('From')}</span>
-            <span className="right">{formatStr2EllipsisStr(transFromAddress, [7, 7])}</span>
+            <span className="right">{formatStr2EllipsisStr(transFromAddress, [7, 8])}</span>
           </p>
           {toAddress && (
             <p className="label">
@@ -575,7 +577,7 @@ export default function Transaction(props: {
                 {/* <span className="right name">{to}</span> */}
                 {toAddress && (
                   <span className="right address-wrap">
-                    <span>{formatStr2EllipsisStr(transToAddress, [7, 7])}</span>
+                    <span>{formatStr2EllipsisStr(transToAddress, [7, 8])}</span>
                   </span>
                 )}
               </div>

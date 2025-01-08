@@ -176,7 +176,7 @@ export default function Transaction() {
               <span className="left name">{from}</span>
               {fromAddress && (
                 <span className="left address-wrap">
-                  <span>{formatStr2EllipsisStr(transFromAddress, [7, 7])}</span>
+                  <span>{formatStr2EllipsisStr(transFromAddress, [7, 8])}</span>
                   <Copy toCopy={transFromAddress} iconClassName="copy-address" />
                 </span>
               )}
@@ -186,7 +186,7 @@ export default function Transaction() {
               <span className="right name">{to}</span>
               {toAddress && (
                 <span className="right address-wrap">
-                  <span>{formatStr2EllipsisStr(transToAddress, [7, 7])}</span>
+                  <span>{formatStr2EllipsisStr(transToAddress, [7, 8])}</span>
                   <Copy toCopy={transToAddress} iconClassName="copy-address" />
                 </span>
               )}

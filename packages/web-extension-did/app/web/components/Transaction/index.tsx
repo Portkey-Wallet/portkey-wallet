@@ -718,7 +718,7 @@ export default function Transaction(props: {
           title={
             isNft
               ? activityItem.transactionName
-              : SHOW_FROM_TRANSACTION_TYPES.includes(activityItem.transactionType)
+              : !activityItem.isSystem
               ? activityItem.transactionName
               : 'Wallet activity'
           }

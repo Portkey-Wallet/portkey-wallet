@@ -56,7 +56,7 @@ export default function AddressSelector({
           );
         })}
       </div>
-      <div>
+      <div className="send-content">
         {tabIndex == 0 && <Recents isFt={isFt} onChange={onClick} chainId={chainId} tokenId={tokenId} />}
         {tabIndex == 1 && <Contacts fromChainId={chainId} tokenId={tokenId} onChange={onClick} isFt={isFt} />}
         {tabIndex == 2 && <MyAddress onClick={onClick} chainId={anotherChainId} />}

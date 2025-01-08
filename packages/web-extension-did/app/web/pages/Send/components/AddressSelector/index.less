@@ -1,6 +1,11 @@
 @import '../../../../assets/theme/color.less';
 
 .address-selector {
+  height: 100%;
+  .send-content {
+    height: calc(100% - 35px);
+    overflow: auto;
+  }
   .no-data {
     padding-top: 32px;
     padding-bottom: 16px;
@@ -202,7 +207,10 @@
 
     .contacts-body {
       flex: 1;
-      overflow-y: hidden;
+      overflow: auto;
+      &::-webkit-scrollbar {
+        display: none;
+      }
 
       .contact-empty {
         display: none;

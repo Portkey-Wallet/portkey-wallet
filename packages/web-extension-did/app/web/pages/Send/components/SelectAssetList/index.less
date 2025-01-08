@@ -24,6 +24,8 @@
       padding: 16px 0;
     }
     .send-select-nft {
+      width: 100% !important;
+      min-width: auto !important;
       padding: 0;
     }
   }
@@ -47,6 +49,16 @@
 }
 
 .select-asset-list-modal {
+  ::-webkit-scrollbar {
+    display: none;
+  }
+  .portkey-ant-modal-content {
+    height: 100% !important;
+    overflow: auto !important;
+    ::-webkit-scrollbar {
+      display: none;
+    }
+  }
   .select-asset-list-modal-header {
     padding: 0 16px;
     font-family: BG;
@@ -66,12 +78,6 @@
     .close-thin-icon {
       width: 20px;
       height: 20px;
-    }
-  }
-  .portkey-ant-modal-content {
-    overflow: auto;
-    ::-webkit-scrollbar {
-      display: none;
     }
   }
   .token-list-wrap {

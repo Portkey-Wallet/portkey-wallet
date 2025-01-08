@@ -1,0 +1,30 @@
+.swap-form {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-top: 8px;
+  padding-bottom: 16px;
+
+  .swap-form-body {
+    flex: 1;
+    overflow: auto;
+  }
+
+  .swap-form-error {
+    margin-top: 16px;
+  }
+
+  .swap-form-footer {
+    flex-shrink: 0;
+    padding-top: 16px;
+
+    .@{app-prefix}-btn {
+      flex: 1;
+      height: 48px;
+      font-size: 16px;
+      border-radius: 24px;
+      font-weight: 600;
+    }
+  }
+}

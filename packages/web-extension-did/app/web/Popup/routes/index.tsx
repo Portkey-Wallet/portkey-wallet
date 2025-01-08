@@ -74,6 +74,7 @@ import { SelectAssetListPage } from 'pages/Send/components/SelectAssetList';
 import RampBuy from 'pages/Buy/RampBuy';
 import RampSell from 'pages/Buy/RampSell';
 import ActivityList from 'pages/Activity';
+import { Swap } from 'pages/Swap';
 
 export const PageRouter = () =>
   useRoutes([
@@ -399,6 +400,10 @@ export const PageRouter = () =>
     {
       path: '/crypto-gifts/detail',
       element: <CryptoGiftsDetail />,
+    },
+    {
+      path: '/swap',
+      element: <Swap />,
     },
     {
       path: '*',

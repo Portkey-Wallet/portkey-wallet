@@ -1,0 +1,48 @@
+@import '../../../assets/theme/color.less';
+
+.common-tag-toggle-group {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.common-tag-item {
+  flex: 1;
+  flex-shrink: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: @bg-neutral2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  height: 32px;
+  cursor: pointer;
+
+  .common-tag-item-check-icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  .common-tag-item-label {
+    font-size: 16px;
+    line-height: 16px;
+    color: @text-neutral5;
+  }
+
+  &.common-tag-item-selected {
+    background-color: @bg-brand1;
+
+    .common-tag-item-check-icon {
+      svg {
+        path {
+          fill: @icon-brand4;
+        }
+      }
+    }
+
+    .common-tag-item-label {
+      color: @text-brand4;
+    }
+  }
+}

@@ -194,7 +194,7 @@ function TokenDetail() {
               onBuy={isShowBuy ? handleBuy : undefined}
               onSend={cardShowFn.send ? () => handleSendOrReceive('send') : undefined}
               onReceive={cardShowFn.receive ? () => handleSendOrReceive('receive') : undefined}
-              onClickSwap={cardShowFn.swap ? () => handleClickTrade(TradeTypeEnum.Swap) : undefined}
+              onClickSwap={cardShowFn.swap ? () => navigate('/swap') : undefined}
               onClickDeposit={isShowDeposit ? () => handleSendOrReceive('receive', ReceiveTabEnum.Deposit) : undefined}
               isShowFaucet={isShowFaucet}
             />

@@ -31,6 +31,7 @@ import { useInitLoginModeList } from 'hooks/loginModal';
 import { useUserInfo } from './hooks';
 import { useInitCmsBanner } from '@portkey-wallet/hooks/hooks-ca/cms/banner';
 import { useInitRampV2 } from '@portkey-wallet/hooks/hooks-ca/ramp';
+import { useInitAwaken } from '@portkey-wallet/hooks/hooks-ca/awaken';
 
 keepAliveOnPages({});
 request.setExceptionManager(exceptionManager);
@@ -102,6 +103,7 @@ export default function Updater() {
   useTabMenuList(true);
   useCheckContactMap();
   useInitCmsBanner();
+  useInitAwaken();
 
   useEffectOnce(() => {
     initConfig();

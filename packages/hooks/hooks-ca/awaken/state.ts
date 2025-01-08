@@ -196,7 +196,7 @@ export const useAwakenTokenList = (isInit = false) => {
         list: rst.data,
       }),
     );
-  }, [chainId, dispatch, network]);
+  }, [chainId, dispatch, network, wallet]);
 
   useEffect(() => {
     if (!isInit) return;

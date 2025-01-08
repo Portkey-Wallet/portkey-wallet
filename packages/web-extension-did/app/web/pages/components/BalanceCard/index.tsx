@@ -23,7 +23,7 @@ export default function MainCards({
   onSend,
   onReceive,
   onBuy,
-  // onClickSwap,
+  onClickSwap,
   onClickDeposit,
 }: MainCardsProps) {
   const { t } = useTranslation();
@@ -84,18 +84,18 @@ export default function MainCards({
     );
   }, [onClickDeposit, t]);
 
-  // const renderSwap = useMemo(() => {
-  //   return (
-  //     !!onClickSwap && (
-  //       <div className="swap-card card-item flex-column-center" onClick={onClickSwap}>
-  //         <div className="btn-container">
-  //           <CustomSvgV3 type="swap" className="flex-center" />
-  //         </div>
-  //         <span className="btn-name">{t('Swap')}</span>
-  //       </div>
-  //     )
-  //   );
-  // }, [onClickSwap, t]);
+  const renderSwap = useMemo(() => {
+    return (
+      !!onClickSwap && (
+        <div className="card-item flex-column-center" onClick={onClickSwap}>
+          <CommonButton className="common-button" type="primaryOutline" block>
+            <CustomSvgV3 type="swap" className="flex-center" />
+          </CommonButton>
+          <span className="btn-name">{t('Swap')}</span>
+        </div>
+      )
+    );
+  }, [onClickSwap, t]);
 
   const handleClickFaucet = useCallback(() => {
     const openWinder = window.open(FAUCET_URL, '_blank');
@@ -122,10 +122,10 @@ export default function MainCards({
       (renderSend ? 1 : 0) +
       (renderReceive ? 1 : 0) +
       (renderBuy ? 1 : 0) +
-      // (renderSwap ? 1 : 0) +
+      (renderSwap ? 1 : 0) +
       (renderDeposit ? 1 : 0) +
       (renderFaucet ? 1 : 0),
-    [renderBuy, renderDeposit, renderFaucet, renderReceive, renderSend],
+    [renderBuy, renderDeposit, renderFaucet, renderReceive, renderSend, renderSwap],
   );
 
   const cardNumClassName = useMemo(() => {
@@ -139,7 +139,7 @@ export default function MainCards({
       {renderSend}
       {renderReceive}
       {renderBuy}
-      {/* {renderSwap} */}
+      {renderSwap}
       {/* {renderDeposit} */}
       {renderFaucet}
     </div>

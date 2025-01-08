@@ -85,6 +85,7 @@ import ReceiveListPage from 'pages/Receive/ReceiveListPage';
 import ReceiveCardPage from 'pages/Receive/ReceiveCardPage';
 import RampBuy from 'pages/Buy/RampBuy';
 import RampSell from 'pages/Buy/RampSell';
+import { Swap } from 'pages/Swap';
 // import Example from 'pages/Example';
 // import TokenNetworkList from 'pages/DepositHome/components/TokenNetworkList';
 
@@ -265,6 +266,10 @@ export const PageRouter = () => {
     {
       path: '/crypto-gifts/detail',
       element: <CryptoGiftsDetail />,
+    },
+    {
+      path: '/swap',
+      element: <Swap />,
     },
     {
       path: '*',

@@ -31,11 +31,11 @@
 
 .select-asset-list-page {
   .select-asset-list-page-header {
-    margin: 16px 0;
+    height: 48px;
     font-weight: 600;
     font-size: 16px;
     line-height: 22px;
-    .arrow-left {
+    .arrow-left-icon {
       width: 20px;
       height: 20px;
       svg {
@@ -48,17 +48,35 @@
 
 .select-asset-list-modal {
   .select-asset-list-modal-header {
-    margin: 16px;
+    padding: 0 16px;
     font-family: BG;
     font-weight: 700;
     font-size: 20px;
     line-height: 24px;
+    height: 56px;
+    @media screen and (max-width: 767px) {
+      height: 48px;
+    }
+
+    position: sticky;
+    top: 0;
+    left: 0;
+    z-index: 1111;
+    background: @bg-base1;
     .close-thin-icon {
       width: 20px;
       height: 20px;
     }
   }
+  .portkey-ant-modal-content {
+    overflow: auto;
+    ::-webkit-scrollbar {
+      display: none;
+    }
+  }
   .token-list-wrap {
+    height: calc(100% - 48px);
     padding: 0 16px;
+    overflow: auto;
   }
 }

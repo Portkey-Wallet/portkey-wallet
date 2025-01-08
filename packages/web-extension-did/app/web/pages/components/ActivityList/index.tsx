@@ -152,7 +152,7 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
       } else {
         transAddress = toAddress ? addressFormat(toAddress, toChainId, currentNetwork.walletType) : '';
       }
-      return transAddress ? `${isReceived ? 'From' : 'To'} ${formatStr2EllipsisStr(transAddress, [7, 7])}` : '';
+      return transAddress ? `${isReceived ? 'From' : 'To'} ${formatStr2EllipsisStr(transAddress, [7, 8])}` : '';
     },
     [currentNetwork.walletType],
   );

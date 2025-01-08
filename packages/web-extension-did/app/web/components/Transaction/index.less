@@ -18,9 +18,8 @@
 
   .transaction-detail-body {
     max-height: 624px;
-
     @media screen and (max-width: 767px) {
-      max-height: 400px;
+      max-height: calc(100vh - 158px);
     }
 
     background: @bg-base1;
@@ -287,14 +286,19 @@
             .quantity {
               line-height: 22px;
               font-size: 20px;
-              font-weight: 500;
+              font-weight: 600;
               color: @text-base1;
               word-wrap: break-word;
               word-break: break-all;
+              font-family: BG;
               .token-id {
                 margin-left: 4px;
                 font-weight: 400;
               }
+            }
+            .is-received {
+              color: @text-success1;
+              font-weight: 600;
             }
             .index {
               color: @text-opacity70;

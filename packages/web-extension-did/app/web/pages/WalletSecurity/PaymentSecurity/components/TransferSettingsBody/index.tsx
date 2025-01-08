@@ -1,4 +1,4 @@
-import { Button, Form, FormProps, Modal, Switch } from 'antd';
+import { Button, Form, FormProps, Switch } from 'antd';
 import { useTranslation } from 'react-i18next';
 import './index.less';
 import { useCallback, useEffect, useState } from 'react';
@@ -6,7 +6,7 @@ import { AmountSign, divDecimals, formatWithCommas } from '@portkey-wallet/utils
 import { ITransferLimitRouteState } from '@portkey-wallet/types/types-ca/paymentSecurity';
 import TokenImageDisplay from '../../../../components/TokenImageDisplay';
 import { useSetLimit } from '../../TransferSettings/useSetLimit';
-import { CustomModalBottom } from '../../../../components/CustomModalBottom';
+import { CustomModal, CustomModalBottom } from '../../../../components/CustomModalBottom';
 import TransferSettingsEditBody from '../TransferSettingsEditBody';
 import { ValidData } from 'pages/Contacts/AddContact';
 import { LimitFormatTip, SingleExceedDaily } from 'constants/security';
@@ -131,7 +131,7 @@ export default function TransferSettingsBody({
         dailyLimit,
         restricted: restrictedValue || restrictedText,
       });
-      Modal.destroyAll();
+      CustomModal.destroyAll();
       return true;
     },
     [form, handleFormChange, handleSetLimit, restrictedText, state],

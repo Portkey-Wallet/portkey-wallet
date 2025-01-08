@@ -8,6 +8,7 @@ import {
   unitConverter,
 } from '@portkey-wallet/utils/converter';
 import { BaseToken } from '@portkey-wallet/types/types-ca/token';
+import { ChainId } from '@portkey-wallet/types';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { isDIDAelfAddress } from '@portkey-wallet/utils/aelf';
 import { useCurrentChainList, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
@@ -27,6 +28,7 @@ export interface ISendPreviewProps {
   amount?: string;
   usdAmount?: string;
   toAccount: ToAccount;
+  chainId: ChainId;
   className?: string;
   tokenInfo: BaseToken;
   targetNetwork?: INetworkItem;
@@ -44,6 +46,7 @@ export interface ISendPreviewProps {
 
 export default function SendPreview({
   toAccount,
+  chainId = 'AELF',
   className,
   tokenInfo,
   amount = '',
@@ -61,7 +64,10 @@ export default function SendPreview({
   console.log(toAccount);
   const chainList = useCurrentChainList();
   const isMainnet = useIsMainnet();
-  const toChainId = useMemo(() => getAddressChainId(toAccount.address, 'AELF') || 'AELF', [toAccount.address]);
+  const toChainId = useMemo(
+    () => getAddressChainId(toAccount.address, chainId) || 'AELF',
+    [chainId, toAccount.address],
+  );
   const aelfChainImg = useMemo(
     () => chainList?.find((ele) => ele.chainId === toChainId)?.chainImageUrl,
     [chainList, toChainId],

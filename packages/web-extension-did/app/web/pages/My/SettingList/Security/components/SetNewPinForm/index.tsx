@@ -36,7 +36,7 @@ export default function SetNewPinForm({
             confirmPassword: <div className="new-pin-label">{confirmPinLabel}</div>,
           }}
           validateFields={form?.validateFields}
-          isPasswordLengthTipShow={true}
+          isPasswordLengthTipShow={false}
         />
       </div>
       <div className="form-footer">

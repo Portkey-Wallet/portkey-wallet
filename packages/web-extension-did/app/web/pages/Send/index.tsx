@@ -1397,6 +1397,7 @@ export default function Send() {
         element: (
           <SendPreview
             toAccount={toAccount}
+            chainId={chainId}
             tokenInfo={tokenInfo}
             amount={amount}
             usdAmount={usdAmount}

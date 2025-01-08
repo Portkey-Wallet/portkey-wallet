@@ -1,4 +1,5 @@
 import { Modal, ModalFuncProps } from 'antd';
+import Drawer from './Drawer';
 import { ReactNode } from 'react';
 import './index.less';
 import clsx from 'clsx';
@@ -25,6 +26,13 @@ interface IModal {
   destroy: () => void;
   update: (configUpdate: ConfigUpdate) => void;
 }
+
+export const CustomModal = {
+  destroyAll: () => {
+    Modal.destroyAll();
+    Drawer.destroyAll();
+  },
+};
 
 export const CustomModalBottom = ({
   type,
@@ -79,10 +87,11 @@ export const CustomModalBottom = ({
 
   const noFooterClassName = noFooter ? 'modal-no-footer' : '';
   const promptClassName = isPrompt ? 'modal-bottom-prompt' : '';
+  const Component = isPrompt ? Modal : Drawer;
 
   switch (type) {
     case 'confirm': {
-      const modal = Modal.confirm({});
+      const modal = Component.confirm({});
       modal.update({
         ...props,
         className: clsx(['confirm-modal-bottom', noFooterClassName, promptClassName, className]),
@@ -96,7 +105,7 @@ export const CustomModalBottom = ({
       return modal;
     }
     case 'warning': {
-      const modal = Modal.confirm({});
+      const modal = Component.confirm({});
       modal.update({
         ...props,
         className: clsx(['warning-modal-bottom', noFooterClassName, promptClassName, className]),

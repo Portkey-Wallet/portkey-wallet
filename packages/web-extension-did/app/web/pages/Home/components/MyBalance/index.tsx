@@ -396,6 +396,7 @@ export default function MyBalance() {
             isShowFaucet={!isMainNet}
           />
         </div>
+        {isNotLessThan768 && <div className="line"></div>}
         {SelectTokenELe}
         {!isNotLessThan768 && <CommonBanner wrapClassName="banner-wrap" bannerList={homeBannerList} />}
         <Tabs activeKey={activeKey} onChange={onChange} items={renderTabsData} className="balance-tab" />

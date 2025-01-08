@@ -25,6 +25,7 @@ export interface IContactsProps extends BaseHeaderProps {
   contactCount: number;
   initData: Partial<IEditContactItemFormType>;
   loading?: boolean;
+  isEmpty?: boolean;
 }
 
 export default function Contacts() {
@@ -34,6 +35,7 @@ export default function Contacts() {
   const localSearch = useLocalContactSearch();
   const [curList, setCurList] = useState<IContactIndexType[]>([]);
   const [isSearch, setIsSearch] = useState<boolean>(false);
+  const [isEmpty, setIsEmpty] = useState<boolean>(true);
 
   const [loading, setLoading] = useState(true);
 
@@ -52,6 +54,7 @@ export default function Contacts() {
   const searchChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
       setIsSearch(!!e.target.value);
+      setIsEmpty(!e.target.value);
       setLoading(true);
       const { contactIndexFilterList: searchResult } = localSearch(e.target.value);
       setCurList(searchResult);
@@ -83,6 +86,7 @@ export default function Contacts() {
       searchPlaceholder={searchPlaceholder}
       addText={addText}
       isSearch={isSearch}
+      isEmpty={isEmpty}
       list={curList}
       contactCount={curTotalContactsNum}
       handleAdd={() => handleAdd(ContactHandleActionTypeEnum.ADD_CONTACT)}

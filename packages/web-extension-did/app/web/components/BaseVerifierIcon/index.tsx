@@ -10,7 +10,7 @@ interface BaseVerifierIconProps {
 }
 
 export default function BaseVerifierIcon({ fallback, rootClassName, src }: BaseVerifierIconProps) {
-  const fallbackEle = useMemo(() => <span className="fallback-wrapper">{fallback}</span>, [fallback]);
+  const fallbackEle = useMemo(() => <span className="fallback-wrapper">{fallback?.slice(0, 1)}</span>, [fallback]);
 
   return (
     <ImgLoading

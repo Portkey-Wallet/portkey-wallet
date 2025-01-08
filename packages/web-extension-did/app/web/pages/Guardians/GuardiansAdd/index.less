@@ -1,7 +1,8 @@
 @import '../../../assets/theme/color.less';
 @import '../../../assets/theme/constants.less';
 
-.guardian-type-select,.guardian-type-select-drawer {
+.guardian-type-select,
+.guardian-type-select-drawer {
   .guardian-type-icon {
     &.custom-svg,
     &.custom-svg svg {
@@ -28,6 +29,14 @@
       &.custom-svg svg {
         width: 16px;
         height: 16px;
+      }
+    }
+    .login-input {
+      font-size: 16px;
+      border-radius: 8px;
+      height: 40px;
+      &::placeholder {
+        font-size: 16px;
       }
     }
   }

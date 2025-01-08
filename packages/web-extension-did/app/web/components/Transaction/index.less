@@ -3,21 +3,26 @@
 .transaction-detail-modal-new {
   background-color: @bg-base1;
   height: auto;
-  max-height: calc(100vh - 30px);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 16px;
-  .common-header {
-    height: auto;
-  }
+  padding: 0 16px 16px;
+  // .common-header {
+  //   height: auto;
+  // }
   .common-header-title {
     text-align: left;
     font-size: 20px;
+    font-family: BG;
   }
 
   .transaction-detail-body {
-    height: calc(100% - 128px);
+    max-height: 624px;
+
+    @media screen and (max-width: 767px) {
+      max-height: 400px;
+    }
+
     background: @bg-base1;
     overflow: auto;
     &::-webkit-scrollbar {
@@ -56,7 +61,7 @@
         flex-direction: column;
         align-items: center;
         gap: 8px;
-        padding-top: 36px;
+        padding-top: 16px;
         padding-bottom: 20px;
         .dapp-name {
           color: @text-base1;
@@ -115,13 +120,6 @@
             bottom: -2px;
           }
         }
-        .opposite-direction {
-          display: flex;
-          align-items: center;
-          .received-amount {
-            order: 99;
-          }
-        }
         .custom-svg {
           width: 56px;
           height: 56px;
@@ -130,7 +128,6 @@
             height: 56px;
           }
         }
-
         .transaction-amount {
           color: @text-base1;
           display: flex;
@@ -150,9 +147,31 @@
           }
         }
 
+        .opposite-direction {
+          display: flex;
+          align-items: center;
+          .received-amount {
+            order: 99;
+          }
+          .transaction-amount-0 {
+            .thin-icon {
+              display: none;
+            }
+          }
+        }
+        .same-direction {
+          display: flex;
+          align-items: center;
+          .transaction-amount-1 {
+            .thin-icon {
+              display: none;
+            }
+          }
+        }
+
         .transaction-convert {
+          color: @text-opacity70;
           text-align: center;
-          opacity: 0.7;
         }
         .hidden-transaction-convert {
           display: none;
@@ -217,8 +236,7 @@
           .usd {
             line-height: 16px;
             font-size: 12px;
-            color: @text-base1;
-            opacity: 0.7;
+            color: @text-opacity70;
             word-break: break-all;
             text-align: center;
           }
@@ -279,8 +297,7 @@
               }
             }
             .index {
-              color: @text-base1;
-              opacity: 0.7;
+              color: @text-opacity70;
               line-height: 20px;
               font-size: 14px;
             }
@@ -309,13 +326,14 @@
           .left {
             font-size: 16px;
             font-weight: 400;
+            flex: 1;
           }
           .right {
             font-size: 16px;
             font-weight: 600;
             display: flex;
             align-items: center;
-            gap: 2px;
+            gap: 4px;
           }
         }
       }
@@ -409,55 +427,46 @@
       }
       .money-wrap {
         flex: 1;
-        gap: 16px;
-
-        > div {
-          display: flex;
-          flex-direction: column;
-          gap: 12px;
-          .value {
-            /* stylelint-disable-next-line no-descending-specificity */
-            .left {
-              color: @neutral-secondary-text;
+        display: flex;
+        flex-direction: column;
+        .value {
+          /* stylelint-disable-next-line no-descending-specificity */
+          .left {
+            color: @text-base1;
+          }
+          /* stylelint-disable-next-line no-descending-specificity */
+          .right {
+            color: @text-base1;
+            font-weight: 500;
+            display: block;
+            .right-item {
+              text-align: right;
             }
-            /* stylelint-disable-next-line no-descending-specificity */
+            .right-usd {
+              color: @text-opacity70;
+              font-size: 12px;
+              font-weight: 400;
+              text-align: right;
+            }
+          }
+
+          &.total-amount {
             .right {
-              color: @text-base1;
-              font-weight: 500;
-              .right-item {
-                margin-bottom: 8px;
-                font-size: 16px;
-                font-weight: 600;
-                span {
-                  text-align: right;
-                  flex-wrap: wrap;
-                  word-break: break-all;
-                }
-                .right-usd {
+              display: flex;
+              flex-direction: column;
+              span {
+                text-align: right;
+                &.convert {
                   color: @neutral-secondary-text;
-                  font-size: 12px;
                   font-weight: 400;
-                }
-              }
-            }
-
-            &.total-amount {
-              .right {
-                display: flex;
-                flex-direction: column;
-                span {
-                  text-align: right;
-                  &.convert {
-                    color: @neutral-secondary-text;
-                    font-weight: 400;
-                    font-size: 12px;
-                    line-height: 16px;
-                  }
+                  font-size: 12px;
+                  line-height: 16px;
                 }
               }
             }
           }
         }
+
         .tx-id {
           display: flex;
           align-items: center;
@@ -482,13 +491,9 @@
       border-radius: 50px;
     }
     .link {
-      // display: block;
-      // width: 100%;
-      // background: @bg-base1;
-      // text-align: center;
-      // line-height: 20px;
-      // padding-bottom: 40px;
-      // color: @brand-normal;
+      color: @text-brand4;
+      font-weight: 600;
+      font-size: 16px;
     }
   }
 }

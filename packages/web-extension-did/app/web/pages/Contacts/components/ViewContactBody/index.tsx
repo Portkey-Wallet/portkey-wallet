@@ -1,4 +1,3 @@
-import { Modal } from 'antd';
 import './index.less';
 import { IProfileDetailBodyProps } from 'types/Profile';
 import IdAndAddress from '../IdAndAddress';
@@ -9,17 +8,20 @@ import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import Avatar from 'pages/components/Avatar';
 import clsx from 'clsx';
 import { CustomSvgV3 } from 'components/CustomSvgV3';
-import { CustomModalBottom } from '../../../components/CustomModalBottom';
+import { CustomModal, CustomModalBottom } from '../../../components/CustomModalBottom';
 import EditWalletNameForm from '../../../Wallet/components/EditWalletNameForm';
 import { EditWalletAvatarForm } from '../../../Wallet/components/EditWalletAvatarForm';
 import { useCurrentUserInfo, useSetUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import uploadImageToS3 from 'utils/compressAndUploadToS3';
 import { useCommonState } from 'store/Provider/hooks';
+import { singleMessage } from '@portkey/did-ui-react';
+import { useTranslation } from 'react-i18next';
 
 export default function ViewContactBody({ data }: IProfileDetailBodyProps) {
   const networkInfo = useCurrentNetworkInfo();
   const { avatar, nickName } = useCurrentUserInfo();
   const setUserInfo = useSetUserInfo();
+  const { t } = useTranslation();
   // const navigate = useNavigate();
   // const [popVisible, setPopVisible] = useState(false);
 
@@ -78,7 +80,7 @@ export default function ViewContactBody({ data }: IProfileDetailBodyProps) {
                       networkInfo={networkInfo}
                       data={data}
                       saveCallback={async (avatar) => {
-                        Modal.destroyAll();
+                        CustomModal.destroyAll();
                         try {
                           setAvatarUploading(true);
                           let s3Url = '';
@@ -87,6 +89,7 @@ export default function ViewContactBody({ data }: IProfileDetailBodyProps) {
                           }
 
                           await setUserInfo({ avatar: (s3Url || avatar.selectedAvatar) as string });
+                          singleMessage.success(t('Avatar changed'));
                         } catch (error) {
                           console.log('setWalletName: error', error);
                         } finally {
@@ -120,7 +123,7 @@ export default function ViewContactBody({ data }: IProfileDetailBodyProps) {
                       setUserInfo={setUserInfo}
                       data={data}
                       saveCallback={() => {
-                        Modal.destroyAll();
+                        CustomModal.destroyAll();
                       }}
                     />
                   ),

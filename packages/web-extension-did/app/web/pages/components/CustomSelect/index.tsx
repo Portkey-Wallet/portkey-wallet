@@ -76,7 +76,7 @@ export default function CustomSelect({ items = [], value, onChange, title, ...pr
           className="select-network"
           footer={false}
           closable={false}
-          maskClosable
+          maskClosable={true}
           {...props}>
           <>
             <CommonCloseHeader className="select-network-header" {...modalCloseHeaderProps} />
@@ -98,11 +98,11 @@ export default function CustomSelect({ items = [], value, onChange, title, ...pr
       ) : (
         <BaseDrawer
           open={show}
-          destroyOnClose
           className={`common-drawer select-network ${props.className}-drawer`}
           height="580"
-          maskClosable
-          placement="bottom">
+          maskClosable={true}
+          placement="bottom"
+          onClose={() => setShow(false)}>
           <>
             <CommonCloseHeader className="select-network-header" {...modalCloseHeaderProps} />
             <div className="modal-content">

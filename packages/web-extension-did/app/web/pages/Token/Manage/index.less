@@ -6,15 +6,28 @@
   display: flex;
   flex-direction: column;
   background-color: @bg-base1;
+  .portkey-input {
+    font-size: 16px;
+    &::placeholder {
+      font-size: 16px;
+      color: @text-opacity70;
+      font-weight: 400;
+    }
+  }
   .portkey-input-affix-wrapper {
     background-color: transparent !important;
+  }
+
+  .portkey-input-affix-wrapper-focused {
+    border: 1px solid @border-base1 !important;
+    box-shadow: none;
   }
 
   .add-token-top {
     margin-bottom: 1px;
     flex-shrink: 0;
     .dropdown-search-wrapper {
-      padding: 16px 0 10px;
+      padding: 0 0 10px;
     }
     .search-box {
       height: 40px;
@@ -22,7 +35,7 @@
       padding: 0 16px;
       border: 1px solid @border-base1;
       &:focus {
-        border: 1px solid @border-base1;
+        border: 1px solid @border-base1 !important;
       }
       .searchblur-icon {
         width: 16px;
@@ -91,8 +104,7 @@
           }
           .token-item-net {
             line-height: 16px;
-            color: @text-base1;
-            opacity: 0.7;
+            color: @text-opacity70;
             font-size: 12px;
           }
         }
@@ -102,7 +114,12 @@
         .add-token-btn-icon {
           display: flex;
           justify-content: center;
-          height: 16px;
+          width: 20px;
+          height: 20px;
+          .garylock-icon {
+            width: 20px !important;
+            height: 20px !important;
+          }
         }
         .edit-btn-icon {
           display: flex;
@@ -172,13 +189,18 @@
   .add-button {
     box-shadow: none;
     text-shadow: none;
-    justify-content: space-between;
+    justify-content: center;
     padding: 12px 16px;
-    border-radius: 40px;
+    width: 156px;
+    height: 40px;
+    border-radius: 9999px;
+    color: @text-brand4;
+    font-weight: 600;
+    gap: 8px;
+    font-size: 16px;
     .plus-icon {
-      width: 12px;
-      height: 12px;
-      margin-right: 8px;
+      width: 16px;
+      height: 16px;
       /* stylelint-disable-next-line no-descending-specificity */
       & > svg {
         display: block;
@@ -200,8 +222,7 @@
     }
     .desc {
       margin: 24px 0 16px;
-      color: @text-base1;
-      opacity: 0.7;
+      color: @text-opacity70;
     }
   }
 
@@ -212,8 +233,7 @@
     font-weight: 400;
     .desc {
       margin-bottom: 16px;
-      color: @text-base1;
-      opacity: 0.7;
+      color: @text-opacity70;
     }
   }
 

@@ -1,7 +1,6 @@
 import clsx from 'clsx';
 import CommonHeader from 'components/CommonHeader';
 import { useLocationState, useNavigateState } from 'hooks/router';
-import PromptFrame from 'pages/components/PromptFrame';
 import { useEffect, useMemo, useCallback } from 'react';
 import { useCommonState } from 'store/Provider/hooks';
 import { THomePageLocationState, TSendLocationState, TNFTLocationState } from 'types/router';
@@ -10,9 +9,11 @@ import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 
 import './index.less';
+import CustomSvg from 'components/CustomSvg';
+import { getSeedTypeTag, NFTSizeEnum } from 'utils/assets';
 
 const Collection = () => {
-  const { isPrompt, isNotLessThan768 } = useCommonState();
+  const { isPrompt } = useCommonState();
   const navigate = useNavigateState<TSendLocationState | THomePageLocationState>();
 
   const { state } = useLocationState<TNFTLocationState>();
@@ -56,6 +57,7 @@ const Collection = () => {
           </div>
           <div className="collection-detail-lists">
             {currentCollection.children.map((list: any) => {
+              const seedTypeTag = getSeedTypeTag(list, NFTSizeEnum.large);
               return (
                 <div
                   className="collection-detail-list"
@@ -65,7 +67,9 @@ const Collection = () => {
                       state: { ...list, collectionName: state.collectionName, collectionImageUrl: state.imageUrl },
                     })
                   }>
-                  <img src={list.imageUrl} alt="" width={32} height={32} />
+                  <div className="img-box" style={{ backgroundImage: `url(${list.imageUrl})` }}>
+                    {seedTypeTag && <CustomSvg className="seed-tag" type={seedTypeTag} />}
+                  </div>
                   <div className="token-name">{list.tokenName}</div>
                   <div className="balance-of">{formatTokenAmountShowWithDecimals(list.balance, list.decimals)}</div>
                 </div>
@@ -77,7 +81,7 @@ const Collection = () => {
     );
   };
 
-  return <>{isPrompt && isNotLessThan768 ? <PromptFrame content={content()} /> : content()}</>;
+  return <>{content()}</>;
 };
 
 export default Collection;

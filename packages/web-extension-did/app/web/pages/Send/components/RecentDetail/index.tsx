@@ -164,8 +164,19 @@ export default function RecentDetail() {
 
   const formatAddress = useMemo(
     () =>
-      addressFormat(state?.addressInfo?.address, state?.addressInfo?.chainId, state?.addressInfo?.network as ChainType),
-    [state?.addressInfo?.address, state?.addressInfo?.chainId, state?.addressInfo?.network],
+      state?.addressInfo?.isExchange
+        ? state?.addressInfo?.address
+        : addressFormat(
+            state?.addressInfo?.address,
+            state?.addressInfo?.chainId,
+            state?.addressInfo?.network as ChainType,
+          ),
+    [
+      state?.addressInfo?.address,
+      state?.addressInfo?.chainId,
+      state?.addressInfo?.isExchange,
+      state?.addressInfo?.network,
+    ],
   );
 
   return (
@@ -176,16 +187,17 @@ export default function RecentDetail() {
         onLeftBack={onClose}
         rightElementList={[
           {
-            customSvgWrapClassName: 'nft-detail-more',
-            customSvgType: 'moreHome',
+            customSvgWrapClassName: 'recent-detail-more',
+            customSvgType: 'more_verti',
             popoverProps: {
-              overlayClassName: `nft-detail-popover ${isPrompt ? '' : 'nft-detail-popover-popup'}`,
+              overlayClassName: `recent-detail-popover`,
               open: popVisible,
               trigger: 'click',
               showArrow: false,
               placement: 'bottomLeft',
               getPopupContainer: (triggerNode: any) => triggerNode.parentNode,
               content: <PopoverMenuList />,
+              onOpenChange: () => setPopVisible(!popVisible),
             },
             onClick: () => setPopVisible(!popVisible),
           },

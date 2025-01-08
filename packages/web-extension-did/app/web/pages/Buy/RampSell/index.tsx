@@ -31,6 +31,7 @@ import InternalMessage from 'messages/InternalMessage';
 import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 import { GuardianItem } from 'types/guardians';
 import useDebounce from 'hooks/useDebounce';
+import './index.less';
 
 export default function RampSell() {
   const { state: selectedCrypto } = useLocationState<{

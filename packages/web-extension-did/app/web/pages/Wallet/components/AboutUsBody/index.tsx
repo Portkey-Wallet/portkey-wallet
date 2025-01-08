@@ -29,7 +29,7 @@ export default function AboutUsBody() {
       },
       {
         icon: 'PortkeyPrivacyPolicy',
-        label: 'Privacy Policy',
+        label: 'Privacy policy',
         link: `${OfficialWebsite}/privacy-policy`,
       },
     ],

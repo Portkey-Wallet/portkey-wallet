@@ -152,7 +152,7 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
       } else {
         transAddress = toAddress ? addressFormat(toAddress, toChainId, currentNetwork.walletType) : '';
       }
-      return transAddress ? `${isReceived ? 'From' : 'To'} ${formatStr2EllipsisStr(transAddress, [7, 9])}` : '';
+      return transAddress ? `${isReceived ? 'From' : 'To'} ${formatStr2EllipsisStr(transAddress, [7, 7])}` : '';
     },
     [currentNetwork.walletType],
   );
@@ -478,7 +478,11 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
       {renderActivityList}
       <LoadingMore hasMore={hasMore} loadMore={loadMore} className="load-more" loadingText="" />
       {open && (
-        <CommonBaseModal open={open}>
+        <CommonBaseModal
+          open={open}
+          maskClosable={true}
+          onClose={() => setOpen(false)}
+          className="transaction-modal-drawer">
           <Transaction state={selectItem} closeFun={setOpen} />
         </CommonBaseModal>
       )}

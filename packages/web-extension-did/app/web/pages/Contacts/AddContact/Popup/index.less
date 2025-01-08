@@ -4,27 +4,43 @@
   width: 100%;
   height: 600px;
   .@{app-prefix}-input {
-    font-size: 14px;
+    font-size: 16px;
     line-height: 20px;
+    &::placeholder {
+      font-size: 16px;
+    }
   }
   .add-contact-form {
     overflow-y: overlay;
     height: calc(100% - @common-header-height);
+    .name-input {
+      border: 1px solid @border-base1;
+    }
+    .portkey-input-affix-wrapper-focused {
+      box-shadow: none;
+    }
   }
 }
 .remove-tip-modal {
+  .portkey-ant-drawer-content {
+    border-radius: 0 !important;
+    border: 1px solid @border-base1;
+  }
+  .portkey-ant-drawer-body {
+    padding: 0 16px !important;
+  }
+  .portkey-ant-modal-content {
+    padding: 0 16px !important;
+  }
   .close-icon {
     width: 24px;
     height: 24px;
   }
-  .common-header-title {
-    margin-top: 10px;
-  }
   .remove-content {
-    padding: 16px;
+    padding: 0 0 12px;
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 12px;
     .title {
       font-size: 20px;
       font-weight: 700;
@@ -38,6 +54,7 @@
       align-items: center;
       justify-content: space-between;
       gap: 16px;
+      margin-top: 8px;
       button {
         height: 48px;
         border-radius: 40px;
@@ -56,21 +73,34 @@
   }
 }
 .select-chain-modal {
+  padding: 0 16px !important;
+  .portkey-ant-drawer-content {
+    background: @bg-base1!important;
+    padding: 0 16px !important;
+  }
   .close-icon {
     width: 24px;
     height: 24px;
   }
+  // .common-header {
+  //   height: auto !important;
+  // }
   .common-header-title {
-    margin-top: 10px;
     text-align: left;
     font-size: 20px;
+    font-family: BG;
   }
   .chain-content {
-    padding: 16px;
+    padding-bottom: 16px;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 12px;
+    max-height: calc(100vh - 80px);
+    overflow: auto;
+    &::-webkit-scrollbar {
+      display: none;
+    }
     .chain-list {
       width: 100%;
       display: flex;
@@ -78,6 +108,7 @@
       justify-content: space-between;
       padding: 12px 0;
       .chain-list-info {
+        font-size: 16px;
         display: flex;
         align-items: center;
         gap: 8px;

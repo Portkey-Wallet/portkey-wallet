@@ -75,7 +75,7 @@ export default function SecondaryMailboxEdit() {
             className="email-input"
             value={val}
             placeholder={`Enter email`}
-            // allowClear
+            allowClear
             onChange={(e) => {
               handleEmailInputChange(e.target.value);
             }}

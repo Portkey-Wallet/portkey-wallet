@@ -9,12 +9,16 @@
 
 .guardian-approve-login-page {
   margin-top: 64px;
+  margin-bottom: 80px;
   width: 552px;
-  min-height: 632px;
+  min-height: 600px;
   height: fit-content;
-  padding: 16px;
+  padding: 32px;
   border: 1px solid @border-base1;
   border-radius: 16px;
+  .guardian-approval-header {
+    height: 40px;
+  }
 }
 
 .guardian-approval-wrapper {
@@ -31,7 +35,7 @@
       font-family: BG;
     }
     .description {
-      color: @text-base3;
+      color: @text-base2;
     }
   }
   .approve-count {
@@ -97,19 +101,6 @@
     margin: 0;
     width: auto;
     height: calc(100% - 64px);
-    .title {
-      height: 28px;
-      line-height: 28px;
-      color: @text-base1;
-      font-size: 24px;
-      margin-bottom: 4px;
-    }
-    .description {
-      line-height: 20px;
-      color: @neutral-secondary-text;
-      font-size: 14px;
-      margin-bottom: 32px;
-    }
   }
   .recovery-wallet-btn-wrap {
     padding-bottom: 24px;

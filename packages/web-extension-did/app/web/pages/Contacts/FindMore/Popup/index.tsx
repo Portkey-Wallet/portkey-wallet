@@ -21,7 +21,7 @@ export default function FindMorePopup({
     <div className="find-more-popup min-width-max-height flex-column">
       <div className="flex-column find-more-top">
         <CommonHeader title={headerTitle} onLeftBack={goBack} />
-        <ContactsSearchInput placeholder="Address/email" handleChange={handleSearch} />
+        <ContactsSearchInput placeholder="Address/email" handleChange={handleSearch} isEmpty={false} />
       </div>
       <div className="find-more-body">
         {(!contacts || !Array.isArray(contacts) || contacts?.length === 0) && isSearch && (

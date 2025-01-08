@@ -97,7 +97,7 @@ export default function GetSignature() {
   const [signature, setSignature] = useState<{
     r: string;
     s: string;
-    recoveryParam: string;
+    recoveryParam: number | null;
   }>();
   const getSignature = useCallback(async () => {
     const { privateKey } = await getSeed();
@@ -112,7 +112,7 @@ export default function GetSignature() {
     const data = {
       r: result.r.toString('hex', 32),
       s: result.s.toString('hex', 32),
-      recoveryParam: (result.recoveryParam || 0)?.toString(),
+      recoveryParam: result.recoveryParam,
     };
     setSignature(data);
 

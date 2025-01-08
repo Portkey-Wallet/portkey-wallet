@@ -61,11 +61,19 @@ export default function AddContactPopup({
         onClose={() => handleNetworkModalState(false)}
       /> */}
 
-      <CommonModal className="remove-tip-modal" open={removeTip} onClose={() => setRemoveTip(false)}>
-        <CommonHeader title={<CustomSvgV3 type="error" />} onLeftBackShowClose={true} />
+      <CommonModal className="remove-tip-modal" open={removeTip} maskClosable onClose={() => setRemoveTip(false)}>
+        <CommonHeader
+          title={<CustomSvgV3 type="error" />}
+          rightElementList={[
+            {
+              customSvgType: 'close thin',
+              onClick: () => setRemoveTip(false),
+            },
+          ]}
+        />
         <div className="remove-content">
-          <div className="title">Delete Account Warning</div>
-          <div className="desc">Are you sure you want to delete your account? This action is irreversible.</div>
+          <div className="title">Confirm delete address</div>
+          <div className="desc">Are you sure you want to delete this saved address?</div>
           <div className="btn-box">
             <Button className="cancel" onClick={() => setRemoveTip(false)}>
               Cancel

@@ -1,10 +1,34 @@
 .portkey-ui-receive-content {
   width: 100%;
   background-color: var(--sds-color-background-default-default);
-  .left-icon {
-    left: 0 !important;
+  .receive-content-nav {
+    height: 56px;
+    .left-icon {
+      left: 0 !important;
+    }
+    .right-icon {
+      right: 0 !important;
+    }
   }
   .receive-content-body {
     padding: 0 0 16px !important;
+  }
+}
+.portkey-ui-receive-modals {
+  max-height: none !important;
+}
+.received-modals-body,
+.portkey-ant-drawer-body {
+  max-height: 760px;
+}
+@media screen and (max-width: 768px) {
+  .received-modals-body,
+  .portkey-ant-drawer-body {
+    max-height: 554px;
+  }
+  .portkey-ui-receive-content { 
+    .receive-content-nav {
+      height: 48px;
+    }
   }
 }

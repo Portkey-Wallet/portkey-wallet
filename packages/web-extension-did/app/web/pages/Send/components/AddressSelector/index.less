@@ -1,6 +1,11 @@
 @import '../../../../assets/theme/color.less';
 
 .address-selector {
+  height: 100%;
+  .send-content {
+    height: calc(100% - 35px);
+    overflow: auto;
+  }
   .no-data {
     padding-top: 32px;
     padding-bottom: 16px;
@@ -79,8 +84,7 @@
         gap: 4px;
         .name {
           font-size: 16px;
-          color: @text-base1;
-          opacity: 0.7;
+          color: @text-opacity70;
         }
         .address {
           font-size: 16px;
@@ -125,10 +129,9 @@
 
         .address {
           font-size: 16px;
-          color: @text-base1;
-          opacity: 0.7;
+          color: @text-opacity70;
         }
-        .gap{
+        .gap {
           height: 4px;
         }
         .network {
@@ -136,7 +139,6 @@
           color: @text-base1;
           opacity: 0.4;
         }
-   
       }
       .go-detail {
         .go-detail-common();
@@ -172,13 +174,11 @@
         gap: 4px;
         .name {
           font-size: 16px;
-          color: @text-base1;
-          opacity: 0.7;
+          color: @text-opacity70;
         }
         .address {
           font-size: 16px;
-          color: @text-base1;
-          opacity: 0.4;
+          color: @text-opacity40;
         }
       }
       .info-icon {
@@ -207,7 +207,10 @@
 
     .contacts-body {
       flex: 1;
-      overflow-y: hidden;
+      overflow: auto;
+      &::-webkit-scrollbar {
+        display: none;
+      }
 
       .contact-empty {
         display: none;
@@ -361,13 +364,11 @@
         font-variant: normal;
         .address {
           font-size: 16px;
-          color: @text-base1;
-          opacity: 0.7;
+          color: @text-opacity70;
         }
         .network {
           font-size: 16px;
-          color: @text-base1!important;
-          opacity: 0.4;
+          color: @text-opacity40!important;
         }
       }
 

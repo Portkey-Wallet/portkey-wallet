@@ -19,16 +19,15 @@
       align-items: center;
       flex-direction: column;
       gap: 8px;
-      color: @text-base1;
       .collection-name {
         font-family: BG;
         padding-top: 8px;
         font-weight: 700;
         font-size: 20px;
-        opacity: 1;
+        color: @text-base1;
       }
       .collection-chain {
-        opacity: 0.7;
+        color: @text-opacity70;
       }
       img {
         border-radius: 8px;
@@ -47,11 +46,24 @@
         gap: 4px;
         color: @text-base1;
         font-size: 14px;
-        img {
+        .img-box {
+          position: relative;
           width: 100%;
           height: 100%;
           border-radius: 8px;
+          background-repeat: no-repeat;
+          background-size: contain;
+          background-color: @bg-base4;
+          background-position: center;
+          .seed-tag {
+            width: 32px;
+            height: 16px;
+            position: absolute;
+            right: 10px;
+            top: 0;
+          }
         }
+
         .token-name {
           text-overflow: ellipsis;
           overflow: hidden;

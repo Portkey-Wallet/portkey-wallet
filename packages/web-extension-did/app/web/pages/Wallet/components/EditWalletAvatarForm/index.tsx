@@ -43,11 +43,11 @@ export function EditWalletAvatarForm({ saveCallback, avatar, networkInfo }: IEdi
     });
   }, [networkInfo.apiUrl]);
 
+  const [activeKey, setActiveKey] = useState<TabKey>('1');
+
   const handleUpdate = useCallback(async () => {
-    saveCallback({
-      file: newAvatarFile.current,
-      selectedAvatar: selectedAvatar,
-    });
+    const params = activeKey === '1' ? { selectedAvatar: selectedAvatar } : { file: newAvatarFile.current };
+    saveCallback(params);
     // try {
     //   setLoading(true);
     //   let s3Url = '';
@@ -64,7 +64,7 @@ export function EditWalletAvatarForm({ saveCallback, avatar, networkInfo }: IEdi
     // } finally {
     //   setLoading(false);
     // }
-  }, [saveCallback, selectedAvatar]);
+  }, [saveCallback, selectedAvatar, newAvatarFile, activeKey]);
 
   const getFile = useCallback((file: File) => {
     newAvatarFile.current = file;
@@ -74,7 +74,6 @@ export function EditWalletAvatarForm({ saveCallback, avatar, networkInfo }: IEdi
   //   console.error(errorInfo, 'onFinishFailed==');
   //   singleMessage.error('Something error');
   // }, []);
-  const [activeKey, setActiveKey] = useState<TabKey>('1');
 
   return (
     <div className="edit-wallet-avatar-form portkey-form">

@@ -226,13 +226,13 @@ export default function Preview() {
             onClick={() => onSwitchProvider(item)}>
             <div className="portkey-ui-flex-row-center portkey-ui-ramp-provider">
               <img src={item?.providerInfo.logo} className="portkey-ui-ramp-provider-logo" />
-              <div className="rate">{generateRateText(data.crypto, item.exchange, data.fiat)}</div>
             </div>
             <div className="portkey-ui-ramp-provider-pay">
               {item?.providerInfo.paymentTags.map((tag, index) => (
                 <img src={tag} key={'paymentTags-' + index} className="portkey-ui-ramp-provider-pay-item" />
               ))}
             </div>
+            <div className="rate">{generateRateText(data.crypto, item.exchange, data.fiat)}</div>
             {providerSelected?.providerInfo.key === item?.providerInfo.key && (
               <CustomSvg type="CheckCircle" className="card-selected-icon" />
             )}

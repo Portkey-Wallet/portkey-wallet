@@ -36,7 +36,7 @@ export default function HomeHeader({ onUserClick, unReadShow }: IHomeHeaderProps
   const navigate = useNavigate();
 
   const handleExpandView = () => {
-    InternalMessage.payload(PortkeyMessageTypes.SETTING).send();
+    InternalMessage.payload(PortkeyMessageTypes.EXPAND_FULL_SCREEN).send();
   };
 
   const { isNotLessThan768 } = useCommonState();

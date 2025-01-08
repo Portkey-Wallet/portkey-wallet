@@ -23,4 +23,5 @@ export enum AutoLockDataType {
 
 export type AutoLockDataKey = keyof typeof AutoLockData;
 
-export const DefaultLock = 'QuarterMinute';
+// export const DefaultLock = 'QuarterMinute';
+export const DefaultLock = 'Never';

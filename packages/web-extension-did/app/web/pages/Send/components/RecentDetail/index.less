@@ -7,6 +7,13 @@
   display: flex;
   flex-direction: column;
 
+  .recent-detail-more {
+    .custom-svg {
+      width: 24px !important;
+      height: 24px !important;
+    }
+  }
+
   .recent-detail-body {
     background: @bg-base1;
     display: flex;
@@ -67,8 +74,7 @@
           line-height: 26px;
         }
         .address {
-          color: @text-base1;
-          opacity: 0.7;
+          color: @text-opacity70;
           font-size: 14px;
           line-height: 24px;
         }
@@ -113,20 +119,30 @@
       gap: 8px;
       color: @text-base1;
       font-size: 16px;
-      padding: 10px 0;
+      padding: 12px 0;
     }
   }
   .no-data {
     margin-top: 32px;
     text-align: center;
     font-size: 16px;
-    color: @text-base1;
-    opacity: 0.7;
+    color: @text-opacity70;
     font-weight: 700;
   }
 
-  .morehome-icon {
-    width: 24px !important;
-    height: 24px !important;
+  .recent-detail-popover {
+    padding-top: 0 !important;
+    .portkey-popover-content {
+      border: 1px solid @border-base1;
+      border-radius: 8px;
+      overflow: hidden;
+      .portkey-popover-inner-content {
+        background-color: @bg-base1;
+        padding: 8px 16px;
+        .list {
+          padding: 12px 0;
+        }
+      }
+    }
   }
 }

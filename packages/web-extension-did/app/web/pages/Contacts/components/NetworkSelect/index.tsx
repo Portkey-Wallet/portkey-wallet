@@ -1,4 +1,4 @@
-import CustomSvg from 'components/CustomSvg';
+import { CustomSvgV3 } from 'components/CustomSvgV3';
 import DropdownSearch from 'components/DropdownSearch';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -36,7 +36,7 @@ export default function NetworkSelect({ onClose, onChange }: INetworkSelectProps
     <div className="network-select">
       <div className="header">
         <p>{t('Select Network')}</p>
-        <CustomSvg type="SuggestClose" onClick={onClose} />
+        <CustomSvgV3 type="close thin" onClick={onClose} />
       </div>
       <DropdownSearch
         overlayClassName="switch-network-empty-dropdown"

@@ -21,6 +21,16 @@
     overflow: auto;
   }
 
+  &.register-page {
+    .common-page-inner {
+      overflow: auto;
+      scrollbar-width: none;
+      &::-webkit-scrollbar {
+        display: none;
+      }
+    }
+  }
+
   &.large-logo-page {
     .portkey-logo-prompt {
       height: 24px;

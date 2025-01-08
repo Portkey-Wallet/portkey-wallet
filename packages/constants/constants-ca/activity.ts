@@ -10,6 +10,7 @@ export enum TransactionTypes {
   PALY = 'Play',
   ADDTREEPOINTS = 'AddTreePoints',
   JOIN = 'Join',
+  PLACEBID = 'PlaceBid',
 }
 
 export const DEFAULT_AMOUNT = 0;
@@ -38,6 +39,7 @@ export const SHOW_FROM_TRANSACTION_TYPES = [
   TransactionTypes.PALY,
   TransactionTypes.ADDTREEPOINTS,
   TransactionTypes.JOIN,
+  TransactionTypes.PLACEBID,
 ];
 
 export const SHOW_DAPP_TRANSACTION_TYPES = [TransactionTypes.SWAP];

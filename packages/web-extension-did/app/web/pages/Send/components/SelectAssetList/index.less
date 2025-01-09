@@ -49,13 +49,17 @@
 }
 
 .select-asset-list-modal {
-  ::-webkit-scrollbar {
-    display: none;
+  @media screen and (min-width: 767px) {
+    max-height: 80vh !important;
+    overflow: scroll !important;
+    &::-webkit-scrollbar {
+      display: none;
+    }
   }
   .portkey-ant-modal-content {
     height: 100% !important;
-    overflow: auto !important;
-    ::-webkit-scrollbar {
+    overflow: scroll !important;
+    &::-webkit-scrollbar {
       display: none;
     }
   }
@@ -70,19 +74,17 @@
       height: 48px;
     }
 
-    position: sticky;
-    top: 0;
-    left: 0;
-    z-index: 1111;
-    background: @bg-base1;
     .close-thin-icon {
       width: 20px;
       height: 20px;
     }
   }
   .token-list-wrap {
-    height: calc(100% - 48px);
+    max-height: calc(80vh - 56px);
     padding: 0 16px;
     overflow: auto;
+    &::-webkit-scrollbar {
+      display: none;
+    }
   }
 }

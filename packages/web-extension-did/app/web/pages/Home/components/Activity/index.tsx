@@ -8,7 +8,6 @@ import { useLoading, useUserInfo } from 'store/Provider/hooks';
 import { IActivitiesApiParams } from '@portkey-wallet/store/store-ca/activity/type';
 import { getCurrentActivityMapKey } from '@portkey-wallet/utils/activity';
 import { ChainId } from '@portkey-wallet/types';
-import CustomSvg from 'components/CustomSvg';
 import './index.less';
 import useGAReport from 'hooks/useGAReport';
 
@@ -120,12 +119,12 @@ export default function Activity({ chainId, symbol, pageKey = 'Home-Activity' }:
   return (
     <div className="activity-wrapper">
       {currentActivity?.totalRecordCount ? (
-        <ActivityList data={currentActivity.data} chainId={chainId} hasMore={hasMore} loadMore={loadMoreActivities} />
+        <>
+          <div className="token-detail-activity-title">Activity</div>
+          <ActivityList data={currentActivity.data} chainId={chainId} hasMore={hasMore} loadMore={loadMoreActivities} />
+        </>
       ) : (
-        <div className="no-activity-data flex-column-center">
-          <CustomSvg type="NoActivity" />
-          {t(EmptyTipMessage.NO_TRANSACTIONS)}
-        </div>
+        <div className="no-activity-data flex-column-center">{!initLoading && t('No activity')}</div>
       )}
     </div>
   );

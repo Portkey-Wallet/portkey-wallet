@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router';
 import CustomModal from 'pages/components/CustomModal';
 import { useCommonState } from 'store/Provider/hooks';
 import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
-import FindMorePrompt from './Prompt';
 import FindMorePopup from './Popup';
 import { BaseHeaderProps } from 'types/UI';
 import im from '@portkey-wallet/im';
@@ -36,7 +35,7 @@ export interface IFindMoreProps extends BaseHeaderProps {
 
 export default function FindMore() {
   const navigate = useNavigate();
-  const { isPrompt, isNotLessThan768 } = useCommonState();
+  const { isPrompt } = useCommonState();
   const { state } = useLocationState<TFindMoreLocationState>();
   const showChat = useIsChatShow();
   const userInfo = useCurrentUserInfo();
@@ -120,22 +119,7 @@ export default function FindMore() {
     [createChannel, isPrompt, navigate],
   );
 
-  return isNotLessThan768 ? (
-    <FindMorePrompt
-      headerTitle={headerTitle}
-      myPortkeyId={userInfo?.userId || ''}
-      contacts={contacts}
-      showChat={showChat}
-      isSearch={isSearch}
-      goBack={goBack}
-      handleSearch={handleSearch}
-      clickItem={(contact) => {
-        navigate('/setting/contacts/view', { state: contact });
-      }}
-      clickChat={(e, item) => handleChat(e, item)}
-      clickQRCode={() => navigate('/setting/contacts/qrcode', { state })}
-    />
-  ) : (
+  return (
     <FindMorePopup
       headerTitle={headerTitle}
       myPortkeyId={userInfo?.userId || ''}

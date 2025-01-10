@@ -11,19 +11,21 @@ enum STEP {
   inputLogin,
 }
 export default function SignCard({
+  loading,
   onFinish,
   validateEmail,
   validatePhone,
   onSocialStart,
   onSocialSignFinish,
 }: {
+  loading: boolean;
   onFinish: (data: LoginInfo) => void;
   onSocialStart: (type: ISocialLogin) => void;
   validateEmail?: ValidateHandler;
   validatePhone?: ValidateHandler;
   onSocialSignFinish: SocialLoginFinishHandler;
 }) {
-  const [step, setStep] = useState<STEP>(STEP.socialLogin);
+  const [step, setStep] = useState<STEP>(STEP.inputLogin);
 
   const navigate = useNavigateState();
 
@@ -34,15 +36,17 @@ export default function SignCard({
       {step === STEP.inputLogin ? (
         <InputLogin
           type="Sign up"
+          loading={loading}
           defaultKey={defaultKey}
           validateEmail={validateEmail}
           validatePhone={validatePhone}
           onFinish={onFinish}
-          onBack={() => setStep(STEP.socialLogin)}
+          onBack={() => navigate('/register/start')}
         />
       ) : (
         <SocialLogin
           type="Sign up"
+          loading={loading}
           onFinish={onSocialSignFinish}
           onSocialStart={onSocialStart}
           switchLogin={(type) => {

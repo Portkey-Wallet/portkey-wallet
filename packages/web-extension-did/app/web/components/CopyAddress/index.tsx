@@ -42,7 +42,8 @@ export default function Copy({
   const CheckIcon = useMemo(
     () =>
       size === CopySize.Small ? (
-        <CustomSvg type="CheckSmall" className="copy-svg" />
+        // <CustomSvg type="CheckSmall" className="copy-svg" />
+        <></>
       ) : (
         <CustomSvg type="Check" className="copy-svg" />
       ),

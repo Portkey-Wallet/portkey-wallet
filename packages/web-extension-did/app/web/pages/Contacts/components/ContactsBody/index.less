@@ -2,13 +2,14 @@
 
 .contacts-body {
   flex: 1;
-  color: @neutral-primary-text;
+  color: @text-base1;
   overflow-y: auto;
+  background-color: @bg-base1;
 
   .find-more {
     padding: 14px 24px;
     align-items: center;
-    border-bottom: 1px solid @neutral-divider;
+    border-bottom: 1px solid @border-neutral3;
     cursor: pointer;
     .find-more-icon {
       width: 20px;
@@ -54,10 +55,10 @@
   }
 
   .no-search-result {
-    margin-top: 32px;
     line-height: 20px;
     color: @neutral-disable-text;
-    font-size: 14px;
+    font-size: 16px;
+    height: 100%;
   }
 
   &.index-bar-hidden {
@@ -68,12 +69,7 @@
 
   .adm-index-bar-anchor {
     .adm-index-bar-anchor-title {
-      padding-left: 24px;
-    }
-    .adm-list {
-      .adm-list-item {
-        padding-left: 24px;
-      }
+      padding-left: 0;
     }
   }
 }

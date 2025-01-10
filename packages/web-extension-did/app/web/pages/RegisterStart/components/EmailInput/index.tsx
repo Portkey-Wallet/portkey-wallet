@@ -6,6 +6,7 @@ import i18n from 'i18n';
 import clsx from 'clsx';
 import { ValidateHandler } from 'types/wallet';
 import './index.less';
+import { CustomSvgV3 } from 'components/CustomSvgV3';
 
 interface EmailInputProps {
   wrapperClassName?: string;
@@ -35,16 +36,18 @@ const EmailInput = forwardRef(({ error, val, wrapperClassName, validate, onChang
 
   return (
     <div className={clsx('email-input-wrapper', wrapperClassName)}>
-      <div className="input-wrapper">
+      <div className="input-wrapper flex-column">
+        <div>Email</div>
         <Input
-          className="login-input"
+          className={clsx('login-input', 'flex-center', error && 'error-input')}
           value={val}
           placeholder={t('Enter email')}
           onChange={(e: { target: { value: string } }) => {
             onChange?.(e.target.value);
           }}
+          allowClear={{ clearIcon: <CustomSvgV3 className="flex-center" type="close-circle" /> }}
         />
-        {error && <span className="error-text">{error}</span>}
+        {error && <span className="error-input-text">{error}</span>}
       </div>
     </div>
   );

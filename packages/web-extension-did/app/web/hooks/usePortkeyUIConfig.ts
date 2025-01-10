@@ -46,6 +46,7 @@ const usePortkeyUIConfig = () => {
   );
   useMemo(() => {
     ConfigProvider.setGlobalConfig({
+      // theme: 'dark',
       storageMethod: localStorage,
       graphQLUrl: currentNetwork.graphqlUrl,
       socketUrl: `${currentNetwork.apiUrl}/ca`,

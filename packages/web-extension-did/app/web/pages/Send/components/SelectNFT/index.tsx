@@ -1,0 +1,71 @@
+import { useCallback } from 'react';
+import { IAssetNftCollection, INftInfoType } from '@portkey-wallet/store/store-ca/assets/type';
+import NFTImageDisplay from 'pages/components/NFTImageDisplay';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
+import CircleLoading from 'components/CircleLoading';
+import './index.less';
+
+export interface SelectNFTProps {
+  nftInfos: IAssetNftCollection[];
+  noDataMessage: string;
+  loading: boolean;
+  toAddress?: string;
+  onSelect: (v: INftInfoType) => void;
+}
+
+export default function SelectNFT({ nftInfos = [], noDataMessage, loading, onSelect }: SelectNFTProps) {
+  const isMainnet = useIsMainnet();
+
+  const renderItem = useCallback(
+    (nft: INftInfoType) => {
+      return (
+        <div
+          className="nft-item flex-row-center gap-8"
+          key={`${nft.alias}-${nft.tokenId}`}
+          onClick={() => onSelect(nft)}>
+          <NFTImageDisplay
+            src={nft.imageUrl}
+            width={42}
+            alias={nft.alias}
+            isSeed={nft.isSeed}
+            seedType={nft.seedType}
+          />
+          <div className="nft-item-info flex-between-center flex-1">
+            <div>
+              <div>{`${nft.alias} #${nft.tokenId}`}</div>
+              <div className="nft-item-chain">{`${nft.displayChainName || ''} ${isMainnet ? '' : 'Testnet'}`}</div>
+            </div>
+            <div>{formatTokenAmountShowWithDecimals(nft.balance, nft.decimals)}</div>
+          </div>
+        </div>
+      );
+    },
+    [isMainnet, onSelect],
+  );
+  const renderCollection = useCallback(
+    (item: IAssetNftCollection) => {
+      return (
+        <div key={item.collectionName}>
+          <div className="nft-collection flex-row-center gap-8">
+            <NFTImageDisplay src={item.imageUrl} width={24} alias={item.collectionName} />
+            <div>{item.collectionName}</div>
+          </div>
+          {item.items.map((nft) => renderItem(nft))}
+        </div>
+      );
+    },
+    [renderItem],
+  );
+  return (
+    <div className="send-select-nft">
+      {loading ? (
+        <CircleLoading width={32} height={32} />
+      ) : nftInfos.length === 0 ? (
+        <div className="no-data-message flex-center">{noDataMessage}</div>
+      ) : (
+        nftInfos.map((item) => renderCollection(item))
+      )}
+    </div>
+  );
+}

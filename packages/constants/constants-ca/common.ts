@@ -25,3 +25,5 @@ export enum contractStatusEnum {
 }
 
 export const HELP_CENTER_URL = 'https://doc.portkey.finance/help';
+
+export const AELF_NETWORK_NAME = 'aelf';

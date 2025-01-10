@@ -1,25 +1,19 @@
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { ChangeEvent, ChangeEventHandler, useCallback, useEffect, useMemo, useState } from 'react';
-import { useIsImputation, useLocalContactSearch } from '@portkey-wallet/hooks/hooks-ca/contact';
+import { useLocalContactSearch } from '@portkey-wallet/hooks/hooks-ca/contactNew';
 import { useAppDispatch } from 'store/Provider/hooks';
-import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/actions';
-import { ContactIndexType, ContactItemType } from '@portkey-wallet/types/types-ca/contact';
+import { fetchContactListV2Async } from '@portkey-wallet/store/store-ca/contact/actions';
+import { IContactIndexType } from '@portkey-wallet/types/types-ca/contactNew';
 import { useEffectOnce } from 'react-use';
 import ContactsPopup from './Popup';
-import ContactsPrompt from './Prompt';
+// import ContactsPrompt from './Prompt';
 import { BaseHeaderProps } from 'types/UI';
-import { useCommonState } from 'store/Provider/hooks';
+// import { useCommonState } from 'store/Provider/hooks';
 import { useGoAddNewContact } from 'hooks/useProfile';
-import { ContactsTab } from '@portkey-wallet/constants/constants-ca/assets';
-import { ExtraTypeEnum } from 'types/Profile';
-import { useBlockAndReport } from '@portkey-wallet/hooks/hooks-ca/im';
-
-const initContactItem: Partial<ContactItemType> = {
-  id: '-1',
-  name: '',
-  addresses: [{ chainId: 'AELF', address: '', chainName: 'aelf' }],
-};
+import { ContactHandleActionTypeEnum } from 'types/Profile';
+import { defaultContactFormData } from './AddContact/hooks';
+import { IEditContactItemFormType } from './AddContact/types';
 
 export interface IContactsProps extends BaseHeaderProps {
   searchPlaceholder?: string;
@@ -27,12 +21,11 @@ export interface IContactsProps extends BaseHeaderProps {
   handleAdd: () => void;
   isSearch: boolean;
   handleSearch: ChangeEventHandler<HTMLInputElement>;
-  list: ContactIndexType[];
+  list: IContactIndexType[];
   contactCount: number;
-  initData: Partial<ContactItemType>;
-  showImputation?: boolean;
-  closeImputationTip: () => void;
-  changeTab: (key: ContactsTab) => void;
+  initData: Partial<IEditContactItemFormType>;
+  loading?: boolean;
+  isEmpty?: boolean;
 }
 
 export default function Contacts() {
@@ -40,30 +33,32 @@ export default function Contacts() {
   const navigate = useNavigate();
   const appDispatch = useAppDispatch();
   const localSearch = useLocalContactSearch();
-  const [curList, setCurList] = useState<ContactIndexType[]>([]);
+  const [curList, setCurList] = useState<IContactIndexType[]>([]);
   const [isSearch, setIsSearch] = useState<boolean>(false);
-  const isImputation = useIsImputation();
-  const [isCloseImputationManually, setIsCloseImputationManually] = useState(false);
-  const showImputation = isImputation && !isCloseImputationManually;
-  const { fetchAndSetBlockList } = useBlockAndReport();
+  const [isEmpty, setIsEmpty] = useState<boolean>(true);
+
+  const [loading, setLoading] = useState(true);
 
   useEffectOnce(() => {
-    appDispatch(fetchContactListAsync());
-    fetchAndSetBlockList();
+    appDispatch(fetchContactListV2Async());
   });
 
   useEffect(() => {
-    const { contactIndexFilterList: searchResult } = localSearch('', ContactsTab.ALL);
+    setLoading(true);
+    const { contactIndexFilterList: searchResult } = localSearch('');
     setCurList(searchResult);
+    setLoading(false);
     setIsSearch(false);
   }, [localSearch]);
 
   const searchChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
       setIsSearch(!!e.target.value);
-
-      const { contactIndexFilterList: searchResult } = localSearch(e.target.value, ContactsTab.ALL);
+      setIsEmpty(!e.target.value);
+      setLoading(true);
+      const { contactIndexFilterList: searchResult } = localSearch(e.target.value);
       setCurList(searchResult);
+      setLoading(false);
     },
     [localSearch],
   );
@@ -72,9 +67,9 @@ export default function Contacts() {
     return curList.reduce((pre, cv) => pre + cv.contacts.length, 0);
   }, [curList]);
 
-  const { isNotLessThan768 } = useCommonState();
-  const searchPlaceholder = 'Name/address';
-  const title = t('Contacts');
+  // const { isNotLessThan768 } = useCommonState();
+  const searchPlaceholder = 'Name, address';
+  const title = t('Address Book');
   const addText = t('Add contact');
 
   const goBack = useCallback(() => {
@@ -83,46 +78,54 @@ export default function Contacts() {
 
   const handleAdd = useGoAddNewContact();
 
-  const closeImputationTip = () => {
-    setIsCloseImputationManually(true);
-  };
-
-  const changeTab = (key: ContactsTab) => {
-    const { contactIndexFilterList: searchResult } = localSearch('', key);
-    setCurList(searchResult);
-  };
-
-  return isNotLessThan768 ? (
-    <ContactsPrompt
-      headerTitle={title}
-      goBack={goBack}
-      searchPlaceholder={searchPlaceholder}
-      addText={addText}
-      isSearch={isSearch}
-      list={curList}
-      contactCount={curTotalContactsNum}
-      initData={initContactItem}
-      showImputation={showImputation}
-      closeImputationTip={closeImputationTip}
-      handleAdd={() => handleAdd(ExtraTypeEnum.ADD_NEW_CHAT, initContactItem)}
-      handleSearch={searchChange}
-      changeTab={changeTab}
-    />
-  ) : (
+  return (
     <ContactsPopup
+      initData={defaultContactFormData}
       headerTitle={title}
       goBack={goBack}
       searchPlaceholder={searchPlaceholder}
       addText={addText}
       isSearch={isSearch}
+      isEmpty={isEmpty}
       list={curList}
       contactCount={curTotalContactsNum}
-      initData={initContactItem}
-      showImputation={showImputation}
-      closeImputationTip={closeImputationTip}
-      handleAdd={() => handleAdd(ExtraTypeEnum.ADD_NEW_CHAT, initContactItem)}
+      handleAdd={() => handleAdd(ContactHandleActionTypeEnum.ADD_CONTACT)}
       handleSearch={searchChange}
-      changeTab={changeTab}
+      loading={loading}
     />
   );
+
+  // return isNotLessThan768 ? (
+  //   <ContactsPrompt
+  //     headerTitle={title}
+  //     goBack={goBack}
+  //     searchPlaceholder={searchPlaceholder}
+  //     addText={addText}
+  //     isSearch={isSearch}
+  //     list={curList}
+  //     contactCount={curTotalContactsNum}
+  //     initData={initContactItem}
+  //     showImputation={showImputation}
+  //     closeImputationTip={closeImputationTip}
+  //     handleAdd={() => handleAdd(ExtraTypeEnum.ADD_NEW_CHAT, initContactItem)}
+  //     handleSearch={searchChange}
+  //     changeTab={changeTab}
+  //   />
+  // ) : (
+  //   <ContactsPopup
+  //     headerTitle={title}
+  //     goBack={goBack}
+  //     searchPlaceholder={searchPlaceholder}
+  //     addText={addText}
+  //     isSearch={isSearch}
+  //     list={curList}
+  //     contactCount={curTotalContactsNum}
+  //     initData={initContactItem}
+  //     showImputation={showImputation}
+  //     closeImputationTip={closeImputationTip}
+  //     handleAdd={() => handleAdd(ExtraTypeEnum.ADD_NEW_CHAT, initContactItem)}
+  //     handleSearch={searchChange}
+  //     changeTab={changeTab}
+  //   />
+  // );
 }

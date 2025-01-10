@@ -4,7 +4,7 @@ import Activity from 'pages/Home/components/Activity';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import clsx from 'clsx';
 import { useCommonState, useLoading } from 'store/Provider/hooks';
-import PromptFrame from 'pages/components/PromptFrame';
+// import PromptFrame from 'pages/components/PromptFrame';
 import { useFreshTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { FAUCET_URL } from '@portkey-wallet/constants/constants-ca/wallet';
 import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
@@ -12,7 +12,6 @@ import { useExtensionETransShow } from 'hooks/cms';
 import { useCheckSecurity } from 'hooks/useSecurity';
 import { useDisclaimer } from '@portkey-wallet/hooks/hooks-ca/disclaimer';
 import DisclaimerModal, { IDisclaimerProps, initDisclaimerData } from 'pages/components/DisclaimerModal';
-import './index.less';
 import { useLocationState, useNavigateState } from 'hooks/router';
 import { TReceiveLocationState, TSendLocationState, TTokenDetailLocationState } from 'types/router';
 import { useExtensionRampEntryShow } from 'hooks/ramp';
@@ -28,6 +27,7 @@ import SkeletonCom from 'pages/components/SkeletonCom';
 import CommonBanner from 'components/CommonBanner';
 import { useCmsBanner } from '@portkey-wallet/hooks/hooks-ca/cms/banner';
 import { TBaseCardItemType } from '@portkey-wallet/types/types-ca/cms';
+import './index.less';
 
 export enum TokenTransferStatus {
   CONFIRMED = 'Confirmed',
@@ -40,7 +40,7 @@ export type TTokenDetailNavigateState = {
 
 function TokenDetail() {
   const navigate = useNavigateState<TTokenDetailNavigateState | Partial<TSendLocationState> | TReceiveLocationState>();
-  const { state: currentToken } = useLocationState<TTokenDetailLocationState>();
+  const { state } = useLocationState<any>();
   const isMainNet = useIsMainnet();
   const { checkDappIsConfirmed } = useDisclaimer();
   const checkSecurity = useCheckSecurity();
@@ -51,6 +51,16 @@ function TokenDetail() {
   const { isPrompt, isNotLessThan768 } = useCommonState();
   const { isRampShow } = useExtensionRampEntryShow();
   const { setLoading } = useLoading();
+
+  const [currentChain, setCurrentChain] = useState(state.chainId);
+
+  const currentToken = useMemo(() => {
+    if (state?.tokenInfo.length == 1) {
+      return state.tokenInfo[0];
+    } else {
+      return state.tokenInfo.filter((list: { chainId: string }) => list.chainId == currentChain)[0];
+    }
+  }, [state, currentChain]);
 
   useEffect(() => {
     const list = getTokenDetailBannerList(currentToken.chainId, currentToken.symbol);
@@ -73,16 +83,17 @@ function TokenDetail() {
   const disclaimerData = useRef<IDisclaimerProps>(initDisclaimerData);
   const handleBuy = useCallback(() => {
     if (isMainNet) {
-      navigate(`/receive/token/${currentToken.symbol}`, {
-        state: { ...currentToken, address: currentToken?.tokenContractAddress, pageSide: ReceiveTabEnum.Buy },
-      });
+      navigate('/buy');
+      // navigate(`/receive/token/${currentToken.symbol}`, {
+      //   state: { ...currentToken, address: currentToken?.tokenContractAddress, pageSide: ReceiveTabEnum.Buy },
+      // });
     } else {
       const openWinder = window.open(FAUCET_URL, '_blank');
       if (openWinder) {
         openWinder.opener = null;
       }
     }
-  }, [currentToken, isMainNet, navigate]);
+  }, [isMainNet, navigate]);
   const AmountShowWithDecimals = useMemo(
     () => formatTokenAmountShowWithDecimals(currentToken.balance, currentToken.decimals),
     [currentToken.balance, currentToken.decimals],
@@ -128,11 +139,17 @@ function TokenDetail() {
 
   const handleSendOrReceive = useCallback(
     (type: 'send' | 'receive', pageSide?: ReceiveTabEnum) => {
+      if (type === 'receive') {
+        navigate('/receive-card', {
+          state: { ...currentToken, address: currentToken?.tokenContractAddress, tokens: state.tokenInfo },
+        });
+        return;
+      }
       navigate(`/${type}/token/${currentToken?.symbol}`, {
         state: { ...currentToken, address: currentToken?.tokenContractAddress, pageSide },
       });
     },
-    [currentToken, navigate],
+    [currentToken, navigate, state.tokenInfo],
   );
 
   useEffectOnce(() => {
@@ -143,17 +160,31 @@ function TokenDetail() {
 
   const mainContent = useCallback(() => {
     return (
-      <div className={clsx(['token-detail', isPrompt && isNotLessThan768 ? 'portkey-body' : ''])}>
+      <div className={clsx(['token-detail'])}>
         <CommonTokenHeader
           symbol={currentToken.label ?? currentToken.symbol}
           imgUrl={currentToken.imageUrl}
-          chainId={currentToken.chainId}
+          // chainId={currentToken.chainId}
         />
+
+        <div className="token-detail-tabs">
+          {state.tokenInfo.map((list: any) => {
+            return (
+              <div
+                key={list.chainId}
+                className={`${list.chainId == currentToken.chainId ? 'active' : 'token-detail-tab'}`}
+                onClick={() => setCurrentChain(list.chainId)}>
+                {list.displayChainName}
+              </div>
+            );
+          })}
+        </div>
+
         <div className={clsx('token-detail-content', isPrompt ? '' : 'token-detail-content-popup')}>
           <div className="token-detail-balance flex-column">
             <div className={clsx('balance-amount', 'flex-column', isPrompt && 'is-prompt')}>
               <div className={clsx('amount-number', AmountShowWithDecimals.length > 18 && 'amount-number-long')}>
-                {AmountShowWithDecimals ?? <SkeletonCom />}
+                {AmountShowWithDecimals ?? <SkeletonCom />} {currentToken.label || currentToken.symbol}
               </div>
               <div className={clsx('amount-convert', !isMainNet && 'hidden-amount-convert')}>
                 {formatAmountUSDShow(currentToken?.balanceInUsd) ?? <SkeletonCom />}
@@ -170,7 +201,6 @@ function TokenDetail() {
           </div>
           {!isNotLessThan768 && <CommonBanner wrapClassName="banner-wrap" bannerList={tokenDetailBannerList} />}
           <div className="token-detail-activity">
-            <div className="token-detail-activity-title">Activity</div>
             <Activity chainId={currentToken.chainId} symbol={currentToken.symbol} pageKey="Token-Activity" />
           </div>
         </div>
@@ -182,8 +212,9 @@ function TokenDetail() {
     currentToken.label,
     currentToken.symbol,
     currentToken.imageUrl,
-    currentToken.chainId,
     currentToken?.balanceInUsd,
+    currentToken.chainId,
+    state.tokenInfo,
     AmountShowWithDecimals,
     isMainNet,
     isShowBuy,
@@ -200,7 +231,7 @@ function TokenDetail() {
 
   return (
     <>
-      {isPrompt && isNotLessThan768 ? <PromptFrame content={mainContent()} /> : mainContent()}
+      {mainContent()}
       <DisclaimerModal open={disclaimerOpen} onClose={() => setDisclaimerOpen(false)} {...disclaimerData.current} />
     </>
   );

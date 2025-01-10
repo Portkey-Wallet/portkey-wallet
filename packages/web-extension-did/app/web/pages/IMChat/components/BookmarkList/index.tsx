@@ -62,7 +62,7 @@ export default function BookmarkList({ onClick, onClose }: IBookmarkListProps) {
               defaultHeight={32}
               className="icon"
               src={getCmsWebsiteInfoImageUrl(item?.url) || getFaviconUrl(item?.url)}
-              backupSrc="DappDefault"
+              backupSrc="Dapp=Others"
             />
             <div className="desc flex-column">
               <div className="text name">

@@ -8,22 +8,36 @@
 }
 
 .guardian {
-  display: flex;
+  //display: flex;
   position: relative;
-  height: 84px;
-  padding: 0 16px;
-  align-items: center;
-  border-bottom: 1px solid @neutral-divider;
-  font-size: 14px;
-  line-height: 20px;
-  color: @neutral-primary-text;
+  //height: 84px;
+  //padding: 0 16px;
+  //align-items: center;
+  //border-bottom: 1px solid @border-neutral3;
+  //font-size: 14px;
+  //line-height: 20px;
+  //color: @text-base1;
+  .guardian-title {
+    padding: 16px 0 8px;
+    color: @text-opacity70;
+    font-size: 14px;
+    line-height: 140%;
+  }
+  .learn-more {
+    display: block;
+    padding: 16px 0;
+    color: @text-brand1;
+    font-size: 14px;
+    line-height: 140%;
+  }
   .guardian-item-wrap {
     width: 100%;
   }
   .login-icon {
+    z-index: 1000;
     position: absolute;
     top: 4px;
-    left: 16px;
+    //left: 16px;
     padding: 2px 8px;
     border-top-left-radius: 9px;
     border-bottom-right-radius: 9px;
@@ -33,7 +47,7 @@
     background-color: @bg-4;
   }
   .icon-pair {
-    margin-right: 12px;
+    margin-right: 8px;
   }
 }
 

@@ -1,6 +1,11 @@
 @import '../../../../assets/theme/color.less';
 
 .address-selector {
+  height: 100%;
+  .send-content {
+    height: calc(100% - 35px);
+    overflow: auto;
+  }
   .no-data {
     padding-top: 32px;
     padding-bottom: 16px;
@@ -12,60 +17,27 @@
     justify-content: center;
     font-size: 14px;
   }
-  &.@{app-prefix}-tabs {
-    overflow: auto;
-    flex: 1;
-
-    .@{app-prefix}-tabs-nav {
-      margin: 0;
-      box-shadow: none;
-      z-index: 10;
-      position: sticky;
-      background: @neutral-default-bg;
-      border-bottom: 1px solid @neutral-divider;
-
-      .@{app-prefix}-tabs-nav-wrap {
-        min-width: 100%;
-        max-width: 100%;
-
-        .@{app-prefix}-tabs-nav-list {
-          flex: 1;
-          justify-content: space-between;
-          padding: 0 24px;
-          .@{app-prefix}-tabs-tab {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 13px 0;
-            margin: 0;
-
-            .@{app-prefix}-tabs-tab-btn {
-              font-weight: 400;
-              font-size: 16px;
-              height: 22px;
-              line-height: 22px;
-              text-align: center;
-              color: @neutral-secondary-text !important;
-              text-shadow: unset;
-            }
-          }
-
-          .@{app-prefix}-tabs-tab-active {
-            .@{app-prefix}-tabs-tab-btn {
-              color: @neutral-primary-text !important;
-            }
-          }
-
-          .@{app-prefix}-tabs-ink-bar {
-            width: 50%;
-          }
-        }
-      }
+  .tab-list {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    color: @text-base1;
+    font-size: 16px;
+    margin-bottom: 16px;
+    button {
+      width: auto;
+      height: auto;
+      padding: 8px;
+      background-color: transparent;
+      border-radius: 8px;
+      border: none;
+      opacity: 0.4;
     }
-    .@{app-prefix}-tabs-content {
-      overflow: auto;
-      height: 100%;
+    .active-tab {
+      color: @text-base1;
+      opacity: 1;
+      background-color: @bg-base2;
+      border: none;
     }
   }
 
@@ -78,7 +50,7 @@
     line-height: 16px;
     .address {
       display: flex;
-      color: @neutral-primary-text;
+      color: @text-base1;
     }
     .network {
       color: @neutral-secondary-text;
@@ -100,22 +72,80 @@
 
   // ================ Recent component style ================
   .recents {
+    .contact-list {
+      display: flex;
+      align-items: start;
+      gap: 16px;
+      padding: 16px 0;
+      cursor: pointer;
+      .info-box {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        .name {
+          font-size: 16px;
+          color: @text-opacity70;
+        }
+        .address {
+          font-size: 16px;
+          color: @text-base1;
+          opacity: 0.4;
+        }
+      }
+      .info-icon {
+        margin-left: auto;
+      }
+      .chain-box {
+        position: relative;
+        .chain-logo {
+          width: 20px !important;
+          height: 20px !important;
+          position: absolute;
+          bottom: -2px;
+          right: -5px;
+          .show-name-index {
+            width: 20px !important;
+            height: 20px !important;
+          }
+        }
+        .show-name {
+          background-color: @bg-brand1;
+          color: @text-brand4;
+          border-radius: 50%;
+        }
+      }
+    }
+
     .recent-item {
       border-top: none !important;
-      border-bottom: 1px solid @neutral-divider;
-      padding: 13px 16px 11px 24px;
-      .main-info {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 16px 0;
+
+      .center {
+        padding-left: 16px;
         flex: 1;
-        margin-right: 24px;
-        cursor: pointer;
-        .address-item();
+
+        .address {
+          font-size: 16px;
+          color: @text-opacity70;
+        }
+        .gap {
+          height: 4px;
+        }
+        .network {
+          font-size: 16px;
+          color: @text-base1;
+          opacity: 0.4;
+        }
       }
       .go-detail {
         .go-detail-common();
       }
     }
     .contact-card-in-recent {
-      border-bottom: 1px solid @neutral-divider;
+      border-bottom: 1px solid @border-neutral3;
       .@{app-prefix}-collapse-header {
         padding-left: 24px !important;
       }
@@ -132,9 +162,55 @@
     display: flex;
     flex-direction: column;
 
+    .contact-list {
+      display: flex;
+      align-items: start;
+      gap: 16px;
+      padding: 16px 0;
+      cursor: pointer;
+      .info-box {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        .name {
+          font-size: 16px;
+          color: @text-opacity70;
+        }
+        .address {
+          font-size: 16px;
+          color: @text-opacity40;
+        }
+      }
+      .info-icon {
+        margin-left: auto;
+      }
+      .chain-box {
+        position: relative;
+        .chain-logo {
+          width: 20px !important;
+          height: 20px !important;
+          position: absolute;
+          bottom: -2px;
+          right: -5px;
+          .show-name-index {
+            width: 20px !important;
+            height: 20px !important;
+          }
+        }
+        .show-name {
+          background-color: @bg-brand1;
+          color: @text-brand4;
+          border-radius: 50%;
+        }
+      }
+    }
+
     .contacts-body {
       flex: 1;
-      overflow-y: hidden;
+      overflow: auto;
+      &::-webkit-scrollbar {
+        display: none;
+      }
 
       .contact-empty {
         display: none;
@@ -147,7 +223,7 @@
       }
     }
     .adm-index-bar-anchor-title {
-      padding: 8px 24px;
+      padding: 8px 0;
       line-height: 16px;
       color: @neutral-secondary-text;
       font-size: 12px;
@@ -155,7 +231,7 @@
     }
     .adm-list-item {
       padding: 0;
-      border-top: 1px solid @neutral-divider;
+      border-top: 1px solid @border-neutral3;
       .adm-list-item-content {
         padding: 0;
         border-top: none;
@@ -180,7 +256,7 @@
     border-top: 0;
     border-left: 0;
     border-right: 0;
-    background: @neutral-default-bg;
+    background: @bg-base1;
     .@{app-prefix}-collapse-item {
       border-bottom: none;
     }
@@ -215,7 +291,7 @@
       align-items: center;
       line-height: 20px;
       font-size: 14px;
-      color: @neutral-primary-text;
+      color: @text-base1;
     }
     .content {
       display: flex;
@@ -231,7 +307,7 @@
           gap: 2px;
           line-height: 16px;
           font-size: 12px;
-          color: @neutral-primary-text;
+          color: @text-base1;
           padding-left: 34px;
           margin-right: 24px;
 
@@ -261,8 +337,41 @@
   .my-address {
     .my-address-item {
       border-top: none !important;
-      border-bottom: 1px solid @neutral-divider;
-      padding: 13px 24px 11px;
+      display: flex;
+      align-items: center;
+      flex-direction: row !important;
+      gap: 16px !important;
+      padding: 16px 0;
+      .info-box {
+        position: relative;
+        .chain-icon {
+          width: 20px !important;
+          height: 20px !important;
+          position: absolute;
+          right: -5px;
+          bottom: -3px;
+          .show-name-index {
+            width: 20px !important;
+            height: 20px !important;
+          }
+        }
+      }
+      .info-detail {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        font-feature-settings: normal;
+        font-variant: normal;
+        .address {
+          font-size: 16px;
+          color: @text-opacity70;
+        }
+        .network {
+          font-size: 16px;
+          color: @text-opacity40!important;
+        }
+      }
+
       .address-item();
     }
     .loading {

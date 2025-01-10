@@ -2,6 +2,7 @@ import ReactDOM from 'react-dom/client';
 import { PageRouter } from './routes';
 import CustomProvider from 'store/Provider';
 import { setPageType } from 'utils/setBody';
+import { CommonPage } from 'components/CommonPage';
 
 const RootWrapper = document.getElementById('root') as Element;
 
@@ -14,7 +15,9 @@ setPageType('Prompt');
 root.render(
   <>
     <CustomProvider pageType="Prompt">
-      <PageRouter />
+      <CommonPage>
+        <PageRouter />
+      </CommonPage>
     </CustomProvider>
   </>,
 );

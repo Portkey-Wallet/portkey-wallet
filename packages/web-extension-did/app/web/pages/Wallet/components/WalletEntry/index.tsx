@@ -11,7 +11,7 @@ export interface IWalletEntryProps {
 
 export default function WalletEntry({ walletAvatar, walletName, clickAvatar }: IWalletEntryProps) {
   return (
-    <MenuItem className="wallet-entry" height={108} onClick={clickAvatar}>
+    <MenuItem className="wallet-entry" height={72} onClick={clickAvatar}>
       <div className="flex-start-center wallet-entry-main">
         <Avatar avatarUrl={walletAvatar} nameIndex={walletName?.substring(0, 1).toLocaleUpperCase()} size="large" />
         <div className="wallet-info">

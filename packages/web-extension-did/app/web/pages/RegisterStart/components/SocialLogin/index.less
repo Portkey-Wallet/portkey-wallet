@@ -1,30 +1,12 @@
 @import '../../../../assets/theme/color.less';
 
 .social-login-content {
-  padding-top: 16px;
+  padding-top: 96px;
   .login-by-input-btn {
     line-height: 48px;
     font-size: 16px;
     border-radius: 24px;
     margin-bottom: 24px;
-  }
-  .go-sign-up {
-    text-align: center;
-    font-size: 16px;
-    line-height: 22px;
-    color: @neutral-secondary-text;
-
-    &.hidden-go-sign-up {
-      visibility: hidden;
-    }
-    .sign-text {
-      margin-left: 8px;
-      padding-right: 22px;
-      color: @brand-normal;
-      background: url('../../../../assets/svgIcon/iconRight.svg') right center no-repeat;
-      background-size: 14px;
-      cursor: pointer;
-    }
   }
   .extra-guardian-type-content {
     padding: 0 15px;
@@ -35,14 +17,35 @@
       width: 48px;
       height: 48px;
       flex-shrink: 0;
-      border: 1px solid @neutral-divider;
+      border: 1px solid @border-neutral2;
       border-radius: 50%;
       cursor: pointer;
+      &:hover {
+        background-color: @bg-hover;
+        border-color: @border-neutral3;
+      }
       .custom-svg,
       .custom-svg svg {
         width: 20px;
         height: 20px;
       }
     }
+  }
+}
+.go-sign-up-text {
+  margin-top: 32px;
+  text-align: center;
+  font-size: 16px;
+  line-height: 16px;
+  color: @text-base2;
+  &.hidden-go-sign-up {
+    visibility: hidden;
+  }
+  .sign-text {
+    margin-left: 8px;
+    padding-right: 22px;
+    color: @text-brand1;
+    background-size: 14px;
+    cursor: pointer;
   }
 }

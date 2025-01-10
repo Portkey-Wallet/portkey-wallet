@@ -1,6 +1,4 @@
-import { useCommonState } from 'store/Provider/hooks';
 import PaymentSecurityPopup from './Popup';
-import PaymentSecurityPrompt from './Prompt';
 import { useTranslation } from 'react-i18next';
 import { BaseHeaderProps } from 'types/UI';
 import { ITransferLimitItem } from '@portkey-wallet/types/types-ca/paymentSecurity';
@@ -18,17 +16,17 @@ export interface IPaymentSecurityProps extends BaseHeaderProps {
   hasMore: boolean;
   loadMore: () => Promise<void>;
   noDataText: string;
+  fetching?: boolean;
 }
 
 export default function PaymentSecurity() {
-  const { isNotLessThan768 } = useCommonState();
   const { t } = useTranslation();
   const navigate = useNavigateState<TTransferSettingLocationState>();
-  const headerTitle = t('Payment Security');
-  const noDataText = t('No asset');
+  const headerTitle = t('Transaction Limits');
+  const noDataText = t('No assets yet');
   const loadingFlag = useRef(false);
 
-  const { list: securityList, pagination, init, next, isNext } = useTransferLimitList();
+  const { list: securityList, pagination, init, next, isNext, fetching } = useTransferLimitList();
 
   const getSecurityList = useCallback(async () => {
     try {
@@ -53,7 +51,7 @@ export default function PaymentSecurity() {
   );
 
   const handleBack = useCallback(() => {
-    navigate('/setting/wallet-security');
+    navigate('/setting');
   }, [navigate]);
 
   const loadMoreSecurity = useCallback(async () => {
@@ -78,17 +76,7 @@ export default function PaymentSecurity() {
     getSecurityList();
   });
 
-  return isNotLessThan768 ? (
-    <PaymentSecurityPrompt
-      headerTitle={headerTitle}
-      list={securityList}
-      clickItem={handleClick}
-      goBack={handleBack}
-      hasMore={isNext}
-      loadMore={loadMoreSecurity}
-      noDataText={noDataText}
-    />
-  ) : (
+  return (
     <PaymentSecurityPopup
       headerTitle={headerTitle}
       list={securityList}
@@ -97,6 +85,7 @@ export default function PaymentSecurity() {
       hasMore={isNext}
       loadMore={loadMoreSecurity}
       noDataText={noDataText}
+      fetching={fetching}
     />
   );
 }

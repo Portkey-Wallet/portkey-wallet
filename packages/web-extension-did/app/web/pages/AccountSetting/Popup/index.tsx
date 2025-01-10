@@ -2,6 +2,7 @@ import CommonHeader from 'components/CommonHeader';
 import { IAccountSettingProps } from '../index';
 import { useNavigate } from 'react-router';
 import MenuList from 'pages/components/MenuList';
+import './index.less';
 
 export default function AccountSettingPopup({ headerTitle, menuList }: IAccountSettingProps) {
   const navigate = useNavigate();

@@ -1,3 +1,10 @@
+@import './color.less';
+
+/* dark-wrapper */
+.portkey-ui-dark-wrapper {
+  background-color: var(--sds-color-background-default-default);
+}
+
 /* button */
 .@{app-prefix}-btn-dangerous.@{app-prefix}-btn-link span {
   text-decoration: underline;
@@ -12,16 +19,41 @@
 }
 
 button.@{app-prefix}-btn-default {
-  border-color: @neutral-border;
-  background-color: @neutral-default-bg;
+  border-color: @border-neutral2;
+  background-color: @bg-base1;
+  color: @text-base1;
+
+  &:hover,
+  &:focus {
+    color: @text-base1;
+  }
+  &:focus {
+    background-color: @bg-base2;
+    border-color: @border-neutral3;
+  }
+  &:hover {
+    background-color: @bg-base2;
+    border-color: @border-neutral3;
+  }
+
+  &:disabled,
+  &:disabled:hover,
+  &:disabled:focus,
+  &:disabled:active {
+    color: @text-disabled2;
+    background-color: @bg-base2 !important;
+    border-color: @bg-base2 !important;
+    box-shadow: none !important;
+  }
 }
 
 .@{app-prefix}-btn-primary {
   border-width: 0;
+  color: @text-brand4;
 
   &:hover,
   &:focus {
-    color: white;
+    color: @text-neutral4;
   }
   &:focus {
     background-color: @brand-click;
@@ -36,9 +68,41 @@ button.@{app-prefix}-btn-default {
   &:disabled:hover,
   &:disabled:focus,
   &:disabled:active {
-    color: white;
+    color: @text-disabled2 !important;
     background-color: @brand-disable !important;
     border-color: @brand-disable !important;
+    box-shadow: none !important;
+  }
+}
+
+.@{app-prefix}-btn-loading > span:not(.@{app-prefix}-btn-loading-icon) {
+  display: none;
+}
+
+.@{app-prefix}-btn-dangerous.@{app-prefix}-btn-primary {
+  border-width: 0;
+  color: @text-danger4;
+
+  &:hover,
+  &:focus {
+    color: @text-danger4;
+  }
+  &:focus {
+    background-color: @bg-danger4;
+    border-color: @bg-danger4;
+  }
+  &:hover {
+    background-color: @bg-danger4;
+    border-color: @bg-danger4;
+  }
+
+  &:disabled,
+  &:disabled:hover,
+  &:disabled:focus,
+  &:disabled:active {
+    color: @text-disabled2;
+    background-color: @bg-base2 !important;
+    border-color: @bg-base2 !important;
     box-shadow: none !important;
   }
 }
@@ -49,24 +113,35 @@ button.@{app-prefix}-btn-default {
 .@{app-prefix}-input-password {
   padding: 12px 16px;
   border-radius: 6px;
-  color: @font-2;
+  //color: @font-2;
+  color: @text-base1;
   line-height: 22px;
-  border-color: @neutral-border;
+  //border-color: @neutral-border;
+  border-color: @border-base1;
+  background: @bg-base1;
 
   &:hover {
-    border-color: @brand-normal;
+    //border-color: @brand-normal;
+    border-color: @border-focus !important;
+    box-shadow: none;
+  }
+  &:focus {
+    border-color: @border-base1 !important;
+    box-shadow: none;
   }
 }
 
 .@{app-prefix}-input {
   font-size: 16px;
   line-height: 24px;
-  color: @neutral-primary-text;
+  color: @text-base1;
+  background: @bg-base1;
 
   &::placeholder {
     font-size: 14px;
     line-height: 20px;
-    color: @neutral-disable-text;
+    //color: @neutral-disable-text;
+    color: @text-disabled2;
   }
 }
 
@@ -89,7 +164,8 @@ button.@{app-prefix}-btn-default {
   .@{app-prefix}-form-item-explain {
     line-height: 16px;
     height: 16px;
-    margin-top: 4px;
+    margin-top: 8px;
+    color: @text-opacity70;
   }
 
   .@{app-prefix}-form-item-has-error {
@@ -108,16 +184,16 @@ button.@{app-prefix}-btn-default {
   }
 
   .@{app-prefix}-input-affix-wrapper-status-error {
-    border-color: @border-7;
+    border-color: @border-danger1;
   }
 
   .@{app-prefix}-form-item-explain-error {
-    color: @font-14;
-    font-size: 12px;
+    color: @text-danger2;
+    font-size: 14px;
   }
 
   .@{app-prefix}-form-item {
-    margin-bottom: 24px;
+    margin-bottom: 16px;
   }
 
   .@{app-prefix}-form-item-label {
@@ -140,29 +216,51 @@ button.@{app-prefix}-btn-default {
 }
 
 // to change  border color of the errored input
-.@{app-prefix}-input-status-error:not(.@{app-prefix}-input-disabled):not(.@{app-prefix}-input-borderless).@{app-prefix}-input:hover,
-.@{app-prefix}-input-affix-wrapper-status-error:not(.@{app-prefix}-input-affix-wrapper-disabled):not(.@{app-prefix}-input-affix-wrapper-borderless).@{app-prefix}-input-affix-wrapper,
-.@{app-prefix}-input-affix-wrapper-status-error:not(.@{app-prefix}-input-affix-wrapper-disabled):not(.@{app-prefix}-input-affix-wrapper-borderless).@{app-prefix}-input-affix-wrapper:hover {
-  border-color: @brand-normal !important;
+.@{app-prefix}-input-status-error:not(.@{app-prefix}-input-disabled):not(
+    .@{app-prefix}-input-borderless
+  ).@{app-prefix}-input:hover,
+.@{app-prefix}-input-affix-wrapper-status-error:not(.@{app-prefix}-input-affix-wrapper-disabled):not(
+    .@{app-prefix}-input-affix-wrapper-borderless
+  ).@{app-prefix}-input-affix-wrapper,
+.@{app-prefix}-input-affix-wrapper-status-error:not(.@{app-prefix}-input-affix-wrapper-disabled):not(
+    .@{app-prefix}-input-affix-wrapper-borderless
+  ).@{app-prefix}-input-affix-wrapper:hover {
+  //border-color: @brand-normal !important;
+  border-color: @border-danger1 !important;
+  background: @bg-base1;
 }
 
-.@{app-prefix}-input-status-error:not(.@{app-prefix}-input-disabled):not(.@{app-prefix}-input-borderless).@{app-prefix}-input,
-.@{app-prefix}-input-affix-wrapper-status-error:not(.@{app-prefix}-input-affix-wrapper-disabled):not(.@{app-prefix}-input-affix-wrapper-borderless).@{app-prefix}-input-affix-wrapper,
-.@{app-prefix}-input-affix-wrapper-status-error:not(.@{app-prefix}-input-affix-wrapper-disabled):not(.@{app-prefix}-input-affix-wrapper-borderless).@{app-prefix}-input-affix-wrapper:focus {
-  border-color: #dcdee1;
+.@{app-prefix}-input-status-error:not(.@{app-prefix}-input-disabled):not(
+    .@{app-prefix}-input-borderless
+  ).@{app-prefix}-input,
+.@{app-prefix}-input-affix-wrapper-status-error:not(.@{app-prefix}-input-affix-wrapper-disabled):not(
+    .@{app-prefix}-input-affix-wrapper-borderless
+  ).@{app-prefix}-input-affix-wrapper,
+.@{app-prefix}-input-affix-wrapper-status-error:not(.@{app-prefix}-input-affix-wrapper-disabled):not(
+    .@{app-prefix}-input-affix-wrapper-borderless
+  ).@{app-prefix}-input-affix-wrapper:focus {
+  //border-color: #dcdee1;
+  border-color: @border-danger1;
+  background: @bg-base1;
 }
 
-.@{app-prefix}-input-status-error:not(.@{app-prefix}-input-disabled):not(.@{app-prefix}-input-borderless).@{app-prefix}-input:focus,
-.@{app-prefix}-input-affix-wrapper-status-error:not(.@{app-prefix}-input-affix-wrapper-disabled):not(.@{app-prefix}-input-affix-wrapper-borderless).@{app-prefix}-input-affix-wrapper-focused {
-  border-color: @brand-normal !important;
-  box-shadow: 0 0 0 2px rgb(91 142 244 / 20%);
+.@{app-prefix}-input-status-error:not(.@{app-prefix}-input-disabled):not(
+    .@{app-prefix}-input-borderless
+  ).@{app-prefix}-input:focus,
+.@{app-prefix}-input-affix-wrapper-status-error:not(.@{app-prefix}-input-affix-wrapper-disabled):not(
+    .@{app-prefix}-input-affix-wrapper-borderless
+  ).@{app-prefix}-input-affix-wrapper-focused {
+  //border-color: @brand-normal !important;
+  border-color: @border-danger1 !important;
+  //box-shadow: 0 0 0 2px rgb(91 142 244 / 20%);
+  box-shadow: none;
 }
 
 // to change input disable
 .@{app-prefix}-input[disabled] {
-  background-color: @bg-13;
-  border: 1px solid @neutral-border;
-  color: @neutral-primary-text;
+  background-color: @bg-base2;
+  border: 1px solid @border-disabled;
+  color: @text-disabled2;
 }
 
 .customer-form {
@@ -171,7 +269,7 @@ button.@{app-prefix}-btn-default {
   }
 
   .@{app-prefix}-form-item-label > label {
-    color: @neutral-primary-text;
+    color: @text-base1;
     font-size: 14px;
     line-height: 20px;
   }
@@ -182,18 +280,38 @@ button.@{app-prefix}-btn-default {
   }
 
   .@{app-prefix}-input-affix-wrapper {
-    height: 48px;
+    //height: 48px;
+    height: 40px;
     border-radius: 6px;
-    padding-left: 16px;
-    padding-right: 16px;
+    padding: 0 16px !important;
+    background: @bg-base1;
+    color: @text-base1;
+    border: 1px solid @border-base1 !important;
+    box-shadow: none;
+
+    .@{app-prefix}-input-suffix {
+      .@{app-prefix}-input-clear-icon {
+        height: 16px;
+      }
+      .anticon-close-circle {
+        width: 16px;
+        height: 16px;
+        background: url('../../assets/iconV3/icons/close-circle.svg') no-repeat center;
+        background-size: inherit;
+
+        & > svg {
+          display: none;
+        }
+      }
+    }
   }
 }
 
 .@{app-prefix}-switch {
   width: 43px;
   height: 24px;
-  background-color: @bg-13;
-  border: 2px solid @neutral-divider;
+  background-color: @bg-neutral2;
+  border: 2px solid @bg-neutral2;
   position: relative;
 
   &:focus {
@@ -220,10 +338,12 @@ button.@{app-prefix}-btn-default {
 }
 
 .@{app-prefix}-switch-checked {
-  border: 2px solid @brand-normal;
+  border: 2px solid @icon-brand6;
+  background: @icon-brand6;
 
   .@{app-prefix}-switch-handle::before {
-    background-color: @brand-normal;
+    //background-color: @brand-normal;
+    background-color: @text-base1;
   }
 
   .@{app-prefix}-switch-inner {
@@ -233,12 +353,12 @@ button.@{app-prefix}-btn-default {
 
 .footer-btn-wrap {
   width: 100%;
-  padding: 16px;
-  border-top: 1px solid @neutral-divider;
+  padding: 16px 0;
+  //border-top: 1px solid @border-neutral3;
   margin-bottom: 0 !important;
 
   .footer-btn {
-    color: @neutral-white-text;
+    color: #0a4370;
     font-size: 16px;
     line-height: 22px;
     height: 48px;
@@ -257,7 +377,7 @@ button.@{app-prefix}-btn-default {
     .@{app-prefix}-modal-confirm-content {
       padding: 24px;
       margin: 0;
-      border-bottom: 1px solid @neutral-divider;
+      border-bottom: 1px solid @border-neutral3;
       text-align: center;
       line-height: 20px;
       font-size: 14px;
@@ -294,7 +414,7 @@ button.@{app-prefix}-btn-default {
         .@{app-prefix}-modal-confirm-content {
           padding: 32px 24px 24px;
           margin: 0;
-          border-bottom: 1px solid @neutral-divider;
+          border-bottom: 1px solid @border-neutral3;
           text-align: center;
           line-height: 20px;
           font-size: 14px;
@@ -362,7 +482,7 @@ button.@{app-prefix}-btn-default {
     min-width: 360px;
   }
   .@{app-prefix}-drawer-content {
-    border-radius: 8px 8px 0 0;
+    border-radius: 0;
   }
 }
 
@@ -371,5 +491,20 @@ button.@{app-prefix}-btn-default {
   .@{app-prefix}-message-custom-content {
     display: flex;
     text-align: left;
+  }
+}
+
+/* modal */
+.@{app-prefix}-modal-mask,
+.@{app-prefix}-drawer-mask,
+.portkey-ant-modal-mask,
+.portkey-ant-drawer-mask {
+  background: @bg-opacity80 !important;
+  backdrop-filter: blur(2px);
+}
+
+@media screen and (max-width: 600px) {
+  .portkey-ant-message {
+    top: 16px !important;
   }
 }

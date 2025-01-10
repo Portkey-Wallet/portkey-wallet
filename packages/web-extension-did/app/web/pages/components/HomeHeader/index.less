@@ -1,6 +1,68 @@
 @import '../../../assets/theme/color.less';
 
 .portkey-home-header {
+  width: 100%;
+  height: 56px;
+
+  @media screen and (max-width: 767px) {
+    height: 48px;
+  }
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  position: sticky;
+  top: 0;
+  left: 0;
+  background-color: @bg-base1;
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    .token-img-wrapper {
+      width: 24px !important;
+      height: 24px !important;
+    }
+    .show-name-index {
+      width: 100% !important;
+      height: 100% !important;
+      border-radius: 100%;
+      background-color: @brand-normal;
+      color: @text-brand4;
+    }
+    .arrow-down-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 11.15px;
+      height: 6.55px;
+      flex-shrink: 0;
+      margin-top: 4px;
+    }
+    .skeleton-com-avatar {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background-color: @bg-base3;
+      overflow: hidden;
+    }
+    .skeleton-com-name {
+      width: 126px;
+      height: 14px;
+    }
+    .portkey-skeleton-avatar {
+      width: 100%;
+      height: 100%;
+      background-color: @bg-base3;
+    }
+  }
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
   .portkeylogov2-icon {
     width: 28px;
     height: 28px;
@@ -20,6 +82,34 @@
     .unread-badge {
       right: -1px;
       top: -1px;
+    }
+  }
+}
+
+.home-popover {
+  padding-top: 8px;
+  .portkey-popover-content {
+    .portkey-popover-arrow {
+      display: none;
+    }
+    .portkey-popover-inner {
+      background-color: @bg-base1;
+      border: 1px solid @border-base1;
+      border-radius: 8px;
+      .portkey-popover-inner-content {
+        padding: 8px 16px;
+        .home-popover-content {
+          color: @text-base1;
+          .popover-list {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 0;
+            font-size: 16px;
+            cursor: pointer;
+          }
+        }
+      }
     }
   }
 }

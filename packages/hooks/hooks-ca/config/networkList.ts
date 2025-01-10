@@ -49,11 +49,12 @@ export const useContactNetworkConfig = () => {
   const networkList = useNetworkList();
 
   const supportNetworkList = useMemo(
-    () => contactSupportNetworkMap[currentNetwork],
+    () => contactSupportNetworkMap?.[currentNetwork] || [],
     [contactSupportNetworkMap, currentNetwork],
   );
 
   const fetchContactSupportConfig = useCallback(() => {
+    console.log('aaaa');
     dispatch(fetchContactSupportNetworkList(networkList));
   }, [dispatch, networkList]);
 

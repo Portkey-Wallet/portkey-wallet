@@ -1,7 +1,7 @@
 import { useCurrentWallet, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import AElf from 'aelf-sdk';
 import { useCallback } from 'react';
-import { useAppDispatch, useGuardiansInfo, useLoading } from 'store/Provider/hooks';
+import { useAppDispatch, useGuardiansInfo } from 'store/Provider/hooks';
 import { handleErrorMessage, randomId } from '@portkey-wallet/utils';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { extraDataEncode } from '@portkey-wallet/utils/device';
@@ -18,9 +18,6 @@ import { setManagerInfo } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import useFetchDidWallet from './useFetchDidWallet';
 import { isWalletError } from '@portkey-wallet/store/wallet/utils';
-import ModalTip from 'pages/components/ModalTip';
-import { CreateAddressLoading, InitLoginLoading } from '@portkey-wallet/constants/constants-ca/wallet';
-import { useTranslation } from 'react-i18next';
 import { getLoginAccount, getLoginCache } from 'utils/lib/SWGetReduxStore';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 import { useNavigate } from 'react-router';
@@ -29,13 +26,11 @@ import singleMessage from 'utils/singleMessage';
 import { RequestSourceEnum } from '@portkey-wallet/constants/constants-ca/device';
 
 export function useOnManagerAddressAndQueryResult(state: string | undefined) {
-  const { setLoading } = useLoading();
   const { walletInfo } = useCurrentWallet();
   const { userGuardianStatus } = useGuardiansInfo();
   const dispatch = useAppDispatch();
   const getWalletCAAddressResult = useFetchDidWallet();
   const network = useCurrentNetworkInfo();
-  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const originChainId = useOriginChainId();
@@ -153,12 +148,6 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
           return singleMessage.error('Missing account!!! Please login/register again');
         }
 
-        if (loginAccount.createType === 'register') {
-          setLoading(true, t(CreateAddressLoading));
-        } else {
-          setLoading(true, t(InitLoginLoading));
-        }
-
         const _walletInfo = walletInfo.address ? walletInfo : AElf.wallet.createNewWallet();
         console.log(walletInfo.address, 'onCreate==');
 
@@ -214,18 +203,12 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
           pwd: pin,
           managerAddress: _walletInfo.address,
         });
-        setLoading(false);
-        ModalTip({
-          content: 'Requested successfully',
-        });
       } catch (error: any) {
         console.log(error, 'onCreate==error');
         const walletError = isWalletError(error);
         if (walletError) return singleMessage.error(walletError);
         singleMessage.error(handleErrorMessage(error, 'Create Wallet Failed'));
         navigate('/register/start');
-      } finally {
-        setLoading(false);
       }
     },
     [
@@ -235,9 +218,7 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
       network.networkType,
       requestRecoveryDIDWallet,
       requestRegisterDIDWallet,
-      setLoading,
       state,
-      t,
       walletInfo,
     ],
   );

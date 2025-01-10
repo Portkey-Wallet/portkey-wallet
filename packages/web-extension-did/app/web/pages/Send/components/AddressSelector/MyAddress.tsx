@@ -6,6 +6,10 @@ import { formatStr2EllipsisStr } from '@portkey-wallet/utils/converter';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useTranslation } from 'react-i18next';
+import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import TokenImageDisplay from 'pages/components/TokenImageDisplay';
+
+// import { useLocalContactSearch } from '@portkey-wallet/hooks/hooks-ca/contactNew';
 
 export default function MyAddress({
   chainId,
@@ -19,8 +23,10 @@ export default function MyAddress({
   const [addressList, setAddressList] = useState<ICaAddressInfoListItemType[]>([]);
   const caAddressInfos = useCaAddressInfoList();
 
+  const [info] = useState(useCurrentUserInfo());
+
   useEffect(() => {
-    const list = caAddressInfos.filter((item) => item.chainId !== chainId);
+    const list = caAddressInfos.filter((item) => item.chainId === chainId);
     setAddressList(list);
   }, [caAddressInfos, chainId]);
 
@@ -34,10 +40,15 @@ export default function MyAddress({
             className="my-address-item"
             key={idx + _address}
             onClick={() => {
-              onClick({ chainId: item.chainId, address: item.caAddress, chainName: item.chainName });
+              onClick({ chainId: item.chainId, address: item.caAddress });
             }}>
-            <p className="address">{_address}</p>
-            <p className="network">{transNetworkText(item.chainId, !isMainnet)}</p>
+            <div className="info-box">
+              <TokenImageDisplay src={info.avatar} subDisplay={true} chain={item.chainId == 'AELF' ? 'main' : 'dApp'} />
+            </div>
+            <div className="info-detail">
+              <div className="address">{_address}</div>
+              <div className="network">{transNetworkText(item.chainId, !isMainnet)}</div>
+            </div>
           </div>
         );
       })}

@@ -5,8 +5,8 @@ import InputInfo, { InputInfoProps, InputInfoRef } from '../InputInfo';
 import { LoginKey } from '@portkey-wallet/types/types-ca/wallet';
 import { BackAndSwitchNetwork } from '../SwitchNetworkButton';
 import './index.less';
-import clsx from 'clsx';
-import { useNavigateState } from 'hooks/router';
+// import clsx from 'clsx';
+// import { useNavigateState } from 'hooks/router';
 
 export default function InputLogin({
   type,
@@ -34,28 +34,28 @@ export default function InputLogin({
   const renderTitle = useMemo(() => {
     return <span>{title}</span>;
   }, [title]);
-  const navigate = useNavigateState();
+  // const navigate = useNavigateState();
 
-  const nextEle = useMemo(() => {
-    if (isLogin) {
-      return (
-        <div className={clsx('go-sign-up-text')}>
-          <span>{t(`Don't have an account?`)}</span>
-          <span className="sign-text" onClick={() => navigate('/register/start/create')}>
-            {t('Sign up')}
-          </span>
-        </div>
-      );
-    }
-    return (
-      <div className={clsx('go-sign-up-text')}>
-        <span>{t('Already have an account?')}</span>
-        <span className="sign-text" onClick={() => navigate('/register/start/login-input')}>
-          {t('Log in')}
-        </span>
-      </div>
-    );
-  }, [isLogin, navigate, t]);
+  // const nextEle = useMemo(() => {
+  //   if (isLogin) {
+  //     return (
+  //       <div className={clsx('go-sign-up-text')}>
+  //         <span>{t(`Don't have an account?`)}</span>
+  //         <span className="sign-text" onClick={() => navigate('/register/start/create')}>
+  //           {t('Sign up')}
+  //         </span>
+  //       </div>
+  //     );
+  //   }
+  //   return (
+  //     <div className={clsx('go-sign-up-text')}>
+  //       <span>{t('Already have an account?')}</span>
+  //       <span className="sign-text" onClick={() => navigate('/register/start/login-input')}>
+  //         {t('Log in')}
+  //       </span>
+  //     </div>
+  //   );
+  // }, [isLogin, navigate, t]);
 
   return (
     <div className="login-content-wrapper">
@@ -69,7 +69,7 @@ export default function InputLogin({
         confirmText={'Continue'}
         onFinish={onFinish}
       />
-      {nextEle}
+      {/* {nextEle} */}
     </div>
   );
 }

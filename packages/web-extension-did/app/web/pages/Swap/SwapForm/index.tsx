@@ -21,6 +21,8 @@ import { PromptCardType } from 'pages/Send';
 
 import { Button } from 'antd';
 import { CommonInfoRow } from 'pages/components/CommonInfoRow';
+import { TSwapPreviewProps } from '../SwapPreivew';
+import clsx from 'clsx';
 
 export type TSwapInfo = {
   tokenIn?: TCurrency;
@@ -31,7 +33,12 @@ export type TSwapInfo = {
   isFocusValueIn: boolean;
 };
 
-export const SwapForm = () => {
+export type TSwapFormProps = {
+  className?: string;
+  onFinish?: (props: TSwapPreviewProps) => void;
+};
+
+export const SwapForm = ({ className, onFinish }: TSwapFormProps) => {
   const getSwapRoutesInstant = useGetSwapRoutes();
   const getSwapRoutes = useReturnLastCallback(getSwapRoutesInstant, [getSwapRoutesInstant]);
   const gasFee = useAwakenGasFee();
@@ -432,23 +439,22 @@ export const SwapForm = () => {
         return;
       }
 
-      // TODO: swap jump to preview
-      // navigationService.navigate('SwapPreview', {
-      //   swapInfo: {
-      //     ...swapInfo,
-      //     valueIn: result.valueIn,
-      //     valueOut: result.valueOut,
-      //   },
-      //   swapRoute: route,
-      //   priceLabel,
-      // });
+      onFinish?.({
+        swapInfo: {
+          ...swapInfo,
+          valueIn: result.valueIn,
+          valueOut: result.valueOut,
+        },
+        swapRoute: route,
+        priceLabel,
+      });
     } catch (error) {
       console.log('error', error);
     } finally {
       console.log('onSwap finally');
       setIsSwapping(false);
     }
-  }, [priceLabel, swapInfo]);
+  }, [onFinish, priceLabel, swapInfo]);
 
   const isPreviewShow = useMemo(() => {
     if (swapInfo.isFocusValueIn && (!swapInfo.valueIn || ZERO.gte(swapInfo.valueIn))) {
@@ -461,7 +467,7 @@ export const SwapForm = () => {
   }, [swapInfo.isFocusValueIn, swapInfo.valueIn, swapInfo.valueOut]);
 
   return (
-    <div className="swap-form">
+    <div className={clsx('swap-form', className)}>
       <div className="swap-form-body">
         <AmountCardGroup
           swapInfo={swapInfo}

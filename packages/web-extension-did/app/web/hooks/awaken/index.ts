@@ -7,7 +7,10 @@ import { ZERO } from '@portkey-wallet/constants/misc';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { getELFChainBalance } from '@portkey-wallet/utils/balance';
 import { ExtensionContractBasic } from 'utils/sandboxUtil/ExtensionContractBasic';
-import { COMMON_PRIVATE } from '@portkey-wallet/constants';
+
+import AElf from 'aelf-sdk';
+import { useGetTokenViewContract } from '../contract';
+const Wallet = AElf.wallet;
 
 export const useGetSwapHookViewContract = () => {
   const contractAddress = useSwapHookContractAddress();
@@ -16,10 +19,13 @@ export const useGetSwapHookViewContract = () => {
 
   return useCallback(() => {
     if (!currentChain) throw new Error('invalid chain info');
+
+    const wallet = Wallet.createNewWallet();
+
     return new ExtensionContractBasic({
       rpcUrl: currentChain.endPoint,
       contractAddress,
-      privateKey: COMMON_PRIVATE,
+      privateKey: wallet.privateKey,
     });
   }, [contractAddress, currentChain]);
 };
@@ -47,14 +53,14 @@ export const useBalancesV2 = (
   }, [tokens]);
   const [balances, setBalances] = useState<TBalancesV2>(deArr);
   const chainId = useDAppChainId();
-  const currentChain = useCurrentChain(chainId);
+  const getTokenViewContract = useGetTokenViewContract();
   const wallet = useCurrentWalletInfo();
   const account = useMemo(() => wallet[chainId]?.caAddress, [chainId, wallet]);
 
   const onGetBalance = useCallback(async () => {
     const tokensList = Array.isArray(tokens) ? tokens : [tokens];
 
-    if (!account || !currentChain) {
+    if (!account || !chainId) {
       return setBalances(
         tokensList.reduce((acc: any, symbol) => {
           if (symbol) {
@@ -66,11 +72,7 @@ export const useBalancesV2 = (
       );
     }
     // elf chain
-    const contract = new ExtensionContractBasic({
-      rpcUrl: currentChain.endPoint,
-      contractAddress: currentChain.defaultToken.address,
-      privateKey: COMMON_PRIVATE,
-    });
+    const contract = getTokenViewContract(chainId);
 
     if (!contract) return;
     const bs: TBalancesV2 = {};
@@ -84,7 +86,7 @@ export const useBalancesV2 = (
     await Promise.all(promise);
 
     setBalances(bs);
-  }, [account, currentChain, tokens]);
+  }, [account, chainId, getTokenViewContract, tokens]);
 
   useInterval(onGetBalance, [onGetBalance], delay);
 

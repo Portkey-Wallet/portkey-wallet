@@ -9,8 +9,7 @@ import clsx from 'clsx';
 import { CommonModal } from '@portkey/did-ui-react';
 import { Input } from 'antd';
 import TokenImageDisplay from 'pages/components/TokenImageDisplay';
-import { formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { CurrencyItem } from '../CurrencyItem';
 
 interface ISelectTokenButtonProps {
   className?: string;
@@ -18,51 +17,6 @@ interface ISelectTokenButtonProps {
   token?: TCurrency;
   onTokenChange?: (token: TCurrency) => void;
 }
-
-export type TSelectTokenItemProps = {
-  item: TCurrency;
-  onClick?: (item: TCurrency) => void;
-};
-export const SelectTokenItem = ({ item, onClick }: TSelectTokenItemProps) => {
-  const isMainnet = useIsMainnet();
-
-  const onPress = useCallback(() => {
-    onClick?.(item);
-  }, [item, onClick]);
-
-  const balanceInUsd = useMemo(() => {
-    return `$${Number(item.balanceInUsd ?? 0).toLocaleString('en-US', {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 8,
-    })}`;
-  }, [item.balanceInUsd]);
-
-  return (
-    <div className="select-token-item" onClick={onPress}>
-      <div className="select-token-item-token-image-wrap">
-        <TokenImageDisplay width={40} symbol={item?.symbol} src={item?.imageUrl} />
-        <TokenImageDisplay
-          className="swap-select-item-chain-image"
-          width={20}
-          symbol={item?.displayChainName}
-          src={item?.chainImageUrl}
-        />
-      </div>
-
-      <div className="select-token-item-body">
-        <div className="select-token-item-title">{formatNameWithNoUnderline(item.label || item.symbol)}</div>
-
-        <div className="select-token-item-sub-title">{item.displayChainName}</div>
-      </div>
-
-      <div className="select-token-item-suffix">
-        <div className="select-token-item-title">{formatTokenAmountShowWithDecimals(item.balance, item.decimals)}</div>
-
-        {isMainnet && item.balanceInUsd && <div className="select-token-item-sub-title">{balanceInUsd}</div>}
-      </div>
-    </div>
-  );
-};
 
 export const SelectTokenButton = ({ className, modalTitle, token, onTokenChange }: ISelectTokenButtonProps) => {
   const [isShow, setIsShow] = useState(false);
@@ -146,7 +100,7 @@ export const SelectTokenButton = ({ className, modalTitle, token, onTokenChange 
         {filterList.length ? (
           <div className="swap-select-token-modal-body">
             {filterList.map((item) => (
-              <SelectTokenItem key={`${item.symbol}${item.chainId}`} item={item} onClick={handleSelect} />
+              <CurrencyItem key={`${item.symbol}${item.chainId}`} item={item} onClick={handleSelect} />
             ))}
           </div>
         ) : (

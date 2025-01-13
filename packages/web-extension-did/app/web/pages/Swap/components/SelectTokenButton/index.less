@@ -39,6 +39,11 @@
 }
 
 .swap-select-token-modal {
+  .close-icon {
+    width: 20px;
+    height: 20px;
+  }
+
   .swap-select-token-modal-title {
     margin-top: 16px;
     height: 32px;
@@ -85,52 +90,5 @@
     line-height: 22px;
     color: @text-base2;
     text-align: center;
-  }
-}
-
-.select-token-item {
-  display: flex;
-  padding: 16px;
-  gap: 8px;
-  align-items: center;
-
-  .select-token-item-token-image-wrap {
-    padding-right: 5px;
-    padding-bottom: 2px;
-    position: relative;
-    flex-shrink: 0;
-
-    .swap-select-item-chain-image {
-      position: absolute;
-      right: 0;
-      bottom: 0;
-      border: 1px solid @border-base1;
-      border-radius: 100%;
-      overflow: hidden;
-    }
-  }
-
-  .select-token-item-body {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-  }
-
-  .select-token-item-suffix {
-    flex-shrink: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-  }
-
-  .select-token-item-title {
-    font-size: 16px;
-    line-height: 22px;
-    color: @text-base1;
-  }
-  .select-token-item-sub-title {
-    font-size: 14px;
-    line-height: 20px;
-    color: @text-base2;
   }
 }

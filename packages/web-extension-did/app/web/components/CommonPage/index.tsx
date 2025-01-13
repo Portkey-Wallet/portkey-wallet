@@ -10,7 +10,7 @@ export type TCommonPageProps = {
   className?: string;
   contentClassName?: string;
   isHeaderShow?: boolean;
-  useInnerCls?: boolean;
+  isInnerScroll?: boolean;
 };
 
 enum CommonPageClassName {
@@ -29,19 +29,20 @@ const COMMON_PAGE_CLASS_NAME_MAP: Record<string, string> = {
   '/prepare-wallet': `${CommonPageClassName.LARGE_LOGO_PAGE} ${CommonPageClassName.DARK_FULL_PAGE}`,
   '/success-page': `${CommonPageClassName.LARGE_LOGO_PAGE} ${CommonPageClassName.DARK_FULL_PAGE}`,
 };
-const NotUseCommonPageInnerClassName = ['/buy'];
+const NotUseCommonPageInnerClassName = ['/buy', '/swap'];
+
 export const BaseCommonPage = ({
   children,
   className,
   contentClassName,
   isHeaderShow,
-  useInnerCls = true,
+  isInnerScroll = true,
 }: TCommonPageProps) => {
   return (
     <div className={clsx('common-page-wrap', className)}>
       {isHeaderShow ? <PortKeyHeader className="common-page-header" /> : <></>}
       <div className={clsx('common-page-content', contentClassName)}>
-        <div className={clsx({ 'common-page-inner': useInnerCls })}>{children}</div>
+        {isInnerScroll ? <div className="common-page-inner">{children}</div> : children}
       </div>
     </div>
   );
@@ -59,7 +60,7 @@ export const CommonPage = ({ className, isHeaderShow, ...props }: TCommonPagePro
     return '';
   }, [pathname]);
 
-  const useInnerCls = useMemo(() => {
+  const isInnerScroll = useMemo(() => {
     return NotUseCommonPageInnerClassName.indexOf(pathname) === -1;
   }, [pathname]);
 
@@ -78,7 +79,7 @@ export const CommonPage = ({ className, isHeaderShow, ...props }: TCommonPagePro
     <BaseCommonPage
       isHeaderShow={isBaseHeaderShow}
       className={clsx(extraClassName, className)}
-      useInnerCls={useInnerCls}
+      isInnerScroll={isInnerScroll}
       {...props}
     />
   );

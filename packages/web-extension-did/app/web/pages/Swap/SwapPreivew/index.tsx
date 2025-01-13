@@ -366,7 +366,7 @@ export const SwapPreview = ({ swapInfo: swapInfoProp, swapRoute, priceLabel, onF
 
   return (
     <div className="swap-preview">
-      <div className="swap-preview-body">
+      <div className="swap-preview-body swap-common-padding">
         {swapInfo.tokenIn && swapInfo.tokenOut && (
           <div className="swap-preview-token-card">
             <CurrencyItem
@@ -480,7 +480,7 @@ export const SwapPreview = ({ swapInfo: swapInfoProp, swapRoute, priceLabel, onF
         </div>
       </div>
 
-      <div className="swap-preview-footer">
+      <div className="swap-preview-footer swap-common-padding">
         <Button loading={isSwapping} type="primary" onClick={handlePress}>
           Swap
         </Button>

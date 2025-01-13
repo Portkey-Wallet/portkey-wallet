@@ -7,10 +7,22 @@
   .swap-page-body {
     flex: 1;
     width: 100%;
-    overflow: auto;
+    overflow: hidden;
   }
 
   .swap-form-hidden {
     display: none;
+  }
+
+  .swap-common-padding {
+    padding: 0 24px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .swap-page {
+    .swap-common-padding {
+      padding: 0 16px;
+    }
   }
 }

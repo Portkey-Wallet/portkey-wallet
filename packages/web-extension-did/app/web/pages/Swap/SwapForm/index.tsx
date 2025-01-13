@@ -468,7 +468,7 @@ export const SwapForm = ({ className, onFinish }: TSwapFormProps) => {
 
   return (
     <div className={clsx('swap-form', className)}>
-      <div className="swap-form-body">
+      <div className="swap-form-body swap-common-padding">
         <AmountCardGroup
           swapInfo={swapInfo}
           setValueIn={setValueIn}
@@ -506,7 +506,7 @@ export const SwapForm = ({ className, onFinish }: TSwapFormProps) => {
       </div>
 
       {isPreviewShow && (
-        <div className="swap-form-footer">
+        <div className="swap-form-footer swap-common-padding">
           <Button loading={isSwapping} type="primary" disabled={isBtnDisable} onClick={onPreviewClick}>
             {bottomButtonTitle}
           </Button>

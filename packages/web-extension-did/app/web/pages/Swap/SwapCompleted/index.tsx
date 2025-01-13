@@ -13,13 +13,13 @@ export const SwapCompleted = () => {
 
   return (
     <div className="swap-completed">
-      <div className="swap-completed-body">
+      <div className="swap-completed-body swap-common-padding">
         <CustomSvgV3 className="swap-completed-icon" type="activity-success" />
         <div className="swap-completed-title">Transaction completed</div>
         <div className="swap-completed-sub-title">{'View the transaction in “Activity” tab to check its status.'}</div>
       </div>
 
-      <div className="swap-completed-footer">
+      <div className="swap-completed-footer swap-common-padding">
         <Button type="primary" onClick={onClose}>
           Close
         </Button>

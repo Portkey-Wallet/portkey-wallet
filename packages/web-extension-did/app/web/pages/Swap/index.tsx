@@ -58,7 +58,9 @@ export const Swap = () => {
   return (
     <div className="swap-page">
       {type !== SwapTypeEnum.SwapCompleted && (
-        <CommonHeader title={title} onLeftBack={onBack} rightElementList={[rightElement]} />
+        <div className="swap-common-padding">
+          <CommonHeader title={title} onLeftBack={onBack} rightElementList={[rightElement]} />
+        </div>
       )}
 
       <div className="swap-page-body">

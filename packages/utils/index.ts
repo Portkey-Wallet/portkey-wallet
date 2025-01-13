@@ -34,15 +34,15 @@ export function isDIDAddress(address: string, chainType: ChainType = 'aelf') {
   return web3IsAddress(address);
 }
 
-export const getChainIdByAddress = (address: string, chainType: ChainType = 'aelf') => {
+export const getChainIdByAddress = (address: string, chainType = 'aelf', chainId: ChainId = 'AELF'): ChainId => {
   // if (!isAddress(address)) throw Error(`${address} is not address`);
 
   if (chainType === 'aelf') {
     if (address.includes('_')) {
       const arr = address.split('_');
-      return arr[arr.length - 1];
+      return arr[arr.length - 1] as ChainId;
     } else {
-      return 'AELF';
+      return chainId;
     }
   }
   throw Error('Not support');

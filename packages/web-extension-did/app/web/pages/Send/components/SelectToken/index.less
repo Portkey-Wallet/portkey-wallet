@@ -1,13 +1,15 @@
 @import '../../../../assets/theme/color.less';
 
 .select-send-tokens-list {
+  height: calc(100% - 100px);
+  overflow: auto;
   font-size: 16px;
   line-height: 22px;
   .token-item {
     padding: 16px 0;
-    &:hover {
-      background-color: @bg-hover;
-    }
+    // &:hover {
+    //   background-color: @bg-hover;
+    // }
     .token-icon-show {
       position: relative;
       width: 45px;

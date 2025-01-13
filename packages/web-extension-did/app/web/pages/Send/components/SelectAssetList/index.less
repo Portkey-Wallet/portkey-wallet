@@ -24,6 +24,8 @@
       padding: 16px 0;
     }
     .send-select-nft {
+      width: 100% !important;
+      min-width: auto !important;
       padding: 0;
     }
   }
@@ -31,11 +33,11 @@
 
 .select-asset-list-page {
   .select-asset-list-page-header {
-    margin: 16px 0;
+    height: 48px;
     font-weight: 600;
     font-size: 16px;
     line-height: 22px;
-    .arrow-left {
+    .arrow-left-icon {
       width: 20px;
       height: 20px;
       svg {
@@ -47,18 +49,42 @@
 }
 
 .select-asset-list-modal {
+  @media screen and (min-width: 767px) {
+    max-height: 80vh !important;
+    overflow: scroll !important;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+  .portkey-ant-modal-content {
+    height: 100% !important;
+    overflow: scroll !important;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
   .select-asset-list-modal-header {
-    margin: 16px;
+    padding: 0 16px;
     font-family: BG;
     font-weight: 700;
     font-size: 20px;
     line-height: 24px;
+    height: 56px;
+    @media screen and (max-width: 767px) {
+      height: 48px;
+    }
+
     .close-thin-icon {
       width: 20px;
       height: 20px;
     }
   }
   .token-list-wrap {
+    max-height: calc(80vh - 56px);
     padding: 0 16px;
+    overflow: auto;
+    &::-webkit-scrollbar {
+      display: none;
+    }
   }
 }

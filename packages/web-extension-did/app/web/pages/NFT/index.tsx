@@ -3,7 +3,7 @@
 import CommonHeader from 'components/CommonHeader';
 import { useCommonState } from 'store/Provider/hooks';
 import clsx from 'clsx';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
 import { addressFormat } from '@portkey-wallet/utils';
 import Copy from 'components/Copy';
@@ -219,6 +219,20 @@ export default function NFT() {
     document.addEventListener('click', hidePop);
     return () => document.removeEventListener('click', hidePop);
   }, [hidePop]);
+
+  const scrollableRef = useRef(null);
+
+  const [titleName, setTitleName] = useState('');
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const handleScroll = (e: any) => {
+    if (e.target.scrollTop > 530) {
+      setTitleName(nftDetail.alias);
+    } else {
+      setTitleName('');
+    }
+  };
+
   const mainContent = useCallback(() => {
     const { collectionName, collectionImageUrl, tokenId, imageUrl, symbol, balance, alias, decimals = 0 } = nftDetail;
     const seedTypeTag = getSeedTypeTag(nftDetail, NFTSizeEnum.large);
@@ -227,6 +241,7 @@ export default function NFT() {
       <div id="nft-detail" className={clsx(['nft-detail', isPrompt && 'detail-page-prompt'])}>
         <CommonHeader
           onLeftBack={() => navigate('/', { state: { key: BalanceTab.NFT } })}
+          title={titleName}
           rightElementList={[
             {
               customSvgWrapClassName: 'nft-detail-more',
@@ -244,7 +259,7 @@ export default function NFT() {
             },
           ]}
         />
-        <div className="nft-detail-body">
+        <div className="nft-detail-body" ref={scrollableRef} onScroll={handleScroll}>
           <div className="picture flex-center">
             {imageUrl ? (
               // <img className="picture-common" src={imageUrl} />
@@ -321,12 +336,15 @@ export default function NFT() {
     isPrompt,
     popVisible,
     moreData,
+    handleScroll,
+    renderDescInfo,
     renderBasicInfo,
     renderIsSeedInfo,
     renderTraitsInfo,
     renderGenerationInfo,
     renderInscriptionInfo,
     navigate,
+    titleName,
   ]);
 
   return <>{mainContent()}</>;

@@ -24,11 +24,14 @@
 @media screen and (max-width: 768px) {
   .received-modals-body,
   .portkey-ant-drawer-body {
-    max-height: 554px;
+    max-height: calc(100vh - 30px);
   }
   .portkey-ui-receive-content { 
     .receive-content-nav {
       height: 48px;
     }
+  }
+  .source-item:last-child {
+    padding-bottom: 24px !important; 
   }
 }

@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { CustomSvgV3 } from 'components/CustomSvgV3';
 import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useChangeNetwork } from 'hooks/useChangeNetwork';
-import { useIsMainnet, useNetworkList } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useNetworkList } from '@portkey-wallet/hooks/hooks-ca/network';
 import { NetworkType } from '@portkey-wallet/types';
 import { IconTypeV3 } from 'types/icon';
 import { useCallback } from 'react';
@@ -27,7 +27,7 @@ export default function NetworkList() {
   const NetworkList = useNetworkList();
   const changeNetwork = useChangeNetwork();
   const changeNetworkModalText = useChangeNetworkText();
-  const isMainnet = useIsMainnet();
+  // const isMainnet = useIsMainnet();
   const handleChangeNetwork = useCallback(
     (network: NetworkItem) => {
       if (network.networkType === currentNetwork) return;
@@ -55,7 +55,7 @@ export default function NetworkList() {
         okText: 'Confirm',
       });
     },
-    [changeNetwork, changeNetworkModalText, currentNetwork, isMainnet],
+    [changeNetwork, changeNetworkModalText, currentNetwork, isPrompt],
   );
 
   return (

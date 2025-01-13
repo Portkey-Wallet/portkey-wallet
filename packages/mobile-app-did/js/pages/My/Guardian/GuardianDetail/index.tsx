@@ -20,9 +20,10 @@ import { checkIsLastLoginAccount } from '@portkey-wallet/utils/guardian';
 import { useSetLoginAccount } from '../hooks/useSetLoginAccount';
 import myEvents from 'utils/deviceEvent';
 import { zkLoginVerifierItem } from '@portkey-wallet/types/verifier';
-import { isZKLoginSupported } from '@portkey-wallet/types/types-ca/wallet';
+import { isZKLoginSupported, LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { GUARDIAN_ITEM_TYPE_ICON } from 'constants/misc';
 import GuardianAccount from 'pages/Guardian/components/GuardianAccount';
+import { useLanguage } from 'i18n/hooks';
 
 type RouterParams = {
   guardian?: UserGuardianItem;
@@ -32,6 +33,7 @@ export default function GuardianDetail() {
   const {
     params: { guardian: guardianRouter },
   } = useRoute<RouteProp<{ params: RouterParams }>>();
+  const { t } = useLanguage();
   const getGuardiansInfo = useGetGuardiansInfo();
   const { userGuardiansList } = useGuardiansInfo();
   const setLoginAccount = useSetLoginAccount();
@@ -157,7 +159,10 @@ export default function GuardianDetail() {
     }
     return guardian?.verifier?.imageUrl;
   }, [guardian]);
-
+  const cantSwitch = useMemo(
+    () => !guardian?.isLoginAccount && guardian?.guardianType === LoginType.Email,
+    [guardian?.guardianType, guardian?.isLoginAccount],
+  );
   return (
     <PageContainer
       safeAreaColor={['black', 'black']}
@@ -171,13 +176,17 @@ export default function GuardianDetail() {
             <View style={pageStyles.loginSwitchContainer}>
               <CommonSwitch
                 value={guardian === undefined ? false : guardian.isLoginAccount}
-                disabled={(userGuardiansList?.length ?? 0) <= 1}
+                disabled={(userGuardiansList?.length ?? 0) <= 1 || cantSwitch}
                 onValueChange={onLoginAccountChange}
               />
             </View>
           </View>
           <TextM style={pageStyles.tips}>
-            {'The login account will be able to log in and control all your assets'}
+            {t(
+              cantSwitch
+                ? 'Email can no longer be used as a login account.'
+                : 'The login account will be able to log in and control all your assets',
+            )}
           </TextM>
         </View>
         {guardian && (

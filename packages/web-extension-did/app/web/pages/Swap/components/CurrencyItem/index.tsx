@@ -62,8 +62,7 @@ export const CurrencyItem = ({
           {balance ?? formatTokenAmountShowWithDecimals(item.balance, item.decimals)}
         </div>
 
-        {/* TODO: swap isMainnet */}
-        {!isMainnet && item.balanceInUsd && <div className="currency-item-sub-title">{balanceInUsdText}</div>}
+        {isMainnet && item.balanceInUsd && <div className="currency-item-sub-title">{balanceInUsdText}</div>}
       </div>
     </div>
   );

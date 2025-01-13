@@ -356,12 +356,12 @@ export const SwapPreview = ({ swapInfo: swapInfoProp, swapRoute, priceLabel, onF
 
   const valueInUsd = useMemo(() => {
     if (!swapInfo.valueIn) return '';
-    return `${formatPriceUsd(ZERO.plus(swapInfo.valueIn).times(tokenInPrice))}`;
+    return `$${formatPriceUsd(ZERO.plus(swapInfo.valueIn).times(tokenInPrice))}`;
   }, [swapInfo.valueIn, tokenInPrice]);
 
   const valueOutUsd = useMemo(() => {
     if (!swapInfo.valueOut) return '';
-    return `${formatPriceUsd(ZERO.plus(swapInfo.valueOut).times(tokenOutPrice))}`;
+    return `$${formatPriceUsd(ZERO.plus(swapInfo.valueOut).times(tokenOutPrice))}`;
   }, [swapInfo.valueOut, tokenOutPrice]);
 
   return (
@@ -448,6 +448,7 @@ export const SwapPreview = ({ swapInfo: swapInfoProp, swapRoute, priceLabel, onF
                 content: (
                   <>
                     {'Fee applied by the decentralised exchange to ensure an optimal experience.'}
+                    &nbsp;
                     <a
                       className="swap-preview-tip-link"
                       href="https://awakenfinance.gitbook.io/en/ii.-trader-faq/what-is-a-swap-trade/what-is-the-fee"

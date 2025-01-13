@@ -470,6 +470,7 @@ export const SwapForm = ({ className, onFinish }: TSwapFormProps) => {
     <div className={clsx('swap-form', className)}>
       <div className="swap-form-body swap-common-padding">
         <AmountCardGroup
+          className="swap-form-amount-group"
           swapInfo={swapInfo}
           setValueIn={setValueIn}
           setValueOut={setValueOut}

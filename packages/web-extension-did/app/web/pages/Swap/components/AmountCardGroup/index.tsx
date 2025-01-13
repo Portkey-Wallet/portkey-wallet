@@ -66,9 +66,9 @@ const AmountCardGroup = ({
     }
 
     return (
-      <div className={clsx('swap-amount-percent', fontClassName)}>{`(${
-        _impact.gt(ZERO) ? '+' : ''
-      }${_impact.toFixed()}%)`}</div>
+      <div className={clsx('swap-amount-percent', fontClassName)}>
+        &nbsp;{`(${_impact.gt(ZERO) ? '+' : ''}${_impact.toFixed()}%)`}
+      </div>
     );
   }, [swapInfo, tokenInPrice, tokenOutPrice]);
 

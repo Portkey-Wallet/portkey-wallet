@@ -4,7 +4,6 @@ import { priceImpactList } from '@portkey-wallet/constants/constants-ca/awaken';
 import { useAwakenUserSlippageTolerance, useAwakenUserExpiration } from '@portkey-wallet/hooks/hooks-ca/awaken/state';
 
 import { isStrictInteger, isValidNumberV2 } from '@portkey-wallet/utils/reg';
-import BigNumber from 'bignumber.js';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { CustomSvgV3 } from 'components/CustomSvgV3';
 import { CommonModal, CommonModalTip } from '@portkey/did-ui-react';
@@ -24,9 +23,6 @@ const SLIPPAGE_TOLERANCE_MIN_VALUE = '0.01';
 
 export const SwapSettingButton = ({ className }: ISwapSettingButtonProps) => {
   const [isShow, setIsShow] = useState(false);
-  const onPress = useCallback(() => {
-    setIsShow(true);
-  }, []);
 
   const { userSlippageTolerance, update: updateSlippageTolerance } = useAwakenUserSlippageTolerance();
   const { userExpiration, update: updateExpiration } = useAwakenUserExpiration();
@@ -38,11 +34,23 @@ export const SwapSettingButton = ({ className }: ISwapSettingButtonProps) => {
   }, [userSlippageTolerance]);
 
   const [slippageTolerance, setSlippageTolerance] = useState(
-    new BigNumber(userSlippageTolerance || '0').multipliedBy(100).toFixed(),
+    ZERO.plus(userSlippageTolerance || '0')
+      .times(100)
+      .toFixed(),
   );
   const [slippageToleranceSelectedValue, setSlippageToleranceSelectedValue] = useState(
     defaultSlippageToleranceSelectedValue,
   );
+
+  const onPress = useCallback(() => {
+    setSlippageToleranceSelectedValue(defaultSlippageToleranceSelectedValue);
+    setSlippageTolerance(
+      ZERO.plus(userSlippageTolerance || '0')
+        .times(100)
+        .toFixed(),
+    );
+    setIsShow(true);
+  }, [defaultSlippageToleranceSelectedValue, userSlippageTolerance]);
 
   const [expiration, setExpiration] = useState(userExpiration);
 
@@ -99,7 +107,9 @@ export const SwapSettingButton = ({ className }: ISwapSettingButtonProps) => {
   }, [expiration]);
 
   const saveSetting = useCallback(() => {
-    const slippageValue = new BigNumber(slippageTolerance || SLIPPAGE_TOLERANCE_MIN_VALUE).dividedBy(100).toFixed();
+    const slippageValue = ZERO.plus(slippageTolerance || SLIPPAGE_TOLERANCE_MIN_VALUE)
+      .dividedBy(100)
+      .toFixed();
     updateSlippageTolerance(slippageValue);
     updateExpiration(expiration || '0');
     setIsShow(false);

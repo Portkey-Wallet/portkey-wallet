@@ -548,7 +548,9 @@ export function useGoSelectVerifier(isLogin?: boolean) {
             // { title: 'Cancel', type: 'outline' },
             {
               title: 'Ok',
-              // onPress: () => onConfirmRef.current(params),
+              onPress: () => {
+                navigationService.goBack();
+              },
             },
           ],
         });

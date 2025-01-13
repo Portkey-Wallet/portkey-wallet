@@ -15,4 +15,5 @@ export interface IChainItemType {
   caContractAddress: string;
   defaultToken: DefaultToken;
   chainImageUrl?: string;
+  displayChainName?: string;
 }

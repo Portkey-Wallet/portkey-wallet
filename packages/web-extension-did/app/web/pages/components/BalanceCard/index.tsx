@@ -1,10 +1,11 @@
 import { useCallback, useMemo } from 'react';
-import CustomSvg from 'components/CustomSvg';
+import { CustomSvgV3 } from 'components/CustomSvgV3';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
 import { useCommonState } from 'store/Provider/hooks';
 import { FAUCET_URL } from '@portkey-wallet/constants/constants-ca/wallet';
 import './index.less';
+import { CommonButton } from '@portkey/did-ui-react';
 
 export interface MainCardsProps {
   className?: string;
@@ -22,7 +23,7 @@ export default function MainCards({
   onSend,
   onReceive,
   onBuy,
-  onClickSwap,
+  // onClickSwap,
   onClickDeposit,
 }: MainCardsProps) {
   const { t } = useTranslation();
@@ -32,7 +33,14 @@ export default function MainCards({
     () =>
       !!onSend && (
         <div className="card-item send-card flex-column-center" onClick={onSend}>
-          <CustomSvg type="DirectionArrow" className="flex-center" />
+          {/* <div className="btn-container">
+            <CustomSvgV3 type="send" className="flex-center" />
+          </div>
+          <span className="btn-name">{t('Send')}</span> */}
+
+          <CommonButton className="common-button" type="primaryOutline" block>
+            <CustomSvgV3 type="send" className="flex-center" />
+          </CommonButton>
           <span className="btn-name">{t('Send')}</span>
         </div>
       ),
@@ -43,7 +51,9 @@ export default function MainCards({
     () =>
       !!onReceive && (
         <div className="card-item receive-card flex-column-center" onClick={onReceive}>
-          <CustomSvg type="DirectionArrow" className="flex-center" />
+          <CommonButton className="common-button" type="primaryOutline" block>
+            <CustomSvgV3 type="receive" className="flex-center" />
+          </CommonButton>
           <span className="btn-name">{t('Receive')}</span>
         </div>
       ),
@@ -54,7 +64,9 @@ export default function MainCards({
     () =>
       !!onBuy && (
         <div className="buy-card card-item flex-column-center" onClick={onBuy}>
-          <CustomSvg type="Addition" className="flex-center" />
+          <CommonButton className="common-button" type="primaryOutline" block>
+            <CustomSvgV3 type="buy" className="flex-center" />
+          </CommonButton>
           <span className="btn-name">{t('Buy')}</span>
         </div>
       ),
@@ -65,23 +77,25 @@ export default function MainCards({
     return (
       !!onClickDeposit && (
         <div className="deposit-card card-item flex-column-center" onClick={onClickDeposit}>
-          <CustomSvg type="Deposit" className="flex-center" />
+          <div className="btn-container">{/* <CustomSvgV3 type="Deposit" className="flex-center" /> */}</div>
           <span className="btn-name">{t('Deposit')}</span>
         </div>
       )
     );
   }, [onClickDeposit, t]);
 
-  const renderSwap = useMemo(() => {
-    return (
-      !!onClickSwap && (
-        <div className="swap-card card-item flex-column-center" onClick={onClickSwap}>
-          <CustomSvg type="Swap" className="flex-center" />
-          <span className="btn-name">{t('Swap')}</span>
-        </div>
-      )
-    );
-  }, [onClickSwap, t]);
+  // const renderSwap = useMemo(() => {
+  //   return (
+  //     !!onClickSwap && (
+  //       <div className="swap-card card-item flex-column-center" onClick={onClickSwap}>
+  //         <div className="btn-container">
+  //           <CustomSvgV3 type="swap" className="flex-center" />
+  //         </div>
+  //         <span className="btn-name">{t('Swap')}</span>
+  //       </div>
+  //     )
+  //   );
+  // }, [onClickSwap, t]);
 
   const handleClickFaucet = useCallback(() => {
     const openWinder = window.open(FAUCET_URL, '_blank');
@@ -94,7 +108,9 @@ export default function MainCards({
     () =>
       isShowFaucet && (
         <div className="faucet-card card-item flex-column-center" onClick={handleClickFaucet}>
-          <CustomSvg type="Faucet" className="flex-center" />
+          <CommonButton className="common-button" type="primaryOutline" block>
+            <CustomSvgV3 type="faucet" className="flex-center" />
+          </CommonButton>
           <span className="btn-name">{t('Faucet')}</span>
         </div>
       ),
@@ -106,10 +122,10 @@ export default function MainCards({
       (renderSend ? 1 : 0) +
       (renderReceive ? 1 : 0) +
       (renderBuy ? 1 : 0) +
-      (renderSwap ? 1 : 0) +
+      // (renderSwap ? 1 : 0) +
       (renderDeposit ? 1 : 0) +
       (renderFaucet ? 1 : 0),
-    [renderBuy, renderDeposit, renderFaucet, renderReceive, renderSend, renderSwap],
+    [renderBuy, renderDeposit, renderFaucet, renderReceive, renderSend],
   );
 
   const cardNumClassName = useMemo(() => {
@@ -123,8 +139,8 @@ export default function MainCards({
       {renderSend}
       {renderReceive}
       {renderBuy}
-      {renderSwap}
-      {renderDeposit}
+      {/* {renderSwap} */}
+      {/* {renderDeposit} */}
       {renderFaucet}
     </div>
   );

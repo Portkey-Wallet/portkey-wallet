@@ -1,11 +1,4 @@
-import {
-  SetPinBase,
-  CreatePendingInfo,
-  DIDWalletInfo,
-  AddManagerType,
-  OnErrorFunc,
-  setLoading,
-} from '@portkey/did-ui-react';
+import { SetPinBase, CreatePendingInfo, DIDWalletInfo, AddManagerType, OnErrorFunc } from '@portkey/did-ui-react';
 import { useCallback, useEffect, useRef } from 'react';
 import singleMessage from 'utils/singleMessage';
 import clsx from 'clsx';
@@ -72,7 +65,6 @@ export default function SetPinAndAddManager(props: ISetPinAndAddManagerProps) {
         const createResult = await createWallet(params);
         createResult && onFinishRef.current(createResult);
       } catch (error) {
-        setLoading(false);
         console.log('===SetPinAndAddManager error', error);
         singleMessage.error(handleErrorMessage(error));
       }

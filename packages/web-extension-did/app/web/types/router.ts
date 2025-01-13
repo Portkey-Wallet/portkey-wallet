@@ -3,7 +3,6 @@ import { ChainId } from '@portkey-wallet/types';
 import { ActivityItemType } from '@portkey-wallet/types/types-ca/activity';
 import { IImInfo } from '@portkey-wallet/types/types-ca/contact';
 import { ITransferLimitRouteState } from '@portkey-wallet/types/types-ca/paymentSecurity';
-import { BaseToken } from '@portkey-wallet/types/types-ca/token';
 import { CaHolderInfo } from '@portkey-wallet/types/types-ca/wallet';
 import { CustomAddressItem } from 'pages/Contacts/AddContact';
 import { IProfileDetailDataProps } from './Profile';
@@ -13,6 +12,7 @@ import { GuardianItem } from './guardians';
 import { NFTItemBaseType } from '@portkey-wallet/types/types-ca/assets';
 import { ReceiveTabEnum } from '@portkey-wallet/constants/constants-ca/send';
 import { FreeMintStatus } from '@portkey-wallet/types/types-ca/freeMint';
+import { IAssetToken, INftInfoType } from '@portkey-wallet/store/store-ca/assets/type';
 
 export enum FromPageEnum {
   register = 'register',
@@ -33,6 +33,7 @@ export enum FromPageEnum {
   cryptoGiftHome = 'cryptoGiftHome',
   cryptoGiftHistory = 'cryptoGiftHistory',
   cryptoGiftSuccess = 'cryptoGiftSuccess',
+  activityList = 'activity-list',
 }
 
 // Guardians
@@ -248,7 +249,7 @@ export type TReceiveLocationState = {
 
 // Send
 export type TSendPageType = 'token' | 'nft';
-export type TSendLocationState = BaseToken & {
+export type TSendLocationState = (IAssetToken | INftInfoType) & {
   chainId: ChainId;
   targetChainId?: ChainId;
   toAccount?: ToAccount;

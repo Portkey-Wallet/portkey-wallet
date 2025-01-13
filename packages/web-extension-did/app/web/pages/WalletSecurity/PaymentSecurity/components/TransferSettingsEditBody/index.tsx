@@ -1,40 +1,45 @@
-import { Button, Form, FormProps, Input, Switch } from 'antd';
+import { Button, Form, FormProps, Input } from 'antd';
 import { ValidData } from 'pages/Contacts/AddContact';
 import { useTranslation } from 'react-i18next';
 import './index.less';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { ITransferSettingsFormInit } from '../TransferSettingsBody';
 import { divDecimals } from '@portkey-wallet/utils/converter';
-import { NoLimit, SetLimitExplain } from 'constants/security';
 import { ITransferLimitRouteState } from '@portkey-wallet/types/types-ca/paymentSecurity';
+import { isValidInteger } from '@portkey-wallet/utils/reg';
+import { LimitFormatTip } from 'constants/security';
+import BigNumber from 'bignumber.js';
 
 const { Item: FormItem } = Form;
 
 export interface ITransferSettingsEditBodyProps extends FormProps {
   state: ITransferLimitRouteState;
   restrictedValue: boolean;
-  disable: boolean;
-  validSingleLimit: ValidData;
-  validDailyLimit: ValidData;
-  onRestrictedChange: (checked: boolean) => void;
+  disable?: boolean;
+  validSingleLimit?: ValidData;
+  validDailyLimit?: ValidData;
+  onRestrictedChange?: (checked: boolean) => void;
   onSingleLimitChange: (v: string) => void;
   onDailyLimitChange: (v: string) => void;
-  onFinish: () => void;
+  // onFinish: () => void;
+  onFinish: (() => void) | ((param: { restrictedValue?: boolean }) => Promise<boolean>);
 }
 
 export default function TransferSettingsEditBody({
   form,
-  restrictedValue,
+  // restrictedValue,
   state,
-  disable,
-  validSingleLimit,
-  validDailyLimit,
-  onRestrictedChange,
+  // disable,
+  // validSingleLimit,
+  // validDailyLimit,
+  // onRestrictedChange,
   onSingleLimitChange,
   onDailyLimitChange,
   onFinish,
 }: ITransferSettingsEditBodyProps) {
   const { t } = useTranslation();
+  const [loading, setLoading] = useState(false);
+  const [disable, setDisable] = useState(false);
 
   const initValue: ITransferSettingsFormInit = useMemo(
     () => ({
@@ -45,6 +50,14 @@ export default function TransferSettingsEditBody({
     [state.dailyLimit, state.decimals, state.restricted, state.singleLimit],
   );
 
+  const validateNumberGreaterThanZero = (_: any, value: string | undefined) => {
+    if (isValidInteger(value)) {
+      return Promise.resolve();
+    }
+    return Promise.reject(new Error(LimitFormatTip));
+    // return Promise.reject(new Error('LimitFormatTip'));
+  };
+
   return (
     <Form
       form={form}
@@ -52,53 +65,80 @@ export default function TransferSettingsEditBody({
       layout="vertical"
       className="flex-column transfer-settings-edit-form"
       initialValues={initValue}
+      onValuesChange={async () => {
+        console.log('data update ');
+        if (!form) {
+          return;
+        }
+        try {
+          const values = await form.validateFields();
+          console.log('Success:', values);
+          setDisable(false);
+        } catch (errorInfo: any) {
+          console.log('Failed:', errorInfo);
+          if (errorInfo && errorInfo.errorFields && errorInfo.errorFields.length > 0) {
+            setDisable(true);
+          } else {
+            setDisable(false);
+          }
+        }
+      }}
       requiredMark={false}
-      onFinish={onFinish}>
+      onFinish={async () => {
+        setLoading(true);
+        await onFinish({});
+        setLoading(false);
+      }}>
       <div className="customer-form form-content">
-        <FormItem name="restricted" label={t('Transfer Settings')}>
-          <div className="flex-start-center">
-            <Switch onChange={onRestrictedChange} checked={restrictedValue} />
-            <div className="switch-text">{restrictedValue ? 'ON' : 'OFF'}</div>
-          </div>
-        </FormItem>
-
-        <div className="divide" />
-
-        <div className={!restrictedValue ? 'hidden-form' : ''}>
+        <div>
           <FormItem
             name="singleLimit"
             label={t('Limit per Transaction')}
-            validateStatus={validSingleLimit.validateStatus}
-            help={validSingleLimit.errorMsg}>
+            rules={[
+              {
+                validator: validateNumberGreaterThanZero,
+              },
+              {
+                validator: (_, value) => {
+                  const formValues = form?.getFieldsValue() || {};
+
+                  if (BigNumber(value).isGreaterThan(formValues.dailyLimit || 0)) {
+                    // if (BigNumber(value).isGreaterThan(divDecimals(state.dailyLimit, state.decimals))) {
+                    return Promise.reject(new Error(t('Cannot exceed the daily limit.')));
+                  }
+                  return Promise.resolve();
+                },
+              },
+            ]}>
             <Input
-              placeholder={t('Enter limit')}
+              placeholder={t('Enter amount')}
               onChange={(e) => onSingleLimitChange(e.target.value)}
               maxLength={18 - Number(state.decimals)}
               suffix={state?.symbol || ''}
             />
           </FormItem>
+          <div className="blank" />
           <FormItem
             name="dailyLimit"
             label={t('Daily Limit')}
-            validateStatus={validDailyLimit.validateStatus}
-            help={validDailyLimit.errorMsg}>
+            rules={[
+              {
+                validator: validateNumberGreaterThanZero,
+              },
+            ]}>
             <Input
-              placeholder={t('Enter limit')}
+              placeholder={t('Enter amount')}
               onChange={(e) => onDailyLimitChange(e.target.value)}
               maxLength={18 - Number(state.decimals)}
               suffix={state?.symbol || ''}
             />
           </FormItem>
-
-          <div className="limit-tip ">{SetLimitExplain}</div>
         </div>
-
-        {!restrictedValue && <div className="limit-tip">{NoLimit}</div>}
       </div>
 
       <FormItem className="footer-btn-wrap">
-        <Button className="footer-btn" type="primary" htmlType="submit" disabled={disable}>
-          {t('Send Request')}
+        <Button className="footer-btn" type="primary" htmlType="submit" disabled={disable} loading={loading}>
+          {t('Verify with guardian')}
         </Button>
       </FormItem>
     </Form>

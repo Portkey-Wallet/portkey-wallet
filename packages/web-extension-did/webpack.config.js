@@ -106,12 +106,19 @@ let config = {
             options: {
               lessOptions: {
                 modifyVars: {
-                  'primary-color': '#5d42ff',
-                  'error-color': '#FF4D4F',
-                  'success-color': '#52C41A',
-                  'warning-color': '#ff9417',
+                  // 'primary-color': '#5d42ff',
+                  // 'error-color': '#FF4D4F',
+                  // 'success-color': '#52C41A',
+                  // 'warning-color': '#ff9417',
+                  // '@ant-prefix': 'portkey',
+                  // '@app-prefix': 'portkey',
+                  'primary-color': '#B8E1FF',
+                  'error-color': '#B73907',
+                  'success-color': '#23850E',
+                  'warning-color': '#CDA90E',
                   '@ant-prefix': 'portkey',
                   '@app-prefix': 'portkey',
+                  '@btn-primary-color': '#242424',
                 },
                 javascriptEnabled: true,
               },

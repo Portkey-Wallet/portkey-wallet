@@ -13,7 +13,6 @@ import { IContactIndexType, IContactItemType } from '@portkey-wallet/types/types
 interface ContactsListProps {
   isIndexBarShow?: boolean;
   isSearchShow?: boolean;
-  isContactUpdateWarningShow?: boolean;
   renderContactItem?: (item: IContactItemType) => JSX.Element;
   itemHeight?: number;
   style?: ViewStyleType;
@@ -39,7 +38,9 @@ const ContactsList: React.FC<ContactsListProps> = ({
   const flashListData = useMemo<FlashItemType[]>(() => {
     let _flashListData: FlashItemType[] = [];
     list.forEach(contactIndex => {
-      if (!contactIndex.contacts.length) return;
+      if (!contactIndex.contacts.length) {
+        return;
+      }
 
       _flashListData.push({
         ...contactIndex,
@@ -75,7 +76,9 @@ const ContactsList: React.FC<ContactsListProps> = ({
   };
 
   const _renderItem = (item: IContactItemType) => {
-    if (renderContactItem) return renderContactItem(item);
+    if (renderContactItem) {
+      return renderContactItem(item);
+    }
     return (
       <ContactItem
         key={item.id}

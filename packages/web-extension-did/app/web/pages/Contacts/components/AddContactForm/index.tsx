@@ -1,114 +1,104 @@
-import { Button, Form, Input, FormProps } from 'antd';
+import { Form, Input, FormProps } from 'antd';
 import { useTranslation } from 'react-i18next';
-import CustomSvg from 'components/CustomSvg';
 import './index.less';
-import { CustomAddressItem, ValidData } from 'pages/Contacts/AddContact';
-import EditButtonGroup from '../EditButtonGroup';
-import { ExtraType, ExtraTypeEnum } from 'types/Profile';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { ContactInfoError, ValidData } from 'pages/Contacts/AddContact';
+import { defaultContactFormData } from '../../AddContact/hooks';
+import { IEditContactItemFormType } from 'pages/Contacts/AddContact/types';
+import { ContactHandleActionTypeEnum } from 'types/Profile';
+import AddContactAddressInfoSection from '../AddressInfoForm';
+import { useCallback, useState } from 'react';
+import { useEffectOnce } from '@portkey-wallet/hooks';
+import { CommonButton } from '@portkey/did-ui-react';
+import { CustomSvgV3 } from 'components/CustomSvgV3';
 
 const { Item: FormItem } = Form;
 
 export interface IAddContactFormProps extends FormProps {
-  isDisable: boolean;
+  isDisable?: boolean;
   validName: ValidData;
-  state: any;
-  addressArr: CustomAddressItem[];
-  extra: ExtraType;
-  handleInputValueChange: (v: string) => void;
-  handleSelectNetwork: (i: number) => void;
-  handleAddressChange: (i: number, value: string) => void;
+  state?: any;
+  extra?: ContactHandleActionTypeEnum;
+  handleAddressInfoChange: (v: IEditContactItemFormType['addressInfo']) => void;
+  isNetworkModalOpen?: boolean;
+  handleNetworkModalState: (isShow: boolean) => void;
 }
 
 export default function AddContactForm({
   form,
-  isDisable,
-  state,
-  addressArr,
   validName,
-  extra,
+  // extra,
   onFinish,
-  handleInputValueChange,
-  handleSelectNetwork,
-  handleAddressChange,
+  isNetworkModalOpen,
+  handleAddressInfoChange,
+  handleNetworkModalState,
 }: IAddContactFormProps) {
+  // TODO: change it to real data
   const { t } = useTranslation();
-  const isMainnet = useIsMainnet();
+  const [disabled, setDisabled] = useState<boolean>(false);
+
+  const changeDisabled = useCallback(() => {
+    if (!form) return;
+    const { addressInfo, contactName } = form.getFieldsValue();
+    const _disabled = !contactName?.trim() || !addressInfo?.address?.trim();
+    setDisabled(_disabled);
+  }, [form]);
+
+  useEffectOnce(() => {
+    changeDisabled();
+  });
 
   return (
     <Form
+      onChange={changeDisabled}
       form={form}
+      initialValues={defaultContactFormData}
       autoComplete="off"
       layout="vertical"
       className="flex-column add-contact-form"
-      initialValues={state}
       requiredMark={false}
       onFinish={onFinish}>
       <div className="form-content">
-        <FormItem name="name" label={t('Name')} validateStatus={validName.validateStatus} help={validName.errorMsg}>
+        <FormItem
+          name="contactName"
+          label={t('Name')}
+          rules={[
+            {
+              required: true,
+              whitespace: true,
+              max: 16,
+            },
+            {
+              pattern: /^[a-zA-Z0-9_ ]+$/,
+              message: ContactInfoError.inValidName,
+            },
+          ]}>
           <Input
+            allowClear={{ clearIcon: <CustomSvgV3 type="close-circle" className="clear-svg" /> }}
+            className="name-input"
             placeholder={t('Enter name')}
-            onChange={(e) => handleInputValueChange(e.target.value)}
             maxLength={16}
           />
         </FormItem>
 
-        <Form.List name="addresses">
-          {(fields) => (
-            <div className="addresses">
-              {fields.map(({ key, name, ...restField }, i) => (
-                <div className="address-item" key={key}>
-                  <div className="flex-between address-item-title">{`Address`}</div>
-                  <Input.Group compact className="flex-column address-item-body">
-                    <FormItem {...restField} name={[name, 'networkName']} noStyle>
-                      <Input
-                        placeholder="Select Network"
-                        disabled
-                        prefix={<CustomSvg className="select-svg" type={isMainnet ? 'Aelf' : 'elf-icon'} />}
-                        suffix={
-                          <CustomSvg
-                            type="Down"
-                            onClick={() => {
-                              handleSelectNetwork(i);
-                            }}
-                          />
-                        }
-                        onClick={() => {
-                          handleSelectNetwork(i);
-                        }}
-                      />
-                    </FormItem>
-                    <FormItem
-                      {...restField}
-                      name={[name, 'address']}
-                      validateStatus={addressArr?.[i]?.validData?.validateStatus}
-                      help={addressArr?.[i]?.validData?.errorMsg}>
-                      <Input
-                        onChange={(e) => handleAddressChange(i, e.target.value)}
-                        placeholder={t("Enter contact's address")}
-                        addonBefore="ELF"
-                        addonAfter={addressArr[i]?.chainId}
-                      />
-                    </FormItem>
-                  </Input.Group>
-                </div>
-              ))}
-            </div>
-          )}
-        </Form.List>
+        <FormItem
+          name="addressInfo"
+          label={t('Address')}
+          validateStatus={validName.validateStatus}
+          help={validName.errorMsg}>
+          <AddContactAddressInfoSection
+            form={form}
+            isNetworkModalOpen={isNetworkModalOpen}
+            onChange={handleAddressInfoChange}
+            handleNetworkModalState={handleNetworkModalState}
+          />
+        </FormItem>
       </div>
 
-      {extra === ExtraTypeEnum.ADD_NEW_CHAT && (
-        <FormItem className="form-btn">
-          <Button className="add-btn" type="primary" htmlType="submit" disabled={isDisable}>
-            {t('Add')}
-          </Button>
-        </FormItem>
-      )}
-
-      {extra !== ExtraTypeEnum.ADD_NEW_CHAT && (
-        <EditButtonGroup className="form-btn" data={state} cantSave={isDisable} />
-      )}
+      <FormItem className="form-btn">
+        <CommonButton className="add-btn" type="primary" htmlType="submit" disabled={disabled}>
+          {t('Save address')}
+        </CommonButton>
+      </FormItem>
     </Form>
   );
 }

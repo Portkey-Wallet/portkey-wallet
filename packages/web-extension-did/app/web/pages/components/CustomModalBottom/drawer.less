@@ -1,0 +1,91 @@
+@import '../../../assets/theme/color.less';
+
+.modal-drawer-bottom {
+  color: @text-base1;
+
+  .portkey-drawer-content-wrapper {
+    border-top: 1px solid @border-base1;
+
+    .portkey-drawer-body {
+      padding: 16px 16px 0;
+    }
+
+    .portkey-drawer-header {
+      border: none;
+
+      .portkey-drawer-title {
+        color: @text-base1;
+        font-size: 20px;
+        line-height: 120%;
+        letter-spacing: -0.4px;
+        font-weight: 700;
+        font-family: BG, sans-serif;
+      }
+    }
+
+    .portkey-drawer-content {
+      background: @bg-base1;
+    }
+    .header {
+      font-size: 20px;
+      line-height: 120%;
+      letter-spacing: -0.4px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      //align-items: ;
+      .error-icon {
+        height: 32px;
+        width: 32px;
+        svg {
+          width: 100%;
+          height: 100%;
+        }
+      }
+      .close-thin-icon {
+        height: 20px;
+        width: 20px;
+        svg {
+          width: 100%;
+          height: 100%;
+        }
+      }
+    }
+    .title {
+      margin-bottom: 12px;
+      font-size: 20px;
+      line-height: 120%;
+      letter-spacing: -0.4px;
+      font-weight: 700;
+      font-family: BG, sans-serif;
+    }
+    .content {
+      font-size: 16px;
+      line-height: 140%;
+    }
+
+    .@{app-prefix}-modal-confirm-btns {
+      display: flex;
+      justify-content: space-between;
+      padding: 24px 8px 16px;
+      margin: 0;
+      //border-top: 1px solid @border-neutral3;
+      button {
+        //width: 136px;
+        height: 48px;
+        border-radius: 24px;
+        margin: 0 8px !important;
+        line-height: 22px;
+        font-size: 16px;
+      }
+    }
+  }
+}
+
+.modal-no-footer {
+  .@{app-prefix}-modal-confirm-btns {
+    display: none !important;
+  }
+}
+

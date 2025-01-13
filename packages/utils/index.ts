@@ -363,3 +363,43 @@ export enum FormatNameRuleList {
   NO_BRACKETS = 'NO_BRACKETS',
   NO_UNDERLINE = 'NO_UNDERLINE',
 }
+
+export function isEqual(value: any, other: any): boolean {
+  if (value === other) {
+    return true;
+  }
+
+  if (typeof value !== typeof other) {
+    return false;
+  }
+
+  if (value == null || other == null) {
+    return value === other;
+  }
+
+  if (value instanceof Date && other instanceof Date) {
+    return value.getTime() === other.getTime();
+  }
+
+  if (Array.isArray(value) && Array.isArray(other)) {
+    if (value.length !== other.length) {
+      return false;
+    }
+    return value.every((item, index) => isEqual(item, other[index]));
+  }
+
+  if (typeof value === 'object' && typeof other === 'object') {
+    const valueKeys = Object.keys(value);
+    const otherKeys = Object.keys(other);
+
+    if (valueKeys.length !== otherKeys.length) {
+      return false;
+    }
+
+    return valueKeys.every(key => {
+      return isEqual(value[key], other[key]);
+    });
+  }
+
+  return false;
+}

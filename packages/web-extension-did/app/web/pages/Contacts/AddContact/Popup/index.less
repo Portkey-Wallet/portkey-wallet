@@ -1,13 +1,123 @@
 @import '../../../../assets/theme/constants.less';
 
 .add-contact-popup {
+  width: 100%;
   height: 600px;
   .@{app-prefix}-input {
-    font-size: 14px;
+    font-size: 16px;
     line-height: 20px;
+    &::placeholder {
+      font-size: 16px;
+    }
   }
   .add-contact-form {
     overflow-y: overlay;
     height: calc(100% - @common-header-height);
+    .name-input {
+      border: 1px solid @border-base1;
+    }
+    .portkey-input-affix-wrapper-focused {
+      box-shadow: none;
+    }
+  }
+}
+.remove-tip-modal {
+  .portkey-ant-drawer-content {
+    border-radius: 0 !important;
+    border: 1px solid @border-base1;
+  }
+  .portkey-ant-drawer-body {
+    padding: 0 16px !important;
+  }
+  .portkey-ant-modal-content {
+    padding: 0 16px !important;
+  }
+  .close-icon {
+    width: 24px;
+    height: 24px;
+  }
+  .error-icon {
+    width: 32px;
+    height: 32px;
+  }
+  .remove-content {
+    padding: 0 0 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    .title {
+      font-size: 20px;
+      font-weight: 700;
+      font-family: BG;
+    }
+    .desc {
+      font-size: 16px;
+      line-height: 1.5;
+    }
+    .btn-box {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-top: 8px;
+      button {
+        height: 48px;
+        border-radius: 40px;
+        font-size: 16px;
+        font-weight: 600;
+      }
+      .cancel {
+        width: 100%;
+      }
+      .delete {
+        background-color: @bg-danger1;
+        border: none;
+        width: 100%;
+      }
+    }
+  }
+}
+.select-chain-modal {
+  padding: 0 16px !important;
+  .portkey-ant-drawer-content {
+    background: @bg-base1!important;
+    padding: 0 16px !important;
+  }
+  .close-icon {
+    width: 24px;
+    height: 24px;
+  }
+  // .common-header {
+  //   height: auto !important;
+  // }
+  .common-header-title {
+    text-align: left;
+    font-size: 20px;
+    font-family: BG;
+  }
+  .chain-content {
+    padding-bottom: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    max-height: calc(100vh - 80px);
+    overflow: auto;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    .chain-list {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0;
+      .chain-list-info {
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+    }
   }
 }

@@ -3,38 +3,41 @@
 .secondary-mailbox-verify-prompt {
   width: 100%;
   flex: 1;
-  border-left: 1px solid @neutral-divider;
+  border-left: 1px solid @border-neutral3;
   overflow-y: auto;
 }
 .secondary-mailbox-verify-popup {
   height: 100%;
+  width: 100%;
 }
 
 .secondary-mailbox-verify-page {
   .secondary-mailbox-verify-body {
-    padding: 0 24px;
+    padding: 0;
     &.secondary-mailbox-body-popup {
-      padding: 0 16px;
+      padding: 0;
     }
     .verify-email {
-      padding: 24px 0;
+      margin: 24px 0 16px;
       gap: 8px;
-      font-size: 16px;
-      line-height: 22px;
-      color: @neutral-primary-text;
-      border-bottom: 1px solid @neutral-divider;
+      font-size: 32px;
+      font-family: BG;
+      font-weight: 700;
+      line-height: 120%;
+      color: @text-base1;
+      //border-bottom: 1px solid @border-neutral3;
     }
     .verify-tip {
       margin-top: 16px;
       font-size: 14px;
       line-height: 20px;
-      color: @neutral-tertiary-text;
+      color: @text-opacity70;
       span {
-        color: @brand-normal;
+        color: @text-brand1;
       }
     }
     .verify-code {
-      margin-top: 48px;
+      margin-top: 32px;
 
       /** pin */
       .adm-passcode-input,
@@ -52,8 +55,10 @@
         height: 48px;
         width: 48px;
         max-width: 48px;
-        color: @neutral-secondary-text;
+        color: @text-base1;
         font-weight: 500;
+        border: 1px solid @border-base1;
+        border-radius: 8px;
       }
       .adm-passcode-input.adm-passcode-input-seperated {
         display: flex;
@@ -68,8 +73,8 @@
             background-color: @brand-normal;
           }
 
-          border: 1px solid @neutral-border;
-          border-radius: 6px;
+          border: 1px solid @border-base1;
+          border-radius: 8px;
         }
         .adm-passcode-input-cell-focused {
           box-shadow: none;
@@ -81,16 +86,17 @@
         width: auto;
         margin: auto;
         display: block;
-        margin-top: 24px;
-        color: @brand-normal;
+        margin-top: 40px;
+        color: @text-brand1;
         background-color: transparent;
         border: none;
         &:hover {
           background-color: transparent;
         }
         span {
-          line-height: 20px;
-          font-size: 14px;
+          line-height: 100%;
+          font-size: 16px;
+          font-weight: 600;
         }
         &.resend-after-btn {
           color: @neutral-disable-text;
@@ -99,10 +105,10 @@
 
       &.verify-code-error {
         .adm-passcode-input .adm-passcode-input-cell {
-          border-color: @functional-error-default;
+          border-color: @icon-danger2;
         }
         .resend-btn {
-          color: @functional-error-default !important;
+          color: @icon-danger2 !important;
         }
       }
     }

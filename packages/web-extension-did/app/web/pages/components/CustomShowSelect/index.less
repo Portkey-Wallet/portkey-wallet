@@ -18,7 +18,7 @@
       font-size: 14px;
       line-height: 20px;
       .custom-label {
-        color: @neutral-primary-text;
+        color: @text-base1;
       }
       .value-show {
         color: @neutral-secondary-text;
@@ -53,7 +53,7 @@
 .custom-select-option {
   font-size: 14px;
   line-height: 20px;
-  color: @neutral-primary-text;
+  color: @text-base1;
   height: 100%;
   display: flex;
   align-items: center;
@@ -72,10 +72,11 @@
 
 .custom-select-popup {
   border-radius: 6px;
+  background: @bg-base1;
   .@{app-prefix}-select-item-option {
     background: transparent !important;
     padding: 0 12px;
-    border-bottom: 1px solid @neutral-divider;
+    border-bottom: 1px solid @border-neutral3;
 
     &:last-child {
       border: none;

@@ -176,7 +176,7 @@ export default function Transaction() {
               <span className="left name">{from}</span>
               {fromAddress && (
                 <span className="left address-wrap">
-                  <span>{formatStr2EllipsisStr(transFromAddress, [7, 4])}</span>
+                  <span>{formatStr2EllipsisStr(transFromAddress, [7, 8])}</span>
                   <Copy toCopy={transFromAddress} iconClassName="copy-address" />
                 </span>
               )}
@@ -186,7 +186,7 @@ export default function Transaction() {
               <span className="right name">{to}</span>
               {toAddress && (
                 <span className="right address-wrap">
-                  <span>{formatStr2EllipsisStr(transToAddress, [7, 4])}</span>
+                  <span>{formatStr2EllipsisStr(transToAddress, [7, 8])}</span>
                   <Copy toCopy={transToAddress} iconClassName="copy-address" />
                 </span>
               )}
@@ -219,7 +219,7 @@ export default function Transaction() {
   const noFeeUI = useCallback(() => {
     return (
       <div className="right-item">
-        <span>{`0 ELF`}</span> {isMainnet && <span className="right-usd">{`$ 0`}</span>}
+        <div>{`0 ELF`}</div> {isMainnet && <div className="right-usd">{`$ 0`}</div>}
       </div>
     );
   }, [isMainnet]);
@@ -239,12 +239,12 @@ export default function Transaction() {
             feeInfo.map((item, idx) => {
               return (
                 <div key={'transactionFee' + idx} className="right-item flex-column">
-                  <span>{`${formatWithCommas({
+                  <div>{`${formatWithCommas({
                     amount: item.fee,
                     decimals: item.decimals || defaultToken.decimals,
                     digits: Number(item.decimals),
-                  })} ${item.symbol ?? ''}`}</span>
-                  {isMainnet && <span className="right-usd">{formatAmountUSDShow(item?.feeInUsd ?? 0)}</span>}
+                  })} ${item.symbol ?? ''}`}</div>
+                  {isMainnet && <div className="right-usd">{formatAmountUSDShow(item?.feeInUsd ?? 0)}</div>}
                 </div>
               );
             })}
@@ -264,7 +264,7 @@ export default function Transaction() {
           <div className="value">
             <span className="left">{t('Transaction ID')}</span>
             <span className="right tx-id">
-              {`${formatStr2EllipsisStr(activityItem.transactionId, [7, 4])} `}
+              {`${formatStr2EllipsisStr(activityItem.transactionId, [10, 0])} `}
               <Copy toCopy={activityItem.transactionId} />
             </span>
           </div>

@@ -8,16 +8,18 @@ import errorHandler from 'utils/errorHandler';
 import { closePrompt } from 'utils/lib/serviceWorkerAction';
 import { ResponseCode } from '@portkey/provider-types';
 import { getWallet } from '@portkey-wallet/utils/aelf';
-import ImageDisplay from 'pages/components/ImageDisplay';
 import { showValueToStr, valueToString } from '@portkey-wallet/utils/byteConversion';
 import getSeed from 'utils/getSeed';
 import singleMessage from 'utils/singleMessage';
 import AsyncButton from 'components/AsyncButton';
 import AElf from 'aelf-sdk';
 import { IBlockchainWallet } from '@portkey/types';
-import CustomSvg from 'components/CustomSvg';
 import { useDecodeTx } from 'hooks/dapp';
 import './index.less';
+import { CommonPromptCard } from '@portkey/did-ui-react';
+import { PromptCardType } from 'pages/Send';
+import { ToggleContent } from 'pages/components/ToggleContent';
+import { DappSiteInfo } from 'pages/components/DappSiteInfo';
 
 export default function GetSignature() {
   const { payload, autoSha256, isManagerSignature } = usePromptSearch<{
@@ -33,12 +35,12 @@ export default function GetSignature() {
   const { currentNetwork } = useWalletInfo();
   const [showData, setShowData] = useState<string | { methodName: string; params: object }>(payload?.data);
   const { dappMap } = useDapp();
+
   const curDapp = useMemo(
     () => dappMap[currentNetwork]?.find((item) => item.origin === payload?.origin),
     [currentNetwork, dappMap, payload?.origin],
   );
   const [showWarning, setShowWarning] = useState(false);
-  const [isManagerForwardCall, setIsManagerForwardCall] = useState<boolean>(false);
   const getDecodedTxData = useDecodeTx();
 
   useEffect(() => {
@@ -55,7 +57,6 @@ export default function GetSignature() {
             res.result?.params?.methodName &&
             res.result?.methodName === 'ManagerForwardCall'
           ) {
-            setIsManagerForwardCall(true);
             setShowData({
               methodName: res.result.params.methodName,
               params: res.result.params.args,
@@ -75,16 +76,6 @@ export default function GetSignature() {
       }
     })();
   }, [getDecodedTxData, payload?.data, payload?.isCipherText]);
-  const renderSite = useMemo(
-    () =>
-      curDapp && (
-        <div className="site flex-center">
-          <ImageDisplay defaultHeight={24} className="icon" src={curDapp?.icon} backupSrc="DappDefault" />
-          <span className="origin">{curDapp.origin}</span>
-        </div>
-      ),
-    [curDapp],
-  );
 
   const onSignByManager = useCallback(
     (manager: IBlockchainWallet) => {
@@ -103,18 +94,40 @@ export default function GetSignature() {
     [autoSha256, isManagerSignature, payload?.data],
   );
 
+  const [signature, setSignature] = useState<{
+    r: string;
+    s: string;
+    recoveryParam: number | null;
+  }>();
+  const getSignature = useCallback(async () => {
+    const { privateKey } = await getSeed();
+    if (!privateKey) throw 'Invalid user information, please check';
+
+    const manager = getWallet(privateKey);
+    if (!manager?.keyPair) {
+      closePrompt({ ...errorHandler(400001), data: { code: ResponseCode.INTERNAL_ERROR, msg: 'invalid error' } });
+      return;
+    }
+    const result = onSignByManager(manager);
+    const data = {
+      r: result.r.toString('hex', 32),
+      s: result.s.toString('hex', 32),
+      recoveryParam: result.recoveryParam,
+    };
+    setSignature(data);
+
+    return data;
+  }, [onSignByManager]);
+  useEffect(() => {
+    getSignature();
+  }, [getSignature]);
+
   const sendHandler = useCallback(async () => {
     try {
-      const { privateKey } = await getSeed();
-      if (!privateKey) throw 'Invalid user information, please check';
-
-      const manager = getWallet(privateKey);
-      if (!manager?.keyPair) {
-        closePrompt({ ...errorHandler(400001), data: { code: ResponseCode.INTERNAL_ERROR, msg: 'invalid error' } });
-        return;
+      let data = signature;
+      if (!data) {
+        data = await getSignature();
       }
-      const data = onSignByManager(manager);
-
       closePrompt({
         ...errorHandler(0),
         data,
@@ -123,98 +136,106 @@ export default function GetSignature() {
       console.error(error, 'error===detail');
       singleMessage.error(handleErrorMessage(error));
     }
-  }, [onSignByManager]);
+  }, [getSignature, signature]);
 
-  const renderShowData = useMemo(() => {
+  const messageList = useMemo(() => {
+    const list: Array<{ title: string; value: string }> = [];
+
+    if (typeof showData === 'string') {
+      list.push({
+        title: 'String to be sign',
+        value: showValueToStr(showData),
+      });
+
+      list.push({
+        title: 'Method',
+        value: `"GET_SIGNATURE"`,
+      });
+    }
+
     if (typeof showData === 'object') {
-      return (
-        <div className="data">
-          {Object.entries(showData).map(([key, value], index) => (
-            <div key={index}>
-              <div className="method-name">{key}</div>
-              <div>{showValueToStr(value)}</div>
-            </div>
-          ))}
-        </div>
-      );
-    }
-    return <div className="data">{showValueToStr(showData)}</div>;
-  }, [showData]);
-  const renderShowParamsData = useMemo(() => {
-    if (typeof showData !== 'object' || !showData.params) {
-      return null;
-    }
-    if (typeof showData.params === 'object') {
-      return (
-        <div className="data">
-          {Object.entries(showData.params).map(([key, value], index) => {
-            if (!value) {
-              return null;
-            }
-            let formattedDate = value;
-            if (key === 'expirationTime') {
-              const date = new Date(value * 1000);
-              formattedDate = date.toLocaleString();
-            }
-            return (
-              <div key={index} style={{ marginTop: index !== 0 ? 8 : 0 }}>
-                <div className="method-name">{key}</div>
-                <div>{key === 'expirationTime' ? formattedDate : valueToString(value)}</div>
-              </div>
-            );
-          })}
-        </div>
-      );
-    }
-    return <div className="data">{showValueToStr(showData)}</div>;
-  }, [showData]);
-  return (
-    <div className="get-signature flex">
-      {renderSite}
-      <div className="title flex-center">{t('Sign Message')}</div>
-      {showWarning && (
-        <div className="warning-tip flex">
-          <CustomSvg type="WarningFilled" />
-          {`Unrecognized authorization. Please exercise caution and refrain from approving the transaction if you are uncertain.`}
-        </div>
-      )}
-      {isManagerForwardCall ? (
-        <>
-          <div className="message">
-            <div className="msg-title">Method</div>
-            <div className="method">
-              <div>
-                {typeof showData === 'object' && showData !== null && 'methodName' in showData ? (
-                  <div>{showData.methodName}</div>
-                ) : (
-                  <div>Unknown</div>
-                )}
-              </div>
-            </div>
-          </div>
-          <div className="message">
-            <div className="msg-title">Message</div>
-            {renderShowParamsData}
-          </div>
-        </>
-      ) : (
-        <div className="message">
-          <div>Message</div>
-          {renderShowData}
-        </div>
-      )}
+      list.push({
+        title: 'Method',
+        value: `"${showData.methodName || 'Unknown'}"`,
+      });
 
-      <div className="btn flex-between">
-        <Button
-          type="text"
-          onClick={() => {
-            closePrompt(errorHandler(200003));
-          }}>
-          {t('Reject')}
-        </Button>
-        <AsyncButton type="primary" onClick={sendHandler}>
-          {t('Sign')}
-        </AsyncButton>
+      if (showData.params && typeof showData.params === 'object') {
+        Object.entries(showData.params).forEach(([key, value]) => {
+          if (!value) return;
+
+          let formattedDate = value;
+          if (key === 'expirationTime') {
+            const date = new Date(value * 1000);
+            formattedDate = date.toLocaleString();
+          }
+
+          list.push({
+            title: key,
+            value: key === 'expirationTime' ? formattedDate : valueToString(value),
+          });
+        });
+      }
+    }
+
+    let signatureValue = '';
+    if (signature) {
+      signatureValue = [signature.r, signature.s, signature.recoveryParam].join('');
+    }
+
+    list.push({
+      title: 'Signature',
+      value: signatureValue,
+    });
+    return list;
+  }, [showData, signature]);
+
+  return (
+    <div className="get-signature">
+      <div className="get-signature-body">
+        <DappSiteInfo title="Sign message" dappInfo={curDapp} />
+
+        {showWarning && (
+          // TODO-SA
+          <CommonPromptCard
+            className="warning-tip"
+            type={PromptCardType.WARNING}
+            description="Unknown authorization. Please proceed with caution."
+          />
+        )}
+
+        <div className="message-tip-wrap">
+          {
+            'Signing this message will prove you have ownership of the current account. Only sign messages from applications you trust.'
+          }
+        </div>
+
+        <ToggleContent title="Message">
+          <div className="message-list-container">
+            {messageList.map((item) => (
+              <div key={item.title} className="message-item">
+                <span className="message-item-title">{item.title}</span>
+                <span className="message-item-value">{item.value}</span>
+              </div>
+            ))}
+          </div>
+        </ToggleContent>
+      </div>
+
+      <div className="get-signature-footer">
+        <div className="get-signature-footer-body">
+          <Button
+            type="default"
+            onClick={() => {
+              closePrompt(errorHandler(200003));
+            }}>
+            {t('Reject')}
+          </Button>
+          <AsyncButton type="primary" onClick={sendHandler}>
+            {t('Sign')}
+          </AsyncButton>
+        </div>
+
+        <div className="get-signature-footer-tip">{'Only sign if you trust this website'}</div>
       </div>
     </div>
   );

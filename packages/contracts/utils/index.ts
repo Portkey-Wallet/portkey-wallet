@@ -167,6 +167,7 @@ export const handleContractParams = async ({ paramsOption, functionName, instanc
 
     // adjust some function, just like .CrossChainTransfer
     const _methodName = methodName.replace('.', '');
+
     const inputType = methods[_methodName];
 
     if (!inputType) throw new Error(`Contract ${contractAddress} does not exist ${methodName}`);

@@ -2,51 +2,36 @@
 
 .about-us-body {
   .logo-wrapper {
+    margin: 32px 0;
     .logo {
-      margin-top: 24px;
-      .portkeyaboutus-icon {
+      border-radius: 16px;
+      background: @icon-brand2;
+      .portkey-icon {
         width: 80px;
         height: 80px;
       }
     }
     .name {
+      font-family: BG;
       margin-top: 16px;
-      font-size: 24px;
-      line-height: 28px;
-      color: @neutral-primary-text;
-      font-weight: 500;
+      font-size: 20px;
+      line-height: 120%;
+      letter-spacing: -0.4px;
+      color: @text-base1;
+      font-weight: 700;
     }
     .version {
-      margin-top: 8px;
-      color: @neutral-secondary-text;
+      margin-top: 4px;
+      color: @text-opacity70;
       font-size: 14px;
-      line-height: 20px;
+      line-height: 140%;
     }
   }
   .content {
-    .content-item {
-      margin-top: 24px;
-      .menu-item {
-        .custom-svg {
-          width: 28px;
-          height: 28px;
-        }
-        .menu-item-title {
-          font-size: 16px;
-          a {
-            display: inline-block;
-            width: 100%;
-            color: @neutral-primary-text;
-          }
-        }
-      }
-    }
-    .social {
-      svg {
-        path {
-          fill: @neutral-secondary-text;
-        }
-      }
+    .divider {
+      margin: 12px 0;
+      width: 100%;
+      border-top: 1px solid @border-neutral3;
     }
   }
 }

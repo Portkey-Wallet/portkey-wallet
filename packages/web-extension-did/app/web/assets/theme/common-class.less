@@ -1,5 +1,7 @@
+@import './constants.less';
+
 .min-height-container {
-  font-family: Roboto-Regular;
+  font-family: SG;
   min-height: calc(100% - @footer-height);
 }
 .full-screen-height {
@@ -64,13 +66,19 @@
   gap: 16px;
 }
 .gap-8 {
-  gap: 8px
+  gap: 8px;
 }
 .cursor-pointer {
   cursor: pointer;
 }
 .margin-auto {
   margin: auto;
+}
+.margin-top-64 {
+  margin-top: 64px;
+}
+.margin-top-16 {
+  margin-top: 16px;
 }
 .flex-center {
   display: flex;
@@ -81,7 +89,7 @@
   color: @neutral-white-text;
 }
 .font-1 {
-  color: @neutral-primary-text;
+  color: @text-base1;
 }
 
 .text-center {
@@ -91,12 +99,16 @@
   text-align: right;
 }
 
+.text-14 {
+  font-size: 14px;
+}
+
 .modal-title {
   margin-bottom: 8px;
   font-size: 18px;
   font-weight: bold;
   line-height: 22px;
-  color: @neutral-primary-text;
+  color: @text-base1;
 }
 
 /* set list-style */
@@ -150,6 +162,11 @@ td {
   margin: auto;
 }
 
+.common-page2 {
+  width: @page-width2;
+  margin: auto;
+}
+
 .common-content {
   width: @page-content;
   margin: auto;
@@ -164,14 +181,14 @@ td {
     font-size: 40px;
     margin-bottom: 8px;
     text-align: center;
-    color: @neutral-primary-text;
+    color: @text-base1;
   }
   .description {
     line-height: 22px;
     font-size: 16px;
     margin-bottom: 32px;
     text-align: center;
-    color: @neutral-primary-text;
+    color: @text-base1;
   }
 }
 
@@ -193,12 +210,12 @@ td {
 
 .brand-tip {
   line-height: 22px;
-  color: @neutral-primary-text;
+  color: @text-base1;
   font-size: 16px;
 }
 
 .popup-body {
-  width: 375px !important;
+  min-width: 360px !important;
   height: 600px;
 }
 
@@ -207,13 +224,51 @@ td {
 }
 
 .custom-svg {
-  width: 16px;
-  height: 16px;
+  width: 24px;
+  height: 24px;
+  svg {
+    width: 100%;
+    height: 100%;
+  }
 }
 
 .min-width-max-height {
-  min-width: 360px;
+  width: 100%;
+  //min-width: 360px;
+  min-width: 328px;
   height: 100%;
+}
+
+.common-card {
+  margin: 0 16px;
+  background-color: @bg-base2;
+  border-radius: 8px;
+  display: flex;
+  padding: 16px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  align-self: stretch;
+  .title {
+    color: @text-base1;
+
+    /* Body Base */
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 140%;
+  }
+  .sub-content {
+    color: @text-opacity70;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 140%;
+  }
+  .content-highlight {
+    color: @text-base1;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 140%;
+  }
 }
 
 // =========================================================
@@ -224,7 +279,6 @@ td {
   min-width: @min-width;
   min-height: 100%;
   height: 100vh;
-  background-color: @bg-20;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -234,10 +288,12 @@ td {
     z-index: 101;
     background-color: @bg-20;
     margin: 0 auto;
+    width: 100%;
   }
 
   .portkey-body {
-    height: calc(100vh - 96px);
+    // height: calc(100vh - 96px);
+    width: 100%;
     min-height: 593px;
     margin: 0 auto;
   }
@@ -250,7 +306,7 @@ td {
     .portkey-body,
     .portkey-header {
       max-width: @max-width;
-      width: @max-width;
+      // width: @max-width;
 
       .portkey-header-body {
         padding-left: 0;
@@ -261,7 +317,8 @@ td {
   // 1280 < screen < 1820, maxContentWidth = 1440, marginLeftAndRight = 190
   @media screen and (max-width: 1819px) and (min-width: @mid-screen) {
     .portkey-header {
-      width: calc(100vw - @max-margin * 2);
+      // width: calc(100vw - @max-margin * 2);
+      width: 100%;
 
       .portkey-header-body {
         padding-left: 0;
@@ -269,14 +326,14 @@ td {
       }
     }
     .portkey-body {
-      width: calc(100vw - @max-margin * 2);
+      // width: calc(100vw - @max-margin * 2);
     }
   }
   // 768 < screen < 1280, maxContentWidth = 1024, marginLeftAndRight = 44
   @media screen and (max-width: 1279px) and (min-width: @min-screen) {
     .portkey-header {
       max-width: @mid-width;
-      width: calc(100vw - @min-margin * 2);
+      // width: calc(100vw - @min-margin * 2);
       .portkey-header-body {
         padding-left: 0;
         padding-right: 0;
@@ -284,11 +341,15 @@ td {
     }
     .portkey-body {
       max-width: @mid-width;
-      width: calc(100vw - @min-margin * 2);
+      // width: calc(100vw - @min-margin * 2);
     }
   }
   // screen < 768, maxContentWidth = screen, minContentWidth = 360, paddingLeftAndRight = 24
   @media screen and (max-width: 767px) {
+    .portkey-prompt {
+      background-color: @bg-base2;
+    }
+
     padding-bottom: 0 !important;
     .portkey-header {
       width: 100vw;
@@ -298,6 +359,7 @@ td {
       width: 100vw;
       min-width: @min-width;
       min-height: calc(100vh - 72px);
+      border-radius: 16px;
     }
   }
 }
@@ -305,11 +367,11 @@ td {
 // This style is suitable for detail pages, such as transaction、asset preview page...
 .detail-page-prompt {
   width: inherit;
-  max-width: @detail-width;
-  min-width: @min-width;
+  // max-width: @detail-width;
+  // min-width: @min-width;
   height: calc(100vh - 72px); // height - navHeight
-  max-height: @max-detail-height;
-  min-height: @min-detail-height;
+  // max-height: @max-detail-height;
+  // min-height: @min-detail-height;
 
   @media screen and (max-width: 767px) {
     min-height: calc(100vh - 72px);
@@ -324,13 +386,53 @@ td {
 .three-level-prompt-container {
   width: 100%;
   flex: 1;
-  border-left: 1px solid @neutral-divider;
+  border-left: 1px solid @border-neutral3;
   overflow-y: auto;
 
   .three-level-prompt-body {
     height: 100%;
   }
 }
+
+.font-sg {
+  font-family: SG, sans-serif;
+}
+
+.font-bg {
+  font-family: BG, sans-serif;
+}
+
+.register-common-card {
+  color: @text-base1;
+  width: 552px;
+  padding: 32px;
+  border-radius: 16px;
+  border: 1px solid @border-base1;
+}
 // =========================================================
 // ============= Large screen adaptation [end] =============
 // =========================================================
+
+.portkey-ui-dark-wrapper {
+  background-color: var(--sds-color-background-default-default);
+}
+
+.back-header,
+.common-header,
+.portkey-ui-ramp-preview-content,
+.portkey-ui-ramp-content {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+// .portkey-ui-ramp-content {
+//   &:not(.ramp-home-list .portkey-ui-ramp-content) {
+//     padding-left: 0 !important;
+//     padding-right: 0 !important;
+//   }
+// }
+.back-header-page-wrapper {
+  &:not(.ramp-home-list .back-header-page-wrapper) {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+}

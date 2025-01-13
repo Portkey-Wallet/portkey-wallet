@@ -11,10 +11,10 @@ import { formatAmountShow } from '@portkey-wallet/utils/converter';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 
 interface IUpdateReceiveAndIntervalProps {
-  cryptoSelectedRef: MutableRefObject<IRampCryptoItem>;
-  fiatSelectedRef: MutableRefObject<IRampFiatItem>;
-  fiatAmountRef?: MutableRefObject<string>;
-  cryptoAmountRef?: MutableRefObject<string>;
+  cryptoSelectedRef: MutableRefObject<IRampCryptoItem | undefined>;
+  fiatSelectedRef: MutableRefObject<IRampFiatItem | undefined>;
+  fiatAmountRef?: MutableRefObject<string | undefined>;
+  cryptoAmountRef?: MutableRefObject<string | undefined>;
 }
 
 export const useUpdateReceiveAndInterval = (type: RampType, params: IUpdateReceiveAndIntervalProps) => {
@@ -43,7 +43,9 @@ export const useUpdateReceiveAndInterval = (type: RampType, params: IUpdateRecei
         }
 
         await checkBuyLimit();
-
+        if (!cryptoSelectedRef.current || !fiatSelectedRef.current) {
+          return;
+        }
         const { cryptoAmount, exchange } = await getBuyPrice({
           network: cryptoSelectedRef.current.network,
           crypto: cryptoSelectedRef.current.symbol,
@@ -77,7 +79,9 @@ export const useUpdateReceiveAndInterval = (type: RampType, params: IUpdateRecei
         }
 
         await checkSellLimit();
-
+        if (!cryptoSelectedRef.current || !fiatSelectedRef.current) {
+          return;
+        }
         const { fiatAmount, exchange } = await getSellPrice({
           network: cryptoSelectedRef.current.network,
           crypto: cryptoSelectedRef.current.symbol,
@@ -117,6 +121,9 @@ export const useUpdateReceiveAndInterval = (type: RampType, params: IUpdateRecei
 
     const checkBuyLimit = async () => {
       const { cryptoSelectedRef, fiatSelectedRef, fiatAmountRef } = params;
+      if (!cryptoSelectedRef.current || !fiatSelectedRef.current) {
+        return;
+      }
       const { minLimit, maxLimit } = await getBuyLimit({
         crypto: cryptoSelectedRef.current.symbol,
         network: cryptoSelectedRef.current.network,
@@ -134,6 +141,9 @@ export const useUpdateReceiveAndInterval = (type: RampType, params: IUpdateRecei
 
     const checkSellLimit = async () => {
       const { cryptoSelectedRef, fiatSelectedRef, cryptoAmountRef } = params;
+      if (!cryptoSelectedRef.current || !fiatSelectedRef.current) {
+        return;
+      }
       const { minLimit, maxLimit } = await getSellLimit({
         crypto: cryptoSelectedRef.current.symbol,
         network: cryptoSelectedRef.current.network,

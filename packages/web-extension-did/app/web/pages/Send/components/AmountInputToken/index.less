@@ -1,0 +1,74 @@
+@import '../../../../assets/theme/color.less';
+@import '../../../../assets/theme/constants.less';
+
+.input-token-wrap {
+  padding: 24px;
+  font-size: 16px;
+  line-height: 22px;
+  color: @text-base2;
+  .amount-input {
+    background-color: @bg-base1;
+    align-items: baseline;
+    max-width: 303px !important;
+    padding: 0;
+    border: none;
+    font-size: 32px;
+    line-height: 38px;
+    font-family: BG;
+    font-weight: 700;
+    color: @text-base1;
+    text-align: right;
+    .text-overflow(1);
+    &::placeholder {
+      color: @text-base3;
+      font-size: 32px;
+      line-height: 38px;
+      font-family: BG;
+      font-weight: 700;
+    }
+    &.usd-input {
+      text-align: left;
+    }
+    &.font20 {
+      font-size: 20px;
+    }
+    &.font24 {
+      font-size: 24px;
+    }
+  }
+  .amount-error {
+    color: @text-danger1 !important;
+  }
+  .amount-input-suffix {
+    margin-left: 6px;
+    font-size: 32px;
+    line-height: 38px;
+    font-family: BG;
+    font-weight: 700;
+    color: @text-base1;
+    &.font20 {
+      font-size: 20px;
+    }
+    &.font24 {
+      font-size: 24px;
+    }
+  }
+  .swap-vert {
+    gap: 2px;
+    margin-top: 8px;
+  }
+  .swap-vert-thin-icon {
+    width: 16px;
+    height: 16px;
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
+  .error-msg {
+    font-size: 14px;
+    line-height: 20px;
+    text-align: center;
+    color: @text-danger2;
+  }
+}

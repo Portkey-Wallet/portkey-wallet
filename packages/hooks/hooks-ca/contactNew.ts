@@ -129,7 +129,7 @@ export const useGetFilterContactList = () => {
       let result: IContactItemType[] = [];
 
       result = contactList.filter(ele => {
-        if (isFt && ele.addressInfo.network !== 'aelf') return false;
+        if (!isFt && ele.addressInfo.network !== 'aelf') return false;
         if (ele.addressInfo.network === 'aelf') return true;
 
         return checkIsSupportTargetChain({ fromChainId, symbol: tokenId, network: ele.addressInfo.network });

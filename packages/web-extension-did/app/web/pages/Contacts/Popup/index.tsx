@@ -2,8 +2,8 @@ import CommonHeader from 'components/CommonHeader';
 import { IContactsProps } from '..';
 import ContactsBody from '../components/ContactsBody';
 import ContactsSearchInput from '../components/ContactsSearchInput';
+import CircleLoading from 'components/CircleLoading';
 import './index.less';
-import ImputationTip from '../components/ImputationTip';
 
 export default function ContactsPopup({
   headerTitle,
@@ -11,41 +11,35 @@ export default function ContactsPopup({
   searchPlaceholder,
   handleAdd,
   isSearch,
+  isEmpty,
   handleSearch,
   list,
   contactCount,
-  initData,
-  showImputation = false,
-  closeImputationTip,
-  changeTab,
+  loading,
 }: IContactsProps) {
   return (
     <div className="flex-column contacts-popup min-width-max-height">
       <div className="flex-column">
         <CommonHeader
+          className="contacts-popup-header"
           title={headerTitle}
           onLeftBack={goBack}
-          rightElementList={
-            contactCount !== 0 || (contactCount === 0 && isSearch)
-              ? [
-                  {
-                    customSvgType: 'SuggestAdd',
-                    onClick: handleAdd,
-                  },
-                ]
-              : undefined
-          }
+          rightElementList={[
+            {
+              customSvgType: 'add',
+              onClick: handleAdd,
+            },
+          ]}
         />
-        <ContactsSearchInput placeholder={searchPlaceholder} handleChange={handleSearch} />
+        <ContactsSearchInput placeholder={searchPlaceholder} handleChange={handleSearch} isEmpty={!!isEmpty} />
       </div>
-      {showImputation && <ImputationTip closeTip={closeImputationTip} />}
-      <ContactsBody
-        isSearch={isSearch}
-        list={list}
-        contactCount={contactCount}
-        initData={initData}
-        changeTab={changeTab}
-      />
+      {loading ? (
+        <div className="loading-container">
+          <CircleLoading width={24} height={24} />
+        </div>
+      ) : (
+        <ContactsBody isSearch={isSearch} list={list} contactCount={contactCount} />
+      )}
     </div>
   );
 }

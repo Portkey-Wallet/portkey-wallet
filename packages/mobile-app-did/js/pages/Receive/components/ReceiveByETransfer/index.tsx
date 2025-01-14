@@ -77,9 +77,13 @@ export default function ReceiveByETransfer({
                 iconStyle={styles.infoLabelHelpIcon}
                 tooltipProps={{
                   title: 'Service fee',
-                  description: `This is an estimated fee charged by Cobo to cover the costs of asset consolidation.
-  Deposit amount ≥ 2 USDT: No service fee
-  Deposit amount < USDT: Max service fee 0.5 USDT`,
+                  description: `This is an estimated fee charged by Cobo to cover the costs of asset consolidation.\nDeposit amount ≥ ${
+                    depositInfo.currentThreshold
+                  } ${tokenInfo.label ?? tokenInfo.symbol}: No service fee\nDeposit amount < ${
+                    depositInfo.currentThreshold
+                  } ${tokenInfo.label ?? tokenInfo.symbol}: Max service fee ${depositInfo.serviceFee} ${
+                    tokenInfo.label ?? tokenInfo.symbol
+                  }`,
                 }}
               />
             </View>

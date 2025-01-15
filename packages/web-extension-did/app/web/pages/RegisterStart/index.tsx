@@ -40,9 +40,15 @@ import googleAnalytics from 'utils/googleAnalytics';
 import { getOperationDetails } from '@portkey-wallet/utils/operation.util';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 
+export enum STEP {
+  socialLogin,
+  inputLogin,
+}
+
 export default function RegisterStart() {
   const { type } = useParams();
   console.log(type, '====type');
+  const loginCard = useRef<{ setStep: (step: STEP) => void }>(null);
   const dispatch = useAppDispatch();
   const navigate = useNavigateState<TVerifierAccountLocationState>();
   const [loading, setLoading] = useState(false);
@@ -399,6 +405,7 @@ export default function RegisterStart() {
               onSocialStart={onSocialStart}
               onSocialLoginFinish={onSocialFinish}
               loading={loading}
+              ref={loginCard}
             />
           )}
         </div>
@@ -410,6 +417,7 @@ export default function RegisterStart() {
         onCancel={() => {
           setOpen(false);
           setLoading(false);
+          loginCard?.current?.setStep(STEP.socialLogin);
         }}
         onConfirm={() => {
           if (!loginInfoRef.current) return setOpen(false);

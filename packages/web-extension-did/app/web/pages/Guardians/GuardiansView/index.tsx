@@ -279,7 +279,10 @@ export default function GuardiansView() {
       userGuardiansList,
     ],
   );
-
+  const cantSwitch = useMemo(
+    () => !currentGuardian?.isLoginAccount && currentGuardian?.guardianType === LoginType.Email,
+    [currentGuardian?.guardianType, currentGuardian?.isLoginAccount],
+  );
   const renderContent = useMemo(
     () => (
       <div className="guardian-view-content flex-column-between flex-1">
@@ -293,11 +296,17 @@ export default function GuardiansView() {
                   checked={opGuardian?.isLoginAccount}
                   loading={btnLoading}
                   onChange={checkSwitch}
-                  disabled={isTheOnlyLoginAccount && opGuardian?.isLoginAccount}
+                  disabled={(isTheOnlyLoginAccount && opGuardian?.isLoginAccount) || cantSwitch}
                 />
               </div>
             </div>
-            <div className="sub-content">{t('The login account can access and control all your assets.')}</div>
+            <div className="sub-content">
+              {t(
+                cantSwitch
+                  ? 'Email can no longer be used as a login account.'
+                  : 'The login account can access and control all your assets.',
+              )}
+            </div>
           </div>
           <MenuItem height={54} showEnterIcon={false}>
             <div className="flex-between">

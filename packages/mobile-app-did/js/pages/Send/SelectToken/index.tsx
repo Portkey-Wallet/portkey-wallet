@@ -17,6 +17,8 @@ import { DarkFontStyles } from 'assets/theme/styles';
 import { IToSendHomeParamsType } from '@portkey-wallet/types/types-ca/routeParams';
 import { makeStyles } from '@rneui/themed';
 import fonts from 'assets/theme/fonts';
+import { getChainIdByAddress } from '@portkey-wallet/utils';
+import { ChainId } from '@portkey-wallet/types';
 
 export interface SelectTokenProps {
   tokenInfos: IAssetToken[];
@@ -38,6 +40,7 @@ export default function SelectToken({ tokenInfos, noDataMessage, toAddress, load
         toInfo: {
           name: '',
           address: toAddress || '',
+          chainId: getChainIdByAddress(toAddress || '') as ChainId,
         },
       } as unknown as IToSendHomeParamsType);
     },

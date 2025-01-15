@@ -8,7 +8,7 @@ import './index.less';
 interface ICommonTokenHeaderProps {
   symbol?: string;
   imgUrl?: string;
-  chainId: string;
+  chainId?: string;
   onLeftBack?: () => void;
 }
 
@@ -20,12 +20,12 @@ export default function CommonTokenHeader({ symbol, imgUrl, chainId, onLeftBack 
     <CommonHeader
       className="common-token-header"
       title={
-        <div className="title flex-column">
-          <div className="symbol flex-row-center">
+        <div className="title">
+          <div className="symbol">
             <TokenImageDisplay symbol={symbol} src={imgUrl} width={20} />
             <span>{symbol}</span>
           </div>
-          <div className="network">{transNetworkText(chainId, !isMainNet)}</div>
+          {chainId && <div className="network">{transNetworkText(chainId, !isMainNet)}</div>}
         </div>
       }
       onLeftBack={onLeftBack || (() => navigate('/'))}

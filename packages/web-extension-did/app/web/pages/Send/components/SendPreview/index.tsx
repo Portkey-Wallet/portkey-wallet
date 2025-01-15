@@ -1,213 +1,276 @@
-import { ZERO } from '@portkey-wallet/constants/misc';
+import { ToAccount } from 'pages/Send';
 import clsx from 'clsx';
-import { useMemo } from 'react';
-// import { useTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
-import './index.less';
-import { useCurrentUserInfo, useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { formatAmountShow, formatAmountUSDShow } from '@portkey-wallet/utils/converter';
-import { getEntireDIDAelfAddress, isAelfAddress } from '@portkey-wallet/utils/aelf';
+import { CustomSvgV3 } from 'components/CustomSvgV3';
+import {
+  formatAmountShow,
+  formatAmountUSDShow,
+  formatStr2EllipsisStr,
+  unitConverter,
+} from '@portkey-wallet/utils/converter';
+import { BaseToken } from '@portkey-wallet/types/types-ca/token';
 import { ChainId } from '@portkey-wallet/types';
-import { chainShowText } from '@portkey-wallet/utils';
-import { useAmountInUsdShow, useFreshTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
-import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { ZERO } from '@portkey-wallet/constants/misc';
+import { isDIDAelfAddress } from '@portkey-wallet/utils/aelf';
+import { useCurrentChainList, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { useMemo } from 'react';
+import { getAddressChainId } from '@portkey-wallet/utils';
+import { INetworkItem } from '../SelectNetwork';
+import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
+import { TransferType } from '@portkey-wallet/types/types-ca/routeParams';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
-import { getSeedTypeTag } from 'utils/assets';
-import { SeedTypeEnum } from '@portkey-wallet/types/types-ca/assets';
-import CustomSvg from 'components/CustomSvg';
-import { CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL } from '@portkey-wallet/utils/withdraw';
+import { getEstimatedTime } from 'pages/Send/utils';
+import { CommonModalTip } from '@portkey/did-ui-react';
+import { useAmountInUsdShow, useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
+import { useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
+import './index.less';
 
 export interface ISendPreviewProps {
-  amount: string;
-  symbol: string;
-  alias: string;
-  imageUrl: string;
-  toAccount: { name?: string; address: string };
-  transactionFee: string | number;
-  type: 'nft' | 'token';
+  amount?: string;
+  usdAmount?: string;
+  toAccount: ToAccount;
   chainId: ChainId;
-  isCross: boolean;
-  tokenId: string;
-  isSeed?: boolean;
-  seedType?: SeedTypeEnum;
-  decimals?: number;
+  className?: string;
+  tokenInfo: BaseToken;
+  targetNetwork?: INetworkItem;
+  transferType: TransferType;
+  eBridgeFeeNotEnough?: boolean;
+  transactionFee?: string;
+  transactionUnit?: string;
+  networkFee?: string;
+  networkFeeUnit?: string;
   receiveAmount?: string;
   receiveAmountUsd?: string;
-  label?: string;
-  crossChainFee: number | string;
-  crossChainFeeUnit?: string;
+  seedType?: string;
+  isSeed?: boolean;
 }
 
-export default function SendPreview(props: ISendPreviewProps) {
-  const userInfo = useCurrentUserInfo();
-  const {
-    amount,
-    symbol,
-    alias,
-    toAccount,
-    transactionFee,
-    type,
-    imageUrl,
-    chainId,
-    isCross,
-    tokenId,
-    decimals,
-    receiveAmount,
-    receiveAmountUsd,
-    label,
-    crossChainFee,
-    crossChainFeeUnit,
-  } = props;
-  const wallet = useCurrentWalletInfo();
+export default function SendPreview({
+  toAccount,
+  chainId = 'AELF',
+  className,
+  tokenInfo,
+  amount = '',
+  usdAmount,
+  targetNetwork,
+  transferType,
+  eBridgeFeeNotEnough,
+  transactionFee = '',
+  transactionUnit = '',
+  networkFee = '',
+  networkFeeUnit = '',
+  receiveAmount = '',
+  receiveAmountUsd = '',
+}: ISendPreviewProps) {
+  console.log(toAccount);
+  const chainList = useCurrentChainList();
   const isMainnet = useIsMainnet();
+  const toChainId = useMemo(
+    () => getAddressChainId(toAccount.address, chainId) || 'AELF',
+    [chainId, toAccount.address],
+  );
+  const aelfChainImg = useMemo(
+    () => chainList?.find((ele) => ele.chainId === toChainId)?.chainImageUrl,
+    [chainList, toChainId],
+  );
   const amountInUsdShow = useAmountInUsdShow();
-  useFreshTokenPrice();
-  const defaultToken = useDefaultToken(chainId);
-  const seedTypeTag = useMemo(() => getSeedTypeTag(props), [props]);
-
-  const toChain = useMemo(() => {
-    const arr = toAccount.address.split('_');
-    if (isAelfAddress(arr[arr.length - 1])) {
-      return 'AELF';
-    }
-    return arr[arr.length - 1];
-  }, [toAccount.address]);
-  const entireFromAddressShow = useMemo(
-    () => getEntireDIDAelfAddress(wallet?.[chainId]?.caAddress || '', undefined, chainId),
-    [chainId, wallet],
-  );
-
-  const isSupportCross = useMemo(
-    () => Boolean(receiveAmount) && CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL.includes(symbol),
-    [receiveAmount, symbol],
-  );
-
-  const receiveAmountInner = useMemo(() => {
+  const { crossChain: crossDefaultFee } = useGetTxFee(tokenInfo.chainId);
+  const defaultToken = useDefaultToken();
+  const [tokenPriceObject] = useGetCurrentAccountTokenPrice();
+  const EstimateAmount = useMemo(() => {
     let _amount = amount;
-    let amountUsd;
-    if (receiveAmount) _amount = receiveAmount;
-    else _amount = formatAmountShow(ZERO.plus(_amount).minus(crossChainFee), Number(defaultToken.decimals));
 
-    if (receiveAmountUsd) amountUsd = formatAmountUSDShow(receiveAmountUsd);
-    else amountUsd = amountInUsdShow(ZERO.plus(_amount).minus(crossChainFee).toFixed(), 0, symbol);
+    // adjust etransfer
+    if (
+      ZERO.plus(amount).isLessThanOrEqualTo(transactionFee || '') &&
+      tokenInfo?.symbol === 'ELF' &&
+      transferType === TransferType.E_TRANSFER
+    ) {
+      return {
+        estimateAmount: `0 ${tokenInfo?.label || tokenInfo?.symbol}`,
+        estimateAmountUsd: isMainnet ? '$0' : '',
+      };
+    }
 
-    return (
-      <>
-        <div className="amount">{`${_amount} ${label ?? symbol}`}</div>
-        <div className="usd">{isMainnet && amountUsd}</div>
-      </>
-    );
+    // adjust etransfer & ebridge
+    if (transferType === TransferType.E_BRIDGE || transferType === TransferType.E_TRANSFER) {
+      return {
+        estimateAmount: `${receiveAmount} ${tokenInfo?.label || tokenInfo?.symbol}`,
+        estimateAmountUsd: isMainnet ? receiveAmountUsd : '',
+      };
+    }
+
+    // adjust general transfer
+    if (transferType === TransferType.GENERAL_SAME_CHAIN) {
+      _amount = formatAmountShow(_amount, Number(tokenInfo.decimals));
+      const amountUsd = amountInUsdShow(_amount, 0, tokenInfo.symbol);
+
+      console.log('GENERAL_SAME_CHAIN', _amount, amountUsd);
+
+      return {
+        estimateAmount: `${_amount} ${tokenInfo.label || tokenInfo.symbol}`,
+        estimateAmountUsd: isMainnet ? amountUsd : '',
+      };
+    }
+
+    //
+    const fee = networkFee || 0;
+    if (ZERO.plus(amount).isLessThanOrEqualTo(fee) && tokenInfo.symbol === defaultToken.symbol) {
+      return {
+        estimateAmount: `0 ${tokenInfo?.label || tokenInfo?.symbol}`,
+        estimateAmountUsd: isMainnet ? '$0' : '',
+      };
+    }
+
+    // adjust cross chain in aelf
+    if (transferType === TransferType.GENERAL_CROSS_CHAIN) {
+      _amount =
+        tokenInfo.symbol === defaultToken.symbol
+          ? formatAmountShow(
+              ZERO.plus(_amount)
+                .minus(networkFee || '')
+                .minus(crossDefaultFee),
+              Number(defaultToken.decimals),
+            )
+          : formatAmountShow(ZERO.plus(_amount), Number(tokenInfo.decimals));
+    } else {
+      _amount =
+        tokenInfo.symbol === defaultToken.symbol
+          ? formatAmountShow(ZERO.plus(_amount).minus(networkFee || ''), Number(defaultToken.decimals))
+          : formatAmountShow(ZERO.plus(_amount), Number(tokenInfo.decimals));
+    }
+
+    const amountUsd = tokenPriceObject[tokenInfo?.symbol] ? amountInUsdShow(_amount, 0, tokenInfo.symbol) : '';
+
+    return {
+      estimateAmount: `${_amount} ${tokenInfo.label || tokenInfo.symbol}`,
+      estimateAmountUsd: isMainnet ? amountUsd : '',
+    };
   }, [
     amount,
     amountInUsdShow,
-    crossChainFee,
+    crossDefaultFee,
     defaultToken.decimals,
+    defaultToken.symbol,
     isMainnet,
-    label,
+    networkFee,
     receiveAmount,
     receiveAmountUsd,
-    symbol,
+    tokenInfo.decimals,
+    tokenInfo.label,
+    tokenInfo.symbol,
+    tokenPriceObject,
+    transactionFee,
+    transferType,
   ]);
 
-  const renderEstimateAmount = useMemo(() => {
-    if (ZERO.plus(amount).isLessThanOrEqualTo(crossChainFee) && symbol === defaultToken.symbol) {
-      return (
-        <>
-          <div className="amount">{`0 ${label ?? symbol}`}</div>
-          <div className="usd">{isMainnet && '$ 0'}</div>
-        </>
-      );
-    } else {
-      return receiveAmountInner;
+  const estimatedTime = useMemo(
+    () => (targetNetwork ? getEstimatedTime(targetNetwork, transferType) : ''),
+    [targetNetwork, transferType],
+  );
+
+  const transactionFeeShow = useMemo(() => {
+    const result = {
+      feeShow: '',
+      feeUsdShow: '',
+    };
+    switch (transferType) {
+      case TransferType.E_TRANSFER:
+      case TransferType.E_BRIDGE:
+        result.feeShow = `${transactionFee} ${transactionUnit}`;
+        result.feeUsdShow = `$${unitConverter(
+          ZERO.plus(transactionFee || '').multipliedBy(tokenPriceObject[transactionUnit || '']),
+        )}`;
+        break;
+      case TransferType.GENERAL_CROSS_CHAIN:
+        result.feeShow = `${unitConverter(crossDefaultFee)} ${defaultToken.symbol}`;
+        result.feeUsdShow = `$${unitConverter(
+          ZERO.plus(crossDefaultFee).multipliedBy(tokenPriceObject[defaultToken.symbol]),
+        )}`;
     }
-  }, [amount, crossChainFee, defaultToken.symbol, isMainnet, label, receiveAmountInner, symbol]);
+    return result;
+  }, [crossDefaultFee, defaultToken.symbol, tokenPriceObject, transactionFee, transactionUnit, transferType]);
 
   return (
-    <div className="send-preview">
-      {type !== 'nft' ? (
-        <div className="amount-preview">
-          <p className="amount">
-            -{formatAmountShow(amount, decimals)} {label ?? symbol}
-          </p>
-          <p className="convert">{isMainnet && amountInUsdShow(amount, 0, symbol)}</p>
+    <div className={clsx('send-preview-wrap', className)}>
+      <div className="flex-column-center icon-amount">
+        <CustomSvgV3 type="Activity=Send" className="activity-send-icon" />
+        <div className="amount-show">{`${formatAmountShow(amount, tokenInfo?.decimals)} ${tokenInfo?.symbol}`}</div>
+        {isMainnet && <div className="usd-show">{`${formatAmountUSDShow(usdAmount)}`}</div>}
+      </div>
+      <div className="flex-between-center content-row-info">
+        <div>{`To`}</div>
+        <div className="value-show">{formatStr2EllipsisStr(toAccount.address, [8, 8])}</div>
+      </div>
+      <div className="flex-between-center content-row-info">
+        <div>{`Destination network`}</div>
+        <div className="value-show flex-row-center gap-4">
+          <>
+            <img
+              src={isDIDAelfAddress(toAccount.address) ? aelfChainImg : targetNetwork?.imageUrl}
+              className="chain-image"
+            />
+            {isDIDAelfAddress(toAccount.address)
+              ? `aelf ${toChainId === MAIN_CHAIN_ID ? 'MainChain' : 'dAppChain'}`
+              : targetNetwork?.name}
+          </>
         </div>
-      ) : (
-        <div className="amount-preview nft">
-          <div className="avatar flex-center">
-            {seedTypeTag && <CustomSvg type={seedTypeTag} />}
-            {imageUrl ? <img src={imageUrl} /> : <p>{symbol?.slice(0, 1)}</p>}
-          </div>
-          <div className="info">
-            <div className="index flex">
-              <p className="alias">{alias}</p>
-              <p className="token-id">{`#${tokenId}`}</p>
-            </div>
-            <p className="quantity">
-              Amount: <span>{formatAmountShow(amount, decimals)}</span>
-            </p>
-          </div>
-        </div>
-      )}
-      <div className="address-preview">
-        <div className="item">
-          <span className="label">From</span>
-          <div className="value">
-            <p className="name">{userInfo?.nickName}</p>
-            <p className="address">{entireFromAddressShow.replace(/(?<=^\w{9})\w+(?=\w{10})/, '...')}</p>
-          </div>
-        </div>
-        <div className={clsx('item', toAccount.name?.length || 'no-name')}>
-          <span className="label">To</span>
-          <div className="value">
-            {!!toAccount.name?.length && <p className="name">{toAccount.name}</p>}
-            <p className="address">
-              {toAccount.address.includes('ELF_')
-                ? toAccount.address.replace(/(?<=^\w{9})\w+(?=\w{10})/, '...')
-                : toAccount.address.replace(/(?<=^\w{6})\w+(?=\w{6})/, '...')}
-            </p>
-          </div>
-        </div>
-        <div className="item network">
-          <span>Network</span>
+      </div>
+      {!!transactionFeeShow.feeShow && (
+        <div className="flex-between-center content-row-info">
           <div>
-            <p className="chain">
-              {`${chainShowText(chainId as ChainId)} ${chainId}->${chainShowText(toChain as ChainId)} ${toChain}`}
-            </p>
+            <div className="flex-row-center gap-4">
+              {`Transaction fee`}
+              <CommonModalTip
+                title="Transaction fee"
+                content="Fee applied by the cross-chain bridge to process your transaction on blockchains."
+              />
+            </div>
+            {eBridgeFeeNotEnough && <div className="below-show text-color-danger">{`Not enough ELF`}</div>}
           </div>
-        </div>
-      </div>
-      <div className="fee-preview flex-between">
-        <span className="label">Transaction fee</span>
-        <div className="value flex-column">
-          <div className="amount">{`${formatAmountShow(transactionFee, Number(defaultToken.decimals))} ${
-            defaultToken.symbol
-          }`}</div>
-          <div className="usd">{isMainnet && amountInUsdShow(transactionFee, 0, defaultToken.symbol)}</div>
-        </div>
-      </div>
-      {isCross && (
-        <div className="fee-preview flex-between">
-          <span className="label">Estimated CrossChain Transfer</span>
-          <div className="value flex-column">
-            <div className="amount">
-              {isSupportCross
-                ? `${crossChainFee} ${crossChainFeeUnit}`
-                : `${formatAmountShow(crossChainFee, Number(defaultToken.decimals))} ${defaultToken.symbol}`}
-            </div>
-            <div className="usd">
-              {isMainnet &&
-                amountInUsdShow(
-                  crossChainFee,
-                  0,
-                  isSupportCross && crossChainFeeUnit ? crossChainFeeUnit : defaultToken.symbol,
-                )}
-            </div>
+          <div className="value-show">
+            <div>{`${transactionFeeShow.feeShow}`}</div>
+            {isMainnet && <div className="below-show">{transactionFeeShow.feeUsdShow}</div>}
           </div>
         </div>
       )}
-      {isCross && (isSupportCross || symbol === defaultToken.symbol) && (
-        <div className="fee-preview flex-between">
-          <span className="label">Estimated amount received</span>
-          <div className="value flex-column">{renderEstimateAmount}</div>
+      {!!networkFee && (
+        <div className="flex-between-center content-row-info">
+          <div className="flex-row-center gap-4">
+            {`Estimated network fee`}
+            <CommonModalTip
+              title="Estimated network fee"
+              content="Fee applied by the blockchain to process your transaction, also known as gas fee."
+            />
+          </div>
+          <div className="value-show">
+            <div>{`${networkFee} ${networkFeeUnit}`}</div>
+            {isMainnet && (
+              <div className="below-show">{`$${unitConverter(
+                ZERO.plus(networkFee || '').multipliedBy(tokenPriceObject[networkFeeUnit || 'ELF']),
+              )}`}</div>
+            )}
+          </div>
+        </div>
+      )}
+      <div className="flex-between-center content-row-info">
+        <div className="flex-row-center gap-4">{`Amount to receive`}</div>
+        <div className="value-show">
+          <div>{EstimateAmount.estimateAmount}</div>
+          {isMainnet && <div className="below-show">{`$${EstimateAmount?.estimateAmountUsd}`}</div>}
+        </div>
+      </div>
+      {!!estimatedTime && (
+        <div className="flex-between-center content-row-info">
+          <div>{`Estimated duration`}</div>
+          <div className="value-show">{`~${estimatedTime}`}</div>
+        </div>
+      )}
+      {(transferType === TransferType.E_BRIDGE || transferType === TransferType.E_TRANSFER) && (
+        <div className="flex-center powered-by">
+          <CustomSvgV3
+            className={transferType === TransferType.E_BRIDGE ? 'provider-ebridge-icon' : 'provider-etransfer-icon'}
+            type={transferType === TransferType.E_BRIDGE ? 'Provider=eBridge' : 'Provider=ETransfer'}
+          />
         </div>
       )}
     </div>

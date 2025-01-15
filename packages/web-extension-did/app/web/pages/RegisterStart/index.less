@@ -1,8 +1,8 @@
 @import '../../assets/theme/constants.less';
+@import '../../assets/theme/common-class.less';
 .register-start-content {
-  width: @page-width1;
   margin: auto;
-  padding-top: 74px;
+  padding-top: 64px;
   .text-content {
     padding-top: 66px;
     .portkey-icon {
@@ -24,10 +24,13 @@
     }
   }
 
-  .login-primary-btn {
-    border-radius: 28px;
+  .login-primary-button {
+    height: 48px;
+    margin-top: 16px;
+    border-radius: 24px;
     line-height: 48px;
     font-size: 16px;
+    font-weight: 600;
   }
 }
 
@@ -89,12 +92,8 @@
 }
 
 .register-start-card {
-  width: 406px;
-  min-height: 492px;
-  padding: 0 20px 20px;
-  border-radius: 6px;
-  background-color: @neutral-default-bg;
-  box-shadow: @box-shadow5;
+  .register-common-card();
+
   position: relative;
   display: flex;
   flex-direction: column;
@@ -102,22 +101,15 @@
     flex: 1;
   }
   .title {
-    text-align: center;
-    padding: 24px 0;
-    line-height: 32px;
-    color: @neutral-primary-text;
-    font-size: 24px;
-    font-weight: 500;
+    .font-bg();
+
+    text-align: left;
+    color: @text-base1;
+    font-size: 32px;
+    line-height: 38px;
+    font-weight: 700;
+    font-family: BG;
     position: relative;
-    .backleft-icon {
-      cursor: pointer;
-      position: absolute;
-      width: 24px;
-      height: 24px;
-      left: 0;
-      top: 50%;
-      margin-top: -20px;
-    }
     .testnet-flag {
       .content {
         position: relative;
@@ -155,4 +147,12 @@
     background-color: @bg-9;
     border: none;
   }
+}
+
+.register-header-back {
+  margin-top: 32px;
+}
+
+.register-header-back-title {
+  padding-top: 16px;
 }

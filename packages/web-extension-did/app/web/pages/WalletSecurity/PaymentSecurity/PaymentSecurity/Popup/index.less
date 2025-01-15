@@ -1,6 +1,8 @@
 @import '../../../../../assets/theme/color.less';
+@import '../../../../../assets/theme/constants.less';
 
 .payment-security-popup {
+  width: 100%;
   .payment-security-item {
     .left-arrow {
       transform: rotateZ(180deg);
@@ -8,10 +10,13 @@
     }
   }
 
+  .loading-container {
+    margin-top: calc(50% - @common-header-height);
+  }
   .no-data-text {
-    color: @neutral-disable-text;
+    color: @text-opacity70;
     font-size: 16px;
-    margin-top: 100px;
+    margin-top: calc(50% - @common-header-height);
     text-align: center;
   }
 }

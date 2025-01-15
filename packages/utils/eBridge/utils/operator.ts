@@ -21,10 +21,10 @@ export class EVMBridgeOperator implements IBridgeOperator {
   constructor(chainInfo: IEBridgeEVMChainInfo) {
     this.chainInfo = chainInfo;
   }
-  checkAllowanceAndApprove(params: ICheckAndApproveParams): Promise<boolean> {
+  checkAllowanceAndApprove(): Promise<boolean> {
     throw new Error('Method not implemented.');
   }
-  createReceipt(params: ICreateReceiptHandlerParams): Promise<any> {
+  createReceipt(_params: ICreateReceiptHandlerParams): Promise<any> {
     throw new Error('Method not implemented.');
   }
 
@@ -75,8 +75,8 @@ export class ELFBridgeOperator implements IBridgeOperator {
     });
   };
 
-  getFromLimit = async (toChainId: string, target: string) => {
-    const bridgeContract = await this.getBridgeContract();
+  getFromLimit = async (toChainId: string, target: string, bridgeContract?: IContract) => {
+    bridgeContract ||= await this.getBridgeContract();
     const limit = await getReceiptLimit({
       type: 'aelf',
       limitContract: bridgeContract as unknown as IContract,
@@ -86,8 +86,8 @@ export class ELFBridgeOperator implements IBridgeOperator {
     return limit;
   };
 
-  getELFFee = async (toChainId: string) => {
-    const bridgeContract = await this.getBridgeContract();
+  getELFFee = async (toChainId: string, bridgeContract?: IContract) => {
+    bridgeContract ||= await this.getBridgeContract();
     const ELFFee = await bridgeContract.callViewMethod('GetFeeByChainId', {
       value: toChainId,
     });
@@ -135,7 +135,17 @@ export class ELFBridgeOperator implements IBridgeOperator {
   };
 
   async createReceipt(params: ICreateReceiptHandlerParams): Promise<any> {
-    const { amount, tokenContract, portkeyContract, owner, caHash, tokenInfo, targetChainId, targetAddress } = params;
+    const {
+      amount,
+      tokenContract,
+      portkeyContract,
+      owner,
+      caHash,
+      tokenInfo,
+      targetChainId,
+      targetAddress,
+      bridgeContract,
+    } = params;
     const symbol = tokenInfo.symbol;
     const approveParams = {
       tokenContract,
@@ -148,7 +158,7 @@ export class ELFBridgeOperator implements IBridgeOperator {
     };
     const toBridgeChainId = getChainIdByMap(String(targetChainId));
 
-    const ELFFee = await this.getELFFee(toBridgeChainId);
+    const ELFFee = await this.getELFFee(toBridgeChainId, bridgeContract);
     const ELFFeeAmount = divDecimals(ELFFee, 8).toFixed(0);
     console.log(ELFFee);
     if (symbol !== ELF_NATIVE_TOKEN) {

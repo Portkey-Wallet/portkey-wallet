@@ -1,8 +1,18 @@
 import { useRef, useEffect } from 'react';
 import lottie, { AnimationItem } from 'lottie-web';
-import animationData from './data.json';
+import animationDarkData from './spinnerDark';
+import animationWhiteData from './spinnerWhite';
 
-const CircleLoading = () => {
+export type LoadingType = {
+  width?: number;
+  height?: number;
+};
+
+// TODO-SA
+const theme = 'dark';
+
+const CircleLoading = (props: LoadingType) => {
+  const { width = 16, height = 16 } = props;
   const containerRef = useRef<HTMLDivElement>(null);
   const animation = useRef<AnimationItem | null>(null);
 
@@ -13,19 +23,17 @@ const CircleLoading = () => {
         renderer: 'svg',
         loop: true,
         autoplay: true,
-        animationData: animationData,
+        animationData: theme === 'dark' ? animationWhiteData : animationDarkData,
       });
     }
     return () => {
-      if (animation.current) {
-        animation.current.stop();
-        animation.current.destroy();
-        animation.current = null;
-      }
+      animation.current?.stop();
+      animation.current?.destroy();
+      animation.current = null;
     };
   }, []);
 
-  return <div className="circle-loading" ref={containerRef}></div>;
+  return <div className="circle-loading" style={{ width, height }} ref={containerRef}></div>;
 };
 
 export default CircleLoading;

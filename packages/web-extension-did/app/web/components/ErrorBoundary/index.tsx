@@ -1,10 +1,9 @@
 import { ReactNode, useCallback, useMemo } from 'react';
 import ReactErrorBoundary, { ErrorBoundaryTrue, handleReportError } from '@portkey-wallet/utils/errorBoundary';
-import CustomSvg from 'components/CustomSvg';
-import { Button } from 'antd';
-import clsx from 'clsx';
+import { Button, Image } from 'antd';
 import * as Sentry from '@sentry/react';
 import './index.less';
+import { BaseCommonPage } from 'components/CommonPage';
 
 export type ErrorBoundaryProps = {
   children: ReactNode;
@@ -25,17 +24,27 @@ export default function ErrorBoundary({ children, view, pageType }: ErrorBoundar
       onError={(error, componentStack) => onError({ error, componentStack })}
       fallback={({ resetError }) => {
         return (
-          <div className={clsx(!isPrompt && 'error-body-popup', 'error-body', 'flex')}>
-            <div className="flex-column-center">
-              <CustomSvg type="ErrorIcon" />
-              <div className="tip">
-                {"Oops! Looks like something went wrong. But don't worry, your wallet and funds are safe and sound."}
+          <BaseCommonPage className="error-boundary-page" isHeaderShow={isPrompt}>
+            <div className="error-boundary-wrap">
+              <div className="error-boundary-body">
+                <Image src="assets/images/crash_image.png" className="error-boundary-image" preview={false} />
+
+                <div className="error-boundary-content">
+                  <div className="error-boundary-title">Oops!</div>
+                  <div className="error-boundary-description">
+                    Just a minor hiccup. Your wallet
+                    <br />
+                    is perfectly safe!
+                  </div>
+                </div>
+              </div>
+              <div className="error-boundary-footer">
+                <Button type="primary" onClick={resetError}>
+                  Reload
+                </Button>
               </div>
             </div>
-            <div className="btn-wrap">
-              <Button onClick={resetError}>Reload</Button>
-            </div>
-          </div>
+          </BaseCommonPage>
         );
       }}>
       {children}

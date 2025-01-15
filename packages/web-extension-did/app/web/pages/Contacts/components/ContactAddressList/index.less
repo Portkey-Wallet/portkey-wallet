@@ -2,44 +2,49 @@
 
 .contact-addresses {
   .address-item {
-    margin-bottom: 24px;
+    margin-bottom: 8px;
     font-size: 12px;
     line-height: 16px;
+    border-radius: 8px;
+    background: @bg-base2;
+    padding: 12px 16px;
 
     .address {
       font-size: 14px;
       font-weight: normal;
-      color: @neutral-secondary-text;
+      line-height: 140%;
+      color: @text-opacity1;
       overflow-wrap: anywhere;
     }
     .address-wrapper {
       overflow: hidden;
       flex: 1;
-      margin-right: 10px;
+      margin-left: 36px;
     }
     .chain {
-      margin-top: 8px;
+      //margin-top: 8px;
       .chain-img {
-        width: 16px;
-        height: 16px;
+        width: 24px;
+        height: 24px;
         border-radius: 50%;
         background-color: @bg-13;
       }
       .chain-elf {
         svg {
-          width: 16px;
-          height: 16px;
+          width: 24px;
+          height: 24px;
         }
       }
       .chain-text {
-        font-size: 12px;
-        margin-left: 8px;
-        color: @neutral-secondary-text;
+        font-size: 16px;
+        margin-left: 12px;
+        line-height: 140%;
+        color: @text-base1;
       }
     }
     .address-copy-icon {
-      width: 16px;
-      height: 16px;
+      width: 24px;
+      height: 24px;
       cursor: pointer;
     }
   }

@@ -13,7 +13,7 @@ export enum NFTSizeEnum {
 }
 
 export type TSeedTypeTag = {
-  isSeed: boolean;
+  isSeed?: boolean;
   seedType?: SeedTypeEnum;
 };
 

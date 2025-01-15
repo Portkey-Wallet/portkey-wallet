@@ -1,0 +1,59 @@
+@import '../../../../../../assets/theme/color.less';
+
+.set-pin-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+
+  .form-content {
+    padding: 0;
+    .new-pin-label {
+      margin-top: 16px;
+    }
+    .close-circle-icon {
+      width: 16px;
+    }
+    .@{app-prefix}-form-item-label > label,
+    .@{app-prefix}-input-password {
+      color: @text-base1;
+      font-size: 16px;
+      font-weight: 400;
+      line-height: 140%;
+    }
+    .@{app-prefix}-form-item-label {
+      padding-bottom: 8px;
+    }
+    .@{app-prefix}-input-password {
+      box-shadow: none;
+      padding: 7px 16px;
+    }
+    .@{app-prefix}-input-affix-wrapper {
+      padding-right: 16px;
+    }
+    .confirm-password .@{app-prefix}-form-item {
+      flex-direction: column;
+    }
+  }
+  .form-footer {
+    padding: 0;
+    margin: 16px auto 24px;
+    width: 100%;
+    max-width: 896px;
+    //border-top: 1px solid @border-neutral3;
+    .@{app-prefix}-form-item {
+      margin-bottom: 0;
+    }
+    .@{app-prefix}-btn-primary {
+      height: 48px;
+      border-radius: 22px;
+      font-size: 16px;
+    }
+  }
+}
+//
+//.set-pin-form-prompt {
+//  .form-footer {
+//    position: absolute;
+//    bottom: 0;
+//  }
+//}

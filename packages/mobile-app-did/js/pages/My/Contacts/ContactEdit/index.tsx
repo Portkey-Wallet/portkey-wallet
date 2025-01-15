@@ -63,7 +63,9 @@ const ContactEdit: React.FC = () => {
   const currentNetworkInfo = useCurrentNetworkInfo();
 
   useEffect(() => {
-    if (!contact) return;
+    if (!contact) {
+      return;
+    }
     const _contact: ContactItemType = JSON.parse(JSON.stringify(contact));
     setEditContact({
       ..._contact,
@@ -94,7 +96,9 @@ const ContactEdit: React.FC = () => {
   }, [customChainList]);
 
   useEffect(() => {
-    if (isEdit || chainList.length === 0) return;
+    if (isEdit || chainList.length === 0) {
+      return;
+    }
     setEditContact(preEditContact => {
       const _editContact = { ...preEditContact };
       if (!addressList) {
@@ -168,11 +172,17 @@ const ContactEdit: React.FC = () => {
   }, []);
 
   const isSaveDisable = useMemo(() => {
-    if (editContact.name === '') return true;
+    if (editContact.name === '') {
+      return true;
+    }
     const addresses = editContact.addresses;
-    if (addresses.length === 0) return true;
+    if (addresses.length === 0) {
+      return true;
+    }
     for (let i = 0; i < addresses.length; i++) {
-      if (addresses[i].address === '') return true;
+      if (addresses[i].address === '') {
+        return true;
+      }
     }
     return false;
   }, [editContact]);
@@ -199,7 +209,9 @@ const ContactEdit: React.FC = () => {
     } else {
       let isContactNameExist = false;
       for (let i = 0; i < contactIndexList.length; i++) {
-        if (isContactNameExist) break;
+        if (isContactNameExist) {
+          break;
+        }
         const contacts = contactIndexList[i].contacts;
         for (let j = 0; j < contacts.length; j++) {
           if (contacts[j].name === _editContact.name && contacts[j].id !== _editContact.id) {
@@ -226,13 +238,17 @@ const ContactEdit: React.FC = () => {
         };
       }
     });
-    if (isErrorExist) setEditContact(_editContact);
+    if (isErrorExist) {
+      setEditContact(_editContact);
+    }
     return isErrorExist;
   }, [contactIndexList, editContact, t]);
 
   const onFinish = useCallback(async () => {
     const isErrorExist = checkError();
-    if (isErrorExist) return;
+    if (isErrorExist) {
+      return;
+    }
     Loading.show();
     try {
       let result;
@@ -308,7 +324,7 @@ const ContactEdit: React.FC = () => {
   return (
     <PageContainer
       safeAreaColor={['white', 'gray']}
-      titleDom={isEdit ? t('Edit Contact') : t('Add New Contacts')}
+      titleDom={isEdit ? t('Edit Address') : t('Add New Address')}
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}>
       <Input

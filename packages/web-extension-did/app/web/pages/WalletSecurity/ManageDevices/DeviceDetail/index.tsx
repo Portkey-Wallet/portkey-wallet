@@ -7,7 +7,6 @@ import useGuardianList from 'hooks/useGuardianList';
 import { useCurrentWallet, useDeviceList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { setLoginAccountAction } from 'store/reducers/loginCache/actions';
-import DeviceDetailPrompt from './Prompt';
 import DeviceDetailPopup from './Popup';
 import InternalMessage from 'messages/InternalMessage';
 import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
@@ -17,7 +16,7 @@ import { FromPageEnum, TGuardianApprovalLocationState } from 'types/router';
 export default function DeviceDetail() {
   const { t } = useTranslation();
   const navigate = useNavigateState<TGuardianApprovalLocationState>();
-  const { isPrompt, isNotLessThan768 } = useCommonState();
+  const { isPrompt } = useCommonState();
   const { setLoading } = useLoading();
   const { managerAddress } = useParams();
   const dispatch = useAppDispatch();
@@ -75,15 +74,7 @@ export default function DeviceDetail() {
     navigate('/setting/wallet-security/manage-devices');
   }, [navigate]);
 
-  return isNotLessThan768 ? (
-    <DeviceDetailPrompt
-      headerTitle={title}
-      goBack={handleBack}
-      device={device}
-      isCurrent={isCurrent}
-      onDelete={handleDelete}
-    />
-  ) : (
+  return (
     <DeviceDetailPopup
       headerTitle={title}
       goBack={handleBack}

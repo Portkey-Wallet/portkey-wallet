@@ -48,6 +48,7 @@ export default function PermissionCheck({
       location.pathname.includes('/login') ||
       location.pathname.includes('/register') ||
       location.pathname.includes('/success-page') ||
+      location.pathname.includes('/prepare-wallet') ||
       location.pathname === '/permission',
     [location.pathname],
   );

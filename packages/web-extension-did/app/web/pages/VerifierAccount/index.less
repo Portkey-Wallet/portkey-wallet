@@ -1,82 +1,24 @@
 @import '../../assets/theme/color.less';
 
-.verifier-account {
-  .verifier-account-content {
-    width: 350px;
-    margin-top: 14px;
-  }
-  .verifier-account-wrapper .login-account {
-    width: 0;
-    flex: 1;
-  }
-  .verifier-account-wrapper .send-tip .account {
-    color: @brand-normal;
-  }
-  .verifier-account-wrapper {
-    .portkey-ui-code-verify-passcode {
-      .adm-passcode-input.adm-passcode-input-seperated {
-        display: flex;
-        justify-content: center;
-        .adm-passcode-input-cell-container {
-          justify-content: space-between;
-          max-width: 408px;
-          .adm-passcode-input-cell {
-            width: auto;
-            min-width: 36px;
-            margin-right: 0;
-            flex: 0 1;
-            flex-basis: 48px;
-            &::after {
-              background-color: @brand-normal;
-            }
-          }
-        }
-      }
-      .resend-btn {
-        color: @brand-normal;
-        &.resend-after-btn {
-          color: @neutral-disable-text;
-        }
-      }
-    }
-    .password-wrapper {
-      .resend-btn {
-        width: auto;
-        margin: auto;
-        display: block;
-        margin-top: 24px;
-        color: @brand-normal;
-        border: none;
-        background-color: transparent;
-        &:hover {
-          background-color: transparent;
-        }
-        span {
-          line-height: 20px;
-          font-size: 14px;
-        }
-        &.resend-after-btn {
-          color: @neutral-disable-text;
-        }
-      }
-    }
-  }
-}
-.verifier-account.big-screen-verifier-account {
-  .verifier-account-content {
-    padding: 0 24px;
-    width: auto;
-  }
-}
-.verifier-account.popup-page {
-  min-width: 360px;
+.verify-register-page,
+.verify-login-page {
   width: 100%;
-  .verifier-account-header {
-    position: sticky;
-    top: 0;
+  .register-header-wrapper {
+    margin-left: 0;
   }
-  .verifier-account-content {
-    padding: 0 24px;
-    width: auto;
+  .verifier-account {
+    width: 552px;
+    height: fit-content;
+    border-radius: 16px;
+    border: 1px solid @border-base1;
+    margin: 64px auto;
+    padding: 32px;
+    .verifier-account-header.common-header {
+      height: 40px;
+    }
+    .verifier-account-title {
+      font-size: 32px !important;
+      line-height: 38px;
+    }
   }
 }

@@ -1,15 +1,15 @@
-import { Button, Skeleton } from 'antd';
-import PromptFrame from 'pages/components/PromptFrame';
+// import { Button } from 'antd';
+// import PromptFrame from 'pages/components/PromptFrame';
 import CommonHeader from 'components/CommonHeader';
 import { useCommonState } from 'store/Provider/hooks';
 import clsx from 'clsx';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
 import { addressFormat } from '@portkey-wallet/utils';
 import Copy from 'components/Copy';
 import { formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
-import PromptEmptyElement from 'pages/components/PromptEmptyElement';
+// import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useLocationState, useNavigateState } from 'hooks/router';
 import { THomePageLocationState, TNFTLocationState, TSendLocationState } from 'types/router';
@@ -24,6 +24,9 @@ import { PopoverMenuList } from '@portkey-wallet/im-ui-web';
 import { useSetUserAvatar } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import singleMessage from 'utils/singleMessage';
 import './index.less';
+import { CustomSvgV3 } from 'components/CustomSvgV3';
+import { CommonButton } from '@portkey/did-ui-react';
+import TokenImageDisplay from 'pages/components/TokenImageDisplay';
 
 export default function NFT() {
   const navigate = useNavigateState<TSendLocationState | THomePageLocationState>();
@@ -69,8 +72,10 @@ export default function NFT() {
   });
 
   const renderBasicInfo = useMemo(() => {
-    const { tokenContractAddress, chainId } = nftDetail;
+    const { tokenContractAddress, chainId, chainImageUrl } = nftDetail;
     const formatTokenContractAds = addressFormat(tokenContractAddress, chainId, currentNetwork.walletType);
+
+    console.log('nftDetail', nftDetail);
     return (
       <div className="info basic-info">
         <div className="info-title">Basic Info</div>
@@ -78,12 +83,15 @@ export default function NFT() {
           <div className="label">Contract Address</div>
           <div className="contract-title flex">
             {formatTokenContractAds.replace(/(?<=^\w{8})\w+(?=\w{9})/, '...')}
-            <Copy toCopy={formatTokenContractAds} />
+            <Copy toCopy={formatTokenContractAds} iconType="copy" />
           </div>
         </div>
         <div className="chain info-item flex-between">
-          <div className="label">Blockchain</div>
-          <div>{transNetworkText(nftDetail.chainId, !isMainNet)}</div>
+          <div className="label">Network</div>
+          <div className="flex">
+            <TokenImageDisplay src={chainImageUrl} width={18} />
+            {transNetworkText(nftDetail.chainId, !isMainNet)}
+          </div>
         </div>
         <div className="info-item flex-between">
           <div className="label">Symbol</div>
@@ -142,22 +150,17 @@ export default function NFT() {
     return traitsPercentages ? (
       <div className="info traits-info">
         <div className="info-title">Traits</div>
-        {traitsPercentages.length === 0
-          ? new Array(3).fill('').map((_item, index) => (
-              <div key={`skeleton_${index}`} className="flex-column traits-info-skeleton">
-                <Skeleton.Avatar className="skeleton-title" shape="square" active />
-                <Skeleton.Avatar className="skeleton-desc" shape="square" active />
+        <div className="traits-items">
+          {traitsPercentages.map((trait, i) => (
+            <div key={`${trait.traitType}_${i}`} className="info-item">
+              <div className="label">
+                <div className="trait-type">{trait.traitType}</div>
+                <div className="label-bold">{trait.value}</div>
               </div>
-            ))
-          : traitsPercentages.map((trait, i) => (
-              <div key={`${trait.traitType}_${i}`} className="info-item flex-between-center">
-                <div className="label">
-                  <div>{trait.traitType}</div>
-                  <div className="label-bold">{trait.value}</div>
-                </div>
-                <div className="content">{trait.percent}</div>
-              </div>
-            ))}
+              <div className="content">{trait.percent}</div>
+            </div>
+          ))}
+        </div>
       </div>
     ) : null;
   }, [nftDetail]);
@@ -174,13 +177,19 @@ export default function NFT() {
       </div>
     ) : null;
   }, [nftDetail]);
+
+  const renderDescInfo = useMemo(() => {
+    const { description } = nftDetail;
+    return description && <div className="info description-info">{description}</div>;
+  }, [nftDetail]);
+
   const [popVisible, setPopVisible] = useState(false);
 
   const moreData = useMemo(() => {
     return [
       {
         key: 'profile',
-        leftIcon: <CustomSvg type="Profile" />,
+        leftIcon: <CustomSvgV3 type="profile" />,
         children: 'Set as Profile Photo',
         onClick: async () => {
           try {
@@ -210,63 +219,77 @@ export default function NFT() {
     document.addEventListener('click', hidePop);
     return () => document.removeEventListener('click', hidePop);
   }, [hidePop]);
+
+  const scrollableRef = useRef(null);
+
+  const [titleName, setTitleName] = useState('');
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const handleScroll = (e: any) => {
+    if (e.target.scrollTop > 530) {
+      setTitleName(nftDetail.alias);
+    } else {
+      setTitleName('');
+    }
+  };
+
   const mainContent = useCallback(() => {
     const { collectionName, collectionImageUrl, tokenId, imageUrl, symbol, balance, alias, decimals = 0 } = nftDetail;
     const seedTypeTag = getSeedTypeTag(nftDetail, NFTSizeEnum.large);
 
     return (
       <div id="nft-detail" className={clsx(['nft-detail', isPrompt && 'detail-page-prompt'])}>
-        <div className="nft-detail-body">
-          <CommonHeader
-            onLeftBack={() => navigate('/', { state: { key: BalanceTab.NFT } })}
-            rightElementList={[
-              {
-                customSvgWrapClassName: 'nft-detail-more',
-                customSvgType: 'More',
-                popoverProps: {
-                  overlayClassName: `nft-detail-popover ${isPrompt ? '' : 'nft-detail-popover-popup'}`,
-                  open: popVisible,
-                  trigger: 'click',
-                  showArrow: false,
-                  placement: 'bottomLeft',
-                  getPopupContainer: (triggerNode: any) => triggerNode.parentNode,
-                  content: <PopoverMenuList data={moreData} />,
-                },
-                onClick: () => setPopVisible(!popVisible),
+        <CommonHeader
+          onLeftBack={() => navigate('/', { state: { key: BalanceTab.NFT } })}
+          title={titleName}
+          rightElementList={[
+            {
+              customSvgWrapClassName: 'nft-detail-more',
+              customSvgType: 'more_verti',
+              popoverProps: {
+                overlayClassName: `nft-detail-popover ${isPrompt ? '' : 'nft-detail-popover-popup'}`,
+                open: popVisible,
+                trigger: 'click',
+                showArrow: false,
+                placement: 'bottomLeft',
+                getPopupContainer: (triggerNode: any) => triggerNode.parentNode,
+                content: <PopoverMenuList className="profile-popover" data={moreData} />,
               },
-            ]}
-          />
-          <div className="collection flex-start-center">
-            <div className="img">
-              {collectionImageUrl ? (
-                <img src={collectionImageUrl} />
-              ) : (
-                <div className="img-text flex-center">{collectionName?.slice(0, 1)}</div>
-              )}
-            </div>
-            <div className="name">{collectionName}</div>
-          </div>
-          <div className="token-id">{`${alias} #${tokenId}`}</div>
+              onClick: () => setPopVisible(!popVisible),
+            },
+          ]}
+        />
+        <div className="nft-detail-body" ref={scrollableRef} onScroll={handleScroll}>
           <div className="picture flex-center">
-            {seedTypeTag && <CustomSvg type={seedTypeTag} />}
             {imageUrl ? (
-              <img className="picture-common" src={imageUrl} />
+              // <img className="picture-common" src={imageUrl} />
+              <div className="picture-common" style={{ backgroundImage: `url(${imageUrl})` }}>
+                {seedTypeTag && <CustomSvg type={seedTypeTag} />}
+              </div>
             ) : (
               <div className="picture-text picture-common flex-center">{symbol?.slice(0, 1)}</div>
             )}
           </div>
-          <div className="nft-info flex-column">
-            {renderBasicInfo}
-            {renderIsSeedInfo}
-            {renderTraitsInfo}
-            {renderGenerationInfo}
-            {renderInscriptionInfo}
-          </div>
-        </div>
-        <div>
           <div className="btn-wrap flex-column-center">
-            <div className="balance">{`You have: ${formatTokenAmountShowWithDecimals(balance, decimals)}`}</div>
-            <Button
+            <div className="balance">{`You own: ${formatTokenAmountShowWithDecimals(balance, decimals)}`}</div>
+
+            <CommonButton
+              className="common-button"
+              type="primaryOutline"
+              block
+              onClick={() =>
+                navigate(`/send/nft/${symbol}`, {
+                  state: {
+                    ...nftDetail,
+                    address: nftDetail.tokenContractAddress,
+                    decimals: Number(nftDetail.decimals),
+                  },
+                })
+              }>
+              <CustomSvgV3 type="send" className="send-icon" />
+              <span>Send</span>
+            </CommonButton>
+            {/* <Button
               type="primary"
               onClick={() =>
                 navigate(`/send/nft/${symbol}`, {
@@ -278,9 +301,33 @@ export default function NFT() {
                 })
               }>
               Send
-            </Button>
+            </Button> */}
           </div>
-          {isPrompt && <PromptEmptyElement />}
+          <div className="token-id">{`${alias} #${tokenId}`}</div>
+          <div
+            className="collection flex-start-center"
+            onClick={() => {
+              const params: any = { state: { ...nftDetail } };
+              navigate('/collection', params);
+            }}>
+            <div className="img">
+              {collectionImageUrl ? (
+                <img src={collectionImageUrl} />
+              ) : (
+                <div className="img-text flex-center">{collectionName?.slice(0, 1)}</div>
+              )}
+            </div>
+            <div className="name">{collectionName}</div>
+            <CustomSvgV3 type="collection-arrow" />
+          </div>
+          {renderDescInfo}
+          <div className="nft-info flex-column">
+            {renderBasicInfo}
+            {renderIsSeedInfo}
+            {renderTraitsInfo}
+            {renderGenerationInfo}
+            {renderInscriptionInfo}
+          </div>
         </div>
       </div>
     );
@@ -289,13 +336,16 @@ export default function NFT() {
     isPrompt,
     popVisible,
     moreData,
+    handleScroll,
+    renderDescInfo,
     renderBasicInfo,
     renderIsSeedInfo,
     renderTraitsInfo,
     renderGenerationInfo,
     renderInscriptionInfo,
     navigate,
+    titleName,
   ]);
 
-  return <>{isPrompt ? <PromptFrame content={mainContent()} className="nft-detail-prompt" /> : mainContent()}</>;
+  return <>{mainContent()}</>;
 }

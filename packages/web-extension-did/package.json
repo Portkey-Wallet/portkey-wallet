@@ -1,6 +1,6 @@
 {
   "name": "web-extension-did",
-  "version": "2.6.0",
+  "version": "3.0.2",
   "description": "web-extension-did",
   "private": true,
   "dependencies": {
@@ -17,16 +17,16 @@
     "@portkey-wallet/store": "^1.3.0",
     "@portkey-wallet/types": "^1.3.0",
     "@portkey-wallet/utils": "^1.3.0",
-    "@portkey/accounts": "2.9.6-alpha.6",
-    "@portkey/did": "2.9.6-alpha.6",
-    "@portkey/did-ui-react": "2.9.6-alpha.6",
-    "@portkey/extension-provider": "2.2.4",
-    "@portkey/graphql": "2.9.6-alpha.6",
-    "@portkey/provider-types": "2.2.4",
-    "@portkey/provider-utils": "2.2.4",
-    "@portkey/providers": "2.2.4",
-    "@portkey/socket": "2.9.6-alpha.6",
-    "@portkey/types": "2.9.6-alpha.6",
+    "@portkey/accounts": "2.17.7-alpha.13",
+    "@portkey/did": "2.17.7-alpha.13",
+    "@portkey/did-ui-react": "2.17.7-alpha.13",
+    "@portkey/extension-provider": "2.3.5",
+    "@portkey/graphql": "2.17.7-alpha.13",
+    "@portkey/provider-types": "2.3.5",
+    "@portkey/provider-utils": "2.3.5",
+    "@portkey/providers": "2.3.5",
+    "@portkey/socket": "2.17.7-alpha.13",
+    "@portkey/types": "2.17.7-alpha.13",
     "@reduxjs/toolkit": "^1.8.5",
     "@sentry/browser": "^7.37.1",
     "@sentry/core": "^7.37.1",
@@ -154,7 +154,9 @@
     "pro": "rm -rf app/public && webpack --mode production && yarn copy-lib && node app/compressPublicFolder.js",
     "pro:watch": "webpack watch --mode production && yarn copy-lib",
     "prepare": "husky install",
-    "svg-handle": "node ./app/web/assets/getSvg1.js"
+    "svg-handle": "node ./app/web/assets/getSvg1.js",
+    "svg-handle-v3": "node ./app/web/assets/iconV3/getIconV3Svgs.js",
+    "svg-avatar-handle-v3": "node ./app/web/assets/iconV3/getIconV3AvatarsSvgs.js"
   },
   "ci": {
     "version": "8"

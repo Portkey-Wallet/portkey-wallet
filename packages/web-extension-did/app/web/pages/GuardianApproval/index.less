@@ -1,112 +1,80 @@
 @import '../../assets/theme/color.less';
 @import '../../assets/theme/constants.less';
 
+.guardian-approve-login-wrap {
+  .register-header-wrapper {
+    margin-left: 0;
+  }
+}
+
+.guardian-approve-login-page {
+  margin-top: 64px;
+  margin-bottom: 80px;
+  width: 552px;
+  min-height: 600px;
+  height: fit-content;
+  padding: 32px;
+  border: 1px solid @border-base1;
+  border-radius: 16px;
+  .guardian-approval-header {
+    height: 40px;
+  }
+}
+
 .guardian-approval-wrapper {
   .guardian-approval-content {
-    margin-bottom: 40px;
+    .error-icon {
+      height: 32px;
+      width: 32px;
+    }
     .title {
-      margin-bottom: 16px;
-      font-size: 40px;
-      line-height: 47px;
-      text-align: center;
+      font-size: 32px;
+      line-height: 38px;
+      color: @text-base1;
+      font-weight: 700;
+      font-family: BG;
     }
     .description {
-      margin-bottom: 42px;
+      color: @text-base2;
     }
   }
   .approve-count {
+    margin-top: 24px;
     line-height: 20px;
     font-size: 14px;
-    margin-bottom: 8px;
-    padding-bottom: 12px;
     color: @neutral-secondary-text;
-    border-bottom: 1px solid @neutral-divider;
-    .tooltip-icon {
+    .check-icon {
       margin-left: 8px;
-      width: 14px;
-      height: 14px;
+      width: 22px;
+      height: 22px;
     }
-    .already-approval {
-      color: @brand-normal;
+    .all-approval {
+      font-size: 16px;
+      color: @text-base1;
     }
-    .common-tooltip {
-      max-width: 272px;
+    .@{app-prefix}-progress-show-info .@{app-prefix}-progress-outer {
+      margin-top: 4px;
+      margin-right: 0;
+      padding-right: 0;
+    }
+    .@{app-prefix}-progress-inner {
+      background-color: @bg-neutral2;
+    }
+    .@{app-prefix}-progress-text {
+      display: none;
     }
   }
   .verifier-content {
-    padding-bottom: 24px;
-    .verifier-item {
-      position: relative;
-      padding: 24px 0;
-      border-bottom: 1px solid @neutral-divider;
-      &.verifier-item-disabled {
-        &::after {
-          content: '';
-          position: absolute;
-          width: 100%;
-          height: 100%;
-          background-color: @neutral-default-bg;
-          opacity: 0.3;
-          cursor: not-allowed;
-        }
-      }
-      .account-text {
-        margin-left: 12px;
-        line-height: 20px;
-        color: @neutral-primary-text;
-        font-size: 14px;
-        width: 0; // responsive text, to fix overflow
-        flex: 1;
-        .detail {
-          font-size: 12px;
-          line-height: 16px;
-          color: @neutral-secondary-text;
-        }
-      }
-      .account-text-one-row {
-        word-wrap: break-word;
-        .text-overflow(2);
-      }
-      .account-text-two-row {
-        .name,
-        .detail {
-          word-wrap: break-word;
-          .text-overflow(1);
-        }
-      }
-      .not-verified,
-      .verifying,
-      .@{app-prefix}-btn-text {
-        width: auto;
-        display: block;
-      }
-      .not-verified,
-      .verifying {
-        border-radius: 6px;
-        line-height: 24px;
-        font-size: 12px;
-        padding: 0 12px;
-        margin-left: 16px;
-      }
-      .@{app-prefix}-btn-text {
-        color: @brand-normal;
-        padding: 0;
-        margin-left: 16px;
-        &.verified {
-          color: @functional-success-default;
-        }
-        &.expired {
-          color: @neutral-disable-text;
-        }
-        &:hover {
-          background-color: transparent;
-        }
-        span {
-          line-height: 20px;
-          font-size: 14px;
-        }
-      }
+    margin-top: 24px;
+    .guardian-items-title {
+      margin: 16px 0 8px;
+      font-size: 14px;
+      line-height: 20px;
+      color: @text-base2;
     }
+  }
+  .circle-loading {
+    margin-top: 150px;
   }
   .popup-verifier-content {
     // max-height: 320px;
@@ -115,23 +83,12 @@
   .popup-verifier-content::-webkit-scrollbar {
     display: none;
   }
-  .login-icon {
-    position: absolute;
-    top: 0;
-    left: 0;
-    border-bottom-right-radius: 9px;
-    border-top-left-radius: 9px;
-    line-height: 18px;
-    background-color: @bg-4;
-    padding: 0 8px;
-    text-align: center;
-    color: @functional-warning-default;
-    font-size: 12px;
-  }
 
   .recovery-wallet-btn {
+    width: 100%;
+    height: 48px;
     line-height: 44px;
-    border-radius: 22px;
+    border-radius: 24px;
   }
 }
 .popup-page.guardian-approval-wrapper {
@@ -141,53 +98,9 @@
   }
   .guardian-approval-content {
     padding-top: 0;
-    margin: 0 24px;
+    margin: 0;
     width: auto;
     height: calc(100% - 64px);
-    .title {
-      height: 28px;
-      line-height: 28px;
-      color: @neutral-primary-text;
-      font-size: 24px;
-      margin-bottom: 4px;
-      text-align: center;
-    }
-    .description {
-      line-height: 20px;
-      color: @neutral-secondary-text;
-      font-size: 14px;
-      margin-bottom: 32px;
-    }
-  }
-  .approve-count {
-    .tooltip-icon {
-      margin-left: 8px;
-      width: 14px;
-      height: 14px;
-    }
-    .already-approval {
-      color: @brand-normal;
-    }
-    .common-tooltip {
-      max-width: 272px;
-    }
-  }
-  .verifier-content {
-    .verifier-item {
-      border-bottom: 1px solid @neutral-divider;
-    }
-  }
-  .btn-wrap {
-    position: fixed;
-    bottom: 0;
-    margin-left: -24px;
-    width: 100vw;
-    border-top: 1px solid @neutral-divider;
-    padding: 16px;
-    background-color: @neutral-default-bg;
-    button {
-      height: 48px;
-    }
   }
   .recovery-wallet-btn-wrap {
     padding-bottom: 24px;

@@ -1,4 +1,5 @@
 import { ChainId } from '..';
+import { IContactItemType } from './contactNew';
 import { CaHolderInfo, LoginType } from './wallet';
 
 export interface AddressItem {
@@ -83,14 +84,7 @@ export type ContactIndexType = Pick<ContactItemType, 'index'> & { contacts: Cont
 
 export type ContactMapType = { [key: string]: ContactItemType[] };
 
-export interface IClickAddressProps {
-  name?: string;
-  isDisable?: boolean;
-  chainId: ChainId;
-  chainName?: string;
-  addressChainId?: string;
-  address: string;
-}
+export type IClickAddressProps = RecentAddressItem | IContactItemType;
 
 export interface IContactPrivacy {
   id?: string;

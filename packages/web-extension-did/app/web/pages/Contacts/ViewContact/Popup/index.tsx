@@ -3,33 +3,11 @@ import './index.less';
 import ViewContactBody from 'pages/Contacts/components/ViewContactBody';
 import { IProfileDetailProps } from 'types/Profile';
 
-export default function ViewContactPopup({
-  headerTitle,
-  goBack,
-  data,
-  editText,
-  chatText,
-  addedText,
-  addContactText,
-  morePopListData,
-  handleEdit,
-  handleChat,
-  handleAdd,
-}: IProfileDetailProps) {
+export default function ViewContactPopup({ headerTitle, goBack, data }: IProfileDetailProps) {
   return (
     <div className="view-contact-popup">
       <CommonHeader title={headerTitle} onLeftBack={goBack} />
-      <ViewContactBody
-        data={data}
-        editText={editText}
-        chatText={chatText}
-        addedText={addedText}
-        addContactText={addContactText}
-        handleEdit={handleEdit}
-        handleChat={handleChat}
-        handleAdd={handleAdd}
-        morePopListData={morePopListData}
-      />
+      <ViewContactBody data={data} />
     </div>
   );
 }

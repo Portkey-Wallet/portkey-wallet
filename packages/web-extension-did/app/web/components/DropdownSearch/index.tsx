@@ -1,6 +1,6 @@
 import { Dropdown, DropdownProps, Input, InputProps } from 'antd';
 import clsx from 'clsx';
-import CustomSvg from 'components/CustomSvg';
+import { CustomSvgV3 } from 'components/CustomSvgV3';
 import './index.less';
 
 interface DropdownSearchProps extends DropdownProps {
@@ -17,15 +17,20 @@ export default function DropdownSearch({
   onPressEnter,
   ...props
 }: DropdownSearchProps) {
+  const clearValue: any = () => {
+    if (inputProps?.onChange) {
+      const value: any = { target: { value: '' } };
+      inputProps?.onChange(value);
+    }
+  };
   return (
     <div className={clsx('dropdown-search-wrapper', 'web-dropdown-search', wrapperClassName)}>
       <Dropdown overlayClassName="empty-dropdown" {...props}>
         <Input
           value={value}
-          allowClear
           onPressEnter={onPressEnter}
           // eslint-disable-next-line no-inline-styles/no-inline-styles
-          prefix={<CustomSvg type="SearchBlur" style={{ width: 20, height: 20 }} />}
+          suffix={value ? <CustomSvgV3 type="Remove" onClick={clearValue} /> : <CustomSvgV3 type="SearchBlur" />}
           {...inputProps}
         />
       </Dropdown>

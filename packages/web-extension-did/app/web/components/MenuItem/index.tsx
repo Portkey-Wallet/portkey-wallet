@@ -1,7 +1,7 @@
 import clsx from 'clsx';
-import CustomSvg from 'components/CustomSvg';
 import { ReactNode } from 'react';
 import './index.less';
+import { CustomSvgV3 } from 'components/CustomSvgV3';
 
 export interface MenuItemProps {
   icon?: ReactNode;
@@ -24,7 +24,7 @@ export default function MenuItem({
     <div className={clsx('menu-item', className)} style={{ height }} onClick={onClick}>
       {icon && <div className="icon-area">{icon}</div>}
       <span className="menu-item-title">{children}</span>
-      {showEnterIcon && <CustomSvg className="enter-btn" type="Arrow" />}
+      {showEnterIcon && <CustomSvgV3 className="enter-btn" type="chevron_right" fillColor="#B2B2B2" />}
     </div>
   );
 }

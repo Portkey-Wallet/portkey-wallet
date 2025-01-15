@@ -1,10 +1,11 @@
+import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
+import { IContract } from '@portkey/types';
 import { TLimitData, TokenInfo } from './index';
-import { ContractBasic } from '@portkey/contracts';
 
 export interface ICreateReceiptParams {
   tokenContract: ContractBasic;
   portkeyContract: ContractBasic;
-  // bridgeContract: ContractBasic;
+  bridgeContract?: IContract;
   targetAddress: string;
   amount: string;
   owner: string;
@@ -27,7 +28,7 @@ export interface ICheckAndApproveParams {
 }
 
 export interface IBridgeOperator {
-  getFromLimit(toChainId: string, target: string): Promise<TLimitData>;
+  getFromLimit(toChainId: string, target: string, bridgeContract?: IContract): Promise<TLimitData>;
   getToLimit(toChainId: string, target: string): Promise<TLimitData>;
   createReceipt(params: ICreateReceiptHandlerParams): Promise<any>;
 }

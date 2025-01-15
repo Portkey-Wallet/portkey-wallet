@@ -65,7 +65,7 @@ export function useRecent() {
       const list = result
         .map(ele => {
           // nft adjust
-          if (!isFt && !!ele.network && ele.network !== 'aelf') return;
+          if (!isFt && !!ele.network && ele.network !== 'aelf') return null;
 
           const addr = getAelfAddress(ele.address);
 
@@ -99,12 +99,21 @@ export function useRecent() {
               caHolderInfo: userInfo,
             };
           }
+          return ele;
         })
         .filter(i => !!i);
 
-      return list;
+      return (list || []) as TFormattedRecentItem[];
     },
     [caAddressInfos, contactMapNew, getFilterRecentList, userInfo],
+  );
+
+  const checkAddressIsRecent = useCallback(
+    (props: { fromChainId: ChainId; tokenId: string; isFt: boolean; address: string }) => {
+      const _list = getFilterRecentList(props);
+      return !!_list.find(ele => ele.address === props.address);
+    },
+    [getFilterRecentList],
   );
 
   const addRecent = useCallback(
@@ -118,5 +127,5 @@ export function useRecent() {
     return dispatch(resetTargetNetworkRecent(currentNetwork));
   }, [currentNetwork, dispatch]);
 
-  return { getTransformedRecentList, getRecentList, addRecent, resetRecentCurrentNetwork };
+  return { getTransformedRecentList, getRecentList, addRecent, checkAddressIsRecent, resetRecentCurrentNetwork };
 }

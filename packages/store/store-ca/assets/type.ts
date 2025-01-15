@@ -12,11 +12,11 @@ export interface ITokenInfoType {
 
 export interface INftInfoType {
   imageUrl: string;
-  alias: string;
-  tokenId: string;
+  alias?: string;
+  tokenId?: string;
   tokenName?: string;
   collectionName?: string;
-  balance: string;
+  balance?: string;
   chainId: string;
   decimals: number;
   seedType?: SeedTypeEnum;
@@ -24,6 +24,8 @@ export interface INftInfoType {
   tokenContractAddress?: string;
   displayChainName?: string;
   chainImageUrl?: string;
+  symbol: string;
+  label?: string;
 }
 
 export interface IAssetItemType {

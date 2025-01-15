@@ -9,6 +9,7 @@
   align-items: center;
   gap: 4px;
   cursor: pointer;
+  background-color: @bg-base1;
 
   .swap-select-token-button-image-wrap {
     padding-right: 5px;
@@ -44,6 +45,20 @@
     height: 20px;
   }
 
+  .portkey-ant-drawer-body,
+  .portkey-ant-modal-content {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .swap-select-token-modal-wrap,
+  .portkey-ant-modal-body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
+  }
+
   .swap-select-token-modal-title {
     margin-top: 16px;
     height: 32px;
@@ -55,6 +70,7 @@
     font-weight: 700;
     padding: 0 16px;
     margin-bottom: 12px;
+    font-family: BG;
   }
 
   .swap-select-token-modal-input-wrap {
@@ -78,7 +94,7 @@
 
   .swap-select-token-modal-body {
     margin-top: 12px;
-    max-height: 66vh;
+    flex: 1;
     overflow: auto;
     padding-bottom: 16px;
   }

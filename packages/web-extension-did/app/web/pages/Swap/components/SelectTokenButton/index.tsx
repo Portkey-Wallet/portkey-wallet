@@ -77,35 +77,38 @@ export const SelectTokenButton = ({ className, modalTitle, token, onTokenChange 
 
       <CommonModal
         className="swap-select-token-modal"
+        maskClosable={true}
         open={isShow}
         onClose={() => {
           setIsShow(false);
         }}>
-        <div className="swap-select-token-modal-title">{modalTitle}</div>
+        <div className="swap-select-token-modal-wrap">
+          <div className="swap-select-token-modal-title">{modalTitle}</div>
 
-        <div className="swap-select-token-modal-input-wrap">
-          <Input
-            className="swap-select-token-modal-input"
-            type="search"
-            placeholder="Search"
-            value={keyword}
-            onChange={(e) => {
-              const v = e.target.value.trim();
-              setKeyword(v);
-            }}
-            suffix={inputSuffix}
-          />
-        </div>
-
-        {filterList.length ? (
-          <div className="swap-select-token-modal-body">
-            {filterList.map((item) => (
-              <CurrencyItem key={`${item.symbol}${item.chainId}`} item={item} onClick={handleSelect} />
-            ))}
+          <div className="swap-select-token-modal-input-wrap">
+            <Input
+              className="swap-select-token-modal-input"
+              type="search"
+              placeholder="Search"
+              value={keyword}
+              onChange={(e) => {
+                const v = e.target.value.trim();
+                setKeyword(v);
+              }}
+              suffix={inputSuffix}
+            />
           </div>
-        ) : (
-          <div className="swap-select-token-modal-empty">No tokens available</div>
-        )}
+
+          {filterList.length ? (
+            <div className="swap-select-token-modal-body">
+              {filterList.map((item) => (
+                <CurrencyItem key={`${item.symbol}${item.chainId}`} item={item} onClick={handleSelect} />
+              ))}
+            </div>
+          ) : (
+            <div className="swap-select-token-modal-empty">No tokens available</div>
+          )}
+        </div>
       </CommonModal>
     </div>
   );

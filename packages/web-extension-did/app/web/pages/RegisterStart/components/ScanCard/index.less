@@ -2,28 +2,28 @@
 @import '../../../../assets/theme/constants.less';
 
 .scan-card {
-  width: 406px;
-  height: 474px;
-  padding: 0 20px 24px;
-  border-radius: 6px;
-  background-color: @neutral-default-bg;
-  box-shadow: @box-shadow5;
   position: relative;
   display: flex;
   flex-direction: column;
+  .scan-text-inner {
+    display: none;
+  }
+  .scan-text-header {
+    margin-top: 16px;
+    font-size: 32px;
+    line-height: 38px;
+    font-weight: 700;
+    font-family: BG;
+  }
+  .scan-text-desc {
+    margin: 16px 0 32px;
+    font-size: 14px;
+    line-height: 20px;
+    color: @text-base2;
+  }
   .scan-card-inner {
-    flex: 1;
-    .scan-title {
-      padding-top: 80px;
-      padding-bottom: 8px;
-      .back-icon-wrapper {
-        right: -16px;
-      }
-    }
-    .pc-icon {
-      width: 80px;
-      height: 80px;
-      border-radius: 8px;
+    .scan-card-content {
+      margin: 16px 0;
     }
   }
 }

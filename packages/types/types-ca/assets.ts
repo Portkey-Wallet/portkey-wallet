@@ -21,6 +21,7 @@ export type NFTCollectionItemBaseType = {
   seedOwnedSymbol?: string;
   chainImageUrl?: string;
   displayChainImage?: boolean;
+  displayChainName?: string;
 };
 
 export interface NFTCollectionItemShowType extends NFTCollectionItemBaseType {
@@ -43,7 +44,7 @@ export type NFTItemBaseType = {
   imageUrl: string;
   tokenContractAddress: string;
   totalSupply: string | number;
-  decimals?: string;
+  decimals?: string | number;
   isSeed?: boolean;
   seedType?: SeedTypeEnum;
   inscriptionName?: string;

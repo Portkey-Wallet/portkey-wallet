@@ -1,25 +1,26 @@
-.manager-approve-page {
-  margin: auto;
-  width: 328px;
+@import '../../assets/theme/color.less';
 
-  .manager-approval-wrapper {
-    .manager-approval-guardian-approve {
-      .verifier-account-wrapper {
-        padding: 0 16px;
-        .portkey-ui-code-verify-passcode {
-          .adm-passcode-input.adm-passcode-input-seperated {
-            display: flex;
-            justify-content: center;
-            .adm-passcode-input-cell-container {
-              justify-content: space-between;
-              max-width: 408px;
-              .adm-passcode-input-cell {
-                width: auto;
-                min-width: 36px;
-                margin-right: 0;
-                flex: 0 1;
-                flex-basis: 44px;
-              }
+.manager-approval-wrapper {
+  min-height: 100%;
+  padding: 24px 0;
+  overflow: auto;
+
+  .manager-approval-guardian-approve {
+    .verifier-account-wrapper {
+      padding: 0 16px;
+      .portkey-ui-code-verify-passcode {
+        .adm-passcode-input.adm-passcode-input-seperated {
+          display: flex;
+          justify-content: center;
+          .adm-passcode-input-cell-container {
+            justify-content: space-between;
+            max-width: 408px;
+            .adm-passcode-input-cell {
+              width: auto;
+              min-width: 36px;
+              margin-right: 0;
+              flex: 0 1;
+              flex-basis: 44px;
             }
           }
         }
@@ -29,7 +30,7 @@
 }
 
 @media screen and (max-width: 768px) {
-  .manager-approve-page {
-    width: 360px;
+  .manager-approval-wrapper {
+    padding-bottom: 16px;
   }
 }

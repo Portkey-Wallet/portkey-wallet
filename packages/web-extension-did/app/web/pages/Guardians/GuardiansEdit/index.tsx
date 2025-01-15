@@ -1,7 +1,7 @@
 import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useAppDispatch, useGuardiansInfo, useLoading, useLoginInfo } from 'store/Provider/hooks';
+import { useAppDispatch, useCommonState, useGuardiansInfo, useLoginInfo } from 'store/Provider/hooks';
 import CustomSelect from 'pages/components/CustomSelect';
 import { useCurrentWallet, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import {
@@ -11,17 +11,14 @@ import {
   setUserGuardianItemStatus,
 } from '@portkey-wallet/store/store-ca/guardians/actions';
 import useGuardianList from 'hooks/useGuardianList';
-import { LoginType, isZKLoginSupported } from '@portkey-wallet/types/types-ca/wallet';
+import { isZKLoginSupported, LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { setLoginAccountAction } from 'store/reducers/loginCache/actions';
 import { OperationTypeEnum, VerifierItem, zkLoginVerifierItem } from '@portkey-wallet/types/verifier';
 import BaseVerifierIcon from 'components/BaseVerifierIcon';
 import { handleErrorMessage } from '@portkey-wallet/utils';
-import GuardianEditPrompt from './Prompt';
 import GuardianEditPopup from './Popup';
-import CustomModal from '../../components/CustomModal';
-import { useCommonState } from 'store/Provider/hooks';
 import AccountShow from '../components/AccountShow';
-import { VerifierStatusItem, getVerifierStatusMap, guardianIconMap } from '../utils';
+import { getVerifierStatusMap, guardianIconMap, VerifierStatusItem } from '../utils';
 import { verification } from 'utils/api';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 import { useSocialVerify } from 'pages/GuardianApproval/hooks/useSocialVerify';
@@ -34,6 +31,9 @@ import { FromPageEnum, TGuardianApprovalLocationState, TVerifierAccountLocationS
 import BaseGuardianTypeIcon from 'components/BaseGuardianTypeIcon';
 import { getOperationDetails } from '@portkey-wallet/utils/operation.util';
 import './index.less';
+import { CustomModalBottom } from '../../components/CustomModalBottom';
+import { CustomSvgV3 } from '../../../components/CustomSvgV3';
+import { HelpIcon } from '../components/HelpIcon';
 
 export default function GuardiansEdit() {
   const { t } = useTranslation();
@@ -60,8 +60,9 @@ export default function GuardiansEdit() {
   const { walletInfo } = useCurrentWallet();
   const userGuardianList = useGuardianList();
   const dispatch = useAppDispatch();
-  const { setLoading } = useLoading();
-  const { isNotLessThan768 } = useCommonState();
+  // const { setLoading } = useLoading();
+  const [loading, setLoading] = useState(false);
+  const { isPrompt } = useCommonState();
   const isPhoneType = useMemo(() => preGuardian?.guardianType === LoginType.Phone, [preGuardian?.guardianType]);
   const isSocialGuardian = useMemo(
     () =>
@@ -75,10 +76,10 @@ export default function GuardiansEdit() {
   const selectOptions = useMemo(
     () =>
       Object.values(verifierStatusMap ?? {})?.map((item: VerifierStatusItem) => {
-        let disabled = false;
+        let disabled: boolean;
         if (isZKLoginSupported(preGuardian?.guardianType || 0)) {
-          const abled = item.id === preGuardian?.verifier?.id || item.name === zkLoginVerifierItem.name;
-          disabled = !abled;
+          const enabled = item.id === preGuardian?.verifier?.id || item.name === zkLoginVerifierItem.name;
+          disabled = !enabled;
         } else {
           disabled = (!!item.isUsed && item.id !== preGuardian?.verifier?.id) || item.name === zkLoginVerifierItem.name;
         }
@@ -88,12 +89,14 @@ export default function GuardiansEdit() {
             <div className={clsx(['flex', 'verifier-option', disabled && 'no-use'])}>
               <BaseVerifierIcon fallback={item.name[0]} src={item.imageUrl} />
               <span className="title">{item.name}</span>
+              {/*{selectVal === item.id && <div className="current-tag">{t('Current')}</div>}*/}
+              {preGuardian?.verifier?.id === item.id && <div className="current-tag">{t('Current')}</div>}
             </div>
           ),
           disabled,
         };
       }),
-    [preGuardian?.guardianType, preGuardian?.verifier?.id, verifierStatusMap],
+    [preGuardian?.guardianType, preGuardian?.verifier?.id, t, verifierStatusMap],
   );
   const originChainId = useOriginChainId();
   const { loginAccount } = useLoginInfo();
@@ -133,10 +136,7 @@ export default function GuardiansEdit() {
     }
     const { verifierMap, userGuardiansList } = guardiansSaveRef.current;
     const _verifierStatusMap = getVerifierStatusMap(verifierMap, userGuardiansList);
-    const _verifierIsExist = Object.values(_verifierStatusMap).some(
-      (verifier) => verifier.id === selectVal && verifier.isUsed,
-    );
-    return _verifierIsExist;
+    return Object.values(_verifierStatusMap).some((verifier) => verifier.id === selectVal && verifier.isUsed);
   }, [selectVal, setLoading, userGuardianList, walletInfo.caHash]);
 
   const guardiansChangeHandler = useCallback(async () => {
@@ -338,7 +338,8 @@ export default function GuardiansEdit() {
     if (isSocialGuardian) {
       handleSocialVerify();
     } else {
-      CustomModal({
+      CustomModalBottom({
+        isPrompt,
         type: 'confirm',
         okText: 'Confirm',
         content: (
@@ -356,6 +357,7 @@ export default function GuardiansEdit() {
     handleCommonVerify,
     handleSocialVerify,
     isPhoneType,
+    isPrompt,
     isSocialGuardian,
     opGuardian?.guardianAccount,
     opGuardian?.verifier?.name,
@@ -369,12 +371,14 @@ export default function GuardiansEdit() {
     const isLoginAccountList = userGuardiansList?.filter((item) => item.isLoginAccount) || [];
     if (opGuardian?.isLoginAccount) {
       if (isLoginAccountList.length === 1) {
-        CustomModal({
+        CustomModalBottom({
+          isPrompt: true,
           type: 'info',
           content: <>{t('This guardian is the only login account and cannot be removed')}</>,
         });
       } else {
-        CustomModal({
+        CustomModalBottom({
+          isPrompt,
           type: 'confirm',
           content: (
             <>
@@ -388,7 +392,8 @@ export default function GuardiansEdit() {
         });
       }
     } else {
-      CustomModal({
+      CustomModalBottom({
+        isPrompt,
         type: 'confirm',
         content: (
           <div>
@@ -400,7 +405,7 @@ export default function GuardiansEdit() {
         onOk: removeHandler,
       });
     }
-  }, [opGuardian?.isLoginAccount, removeHandler, unsetLoginGuardian, t, userGuardiansList]);
+  }, [userGuardiansList, opGuardian?.isLoginAccount, t, isPrompt, unsetLoginGuardian, removeHandler]);
 
   const renderContent = useMemo(
     () => (
@@ -408,39 +413,48 @@ export default function GuardiansEdit() {
         <div>
           <div className="input-item">
             <div className="label">{`Guardian ${LoginType[opGuardian?.guardianType || 0]}`}</div>
-            <div className="control">
-              <BaseGuardianTypeIcon type={guardianIconMap[opGuardian?.guardianType || 0]} />
-              <AccountShow guardian={opGuardian} />
+            <div className="common-card control">
+              <div className="flex-row-center">
+                <BaseGuardianTypeIcon type={guardianIconMap[opGuardian?.guardianType || 0]} />
+                <AccountShow guardian={opGuardian} />
+              </div>
             </div>
           </div>
           <div className="input-item">
-            <p className="label">{t('Verifier')}</p>
+            <div className="label flex-row-center verifier-content">
+              {t('Verifier')}
+              <HelpIcon />
+            </div>
             <CustomSelect
-              className={clsx('select', isZK && 'select-zklogin-verify')}
+              className={clsx('select-network', isZK && 'select-zklogin-verify')}
               value={selectVal}
               onChange={handleChange}
               items={selectOptions}
               customChild={OptionTip()}
+              disabled={isZK}
+              title={t('Select verifier')}
             />
             {verifierExist && <div className="error">{verifierExistTip}</div>}
           </div>
         </div>
-        <div className="btn-wrap">
-          <Button className="warning" onClick={checkRemove}>
-            {t('Remove')}
-          </Button>
-          <Button onClick={guardiansChangeHandler} disabled={isZK || disabled} type="primary">
-            {t('Send Request')}
-          </Button>
-        </div>
+        {!isZK && (
+          <div className="btn-wrap">
+            {/*<Button className="warning" onClick={checkRemove}>*/}
+            {/*  {t('Remove')}*/}
+            {/*</Button>*/}
+            <Button onClick={guardiansChangeHandler} disabled={isZK || disabled} loading={loading} type="primary">
+              {t('Verify with guardian')}
+            </Button>
+          </div>
+        )}
       </div>
     ),
     [
-      checkRemove,
       disabled,
       guardiansChangeHandler,
       handleChange,
       isZK,
+      loading,
       opGuardian,
       selectOptions,
       selectVal,
@@ -448,18 +462,15 @@ export default function GuardiansEdit() {
       verifierExist,
     ],
   );
-  const headerTitle = useMemo(() => t('Edit Guardians'), [t]);
-  const onBack = useCallback(() => {
-    navigate('/setting/guardians/view');
-  }, [navigate]);
-  const props = useMemo(
-    () => ({
-      headerTitle,
-      onBack,
-      renderContent,
-    }),
-    [headerTitle, onBack, renderContent],
-  );
 
-  return isNotLessThan768 ? <GuardianEditPrompt {...props} /> : <GuardianEditPopup {...props} />;
+  return (
+    <GuardianEditPopup
+      headerTitle={t('Edit Guardians')}
+      onBack={() => navigate('/setting/guardians/view')}
+      renderContent={renderContent}
+      rightElementList={[
+        <CustomSvgV3 key="delete" type="delete" className="delete-icon" onClick={checkRemove} fillColor="#EB7D50" />,
+      ]}
+    />
+  );
 }

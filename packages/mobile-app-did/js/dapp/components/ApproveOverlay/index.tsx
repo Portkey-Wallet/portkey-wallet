@@ -29,6 +29,9 @@ import { makeStyles, useTheme } from '@rneui/themed';
 import CommonTooltip from 'components/CommonTooltip';
 import TitleInfoSection from '../TitleInfoSection';
 import { KeyboardSafeArea } from 'components/KeyboardSafeArea';
+import { CommonPromptCard, PromptCardType } from 'components/CommonPromptCard';
+import { useDappSpenderCheck } from '@portkey-wallet/hooks/hooks-ca/discover';
+import { getFaviconUrl } from '@portkey-wallet/utils/dapp/browser';
 
 type SignModalPropsType = {
   dappInfo: DappStoreItem;
@@ -36,18 +39,23 @@ type SignModalPropsType = {
   onReject: () => void;
   isEditBatchApprovalInApp?: boolean;
 };
-
+// Contract update time: Oct 15, 2024, at 17:07 The dApp's smart contract has been updated. Please proceed with caution.
 const ZERO_MESSAGE = 'Please enter a valid amount.';
 const ApproveModal = (props: SignModalPropsType) => {
   const { dappInfo, approveParams, onReject, isEditBatchApprovalInApp } = props;
-  const { amount, targetChainId } = approveParams.approveInfo;
+  const { amount, targetChainId, spender } = approveParams.approveInfo;
   const dispatch = useAppDispatch();
   const { t } = useLanguage();
   const [errorMessage, setErrorMessage] = useState('');
   const [symbolNum, setSymbolNum] = useState<string>('');
   const styles = getStyles();
   const { theme } = useTheme();
-
+  const checkResult = useDappSpenderCheck(
+    dappInfo.origin,
+    spender,
+    dappInfo.icon || getFaviconUrl(dappInfo.origin),
+    targetChainId,
+  );
   const decimals = useMemo(() => approveParams.approveInfo.decimals, [approveParams.approveInfo.decimals]);
 
   const approveSymbol = useMemo(
@@ -165,7 +173,7 @@ const ApproveModal = (props: SignModalPropsType) => {
       }
       onClose={onReject}
       onTouchStart={Keyboard.dismiss}>
-      <View style={styles.contentWrap}>
+      <View style={[styles.contentWrap, checkResult.show && GStyles.paddingBottom(86)]}>
         <View style={styles.inputWrap}>
           <View style={[GStyles.flexRow, GStyles.itemCenter, { marginBottom: pTd(8) }]}>
             <TextL style={{ lineHeight: pTd(22) }}>{t('Token allowance')}</TextL>
@@ -221,6 +229,13 @@ const ApproveModal = (props: SignModalPropsType) => {
               <TextM style={{ color: theme.colors.textBrand1 }}>Max</TextM>
             </Touchable>
           </View>
+          {checkResult.show && (
+            <CommonPromptCard
+              style={{ marginTop: pTd(8) }}
+              type={checkResult.type === 'warning' ? PromptCardType.WARNING : PromptCardType.INFO}
+              description={checkResult.text}
+            />
+          )}
         </View>
       </View>
       <OverlayBottomSection bottomButtonGroup={ButtonList} />

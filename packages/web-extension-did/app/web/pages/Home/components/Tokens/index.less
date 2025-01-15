@@ -5,9 +5,11 @@
     .token-list-item {
       gap: 10px;
       cursor: pointer;
-      padding: 12px 16px;
+      padding: 16px 0 !important;
+      font-variant: normal;
+      font-feature-settings: normal;
       .more-wrapper {
-        background-color: @brand-light;
+        background-color: @bg-base1;
         border-radius: 4px;
         width: 20px;
         height: 20px;
@@ -19,9 +21,27 @@
         background-color: transparent;
       }
       &:hover {
-        background-color: @neutral-hover-bg;
+        background-color: @bg-base1;
+      }
+      .logos {
+        position: relative;
+        .logo-number-box {
+          position: absolute;
+          bottom: -3px;
+          right: -4px;
+        }
+        .logo-number {
+          width: 20px;
+          height: 20px;
+          border-radius: 100%;
+          border: 1px solid @border-base3;
+          background-color: @text-base1;
+          text-align: center;
+          font-size: 12px;
+        }
       }
 
+      
       @media screen and (min-width: 768px) {
         padding: 24px;
       }
@@ -35,7 +55,7 @@
           gap: 4px;
           span {
             font-size: 16px;
-            color: @neutral-primary-text;
+            color: @text-base1;
             line-height: 24px;
             word-break: break-all;
             .text-overflow(1);
@@ -44,9 +64,9 @@
         .amount {
           gap: 4px;
           span {
-            font-size: 12px;
+            font-size: 14px;
             line-height: 16px;
-            color: @neutral-tertiary-text;
+            color: @text-opacity70;
             word-break: break-all;
             .text-overflow(1);
           }
@@ -56,12 +76,17 @@
   .add-token-wrapper {
     height: 64px;
     margin-bottom: 24px;
+    .manage-token-icon {
+     width: 16px;
+     height: 16px;
+    }
     .add-token-text {
+      padding-left: 8px;
       font-size: 14px;
       line-height: 22px;
-      color: @brand-normal;
+      color: @text-brand1;
       cursor: pointer;
-    } 
+    }
 
     @media screen and (min-width: 768px) {
       margin-bottom: 40px;
@@ -73,57 +98,85 @@
     }
   }
   .item-wrapper{
-    padding-left: 16px;
-    margin-right: 16px;
+    background-color: @bg-base1;
     .container {
+      padding: 16px 0 16px 16px!important;
       width: 100%;
-      height: 48px;
-      padding-left: 12px;
-      padding-right: 12px;
-      background: #f5f6f7;
+      background: transparent;
       border-radius: 8px;
       display: inline-flex;
       justify-content: flex-start;
       align-items: center;
       gap: 12px;
+      background-color: @bg-base1;
     }
     .margin-top-4px{
       margin-top: 4px;
     }
     .row {
       width: 100%;
+      .row-first {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        .symbol-logo {
+          flex-shrink: 0;
+          position: relative;
+          .chain-logo {
+            position: absolute;
+            bottom: -3px;
+            right: -4px;
+          }
+        }
+      }
       .amount-container {
         flex: 1 1 0;
         height: 22px;
         display: flex;
         justify-content: flex-start;
-        align-items: center;
+        align-items: right;
+        flex-direction: column;
         gap: 2px;
+        font-variant: normal;
+        font-feature-settings: normal;
         .amount {
           flex: 1 1 0;
           text-align: right;
-          color: #101114;
-          font-size: 14px;
-          font-family: Roboto-Regular;
-          font-weight: 400;
+          color: @text-base1;
+          font-size: 16px;
+          font-weight: 600;
           line-height: 22px;
           word-wrap: break-word;
+          span {
+            font-size: 14px;
+            line-height: 16px;
+            color: @text-opacity70;
+          }
         }
       }
     }
-    
+
     .text {
       flex: 1 1 0;
-      color: #55585e;
-      font-size: 14px;
-      font-family: Roboto-Regular;
-      font-weight: 400;
+      color: @text-base1;
       line-height: 22px;
       word-wrap: break-word;
+      .symbol {
+        font-size: 16px;
+        color: @text-base1;
+        font-weight: 400;
+      }
+      .chain-desc {
+        font-size: 14px;
+        color: @text-opacity70;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
     }
   }
   .@{app-prefix}-collapse {
-    background-color: @neutral-default-bg;
+    background-color: @bg-base1;
     border: none;
     .@{app-prefix}-collapse-item {
       border: none;
@@ -132,13 +185,13 @@
         align-items: center;
         padding: 0;
         &:hover {
-          background-color: @neutral-hover-bg;
+          background-color: @bg-base1;
         }
         .@{app-prefix}-collapse-expand-icon {
           display: none;
           width: 16px;
           height: 16px;
-         
+
         }
         .@{app-prefix}-collapse-header-text {
           overflow: hidden;
@@ -163,6 +216,12 @@
       .@{app-prefix}-collapse-header {
         padding: 0;
       }
+    }
+  }
+  .item-wrapper{
+    background-color: @bg-base1;
+    .container {
+      padding: 16px 24px 16px 32px!important
     }
   }
 }

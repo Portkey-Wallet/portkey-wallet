@@ -48,6 +48,9 @@ export const checkIsSvgUrl = (imgUrl: string) => {
   return /.svg$/.test(imgUrl);
 };
 
+export const checkIsSvgContent = (imgContent: string) => {
+  return /<svg[\s\S]*?>/.test(imgContent);
+};
 /**
  * A method to determine whether a number is within an interval, like (10,100]
  * @param num

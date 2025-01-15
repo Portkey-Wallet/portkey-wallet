@@ -72,6 +72,7 @@ const useCheckVerifier = () => {
               key: _key,
               identifierHash: '',
               salt: '',
+              type: '',
             }),
           );
           navigate('/register/verifier-account', {

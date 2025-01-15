@@ -1,8 +1,6 @@
 import { addDapp } from '@portkey-wallet/store/store-ca/dapp/actions';
 import { Button } from 'antd';
-import CustomSvg from 'components/CustomSvg';
 import usePromptSearch from 'hooks/usePromptSearch';
-import ImageDisplay from 'pages/components/ImageDisplay';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useWalletInfo } from 'store/Provider/hooks';
@@ -15,8 +13,12 @@ import getManager from 'utils/getManager';
 import { useCheckSiteIsInBlackList } from '@portkey-wallet/hooks/hooks-ca/cms';
 import AsyncButton from 'components/AsyncButton';
 import './index.less';
-
-const allowItem = ['view wallet balance and activities', 'send you transaction requests'];
+import { useDappInfo } from '@portkey-wallet/hooks/hooks-ca/discover';
+import { DappSiteInfo } from 'pages/components/DappSiteInfo';
+import { CommonPromptCard } from '@portkey/did-ui-react';
+import { PromptCardType } from 'pages/Send';
+import Avatar from 'pages/components/Avatar';
+import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 
 export default function ConnectWallet() {
   const detail = usePromptSearch();
@@ -28,34 +30,7 @@ export default function ConnectWallet() {
   const [exp, setExp] = useState<SessionExpiredPlan>(SessionExpiredPlan.hour1);
   const updateSessionInfo = useUpdateSessionInfo();
   const checkOriginInBlackList = useCheckSiteIsInBlackList();
-
-  const renderSite = useMemo(
-    () =>
-      detail && (
-        <div className="site flex-center">
-          <ImageDisplay defaultHeight={24} className="icon" src={detail.appLogo} backupSrc="DappDefault" />
-          <span className="origin">{detail.appHref}</span>
-        </div>
-      ),
-    [detail],
-  );
-
-  const renderAllow = useMemo(
-    () => (
-      <div className="allow">
-        {allowItem.map((item) => (
-          <div className="item" key={item}>
-            <div className="flex allow-title">
-              <CustomSvg type="TickFilled" className="flex-center" />
-              <span>{t('Allow this site to')}</span>
-            </div>
-            <div className="allow-text">{item}</div>
-          </div>
-        ))}
-      </div>
-    ),
-    [t],
-  );
+  const isInWebSet = useDappInfo(detail.appHref, detail.appLogo || '');
 
   const handleSessionChange = useCallback((flag: boolean, extTime: SessionExpiredPlan) => {
     setOpen(flag);
@@ -92,23 +67,62 @@ export default function ConnectWallet() {
     }
   }, [currentNetwork, detail.appHref, detail.appLogo, detail.appName, dispatch, exp, open, updateSessionInfo]);
 
+  const curDapp = useMemo(
+    () => ({
+      name: detail.appName,
+      icon: detail.appLogo,
+      origin: detail.appHref,
+    }),
+    [detail.appHref, detail.appLogo, detail.appName],
+  );
+
+  const userInfo = useCurrentUserInfo();
+
   return (
-    <div className="connect-wallet flex">
-      {renderSite}
-      <div className="title">{t('Connect with Portkey')}</div>
-      {renderAllow}
-      {!checkOriginInBlackList(detail.appHref) && <DappSession onChange={handleSessionChange} />}
-      <div className="btn flex-between">
-        <Button
-          type="text"
-          onClick={() => {
-            closePrompt({ ...errorHandler(200003) });
-          }}>
-          {t('Reject')}
-        </Button>
-        <AsyncButton disabled={disabled} type="primary" onClick={handleSign}>
-          {t('Approve')}
-        </AsyncButton>
+    <div className="connect-wallet">
+      <div className="connect-wallet-body">
+        <DappSiteInfo title="Connect" dappInfo={curDapp} />
+
+        {!isInWebSet && (
+          <CommonPromptCard
+            className="warning-tip"
+            type={PromptCardType.WARNING}
+            description={`The dApp's contract address, logo, or domain may not be authentic. Please proceed with caution.`}
+          />
+        )}
+
+        <div className="connect-wallet-content">
+          <div className="connect-wallet-title">
+            {`Connecting will allow this site to view balances and activity in your current account.`}
+          </div>
+
+          <div className="connect-wallet-user">
+            <Avatar
+              wrapperClass={'connect-wallet-user-avatar'}
+              avatarUrl={userInfo.avatar}
+              nameIndex={userInfo.nickName?.substring(0, 1).toLocaleUpperCase()}
+            />
+            <span className="connect-wallet-user-name">{userInfo.nickName}</span>
+          </div>
+
+          {!checkOriginInBlackList(detail.appHref) && <DappSession onChange={handleSessionChange} />}
+        </div>
+      </div>
+
+      <div className="connect-wallet-footer">
+        <div className="connect-wallet-footer-body">
+          <Button
+            onClick={() => {
+              closePrompt({ ...errorHandler(200003) });
+            }}>
+            {t('Reject')}
+          </Button>
+          <AsyncButton disabled={disabled} type="primary" onClick={handleSign}>
+            {t('Connect')}
+          </AsyncButton>
+        </div>
+
+        <div className="connect-wallet-footer-tip">{'Only approve if you trust this website'}</div>
       </div>
     </div>
   );

@@ -1,15 +1,18 @@
 import clsx from 'clsx';
-import CustomSvg from 'components/CustomSvg';
+import { CustomSvgV3 } from 'components/CustomSvgV3';
 import { useMemo, useState } from 'react';
-import { IconType } from 'types/icon';
+import { IconTypeV3 } from 'types/icon';
 import './index.less';
 
 interface ImageDisplayProps {
   src?: string;
   className?: string;
-  backupSrc?: IconType;
+  backupSrc?: IconTypeV3;
   key?: string;
   notReady?: boolean;
+  hasBorder?: boolean;
+  borderRadius?: number | string;
+  defaultWidth?: number | string;
   defaultHeight?: number | string;
   name?: string;
 }
@@ -19,6 +22,9 @@ export default function ImageDisplay({
   className,
   backupSrc,
   notReady = false,
+  hasBorder = false,
+  borderRadius,
+  defaultWidth = 'auto',
   defaultHeight = 'auto',
   name = 'A',
 }: ImageDisplayProps) {
@@ -27,11 +33,13 @@ export default function ImageDisplay({
   const isShowDefault = useMemo(() => isError || notReady || !src, [isError, notReady, src]);
 
   return (
-    <div className={clsx('img-loading-wrapper', className)} style={{ height: defaultHeight || 'auto' }}>
+    <div
+      className={clsx('img-loading-wrapper', hasBorder && 'has-border', className)}
+      style={{ width: defaultWidth, height: defaultHeight, borderRadius }}>
       {isShowDefault ? (
         backupSrc ? (
           <div className="flex-center">
-            <CustomSvg type={backupSrc} />
+            <CustomSvgV3 type={backupSrc} style={{ width: defaultWidth, height: defaultHeight }} />
           </div>
         ) : (
           <div className="image-backup flex-center">{name?.[0]}</div>
@@ -50,6 +58,7 @@ export default function ImageDisplay({
           onError={() => {
             setError(true);
           }}
+          alt={src}
         />
       )}
     </div>

@@ -2,7 +2,7 @@ import { Modal, ModalProps } from 'antd';
 import clsx from 'clsx';
 import './index.less';
 
-type ICustomTokenModalProps = ModalProps & { onClose: () => void };
+export type ICustomTokenModalProps = ModalProps & { onClose: () => void };
 export default function CustomPromptModal({ onClose, wrapClassName, ...props }: ICustomTokenModalProps) {
   return (
     <Modal

@@ -4,7 +4,7 @@ import BookmarkList from '../BookmarkList';
 import { useCallback } from 'react';
 import './index.less';
 
-interface CustomSelectProps extends DrawerProps {
+interface CustomSelectProps extends Omit<DrawerProps, 'onClick'> {
   open: boolean;
   onClose: () => void;
   onClick: (url: string) => void;

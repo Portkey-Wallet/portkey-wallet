@@ -1,22 +1,20 @@
-import { ContactIndexType, ContactItemType } from '@portkey-wallet/types/types-ca/contact';
+import { IContactIndexType, IContactItemType } from '@portkey-wallet/types/types-ca/contactNew';
 import { IndexBar } from 'antd-mobile';
 import './index.less';
 import ContactList from '../ContactList';
 
 export interface IContactListIndexBarProps {
-  list: ContactIndexType[];
-  hasChatEntry?: boolean;
-  clickItem: (item: ContactItemType) => void;
-  clickChat: (e: any, item: Partial<ContactItemType>) => void;
+  list: IContactIndexType[];
+  clickItem: (item: IContactItemType) => void;
 }
 
-export default function ContactListIndexBar({ list, hasChatEntry, clickItem, clickChat }: IContactListIndexBarProps) {
+export default function ContactListIndexBar({ list, clickItem }: IContactListIndexBarProps) {
   return (
     <IndexBar className="contact-list">
       {list.map(({ index, contacts }) => {
         return (
           <IndexBar.Panel className={!contacts.length ? 'contact-empty' : ''} index={index} title={index} key={index}>
-            <ContactList list={contacts} hasChatEntry={hasChatEntry} clickItem={clickItem} clickChat={clickChat} />
+            <ContactList list={contacts} clickItem={clickItem} />
           </IndexBar.Panel>
         );
       })}

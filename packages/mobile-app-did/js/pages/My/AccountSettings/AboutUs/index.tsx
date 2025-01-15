@@ -176,6 +176,5 @@ const getStyles = makeStyles(theme => ({
   },
   dividerStyle: {
     marginVertical: pTd(4),
-    // marginHorizontal: pTd(16),
   },
 }));

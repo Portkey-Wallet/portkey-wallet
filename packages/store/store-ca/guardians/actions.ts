@@ -27,6 +27,8 @@ export const setUserGuardianStatus = createAction<{ [x: string]: UserGuardianSta
   'verifier/setUserGuardianStatus',
 );
 export const resetUserGuardianStatus = createAction('verifier/resetUserGuardianStatus');
+export const resetUserGuardianStatusState = createAction('verifier/resetUserGuardianStatusState');
+export const resetGuardianExpiredTime = createAction('verifier/resetGuardianExpiredTime');
 
 export const setUserGuardianSessionIdAction = createAction<{ key: string; verifierInfo: IVerifierInfo }>(
   'verifier/setUserGuardianSessionId',

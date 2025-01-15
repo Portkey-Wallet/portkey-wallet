@@ -112,8 +112,12 @@ export function useOnManagerAddressAndQueryResult() {
 
   const createTmpWalletInfo = useCallback(
     (walletInfo?: CurrentWalletType) => {
-      if (walletInfo?.address) return walletInfo;
-      if (latestStoreTmpWalletInfo.current?.address) return latestStoreTmpWalletInfo.current;
+      if (walletInfo?.address) {
+        return walletInfo;
+      }
+      if (latestStoreTmpWalletInfo.current?.address) {
+        return latestStoreTmpWalletInfo.current;
+      }
       return AElf.wallet.createNewWallet();
     },
     [latestStoreTmpWalletInfo],
@@ -290,7 +294,9 @@ export function useGoGuardianApproval(isLogin?: boolean) {
             }),
           },
         });
-        if (!req?.verifierSessionId) throw new Error('verifierSessionId does not exist');
+        if (!req?.verifierSessionId) {
+          throw new Error('verifierSessionId does not exist');
+        }
       } catch (error) {
         Loading.hide();
         throw error;
@@ -535,13 +541,16 @@ export function useGoSelectVerifier(isLogin?: boolean) {
     async (params: LoginConfirmParams) => {
       if (isLogin && params.loginType === LoginType.Email) {
         ActionSheet.alert({
-          title: 'You don’t have an account',
-          message: `Would you like to create one with ${params.loginAccount || ''} ?`,
+          title: 'This email is not registered',
+          message:
+            'Email sign-up is suspended. You can log in using your registered email or create a new account through alternative methods.',
           buttons: [
-            { title: 'Cancel', type: 'outline' },
+            // { title: 'Cancel', type: 'outline' },
             {
-              title: 'Sign up',
-              onPress: () => onConfirmRef.current(params),
+              title: 'Ok',
+              onPress: () => {
+                navigationService.goBack();
+              },
             },
           ],
         });

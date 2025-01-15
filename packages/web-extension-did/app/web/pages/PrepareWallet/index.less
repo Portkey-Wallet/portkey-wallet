@@ -1,0 +1,38 @@
+@import '../../assets/theme/constants.less';
+@import '../../assets/theme/common-class.less';
+.prepare-wallet-page {
+  .prepare-wallet-content {
+    width: 552px;
+    margin-top: 64px;
+    border: 1px solid @border-base1;
+    border-radius: 16px;
+  }
+  .welcome-logo {
+    margin-bottom: 0;
+    width: 552px;
+    height: 310px;
+  }
+  .prepare-wallet-progress {
+    margin: 32px 32px 52px;
+    h2 {
+      .font-bg();
+
+      font-size: 32px;
+      line-height: 39px;
+      color: @text-base1;
+      margin-bottom: 13px;
+      font-weight: 700;
+    }
+    .@{app-prefix}-progress-show-info .@{app-prefix}-progress-outer {
+      margin-top: 4px;
+      margin-right: 0;
+      padding-right: 0;
+    }
+    .@{app-prefix}-progress-inner {
+      background-color: @bg-neutral2;
+    }
+    .@{app-prefix}-progress-text {
+      display: none;
+    }
+  }
+}

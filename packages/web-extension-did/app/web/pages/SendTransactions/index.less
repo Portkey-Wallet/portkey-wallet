@@ -1,160 +1,167 @@
 @import '../../assets/theme/color.less';
 
 .send-transaction {
-  width: 328px;
-  margin: auto;
-  padding: 40px 16px;
+  min-height: 100%;
+  width: 100%;
+  padding: 24px 0;
+  display: flex;
   flex-direction: column;
-  font-size: 12px;
-  line-height: 16px;
-  color: @neutral-secondary-text;
+  justify-content: space-between;
+
   .circle-loading {
     display: inline-block;
     width: 12px;
     margin-right: 8px;
   }
-  .value {
-  font-size: 14px;
-  line-height: 20px;
-  font-weight: 500;
-  color: @neutral-primary-text;
+
+  .send-transaction-site {
+    margin-bottom: 24px;
   }
-  .chain {
-    align-self: center;
-    padding: 8px 16px;
-    border-radius: 24px;
-    border: 1px solid @neutral-divider;
-    font-weight: 500;
-    .aelf-icon, .elf-icon-icon {
-      width: 24px;
-      height: 24px;
-      margin-right: 8px;
-      svg {
-        width: 24px;
-        height: 24px;
-      }
-    }
+
+  .send-transaction-warning-tip {
+    margin-bottom: 24px;
   }
-  .account {
-    position: relative;
-    margin: 24px auto 0;
-    padding: 17px 15px;
-    width: 328px;
-    border: 1px solid @neutral-divider;
-    border-radius: 6px;
+
+  .send-transaction-transfer-amount-wrap {
+    display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 44px;
-    color: @neutral-primary-text;
-    .address,
-    .name {
-      flex: 1;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
+    gap: 8;
+    padding: 16px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid @border-neutral3;
+    margin-bottom: 12px;
+
+    .send-transaction-transfer-amount {
+      color: @text-base1;
+      font-size: 32px;
+      line-height: 38px;
+      font-weight: 700;
     }
-    .oval-icon {
-      position: absolute;
-      width: 20px;
-      height: 20px;
-      top: 50%;
-      left: 50%;
-      transform: translateX(-10px) translateY(-10px);
-      z-index: 10;
-    }
-    .line {
-      position: absolute;
-      left: 50%;
-      height: 100%;
-      border-left: 1px solid @neutral-divider;
+    .send-transaction-transfer-usd {
+      color: @text-base2;
+      font-size: 16px;
+      line-height: 22px;
     }
   }
-  .amount {
-    .amount-number {
-      margin-top: 4px;
-    }
-  }
-  .method {
-    margin-top: 16px;
-    color: @neutral-secondary-text;
-    .method-name {
-      margin-top: 4px;
-    }
-  }
-  .detail {
-    margin-top: 16px;
-    color: @neutral-secondary-text;
-    .title {
-      margin-bottom: 4px;
-    }
-    .amount {
-      padding: 16px;
-      border: 1px solid @neutral-divider;
-      border-radius: 6px;
-    }
-    .fee, .total {
-      margin-top: 16px;
-      .amount-show {
-        margin-top: 4px;
+
+  .send-transaction-info-list-wrap {
+    .send-transaction-info-item-wrap {
+      display: flex;
+      padding: 16px 0;
+      align-items: center;
+      color: @text-base1;
+      font-size: 16px;
+      line-height: 22px;
+      justify-content: space-between;
+      gap: 8px;
+
+      .send-transaction-info-item-title {
+        flex-shrink: 0;
       }
-    }
-  }
-  .message-wrapper {
-    margin-top: 16px;
-    .message {
-      flex-direction: column;
-      gap: 16px;
-      width: 328px;
-      padding: 16px;
-      margin-top: 4px;
-      border: 1px solid @neutral-divider;
-      border-radius: 6px;
-      .content {
-        margin-top: 4px;
-        width: 100%;
-        line-break: anywhere;
-        white-space: pre-wrap;
-        &:last-child {
-          margin-bottom: 0;
+      .send-transaction-info-item-content {
+        font-weight: 600;
+        display: flex;
+        flex-direction: column;
+        text-align: right;
+        overflow: hidden;
+
+        span {
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .send-transaction-info-item-content-sub {
+          font-weight: 400;
+          font-size: 14px;
+          line-height: 20px;
+          color: @text-base2;
+        }
+
+        .info-item-chain-wrap {
+          display: flex;
+          gap: 4px;
+          align-items: center;
+
+          .info-item-chain-icon {
+            width: 18px;
+            height: 18px;
+          }
         }
       }
     }
-    .fee {
-      margin-top: 16px;
-      .fee-amount {
-        margin-top: 4px;
+  }
+
+  .send-transaction-data-body {
+    margin-bottom: 8px;
+  }
+  .send-transaction-data-list-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    .send-transaction-data-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 14px;
+      line-height: 20px;
+
+      .send-transaction-data-item-title {
+        color: @text-base2;
+      }
+      .send-transaction-data-item-value {
+        color: @text-base3;
+        word-break: break-all;
       }
     }
   }
+
   .error-message {
-    margin-top: 16px;
-    color: @font-14;
+    color: @text-danger2;
+    font-size: 16px;
+    line-height: 22px;
+    padding-bottom: 16px;
   }
   .error-message.error-warning {
-    color: @functional-warning-default;
+    color: @text-warning3;
   }
-  .dapp-session {
-    margin-top: 32px;
+
+  .send-transaction-session {
+    margin-top: 8px;
   }
-  .btn {
+
+  .send-transaction-footer {
     width: 100%;
-    margin-top: 40px;
+    padding-top: 40px;
+    display: flex;
+    flex-direction: column;
     gap: 16px;
-    .@{app-prefix}-btn {
-      width: 156px;
-      height: 48px;
-      font-size: 14px;
+
+    .send-transaction-footer-body {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .send-transaction-footer-tip {
+      color: @text-base2;
+      font-size: 16px;
       line-height: 22px;
       text-align: center;
+    }
+
+    .@{app-prefix}-btn {
+      flex: 1;
+      height: 48px;
+      font-size: 16px;
       border-radius: 24px;
     }
-    .@{app-prefix}-btn-text {
-      border: 1px solid @brand-normal;
-      color: @brand-normal;
-      background-color: @neutral-default-bg;
-    }
-    .@{app-prefix}-btn-primary {
-      color: @neutral-white-text;
-      background-color: @brand-normal;
-    }
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .send-transaction {
+    padding-bottom: 16px;
   }
 }

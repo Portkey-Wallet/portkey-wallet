@@ -1,4 +1,4 @@
-import { TokenItemShowType, ITokenSectionResponse } from '@portkey-wallet/types/types-ca/token';
+import { ITokenSectionResponse } from '@portkey-wallet/types/types-ca/token';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
 import { formatAmountUSDShow, formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -15,9 +15,13 @@ import { useEffectOnce } from 'react-use';
 import useGAReport from 'hooks/useGAReport';
 import clsx from 'clsx';
 import { Row, Col, Collapse } from 'antd';
-import CustomSvg from 'components/CustomSvg';
+// import CustomSvg from 'components/CustomSvg';
+import { CustomSvgV3 } from 'components/CustomSvgV3';
+import { useCommonState } from 'store/Provider/hooks';
 
 export default function TokenList() {
+  const { isPrompt } = useCommonState();
+
   const { t } = useTranslation();
   const navigate = useNavigate();
   const isMainnet = useIsMainnet();
@@ -28,7 +32,7 @@ export default function TokenList() {
     () => accountTokenList.length < totalRecordCount,
     [accountTokenList.length, totalRecordCount],
   );
-  const [openPanel, setOpenPanel] = useState<string[]>([]);
+  const [, setOpenPanel] = useState<string[]>([]);
 
   const { startReport, endReport } = useGAReport();
 
@@ -43,8 +47,8 @@ export default function TokenList() {
   }, [caAddressInfos, endReport, fetchAccountTokenInfoList]);
 
   const onNavigate = useCallback(
-    (tokenInfo: TokenItemShowType) => {
-      navigate('/token-detail', { state: tokenInfo });
+    (tokenInfo: any, chainId?: string) => {
+      navigate('/token-detail', { state: { tokenInfo, chainId } });
     },
     [navigate],
   );
@@ -65,13 +69,13 @@ export default function TokenList() {
   }, [navigate]);
 
   const getTokenAmount = useCallback(
-    (item: { balance?: string; decimals?: number }) =>
+    (item: { balance?: string; decimals?: number | string }) =>
       userInfo.hideAssets ? '****' : formatTokenAmountShowWithDecimals(item.balance, item.decimals),
     [userInfo.hideAssets],
   );
 
   const getAmountUSDShow = useCallback(
-    (item: ITokenSectionResponse) => {
+    (item: any) => {
       const formatAmount = formatAmountUSDShow(item?.balanceInUsd);
       let text = '';
       if (isMainnet && formatAmount) {
@@ -95,7 +99,8 @@ export default function TokenList() {
     [setOpenPanel],
   );
   const renderItem = useCallback(
-    (item: ITokenSectionResponse, index: number) => {
+    (item: ITokenSectionResponse) => {
+      console.log('item', item);
       return (
         <Collapse.Panel
           key=""
@@ -103,9 +108,22 @@ export default function TokenList() {
             <li
               className="token-list-item flex-row-center"
               key={`${item.label}_${item.symbol}`}
-              // onClick={() => onNavigate(item)}
-            >
-              <TokenImageDisplay width={36} className="token-icon" symbol={item.symbol} src={item.imageUrl} />
+              onClick={() => item.tokens && item.tokens.length == 1 && onNavigate(item.tokens, item.chainId)}>
+              <div className="logos">
+                <TokenImageDisplay width={40} className="token-icon" symbol={item.symbol} src={item.imageUrl} />
+                <div className="logo-number-box">
+                  {item?.tokens?.length === 1 ? (
+                    <TokenImageDisplay
+                      width={20}
+                      className="token-icon"
+                      symbol={item.symbol}
+                      src={item.tokens[0].chainImageUrl}
+                    />
+                  ) : (
+                    <div className="logo-number">2</div>
+                  )}
+                </div>
+              </div>
               <div className="token-desc">
                 <div className="info flex-between">
                   <span>{item.label ?? item.symbol}</span>
@@ -116,7 +134,7 @@ export default function TokenList() {
                   {getAmountUSDShow(item)}
                 </div>
               </div>
-              <div
+              {/* <div
                 className={
                   openPanel.includes(index.toString()) ? 'more-wrapper' : 'more-wrapper more-wrapper-transparent'
                 }>
@@ -124,7 +142,7 @@ export default function TokenList() {
                   // className={openPanel.includes(index.toString()) ? 'is-active' : ''}
                   type={openPanel.includes(index.toString()) ? 'ActiveMore' : 'InteractiveMore'}
                 />
-              </div>
+              </div> */}
             </li>
           }>
           {/* <span>{transNetworkText(item.chainId, !isMainnet)}</span> */}
@@ -143,35 +161,55 @@ export default function TokenList() {
               </Row>
             </div>);
             }} */}
-            {item?.tokens?.map((tokenItem, index) => (
-              <div
-                className="container"
-                style={{ marginTop: index !== 0 ? 4 : 0 }}
-                key={`${tokenItem.symbol}_${index}`}
-                onClick={() => onNavigate(tokenItem)}>
-                <Row className="row">
-                  <Col className="text" span={12}>
-                    {transNetworkText(tokenItem.chainId, !isMainnet)}
-                  </Col>
-                  <Col className="amount-container" span={12}>
-                    <div className="amount">{getTokenAmount(tokenItem)}</div>
-                    <CustomSvg type="NewRightArrow" />
-                  </Col>
-                </Row>
-              </div>
-            ))}
+            {item?.tokens &&
+              item?.tokens?.length > 1 &&
+              item?.tokens?.map((tokenItem, index) => (
+                <div
+                  className="container"
+                  key={`${tokenItem.symbol}_${index}`}
+                  onClick={() => onNavigate(item?.tokens, tokenItem.chainId)}>
+                  <Row className="row">
+                    <Col className="row-first" span={12}>
+                      <div className="symbol-logo">
+                        <TokenImageDisplay width={40} className="token-icon" symbol={item.symbol} src={item.imageUrl} />
+                        <TokenImageDisplay
+                          width={20}
+                          className="token-icon chain-logo"
+                          symbol={item.symbol}
+                          src={tokenItem.chainImageUrl}
+                        />
+                      </div>
+
+                      <div className="text">
+                        <div className="symbol">{tokenItem.label || tokenItem.symbol}</div>
+                        <div className="chain-desc">{transNetworkText(tokenItem.chainId, !isMainnet)}</div>
+                      </div>
+                    </Col>
+
+                    <Col className="amount-container" span={12}>
+                      <div className="amount">
+                        <div>{getTokenAmount(tokenItem)}</div>
+                        <span>{getAmountUSDShow(tokenItem)}</span>
+                      </div>
+                      {/* <CustomSvg type="NewRightArrow" /> */}
+                    </Col>
+                  </Row>
+                </div>
+              ))}
           </div>
         </Collapse.Panel>
       );
     },
-    [getAmountUSDShow, getTokenAmount, isMainnet, onNavigate, openPanel],
+    [getAmountUSDShow, getTokenAmount, isMainnet, onNavigate],
   );
   return (
     <div className={clsx('tab-token', !hasMoreTokenList && 'hidden-loading-more')}>
-      <Collapse onChange={handleChange}>{accountTokenList.map((item, index) => renderItem(item, index))}</Collapse>
+      <Collapse onChange={handleChange}>{accountTokenList.map((item) => renderItem(item))}</Collapse>
       <LoadingMore hasMore={hasMoreTokenList} loadMore={getMoreTokenList} className="load-more" />
-
-      <div className="add-token-wrapper flex-center" onClick={handleAddToken}>
+      <div
+        className={clsx(['add-token-wrapper flex-center', !isPrompt && 'add-token-wrapper-margin'])}
+        onClick={handleAddToken}>
+        <CustomSvgV3 type="manage-token" className="manage-token-icon" />
         <span className="add-token-text">{t('Add Tokens')}</span>
       </div>
     </div>

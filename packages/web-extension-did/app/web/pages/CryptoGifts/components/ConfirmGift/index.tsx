@@ -19,7 +19,7 @@ import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { chianInfoShow } from 'pages/CryptoGifts/utils';
 import './index.less';
 
-interface IConfirmGiftProps extends ModalProps, DrawerProps {
+interface IConfirmGiftProps extends Omit<ModalProps, 'getContainer'>, DrawerProps {
   onClose: () => void;
   onConfirm: () => Promise<void>;
   totalAmount: string | number;

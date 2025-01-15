@@ -9,11 +9,12 @@ export default function TransferSettingsPopup({
   form,
   state,
   onEdit,
+  chainName,
 }: BaseHeaderProps & ITransferSettingsBodyProps) {
   return (
-    <div className="transfer-settings-popup min-width-max-height">
+    <div className="transfer-settings-popup min-width-max-height flex-column">
       <CommonHeader className="popup-header-wrap" title={headerTitle} onLeftBack={goBack} />
-      <TransferSettingsBody form={form} state={state} onEdit={onEdit} />
+      <TransferSettingsBody form={form} state={state} onEdit={onEdit} chainName={chainName} />
     </div>
   );
 }

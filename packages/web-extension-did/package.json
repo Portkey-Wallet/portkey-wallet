@@ -1,6 +1,6 @@
 {
   "name": "web-extension-did",
-  "version": "2.5.0",
+  "version": "3.0.4",
   "description": "web-extension-did",
   "private": true,
   "dependencies": {
@@ -13,20 +13,20 @@
     "@portkey-wallet/graphql": "^1.3.0",
     "@portkey-wallet/hooks": "^1.3.0",
     "@portkey-wallet/i18n": "^1.3.0",
+    "@portkey-wallet/im-ui-web": "^1.3.0",
     "@portkey-wallet/store": "^1.3.0",
     "@portkey-wallet/types": "^1.3.0",
     "@portkey-wallet/utils": "^1.3.0",
-    "@portkey-wallet/im-ui-web": "^1.3.0",
-    "@portkey/extension-provider": "2.2.4",
-    "@portkey/provider-utils": "2.2.4",
-    "@portkey/provider-types": "2.2.4",
-    "@portkey/providers": "2.2.4",
-    "@portkey/did-ui-react": "2.9.6-alpha.6",
-    "@portkey/types": "2.9.6-alpha.6",
-    "@portkey/did": "2.9.6-alpha.6",
-    "@portkey/graphql": "2.9.6-alpha.6",
-    "@portkey/accounts": "2.9.6-alpha.6",
-    "@portkey/socket": "2.9.6-alpha.6",
+    "@portkey/accounts": "2.18.0-alpha.1",
+    "@portkey/did": "2.18.0-alpha.1",
+    "@portkey/did-ui-react": "2.18.0-alpha.1",
+    "@portkey/extension-provider": "2.3.5",
+    "@portkey/graphql": "2.18.0-alpha.1",
+    "@portkey/provider-types": "2.3.5",
+    "@portkey/provider-utils": "2.3.5",
+    "@portkey/providers": "2.3.5",
+    "@portkey/socket": "2.18.0-alpha.1",
+    "@portkey/types": "2.18.0-alpha.1",
     "@reduxjs/toolkit": "^1.8.5",
     "@sentry/browser": "^7.37.1",
     "@sentry/core": "^7.37.1",
@@ -34,7 +34,6 @@
     "@sentry/tracing": "^7.37.1",
     "aelf-sdk": "3.2.45-beta.1",
     "aelf-sdk-cross-chain": "^1.0.14",
-    "query-string": "^7.1.1",
     "antd": "^4.23.2",
     "antd-mobile": "^5.26.0",
     "browser-image-compression": "git+https://github.com/portkey-yellow/browser-image-compression.git#e6b8e9438cb4b3fb0a37c0c11b11670be9cbf948",
@@ -50,6 +49,7 @@
     "intl": "^1.2.5",
     "lottie-web": "^5.9.6",
     "moment": "^2.29.4",
+    "query-string": "^7.1.1",
     "rc-form": "^2.4.12",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -63,9 +63,13 @@
     "redux": "^4.2.0",
     "redux-persist": "^6.0.0",
     "redux-persist-webextension-storage": "^1.0.2",
+    "vm-browserify": "^1.1.2",
     "web3": "^1.8.0",
     "web3-utils": "^1.8.0",
-    "whatwg-fetch": "^3.6.2"
+    "whatwg-fetch": "^3.6.2",
+    "https-browserify": "1.0.0",
+    "browserify-zlib": "0.2.0",
+    "stream-http": "3.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.19.1",
@@ -130,7 +134,8 @@
     "webpack-cli": "^4.10.0",
     "webpack-dev-server": "^4.11.0",
     "webpack-livereload-plugin": "^3.0.2",
-    "zip-folder": "1.0.0"
+    "zip-folder": "1.0.0",
+    "circular-dependency-plugin": "5.2.2"
   },
   "engines": {
     "node": ">=15.9.0"
@@ -149,7 +154,9 @@
     "pro": "rm -rf app/public && webpack --mode production && yarn copy-lib && node app/compressPublicFolder.js",
     "pro:watch": "webpack watch --mode production && yarn copy-lib",
     "prepare": "husky install",
-    "svg-handle": "node ./app/web/assets/getSvg1.js"
+    "svg-handle": "node ./app/web/assets/getSvg1.js",
+    "svg-handle-v3": "node ./app/web/assets/iconV3/getIconV3Svgs.js",
+    "svg-avatar-handle-v3": "node ./app/web/assets/iconV3/getIconV3AvatarsSvgs.js"
   },
   "ci": {
     "version": "8"

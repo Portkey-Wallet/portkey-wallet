@@ -13,6 +13,7 @@ import Svg from 'components/Svg';
 import ReceiveQRCode from '../ReceiveQRCode';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import { getManagerAccount, getPin } from 'utils/redux';
+import CommonTooltip from 'components/CommonTooltip';
 
 export default function ReceiveByETransfer({
   sourceChain,
@@ -49,16 +50,51 @@ export default function ReceiveByETransfer({
   }, [depositInfo?.depositAddress]);
 
   const infoUI = useMemo(() => {
-    if (!depositInfo?.minAmount || depositInfo.minAmount === '0') {
+    if (
+      (!depositInfo?.minAmount || depositInfo.minAmount === '0') &&
+      (!depositInfo?.serviceFee || depositInfo.serviceFee === '0')
+    ) {
       return null;
     }
     return (
-      <View style={styles.infoWrap}>
-        <Text style={styles.infoTitle}>Minimum deposit</Text>
-        <View style={styles.minimumWrap}>
-          <Text style={styles.minimumCount}>{`${depositInfo?.minAmount} ${tokenInfo.label ?? tokenInfo.symbol}`}</Text>
-          <Text style={styles.minimumUsd}>{`$${depositInfo?.minAmountUsd}`}</Text>
-        </View>
+      <View style={styles.infoContainer}>
+        {depositInfo?.minAmount && (
+          <View style={styles.infoWrap}>
+            <Text style={styles.infoTitle}>Minimum deposit</Text>
+            <View style={styles.minimumWrap}>
+              <Text style={styles.minimumCount}>{`${depositInfo?.minAmount} ${
+                tokenInfo.label ?? tokenInfo.symbol
+              }`}</Text>
+              <Text style={styles.minimumUsd}>{`$${depositInfo?.minAmountUsd}`}</Text>
+            </View>
+          </View>
+        )}
+        {depositInfo?.serviceFee && (
+          <View style={styles.infoWrap}>
+            <View style={styles.infoWrapLeft}>
+              <Text style={styles.infoTitle}>Service fee</Text>
+              <CommonTooltip
+                iconStyle={styles.infoLabelHelpIcon}
+                tooltipProps={{
+                  title: 'Service fee',
+                  description: `This is an estimated fee charged by Cobo to cover the costs of asset consolidation.\nDeposit amount ≥ ${
+                    depositInfo.currentThreshold
+                  } ${tokenInfo.label ?? tokenInfo.symbol}: No service fee\nDeposit amount < ${
+                    depositInfo.currentThreshold
+                  } ${tokenInfo.label ?? tokenInfo.symbol}: Max service fee ${depositInfo.serviceFee} ${
+                    tokenInfo.label ?? tokenInfo.symbol
+                  }`,
+                }}
+              />
+            </View>
+            <View style={styles.minimumWrap}>
+              <Text style={styles.minimumCount}>{`0~${depositInfo.serviceFee} ${
+                tokenInfo.label ?? tokenInfo.symbol
+              }`}</Text>
+              <Text style={styles.minimumUsd}>{`0~$${depositInfo.serviceFeeUsd}`}</Text>
+            </View>
+          </View>
+        )}
       </View>
     );
   }, [depositInfo, styles, tokenInfo]);
@@ -126,15 +162,27 @@ const getStyles = makeStyles((theme: any) => ({
   reminderHighlightText: {
     color: theme.colors.textBase1,
   },
-  infoWrap: {
+  infoContainer: {
     marginTop: pTd(24),
-    height: pTd(74),
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: theme.colors.borderBase1,
     borderRadius: pTd(16),
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  infoLabelHelpIcon: {
+    marginLeft: pTd(4),
+  },
+  infoWrap: {
+    height: pTd(74),
+    width: '100%',
     padding: pTd(16),
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  infoWrapLeft: {
+    flexDirection: 'row',
     alignItems: 'center',
   },
   infoTitle: {

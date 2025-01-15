@@ -1,7 +1,20 @@
 @import '../../../assets/theme/color.less';
 @import '../../../assets/theme/constants.less';
 
+.guardian-type-select,
+.guardian-type-select-drawer {
+  .guardian-type-icon {
+    &.custom-svg,
+    &.custom-svg svg {
+      width: 24px;
+      height: 24px;
+    }
+  }
+}
+
 .add-guardian-page {
+  width: 100%;
+  //padding: 16px;
   .@{app-prefix}-select-selection-placeholder {
     .text-overflow(1);
 
@@ -9,75 +22,108 @@
     line-height: 46px !important;
     width: 0; // responsive placeholder, to fix overflow
   }
+  .add-guardian-body {
+    margin-top: 14px;
+    .guardian-type-icon {
+      &.custom-svg,
+      &.custom-svg svg {
+        width: 16px;
+        height: 16px;
+      }
+    }
+    .login-input {
+      font-size: 16px;
+      border-radius: 8px;
+      height: 40px;
+      &::placeholder {
+        font-size: 16px;
+      }
+    }
+  }
   .input-item {
-    margin: 0 24px 24px;
+    margin-bottom: 24px;
     display: flex;
     flex-direction: column;
     gap: 8px;
     .label {
-      line-height: 20px;
-      color: @neutral-primary-text;
-      font-size: 14px;
+      line-height: 140%;
+      color: @text-base1;
+      font-size: 16px;
+    }
+    .verifier-label {
+      .help-icon {
+        height: 16px;
+        width: 16px;
+        cursor: pointer;
+        margin-left: 4px;
+      }
     }
     .detail {
-      height: 56px;
+      height: 58px;
     }
     .click {
       align-items: center;
       height: 48px;
     }
     .social-input {
-      padding: 9px 16px;
-      border-radius: 6px;
-      border: 1px solid @neutral-border;
+      padding: 0 16px;
+      border-radius: 8px;
+      border: 1px solid @border-base1;
       font-size: 14px;
       line-height: 20px;
+      gap: 4px;
       .name {
-        color: @neutral-primary-text;
+        font-size: 16px;
+        line-height: 100%;
+        color: @text-base1;
       }
       .email {
-        font-size: 12px;
-        line-height: 16px;
-        color: @neutral-secondary-text;
+        font-size: 14px;
+        line-height: 100%;
+        color: @text-opacity70;
       }
       .click-text {
-        font-weight: 500;
-        color: @brand-normal;
+        font-size: 16px;
+        font-weight: 400;
+        line-height: 100%;
+        color: @text-brand1;
         cursor: pointer;
       }
       &.detail {
+        align-items: self-start;
+        justify-content: center;
         position: relative;
-        height: 56px;
-        .close4-icon {
+        height: 58px;
+        .close-circle-icon {
           position: absolute;
           right: 16px;
-          top: 20px;
+          top: 50%;
+          transform: translateY(-50%);
           cursor: pointer;
-          path {
-            fill: @neutral-secondary-text;
-          }
+          height: 16px;
+          width: 16px;
         }
       }
     }
-    .control {
-      width: 100%;
-      height: 48px;
-      border-radius: 6px;
-      background-color: @bg-13;
-      border: 1px solid @neutral-border;
-      display: flex;
-      align-items: center;
-      padding: 14px 16px;
-      left: 40px;
-      line-height: 20px;
-      color: @neutral-primary-text;
-      font-size: 14px;
-      .custom-svg,
-      svg {
-        width: 32px;
-        height: 32px;
-      }
-    }
+    //.control {
+    //  width: 100%;
+    //  height: 48px;
+    //  border-radius: 6px;
+    //  background-color: @bg-13;
+    //  border: 1px solid @border-base1;
+    //  display: flex;
+    //  align-items: center;
+    //  padding: 14px 16px;
+    //  left: 40px;
+    //  line-height: 20px;
+    //  color: @text-base1;
+    //  font-size: 14px;
+    //  .custom-svg,
+    //  svg {
+    //    width: 32px;
+    //    height: 32px;
+    //  }
+    //}
     .select {
       .@{app-prefix}-select-selector {
         border-radius: 6px;
@@ -89,7 +135,7 @@
             display: flex;
             align-items: center;
             margin-left: 12px;
-            color: @neutral-primary-text;
+            color: @text-base1;
             font-size: 14px;
           }
         }
@@ -111,26 +157,18 @@
     .error {
       margin-top: -4px;
       line-height: 16px;
-      color: @font-14;
+      color: @text-danger2;
       font-size: 12px;
     }
     .err-text {
-      color: @font-14;
+      color: @text-danger2;
     }
   }
-  .add-guardian-body {
-    margin-top: 14px;
-  }
   .btn-wrap {
-    border-top: 1px solid @neutral-border;
     padding: 16px;
     display: flex;
     align-items: center;
     gap: 16px;
-    .warning {
-      border: 1px solid @border-7;
-      color: @font-14;
-    }
     button {
       flex: 1;
       height: 48px;
@@ -138,21 +176,5 @@
     }
   }
 }
-.select-option {
-  /* stylelint-disable-next-line no-descending-specificity */
-  img {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-  }
-  &.no-use {
-    opacity: 0.3;
-    cursor: not-allowed;
-  }
-  .title {
-    display: flex;
-    align-items: center;
-    margin-left: 12px;
-    font-size: 14px;
-  }
-}
+
+// .select-option is write in GuardianEdit/index.less

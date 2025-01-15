@@ -2,95 +2,86 @@
 @import '../../assets/theme/constants.less';
 
 .connect-wallet {
-  margin: auto;
-  padding: 40px 24px;
-  width: 328px;
+  min-height: 100%;
+  width: 100%;
+  padding: 24px 0;
+  display: flex;
   flex-direction: column;
-  align-items: center;
-  .site {
-    margin-bottom: 24px;
-    width: fit-content;
-    padding: 8px 16px;
-    border: 1px solid @neutral-divider;
-    border-radius: 24px;
-    font-size: 14px;
-    line-height: 20px;
-    color: @neutral-secondary-text;
-    .icon {
-      width: 24px;
-      border-radius: 50%;
-      margin-right: 8px;
-      .dappdefault-icon {
-        width: 24px;
-        height: 24px;
-      }
-    }
-    .origin {
-      line-break: anywhere;
-      .text-overflow(1)
-    }
-  }
-  .title {
-    margin-bottom: 16px;
-    font-size: 24px;
-    line-height: 28px;
-    font-weight: 700;
-    color: @neutral-primary-text;
-  }
-  .allow {
+  justify-content: space-between;
+
+  .connect-wallet-body {
     width: 100%;
-    margin-bottom: 32px;
-    font-size: 12px;
-    line-height: 16px;
-    color: @neutral-secondary-text;
-    border: 1px solid @neutral-divider;
-    border-radius: 6px;
-    .item {
-      padding-top: 16px;
-      margin: 0 16px 16px;
-      border-top: 1px solid @neutral-divider;
-      .allow-title {
-        align-items: center;
-        font-size: 14px;
-        line-height: 20px;
-        font-weight: 500;
-        color: @neutral-primary-text;
-        .tickfilled-icon {
-          width: 14px;
-          height: 14px;
-          margin-left: 1px;
-          margin-right: 9px;
-        }
-      }
-      .allow-text {
-        margin-top: 4px;
-        margin-left: 24px;
-      }
-      &:first-child {
-        border-top: none;
-      }
-    }
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
   }
-  .btn{
-    width: 100%;
+
+  .connect-wallet-content {
+    display: flex;
+    flex-direction: column;
     gap: 16px;
-    margin-top: 40px;
-    .@{app-prefix}-btn {
-      width: 156px;
-      height: 48px;
-      font-size: 14px;
+  }
+
+  .connect-wallet-title {
+    font-size: 16px;
+    line-height: 22px;
+    color: @text-base2;
+  }
+
+  .connect-wallet-user {
+    height: 56px;
+    border-radius: 28px;
+    border: 1px solid @border-base1;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    gap: 8px;
+    font-size: 16px;
+    line-height: 22px;
+    color: @text-base1;
+
+    .connect-wallet-user-avatar {
+      flex-shrink: 0;
+    }
+    .connect-wallet-user-name {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  .connect-wallet-footer {
+    width: 100%;
+    padding-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    .connect-wallet-footer-body {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .connect-wallet-footer-tip {
+      color: @text-base2;
+      font-size: 16px;
       line-height: 22px;
       text-align: center;
+    }
+
+    .@{app-prefix}-btn {
+      flex: 1;
+      height: 48px;
+      font-size: 16px;
       border-radius: 24px;
+      font-weight: 600;
     }
-    .@{app-prefix}-btn-text {
-      border: 1px solid @brand-normal;
-      color: @brand-normal;
-      background-color: @neutral-default-bg;
-    }
-    .@{app-prefix}-btn-primary {
-      color: @neutral-white-text;
-      background-color: @brand-normal;
-    }
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .connect-wallet {
+    padding-bottom: 16px;
   }
 }

@@ -4,17 +4,23 @@ import svgsList from '../../assets/svgs';
 export default function ({
   type,
   className,
+  fillColor,
   ...props
 }: {
   type: keyof typeof svgsList;
   className?: string;
+  fillColor?: string;
   style?: CSSProperties;
   onClick?: () => void;
 }) {
+  let svgContent = svgsList[type];
+  if (fillColor) {
+    svgContent = svgContent.replace(/fill="[^"]*"/g, `fill="${fillColor}"`);
+  }
   return (
     <div
       className={clsx('custom-svg', `${type.toLocaleLowerCase()}-icon`, className)}
-      dangerouslySetInnerHTML={{ __html: svgsList[type] }}
+      dangerouslySetInnerHTML={{ __html: svgContent }}
       {...props}></div>
   );
 }

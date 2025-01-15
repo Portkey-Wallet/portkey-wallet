@@ -1,46 +1,48 @@
 @import '../../../../assets/theme/color.less';
 
-.contacts-search-input {
-  margin: 0 24px 10px;
-  width: calc(100% - 48px);
-  height: 48px;
-  border-radius: 6px;
-  background-color: @neutral-default-bg;
-  border: 1px solid @neutral-border;
-
-  .@{app-prefix}-input-prefix {
-    margin-right: 12px;
+.contacts-search-box {
+  .dropdown-search-wrapper {
+    padding: 0 0 10px;
   }
+  .portkey-input-affix-wrapper-focused {
+    box-shadow: none !important;
+  }
+  .contacts-search-input {
+    margin: 0 0 8px;
+    width: 100%;
+    height: 40px;
+    border-radius: 9999px !important;
+    background-color: transparent !important;
+    border: 1px solid @border-base1 !important;
+    padding: 0 20px;
+    font-size: 16px;
 
-  .@{app-prefix}-input-suffix {
-    .anticon-close-circle {
-      width: 14px;
-      height: 14px;
-      background: url('../../../../assets/svgIcon/SuggestClose.svg') no-repeat center;
-      background-size: inherit;
-
-      & > svg {
-        display: none;
+    .search-box {
+      height: 40px;
+      border-radius: 30px;
+      padding: 0 16px;
+      border: 1px solid @border-base1;
+      &:focus {
+        border: 1px solid @border-base1 !important;
+        box-shadow: none !important;
+      }
+      .portkey-input {
+        &::placeholder {
+          font-size: 16px;
+        }
+      }
+      .searchblur-icon {
+        width: 16px;
+        height: 16px;
+      }
+      .remove-icon {
+        width: 16px;
+        height: 16px;
       }
     }
-  }
-
-  .search-svg {
-    width: 20px;
-    height: 20px;
-  }
-}
-
-.contacts-search-input.@{app-prefix}-input-affix-wrapper-focused {
-  box-shadow: none;
-  border-color: @brand-normal !important;
-  .@{app-prefix}-input-prefix {
-    .custom-svg {
-      background: url('../../../../assets/svgIcon/Search.svg') center no-repeat;
-      background-size: 20px 20px;
-      & > svg {
-        display: none;
-      }
+    .search-svg {
+      width: 16px;
+      height: 20px;
     }
   }
 }

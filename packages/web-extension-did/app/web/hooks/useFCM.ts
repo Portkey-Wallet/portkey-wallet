@@ -31,7 +31,7 @@ export function useReportFCMStatus() {
 
 export default function useFCM() {
   const unreadCount = useUnreadCount();
-  const timerRef = useRef<NodeJS.Timer | number>();
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const isFCMEnabled = useFCMEnable();
   const lastUnreadCount = useLatestRef(unreadCount);
   const reportFCMStatus = useReportFCMStatus();

@@ -2,16 +2,17 @@ import CustomModal from 'pages/components/CustomModal';
 import { useCallback } from 'react';
 import { useNavigate } from 'react-router';
 import { useCommonState } from 'store/Provider/hooks';
-import { ExtraType, IProfileDetailDataProps } from 'types/Profile';
+import { ContactHandleActionType, ContactHandleActionTypeEnum, IProfileDetailDataProps } from 'types/Profile';
 import { useCreateP2pChannel } from '@portkey-wallet/hooks/hooks-ca/im';
 import singleMessage from 'utils/singleMessage';
+import { IContactItemType } from '@portkey-wallet/types/types-ca/contactNew';
 
 export const useGoProfile = () => {
   const navigate = useNavigate();
 
   return useCallback(
     (state: IProfileDetailDataProps) => {
-      navigate('/setting/contacts/view', { state });
+      navigate('/recent-detail', { state });
     },
     [navigate],
   );
@@ -21,7 +22,7 @@ export const useGoProfileEdit = () => {
   const navigate = useNavigate();
 
   return useCallback(
-    (extra: ExtraType, state: IProfileDetailDataProps) => {
+    (extra: ContactHandleActionTypeEnum, state: IProfileDetailDataProps) => {
       navigate(`/setting/contacts/edit/${extra}`, { state });
     },
     [navigate],
@@ -32,7 +33,7 @@ export const useGoAddNewContact = () => {
   const navigate = useNavigate();
 
   return useCallback(
-    (extra: ExtraType, state: IProfileDetailDataProps) => {
+    (extra: ContactHandleActionType, state?: IContactItemType) => {
       navigate(`/setting/contacts/add/${extra}`, { state });
     },
     [navigate],

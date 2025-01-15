@@ -42,7 +42,7 @@ export const useReceive = (token: IUserTokenItemResponse, initToChainId?: ChainI
   const sourceChainList = useMemo(() => {
     if (!destinationMap) return [];
     if (!destinationChain) return [];
-    return destinationMap[destinationChain.chainId].filter(item => {
+    return destinationMap[destinationChain.chainId]?.filter(item => {
       return !(
         item.serviceList &&
         item.serviceList.length === 1 &&

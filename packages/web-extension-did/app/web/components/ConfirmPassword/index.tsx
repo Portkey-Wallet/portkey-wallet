@@ -103,7 +103,7 @@ export default function ConfirmPassword({
         ]}>
         <CustomPassword
           key="new pin"
-          placeholder={label?.newPlaceholder || t('Enter Pin')}
+          placeholder={label?.newPlaceholder || t('At least 6 characters')}
           value={value || password}
           onChange={(e) => setPassword(e.target.value)}
         />
@@ -120,7 +120,7 @@ export default function ConfirmPassword({
               if (!value || password === value) {
                 return Promise.resolve();
               }
-              return Promise.reject(new Error(t('Pins do not match')));
+              return Promise.reject(new Error(t('Not match, please try again.')));
             },
           }),
         ]}>

@@ -19,7 +19,7 @@ import { getOrigin } from '@portkey-wallet/utils/dapp/browser';
 import { showPeriodOverlay } from 'components/RememberMe';
 import { useCurrentDappInfo, useUpdateSessionInfo } from '@portkey-wallet/hooks/hooks-ca/dapp';
 import navigationService from 'utils/navigationService';
-import { SessionKeyMap } from '@portkey-wallet/constants/constants-ca/dapp';
+import { DAPP_SECURITY_DOMAIN_HINT, SessionKeyMap } from '@portkey-wallet/constants/constants-ca/dapp';
 import { SessionExpiredPlan } from '@portkey-wallet/types/session';
 import { usePin } from 'hooks/store';
 import { getManagerAccount } from 'utils/redux';
@@ -31,6 +31,8 @@ import CommonButton from 'components/CommonButton';
 import Touchable from 'components/Touchable';
 import { makeStyles } from '@rneui/themed';
 import CommonTooltip from 'components/CommonTooltip';
+import { useDappInfo } from '@portkey-wallet/hooks/hooks-ca/discover';
+import { CommonPromptCard, PromptCardType } from 'components/CommonPromptCard';
 
 interface RouterParams {
   origin: string;
@@ -49,6 +51,7 @@ const DappDetail: React.FC = () => {
   const { currentNetwork } = useWallet();
   const updateSessionInfo = useUpdateSessionInfo();
   const discoverJump = useDiscoverJumpWithNetWork();
+  const isInWebSet = useDappInfo(dappInfo?.origin || '', dappInfo?.icon || '');
 
   const styles = getStyles();
 
@@ -150,6 +153,13 @@ const DappDetail: React.FC = () => {
         item={dappInfo}
         onPress={() => onJumpToDapp(dappInfo?.name || '', dappInfo?.origin || '')}
       />
+      {!isInWebSet && (
+        <CommonPromptCard
+          style={{ marginBottom: pTd(12) }}
+          type={PromptCardType.WARNING}
+          description={DAPP_SECURITY_DOMAIN_HINT}
+        />
+      )}
       <View style={styles.connectSection}>
         <TextL>{t('Connected time')}</TextL>
         <TextL style={FontStyles.weight500}>{formatTimeToStr(dappInfo?.connectedTime)}</TextL>

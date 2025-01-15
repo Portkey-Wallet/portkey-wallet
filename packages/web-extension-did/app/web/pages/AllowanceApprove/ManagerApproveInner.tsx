@@ -199,6 +199,9 @@ export default function ManagerApproveInner({
           max={divDecimals(LANG_MAX, tokenInfo?.decimals ?? DEFAULT_SYMBOL_DECIMAL).toFixed(0)}
           dappInfo={dappInfo}
           onCancel={onCancel}
+          spender={spender}
+          originChainId={originChainId}
+          targetChainId={targetChainId}
           onAllowanceChange={setAllowance}
           onConfirm={allowanceConfirm}
           defaultIcon={defaultIcon}

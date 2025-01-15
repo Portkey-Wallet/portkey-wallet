@@ -1,16 +1,25 @@
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
-import { IconType } from 'types/icon';
+import { IconTypeV3 } from 'types/icon';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
-import { VerifierItem } from '@portkey-wallet/types/verifier';
+import { VerifierItem, zkLoginVerifierItem } from '@portkey-wallet/types/verifier';
 
-export const guardianIconMap: Record<LoginType, IconType> = {
-  [LoginType.Email]: 'Email',
-  [LoginType.Phone]: 'Phone',
-  [LoginType.Apple]: 'Apple',
-  [LoginType.Google]: 'Google',
-  [LoginType.Telegram]: 'Telegram',
-  [LoginType.Facebook]: 'Facebook',
-  [LoginType.Twitter]: 'Twitter',
+// export const guardianIconMap: Record<LoginType, IconType> = {
+//   [LoginType.Email]: 'Email',
+//   [LoginType.Phone]: 'Phone',
+//   [LoginType.Apple]: 'Apple',
+//   [LoginType.Google]: 'Google',
+//   [LoginType.Telegram]: 'Telegram',
+//   [LoginType.Facebook]: 'Facebook',
+//   [LoginType.Twitter]: 'Twitter',
+// };
+export const guardianIconMap: Record<LoginType, IconTypeV3> = {
+  [LoginType.Email]: 'Guardians=Email',
+  [LoginType.Phone]: 'Guardians=Phone',
+  [LoginType.Google]: 'Guardians=Google',
+  [LoginType.Apple]: 'Guardians=Apple',
+  [LoginType.Telegram]: 'Guardians=Telegram',
+  [LoginType.Facebook]: 'Guardians=Facebook',
+  [LoginType.Twitter]: 'Guardians=X',
 };
 
 export interface IGuardianTypeAccount {
@@ -41,11 +50,18 @@ export const getVerifierStatusMap = (
   const verifierStatusMap: { [x: string]: VerifierStatusItem } = {};
   const _userGuardiansList = userGuardiansList.filter((guardian) => guardian.key !== opGuardian?.key);
   Object.values(verifierMap).forEach((verifier) => {
-    const isUsed = _userGuardiansList.some((guardian) => guardian.verifier?.id === verifier.id);
-    verifierStatusMap[verifier.id] = {
-      ...verifier,
-      isUsed,
-    };
+    if (verifier.name === zkLoginVerifierItem.name) {
+      verifierStatusMap[verifier.name] = {
+        ...verifier,
+        isUsed: true,
+      };
+    } else {
+      const isUsed = _userGuardiansList.some((guardian) => guardian.verifier?.id === verifier.id);
+      verifierStatusMap[verifier.id] = {
+        ...verifier,
+        isUsed,
+      };
+    }
   });
   return verifierStatusMap;
 };

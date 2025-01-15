@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
 import navigationService from 'utils/navigationService';
 import Svg from 'components/Svg';
@@ -6,7 +6,7 @@ import { pTd } from 'utils/unit';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import { isIOS, screenHeight, screenWidth } from '@portkey-wallet/utils/mobile/device';
-import { Camera, CameraCapturedPicture } from 'expo-camera';
+import { Camera, CameraCapturedPicture, CameraView } from 'expo-camera';
 import Touchable from 'components/Touchable';
 import useEffectOnce from 'hooks/useEffectOnce';
 import CommonButton from 'components/CommonButton';
@@ -16,14 +16,21 @@ import { useSendCurrentChannelMessage } from '../components/hooks';
 import CommonToast from 'components/CommonToast';
 import ActionSheet from 'components/ActionSheet';
 import { useLanguage } from 'i18n/hooks';
+import useBotSendingStatus from '@portkey-wallet/hooks/hooks-ca/im/useBotSendingStatus';
+import { useCurrentChannelId } from '../context/hooks';
+import { useChannelItemInfo } from '@portkey-wallet/hooks/hooks-ca/im';
 
 const ChatCameraPage: React.FC = () => {
   const cameraRef = useRef<Camera>(null);
   const [sending, setSending] = useState(false);
   const [img, setImgUrl] = useState<CameraCapturedPicture>();
-  const [, requestCameraPermission] = Camera.useCameraPermissions();
+  // const [, requestCameraPermission] = Camera.useCameraPermissions();
   const { sendChannelImage } = useSendCurrentChannelMessage();
+  const currentChannelId = useCurrentChannelId();
+  const currentChannelInfo = useChannelItemInfo(currentChannelId || '');
   const { t } = useLanguage();
+  const { changeToRepliedStatus } = useBotSendingStatus(currentChannelInfo?.toRelationId || '');
+  const isBot = useMemo(() => currentChannelInfo?.botChannel, [currentChannelInfo?.botChannel]);
 
   const showDialog = useCallback(
     () =>
@@ -52,23 +59,27 @@ const ChatCameraPage: React.FC = () => {
   }, []);
 
   const resetCamera = useCallback(() => {
-    if (!cameraRef?.current) return;
+    if (!cameraRef?.current) {
+      return;
+    }
     cameraRef.current.resumePreview();
     setImgUrl(undefined);
   }, []);
 
   useEffectOnce(() => {
     (async () => {
-      const result = await requestCameraPermission();
+      const result = await Camera.requestCameraPermissionsAsync();
       console.log('=====requestCameraPermission====result', result);
-      if (!result) return showDialog();
+      if (!result) {
+        return showDialog();
+      }
     })();
   });
 
   return (
     <SafeAreaBox edges={['bottom', 'right', 'left']} style={PageStyle.safeAreaBox}>
       <View style={PageStyle.wrapper}>
-        <Camera
+        <CameraView
           ratio={'16:9'}
           ref={cameraRef}
           style={[PageStyle.barCodeScanner, !isIOS && PageStyle.barCodeScannerAndroid]}>
@@ -84,7 +95,7 @@ const ChatCameraPage: React.FC = () => {
               </Touchable>
             )}
           </View>
-        </Camera>
+        </CameraView>
         <View
           style={[
             GStyles.flexRow,
@@ -118,6 +129,9 @@ const ChatCameraPage: React.FC = () => {
                   await sendChannelImage(img);
                   navigationService.goBack();
                 } catch (error) {
+                  if (isBot) {
+                    changeToRepliedStatus();
+                  }
                   console.log(error);
                   CommonToast.fail('Failed to send message');
                 } finally {

@@ -6,11 +6,11 @@ import { useLocationState, useNavigateState } from 'hooks/router';
 import { useCurrentWallet, useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { setRegisterVerifierAction } from 'store/reducers/loginCache/actions';
 import { handleVerificationDoc } from '@portkey-wallet/utils/guardian';
-import VerifierAccountPrompt from './Prompt';
+// import VerifierAccountPrompt from './Prompt';
 import VerifierAccountPopup from './Popup';
 import './index.less';
 import { useOnManagerAddressAndQueryResult } from 'hooks/useOnManagerAddressAndQueryResult';
-import { useCommonState } from 'store/Provider/hooks';
+// import { useCommonState } from 'store/Provider/hooks';
 import InternalMessage from 'messages/InternalMessage';
 import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 import VerifierPage from 'pages/components/VerifierPage';
@@ -22,7 +22,7 @@ import {
   TGuardianApprovalLocationState,
   TAddGuardianLocationState,
 } from 'types/router';
-
+import { getOperationDetails } from '@portkey-wallet/utils/operation.util';
 const AllowedGuardianPageArr = [
   FromPageEnum.guardiansAdd,
   FromPageEnum.guardiansDel,
@@ -35,27 +35,41 @@ export default function VerifierAccount() {
   const navigate = useNavigateState<TGuardianApprovalLocationState | TAddGuardianLocationState>();
   const dispatch = useAppDispatch();
   const { state } = useLocationState<TVerifierAccountLocationState>();
-  const { isNotLessThan768 } = useCommonState();
+  // const { isNotLessThan768 } = useCommonState();
   const { walletInfo } = useCurrentWallet();
   const { address: managerAddress } = useCurrentWalletInfo();
-  const isBigScreenPrompt = useMemo(() => {
-    const bigScreenAllowedArr = [
-      FromPageEnum.guardiansAdd,
-      FromPageEnum.guardiansDel,
-      FromPageEnum.guardiansEdit,
-      FromPageEnum.guardiansLoginGuardian,
-      FromPageEnum.removeManage,
-      FromPageEnum.setTransferLimit,
-    ];
-    return isNotLessThan768 ? bigScreenAllowedArr.includes(state.previousPage) : false;
-  }, [isNotLessThan768, state]);
+  const classNameWrap = useMemo(() => {
+    const from = state.previousPage;
+    if (from === FromPageEnum.register) {
+      return 'verify-register-page';
+    }
+    if (from == FromPageEnum.login) {
+      return 'verify-login-page';
+    }
+    return '';
+  }, [state.previousPage]);
+  const showRegisterHeader = useMemo(() => {
+    const from = state.previousPage;
+    return from === FromPageEnum.register || from == FromPageEnum.login;
+  }, [state.previousPage]);
+  // const isBigScreenPrompt = useMemo(() => {
+  //   const bigScreenAllowedArr = [
+  //     FromPageEnum.guardiansAdd,
+  //     FromPageEnum.guardiansDel,
+  //     FromPageEnum.guardiansEdit,
+  //     FromPageEnum.guardiansLoginGuardian,
+  //     FromPageEnum.removeManage,
+  //     FromPageEnum.setTransferLimit,
+  //   ];
+  //   return isNotLessThan768 ? (state?.previousPage ? bigScreenAllowedArr.includes(state?.previousPage) : false) : false;
+  // }, [isNotLessThan768, state]);
   const targetChainId: ChainId | undefined = useMemo(() => state.targetChainId, [state]);
   const onManagerAddressAndQueryResult = useOnManagerAddressAndQueryResult(`${state.previousPage}`);
 
   const onSuccessInGuardian = useCallback(
     async (res: VerifierInfo) => {
       if (!currentGuardian) return;
-      const { guardianIdentifier } = handleVerificationDoc(res.verificationDoc);
+      const { guardianIdentifier } = handleVerificationDoc(res.verificationDoc ?? '');
       dispatch(
         setUserGuardianItemStatus({
           key: currentGuardian.key,
@@ -73,7 +87,7 @@ export default function VerifierAccount() {
   const onSuccessInRemoveOtherManage = useCallback(
     (res: VerifierInfo) => {
       if (!currentGuardian) return;
-      const { guardianIdentifier } = handleVerificationDoc(res.verificationDoc);
+      const { guardianIdentifier } = handleVerificationDoc(res.verificationDoc ?? '');
       dispatch(
         setUserGuardianItemStatus({
           key: currentGuardian.key,
@@ -91,7 +105,7 @@ export default function VerifierAccount() {
   const onSuccessInSetTransferLimit = useCallback(
     (res: VerifierInfo) => {
       if (!currentGuardian) return;
-      const { guardianIdentifier } = handleVerificationDoc(res.verificationDoc);
+      const { guardianIdentifier } = handleVerificationDoc(res.verificationDoc ?? '');
       dispatch(
         setUserGuardianItemStatus({
           key: currentGuardian.key,
@@ -144,11 +158,17 @@ export default function VerifierAccount() {
             navigate('/login/set-pin/login');
           }
         } else {
-          navigate('/login/guardian-approval');
+          navigate('/login/guardian-approval', {
+            state: {
+              operationDetails: getOperationDetails(OperationTypeEnum.communityRecovery, {
+                verifyManagerAddress: managerAddress,
+              }),
+            },
+          });
         }
         return;
       }
-      if (AllowedGuardianPageArr.includes(from)) {
+      if (from && AllowedGuardianPageArr.includes(from)) {
         onSuccessInGuardian(res);
         singleMessage.success('Verified Successful');
         return;
@@ -184,7 +204,13 @@ export default function VerifierAccount() {
       return navigate('/register/start/create');
     }
     if (fromPage === FromPageEnum.login) {
-      return navigate('/login/guardian-approval');
+      return navigate('/login/guardian-approval', {
+        state: {
+          operationDetails: getOperationDetails(OperationTypeEnum.communityRecovery, {
+            verifyManagerAddress: managerAddress,
+          }),
+        },
+      });
     }
     if (fromPage === FromPageEnum.guardiansAdd && !userGuardianStatus?.[opGuardian?.key || '']?.signature) {
       return navigate('/setting/guardians/add', {
@@ -201,14 +227,14 @@ export default function VerifierAccount() {
       }
       return;
     }
-    if (AllowedGuardianPageArr.includes(fromPage)) {
+    if (fromPage && AllowedGuardianPageArr.includes(fromPage)) {
       return navigate('/setting/guardians/guardian-approval', { state });
     }
     if (fromPage === FromPageEnum.setTransferLimit) {
       return navigate(`/setting/wallet-security/payment-security/guardian-approval`, { state });
     }
     navigate(-1);
-  }, [navigate, opGuardian?.key, state, userGuardianStatus]);
+  }, [managerAddress, navigate, opGuardian?.key, state, userGuardianStatus]);
 
   const isInitStatus = useMemo(() => {
     if (state.previousPage === FromPageEnum.register) return true;
@@ -241,7 +267,7 @@ export default function VerifierAccount() {
 
   const renderContent = useMemo(
     () => (
-      <div className="common-content1 verifier-account-content">
+      <div className="verifier-account-content">
         <VerifierPage
           loginAccount={loginAccount}
           isInitStatus={isInitStatus}
@@ -250,10 +276,11 @@ export default function VerifierAccount() {
           onSuccess={onSuccess}
           operationType={operationType}
           targetChainId={targetChainId}
+          operationDetails={state.operationDetails}
         />
       </div>
     ),
-    [currentGuardian, isInitStatus, loginAccount, onSuccess, operationType, targetChainId],
+    [currentGuardian, isInitStatus, loginAccount, onSuccess, operationType, targetChainId, state],
   );
 
   const props = useMemo(
@@ -264,8 +291,10 @@ export default function VerifierAccount() {
     [handleBack, renderContent],
   );
 
-  return isNotLessThan768 ? (
-    <VerifierAccountPrompt {...props} isBigScreenPrompt={isBigScreenPrompt} />
+  return showRegisterHeader ? (
+    <div className={classNameWrap}>
+      <VerifierAccountPopup {...props} />
+    </div>
   ) : (
     <VerifierAccountPopup {...props} />
   );

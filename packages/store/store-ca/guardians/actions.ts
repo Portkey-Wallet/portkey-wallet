@@ -1,5 +1,5 @@
 import { createAction } from '@reduxjs/toolkit';
-import { VerifierItem, VerifyStatus } from '@portkey-wallet/types/verifier';
+import { VerifierItem, VerifyStatus, ZKLoginInfo } from '@portkey-wallet/types/verifier';
 import { GuardiansInfo } from '@portkey-wallet/types/types-ca/guardian';
 
 import { IVerifierInfo, StoreUserGuardianItem, UserGuardianItem, UserGuardianStatus } from './type';
@@ -20,12 +20,15 @@ export const setUserGuardianItemStatus = createAction<{
   signature?: string;
   verificationDoc?: string;
   identifierHash?: string;
+  zkLoginInfo?: ZKLoginInfo;
 }>('verifier/setUserGuardianItemStatus');
 
 export const setUserGuardianStatus = createAction<{ [x: string]: UserGuardianStatus }>(
   'verifier/setUserGuardianStatus',
 );
 export const resetUserGuardianStatus = createAction('verifier/resetUserGuardianStatus');
+export const resetUserGuardianStatusState = createAction('verifier/resetUserGuardianStatusState');
+export const resetGuardianExpiredTime = createAction('verifier/resetGuardianExpiredTime');
 
 export const setUserGuardianSessionIdAction = createAction<{ key: string; verifierInfo: IVerifierInfo }>(
   'verifier/setUserGuardianSessionId',

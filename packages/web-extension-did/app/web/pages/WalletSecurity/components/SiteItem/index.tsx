@@ -1,5 +1,4 @@
 import { Button, Switch } from 'antd';
-import CustomSvg from 'components/CustomSvg';
 import { useTranslation } from 'react-i18next';
 import { DappStoreItem } from '@portkey-wallet/store/store-ca/dapp/type';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -10,12 +9,18 @@ import { SessionExpiredPlan } from '@portkey-wallet/types/session';
 import { useUpdateSessionInfo } from '@portkey-wallet/hooks/hooks-ca/dapp';
 import { formatTimeToStr, hasSessionInfoExpired } from '@portkey-wallet/utils/session';
 import getManager from 'utils/getManager';
-import { SessionKeyArray } from '@portkey-wallet/constants/constants-ca/dapp';
+import { DAPP_SECURITY_DOMAIN_HINT, SessionKeyArray } from '@portkey-wallet/constants/constants-ca/dapp';
 import ImageDisplay from 'pages/components/ImageDisplay';
 import { useCheckSiteIsInBlackList } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { isSafeOrigin } from 'pages/WalletSecurity/utils';
 import singleMessage from 'utils/singleMessage';
 import { useNavigateState } from 'hooks/router';
+import { useDappInfo } from '@portkey-wallet/hooks/hooks-ca/discover';
+import { CustomSvgV3 } from 'components/CustomSvgV3';
+import { PromptCardType } from '@portkey/did-ui-react/dist/_types/src/components/CommonPromptCard';
+import { CommonPromptCard } from '@portkey/did-ui-react';
+import MenuItem from 'components/MenuItem';
+import { CustomModalBottom } from '../../../components/CustomModalBottom';
 import './index.less';
 
 export interface ISiteItemProps {
@@ -31,6 +36,7 @@ export default function SiteItem({ siteItem }: ISiteItemProps) {
   const [open, setOpen] = useState(!!sessionInfo?.expiredPlan);
   const updateSessionInfo = useUpdateSessionInfo();
   const checkSiteIsInBlackList = useCheckSiteIsInBlackList();
+  const isInWebSet = useDappInfo(siteItem.origin, siteItem.icon || '');
   const isInBlackList = useMemo(
     () => checkSiteIsInBlackList(siteItem.origin),
     [checkSiteIsInBlackList, siteItem.origin],
@@ -92,11 +98,13 @@ export default function SiteItem({ siteItem }: ISiteItemProps) {
   return (
     <div className="site-item-content flex-column-between flex-1">
       <div>
-        <div className="site-dapp flex-column-center">
-          <ImageDisplay defaultHeight={64} className="icon" src={siteItem.icon} backupSrc="DappDefault" />
-          <span>{siteItem.name}</span>
-          <div className="origin flex">
-            <CustomSvg type={isSafeOrigin(siteItem.origin) ? 'DappLock' : 'DappWarn'} />
+        <div className={`site-dapp flex-column-center ${!isInWebSet && `margin-bottom16`}`}>
+          <ImageDisplay defaultHeight={80} className="icon" src={siteItem.icon} backupSrc="Dapp=Others" />
+          <span className="dapp-name">{siteItem.name}</span>
+          <div className="origin flex-center">
+            {!isSafeOrigin(siteItem.origin) && (
+              <CustomSvgV3 type="warning" className="flex-center warning-icon" fillColor="#EB7D50" />
+            )}
             <span>
               <a href={siteItem.origin} target="_blank" rel="noreferrer">
                 {siteItem.origin}
@@ -104,50 +112,97 @@ export default function SiteItem({ siteItem }: ISiteItemProps) {
             </span>
           </div>
         </div>
-        <div className="content-item flex-column">
-          <div className="label">{t('Connected time')}</div>
-          <div className="control flex">{siteItem.connectedTime ? formatTimeToStr(siteItem.connectedTime) : '-'}</div>
+        {!isInWebSet && (
+          <CommonPromptCard
+            className="warning-tip"
+            title=""
+            type={'warning' as PromptCardType}
+            description={DAPP_SECURITY_DOMAIN_HINT}
+          />
+        )}
+        <MenuItem height={54} showEnterIcon={false}>
+          <div className="flex-between">
+            <div className="label">{t('Connected time')}</div>
+            <div className="time">{siteItem.connectedTime ? formatTimeToStr(siteItem.connectedTime) : '-'}</div>
+          </div>
+        </MenuItem>
+
+        <div className="common-card">
+          <div className="title title-container">
+            <div className="flex-row-center">
+              Remember me
+              <CustomSvgV3
+                onClick={() => {
+                  CustomModalBottom({
+                    isPrompt: true,
+                    promptInfo: {
+                      width: 343,
+                    },
+                    type: 'info',
+                    title: t('Remember me'),
+                    content: (
+                      <div className="remember-me-content">
+                        {t(
+                          "Once enabled, your wallet will auto-approve all requests from this dApp on this device. You won't receive pop-up notifications for approvals until the session expires. This feature turns off automatically when you disconnect from the dApp or when the session expires. You can manually disable it or adjust the expiration time at any time.",
+                        )}
+                      </div>
+                    ),
+                    okText: t('OK'),
+                  });
+                }}
+                type="help"
+                className="help-icon"
+                fillColor="#FFFFFFB3"
+              />
+            </div>
+            <div>
+              <Switch className="switch" checked={open} onChange={handleSwitch} />
+            </div>
+          </div>
+          <div className="sub-content">{t('Disable to always require authentication for this dApp.')}</div>
         </div>
-        {!isInBlackList && (
-          <div className="session-tip">
-            <span className="label">{t('Remember me to skip authentication')}</span>
-            <span className="value">
-              {t(
-                "Once enabled, your session key will automatically approve all requests from this DApp, on this device only. You won't see pop-up notifications asking for your approvals until the session key expires. This feature is automatically off when you disconnect from the DApp or when the session key expires. You can also manually disable it or change the expiration time.",
-              )}
-            </span>
-          </div>
-        )}
-        {!isInBlackList && (
-          <div className="session-switch flex">
-            <Switch className="switch" checked={open} onChange={handleSwitch} />
-            <span className="status">{open ? 'Open' : 'Close'}</span>
-          </div>
-        )}
+
         {open && !isInBlackList && (
           <div className="content-item flex-column">
-            <div className="label">{t('Session key expires in')}</div>
+            <div className="label">{t('Session expires in')}</div>
             <CustomSelect
-              items={SessionKeyArray}
+              className="site-item-select select-network"
+              items={SessionKeyArray.filter((e) => e.value !== SessionExpiredPlan.always)}
               defaultValue={SessionExpiredPlan.hour1}
               value={sessionInfo?.expiredPlan}
               onChange={handleSessionChange}
+              title={t('Session expires in')}
             />
           </div>
         )}
         {open && !isInBlackList && (
-          <div className="content-item flex-column">
-            <div className="label">{t('Expiration time')}</div>
-            <div className="control flex">
-              {sessionInfo?.expiredPlan === SessionExpiredPlan.always
-                ? '-'
-                : formatTimeToStr(sessionInfo?.expiredTime || 0)}
-            </div>
+          <div className="expiration-time">
+            {t('Expiration time')}:{' '}
+            {sessionInfo?.expiredPlan === SessionExpiredPlan.never
+              ? '-'
+              : formatTimeToStr(sessionInfo?.expiredTime || 0)}
           </div>
         )}
+
+        {/*{!isInBlackList && (*/}
+        {/*  <div className="session-tip">*/}
+        {/*    <span className="label">{t('Remember me to skip authentication')}</span>*/}
+        {/*    <span className="value">*/}
+        {/*      {t(*/}
+        {/*        "Once enabled, your session key will automatically approve all requests from this DApp, on this device only. You won't see pop-up notifications asking for your approvals until the session key expires. This feature is automatically off when you disconnect from the DApp or when the session key expires. You can also manually disable it or change the expiration time.",*/}
+        {/*      )}*/}
+        {/*    </span>*/}
+        {/*  </div>*/}
+        {/*)}*/}
+        {/*{!isInBlackList && (*/}
+        {/*  <div className="session-switch flex">*/}
+        {/*    <Switch className="switch" checked={open} onChange={handleSwitch} />*/}
+        {/*    <span className="status">{open ? 'Open' : 'Close'}</span>*/}
+        {/*  </div>*/}
+        {/*)}*/}
       </div>
       <div className="btn-wrap">
-        <Button onClick={handleDisconnect} type="default">
+        <Button className="disconnect-btn" onClick={handleDisconnect} type="default">
           {t('Disconnect')}
         </Button>
       </div>

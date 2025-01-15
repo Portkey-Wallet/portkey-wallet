@@ -1,22 +1,23 @@
-import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
-import { RecentContactItemType } from '@portkey-wallet/types/types-ca/contact';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { RecentStateType, IRecentItem } from './type';
+import { ChainId, NetworkType } from '@portkey-wallet/types';
 import { fetchRecentTransactionUsers } from './api';
-import { initialRecentData } from '@portkey-wallet/hooks/hooks-ca/useRecent';
-
 import { RECENT_LIST_PAGE_SIZE } from '@portkey-wallet/constants/constants-ca/recent';
-import { ChainId } from '@portkey-wallet/types';
+// import { initialRecentData } from '@portkey-wallet/hooks/hooks-ca/useRecent';
 
-export interface RecentStateType {
-  [caAddress: string]: {
-    isFetching: boolean;
-    totalRecordCount: number;
-    skipCount: number;
-    maxResultCount: number;
-    recentContactList: RecentContactItemType[];
-  };
-}
+export const initialRecentData = {
+  isFetching: false,
+  skipCount: 0,
+  maxResultCount: 10,
+  totalRecordCount: 0,
+  recentContactList: [],
+};
+// TODO: BACK TO 100
+const MAX_RECENT_COUNT = 5;
 
-export const initialState: RecentStateType = {};
+export const initialState: RecentStateType = {
+  recentMap: {},
+};
 
 export const fetchRecentListAsync = createAsyncThunk(
   'fetchRecentListAsync',
@@ -58,6 +59,43 @@ export const recentSlice = createSlice({
       const { caAddress } = action.payload;
       state[caAddress] = initialRecentData;
     },
+    addRecentItem: (
+      state,
+      action: PayloadAction<{
+        recentItem: IRecentItem;
+        network: NetworkType;
+      }>,
+    ) => {
+      const { network, recentItem } = action.payload;
+
+      const targetList = [...(state.recentMap?.[network] || [])];
+
+      const existingIndex = targetList.findIndex(ele => {
+        return recentItem.network && recentItem.network !== 'aelf'
+          ? ele.address === recentItem.address && ele.network === recentItem.network
+          : ele.address === recentItem.address && ele.chainId === recentItem.chainId;
+      });
+
+      if (existingIndex !== -1) {
+        const [existingItem] = targetList.splice(existingIndex, 1);
+        existingItem.transferTime = recentItem.transferTime;
+        targetList.unshift(existingItem);
+      } else {
+        targetList.unshift(recentItem);
+        targetList.length > MAX_RECENT_COUNT && targetList.pop();
+      }
+
+      state.recentMap = {
+        ...state.recentMap,
+        [network]: targetList,
+      };
+    },
+    resetTargetNetworkRecent: (state, action: PayloadAction<NetworkType>) => {
+      state.recentMap = {
+        ...state.recentMap,
+        [action.payload]: [],
+      };
+    },
     resetRecent: () => initialState,
   },
   extraReducers: builder => {
@@ -82,6 +120,6 @@ export const recentSlice = createSlice({
   },
 });
 
-export const { resetRecent, initCurrentChainRecentData } = recentSlice.actions;
+export const { initCurrentChainRecentData, addRecentItem, resetRecent, resetTargetNetworkRecent } = recentSlice.actions;
 
 export default recentSlice;

@@ -33,6 +33,7 @@ import singleMessage from 'utils/singleMessage';
 import { ChainId } from '@portkey/provider-types';
 import { useLatestRef } from '@portkey-wallet/hooks';
 import { useMiscSetting } from '@portkey-wallet/hooks/hooks-ca/misc';
+import { resetRecent } from '@portkey-wallet/store/store-ca/recent/slice';
 
 export default function useLogOut() {
   const dispatch = useAppDispatch();
@@ -51,6 +52,8 @@ export default function useLogOut() {
         unRegisterFCM();
       }
       resetStore();
+      // TODO
+      dispatch(resetRecent());
       im.destroy();
       dispatch(resetIm(currentNetwork));
       dispatch(resetDisclaimerConfirmedDapp(currentNetwork));

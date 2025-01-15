@@ -12,15 +12,15 @@ export type TDoubleAvatarProps = {
 export default function DoubleAvatar({ firstAvatar, secondAvatar }: TDoubleAvatarProps) {
   return (
     <View style={styles.wrap}>
-      <CommonAvatar {...firstAvatar} avatarSize={pTd(24)} style={styles.avatar1} />
-      <CommonAvatar {...secondAvatar} avatarSize={pTd(24)} style={styles.avatar2} />
+      <CommonAvatar {...firstAvatar} avatarSize={pTd(30)} style={styles.avatar1} />
+      <CommonAvatar {...secondAvatar} avatarSize={pTd(30)} style={styles.avatar2} />
     </View>
   );
 }
 const styles = StyleSheet.create({
   wrap: {
-    width: pTd(32),
-    height: pTd(32),
+    width: pTd(45),
+    height: pTd(42),
     position: 'relative',
     marginRight: pTd(8),
   },

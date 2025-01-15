@@ -87,13 +87,16 @@ const ActivityDetail = () => {
 
   const isNft = useMemo(() => !!activityItem?.nftInfo?.nftId, [activityItem?.nftInfo?.nftId]);
   const status = useMemo(() => {
-    if (!activityItem?.status) return { text: '', style: 'confirmed' };
+    if (!activityItem?.status) {
+      return { text: '', style: 'confirmed' };
+    }
 
-    if (activityItem?.status === TransactionStatus.Mined)
+    if (activityItem?.status === TransactionStatus.Mined) {
       return {
         text: 'Confirmed',
         style: 'confirmed',
       };
+    }
     return {
       text: 'Failed',
       style: 'failed',
@@ -118,7 +121,14 @@ const ActivityDetail = () => {
   );
 
   const networkUI = useMemo(() => {
-    const { transactionType, fromChainId, toChainId, transactionId: _transactionId = '' } = activityItem || {};
+    const {
+      transactionType,
+      fromChainId,
+      fromChainIdUpdated,
+      toChainId,
+      toChainIdUpdated,
+      transactionId: _transactionId = '',
+    } = activityItem || {};
 
     const isNetworkShow = transactionType && SHOW_FROM_TRANSACTION_TYPES.includes(transactionType);
     return (
@@ -128,10 +138,14 @@ const ActivityDetail = () => {
             <View style={[styles.flexSpaceBetween]}>
               <TextM style={[styles.lightGrayFontColor]}>{t('Network')}</TextM>
               <View style={styles.networkInfoContent}>
-                <TextM style={[styles.blackFontColor]}>{formatChainInfoToShow(fromChainId, currentNetwork)}</TextM>
+                <TextM style={[styles.blackFontColor]}>
+                  {formatChainInfoToShow(fromChainId, currentNetwork, fromChainIdUpdated)}
+                </TextM>
                 <View style={GStyles.flexRowWrap}>
-                  <TextM style={[styles.lightGrayFontColor]}>{` → `}</TextM>
-                  <TextM style={[styles.blackFontColor]}>{formatChainInfoToShow(toChainId, currentNetwork)}</TextM>
+                  <TextM style={[styles.lightGrayFontColor]}>{' → '}</TextM>
+                  <TextM style={[styles.blackFontColor]}>
+                    {formatChainInfoToShow(toChainId, currentNetwork, toChainIdUpdated)}
+                  </TextM>
                 </View>
               </View>
             </View>
@@ -151,7 +165,9 @@ const ActivityDetail = () => {
   }, [CopyIconUI, activityItem, currentNetwork, t, transactionId]);
 
   const feeUI = useMemo(() => {
-    if (activityItem?.isReceived) return null;
+    if (activityItem?.isReceived) {
+      return null;
+    }
 
     const transactionFees =
       activityItem?.transactionFees?.length === 0
@@ -165,7 +181,7 @@ const ActivityDetail = () => {
           {activityItem?.isDelegated ? (
             <View style={[styles.transactionFeeItemWrap]}>
               <TextM style={[styles.blackFontColor, styles.fontBold]}>{`0 ${defaultToken.symbol}`}</TextM>
-              {isMainnet && <TextS style={[styles.lightGrayFontColor, styles.marginTop4]}>{`$ 0`}</TextS>}
+              {isMainnet && <TextS style={[styles.lightGrayFontColor, styles.marginTop4]}>{'$ 0'}</TextS>}
             </View>
           ) : (
             <View>
@@ -318,9 +334,11 @@ const ActivityDetail = () => {
         <View style={styles.space} />
         {explorerUrl && (
           <CommonButton
-            containerStyle={[GStyles.marginTop(8), styles.bottomButton]}
+            containerStyle={[GStyles.marginTop(8)]}
             onPress={() => {
-              if (!activityItem?.transactionId) return;
+              if (!activityItem?.transactionId) {
+                return;
+              }
 
               navigationService.navigate('ViewOnWebView', {
                 title: t('View on Explorer'),
@@ -328,9 +346,8 @@ const ActivityDetail = () => {
               });
             }}
             title={t('View on Explorer')}
-            type="clear"
+            type="primary"
             style={styles.button}
-            buttonStyle={styles.bottomButton}
           />
         )}
       </>
@@ -344,7 +361,6 @@ const ActivityDetail = () => {
       safeAreaColor={['white']}
       containerStyles={styles.containerStyle}
       scrollViewProps={{ disabled: true }}>
-      <StatusBar barStyle={'dark-content'} />
       <Touchable style={styles.closeWrap} onPress={() => navigationService.goBack()}>
         <Svg icon="close" size={pTd(16)} />
       </Touchable>
@@ -505,9 +521,6 @@ export const styles = StyleSheet.create({
   },
   justifyContentCenter: {
     justifyContent: 'center',
-  },
-  bottomButton: {
-    backgroundColor: defaultColors.bg1,
   },
   networkInfoContent: {
     flexDirection: 'row',

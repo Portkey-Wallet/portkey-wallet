@@ -1,0 +1,7 @@
+query dappList_by_id($id: ID!){
+    dappList_by_id(id: $id){
+        Dapp_Name
+        domainName
+        id
+    }
+}

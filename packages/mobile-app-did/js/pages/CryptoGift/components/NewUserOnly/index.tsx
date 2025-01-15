@@ -1,10 +1,11 @@
-import { defaultColors } from 'assets/theme';
-import CommonSwitch from 'components/CommonSwitch';
 import { TextM } from 'components/CommonText';
 import React, { useState } from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text } from 'react-native';
 import { pTd } from 'utils/unit';
+import { makeStyles } from '@rneui/themed';
+import CustomSwitch from '../../../../components/CustomSwitch';
+
 export interface INewUserOnlyProps {
   containerStyle?: StyleProp<ViewStyle>;
   onSwitchChanged?: (selected: boolean) => void;
@@ -12,7 +13,7 @@ export interface INewUserOnlyProps {
 export default function NewUserOnly(props: INewUserOnlyProps) {
   const { onSwitchChanged, containerStyle } = props;
   const [isEnabled, setIsEnabled] = useState(true);
-
+  const styles = getStyles();
   const toggleSwitch = () => {
     setIsEnabled(previousState => {
       onSwitchChanged?.(!previousState);
@@ -22,69 +23,39 @@ export default function NewUserOnly(props: INewUserOnlyProps) {
   return (
     <View style={[styles.container, containerStyle]}>
       <View style={styles.textContainer}>
-        <TextM style={styles.title}>New Users Only</TextM>
-        <Text style={styles.description}>
-          Once enabled, only newly registered Portkey users can claim your crypto gift.
-        </Text>
+        <TextM style={styles.title}>New users only</TextM>
+        <CustomSwitch value={isEnabled} onToggle={toggleSwitch} />
       </View>
-      {/* <View style={styles.switchContainer}>
-        <View style={styles.switchBackground}>
-          <View style={styles.switchKnob} />
-        </View>
-      </View> */}
-      <CommonSwitch
-        style={{ transform: [{ scaleX: 32 / 51 }, { scaleY: 20 / 31 }] }}
-        value={isEnabled}
-        onValueChange={toggleSwitch}
-      />
+      <Text style={styles.description}>
+        Once enabled, only newly registered Portkey users can claim your crypto gift.
+      </Text>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = makeStyles(theme => ({
   container: {
-    // flex: 1,
-    height: pTd(74),
-    padding: pTd(12),
-    backgroundColor: defaultColors.neutralHoverBG,
+    backgroundColor: theme.colors.neutralHoverBG,
     borderRadius: pTd(6),
-    flexDirection: 'row',
+    flexDirection: 'column',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
   textContainer: {
-    flex: 1,
-    flexDirection: 'column',
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   title: {
-    color: defaultColors.neutralSecondaryTextColor,
+    color: theme.colors.textBase1,
+    fontSize: pTd(16),
     lineHeight: pTd(22),
   },
   description: {
-    color: defaultColors.neutralTertiaryText,
-    fontSize: pTd(12),
-    fontWeight: '400',
-    lineHeight: pTd(16),
+    color: theme.colors.textBase2,
+    fontSize: pTd(14),
+    width: '100%',
+    // fontWeight: '400',
   },
-  switchContainer: {
-    paddingTop: 1,
-    paddingBottom: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  switchBackground: {
-    width: pTd(32),
-    height: pTd(20),
-    backgroundColor: '#5D42FF',
-    borderRadius: pTd(10),
-  },
-  switchKnob: {
-    width: pTd(16),
-    height: pTd(16),
-    position: 'absolute',
-    right: pTd(2),
-    top: pTd(2),
-    backgroundColor: defaultColors.neutralDefaultBG,
-    borderRadius: 9999,
-  },
-});
+}));

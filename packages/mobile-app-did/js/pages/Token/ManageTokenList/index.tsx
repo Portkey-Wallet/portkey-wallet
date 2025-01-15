@@ -1,9 +1,8 @@
 import PageContainer from 'components/PageContainer';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import CommonInput from 'components/CommonInput';
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 import gStyles from 'assets/theme/GStyles';
-import { defaultColors } from 'assets/theme';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import CommonToast from 'components/CommonToast';
 import { useLanguage } from 'i18n/hooks';
@@ -23,9 +22,10 @@ import {
   PAGE_SIZE_IN_ACCOUNT_ASSETS,
   PAGE_SIZE_IN_ACCOUNT_TOKEN,
 } from '@portkey-wallet/constants/constants-ca/assets';
-import useToken from '@portkey-wallet/hooks/hooks-ca/useToken';
+import { useTokenLegacy } from '@portkey-wallet/hooks/hooks-ca/useToken';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { useAccountTokenInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
+import { makeStyles } from '@rneui/themed';
 
 interface ManageTokenListProps {
   route?: any;
@@ -34,8 +34,8 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
   const { t } = useLanguage();
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const [isSearching, setIsSearching] = useState<boolean>(false);
-  const { tokenDataShowInMarket, totalRecordCount, fetchTokenInfoList } = useToken();
+  const [isSearch, setIsSearching] = useState<boolean>(false);
+  const { tokenDataShowInMarket, totalRecordCount, fetchTokenInfoList } = useTokenLegacy();
   const chainIdArray = useChainIdList();
   const caAddressInfos = useCaAddressInfoList();
 
@@ -45,11 +45,16 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
   const [filterTokenList, setFilterTokenList] = useState<TokenItemShowType[]>([]);
 
   const debounceWord = useDebounce(keyword, 800);
+  const pageStyles = getStyles();
 
   const getTokenList = useLockCallback(
     async (isInit?: boolean) => {
-      if (debounceWord) return;
-      if (totalRecordCount && tokenDataShowInMarket.length >= totalRecordCount && !isInit) return;
+      if (debounceWord) {
+        return;
+      }
+      if (totalRecordCount && tokenDataShowInMarket.length >= totalRecordCount && !isInit) {
+        return;
+      }
 
       await fetchTokenInfoList({
         keyword: '',
@@ -62,7 +67,9 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
   );
 
   const searchToken = useLockCallback(async () => {
-    if (!debounceWord) return;
+    if (!debounceWord) {
+      return;
+    }
 
     try {
       setIsSearching(true);
@@ -90,7 +97,7 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
     }
   }, [chainIdArray, debounceWord, keyword]);
 
-  const onHandleTokenItem = useCallback(
+  const onSwitchTokenDisplay = useCallback(
     async (item: TokenItemShowType, isDisplay: boolean) => {
       Loading.showOnce();
 
@@ -114,7 +121,6 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
             await getTokenList(true);
           }
           Loading.hide();
-          CommonToast.success('Success');
         }, 800);
       } catch (err) {
         Loading.hide();
@@ -124,9 +130,18 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
     [caAddressInfos, debounceWord, fetchAccountTokenInfoList, getTokenList, searchToken],
   );
 
+  const onHandleToken = useCallback(
+    (item: TokenItemShowType, isDisplay: boolean) => {
+      onSwitchTokenDisplay(item, isDisplay);
+    },
+    [onSwitchTokenDisplay],
+  );
+
   // search token with keyword
   useEffect(() => {
-    if (!debounceWord) setFilterTokenList([]);
+    if (!debounceWord) {
+      setFilterTokenList([]);
+    }
     searchToken();
   }, [debounceWord, searchToken]);
 
@@ -138,7 +153,9 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
   // clear timer
   useEffect(
     () => () => {
-      if (timerRef.current) clearInterval(timerRef.current);
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
     },
     [],
   );
@@ -150,27 +167,25 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
         onPress={() => {
           navigationService.navigate('CustomToken');
         }}>
-        <Svg icon="add1" size={pTd(20)} color={defaultColors.font18} />
+        <Svg icon="add4" size={pTd(24)} />
       </Touchable>
     ),
-    [],
+    [pageStyles],
   );
 
   return (
     <PageContainer
-      titleDom={t('Add Tokens')}
-      safeAreaColor={['white', 'white']}
+      titleDom={t('Manage Token List')}
+      safeAreaColor={['black', 'black']}
       rightDom={RightDom}
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}>
       <View style={pageStyles.inputWrap}>
         <CommonInput
           allowClear
-          grayBorder
-          theme="white-bg"
-          loading={isSearching}
+          clearIcon="clear4"
           value={keyword}
-          placeholder={t('Token Name')}
+          placeholder={t('Search')}
           onChangeText={v => {
             setKeyword(v.trim());
           }}
@@ -178,12 +193,12 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
       </View>
 
       {debounceWord ? (
-        <FilterTokenSection tokenList={filterTokenList} onHandleTokenItem={onHandleTokenItem} />
+        <FilterTokenSection tokenList={filterTokenList} onHandleTokenItem={onHandleToken} isSearch={isSearch} />
       ) : (
         <PopularTokenSection
           tokenDataShowInMarket={tokenDataShowInMarket}
           getTokenList={getTokenList}
-          onHandleTokenItem={onHandleTokenItem}
+          onHandleTokenItem={onHandleToken}
         />
       )}
     </PageContainer>
@@ -192,14 +207,16 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
 
 export default ManageTokenList;
 
-export const pageStyles = StyleSheet.create({
+export const getStyles = makeStyles(theme => ({
   pageWrap: {
     flex: 1,
+    backgroundColor: theme.colors.bgBase1,
     ...gStyles.paddingArg(0),
   },
   inputWrap: {
-    backgroundColor: defaultColors.bg1,
-    ...gStyles.paddingArg(0, 20, 8),
+    backgroundColor: theme.colors.bgBase1,
+    ...gStyles.paddingArg(0, 16, 0, 16),
+    marginBottom: pTd(8),
   },
   list: {
     flex: 1,
@@ -210,4 +227,4 @@ export const pageStyles = StyleSheet.create({
   rightIconStyle: {
     padding: pTd(16),
   },
-});
+}));

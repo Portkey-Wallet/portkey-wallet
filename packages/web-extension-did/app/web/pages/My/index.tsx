@@ -1,123 +1,111 @@
-import { Button } from 'antd';
-import { useMemo } from 'react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import MenuItem from 'components/MenuItem';
-import CustomSvg from 'components/CustomSvg';
 import CommonHeader from 'components/CommonHeader';
-import { lockWallet } from 'utils/lib/serviceWorkerAction';
-import { IconType } from 'types/icon';
-import { useCommonState } from 'store/Provider/hooks';
 import './index.less';
-import InternalMessage from 'messages/InternalMessage';
-import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 import { useIsImputation } from '@portkey-wallet/hooks/hooks-ca/contact';
-import svgsList from 'assets/svgs';
 import UnReadBadge from 'pages/components/UnReadBadge';
-import { useClickReferral } from 'hooks/referral';
-
-interface MenuItemInfo {
-  label: string;
-  icon: IconType;
-  router: string;
-}
+import WalletEntry from '../Wallet/components/WalletEntry';
+import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { IMenuItemInfo, useMenuList } from './useMenuList';
+import { IconTypeV3 } from 'types/icon';
+import { CustomSvgV3 } from 'components/CustomSvgV3';
+import ExitWallet from '../Wallet/components/ExitWallet';
+import { useState } from 'react';
+import SetNewWalletNameIcon from '../Home/components/SetNewWalletNameIcon';
 
 export default function My() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { isPrompt } = useCommonState();
   const isImputation = useIsImputation();
-  const clickReferral = useClickReferral();
-  const MenuList: MenuItemInfo[] = useMemo(
-    () => [
-      {
-        label: 'Wallet',
-        icon: 'Wallet',
-        router: '/setting/wallet',
-      },
-      {
-        label: 'Contacts',
-        icon: 'AddressBook2',
-        router: '/setting/contacts',
-      },
-      {
-        label: 'Account Setting',
-        icon: 'Setting',
-        router: '/setting/account-setting',
-      },
-      {
-        label: 'Guardians',
-        icon: 'Guardians',
-        router: '/setting/guardians',
-      },
-      {
-        label: 'Wallet Security',
-        icon: 'Security',
-        router: '/setting/wallet-security',
-      },
-    ],
-    [],
-  );
 
-  const handleExpandView = () => {
-    InternalMessage.payload(PortkeyMessageTypes.SETTING).send();
-  };
+  const MenuList: IMenuItemInfo[] = useMenuList();
 
-  const menuItemIcon = (iconType: keyof typeof svgsList, unReadShow: boolean) => {
+  const menuItemIcon = (iconType: IconTypeV3, unReadShow: boolean) => {
     return (
       <div className="menu-icon-wrap">
-        <CustomSvg type={iconType || 'Aelf'} />
+        {/*<CustomSvg type={iconType || 'Aelf'} />*/}
+        <CustomSvgV3 type={iconType || 'Aelf'} />
         {unReadShow && <UnReadBadge />}
       </div>
     );
+  };
+
+  const { nickName, avatar, userId } = useCurrentUserInfo();
+
+  const [exitVisible, setExitVisible] = useState<boolean>(false);
+  const onExit = () => {
+    setExitVisible(true);
+  };
+  const onCancelExit = () => {
+    setExitVisible(false);
   };
 
   return (
     <div className="flex-column my-frame">
       <CommonHeader
         className="my-header"
-        title={t('My')}
-        rightElementList={[
-          <div key="lock" className="lock-wrap flex-center cursor-pointer" onClick={lockWallet}>
-            <CustomSvg className="lock-icon" type="LockOutlined" />
-            <span className="lock-text">{t('Lock')}</span>
-          </div>,
-        ]}
+        title={t('Settings')}
         onLeftBack={() => {
           navigate('/');
         }}
+        onLeftBackShowClose={true}
       />
-      <div className="flex my-content">
+
+      {/* For some users register in old versions */}
+      <div className="set-new-wallet-name-container">
+        <SetNewWalletNameIcon />
+      </div>
+
+      <div className="wallet-entry-container">
+        <WalletEntry
+          walletAvatar={avatar}
+          walletName={nickName}
+          portkeyId={userId}
+          clickAvatar={() => {
+            navigate('/setting/wallet/wallet-name');
+          }}
+        />
+      </div>
+
+      <div className="empty-placeholder" />
+
+      <div className="flex my-content my-list-container">
         <div className="menu-list">
-          {MenuList.map((item) => (
-            <MenuItem
-              key={item.label}
-              height={56}
-              icon={menuItemIcon(item.icon, !!(isImputation && item.label === 'Contacts'))}
-              onClick={() => {
-                navigate(item.router);
-              }}>
-              {t(item.label)}
-            </MenuItem>
-          ))}
-          <MenuItem key="referral" height={56} icon={<CustomSvg type="Referral" />} onClick={clickReferral}>
-            <div className="flex-between-center">
-              <div>Referral</div>
-              <div className="referral-tag flex-center">New</div>
-            </div>
-          </MenuItem>
+          {MenuList.map((item, index) => {
+            if (item.type === 'divider') {
+              return <div key={index} className="empty-placeholder" />;
+            }
+            return (
+              <MenuItem
+                key={item.label}
+                height={48}
+                icon={menuItemIcon(item.icon, isImputation && item.label === 'Contacts')}
+                onClick={() => {
+                  if (item.router.match('http')) {
+                    window.open(item.router);
+                    return;
+                  }
+                  navigate(item.router);
+                }}>
+                <div className="flex-between">
+                  {t(item.label)}
+                  {item.element}
+                </div>
+              </MenuItem>
+            );
+          })}
         </div>
-        {!isPrompt && (
-          <div className="btn flex-center">
-            <Button type="link" onClick={handleExpandView}>
-              <div className="flex-center">
-                <CustomSvg type="ExpandBlue" />
-                &nbsp;&nbsp;
-                <span>{t('Expand View')}</span>
-              </div>
-            </Button>
-          </div>
-        )}
+      </div>
+
+      <div>
+        <ExitWallet
+          exitText={t('Sign out')}
+          exitVisible={exitVisible}
+          className="exit-btn"
+          onExit={onExit}
+          onCancelExit={onCancelExit}
+        />
       </div>
     </div>
   );

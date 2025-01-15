@@ -3,8 +3,8 @@ import { useAppCASelector, useAppCommonDispatch } from '../../index';
 import ramp, { IClientType, IRampProviderType } from '@portkey-wallet/ramp';
 import { sleep } from '@portkey-wallet/utils';
 import { setRampEntry } from '@portkey-wallet/store/store-ca/ramp/actions';
-import { useBuyFiat } from './buy';
-import { useSellCrypto } from './sell';
+import { useBuyCryptoList, useBuyFiat } from './buy';
+import { useSellCrypto, useSellCryptoList } from './sell';
 import { useCurrentNetworkInfo, useIsMainnet } from '../network';
 import { IEntranceMatchValueConfig } from '@portkey-wallet/types/types-ca/cms';
 import { useBuyButtonShow } from '../cms/index';
@@ -20,6 +20,7 @@ export const useSellCryptoListState = () => useAppCASelector(state => state.ramp
 export const useSellDefaultCryptoState = () => useAppCASelector(state => state.ramp.sellDefaultCrypto);
 export const useSellDefaultFiatListState = () => useAppCASelector(state => state.ramp.sellDefaultFiatList);
 export const useSellDefaultFiatState = () => useAppCASelector(state => state.ramp.sellDefaultFiat);
+export const useBuyCryptoListState = () => useAppCASelector(state => state.ramp.buyCryptoList);
 
 export const useInitRamp = ({ clientType }: { clientType: IClientType }) => {
   const { refreshRampShow } = useRampEntryShow();
@@ -44,6 +45,31 @@ export const useInitRamp = ({ clientType }: { clientType: IClientType }) => {
       await refreshSellCrypto();
     }
   }, [apiUrl, clientType, refreshRampShow, refreshBuyFiat, refreshSellCrypto]);
+};
+
+export const useInitRampV2 = ({ clientType }: { clientType: IClientType }) => {
+  const { refreshRampShow } = useRampEntryShow();
+  const { refresh: refreshBuyCryptoList } = useBuyCryptoList();
+  const { refresh: refreshSellCryptoList } = useSellCryptoList();
+  const { apiUrl } = useCurrentNetworkInfo();
+
+  return useCallback(async () => {
+    await ramp.init({ baseUrl: apiUrl, clientType });
+
+    const { isBuySectionShow, isSellSectionShow } = await refreshRampShow(false);
+
+    await sleep(1000);
+
+    if (isBuySectionShow) {
+      // fetch fiatList and defaultFiat
+      await refreshBuyCryptoList();
+    }
+
+    if (isSellSectionShow) {
+      // fetch cryptoList and defaultCrypto
+      await refreshSellCryptoList();
+    }
+  }, [apiUrl, clientType, refreshRampShow, refreshBuyCryptoList, refreshSellCryptoList]);
 };
 
 export const useRampEntryShow = () => {

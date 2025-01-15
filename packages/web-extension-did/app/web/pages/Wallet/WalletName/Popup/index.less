@@ -2,6 +2,7 @@
 @import '../../../../assets/theme/constants.less';
 
 .wallet-name-popup {
+  width: 100%;
   position: relative;
   .view-contact-body {
     height: calc(100% - @common-header-height);
@@ -21,19 +22,19 @@
       padding: 24px 24px 0;
     }
 
-    .form-btn{
-      padding: 16px;
+    .form-btn {
+      padding: 16px 0;
     }
   }
 
   .account-cancelation {
     position: absolute;
-    bottom: -120px;
+    bottom: 16px;
     width: 100%;
     padding-bottom: 16px;
-    font-size: 14px;
-    line-height: 20px;
-    color: @neutral-disable-text;
+    font-size: 16px;
+    line-height: 100%;
+    color: @text-opacity40;
     cursor: pointer;
   }
 }

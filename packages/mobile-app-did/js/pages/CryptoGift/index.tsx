@@ -1,141 +1,155 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback } from 'react';
 import PageContainer from 'components/PageContainer';
-import { DeviceEventEmitter, Image, StyleSheet, View } from 'react-native';
-import { defaultColors } from 'assets/theme';
+import { Image, View } from 'react-native';
 import { useLanguage } from 'i18n/hooks';
-import { TextL, TextM, TextS, TextXXXL } from 'components/CommonText';
+import { TextL, TextM, TextH1 } from 'components/CommonText';
 import { pTd } from 'utils/unit';
-import { FontStyles } from 'assets/theme/styles';
 import GStyles from 'assets/theme/GStyles';
-import Svg from 'components/Svg';
+import { makeStyles } from '@rneui/themed';
 import CommonButton from 'components/CommonButton';
-import HistoryCard from './components/HistoryCard';
-import { CryptoGiftCreateSuccess, useGetFirstCryptoGift } from '@portkey-wallet/hooks/hooks-ca/cryptogift';
 import navigationService from 'utils/navigationService';
 import fonts from 'assets/theme/fonts';
 import boxOpen from 'assets/image/pngs/box-open.png';
+import CommonTooltip from 'components/CommonTooltip';
 
 export default function CryptoGift() {
   const { t } = useLanguage();
-  const { firstCryptoGift, loading, getFirstCryptoGift } = useGetFirstCryptoGift();
-  useEffect(() => {
-    const eventListener = DeviceEventEmitter.addListener(CryptoGiftCreateSuccess, () => {
-      getFirstCryptoGift();
-    });
-    return () => {
-      eventListener.remove();
-    };
-  }, [getFirstCryptoGift]);
+  const styles = getStyles();
   const onGiftCreatePress = useCallback(() => {
     navigationService.navigate('SendPacketGroupPage', {
       isCryptoGift: true,
     });
   }, []);
+  const onViewSentGifts = useCallback(() => {
+    navigationService.navigate('GiftHistory');
+  }, []);
   return (
     <PageContainer
       noCenterDom
-      safeAreaColor={['white']}
       containerStyles={styles.pageStyles}
-      pageSafeBottomPadding
-      scrollViewProps={{ disabled: false }}>
-      <TextXXXL style={[styles.title, FontStyles.size30, GStyles.textAlignCenter, GStyles.lineHeight(pTd(38))]}>
-        Crypto Gift
-      </TextXXXL>
-      <TextM
-        style={[
-          styles.subTitle,
-          FontStyles.neutralSecondaryTextColor,
-          GStyles.textAlignCenter,
-          GStyles.lineHeight(pTd(22)),
-        ]}>
-        Send crypto assets as a gift
+      rightDom={
+        <CommonTooltip
+          iconStyle={{ marginRight: pTd(16) }}
+          iconName="help-white"
+          iconSize={pTd(24)}
+          tooltipProps={{
+            title: 'About crypto gift',
+            description: `Crypto Gift lets Portkey users send crypto assets as gifts.
+
+To get started, click "Create crypto gift" to choose the asset, quantity, and claim requirements. After sending, share the generated gift link with friends.
+
+To claim, click the link, log in to your Portkey account, and verify eligibility. Gifts are valid for 24 hours, and unclaimed tokens or NFTs are returned to you afterward.`,
+          }}
+        />
+      }
+      scrollViewProps={{ disabled: true }}>
+      <TextH1 style={[styles.title, GStyles.lineHeight(pTd(38))]}>Crypto gift</TextH1>
+      <TextM style={[styles.subTitle, GStyles.lineHeight(pTd(19.6))]}>
+        Spread joy with Portkey&apos;s Crypto Gift feature—send crypto assets to anyone as a gift!
       </TextM>
       <Image resizeMode="contain" source={boxOpen} style={{ width: pTd(343), height: pTd(240) }} />
-
-      <CommonButton containerStyle={styles.buttonContainer} type="primary" disabled={false} onPress={onGiftCreatePress}>
-        <TextL style={styles.buttonText}>{t('Send Crypto Gift')}</TextL>
-      </CommonButton>
-      {firstCryptoGift && firstCryptoGift.exist && (
-        <HistoryCard
-          containerStyle={styles.hsCardContainer}
-          showTitle
-          redPacketDetail={firstCryptoGift || undefined}
-          isSkeleton={loading}
-        />
-      )}
-      <View style={styles.noteWrap}>
-        <TextM style={styles.noteTextTitle}>{t('About Crypto Gift')}</TextM>
-        <View style={styles.qaWrapper}>
-          <TextM style={styles.noteTextQuestion}>{t('What is crypto gift?')}</TextM>
-          <TextS style={styles.noteTextAnswer}>
-            {t(
-              'Crypto gift allows Portkey users to send crypto assets to anyone as a gift, adding an element of fun and surprise.',
-            )}
-          </TextS>
-        </View>
-        <View style={styles.qaWrapper}>
-          <TextM style={styles.noteTextQuestion}>{t('How to send a crypto gift?')}</TextM>
-          <TextS style={styles.noteTextAnswer}>
-            {t(
-              'Click "Send Crypto Gift" and customise the gift by selecting the asset, quantity, and requirements for claimers. After the gift is sent, a gift link will be generated, which you can then share with friends.',
-            )}
-          </TextS>
-        </View>
-        <View style={styles.qaWrapper}>
-          <TextM style={styles.noteTextQuestion}>{t('How to claim a crypto gift?')}</TextM>
-          <TextS style={styles.noteTextAnswer}>
-            {t(
-              'Click on the crypto gift link and log in to your Portkey account to check eligibility. If you qualify, simply claim the gift.',
-            )}
-          </TextS>
-        </View>
+      <View style={styles.multiBtnWrap}>
+        <CommonButton buttonStyle={styles.createBtnStyle} type="transparent" onPress={onGiftCreatePress}>
+          <View style={styles.createBtnContainer}>
+            <TextL style={styles.createBtnText}>{t('Create Crypto Gift')}</TextL>
+          </View>
+        </CommonButton>
+        <CommonButton buttonStyle={styles.ViewBtnStyle} type="transparent" onPress={onViewSentGifts}>
+          <View style={styles.ViewBtnContainer}>
+            <TextL style={styles.ViewBtnText}>{t('View sent gifts')}</TextL>
+          </View>
+        </CommonButton>
       </View>
+      {/* <CommonButton
+          containerStyle={styles.button}
+          buttonStyle={styles.buttonStyle}
+          type="transparent"
+          onPress={onGiftCreatePress}>
+          <View style={styles.buttonContainer}>
+            <TextL style={styles.buttonText}>{t('Create Crypto Gift')}</TextL>
+          </View>
+        </CommonButton> */}
     </PageContainer>
   );
 }
-const styles = StyleSheet.create({
+const getStyles = makeStyles(theme => ({
   pageStyles: {
-    backgroundColor: defaultColors.neutralDefaultBG,
+    backgroundColor: theme.colors.bgBase1,
     flex: 1,
   },
+  headerHelpIcon: { marginRight: pTd(16) },
   title: {
-    marginTop: pTd(16),
+    marginTop: pTd(24),
   },
   subTitle: {
-    marginTop: pTd(8),
-    marginBottom: pTd(32),
+    marginTop: pTd(16),
+    marginBottom: pTd(64),
+    color: theme.colors.textBase2,
+  },
+  multiBtnWrap: {
+    position: 'absolute',
+    left: pTd(16),
+    bottom: pTd(24),
+  },
+  createBtnStyle: {
+    height: pTd(48),
+    paddingVertical: pTd(0),
+    paddingHorizontal: pTd(0),
+  },
+  createBtnContainer: {
+    width: '100%',
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: theme.colors.bgBrand1,
+    borderRadius: pTd(38),
+  },
+  createBtnText: {
+    lineHeight: pTd(24),
+    color: theme.colors.textBrand4,
+    ...fonts.mediumFont,
+  },
+  ViewBtnStyle: {
+    marginTop: pTd(16),
+    height: pTd(48),
+    paddingVertical: pTd(0),
+    paddingHorizontal: pTd(0),
+  },
+  ViewBtnContainer: {
+    width: '100%',
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: pTd(38),
+    borderWidth: 1,
+    borderColor: theme.colors.borderNeutral2,
+  },
+  ViewBtnText: {
+    color: theme.colors.textBase1,
+    ...fonts.mediumFont,
+  },
+  button: {
+    position: 'absolute',
+    left: pTd(16),
+    bottom: pTd(24),
+  },
+  buttonStyle: {
+    height: pTd(48),
+    borderWidth: pTd(1.5),
+    paddingVertical: pTd(3.5),
+    paddingHorizontal: pTd(3.5),
   },
   buttonContainer: {
-    paddingVertical: pTd(32),
+    width: '100%',
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: theme.colors.bgBrand1,
+    borderRadius: pTd(38),
   },
   buttonText: {
     lineHeight: pTd(24),
-    color: defaultColors.neutralContainerBG,
-  },
-  noteWrap: {
-    width: '100%',
-    backgroundColor: defaultColors.neutralHoverBG,
-    paddingHorizontal: pTd(12),
-    paddingVertical: pTd(16),
-    borderRadius: pTd(6),
-  },
-  qaWrapper: {
-    marginTop: pTd(12),
-  },
-  noteTextTitle: {
+    color: theme.colors.bgNeutral4,
     ...fonts.mediumFont,
-    ...GStyles.lineHeight(pTd(22)),
   },
-  noteTextQuestion: {
-    ...fonts.regularFont,
-    ...GStyles.lineHeight(pTd(22)),
-  },
-  noteTextAnswer: {
-    color: defaultColors.neutralTertiaryText,
-    marginTop: pTd(4),
-    ...GStyles.lineHeight(pTd(16)),
-  },
-  hsCardContainer: {
-    marginBottom: pTd(16),
-  },
-});
+}));

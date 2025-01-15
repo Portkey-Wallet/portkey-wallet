@@ -1,6 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { BarCodeScanner } from 'expo-barcode-scanner';
-import { View, Text, SafeAreaView, StyleSheet } from 'react-native';
+import { View, SafeAreaView, StatusBar } from 'react-native';
 import navigationService from 'utils/navigationService';
 import Svg from 'components/Svg';
 import { pTd } from 'utils/unit';
@@ -11,22 +10,26 @@ import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
 import { TextM } from 'components/CommonText';
 import GStyles from 'assets/theme/GStyles';
-import { FontStyles } from 'assets/theme/styles';
+import fonts from 'assets/theme/fonts';
 import { isIOS, screenHeight, screenWidth } from '@portkey-wallet/utils/mobile/device';
 
-import { Camera } from 'expo-camera';
+import { CameraView, Camera } from 'expo-camera';
 import Loading from 'components/Loading';
 import { useHandleDataFromQrCode } from 'hooks/useQrScan';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { sleep } from '@portkey-wallet/utils';
 import { useLatestRef } from '@portkey-wallet/hooks';
 import Touchable from 'components/Touchable';
+import { makeStyles } from '@rneui/themed';
+
 interface QrScannerProps {
   route?: any;
 }
 
 const QrScanner: React.FC<QrScannerProps> = () => {
   const { t } = useLanguage();
+
+  const PageStyle = getStyles();
 
   const [refresh, setRefresh] = useState<boolean>();
   const handleDataFromQrCode = useHandleDataFromQrCode();
@@ -38,7 +41,7 @@ const QrScanner: React.FC<QrScannerProps> = () => {
     useCallback(() => {
       (async () => {
         setRefresh(true);
-        await sleep(10);
+        await sleep(300);
         setRefresh(false);
       })();
     }, []),
@@ -46,7 +49,9 @@ const QrScanner: React.FC<QrScannerProps> = () => {
 
   const handleBarCodeScanned = useLockCallback(
     async ({ data = '' }) => {
-      if (!latestIsFocused.current) return;
+      if (!latestIsFocused.current) {
+        return;
+      }
       try {
         await handleDataFromQrCode(data);
       } catch {
@@ -65,51 +70,54 @@ const QrScanner: React.FC<QrScannerProps> = () => {
       allowsMultipleSelection: false,
       quality: 1,
     });
+    if (result.canceled || !result.assets || result.assets.length <= 0) {
+      return;
+    }
 
-    if (result.cancelled || !result.uri) return;
+    if (result && result?.assets[0].uri) {
+      const scanResult = await Camera.scanFromURLAsync(result?.assets[0].uri, ['qr']);
 
-    if (result && result?.uri) {
-      const scanResult = await BarCodeScanner.scanFromURLAsync(result?.uri, [BarCodeScanner.Constants.BarCodeType.qr]);
-
-      if (scanResult[0]?.data) handleBarCodeScanned({ data: scanResult[0]?.data || '' });
+      if (scanResult[0]?.data) {
+        handleBarCodeScanned({ data: scanResult[0]?.data || '' });
+      }
     }
   };
 
   return (
     <View style={PageStyle.wrapper}>
-      {refresh ? null : (
-        <Camera
-          ratio={'16:9'}
-          style={[PageStyle.barCodeScanner, !isIOS && PageStyle.barCodeScannerAndroid]}
-          onBarCodeScanned={handleBarCodeScanned}>
+      <CameraView
+        ratio={'16:9'}
+        barcodeScannerSettings={{
+          barcodeTypes: ['qr', 'pdf417'],
+        }}
+        style={[PageStyle.barCodeScanner, !isIOS && PageStyle.barCodeScannerAndroid]}
+        onBarcodeScanned={handleBarCodeScanned}>
+        {!refresh && (
           <SafeAreaView style={PageStyle.innerView}>
             <View style={PageStyle.iconWrap}>
-              <Text style={PageStyle.leftBlock} />
               <Touchable
                 style={PageStyle.svgWrap}
                 onPress={() => {
                   navigationService.goBack();
                 }}>
-                <Svg icon="close1" size={pTd(14)} iconStyle={PageStyle.icon} />
+                <Svg icon="left-arrow-v2" size={pTd(20)} />
+              </Touchable>
+              <Touchable style={PageStyle.svgWrap} onPress={selectImage}>
+                <Svg icon="photo" size={pTd(24)} />
               </Touchable>
             </View>
             <Svg icon="scan-square" size={pTd(240)} iconStyle={PageStyle.scan} />
-            <TextM style={PageStyle.tips}>{t('Receive code / Login code / URL code')}</TextM>
-
-            <Touchable style={[PageStyle.albumWrap, GStyles.alignCenter]} onPress={selectImage}>
-              <Svg icon="album" size={pTd(48)} />
-              <TextM style={[FontStyles.font2, PageStyle.albumText]}>{t('Album')}</TextM>
-            </Touchable>
+            <TextM style={PageStyle.tips}>{t('Send crypto and connect to dApps \n by scanning a QR code')}</TextM>
           </SafeAreaView>
-        </Camera>
-      )}
+        )}
+      </CameraView>
     </View>
   );
 };
 
 export default QrScanner;
 
-export const PageStyle = StyleSheet.create({
+export const getStyles = makeStyles(theme => ({
   wrapper: {
     width: '100%',
     height: '100%',
@@ -129,40 +137,34 @@ export const PageStyle = StyleSheet.create({
   innerView: {
     width: '100%',
     height: '100%',
+    paddingTop: StatusBar.currentHeight,
+    // backgroundColor: 'red',
   },
   iconWrap: {
-    marginTop: pTd(16),
     width: '100%',
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'flex-end',
-    alignItems: 'flex-end',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   icon: {
     width: pTd(40),
   },
   svgWrap: {
-    ...GStyles.paddingArg(16, 0, 16, 16),
+    ...GStyles.paddingArg(16, 16, 16, 16),
   },
   scan: {
     marginTop: pTd(136),
     marginLeft: 'auto',
     marginRight: 'auto',
   },
-  title: {
-    marginTop: pTd(62),
-    fontSize: pTd(16),
-    color: defaultColors.font2,
-    textAlign: 'center',
-  },
   tips: {
-    // position: 'absolute',
-    // bottom: 100,
-    color: defaultColors.font7,
+    color: theme.colors.textBase1,
     textAlign: 'center',
     width: screenWidth,
     lineHeight: pTd(20),
     marginTop: pTd(54),
+    ...fonts.mediumFont,
   },
   albumWrap: {
     position: 'absolute',
@@ -175,4 +177,4 @@ export const PageStyle = StyleSheet.create({
   leftBlock: {
     flex: 1,
   },
-});
+}));

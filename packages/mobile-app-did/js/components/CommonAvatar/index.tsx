@@ -5,9 +5,10 @@ import { Text, TextStyle, View, ViewStyle } from 'react-native';
 import { StyleSheet } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import { checkIsSvgUrl } from 'utils';
-import { SvgCssUri } from 'react-native-svg';
+import { SvgCssUri } from 'react-native-svg/css';
 import FastImage from 'components/FastImage';
 import { ResizeMode } from 'react-native-fast-image';
+import { makeStyles } from '@rneui/themed';
 
 export interface CommonAvatarProps {
   title?: string;
@@ -44,6 +45,7 @@ export default function CommonAvatar(props: CommonAvatarProps) {
     borderStyle: borderStyleProp,
   } = props;
 
+  const styles = getStyles();
   const [loadError, setLoadError] = useState(false);
   const initialsTitle = String(title?.[0] || '').toUpperCase();
 
@@ -51,7 +53,7 @@ export default function CommonAvatar(props: CommonAvatarProps) {
     () => ({
       width: width || Number(avatarSize),
       height: height || Number(avatarSize),
-      borderRadius: shapeType === 'square' ? 4 : Number(avatarSize) / 2,
+      borderRadius: shapeType === 'square' ? pTd(8) : Number(avatarSize) / 2,
     }),
     [avatarSize, height, shapeType, width],
   );
@@ -78,7 +80,7 @@ export default function CommonAvatar(props: CommonAvatarProps) {
   // when change url ,reset loading error state
   useEffect(() => setLoadError(false), [imageUrl]);
 
-  if (svgName)
+  if (svgName) {
     return (
       <Svg
         oblongSize={[width || avatarSize, height || avatarSize]}
@@ -92,6 +94,7 @@ export default function CommonAvatar(props: CommonAvatarProps) {
         }}
       />
     );
+  }
 
   if (imageUrl && !loadError) {
     return checkIsSvgUrl(imageUrl) ? (
@@ -128,7 +131,7 @@ export default function CommonAvatar(props: CommonAvatarProps) {
     </View>
   );
 }
-const styles = StyleSheet.create({
+const getStyles = makeStyles(theme => ({
   avatarWrap: {
     width: pTd(48),
     height: pTd(48),
@@ -141,8 +144,8 @@ const styles = StyleSheet.create({
   },
   squareStyle: {
     borderRadius: pTd(6),
-    backgroundColor: defaultColors.bg7,
+    backgroundColor: '#000000B2',
     borderWidth: 0,
     color: defaultColors.font7,
   },
-});
+}));

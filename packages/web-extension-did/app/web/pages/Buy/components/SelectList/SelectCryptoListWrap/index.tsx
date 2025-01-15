@@ -2,7 +2,7 @@ import { DrawerProps, ModalProps } from 'antd';
 import BaseDrawer from 'components/BaseDrawer';
 import './index.less';
 import { useCommonState } from 'store/Provider/hooks';
-import CustomPromptModal from 'pages/components/CustomPromptModal';
+import CustomPromptModal, { ICustomTokenModalProps } from 'pages/components/CustomPromptModal';
 import SelectCryptoList from '../SelectCryptoList';
 import { IRampCryptoItem } from '@portkey-wallet/ramp';
 
@@ -33,7 +33,11 @@ export default function SelectCryptoListWrap({
   const { isPrompt } = useCommonState();
 
   return isPrompt ? (
-    <CustomPromptModal {...props} onClose={onClose} destroyOnClose className="ramp-crypto-modal">
+    <CustomPromptModal
+      {...(props as ICustomTokenModalProps)}
+      onClose={onClose}
+      destroyOnClose
+      className="ramp-crypto-modal">
       <SelectCryptoList
         title={title}
         searchPlaceHolder={searchPlaceHolder}

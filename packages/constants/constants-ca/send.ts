@@ -5,7 +5,7 @@ export enum AddressError {
 }
 
 export enum TransactionError {
-  TOKEN_NOT_ENOUGH = 'Insufficient funds',
+  TOKEN_NOT_ENOUGH = 'Exceeds available balance',
   NFT_NOT_ENOUGH = 'Insufficient quantity',
   FEE_NOT_ENOUGH = 'Insufficient funds for transaction fee',
   CROSS_NOT_ENOUGH = 'Insufficient funds for cross chain transaction fee',
@@ -17,7 +17,7 @@ export const TransactionErrorArray = Object.values(TransactionError);
 
 export const SEND_SIDE_CHAIN_TOKEN_TIP_TITLE = `Send to exchange account?`;
 export const SEND_SIDE_CHAIN_TOKEN_TIP_CONTENT = [
-  `Please note that assets on the SideChain can't be sent directly to exchanges. You can transfer your SideChain assets to the MainChain before sending them to your exchange account.`,
+  `Please note that assets on the dAppChain can't be sent directly to exchanges. You can transfer your dAppChain assets to the MainChain before sending them to your exchange account.`,
 ];
 
 export const RECEIVE_MAIN_CHAIN_TOKEN_TIP_TITLE = `Receive from exchange account?`;
@@ -27,7 +27,7 @@ export const RECEIVE_MAIN_CHAIN_TOKEN_TIP_CONTENT = [
 
 export const RECEIVE_SIDE_CHAIN_TOKEN_TIP_TITLE = `Receive from exchange account?`;
 export const RECEIVE_SIDE_CHAIN_TOKEN_TIP_CONTENT = [
-  `If you wish to receive assets from exchanges, please note that they will not be credited to your SideChain address, and you cannot make the transfer through QR code scanning.`,
+  `If you wish to receive assets from exchanges, please note that they will not be credited to your dAppChain address, and you cannot make the transfer through QR code scanning.`,
   `To receive, please follow these steps:`,
   ` · Copy your wallet address.`,
   ` · Remove the "ELF_" prefix and "CHAIN_SUFFIX" suffix.`,
@@ -38,7 +38,7 @@ export const RECEIVE_SIDE_CHAIN_TOKEN_TIP_MODAL_REMEMBER_TEXT = `Don't show this
 export const RECEIVE_SIDE_CHAIN_TOKEN_TIP_MODAL_BUTTON_TEXT = `I Know`;
 
 export const RECEIVE_MAIN_CHAIN_ELF_TIP = `If you wish to receive assets from exchanges, please switch to the "Exchanges" tab on the right.`;
-
+export const CROSS_CHAIN_INTERCEPTED_CONTENT = `The asset does not exist on the target chain, so the transfer cannot be completed.`;
 export enum ReceiveTabEnum {
   QRCode = 'QRCode',
   Exchanges = 'Exchanges',
@@ -67,3 +67,48 @@ export const ALL_RECEIVE_TAB: {
     label: 'Deposit',
   },
 ];
+
+export enum WarningKey {
+  INVALID_ADDRESS = 'invalid_address',
+  STRANGE_ADDRESS = 'strange_address',
+  CROSS_CHAIN = 'cross_chain',
+  DAPP_CHAIN_TO_NO_AFFIX_ADDRESS_ELF = 'dapp_chain_to_no_affix_address_elf',
+  MAIN_CHAIN_TO_NO_AFFIX_ADDRESS_ELF = 'main_chain_to_no_affix_address_elf',
+  SAME_ADDRESS = 'same_address',
+  MAKE_SURE_SUPPORT_PLATFORM = 'make_sure_support_platform',
+}
+
+export const WarningTips = {
+  [WarningKey.INVALID_ADDRESS]:
+    "You can't send assets to this address because it's not a valid address, or is not supported at the moment.",
+  [WarningKey.STRANGE_ADDRESS]:
+    'You have not used this address recently. Ensure it is the correct address before proceeding.',
+  [WarningKey.CROSS_CHAIN]: 'This is a cross-chain transfer. Sending will incur transfer fees.',
+  [WarningKey.DAPP_CHAIN_TO_NO_AFFIX_ADDRESS_ELF]:
+    "The address you've entered appears to be for an exchange. Please confirm before proceeding. Sending tokens to the wrong address may result in the loss of your assets.",
+  [WarningKey.MAIN_CHAIN_TO_NO_AFFIX_ADDRESS_ELF]:
+    "The address entered seems to be for an exchange. Please confirm if it's one of the supported ones before continuing to avoid losing your asset.",
+  [WarningKey.SAME_ADDRESS]: "You can't send to this address because it's the same as the sending address.",
+  [WarningKey.MAKE_SURE_SUPPORT_PLATFORM]: 'Make sure that your receiving platform supports the token and network.',
+};
+
+// error style
+export const Warning1Arr: WarningKey[] = [WarningKey.INVALID_ADDRESS, WarningKey.SAME_ADDRESS];
+
+// warning style
+export const Warning2Arr: WarningKey[] = [
+  WarningKey.STRANGE_ADDRESS,
+  WarningKey.CROSS_CHAIN,
+  WarningKey.DAPP_CHAIN_TO_NO_AFFIX_ADDRESS_ELF,
+  WarningKey.MAIN_CHAIN_TO_NO_AFFIX_ADDRESS_ELF,
+];
+// info style
+export const Warning3Arr: WarningKey[] = [WarningKey.MAKE_SURE_SUPPORT_PLATFORM];
+
+export const TransferErrorMessage = {
+  BALANCE_NOT_ENOUGH: 'Exceeds available balance',
+  FEE_NOT_ENOUGH: 'Not enough ELF balance for transaction fee',
+};
+
+export const HELP_URL = 'https://doc.portkey.finance/docs/How-to-trade-assets';
+export const SEND_HELP_URL = 'https://doc.portkey.finance/docs/How-to-send-assets';

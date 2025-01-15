@@ -23,17 +23,17 @@ export type TokenDetailBanner_AggregatedQuery = {
     countAll?: number | null;
     count?: {
       __typename?: 'tokenDetailBanner_aggregated_count';
+      chainId?: number | null;
       id?: number | null;
       status?: number | null;
-      chainId?: number | null;
       symbol?: number | null;
       items?: number | null;
     } | null;
     countDistinct?: {
       __typename?: 'tokenDetailBanner_aggregated_count';
+      chainId?: number | null;
       id?: number | null;
       status?: number | null;
-      chainId?: number | null;
       symbol?: number | null;
       items?: number | null;
     } | null;
@@ -68,16 +68,16 @@ export const TokenDetailBanner_AggregatedDocument = gql`
       group
       countAll
       count {
+        chainId
         id
         status
-        chainId
         symbol
         items
       }
       countDistinct {
+        chainId
         id
         status
-        chainId
         symbol
         items
       }

@@ -1,4 +1,5 @@
 import { ContactIndexType, ContactItemType } from '@portkey-wallet/types/types-ca/contact';
+import { IContactIndexType, IContactItemType } from '@portkey-wallet/types/types-ca/contactNew';
 import { ContactState } from './slice';
 
 export interface FetchContractListAsyncPayloadType {
@@ -6,5 +7,11 @@ export interface FetchContractListAsyncPayloadType {
   contactIndexList?: ContactIndexType[];
   eventList?: ContactItemType[];
   lastModified: ContactState['lastModified'];
-  isImputation: boolean;
+}
+
+export interface FetchContactListAsyncPayloadTypeV2 {
+  isInit?: boolean;
+  contactIndexList?: IContactIndexType[];
+  eventList?: IContactItemType[];
+  lastModified?: ContactState['lastModifiedNew'];
 }

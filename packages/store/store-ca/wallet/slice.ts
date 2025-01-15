@@ -16,6 +16,7 @@ import {
   setManagerInfo,
   setOriginChainId,
   setNickNameAndAvatarAction,
+  setAvatarAction,
   resetCurrentUserInfoAction,
   updateCASyncState,
   setHideAssetsAction,
@@ -37,6 +38,7 @@ export const DEFAULT_USER_INFO: UserInfoType = {
 const initialState: WalletState = {
   walletAvatar: `master${(Math.floor(Math.random() * 10000) % 6) + 1}`, // to be scrapped, please use userInfo.avatar
   walletType: 'aelf',
+  // TODO: change it
   currentNetwork: 'MAINNET',
   chainList: [],
   chainInfo: {},
@@ -140,11 +142,28 @@ export const walletSlice = createSlice({
       })
       .addCase(setNickNameAndAvatarAction, (state, action) => {
         const { avatar, nickName, networkType = 'MAINNET' } = action.payload;
+
+        const tmpInfo = {
+          nickName: nickName || state.userInfo?.[networkType]?.nickName || '',
+          avatar: avatar || state.userInfo?.[networkType]?.avatar || '',
+        };
+
+        console.log('====tmpInfo', tmpInfo);
+
         state.userInfo = {
           ...(state.userInfo || {}),
           [networkType]: {
             ...(state?.userInfo?.[networkType] || {}),
-            nickName,
+            ...tmpInfo,
+          },
+        };
+      })
+      .addCase(setAvatarAction, (state, action) => {
+        const { avatar, networkType = 'MAINNET' } = action.payload;
+        state.userInfo = {
+          ...(state.userInfo || {}),
+          [networkType]: {
+            ...(state?.userInfo?.[networkType] || {}),
             avatar,
           },
         };

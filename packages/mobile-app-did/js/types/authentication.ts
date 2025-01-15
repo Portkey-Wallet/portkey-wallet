@@ -6,7 +6,9 @@ import { AppleUserInfo, TFacebookUserInfo, TelegramUserInfo } from '@portkey-wal
 
 export type TGoogleAuthentication = {
   accessToken: string;
-  idToken?: string;
+  idToken: string;
+  nonce: string;
+  timestamp: number;
   user: {
     email: string;
     familyName: string;
@@ -26,6 +28,9 @@ export type TAppleAuthentication = {
     givenName?: string;
     familyName?: string;
   };
+  idToken: string;
+  nonce: string;
+  timestamp: number;
 };
 
 export type TFacebookAuthentication = {

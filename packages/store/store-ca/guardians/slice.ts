@@ -1,4 +1,4 @@
-import { VerifierItem, VerifyStatus } from '@portkey-wallet/types/verifier';
+import { VerifierItem, VerifyStatus, zkLoginVerifierItem } from '@portkey-wallet/types/verifier';
 import { createSlice } from '@reduxjs/toolkit';
 import moment from 'moment';
 import {
@@ -14,6 +14,8 @@ import {
   setOpGuardianAction,
   resetGuardians,
   setGuardianListAction,
+  resetGuardianExpiredTime,
+  resetUserGuardianStatusState,
 } from './actions';
 import { GuardiansState } from './type';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
@@ -41,6 +43,7 @@ export const guardiansSlice = createSlice({
         action.payload.forEach((item: VerifierItem) => {
           map[item.id] = item;
         });
+        map[zkLoginVerifierItem.id] = zkLoginVerifierItem;
         state.verifierMap = map;
       })
       .addCase(setGuardiansAction, (state, action) => {
@@ -109,18 +112,27 @@ export const guardiansSlice = createSlice({
         state.userGuardianStatus = userStatus;
       })
       .addCase(setUserGuardianItemStatus, (state, action) => {
-        const { key, status, signature, verificationDoc, identifierHash } = action.payload;
+        const { key, status, signature, verificationDoc, identifierHash, zkLoginInfo } = action.payload;
         if (!state.userGuardianStatus?.[key]) throw Error("Can't find this item");
         state.userGuardianStatus[key]['status'] = status;
         state.userGuardianStatus[key]['signature'] = signature;
         state.userGuardianStatus[key]['verificationDoc'] = verificationDoc;
         state.userGuardianStatus[key]['identifierHash'] = identifierHash || '';
+        state.userGuardianStatus[key]['zkLoginInfo'] = zkLoginInfo;
         if (!state.guardianExpiredTime && status === VerifyStatus.Verified) {
           state.guardianExpiredTime = moment().add(GUARDIAN_EXPIRED_TIME, 'ms').valueOf();
         }
       })
       .addCase(resetUserGuardianStatus, state => {
         state.userGuardianStatus = {};
+      })
+      .addCase(resetUserGuardianStatusState, state => {
+        Object.keys(state.userGuardianStatus ?? {}).forEach(key => {
+          if (state.userGuardianStatus) state.userGuardianStatus[key].status = undefined;
+        });
+      })
+      .addCase(resetGuardianExpiredTime, state => {
+        state.guardianExpiredTime = undefined;
       })
       .addCase(setUserGuardianSessionIdAction, (state, action) => {
         const { key, verifierInfo } = action.payload;

@@ -15,11 +15,20 @@ export function isEqAddress(a1?: string, a2?: string) {
   return a1?.toLocaleLowerCase() === a2?.toLocaleLowerCase();
 }
 
+/**
+ *
+ * @param address
+ * @returns boolean
+ */
+export const isTronAddress = (address: string) => {
+  return address.length === 34 && address.startsWith('T');
+};
+
 export function isAelfAddress(value?: string) {
   if (!value || !isValidBase58(value)) return false;
   if (value.includes('_') && value.split('_').length < 3) return false;
   try {
-    return !!AElf.utils.decodeAddressRep(value);
+    return !!AElf.utils.decodeAddressRep(value) && !isTronAddress(value);
   } catch {
     return false;
   }
@@ -36,7 +45,7 @@ export function isDIDAelfAddress(value?: string) {
     const res = arr[0].length > arr[1].length ? arr[0] : arr[1];
     try {
       const decodeStr = AElf.utils.decodeAddressRep(res);
-      return !!decodeStr && Buffer.from(decodeStr, 'hex').length === 32;
+      return !!decodeStr && Buffer.from(decodeStr, 'hex').length === 32 && !isTronAddress(value);
       // return !!AElf.utils.decodeAddressRep(res);
     } catch {
       return false;
@@ -44,7 +53,7 @@ export function isDIDAelfAddress(value?: string) {
   }
   try {
     const decodeStr = AElf.utils.decodeAddressRep(value);
-    return !!decodeStr && Buffer.from(decodeStr, 'hex').length === 32;
+    return !!decodeStr && Buffer.from(decodeStr, 'hex').length === 32 && !isTronAddress(value);
     // return !!AElf.utils.decodeAddressRep(value);
   } catch {
     return false;

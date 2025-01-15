@@ -25,7 +25,7 @@ export const commonButtonStyle = StyleSheet.create({
   dashBoardTitleColorStyle: {
     color: font16,
     lineHeight: pTd(16),
-    fontWeight: '400',
+    // fontWeight: '400',
   },
   innerPageTitleColorStyle: {
     color: font16,

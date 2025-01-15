@@ -1,7 +1,7 @@
 import clsx from 'clsx';
-import PortKeyHeader from 'pages/components/PortKeyHeader';
+// import PortKeyHeader from 'pages/components/PortKeyHeader';
 import { useCallback, useRef } from 'react';
-import { useNavigate, useLocation } from 'react-router';
+import { useLocation } from 'react-router';
 import { useCommonState } from 'store/Provider/hooks';
 import MyBalance from './components/MyBalance';
 import './index.less';
@@ -10,28 +10,27 @@ import { useHandleAchSell } from 'pages/Buy/hooks/useHandleAchSell';
 import { useStorage } from 'hooks/useStorage';
 import walletMessage from 'messages/walletMessage';
 import { useEffectOnce } from 'react-use';
-import { useIsImputation } from '@portkey-wallet/hooks/hooks-ca/contact';
+// import { useIsImputation } from '@portkey-wallet/hooks/hooks-ca/contact';
 import initIm from 'hooks/im';
 import { sleep } from '@portkey-wallet/utils';
 import { useDiscoverGroupList } from '@portkey-wallet/hooks/hooks-ca/cms';
-import { useManagerExceedTipModal } from 'hooks/useManagerExceedTip';
 import { useReferral } from '@portkey-wallet/hooks/hooks-ca/referral';
-import HomeHeader from 'pages/components/HomeHeader';
+// import HomeHeader from 'pages/components/HomeHeader';
 import BottomBar from 'pages/components/BottomBar';
-import SetNewWalletNameModal from './components/SetNewWalletNameModal';
+// import SetNewWalletNameModal from './components/SetNewWalletNameModal';
 import { useBlockAndReport } from '@portkey-wallet/hooks/hooks-ca/im';
+// import { hideReferral } from '@portkey-wallet/constants/referral';
 
 export default function Home() {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const { isPrompt, isNotLessThan768 } = useCommonState();
-  const isImputation = useIsImputation();
-  const { getViewReferralStatusStatus, getReferralLink, viewReferralStatus } = useReferral();
-  const onUserClick = useCallback(() => {
-    const url = isNotLessThan768 ? `/setting/wallet` : `/setting`;
-    navigate(url);
-  }, [isNotLessThan768, navigate]);
+  // const isImputation = useIsImputation();
+  const { getViewReferralStatusStatus, getReferralLink } = useReferral();
+  // const onUserClick = useCallback(() => {
+  //   const url = isNotLessThan768 ? `/setting/wallet` : `/setting`;
+  //   navigate(url);
+  // }, [isNotLessThan768, navigate]);
   useDiscoverGroupList();
-  const managerExceedTip = useManagerExceedTipModal();
   const { search } = useLocation();
   const isSell = useRef(0); // guaranteed to make only one transfer
   const handleAchSell = useHandleAchSell();
@@ -55,7 +54,6 @@ export default function Home() {
 
   useEffectOnce(() => {
     checkAchSell();
-    managerExceedTip();
     getViewReferralStatusStatus();
     getReferralLink();
     fetchAndSetBlockList();
@@ -63,17 +61,13 @@ export default function Home() {
   initIm();
 
   return (
-    <div className={clsx(['portkey-home', 'flex-column', isPrompt && 'portkey-prompt'])}>
-      {isPrompt && isNotLessThan768 ? (
-        <PortKeyHeader unReadShow={isImputation || !viewReferralStatus} onUserClick={onUserClick} />
-      ) : (
-        <HomeHeader unReadShow={isImputation || !viewReferralStatus} onUserClick={onUserClick} />
-      )}
-      <div className={clsx('portkey-body', isPrompt ? '' : 'flex-1')}>
-        <MyBalance />
-      </div>
+    <div className={clsx(['portkey-home', 'flex-column', isPrompt && !isNotLessThan768 && 'portkey-prompt'])}>
+      {/* {isPrompt && isNotLessThan768 && (
+        <PortKeyHeader unReadShow={isImputation || (!hideReferral && !viewReferralStatus)} onUserClick={onUserClick} />
+      )} */}
+      <MyBalance />
       {!isPrompt && <BottomBar />}
-      <SetNewWalletNameModal />
+      {/*<SetNewWalletNameModal />*/}
     </div>
   );
 }

@@ -1,42 +1,28 @@
-import { useAppDispatch, useCommonState, useLoading } from 'store/Provider/hooks';
 import TransferSettingsEditPopup from './Popup';
-import TransferSettingsEditPrompt from './Prompt';
 import { useTranslation } from 'react-i18next';
 import { useCallback, useRef, useState } from 'react';
 import { ValidData } from 'pages/Contacts/AddContact';
 import { Form } from 'antd';
-import { setLoginAccountAction } from 'store/reducers/loginCache/actions';
-import { resetUserGuardianStatus } from '@portkey-wallet/store/store-ca/guardians/actions';
-import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
-import useGuardianList from 'hooks/useGuardianList';
-import InternalMessage from 'messages/InternalMessage';
-import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
-import { useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { isValidInteger } from '@portkey-wallet/utils/reg';
 import { LimitFormatTip, SingleExceedDaily } from 'constants/security';
-import { divDecimals, timesDecimals } from '@portkey-wallet/utils/converter';
+import { divDecimals } from '@portkey-wallet/utils/converter';
 import { useEffectOnce } from 'react-use';
-import { useThrottleCallback } from '@portkey-wallet/hooks';
 import { ICheckLimitBusiness } from '@portkey-wallet/types/types-ca/paymentSecurity';
 import { useLocationState, useNavigateState } from 'hooks/router';
-import { FromPageEnum, TTransferSettingEditLocationState } from 'types/router';
+import { TTransferSettingEditLocationState } from 'types/router';
+import { useSetLimit } from '../TransferSettings/useSetLimit';
 
 export default function TransferSettingsEdit() {
-  const { isPrompt, isNotLessThan768 } = useCommonState();
-  const dispatch = useAppDispatch();
-  const userGuardianList = useGuardianList();
-  const { walletInfo } = useCurrentWallet();
   const { t } = useTranslation();
   const { state } = useLocationState<TTransferSettingEditLocationState>();
   const navigate = useNavigateState();
   const [form] = Form.useForm();
-  const headerTitle = t('Transfer Settings');
+  const headerTitle = t('Transaction Limits');
   const [restrictedText, setRestrictedText] = useState(!!state?.restricted);
   const restrictedTextRef = useRef(!!state?.restricted);
   const [disable, setDisable] = useState(true);
   const [validSingleLimit, setValidSingleLimit] = useState<ValidData>({ validateStatus: '', errorMsg: '' });
   const [validDailyLimit, setValidDailyLimit] = useState<ValidData>({ validateStatus: '', errorMsg: '' });
-  const { setLoading } = useLoading();
 
   const handleDisableCheck = useCallback(() => {
     const { singleLimit, dailyLimit } = form.getFieldsValue();
@@ -113,71 +99,19 @@ export default function TransferSettingsEdit() {
     setValidDailyLimit({ validateStatus: '', errorMsg: '' });
   }, [handleDisableCheck]);
 
-  const handleSetLimit = useThrottleCallback(async () => {
-    setLoading(true);
-    try {
-      // ====== clear guardian cache ====== start
-      dispatch(
-        setLoginAccountAction({
-          guardianAccount: walletInfo.managerInfo?.loginAccount as string,
-          loginType: walletInfo.managerInfo?.type as LoginType,
-        }),
-      );
-      dispatch(resetUserGuardianStatus());
-      await userGuardianList({ caHash: walletInfo.caHash });
-      // ====== clear guardian cache ====== end
+  const { handleSetLimit } = useSetLimit();
 
-      const { singleLimit, dailyLimit } = form.getFieldsValue();
-      const params = {
-        dailyLimit: timesDecimals(dailyLimit, state.decimals).toFixed(),
-        singleLimit: timesDecimals(singleLimit, state.decimals).toFixed(),
-        symbol: state.symbol,
-        fromSymbol: state.fromSymbol,
-        decimals: state.decimals,
-        restricted: restrictedTextRef.current,
-        from: state.from,
-        targetChainId: state.targetChainId || state.chainId,
-        initStateBackUp: state,
-        extra: state.extra,
-      };
-      setLoading(false);
-      isPrompt
-        ? navigate('/setting/wallet-security/payment-security/guardian-approval', {
-            state: {
-              previousPage: FromPageEnum.setTransferLimit,
-              ...params,
-            },
-          })
-        : InternalMessage.payload(
-            PortkeyMessageTypes.GUARDIANS_APPROVAL_PAYMENT_SECURITY,
-            JSON.stringify({
-              previousPage: FromPageEnum.setTransferLimit,
-              ...params,
-            }),
-          ).send();
-    } catch (error) {
-      console.log('set limit error: ', error);
-    } finally {
-      setLoading(false);
-    }
-  }, [
-    setLoading,
-    dispatch,
-    walletInfo.managerInfo?.loginAccount,
-    walletInfo.managerInfo?.type,
-    walletInfo.caHash,
-    userGuardianList,
-    form,
-    state,
-    isPrompt,
-    navigate,
-  ]);
-
-  const onFinish = useCallback(() => {
+  const onFinish = useCallback(async () => {
     const errorCount = handleFormChange();
     if (errorCount > 0) return;
-    handleSetLimit();
-  }, [handleFormChange, handleSetLimit]);
+    const { singleLimit, dailyLimit } = form.getFieldsValue();
+    await handleSetLimit({
+      state,
+      singleLimit,
+      dailyLimit,
+      restricted: restrictedTextRef.current,
+    });
+  }, [form, handleFormChange, handleSetLimit, state]);
 
   useEffectOnce(() => {
     if (!state?.restricted) {
@@ -187,22 +121,7 @@ export default function TransferSettingsEdit() {
     handleDisableCheck();
   });
 
-  return isNotLessThan768 ? (
-    <TransferSettingsEditPrompt
-      headerTitle={headerTitle}
-      goBack={handleBack}
-      form={form}
-      restrictedValue={restrictedText}
-      state={state}
-      disable={disable}
-      validSingleLimit={validSingleLimit}
-      validDailyLimit={validDailyLimit}
-      onRestrictedChange={handleRestrictedChange}
-      onSingleLimitChange={handleSingleLimitChange}
-      onDailyLimitChange={handleDailyLimitChange}
-      onFinish={onFinish}
-    />
-  ) : (
+  return (
     <TransferSettingsEditPopup
       headerTitle={headerTitle}
       goBack={handleBack}

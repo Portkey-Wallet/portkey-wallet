@@ -23,29 +23,29 @@ export type EntranceMatch_AggregatedQuery = {
     countAll?: number | null;
     count?: {
       __typename?: 'entranceMatch_aggregated_count';
+      date_created?: number | null;
+      date_updated?: number | null;
+      description?: number | null;
       id?: number | null;
+      matchRuleList?: number | null;
+      matchSwitch?: number | null;
       status?: number | null;
       user_created?: number | null;
-      date_created?: number | null;
       user_updated?: number | null;
-      date_updated?: number | null;
-      matchRuleList?: number | null;
       weight?: number | null;
-      matchSwitch?: number | null;
-      description?: number | null;
     } | null;
     countDistinct?: {
       __typename?: 'entranceMatch_aggregated_count';
+      date_created?: number | null;
+      date_updated?: number | null;
+      description?: number | null;
       id?: number | null;
+      matchRuleList?: number | null;
+      matchSwitch?: number | null;
       status?: number | null;
       user_created?: number | null;
-      date_created?: number | null;
       user_updated?: number | null;
-      date_updated?: number | null;
-      matchRuleList?: number | null;
       weight?: number | null;
-      matchSwitch?: number | null;
-      description?: number | null;
     } | null;
     avg?: { __typename?: 'entranceMatch_aggregated_fields'; id?: number | null; weight?: number | null } | null;
     sum?: { __typename?: 'entranceMatch_aggregated_fields'; id?: number | null; weight?: number | null } | null;
@@ -78,28 +78,28 @@ export const EntranceMatch_AggregatedDocument = gql`
       group
       countAll
       count {
+        date_created
+        date_updated
+        description
         id
+        matchRuleList
+        matchSwitch
         status
         user_created
-        date_created
         user_updated
-        date_updated
-        matchRuleList
         weight
-        matchSwitch
-        description
       }
       countDistinct {
+        date_created
+        date_updated
+        description
         id
+        matchRuleList
+        matchSwitch
         status
         user_created
-        date_created
         user_updated
-        date_updated
-        matchRuleList
         weight
-        matchSwitch
-        description
       }
       avg {
         id

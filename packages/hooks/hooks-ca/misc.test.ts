@@ -6,7 +6,7 @@ import { useAppCommonDispatch } from '../index';
 import { renderHook } from '@testing-library/react';
 import { CountryItem } from '@portkey-wallet/types/types-ca/country';
 import * as MiscActions from '@portkey-wallet/store/store-ca/misc/actions';
-import * as indexHook from '.';
+import * as indexHook from './index';
 import * as networkHook from '@portkey-wallet/hooks/hooks-ca/network';
 import { MainnetNetworkInfo, TestnetNetworkInfo } from '../../../test/data/networkState';
 import { DefaultCountry } from '@portkey-wallet/constants/constants-ca/country';

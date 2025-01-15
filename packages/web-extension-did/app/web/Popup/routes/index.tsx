@@ -11,6 +11,7 @@ import AccountSetting from 'pages/AccountSetting';
 import My from 'pages/My';
 import Send from 'pages/Send';
 import NFT from 'pages/NFT';
+import Collection from 'pages/Collection';
 import Transaction from 'pages/Transaction';
 import Guardians from 'pages/Guardians';
 import AddGuardian from 'pages/Guardians/GuardiansAdd';
@@ -19,15 +20,18 @@ import GuardiansView from 'pages/Guardians/GuardiansView';
 import VerifierAccount from 'pages/VerifierAccount';
 import Unlock from 'pages/Unlock';
 import ContactDetail from 'pages/Contacts/ContactDetail';
-import ConfirmPin from 'pages/AccountSetting/ConfirmPin';
+// import ConfirmPin from 'pages/AccountSetting/ConfirmPin';
+import ConfirmPin from 'pages/My/SettingList/Security/ConfirmPin';
+import SetNewPin from 'pages/My/SettingList/Security/SetNewPin';
 import WalletSecurity from 'pages/WalletSecurity';
-import SetNewPin from 'pages/AccountSetting/SetNewPin';
+// import SetNewPin from 'pages/AccountSetting/SetNewPin';
 import Devices from 'pages/WalletSecurity/ManageDevices/Devices';
 import DeviceDetail from 'pages/WalletSecurity/ManageDevices/DeviceDetail';
 import Buy from 'pages/Buy';
 import BuyPreview from 'pages/Buy/Preview';
 import AboutUs from 'pages/Wallet/AboutUs';
-import AutoLock from 'pages/Wallet/AutoLock';
+// import AutoLock from 'pages/Wallet/AutoLock';
+import AutoLock from 'pages/My/SettingList/Security/AutoLock';
 import SwitchNetworks from 'pages/Wallet/SwitchNetwork';
 import WalletName from 'pages/Wallet/WalletName';
 import MyQRCode from 'pages/MyQRCode';
@@ -56,9 +60,20 @@ import TradePage from 'pages/Trade';
 import TokenAllowance from 'pages/WalletSecurity/TokenAllowance';
 import TokenAllowanceDetail from 'pages/WalletSecurity/TokenAllowance/TokenAllowanceDetail';
 import DepositHome from 'pages/DepositHome';
+import ReceiveListPage from 'pages/Receive/ReceiveListPage';
+import ReceiveCardPage from 'pages/Receive/ReceiveCardPage';
 import CryptoGifts from 'pages/CryptoGifts/Home';
 import HistoryList from 'pages/CryptoGifts/History';
 import CryptoGiftsDetail from 'pages/CryptoGifts/Detail';
+import FreeMint from 'pages/FreeMint';
+import SecondaryMailbox from 'pages/WalletSecurity/SecondaryMailbox';
+import SecondaryMailboxEdit from 'pages/WalletSecurity/SecondaryMailbox/Edit';
+import SecondaryMailboxVerify from 'pages/WalletSecurity/SecondaryMailbox/Verify';
+import Security from '../../pages/My/SettingList/Security';
+import { SelectAssetListPage } from 'pages/Send/components/SelectAssetList';
+import RampBuy from 'pages/Buy/RampBuy';
+import RampSell from 'pages/Buy/RampSell';
+import ActivityList from 'pages/Activity';
 
 export const PageRouter = () =>
   useRoutes([
@@ -135,6 +150,10 @@ export const PageRouter = () =>
       element: <TokenDetail />,
     },
     {
+      path: '/select-asset',
+      element: <SelectAssetListPage />,
+    },
+    {
       path: '/send/:type/:symbol',
       element: <Send />,
     },
@@ -151,12 +170,28 @@ export const PageRouter = () =>
       element: <Buy />,
     },
     {
+      path: '/buy/ramp-buy',
+      element: <RampBuy />,
+    },
+    {
+      path: '/buy/ramp-sell',
+      element: <RampSell />,
+    },
+    {
       path: '/buy/preview',
       element: <BuyPreview />,
     },
     {
       path: '/nft',
       element: <NFT />,
+    },
+    {
+      path: '/collection',
+      element: <Collection />,
+    },
+    {
+      path: '/free-mint',
+      element: <FreeMint />,
     },
     {
       path: 'setting/contacts',
@@ -197,6 +232,28 @@ export const PageRouter = () =>
     {
       path: '/setting/account-setting/chat-privacy-edit',
       element: <ChatPrivacyEdit />,
+    },
+    // Revamp security
+    {
+      path: '/setting/security',
+      element: <Security />,
+    },
+    {
+      path: '/setting/security/auto-lock',
+      element: <AutoLock />,
+    },
+    {
+      path: '/setting/security/confirm-pin',
+      element: <ConfirmPin />,
+    },
+    {
+      path: '/setting/security/set-new-pin',
+      element: <SetNewPin />,
+    },
+    // Revamp security end
+    {
+      path: '/setting/wallet/auto-lock',
+      element: <AutoLock />,
     },
     {
       path: '/setting/wallet-security',
@@ -255,9 +312,26 @@ export const PageRouter = () =>
       element: <TokenAllowanceDetail />,
     },
     {
+      path: '/setting/wallet-security/secondary-mailbox',
+      element: <SecondaryMailbox />,
+    },
+    {
+      path: '/setting/wallet-security/secondary-mailbox-edit',
+      element: <SecondaryMailboxEdit />,
+    },
+    {
+      path: '/setting/wallet-security/secondary-mailbox-verify',
+      element: <SecondaryMailboxVerify />,
+    },
+    {
+      path: '/activity-list',
+      element: <ActivityList />,
+    },
+    {
       path: '/chat-list',
       element: <ChatList />,
     },
+
     {
       path: '/chat-list-search',
       element: <ChatListSearch />,
@@ -333,5 +407,13 @@ export const PageRouter = () =>
     {
       path: '/token-detail/deposit-home/:chain/:symbol',
       element: <DepositHome />,
+    },
+    {
+      path: '/receive-list',
+      element: <ReceiveListPage />,
+    },
+    {
+      path: '/receive-card',
+      element: <ReceiveCardPage />,
     },
   ]);

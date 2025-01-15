@@ -12,8 +12,6 @@ import { useCaInfoOnChain } from 'hooks/useCaInfoOnChain';
 import { useFetchSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
 import { useCheckManager } from '@portkey-wallet/hooks/hooks-ca/graphql';
 import { useCheckManagerOnLogout } from 'hooks/useLogOut';
-import socket from '@portkey-wallet/socket/socket-did';
-import CommonToast from 'components/CommonToast';
 import { usePhoneCountryCode } from '@portkey-wallet/hooks/hooks-ca/misc';
 import {
   useDiscoverGroupList,
@@ -36,7 +34,8 @@ import useInterval from '@portkey-wallet/hooks/useInterval';
 import { useLatestRef } from '@portkey-wallet/hooks';
 import MatchValueMap from 'utils/matchValueMap';
 import { useInitCmsBanner } from '@portkey-wallet/hooks/hooks-ca/cms/banner';
-import { useInitCMSDiscoverNewData } from '@portkey-wallet/hooks/hooks-ca/cms/discover';
+import { useInitCMSDiscoverNewData, useInitDappWhiteListData } from '@portkey-wallet/hooks/hooks-ca/cms/discover';
+import { useInitAwaken } from '@portkey-wallet/hooks/hooks-ca/awaken';
 
 request.setExceptionManager(exceptionManager);
 
@@ -97,9 +96,10 @@ export default function Updater() {
     EntryScriptWeb3.init();
     // init MatchValueMap
     MatchValueMap.init();
-    socket.onScanLoginSuccess(data => {
-      CommonToast.success(data.body);
-    });
+
+    // socket.onScanLoginSuccess(data => {
+    //   CommonToast.success(data.body);
+    // });
   });
   useInterval(
     () => {
@@ -127,5 +127,7 @@ export default function Updater() {
   useAppEntrance(true);
   useRememberMeBlackList(true);
   useCheckContactMap();
+  useInitDappWhiteListData();
+  useInitAwaken();
   return null;
 }

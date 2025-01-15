@@ -1,6 +1,6 @@
 import React, { useCallback, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { defaultColors } from 'assets/theme';
+import { darkColors, defaultColors } from 'assets/theme';
 import WebView from 'react-native-webview';
 import CustomHeader from 'components/CustomHeader';
 import SafeAreaBox from 'components/SafeAreaBox';
@@ -12,15 +12,9 @@ import CommonToast from 'components/CommonToast';
 import Progressbar, { IProgressbar } from 'components/Progressbar';
 import { RAMP_BUY_URL, RAMP_SELL_URL } from 'constants/common';
 import { GuardiansApprovedType } from '@portkey-wallet/types/types-ca/guardian';
+import { SafeAreaColorMap } from 'components/PageContainer';
 
-const safeAreaColorMap = {
-  white: defaultColors.bg1,
-  blue: defaultColors.bg5,
-  gray: defaultColors.bg4,
-  transparent: 'transparent',
-};
-
-export type SafeAreaColorMapKeyUnit = keyof typeof safeAreaColorMap;
+export type SafeAreaColorMapKeyUnit = keyof typeof SafeAreaColorMap;
 
 type WebViewPageType = 'default' | 'ramp-buy' | 'ramp-sell';
 
@@ -83,7 +77,7 @@ const ViewOnWebView: React.FC = () => {
   );
 
   return (
-    <SafeAreaBox edges={['top', 'right', 'left']} style={[{ backgroundColor: safeAreaColorMap.white }]}>
+    <SafeAreaBox edges={['top', 'right', 'left']} style={[{ backgroundColor: SafeAreaColorMap.black }]}>
       <CustomHeader themeType={'white'} titleDom={browserInfo?.title} />
       <View style={pageStyles.contentWrap}>
         <Progressbar ref={progressBarRef} />

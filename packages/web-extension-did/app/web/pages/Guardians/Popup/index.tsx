@@ -22,7 +22,7 @@ const GuardiansPopup = (props: IGuardianProps) => {
           showAddBtn
             ? [
                 {
-                  customSvgType: 'SuggestAdd',
+                  customSvgType: 'add',
                   onClick: onAdd,
                 },
               ]

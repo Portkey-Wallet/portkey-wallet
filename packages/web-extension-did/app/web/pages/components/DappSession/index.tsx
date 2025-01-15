@@ -1,53 +1,73 @@
-import { Switch } from 'antd';
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { SessionExpiredPlan } from '@portkey-wallet/types/session';
 import { SessionKeyArray } from '@portkey-wallet/constants/constants-ca/dapp';
-import CustomShowSelect from '../CustomShowSelect';
 import './index.less';
+import { CommonModal, CommonModalTip } from '@portkey/did-ui-react';
+import { CustomSvgV3 } from 'components/CustomSvgV3';
+import clsx from 'clsx';
 
 export interface IDappSessionProps {
+  className?: string;
   onChange: (open: boolean, exp: SessionExpiredPlan) => void;
 }
 
-export default function DappSession({ onChange }: IDappSessionProps) {
-  const [open, setOpen] = useState(false);
-  const [exp, setExp] = useState<SessionExpiredPlan>(SessionExpiredPlan.hour1);
+export default function DappSession({ className, onChange }: IDappSessionProps) {
+  const [exp, setExp] = useState<SessionExpiredPlan>(SessionExpiredPlan.always);
+  const [isShow, setIsShow] = useState(false);
 
-  const handleSwitch = useCallback(
-    (value: boolean) => {
-      setOpen(value);
-      setExp(SessionExpiredPlan.hour1);
-      onChange(value, SessionExpiredPlan.hour1);
+  const handleSessionChange = useCallback(
+    (value: SessionExpiredPlan) => {
+      const open = value !== SessionExpiredPlan.always;
+      onChange(open, value);
+      setExp(value);
+      setIsShow(false);
     },
     [onChange],
   );
 
-  const handleSessionChange = useCallback(
-    (value: SessionExpiredPlan) => {
-      onChange(open, value);
-      setExp(value);
-    },
-    [onChange, open],
-  );
+  const expLabel = useMemo(() => SessionKeyArray.find((item) => item.value === exp)?.label || '', [exp]);
 
   return (
-    <div className="dapp-session flex-column">
-      <div className="switch-wrap flex-between">
-        <div>Remember me to skip authentication</div>
-        <Switch className="switch" checked={open} onChange={handleSwitch} />
-      </div>
-      {open && (
-        <div className="select">
-          <CustomShowSelect
-            showInValue={`Session key expires in`}
-            items={SessionKeyArray}
-            defaultValue={SessionExpiredPlan.hour1}
-            value={exp}
-            onChange={handleSessionChange}
-          />
+    <div className={clsx('dapp-session', className)}>
+      <div
+        className="dapp-session-button"
+        onClick={() => {
+          setIsShow(true);
+        }}>
+        <div className="dapp-session-title-wrap">
+          <span className="dapp-session-title">Require authentication</span>
+          <div onClick={(e) => e.stopPropagation()}>
+            <CommonModalTip
+              title="Token allowance"
+              content={`When set to any value other than "Always," your session key will automatically approve this dApp's requests on this device, suppressing pop-ups until it expires. The feature disables when you disconnect or when the session key expires, and you can manually turn it off or adjust the expiration time.`}
+            />
+          </div>
         </div>
-      )}
-      <div className="tip">{`Once enabled, your session key will automatically approve all requests from this DApp, on this device only. You won't see pop-up notifications asking for your approvals until the session key expires. This feature is automatically off when you disconnect from the DApp or when the session key expires. You can also manually disable it or change the expiration time.`}</div>
+
+        <div className="dapp-session-value-wrap">
+          <span>{expLabel}</span>
+          <CustomSvgV3 type="chevron_right" className="dapp-session-value-icon" />
+        </div>
+      </div>
+
+      <CommonModal
+        className="dapp-session-modal"
+        open={isShow}
+        onClose={() => {
+          setIsShow(false);
+        }}>
+        <div className="dapp-session-modal-title">
+          <span>Require authentication</span>
+        </div>
+        <div className="dapp-session-list-wrap">
+          {SessionKeyArray.map((item) => (
+            <div key={item.value} className="dapp-session-item-wrap" onClick={() => handleSessionChange(item.value)}>
+              <span>{item.label}</span>
+              {exp === item.value && <CustomSvgV3 className="dapp-session-item-check-icon" type="check_circle" />}
+            </div>
+          ))}
+        </div>
+      </CommonModal>
     </div>
   );
 }

@@ -3,18 +3,19 @@ import { ChainId } from '@portkey-wallet/types';
 import { NFTCollectionItemShowType, NFTItemBaseType } from '@portkey-wallet/types/types-ca/assets';
 import { Collapse, Skeleton } from 'antd';
 import CustomSvg from 'components/CustomSvg';
+import { CustomSvgV3 } from 'components/CustomSvgV3';
+
 import { useCallback, useState, useMemo, useEffect } from 'react';
-import { useNavigate } from 'react-router';
 import clsx from 'clsx';
-import { useCommonState } from 'store/Provider/hooks';
+// import { useCommonState } from 'store/Provider/hooks';
 import './index.less';
-import { transNetworkText } from '@portkey-wallet/utils/activity';
+// import { transNetworkText } from '@portkey-wallet/utils/activity';
 import {
-  PAGE_SIZE_IN_NFT_ITEM,
+  // PAGE_SIZE_IN_NFT_ITEM,
   PAGE_SIZE_IN_ACCOUNT_NFT_COLLECTION,
 } from '@portkey-wallet/constants/constants-ca/assets';
-import { PAGE_SIZE_IN_NFT_ITEM_PROMPT } from 'constants/index';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+// import { PAGE_SIZE_IN_NFT_ITEM_PROMPT } from 'constants/index';
+// import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { getSeedTypeTag } from 'utils/assets';
 import LoadingMore from 'components/LoadingMore/LoadingMore';
 import { useAccountNFTCollectionInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
@@ -22,19 +23,34 @@ import { ZERO } from '@portkey-wallet/constants/misc';
 import { formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import useGAReport from 'hooks/useGAReport';
 import { useEffectOnce } from 'react-use';
+// import { useRecentStatus } from '@portkey-wallet/hooks/hooks-ca/freeMint';
+// import { FreeMintStatus } from '@portkey-wallet/types/types-ca/freeMint';
+import { useNavigate } from 'react-router';
+import TokenImageDisplay from 'pages/components/TokenImageDisplay';
+// import chain from '@portkey-wallet/api/api-did/chain';
 
 export default function NFT() {
   const nav = useNavigate();
+  // const { recentStatus, itemId } = useRecentStatus();
   const [openPanel, setOpenPanel] = useState<string[]>([]);
   const [nftNum, setNftNum] = useState<Record<string, number>>({});
   const [openOp, setOpenOp] = useState<boolean>(true);
-  const isMainnet = useIsMainnet();
-  const { accountNFTList, totalRecordCount, fetchAccountNFTCollectionInfoList, fetchAccountNFTItem, isFetching } =
-    useAccountNFTCollectionInfo();
-  const { isPrompt } = useCommonState();
+  // const { eForestUrl = '' } = useCurrentNetworkInfo();
+  // const isMainnet = useIsMainnet();
+  const {
+    accountNFTList,
+    totalRecordCount,
+    totalNftItemCount,
+    fetchAccountNFTCollectionInfoList,
+    fetchAccountNFTItem,
+    isFetching,
+  } = useAccountNFTCollectionInfo();
+  // const { isPrompt } = useCommonState();
   const caAddressInfos = useCaAddressInfoList();
-  const [getMoreFlag, setGetMoreFlag] = useState(false);
-  const maxNftNum = useMemo(() => (isPrompt ? PAGE_SIZE_IN_NFT_ITEM_PROMPT : PAGE_SIZE_IN_NFT_ITEM), [isPrompt]);
+  // const [getMoreFlag, setGetMoreFlag] = useState(false);
+  // const maxNftNum = useMemo(() => (isPrompt ? PAGE_SIZE_IN_NFT_ITEM_PROMPT : PAGE_SIZE_IN_NFT_ITEM), [isPrompt]);
+
+  const maxNftNum = totalNftItemCount;
   const hasMoreNFTCollection = useMemo(
     () => accountNFTList.length < totalRecordCount,
     [accountNFTList.length, totalRecordCount],
@@ -70,28 +86,28 @@ export default function NFT() {
     }
   }, [accountNFTList.length, caAddressInfos, fetchAccountNFTCollectionInfoList, maxNftNum, totalRecordCount]);
 
-  const getMoreNFTItem = useCallback(
-    async (symbol: string, chainId: ChainId) => {
-      if (getMoreFlag) return;
-      const nftColKey = `${symbol}_${chainId}`;
-      const curNftNum = nftNum[nftColKey];
-      setGetMoreFlag(true);
-      try {
-        setNftNum((pre) => ({ ...pre, [nftColKey]: curNftNum + 1 }));
-        await fetchAccountNFTItem({
-          symbol,
-          chainId: chainId as ChainId,
-          pageNum: curNftNum,
-          caAddressInfos: caAddressInfos.filter((item) => item.chainId === chainId),
-        });
-      } catch (error) {
-        console.log('===getMoreNFTItem error', error);
-      } finally {
-        setGetMoreFlag(false);
-      }
-    },
-    [getMoreFlag, nftNum, fetchAccountNFTItem, caAddressInfos],
-  );
+  // const getMoreNFTItem = useCallback(
+  //   async (symbol: string, chainId: ChainId) => {
+  //     if (getMoreFlag) return;
+  //     const nftColKey = `${symbol}_${chainId}`;
+  //     const curNftNum = nftNum[nftColKey];
+  //     setGetMoreFlag(true);
+  //     try {
+  //       setNftNum((pre) => ({ ...pre, [nftColKey]: curNftNum + 1 }));
+  //       await fetchAccountNFTItem({
+  //         symbol,
+  //         chainId: chainId as ChainId,
+  //         pageNum: curNftNum,
+  //         caAddressInfos: caAddressInfos.filter((item) => item.chainId === chainId),
+  //       });
+  //     } catch (error) {
+  //       console.log('===getMoreNFTItem error', error);
+  //     } finally {
+  //       setGetMoreFlag(false);
+  //     }
+  //   },
+  //   [getMoreFlag, nftNum, fetchAccountNFTItem, caAddressInfos],
+  // );
 
   const handleChange = useCallback(
     (arr: string[] | string) => {
@@ -120,6 +136,13 @@ export default function NFT() {
     [caAddressInfos, fetchAccountNFTItem, openPanel],
   );
 
+  // const handleClickForest = useCallback(() => {
+  //   const openWinder = window.open(`${eForestUrl}/collections`, '_blank');
+  //   if (openWinder) {
+  //     openWinder.opener = null;
+  //   }
+  // }, [eForestUrl]);
+
   const renderItem = useCallback(
     (nft: NFTCollectionItemShowType) => {
       const nftColKey = `${nft.symbol}_${nft.chainId}`;
@@ -132,17 +155,26 @@ export default function NFT() {
       return (
         <Collapse.Panel
           key={nftColKey}
+          showArrow={true}
           header={
             <div className="nft-collection flex-row-center">
-              <div className={clsx('nft-collection-avatar', 'flex-center', !nft.imageUrl && 'show-nft-default')}>
-                {nft.imageUrl ? <img src={nft.imageUrl} /> : nft.collectionName?.slice(0, 1)}
+              <div className="nft-img-box">
+                <div className={clsx('nft-collection-avatar', 'flex-center', !nft.imageUrl && 'show-nft-default')}>
+                  {nft.imageUrl ? <img src={nft.imageUrl} /> : nft.collectionName?.slice(0, 1)}
+                </div>
+                <div className="nft-chain-img">
+                  {nft.displayChainImage && (
+                    <TokenImageDisplay width={16} className="token-icon" src={nft.chainImageUrl} />
+                  )}
+                </div>
               </div>
+
               <div className="info flex-column">
                 <div className="flex-between info-top">
                   <div className="alias">{nft.collectionName}</div>
                   <div className="amount">{nft.itemCount}</div>
                 </div>
-                <p className="network">{transNetworkText(nft.chainId, !isMainnet)}</p>
+                {/* <p className="network">{transNetworkText(nft.chainId, !isMainnet)}</p> */}
               </div>
             </div>
           }>
@@ -154,9 +186,6 @@ export default function NFT() {
                   index < curNftNum * maxNftNum && (
                     <div
                       key={`${nft.symbol}-${nftItem.symbol}`}
-                      style={{
-                        backgroundImage: `url('${nftItem.imageUrl || ''}')`,
-                      }}
                       className={clsx(['nft-item', nftItem.imageUrl ? '' : 'nft-item-no-img'])}
                       onClick={() => {
                         nav('/nft', {
@@ -167,6 +196,11 @@ export default function NFT() {
                           },
                         });
                       }}>
+                      <div
+                        className="nft-item-img-box"
+                        style={{
+                          backgroundImage: `url('${nftItem.imageUrl || ''}')`,
+                        }}></div>
                       {seedTypeTag && <CustomSvg type={seedTypeTag} />}
                       <div className="mask flex-column">
                         <p className="alias">{nftItem.alias}</p>
@@ -189,36 +223,130 @@ export default function NFT() {
               <div
                 className="load-more"
                 onClick={() => {
-                  getMoreNFTItem(nft.symbol, nft.chainId);
+                  // getMoreNFTItem(nft.symbol, nft.chainId);
+
+                  const params = {
+                    chainId: nft.chainId,
+                    chainImageUrl: nft.chainImageUrl,
+                    collectionName: nft.collectionName,
+                    displayChainName: nft?.displayChainName,
+                    itemCount: nft.itemCount,
+                    isSeed: nft.isSeed,
+                    symbol: nft.symbol,
+                    collectionImageUrl: nft.imageUrl,
+                    maxResultCount: nft.maxResultCount,
+                    totalRecordCount: nft.totalRecordCount,
+                  };
+
+                  nav('/collection', { state: params });
+
+                  console.log('nft', params, nft);
                 }}>
-                <CustomSvg type="Down" /> More
+                <CustomSvgV3 type="load-more" />
+                <p>View all</p>
               </div>
             )}
           </div>
         </Collapse.Panel>
       );
     },
-    [nftNum, calSkeletonLength, maxNftNum, isMainnet, openOp, nav, getMoreNFTItem],
+    [nftNum, calSkeletonLength, maxNftNum, openOp, nav],
   );
+
+  // const handleClickMint = useCallback(() => {
+  //   if (itemId && (recentStatus === FreeMintStatus.PENDING || recentStatus === FreeMintStatus.FAIL)) {
+  //     nav('/free-mint', { state: { itemId, status: recentStatus } });
+  //     return;
+  //   }
+  //   nav('/free-mint');
+  // }, [itemId, nav, recentStatus]);
+
+  // const renderFreeMintTip = useMemo(() => {
+  //   let leftText = '';
+  //   let rightText = '';
+  //   if (recentStatus === FreeMintStatus.PENDING) {
+  //     leftText = 'Your NFT is being minted.';
+  //     rightText = 'View';
+  //   } else if (recentStatus === FreeMintStatus.FAIL) {
+  //     leftText = 'Mint failed.';
+  //     rightText = 'Try Again';
+  //   } else {
+  //     leftText = 'Mint NFTs for free!';
+  //     rightText = 'Mint Now';
+  //   }
+  //   return (
+  //     <div className="flex-between-center free-mint-tip-container">
+  //       <div className="left-text">{leftText}</div>
+  //       <div className="flex-row-center right-container" onClick={handleClickMint}>
+  //         <span className="right-text">{rightText}</span>
+  //         <CustomSvgV3 className="flex-center right-arrow" type="nftArrow" />
+  //       </div>
+  //     </div>
+  //   );
+  // }, [handleClickMint, recentStatus]);
+
+  // const renderNoNFT = useCallback(() => {
+  //   return (
+  //     <div className={clsx('empty-nft-container', 'flex-column-between', isPrompt ? 'prompt-page' : 'ss')}>
+  //       <div className="flex-column-center empty-nft-list">
+  //         <CustomSvg type="NoNFTs" />
+  //         <div>No NFTs yet</div>
+  //       </div>
+  //       {recentStatus === FreeMintStatus.PENDING || recentStatus === FreeMintStatus.FAIL ? (
+  //         renderFreeMintTip
+  //       ) : (
+  //         <div className="free-mint-container flex-column">
+  //           <div>Get your own NFTs to start</div>
+  //           <div className="flex-row-center free-mint-list">
+  //             <div className="list-item-number flex-center">1</div>
+  //             <div className="flex-row-center list-item-text list-item-text-primary" onClick={() => nav('/free-mint')}>
+  //               <span>Free Mint</span>
+  //               <CustomSvg className="flex-center" type="NewRightArrow" />
+  //             </div>
+  //           </div>
+  //           <div className="flex-row-center free-mint-list">
+  //             <div className="list-item-number flex-center">2</div>
+  //             <div className="flex list-item-text">
+  //               <span>Buy on NFT Marketplace -</span>
+  //               <div className="flex-row-center list-item-text-primary" onClick={handleClickForest}>
+  //                 <span>&nbsp;Forest</span>
+  //                 <CustomSvg className="flex-center" type="NewRightArrow" />
+  //               </div>
+  //             </div>
+  //           </div>
+  //         </div>
+  //       )}
+  //     </div>
+  //   );
+  // }, [handleClickForest, isPrompt, nav, recentStatus, renderFreeMintTip]);
 
   return (
     <div className="tab-nft">
       {accountNFTList.length === 0 ? (
-        <div className="empty-nft-list flex-column-center">
-          <CustomSvg type="NoNFTs" />
-          No NFTs yet
-        </div>
+        // renderNoNFT()
+        <div className="no-nft">No NFT</div>
       ) : (
         <div className={clsx('nft-list', !hasMoreNFTCollection && 'hidden-loading-more')}>
           <Collapse
+            bordered={false}
             collapsible={isFetching ? 'disabled' : undefined}
             onChange={handleChange}
-            expandIcon={(panelProps) => (
-              <CustomSvg className={panelProps.isActive ? 'is-active' : ''} type="NewRightArrow" />
-            )}>
+            expandIconPosition={'end'}
+            expandIcon={(panelProps) => {
+              return (
+                <div className="arrow-box">
+                  {panelProps.isActive ? (
+                    <CustomSvgV3 type="nftArrow" />
+                  ) : (
+                    <CustomSvgV3 className="arrow-rotate" type="nftArrow" />
+                  )}
+                </div>
+              );
+            }}>
             {accountNFTList.map((item) => renderItem(item))}
           </Collapse>
           <LoadingMore hasMore={hasMoreNFTCollection} loadMore={getMoreNFTCollection} className="load-more" />
+          {/* {renderFreeMintTip} */}
         </div>
       )}
     </div>

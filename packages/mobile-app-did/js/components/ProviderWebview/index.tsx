@@ -21,9 +21,13 @@ import { useDeepEQMemo } from 'hooks';
 import * as Application from 'expo-application';
 import { ShouldStartLoadRequest } from 'react-native-webview/lib/WebViewTypes';
 import { PROTOCOL_ALLOW_LIST } from 'constants/web';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCMS } from '@portkey-wallet/hooks/hooks-ca/cms/discover';
+import { KeyboardSafeArea } from 'components/KeyboardSafeArea';
 
 export const BLANK_PAGE = 'about:blank';
+const PORTKEY_AUDIO_MANAGER_SCRIPT =
+  'let _portkeyPausedAudioList = []; function _portkeyPauseAudio() { _portkeyPausedAudioList = []; const audioList = document.getElementsByTagName("audio"); Array.from(audioList).forEach(function(audio){if (!audio.paused) {audio.pause(); _portkeyPausedAudioList.push(audio);}});} function _portkeyResumeAudio() { _portkeyPausedAudioList && _portkeyPausedAudioList.forEach(function(audio){audio.play();}); _portkeyPausedAudioList = []; }';
 
 export interface IWebView {
   goBack: WebView['goBack'];
@@ -51,11 +55,16 @@ const ProviderWebview = forwardRef<
   const loadStartRef = useRef<boolean>(false);
   const prePageUrl = useRef<string>();
   const [entryScriptWeb3, setEntryScriptWeb3] = useState<string>();
+  const { networkType } = useCurrentNetworkInfo();
+  const { dappWhiteListMap } = useCMS();
   useEffectOnce(() => {
     const getEntryScriptWeb3 = async () => {
       const script = await EntryScriptWeb3.get();
-      setEntryScriptWeb3(script);
-      if (!isIOS) webViewRef.current?.injectJavaScript(script);
+      const scriptWithAudioManager = `${PORTKEY_AUDIO_MANAGER_SCRIPT};${script}`;
+      setEntryScriptWeb3(scriptWithAudioManager);
+      if (!isIOS) {
+        webViewRef.current?.injectJavaScript(scriptWithAudioManager);
+      }
     };
 
     getEntryScriptWeb3();
@@ -75,13 +84,20 @@ const ProviderWebview = forwardRef<
   }, [memoSource]);
 
   useEffect(() => {
+    if (props.isHidden) {
+      webViewRef.current?.injectJavaScript('_portkeyPauseAudio && _portkeyPauseAudio();');
+    } else {
+      webViewRef.current?.injectJavaScript('_portkeyResumeAudio && _portkeyResumeAudio();');
+    }
     operatorRef.current?.setIsLockDapp(!!props.isHidden);
   }, [props.isHidden]);
 
   const initOperator = useCallback(
     (origin: string) => {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      if (!isIOS) webViewRef.current?.injectJavaScript(entryScriptWeb3!);
+      if (!isIOS) {
+        webViewRef.current?.injectJavaScript(entryScriptWeb3!);
+      }
 
       operatorRef.current = new DappMobileOperator({
         origin,
@@ -90,14 +106,17 @@ const ProviderWebview = forwardRef<
         stream: new MobileStream(webViewRef.current!),
         dappManager: new DappMobileManager({ store: store as any }),
         dappOverlay: new DappOverlay(),
+        dappWhiteList: dappWhiteListMap[networkType],
       });
     },
-    [entryScriptWeb3, props.isDiscover],
+    [dappWhiteListMap, entryScriptWeb3, networkType, props.isDiscover],
   );
 
   const onLoadStart = useCallback(
     ({ nativeEvent }: WebViewNavigationEvent) => {
-      if (!loadStartRef.current) loadStartRef.current = true;
+      if (!loadStartRef.current) {
+        loadStartRef.current = true;
+      }
       const { origin } = new URL(nativeEvent.url);
       initOperator(origin);
     },
@@ -164,7 +183,9 @@ const ProviderWebview = forwardRef<
   }, []);
   const onShouldStartLoadWithRequest = ({ url }: ShouldStartLoadRequest) => {
     const { protocol } = new URL(url);
-    if (PROTOCOL_ALLOW_LIST.includes(protocol)) return true;
+    if (PROTOCOL_ALLOW_LIST.includes(protocol)) {
+      return true;
+    }
     // if (SCHEME_ALLOW_LIST.includes(protocol)) {
     // open natively
     Linking.openURL(url).catch(er => {
@@ -192,18 +213,23 @@ const ProviderWebview = forwardRef<
           props.onLoadStart?.(event);
         }}
         onLoadEnd={event => {
-          if (!loadStartRef.current) return;
+          if (!loadStartRef.current) {
+            return;
+          }
           handleUpdate(event);
           props.onLoadEnd?.(event);
         }}
         onLoad={event => {
-          if (!loadStartRef.current) return;
+          if (!loadStartRef.current) {
+            return;
+          }
           handleUpdate(event);
           props.onLoad?.(event);
         }}
         onNavigationStateChange={(event: WebViewNavigation) => {
-          if (prePageUrl.current === BLANK_PAGE && event.url !== BLANK_PAGE && !isIOS)
+          if (prePageUrl.current === BLANK_PAGE && event.url !== BLANK_PAGE && !isIOS) {
             webViewRef.current?.clearHistory?.();
+          }
           prePageUrl.current = event.url;
           props.onNavigationStateChange?.(event);
         }}
@@ -223,15 +249,16 @@ const ProviderWebview = forwardRef<
     ),
     [entryScriptWeb3, handleUpdate, onFileDownload, onLoadStart, props, source],
   );
-  if (!entryScriptWeb3) return null;
 
-  if (isIOS) return webViewDom;
+  if (!entryScriptWeb3) {
+    return null;
+  }
 
-  return (
-    <KeyboardAwareScrollView enableOnAndroid={true} contentContainerStyle={styles.scrollStyle}>
-      {webViewDom}
-    </KeyboardAwareScrollView>
-  );
+  if (isIOS) {
+    return webViewDom;
+  }
+
+  return <KeyboardSafeArea containerStyle={[styles.scrollStyle]}>{webViewDom}</KeyboardSafeArea>;
 });
 
 export default memo(ProviderWebview);

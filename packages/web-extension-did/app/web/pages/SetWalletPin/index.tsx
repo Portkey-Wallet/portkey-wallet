@@ -1,8 +1,7 @@
-import { Button } from 'antd';
 import PortKeyTitle from 'pages/components/PortKeyTitle';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useParams } from 'react-router';
-import { useAppDispatch, useGuardiansInfo, useLoading, useLoginInfo } from 'store/Provider/hooks';
+import { useAppDispatch, useGuardiansInfo, useLoginInfo } from 'store/Provider/hooks';
 import { setPinAction } from 'utils/lib/serviceWorkerAction';
 import {
   useCurrentWallet,
@@ -18,7 +17,6 @@ import { useHardwareBack } from 'hooks/useHardwareBack';
 import { setPasswordSeed } from 'store/reducers/user/slice';
 import { CAInfoType, LoginMethod, LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { sendScanLoginSuccess } from '@portkey-wallet/api/api-did/message/utils';
-import ModalTip from 'pages/components/ModalTip';
 import './index.less';
 import {
   AddManagerType,
@@ -26,10 +24,11 @@ import {
   CreatePendingInfo,
   handleErrorMessage,
   OnErrorFunc,
+  CommonButton,
+  CommonModal,
 } from '@portkey/did-ui-react';
 import type { AccountType, GuardiansApproved } from '@portkey/services';
 import { getHolderInfo } from 'utils/sandboxUtil/getHolderInfo';
-import CommonModal from 'components/CommonModal';
 import useDistributeLoginFail from 'hooks/useDistributeLoginFail';
 import { NetworkType } from '@portkey-wallet/types';
 import singleMessage from 'utils/singleMessage';
@@ -44,7 +43,6 @@ export default function SetWalletPin() {
   const loginType: AddManagerType = useMemo(() => (state === 'register' ? 'register' : 'recovery'), [state]);
   const navigate = useNavigateState();
   const dispatch = useAppDispatch();
-  const { setLoading } = useLoading();
   const { walletInfo } = useCurrentWallet();
   const [returnOpen, setReturnOpen] = useState<boolean>();
   const { scanWalletInfo, scanCaWalletInfo, loginAccount, registerVerifier } = useLoginInfo();
@@ -53,6 +51,7 @@ export default function SetWalletPin() {
   const distributeFail = useDistributeLoginFail();
   const { currentNetwork } = useWallet();
   const otherNetworkLogged = useOtherNetworkLogged();
+  const [loginAgainModal, setLoginAgainModal] = useState<boolean>();
 
   console.log(walletInfo, state, scanWalletInfo, scanCaWalletInfo, 'walletInfo===caWallet');
 
@@ -72,6 +71,7 @@ export default function SetWalletPin() {
           verifierId: registerVerifier?.verifierId || '',
           verificationDoc: registerVerifier?.verificationDoc || '',
           signature: registerVerifier?.signature || '',
+          zkLoginInfo: registerVerifier?.zkLoginInfo,
         },
       ];
     }
@@ -81,6 +81,7 @@ export default function SetWalletPin() {
       verifierId: guardian.verifier?.id || '',
       verificationDoc: guardian.verificationDoc || '',
       signature: guardian.signature || '',
+      zkLoginInfo: guardian.zkLoginInfo,
     }));
   }, [loginAccount, registerVerifier, state, userGuardianStatus]);
 
@@ -154,23 +155,15 @@ export default function SetWalletPin() {
           }),
         );
         navigate(`/success-page/${state}`);
-        setLoading(false);
-
-        ModalTip({
-          content: 'Requested successfully',
-        });
       } catch (error: any) {
         dispatch(resetWallet());
-        setLoading(false);
 
         const walletError = isWalletError(error);
         if (walletError) return singleMessage.error(walletError);
         singleMessage.error(handleErrorMessage(error, 'Create wallet failed'));
-      } finally {
-        setLoading(false);
       }
     },
-    [state, originChainId, dispatch, navigate, setLoading, currentNetwork, createByScan],
+    [state, originChainId, dispatch, navigate, createByScan],
     500,
   );
 
@@ -178,6 +171,7 @@ export default function SetWalletPin() {
 
   const onCreatePending = useCallback(
     async (info: CreatePendingInfo) => {
+      navigate(`/prepare-wallet/${state}`);
       try {
         const verificationType = state === 'login' ? VerificationType.communityRecovery : VerificationType.register;
         const managerInfo = {
@@ -202,16 +196,14 @@ export default function SetWalletPin() {
         console.log('onCreatePending error:', error);
       }
     },
-    [dispatch, loginAccount?.guardianAccount, loginAccount?.loginType, state],
+    [dispatch, loginAccount?.guardianAccount, loginAccount?.loginType, navigate, state],
   );
 
   const backHandler = useCallback(() => {
     switch (state) {
       case 'register':
-        navigate('/register/start/create');
-        break;
       case 'login':
-        navigate('/login/guardian-approval');
+        navigate('/register/start');
         break;
       case 'scan':
         navigate('/register/start/scan');
@@ -249,12 +241,7 @@ export default function SetWalletPin() {
             pin: pendingInfo.current.pin,
             verificationType: state === 'login' ? VerificationType.communityRecovery : VerificationType.register,
           });
-          if (isSuccess) {
-            ModalTip({
-              content: 'Requested successfully',
-            });
-            return;
-          }
+          if (isSuccess) return;
         }
         throw errorString;
       } catch (error) {
@@ -265,44 +252,69 @@ export default function SetWalletPin() {
         }
         const walletError = isWalletError(error);
         if (walletError) return singleMessage.error(walletError);
-        singleMessage.error(handleErrorMessage(error, 'Create wallet failed'));
-        navigate('/register/start');
+        setLoginAgainModal(true);
       }
     },
-    [currentNetwork, dispatch, distributeFail, navigate, otherNetworkLogged, state],
+    [currentNetwork, dispatch, distributeFail, otherNetworkLogged, state],
   );
 
   return (
-    <div className="common-page set-wallet-pin" id="set-wallet-pin">
-      <PortKeyTitle leftElement={state !== 'login'} leftCallBack={leftCallBack} />
-      <div className="common-content1 set-pin-content">
-        <SetPinAndAddManager
-          accountType={LoginType[loginAccount?.loginType as LoginType] as AccountType}
-          type={loginType}
-          chainId={originChainId}
-          onlyGetPin={state === 'scan'}
-          guardianApprovedList={approvedList}
-          guardianIdentifier={loginAccount?.guardianAccount}
-          onFinish={onCreate}
-          onCreatePending={onCreatePending}
-          onError={onError}
-        />
-      </div>
+    <div className="set-wallet-pin" id="set-wallet-pin">
+      <PortKeyTitle
+        hidePortKeyLogo
+        leftElement={state !== 'login'}
+        leftCallBack={leftCallBack}
+        renderContent={
+          <>
+            <div className="set-pin-header">{`Create a PIN to protect your wallet`}</div>
+            <div className="set-pin-content">
+              <SetPinAndAddManager
+                accountType={LoginType[loginAccount?.loginType as LoginType] as AccountType}
+                type={loginType}
+                chainId={originChainId}
+                onlyGetPin={state === 'scan'}
+                guardianApprovedList={approvedList}
+                guardianIdentifier={loginAccount?.guardianAccount}
+                onFinish={onCreate}
+                onCreatePending={onCreatePending}
+                onError={onError}
+              />
+            </div>
 
-      <CommonModal
-        closable={false}
-        open={returnOpen}
-        title={t('Leave this page?')}
-        getContainer={'#set-wallet-pin'}
-        width={320}>
-        <p className="modal-content">{t('returnTip')}</p>
-        <div className="btn-wrapper">
-          <Button onClick={() => setReturnOpen(false)}>No</Button>
-          <Button type="primary" onClick={backHandler}>
-            Yes
-          </Button>
-        </div>
-      </CommonModal>
+            <CommonModal open={returnOpen} getContainer={'#set-wallet-pin'}>
+              <div className="padding-16 flex-column">
+                <div className="back-modal-title">{t('Leave this page?')}</div>
+                <div className="modal-content">{t('returnTip')}</div>
+                <div className="btn-wrapper flex-row-center gap-16">
+                  <CommonButton type="outline" block onClick={() => setReturnOpen(false)}>
+                    No
+                  </CommonButton>
+                  <CommonButton type="primary" block onClick={backHandler}>
+                    Yes
+                  </CommonButton>
+                </div>
+              </div>
+            </CommonModal>
+
+            <CommonModal open={loginAgainModal} getContainer={'#set-wallet-pin'}>
+              <div className="padding-16 gap-24 flex-column">
+                <div className="modal-content">{t('Wallet account recovery failed. Please try again.')}</div>
+                <div className="btn-wrapper">
+                  <CommonButton
+                    type="primary"
+                    block
+                    onClick={() => {
+                      navigate('/register/start');
+                      setLoginAgainModal(false);
+                    }}>
+                    {`Log in again`}
+                  </CommonButton>
+                </div>
+              </div>
+            </CommonModal>
+          </>
+        }
+      />
     </div>
   );
 }

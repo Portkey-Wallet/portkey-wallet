@@ -5,16 +5,18 @@ interface ICommonCloseHeaderProps {
   className?: string;
   title?: ReactNode;
   onClose: () => void;
+  onLeftBack?: () => void;
 }
 
-export default function CommonCloseHeader({ className, title, onClose }: ICommonCloseHeaderProps) {
+export default function CommonCloseHeader({ className, title, onClose, onLeftBack }: ICommonCloseHeaderProps) {
   return (
     <CommonHeader
+      onLeftBack={onLeftBack}
       className={className}
       title={title}
       rightElementList={[
         {
-          customSvgType: 'SuggestClose',
+          customSvgType: 'close thin',
           customSvgPlaceholderSize: CustomSvgPlaceholderSize.MD,
           onClick: onClose,
         },

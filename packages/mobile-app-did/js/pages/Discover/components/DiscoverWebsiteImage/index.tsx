@@ -1,9 +1,12 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { pTd } from 'utils/unit';
-import { StyleSheet } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import Default_Image from 'assets/image/pngs/default_record.png';
 import FastImage from 'components/FastImage';
+import { makeStyles } from '@rneui/themed';
+import { checkIsSvgContent } from 'utils';
+import { SvgXml } from 'react-native-svg';
+import { View } from 'react-native';
 
 interface DiscoverWebsiteImageProps {
   imageUrl?: string;
@@ -13,6 +16,10 @@ interface DiscoverWebsiteImageProps {
 
 export default function DiscoverWebsiteImage(props: DiscoverWebsiteImageProps) {
   const { size = pTd(32), imageUrl, style } = props;
+  const [isSvg, setIsSvg] = useState(false);
+  const svgStr = useRef<string>('');
+
+  const styles = getStyles();
 
   const sizeStyle = useMemo(
     () => ({
@@ -22,7 +29,24 @@ export default function DiscoverWebsiteImage(props: DiscoverWebsiteImageProps) {
     }),
     [size],
   );
-
+  useEffect(() => {
+    (async () => {
+      if (!imageUrl) {
+        return;
+      }
+      const response = await fetch(imageUrl);
+      const result = await response.text();
+      svgStr.current = result;
+      setIsSvg(checkIsSvgContent(result));
+    })();
+  });
+  if (isSvg) {
+    return (
+      <View style={[styles.avatarWrap, sizeStyle, style]}>
+        <SvgXml xml={svgStr.current} width={sizeStyle.width} height={sizeStyle.height} />
+      </View>
+    );
+  }
   return (
     <FastImage
       resizeMode={'cover'}
@@ -33,7 +57,7 @@ export default function DiscoverWebsiteImage(props: DiscoverWebsiteImageProps) {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = makeStyles(() => ({
   avatarWrap: {
     width: pTd(48),
     height: pTd(48),
@@ -56,4 +80,4 @@ const styles = StyleSheet.create({
     borderWidth: 0,
     color: defaultColors.font7,
   },
-});
+}));

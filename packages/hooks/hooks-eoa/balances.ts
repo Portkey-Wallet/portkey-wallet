@@ -1,7 +1,7 @@
 import { useCurrentNetwork } from '../network';
 import { useMemo } from 'react';
 import { Account } from '@portkey-wallet/types/types-eoa/tokenBalance';
-import { useAppEOASelector } from '.';
+import { useAppEOASelector } from './index';
 
 export function useAllBalances() {
   return useAppEOASelector(state => state.tokenBalance.balances);

@@ -1,6 +1,8 @@
+// import { DappMiddle } from '@portkey-wallet/utils/dapp/middle';
 import ServiceWorkerInstantiate from './ServiceWorkerInstantiate';
 import serviceWorkerListener from './serviceWorkerListener';
-
+// import SWEventController from 'controllers/SWEventController';
+// DappMiddle.registerEvent(SWEventController);
 /**
  * Initializes the Portkey controller, and sets up all platform configuration.
  *

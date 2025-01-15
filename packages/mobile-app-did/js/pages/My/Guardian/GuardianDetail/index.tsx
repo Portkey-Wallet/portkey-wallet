@@ -1,11 +1,12 @@
 import CommonButton from 'components/CommonButton';
 import { TextL, TextM } from 'components/CommonText';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { pTd } from 'utils/unit';
 import navigationService from 'utils/navigationService';
 import PageContainer from 'components/PageContainer';
-import { pageStyles } from './style';
+import Svg from 'components/Svg';
+import { getPageStyles } from './style';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 import CommonSwitch from 'components/CommonSwitch';
 import ActionSheet from 'components/ActionSheet';
@@ -15,11 +16,14 @@ import Loading from 'components/Loading';
 import CommonToast from 'components/CommonToast';
 import { VerifierImage } from 'pages/Guardian/components/VerifierImage';
 import { RouteProp, useRoute } from '@react-navigation/native';
-import GuardianAccountItem from '../components/GuardianAccountItem';
-import Divider from 'components/Divider';
 import { checkIsLastLoginAccount } from '@portkey-wallet/utils/guardian';
 import { useSetLoginAccount } from '../hooks/useSetLoginAccount';
 import myEvents from 'utils/deviceEvent';
+import { zkLoginVerifierItem } from '@portkey-wallet/types/verifier';
+import { isZKLoginSupported, LoginType } from '@portkey-wallet/types/types-ca/wallet';
+import { GUARDIAN_ITEM_TYPE_ICON } from 'constants/misc';
+import GuardianAccount from 'pages/Guardian/components/GuardianAccount';
+import { useLanguage } from 'i18n/hooks';
 
 type RouterParams = {
   guardian?: UserGuardianItem;
@@ -29,19 +33,32 @@ export default function GuardianDetail() {
   const {
     params: { guardian: guardianRouter },
   } = useRoute<RouteProp<{ params: RouterParams }>>();
+  const { t } = useLanguage();
   const getGuardiansInfo = useGetGuardiansInfo();
   const { userGuardiansList } = useGuardiansInfo();
   const setLoginAccount = useSetLoginAccount();
+  const pageStyles = getPageStyles();
 
   const [guardian, setGuardian] = useState(guardianRouter);
   useEffect(() => {
     setGuardian(guardianRouter);
   }, [guardianRouter]);
+  const loginGuardians = useMemo(
+    () => (userGuardiansList || []).filter(item => item.isLoginAccount),
+    [userGuardiansList],
+  );
+
+  const isShowEditButton = useMemo(() => {
+    // only 1 login guardians
+    return !(guardian?.isLoginAccount && loginGuardians.length <= 1);
+  }, [loginGuardians, guardian]);
 
   useEffect(() => {
     const listener = myEvents.setLoginAccount.addListener(({ guardian: _guardian }: { guardian: UserGuardianItem }) => {
       setGuardian(pre => {
-        if (pre?.key !== _guardian.key) return pre;
+        if (pre?.key !== _guardian.key) {
+          return pre;
+        }
         return {
           ...pre,
           isLoginAccount: _guardian.isLoginAccount,
@@ -55,7 +72,9 @@ export default function GuardianDetail() {
 
   const onLoginAccountChange = useCallback(
     async (value: boolean) => {
-      if (guardian === undefined || userGuardiansList === undefined) return;
+      if (guardian === undefined || userGuardiansList === undefined) {
+        return;
+      }
 
       if (!value) {
         const isLastLoginAccount = checkIsLastLoginAccount(userGuardiansList, guardian);
@@ -93,7 +112,10 @@ export default function GuardianDetail() {
           if (error.code === '20004') {
             Loading.hide();
             ActionSheet.alert({
-              title2: 'This account address is already a login account and cannot be used',
+              showInfoIcon: true,
+              title2: 'Already used as login account',
+              message:
+                "This account is already set as a login account for other wallet(s) and can't be used for this purpose.",
               buttons: [
                 {
                   title: 'Close',
@@ -116,38 +138,85 @@ export default function GuardianDetail() {
     [getGuardiansInfo, guardian, setLoginAccount, userGuardiansList],
   );
 
+  const verifierName = useMemo(() => {
+    if (
+      guardian &&
+      isZKLoginSupported(guardian.guardianType) &&
+      (guardian?.verifiedByZk || guardian?.manuallySupportForZk)
+    ) {
+      return zkLoginVerifierItem.name;
+    }
+    return guardian?.verifier?.name;
+  }, [guardian]);
+
+  const verifierImage = useMemo(() => {
+    if (
+      guardian &&
+      isZKLoginSupported(guardian.guardianType) &&
+      (guardian?.verifiedByZk || guardian?.manuallySupportForZk)
+    ) {
+      return zkLoginVerifierItem.imageUrl;
+    }
+    return guardian?.verifier?.imageUrl;
+  }, [guardian]);
+  const cantSwitch = useMemo(
+    () => !guardian?.isLoginAccount && guardian?.guardianType === LoginType.Email,
+    [guardian?.guardianType, guardian?.isLoginAccount],
+  );
   return (
     <PageContainer
-      safeAreaColor={['white', 'gray']}
+      safeAreaColor={['black', 'black']}
       titleDom={'Guardians'}
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}>
       <View style={pageStyles.contentWrap}>
-        <View style={pageStyles.guardianInfoWrap}>
-          <GuardianAccountItem guardian={guardian} />
-          <Divider style={pageStyles.dividerStyle} />
-          <View style={pageStyles.verifierInfoWrap}>
-            <VerifierImage
-              style={pageStyles.verifierImageStyle}
-              size={pTd(28)}
-              label={guardian?.verifier?.name}
-              uri={guardian?.verifier?.imageUrl}
-            />
-            <TextL>{guardian?.verifier?.name || ''}</TextL>
-          </View>
-        </View>
-
         <View style={pageStyles.loginSwitchWrap}>
-          <TextM>{'Login account'}</TextM>
-          <CommonSwitch
-            value={guardian === undefined ? false : guardian.isLoginAccount}
-            onValueChange={onLoginAccountChange}
-          />
+          <View style={pageStyles.rowSpaceBetweenItemsCenter}>
+            <TextL style={pageStyles.loginSwitchTitle}>{'Login account'}</TextL>
+            <View style={pageStyles.loginSwitchContainer}>
+              <CommonSwitch
+                value={guardian === undefined ? false : guardian.isLoginAccount}
+                disabled={(userGuardiansList?.length ?? 0) <= 1 || cantSwitch}
+                onValueChange={onLoginAccountChange}
+              />
+            </View>
+          </View>
+          <TextM style={pageStyles.tips}>
+            {t(
+              cantSwitch
+                ? 'Email can no longer be used as a login account.'
+                : 'The login account will be able to log in and control all your assets',
+            )}
+          </TextM>
         </View>
-
-        <TextM style={pageStyles.tips}>{'The login account will be able to log in and control all your assets'}</TextM>
+        {guardian && (
+          <View style={pageStyles.guardianInfoWrap}>
+            <View style={[pageStyles.rowSpaceBetweenItemsCenter, pageStyles.guardianInfoItem]}>
+              <TextL>Guardian</TextL>
+              <View style={pageStyles.guardianTypeWrap}>
+                <Svg icon={GUARDIAN_ITEM_TYPE_ICON[guardian.guardianType]} size={pTd(18)} />
+                <TextL style={pageStyles.guardianInfoText}>{guardian.type}</TextL>
+              </View>
+            </View>
+            <View style={[pageStyles.rowSpaceBetweenItemsCenter, pageStyles.guardianInfoItem]}>
+              <TextL>Guardian account</TextL>
+              <GuardianAccount
+                guardianItem={guardian}
+                wrapStyle={pageStyles.guardianAccountWrap}
+                firstNameStyle={pageStyles.textBold}
+              />
+            </View>
+            <View style={[pageStyles.rowSpaceBetweenItemsCenter, pageStyles.guardianInfoItem]}>
+              <TextL>Verifier</TextL>
+              <View style={pageStyles.verifierInfoWrap}>
+                <VerifierImage size={pTd(18)} label={verifierName} uri={verifierImage} />
+                <TextL style={pageStyles.guardianInfoText}>{verifierName || ''}</TextL>
+              </View>
+            </View>
+          </View>
+        )}
       </View>
-      {userGuardiansList && userGuardiansList.length > 1 && (
+      {isShowEditButton && (
         <CommonButton
           type="primary"
           onPress={() => {

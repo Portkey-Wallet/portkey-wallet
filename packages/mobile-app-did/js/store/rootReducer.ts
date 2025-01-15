@@ -25,6 +25,8 @@ import { chatSlice } from './chat/slice';
 import securitySlice from '@portkey-wallet/store/store-ca/security/slice';
 import { rampSlice } from '@portkey-wallet/store/store-ca/ramp/slice';
 import { referralSlice } from '@portkey-wallet/store/store-ca/referral/slice';
+import { configSlice } from '@portkey-wallet/store/store-ca/config/slice';
+import awakenSlice from '@portkey-wallet/store/store-ca/awaken/slice';
 
 const userPersistConfig = {
   key: userSlice.name,
@@ -41,7 +43,13 @@ const discoverPersistConfig = {
 const imPersistConfig = {
   key: imSlice.name,
   storage: AsyncStorage,
-  blacklist: ['channelMessageListNetMap', 'groupInfoMapNetMap', 'pinListNetMap', 'lastPinNetMap'],
+  blacklist: [
+    'channelMessageListNetMap',
+    'groupInfoMapNetMap',
+    'pinListNetMap',
+    'lastPinNetMap',
+    'sendingBotRelationIdNetMap',
+  ],
 };
 
 export const userReducer = persistReducer(userPersistConfig, userSlice.reducer);
@@ -69,7 +77,9 @@ const rootReducer = combineReducers({
   [securitySlice.name]: securitySlice.reducer,
   [chatSlice.name]: chatSlice.reducer,
   [rampSlice.name]: rampSlice.reducer,
+  [awakenSlice.name]: awakenSlice.reducer,
   [referralSlice.name]: referralSlice.reducer,
+  [configSlice.name]: configSlice.reducer,
 });
 
 export default rootReducer;

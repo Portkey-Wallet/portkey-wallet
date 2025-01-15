@@ -1,9 +1,9 @@
 import { StyleSheet } from 'react-native';
-import { defaultColors } from 'assets/theme';
+import { defaultColors, darkColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
 import fonts from 'assets/theme/fonts';
 
-const { bg1, bg5, font5, icon5 } = defaultColors;
+const { bg1, bg5 } = defaultColors;
 
 export const headerHeight = pTd(52);
 
@@ -39,7 +39,7 @@ export const blueStyles = StyleSheet.create({
   },
   title: {
     color: bg1,
-    fontWeight: 'bold',
+    // fontWeight: 'bold',
     ...fonts.mediumFont,
   },
   rightDomWrap: {
@@ -52,23 +52,26 @@ export const blueStyles = StyleSheet.create({
     color: bg1,
     marginLeft: pTd(4),
   },
+  leftBackTitleDisabled: {
+    color: darkColors.iconDisabled,
+  },
 });
 
 export const whitStyles = StyleSheet.create({
   ...styles,
   sectionContainer: {
-    height: pTd(44),
+    height: 44,
     width: '100%',
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-    backgroundColor: bg1,
   },
   leftDomWrap: {
     display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'flex-start',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    flexDirection: 'row',
     flex: 1,
   },
   centerWrap: {
@@ -78,18 +81,22 @@ export const whitStyles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    color: font5,
-    fontWeight: 'bold',
+    color: darkColors.textBase1,
+    // fontWeight: 'bold',
     ...fonts.mediumFont,
   },
   rightDomWrap: {
     flex: 1,
     display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'flex-end',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    flexDirection: 'row',
   },
   leftBackTitle: {
-    color: icon5,
+    color: darkColors.iconBase1,
+  },
+  leftBackTitleDisabled: {
+    color: darkColors.iconDisabled,
   },
 });
 

@@ -2,57 +2,57 @@ query loginMode_loginModeMatch($filter: loginType_filter, $sort: [String], $limi
     loginMode_loginModeMatch(filter: $filter6, sort: $sort6, limit: $limit6, offset: $offset6, page: $page6, search: $search6){
         id
         loginMode_id(filter: $filter4, sort: $sort4, limit: $limit4, offset: $offset4, page: $page4, search: $search4){
-            id
-            status
-            extensionIndex
-            iOSIndex
             androidIndex
-            extensionRecommend
-            iOSRecommend
             androidRecommend
             defaultSwitch
+            extensionIndex
+            extensionRecommend
+            id
+            iOSIndex
+            iOSRecommend
+            status
             type(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search){
                 id
-                status
                 label
+                status
                 value
             }
             matchList(filter: $filter3, sort: $sort3, limit: $limit3, offset: $offset3, page: $page3, search: $search3){
                 id
                 loginMode_id(filter: $filter1, sort: $sort1, limit: $limit1, offset: $offset1, page: $page1, search: $search1){
-                    id
-                    status
-                    extensionIndex
-                    iOSIndex
                     androidIndex
-                    extensionRecommend
-                    iOSRecommend
                     androidRecommend
                     defaultSwitch
+                    extensionIndex
+                    extensionRecommend
+                    id
+                    iOSIndex
+                    iOSRecommend
+                    status
                     matchList_func{
                         count
                     }
                 }
                 loginModeMatch_id(filter: $filter2, sort: $sort2, limit: $limit2, offset: $offset2, page: $page2, search: $search2){
+                    description
                     id
-                    status
-                    weight
-                    matchSwitch
                     matchRuleList
                     matchRuleList_func{
                         count
                     }
-                    description
+                    matchSwitch
+                    status
+                    weight
                 }
             }
         }
         loginModeMatch_id(filter: $filter5, sort: $sort5, limit: $limit5, offset: $offset5, page: $page5, search: $search5){
+            description
             id
+            matchRuleList
+            matchSwitch
             status
             weight
-            matchSwitch
-            matchRuleList
-            description
         }
     }
 }

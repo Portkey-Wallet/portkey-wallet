@@ -74,9 +74,11 @@ export type DiscoverGroup_By_IdQuery = {
     } | null;
     items?: Array<{
       __typename?: 'discoverItem';
+      appLink?: string | null;
       date_created?: any | null;
       date_updated?: any | null;
       description?: string | null;
+      extensionLink?: string | null;
       id: string;
       index?: number | null;
       sort?: number | null;
@@ -85,8 +87,6 @@ export type DiscoverGroup_By_IdQuery = {
       url?: string | null;
       user_created?: string | null;
       user_updated?: string | null;
-      appLink?: string | null;
-      extensionLink?: string | null;
       date_created_func?: {
         __typename?: 'datetime_functions';
         year?: number | null;
@@ -144,9 +144,11 @@ export type DiscoverGroup_By_IdQuery = {
         } | null;
         items?: Array<{
           __typename?: 'discoverItem';
+          appLink?: string | null;
           date_created?: any | null;
           date_updated?: any | null;
           description?: string | null;
+          extensionLink?: string | null;
           id: string;
           index?: number | null;
           sort?: number | null;
@@ -155,42 +157,30 @@ export type DiscoverGroup_By_IdQuery = {
           url?: string | null;
           user_created?: string | null;
           user_updated?: string | null;
-          appLink?: string | null;
-          extensionLink?: string | null;
           imgUrl?: {
             __typename?: 'directus_files';
-            id: string;
-            storage: string;
-            filename_disk?: string | null;
-            filename_download: string;
-            title?: string | null;
-            type?: string | null;
-            folder?: string | null;
-            uploaded_by?: string | null;
-            uploaded_on?: any | null;
-            modified_by?: string | null;
-            modified_on?: any | null;
             charset?: string | null;
-            filesize?: any | null;
-            width?: number | null;
-            height?: number | null;
+            description?: string | null;
             duration?: number | null;
             embed?: string | null;
-            description?: string | null;
+            filename_disk?: string | null;
+            filename_download: string;
+            filesize?: any | null;
+            folder?: string | null;
+            height?: number | null;
+            id: string;
             location?: string | null;
-            tags?: any | null;
             metadata?: any | null;
-            uploaded_on_func?: {
-              __typename?: 'datetime_functions';
-              year?: number | null;
-              month?: number | null;
-              week?: number | null;
-              day?: number | null;
-              weekday?: number | null;
-              hour?: number | null;
-              minute?: number | null;
-              second?: number | null;
-            } | null;
+            modified_by?: string | null;
+            modified_on?: any | null;
+            storage: string;
+            tags?: any | null;
+            title?: string | null;
+            type?: string | null;
+            uploaded_by?: string | null;
+            uploaded_on?: any | null;
+            width?: number | null;
+            metadata_func?: { __typename?: 'count_functions'; count?: number | null } | null;
             modified_on_func?: {
               __typename?: 'datetime_functions';
               year?: number | null;
@@ -203,7 +193,17 @@ export type DiscoverGroup_By_IdQuery = {
               second?: number | null;
             } | null;
             tags_func?: { __typename?: 'count_functions'; count?: number | null } | null;
-            metadata_func?: { __typename?: 'count_functions'; count?: number | null } | null;
+            uploaded_on_func?: {
+              __typename?: 'datetime_functions';
+              year?: number | null;
+              month?: number | null;
+              week?: number | null;
+              day?: number | null;
+              weekday?: number | null;
+              hour?: number | null;
+              minute?: number | null;
+              second?: number | null;
+            } | null;
           } | null;
         } | null> | null;
         items_func?: { __typename?: 'count_functions'; count?: number | null } | null;
@@ -272,6 +272,7 @@ export const DiscoverGroup_By_IdDocument = gql`
       user_created
       user_updated
       items(filter: $filter3, sort: $sort3, limit: $limit3, offset: $offset3, page: $page3, search: $search3) {
+        appLink
         date_created
         date_created_func {
           year
@@ -295,6 +296,7 @@ export const DiscoverGroup_By_IdDocument = gql`
           second
         }
         description
+        extensionLink
         group(filter: $filter2, sort: $sort2, limit: $limit2, offset: $offset2, page: $page2, search: $search2) {
           date_created
           date_created_func {
@@ -326,29 +328,27 @@ export const DiscoverGroup_By_IdDocument = gql`
           user_created
           user_updated
           items(filter: $filter1, sort: $sort1, limit: $limit1, offset: $offset1, page: $page1, search: $search1) {
+            appLink
             date_created
             date_updated
             description
+            extensionLink
             id
             imgUrl(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search) {
-              id
-              storage
+              charset
+              description
+              duration
+              embed
               filename_disk
               filename_download
-              title
-              type
+              filesize
               folder
-              uploaded_by
-              uploaded_on
-              uploaded_on_func {
-                year
-                month
-                week
-                day
-                weekday
-                hour
-                minute
-                second
+              height
+              id
+              location
+              metadata
+              metadata_func {
+                count
               }
               modified_by
               modified_on
@@ -362,22 +362,26 @@ export const DiscoverGroup_By_IdDocument = gql`
                 minute
                 second
               }
-              charset
-              filesize
-              width
-              height
-              duration
-              embed
-              description
-              location
+              storage
               tags
               tags_func {
                 count
               }
-              metadata
-              metadata_func {
-                count
+              title
+              type
+              uploaded_by
+              uploaded_on
+              uploaded_on_func {
+                year
+                month
+                week
+                day
+                weekday
+                hour
+                minute
+                second
               }
+              width
             }
             index
             sort
@@ -386,8 +390,6 @@ export const DiscoverGroup_By_IdDocument = gql`
             url
             user_created
             user_updated
-            appLink
-            extensionLink
           }
           items_func {
             count
@@ -401,8 +403,6 @@ export const DiscoverGroup_By_IdDocument = gql`
         url
         user_created
         user_updated
-        appLink
-        extensionLink
       }
       items_func {
         count

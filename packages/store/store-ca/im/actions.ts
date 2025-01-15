@@ -173,5 +173,13 @@ export const changeBlockedMap = createAction<{
   targetRelationId: string;
   isBlock: boolean;
 }>('im/changeBlockedMap');
+export const addBotSending = createAction<{
+  network: NetworkType;
+  targetRelationId: string;
+}>('im/addBotSending');
+export const removeBotSending = createAction<{
+  network: NetworkType;
+  targetRelationId: string;
+}>('im/removeBotSending');
 
 export const resetIm = createAction<NetworkType>('im/resetIm');

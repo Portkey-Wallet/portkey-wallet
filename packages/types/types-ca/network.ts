@@ -27,9 +27,28 @@ export type NetworkItem = {
   imS3Bucket?: string;
   eBridgeUrl?: string;
   eTransferUrl?: string;
+  eForestUrl?: string;
   awakenUrl?: string;
   schrodingerUrl?: string;
+  sgrSchrodingerUrl?: string;
+  tomorrowDAOUrl?: string;
   eTransferCA?: {
     [x in ChainId]?: string;
   };
+  hamsterUrl?: string;
+  zkLoginVerifyUrl?: string;
+  cryptoGiftTgUrl?: string;
 };
+
+export interface INetworkServiceItem {
+  serviceName: string;
+  multiConfirmTime: string;
+  maxAmount: string | number;
+}
+
+export interface INetworkItem {
+  network: string;
+  name: string;
+  imageUrl: string;
+  serviceList: INetworkServiceItem[];
+}

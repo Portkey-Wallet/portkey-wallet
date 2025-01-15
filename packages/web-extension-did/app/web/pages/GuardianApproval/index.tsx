@@ -1,16 +1,15 @@
-import { Button } from 'antd';
+import { Progress } from 'antd';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useLoginInfo, useGuardiansInfo, useCommonState } from 'store/Provider/hooks';
+import { useLoginInfo, useGuardiansInfo, useCommonState, useAppDispatch } from 'store/Provider/hooks';
 import { VerifyStatus } from '@portkey-wallet/types/verifier';
 import { UserGuardianStatus } from '@portkey-wallet/store/store-ca/guardians/type';
 import { getApprovalCount } from '@portkey-wallet/utils/guardian';
 import clsx from 'clsx';
-import CommonTooltip from 'components/CommonTooltip';
 import { useTranslation } from 'react-i18next';
 import GuardianItems from './components/GuardianItems';
 import { useGuardianRecovery } from './hooks/useRecovery';
 import { useRemoveOtherManage } from './hooks/useRemoveOtherManage';
-import GuardianApprovalPrompt from './Prompt';
+// import GuardianApprovalPrompt from './Prompt';
 import GuardianApprovalPopup from './Popup';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useOnManagerAddressAndQueryResult } from 'hooks/useOnManagerAddressAndQueryResult';
@@ -27,6 +26,19 @@ import {
 } from 'types/router';
 import './index.less';
 import { useSetTransferLimit } from './hooks/useSetTransferLimit';
+import { ZERO } from '@portkey-wallet/constants/misc';
+import {
+  resetGuardianExpiredTime,
+  // resetUserGuardianStatus,
+  resetUserGuardianStatusState,
+  setOpGuardianAction,
+  setPreGuardianAction,
+  // setUserGuardianStatus,
+} from '@portkey-wallet/store/store-ca/guardians/actions';
+import { CustomSvgV3 } from 'components/CustomSvgV3';
+import CircleLoading from 'components/CircleLoading';
+import { CommonButton } from '@portkey/did-ui-react';
+import { useLocation } from 'react-router-dom';
 
 const AllowedGuardianPageArr = [
   FromPageEnum.guardiansAdd,
@@ -37,23 +49,27 @@ const AllowedGuardianPageArr = [
 
 export default function GuardianApproval() {
   const { userGuardianStatus, guardianExpiredTime, opGuardian, preGuardian } = useGuardiansInfo();
+
   const { address: managerAddress } = useCurrentWalletInfo();
   const { loginAccount } = useLoginInfo();
   const [isExpired, setIsExpired] = useState<boolean>(false);
+  const dispatch = useAppDispatch();
   const navigate = useNavigateState<TAddGuardianLocationState | TTransferSettingEditLocationState>();
   const { locationParams } = usePromptLocationParams<TGuardianApprovalLocationState, TGuardianApprovalLocationSearch>();
-  const { isPrompt, isNotLessThan768 } = useCommonState();
+  const { pathname } = useLocation();
+  const isFromLogin = useMemo(() => pathname.includes('login'), [pathname]);
+  const { isNotLessThan768 } = useCommonState();
   const { t } = useTranslation();
-  const isBigScreenPrompt: boolean = useMemo(() => {
-    const from = locationParams.previousPage;
-    const isNotFromLoginAndRegister = !!(
-      from &&
-      (AllowedGuardianPageArr.includes(from) ||
-        from === FromPageEnum.removeManage ||
-        from === FromPageEnum.setTransferLimit)
-    );
-    return isNotLessThan768 ? isNotFromLoginAndRegister : false;
-  }, [isNotLessThan768, locationParams.previousPage]);
+  // const isBigScreenPrompt: boolean = useMemo(() => {
+  //   const from = locationParams.previousPage;
+  //   const isNotFromLoginAndRegister = !!(
+  //     from &&
+  //     (AllowedGuardianPageArr.includes(from) ||
+  //       from === FromPageEnum.removeManage ||
+  //       from === FromPageEnum.setTransferLimit)
+  //   );
+  //   return isNotLessThan768 ? isNotFromLoginAndRegister : false;
+  // }, [isNotLessThan768, locationParams.previousPage]);
   const targetChainId: ChainId | undefined = useMemo(
     () => locationParams.targetChainId || undefined,
     [locationParams.targetChainId],
@@ -64,11 +80,13 @@ export default function GuardianApproval() {
     const tempGuardianList = Object.values(userGuardianStatus ?? {});
     let filterGuardianList: UserGuardianStatus[] = tempGuardianList;
     const from = locationParams.previousPage;
-    if (from === FromPageEnum.guardiansEdit) {
+    if (FromPageEnum.guardiansEdit === from) {
       filterGuardianList = tempGuardianList.filter((item) => item.key !== preGuardian?.key);
-    } else if (
-      [FromPageEnum.guardiansAdd, FromPageEnum.guardiansDel, FromPageEnum.guardiansLoginGuardian].includes(from)
-    ) {
+    } else if (FromPageEnum.guardiansDel === from) {
+      filterGuardianList = tempGuardianList.filter(
+        (item) => item.key !== preGuardian?.key && item.key !== opGuardian?.key,
+      );
+    } else if (from && [FromPageEnum.guardiansAdd, FromPageEnum.guardiansLoginGuardian].includes(from)) {
       filterGuardianList = tempGuardianList.filter((item) => item.key !== opGuardian?.key);
     }
     return filterGuardianList;
@@ -89,7 +107,7 @@ export default function GuardianApproval() {
 
   const recoveryWallet = useCallback(async () => {
     const from = locationParams.previousPage;
-    if (AllowedGuardianPageArr.includes(from)) {
+    if (from && AllowedGuardianPageArr.includes(from)) {
       console.log('recoveryWallet guardians', '');
       handleGuardianRecovery();
     } else if (from === FromPageEnum.removeManage) {
@@ -161,7 +179,7 @@ export default function GuardianApproval() {
         return;
       }
       if (from === FromPageEnum.setTransferLimit) {
-        navigate(`/setting/wallet-security/payment-security/transfer-settings-edit`, {
+        navigate(`/setting/wallet-security/payment-security/transfer-settings`, {
           state: locationParams,
         });
         return;
@@ -174,63 +192,109 @@ export default function GuardianApproval() {
     navigate('/register/start');
   }, [locationParams, navigate]);
 
-  const renderContent = useMemo(
-    () => (
-      <div className="common-content1 guardian-approval-content flex-1 flex-column-between">
-        <div>
-          <div className="title">{t('Guardian Approval')}</div>
-          <p className="description">
-            {isExpired ? t('Expired. Please initiate social recovery again.') : t('Expire after 1 hour')}
-          </p>
-          <div className="flex-between-center approve-count">
-            <span className="flex-row-center">
-              {t("Guardians' approval")}
-              <CommonTooltip placement="top" title={t('guardianApprovalTip')} />
-            </span>
-            <div>
-              <span className="already-approval">{alreadyApprovalLength}</span>
-              <span className="all-approval">{`/${approvalLength}`}</span>
-            </div>
-          </div>
-          <ul className={clsx('verifier-content', !isNotLessThan768 && 'popup-verifier-content')}>
-            {userVerifiedList?.map((item) => (
-              <GuardianItems
-                key={item.key}
-                disabled={alreadyApprovalLength >= approvalLength && item.status !== VerifyStatus.Verified}
-                isExpired={isExpired}
-                item={item}
-                loginAccount={loginAccount}
-                targetChainId={targetChainId}
-              />
-            ))}
-          </ul>
-        </div>
-        {!isExpired && (
-          <div className={clsx(isPrompt ? 'recovery-wallet-btn-wrap' : 'btn-wrap')}>
-            <Button
+  const renderContent = useMemo(() => {
+    const loginAccountList = userVerifiedList.filter((i) => i.isLoginAccount);
+    const otherAccountList = userVerifiedList.filter((i) => !i.isLoginAccount);
+    return (
+      <div className={clsx('guardian-approval-content', 'flex-1', 'margin-top-16', isExpired && 'flex-column-between')}>
+        {isExpired && <CustomSvgV3 fillColor="#F1A282" className="margin-top-16" type="error" />}
+        <div className="title margin-top-16">{t(isExpired ? 'Guardian Approval Expired' : 'Guardian Approval')}</div>
+        <p className="description margin-top-16">
+          {isExpired
+            ? t('Your guardian approvals have expired. Please request new approvals to continue or cancel the process.')
+            : t('Complete the required guardian approvals below. Note: approvals expire after 1 hour.')}
+        </p>
+        {isExpired ? (
+          <>
+            <div className="flex-1"></div>
+            <CommonButton
               type="primary"
               className="recovery-wallet-btn"
-              disabled={alreadyApprovalLength <= 0 || alreadyApprovalLength !== approvalLength}
-              onClick={recoveryWallet}>
-              {t('Confirm')}
-            </Button>
-          </div>
+              onClick={() => {
+                setIsExpired(false);
+                dispatch(setOpGuardianAction());
+                dispatch(setPreGuardianAction());
+                dispatch(resetGuardianExpiredTime());
+                dispatch(resetUserGuardianStatusState());
+              }}>
+              {t('Try Again')}
+            </CommonButton>
+            <CommonButton
+              type="outline"
+              className="recovery-wallet-btn margin-top-16"
+              onClick={() => navigate('/register/start')}>
+              {t('Cancel')}
+            </CommonButton>
+          </>
+        ) : (
+          <>
+            <div className="flex-between-center approve-count">
+              <div className="width-100-percent">
+                <div className="flex-row-center">
+                  <span className="all-approval">{`${alreadyApprovalLength} / ${approvalLength} completed`}</span>
+                  <span>{alreadyApprovalLength === approvalLength ? <CustomSvgV3 type="check" /> : null}</span>
+                </div>
+                <Progress
+                  percent={
+                    alreadyApprovalLength
+                      ? ZERO.plus(alreadyApprovalLength).div(approvalLength).times(100).toNumber()
+                      : alreadyApprovalLength
+                  }
+                />
+              </div>
+            </div>
+            {alreadyApprovalLength === approvalLength ? (
+              <div className="flex-center">
+                <CircleLoading width={32} height={32} />
+              </div>
+            ) : (
+              <ul className={clsx('verifier-content', !isNotLessThan768 && 'popup-verifier-content')}>
+                <div className="guardian-items-title">Login account{loginAccountList.length > 1 ? '(s)' : null}</div>
+                {loginAccountList?.map((item) => (
+                  <GuardianItems
+                    key={item.key}
+                    disabled={alreadyApprovalLength >= approvalLength && item.status !== VerifyStatus.Verified}
+                    isExpired={isExpired}
+                    item={item}
+                    loginAccount={loginAccount}
+                    targetChainId={targetChainId}
+                  />
+                ))}
+                {otherAccountList.length > 0 ? (
+                  <>
+                    <div className="guardian-items-title">
+                      Other guardian{loginAccountList.length > 1 ? '(s)' : null}
+                    </div>
+                    {otherAccountList?.map((item) => (
+                      <GuardianItems
+                        key={item.key}
+                        disabled={alreadyApprovalLength >= approvalLength && item.status !== VerifyStatus.Verified}
+                        isExpired={isExpired}
+                        item={item}
+                        loginAccount={loginAccount}
+                        targetChainId={targetChainId}
+                      />
+                    ))}
+                  </>
+                ) : null}
+              </ul>
+            )}
+          </>
         )}
       </div>
-    ),
-    [
-      alreadyApprovalLength,
-      approvalLength,
-      isExpired,
-      isNotLessThan768,
-      isPrompt,
-      loginAccount,
-      recoveryWallet,
-      t,
-      userVerifiedList,
-      targetChainId,
-    ],
-  );
+    );
+  }, [
+    userVerifiedList,
+    isExpired,
+    t,
+    alreadyApprovalLength,
+    approvalLength,
+    isNotLessThan768,
+    dispatch,
+    navigate,
+    loginAccount,
+    targetChainId,
+  ]);
 
   const props = useMemo(
     () => ({
@@ -240,9 +304,19 @@ export default function GuardianApproval() {
     [handleBack, renderContent],
   );
 
-  return isNotLessThan768 ? (
-    <GuardianApprovalPrompt {...props} isBigScreenPrompt={isBigScreenPrompt} />
+  return isFromLogin ? (
+    <div className="flex-1 flex-column-center guardian-approve-login-wrap">
+      <div className="guardian-approve-login-page">
+        <GuardianApprovalPopup {...props} />
+      </div>
+    </div>
   ) : (
     <GuardianApprovalPopup {...props} />
   );
+
+  // return isNotLessThan768 ? (
+  //   <GuardianApprovalPrompt {...props} isBigScreenPrompt={isBigScreenPrompt} />
+  // ) : (
+  //   <GuardianApprovalPopup {...props} />
+  // );
 }

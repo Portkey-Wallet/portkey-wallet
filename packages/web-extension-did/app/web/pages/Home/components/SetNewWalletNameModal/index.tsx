@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Button, Modal } from 'antd';
+import { Button } from 'antd';
+import { CommonModal } from '@portkey/did-ui-react';
 import { useSetNewWalletName } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import singleMessage from 'utils/singleMessage';
@@ -36,7 +37,7 @@ export default function SetNewWalletNameModal() {
   };
 
   return (
-    <Modal
+    <CommonModal
       wrapClassName="set-new-waller-name-modal"
       width={SET_NEW_WALLET_NAME_MODAL_WIDTH}
       closable={false}
@@ -45,7 +46,9 @@ export default function SetNewWalletNameModal() {
       destroyOnClose
       footer={null}
       open={isOpen}
-      onCancel={handleCancel}>
+      onClose={handleCancel}
+      // onCancel={handleCancel}
+    >
       <div>
         <div className="modal-title">Set a Name for Your Wallet</div>
         <div className="modal-content">
@@ -58,6 +61,6 @@ export default function SetNewWalletNameModal() {
           <Button onClick={handleCancel}>Cancel</Button>
         </div>
       </div>
-    </Modal>
+    </CommonModal>
   );
 }

@@ -12,13 +12,15 @@ export interface IVerifierAccountPromptProps {
 
 const VerifierAccountPrompt = ({ renderContent, onBack, isBigScreenPrompt }: IVerifierAccountPromptProps) => {
   return (
-    <div className={clsx('verifier-account', isBigScreenPrompt ? 'big-screen-verifier-account' : 'common-page')}>
+    <div className={clsx('verifier-account', isBigScreenPrompt ? 'big-screen-verifier-account' : '')}>
       {isBigScreenPrompt ? (
-        <SecondPageHeader className="guardian-header" title="" leftCallBack={onBack} />
+        <>
+          <SecondPageHeader className="guardian-header" title="" leftCallBack={onBack} />
+          {renderContent}
+        </>
       ) : (
-        <PortKeyTitle leftElement leftCallBack={onBack} />
+        <PortKeyTitle leftElement leftCallBack={onBack} renderContent={renderContent} />
       )}
-      {renderContent}
     </div>
   );
 };

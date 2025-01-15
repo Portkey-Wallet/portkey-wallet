@@ -1,6 +1,6 @@
 import { CurrentWalletType } from '@portkey-wallet/types/wallet';
 import { ChainId } from '@portkey-wallet/types';
-import { TGetWithdrawInfoResult, TCreateWithdrawOrderResult } from '@etransfer/services';
+import { TGetWithdrawInfoResult, TCreateWithdrawOrderResult } from '@etransfer/types';
 import { IChainItemType } from '@portkey-wallet/types/types-ca/chain';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
 import { IStorageSuite } from '@portkey/types';
@@ -19,6 +19,7 @@ export interface IWithdrawPreviewParams {
   chainId: ChainId;
   address: string;
   symbol: string;
+  network: string;
   amount?: string;
 }
 
@@ -27,12 +28,14 @@ export interface IWithdrawParams {
   tokenContract: ContractBasic;
   portkeyContract: ContractBasic;
   toAddress: string;
+  network: string;
   amount: string;
   tokenInfo: {
     address: string;
     symbol: string;
     decimals: number;
   };
+  isCheckSymbol?: boolean;
 }
 
 export interface ICrossTransfer {

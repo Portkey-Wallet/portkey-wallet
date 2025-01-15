@@ -1,20 +1,21 @@
 import { getOrigin, isDangerousLink } from '@portkey-wallet/utils/dapp/browser';
-import { defaultColors } from 'assets/theme';
+import { darkColors } from 'assets/theme';
 
 import { TextM } from 'components/CommonText';
 import Svg from 'components/Svg';
 import React, { memo, useMemo } from 'react';
-import { StyleSheet, View, ViewProps, StyleProp } from 'react-native';
+import { StyleSheet, View, StyleProp, ViewStyle } from 'react-native';
 import { pTd } from 'utils/unit';
 
 interface ITextWithProtocolIconProps {
   title?: string;
   url: string;
   textFontSize?: number;
-  wrapStyle?: StyleProp<ViewProps>;
+  wrapStyle?: StyleProp<ViewStyle>;
   iconSize?: number;
   type?: 'iconLeft' | 'iconRight';
   location?: 'header' | 'other';
+  showProtocolIcon?: boolean;
 }
 
 const TextWithProtocolIcon = ({
@@ -25,6 +26,7 @@ const TextWithProtocolIcon = ({
   wrapStyle = {},
   type = 'iconRight',
   location = 'other',
+  showProtocolIcon = true,
 }: ITextWithProtocolIconProps) => {
   const isDanger = isDangerousLink(url);
 
@@ -33,19 +35,13 @@ const TextWithProtocolIcon = ({
   };
 
   const ProtocolIcon = useMemo(() => {
-    if (isDanger) {
-      return <Svg icon="httpWarn" size={iconSize} iconStyle={styles.iconStyle} />;
-    } else {
-      return (
-        <Svg
-          icon="httpsLock"
-          size={iconSize}
-          iconStyle={styles.iconStyle}
-          color={location === 'header' ? defaultColors.font11 : defaultColors.font7}
-        />
-      );
+    if (!showProtocolIcon) {
+      return null;
     }
-  }, [iconSize, isDanger, location]);
+    if (isDanger) {
+      return <Svg icon="warning-fill" size={iconSize} iconStyle={styles.iconStyle} color={darkColors.iconDanger2} />;
+    }
+  }, [iconSize, isDanger, showProtocolIcon]);
 
   return (
     <View style={[styles.wrap, wrapStyle]}>
@@ -82,6 +78,6 @@ const styles = StyleSheet.create({
     marginLeft: pTd(4),
   },
   headerTextColor: {
-    color: defaultColors.font5,
+    color: darkColors.textBase1,
   },
 });

@@ -1,49 +1,42 @@
-import CustomSvg from 'components/CustomSvg';
+import { CustomSvgV3 } from 'components/CustomSvgV3';
 import DropdownSearch from 'components/DropdownSearch';
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { transNetworkText } from '@portkey-wallet/utils/activity';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import './index.less';
+import { useContactNetworkConfig } from '@portkey-wallet/hooks/hooks-ca/config';
+import { IContactSupportNetworkItem } from '@portkey-wallet/types/types-ca/config';
+import { useEffectOnce } from '@portkey-wallet/hooks';
 
 export interface INetworkSelectProps {
   onClose: () => void;
-  onChange: (v: Record<string, string>) => void;
+  onChange: (v: string) => void;
 }
 
 export default function NetworkSelect({ onClose, onChange }: INetworkSelectProps) {
   const { t } = useTranslation();
   const [filterWord, setFilterWord] = useState<string>('');
-  const [showNetworkLists, setShowNetworkLists] = useState<any[]>([]);
-  const { chainList, currentNetwork } = useCurrentWallet();
-  const isMainnet = useIsMainnet();
+  const [showNetworkLists, setShowNetworkLists] = useState<IContactSupportNetworkItem[]>([]);
 
-  const networkLists = useMemo(
-    () =>
-      chainList?.map((chain) => ({
-        networkType: currentNetwork,
-        chainId: chain.chainId,
-        chainName: chain.chainName,
-        networkName: transNetworkText(chain.chainId, !isMainnet),
-      })),
-    [chainList, currentNetwork, isMainnet],
-  );
+  const { supportNetworkList, fetchContactSupportConfig } = useContactNetworkConfig();
 
   useEffect(() => {
     if (!filterWord) {
-      setShowNetworkLists(networkLists || []);
+      setShowNetworkLists(supportNetworkList || []);
     } else {
-      const filter = (networkLists || []).filter((l) => l.networkName.toLowerCase() === filterWord.toLowerCase());
+      const filter = (supportNetworkList || []).filter((l) => l.name.toLowerCase() === filterWord.toLowerCase());
       setShowNetworkLists(filter);
     }
-  }, [filterWord, networkLists]);
+  }, [filterWord, showNetworkLists, supportNetworkList]);
+
+  useEffectOnce(() => {
+    fetchContactSupportConfig();
+  });
 
   return (
     <div className="network-select">
       <div className="header">
         <p>{t('Select Network')}</p>
-        <CustomSvg type="SuggestClose" onClick={onClose} />
+        <CustomSvgV3 type="close thin" onClick={onClose} />
       </div>
       <DropdownSearch
         overlayClassName="switch-network-empty-dropdown"
@@ -61,12 +54,13 @@ export default function NetworkSelect({ onClose, onChange }: INetworkSelectProps
         {showNetworkLists.map((net) => (
           <div
             className="item"
-            key={`${net.networkType}_${net.chainId}`}
+            key={`${net.network}_${net.chainId}`}
             onClick={() => {
-              onChange(net);
+              onChange?.(net?.network);
+              onClose?.();
             }}>
-            <CustomSvg type={isMainnet ? 'Aelf' : 'elf-icon'} />
-            <div className="info">{net?.networkName}</div>
+            <img src={net.imageUrl} />
+            <span>{net?.name}</span>
           </div>
         ))}
         {!!filterWord && !showNetworkLists.length && (

@@ -25,6 +25,7 @@ export interface IContactCardProps {
   className?: string;
 }
 export default function ContactCard({ user, className, fromRecents = true, chainId, onChange }: IContactCardProps) {
+  console.log('onChange', onChange);
   const isMainnet = useIsMainnet();
   const isDisabled = useCallback(
     (transactionTime: string | undefined): boolean => {
@@ -70,11 +71,7 @@ export default function ContactCard({ user, className, fromRecents = true, chain
             <div
               key={formatAddressShow(address.address, address.chainId)}
               className={clsx(['flex-between-center', 'content-item'])}>
-              <div
-                className={clsx(['main-info', isDisabled(address?.transactionTime) && 'disabled'])}
-                onClick={() =>
-                  onChange({ ...address, name: transName, isDisable: isDisabled(address?.transactionTime) })
-                }>
+              <div className={clsx(['main-info', isDisabled(address?.transactionTime) && 'disabled'])}>
                 <span className={'address'}>{formatAddressShow(address.address, address.chainId)}</span>
                 <span className={clsx(['network', isDisabled(address?.transactionTime) ? 'disabled' : ''])}>
                   {transNetworkText(address.chainId, !isMainnet)}

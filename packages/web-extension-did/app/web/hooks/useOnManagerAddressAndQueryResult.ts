@@ -1,42 +1,42 @@
 import { useCurrentWallet, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import AElf from 'aelf-sdk';
 import { useCallback } from 'react';
-import { useAppDispatch, useGuardiansInfo, useLoading } from 'store/Provider/hooks';
+import { useAppDispatch, useGuardiansInfo } from 'store/Provider/hooks';
 import { handleErrorMessage, randomId } from '@portkey-wallet/utils';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { extraDataEncode } from '@portkey-wallet/utils/device';
 import { getDeviceInfo } from 'utils/device';
 import { DEVICE_TYPE } from 'constants/index';
-import { recoveryDIDWallet, registerDIDWallet } from '@portkey-wallet/api/api-did/utils/wallet';
-import type { AccountType, GuardiansApproved } from '@portkey/services';
+import {
+  GuardiansApprovedWithZK,
+  recoveryDIDWallet,
+  registerDIDWallet,
+} from '@portkey-wallet/api/api-did/utils/wallet';
+import type { AccountType } from '@portkey/services';
 import { VerificationType, VerifierInfo, VerifyStatus } from '@portkey-wallet/types/verifier';
 import { setManagerInfo } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import useFetchDidWallet from './useFetchDidWallet';
 import { isWalletError } from '@portkey-wallet/store/wallet/utils';
-import ModalTip from 'pages/components/ModalTip';
-import { CreateAddressLoading, InitLoginLoading } from '@portkey-wallet/constants/constants-ca/wallet';
-import { useTranslation } from 'react-i18next';
 import { getLoginAccount, getLoginCache } from 'utils/lib/SWGetReduxStore';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 import { useNavigate } from 'react-router';
 import { useLatestRef } from '@portkey-wallet/hooks';
 import singleMessage from 'utils/singleMessage';
+import { RequestSourceEnum } from '@portkey-wallet/constants/constants-ca/device';
 
 export function useOnManagerAddressAndQueryResult(state: string | undefined) {
-  const { setLoading } = useLoading();
   const { walletInfo } = useCurrentWallet();
   const { userGuardianStatus } = useGuardiansInfo();
   const dispatch = useAppDispatch();
   const getWalletCAAddressResult = useFetchDidWallet();
   const network = useCurrentNetworkInfo();
-  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const originChainId = useOriginChainId();
   const latestOriginChainId = useLatestRef(originChainId);
 
-  const getGuardiansApproved: () => GuardiansApproved[] = useCallback(() => {
+  const getGuardiansApproved: () => GuardiansApprovedWithZK[] = useCallback(() => {
     return Object.values(userGuardianStatus ?? {})
       .filter((guardian) => guardian.status === VerifyStatus.Verified)
       .map((guardian) => ({
@@ -45,6 +45,7 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
         verifierId: guardian.verifier?.id || '',
         verificationDoc: guardian.verificationDoc || '',
         signature: guardian.signature || '',
+        zkLoginInfo: guardian.zkLoginInfo,
       }));
   }, [userGuardianStatus]);
 
@@ -77,6 +78,7 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
           clientId: managerAddress,
           requestId,
         },
+        source: RequestSourceEnum.Web,
       });
       return {
         requestId,
@@ -92,7 +94,7 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
       guardiansApprovedList,
     }: {
       managerAddress: string;
-      guardiansApprovedList?: GuardiansApproved[];
+      guardiansApprovedList?: GuardiansApprovedWithZK[];
     }) => {
       const loginAccount = await getLoginAccount();
       if (!loginAccount?.guardianAccount || !LoginType[loginAccount.loginType]) {
@@ -117,6 +119,7 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
           clientId: managerAddress,
           requestId,
         },
+        source: RequestSourceEnum.Web,
       });
 
       return {
@@ -145,12 +148,6 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
           return singleMessage.error('Missing account!!! Please login/register again');
         }
 
-        if (loginAccount.createType === 'register') {
-          setLoading(true, t(CreateAddressLoading));
-        } else {
-          setLoading(true, t(InitLoginLoading));
-        }
-
         const _walletInfo = walletInfo.address ? walletInfo : AElf.wallet.createNewWallet();
         console.log(walletInfo.address, 'onCreate==');
 
@@ -163,16 +160,17 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
         if (state === 'register') {
           sessionInfo = await requestRegisterDIDWallet({ managerAddress: _walletInfo.address, verifierParams });
         } else {
-          let guardiansApprovedList: GuardiansApproved[] | undefined = undefined;
+          let guardiansApprovedList: GuardiansApprovedWithZK[] | undefined = undefined;
           if (verifierParams && currentGuardian) {
             guardiansApprovedList = [
               {
                 type: LoginType[currentGuardian.guardianType] as AccountType,
                 identifier: currentGuardian.guardianAccount,
                 verifierId: verifierParams.verifierId,
-                verificationDoc: verifierParams?.verificationDoc,
-                signature: verifierParams.signature,
+                verificationDoc: verifierParams?.verificationDoc ?? '',
+                signature: verifierParams.signature ?? '',
                 identifierHash: currentGuardian.identifierHash,
+                zkLoginInfo: currentGuardian.zkLoginInfo,
               },
             ];
           }
@@ -205,18 +203,12 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
           pwd: pin,
           managerAddress: _walletInfo.address,
         });
-        setLoading(false);
-        ModalTip({
-          content: 'Requested successfully',
-        });
       } catch (error: any) {
         console.log(error, 'onCreate==error');
         const walletError = isWalletError(error);
         if (walletError) return singleMessage.error(walletError);
         singleMessage.error(handleErrorMessage(error, 'Create Wallet Failed'));
         navigate('/register/start');
-      } finally {
-        setLoading(false);
       }
     },
     [
@@ -226,9 +218,7 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
       network.networkType,
       requestRecoveryDIDWallet,
       requestRegisterDIDWallet,
-      setLoading,
       state,
-      t,
       walletInfo,
     ],
   );

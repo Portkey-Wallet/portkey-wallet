@@ -19,6 +19,9 @@ export type NFTCollectionItemBaseType = {
   seedType?: SeedTypeEnum;
   expires?: string;
   seedOwnedSymbol?: string;
+  chainImageUrl?: string;
+  displayChainImage?: boolean;
+  displayChainName?: string;
 };
 
 export interface NFTCollectionItemShowType extends NFTCollectionItemBaseType {
@@ -27,6 +30,7 @@ export interface NFTCollectionItemShowType extends NFTCollectionItemBaseType {
   maxResultCount: number;
   totalRecordCount: string | number;
   children: NFTItemBaseType[];
+  prevChildren: NFTItemBaseType[];
 }
 
 // nft item types
@@ -40,7 +44,7 @@ export type NFTItemBaseType = {
   imageUrl: string;
   tokenContractAddress: string;
   totalSupply: string | number;
-  decimals?: string;
+  decimals?: string | number;
   isSeed?: boolean;
   seedType?: SeedTypeEnum;
   inscriptionName?: string;
@@ -55,6 +59,9 @@ export type NFTItemBaseType = {
   recommendedRefreshSeconds?: number;
   generation?: string;
   traitsPercentages?: TraitsPercentType[];
+  displayChainName?: string;
+  chainImageUrl?: string;
+  description?: string;
 };
 
 export type TraitsPercentType = {

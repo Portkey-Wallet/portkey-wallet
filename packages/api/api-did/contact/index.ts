@@ -1,6 +1,8 @@
 import { BaseConfig } from '../../types';
 
 const BASE_URL = `/api/app/contacts`;
+const BASE_URL_V2 = `/api/app/address-book`;
+
 const KeyList = [
   'addContact',
   'editContact',
@@ -9,6 +11,15 @@ const KeyList = [
   'readImputation',
   'contactPrivacyList',
   'updateContactPrivacy',
+] as const;
+
+const KeyListV2 = [
+  'createSaved',
+  'updateSaved',
+  'deleteSaved',
+  'checkSavedName',
+  'getSavedList',
+  'getSupportNetworkList',
 ] as const;
 
 const ApiObject: Record<typeof KeyList[number], BaseConfig> = {
@@ -41,5 +52,31 @@ const ApiObject: Record<typeof KeyList[number], BaseConfig> = {
     config: { method: 'POST' },
   },
 };
+const ApiObjectV2: Record<typeof KeyListV2[number], BaseConfig> = {
+  createSaved: {
+    target: `${BASE_URL_V2}/create`,
+    config: { method: 'POST' },
+  },
+  updateSaved: {
+    target: `${BASE_URL_V2}/update`,
+    config: { method: 'POST' },
+  },
+  deleteSaved: {
+    target: `${BASE_URL_V2}/delete`,
+    config: { method: 'POST' },
+  },
+  checkSavedName: {
+    target: `${BASE_URL_V2}/exist`,
+    config: { method: 'GET' },
+  },
+  getSavedList: {
+    target: `${BASE_URL_V2}/read`,
+    config: { method: 'GET' },
+  },
+  getSupportNetworkList: {
+    target: `${BASE_URL_V2}/network`,
+    config: { method: 'GET' },
+  },
+};
 
-export default ApiObject;
+export default Object.assign(ApiObject, ApiObjectV2);

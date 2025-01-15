@@ -278,3 +278,8 @@ export const useGetCryptoGiftConfig = () => {
     getCryptoGiftContractAddress,
   };
 };
+
+export const useGetCryptoGiftTgLink = (): ((cryptoGiftId: string) => string) => {
+  const { cryptoGiftTgUrl } = useCurrentNetworkInfo();
+  return useCallback((cryptoGiftId: string) => `${cryptoGiftTgUrl}?startapp=${cryptoGiftId}`, [cryptoGiftTgUrl]);
+};

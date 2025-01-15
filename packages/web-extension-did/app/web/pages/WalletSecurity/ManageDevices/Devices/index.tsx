@@ -4,8 +4,6 @@ import { useCallback, useEffect, useState } from 'react';
 import { DeviceItemType } from '@portkey-wallet/types/types-ca/device';
 import { useLoading } from 'store/Provider/hooks';
 import DevicesPopup from './Popup';
-import DevicesPrompt from './Prompt';
-import { useCommonState } from 'store/Provider/hooks';
 import singleMessage from 'utils/singleMessage';
 import { useNavigateState } from 'hooks/router';
 
@@ -21,7 +19,6 @@ export default function Devices() {
   });
   const [devices, setDevices] = useState<IDeviceItem[]>([]);
   const { setLoading } = useLoading();
-  const { isNotLessThan768 } = useCommonState();
 
   useEffect(() => {
     if (!loading) {
@@ -44,14 +41,10 @@ export default function Devices() {
     [navigate],
   );
 
-  const title = t('Login Devices');
+  const title = t('Manage Devices');
   const handleBack = useCallback(() => {
-    navigate('/setting/wallet-security');
+    navigate('/setting');
   }, [navigate]);
 
-  return isNotLessThan768 ? (
-    <DevicesPrompt headerTitle={title} goBack={handleBack} list={devices} onClick={handleClick} />
-  ) : (
-    <DevicesPopup headerTitle={title} goBack={handleBack} list={devices} onClick={handleClick} />
-  );
+  return <DevicesPopup headerTitle={title} goBack={handleBack} list={devices} onClick={handleClick} />;
 }

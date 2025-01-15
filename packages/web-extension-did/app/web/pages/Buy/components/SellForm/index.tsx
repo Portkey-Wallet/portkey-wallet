@@ -40,6 +40,7 @@ import singleMessage from 'utils/singleMessage';
 import InternalMessage from 'messages/InternalMessage';
 import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 import { useExtensionRampEntryShow } from 'hooks/ramp';
+import { getOperationDetails } from '@portkey-wallet/utils/operation.util';
 
 export default function SellFrom() {
   const { t } = useTranslation();
@@ -256,10 +257,11 @@ export default function SellFrom() {
       const chainId = cryptoSelectedRef.current.chainId;
       const currentChain = getCurrentChain(chainId);
       if (!currentChain) return setLoading(false);
+      const _address = accountTokenList[0]?.tokens?.find((ele) => ele.chainId === chainId)?.tokenContractAddress;
       // search balance from contract
       const result = await getBalance({
         rpcUrl: currentChain.endPoint,
-        address: accountTokenList[0].tokenContractAddress || '',
+        address: _address || '',
         chainType: currentNetwork.walletType,
         paramsOption: {
           owner: wallet[chainId as ChainId]?.caAddress || '',
@@ -371,6 +373,13 @@ export default function SellFrom() {
         operationType={OperationTypeEnum.transferApprove}
         onClose={onCloseGuardianApprove}
         getApproveRes={getApproveRes}
+        operationDetails={getOperationDetails(OperationTypeEnum.transferApprove, {
+          symbol: cryptoSelected.symbol,
+          amount: cryptoAmount,
+          toAddress: cryptoSelected.address,
+          caHash: wallet.caHash,
+          verifyManagerAddress: wallet.address,
+        })}
       />
     </>
   );

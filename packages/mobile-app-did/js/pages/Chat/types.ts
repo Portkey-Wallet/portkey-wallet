@@ -15,6 +15,6 @@ export interface ChatMessage extends IMessage, Message {
 }
 
 export enum GroupRedPacketTabEnum {
-  Random = 'Random',
-  Fixed = 'Fixed',
+  Random = 'Random amounts',
+  Fixed = 'Fixed amount',
 }

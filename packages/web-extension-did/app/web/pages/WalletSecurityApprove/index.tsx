@@ -9,6 +9,7 @@ import { ChainId } from '@portkey-wallet/types';
 import { useCurrentWallet, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { handleGuardianByContract } from 'utils/sandboxUtil/handleGuardianByContract';
 import { getAelfTxResult } from '@portkey-wallet/utils/aelf';
+import { fixedGuardianParams, fixedGuardianApprovedParams } from '@portkey-wallet/utils/guardian';
 import { useLoading } from 'store/Provider/hooks';
 import { getAccelerateGuardianTxId } from '@portkey-wallet/utils/securityTest';
 import { SecurityAccelerateErrorTip } from 'constants/security';
@@ -56,8 +57,8 @@ export default function WalletSecurityApprove() {
             method: 'AddGuardian',
             params: {
               caHash: walletInfo?.caHash,
-              guardianToAdd: params.guardianToAdd,
-              guardiansApproved: params.guardiansApproved,
+              guardianToAdd: fixedGuardianParams(params.guardianToAdd),
+              guardiansApproved: fixedGuardianApprovedParams(params.guardiansApproved),
             },
           },
         });

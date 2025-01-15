@@ -2,7 +2,7 @@ import * as RNLocalize from 'react-native-localize';
 
 export const LOCAL_LANGUAGE = [
   { language: 'en', title: 'English' },
-  { language: 'zh', title: '繁体中文' },
+  { language: 'zh', title: '繁體中文' },
 ] as const;
 
 export type LanguageValue = typeof LOCAL_LANGUAGE[number]['language'];

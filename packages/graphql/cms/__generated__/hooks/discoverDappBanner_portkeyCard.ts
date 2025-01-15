@@ -18,7 +18,7 @@ export type DiscoverDappBanner_PortkeyCardQueryVariables = Types.Exact<{
   offset1?: Types.InputMaybe<Types.Scalars['Int']>;
   page1?: Types.InputMaybe<Types.Scalars['Int']>;
   search1?: Types.InputMaybe<Types.Scalars['String']>;
-  filter2?: Types.InputMaybe<Types.PortkeyCard_Filter>;
+  filter2?: Types.InputMaybe<Types.CardType_Filter>;
   sort2?: Types.InputMaybe<
     Array<Types.InputMaybe<Types.Scalars['String']>> | Types.InputMaybe<Types.Scalars['String']>
   >;
@@ -26,7 +26,7 @@ export type DiscoverDappBanner_PortkeyCardQueryVariables = Types.Exact<{
   offset2?: Types.InputMaybe<Types.Scalars['Int']>;
   page2?: Types.InputMaybe<Types.Scalars['Int']>;
   search2?: Types.InputMaybe<Types.Scalars['String']>;
-  filter3?: Types.InputMaybe<Types.DiscoverDappBanner_PortkeyCard_Filter>;
+  filter3?: Types.InputMaybe<Types.PortkeyCard_Filter>;
   sort3?: Types.InputMaybe<
     Array<Types.InputMaybe<Types.Scalars['String']>> | Types.InputMaybe<Types.Scalars['String']>
   >;
@@ -34,7 +34,7 @@ export type DiscoverDappBanner_PortkeyCardQueryVariables = Types.Exact<{
   offset3?: Types.InputMaybe<Types.Scalars['Int']>;
   page3?: Types.InputMaybe<Types.Scalars['Int']>;
   search3?: Types.InputMaybe<Types.Scalars['String']>;
-  filter4?: Types.InputMaybe<Types.DiscoverDappBanner_Filter>;
+  filter4?: Types.InputMaybe<Types.DiscoverDappBanner_PortkeyCard_Filter>;
   sort4?: Types.InputMaybe<
     Array<Types.InputMaybe<Types.Scalars['String']>> | Types.InputMaybe<Types.Scalars['String']>
   >;
@@ -42,7 +42,7 @@ export type DiscoverDappBanner_PortkeyCardQueryVariables = Types.Exact<{
   offset4?: Types.InputMaybe<Types.Scalars['Int']>;
   page4?: Types.InputMaybe<Types.Scalars['Int']>;
   search4?: Types.InputMaybe<Types.Scalars['String']>;
-  filter5?: Types.InputMaybe<Types.PortkeyCard_Filter>;
+  filter5?: Types.InputMaybe<Types.DiscoverDappBanner_Filter>;
   sort5?: Types.InputMaybe<
     Array<Types.InputMaybe<Types.Scalars['String']>> | Types.InputMaybe<Types.Scalars['String']>
   >;
@@ -50,7 +50,7 @@ export type DiscoverDappBanner_PortkeyCardQueryVariables = Types.Exact<{
   offset5?: Types.InputMaybe<Types.Scalars['Int']>;
   page5?: Types.InputMaybe<Types.Scalars['Int']>;
   search5?: Types.InputMaybe<Types.Scalars['String']>;
-  filter6?: Types.InputMaybe<Types.DiscoverDappBanner_PortkeyCard_Filter>;
+  filter6?: Types.InputMaybe<Types.PortkeyCard_Filter>;
   sort6?: Types.InputMaybe<
     Array<Types.InputMaybe<Types.Scalars['String']>> | Types.InputMaybe<Types.Scalars['String']>
   >;
@@ -58,6 +58,14 @@ export type DiscoverDappBanner_PortkeyCardQueryVariables = Types.Exact<{
   offset6?: Types.InputMaybe<Types.Scalars['Int']>;
   page6?: Types.InputMaybe<Types.Scalars['Int']>;
   search6?: Types.InputMaybe<Types.Scalars['String']>;
+  filter7?: Types.InputMaybe<Types.DiscoverDappBanner_PortkeyCard_Filter>;
+  sort7?: Types.InputMaybe<
+    Array<Types.InputMaybe<Types.Scalars['String']>> | Types.InputMaybe<Types.Scalars['String']>
+  >;
+  limit7?: Types.InputMaybe<Types.Scalars['Int']>;
+  offset7?: Types.InputMaybe<Types.Scalars['Int']>;
+  page7?: Types.InputMaybe<Types.Scalars['Int']>;
+  search7?: Types.InputMaybe<Types.Scalars['String']>;
 }>;
 
 export type DiscoverDappBanner_PortkeyCardQuery = {
@@ -80,51 +88,40 @@ export type DiscoverDappBanner_PortkeyCardQuery = {
         } | null;
         portkeyCard_id?: {
           __typename?: 'portkeyCard';
-          id: string;
-          status?: string | null;
-          index?: any | null;
-          title?: string | null;
-          value?: string | null;
-          description?: string | null;
-          buttonTitle?: string | null;
-          url?: string | null;
-          type?: number | null;
           appLink?: string | null;
+          buttonTitle?: string | null;
+          description?: string | null;
           extensionLink?: string | null;
+          id: string;
+          index?: any | null;
+          status?: string | null;
+          title?: string | null;
+          url?: string | null;
+          value?: string | null;
           imgUrl?: {
             __typename?: 'directus_files';
-            id: string;
-            storage: string;
-            filename_disk?: string | null;
-            filename_download: string;
-            title?: string | null;
-            type?: string | null;
-            folder?: string | null;
-            uploaded_by?: string | null;
-            uploaded_on?: any | null;
-            modified_by?: string | null;
-            modified_on?: any | null;
             charset?: string | null;
-            filesize?: any | null;
-            width?: number | null;
-            height?: number | null;
+            description?: string | null;
             duration?: number | null;
             embed?: string | null;
-            description?: string | null;
+            filename_disk?: string | null;
+            filename_download: string;
+            filesize?: any | null;
+            folder?: string | null;
+            height?: number | null;
+            id: string;
             location?: string | null;
-            tags?: any | null;
             metadata?: any | null;
-            uploaded_on_func?: {
-              __typename?: 'datetime_functions';
-              year?: number | null;
-              month?: number | null;
-              week?: number | null;
-              day?: number | null;
-              weekday?: number | null;
-              hour?: number | null;
-              minute?: number | null;
-              second?: number | null;
-            } | null;
+            modified_by?: string | null;
+            modified_on?: any | null;
+            storage: string;
+            tags?: any | null;
+            title?: string | null;
+            type?: string | null;
+            uploaded_by?: string | null;
+            uploaded_on?: any | null;
+            width?: number | null;
+            metadata_func?: { __typename?: 'count_functions'; count?: number | null } | null;
             modified_on_func?: {
               __typename?: 'datetime_functions';
               year?: number | null;
@@ -137,24 +134,40 @@ export type DiscoverDappBanner_PortkeyCardQuery = {
               second?: number | null;
             } | null;
             tags_func?: { __typename?: 'count_functions'; count?: number | null } | null;
-            metadata_func?: { __typename?: 'count_functions'; count?: number | null } | null;
+            uploaded_on_func?: {
+              __typename?: 'datetime_functions';
+              year?: number | null;
+              month?: number | null;
+              week?: number | null;
+              day?: number | null;
+              weekday?: number | null;
+              hour?: number | null;
+              minute?: number | null;
+              second?: number | null;
+            } | null;
+          } | null;
+          type?: {
+            __typename?: 'cardType';
+            id: string;
+            label?: string | null;
+            status?: string | null;
+            value?: string | null;
           } | null;
         } | null;
       } | null> | null;
     } | null;
     portkeyCard_id?: {
       __typename?: 'portkeyCard';
-      id: string;
-      status?: string | null;
-      index?: any | null;
-      title?: string | null;
-      value?: string | null;
-      description?: string | null;
-      buttonTitle?: string | null;
-      url?: string | null;
-      type?: number | null;
       appLink?: string | null;
+      buttonTitle?: string | null;
+      description?: string | null;
       extensionLink?: string | null;
+      id: string;
+      index?: any | null;
+      status?: string | null;
+      title?: string | null;
+      url?: string | null;
+      value?: string | null;
     } | null;
   }>;
 };
@@ -173,58 +186,62 @@ export const DiscoverDappBanner_PortkeyCardDocument = gql`
     $offset1: Int
     $page1: Int
     $search1: String
-    $filter2: portkeyCard_filter
+    $filter2: cardType_filter
     $sort2: [String]
     $limit2: Int
     $offset2: Int
     $page2: Int
     $search2: String
-    $filter3: discoverDappBanner_portkeyCard_filter
+    $filter3: portkeyCard_filter
     $sort3: [String]
     $limit3: Int
     $offset3: Int
     $page3: Int
     $search3: String
-    $filter4: discoverDappBanner_filter
+    $filter4: discoverDappBanner_portkeyCard_filter
     $sort4: [String]
     $limit4: Int
     $offset4: Int
     $page4: Int
     $search4: String
-    $filter5: portkeyCard_filter
+    $filter5: discoverDappBanner_filter
     $sort5: [String]
     $limit5: Int
     $offset5: Int
     $page5: Int
     $search5: String
-    $filter6: discoverDappBanner_portkeyCard_filter
+    $filter6: portkeyCard_filter
     $sort6: [String]
     $limit6: Int
     $offset6: Int
     $page6: Int
     $search6: String
+    $filter7: discoverDappBanner_portkeyCard_filter
+    $sort7: [String]
+    $limit7: Int
+    $offset7: Int
+    $page7: Int
+    $search7: String
   ) {
     discoverDappBanner_portkeyCard(
-      filter: $filter6
-      sort: $sort6
-      limit: $limit6
-      offset: $offset6
-      page: $page6
-      search: $search6
+      filter: $filter7
+      sort: $sort7
+      limit: $limit7
+      offset: $offset7
+      page: $page7
+      search: $search7
     ) {
-      id
       discoverDappBanner_id(
-        filter: $filter4
-        sort: $sort4
-        limit: $limit4
-        offset: $offset4
-        page: $page4
-        search: $search4
+        filter: $filter5
+        sort: $sort5
+        limit: $limit5
+        offset: $offset5
+        page: $page5
+        search: $search5
       ) {
         id
         status
-        items(filter: $filter3, sort: $sort3, limit: $limit3, offset: $offset3, page: $page3, search: $search3) {
-          id
+        items(filter: $filter4, sort: $sort4, limit: $limit4, offset: $offset4, page: $page4, search: $search4) {
           discoverDappBanner_id(
             filter: $filter
             sort: $sort
@@ -239,40 +256,35 @@ export const DiscoverDappBanner_PortkeyCardDocument = gql`
               count
             }
           }
+          id
           portkeyCard_id(
-            filter: $filter2
-            sort: $sort2
-            limit: $limit2
-            offset: $offset2
-            page: $page2
-            search: $search2
+            filter: $filter3
+            sort: $sort3
+            limit: $limit3
+            offset: $offset3
+            page: $page3
+            search: $search3
           ) {
-            id
-            status
-            index
-            title
-            value
-            description
+            appLink
             buttonTitle
+            description
+            extensionLink
+            id
             imgUrl(filter: $filter1, sort: $sort1, limit: $limit1, offset: $offset1, page: $page1, search: $search1) {
-              id
-              storage
+              charset
+              description
+              duration
+              embed
               filename_disk
               filename_download
-              title
-              type
+              filesize
               folder
-              uploaded_by
-              uploaded_on
-              uploaded_on_func {
-                year
-                month
-                week
-                day
-                weekday
-                hour
-                minute
-                second
+              height
+              id
+              location
+              metadata
+              metadata_func {
+                count
               }
               modified_by
               modified_on
@@ -286,42 +298,53 @@ export const DiscoverDappBanner_PortkeyCardDocument = gql`
                 minute
                 second
               }
-              charset
-              filesize
-              width
-              height
-              duration
-              embed
-              description
-              location
+              storage
               tags
               tags_func {
                 count
               }
-              metadata
-              metadata_func {
-                count
+              title
+              type
+              uploaded_by
+              uploaded_on
+              uploaded_on_func {
+                year
+                month
+                week
+                day
+                weekday
+                hour
+                minute
+                second
               }
+              width
+            }
+            index
+            status
+            title
+            type(filter: $filter2, sort: $sort2, limit: $limit2, offset: $offset2, page: $page2, search: $search2) {
+              id
+              label
+              status
+              value
             }
             url
-            type
-            appLink
-            extensionLink
+            value
           }
         }
       }
-      portkeyCard_id(filter: $filter5, sort: $sort5, limit: $limit5, offset: $offset5, page: $page5, search: $search5) {
-        id
-        status
-        index
-        title
-        value
-        description
-        buttonTitle
-        url
-        type
+      id
+      portkeyCard_id(filter: $filter6, sort: $sort6, limit: $limit6, offset: $offset6, page: $page6, search: $search6) {
         appLink
+        buttonTitle
+        description
         extensionLink
+        id
+        index
+        status
+        title
+        url
+        value
       }
     }
   }
@@ -381,6 +404,12 @@ export const DiscoverDappBanner_PortkeyCardDocument = gql`
  *      offset6: // value for 'offset6'
  *      page6: // value for 'page6'
  *      search6: // value for 'search6'
+ *      filter7: // value for 'filter7'
+ *      sort7: // value for 'sort7'
+ *      limit7: // value for 'limit7'
+ *      offset7: // value for 'offset7'
+ *      page7: // value for 'page7'
+ *      search7: // value for 'search7'
  *   },
  * });
  */

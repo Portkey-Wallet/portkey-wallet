@@ -2,6 +2,8 @@ import { ChainId, ChainType } from '..';
 import { SeedTypeEnum } from './assets';
 import { GuardiansApprovedType } from './guardian';
 import type { SendType } from './send';
+import { ICollectionInfo } from './freeMint';
+import { INetworkItem } from './network';
 
 export interface IToSendHomeAssetParamsBaseType {
   symbol: string;
@@ -25,6 +27,8 @@ export interface IToSendNftParamsType extends IToSendHomeAssetParamsBaseType {
   decimals: string;
   isSeed?: boolean;
   seedType?: SeedTypeEnum;
+  collectionName?: string;
+  collectionInfo: ICollectionInfo;
 }
 
 export type IToSendAssetParamsType = IToSendTokenParamsType | IToSendNftParamsType;
@@ -38,8 +42,9 @@ export type ImTransferInfoType = {
 };
 
 export interface TToInfo {
-  address: string;
   name: string;
+  address: string;
+  network?: string;
   chainId?: ChainId;
   chainType?: ChainType;
 }
@@ -51,15 +56,25 @@ export interface IToSendHomeParamsType {
   imTransferInfo?: ImTransferInfoType;
 }
 
+export enum TransferType {
+  'GENERAL_SAME_CHAIN' = 'generalSameChain',
+  'GENERAL_CROSS_CHAIN' = 'generalCrossChain',
+  'E_BRIDGE' = 'eBridge',
+  'E_TRANSFER' = 'eTransfer',
+}
 export interface IToSendPreviewParamsType extends IToSendHomeParamsType {
-  transactionFee: string | number;
   sendNumber: string | number;
   successNavigateName?: any;
   guardiansApproved?: GuardiansApprovedType[];
   isAutoSend?: boolean;
+  transactionFee?: string | number;
+  transactionFeeUnit?: string | number;
+  networkFee?: string | number;
+  networkFeeUnit?: string | number;
   receiveAmount?: string;
   receiveAmountUsd?: string;
-  isEtransferCrossInLimit?: boolean;
   crossChainFee: number | string;
   crossChainFeeUnit?: string;
+  transferType: TransferType;
+  targetNetwork: INetworkItem;
 }

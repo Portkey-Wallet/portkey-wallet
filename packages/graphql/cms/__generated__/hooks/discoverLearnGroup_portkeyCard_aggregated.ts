@@ -23,50 +23,50 @@ export type DiscoverLearnGroup_PortkeyCard_AggregatedQuery = {
     countAll?: number | null;
     count?: {
       __typename?: 'discoverLearnGroup_portkeyCard_aggregated_count';
-      id?: number | null;
       discoverLearnGroup_id?: number | null;
+      id?: number | null;
       portkeyCard_id?: number | null;
     } | null;
     countDistinct?: {
       __typename?: 'discoverLearnGroup_portkeyCard_aggregated_count';
-      id?: number | null;
       discoverLearnGroup_id?: number | null;
+      id?: number | null;
       portkeyCard_id?: number | null;
     } | null;
     avg?: {
       __typename?: 'discoverLearnGroup_portkeyCard_aggregated_fields';
-      id?: number | null;
       discoverLearnGroup_id?: number | null;
+      id?: number | null;
       portkeyCard_id?: number | null;
     } | null;
     sum?: {
       __typename?: 'discoverLearnGroup_portkeyCard_aggregated_fields';
-      id?: number | null;
       discoverLearnGroup_id?: number | null;
+      id?: number | null;
       portkeyCard_id?: number | null;
     } | null;
     avgDistinct?: {
       __typename?: 'discoverLearnGroup_portkeyCard_aggregated_fields';
-      id?: number | null;
       discoverLearnGroup_id?: number | null;
+      id?: number | null;
       portkeyCard_id?: number | null;
     } | null;
     sumDistinct?: {
       __typename?: 'discoverLearnGroup_portkeyCard_aggregated_fields';
-      id?: number | null;
       discoverLearnGroup_id?: number | null;
+      id?: number | null;
       portkeyCard_id?: number | null;
     } | null;
     min?: {
       __typename?: 'discoverLearnGroup_portkeyCard_aggregated_fields';
-      id?: number | null;
       discoverLearnGroup_id?: number | null;
+      id?: number | null;
       portkeyCard_id?: number | null;
     } | null;
     max?: {
       __typename?: 'discoverLearnGroup_portkeyCard_aggregated_fields';
-      id?: number | null;
       discoverLearnGroup_id?: number | null;
+      id?: number | null;
       portkeyCard_id?: number | null;
     } | null;
   }>;
@@ -94,43 +94,43 @@ export const DiscoverLearnGroup_PortkeyCard_AggregatedDocument = gql`
       group
       countAll
       count {
-        id
         discoverLearnGroup_id
+        id
         portkeyCard_id
       }
       countDistinct {
-        id
         discoverLearnGroup_id
+        id
         portkeyCard_id
       }
       avg {
-        id
         discoverLearnGroup_id
+        id
         portkeyCard_id
       }
       sum {
-        id
         discoverLearnGroup_id
+        id
         portkeyCard_id
       }
       avgDistinct {
-        id
         discoverLearnGroup_id
+        id
         portkeyCard_id
       }
       sumDistinct {
-        id
         discoverLearnGroup_id
+        id
         portkeyCard_id
       }
       min {
-        id
         discoverLearnGroup_id
+        id
         portkeyCard_id
       }
       max {
-        id
         discoverLearnGroup_id
+        id
         portkeyCard_id
       }
     }

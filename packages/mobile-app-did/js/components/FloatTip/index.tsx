@@ -27,21 +27,24 @@ export const FloatTip = (props: FloatTipProps) => {
   );
   const baseTextStyle: TextStyle = {
     color: defaultColors.white,
-    fontSize: 12,
-    lineHeight: 16,
+    fontSize: 14,
+    lineHeight: 20,
     textAlign: 'center',
   };
   const textWrapStyle: ViewStyle = {
-    backgroundColor: display ? defaultColors.black : 'transparent',
+    display: display ? 'flex' : 'none',
+    backgroundColor: display ? defaultColors.bgBase3 : 'transparent',
     flexDirection: 'row',
     alignItems: 'center',
+    flexWrap: 'wrap',
     justifyContent: 'center',
-    paddingHorizontal: 8,
-    paddingVertical: 6,
-    alignSelf: 'flex-start',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    alignSelf: 'center',
     minWidth: 64,
+    maxWidth: 280,
     overflow: 'visible',
-    borderRadius: 6,
+    borderRadius: 8,
   };
   const baseArrowStyle: ViewStyle = {
     borderLeftWidth: 8,
@@ -49,7 +52,7 @@ export const FloatTip = (props: FloatTipProps) => {
     borderTopWidth: 8,
     borderLeftColor: 'transparent',
     borderRightColor: 'transparent',
-    borderTopColor: defaultColors.black,
+    borderTopColor: defaultColors.bgBase3,
   };
 
   const addOnStyle: ViewStyle = useMemo(() => {
@@ -137,6 +140,6 @@ const defaultStyle = StyleSheet.create({
   },
   arrow: {
     zIndex: 999,
-    borderTopColor: defaultColors.black,
+    borderTopColor: defaultColors.bgBase3,
   },
 });

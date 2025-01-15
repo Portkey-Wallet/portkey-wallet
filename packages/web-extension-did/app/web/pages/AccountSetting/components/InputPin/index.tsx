@@ -13,7 +13,7 @@ export interface IInputPinProps {
 }
 export default function InputPin({ label, value, placeholder, onChange, errMsg, className }: IInputPinProps) {
   return (
-    <div className={clsx(['input-pin', className])}>
+    <div className={clsx(['input-pin', !!errMsg && 'input-pin-error', className])}>
       <div className="label">{label}</div>
       <CustomPassword value={value} placeholder={placeholder} onChange={onChange} />
       <div className="error-msg">{errMsg}</div>

@@ -5,40 +5,44 @@ import {
   setUserGuardianItemStatus,
 } from '@portkey-wallet/store/store-ca/guardians/actions';
 import { Input, Button } from 'antd';
-import CustomSvg from 'components/CustomSvg';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useAppDispatch, useGuardiansInfo, useLoading, useWalletInfo } from 'store/Provider/hooks';
+import { useAppDispatch, useGuardiansInfo, useWalletInfo } from 'store/Provider/hooks';
 import { EmailReg } from '@portkey-wallet/utils/reg';
-import { ISocialLogin, LoginType } from '@portkey-wallet/types/types-ca/wallet';
+import { ISocialLogin, LoginType, isZKLoginSupported } from '@portkey-wallet/types/types-ca/wallet';
 import CustomSelect from 'pages/components/CustomSelect';
 import useGuardianList from 'hooks/useGuardianList';
 import { setLoginAccountAction } from 'store/reducers/loginCache/actions';
-import { useCurrentWallet, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import {
+  useCurrentWallet,
+  useCurrentWalletInfo,
+  useOriginChainId,
+  useVerifyManagerAddress,
+} from '@portkey-wallet/hooks/hooks-ca/wallet';
 import BaseVerifierIcon from 'components/BaseVerifierIcon';
-import { StoreUserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
+import { IZKAuth, StoreUserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 import { useTranslation } from 'react-i18next';
 import { verification } from 'utils/api';
 import PhoneInput from '../components/PhoneInput';
 import { EmailError } from '@portkey-wallet/utils/check';
-import { guardianTypeList, phoneInit, socialInit } from 'constants/guardians';
-import { IGuardianType, IPhoneInput, ISocialInput } from 'types/guardians';
+import { guardianTypeListV3, phoneInit, socialInit, zkloginGuardianType } from 'constants/guardians';
+import { IGuardianTypeV3, IPhoneInput, ISocialInput } from 'types/guardians';
 import { socialLoginAction } from 'utils/lib/serviceWorkerAction';
 import {
   getGoogleUserInfo,
   parseAppleIdentityToken,
   parseFacebookToken,
+  parseKidFromJWTToken,
   parseTelegramToken,
   parseTwitterToken,
 } from '@portkey-wallet/utils/authentication';
 import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { request } from '@portkey-wallet/api/api-did';
-import { handleErrorMessage } from '@portkey-wallet/utils';
+import { handleErrorMessage, randomId } from '@portkey-wallet/utils';
 import { handleVerificationDoc } from '@portkey-wallet/utils/guardian';
-import { OperationTypeEnum, VerifyStatus } from '@portkey-wallet/types/verifier';
+import { OperationTypeEnum, VerifyStatus, zkLoginVerifierItem } from '@portkey-wallet/types/verifier';
 import verificationApiConfig from '@portkey-wallet/api/api-did/verification';
-import GuardianAddPrompt from './Prompt';
 import GuardianAddPopup from './Popup';
-import CustomModal from '../../components/CustomModal';
+import { CustomModalBottom } from '../../components/CustomModalBottom';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { useCommonState } from 'store/Provider/hooks';
 import clsx from 'clsx';
@@ -57,11 +61,17 @@ import {
 import BaseGuardianTypeIcon from 'components/BaseGuardianTypeIcon';
 import { useLoginModeList } from 'hooks/loginModal';
 import { LOGIN_TYPE_LABEL_MAP } from '@portkey-wallet/constants/verifier';
+import { VerifyTypeEnum } from 'types/wallet';
 import './index.less';
+import { useVerifyZKLogin } from 'hooks/authentication';
+import { getOperationDetails } from '@portkey-wallet/utils/operation.util';
+import { HelpIcon } from '../components/HelpIcon';
+import { CustomSvgV3 } from '../../../components/CustomSvgV3';
 
 export default function AddGuardian() {
   const navigate = useNavigateState<TVerifierAccountLocationState | TGuardianApprovalLocationState>();
   const { t } = useTranslation();
+  const { caHash } = useCurrentWalletInfo();
   const { locationParams } = usePromptLocationParams<TAddGuardianLocationState, TAddGuardianLocationSearch>();
   const { verifierMap, userGuardiansList, opGuardian } = useGuardiansInfo();
   const verifierStatusMap = useMemo(
@@ -81,10 +91,11 @@ export default function AddGuardian() {
   const [curKey, setCurKey] = useState<string>('');
   const [accountShow, setAccountShow] = useState<string>('');
   const dispatch = useAppDispatch();
-  const { setLoading } = useLoading();
+  // const { setLoading } = useLoading();
+  const [loading, setLoading] = useState(false);
   const { walletInfo } = useCurrentWallet();
   const userGuardianList = useGuardianList();
-  const { isNotLessThan768 } = useCommonState();
+  const { isPrompt } = useCommonState();
   const originChainId = useOriginChainId();
   const currentChain = useCurrentChain(originChainId);
   const { currentNetwork } = useWalletInfo();
@@ -92,12 +103,15 @@ export default function AddGuardian() {
     () => locationParams?.accelerateChainId || originChainId,
     [locationParams?.accelerateChainId, originChainId],
   );
+  const verifyZKLogin = useVerifyZKLogin();
+  const [zkAuth, setZKAuth] = useState<IZKAuth>({});
   const loginModeList = useLoginModeList();
   const selectGuardianList = useMemo(() => {
     return loginModeList
-      ?.map((i) => guardianTypeList.find((v) => LOGIN_TYPE_LABEL_MAP[v.value] === i.type?.value))
-      .filter((i) => !!i) as IGuardianType[];
+      ?.map((i) => guardianTypeListV3.find((v) => LOGIN_TYPE_LABEL_MAP[v.value] === i.type?.value))
+      .filter((i) => !!i) as IGuardianTypeV3[];
   }, [loginModeList]);
+  const verifyManagerAddress = useVerifyManagerAddress();
 
   const disabled = useMemo(() => {
     let check = true;
@@ -140,7 +154,7 @@ export default function AddGuardian() {
   const verifierOptions = useMemo(
     () =>
       Object.values(verifierStatusMap ?? {})?.map((item) => ({
-        value: item.id,
+        value: item.id || item.name,
         children: (
           <div className={clsx(['flex', 'select-option', item.isUsed && 'no-use'])}>
             <BaseVerifierIcon fallback={item.name[0]} src={item.imageUrl} />
@@ -152,9 +166,13 @@ export default function AddGuardian() {
     [verifierStatusMap],
   );
 
+  const defaultSelectVerify = useMemo(() => {
+    return Object.values(verifierStatusMap ?? {}).find((item) => !item.isUsed);
+  }, [verifierStatusMap]);
+
   const guardianTypeOptions = useMemo(
     () =>
-      (selectGuardianList.length ? selectGuardianList : guardianTypeList)?.map((item) => ({
+      (selectGuardianList.length ? selectGuardianList : guardianTypeListV3)?.map((item) => ({
         value: item.value,
         children: (
           <div className="flex select-option">
@@ -198,9 +216,15 @@ export default function AddGuardian() {
 
   useEffectOnce(() => {
     if (locationParams?.previousPage && opGuardian) {
+      setZKAuth(opGuardian.zkAuth || {});
       setGuardianType(opGuardian.guardianType);
-      setVerifierVal(opGuardian.verifier?.id);
-      setVerifierName(opGuardian.verifier?.name);
+      if (isZKLoginSupported(opGuardian.guardianType)) {
+        setVerifierVal(zkLoginVerifierItem.name);
+        setVerifierName(zkLoginVerifierItem.name);
+      } else {
+        setVerifierVal(opGuardian.verifier?.id);
+        setVerifierName(opGuardian.verifier?.name);
+      }
 
       switch (opGuardian.guardianType) {
         case LoginType.Email:
@@ -220,22 +244,39 @@ export default function AddGuardian() {
     }
   });
 
-  const guardianTypeChange = useCallback((value: LoginType) => {
-    setVerifierExist(false);
-    setGuardianType(value);
-    setEmailVal('');
-    setPhoneValue(phoneInit);
-    setSocialVale(socialInit);
-    setAccountErr('');
-  }, []);
-
   const verifierChange = useCallback(
     (value: string) => {
-      setVerifierVal(value);
-      setVerifierName(verifierMap?.[value]?.name);
+      if (!value) {
+        setVerifierVal(undefined);
+        setVerifierName(undefined);
+      } else {
+        setVerifierVal(value);
+        setVerifierName(verifierStatusMap?.[value]?.name);
+      }
       setVerifierExist(false);
     },
-    [verifierMap],
+    [verifierStatusMap],
+  );
+
+  const guardianTypeChange = useCallback(
+    (value: LoginType) => {
+      setVerifierExist(false);
+      setGuardianType(value);
+      setEmailVal('');
+      setPhoneValue(phoneInit);
+      setSocialVale(socialInit);
+      setZKAuth({});
+      setAccountErr('');
+
+      if (isZKLoginSupported(value)) {
+        verifierChange(zkLoginVerifierItem.name);
+      } else {
+        if (verifierVal === zkLoginVerifierItem.name) {
+          verifierChange('');
+        }
+      }
+    },
+    [verifierChange, verifierVal],
   );
 
   const handleEmailInputChange = useCallback((v: string) => {
@@ -252,13 +293,18 @@ export default function AddGuardian() {
     async (v: ISocialLogin) => {
       try {
         setLoading(true);
-        const result = await socialLoginAction(v, currentNetwork);
+        const _verifyType = zkloginGuardianType.includes(v) ? VerifyTypeEnum.zklogin : undefined;
+        const _verifyExtraParams = zkloginGuardianType.includes(v)
+          ? { managerAddress: verifyManagerAddress ?? '' }
+          : undefined;
+        const result = await socialLoginAction(v, currentNetwork, _verifyType, _verifyExtraParams);
         const data = result.data;
         if (!data) throw 'auth error';
         if (v === 'Google') {
           const userInfo = await getGoogleUserInfo(data?.access_token);
           const { firstName, email, id } = userInfo;
           setSocialVale({ name: firstName, value: email, id, accessToken: data?.access_token });
+          setZKAuth(data);
         } else if (v === 'Apple') {
           const userInfo = parseAppleIdentityToken(data?.access_token);
           if (userInfo) {
@@ -275,6 +321,7 @@ export default function AddGuardian() {
               isPrivate: isPrivate,
             });
           }
+          setZKAuth(data);
         } else if (v === 'Telegram') {
           const userInfo = parseTelegramToken(data?.access_token);
           if (!userInfo) throw 'Telegram auth error';
@@ -319,11 +366,12 @@ export default function AddGuardian() {
       }
       setLoading(false);
     },
-    [currentNetwork, setLoading],
+    [currentNetwork, setLoading, verifyManagerAddress],
   );
 
   const handleClearSocialAccount = useCallback(() => {
     setSocialVale(socialInit);
+    setZKAuth({});
     setAccountErr('');
   }, []);
 
@@ -334,7 +382,7 @@ export default function AddGuardian() {
           <div className="flex-column social-input detail">
             <span className="name">{socialValue.name}</span>
             <span className="email">{socialValue.isPrivate ? '******' : socialValue.value}</span>
-            <CustomSvg type="Close4" onClick={handleClearSocialAccount} />
+            <CustomSvgV3 type="close-circle" onClick={handleClearSocialAccount} />
           </div>
         ) : (
           <div className="flex social-input click" onClick={() => handleSocialAuth(v)}>
@@ -411,7 +459,11 @@ export default function AddGuardian() {
         setLoading(true);
         dispatch(resetUserGuardianStatus());
         await userGuardianList({ caHash: walletInfo.caHash });
-
+        const operationDetails = getOperationDetails(OperationTypeEnum.addGuardian, {
+          identifierHash: '',
+          guardianType: LoginType[guardianType as LoginType],
+          verifierId: selectVerifierItem?.id || '',
+        });
         const result = await verification.sendVerificationCode({
           params: {
             guardianIdentifier: guardianAccount,
@@ -419,6 +471,7 @@ export default function AddGuardian() {
             verifierId: selectVerifierItem?.id || '',
             chainId: currentChain?.chainId || originChainId,
             operationType: OperationTypeEnum.addGuardian,
+            operationDetails,
           },
         });
         setLoading(false);
@@ -445,6 +498,7 @@ export default function AddGuardian() {
             state: {
               previousPage: FromPageEnum.guardiansAdd,
               accelerateChainId: accelerateChainId,
+              operationDetails,
             },
           });
         }
@@ -483,9 +537,11 @@ export default function AddGuardian() {
           loginType: walletInfo.managerInfo?.type || LoginType.Email,
         }),
       );
+      const isUseZK = guardianType && zkAuth && isZKLoginSupported(guardianType);
+      const _verifier = isUseZK ? defaultSelectVerify : selectVerifierItem;
       const newGuardian: StoreUserGuardianItem = {
         isLoginAccount: false,
-        verifier: selectVerifierItem,
+        verifier: _verifier,
         guardianAccount: socialValue?.id || '',
         guardianType: guardianType as LoginType,
         firstName: socialValue?.name,
@@ -496,51 +552,92 @@ export default function AddGuardian() {
         salt: '',
         phone: phoneValue,
         social: socialValue,
+        zkAuth,
+        type: '',
       };
       dispatch(setCurrentGuardianAction(newGuardian));
       dispatch(setOpGuardianAction(newGuardian));
-      const params = {
-        verifierId: verifierVal,
-        chainId: currentChain?.chainId || originChainId,
-        accessToken: socialValue?.accessToken,
-        operationType: OperationTypeEnum.addGuardian,
-      };
-      let res;
-      if (guardianType === LoginType.Apple) {
-        res = await request.verify.verifyAppleToken({
-          params,
-        });
-      } else if (guardianType === LoginType.Google) {
-        res = await request.verify.verifyGoogleToken({
-          params,
-        });
-      } else if (guardianType === LoginType.Telegram) {
-        res = await request.verify.verifyTelegramToken({
-          params,
-        });
-      } else if (guardianType === LoginType.Twitter) {
-        res = await request.verify.verifyTwitterToken({
-          params,
-        });
-      } else if (guardianType === LoginType.Facebook) {
-        res = await request.verify.verifyFacebookToken({
-          params,
-        });
-      }
-      const { guardianIdentifier } = handleVerificationDoc(res.verificationDoc);
-      dispatch(
-        setUserGuardianItemStatus({
-          key: curKey,
-          status: VerifyStatus.Verified,
-          signature: res.signature,
-          verificationDoc: res.verificationDoc,
-          identifierHash: guardianIdentifier,
+
+      const _operationDetails = JSON.parse(
+        getOperationDetails(OperationTypeEnum.addGuardian, {
+          identifierHash: '',
+          guardianType: LoginType[guardianType as LoginType],
+          verifierId: selectVerifierItem?.id || '',
         }),
       );
+      const operationDetails = JSON.stringify({ ..._operationDetails, caHash });
+      if (isUseZK) {
+        const rst = await verifyZKLogin({
+          verifyToken: {
+            type: LoginType[guardianType],
+            accessToken: zkAuth.access_token,
+            verifierId: defaultSelectVerify?.id,
+            chainId: currentChain?.chainId || originChainId,
+            operationType: OperationTypeEnum.addGuardian,
+            operationDetails,
+          },
+          jwt: zkAuth.id_token,
+          salt: randomId(),
+          kid: parseKidFromJWTToken(zkAuth.id_token!),
+          nonce: zkAuth.nonce,
+          timestamp: zkAuth.timestamp ?? 0,
+          managerAddress: verifyManagerAddress ?? '',
+        });
+        const guardianIdentifier = rst.zkLoginInfo.identifierHash;
+        dispatch(
+          setUserGuardianItemStatus({
+            key: curKey,
+            status: VerifyStatus.Verified,
+            identifierHash: guardianIdentifier,
+            zkLoginInfo: rst.zkLoginInfo,
+          }),
+        );
+      } else {
+        const params = {
+          verifierId: verifierVal,
+          chainId: currentChain?.chainId || originChainId,
+          accessToken: socialValue?.accessToken,
+          operationType: OperationTypeEnum.addGuardian,
+          operationDetails,
+        };
+        let res;
+        if (guardianType === LoginType.Apple) {
+          res = await request.verify.verifyAppleToken({
+            params,
+          });
+        } else if (guardianType === LoginType.Google) {
+          res = await request.verify.verifyGoogleToken({
+            params,
+          });
+        } else if (guardianType === LoginType.Telegram) {
+          res = await request.verify.verifyTelegramToken({
+            params,
+          });
+        } else if (guardianType === LoginType.Twitter) {
+          res = await request.verify.verifyTwitterToken({
+            params,
+          });
+        } else if (guardianType === LoginType.Facebook) {
+          res = await request.verify.verifyFacebookToken({
+            params,
+          });
+        }
+        const { guardianIdentifier } = handleVerificationDoc(res.verificationDoc);
+        dispatch(
+          setUserGuardianItemStatus({
+            key: curKey,
+            status: VerifyStatus.Verified,
+            signature: res.signature,
+            verificationDoc: res.verificationDoc,
+            identifierHash: guardianIdentifier,
+          }),
+        );
+      }
       navigate('/setting/guardians/guardian-approval', {
         state: {
           previousPage: FromPageEnum.guardiansAdd,
           accelerateChainId,
+          operationDetails,
         },
       });
     } catch (error) {
@@ -550,20 +647,27 @@ export default function AddGuardian() {
       setLoading(false);
     }
   }, [
-    originChainId,
-    curKey,
-    currentChain,
-    dispatch,
-    guardianType,
-    navigate,
-    phoneValue,
-    selectVerifierItem,
     setLoading,
-    socialValue,
+    dispatch,
     userGuardianList,
-    verifierVal,
-    walletInfo,
+    walletInfo.caHash,
+    walletInfo.managerInfo?.loginAccount,
+    walletInfo.managerInfo?.type,
+    guardianType,
+    zkAuth,
+    defaultSelectVerify,
+    selectVerifierItem,
+    socialValue,
+    curKey,
+    phoneValue,
+    navigate,
     accelerateChainId,
+    verifyZKLogin,
+    currentChain?.chainId,
+    originChainId,
+    verifyManagerAddress,
+    verifierVal,
+    caHash,
   ]);
 
   const handleVerify = useCallback(async () => {
@@ -605,6 +709,8 @@ export default function AddGuardian() {
   }, [emailVal, guardianType, phoneValue?.code, phoneValue?.phoneNumber, socialValue?.id, userGuardiansList]);
 
   const handleCheck = useCallback(async () => {
+    if (guardianType === undefined) return;
+
     // 1、check email
     if (guardianType === LoginType.Email) {
       if (!EmailReg.test(emailVal as string)) {
@@ -612,30 +718,35 @@ export default function AddGuardian() {
         return;
       }
     }
-    // 2、check verifier
-    if (!selectVerifierItem) return singleMessage.error('Can not get the current verifier message');
 
-    // 3、check account is exist
+    // 2、check account is exist
     if (checkAccountIsExist()) {
       setAccountErr(guardianExistTip);
       return;
     }
-    // 4、check verifier is exist
-    try {
-      setLoading(true);
-      await userGuardianList({ caHash: walletInfo.caHash });
-      setLoading(false);
-    } catch (error) {
-      console.log('===guardian add userGuardianList error', error);
-      setLoading(false);
+
+    const isUseZK = isZKLoginSupported(guardianType);
+    if (!isUseZK) {
+      // 3、check verifier
+      if (!selectVerifierItem) return singleMessage.error('Can not get the current verifier message');
+
+      // 4、check verifier is exist
+      try {
+        setLoading(true);
+        await userGuardianList({ caHash: walletInfo.caHash });
+        setLoading(false);
+      } catch (error) {
+        console.log('===guardian add userGuardianList error', error);
+        setLoading(false);
+      }
+      const { verifierMap, userGuardiansList } = guardiansSaveRef.current;
+      const _verifierStatusMap = getVerifierStatusMap(verifierMap, userGuardiansList);
+      const _verifierIsExist = Object.values(_verifierStatusMap).some(
+        (verifier) => verifier.id === selectVerifierItem.id && verifier.isUsed,
+      );
+      setVerifierExist(_verifierIsExist);
+      if (_verifierIsExist) return;
     }
-    const { verifierMap, userGuardiansList } = guardiansSaveRef.current;
-    const _verifierStatusMap = getVerifierStatusMap(verifierMap, userGuardiansList);
-    const _verifierIsExist = Object.values(_verifierStatusMap).some(
-      (verifier) => verifier.id === selectVerifierItem.id && verifier.isUsed,
-    );
-    setVerifierExist(_verifierIsExist);
-    if (_verifierIsExist) return;
 
     if (
       [LoginType.Google, LoginType.Apple, LoginType.Telegram, LoginType.Twitter, LoginType.Facebook].includes(
@@ -644,7 +755,8 @@ export default function AddGuardian() {
     ) {
       handleSocialVerify();
     } else {
-      CustomModal({
+      CustomModalBottom({
+        isPrompt,
         type: 'confirm',
         content: (
           <p>
@@ -659,20 +771,29 @@ export default function AddGuardian() {
     }
   }, [
     guardianType,
-    selectVerifierItem,
     checkAccountIsExist,
     emailVal,
-    setLoading,
+    selectVerifierItem,
     userGuardianList,
     walletInfo.caHash,
     handleSocialVerify,
+    isPrompt,
     verifierName,
     accountShow,
     isPhoneType,
     handleVerify,
   ]);
 
-  const headerTitle = useMemo(() => 'Add Guardians', []);
+  const [noAvailableVerifier, setNoAvailableVerifier] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (verifierOptions.length === 0 || verifierOptions.every((item) => item.disabled)) {
+      setNoAvailableVerifier(true);
+    } else {
+      setNoAvailableVerifier(false);
+    }
+  }, [verifierOptions]);
+
   const renderContent = useMemo(
     () => (
       <div className="add-guardian-body flex-column-between flex-1">
@@ -680,11 +801,12 @@ export default function AddGuardian() {
           <div className="input-item">
             <p className="label">{t('Guardian Type')}</p>
             <CustomSelect
-              className="select"
+              className="select select-network guardian-type-select"
               value={guardianType}
               placeholder={t('Select guardian types')}
               onChange={guardianTypeChange}
               items={guardianTypeOptions}
+              title={t('Select guardian type')}
             />
           </div>
           {guardianType !== undefined && (
@@ -695,20 +817,30 @@ export default function AddGuardian() {
             </div>
           )}
           <div className="input-item">
-            <p className="label">{t('Verifier')}</p>
+            <div className="label verifier-label flex-row-center">
+              {t('Verifier')}
+              <HelpIcon />
+            </div>
             <CustomSelect
-              className="select"
+              className={clsx(
+                'select',
+                'select-network',
+                verifierVal === zkLoginVerifierItem.name && 'select-zklogin-verify',
+              )}
+              disabled={verifierVal === zkLoginVerifierItem.name || noAvailableVerifier}
               value={verifierVal}
-              placeholder={t('Select guardian verifiers')}
+              placeholder={noAvailableVerifier ? t('No available verifier') : t('Select guardian verifier')}
               onChange={verifierChange}
               items={verifierOptions}
               customChild={OptionTip()}
+              title={t('Select verifier')}
             />
             {verifierExist && <div className="error">{verifierExistTip}</div>}
+            {noAvailableVerifier && <div className="error">All applicable verifiers have already been used.</div>}
           </div>
         </div>
         <div className="btn-wrap">
-          <Button type="primary" onClick={handleCheck} disabled={disabled}>
+          <Button type="primary" onClick={handleCheck} disabled={loading ? false : disabled} loading={loading}>
             {t('Confirm')}
           </Button>
         </div>
@@ -721,6 +853,8 @@ export default function AddGuardian() {
       guardianTypeChange,
       guardianTypeOptions,
       handleCheck,
+      loading,
+      noAvailableVerifier,
       renderGuardianAccount,
       t,
       verifierChange,
@@ -729,10 +863,5 @@ export default function AddGuardian() {
       verifierVal,
     ],
   );
-  const props = useMemo(
-    () => ({ headerTitle, renderContent, onBack: handleBack }),
-    [handleBack, headerTitle, renderContent],
-  );
-
-  return isNotLessThan768 ? <GuardianAddPrompt {...props} /> : <GuardianAddPopup {...props} />;
+  return <GuardianAddPopup headerTitle={'Add Guardians'} onBack={handleBack} renderContent={renderContent} />;
 }

@@ -4,9 +4,10 @@ import Carousel from 'rn-teaset/components/Carousel/Carousel';
 import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
-import { useDiscoverJumpWithNetWork } from 'hooks/discover';
 import PortkeySkeleton from 'components/PortkeySkeleton';
 import Svg from 'components/Svg';
+import { TAppLink } from '@portkey-wallet/types/types-ca/cms';
+import useJump from 'hooks/useJump';
 
 const DEFAULT_CAROUSEL_IMAGE_RATIO = 375.0 / 125.0;
 
@@ -14,7 +15,8 @@ type DotStyle = 'Light' | 'Dark';
 
 export interface CarouselItemProps {
   imgUrl: string;
-  url: string;
+  // url: string;
+  appLink: TAppLink;
 }
 
 export interface CarouselProps {
@@ -38,7 +40,7 @@ const CarouselComponent: React.FC<CarouselProps> = ({
   showDivider = false,
   dotStyle = 'Dark',
 }) => {
-  const jumpToWebview = useDiscoverJumpWithNetWork();
+  const jump = useJump();
   const [showSkeleton, setShowSkeleton] = useState(true);
 
   const onPress =
@@ -47,12 +49,7 @@ const CarouselComponent: React.FC<CarouselProps> = ({
       if (onClick) {
         onClick({ index, item });
       } else {
-        jumpToWebview({
-          item: {
-            name: item.url,
-            url: item.url,
-          },
-        });
+        jump(item.appLink);
       }
     };
 

@@ -67,7 +67,7 @@ export const getPortkeyFinanceUrl = (currentNetwork: NetworkType) => {
 
   return {
     JOIN_AUTH_URL: `${host}/join`,
-    JOIN_TELEGRAM_URL: `${webPageUrl}/social-login/Telegram?from=portkey&network=${networkType}`,
+    JOIN_TELEGRAM_URL: `${webPageUrl}/social-login/Telegram?from=portkey&network=${networkType}&theme=dark`,
     AUTH_APPLE_URL: `${host}/apple-auth`,
     RECAPTCHA_URL: `${host}/recaptcha-check`,
     OPEN_LOGIN_URL: webPageUrl,
@@ -82,4 +82,28 @@ export const getImageUrlBySymbol = (symbol: string | undefined) => {
     return 'https://raw.githubusercontent.com/Awaken-Finance/assets/main/blockchains/AELF/assets/SGR-1/logo24%403x.png';
   }
   return '';
+};
+
+export const timeAgo = (timestampInSeconds: number) => {
+  const now = Math.floor(Date.now() / 1000);
+  const diffInSeconds = now - timestampInSeconds;
+
+  if (diffInSeconds < 60) {
+    return '< 1 minute ago';
+  } else if (diffInSeconds < 120) {
+    return '1 minute ago';
+  } else if (diffInSeconds < 3600) {
+    const minutes = Math.floor(diffInSeconds / 60);
+    return `${minutes} minutes ago`;
+  } else if (diffInSeconds < 7200) {
+    return '1 hour ago';
+  } else if (diffInSeconds < 86400) {
+    const hours = Math.floor(diffInSeconds / 3600);
+    return `${hours} hours ago`;
+  } else if (diffInSeconds < 172800) {
+    return '1 day ago';
+  } else {
+    const days = Math.floor(diffInSeconds / 86400);
+    return `${days} days ago`;
+  }
 };

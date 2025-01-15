@@ -11,8 +11,8 @@ import HeaderCard from '../components/HeaderCard';
 import { View } from 'react-native';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import GStyles from 'assets/theme/GStyles';
-import { TextM } from 'components/CommonText';
-import { BGStyles, FontStyles } from 'assets/theme/styles';
+import { TextL, TextM } from 'components/CommonText';
+import { BGStyles } from 'assets/theme/styles';
 import ReceiverItem from '../components/ReceiverItem';
 import { useGetCryptoGiftDetail } from '@portkey-wallet/hooks/hooks-ca/cryptogift';
 import { RedPackageGrabInfoItem } from '@portkey-wallet/im';
@@ -25,8 +25,11 @@ import Loading from 'components/Loading';
 import CommonToast from 'components/CommonToast';
 import { isValidUserId } from '@portkey-wallet/utils';
 import { isIOS } from '@rneui/base';
+import { makeStyles } from '@rneui/themed';
+import fonts from 'assets/theme/fonts';
 
 export default function GiftDetail() {
+  const styles = getStyles();
   const { t } = useLanguage();
   const { id } = useRouterParams<{ id: string }>();
   const { info, list, next, init } = useGetCryptoGiftDetail(id);
@@ -59,8 +62,8 @@ export default function GiftDetail() {
     [info?.alias, info?.decimal, info?.label, info?.luckKingId, info?.symbol],
   );
   const renderDivider = useCallback(() => {
-    return <Divider style={styles.divider} />;
-  }, []);
+    return <Divider style={[styles.divider, GStyles.marginTop(48)]} />;
+  }, [styles.divider]);
   const nextList = useCallback(() => {
     next();
   }, [next]);
@@ -72,7 +75,7 @@ export default function GiftDetail() {
       info?.status === CryptoGiftOriginalStatus.Claimed
     ) {
       return t(
-        `Active, with ${info?.grabbed || '0'}/${info?.count || '--'} crypto gift(s) opened and ${
+        `${info?.grabbed || '0'}/${info?.count || '--'} crypto gift(s) opened, with a total of ${
           info?.grabbedAmount ? formatTokenAmountShowWithDecimals(info?.grabbedAmount, info?.decimal) : '--'
         }/${info?.totalAmount ? formatTokenAmountShowWithDecimals(info?.totalAmount, info?.decimal) : '--'} ${
           info?.label || info?.alias || info?.symbol || ''
@@ -80,14 +83,14 @@ export default function GiftDetail() {
       );
     } else if (info?.status === CryptoGiftOriginalStatus.FullyClaimed) {
       return t(
-        `All claimed, with ${info?.grabbed || '0'}/${info?.count || '--'} crypto gift(s) opened and ${
+        `${info?.grabbed || '0'}/${info?.count || '--'} crypto gift(s) opened, with a total of ${
           info?.grabbedAmount ? formatTokenAmountShowWithDecimals(info?.grabbedAmount, info?.decimal) : '--'
         }/${info?.totalAmount ? formatTokenAmountShowWithDecimals(info?.totalAmount, info?.decimal) : '--'} ${
           info?.label || info?.alias || info?.symbol || ''
         } claimed.`,
       );
     }
-    return `Expired, with ${info?.grabbed || '0'}/${info?.count || '--'} crypto gift(s) opened and ${
+    return `${info?.grabbed || '0'}/${info?.count || '--'} crypto gift(s) opened, with a total of ${
       info?.grabbedAmount ? formatTokenAmountShowWithDecimals(info?.grabbedAmount, info?.decimal) : '--'
     }/${info?.totalAmount ? formatTokenAmountShowWithDecimals(info?.totalAmount, info?.decimal) : '--'} ${
       info?.label || info?.alias || info?.symbol || ''
@@ -121,25 +124,35 @@ export default function GiftDetail() {
       rightDom={
         info?.status && info?.status <= CryptoGiftOriginalStatus.Claimed ? (
           <Touchable onPress={onSharePress}>
-            <Svg size={pTd(22)} icon="share-gift" iconStyle={styles.iconMargin} />
+            <Svg size={pTd(24)} icon="share-thin" iconStyle={styles.iconMargin} />
           </Touchable>
         ) : null
       }
       containerStyles={styles.pageStyles}
-      safeAreaColor={['white']}>
+      safeAreaColor={['black']}>
       <FlatList
         ListHeaderComponent={() => (
           <>
             <HeaderCard memo={info?.memo} />
             {renderDivider()}
-            <TextM style={[FontStyles.neutralTertiaryText, GStyles.marginTop(pTd(16)), GStyles.paddingArg(0, pTd(12))]}>
+            <TextL style={[GStyles.marginTop(pTd(16)), GStyles.paddingArg(0, 16), fonts.SGMediumFont]}>
+              {info?.displayStatus}
+            </TextL>
+            <TextM
+              style={[
+                styles.subTitle,
+                GStyles.marginTop(pTd(7)),
+                GStyles.paddingArg(0, 16),
+                fonts.SGRegularFont,
+                GStyles.lineHeight(20),
+              ]}>
               {statusTextShow}
             </TextM>
             <View
               style={[
                 GStyles.paddingArg(0, pTd(16)),
                 BGStyles.neutralDivider,
-                GStyles.height(pTd(0.5)),
+                styles.divider,
                 GStyles.marginTop(pTd(8)),
               ]}
             />
@@ -155,15 +168,15 @@ export default function GiftDetail() {
     </PageContainer>
   );
 }
-const styles = StyleSheet.create({
+const getStyles = makeStyles(theme => ({
   pageStyles: {
-    backgroundColor: defaultColors.neutralDefaultBG,
+    backgroundColor: theme.colors.bgBase1,
     flex: 1,
     paddingHorizontal: 0,
   },
   container: {
     position: 'relative',
-    backgroundColor: defaultColors.bg1,
+    backgroundColor: theme.colors.bgBase1,
     flex: 1,
     ...GStyles.paddingArg(0),
   },
@@ -182,9 +195,8 @@ const styles = StyleSheet.create({
     ...GStyles.paddingArg(0, pTd(16)),
   },
   divider: {
-    height: pTd(8),
-    backgroundColor: defaultColors.neutralContainerBG,
-    marginTop: pTd(32),
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: theme.colors.bgBase3,
   },
   itemContainer: {
     flexDirection: 'row',
@@ -202,4 +214,7 @@ const styles = StyleSheet.create({
     color: defaultColors.font3,
     textAlign: 'center',
   },
-});
+  subTitle: {
+    color: theme.colors.textBase2,
+  },
+}));

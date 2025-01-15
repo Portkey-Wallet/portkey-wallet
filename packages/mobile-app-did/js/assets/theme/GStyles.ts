@@ -1,5 +1,5 @@
 import { pTd } from 'utils/unit';
-import { StyleSheet } from 'react-native';
+import { DimensionValue, StyleSheet } from 'react-native';
 
 export default {
   pwTip: {
@@ -39,6 +39,9 @@ export default {
   },
   alignEnd: {
     alignSelf: 'flex-end',
+  },
+  alignStart: {
+    alignSelf: 'flex-start',
   },
   flexCenter: {
     justifyContent: 'center',
@@ -197,10 +200,10 @@ export default {
   flex: function (n: number) {
     return { flex: n };
   },
-  width: function (n: number | string) {
+  width: function (n: DimensionValue) {
     return { width: n };
   },
-  height: function (n: number | string) {
+  height: function (n: DimensionValue) {
     return { height: n };
   },
   fontSize: function (n: number) {

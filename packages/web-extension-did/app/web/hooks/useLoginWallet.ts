@@ -2,16 +2,16 @@ import { useCallback, useEffect, useRef } from 'react';
 import AElf from 'aelf-sdk';
 import { CreatePendingInfo, AddManagerType, did, OnErrorFunc } from '@portkey/did-ui-react';
 import { LoginResult, RegisterResult } from '@portkey/did';
-import type { AccountType, GuardiansApproved, RegisterStatusResult, RecoverStatusResult } from '@portkey/services';
+import type { AccountType, RegisterStatusResult, RecoverStatusResult, RegisterParams } from '@portkey/services';
 import { ChainId } from '@portkey-wallet/types';
 import { handleErrorMessage, randomId } from '@portkey-wallet/utils';
 import { extraDataEncode } from '@portkey-wallet/utils/device';
 import { getDeviceInfo } from 'utils/device';
 import { DEVICE_TYPE } from 'constants/index';
-import { useLoading } from 'store/Provider/hooks';
 import singleMessage from 'utils/singleMessage';
 import { CurrentWalletType, useCurrentWallet, useTmpWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useLatestRef } from '@portkey-wallet/hooks';
+import { GuardiansApprovedWithZK } from '@portkey-wallet/api/api-did/utils/wallet';
 
 type onCreatePendingType = (pendingInfo: CreatePendingInfo) => void;
 
@@ -21,7 +21,7 @@ interface CreateWalletParams {
   chainId: ChainId;
   accountType: AccountType;
   guardianIdentifier: string;
-  guardianApprovedList: GuardiansApproved[];
+  guardianApprovedList: GuardiansApprovedWithZK[];
 }
 
 export interface ILoginWalletProps {
@@ -31,7 +31,6 @@ export interface ILoginWalletProps {
 
 export default function useLoginWallet(props: ILoginWalletProps) {
   const { onCreatePending, onError } = props;
-  const { setLoading } = useLoading();
   const { walletInfo } = useCurrentWallet();
   const storeTmpWalletInfo = useTmpWalletInfo();
   const latestStoreTmpWalletInfo = useLatestRef(storeTmpWalletInfo);
@@ -110,6 +109,7 @@ export default function useLoginWallet(props: ILoginWalletProps) {
         verifierId: registerVerifier.verifierId,
         verificationDoc: registerVerifier.verificationDoc,
         signature: registerVerifier.signature,
+        zkLoginInfo: registerVerifier.zkLoginInfo,
         context: {
           clientId,
           requestId,
@@ -119,7 +119,7 @@ export default function useLoginWallet(props: ILoginWalletProps) {
       const { sessionId } = await did.services.register({
         ...params,
         manager: managerAddress,
-      });
+      } as RegisterParams);
       onCreatePendingRef.current?.({
         sessionId,
         requestId,
@@ -157,7 +157,7 @@ export default function useLoginWallet(props: ILoginWalletProps) {
       const extraData = await extraDataEncode(getDeviceInfo(DEVICE_TYPE));
 
       const _guardianApprovedList = guardianApprovedList.filter((item) =>
-        Boolean(item.signature && item.verificationDoc),
+        Boolean((item.signature && item.verificationDoc) || item.zkLoginInfo),
       );
 
       const params = {
@@ -197,10 +197,6 @@ export default function useLoginWallet(props: ILoginWalletProps) {
     async ({ pin, type, chainId, accountType, guardianIdentifier, guardianApprovedList }: CreateWalletParams) => {
       if (!guardianIdentifier) throw 'Missing account!!!';
       // did.reset();
-      const loadingText =
-        type === 'recovery' ? 'Initiating social recovery...' : 'Creating a wallet address on the blockchain';
-
-      setLoading(true, loadingText);
 
       let walletResult: RegisterResult | LoginResult;
       const walletParams = {
@@ -245,7 +241,7 @@ export default function useLoginWallet(props: ILoginWalletProps) {
         walletInfo: wallet,
       };
     },
-    [setLoading, createTmpWalletInfo, walletInfo, requestRegisterWallet, requestRecoveryWallet],
+    [createTmpWalletInfo, walletInfo, requestRegisterWallet, requestRecoveryWallet],
   );
 
   return createWallet;

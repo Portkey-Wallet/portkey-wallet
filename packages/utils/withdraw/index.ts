@@ -8,11 +8,12 @@ import { ICrossTransfer, ICrossTransferInitOption, IWithdrawParams, IWithdrawPre
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { timesDecimals } from '../converter';
 import { handleErrorMessage, sleep } from '../index';
-import { isAuthTokenError } from '@etransfer/services';
-import { LocalStorageKey } from '@etransfer/core';
+import { isAuthTokenError } from '@etransfer/utils';
+import { LocalStorageKey } from '@etransfer/utils';
 import { removeDIDAddressSuffix } from '@etransfer/utils';
 
 export const CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL = ['ELF', 'USDT'];
+const ETRANSFER_VERSION = '2.13.0';
 
 class CrossTransfer implements ICrossTransfer {
   options: ICrossTransferInitOption;
@@ -23,7 +24,12 @@ class CrossTransfer implements ICrossTransfer {
   init(options: ICrossTransferInitOption) {
     this.options = options;
     const eTransferUrl = this.options.eTransferUrl;
-    eTransferCore.init({ etransferUrl: eTransferUrl, etransferAuthUrl: eTransferUrl, storage: this.options.storage });
+    eTransferCore.init({
+      etransferUrl: eTransferUrl,
+      etransferAuthUrl: eTransferUrl,
+      storage: this.options.storage,
+      version: ETRANSFER_VERSION,
+    });
   }
 
   formatAuthTokenParams = () => {
@@ -97,13 +103,21 @@ class CrossTransfer implements ICrossTransfer {
 
   withdraw: ICrossTransfer['withdraw'] = async (params: IWithdrawParams) => {
     try {
-      const { tokenContract, chainId, toAddress, amount, tokenInfo, portkeyContract } = params;
-      const arr = toAddress.split('_');
-      const toChainId = arr[arr.length - 1];
+      const {
+        tokenContract,
+        chainId,
+        toAddress,
+        amount,
+        tokenInfo,
+        portkeyContract,
+        network,
+        isCheckSymbol = true,
+      } = params;
       const { pin, walletInfo, chainList, eTransferCA } = this.options;
       const chainInfo = chainList.find(item => item.chainId === chainId);
       if (!pin) throw new Error('No Pin');
-      if (!CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL.includes(tokenInfo.symbol))
+      // todo: change it
+      if (isCheckSymbol && !CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL.includes(tokenInfo.symbol))
         throw new Error(`Not support: ${tokenInfo.symbol}`);
       const caAddress = walletInfo.caAddress;
       const eTransferContractAddress = eTransferCA?.[chainId];
@@ -140,7 +154,7 @@ class CrossTransfer implements ICrossTransfer {
         caContractAddress: chainInfo.caContractAddress,
         eTransferContractAddress,
         caHash,
-        network: toChainId,
+        network,
         chainId,
         managerAddress,
         getSignature: async ser => {
@@ -171,15 +185,14 @@ class CrossTransfer implements ICrossTransfer {
 
   withdrawPreview: ICrossTransfer['withdrawPreview'] = async (params: IWithdrawPreviewParams) => {
     try {
-      const { chainId, address, symbol, amount } = params;
-      const arr = address.split('_');
-      const toChainId = arr[arr.length - 1];
+      const { chainId, address, symbol, amount, network } = params;
 
       const authParams = this.formatAuthTokenParams();
-      await eTransferCore.getAuthToken({ chainId, ...authParams });
+      const aToken = await eTransferCore.getAuthToken({ chainId, ...authParams });
+      console.log('aToken', aToken);
       const result = await eTransferCore.services.getWithdrawInfo({
         chainId: chainId,
-        network: toChainId,
+        network,
         symbol,
         amount,
         address: removeDIDAddressSuffix(address) || undefined,

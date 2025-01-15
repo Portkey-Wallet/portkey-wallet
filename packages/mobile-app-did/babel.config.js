@@ -11,8 +11,15 @@ function getAliasesFromTsConfig() {
   return alias;
 }
 module.exports = {
-  presets: ['module:metro-react-native-babel-preset'],
+  presets: ['module:@react-native/babel-preset'],
+  // presets: ['module:metro-react-native-babel-preset'],
   plugins: [
+    [
+      '@babel/plugin-transform-react-jsx',
+      {
+        runtime: 'automatic',
+      },
+    ],
     [
       'react-native-reanimated/plugin',
       {
@@ -22,10 +29,15 @@ module.exports = {
     [
       'module-resolver',
       {
-        // alias: getAliasesFromTsConfig(),
         extensions: ['.ios.js', '.android.js', '.js', '.ts', '.tsx', '.json'],
-        root: ['./js'],
+        root: ['./js', './'],
+        alias: {
+          'promise.allsettled': '../../node_modules/promise.allsettled',
+        },
       },
     ],
+    ['@babel/plugin-transform-class-properties', { loose: true }],
+    ['@babel/plugin-transform-private-methods', { loose: true }],
+    ['@babel/plugin-transform-private-property-in-object', { loose: true }],
   ],
 };

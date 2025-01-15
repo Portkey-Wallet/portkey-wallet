@@ -12,7 +12,7 @@ import {
   setHasNext,
   updateChannelAttribute,
 } from '@portkey-wallet/store/store-ca/im/actions';
-import { useIMChannelListNetMapState, useIMHasNextNetMapState } from '.';
+import { useIMChannelListNetMapState, useIMHasNextNetMapState } from './index';
 import useLockCallback from '../../useLockCallback';
 import { messageContentParser } from '@portkey-wallet/im/utils';
 
@@ -95,7 +95,7 @@ export const useChannelList = () => {
 
   const rawList = useMemo(() => channelListNetMap?.[networkType]?.list || [], [channelListNetMap, networkType]);
 
-  const list = useMemo(() => rawList.filter(item => !!item.lastPostAt), [rawList]);
+  const list = useMemo(() => rawList.filter(item => !!item.lastPostAt || item.isInit), [rawList]);
 
   const init = useCallback(() => {
     return next(true);
@@ -135,6 +135,7 @@ export const useCreateP2pChannel = () => {
       });
 
       const channelUuid = result.data.channelUuid;
+      const botChannel = result.data.botChannel;
       channel = {
         status: ChannelStatusEnum.NORMAL,
         channelUuid,
@@ -150,6 +151,7 @@ export const useCreateP2pChannel = () => {
         pin: false,
         pinAt: '0',
         toRelationId: relationId,
+        botChannel: botChannel,
       };
       dispatch(
         addChannel({

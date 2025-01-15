@@ -1,12 +1,11 @@
 import { setCurrentGuardianAction, setUserGuardianItemStatus } from '@portkey-wallet/store/store-ca/guardians/actions';
 import { UserGuardianItem, UserGuardianStatus } from '@portkey-wallet/store/store-ca/guardians/type';
 import { OperationTypeEnum, VerifyStatus } from '@portkey-wallet/types/verifier';
-import { Button } from 'antd';
 import clsx from 'clsx';
 import VerifierPair from 'components/VerifierPair';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAppDispatch, useGuardiansInfo, useLoading } from 'store/Provider/hooks';
+import { useAppDispatch, useGuardiansInfo } from 'store/Provider/hooks';
 import { setLoginAccountAction } from 'store/reducers/loginCache/actions';
 import { LoginInfo } from 'store/reducers/loginCache/type';
 import { verifyErrorHandler } from 'utils/tryErrorHandler';
@@ -25,6 +24,7 @@ import {
   TGuardianItemLocationState,
   TVerifierAccountLocationState,
 } from 'types/router';
+import { CommonButton } from '@portkey/did-ui-react';
 
 interface GuardianItemProps {
   disabled?: boolean;
@@ -44,7 +44,8 @@ const AllowedGuardianPageArr = [
 export default function GuardianItems({ disabled, item, isExpired, loginAccount, targetChainId }: GuardianItemProps) {
   const { t } = useTranslation();
   const { opGuardian } = useGuardiansInfo();
-  const { setLoading } = useLoading();
+  const [loading, setLoading] = useState(false);
+  // const { setLoading } = useLoading();
   const { locationParams } = usePromptLocationParams<TGuardianItemLocationState, TGuardianItemLocationSearch>();
   const dispatch = useAppDispatch();
   const navigate = useNavigateState<TVerifierAccountLocationState>();
@@ -97,6 +98,7 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount,
             verifierId: item?.verifier?.id || '',
             chainId: originChainId,
             operationType,
+            operationDetails: locationParams?.operationDetails,
           },
         });
         setLoading(false);
@@ -150,6 +152,7 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount,
             chainId: originChainId,
             operationType,
             targetChainId: targetChainId,
+            operationDetails: locationParams.operationDetails,
           },
         });
         setLoading(false);
@@ -202,14 +205,17 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount,
   const verifyingHandler = useCallback(
     async (item: UserGuardianItem) => {
       if (isSocialLogin) {
+        setLoading(true);
         const verifiedInfo = await socialVerify({
           operateGuardian: item,
           operationType,
           originChainId,
           loginAccount,
           targetChainId,
+          operationDetails: locationParams.operationDetails,
         });
         verifiedInfo && dispatch(setUserGuardianItemStatus(verifiedInfo));
+        setLoading(false);
         return;
       }
       const from = locationParams.previousPage;
@@ -272,9 +278,9 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount,
 
   return (
     <li className={clsx('flex-between-center verifier-item', disabled && 'verifier-item-disabled')}>
-      {item.isLoginAccount && <div className="login-icon">{t('Login Account')}</div>}
       <div className="flex-between-center verifier-item-main">
         <VerifierPair
+          guardian={item}
           guardianType={item.guardianType}
           verifierSrc={item.verifier?.imageUrl}
           verifierName={item?.verifier?.name}
@@ -282,26 +288,28 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount,
         {accountShow(item)}
       </div>
       {isExpired && item.status !== VerifyStatus.Verified ? (
-        <Button className="expired" type="text" disabled>
-          {t('Expired')}
-        </Button>
+        <span className="btn expired"> {t('Expired')}</span>
       ) : (
         <>
           {(!item.status || item.status === VerifyStatus.NotVerified) && !isSocialLogin && (
-            <Button className="not-verified" type="primary" onClick={() => SendCode(item)}>
+            <CommonButton
+              loading={loading}
+              className="btn not-verified flex"
+              type="primary"
+              onClick={() => SendCode(item)}>
               {t('Send')}
-            </Button>
+            </CommonButton>
           )}
           {(item.status === VerifyStatus.Verifying || (!item.status && isSocialLogin)) && (
-            <Button type="primary" className="verifying" onClick={() => verifyingHandler(item)}>
+            <CommonButton
+              loading={loading}
+              type="primary"
+              className="btn verifying flex"
+              onClick={() => verifyingHandler(item)}>
               {t('Verify')}
-            </Button>
+            </CommonButton>
           )}
-          {item.status === VerifyStatus.Verified && (
-            <Button className="verified" type="text" disabled>
-              {t('Confirmed')}
-            </Button>
-          )}
+          {item.status === VerifyStatus.Verified && <span className="btn verified"> {t('Approved')}</span>}
         </>
       )}
     </li>

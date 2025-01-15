@@ -35,8 +35,6 @@ export default function AllowanceApprove() {
 
   const [txParams, setTxParams] = useState<any>();
 
-  console.log(txParams, '===txParams');
-
   const privateKeyRef = useRef<string>('');
 
   const getInitState = useCallback(async () => {
@@ -139,11 +137,12 @@ export default function AllowanceApprove() {
   }, [getTxPayload]);
 
   return (
-    <div className="manager-approve-page">
+    <>
       {txParams && (
         <ManagerApproveInner
           networkType={currentNetwork}
           originChainId={originChainId}
+          spender={txParams?.params?.paramsOption?.spender}
           targetChainId={chainId}
           caHash={caHash || ''}
           amount={txParams.params.paramsOption.amount}
@@ -163,6 +162,6 @@ export default function AllowanceApprove() {
           }}
         />
       )}
-    </div>
+    </>
   );
 }

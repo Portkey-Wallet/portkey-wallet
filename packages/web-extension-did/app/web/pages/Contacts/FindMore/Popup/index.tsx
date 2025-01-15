@@ -5,6 +5,7 @@ import './index.less';
 import FindMoreItem from 'pages/Contacts/components/FindMoreItem';
 import InviteGuideList from 'pages/components/InviteGuideList';
 import OfficialGroupGuide from 'pages/components/OfficialGroupGuide';
+import { hideReferral } from '@portkey-wallet/constants/referral';
 
 export default function FindMorePopup({
   headerTitle,
@@ -20,7 +21,7 @@ export default function FindMorePopup({
     <div className="find-more-popup min-width-max-height flex-column">
       <div className="flex-column find-more-top">
         <CommonHeader title={headerTitle} onLeftBack={goBack} />
-        <ContactsSearchInput placeholder="Address/email" handleChange={handleSearch} />
+        <ContactsSearchInput placeholder="Address/email" handleChange={handleSearch} isEmpty={false} />
       </div>
       <div className="find-more-body">
         {(!contacts || !Array.isArray(contacts) || contacts?.length === 0) && isSearch && (
@@ -28,7 +29,7 @@ export default function FindMorePopup({
         )}
         {(!contacts || !Array.isArray(contacts) || contacts?.length === 0) && !isSearch && (
           <div className="flex-column">
-            <InviteGuideList />
+            {!hideReferral && <InviteGuideList />}
             <OfficialGroupGuide />
           </div>
         )}

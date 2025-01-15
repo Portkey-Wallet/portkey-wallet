@@ -2,11 +2,13 @@ import React, { forwardRef, useCallback, useImperativeHandle, useRef } from 'rea
 import { View, StyleSheet, TouchableOpacity, StyleProp, ViewStyle } from 'react-native';
 
 import GStyles from 'assets/theme/GStyles';
-import { TextXXXL } from 'components/CommonText';
+import { TextH1 } from 'components/CommonText';
 import { pTd } from 'utils/unit';
 import Svg from 'components/Svg';
 import { PIN_SIZE } from '@portkey-wallet/constants/misc';
 import { defaultColors } from 'assets/theme';
+import fonts from 'assets/theme/fonts';
+import { useTheme } from '@rneui/themed';
 
 export interface KeypadPropsType {
   onChange?: (value: string) => void;
@@ -29,6 +31,7 @@ const Keypad = forwardRef(function Keypad(
   ref,
 ) {
   const valueRef = useRef('');
+  const { theme } = useTheme();
 
   const handleValueChange = useCallback(
     (_value = '', type = PadEventType.ADD) => {
@@ -71,21 +74,21 @@ const Keypad = forwardRef(function Keypad(
           onPress={() => {
             handleValueChange('1');
           }}>
-          <TextXXXL>1</TextXXXL>
+          <TextH1 style={fonts.mediumFont}>1</TextH1>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.padBtn}
           onPress={() => {
             handleValueChange('2');
           }}>
-          <TextXXXL>2</TextXXXL>
+          <TextH1 style={fonts.mediumFont}>2</TextH1>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.padBtn, styles.noMarginRight]}
           onPress={() => {
             handleValueChange('3');
           }}>
-          <TextXXXL>3</TextXXXL>
+          <TextH1 style={fonts.mediumFont}>3</TextH1>
         </TouchableOpacity>
       </View>
       <View style={styles.padRow}>
@@ -94,21 +97,21 @@ const Keypad = forwardRef(function Keypad(
           onPress={() => {
             handleValueChange('4');
           }}>
-          <TextXXXL>4</TextXXXL>
+          <TextH1 style={fonts.mediumFont}>4</TextH1>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.padBtn}
           onPress={() => {
             handleValueChange('5');
           }}>
-          <TextXXXL>5</TextXXXL>
+          <TextH1 style={fonts.mediumFont}>5</TextH1>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.padBtn, styles.noMarginRight]}
           onPress={() => {
             handleValueChange('6');
           }}>
-          <TextXXXL>6</TextXXXL>
+          <TextH1 style={fonts.mediumFont}>6</TextH1>
         </TouchableOpacity>
       </View>
       <View style={styles.padRow}>
@@ -117,27 +120,27 @@ const Keypad = forwardRef(function Keypad(
           onPress={() => {
             handleValueChange('7');
           }}>
-          <TextXXXL>7</TextXXXL>
+          <TextH1 style={fonts.mediumFont}>7</TextH1>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.padBtn}
           onPress={() => {
             handleValueChange('8');
           }}>
-          <TextXXXL>8</TextXXXL>
+          <TextH1 style={fonts.mediumFont}>8</TextH1>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.padBtn, styles.noMarginRight]}
           onPress={() => {
             handleValueChange('9');
           }}>
-          <TextXXXL>9</TextXXXL>
+          <TextH1 style={fonts.mediumFont}>9</TextH1>
         </TouchableOpacity>
       </View>
       <View style={styles.padRow}>
         {isBiometrics ? (
           <TouchableOpacity style={styles.padBtn} onPress={onBiometricsPress}>
-            <Svg icon="touch-id" oblongSize={[pTd(24), pTd(26)]} color={defaultColors.primaryColor} />
+            <Svg icon="face-id" oblongSize={[pTd(22), pTd(22)]} color={theme.colors.iconBase1} />
           </TouchableOpacity>
         ) : (
           <View style={styles.padBtn} />
@@ -147,7 +150,7 @@ const Keypad = forwardRef(function Keypad(
           onPress={() => {
             handleValueChange('0');
           }}>
-          <TextXXXL>0</TextXXXL>
+          <TextH1 style={fonts.mediumFont}>0</TextH1>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.padBtn, styles.noMarginRight]}
@@ -170,18 +173,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   padBtn: {
-    height: pTd(44),
+    height: pTd(80),
     flex: 1,
-    marginRight: pTd(8),
+    marginRight: pTd(36),
     justifyContent: 'center',
     alignItems: 'center',
   },
   noMarginRight: {
     marginRight: 0,
-  },
-  pinStyle: {
-    marginTop: 24,
-    width: pTd(230),
-    alignSelf: 'center',
   },
 });

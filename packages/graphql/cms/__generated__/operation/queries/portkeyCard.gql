@@ -1,31 +1,25 @@
-query portkeyCard($filter: directus_files_filter, $sort: [String], $limit: Int, $offset: Int, $page: Int, $search: String, $filter1: portkeyCard_filter, $sort1: [String], $limit1: Int, $offset1: Int, $page1: Int, $search1: String){
-    portkeyCard(filter: $filter1, sort: $sort1, limit: $limit1, offset: $offset1, page: $page1, search: $search1){
-        id
-        status
-        index
-        title
-        value
-        description
+query portkeyCard($filter: directus_files_filter, $sort: [String], $limit: Int, $offset: Int, $page: Int, $search: String, $filter1: cardType_filter, $sort1: [String], $limit1: Int, $offset1: Int, $page1: Int, $search1: String, $filter2: portkeyCard_filter, $sort2: [String], $limit2: Int, $offset2: Int, $page2: Int, $search2: String){
+    portkeyCard(filter: $filter2, sort: $sort2, limit: $limit2, offset: $offset2, page: $page2, search: $search2){
+        appLink
         buttonTitle
+        description
+        extensionLink
+        id
         imgUrl(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search){
-            id
-            storage
+            charset
+            description
+            duration
+            embed
             filename_disk
             filename_download
-            title
-            type
+            filesize
             folder
-            uploaded_by
-            uploaded_on
-            uploaded_on_func{
-                year
-                month
-                week
-                day
-                weekday
-                hour
-                minute
-                second
+            height
+            id
+            location
+            metadata
+            metadata_func{
+                count
             }
             modified_by
             modified_on
@@ -39,26 +33,37 @@ query portkeyCard($filter: directus_files_filter, $sort: [String], $limit: Int, 
                 minute
                 second
             }
-            charset
-            filesize
-            width
-            height
-            duration
-            embed
-            description
-            location
+            storage
             tags
             tags_func{
                 count
             }
-            metadata
-            metadata_func{
-                count
+            title
+            type
+            uploaded_by
+            uploaded_on
+            uploaded_on_func{
+                year
+                month
+                week
+                day
+                weekday
+                hour
+                minute
+                second
             }
+            width
+        }
+        index
+        status
+        title
+        type(filter: $filter1, sort: $sort1, limit: $limit1, offset: $offset1, page: $page1, search: $search1){
+            id
+            label
+            status
+            value
         }
         url
-        type
-        appLink
-        extensionLink
+        value
     }
 }

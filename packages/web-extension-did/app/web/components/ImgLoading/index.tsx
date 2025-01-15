@@ -44,17 +44,15 @@ export default function ImgLoading({
         />
       )}
 
-      {(!isLoad || notReady) && (
+      {!isLoad || notReady ? (
         <div className="flex-center loading-image-default-wrapper">
           {loadEle ? loadEle : <>{/* default loading */}</>}
         </div>
-      )}
-
-      {isError && (
+      ) : isError ? (
         <div className="flex-center loading-image-default-wrapper">
           {errorEle ? errorEle : <>{/* default error element */}</>}
         </div>
-      )}
+      ) : null}
     </div>
   );
 }

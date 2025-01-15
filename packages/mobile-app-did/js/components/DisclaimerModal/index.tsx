@@ -21,21 +21,27 @@ import myEvents from 'utils/deviceEvent';
 import { useDisclaimer } from '@portkey-wallet/hooks/hooks-ca/disclaimer';
 import { getUrlObj } from '@portkey-wallet/utils/dapp/browser';
 import Loading from 'components/Loading';
+import { ViewStyleType } from 'types/styles';
 
 export type DisclaimerModalProps = {
   url: string;
   title: string;
   description: string;
   icon?: IconName;
+  style?: ViewStyleType;
+  isShowRightCloseIcon?: boolean;
   disclaimerCheckFailCallBack?: () => void;
   disclaimerCheckSuccessCallBack?: () => void;
 };
 
-const DisclaimerModal = ({
+export const DisclaimerModal = ({
   url,
   title,
   description,
   icon,
+  style,
+  isShowRightCloseIcon = true,
+  disclaimerCheckFailCallBack,
   disclaimerCheckSuccessCallBack,
   tracer,
 }: DisclaimerModalProps & { tracer: ModalCloseTracer }) => {
@@ -62,10 +68,16 @@ const DisclaimerModal = ({
 
   const onDisposal = () => {
     OverlayModal.hide();
+    disclaimerCheckFailCallBack?.();
   };
 
   return (
-    <ModalBody modalBodyType="bottom" title={t('Disclaimer')} onClose={onDisposal}>
+    <ModalBody
+      modalBodyType="bottom"
+      title={t('Disclaimer')}
+      isShowRightCloseIcon={isShowRightCloseIcon}
+      onClose={onDisposal}
+      style={style}>
       <View style={styles.contentWrap}>
         <View style={[GStyles.flexRow, GStyles.itemCenter]}>
           <Svg icon={icon || 'eBridgeFavIcon'} size={pTd(24)} />
@@ -99,7 +111,7 @@ const DisclaimerModal = ({
   );
 };
 
-class ModalCloseTracer {
+export class ModalCloseTracer {
   private closeModalType: ModalCloseType = ModalCloseType.CLOSED;
 
   public reportModalCloseType = (type: ModalCloseType) => {

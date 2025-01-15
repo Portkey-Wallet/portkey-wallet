@@ -21,7 +21,7 @@ import { PromptCardType } from 'pages/Send';
 
 import { Button } from 'antd';
 import { CommonInfoRow } from 'pages/components/CommonInfoRow';
-import { TSwapPreviewProps } from '../SwapPreivew';
+import { TSwapPreviewProps } from '../SwapPreview';
 import clsx from 'clsx';
 
 export type TSwapInfo = {

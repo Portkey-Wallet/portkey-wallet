@@ -4,7 +4,7 @@ import { SwapForm } from './SwapForm';
 import { useNavigateState } from 'hooks/router';
 import { useCallback, useMemo, useState } from 'react';
 import { SwapSettingButton } from './components/SwapSettingButton';
-import { SwapPreview, TSwapPreviewProps } from './SwapPreivew';
+import { SwapPreview, TSwapPreviewProps } from './SwapPreview';
 import clsx from 'clsx';
 import { SwapCompleted } from './SwapCompleted';
 import { CustomSvgV3 } from 'components/CustomSvgV3';

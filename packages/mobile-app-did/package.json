@@ -156,7 +156,7 @@
     "react-native-url-polyfill": "^2.0.0",
     "react-native-vector-icons": "^10.2.0",
     "react-native-view-shot": "^3.6.0",
-    "react-native-webview": "^13.10.5",
+    "react-native-webview": "^13.13.1",
     "react-redux": "^8.0.2",
     "redux-persist": "^6.0.0",
     "rn-minimizer": "1.0.0",

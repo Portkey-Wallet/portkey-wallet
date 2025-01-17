@@ -1,0 +1,31 @@
+@import '../../../../assets/theme/color.less';
+
+.input-nft-wrap {
+  .portkey-input {
+    padding: 24px;
+    border: none;
+    font-size: 32px;
+    line-height: 38px;
+    font-family: BG;
+    font-weight: 700;
+    text-align: center;
+    &::placeholder {
+      color: @text-base3;
+      font-size: 32px;
+      line-height: 38px;
+      font-family: BG;
+      font-weight: 700;
+    }
+  }
+  .amount-error {
+    .portkey-input {
+      color: @text-danger1 !important;
+    }
+  }
+  .error-msg {
+    font-size: 14px;
+    line-height: 20px;
+    text-align: center;
+    color: @text-danger2;
+  }
+}

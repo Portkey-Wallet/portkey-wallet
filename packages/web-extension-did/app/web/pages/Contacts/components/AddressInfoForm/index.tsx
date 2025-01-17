@@ -1,0 +1,138 @@
+import { IEditContactItemFormType } from 'pages/Contacts/AddContact/types';
+import './index.less';
+import { FormInstance, Form } from 'antd';
+import { useCallback, useMemo } from 'react';
+// import { useContactNetworkConfig } from '@portkey-wallet/hooks/hooks-ca/config';
+import { CustomSvgV3 } from 'components/CustomSvgV3';
+import { Input } from 'antd';
+import { CommonModal } from '@portkey/did-ui-react';
+import CommonCloseHeader from 'components/CommonCloseHeader';
+import { useContactNetworkConfig } from '@portkey-wallet/hooks/hooks-ca/config';
+import { useEffectOnce } from '@portkey-wallet/hooks';
+
+const { Item: FormItem } = Form;
+
+export type TChangeAddressInfoParams = Partial<IEditContactItemFormType['addressInfo']>;
+// packages/web-extension-did/app/web/pages/components/CustomSelect/index.tsx
+
+interface AddressInfoFormProps {
+  form?: FormInstance<IEditContactItemFormType>;
+  value?: IEditContactItemFormType['addressInfo'];
+  onChange: (v: IEditContactItemFormType['addressInfo']) => void;
+  isNetworkModalOpen: boolean | undefined;
+  handleNetworkModalState: (isShow: boolean) => void;
+}
+export default function AddressInfoForm({
+  form,
+  value,
+  onChange,
+  isNetworkModalOpen,
+  handleNetworkModalState,
+}: AddressInfoFormProps) {
+  const { supportNetworkList, fetchContactSupportConfig } = useContactNetworkConfig();
+
+  const selectedNetworkInfo = useMemo(
+    () =>
+      supportNetworkList.find((ele) => {
+        if (ele.network == 'aelf') {
+          return ele.chainId === value?.chainId;
+        } else {
+          return ele.network === value?.network;
+        }
+      }),
+    [supportNetworkList, value?.chainId, value?.network],
+  );
+
+  const isAelfMainChain = useMemo(
+    () => value?.network === 'aelf' && value.chainId === 'AELF',
+    [value?.chainId, value?.network],
+  );
+
+  const onChangeAddressInfo = useCallback(
+    (v: TChangeAddressInfoParams) => {
+      const _addressInfo = form?.getFieldValue('addressInfo');
+      onChange({ ..._addressInfo, ...v });
+    },
+    [form, onChange],
+  );
+
+  const pasteClipBoard = useCallback(async () => {
+    const text = await navigator.clipboard.readText();
+    onChangeAddressInfo({ address: text });
+  }, [onChangeAddressInfo]);
+
+  useEffectOnce(() => {
+    fetchContactSupportConfig();
+  });
+
+  return (
+    <div className="address-info-from">
+      <div className="select-chain" onClick={() => handleNetworkModalState(true)}>
+        <img src={selectedNetworkInfo?.imageUrl} width={16} height={16} alt="" />
+        <span className="network-name-show">{selectedNetworkInfo?.name}</span>
+        <CustomSvgV3 type="chevron_down" />
+      </div>
+      {isAelfMainChain && (
+        <div className="address-info-tabs">
+          <div
+            onClick={() => onChangeAddressInfo({ isExchange: true })}
+            className={`${value?.isExchange ? 'active' : ''}`}>
+            {value?.isExchange && <CustomSvgV3 type="check" fillColor="@text-brand4" />}
+            <span>Exchange</span>
+          </div>
+          <div
+            className={`${value?.isExchange ? '' : 'active'}`}
+            onClick={() => onChangeAddressInfo({ isExchange: false })}>
+            {!value?.isExchange && <CustomSvgV3 type="check" fillColor="@text-brand4" />}
+            <span>Non-exchange</span>
+          </div>
+        </div>
+      )}
+      <FormItem name="addressInfoInput" className="address-input-wrap">
+        <Input.TextArea
+          // eslint-disable-next-line no-inline-styles/no-inline-styles
+          style={{ resize: 'none', height: 80 }}
+          placeholder="Enter address"
+          rows={3}
+          maxLength={1000}
+          value={value?.address || ''}
+          onChange={(e) => onChangeAddressInfo({ address: e.target.value })}
+        />
+      </FormItem>
+      <div className="paste-container">
+        <span className="show-text">{`Enter or `}</span>
+        <span className="paste-text cursor-pointer" onClick={pasteClipBoard}>{`paste a wallet address`}</span>
+      </div>
+      <CommonModal
+        className="select-chain-modal"
+        maskClosable
+        onClose={() => handleNetworkModalState(false)}
+        open={isNetworkModalOpen}>
+        <CommonCloseHeader title="Select network" onClose={() => handleNetworkModalState(false)} />
+        <div className="chain-content">
+          {supportNetworkList.map((list, index) => {
+            return (
+              <div
+                key={index}
+                className="chain-list"
+                onClick={() => {
+                  onChangeAddressInfo({ network: list.network, chainId: list.chainId });
+                  handleNetworkModalState(false);
+                }}>
+                <div className="chain-list-info">
+                  <img src={list.imageUrl} width={24} height={24} alt="" />
+                  <div>{list.name}</div>
+                </div>
+                {list.network == 'aelf' ? (
+                  <>{list.chainId == value?.chainId && <CustomSvgV3 type="selected" />}</>
+                ) : (
+                  <>{list.network == value?.network && <CustomSvgV3 type="selected" />}</>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </CommonModal>
+    </div>
+  );
+}

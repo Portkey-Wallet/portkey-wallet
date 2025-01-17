@@ -3,15 +3,25 @@
 .add-contact-form {
   height: 504px;
   justify-content: space-between;
+  
 
   .form-content {
-    padding: 12px 24px 8px;
+    padding: 12px 0 8px;
+    .name-input{
+      height: 40px;
+      border-radius: 8px;
+      background-color: transparent;
+    }
+    .clear-svg{
+      width: 16px;
+      height: 16px;
+    }
 
     .@{app-prefix}-form-item .@{app-prefix}-form-item-label {
       padding-bottom: 8px;
     }
     .@{app-prefix}-form-item-label > label {
-      color: @neutral-primary-text;
+      color: @text-base1;
       font-size: 14px;
       line-height: 20px;
     }
@@ -21,7 +31,7 @@
     }
     .address-item {
       .address-item-title {
-        color: @neutral-primary-text;
+        color: @text-base1;
         line-height: 20px;
         .address-item-delete {
           cursor: pointer;
@@ -38,7 +48,7 @@
           }
         }
         .@{app-prefix}-input{
-          color: @neutral-primary-text;
+          color: @text-base1;
           cursor: default;
         }
         .@{app-prefix}-input-affix-wrapper {
@@ -53,8 +63,8 @@
         }
         .@{app-prefix}-input-affix-wrapper-disabled{
           background-color: transparent;
-
         }
+
         .@{app-prefix}-form-item {
           width: 100%;
           height: 48px;
@@ -83,10 +93,8 @@
     .addresses-add-btn {
       margin-top: 8px;
       margin-bottom: 24px;
-      color: @brand-normal;
-      font-size: 14px;
-      line-height: 20px;
       cursor: pointer;
+      
       & > div {
         display: flex;
         margin-right: 8px;
@@ -99,17 +107,13 @@
   }
   .form-btn {
     width: 100%;
-    padding: 16px;
-    border-top: 1px solid @neutral-divider;
+    padding: 16px 0;
     margin-bottom: 0 !important;
 
     .add-btn {
-      color: @neutral-white-text;
-      font-size: 16px;
-      line-height: 22px;
       height: 48px;
       border-radius: 22px;
-      background-color: @brand-normal;
+      width: 100%;
     }
   }
 }

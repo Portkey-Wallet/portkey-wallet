@@ -9,7 +9,7 @@ import { useCommonState } from 'store/Provider/hooks';
 import singleMessage from 'utils/singleMessage';
 import './index.less';
 
-export interface IAllowanceModal extends IManagerApproveInnerProps, ModalProps, DrawerProps {
+export interface IAllowanceModal extends IManagerApproveInnerProps, Omit<ModalProps, 'getContainer'>, DrawerProps {
   onCancel: () => void;
   targetChainId: ChainId;
   dappInfo?: {

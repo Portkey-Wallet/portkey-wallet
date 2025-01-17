@@ -2,14 +2,13 @@
 
 .contact-list {
   .adm-list {
-    --border-top: solid 1px @neutral-divider;
-    --border-bottom: solid 1px @neutral-divider;
+    --border-top: solid 1px @border-neutral3;
+    --border-bottom: solid 1px @border-neutral3;
   }
   .adm-list-item {
-    border-top: 1px solid @neutral-divider;
+    padding-left: 0;
   }
   .adm-list-item-content {
-    height: 60px;
     border-top: none;
   }
   .adm-list-item-content-arrow {
@@ -18,5 +17,17 @@
   .adm-index-bar-sidebar-item-active {
     color: inherit;
     background-color: inherit;
+  }
+  .adm-list-default .adm-list-body {
+    border: none;
+    background-color: @bg-base1;
+    .contact-index-logo {
+      width: 40px;
+      height: 40px;
+    }
+    .avatar-img {
+      width: 40px !important;
+      height: 40px !important;
+    }
   }
 }

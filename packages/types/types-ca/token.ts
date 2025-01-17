@@ -1,4 +1,3 @@
-import { IconName } from 'components/Svg';
 import { ChainId, NetworkType } from '..';
 import { ChainItemType } from '../chain';
 import { AccountType } from '../wallet';
@@ -7,7 +6,7 @@ import { SeedTypeEnum } from './assets';
 export interface BaseToken {
   id?: string; // id
   chainId: ChainId;
-  decimals: number; // 8
+  decimals: number | string; // 8
   address: string; // "ArPnUb5FtxG2oXTaWX2DxNZowDEruJLs2TEkhRCzDdrRDfg8B",        token address  contract address
   symbol: string; // "ELF"   the name showed
   imageUrl?: string;
@@ -33,8 +32,6 @@ export interface TokenItemShowType extends TokenItemType {
   isAdded?: boolean; // boolean
   tokenContractAddress?: string;
   imageUrl?: string;
-  svgName?: IconName;
-  chainSvgName?: IconName;
   balance?: string;
   balanceInUsd?: string;
   price?: string | number;

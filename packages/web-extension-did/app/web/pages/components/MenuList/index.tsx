@@ -20,7 +20,7 @@ export interface IMenuItemProps {
 
 export default function MenuList({
   list,
-  height = 64,
+  height = 48,
   className,
   isShowSelectedColor = false,
   selected,

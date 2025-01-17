@@ -1,5 +1,5 @@
 import { ITransferLimitItem } from '@portkey-wallet/types/types-ca/paymentSecurity';
-import CustomSvg from 'components/CustomSvg';
+import { CustomSvgV3 } from 'components/CustomSvgV3';
 import './index.less';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
@@ -17,13 +17,19 @@ export default function PaymentSecurityItem({
   return (
     <div className="flex-row-between payment-security-item" onClick={() => onClick(item)}>
       <div className="flex-center">
-        <TokenImageDisplay symbol={item.symbol} src={item.imageUrl} />
+        <TokenImageDisplay
+          symbol={item.symbol}
+          src={item.imageUrl}
+          size={'medium'}
+          subDisplay={true}
+          chain={item.chainId === 'AELF' ? 'main' : 'dApp'}
+        />
         <div className="token-info">
           <div className="token-symbol">{item.symbol}</div>
           <div className="token-network">{transNetworkText(item.chainId, !isMainnet)}</div>
         </div>
       </div>
-      <CustomSvg type="LeftArrow" className="left-arrow" />
+      <CustomSvgV3 type="chevron_right" className="chevron-right-icon" fillColor="#B2B2B2" />
     </div>
   );
 }

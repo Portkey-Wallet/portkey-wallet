@@ -8,7 +8,11 @@ import './index.less';
 // }
 export default function CommonTooltip({ ...props }: TooltipProps) {
   return (
-    <Tooltip getPopupContainer={(v) => v} overlayClassName={clsx('common-tooltip', props.overlayClassName)} {...props}>
+    <Tooltip
+      className="common-tooltip-container"
+      getPopupContainer={(v) => v}
+      overlayClassName={clsx('common-tooltip', props.overlayClassName)}
+      {...props}>
       {props.children ? props.children : <CustomSvg type="tooltip" />}
     </Tooltip>
   );

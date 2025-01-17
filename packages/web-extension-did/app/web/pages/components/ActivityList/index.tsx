@@ -6,14 +6,13 @@ import {
   formatStr2EllipsisStr,
   formatAmountUSDShow,
 } from '@portkey-wallet/utils/converter';
-import CustomSvg, { SvgType } from 'components/CustomSvg';
+import CustomSvg from 'components/CustomSvg';
 import { useCallback, useMemo } from 'react';
-import { useNavigateState } from 'hooks/router';
 import './index.less';
 import LoadingMore from 'components/LoadingMore/LoadingMore';
 import { Button, Modal } from 'antd';
 import { useAppCASelector } from '@portkey-wallet/hooks/hooks-ca';
-import { formatActivityTime, isSameDay } from '@portkey-wallet/utils/time';
+import { formatActivityTimeRevamp, isSameDay } from '@portkey-wallet/utils/time';
 import { useTranslation } from 'react-i18next';
 import { intervalCrossChainTransfer } from 'utils/sandboxUtil/crossChainTransfer';
 import { useAppDispatch, useCommonState, useLoading } from 'store/Provider/hooks';
@@ -24,14 +23,17 @@ import { useFreshTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPric
 import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
 import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import getSeed from 'utils/getSeed';
-import { ITransactionLocationState } from 'types/router';
 import clsx from 'clsx';
 import NFTImageDisplay from '../NFTImageDisplay';
 import TokenImageDisplay from '../TokenImageDisplay';
 import dayjs from 'dayjs';
 import ImageForTwo from '../ImageForTwo';
 import ImageDisplay from '../ImageDisplay';
-import { contractStatusEnum } from '@portkey-wallet/constants/constants-ca/common';
+// import { contractStatusEnum } from '@portkey-wallet/constants/constants-ca/common';
+import { CommonBaseModal } from '@portkey/did-ui-react';
+import { useState } from 'react';
+// import CommonHeader, { CustomSvgPlaceholderSize } from 'components/CommonHeader';
+import Transaction from 'components/Transaction';
 
 export interface IActivityListProps {
   data?: ActivityItemType[];
@@ -56,14 +58,15 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
   const chainList = useCurrentChainList();
   useFreshTokenPrice();
   const currentNetwork = useCurrentNetworkInfo();
-  const nav = useNavigateState<ITransactionLocationState>();
   const { isPrompt } = useCommonState();
-  const navToDetail = useCallback(
-    (item: ActivityItemType) => {
-      nav('/transaction', { state: { item, chainId, previousPage: chainId ? '' : BalanceTab.ACTIVITY } });
-    },
-    [chainId, nav],
-  );
+
+  const [selectItem, setSelectItem] = useState<any>();
+  const [open, setOpen] = useState(false);
+  const navToDetail = (item: ActivityItemType) => {
+    setSelectItem({ item, chainId, previousPage: chainId ? '' : BalanceTab.ACTIVITY });
+    setOpen(true);
+    // nav('/transaction', { state: { item, chainId, previousPage: chainId ? '' : BalanceTab.ACTIVITY } });
+  };
 
   const showErrorModal = useCallback(
     (error: the2ThFailedActivityItemType) => {
@@ -121,7 +124,7 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
   );
 
   const formatActivityTimeShow = useCallback(
-    (timestamp: string) => formatActivityTime(dayjs.unix(Number(timestamp || 0))),
+    (timestamp: string) => formatActivityTimeRevamp(dayjs.unix(Number(timestamp || 0))),
     [],
   );
 
@@ -149,31 +152,31 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
       } else {
         transAddress = toAddress ? addressFormat(toAddress, toChainId, currentNetwork.walletType) : '';
       }
-      return transAddress ? `${isReceived ? 'From' : 'To'} ${formatStr2EllipsisStr(transAddress, [7, 9])}` : '';
+      return transAddress ? `${isReceived ? 'From' : 'To'} ${formatStr2EllipsisStr(transAddress, [7, 8])}` : '';
     },
     [currentNetwork.walletType],
   );
 
-  const renderStatusIcon = useCallback((item: ActivityItemType) => {
-    let svg = '';
-    if (item.status === contractStatusEnum.MINED) svg = 'SuggestCheck';
-    if (item.status === contractStatusEnum.FAILED) svg = 'SuggestClose2';
-    if (item.status === contractStatusEnum.PENDING) svg = 'Status';
-    if (svg) return <CustomSvg className="flex-center" type={svg as SvgType} />;
-    return null;
-  }, []);
+  // const renderStatusIcon = useCallback((item: ActivityItemType) => {
+  //   let svg = '';
+  //   if (item.status === contractStatusEnum.MINED) svg = 'SuggestCheck';
+  //   if (item.status === contractStatusEnum.FAILED) svg = 'SuggestClose2';
+  //   if (item.status === contractStatusEnum.PENDING) svg = 'Status';
+  //   if (svg) return <CustomSvg className="flex-center" type={svg as SvgType} />;
+  //   return null;
+  // }, []);
 
   const renderActivityTitleForDapp = useCallback(
     (item: ActivityItemType) => (
       <div className={clsx('activity-item-title', isPrompt && 'prompt-activity-item-title')}>
         <div className="flex-row-center gap-4">
           <div className="transaction-name">{item.transactionName}</div>
-          {renderStatusIcon(item)}
+          {/* {renderStatusIcon(item)} */}
         </div>
         <div className="transaction-dapp-name">{item.dappName}</div>
       </div>
     ),
-    [isPrompt, renderStatusIcon],
+    [isPrompt],
   );
 
   const renderActivityTitle = useCallback(
@@ -183,7 +186,7 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
         <div className={clsx('activity-item-title', isPrompt && 'prompt-activity-item-title')}>
           <div className="flex-row-center gap-4">
             <div className="transaction-name">{transactionName}</div>
-            {renderStatusIcon(item)}
+            {/* {renderStatusIcon(item)} */}
           </div>
 
           <div className="transaction-address">{formatAddressShow(item)}</div>
@@ -193,7 +196,7 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
         </div>
       );
     },
-    [formatAddressShow, isPrompt, renderStatusIcon],
+    [formatAddressShow, isPrompt],
   );
 
   const renderActivityAmountForMulToken = useCallback(
@@ -267,7 +270,12 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
               className="nft-activity-icon"
             />
           ) : (
-            <TokenImageDisplay className="token-activity-icon" src={item.listIcon} symbol={item.symbol} />
+            <div className="token-activity-icon-box">
+              <TokenImageDisplay className="token-activity-icon" src={item.listIcon} symbol={item.symbol} />
+              {item.statusIcon && (
+                <TokenImageDisplay className="token-status-icon" src={item.statusIcon} symbol={item.symbol} />
+              )}
+            </div>
           )}
           <div className="activity-item-detail flex-between-center">
             {renderActivityTitle(item)}
@@ -325,7 +333,12 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
               className="nft-activity-icon"
             />
           ) : (
-            <TokenImageDisplay className="token-activity-icon" src={item.listIcon} symbol={item.symbol} />
+            <div className="token-activity-icon-box">
+              <TokenImageDisplay className="token-activity-icon" src={item.listIcon} symbol={item.symbol} />
+              {item.statusIcon && (
+                <TokenImageDisplay className="token-status-icon" src={item.statusIcon} symbol={item.symbol} />
+              )}
+            </div>
           )}
           <div className="activity-item-detail flex-between-center">
             {renderActivityTitleForDapp(item)}
@@ -354,6 +367,7 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
           <ImageDisplay
             src={item.dappIcon}
             name={item.dappName || 'Unknown'}
+            defaultWidth={32}
             defaultHeight={32}
             className="system-activity-icon"
           />
@@ -367,21 +381,34 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
   const renderSystemActivityItem = useCallback(
     (item: ActivityItemType) => (
       <>
-        <ImageDisplay
-          src={item.listIcon}
-          backupSrc="SystemActivity"
-          defaultHeight={32}
-          className="system-activity-icon"
-        />
+        <div className="icon-box">
+          <ImageDisplay
+            src={item.listIcon}
+            backupSrc="SystemActivity"
+            defaultHeight={40}
+            defaultWidth={40}
+            className="system-activity-icon"
+          />
+          {item.sourceIcon && (
+            <ImageDisplay
+              src={item.sourceIcon}
+              backupSrc="SystemActivity"
+              defaultHeight={20}
+              defaultWidth={20}
+              className="source-icon"
+            />
+          )}
+        </div>
+
         <div className="activity-item-system-detail">
           <span className="flex-row-center gap-4">
             {item?.transactionName}
-            {renderStatusIcon(item)}
+            {/* {renderStatusIcon(item)} */}
           </span>
         </div>
       </>
     ),
-    [renderStatusIcon],
+    [],
   );
 
   const renderActivityItem = useCallback(
@@ -449,7 +476,16 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
   return (
     <div className={clsx('activity-list', !hasMore && 'hidden-loading-more')}>
       {renderActivityList}
-      <LoadingMore hasMore={hasMore} loadMore={loadMore} className="load-more" />
+      <LoadingMore hasMore={hasMore} loadMore={loadMore} className="load-more" loadingText="" />
+      {open && (
+        <CommonBaseModal
+          open={open}
+          maskClosable={true}
+          onClose={() => setOpen(false)}
+          className="transaction-modal-drawer">
+          <Transaction state={selectItem} closeFun={setOpen} />
+        </CommonBaseModal>
+      )}
     </div>
   );
 }

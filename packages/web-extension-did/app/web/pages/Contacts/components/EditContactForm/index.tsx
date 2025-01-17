@@ -71,11 +71,7 @@ export default function EditContactForm({
           )}
         </div>
 
-        <IdAndAddress
-          portkeyId={state?.imInfo?.portkeyId}
-          relationId={state?.imInfo?.relationId}
-          addresses={state?.addresses || []}
-        />
+        <IdAndAddress addresses={state?.addresses || []} />
 
         {/* login account info */}
         <LoginAccountList

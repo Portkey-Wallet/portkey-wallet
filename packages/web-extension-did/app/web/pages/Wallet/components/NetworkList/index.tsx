@@ -1,24 +1,27 @@
 import { useTranslation } from 'react-i18next';
-import CustomSvg from 'components/CustomSvg';
+import { CustomSvgV3 } from 'components/CustomSvgV3';
 import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useChangeNetwork } from 'hooks/useChangeNetwork';
 import { useIsMainnet, useNetworkList } from '@portkey-wallet/hooks/hooks-ca/network';
 import { NetworkType } from '@portkey-wallet/types';
-import { IconType } from 'types/icon';
+import { IconTypeV3 } from 'types/icon';
 import { useCallback } from 'react';
 import { NetworkItem } from '@portkey-wallet/types/types-ca/network';
-import CustomModal from 'pages/components/CustomModal';
+import { CustomModalBottom } from 'pages/components/CustomModalBottom';
 import useChangeNetworkText from 'hooks/useChangeNetworkText';
 import clsx from 'clsx';
+import { useCommonState } from 'store/Provider/hooks';
+import MenuItem from 'components/MenuItem';
 import './index.less';
 
-const netWorkIcon: Record<NetworkType, IconType> = {
-  MAINNET: 'Aelf',
-  TESTNET: 'elf-icon',
+const netWorkIcon: Record<NetworkType, IconTypeV3> = {
+  MAINNET: 'Chain=AELF Main',
+  TESTNET: 'Chain=Testnet',
 };
 
 export default function NetworkList() {
   const { t } = useTranslation();
+  const { isPrompt } = useCommonState();
 
   const { currentNetwork } = useWallet();
   const NetworkList = useNetworkList();
@@ -29,15 +32,18 @@ export default function NetworkList() {
     (network: NetworkItem) => {
       if (network.networkType === currentNetwork) return;
       if (!network.isActive) return;
-      const { title, content } = changeNetworkModalText(network.networkType);
-      CustomModal({
+      // const { title, content } = changeNetworkModalText(network.networkType);
+      const { content } = changeNetworkModalText(network.networkType);
+      CustomModalBottom({
+        isPrompt,
         type: 'confirm',
         content: (
           <div className="change-network-modal">
             <div className="title">
-              {title}
-              <br />
-              {`aelf ${isMainnet ? 'Testnet' : 'Mainnet'}`}
+              {/*{title}*/}
+              Confirm network switch
+              {/*<br />*/}
+              {/*{`aelf ${isMainnet ? 'Testnet' : 'Mainnet'}`}*/}
             </div>
             <div className="content">{content}</div>
           </div>
@@ -45,6 +51,7 @@ export default function NetworkList() {
         onOk: () => {
           changeNetwork(network);
         },
+        cancelText: 'Cancel',
         okText: 'Confirm',
       });
     },
@@ -53,37 +60,24 @@ export default function NetworkList() {
 
   return (
     <div className="flex-column network-list">
-      {NetworkList.map((net) => (
-        <div
-          key={net.networkType}
-          className={clsx('network-item', !net.isActive && 'disabled')}
-          onClick={() => handleChangeNetwork(net)}>
-          <div className="network-item-checked">
-            {currentNetwork === net.networkType && <CustomSvg type="selected" className="selected-svg" />}
-          </div>
-          <div className="network-item-icon">
-            <CustomSvg type={netWorkIcon[net.networkType]} />
-          </div>
-          {t(net.name)}
-        </div>
-      ))}
+      <div className="menu-list">
+        {NetworkList.map((net) => (
+          <MenuItem
+            key={net.networkType}
+            height={74}
+            showEnterIcon={currentNetwork !== net.networkType}
+            className={clsx('network-item', (!net.isActive || currentNetwork === net.networkType) && 'disabled')}
+            onClick={() => handleChangeNetwork(net)}>
+            <div className="flex-row-center">
+              <div className="network-item-icon">
+                <CustomSvgV3 type={netWorkIcon[net.networkType]} />
+              </div>
+              {t(net.name)}
+              {currentNetwork === net.networkType && <div className="network-current-tag">{t('Current')}</div>}
+            </div>
+          </MenuItem>
+        ))}
+      </div>
     </div>
-
-    // <div className="network-list">
-    //   {allNetworkType.map((net) => (
-    //     <div
-    //       key={net.key}
-    //       className={clsx('network-item', net.disabled ? 'disabled' : '')}
-    //       onClick={() => handleChangeNet(net)}>
-    //       <div className="network-item-checked">
-    //         {curNet === net.key && <CustomSvg type="selected" className="selected-svg" />}
-    //       </div>
-    //       <div className="network-item-icon">
-    //         <CustomSvg type={net.icon as any} />
-    //       </div>
-    //       {t(net.name)}
-    //     </div>
-    //   ))}
-    // </div>
   );
 }

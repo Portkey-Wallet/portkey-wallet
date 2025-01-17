@@ -41,7 +41,7 @@ const QrScanner: React.FC<QrScannerProps> = () => {
     useCallback(() => {
       (async () => {
         setRefresh(true);
-        await sleep(10);
+        await sleep(isIOS ? 300 : 10);
         setRefresh(false);
       })();
     }, []),
@@ -85,7 +85,7 @@ const QrScanner: React.FC<QrScannerProps> = () => {
 
   return (
     <View style={PageStyle.wrapper}>
-      {refresh ? null : (
+      {!refresh && (
         <CameraView
           ratio={'16:9'}
           barcodeScannerSettings={{

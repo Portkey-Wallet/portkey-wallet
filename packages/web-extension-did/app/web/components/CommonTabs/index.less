@@ -1,0 +1,45 @@
+// TODO: influence by the css of @portkey/did-ui-react
+@import '../../assets/theme/color.less';
+.portkey-ui-common-tabs {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+
+  .portkey-ui-common-tabs-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 16px 0;
+  }
+
+  .portkey-ui-common-tabs-header-item {
+    display: flex;
+    align-items: center;
+    //gap: 4px;
+    height: 32px !important;
+    cursor: pointer;
+    color: @text-opacity40;
+    padding: 8px;
+    border-radius: 8px;
+
+    &-active {
+      color: @text-base1 !important;
+      background: @bg-base2;
+    }
+  }
+
+  .portkey-ui-common-tabs-header-item-label {
+    font-family: SG, sans-serif !important;
+    font-size: 16px !important;
+    font-weight: 400 !important;
+    line-height: 100%;
+  }
+
+  .portkey-ui-common-tabs-header-item-number {
+    padding: 4px 6px;
+    font-size: 14px;
+    border-radius: 4px;
+    background-color: @bg-base1;
+  }
+}

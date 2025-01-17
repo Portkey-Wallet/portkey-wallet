@@ -47,7 +47,7 @@ const UIElement = ({ children, pageType = 'Popup' }: BasePorviderProps) => {
   const currentNetwork = useCurrentNetwork();
 
   return (
-    <PortkeyProvider networkType={currentNetwork || 'MAINNET'}>
+    <PortkeyProvider networkType={currentNetwork || 'MAINNET'} theme="dark">
       <Modals />
       <Updater />
       <PermissionCheck pageType={pageType}>{children}</PermissionCheck>

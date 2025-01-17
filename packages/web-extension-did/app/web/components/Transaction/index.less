@@ -1,0 +1,522 @@
+@import '../../assets/theme/constants.less';
+
+.transaction-detail-modal-new {
+  background-color: @bg-base1;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 0 16px 16px;
+  max-height: 80vh !important;
+  // .common-header {
+  //   height: auto;
+  // }
+  .common-header-title {
+    text-align: left;
+    font-size: 20px;
+    font-family: BG;
+  }
+
+  .transaction-detail-body {
+    max-height: 624px;
+    @media screen and (max-width: 767px) {
+      max-height: calc(100vh - 158px);
+    }
+
+    background: @bg-base1;
+    overflow: auto;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    .transaction-info {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 1;
+      .left,
+      .right {
+        line-height: 20px;
+      }
+      .label {
+        display: flex;
+        justify-content: space-between;
+        color: @text-base1;
+        font-weight: 500;
+      }
+      .value {
+        display: flex;
+        justify-content: space-between;
+        font-size: 14px;
+      }
+      .wallet-activity-header {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+      }
+      .method-wrap {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        padding-top: 16px;
+        padding-bottom: 20px;
+        .dapp-name {
+          color: @text-base1;
+          font-weight: 700;
+          font-size: 20px;
+          font-family: BG;
+        }
+        .system-activity-icon {
+          width: 60px !important;
+          height: 60px !important;
+        }
+        .icon-box {
+          position: relative;
+          .system-activity-icon {
+            width: 60px !important;
+            height: 60px !important;
+          }
+          .source-icon {
+            position: absolute;
+            right: -2px;
+            bottom: -2px;
+          }
+        }
+        .activity-item-system-detail {
+          font-family: BG;
+          font-size: 20px;
+          font-weight: 700;
+          color: @text-base1;
+        }
+
+        .activity-item-detail {
+          .success {
+            color: @text-success1;
+          }
+        }
+
+        .token-activity-icon {
+          width: 60px !important;
+          height: 60px !important;
+          .token-img-wrapper {
+            width: 42px !important;
+            height: 42px !important;
+          }
+          .show-name-index {
+            width: 100% !important;
+            height: 100% !important;
+          }
+        }
+        .token-activity-icon-box {
+          position: relative;
+          .token-status-icon {
+            width: 20px !important;
+            height: 20px !important;
+            position: absolute;
+            right: -2px;
+            bottom: -2px;
+          }
+        }
+        .custom-svg {
+          width: 56px;
+          height: 56px;
+          svg {
+            width: 56px;
+            height: 56px;
+          }
+        }
+        .transaction-amount {
+          color: @text-base1;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-family: BG;
+          font-size: 20px;
+          font-weight: 700;
+          gap: 4px;
+          .thin-icon {
+            width: 16px;
+            height: 16px;
+            svg {
+              width: 16px;
+              height: 16px;
+            }
+          }
+        }
+
+        .opposite-direction {
+          display: flex;
+          align-items: center;
+          .received-amount {
+            order: 99;
+          }
+          .transaction-amount-0 {
+            .thin-icon {
+              display: none;
+            }
+          }
+        }
+        .same-direction {
+          display: flex;
+          align-items: center;
+          .transaction-amount-1 {
+            .thin-icon {
+              display: none;
+            }
+          }
+        }
+
+        .transaction-convert {
+          color: @text-opacity70;
+          text-align: center;
+        }
+        .hidden-transaction-convert {
+          display: none;
+        }
+
+        .swap-text-box {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          font-size: 18px;
+          color: @text-base1;
+          padding-top: 20px;
+          font-family: BG;
+          span {
+            font-weight: 700;
+          }
+          .arrow-right {
+            width: 20px !important;
+            height: 16px !important;
+            svg {
+              width: 20px !important;
+              height: 16px !important;
+            }
+          }
+        }
+
+        .token-icon-box {
+          width: 60px;
+          height: 60px;
+          position: relative;
+          .source-icon {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+          }
+        }
+
+        .method-name {
+          font-family: BG;
+          font-size: 20px;
+          color: @text-base1;
+          font-weight: 700;
+          line-height: 24px;
+        }
+        .token-amount {
+          gap: 4px;
+          color: @text-base1;
+          line-height: 22px;
+          font-size: 18px;
+          margin-bottom: 15px;
+          .token-amount-text {
+            font-family: BG;
+            font-weight: 700;
+            gap: 4px;
+            padding-top: 8px;
+            .token-amount-number {
+              flex: 1;
+              word-break: break-all;
+              text-align: center;
+            }
+          }
+          .usd {
+            line-height: 16px;
+            font-size: 12px;
+            color: @text-opacity70;
+            word-break: break-all;
+            text-align: center;
+          }
+        }
+        .no-amount {
+          height: 8px;
+        }
+        .nft-amount {
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 8px;
+          padding: 10px 0;
+          .assets {
+            position: relative;
+            width: 64px;
+            height: 64px;
+            border-radius: 6px;
+            background: @border-neutral3;
+            font-size: 24px;
+            color: @neutral-disable-text;
+            overflow: hidden;
+            .tokentagmedium-icon,
+            .tokentagmedium-icon svg,
+            .nfttagmedium-icon,
+            .nfttagmedium-icon svg {
+              position: absolute;
+              width: 32px;
+              height: 16px;
+              top: 0;
+              right: 4px;
+            }
+            .assets-img {
+              width: 100%;
+              height: 100%;
+              object-fit: contain;
+            }
+          }
+          .info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding: 5px 0;
+            width: 100%;
+            .quantity {
+              line-height: 22px;
+              font-size: 20px;
+              font-weight: 600;
+              color: @text-base1;
+              word-wrap: break-word;
+              word-break: break-all;
+              font-family: BG;
+              .token-id {
+                margin-left: 4px;
+                font-weight: 400;
+              }
+            }
+            .is-received {
+              color: @text-success1;
+              font-weight: 600;
+            }
+            .index {
+              color: @text-opacity70;
+              line-height: 20px;
+              font-size: 14px;
+            }
+          }
+        }
+      }
+      .status-wrap {
+        .right {
+          color: @text-base1;
+        }
+        .confirmed {
+          color: @text-success1;
+        }
+        .failed {
+          color: @text-danger2;
+        }
+      }
+      .status-wrap,
+      .account-wrap,
+      .network-wrap,
+      .money-wrap {
+        width: 100%;
+        > p {
+          color: @text-base1;
+          padding: 16px 0;
+          .left {
+            font-size: 16px;
+            font-weight: 400;
+            flex: 1;
+          }
+          .right {
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+          }
+        }
+      }
+
+      .account-wrap {
+        gap: 8px;
+        position: relative;
+        .value {
+          position: initial;
+          .content {
+            display: flex;
+            flex-direction: column;
+            flex: 0.4;
+            color: @neutral-secondary-text;
+            gap: 2px;
+            .left,
+            .right {
+              font-size: 12px;
+              line-height: 16px;
+            }
+            .right {
+              text-align: right;
+            }
+            .name {
+              line-height: 20px;
+              font-size: 14px;
+              color: @text-base1;
+              .text-overflow(1);
+
+              word-break: break-all;
+            }
+          }
+          .right-arrow {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translateX(-16px) translateY(-16px);
+            width: 32px;
+            height: 32px;
+            /* stylelint-disable-next-line no-descending-specificity */
+            svg {
+              width: 32px;
+              height: 32px;
+            }
+          }
+        }
+        .address-wrap {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          &.right {
+            justify-content: flex-end;
+          }
+          .copy-icon {
+            width: 16px;
+            height: 16px;
+          }
+          .copy-address {
+            width: 16px;
+            height: 16px;
+          }
+        }
+      }
+      .network-wrap {
+        .value {
+          line-height: 16px;
+          font-size: 12px;
+          color: @neutral-secondary-text;
+        }
+      }
+      .swap-wrap {
+        width: 100%;
+        border-top: 1px solid @border-base1;
+        font-size: 16px;
+        font-weight: 400;
+        padding-top: 16px;
+        margin-top: 16px;
+        color: @text-base1;
+        > div {
+          padding: 16px 0;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          span:last-child {
+            font-weight: 600;
+          }
+        }
+        .received {
+          color: @text-success1;
+        }
+      }
+      .money-wrap {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        .value {
+          /* stylelint-disable-next-line no-descending-specificity */
+          .left {
+            color: @text-base1;
+          }
+          /* stylelint-disable-next-line no-descending-specificity */
+          .right {
+            color: @text-base1;
+            font-weight: 500;
+            display: block;
+            .right-item {
+              text-align: right;
+            }
+            .right-usd {
+              color: @text-opacity70;
+              font-size: 12px;
+              font-weight: 400;
+              text-align: right;
+            }
+          }
+
+          &.total-amount {
+            .right {
+              display: flex;
+              flex-direction: column;
+              span {
+                text-align: right;
+                &.convert {
+                  color: @neutral-secondary-text;
+                  font-weight: 400;
+                  font-size: 12px;
+                  line-height: 16px;
+                }
+              }
+            }
+          }
+        }
+
+        .tx-id {
+          display: flex;
+          align-items: center;
+          font-weight: 400;
+          gap: 4px;
+          .copy-wrapper {
+            align-items: flex-start;
+            .custom-svg {
+              width: 16px;
+              height: 16px;
+            }
+          }
+        }
+      }
+    }
+  }
+  .transaction-footer {
+    padding-top: 16px;
+    .btn-link {
+      width: 100%;
+      height: 48px;
+      border-radius: 50px;
+    }
+    .link {
+      color: @text-brand4;
+      font-weight: 600;
+      font-size: 16px;
+    }
+  }
+}
+
+.transaction-detail {
+  .transaction-detail-modal {
+    position: relative;
+    background: @bg-base1;
+
+    .transaction-info {
+      .method-wrap {
+        gap: 32px;
+
+        .nft-amount {
+          width: 100%;
+          padding: 0 0 20px;
+        }
+      }
+    }
+  }
+}

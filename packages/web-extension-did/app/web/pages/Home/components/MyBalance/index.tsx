@@ -4,7 +4,7 @@ import MainCards from 'pages/components/BalanceCard';
 import CustomTokenDrawer from 'pages/components/CustomTokenDrawer';
 import { useTranslation } from 'react-i18next';
 import TokenList from '../Tokens';
-import Activity from '../Activity/index';
+// import Activity from '../Activity/index';
 import { Transaction } from '@portkey-wallet/types/types-ca/trade';
 import NFT from '../NFT/NFT';
 import { useAppDispatch, useUserInfo, useCommonState, useLoading } from 'store/Provider/hooks';
@@ -24,7 +24,7 @@ import useGuardianList from 'hooks/useGuardianList';
 import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
 import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useUnreadCount } from '@portkey-wallet/hooks/hooks-ca/im';
-import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/actions';
+import { fetchContactListV2Async } from '@portkey-wallet/store/store-ca/contact/actions';
 import { useCheckSecurity } from 'hooks/useSecurity';
 import { useDisclaimer } from '@portkey-wallet/hooks/hooks-ca/disclaimer';
 import { useExtensionETransShow } from 'hooks/cms';
@@ -44,13 +44,20 @@ import { formatAmountUSDShow } from '@portkey-wallet/utils/converter';
 import { RampType } from '@portkey-wallet/ramp';
 import { getDisclaimerData } from 'utils/disclaimer';
 import { TradeTypeEnum } from 'constants/trade';
-import CustomSvg from 'components/CustomSvg';
-import SetNewWalletNameIcon from '../SetNewWalletNameIcon';
+import { CustomSvgV3 } from 'components/CustomSvgV3';
+// import SetNewWalletNameIcon from '../SetNewWalletNameIcon';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import SkeletonCom from 'pages/components/SkeletonCom';
 import CommonBanner from 'components/CommonBanner';
 import { useCmsBanner } from '@portkey-wallet/hooks/hooks-ca/cms/banner';
-import BigScreenHeader from 'pages/components/BigScreenHeader';
+// import BigScreenHeader from 'pages/components/BigScreenHeader';
+import HomeHeader from 'pages/components/HomeHeader';
+import { SelectAssetListModal } from 'pages/Send/components/SelectAssetList';
+import { useAccountTokenInfo, useAccountNFTCollectionInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
+import Activity from '../Activity';
+import { PAGE_SIZE_IN_ACCOUNT_NFT_COLLECTION } from '@portkey-wallet/constants/constants-ca/assets';
+import useGAReport from 'hooks/useGAReport';
+import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 
 export interface TransactionResult {
   total: number;
@@ -64,8 +71,9 @@ export type TMyBalanceState = {
 export default function MyBalance() {
   const { t } = useTranslation();
   const [activeKey, setActiveKey] = useState<string>(BalanceTab.TOKEN);
-  const [navTarget, setNavTarget] = useState<'send' | 'receive'>('send');
+  const [navTarget] = useState<'send' | 'receive'>('send');
   const [tokenOpen, setTokenOpen] = useState(false);
+  const [assetOpen, setAssetOpen] = useState(false);
   const navigate = useNavigateState<TSendLocationState | TRampLocationState>();
   const { state } = useLocationState<TMyBalanceState>();
   const { passwordSeed } = useUserInfo();
@@ -77,26 +85,69 @@ export default function MyBalance() {
   const { setLoading } = useLoading();
   const setHideAssets = useSetHideAssets();
 
-  const renderTabsData = useMemo(
-    () => [
+  const { totalDisplayCount: tokenCount } = useAccountTokenInfo();
+  const {
+    totalNftItemCount: nftCount,
+    fetchAccountNFTCollectionInfoList,
+    totalNftItemCount,
+  } = useAccountNFTCollectionInfo();
+  const { isNotLessThan768, isPrompt } = useCommonState();
+
+  console.log('nftCount', nftCount);
+
+  const { startReport, endReport } = useGAReport();
+
+  useEffectOnce(() => {
+    startReport('Home-NFTsList');
+  });
+  const maxNftNum = totalNftItemCount;
+
+  const caAddressInfos = useCaAddressInfoList();
+
+  useEffect(() => {
+    fetchAccountNFTCollectionInfoList({
+      maxNFTCount: maxNftNum,
+      caAddressInfos,
+      skipCount: 0,
+      maxResultCount: PAGE_SIZE_IN_ACCOUNT_NFT_COLLECTION,
+    }).then(() => endReport('Home-NFTsList'));
+  }, [caAddressInfos, endReport, fetchAccountNFTCollectionInfoList, maxNftNum]);
+
+  const renderTabsData = useMemo(() => {
+    const tabsData = [
       {
-        label: t('Tokens'),
+        label: (
+          <div className="tab-item">
+            <span>{t('Tokens')}</span>
+            <div className="number">{tokenCount}</div>
+          </div>
+        ),
         key: BalanceTab.TOKEN,
         children: <TokenList />,
       },
       {
-        label: t('NFTs'),
+        label: (
+          <div className="tab-item">
+            <span>{t('NFTs')}</span>
+            <div className="number">{nftCount}</div>
+          </div>
+        ),
         key: BalanceTab.NFT,
         children: <NFT />,
       },
-      {
-        label: t('Activity'),
-        key: BalanceTab.ACTIVITY,
-        children: <Activity pageKey="Home-Activity" />,
-      },
-    ],
-    [t],
-  );
+    ];
+    if (isNotLessThan768) {
+      return [
+        ...tabsData,
+        {
+          label: t('Activity'),
+          key: BalanceTab.ACTIVITY,
+          children: <Activity pageKey="Home-Activity" />,
+        },
+      ];
+    }
+    return tabsData;
+  }, [t, tokenCount, nftCount, isNotLessThan768]);
   const getGuardianList = useGuardianList();
   useFreshTokenPrice();
   useVerifierList();
@@ -110,7 +161,6 @@ export default function MyBalance() {
   const { checkDappIsConfirmed } = useDisclaimer();
   const { isETransShow } = useExtensionETransShow();
   const reportFCMStatus = useReportFCMStatus();
-  const { isNotLessThan768, isPrompt } = useCommonState();
   const userInfo = useCurrentUserInfo();
   const accountBalanceUSD = useAccountBalanceUSD();
   const usdShow = useMemo(() => formatAmountUSDShow(accountBalanceUSD), [accountBalanceUSD]);
@@ -136,7 +186,7 @@ export default function MyBalance() {
   }, [isMainNet]);
 
   useEffect(() => {
-    appDispatch(fetchContactListAsync());
+    appDispatch(fetchContactListV2Async());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -150,7 +200,7 @@ export default function MyBalance() {
         address: isNFT ? `${v?.nftInfo?.tokenContractAddress}` : `${v?.tokenInfo?.tokenContractAddress}`,
         symbol: v.symbol,
         name: v.symbol,
-        imageUrl: isNFT ? v.nftInfo?.imageUrl : v.tokenInfo?.imageUrl,
+        imageUrl: isNFT ? v.nftInfo?.imageUrl || '' : v.tokenInfo?.imageUrl || '',
         alias: isNFT ? v.nftInfo?.alias : '',
         tokenId: isNFT ? v.nftInfo?.tokenId : '',
         isSeed: isNFT ? v.nftInfo?.isSeed : false,
@@ -279,7 +329,7 @@ export default function MyBalance() {
       text = 'Dev Mode';
     }
     return (
-      <div className="balance-amount-content flex-row-start">
+      <div className="balance-amount-content">
         {showSkeleton ? (
           <SkeletonCom />
         ) : (
@@ -294,7 +344,7 @@ export default function MyBalance() {
             </div>
             {isMainNet && (
               <div className="hide-assets-icon-wrap">
-                <CustomSvg
+                <CustomSvgV3
                   className="hide-assets-icon cursor-pointer"
                   type={userInfo.hideAssets ? 'EyeInvisibleOutlined' : 'EyeOutlined'}
                   onClick={() => setHideAssets(!userInfo.hideAssets)}
@@ -308,11 +358,14 @@ export default function MyBalance() {
   }, [isMainNet, setHideAssets, usdShow, userInfo.hideAssets]);
 
   return (
-    <div className={clsx('balance', detailScroll && 'detail-scroll')} onScroll={onBalanceWrapScroll}>
-      <BigScreenHeader />
-      <div className="main-content-wrap flex-column">
-        <div className={clsx('balance-amount-wrap', 'flex-column', isPrompt && 'is-prompt')}>
-          <div className="wallet-name-wrap flex-row-center">
+    <>
+      <HomeHeader />
+      <div className={clsx('balance', detailScroll && 'detail-scroll')} onScroll={onBalanceWrapScroll}>
+        {/* <BigScreenHeader /> */}
+
+        <div className="main-content-wrap flex-column">
+          <div className={clsx('balance-amount-wrap', 'flex-column', isPrompt && 'is-prompt')}>
+            {/* <div className="wallet-name-wrap flex-row-center">
             {userInfo.nickName ? (
               <>
                 <div className="wallet-name">{userInfo.nickName}</div>
@@ -321,27 +374,35 @@ export default function MyBalance() {
             ) : (
               <SkeletonCom />
             )}
+          </div> */}
+            {renderUsdShow()}
           </div>
-          {renderUsdShow()}
+          <MainCards
+            onSend={async () => {
+              if (isPrompt) {
+                setAssetOpen(true);
+              } else {
+                navigate('/select-asset');
+              }
+            }}
+            onReceive={() => {
+              navigate('/receive-list');
+              // setNavTarget('receive');
+              // return setTokenOpen(true);
+            }}
+            onBuy={isRampShow ? handleClickBuy : undefined}
+            onClickSwap={() => handleClickTrade(TradeTypeEnum.Swap)}
+            onClickDeposit={isETransShow ? () => handleClickTrade(TradeTypeEnum.ETrans) : undefined}
+            isShowFaucet={!isMainNet}
+          />
         </div>
-        <MainCards
-          onSend={async () => {
-            setNavTarget('send');
-            return setTokenOpen(true);
-          }}
-          onReceive={() => {
-            setNavTarget('receive');
-            return setTokenOpen(true);
-          }}
-          onBuy={isRampShow ? handleClickBuy : undefined}
-          onClickDeposit={isETransShow ? () => handleClickTrade(TradeTypeEnum.ETrans) : undefined}
-          isShowFaucet={!isMainNet}
-        />
+        {isNotLessThan768 && <div className="line"></div>}
+        {SelectTokenELe}
+        {!isNotLessThan768 && <CommonBanner wrapClassName="banner-wrap" bannerList={homeBannerList} />}
+        <Tabs activeKey={activeKey} onChange={onChange} items={renderTabsData} className="balance-tab" />
+        <DisclaimerModal open={disclaimerOpen} onClose={() => setDisclaimerOpen(false)} {...disclaimerData.current} />
+        <SelectAssetListModal open={assetOpen} onCancel={() => setAssetOpen(false)} />
       </div>
-      {SelectTokenELe}
-      {!isNotLessThan768 && <CommonBanner wrapClassName="banner-wrap" bannerList={homeBannerList} />}
-      <Tabs activeKey={activeKey} onChange={onChange} items={renderTabsData} className="balance-tab" />
-      <DisclaimerModal open={disclaimerOpen} onClose={() => setDisclaimerOpen(false)} {...disclaimerData.current} />
-    </div>
+    </>
   );
 }

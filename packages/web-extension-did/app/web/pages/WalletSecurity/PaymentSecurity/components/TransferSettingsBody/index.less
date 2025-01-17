@@ -1,5 +1,72 @@
 @import '../../../../../assets/theme/color.less';
 
+.transfer-settings-container {
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  justify-content: space-between;
+  padding: 0;
+  .top-content {
+    width: 100%;
+  }
+  .logo {
+    width: 80px;
+    height: 80px;
+    border-radius: 100%;
+    margin: 24px auto 8px;
+    .custom-svg {
+      width: 100%;
+      height: 100%;
+      svg {
+        width: 100%;
+        height: 100%;
+      }
+    }
+  }
+  .token-name {
+    font-size: 16px;
+    line-height: 140%;
+    font-weight: 400;
+    color: @text-base1;
+    text-align: center;
+  }
+  .chain-name {
+    font-size: 14px;
+    line-height: 140%;
+    font-weight: 400;
+    color: @text-opacity70;
+    text-align: center;
+  }
+  .common-card {
+    margin: 24px auto 12px;
+    .title-container {
+      width: 100%;
+      height: 22px;
+      display: flex;
+      justify-content: space-between;
+    }
+  }
+  .limit-container {
+    margin: 12px auto;
+    width: 100%;
+    .common-card {
+      background: none;
+      padding-left: 0;
+      padding-right: 0;
+      margin: 0;
+    }
+    .list-item {
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+    }
+  }
+}
+
 .transfer-settings-form {
   justify-content: space-between;
 
@@ -9,7 +76,7 @@
     .section-one,
     .section-two {
       .portkey-form-item {
-        padding: 0 24px;
+        padding: 0 16px;
         input {
           font-size: 14px;
         }
@@ -26,7 +93,7 @@
     .divide {
       width: 100%;
       height: 1px;
-      background-color: @neutral-divider;
+      background-color: @border-neutral3;
       margin-bottom: 24px;
     }
 

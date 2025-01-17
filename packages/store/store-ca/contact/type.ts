@@ -10,8 +10,8 @@ export interface FetchContractListAsyncPayloadType {
 }
 
 export interface FetchContactListAsyncPayloadTypeV2 {
-  isInit: boolean;
+  isInit?: boolean;
   contactIndexList?: IContactIndexType[];
   eventList?: IContactItemType[];
-  lastModified: ContactState['lastModifiedNew'];
+  lastModified?: ContactState['lastModifiedNew'];
 }

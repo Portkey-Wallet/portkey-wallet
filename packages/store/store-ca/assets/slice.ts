@@ -189,6 +189,9 @@ export const fetchNFTAsync = createAsyncThunk(
     const targetNFTCollection = preAccountNFTCollectionList.find(
       item => item.symbol === symbol && item.chainId === chainId,
     );
+
+    console.log('targetNFTCollection', targetNFTCollection);
+
     if (!targetNFTCollection) return;
 
     const { skipCount, maxResultCount, totalRecordCount, children } = targetNFTCollection;

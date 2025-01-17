@@ -1,9 +1,9 @@
-import { INetworkItem } from 'pages/Send/components/SelectNetwork';
 import { ChainId, ChainType } from '..';
 import { SeedTypeEnum } from './assets';
 import { GuardiansApprovedType } from './guardian';
 import type { SendType } from './send';
 import { ICollectionInfo } from './freeMint';
+import { INetworkItem } from './network';
 
 export interface IToSendHomeAssetParamsBaseType {
   symbol: string;

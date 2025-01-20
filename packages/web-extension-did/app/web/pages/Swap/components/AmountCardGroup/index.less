@@ -1,0 +1,48 @@
+@import '../../../../assets/theme/color.less';
+
+.swap-amount-group {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+
+  .swap-amount-group-switch-wrap {
+    position: relative;
+    margin: 4px 0;
+  }
+  .swap-amount-group-switch-button {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate3d(-50%, -50%, 0);
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    border-radius: 20px;
+    background-color: @bg-brand1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .swap-amount-group-switch-icon {
+      width: 20px;
+      height: 20px;
+      svg {
+        path {
+          fill: @icon-brand4;
+        }
+      }
+    }
+  }
+
+  .swap-amount-percent {
+    font-size: 14px;
+    line-height: 26px;
+    color: @text-base2;
+  }
+  .swap-amount-percent-positive {
+    color: @text-success1;
+  }
+  .swap-amount-percent-negative {
+    color: @text-danger2;
+  }
+}

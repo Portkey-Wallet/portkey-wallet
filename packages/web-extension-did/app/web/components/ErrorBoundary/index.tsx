@@ -1,6 +1,6 @@
 import { ReactNode, useCallback, useMemo } from 'react';
 import ReactErrorBoundary, { ErrorBoundaryTrue, handleReportError } from '@portkey-wallet/utils/errorBoundary';
-import { Button, Image } from 'antd';
+import { Button } from 'antd';
 import * as Sentry from '@sentry/react';
 import './index.less';
 import { BaseCommonPage } from 'components/CommonPage';
@@ -27,7 +27,7 @@ export default function ErrorBoundary({ children, view, pageType }: ErrorBoundar
           <BaseCommonPage className="error-boundary-page" isHeaderShow={isPrompt}>
             <div className="error-boundary-wrap">
               <div className="error-boundary-body">
-                <Image src="assets/images/crash_image.png" className="error-boundary-image" preview={false} />
+                <img src="assets/images/crash_image.png" className="error-boundary-image" />
 
                 <div className="error-boundary-content">
                   <div className="error-boundary-title">Oops!</div>

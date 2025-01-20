@@ -27,6 +27,7 @@ import securitySlice from '@portkey-wallet/store/store-ca/security/slice';
 import { referralSlice } from '@portkey-wallet/store/store-ca/referral/slice';
 import cryptoGiftSlice from '@portkey-wallet/store/store-ca/cryptoGift/slice';
 import { configSlice } from '@portkey-wallet/store/store-ca/config/slice';
+import { awakenSlice } from '@portkey-wallet/store/store-ca/awaken/slice';
 
 interface ThunkOptions<E = any> {
   extraArgument: E;
@@ -137,6 +138,11 @@ export const referralPersistConfig = {
   blacklist: [],
 };
 
+export const awakenPersistConfig = {
+  key: awakenSlice.name,
+  storage: localStorage,
+};
+
 const reduxPersistConfig = {
   key: reduxStorageRoot,
   storage: localStorage,
@@ -164,6 +170,7 @@ const reduxPersistConfig = {
     securitySlice.name,
     referralSlice.name,
     configSlice.name,
+    awakenSlice.name,
   ],
   // More info here:  https://shift.infinite.red/shipping-persistant-reducers-7341691232b1
   // transforms: [SetTokenTransform],

@@ -58,8 +58,8 @@ function DrawerConfirm(options: any) {
               type="primary"
               danger={props?.okButtonProps?.danger}
               onClick={() => {
-                if (typeof options.onOk === 'function') {
-                  options.onOk();
+                if (typeof props.onOk === 'function') {
+                  props.onOk();
                 }
                 closeDrawer();
               }}>

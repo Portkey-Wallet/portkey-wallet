@@ -17,7 +17,7 @@ const initialState: TAwakenState = {
   tokenPrices: {},
   tokenList: {},
 };
-export const imSlice = createSlice({
+export const awakenSlice = createSlice({
   name: 'awaken',
   initialState,
   reducers: {},
@@ -101,4 +101,4 @@ export const imSlice = createSlice({
   },
 });
 
-export default imSlice;
+export default awakenSlice;

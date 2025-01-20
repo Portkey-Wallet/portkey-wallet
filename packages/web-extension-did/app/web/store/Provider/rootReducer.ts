@@ -31,6 +31,7 @@ import {
   imPersistConfig,
   cryptoGiftConfig,
   configConfig,
+  awakenPersistConfig,
 } from './config';
 import { miscSlice } from '@portkey-wallet/store/store-ca/misc/slice';
 import { guardiansSlice } from '@portkey-wallet/store/store-ca/guardians/slice';
@@ -43,6 +44,7 @@ import { imSlice } from '@portkey-wallet/store/store-ca/im/slice';
 import securitySlice from '@portkey-wallet/store/store-ca/security/slice';
 import { referralSlice } from '@portkey-wallet/store/store-ca/referral/slice';
 import { configSlice } from '@portkey-wallet/store/store-ca/config/slice';
+import awakenSlice from '@portkey-wallet/store/store-ca/awaken/slice';
 
 export const tokenReducer = persistReducer(tokenPersistConfig, tokenSlice.reducer);
 export const assetReducer = persistReducer(assetPersistConfig, assetsSlice.reducer);
@@ -61,6 +63,7 @@ export const txFeeReducer = persistReducer(txFeePersistConfig, txFeeSlice.reduce
 export const imReducer = persistReducer(imPersistConfig, imSlice.reducer);
 export const cryptoGiftReducer = persistReducer(cryptoGiftConfig, cryptoGiftSlice.reducer);
 export const configReducer = persistReducer(configConfig, cryptoGiftSlice.reducer);
+export const awakenReducer = persistReducer(awakenPersistConfig, awakenSlice.reducer);
 
 const rootReducer = customCombineReducers({
   [walletSlice.name]: walletReducer,
@@ -87,6 +90,7 @@ const rootReducer = customCombineReducers({
   [referralSlice.name]: referralSlice.reducer,
   [cryptoGiftSlice.name]: cryptoGiftSlice.reducer,
   [configSlice.name]: configSlice.reducer,
+  [awakenSlice.name]: awakenSlice.reducer,
 });
 
 export default rootReducer;

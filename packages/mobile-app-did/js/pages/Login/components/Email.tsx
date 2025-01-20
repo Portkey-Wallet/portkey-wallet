@@ -14,8 +14,6 @@ import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { useInputFocus } from 'hooks/useInputFocus';
 import { TextH1, TextL } from 'components/CommonText';
 import { darkColors } from 'assets/theme';
-import Touchable from 'components/Touchable';
-import navigationService from 'utils/navigationService';
 import { KeyboardSafeArea } from 'components/KeyboardSafeArea';
 import { makeStyles } from '@rneui/themed';
 import { pTd } from 'utils/unit';
@@ -44,7 +42,9 @@ export default function Email({ type = PageType.login }: { type?: PageType }) {
   const onPageLogin = useLockCallback(async () => {
     const message = checkEmail(loginAccount) || undefined;
     setErrorMessage(message);
-    if (message) return;
+    if (message) {
+      return;
+    }
     setLoading(true);
     try {
       await onLogin({ loginAccount: loginAccount as string });
@@ -99,7 +99,7 @@ export default function Email({ type = PageType.login }: { type?: PageType }) {
               {t(TitleMap[type].button)}
             </CommonButton>
 
-            {type === PageType.login ? (
+            {/* {type === PageType.login ? (
               <Touchable
                 style={[GStyles.flexRowWrap, GStyles.itemCenter, GStyles.flexCenter, emailStyles.signUpTip]}
                 onPress={() => navigationService.navigate('SignUpEmail')}>
@@ -115,7 +115,7 @@ export default function Email({ type = PageType.login }: { type?: PageType }) {
                   Already have an account? <TextL style={emailStyles.signUpTipContentBold}>Log in</TextL>
                 </TextL>
               </Touchable>
-            )}
+            )} */}
           </View>
         </KeyboardSafeArea>
       </View>

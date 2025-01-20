@@ -7,8 +7,8 @@ export const useCheckRouteExistInRouteStack = () => {
 
   return useCallback(
     (routeName: RootStackName) => {
-      const routesArr = navigation.getState().routes;
-      return routesArr.some(item => item.name === routeName);
+      const routesArr = navigation?.getState()?.routes;
+      return routesArr?.some(item => item.name === routeName);
     },
     [navigation],
   );

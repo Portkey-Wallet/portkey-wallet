@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import Svg, { IconName } from 'components/Svg';
 import { pTd } from 'utils/unit';
 import { Text, TextStyle, View, ViewStyle } from 'react-native';
-import { StyleSheet } from 'react-native';
+// import { StyleSheet } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import { checkIsSvgUrl } from 'utils';
 import { SvgCssUri } from 'react-native-svg/css';
@@ -16,6 +16,7 @@ export interface CommonAvatarProps {
   hasBorder?: boolean;
   svgName?: IconName;
   imageUrl?: string;
+  localImage?: number;
   shapeType?: 'square' | 'circular';
   style?: ViewStyle & TextStyle;
   color?: string;
@@ -35,6 +36,7 @@ export default function CommonAvatar(props: CommonAvatarProps) {
     style = {},
     color,
     imageUrl,
+    localImage,
     shapeType = 'circular',
     hasBorder,
     resizeMode = 'contain',
@@ -96,8 +98,8 @@ export default function CommonAvatar(props: CommonAvatarProps) {
     );
   }
 
-  if (imageUrl && !loadError) {
-    return checkIsSvgUrl(imageUrl) ? (
+  if ((imageUrl || localImage) && !loadError) {
+    return imageUrl && checkIsSvgUrl(imageUrl) ? (
       <View style={[styles.avatarWrap, shapeType === 'square' && styles.squareStyle, sizeStyle, style]}>
         <SvgCssUri
           uri={imageUrl}
@@ -111,9 +113,13 @@ export default function CommonAvatar(props: CommonAvatarProps) {
         resizeMode={resizeMode}
         style={[styles.avatarWrap, shapeType === 'square' && styles.squareStyle, sizeStyle, style as any]}
         onError={() => setLoadError(true)}
-        source={{
-          uri: imageUrl,
-        }}
+        source={
+          localImage
+            ? localImage
+            : {
+                uri: imageUrl,
+              }
+        }
       />
     );
   }
@@ -131,7 +137,7 @@ export default function CommonAvatar(props: CommonAvatarProps) {
     </View>
   );
 }
-const getStyles = makeStyles(theme => ({
+const getStyles = makeStyles(() => ({
   avatarWrap: {
     width: pTd(48),
     height: pTd(48),

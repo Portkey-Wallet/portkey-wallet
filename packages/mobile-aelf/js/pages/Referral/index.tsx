@@ -100,7 +100,7 @@ export default function Referral() {
       <CommonButton
         style={styles.buttonStyle}
         titleStyle={styles.buttonText}
-        title={'Create a new wallet'}
+        title={'Create a wallet'}
         type="primary"
         onPress={createWallet}
       />
@@ -111,7 +111,7 @@ export default function Referral() {
         title={'Import an existing wallet'}
         type="outline"
         onPress={() => {
-          //TODO: eoa add import
+          navigationService.navigate('WalletImportTypeSelect');
         }}
       />
     </PageContainer>

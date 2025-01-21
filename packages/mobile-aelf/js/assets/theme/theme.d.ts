@@ -31,6 +31,7 @@ declare module '@rneui/themed' {
     bgTransparent: string;
 
     textBase1: string;
+    textBase1Opacity07: string;
     textBase2: string;
     textBase3: string;
     textDisabled1: string;

@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Text } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import ImportWalletTabSwitch from './ImportWalletTabSwitch';
@@ -8,11 +8,23 @@ import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import { makeStyles } from '@rneui/themed';
 import { pTd } from 'utils/unit';
 import fonts from 'assets/theme/fonts';
+import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
+
+type RouterParams = {
+  importType: string;
+};
 
 export default function ImportWallet() {
   const styles = getStyles();
+  const { importType } = useRouterParams<RouterParams>();
 
   const [isPrivateKeySelected, setPrivateKeySelected] = useState(false);
+
+  useEffect(() => {
+    if (importType === 'privateKey') {
+      setPrivateKeySelected(true);
+    }
+  }, [importType]);
 
   const onSelectedTab = useCallback(
     (privateKeySelected: boolean) => {
@@ -29,7 +41,8 @@ export default function ImportWallet() {
       containerStyles={styles.containerStyles}
       scrollViewProps={{ disabled: true }}>
       <Text style={styles.title}>
-        {isPrivateKeySelected ? 'Import your Private key' : 'Import your Recovery phrase'}
+        {/*{isPrivateKeySelected ? 'Import your Private key' : 'Import your Recovery phrase'}*/}
+        Import your wallet
       </Text>
       <ImportWalletTabSwitch onSelected={onSelectedTab} />
       {isPrivateKeySelected ? <PrivateKey /> : <RecoveryPhrase />}

@@ -280,6 +280,7 @@ export const darkColors = {
   bgTransparent: 'transparent',
 
   textBase1: '#ffffff',
+  textBase1Opacity07: '#FFFFFFB3', // #FFFFFF · 70%;
   textBase2: '#FFFFFFB2',
   textBase3: '#FFFFFF66',
   textDisabled1: '#626264',

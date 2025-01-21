@@ -8,6 +8,7 @@ import { pTd } from 'utils/unit';
 import fonts from 'assets/theme/fonts';
 import Touchable from 'components/Touchable';
 import Svg from 'components/Svg';
+import navigationService from 'utils/navigationService';
 
 export default function ConfirmBackup() {
   const styles = getStyles();
@@ -37,7 +38,7 @@ export default function ConfirmBackup() {
     return shuffleArray(shuffledWords.concat(mnemonics[currentIndex]));
   }, [currentIndex]);
 
-  const selectRandomIndex = useCallback(() => {
+  const selectRandomIndex = useCallback((): number => {
     if (testedIndexes.current.length === mnemonics.length) {
       testedIndexes.current = checkedIndexes.current;
     }
@@ -47,31 +48,33 @@ export default function ConfirmBackup() {
     } else {
       return randomIndex;
     }
-  }, [testedIndexes, checkedIndexes]);
+  }, [mnemonics.length]);
 
-  const onPressWord = useCallback((word: string) => {
-    const index = mnemonics.indexOf(word);
-    testedIndexes.current.push(currentIndex);
-    if (index === currentIndex) {
-      // selected the correct word
-      checkedIndexes.current.push(currentIndex);
-      console.log('checkedIndexes : ', checkedIndexes.current);
-      if (checkedIndexes.current.length === 2) {
-        // all words are selected, go to next page
-        // todo_wade: go to next page
+  const onPressWord = useCallback(
+    (word: string) => {
+      const index = mnemonics.indexOf(word);
+      testedIndexes.current.push(currentIndex);
+      if (index === currentIndex) {
+        // selected the correct word
+        checkedIndexes.current.push(currentIndex);
+        console.log('checkedIndexes : ', checkedIndexes.current);
+        if (checkedIndexes.current.length === 2) {
+          navigationService.push('ManualBackupSuccess');
+        } else {
+          setCurrentIndex(selectRandomIndex());
+          setShowError(false);
+        }
       } else {
-        setCurrentIndex(selectRandomIndex());
-        setShowError(false);
+        // selected the incorrect word
+        setShowError(true);
+        setTimeout(() => {
+          setCurrentIndex(selectRandomIndex());
+          setShowError(false);
+        }, 2000);
       }
-    } else {
-      // selected the incorrect word
-      setShowError(true);
-      setTimeout(() => {
-        setCurrentIndex(selectRandomIndex());
-        setShowError(false);
-      }, 2000);
-    }
-  }, [testedIndexes, currentIndex, checkedIndexes, selectRandomIndex, showError]);
+    },
+    [testedIndexes, currentIndex, checkedIndexes, selectRandomIndex, showError],
+  );
 
   useEffect(() => {
     setCurrentIndex(selectRandomIndex());
@@ -84,16 +87,15 @@ export default function ConfirmBackup() {
       pageSafeBottomPadding={!isIOS}
       containerStyles={styles.containerStyles}
       scrollViewProps={{ disabled: true }}>
-      <Text style={styles.title}>Confirm Backup</Text>
-      <Text style={styles.desc}>Complete this quicktestto confirm you've saved everything correctly.</Text>
+      <Text style={styles.title}>Verify seed phrase</Text>
+      <Text style={styles.desc}>Verify your seed phrase by selecting the words in the correct order.</Text>
       <Text style={styles.indexTitle}>{`# ${currentIndex + 1} word`}</Text>
-      <Text style={styles.indexDesc}>{`Please select the #${
-        currentIndex + 1
-      } Word in your Secret Recovery Phrase.`}</Text>
+      <Text style={styles.indexDesc}>{`Please select the #${currentIndex + 1} word in your seed phrase.`}</Text>
       <View style={styles.wordsWrap}>
         {showWords.map((word, index) => {
           return (
             <Touchable
+              key={index}
               style={[styles.wordButton, index > 0 && styles.wordButtonMarginTop]}
               disabled={showError}
               onPress={() => onPressWord(word)}>

@@ -10,6 +10,7 @@ import Svg from 'components/Svg';
 import Touchable from 'components/Touchable';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import CommonButton from 'components/CommonButton';
+import navigationService from 'utils/navigationService';
 
 export default function ManualBackup() {
   const styles = getStyles();
@@ -39,7 +40,7 @@ export default function ManualBackup() {
     return (
       <Touchable style={styles.button} onPress={onCopy}>
         <Svg icon="copy" size={pTd(20)} />
-        <Text style={styles.buttonText}>Paste from clipboard</Text>
+        <Text style={styles.buttonText}>Copy to clipboard</Text>
       </Touchable>
     );
   }, [onCopy, styles]);
@@ -48,7 +49,7 @@ export default function ManualBackup() {
     return (
       <View style={styles.button}>
         <Svg icon="check-circle" size={pTd(20)} color={theme.colors.iconSuccess2} />
-        <Text style={styles.copyText}>Copied</Text>
+        <Text style={styles.copyText}>Seed phrase copied</Text>
       </View>
     );
   }, [styles, theme]);
@@ -58,7 +59,7 @@ export default function ManualBackup() {
       <View style={styles.reminderWrap}>
         <Svg icon="info" size={pTd(22)} color={theme.colors.bgBrand4} />
         <Text style={styles.reminderText}>
-          Next, you&apos;ll be asked to confirm the word at certain positions in your Secret Recovery Phrase.
+          Next, verify your seed phrase by selecting the words in the correct order.
         </Text>
       </View>
     );
@@ -73,8 +74,8 @@ export default function ManualBackup() {
       scrollViewProps={{ disabled: true }}>
       <Text style={styles.title}>Manual backup</Text>
       <Text style={styles.desc}>
-        This is the only way to recover your account. Save your Secret Recovery Phrase in a secure place that only you
-        control.
+        Keep a copy of your seed phrase at a safe place. DO NOT share it with anyone as this could result in wallet and
+        asset loss.
       </Text>
       <View style={styles.mnemonicsWrap}>
         {mnemonics.map((mnemonic, index) => (
@@ -93,8 +94,13 @@ export default function ManualBackup() {
       </View>
       {copied ? copiedView : copyButton}
       {reminderUI}
-      <CommonButton style={styles.continueButton}>
-        <Text>I&apos;ve backed up. Continue!</Text>
+      <CommonButton
+        type="primary"
+        style={styles.continueButton}
+        onPress={() => {
+          navigationService.push('ConfirmBackup');
+        }}>
+        Continue
       </CommonButton>
     </PageContainer>
   );

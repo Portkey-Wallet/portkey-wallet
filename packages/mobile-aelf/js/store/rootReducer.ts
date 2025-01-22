@@ -6,6 +6,7 @@ import userSlice from './user/slice';
 import { walletSlice } from '@portkey-wallet/store/store-eoa/wallet/slice';
 import { settingsSlice } from '@portkey-wallet/store/settings/slice';
 import chainSlice from '@portkey-wallet/store/network/slice';
+import { networkSlice } from '@portkey-wallet/store/store-eoa/network/slice';
 
 const userPersistConfig = {
   key: userSlice.name,
@@ -40,6 +41,7 @@ const rootReducer = combineReducers({
   [walletSlice.name]: walletSlice.reducer,
   [settingsSlice.name]: settingsSlice.reducer,
   [chainSlice.name]: chainSlice.reducer,
+  [networkSlice.name]: networkSlice.reducer,
   // [contactSlice.name]: contactSlice.reducer,
   // [miscSlice.name]: miscSlice.reducer,
   // [guardiansSlice.name]: guardiansSlice.reducer,

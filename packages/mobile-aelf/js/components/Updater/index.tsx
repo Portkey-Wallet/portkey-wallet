@@ -1,56 +1,35 @@
-import { request } from '@portkey-wallet/api/api-did';
-import { useChainListFetch } from '@portkey-wallet/hooks/hooks-ca/chainList';
-import { service } from 'api/utils';
-import { usePin } from 'hooks/store';
+import { request } from '@portkey-wallet/api/api-eoa';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-eoa/network';
+import { useInitChainList } from '@portkey-wallet/hooks/hooks-eoa/network/chain';
+
 import useEffectOnce from 'hooks/useEffectOnce';
 import { useLanguage } from 'i18n/hooks';
-import { useEffect, useMemo } from 'react';
-import { useRefreshTokenConfig } from '@portkey-wallet/hooks/hooks-ca/api';
-import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
-import useLocking from 'hooks/useLocking';
-import { useCaInfoOnChain } from 'hooks/useCaInfoOnChain';
-import { useFetchSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
-import { useCheckManager } from '@portkey-wallet/hooks/hooks-ca/graphql';
-import { useCheckManagerOnLogout } from 'hooks/useLogOut';
-import { usePhoneCountryCode } from '@portkey-wallet/hooks/hooks-ca/misc';
-import {
-  useDiscoverGroupList,
-  useSocialMediaList,
-  useRememberMeBlackList,
-  useTabMenuList,
-} from '@portkey-wallet/hooks/hooks-ca/cms';
+import { useMemo } from 'react';
 import { exceptionManager } from 'utils/errorHandler/ExceptionHandler';
-import EntryScriptWeb3 from 'utils/EntryScriptWeb3';
-import { useFetchTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
-import { useCheckAndInitNetworkDiscoverMap } from 'hooks/discover';
-import im from '@portkey-wallet/im';
-import s3Instance from '@portkey-wallet/utils/s3';
-import Config from 'react-native-config';
-import { useCheckContactMap } from '@portkey-wallet/hooks/hooks-ca/contact';
-import { useAppEntrance } from 'hooks/cms';
-import { codePushOperator } from 'utils/update';
-import { useCheckCodePushUpdate } from 'store/user/hooks';
-import useInterval from '@portkey-wallet/hooks/useInterval';
-import { useLatestRef } from '@portkey-wallet/hooks';
-import MatchValueMap from 'utils/matchValueMap';
-import { useInitCmsBanner } from '@portkey-wallet/hooks/hooks-ca/cms/banner';
-import { useInitCMSDiscoverNewData, useInitDappWhiteListData } from '@portkey-wallet/hooks/hooks-ca/cms/discover';
-import { useInitAwaken } from '@portkey-wallet/hooks/hooks-ca/awaken';
+import { service } from 'api/utils';
 
 request.setExceptionManager(exceptionManager);
 
-const CHECK_CODE_PUSH_TIME = 5 * 60 * 1000;
-
 export default function Updater() {
-  const isMainnet = useIsMainnet();
+  // const isMainnet = useIsMainnet();
 
   // FIXME: delete language
   const { changeLanguage } = useLanguage();
   useEffectOnce(() => {
     changeLanguage('en');
   });
+
+  const { apiUrl } = useCurrentNetworkInfo();
+  useMemo(() => {
+    request.set('baseURL', apiUrl);
+    if (service.defaults.baseURL !== apiUrl) {
+      service.defaults.baseURL = apiUrl;
+    }
+  }, [apiUrl]);
+
+  useInitChainList();
   // useChainListFetch();
-  // const { apiUrl, imApiUrl, imWsUrl, imS3Bucket } = useCurrentNetworkInfo();
+
   // const pin = usePin();
   // const onLocking = useLocking();
   // const checkManagerOnLogout = useCheckManagerOnLogout();
@@ -68,12 +47,7 @@ export default function Updater() {
   // useCheckAndInitNetworkDiscoverMap();
   // useFetchSymbolImages();
   // useFetchTxFee();
-  // useMemo(() => {
-  //   request.set('baseURL', apiUrl);
-  //   if (service.defaults.baseURL !== apiUrl) {
-  //     service.defaults.baseURL = apiUrl;
-  //   }
-  // }, [apiUrl]);
+
   // useMemo(() => {
   //   im.setUrl({
   //     apiUrl: imApiUrl || '',

@@ -8,11 +8,17 @@ import CommonButton from 'components/CommonButton';
 import navigationService from 'utils/navigationService';
 import { useCheckSecurityLock } from 'hooks/securityLock';
 import { useBackupWalletModal } from '../../Login/hooks/useBackupWalletModal';
+import * as Clipboard from 'expo-clipboard';
+import { useGetContract, useGetViewContract } from 'hooks/contract';
+import { useCurrentNetwork, useSwitchNetwork } from '@portkey-wallet/hooks/hooks-eoa/network';
+import { useDAppChain, useDAppChainId, useGetChainInfo } from '@portkey-wallet/hooks/hooks-eoa/network/chain';
 
 const HomeTab: React.FC<any> = ({ _ }) => {
   const { theme } = useTheme();
   const currentAccount = useCurrentAccount();
   const walletList = useWalletListState();
+  const currentNetwork = useCurrentNetwork();
+
   useEffect(() => {
     console.log('currentAccount', currentAccount);
     console.log('walletList', walletList);
@@ -32,39 +38,98 @@ const HomeTab: React.FC<any> = ({ _ }) => {
 
   const { showBackupWalletModal } = useBackupWalletModal();
 
+  const dAppChain = useDAppChain();
+  const getContract = useGetContract();
+  // const getTokenContract = useGetTokenContract();
+  const sendElf = useCallback(async () => {
+    if (!dAppChain) {
+      return;
+    }
+    try {
+      console.log('send ELF');
+      // const contract = await getTokenContract(dAppChain.chainId);
+      const contract = await getContract(dAppChain.chainId, dAppChain.defaultToken.address);
+      const result = await contract.callSendMethod('Transfer', currentAccount?.address || '', {
+        to: 'ELF_bPVEs5WFMMwiqPnaXiJpTmoR9xYVqBK2QDLZdA3HChqNebFQz_tDVW',
+        symbol: 'ELF',
+        amount: '10000000',
+        memo: '',
+      });
+      console.log('result', result);
+    } catch (error) {
+      console.log('sendElf error', error);
+    }
+  }, [currentAccount?.address, dAppChain, getContract]);
+
+  // const getTokenViewContract = useGetTokenViewContract();
+  const getViewContract = useGetViewContract();
+
+  const dAppChainId = useDAppChainId();
+  const getChainInfo = useGetChainInfo();
+  const getBalance = useCallback(async () => {
+    try {
+      // const viewContract = await getTokenViewContract('tDVW');
+
+      const chainInfo = getChainInfo(dAppChainId);
+      const viewContract = await getViewContract({
+        chainId: 'tDVW',
+        contractAddress: chainInfo?.defaultToken.address || '',
+      });
+      const result = await viewContract.callViewMethod('GetBalance', {
+        symbol: 'ELF',
+        owner: currentAccount?.address || '',
+      });
+      console.log('result', result);
+    } catch (error) {
+      console.log('getBalance error', error);
+    }
+  }, [currentAccount?.address, dAppChainId, getChainInfo, getViewContract]);
+
+  const switchNetwork = useSwitchNetwork();
+
   return (
     <SafeAreaBox edges={['top', 'right', 'left']} style={{ backgroundColor: theme.colors.bgBase1 }}>
       <ScrollView>
         <TextM>Home Tab</TextM>
         <TextM>{`Address: ${currentAccount?.address}`}</TextM>
-        <CommonButton type="primary" onPress={() => navigationService.push('Home')}>
+        <TextM>{`Network: ${currentNetwork}`}</TextM>
+
+        <CommonButton type="primary" onPress={() => Clipboard.setStringAsync(currentAccount?.address || '')}>
+          Copy Address
+        </CommonButton>
+
+        <CommonButton type="primary" onPress={switchNetwork} style={{ marginTop: 20 }}>
+          Switch Network
+        </CommonButton>
+
+        <CommonButton type="primary" onPress={() => navigationService.push('Home')} style={{ marginTop: 20 }}>
           Home
         </CommonButton>
-        <CommonButton type="primary" onPress={() => navigationService.push('ImportWallet')} style={{ marginTop: 40 }}>
+        <CommonButton type="primary" onPress={() => navigationService.push('ImportWallet')} style={{ marginTop: 20 }}>
           Import Wallets
         </CommonButton>
         <CommonButton
           type="primary"
           onPress={() => navigationService.push('WalletImportTypeSelect')}
-          style={{ marginTop: 40 }}>
+          style={{ marginTop: 20 }}>
           WalletImportTypeSelect
         </CommonButton>
-        <CommonButton type="primary" onPress={() => navigationService.push('ConfirmBackup')} style={{ marginTop: 40 }}>
+        <CommonButton type="primary" onPress={() => navigationService.push('ConfirmBackup')} style={{ marginTop: 20 }}>
           Confirm Backup
         </CommonButton>
         <CommonButton
           type="primary"
           onPress={() => navigationService.push('ManualBackupSuccess')}
-          style={{ marginTop: 40 }}>
+          style={{ marginTop: 20 }}>
           Confirm Backup Success
         </CommonButton>
-        <CommonButton type="primary" onPress={() => navigationService.push('ManualBackup')} style={{ marginTop: 40 }}>
+        <CommonButton type="primary" onPress={() => navigationService.push('ManualBackup')} style={{ marginTop: 20 }}>
           Manual Backup
         </CommonButton>
-        <CommonButton type="primary" onPress={() => navigationService.push('Referral')} style={{ marginTop: 40 }}>
+        <CommonButton type="primary" onPress={() => navigationService.push('Referral')} style={{ marginTop: 20 }}>
           Referral
         </CommonButton>
-        <CommonButton type="primary" onPress={checkPin} style={{ marginTop: 40 }}>
+        <CommonButton type="primary" onPress={checkPin} style={{ marginTop: 20 }}>
           Check Pin
         </CommonButton>
         <CommonButton
@@ -72,8 +137,15 @@ const HomeTab: React.FC<any> = ({ _ }) => {
           onPress={() => {
             showBackupWalletModal();
           }}
-          style={{ marginTop: 40 }}>
+          style={{ marginTop: 20 }}>
           Backup Modal
+        </CommonButton>
+
+        <CommonButton type="primary" onPress={getBalance} style={{ marginTop: 20 }}>
+          ELF Balance tDVW
+        </CommonButton>
+        <CommonButton type="primary" onPress={sendElf} style={{ marginTop: 20 }}>
+          Send ELF
         </CommonButton>
       </ScrollView>
     </SafeAreaBox>

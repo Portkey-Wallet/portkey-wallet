@@ -1,4 +1,4 @@
-import { ChainType } from '@portkey-wallet/types';
+import { ChainId, ChainType } from '@portkey-wallet/types';
 import { ChainItemType } from '@portkey-wallet/types/chain';
 
 export const DefaultChain: ChainItemType = {
@@ -22,3 +22,5 @@ export const DefaultChain: ChainItemType = {
 };
 
 export const NetworkSeries: { label: string; chainType: ChainType }[] = [{ label: 'AELF series', chainType: 'aelf' }];
+
+export const MAIN_CHAIN_ID: ChainId = 'AELF';

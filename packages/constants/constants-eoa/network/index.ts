@@ -1,0 +1,42 @@
+import { NetworkItem } from '@portkey-wallet/types/types-eoa/network';
+import { BackEndNetWorkMap } from './backend-network';
+import { T_ENV_NAME } from '@portkey-wallet/types';
+
+export const NetworkList: NetworkItem[] = [
+  BackEndNetWorkMap['back-end-mainnet'],
+  BackEndNetWorkMap['back-end-testnet'],
+];
+
+export const DefaultChainId = 'AELF';
+
+export const OfficialWebsite = 'https://portkey.finance';
+
+export const ThirdParty = `https://thirdparty.portkey.finance`;
+
+export const OpenLogin = `https://openlogin.portkey.finance`;
+
+const EBridgeList = NetworkList.map(i => i.eBridgeUrl).filter(i => !!i) as string[];
+const ETransferList = NetworkList.map(i => i.eTransferUrl).filter(i => !!i) as string[];
+const AwakenUrlList = NetworkList.map(i => i.awakenUrl).filter(i => !!i) as string[];
+const SchrodingerList = NetworkList.map(i => i.schrodingerUrl).filter(i => !!i) as string[];
+const SGRSchrodingerList = NetworkList.map(i => i.sgrSchrodingerUrl).filter(i => !!i) as string[];
+const ReferralList = NetworkList.map(i => i.referralUrl).filter(i => !!i) as string[];
+const ForestUrlList = NetworkList.map(i => i.eForestUrl).filter(i => !!i) as string[];
+const TomorrowDAOUrlList = NetworkList.map(i => i.tomorrowDAOUrl).filter(i => !!i) as string[];
+const HamsterUrlList = NetworkList.map(i => i.hamsterUrl).filter(i => !!i) as string[];
+
+export const DAPP_WHITELIST: string[] = [
+  ...EBridgeList,
+  ...ETransferList,
+  ...AwakenUrlList,
+  ...SchrodingerList,
+  ...SGRSchrodingerList,
+  ...ReferralList,
+  ...ForestUrlList,
+  ...TomorrowDAOUrlList,
+  ...HamsterUrlList,
+];
+
+export const LinkPortkeyWebsite = OfficialWebsite;
+
+export const ENV_NAME: T_ENV_NAME = 'online';

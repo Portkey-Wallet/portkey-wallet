@@ -304,13 +304,21 @@ export default function RegisterStart() {
       if (isHasAccount?.current) {
         if (type === 'create') {
           setLoading(false);
-          return setOpen(true);
+          if (loginInfo.loginType === LoginType.Email) {
+            return setOpen(true);
+          } else {
+            return onLoginFinish(loginInfo);
+          }
         } else return onLoginFinish(loginInfo);
       }
       if (type === 'create') return onSignFinish(loginInfo);
       else {
         setLoading(false);
-        return setOpen(true);
+        if (loginInfo.loginType === LoginType.Email) {
+          return setOpen(true);
+        } else {
+          return onSignFinish(loginInfo);
+        }
       }
     },
     [onLoginFinish, onSignFinish, setLoading, type],

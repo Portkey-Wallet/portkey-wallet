@@ -76,3 +76,12 @@ export const useIsAccountExist = () => {
 
   return useMemo(() => list.length > 0, [list.length]);
 };
+
+export const useCurrentWallet = () => {
+  const walletList = useWalletListState();
+  const currentAccountAddress = useCurrentAccountAddressState();
+
+  return useMemo(() => {
+    return walletList.find(wallet => wallet.accountList.some(account => account.address === currentAccountAddress));
+  }, [walletList, currentAccountAddress]);
+};

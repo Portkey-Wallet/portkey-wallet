@@ -3,20 +3,25 @@ import SafeAreaBox from 'components/SafeAreaBox';
 import { useTheme } from '@rneui/themed';
 import { TextM } from 'components/CommonText';
 import { ScrollView } from 'react-native';
-import { useCurrentAccount, useWalletListState } from '@portkey-wallet/hooks/hooks-eoa/wallet';
+import { useCurrentAccount, useCurrentWallet, useWalletListState } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 import CommonButton from 'components/CommonButton';
 import navigationService from 'utils/navigationService';
 import { useCheckSecurityLock } from 'hooks/securityLock';
 import { useBackupWalletModal } from '../../Login/hooks/useBackupWalletModal';
+import { useCredentials } from '../../../hooks/store';
 
 const HomeTab: React.FC<any> = ({ _ }) => {
   const { theme } = useTheme();
   const currentAccount = useCurrentAccount();
   const walletList = useWalletListState();
+  const currentWallet = useCurrentWallet();
+  const credentials = useCredentials();
+
   useEffect(() => {
     console.log('currentAccount', currentAccount);
     console.log('walletList', walletList);
-  }, [currentAccount, walletList]);
+    console.log('currentWallet', currentWallet);
+  }, [currentAccount, walletList, currentWallet]);
 
   const checkSecurityLock = useCheckSecurityLock();
   const checkPin = useCallback(async () => {
@@ -49,7 +54,27 @@ const HomeTab: React.FC<any> = ({ _ }) => {
           style={{ marginTop: 40 }}>
           WalletImportTypeSelect
         </CommonButton>
-        <CommonButton type="primary" onPress={() => navigationService.push('ConfirmBackup')} style={{ marginTop: 40 }}>
+        <CommonButton
+          type="primary"
+          onPress={() =>
+            navigationService.push('ConfirmBackup', {
+              mnemonics: [
+                'seed',
+                'sock',
+                'milk',
+                'update',
+                'focus',
+                'rotate',
+                'barely',
+                'fade',
+                'car',
+                'face',
+                'mechanic',
+                'mercy',
+              ],
+            })
+          }
+          style={{ marginTop: 40 }}>
           Confirm Backup
         </CommonButton>
         <CommonButton
@@ -58,7 +83,14 @@ const HomeTab: React.FC<any> = ({ _ }) => {
           style={{ marginTop: 40 }}>
           Confirm Backup Success
         </CommonButton>
-        <CommonButton type="primary" onPress={() => navigationService.push('ManualBackup')} style={{ marginTop: 40 }}>
+        <CommonButton
+          type="primary"
+          onPress={() =>
+            navigationService.push('ManualBackup', {
+              pin: credentials?.pin,
+            })
+          }
+          style={{ marginTop: 40 }}>
           Manual Backup
         </CommonButton>
         <CommonButton type="primary" onPress={() => navigationService.push('Referral')} style={{ marginTop: 40 }}>

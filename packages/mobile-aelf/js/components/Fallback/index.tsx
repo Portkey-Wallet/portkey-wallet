@@ -27,7 +27,7 @@ export function Fallback({ resetError }: FallbackProps) {
               <Image source={errorUrl} style={styles.errorImgWrap} />
               <View style={styles.errorText}>
                 <Text style={styles.title}>Oops!</Text>
-                <TextL style={styles.subTitle}>{`Just a minor hiccup. Your wallet is perfectly safe!`}</TextL>
+                <TextL style={styles.subTitle}>{'Just a minor hiccup. Your wallet is perfectly safe!'}</TextL>
               </View>
             </View>
             <CommonButton type="primary" onPress={resetError} title="Reload" />

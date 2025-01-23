@@ -3,8 +3,8 @@ import React, { memo, useEffect, useMemo, useState } from 'react';
 import { Animated, StyleSheet, View, ViewStyle } from 'react-native';
 import { formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import { pTd } from 'utils/unit';
-import { ActivityItemType } from '@portkey-wallet/types/types-ca/activity';
-import { SHOW_FROM_TRANSACTION_TYPES, TransactionTypes } from '@portkey-wallet/constants/constants-ca/activity';
+import { ActivityItemType } from '@portkey-wallet/types/types-eoa/activity';
+import { SHOW_FROM_TRANSACTION_TYPES, TransactionTypes } from '@portkey-wallet/constants/constants-eoa/activity';
 import {
   AmountSign,
   formatAmountUSDShow,
@@ -13,7 +13,7 @@ import {
 } from '@portkey-wallet/utils/converter';
 import { addressFormat } from '@portkey-wallet/utils';
 import CommonAvatar from 'components/CommonAvatar';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import Touchable from 'components/Touchable';
 import { formatActivityTimeRevamp, isSameDay } from '@portkey-wallet/utils/time';
@@ -23,7 +23,7 @@ import GStyles from 'assets/theme/GStyles';
 import fonts from 'assets/theme/fonts';
 import DoubleAvatar from 'components/DoubleAvatar';
 import { TextL, TextM } from 'components/CommonText';
-import { contractStatusEnum } from '@portkey-wallet/constants/constants-ca/common';
+import { contractStatusEnum } from '@portkey-wallet/constants/constants-eoa/common';
 import Lottie from 'lottie-react-native';
 import { makeStyles } from '@rneui/themed';
 

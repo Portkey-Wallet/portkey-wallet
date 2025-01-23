@@ -1,10 +1,24 @@
 import { request } from '@portkey-wallet/api/api-eoa';
-import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-eoa/network';
+// import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { useInitChainList } from '@portkey-wallet/hooks/hooks-eoa/network/chain';
 
 import useEffectOnce from 'hooks/useEffectOnce';
 import { useLanguage } from 'i18n/hooks';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
+import { useRefreshTokenConfig } from '@portkey-wallet/hooks/hooks-ca/api';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-eoa/network';
+import useLocking from 'hooks/useLocking';
+import { useCaInfoOnChain } from 'hooks/useCaInfoOnChain';
+import { useFetchSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
+import { useCheckManager } from '@portkey-wallet/hooks/hooks-ca/graphql';
+import { useCheckManagerOnLogout } from 'hooks/useLogOut';
+import { usePhoneCountryCode } from '@portkey-wallet/hooks/hooks-ca/misc';
+import {
+  useDiscoverGroupList,
+  useSocialMediaList,
+  useRememberMeBlackList,
+  useTabMenuList,
+} from '@portkey-wallet/hooks/hooks-ca/cms';
 import { exceptionManager } from 'utils/errorHandler/ExceptionHandler';
 import { service } from 'api/utils';
 
@@ -19,25 +33,26 @@ export default function Updater() {
     changeLanguage('en');
   });
 
-  const { apiUrl } = useCurrentNetworkInfo();
-  useMemo(() => {
-    request.set('baseURL', apiUrl);
-    if (service.defaults.baseURL !== apiUrl) {
-      service.defaults.baseURL = apiUrl;
-    }
-  }, [apiUrl]);
+  // const { apiUrl } = useCurrentNetworkInfo();
+  // useMemo(() => {
+  //   request.set('baseURL', apiUrl);
+  //   if (service.defaults.baseURL !== apiUrl) {
+  //     service.defaults.baseURL = apiUrl;
+  //   }
+  // }, [apiUrl]);
 
   useInitChainList();
   // useChainListFetch();
-
+  const { apiUrl, imApiUrl, imWsUrl, imS3Bucket, eoaApiUrl } = useCurrentNetworkInfo();
   // const pin = usePin();
   // const onLocking = useLocking();
   // const checkManagerOnLogout = useCheckManagerOnLogout();
-  // const refreshTokenConfig = useRefreshTokenConfig();
+  const refreshTokenConfig = useRefreshTokenConfig();
   // const checkCodePushUpdate = useCheckCodePushUpdate();
 
   // const latestCheckCodePushUpdate = useLatestRef(checkCodePushUpdate);
   // useMemo(async () => {
+  //   console.log('pin=====', pin);
   //   await refreshTokenConfig(pin);
   // }, [pin, refreshTokenConfig]);
 
@@ -47,7 +62,13 @@ export default function Updater() {
   // useCheckAndInitNetworkDiscoverMap();
   // useFetchSymbolImages();
   // useFetchTxFee();
-
+  useMemo(() => {
+    console.log('eoaApiUrl===', eoaApiUrl);
+    request.set('baseURL', eoaApiUrl);
+    if (service.defaults.baseURL !== eoaApiUrl) {
+      service.defaults.baseURL = eoaApiUrl;
+    }
+  }, [eoaApiUrl]);
   // useMemo(() => {
   //   im.setUrl({
   //     apiUrl: imApiUrl || '',

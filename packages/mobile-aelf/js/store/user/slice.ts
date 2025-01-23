@@ -1,7 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { UserStoreState } from './types';
 
-const initialState: UserStoreState = {};
+const initialState: UserStoreState = {
+};
 const userSlice = createSlice({
   name: 'user',
   initialState,

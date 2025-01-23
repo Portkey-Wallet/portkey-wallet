@@ -14,4 +14,5 @@ export interface IChainItemType {
   explorerUrl: string;
   defaultToken: DefaultToken;
   chainImageUrl?: string;
+  displayChainName?: string;
 }

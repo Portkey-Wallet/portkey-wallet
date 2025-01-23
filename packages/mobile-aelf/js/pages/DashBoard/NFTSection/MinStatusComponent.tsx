@@ -13,19 +13,22 @@ interface MintStatusIconProps {
 const MinStatusComponent = (props: MintStatusIconProps) => {
   const { status = MintStatus.Minted } = props;
 
-  if (status === MintStatus.Minting)
+  if (status === MintStatus.Minting) {
     return (
       <Lottie style={styles.loadingStyle} source={require('../../../assets/lottieFiles/loading.json')} autoPlay loop />
     );
+  }
 
-  if (status === MintStatus.Minted)
+  if (status === MintStatus.Minted) {
     return (
       <View style={[styles.iconShade, styles.borderRadios]}>
         <Svg icon="minted" size={pTd(20)} />
       </View>
     );
-
-  if (status === MintStatus.MintFailed) return <Svg icon="error" size={pTd(20)} />;
+  }
+  if (status === MintStatus.MintFailed) {
+    return <Svg icon="error" size={pTd(20)} />;
+  }
 
   return null;
 };

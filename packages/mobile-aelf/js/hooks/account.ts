@@ -1,27 +1,32 @@
-import { useCaAddressInfoList, useChainIdList, useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentAddressInfos, useChainIdList, useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 import { useLatestRef, useThrottleCallback } from '@portkey-wallet/hooks';
-import { useAccountTokenInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
-import { PAGE_SIZE_IN_ACCOUNT_ASSETS, PAGE_SIZE_IN_ACCOUNT_TOKEN } from '@portkey-wallet/constants/constants-ca/assets';
+import { useAccountTokenInfo } from '@portkey-wallet/hooks/hooks-eoa/assets';
+import {
+  PAGE_SIZE_IN_ACCOUNT_ASSETS,
+  PAGE_SIZE_IN_ACCOUNT_TOKEN,
+} from '@portkey-wallet/constants/constants-eoa/assets';
 import useToken from '@portkey-wallet/hooks/hooks-ca/useToken';
 
 export function useGetAccountTokenList() {
-  const { caAddressList } = useCurrentWalletInfo();
-  const caAddressInfoList = useCaAddressInfoList();
+  // const addressList = useCurrentAddressInfos();
+  const addressInfoList = useCurrentAddressInfos();
 
   const { fetchAccountTokenInfoList } = useAccountTokenInfo();
 
-  const lastCaAddressInfoList = useLatestRef(caAddressInfoList);
+  const lastCaAddressInfoList = useLatestRef(addressInfoList);
   return useThrottleCallback(
     () => {
-      if (caAddressList?.length === 0) return;
+      if (addressInfoList?.length === 0) {
+        return;
+      }
       return fetchAccountTokenInfoList({
-        caAddressInfos: lastCaAddressInfoList.current || [],
+        addressInfos: lastCaAddressInfoList.current || [],
         skipCount: 0,
         maxResultCount: PAGE_SIZE_IN_ACCOUNT_TOKEN,
       });
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [caAddressList, caAddressInfoList, lastCaAddressInfoList],
+    [addressInfoList, addressInfoList, lastCaAddressInfoList],
     1000,
   );
 }
@@ -29,12 +34,14 @@ export function useGetAccountTokenList() {
 export function useGetAllTokenInfoList() {
   const { fetchTokenInfoList } = useToken();
 
-  const caAddressInfoList = useCaAddressInfoList();
+  const addressInfoList = useCurrentAddressInfos();
   const chainIdList = useChainIdList();
 
   return useThrottleCallback(
     () => {
-      if (caAddressInfoList?.length === 0) return;
+      if (addressInfoList?.length === 0) {
+        return;
+      }
       return fetchTokenInfoList({
         chainIdArray: chainIdList,
         keyword: '',
@@ -42,7 +49,7 @@ export function useGetAllTokenInfoList() {
         maxResultCount: PAGE_SIZE_IN_ACCOUNT_ASSETS,
       });
     },
-    [caAddressInfoList?.length, chainIdList, fetchTokenInfoList],
+    [addressInfoList?.length, chainIdList, fetchTokenInfoList],
     1000,
   );
 }

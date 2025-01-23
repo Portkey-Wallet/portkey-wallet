@@ -1,17 +1,18 @@
 import React, { useMemo } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-// import DashBoard from 'pages/DashBoard';
+import DashBoard from 'pages/DashBoard';
 import Svg, { IconName } from 'components/Svg';
 import { defaultColors } from 'assets/theme';
 // import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 // import useLogOut from 'hooks/useLogOut';
 // import useInitData from 'hooks/useInitData';
 // import DiscoverHome from 'pages/Discover/DiscoverHome';
-// import ActivityListPage from 'pages/Activity/ActivityListPage';
+import ActivityListPage from 'pages/Activity/ActivityListPage';
 import { pTd } from 'utils/unit';
 // import { resetBadge } from 'utils/notifee';
 import { TabRouteNameEnum } from 'types/navigate';
 import HomeTab from 'pages/Home/HomeTab';
+import { TextM } from 'components/CommonText';
 // import { useIsAccountExist } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 
 const Tab = createBottomTabNavigator();
@@ -29,29 +30,29 @@ export interface IRenderTabMenuItem {
 // export const tabMenuTypeMap: Record<TabRouteNameEnum, IRenderTabMenuItem> = {
 export const tabMenuTypeMap: Record<string, IRenderTabMenuItem> = {
   ['Home']: {
-    name: TabRouteNameEnum.WALLET,
+    name: TabRouteNameEnum.TEST,
     index: 0,
     label: 'Wallet',
     icon: 'home',
     isDefault: true,
     component: HomeTab,
   },
-  // [TabRouteNameEnum.WALLET]: {
-  //   name: TabRouteNameEnum.WALLET,
-  //   index: 0,
-  //   label: 'Wallet',
-  //   icon: 'home',
-  //   isDefault: true,
-  //   component: DashBoard,
-  // },
-  // [TabRouteNameEnum.ACTIVITY]: {
-  //   name: TabRouteNameEnum.ACTIVITY,
-  //   index: 1,
-  //   label: 'Activity',
-  //   largeIcon: 'clock',
-  //   icon: 'clock',
-  //   component: ActivityListPage,
-  // },
+  [TabRouteNameEnum.WALLET]: {
+    name: TabRouteNameEnum.WALLET,
+    index: 0,
+    label: 'Wallet',
+    icon: 'home',
+    isDefault: true,
+    component: DashBoard,
+  },
+  [TabRouteNameEnum.ACTIVITY]: {
+    name: TabRouteNameEnum.ACTIVITY,
+    index: 1,
+    label: 'Activity',
+    largeIcon: 'clock',
+    icon: 'clock',
+    component: ActivityListPage,
+  },
   // [TabRouteNameEnum.DISCOVER]: {
   //   name: TabRouteNameEnum.DISCOVER,
   //   index: 2,
@@ -89,7 +90,7 @@ export default function TabRoot() {
 
   return (
     <Tab.Navigator
-      initialRouteName="Wallet"
+      initialRouteName="Test"
       screenOptions={({ route }) => ({
         tabBarStyle: {
           paddingTop: 0,

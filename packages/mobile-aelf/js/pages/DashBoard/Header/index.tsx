@@ -13,9 +13,11 @@ import { useQrScanPermissionAndToast } from 'hooks/useQrScan';
 import navigationService from 'utils/navigationService';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { makeStyles, useTheme } from '@rneui/themed';
+import { useCurrentAccount } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 
 const DashBoardHeader: React.FC = () => {
-  const userInfo = useCurrentUserInfo();
+  // const userInfo = useCurrentUserInfo();
+  const userInfo = useCurrentAccount();
   const qrScanPermissionAndToast = useQrScanPermissionAndToast();
   const styles = getStyles();
   const { theme } = useTheme();
@@ -35,19 +37,19 @@ const DashBoardHeader: React.FC = () => {
   const leftDom = useMemo(() => {
     return (
       <Animated.View style={styles.leftDomWrap}>
-        {userInfo?.nickName ? (
+        {userInfo?.name ? (
           <TouchableOpacity onPress={onShowAccountSetting} style={styles.leftTouchableDomWrap}>
             <CommonAvatar
-              hasBorder={!userInfo?.avatar}
-              title={userInfo?.nickName}
+              hasBorder={true}
+              title={userInfo?.name}
               avatarSize={pTd(24)}
-              imageUrl={userInfo?.avatar || ''}
+              imageUrl={''}
               resizeMode="cover"
               titleStyle={{ fontSize: pTd(14) }}
             />
             <View style={styles.accountNameWrap}>
               <TextM numberOfLines={1} style={[styles.accountName, GStyles.maxWidth(nickNameMaxWidth)]}>
-                {userInfo.nickName}
+                {userInfo.name}
               </TextM>
               <View style={styles.arrowIconWrap}>
                 <Svg icon="keyboard_arrow_down" size={pTd(12)} />
@@ -62,7 +64,19 @@ const DashBoardHeader: React.FC = () => {
         )}
       </Animated.View>
     );
-  }, [nickNameMaxWidth, onShowAccountSetting, userInfo?.avatar, userInfo.nickName, styles]);
+  }, [
+    styles.leftDomWrap,
+    styles.leftTouchableDomWrap,
+    styles.accountNameWrap,
+    styles.accountName,
+    styles.arrowIconWrap,
+    styles.skeletonWrap,
+    styles.skeletonIcon,
+    styles.skeletonText,
+    userInfo?.name,
+    onShowAccountSetting,
+    nickNameMaxWidth,
+  ]);
 
   const rightDom = useMemo(() => {
     return (

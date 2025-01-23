@@ -3,22 +3,27 @@ import SafeAreaBox from 'components/SafeAreaBox';
 import { useTheme } from '@rneui/themed';
 import { TextM } from 'components/CommonText';
 import { ScrollView } from 'react-native';
-import { useCurrentAccount, useWalletListState } from '@portkey-wallet/hooks/hooks-eoa/wallet';
-import CommonButton from 'components/CommonButton';
-import navigationService from 'utils/navigationService';
-import { useCheckSecurityLock } from 'hooks/securityLock';
 import { useBackupWalletModal } from '../../Login/hooks/useBackupWalletModal';
 import * as Clipboard from 'expo-clipboard';
 import { useGetContract, useGetViewContract } from 'hooks/contract';
 import { useCurrentNetwork, useSwitchNetwork } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { useDAppChain, useDAppChainId, useGetChainInfo } from '@portkey-wallet/hooks/hooks-eoa/network/chain';
+import { useCurrentAccount, useSwitchNetworkType, useWalletListState } from '@portkey-wallet/hooks/hooks-eoa/wallet';
+import CommonButton from 'components/CommonButton';
+import navigationService from 'utils/navigationService';
+import { useCheckSecurityLock } from 'hooks/securityLock';
+import { useAppCommonDispatch, useAppEOASelector } from '@portkey-wallet/hooks';
+import { resetWallet } from '@portkey-wallet/store/store-eoa/wallet/actions';
 
 const HomeTab: React.FC<any> = ({ _ }) => {
+  const a = useAppEOASelector(state => state);
+  console.log('a=========', JSON.stringify(a));
   const { theme } = useTheme();
   const currentAccount = useCurrentAccount();
   const walletList = useWalletListState();
+  const dispatch = useAppCommonDispatch();
+  const switchNetwork = useSwitchNetworkType();
   const currentNetwork = useCurrentNetwork();
-
   useEffect(() => {
     console.log('currentAccount', currentAccount);
     console.log('walletList', walletList);
@@ -86,7 +91,27 @@ const HomeTab: React.FC<any> = ({ _ }) => {
   }, [currentAccount?.address, dAppChainId, getChainInfo, getViewContract]);
 
   const switchNetwork = useSwitchNetwork();
-
+  const resetWalletClick = useCallback(async () => {
+    try {
+      dispatch(resetWallet());
+      navigationService.reset('Referral');
+    } catch (error) {
+      console.log('checkPin error', error);
+    }
+  }, [dispatch]);
+  const switchNetworkClick = useCallback(async () => {
+    try {
+      switchNetwork();
+      // navigationService.reset('Referral');
+    } catch (error) {
+      console.log('checkPin error', error);
+    }
+  }, [switchNetwork]);
+  useEffect(() => {
+    if (walletList.length < 1) {
+      navigationService.reset('Referral');
+    }
+  }, [walletList.length]);
   return (
     <SafeAreaBox edges={['top', 'right', 'left']} style={{ backgroundColor: theme.colors.bgBase1 }}>
       <ScrollView>
@@ -146,6 +171,12 @@ const HomeTab: React.FC<any> = ({ _ }) => {
         </CommonButton>
         <CommonButton type="primary" onPress={sendElf} style={{ marginTop: 20 }}>
           Send ELF
+        </CommonButton>
+        <CommonButton type="primary" onPress={resetWalletClick} style={{ marginTop: 40 }}>
+          Reset Wallet
+        </CommonButton>
+        <CommonButton type="primary" onPress={switchNetworkClick} style={{ marginTop: 40 }}>
+          Switch NetworkType (current: {currentNetwork})
         </CommonButton>
       </ScrollView>
     </SafeAreaBox>

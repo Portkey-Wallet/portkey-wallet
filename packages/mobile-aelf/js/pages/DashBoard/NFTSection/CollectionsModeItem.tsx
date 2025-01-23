@@ -6,7 +6,7 @@ import { pTd, pTdFloor } from 'utils/unit';
 import GStyles from 'assets/theme/GStyles';
 import CommonAvatar from 'components/CommonAvatar';
 import { TextL } from 'components/CommonText';
-import { NFTCollectionItemShowType } from '@portkey-wallet/types/types-ca/assets';
+import { NFTCollectionItemShowType } from '@portkey-wallet/types/types-eoa/assets';
 import Touchable from 'components/Touchable';
 import { OpenCollectionObjType } from './index';
 import { ChainId } from '@portkey-wallet/types';

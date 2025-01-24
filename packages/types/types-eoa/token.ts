@@ -1,34 +1,103 @@
-import { ChainItemType } from '@portkey-wallet/types/chain';
-import { AccountType } from '@portkey-wallet/types/wallet';
 import { ChainId } from '..';
+import { ChainItemType } from '../chain';
+import { AccountType } from '../wallet';
+import { SeedTypeEnum } from './assets';
 
 export interface BaseToken {
   id?: string; // id
-  decimals: number; // 8
+  chainId: ChainId;
+  decimals: number | string; // 8
   address: string; // "ArPnUb5FtxG2oXTaWX2DxNZowDEruJLs2TEkhRCzDdrRDfg8B",        token address  contract address
   symbol: string; // "ELF"   the name showed
+  imageUrl?: string;
+  alias?: string;
+  tokenId?: string; // nft tokenId
+  isSeed?: boolean;
+  seedType?: SeedTypeEnum;
+  inscriptionName?: string;
+  limitPerMint?: number;
+  expires?: string;
+  seedOwnedSymbol?: string;
+  label?: string;
+  displayChainName?: string;
+  chainImageUrl?: string;
 }
 
 export interface TokenItemType extends BaseToken {
-  isDefault: boolean; // boolean,
-  tokenName: string; //  "ELF"
+  isDefault?: boolean; // boolean,
+  tokenName?: string; //  "ELF"
   chainId: ChainId; // string "AELF"
 }
 export interface TokenItemShowType extends TokenItemType {
   isAdded?: boolean; // boolean
+  tokenContractAddress?: string;
+  imageUrl?: string;
   balance?: string;
+  balanceInUsd?: string;
+  price?: string | number;
+  userTokenId?: string;
+}
+export type IUserTokenItem = Omit<TokenItemShowType, 'name' | 'address'> & { isDisplay?: boolean; address?: string };
+
+export type ITokenSectionResponse = {
+  chainId?: string;
+  symbol: string;
+  price?: number;
+  balance?: string;
+  decimals?: number;
+  balanceInUsd?: string;
+  label?: string;
+  imageUrl?: string;
+  displayStatus?: 'All' | 'Partial' | 'None';
+  tokens?: TokenItemShowType[];
+};
+export type IUserTokenItemResponse = {
+  symbol: string;
+  price?: number;
+  balance?: string;
+  decimals?: number;
+  balanceInUsd?: string;
+  label?: string;
+  imageUrl?: string;
+  isDefault?: boolean;
+  displayStatus?: 'All' | 'Partial' | 'None';
+  tokens?: IUserTokenItem[];
+  chainImageUrl?: string;
+  displayChainName?: string;
+};
+
+export type UserTokenItemTokenType = Omit<BaseToken, 'name'> & { chainId: string };
+
+export interface UserTokenItemType {
+  userId: string;
+  id: string; // user-token-id
+  isDisplay: boolean;
+  isDefault: boolean;
+  token: UserTokenItemTokenType;
 }
 
 //  all Added TokenInfo（all chain all account tokenList）
 export interface AddedTokenData {
-  [rpcUrl: string]: AddedChainTokenDataType;
-}
-
-export interface AddedChainTokenDataType {
-  [accountAddress: string]: TokenItemType[];
+  [rpcUrl: string]: TokenItemType[];
 }
 
 export type TokenListShowInMarketType = TokenItemShowType[];
+
+// add-token list
+export type UserTokenListType = UserTokenItemType[];
+
+export interface IAccountCryptoBoxAssetItem {
+  chainId: ChainId;
+  address: string;
+  symbol: string;
+  label?: string;
+  imageUrl: string;
+  decimals: number | string;
+  alias?: string;
+  tokenId?: string;
+  balance?: string;
+  tokenContractAddress?: string;
+}
 
 export type UseTokenListAddType = (
   currentChain: ChainItemType,
@@ -42,10 +111,29 @@ export type UseTokenDeleteType = (
 
 export type FilterTokenList = (token_name: string, address: string) => TokenItemShowType;
 
-export interface TokenState {
-  addedTokenData: AddedTokenData;
-  tokenDataShowInMarket: TokenListShowInMarketType;
-  isFetchingTokenList: Boolean;
+export interface ITokenInfo {
+  isFetching: boolean;
+  tokenDataShowInMarket: TokenItemShowType[];
+  skipCount: number;
+  maxResultCount: number;
+  totalRecordCount: number;
+}
+export interface ITokenInfoV2 {
+  isFetching: boolean;
+  tokenDataShowInMarket: IUserTokenItemResponse[];
+  skipCount: number;
+  maxResultCount: number;
+  totalRecordCount: number;
+}
+
+export interface TokenState extends ITokenInfo {
+  symbolImages: Record<string, string>;
+  tokenInfo?: {
+    [key in string]?: ITokenInfo;
+  };
+  tokenInfoV2?: {
+    [key in string]?: ITokenInfoV2;
+  };
 }
 
 export interface AccountItemType {
@@ -55,11 +143,10 @@ export interface AccountItemType {
 
 export interface HandleTokenArgTypes {
   tokenItem: TokenItemType;
-  currentChain: ChainItemType;
   currentAccount: AccountType;
 }
 
-export type FetchParamsType = Pick<HandleTokenArgTypes, 'currentChain' | 'currentAccount'> & {
+export type FetchParamsType = Pick<HandleTokenArgTypes, 'currentAccount'> & {
   pageSize: number;
   pageNo: number;
 };

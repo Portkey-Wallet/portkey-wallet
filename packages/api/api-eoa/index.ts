@@ -101,5 +101,5 @@ export interface IRequest extends BASE_REQ_TYPES, EXPAND_REQ_TYPES {
 }
 
 const request = myServer as unknown as IRequest & DidService;
-
+request.addTransform((result: { data: any }) => result.data);
 export { request };

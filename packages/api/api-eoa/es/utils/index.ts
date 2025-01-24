@@ -1,4 +1,4 @@
-import { request } from '@portkey-wallet/api/api-did';
+import { request } from '@portkey-wallet/api/api-eoa';
 import { GetContractListApiType } from '@portkey-wallet/types/types-ca/contact';
 import { TGetContactListApiType } from '@portkey-wallet/types/types-ca/contactNew';
 

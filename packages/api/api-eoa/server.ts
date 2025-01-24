@@ -3,18 +3,33 @@ import { customFetch } from '@portkey-wallet/utils/fetch';
 import { IExceptionManager, Severity } from '@portkey-wallet/utils/ExceptionManager';
 import { BaseConfig, RequestConfig } from '../types';
 import { getRequestConfig, spliceUrl } from '../utils';
+import { isValidRefreshTokenConfig, queryAuthorization, RefreshTokenConfig } from './utils/index';
+import { sleep } from '@portkey-wallet/utils';
+import im from '@portkey-wallet/im';
+import { IM_TOKEN_ERROR_ARRAY } from '@portkey-wallet/im/constant';
+import signalrFCM from '@portkey-wallet/socket/socket-fcm';
 
+const C_T_EVENT_NAME = 'connectTokenChange';
 export class DidService extends ServiceInit {
+  protected refreshTokenConfig?: RefreshTokenConfig;
   protected onLockApp?: (expired?: boolean) => void;
   locked?: boolean;
   exceptionManager?: IExceptionManager;
+  private transformCallbackList: ((result: any) => any)[] = [];
   constructor() {
     super();
   }
 
-  send = async (base: BaseConfig, config?: RequestConfig): Promise<any> => {
+  send = async (base: BaseConfig, config?: RequestConfig, reCount = 0): Promise<any> => {
     try {
-      return await this.sendOrigin(base, config);
+      const result = await this.sendOrigin(base, config, reCount);
+      if (this.transformCallbackList.length > 0) {
+        const i = this.transformCallbackList.reduce((prevResult, callback) => {
+          return callback(prevResult);
+        }, result);
+        return i;
+      }
+      return result;
     } catch (errResult: any) {
       const { URL, fetchConfig } = this.getConfig(base, config);
       this.errorReport(URL, fetchConfig, errResult);
@@ -32,14 +47,12 @@ export class DidService extends ServiceInit {
       fetchConfig,
     };
   };
-
-  sendOrigin = async (base: BaseConfig, config?: RequestConfig): Promise<any> => {
+  sendOrigin = async (base: BaseConfig, config?: RequestConfig, reCount = 0): Promise<any> => {
     const { URL, fetchConfig, method } = this.getConfig(base, config);
     const fetchResult = await customFetch(URL, {
       ...fetchConfig,
       method,
     });
-
     return fetchResult;
   };
   setLockCallBack = (callBack: (expired?: boolean) => void) => {
@@ -49,6 +62,17 @@ export class DidService extends ServiceInit {
   setExceptionManager = (exceptionManager: IExceptionManager) => {
     this.exceptionManager = exceptionManager;
   };
+
+  addTransform = (callback: (result: any) => any) => {
+    if (typeof callback !== 'function') {
+      return;
+    }
+    if (!this.transformCallbackList) {
+      this.transformCallbackList = [];
+    }
+    this.transformCallbackList.push(callback);
+  };
+
   errorReport = (url: string, fetchConfig: any, fetchResult: any) => {
     this.exceptionManager?.reportErrorMessage?.(`${URL} request error`, Severity.Fatal, {
       req: {

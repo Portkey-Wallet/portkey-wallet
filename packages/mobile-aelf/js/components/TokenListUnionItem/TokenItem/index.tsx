@@ -8,12 +8,11 @@ import { StyleSheet, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import { FontStyles } from 'assets/theme/styles';
 import GStyles from 'assets/theme/GStyles';
-import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { TokenItemShowType } from '@portkey-wallet/types/types-eoa/token';
+import { useCurrentNetwork, useIsMainnet } from '@portkey-wallet/hooks/hooks-eoa/network';
 import fonts from 'assets/theme/fonts';
 import { ViewStyleType, TextStyleType } from 'types/styles';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
-import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 
 interface TokenListItemType {
   wrapStyle?: ViewStyleType;
@@ -27,7 +26,7 @@ interface TokenListItemType {
 const TokenItem: React.FC<TokenListItemType> = props => {
   const { onPress, item, hideBalance = false, wrapStyle, balanceTextStyle, balanceInUseTextStyle } = props;
   const isMainnet = useIsMainnet();
-  const { currentNetwork } = useWallet();
+  const currentNetwork = useCurrentNetwork();
   return (
     <Touchable style={[itemStyle.wrap, wrapStyle]} onPress={() => onPress?.(item)}>
       <View style={itemStyle.left}>
@@ -38,7 +37,7 @@ const TokenItem: React.FC<TokenListItemType> = props => {
             title={item?.symbol}
             avatarSize={pTd(40)}
             imageUrl={item?.imageUrl}
-            svgName={item?.svgName}
+            // svgName={item?.svgName}
             titleStyle={FontStyles.font11}
             borderStyle={GStyles.hairlineBorder}
           />
@@ -48,7 +47,7 @@ const TokenItem: React.FC<TokenListItemType> = props => {
             title={item?.displayChainName}
             avatarSize={pTd(20)}
             imageUrl={item?.chainImageUrl}
-            svgName={item?.chainSvgName}
+            // svgName={item?.chainSvgName}
             borderStyle={itemStyle.tokenIconBorder}
           />
         </View>

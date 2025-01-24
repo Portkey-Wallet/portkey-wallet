@@ -26,6 +26,7 @@ const TokenDetailTopTab: React.FC<TokenDetailTopTabProps> = props => {
     <Tab.Navigator
       initialRouteName={initialRouteName}
       initialLayout={{ width: screenWidth }}
+      // eslint-disable-next-line react/no-unstable-nested-components
       tabBar={prop => <TopTabBar {...prop} />}
       screenOptions={{
         swipeEnabled: false,

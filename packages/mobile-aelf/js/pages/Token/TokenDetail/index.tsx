@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { useNavigation } from '@react-navigation/native';
 import { useLanguage } from 'i18n/hooks';
-import { ITokenSectionResponse } from '@portkey-wallet/types/types-ca/token';
+import { ITokenSectionResponse } from '@portkey-wallet/types/types-eoa/token';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { TokenTitle } from 'components/TokenTitle';
 import NoData from 'components/NoData';

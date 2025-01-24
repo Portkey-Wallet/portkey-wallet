@@ -1,4 +1,4 @@
-import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
+import { useSymbolImages } from '@portkey-wallet/hooks/hooks-eoa/useToken';
 import { formatAmountUSDShow, formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import { darkColors } from 'assets/theme';
 import { FontStyles } from 'assets/theme/styles';
@@ -8,8 +8,8 @@ import TokenItem from './TokenItem';
 import React, { memo, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { pTd } from 'utils/unit';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
-import { ITokenSectionResponse } from '@portkey-wallet/types/types-ca/token';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-eoa/network';
+import { ITokenSectionResponse } from '@portkey-wallet/types/types-eoa/token';
 import Touchable from 'components/Touchable';
 import GStyles from 'assets/theme/GStyles';
 import fonts from 'assets/theme/fonts';

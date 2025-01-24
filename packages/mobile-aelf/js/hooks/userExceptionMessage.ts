@@ -1,11 +1,11 @@
-import { useCurrentNetwork, useNetworkList } from '@portkey-wallet/hooks/hooks-ca/network';
-import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentNetwork, useNetworkList } from '@portkey-wallet/hooks/hooks-eoa/network';
+// import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 import { useCallback } from 'react';
 import { exceptionManager } from 'utils/errorHandler/ExceptionHandler';
 import * as Application from 'expo-application';
 
 export default function useReportAnalyticsEvent() {
-  const { caHash } = useCurrentWalletInfo();
+  // const { caHash } = useCurrentWalletInfo();
   const networkList = useNetworkList();
   const currentNetwork = useCurrentNetwork();
   return useCallback(
@@ -15,7 +15,7 @@ export default function useReportAnalyticsEvent() {
       exceptionManager.reportAnalyticsEvent({
         eventName: eventName,
         params: {
-          caHash,
+          // caHash,
           networkName,
           version,
           currentNetwork,
@@ -23,6 +23,6 @@ export default function useReportAnalyticsEvent() {
         },
       });
     },
-    [caHash, currentNetwork, networkList],
+    [currentNetwork, networkList],
   );
 }

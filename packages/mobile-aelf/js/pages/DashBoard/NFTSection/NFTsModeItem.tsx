@@ -9,7 +9,7 @@ import GStyles from 'assets/theme/GStyles';
 import CommonAvatar from 'components/CommonAvatar';
 import Svg from 'components/Svg';
 import { TextL, TextM, TextS } from 'components/CommonText';
-import { NFTCollectionItemShowType } from '@portkey-wallet/types/types-ca/assets';
+import { NFTCollectionItemShowType } from '@portkey-wallet/types/types-eoa/assets';
 import Touchable from 'components/Touchable';
 import { CONNECTION_KEY_FLAG, OpenCollectionObjType } from './index';
 import { ChainId } from '@portkey-wallet/types';
@@ -21,8 +21,8 @@ import { PortkeyLinearGradientV2 } from 'components/PortkeyLinearGradient';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import CommonButton from 'components/CommonButton';
 import fonts from 'assets/theme/fonts';
-import { useAccountNFTCollectionInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
-import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useAccountNFTCollectionInfo } from '@portkey-wallet/hooks/hooks-eoa/assets';
+import { useCurrentAddressInfos } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 
 export enum NoDataMessage {
   CustomNetWorkNoData = 'No transaction records accessible from the current custom network',
@@ -59,7 +59,7 @@ export default function NFTItem(props: NFTItemPropsType) {
   } = props;
   const styles = getStyles();
   const { fetchAccountNFTItem } = useAccountNFTCollectionInfo();
-  const caAddressInfos = useCaAddressInfoList();
+  const addressInfos = useCurrentAddressInfos();
   const [open, setOpen] = useState<boolean>(false);
 
   const openCollectionInfo = useMemo(
@@ -104,10 +104,10 @@ export default function NFTItem(props: NFTItemPropsType) {
     await fetchAccountNFTItem({
       symbol,
       chainId,
-      caAddressInfos: caAddressInfos.filter(item => item.chainId === chainId),
+      addressInfos: addressInfos.filter(item => item.chainId === chainId),
       pageNum: 0,
     });
-  }, [caAddressInfos, chainId, fetchAccountNFTItem, symbol]);
+  }, [addressInfos, chainId, fetchAccountNFTItem, symbol]);
   return (
     <View style={styles.wrap}>
       <Touchable

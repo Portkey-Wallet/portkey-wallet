@@ -25,4 +25,7 @@ export type NetworkItem = {
   };
   hamsterUrl?: string;
   cryptoGiftTgUrl?: string;
+  zkLoginVerifyUrl?: string;
+  eoaApiUrl?: string;
+  eoaConnectApiUrl?: string;
 };

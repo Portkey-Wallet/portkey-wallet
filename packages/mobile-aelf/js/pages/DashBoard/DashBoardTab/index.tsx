@@ -5,12 +5,12 @@ import CommonTopTab from 'components/CommonTopTab';
 import { useLanguage } from 'i18n/hooks';
 import { pTd } from 'utils/unit';
 import { makeStyles } from '@rneui/themed';
-import { useAccountNFTCollectionInfo, useAccountTokenInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
+import { useAccountNFTCollectionInfo, useAccountTokenInfo } from '@portkey-wallet/hooks/hooks-eoa/assets';
 import Svg from 'components/Svg';
 import { View } from 'react-native';
 import Touchable from 'components/Touchable';
 import ModeChangeSelector from '../componets/ModeChangeSelector';
-import { useNFTSection } from '@portkey-wallet/hooks/hooks-ca';
+import { useNFTSection } from '@portkey-wallet/hooks/hooks-eoa';
 import navigationService from 'utils/navigationService';
 import GStyles from 'assets/theme/GStyles';
 

@@ -10,58 +10,61 @@ import { RootStackName } from 'navigation';
 import myEvents from 'utils/deviceEvent';
 import useReportAnalyticsEvent from 'hooks/userExceptionMessage';
 import { useEffectOnce } from '@portkey-wallet/hooks';
-import { useReferral } from '@portkey-wallet/hooks/hooks-ca/referral';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
-import { useAccountBalanceUSD } from '@portkey-wallet/hooks/hooks-ca/balances';
-import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
-import { useAccountTokenInfo, useAccountNFTCollectionInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
+// import { useReferral } from '@portkey-wallet/hooks/hooks-eoa/referral';
+import { useAccountBalanceUSD } from '@portkey-wallet/hooks/hooks-eoa/assets';
+import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-eoa/useTokensPrice';
+import { useAccountTokenInfo, useAccountNFTCollectionInfo } from '@portkey-wallet/hooks/hooks-eoa/assets';
 import { useLatestRef } from '@portkey-wallet/hooks';
-import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { formatAmountUSDShow } from '@portkey-wallet/utils/converter';
-import { useInitCmsBanner } from '@portkey-wallet/hooks/hooks-ca/cms/banner';
-import { useDiscoverData } from '@portkey-wallet/hooks/hooks-ca/cms/discover';
+// import { useInitCmsBanner } from '@portkey-wallet/hooks/hooks-eoa/cms/banner';
+// import { useDiscoverData } from '@portkey-wallet/hooks/hooks-eoa/cms/discover';
 import { useTheme } from '@rneui/themed';
 import {
   PAGE_SIZE_IN_ACCOUNT_TOKEN,
   PAGE_SIZE_IN_ACCOUNT_NFT_COLLECTION,
-} from '@portkey-wallet/constants/constants-ca/assets';
+} from '@portkey-wallet/constants/constants-eoa/assets';
+import { useCurrentAddressInfos } from '@portkey-wallet/hooks/hooks-eoa/wallet';
+import { useIsMainnet } from 'hooks/useNetwork';
 
 const DashBoard: React.FC<any> = ({ navigation }) => {
+  const { theme } = useTheme();
   const isMainnet = useIsMainnet();
+  const addressInfos = useCurrentAddressInfos();
+  console.log('addressInfos===', addressInfos);
+  const addressInfosList = useLatestRef(addressInfos);
   const reportAnalyticsEvent = useReportAnalyticsEvent();
-  const { getViewReferralStatusStatus, getReferralLink } = useReferral();
+  // const { getViewReferralStatusStatus, getReferralLink } = useReferral();
   const [, getTokenPrice] = useGetCurrentAccountTokenPrice();
   const { fetchAccountTokenInfoList } = useAccountTokenInfo();
   const { fetchAccountNFTCollectionInfoList } = useAccountNFTCollectionInfo();
-  const caAddressInfos = useCaAddressInfoList();
-  const caAddressInfosList = useLatestRef(caAddressInfos);
   const accountBalanceUSD = useAccountBalanceUSD();
-  const { fetchDiscoverTabAsync } = useDiscoverData();
-  const { theme } = useTheme();
-  useInitCmsBanner();
+  // const { fetchDiscoverTabAsync } = useDiscoverData();
+  // const { theme } = useTheme();
+  // useInitCmsBanner();
 
   const [refreshing, setRefreshing] = useState(false);
 
   const onRefresh = useCallback(async () => {
+    console.log('refresh====!!!');
     myEvents.refreshHomeListStart.emit();
     setRefreshing(true);
     getTokenPrice();
     console.log('wfs====fetchAccountNFTCollectionInfoList1');
     await Promise.all([
       fetchAccountTokenInfoList({
-        caAddressInfos: caAddressInfosList.current || [],
+        addressInfos: addressInfosList.current || [],
         skipCount: 0,
         maxResultCount: PAGE_SIZE_IN_ACCOUNT_TOKEN,
       }),
       fetchAccountNFTCollectionInfoList({
-        caAddressInfos,
+        addressInfos: addressInfosList.current || [],
         skipCount: 0,
         maxResultCount: PAGE_SIZE_IN_ACCOUNT_NFT_COLLECTION,
       }),
     ]);
     myEvents.refreshHomeList.emit();
     setRefreshing(false);
-  }, [caAddressInfos, caAddressInfosList, fetchAccountNFTCollectionInfoList, fetchAccountTokenInfoList, getTokenPrice]);
+  }, [addressInfosList, fetchAccountTokenInfoList, fetchAccountNFTCollectionInfoList, getTokenPrice]);
 
   const navToBottomTab = useCallback(
     (tabName: RootStackName, params: any) => {
@@ -74,12 +77,12 @@ const DashBoard: React.FC<any> = ({ navigation }) => {
 
   useEffectOnce(() => {
     reportAnalyticsEvent({ message: 'DashBoard' });
-    getViewReferralStatusStatus();
-    getReferralLink();
-    fetchDiscoverTabAsync();
+    // getViewReferralStatusStatus();
+    // getReferralLink();
+    // fetchDiscoverTabAsync();
   });
 
-  // nav's to chat tab
+  // nav's to target tab
   useEffect(() => {
     const listener = myEvents.navToBottomTab.addListener(({ tabName, params }) => navToBottomTab(tabName, params));
     return () => listener.remove();

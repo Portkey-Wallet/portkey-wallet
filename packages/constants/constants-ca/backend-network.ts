@@ -192,6 +192,8 @@ export const BackEndNetWorkMap: {
     hamsterUrl: 'https://test-hamster.beangotown.com',
     zkLoginVerifyUrl: 'https://zklogin-prover-test.portkey.finance/v1/prove',
     cryptoGiftTgUrl: 'https://t.me/PortkeyTestnet_Bot/crypto_gift',
+    eoaApiUrl: 'https://eoa-portkey-test.portkey.finance',
+    eoaConnectApiUrl: 'https://auth-eoa-portkey-test.portkey.finance',
   },
   'back-end-testnet': {
     name: 'aelf Testnet',
@@ -293,5 +295,7 @@ export const BackEndNetWorkMap: {
     hamsterUrl: 'https://hamster.beangotown.com',
     zkLoginVerifyUrl: 'https://zklogin-prover.portkey.finance/v1/prove',
     cryptoGiftTgUrl: 'https://t.me/PortkeyMainnet_Bot/crypto_gift',
+    eoaApiUrl: 'https://eoa-portkey-test.portkey.finance',
+    eoaConnectApiUrl: 'https://auth-eoa-portkey-test.portkey.finance',
   },
 };

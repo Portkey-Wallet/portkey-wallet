@@ -4,14 +4,14 @@ import { divDecimals, formatAmountUSDShow } from '@portkey-wallet/utils/converte
 import { useCallback, useEffect, useRef } from 'react';
 import { useAppEOASelector, useAppCommonDispatch } from '../index';
 import { useIsMainnet } from './network';
-// import { useDefaultToken } from './chainList';
+import { useDefaultToken } from './chainList';
 import { useSymbolList } from './useToken';
 
-// export function useDefaultTokenPrice() {
-//   const defaultToken = useDefaultToken();
-//   const [tokenPriceObject] = useGetCurrentAccountTokenPrice();
-//   return tokenPriceObject?.[defaultToken.symbol] || 0;
-// }
+export function useDefaultTokenPrice() {
+  const defaultToken = useDefaultToken();
+  const [tokenPriceObject] = useGetCurrentAccountTokenPrice();
+  return tokenPriceObject?.[defaultToken.symbol] || 0;
+}
 
 export function useGetCurrentAccountTokenPrice(): [
   Record<string, number | string>,
@@ -19,9 +19,6 @@ export function useGetCurrentAccountTokenPrice(): [
   (symbols: string[]) => void,
 ] {
   const assets = useAppEOASelector(state => state.assets);
-  // const {
-  //   tokenPrices: { tokenPriceObject },
-  // } = assets;
   const dispatch = useAppCommonDispatch();
   const symbols = useSymbolList();
 

@@ -171,11 +171,15 @@ const HomeTab: React.FC<any> = ({ _ }) => {
         <CommonButton type="primary" onPress={sendElf} style={{ marginTop: 20 }}>
           Send ELF
         </CommonButton>
-        <CommonButton type="primary" onPress={resetWalletClick} style={{ marginTop: 40 }}>
+        <CommonButton type="primary" onPress={resetWalletClick} style={{ marginTop: 20 }}>
           Reset Wallet
         </CommonButton>
-        <CommonButton type="primary" onPress={switchNetworkClick} style={{ marginTop: 40 }}>
+        <CommonButton type="primary" onPress={switchNetworkClick} style={{ marginTop: 20 }}>
           Switch NetworkType (current: {currentNetwork})
+        </CommonButton>
+
+        <CommonButton type="primary" onPress={() => navigationService.push('SwapHome')} style={{ marginTop: 20 }}>
+          Swap
         </CommonButton>
       </ScrollView>
     </SafeAreaBox>

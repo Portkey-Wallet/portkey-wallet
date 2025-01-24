@@ -17,7 +17,7 @@ const initialState: TAwakenState = {
   tokenPrices: {},
   tokenList: {},
 };
-export const imSlice = createSlice({
+export const awakenSlice = createSlice({
   name: 'awaken',
   initialState,
   reducers: {},
@@ -69,13 +69,13 @@ export const imSlice = createSlice({
         };
       })
       .addCase(updateAwakenTokenList, (state, action) => {
-        const { network, list } = action.payload;
+        const { key, list } = action.payload;
 
         return {
           ...state,
           tokenList: {
             ...state.tokenList,
-            [network]: list,
+            [key]: list,
           },
         };
       })
@@ -101,4 +101,4 @@ export const imSlice = createSlice({
   },
 });
 
-export default imSlice;
+export default awakenSlice;

@@ -7,6 +7,8 @@ import { assetsSlice } from '@portkey-wallet/store/store-eoa/assets/slice';
 import { TWalletState } from '@portkey-wallet/store/store-eoa/wallet/type';
 import { networkSlice } from '@portkey-wallet/store/store-eoa/network/slice';
 import { TNetworkState } from '@portkey-wallet/store/store-eoa/network/type';
+import { awakenSlice } from '@portkey-wallet/store/awaken/slice';
+import { TAwakenState } from '@portkey-wallet/store/awaken/type';
 import { TAssetsState } from '@portkey-wallet/store/store-eoa/assets/type';
 import tokenManagementSlice from '@portkey-wallet/store/store-eoa/tokenManagement/slice';
 import { TokenState } from './token';
@@ -21,4 +23,5 @@ export type EOACommonState = {
   [tokenManagementSlice.name]: TokenState;
   [activitySlice.name]: ActivityStateType;
   [networkSlice.name]: TNetworkState;
+  [awakenSlice.name]: TAwakenState;
 };

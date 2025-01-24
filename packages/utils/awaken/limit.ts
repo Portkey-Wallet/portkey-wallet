@@ -30,3 +30,25 @@ export const sendLimit = async ({ contract, managerAddress, contractAddress, caH
   }
   return result;
 };
+
+export type TSendEOALimitParams = {
+  contract: ContractBasic;
+  address: string;
+  args: {
+    amountIn: string;
+    symbolIn: string;
+    amountOut: string;
+    symbolOut: string;
+    deadline: {
+      seconds: number;
+      nanos: number;
+    };
+  };
+};
+export const sendEOALimit = async ({ contract, address, args }: TSendEOALimitParams) => {
+  const result = await contract.callSendMethod('CommitLimitOrder', address, args);
+  if (result.error) {
+    throw result.error;
+  }
+  return result;
+};

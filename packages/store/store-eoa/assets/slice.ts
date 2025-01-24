@@ -173,7 +173,7 @@ export const fetchNFTAsync = createAsyncThunk(
     },
     { getState },
   ) => {
-    const { assets } = getState() as { assets: TAssetsState; };
+    const { assets } = getState() as { assets: TAssetsState };
     const {
       accountNFT: { accountNFTInfo },
     } = assets;
@@ -267,13 +267,7 @@ export const fetchAssetV2Async = createAsyncThunk(
 // fetch current cryptoBox assets when add sent button
 export const fetchCryptoBoxAssetAsync = createAsyncThunk(
   'fetchCryptoBoxAssetAsync',
-  async ({
-    keyword,
-    addressInfos,
-  }: {
-    keyword: string;
-    addressInfos: { chainId: ChainId; address: string }[];
-  }) => {
+  async ({ keyword, addressInfos }: { keyword: string; addressInfos: { chainId: ChainId; address: string }[] }) => {
     const response = await fetchCryptoBoxAssetList({ addressInfos, keyword, skipCount: 0, maxResultCount: 1000 });
 
     return { list: response.data, totalRecordCount: response.totalRecordCount, keyword };

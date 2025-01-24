@@ -1,8 +1,8 @@
-import { DEFAULT_EXPIRATION, DEFAULT_SLIPPAGE_TOLERANCE } from '@portkey-wallet/constants/constants-ca/awaken';
+import { DEFAULT_EXPIRATION, DEFAULT_SLIPPAGE_TOLERANCE } from '@portkey-wallet/constants/awaken';
 import BigNumber from 'bignumber.js';
 import { divDecimals, timesDecimals } from '../converter';
 import { ONE } from '@portkey-wallet/constants/misc';
-import { PBTimestamp, TCurrency } from '@portkey-wallet/types/types-ca/awaken';
+import { PBTimestamp, TCurrency } from '@portkey-wallet/types/awaken';
 
 export function valueToPercentage(input?: BigNumber.Value) {
   return BigNumber.isBigNumber(input) ? input.times(100) : timesDecimals(input, 2);

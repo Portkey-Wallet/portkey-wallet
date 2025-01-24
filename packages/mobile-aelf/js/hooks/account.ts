@@ -1,4 +1,4 @@
-import { useCurrentAddressInfos, useChainIdList, useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-eoa/wallet';
+import { useCurrentAddressInfos, useChainIdList } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 import { useLatestRef, useThrottleCallback } from '@portkey-wallet/hooks';
 import { useAccountTokenInfo } from '@portkey-wallet/hooks/hooks-eoa/assets';
 import {

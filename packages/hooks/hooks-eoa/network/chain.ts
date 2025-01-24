@@ -7,6 +7,7 @@ import { useAppCommonDispatch } from '../../index';
 import { setChainList } from '@portkey-wallet/store/store-eoa/network/actions';
 import { handleLoopFetch } from '@portkey-wallet/utils';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/network';
+import { DEFAULT_TOKEN } from '@portkey-wallet/constants';
 
 export const useChainList = () => {
   const chainListMapState = useChainListMapState();
@@ -73,3 +74,8 @@ export const useDAppChainId = () => {
   const dAppChain = useDAppChain();
   return useMemo(() => dAppChain?.chainId || 'tDVV', [dAppChain?.chainId]);
 };
+
+export function useDefaultToken(_chainId?: ChainId) {
+  const chainInfo = useChainInfo(_chainId || 'AELF');
+  return chainInfo?.defaultToken || DEFAULT_TOKEN;
+}

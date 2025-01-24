@@ -5,7 +5,7 @@ import Svg from 'components/Svg';
 import SelectOverlay from 'components/SelectOverlay';
 import { pTd } from 'utils/unit';
 import { getStyles } from './style';
-import { EXPIRY_LIST, LimitExpiryEnum } from '@portkey-wallet/constants/constants-ca/awaken/limit';
+import { EXPIRY_LIST, LimitExpiryEnum } from '@portkey-wallet/constants/awaken/limit';
 
 interface IExpiresSelectProps {
   selectedValue: LimitExpiryEnum;

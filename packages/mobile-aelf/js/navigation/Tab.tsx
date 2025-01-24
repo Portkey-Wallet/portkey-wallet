@@ -12,7 +12,7 @@ import { pTd } from 'utils/unit';
 // import { resetBadge } from 'utils/notifee';
 import { TabRouteNameEnum } from 'types/navigate';
 import HomeTab from 'pages/Home/HomeTab';
-import { TextM } from 'components/CommonText';
+// import { TextM } from 'components/CommonText';
 // import { useIsAccountExist } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 
 const Tab = createBottomTabNavigator();

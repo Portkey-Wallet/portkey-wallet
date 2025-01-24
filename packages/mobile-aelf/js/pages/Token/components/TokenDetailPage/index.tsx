@@ -29,10 +29,7 @@ import { FlatListFooterLoading } from 'components/FlatListFooterLoading';
 import { ListLoadingEnum } from 'constants/misc';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { pTd } from 'utils/unit';
-import { useAppRampEntryShow } from 'hooks/ramp';
 import { useGetAccountTokenList } from 'hooks/account';
-import { SHOW_RAMP_SYMBOL_LIST } from '@portkey-wallet/constants/constants-eoa/ramp';
-import { useAppSwapButtonShow } from 'hooks/cms';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-eoa/chainList';
 import FaucetButton from 'components/FaucetButton';
 import { darkColors } from 'assets/theme';
@@ -60,7 +57,8 @@ const TokenDetailPage: React.FC<TokenDetailParams> = ({ tokenInfo, tokenSection 
   const defaultToken = useDefaultToken(tokenInfo.chainId);
   // const { isSwapShow } = useAppSwapButtonShow();
   const isSwapShow = true;
-  const { buy, swap } = checkEnabledFunctionalTypes(tokenInfo.symbol, tokenInfo.chainId === 'AELF');
+  // const { buy, swap } = checkEnabledFunctionalTypes(tokenInfo.symbol, tokenInfo.chainId === 'AELF');
+  const { swap } = checkEnabledFunctionalTypes(tokenInfo.symbol, tokenInfo.chainId === 'AELF');
   // const { isRampShow } = useAppRampEntryShow();
   const getAccountTokenList = useGetAccountTokenList();
   // const isBuyButtonShow = useMemo(

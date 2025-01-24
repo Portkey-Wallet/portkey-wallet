@@ -1,5 +1,5 @@
 import { NetworkType } from '@portkey-wallet/types';
-import { TCurrency } from '@portkey-wallet/types/types-ca/awaken';
+import { TCurrency } from '@portkey-wallet/types/awaken';
 
 export type TAwakenState = {
   gasFee: {

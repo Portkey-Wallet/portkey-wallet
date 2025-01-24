@@ -10,7 +10,7 @@ import { RootStackName } from 'navigation';
 import myEvents from 'utils/deviceEvent';
 import useReportAnalyticsEvent from 'hooks/userExceptionMessage';
 import { useEffectOnce } from '@portkey-wallet/hooks';
-import { useReferral } from '@portkey-wallet/hooks/hooks-eoa/referral';
+// import { useReferral } from '@portkey-wallet/hooks/hooks-eoa/referral';
 import { useAccountBalanceUSD } from '@portkey-wallet/hooks/hooks-eoa/assets';
 import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-eoa/useTokensPrice';
 import { useAccountTokenInfo, useAccountNFTCollectionInfo } from '@portkey-wallet/hooks/hooks-eoa/assets';

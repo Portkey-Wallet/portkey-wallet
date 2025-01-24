@@ -4,3 +4,11 @@ export const SECOND = 1000;
 export const MINUTE = SECOND * 60;
 export const HOUR = MINUTE * 60;
 export const DAY = HOUR * 24;
+
+export const DEFAULT_TOKEN = {
+  address: 'JRmBduh4nXWi1aXgdUsj5gJrzeZb2LxmrAbf7W99faZSvoAaE',
+  decimals: '8',
+  imageUrl: 'https://portkey-did.s3.ap-northeast-1.amazonaws.com/img/aelf/Coin-ELF.png',
+  name: 'AELF',
+  symbol: 'ELF',
+};

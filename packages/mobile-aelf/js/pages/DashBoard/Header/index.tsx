@@ -8,7 +8,7 @@ import Svg from 'components/Svg';
 import fonts from 'assets/theme/fonts';
 import GStyles from 'assets/theme/GStyles';
 import { showCopyUserAddress } from '../CopyUserAddress';
-import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+// import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useQrScanPermissionAndToast } from 'hooks/useQrScan';
 import navigationService from 'utils/navigationService';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';

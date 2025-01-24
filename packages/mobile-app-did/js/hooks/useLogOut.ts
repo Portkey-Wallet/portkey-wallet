@@ -37,7 +37,7 @@ import { resetBadge } from 'utils/notifee';
 import { useLatestRef } from '@portkey-wallet/hooks';
 import { useMiscSetting } from '@portkey-wallet/hooks/hooks-ca/misc';
 import { reset } from 'utils/amplitude';
-import { resetAwaken } from '@portkey-wallet/store/store-ca/awaken/actions';
+import { resetAwaken } from '@portkey-wallet/store/awaken/actions';
 import { resetTargetNetworkRecent } from '@portkey-wallet/store/store-ca/recent/slice';
 
 export default function useLogOut() {

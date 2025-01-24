@@ -1,11 +1,10 @@
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { View } from 'react-native';
-import { useLanguage } from 'i18n/hooks';
 import CommonPreviewContainer from 'components/CommonPreviewContainer';
 import Svg from 'components/Svg';
 import CommonInfoRow from 'components/CommonInfoRow';
 import PreviewAmountCard from '../components/PreviewAmountCard';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { getChainSvgName } from 'utils';
 import { pTd } from 'utils/unit';
 import { getStyles } from './style';
@@ -16,29 +15,25 @@ import {
   useAwakenTokenPrices,
   useAwakenUserExpiration,
   useAwakenUserSlippageTolerance,
-} from '@portkey-wallet/hooks/hooks-ca/awaken/state';
+} from '@portkey-wallet/hooks/hooks-eoa/awaken/state';
 import { LANG_MAX, ONE, TEN_THOUSAND, ZERO } from '@portkey-wallet/constants/misc';
 import { bigNumberToString, getDeadline, minimumAmountOut } from '@portkey-wallet/utils/awaken';
-import { getContractTotalAmountOut, getPriceImpactWithBuy, sendSwap } from '@portkey-wallet/utils/awaken/swap';
+import { getContractTotalAmountOut, getPriceImpactWithBuy, sendEOASwap } from '@portkey-wallet/utils/awaken/swap';
 import { formatNameWithNoUnderline } from '@portkey-wallet/utils';
-import { TContractSwapToken, TSwapRoute } from '@portkey-wallet/types/types-ca/awaken/swap';
+import { TContractSwapToken, TSwapRoute } from '@portkey-wallet/types/awaken/swap';
 import BigNumber from 'bignumber.js';
 import { divDecimals, timesDecimals } from '@portkey-wallet/utils/converter';
-import {
-  SWAP_LABS_FEE_RATE,
-  SWAP_RECEIVE_RATE,
-  SWAP_TIME_INTERVAL,
-} from '@portkey-wallet/constants/constants-ca/awaken/swap';
-import { useDefaultTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
+import { SWAP_LABS_FEE_RATE, SWAP_RECEIVE_RATE, SWAP_TIME_INTERVAL } from '@portkey-wallet/constants/awaken/swap';
+import { useDefaultTokenPrice } from '@portkey-wallet/hooks/hooks-eoa/useTokensPrice';
 import { formatPriceUsd } from '@portkey-wallet/utils/format';
 import { useReturnLastCallback } from '@portkey-wallet/hooks';
 import { useGetSwapHookViewContract } from 'hooks/awaken';
-import { useGetCAContract, useGetTokenViewContract } from 'hooks/contract';
-import { useDAppChainId } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { useGetContract, useGetTokenContract, useGetTokenViewContract } from 'hooks/contract';
+import { useDAppChainId } from '@portkey-wallet/hooks/hooks-eoa/network/chain';
 import { getAllowance } from '@portkey-wallet/utils/contract';
-import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { useSwapHookContractAddress } from '@portkey-wallet/hooks/hooks-ca/awaken';
-import { AWAKEN_DEFAULT_CID } from '@portkey-wallet/constants/constants-ca/awaken';
+import { useCurrentAccount } from '@portkey-wallet/hooks/hooks-eoa/wallet';
+import { useSwapHookContractAddress } from '@portkey-wallet/hooks/hooks-eoa/awaken';
+import { AWAKEN_DEFAULT_CID } from '@portkey-wallet/constants/awaken';
 import navigationService from 'utils/navigationService';
 import { ActionType } from 'types/common';
 import ActionSheet from 'components/ActionSheet';
@@ -54,7 +49,6 @@ const SwapPreview = () => {
   const { swapInfo: swapInfoProp, swapRoute, priceLabel } = useRouterParams<TRouterParams>();
   const [swapInfo, setSwapInfo] = useState<TSwapInfo>(swapInfoProp);
 
-  const { t } = useLanguage();
   const styles = getStyles();
 
   const isMainnet = useIsMainnet();
@@ -244,9 +238,10 @@ const SwapPreview = () => {
 
   const swapHookContractAddress = useSwapHookContractAddress();
   const getTokenViewContract = useGetTokenViewContract();
-  const getCAContract = useGetCAContract();
+  const getTokenContract = useGetTokenContract();
+  const getContract = useGetContract();
   const dAppChainId = useDAppChainId();
-  const wallet = useCurrentWalletInfo();
+  const account = useCurrentAccount();
   const { userExpiration } = useAwakenUserExpiration();
 
   const handlePress = useCallback(async () => {
@@ -258,7 +253,7 @@ const SwapPreview = () => {
     if (!tokenIn || !tokenOut || !valueIn || !valueOut) {
       return;
     }
-    const caAddress = wallet[dAppChainId]?.caAddress || '';
+    const accountAddress = account?.address || '';
 
     setIsSwapping(true);
     try {
@@ -267,15 +262,14 @@ const SwapPreview = () => {
       const valueInAmountBN = timesDecimals(valueIn, tokenIn.decimals);
       const allowance = await getAllowance(tokenViewContract, {
         symbol: tokenIn.symbol,
-        owner: caAddress,
+        owner: accountAddress,
         spender: swapHookContractAddress,
       });
 
-      const caContract = await getCAContract(dAppChainId);
+      const tokenContract = await getTokenContract(dAppChainId);
       if (valueInAmountBN.gt(allowance)) {
         console.log('allowance', allowance);
-        const approveResult = await caContract.callSendMethod('ManagerApprove', wallet.address, {
-          caHash: wallet.caHash,
+        const approveResult = await tokenContract.callSendMethod('Approve', accountAddress, {
           spender: swapHookContractAddress,
           symbol: tokenIn.symbol,
           amount: LANG_MAX.toFixed(),
@@ -328,16 +322,15 @@ const SwapPreview = () => {
           channel,
           deadline,
           path: item.tokens.map(token => token.symbol),
-          to: caAddress,
+          to: accountAddress,
           feeRates: item.feeRates.map(fee => ZERO.plus(TEN_THOUSAND).times(fee).toNumber()),
         };
       });
 
-      const req = await sendSwap({
-        contract: caContract,
-        managerAddress: wallet.address,
-        caHash: wallet.caHash || '',
-        contractAddress: swapHookContractAddress,
+      const contract = await getContract(dAppChainId, swapHookContractAddress);
+      const req = await sendEOASwap({
+        contract,
+        address: accountAddress,
         args: {
           swapTokens,
           labsFeeRate: SWAP_LABS_FEE_RATE,
@@ -359,21 +352,22 @@ const SwapPreview = () => {
       setIsSwapping(false);
     }
   }, [
+    account?.address,
     dAppChainId,
-    getCAContract,
+    getContract,
+    getTokenContract,
     getTokenViewContract,
     swapHookContractAddress,
     swapInfo,
     userExpiration,
     userSlippageTolerance,
-    wallet,
   ]);
 
   return (
     <CommonPreviewContainer
       footerStyle={styles.footerWrap}
       poweredIcon={<Svg icon="awakenLogo" oblongSize={[pTd(45), pTd(12)]} />}
-      buttonProps={{ title: t('Swap'), onPress: handlePress }}
+      buttonProps={{ title: 'Swap', onPress: handlePress }}
       isLoading={isSwapping}
       helpUrl={HELP_URL}>
       <PreviewAmountCard

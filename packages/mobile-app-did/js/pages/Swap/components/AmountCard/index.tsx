@@ -11,11 +11,11 @@ import { useAwakenGasFee } from '@portkey-wallet/hooks/hooks-ca/awaken/state';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { divDecimals } from '@portkey-wallet/utils/converter';
 import Bignumber from 'bignumber.js';
-import { TCurrency } from '@portkey-wallet/types/types-ca/awaken';
+import { TCurrency } from '@portkey-wallet/types/awaken';
 import { formatNameWithNoUnderline } from '@portkey-wallet/utils';
 import { isValidNumberV2 } from '@portkey-wallet/utils/reg';
 import { parseInputChange } from '@portkey-wallet/utils/input';
-import { LIMIT_PRICE_DECIMAL } from '@portkey-wallet/constants/constants-ca/awaken/limit';
+import { LIMIT_PRICE_DECIMAL } from '@portkey-wallet/constants/awaken/limit';
 import CommonToast from 'components/CommonToast';
 
 interface IAmountCardProps {

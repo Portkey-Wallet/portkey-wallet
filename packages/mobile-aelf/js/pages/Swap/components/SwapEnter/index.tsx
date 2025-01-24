@@ -7,15 +7,11 @@ import CommonInfoRow from 'components/CommonInfoRow';
 import { CommonPromptCard, PromptCardType } from 'components/CommonPromptCard';
 import { getStyles } from './style';
 import { useDebounceCallback, useEffectOnce, useReturnLastCallback } from '@portkey-wallet/hooks';
-import { useGetSwapRoutes } from '@portkey-wallet/hooks/hooks-ca/awaken/request';
-import { useAwakenGasFee, useAwakenTokenList } from '@portkey-wallet/hooks/hooks-ca/awaken/state';
+import { useGetSwapRoutes } from '@portkey-wallet/hooks/hooks-eoa/awaken/request';
+import { useAwakenGasFee, useAwakenTokenList } from '@portkey-wallet/hooks/hooks-eoa/awaken/state';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { divDecimals, timesDecimals } from '@portkey-wallet/utils/converter';
-import {
-  SWAP_RECEIVE_RATE,
-  SWAP_TIME_INTERVAL,
-  SwapStatusCodeEnum,
-} from '@portkey-wallet/constants/constants-ca/awaken/swap';
+import { SWAP_RECEIVE_RATE, SWAP_TIME_INTERVAL, SwapStatusCodeEnum } from '@portkey-wallet/constants/awaken/swap';
 import BigNumber from 'bignumber.js';
 import { formatNameWithNoUnderline, sleep } from '@portkey-wallet/utils';
 import { formatPrice } from '@portkey-wallet/utils/format';
@@ -23,7 +19,7 @@ import navigationService from 'utils/navigationService';
 import { KeyboardSafeArea } from 'components/KeyboardSafeArea';
 import { pTd } from 'utils/unit';
 import { useCurrencyBalancesV2 } from 'hooks/awaken';
-import { TCurrency } from '@portkey-wallet/types/types-ca/awaken';
+import { TCurrency } from '@portkey-wallet/types/awaken';
 
 export type TSwapInfo = {
   tokenIn?: TCurrency;

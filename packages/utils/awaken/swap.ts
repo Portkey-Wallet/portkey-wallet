@@ -1,6 +1,6 @@
 import { TEN_THOUSAND, ZERO } from '@portkey-wallet/constants/misc';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
-import { TContractSwapToken, TSwapRoute } from '@portkey-wallet/types/types-ca/awaken/swap';
+import { TContractSwapToken, TSwapRoute } from '@portkey-wallet/types/awaken/swap';
 import BigNumber from 'bignumber.js';
 
 export type TGetContractAmountOutParams = {

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react';
-import { useAppCASelector } from '../.';
+import { useAppEOASelector } from '../.';
 import { useGetAwakenGasFee, useGetAwakenTokenPrice } from './request';
 import { handleLoopFetch } from '@portkey-wallet/utils';
 import { useCurrentNetwork } from '../network';
@@ -12,13 +12,13 @@ import {
   updateAwakenUserSlippageTolerance,
 } from '@portkey-wallet/store/awaken/actions';
 import { DEFAULT_EXPIRATION, DEFAULT_SLIPPAGE_TOLERANCE } from '@portkey-wallet/constants/awaken';
-import { useDAppChain, useDAppChainId } from '../chainList';
-import { request } from '@portkey-wallet/api/api-did';
-import { useCurrentWalletInfo } from '../wallet';
+import { useDAppChain, useDAppChainId } from '../network/chain';
+import { request } from '@portkey-wallet/api/api-eoa';
+import { useCurrentAccount } from '../wallet';
 
-export const useAwakenState = () => useAppCASelector(state => state.awaken);
+export const useAwakenState = () => useAppEOASelector(state => state.awaken);
 
-export const useAwakenGasFeeState = () => useAppCASelector(state => state.awaken.gasFee);
+export const useAwakenGasFeeState = () => useAppEOASelector(state => state.awaken.gasFee);
 export const useAwakenGasFee = () => {
   const currentNetwork = useCurrentNetwork();
   const awakenGasFeeState = useAwakenGasFeeState();
@@ -58,7 +58,7 @@ export const useInitAwakenGasFeeState = () => {
   });
 };
 
-export const useAwakenUserSlippageToleranceState = () => useAppCASelector(state => state.awaken.userSlippageTolerance);
+export const useAwakenUserSlippageToleranceState = () => useAppEOASelector(state => state.awaken.userSlippageTolerance);
 
 export const useAwakenUserSlippageTolerance = () => {
   const currentNetwork = useCurrentNetwork();
@@ -88,7 +88,7 @@ export const useAwakenUserSlippageTolerance = () => {
   };
 };
 
-export const useAwakenUserExpirationState = () => useAppCASelector(state => state.awaken.userExpiration);
+export const useAwakenUserExpirationState = () => useAppEOASelector(state => state.awaken.userExpiration);
 
 export const useAwakenUserExpiration = () => {
   const currentNetwork = useCurrentNetwork();
@@ -118,7 +118,7 @@ export const useAwakenUserExpiration = () => {
   };
 };
 
-export const useAwakenTokenPricesState = () => useAppCASelector(state => state.awaken.tokenPrices);
+export const useAwakenTokenPricesState = () => useAppEOASelector(state => state.awaken.tokenPrices);
 
 export type TUseAwakenTokenPricesParams = {
   symbol?: string;
@@ -169,7 +169,7 @@ export const useAwakenTokenPrices = ({ symbol, isInit = true }: TUseAwakenTokenP
   };
 };
 
-export const useAwakenTokenListState = () => useAppCASelector(state => state.awaken.tokenList);
+export const useAwakenTokenListState = () => useAppEOASelector(state => state.awaken.tokenList);
 
 export const useAwakenTokenList = (isInit = false) => {
   const awakenTokenListState = useAwakenTokenListState();
@@ -178,7 +178,7 @@ export const useAwakenTokenList = (isInit = false) => {
   const dispatch = useAppCommonDispatch();
 
   const list = useMemo(() => awakenTokenListState[network] || [], [awakenTokenListState, network]);
-  const wallet = useCurrentWalletInfo();
+  const account = useCurrentAccount();
 
   const refresh = useCallback(async () => {
     const rst = await request.assets.getAwakenTokenList({
@@ -187,7 +187,7 @@ export const useAwakenTokenList = (isInit = false) => {
         maxResultCount: 1000,
         page: 1,
         chainId,
-        caAddress: wallet[chainId]?.caAddress || '',
+        caAddress: account?.address || '',
       },
     });
     dispatch(
@@ -196,7 +196,7 @@ export const useAwakenTokenList = (isInit = false) => {
         list: rst.data,
       }),
     );
-  }, [chainId, dispatch, network, wallet]);
+  }, [account?.address, chainId, dispatch, network]);
 
   useEffect(() => {
     if (!isInit) return;

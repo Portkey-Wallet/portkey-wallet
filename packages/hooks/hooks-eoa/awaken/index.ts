@@ -1,28 +1,15 @@
 import { useAwakenTokenList, useInitAwakenGasFeeState } from './state';
 import { LIMIT_CONTRACT_ADDRESS, SWAP_HOOK_CONTRACT_ADDRESS_MAP } from '@portkey-wallet/constants/awaken';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useCurrentNetwork } from '../network';
-import didServer from '@portkey-wallet/api/api-did/server';
 
 export const useInitAwaken = () => {
   useInitAwakenGasFeeState();
   const { refresh } = useAwakenTokenList();
 
-  const initWithAuth = useCallback(() => {
+  useEffect(() => {
     refresh();
   }, [refresh]);
-
-  const [isAuth, setIsAuth] = useState(false);
-  useEffect(() => {
-    didServer.onConnectTokenChange(() => {
-      setIsAuth(true);
-    });
-  }, []);
-
-  useEffect(() => {
-    if (!isAuth) return;
-    initWithAuth();
-  }, [initWithAuth, isAuth]);
 };
 
 export const useSwapHookContractAddress = () => {

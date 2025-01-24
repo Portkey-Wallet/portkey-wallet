@@ -12,7 +12,7 @@ import { ZERO } from '@portkey-wallet/constants/misc';
 import { useTheme } from '@rneui/themed';
 import { TextM } from 'components/CommonText';
 import { TBalancesV2 } from 'hooks/awaken';
-import { TCurrency } from '@portkey-wallet/types/types-ca/awaken';
+import { TCurrency } from '@portkey-wallet/types/awaken';
 
 interface IAmountCardGroupProps {
   style?: ViewStyleType;

@@ -5,7 +5,7 @@ import CommonPreviewContainer from 'components/CommonPreviewContainer';
 import Svg from 'components/Svg';
 import CommonInfoRow from 'components/CommonInfoRow';
 import PreviewAmountCard from '../components/PreviewAmountCard';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { getChainSvgName } from 'utils';
 import { pTd } from 'utils/unit';
 import { getStyles } from './style';
@@ -16,19 +16,15 @@ import {
   useAwakenTokenPrices,
   useAwakenUserExpiration,
   useAwakenUserSlippageTolerance,
-} from '@portkey-wallet/hooks/hooks-ca/awaken/state';
+} from '@portkey-wallet/hooks/hooks-eoa/awaken/state';
 import { LANG_MAX, ONE, TEN_THOUSAND, ZERO } from '@portkey-wallet/constants/misc';
 import { bigNumberToString, getDeadline, minimumAmountOut } from '@portkey-wallet/utils/awaken';
 import { getContractTotalAmountOut, getPriceImpactWithBuy, sendSwap } from '@portkey-wallet/utils/awaken/swap';
 import { formatNameWithNoUnderline } from '@portkey-wallet/utils';
-import { TContractSwapToken, TSwapRoute } from '@portkey-wallet/types/types-ca/awaken/swap';
+import { TContractSwapToken, TSwapRoute } from '@portkey-wallet/types/awaken/swap';
 import BigNumber from 'bignumber.js';
 import { divDecimals, timesDecimals } from '@portkey-wallet/utils/converter';
-import {
-  SWAP_LABS_FEE_RATE,
-  SWAP_RECEIVE_RATE,
-  SWAP_TIME_INTERVAL,
-} from '@portkey-wallet/constants/constants-ca/awaken/swap';
+import { SWAP_LABS_FEE_RATE, SWAP_RECEIVE_RATE, SWAP_TIME_INTERVAL } from '@portkey-wallet/constants/awaken/swap';
 import { useDefaultTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { formatPriceUsd } from '@portkey-wallet/utils/format';
 import { useReturnLastCallback } from '@portkey-wallet/hooks';
@@ -38,7 +34,7 @@ import { useDAppChainId } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { getAllowance } from '@portkey-wallet/utils/contract';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useSwapHookContractAddress } from '@portkey-wallet/hooks/hooks-ca/awaken';
-import { AWAKEN_DEFAULT_CID } from '@portkey-wallet/constants/constants-ca/awaken';
+import { AWAKEN_DEFAULT_CID } from '@portkey-wallet/constants/awaken';
 import navigationService from 'utils/navigationService';
 import { ActionType } from 'types/common';
 import ActionSheet from 'components/ActionSheet';

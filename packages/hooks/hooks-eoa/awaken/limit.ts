@@ -3,7 +3,7 @@ import { useGetPairReserve } from '@portkey-wallet/graphql/awaken/hooks';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { useReturnLastCallback } from '../../index';
 import { LIMIT_TIME_INTERVAL } from '@portkey-wallet/constants/awaken/limit';
-import { useDAppChainId } from '../chainList';
+import { useDAppChainId } from '../network/chain';
 
 export type TReserveInfo = {
   reserveIn: string;

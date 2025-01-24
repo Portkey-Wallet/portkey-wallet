@@ -1,16 +1,11 @@
-import React, { memo, useCallback, useMemo, useState } from 'react';
-import { Text, FlatList, View } from 'react-native';
-import OverlayModal from 'components/OverlayModal';
-import { ModalBody } from 'components/ModalBody';
-import CommonInput from 'components/CommonInput';
+import React, { memo } from 'react';
+import { Text, View } from 'react-native';
 import CommonAvatar from 'components/CommonAvatar';
 import Touchable from 'components/Touchable';
-import { useLanguage } from 'i18n/hooks';
-import { getContentStyles, getButtonStyles } from './style';
+import { getButtonStyles } from './style';
 import Svg from 'components/Svg';
 import { pTd } from 'utils/unit';
-import { TCurrency } from '@portkey-wallet/types/types-ca/awaken';
-import { useAwakenTokenList } from '@portkey-wallet/hooks/hooks-ca/awaken/state';
+import { TCurrency } from '@portkey-wallet/types/awaken';
 import { formatNameWithNoUnderline } from '@portkey-wallet/utils';
 
 interface ISelectTokenButtonProps {

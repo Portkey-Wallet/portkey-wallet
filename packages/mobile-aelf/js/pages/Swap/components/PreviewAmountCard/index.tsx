@@ -5,9 +5,9 @@ import { useTheme } from '@rneui/themed';
 import { pTd } from 'utils/unit';
 import { ViewStyleType } from 'types/styles';
 import { getStyles } from './style';
-import { TCurrency } from '@portkey-wallet/types/types-ca/awaken';
+import { TCurrency } from '@portkey-wallet/types/awaken';
 import CurrencyItem from '../CurrencyItem';
-import { useAwakenTokenPrices } from '@portkey-wallet/hooks/hooks-ca/awaken/state';
+import { useAwakenTokenPrices } from '@portkey-wallet/hooks/hooks-eoa/awaken/state';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { formatPriceUsd } from '@portkey-wallet/utils/format';
 
@@ -30,7 +30,9 @@ const AmountRow = ({ item, value }: IAmountRowProps) => {
     symbol: item.symbol,
   });
   const balanceInUsd = useMemo(() => {
-    if (!value) return '';
+    if (!value) {
+      return '';
+    }
     return `$${formatPriceUsd(ZERO.plus(value).times(price))}`;
   }, [price, value]);
 
@@ -50,7 +52,9 @@ const PreviewAmountCard = ({ style, tokenIn, tokenOut, valueIn, valueOut }: IPre
   const styles = getStyles();
   const { theme } = useTheme();
 
-  if (!tokenIn || !tokenOut) return null;
+  if (!tokenIn || !tokenOut) {
+    return null;
+  }
 
   return (
     <View style={[styles.container, style]}>

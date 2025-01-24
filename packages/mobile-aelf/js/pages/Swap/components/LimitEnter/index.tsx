@@ -9,17 +9,17 @@ import RateCard, { ILimitRateCard } from '../RateCard';
 import CommonInfoRow from 'components/CommonInfoRow';
 import { getStyles } from './style';
 import { TCurrency } from '@portkey-wallet/types/awaken';
-import { useAwakenGasFee, useAwakenTokenList } from '@portkey-wallet/hooks/hooks-ca/awaken/state';
+import { useAwakenGasFee, useAwakenTokenList } from '@portkey-wallet/hooks/hooks-eoa/awaken/state';
 import { useCurrencyBalancesV2 } from 'hooks/awaken';
-import { usePairMaxReserve } from '@portkey-wallet/hooks/hooks-ca/awaken/limit';
+import { usePairMaxReserve } from '@portkey-wallet/hooks/hooks-eoa/awaken/limit';
 import { LIMIT_RECEIVE_RATE, LimitExpiryEnum } from '@portkey-wallet/constants/awaken/limit';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import BigNumber from 'bignumber.js';
 import { divDecimals } from '@portkey-wallet/utils/converter';
 import { TLimitPairPriceError } from '@portkey-wallet/types/awaken/limit';
 import { useGetLimitOrderRemainingUnfilled } from '@portkey-wallet/graphql/awaken/hooks';
-import { useDAppChainId } from '@portkey-wallet/hooks/hooks-ca/chainList';
-import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useDAppChainId } from '@portkey-wallet/hooks/hooks-eoa/network/chain';
+import { useCurrentAccount } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 import { useKeyboardSafeArea } from 'components/KeyboardSafeArea';
 import { pTd } from 'utils/unit';
 import navigationService from 'utils/navigationService';
@@ -316,7 +316,7 @@ const LimitEnter = () => {
 
   const getUnfilled = useGetLimitOrderRemainingUnfilled();
   const dAppChainId = useDAppChainId();
-  const wallet = useCurrentWalletInfo();
+  const account = useCurrentAccount();
   const onSwapClick = useCallback(async () => {
     const { tokenIn, tokenOut, valueIn, valueOut } = limitInfo;
     if (!tokenIn || !tokenOut || isReserveError) {
@@ -331,7 +331,7 @@ const LimitEnter = () => {
       const result = await getUnfilled({
         dto: {
           chainId: dAppChainId,
-          makerAddress: wallet[dAppChainId]?.caAddress || '',
+          makerAddress: account?.address || '',
           tokenSymbol: tokenIn.symbol,
         },
       });
@@ -350,7 +350,7 @@ const LimitEnter = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [dAppChainId, expiryValue, getUnfilled, isReserveError, limitInfo, tokenPriceInfo.isReverse, wallet]);
+  }, [account?.address, dAppChainId, expiryValue, getUnfilled, isReserveError, limitInfo, tokenPriceInfo.isReverse]);
 
   const actionButtonTitle = useMemo(() => {
     if (!currencyBalances || Object.keys(currencyBalances).length === 0) {

@@ -1,7 +1,6 @@
 import React, { useCallback } from 'react';
 import { Text, View, TouchableWithoutFeedback, GestureResponderEvent } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { useLanguage } from 'i18n/hooks';
 import PageContainer from 'components/PageContainer';
 import Svg from 'components/Svg';
 import CommonButton, { CommonButtonProps } from 'components/CommonButton';
@@ -29,13 +28,14 @@ const CommonPreviewContainer: React.FC<ICommonPreviewContainerProps> = ({
   isLoading,
   children,
 }) => {
-  const { t } = useLanguage();
   const styles = getStyles();
   const { theme } = useTheme();
 
   const handleButtonPress = useCallback(
     (event: GestureResponderEvent) => {
-      if (isLoading) return;
+      if (isLoading) {
+        return;
+      }
       buttonProps.onPress?.(event);
     },
     [isLoading, buttonProps],
@@ -43,14 +43,16 @@ const CommonPreviewContainer: React.FC<ICommonPreviewContainerProps> = ({
 
   return (
     <PageContainer
-      titleDom={t('Preview')}
+      titleDom={'Preview'}
       safeAreaColor={['black', 'black']}
       containerStyles={styles.pageWrap}
       isLeftBackDisabled={isLoading}
       rightDom={
         <Touchable
           onPress={async () => {
-            if (isLoading || !helpUrl) return;
+            if (isLoading || !helpUrl) {
+              return;
+            }
             await openOutLink(helpUrl);
           }}>
           <Svg

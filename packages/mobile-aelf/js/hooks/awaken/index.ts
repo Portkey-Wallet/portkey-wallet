@@ -1,11 +1,11 @@
 import { useCallback, useMemo, useState } from 'react';
-import { useSwapHookContractAddress } from '@portkey-wallet/hooks/hooks-ca/awaken';
+import { useSwapHookContractAddress } from '@portkey-wallet/hooks/hooks-eoa/awaken';
 import { useGetTokenContract, useGetViewContract } from '../contract';
-import { useDAppChainId } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { useDAppChainId } from '@portkey-wallet/hooks/hooks-eoa/network/chain';
 import BigNumber from 'bignumber.js';
 import useInterval from '@portkey-wallet/hooks/useInterval';
 import { ZERO } from '@portkey-wallet/constants/misc';
-import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentAccount } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 import { getELFChainBalance } from '@portkey-wallet/utils/balance';
 
 export const useGetSwapHookViewContract = () => {
@@ -32,7 +32,9 @@ export const useBalancesV2 = (
   delay: null | number = 10000,
 ): [TBalancesV2, () => void] => {
   const deArr: TBalancesV2 | undefined = useMemo(() => {
-    if (!tokens) return;
+    if (!tokens) {
+      return;
+    }
     if (Array.isArray(tokens)) {
       return tokens.reduce((acc: any, symbol) => {
         if (symbol) {
@@ -47,8 +49,7 @@ export const useBalancesV2 = (
   const [balances, setBalances] = useState<TBalancesV2>(deArr);
   const chainId = useDAppChainId();
   const getTokenContract = useGetTokenContract();
-  const wallet = useCurrentWalletInfo();
-  const account = useMemo(() => wallet[chainId]?.caAddress, [chainId, wallet]);
+  const account = useCurrentAccount();
 
   const onGetBalance = useCallback(async () => {
     const tokensList = Array.isArray(tokens) ? tokens : [tokens];
@@ -66,12 +67,14 @@ export const useBalancesV2 = (
     }
     // elf chain
     const contract = await getTokenContract(chainId);
-    if (!contract) return;
+    if (!contract) {
+      return;
+    }
     const bs: TBalancesV2 = {};
     const promise = tokensList.map(async symbol => {
       if (symbol) {
         const _symbol = symbol;
-        const balance = await getELFChainBalance(contract, _symbol, account);
+        const balance = await getELFChainBalance(contract, _symbol, account.address);
         bs[_symbol] = ZERO.plus(balance ?? '');
       }
     });

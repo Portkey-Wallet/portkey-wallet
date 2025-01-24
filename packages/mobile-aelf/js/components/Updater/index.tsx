@@ -21,6 +21,7 @@ import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-eoa/network';
 // } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { exceptionManager } from 'utils/errorHandler/ExceptionHandler';
 import { service } from 'api/utils';
+import { useInitAwaken } from '@portkey-wallet/hooks/hooks-eoa/awaken';
 
 request.setExceptionManager(exceptionManager);
 
@@ -69,6 +70,7 @@ export default function Updater() {
       service.defaults.baseURL = apiUrl;
     }
   }, [apiUrl]);
+
   // useMemo(() => {
   //   im.setUrl({
   //     apiUrl: imApiUrl || '',
@@ -123,6 +125,6 @@ export default function Updater() {
   // useRememberMeBlackList(true);
   // useCheckContactMap();
   // useInitDappWhiteListData();
-  // useInitAwaken();
+  useInitAwaken();
   return null;
 }

@@ -10,6 +10,7 @@ import { networkSlice } from '@portkey-wallet/store/store-eoa/network/slice';
 import assetsSlice from '@portkey-wallet/store/store-eoa/assets/slice';
 import tokenManagementSlice from '@portkey-wallet/store/store-eoa/tokenManagement/slice';
 import activitySlice from '@portkey-wallet/store/store-eoa/activity/slice';
+import awakenSlice from '@portkey-wallet/store/awaken/slice';
 
 const userPersistConfig = {
   key: userSlice.name,
@@ -62,7 +63,7 @@ const rootReducer = combineReducers({
   // [securitySlice.name]: securitySlice.reducer,
   // [chatSlice.name]: chatSlice.reducer,
   // [rampSlice.name]: rampSlice.reducer,
-  // [awakenSlice.name]: awakenSlice.reducer,
+  [awakenSlice.name]: awakenSlice.reducer,
   // [referralSlice.name]: referralSlice.reducer,
   // [configSlice.name]: configSlice.reducer,
 });

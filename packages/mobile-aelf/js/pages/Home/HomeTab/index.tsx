@@ -178,7 +178,7 @@ const HomeTab: React.FC<any> = ({ _ }) => {
           Switch NetworkType (current: {currentNetwork})
         </CommonButton>
 
-        <CommonButton type="primary" onPress={() => navigationService.push('Swap')} style={{ marginTop: 20 }}>
+        <CommonButton type="primary" onPress={() => navigationService.push('SwapHome')} style={{ marginTop: 20 }}>
           Swap
         </CommonButton>
       </ScrollView>

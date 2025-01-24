@@ -87,3 +87,19 @@ export const sendSwap = async ({ contract, managerAddress, contractAddress, caHa
   }
   return result;
 };
+
+export type TSendEOASwapParams = {
+  contract: ContractBasic;
+  address: string;
+  args: {
+    swapTokens: TContractSwapToken[];
+    labsFeeRate: number;
+  };
+};
+export const sendEOASwap = async ({ contract, address, args }: TSendEOASwapParams) => {
+  const result = await contract.callSendMethod('SwapExactTokensForTokens', address, args);
+  if (result.error) {
+    throw result.error;
+  }
+  return result;
+};

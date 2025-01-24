@@ -4,7 +4,7 @@ import SwapEnter from '../components/SwapEnter/index';
 import LimitEnter from '../components/LimitEnter/index';
 import SwapSettingButton from '../components/SwapSettingButton/index';
 import { getStyles } from './style';
-import { useAwakenTokenList } from '@portkey-wallet/hooks/hooks-ca/awaken/state';
+import { useAwakenTokenList } from '@portkey-wallet/hooks/hooks-eoa/awaken/state';
 
 enum SwapHomeTabType {
   SWAP = 'Swap',

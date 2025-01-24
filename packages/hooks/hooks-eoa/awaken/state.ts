@@ -181,21 +181,25 @@ export const useAwakenTokenList = (isInit = false) => {
   const account = useCurrentAccount();
 
   const refresh = useCallback(async () => {
-    const rst = await request.assets.getAwakenTokenList({
-      params: {
-        skipCount: 0,
-        maxResultCount: 1000,
-        page: 1,
-        chainId,
-        caAddress: account?.address || '',
-      },
-    });
-    dispatch(
-      updateAwakenTokenList({
-        key: network,
-        list: rst.data,
-      }),
-    );
+    try {
+      const rst = await request.assets.getAwakenTokenList({
+        params: {
+          skipCount: 0,
+          maxResultCount: 1000,
+          page: 1,
+          chainId,
+          caAddress: account?.address || '',
+        },
+      });
+      dispatch(
+        updateAwakenTokenList({
+          key: network,
+          list: rst.data,
+        }),
+      );
+    } catch (error) {
+      console.log('useAwakenTokenList refresh error', error);
+    }
   }, [account?.address, chainId, dispatch, network]);
 
   useEffect(() => {

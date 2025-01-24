@@ -9,7 +9,7 @@ import { pTd } from 'utils/unit';
 import { ViewStyleType } from 'types/styles';
 import { getStyles } from './style';
 import { TCurrency } from '@portkey-wallet/types/awaken';
-import { TReserveInfo } from '@portkey-wallet/hooks/hooks-ca/awaken/limit';
+import { TReserveInfo } from '@portkey-wallet/hooks/hooks-eoa/awaken/limit';
 import { formatNameWithNoUnderline } from '@portkey-wallet/utils';
 import { ONE, ZERO } from '@portkey-wallet/constants/misc';
 import { LIMIT_PRICE_DECIMAL } from '@portkey-wallet/constants/awaken/limit';

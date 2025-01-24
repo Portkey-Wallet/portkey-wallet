@@ -5,6 +5,7 @@ import { useCurrentNetwork } from '../network';
 
 export const useInitAwaken = () => {
   useInitAwakenGasFeeState();
+
   const { refresh } = useAwakenTokenList();
 
   useEffect(() => {

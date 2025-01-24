@@ -1,4 +1,4 @@
-import { request } from '@portkey-wallet/api/api-did';
+import { request } from '@portkey-wallet/api/api-eoa';
 import { ITokenSectionResponse } from '@portkey-wallet/types/types-ca/token';
 import { IAssetItemType, IAssetNftCollection, IAssetToken } from './type';
 import {

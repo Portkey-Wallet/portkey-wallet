@@ -20,4 +20,5 @@ export type EOACommonState = {
   [assetsSlice.name]: TAssetsState;
   [tokenManagementSlice.name]: TokenState;
   [activitySlice.name]: ActivityStateType;
+  [networkSlice.name]: TNetworkState;
 };

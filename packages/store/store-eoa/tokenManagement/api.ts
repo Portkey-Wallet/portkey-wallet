@@ -1,4 +1,4 @@
-import { request } from '@portkey-wallet/api/api-did';
+import { request } from '@portkey-wallet/api/api-eoa';
 import { ChainId } from '@portkey-wallet/types';
 
 export function fetchAllTokenList({

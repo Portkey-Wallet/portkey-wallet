@@ -8,7 +8,7 @@ import * as Clipboard from 'expo-clipboard';
 import { useGetContract, useGetViewContract } from 'hooks/contract';
 import { useCurrentNetwork, useSwitchNetwork } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { useDAppChain, useDAppChainId, useGetChainInfo } from '@portkey-wallet/hooks/hooks-eoa/network/chain';
-import { useCurrentAccount, useSwitchNetworkType, useWalletListState } from '@portkey-wallet/hooks/hooks-eoa/wallet';
+import { useCurrentAccount, useWalletListState } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 import CommonButton from 'components/CommonButton';
 import navigationService from 'utils/navigationService';
 import { useCheckSecurityLock } from 'hooks/securityLock';
@@ -22,7 +22,6 @@ const HomeTab: React.FC<any> = ({ _ }) => {
   const currentAccount = useCurrentAccount();
   const walletList = useWalletListState();
   const dispatch = useAppCommonDispatch();
-  const switchNetwork = useSwitchNetworkType();
   const currentNetwork = useCurrentNetwork();
   useEffect(() => {
     console.log('currentAccount', currentAccount);

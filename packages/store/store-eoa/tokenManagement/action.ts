@@ -2,7 +2,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { createAction } from '@reduxjs/toolkit';
 import { HandleTokenArgTypes } from '@portkey-wallet/types/types-eoa/token';
 import { fetchAllTokenList, fetchAllTokenListLegacy } from './api';
-import { request } from '@portkey-wallet/api/api-did';
+import { request } from '@portkey-wallet/api/api-eoa';
 import { NetworkType } from '@portkey-wallet/types';
 
 export const addTokenInCurrentAccount = createAction<HandleTokenArgTypes>('token/addTokenInCurrentAccount');

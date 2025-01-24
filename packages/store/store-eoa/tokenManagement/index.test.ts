@@ -3,10 +3,10 @@ import { clearMarketToken, resetToken, tokenManagementSlice } from './slice';
 import { fetchAllTokenList } from './api';
 import { configureStore } from '@reduxjs/toolkit';
 import { fetchAllTokenListAsync, getSymbolImagesAsync } from './action';
-import { request } from '@portkey-wallet/api/api-did';
+import { request } from '@portkey-wallet/api/api-eoa';
 
 jest.mock('./api');
-jest.mock('@portkey-wallet/api/api-did');
+jest.mock('@portkey-wallet/api/api-eoa');
 const reducer = tokenManagementSlice.reducer;
 const mockInitState = {
   tokenDataShowInMarket: [],

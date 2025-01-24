@@ -94,7 +94,9 @@ export const fetchTokenListAsync = createAsyncThunk(
     maxResultCount?: number;
     identify: string;
   }) => {
+    console.log('fetchTokenList===== start!!');
     const response = await fetchTokenList({ addressInfos, skipCount, maxResultCount });
+    console.log('fetchTokenList===== end!!', JSON.stringify(response));
     // // mock data fro new account
     if (response.data.length === 0) {
       return {

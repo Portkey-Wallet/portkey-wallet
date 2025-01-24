@@ -1,5 +1,5 @@
 import { IStorage, StorageBaseLoader } from '@portkey-wallet/types/storage';
-import { request } from '@portkey-wallet/api/api-did';
+import { request } from '@portkey-wallet/api/api-eoa';
 import { RequestConfig } from '../../types';
 import { LoginKeyType } from '@portkey-wallet/types/types-ca/wallet';
 import { OperationTypeEnum } from '@portkey-wallet/types/verifier';

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo } from 'react';
 import { useChainListMapState, useCurrentNetwork } from './index';
 import { ChainId } from '@portkey-wallet/types';
-import { request } from '@portkey-wallet/api/api-did';
+import { request } from '@portkey-wallet/api/api-eoa';
 import { NetworkList } from '@portkey-wallet/constants/constants-eoa/network';
 import { useAppCommonDispatch } from '../../index';
 import { setChainList } from '@portkey-wallet/store/store-eoa/network/actions';

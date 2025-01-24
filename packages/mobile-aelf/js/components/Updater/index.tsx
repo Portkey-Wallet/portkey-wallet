@@ -63,12 +63,12 @@ export default function Updater() {
   // useFetchSymbolImages();
   // useFetchTxFee();
   useMemo(() => {
-    console.log('eoaApiUrl===', eoaApiUrl);
-    request.set('baseURL', eoaApiUrl);
-    if (service.defaults.baseURL !== eoaApiUrl) {
-      service.defaults.baseURL = eoaApiUrl;
+    console.log('apiUrl===', apiUrl);
+    request.set('baseURL', apiUrl);
+    if (service.defaults.baseURL !== apiUrl) {
+      service.defaults.baseURL = apiUrl;
     }
-  }, [eoaApiUrl]);
+  }, [apiUrl]);
   // useMemo(() => {
   //   im.setUrl({
   //     apiUrl: imApiUrl || '',

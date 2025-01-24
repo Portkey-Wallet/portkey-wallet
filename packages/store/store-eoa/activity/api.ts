@@ -1,4 +1,4 @@
-import { request } from '@portkey-wallet/api/api-did';
+import { request } from '@portkey-wallet/api/api-eoa';
 import { NFT_MIDDLE_SIZE } from '@portkey-wallet/constants/constants-eoa/assets';
 import { ActivityItemType } from '@portkey-wallet/types/types-eoa/activity';
 import {

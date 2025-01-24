@@ -35,7 +35,6 @@ import { logBoxTextColorSaver } from 'utils/textColor';
 import { CODE_PUSH_OPTIONS } from 'constants/codePush';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { init, track } from './js/utils/amplitude';
-import { request } from '@portkey-wallet/api/api-did';
 
 if (__DEV__) {
   logBoxTextColorSaver();
@@ -51,7 +50,6 @@ initFCMSignalR();
 secureStore.init(Config.PORT_KEY_CODE || 'EXAMPLE_PORT_KEY_CODE');
 
 const persistor = persistStore(store);
-request.addTransform(result => result.data);
 
 const App = () => {
   const statusBarProps = useMemo(() => {

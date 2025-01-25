@@ -2,6 +2,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { Text, View, StyleSheet } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
+import aes from '@portkey-wallet/utils/aes';
 import * as Clipboard from 'expo-clipboard';
 import { makeStyles, useTheme } from '@rneui/themed';
 import { pTd } from 'utils/unit';
@@ -11,16 +12,34 @@ import Touchable from 'components/Touchable';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import CommonButton from 'components/CommonButton';
 import navigationService from 'utils/navigationService';
+import { useCurrentWallet } from '@portkey-wallet/hooks/hooks-eoa/wallet';
+import { useCredentials } from 'hooks/store';
+import CommonToast from 'components/CommonToast';
 
 export default function ManualBackup() {
   const styles = getStyles();
   const { theme } = useTheme();
   const [copied, setCopied] = useState(false);
 
-  const mnemonics = useMemo(
-    () => ['seed', 'sock', 'milk', 'update', 'focus', 'rotate', 'barely', 'fade', 'car', 'face', 'mechanic', 'mercy'],
-    [],
-  );
+  // const currentAccount = useCurrentAccount();
+  const currentWallet = useCurrentWallet();
+  const credentials = useCredentials();
+
+  // console.log('currentAccount: ', currentAccount, currentWallet, credentials);
+
+  const mnemonics = useMemo(() => {
+    if (credentials?.pin && currentWallet?.AESEncryptMnemonic) {
+      const mnemonicString = aes.decrypt(currentWallet.AESEncryptMnemonic, credentials.pin);
+      if (!mnemonicString) {
+        // Can't into this branch, almost.
+        CommonToast.failError('Decrypt failed');
+        return [];
+      }
+      console.log('decrypt: ', mnemonicString, currentWallet?.AESEncryptMnemonic, credentials.pin);
+      return mnemonicString.split(' ');
+    }
+    return [];
+  }, [credentials?.pin, currentWallet?.AESEncryptMnemonic]);
 
   const inputWidth = useMemo(() => {
     return (screenWidth - pTd(16) * 3) / 2;
@@ -98,7 +117,9 @@ export default function ManualBackup() {
         type="primary"
         style={styles.continueButton}
         onPress={() => {
-          navigationService.push('ConfirmBackup');
+          navigationService.push('ConfirmBackup', {
+            mnemonics,
+          });
         }}>
         Continue
       </CommonButton>

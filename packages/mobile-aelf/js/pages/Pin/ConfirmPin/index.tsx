@@ -20,11 +20,13 @@ import { useSetBiometrics } from 'hooks/useBiometrics';
 type RouterParams = {
   pin?: string;
   oldPin?: string;
+  mnemonics?: string;
+  privateKey?: string;
 };
 
 export default function ConfirmPin() {
   const styles = getStyles();
-  const { pin, oldPin } = useRouterParams<RouterParams>();
+  const { pin, oldPin, mnemonics, privateKey } = useRouterParams<RouterParams>();
 
   usePreventHardwareBack();
 
@@ -47,6 +49,7 @@ export default function ConfirmPin() {
         CommonPrompt.failError(error);
       }
       changeCanLock(true);
+      // navigationService.reset('PrepareWallet', { pin, _inner_mnemonics, _inner_privateKey });
       navigationService.reset('PrepareWallet', { pin });
     },
     [dispatch, oldPin, pin],
@@ -73,9 +76,9 @@ export default function ConfirmPin() {
       }
 
       await setBiometrics(false);
-      navigationService.reset('PrepareWallet', { pin: confirmPin });
+      navigationService.reset('PrepareWallet', { pin: confirmPin, mnemonics, privateKey });
     },
-    [pin, oldPin, setBiometrics, textError.isError, setTextError, onChangePin],
+    [pin, oldPin, setBiometrics, textError.isError, setTextError, onChangePin, mnemonics, privateKey],
   );
 
   return (

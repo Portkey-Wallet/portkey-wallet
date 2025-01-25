@@ -14,7 +14,7 @@ import {
 import { DEFAULT_EXPIRATION, DEFAULT_SLIPPAGE_TOLERANCE } from '@portkey-wallet/constants/awaken';
 import { useDAppChain, useDAppChainId } from '../network/chain';
 import { request } from '@portkey-wallet/api/api-eoa';
-import { useCurrentAccount } from '../wallet';
+import { useCurrentAccount, useUniqueIdentify } from '../wallet';
 
 export const useAwakenState = () => useAppEOASelector(state => state.awaken);
 
@@ -179,6 +179,7 @@ export const useAwakenTokenList = (isInit = false) => {
 
   const list = useMemo(() => awakenTokenListState[network] || [], [awakenTokenListState, network]);
   const account = useCurrentAccount();
+  const key = useUniqueIdentify();
 
   const refresh = useCallback(async () => {
     try {
@@ -193,14 +194,14 @@ export const useAwakenTokenList = (isInit = false) => {
       });
       dispatch(
         updateAwakenTokenList({
-          key: network,
+          key,
           list: rst.data,
         }),
       );
     } catch (error) {
       console.log('useAwakenTokenList refresh error', error);
     }
-  }, [account?.address, chainId, dispatch, network]);
+  }, [account?.address, chainId, dispatch, key]);
 
   useEffect(() => {
     if (!isInit) return;

@@ -1,5 +1,5 @@
 import { useAwakenTokenList, useInitAwakenGasFeeState } from './state';
-import { LIMIT_CONTRACT_ADDRESS, SWAP_HOOK_CONTRACT_ADDRESS_MAP } from '@portkey-wallet/constants/constants-ca/awaken';
+import { LIMIT_CONTRACT_ADDRESS, SWAP_HOOK_CONTRACT_ADDRESS_MAP } from '@portkey-wallet/constants/awaken';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useCurrentNetwork } from '../network';
 import didServer from '@portkey-wallet/api/api-did/server';

@@ -9,7 +9,7 @@ import { pTd } from 'utils/unit';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import fonts from 'assets/theme/fonts';
 import { ViewStyleType, TextStyleType } from 'types/styles';
-import { TCurrency } from '@portkey-wallet/types/types-ca/awaken';
+import { TCurrency } from '@portkey-wallet/types/awaken';
 import { formatNameWithNoUnderline } from '@portkey-wallet/utils';
 import { useTheme } from '@rneui/themed';
 

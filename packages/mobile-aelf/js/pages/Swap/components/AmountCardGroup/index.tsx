@@ -7,12 +7,12 @@ import { pTd } from 'utils/unit';
 import { ViewStyleType } from 'types/styles';
 import { getStyles } from './style';
 import { TSwapInfo } from '../SwapEnter';
-import { useAwakenTokenPrices } from '@portkey-wallet/hooks/hooks-ca/awaken/state';
+import { useAwakenTokenPrices } from '@portkey-wallet/hooks/hooks-eoa/awaken/state';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { useTheme } from '@rneui/themed';
 import { TextM } from 'components/CommonText';
 import { TBalancesV2 } from 'hooks/awaken';
-import { TCurrency } from '@portkey-wallet/types/types-ca/awaken';
+import { TCurrency } from '@portkey-wallet/types/awaken';
 
 interface IAmountCardGroupProps {
   style?: ViewStyleType;

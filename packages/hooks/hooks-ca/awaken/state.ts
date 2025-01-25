@@ -10,8 +10,8 @@ import {
   updateAwakenTokenPrices,
   updateAwakenUserExpiration,
   updateAwakenUserSlippageTolerance,
-} from '@portkey-wallet/store/store-ca/awaken/actions';
-import { DEFAULT_EXPIRATION, DEFAULT_SLIPPAGE_TOLERANCE } from '@portkey-wallet/constants/constants-ca/awaken';
+} from '@portkey-wallet/store/awaken/actions';
+import { DEFAULT_EXPIRATION, DEFAULT_SLIPPAGE_TOLERANCE } from '@portkey-wallet/constants/awaken';
 import { useDAppChain, useDAppChainId } from '../chainList';
 import { request } from '@portkey-wallet/api/api-did';
 import { useCurrentWalletInfo } from '../wallet';
@@ -192,11 +192,11 @@ export const useAwakenTokenList = (isInit = false) => {
     });
     dispatch(
       updateAwakenTokenList({
-        network,
+        key: network,
         list: rst.data,
       }),
     );
-  }, [chainId, dispatch, network]);
+  }, [chainId, dispatch, network, wallet]);
 
   useEffect(() => {
     if (!isInit) return;

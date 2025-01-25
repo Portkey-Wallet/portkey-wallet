@@ -9,7 +9,7 @@ import { FontStyles } from 'assets/theme/styles';
 import GStyles from 'assets/theme/GStyles';
 import fonts from 'assets/theme/fonts';
 import { ViewStyleType, TextStyleType } from 'types/styles';
-import { TCurrency } from '@portkey-wallet/types/types-ca/awaken';
+import { TCurrency } from '@portkey-wallet/types/awaken';
 import { makeStyles } from '@rneui/themed';
 import { formatNameWithNoUnderline } from '@portkey-wallet/utils';
 

@@ -9,7 +9,7 @@ import CommonTooltip from 'components/CommonTooltip';
 import CommonTagToggleGroup from 'components/CommonTagToggleGroup';
 import CommonInput from 'components/CommonInput';
 import CommonButton from 'components/CommonButton';
-import { priceImpactList } from '@portkey-wallet/constants/constants-ca/awaken';
+import { priceImpactList } from '@portkey-wallet/constants/awaken';
 import { useAwakenUserSlippageTolerance, useAwakenUserExpiration } from '@portkey-wallet/hooks/hooks-ca/awaken/state';
 import { useLanguage } from 'i18n/hooks';
 import { pTd } from 'utils/unit';

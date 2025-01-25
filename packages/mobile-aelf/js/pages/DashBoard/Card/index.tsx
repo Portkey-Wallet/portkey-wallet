@@ -3,23 +3,25 @@ import { View, Text, StyleProp, ViewStyle, TouchableOpacity } from 'react-native
 import { getStyles } from './style';
 import SendButton from 'components/SendButton';
 import ReceiveButton from 'components/ReceiveButton';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
-import { useCurrentUserInfo, useSetHideAssets } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-eoa/network';
+import { useCurrentHideAssetsState, useSetHideAssets } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 import FaucetButton from 'components/FaucetButton';
 import OutlinedButton from 'components/OutlinedButton';
 import BuyButton from 'components/BuyButton';
-import { useAppRampEntryShow } from 'hooks/ramp';
+// import { useAppRampEntryShow } from 'hooks/ramp';
 import { pTd } from 'utils/unit';
 import Svg from 'components/Svg';
-import { useAppSwapButtonShow } from 'hooks/cms';
+// import { useAppSwapButtonShow } from 'hooks/cms';
 import navigationService from 'utils/navigationService';
 
 const Card: React.FC<{ title: string }> = ({ title }) => {
   const isMainnet = useIsMainnet();
-  const userInfo = useCurrentUserInfo();
+  const hideAssets = useCurrentHideAssetsState();
   const setHideAssets = useSetHideAssets();
-  const { isRampShow } = useAppRampEntryShow();
-  const { isSwapShow } = useAppSwapButtonShow();
+  // const { isRampShow } = useAppRampEntryShow();
+  // const { isSwapShow } = useAppSwapButtonShow();
+  const isRampShow = true;
+  const isSwapShow = true;
   const styles = getStyles();
   const buttonCount = useMemo(() => {
     let count = 2;
@@ -50,8 +52,8 @@ const Card: React.FC<{ title: string }> = ({ title }) => {
   }, [buttonCount, styles]);
 
   const onHideAssets = useCallback(() => {
-    setHideAssets(!userInfo.hideAssets);
-  }, [setHideAssets, userInfo.hideAssets]);
+    setHideAssets(!hideAssets);
+  }, [setHideAssets, hideAssets]);
 
   const onReceivePress = useCallback(() => {
     navigationService.navigate('ReceiveSelectToken');
@@ -62,12 +64,12 @@ const Card: React.FC<{ title: string }> = ({ title }) => {
       <View style={styles.textColumn}>
         {title ? (
           <View style={styles.usdtBalanceWrap}>
-            <Text style={[styles.usdtBalance, userInfo.hideAssets && { letterSpacing: pTd(3.2) }]}>
-              {userInfo.hideAssets ? '******' : title}
+            <Text style={[styles.usdtBalance, hideAssets && { letterSpacing: pTd(3.2) }]}>
+              {hideAssets ? '******' : title}
             </Text>
             {isMainnet && (
               <TouchableOpacity onPress={onHideAssets}>
-                <Svg icon={userInfo.hideAssets ? 'eyeClosed' : 'eye'} size={pTd(24)} iconStyle={styles.eyeIcon} />
+                <Svg icon={hideAssets ? 'eyeClosed' : 'eye'} size={pTd(24)} iconStyle={styles.eyeIcon} />
               </TouchableOpacity>
             )}
           </View>

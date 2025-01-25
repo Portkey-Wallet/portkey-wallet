@@ -6,8 +6,8 @@ import Touchable from 'components/Touchable';
 import Svg from 'components/Svg';
 import { pTd } from 'utils/unit';
 import { addressFormat, formatStr2EllipsisStr } from '@portkey-wallet/utils';
-import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { useCurrentChainList } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { useCurrentAddressInfos } from '@portkey-wallet/hooks/hooks-eoa/wallet';
+import { useCurrentChainList } from '@portkey-wallet/hooks/hooks-eoa/chainList';
 import { ChainId } from '@portkey-wallet/types';
 import { makeStyles } from '@rneui/themed';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
@@ -17,7 +17,7 @@ import CommonToast from 'components/CommonToast';
 import { setStringAsync } from 'expo-clipboard';
 
 const CopyUserAddress: React.FC = () => {
-  const caAddressInfos = useCaAddressInfoList();
+  const addressInfos = useCurrentAddressInfos();
   const styles = getStyles();
   const currentChainList = useCurrentChainList();
 
@@ -41,7 +41,7 @@ const CopyUserAddress: React.FC = () => {
 
   return (
     <ModalBody title={'Your addresses'} modalBodyType="bottom">
-      {caAddressInfos?.reverse()?.map((item, index) => {
+      {addressInfos?.reverse()?.map((item, index) => {
         return (
           <View key={index} style={styles.itemWrap}>
             <View style={styles.leftWrap}>
@@ -49,13 +49,13 @@ const CopyUserAddress: React.FC = () => {
               <View style={styles.textWrap}>
                 <Text style={styles.chainText}>{formatChainInfoToShow(item.chainId)}</Text>
                 <Text style={styles.addressText}>
-                  {formatStr2EllipsisStr(addressFormat(item.caAddress, item?.chainId), 8)}
+                  {formatStr2EllipsisStr(addressFormat(item.address, item?.chainId), 8)}
                 </Text>
               </View>
             </View>
             <Touchable
               style={styles.svgWrap}
-              onPress={() => onCopyAddress({ address: item.caAddress, chainId: item.chainId })}>
+              onPress={() => onCopyAddress({ address: item.address, chainId: item.chainId })}>
               <Svg icon="copy" size={pTd(24)} color={theme.colors.iconBase2} />
             </Touchable>
           </View>

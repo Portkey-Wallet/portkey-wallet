@@ -2,14 +2,15 @@ import React, { useState, useCallback, useRef, useMemo } from 'react';
 import { RefreshControl, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import { useLanguage } from 'i18n/hooks';
-import { getActivityListAsync } from '@portkey-wallet/store/store-ca/activity/action';
-import { useAppCASelector, useAppCommonDispatch } from '@portkey-wallet/hooks';
-import { IActivitiesApiParams } from '@portkey-wallet/store/store-ca/activity/type';
-import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { getActivityListAsync } from '@portkey-wallet/store/store-eoa/activity/action';
+import { useAppCommonDispatch } from '@portkey-wallet/hooks';
+import { useActivity } from '@portkey-wallet/hooks/hooks-eoa/activity';
+import { IActivitiesApiParams } from '@portkey-wallet/store/store-eoa/activity/type';
+import { useCurrentAddressInfos } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
-import { ActivityItemType } from '@portkey-wallet/types/types-ca/activity';
+import { ActivityItemType } from '@portkey-wallet/types/types-eoa/activity';
 import { getCurrentActivityMapKey } from '@portkey-wallet/utils/activity';
-import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
+import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-eoa/activity';
 import ActivityItem from 'components/ActivityItem';
 import { sleep } from '@portkey-wallet/utils';
 import { FlatListFooterLoading } from 'components/FlatListFooterLoading';
@@ -34,8 +35,8 @@ const ActivityListPage = () => {
   const { chainId, symbol } = useRouterParams<RouterParams>();
   const { t } = useLanguage();
   const dispatch = useAppCommonDispatch();
-  const caAddressInfos = useCaAddressInfoList();
-  const activity = useAppCASelector(state => state.activity);
+  const addressInfos = useCurrentAddressInfos();
+  const activity = useActivity();
   const currentActivity = useMemo(
     () => activity?.activityMap?.[getCurrentActivityMapKey(chainId, symbol)],
     [activity?.activityMap, chainId, symbol],
@@ -57,7 +58,7 @@ const ActivityListPage = () => {
       const params: IActivitiesApiParams = {
         maxResultCount: maxResultCount,
         skipCount: isInit ? 0 : skipCount + maxResultCount,
-        caAddressInfos,
+        addressInfos,
         // managerAddresses: address,
         chainId: chainId,
         symbol: symbol,
@@ -69,7 +70,7 @@ const ActivityListPage = () => {
         await sleep(250);
       }
     },
-    [caAddressInfos, chainId, currentActivity, dispatch, symbol],
+    [addressInfos, chainId, currentActivity, dispatch, symbol],
   );
 
   const isInitRef = useRef(false);

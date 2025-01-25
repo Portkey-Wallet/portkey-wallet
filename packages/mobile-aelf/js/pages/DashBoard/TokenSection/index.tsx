@@ -1,34 +1,34 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import navigationService from 'utils/navigationService';
 import { View, FlatList, Image } from 'react-native';
-import { ITokenSectionResponse } from '@portkey-wallet/types/types-ca/token';
+import { ITokenSectionResponse } from '@portkey-wallet/types/types-eoa/token';
 import fonts from 'assets/theme/fonts';
 import { pTd } from 'utils/unit';
 import TokenListUnionItem from 'components/TokenListUnionItem';
 import { useLanguage } from 'i18n/hooks';
-import { PAGE_SIZE_IN_ACCOUNT_TOKEN, REFRESH_TIME } from '@portkey-wallet/constants/constants-ca/assets';
+import { PAGE_SIZE_IN_ACCOUNT_TOKEN, REFRESH_TIME } from '@portkey-wallet/constants/constants-eoa/assets';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import Touchable from 'components/Touchable';
-import { useAccountTokenInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
-import { useAccountBalanceUSD } from '@portkey-wallet/hooks/hooks-ca/balances';
+import { useAccountTokenInfo } from '@portkey-wallet/hooks/hooks-eoa/assets';
+import { useAccountBalanceUSD } from '@portkey-wallet/hooks/hooks-eoa/assets';
 import { useLatestRef } from '@portkey-wallet/hooks';
-import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentAddressInfos, useCurrentHideAssetsState } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { makeStyles } from '@rneui/themed';
 import Svg from 'components/Svg';
 import { TextL } from 'components/CommonText';
+import { request } from '@portkey-wallet/api/api-did';
 
 export default function TokenSection() {
   const { t } = useLanguage();
-  const userInfo = useCurrentUserInfo();
+  const hideAssets = useCurrentHideAssetsState();
   const styles = getStyles();
 
   const { accountTokenList, totalRecordCount, fetchAccountTokenInfoList } = useAccountTokenInfo();
   const accountBalanceUSD = useAccountBalanceUSD();
   const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const caAddressInfos = useCaAddressInfoList();
-  const caAddressInfosList = useLatestRef(caAddressInfos);
+  const addressInfos = useCurrentAddressInfos();
+  const addressInfosList = useLatestRef(addressInfos);
   const [extraIndex, setExtraIndex] = useState<number>(0);
   const [selectedItem] = useState(new Map<string, boolean>());
 
@@ -60,37 +60,37 @@ export default function TokenSection() {
           item={item}
           onPress={onNavigate}
           onExpand={onExpand}
-          hideBalance={userInfo.hideAssets}
+          hideBalance={hideAssets}
           selected={selectedItem.get(item.symbol) ?? false}
         />
       );
     },
-    [onExpand, onNavigate, selectedItem, userInfo.hideAssets],
+    [onExpand, onNavigate, selectedItem, hideAssets],
   );
 
   const getAccountTokenList = useLockCallback(
     async (isInit: boolean) => {
-      if (totalRecordCount && accountTokenList.length >= totalRecordCount && !isInit) {
+      if (totalRecordCount && (accountTokenList?.length || 0) >= totalRecordCount && !isInit) {
         return;
       }
-
+      console.log('====abcd', request);
       try {
         await fetchAccountTokenInfoList({
-          caAddressInfos: caAddressInfosList.current || [],
-          skipCount: isInit ? 0 : accountTokenList.length,
+          addressInfos: addressInfosList.current || [],
+          skipCount: isInit ? 0 : accountTokenList?.length || 0,
           maxResultCount: PAGE_SIZE_IN_ACCOUNT_TOKEN,
         });
       } catch (error) {
         console.log(error, '===error');
       }
     },
-    [accountTokenList.length, caAddressInfosList, fetchAccountTokenInfoList, totalRecordCount],
+    [accountTokenList?.length, addressInfosList, fetchAccountTokenInfoList, totalRecordCount],
   );
 
   useEffect(() => {
     getAccountTokenList(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [caAddressInfosList]);
+  }, [addressInfosList]);
 
   useEffect(() => {
     if (timerRef.current) {

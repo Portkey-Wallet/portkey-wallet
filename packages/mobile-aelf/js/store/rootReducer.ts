@@ -6,6 +6,11 @@ import userSlice from './user/slice';
 import { walletSlice } from '@portkey-wallet/store/store-eoa/wallet/slice';
 import { settingsSlice } from '@portkey-wallet/store/settings/slice';
 import chainSlice from '@portkey-wallet/store/network/slice';
+import { networkSlice } from '@portkey-wallet/store/store-eoa/network/slice';
+import assetsSlice from '@portkey-wallet/store/store-eoa/assets/slice';
+import tokenManagementSlice from '@portkey-wallet/store/store-eoa/tokenManagement/slice';
+import activitySlice from '@portkey-wallet/store/store-eoa/activity/slice';
+import awakenSlice from '@portkey-wallet/store/awaken/slice';
 
 const userPersistConfig = {
   key: userSlice.name,
@@ -40,13 +45,14 @@ const rootReducer = combineReducers({
   [walletSlice.name]: walletSlice.reducer,
   [settingsSlice.name]: settingsSlice.reducer,
   [chainSlice.name]: chainSlice.reducer,
+  [networkSlice.name]: networkSlice.reducer,
   // [contactSlice.name]: contactSlice.reducer,
   // [miscSlice.name]: miscSlice.reducer,
   // [guardiansSlice.name]: guardiansSlice.reducer,
   // [recentSlice.name]: recentSlice.reducer,
-  // [assetsSlice.name]: assetsSlice.reducer,
-  // [activitySlice.name]: activitySlice.reducer,
-  // [tokenManagementSlice.name]: tokenManagementSlice.reducer,
+  [assetsSlice.name]: assetsSlice.reducer,
+  [activitySlice.name]: activitySlice.reducer,
+  [tokenManagementSlice.name]: tokenManagementSlice.reducer,
   // [dappSlice.name]: dappSlice.reducer,
   // [cmsSlice.name]: cmsSlice.reducer,
 
@@ -57,7 +63,7 @@ const rootReducer = combineReducers({
   // [securitySlice.name]: securitySlice.reducer,
   // [chatSlice.name]: chatSlice.reducer,
   // [rampSlice.name]: rampSlice.reducer,
-  // [awakenSlice.name]: awakenSlice.reducer,
+  [awakenSlice.name]: awakenSlice.reducer,
   // [referralSlice.name]: referralSlice.reducer,
   // [configSlice.name]: configSlice.reducer,
 });

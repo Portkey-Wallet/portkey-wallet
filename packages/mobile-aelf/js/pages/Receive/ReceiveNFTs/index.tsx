@@ -9,11 +9,11 @@ import { RECEIVE_HELP_URL } from 'constants/common';
 import { openOutLink } from 'utils/link';
 import ModeChangeSelector from 'pages/DashBoard/componets/ModeChangeSelector';
 import ReceiveQRCode from '../components/ReceiveQRCode';
-import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { useCurrentNetwork as useCurrentNetworkType } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentNetwork as useCurrentNetworkType } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { Text, View } from 'react-native';
 import { StyleSheet } from 'react-native';
 import fonts from 'assets/theme/fonts';
+import { useCurrentAccount } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 
 const networkList = [
   {
@@ -32,15 +32,11 @@ export default function ReceiveNFTs() {
   const styles = getStyles();
   const [destinationChain, setDestinationChain] = useState(networkList[0]);
   const [currentSelectedIndex, setCurrentSelectedIndex] = useState(networkList[0].key);
-  const currentWallet = useCurrentWalletInfo();
+  const { address = '' } = useCurrentAccount() ?? { address: '' };
   const currentNetworkType = useCurrentNetworkType();
   const destinationChainId =
     destinationChain.key === 'aelf dAppChain' ? (currentNetworkType === 'MAINNET' ? 'tDVV' : 'tDVW') : 'AELF';
-  const currentCaAddress = currentWallet?.[destinationChainId]?.caAddress;
-  const toCaAddress = useMemo(
-    () => `ELF_${currentCaAddress}_${destinationChainId}`,
-    [currentCaAddress, destinationChainId],
-  );
+  const toCaAddress = useMemo(() => `ELF_${address}_${destinationChainId}`, [address, destinationChainId]);
 
   const qrcodeAddress = useMemo(() => {
     return toCaAddress;

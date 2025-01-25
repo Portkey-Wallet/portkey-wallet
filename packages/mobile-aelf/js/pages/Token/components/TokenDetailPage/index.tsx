@@ -7,33 +7,30 @@ import navigationService from 'utils/navigationService';
 import { useLanguage } from 'i18n/hooks';
 import { FlashList } from '@shopify/flash-list';
 import { TextL, TextS } from 'components/CommonText';
-import { TokenItemShowType, ITokenSectionResponse } from '@portkey-wallet/types/types-ca/token';
+import { TokenItemShowType, ITokenSectionResponse } from '@portkey-wallet/types/types-eoa/token';
 import { useAppCASelector, useAppCommonDispatch } from '@portkey-wallet/hooks';
-import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { ActivityItemType } from '@portkey-wallet/types/types-ca/activity';
-import { getActivityListAsync } from '@portkey-wallet/store/store-ca/activity/action';
+import { useCurrentAddressInfos } from '@portkey-wallet/hooks/hooks-eoa/wallet';
+import { ActivityItemType } from '@portkey-wallet/types/types-eoa/activity';
+import { getActivityListAsync } from '@portkey-wallet/store/store-eoa/activity/action';
 import { getCurrentActivityMapKey } from '@portkey-wallet/utils/activity';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
-import { IActivitiesApiParams } from '@portkey-wallet/store/store-ca/activity/type';
+import { IActivitiesApiParams } from '@portkey-wallet/store/store-eoa/activity/type';
 import { formatAmountUSDShow, formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import fonts from 'assets/theme/fonts';
 import { sleep } from '@portkey-wallet/utils';
 import BuyButton from 'components/BuyButton';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
-import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-eoa/network';
+import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-eoa/activity';
 import { checkEnabledFunctionalTypes } from '@portkey-wallet/utils/compass';
-import { useTokenInfoFromStore } from '@portkey-wallet/hooks/hooks-ca/assets';
+import { useTokenInfoFromStore } from '@portkey-wallet/hooks/hooks-eoa/assets';
 import ActivityItem from 'components/ActivityItem';
 import OutlinedButton from 'components/OutlinedButton';
 import { FlatListFooterLoading } from 'components/FlatListFooterLoading';
 import { ListLoadingEnum } from 'constants/misc';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { pTd } from 'utils/unit';
-import { useAppRampEntryShow } from 'hooks/ramp';
 import { useGetAccountTokenList } from 'hooks/account';
-import { SHOW_RAMP_SYMBOL_LIST } from '@portkey-wallet/constants/constants-ca/ramp';
-import { useAppSwapButtonShow } from 'hooks/cms';
-import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { useDefaultToken } from '@portkey-wallet/hooks/hooks-eoa/chainList';
 import FaucetButton from 'components/FaucetButton';
 import { darkColors } from 'assets/theme';
 import { showActivityDetail } from 'components/ActivityOverlay';
@@ -54,24 +51,26 @@ const TokenDetailPage: React.FC<TokenDetailParams> = ({ tokenInfo, tokenSection 
   const { t } = useLanguage();
   const currentTokenInfo = useTokenInfoFromStore(tokenInfo.symbol, tokenInfo.chainId) || tokenInfo;
   const isMainnet = useIsMainnet();
-  const caAddressInfos = useCaAddressInfoList();
+  const addressInfos = useCurrentAddressInfos();
   const dispatch = useAppCommonDispatch();
   const activity = useAppCASelector(state => state.activity);
   const defaultToken = useDefaultToken(tokenInfo.chainId);
-  const { isSwapShow } = useAppSwapButtonShow();
-  const { buy, swap } = checkEnabledFunctionalTypes(tokenInfo.symbol, tokenInfo.chainId === 'AELF');
-  const { isRampShow } = useAppRampEntryShow();
+  // const { isSwapShow } = useAppSwapButtonShow();
+  const isSwapShow = true;
+  // const { buy, swap } = checkEnabledFunctionalTypes(tokenInfo.symbol, tokenInfo.chainId === 'AELF');
+  const { swap } = checkEnabledFunctionalTypes(tokenInfo.symbol, tokenInfo.chainId === 'AELF');
+  // const { isRampShow } = useAppRampEntryShow();
   const getAccountTokenList = useGetAccountTokenList();
-  const isBuyButtonShow = useMemo(
-    () =>
-      SHOW_RAMP_SYMBOL_LIST.includes(tokenInfo.symbol) &&
-      tokenInfo.chainId === 'AELF' &&
-      isRampShow &&
-      isMainnet &&
-      buy,
-    [buy, isMainnet, isRampShow, tokenInfo.chainId, tokenInfo.symbol],
-  );
-
+  // const isBuyButtonShow = useMemo(
+  //   () =>
+  //     SHOW_RAMP_SYMBOL_LIST.includes(tokenInfo.symbol) &&
+  //     tokenInfo.chainId === 'AELF' &&
+  //     isRampShow &&
+  //     isMainnet &&
+  //     buy,
+  //   [buy, isMainnet, isRampShow, tokenInfo.chainId, tokenInfo.symbol],
+  // );
+  const isBuyButtonShow = false;
   const isFaucetButtonShow = useMemo(
     () => !isMainnet && tokenInfo.symbol === defaultToken.symbol && tokenInfo.chainId === 'AELF',
     [defaultToken.symbol, isMainnet, tokenInfo.chainId, tokenInfo.symbol],
@@ -94,11 +93,11 @@ const TokenDetailPage: React.FC<TokenDetailParams> = ({ tokenInfo, tokenSection 
 
   const fixedParamObj = useMemo(
     () => ({
-      caAddressInfos: caAddressInfos.filter(ele => ele.chainId === tokenInfo.chainId),
+      addressInfos: addressInfos.filter(ele => ele.chainId === tokenInfo.chainId),
       symbol: tokenInfo.symbol,
       chainId: tokenInfo.chainId,
     }),
-    [caAddressInfos, tokenInfo.chainId, tokenInfo.symbol],
+    [addressInfos, tokenInfo.chainId, tokenInfo.symbol],
   );
   const pageInfoRef = useRef({
     ...INIT_PAGE_INFO,

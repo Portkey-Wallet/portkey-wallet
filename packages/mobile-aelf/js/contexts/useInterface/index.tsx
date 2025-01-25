@@ -33,18 +33,11 @@ function reducer(state: State, { type, payload }: any) {
         }),
       });
     }
-    case InterfaceActions.setTokenContract: {
-      const { tokenContracts } = state;
-      const { tokenContract, chainId } = payload;
-      return Object.assign({}, state, {
-        tokenContracts: Object.assign({}, tokenContracts, {
-          [chainId]: { ...tokenContracts?.[chainId as ChainId], ...tokenContract },
-        }),
-      });
-    }
     default: {
       const { destroy } = payload;
-      if (destroy) return Object.assign({}, payload);
+      if (destroy) {
+        return Object.assign({}, payload);
+      }
       return Object.assign({}, state, payload);
     }
   }
@@ -66,7 +59,9 @@ export default function Provider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (currentNetwork.chainType === 'aelf') {
-      if (prevRpcUrl !== currentNetwork.rpcUrl) dispatch(setCurrentInterface(getAelfInstance(currentNetwork.rpcUrl)));
+      if (prevRpcUrl !== currentNetwork.rpcUrl) {
+        dispatch(setCurrentInterface(getAelfInstance(currentNetwork.rpcUrl)));
+      }
     } else {
       // TODO: ethereum
     }

@@ -8,11 +8,11 @@ import CommonTagToggleGroup, { TagToggleGroupSize } from 'components/CommonTagTo
 import { pTd } from 'utils/unit';
 import { ViewStyleType } from 'types/styles';
 import { getStyles } from './style';
-import { TCurrency } from '@portkey-wallet/types/types-ca/awaken';
+import { TCurrency } from '@portkey-wallet/types/awaken';
 import { TReserveInfo } from '@portkey-wallet/hooks/hooks-ca/awaken/limit';
 import { formatNameWithNoUnderline } from '@portkey-wallet/utils';
 import { ONE, ZERO } from '@portkey-wallet/constants/misc';
-import { LIMIT_PRICE_DECIMAL } from '@portkey-wallet/constants/constants-ca/awaken/limit';
+import { LIMIT_PRICE_DECIMAL } from '@portkey-wallet/constants/awaken/limit';
 import BigNumber from 'bignumber.js';
 import { getPairTokenRatio } from '@portkey-wallet/utils/awaken';
 import { divDecimals } from '@portkey-wallet/utils/converter';

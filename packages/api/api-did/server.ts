@@ -15,6 +15,7 @@ export class DidService extends ServiceInit {
   protected onLockApp?: (expired?: boolean) => void;
   locked?: boolean;
   exceptionManager?: IExceptionManager;
+  private transformCallbackList: ((result: any) => any)[] = [];
   constructor() {
     super();
   }
@@ -72,7 +73,15 @@ export class DidService extends ServiceInit {
   };
   send = async (base: BaseConfig, config?: RequestConfig, reCount = 0): Promise<any> => {
     try {
-      return await this.sendOrigin(base, config, reCount);
+      const result = await this.sendOrigin(base, config, reCount);
+      console.log('this.transformCallbackList.length', this.transformCallbackList.length);
+      if (this.transformCallbackList.length > 0) {
+        const i = this.transformCallbackList.reduce((prevResult, callback) => {
+          return callback(prevResult);
+        }, result);
+        return i;
+      }
+      return result;
     } catch (errResult: any) {
       const { URL, fetchConfig } = this.getConfig(base, config);
       this.errorReport(URL, fetchConfig, errResult);
@@ -125,6 +134,17 @@ export class DidService extends ServiceInit {
   setExceptionManager = (exceptionManager: IExceptionManager) => {
     this.exceptionManager = exceptionManager;
   };
+
+  addTransform = (callback: (result: any) => any) => {
+    if (typeof callback !== 'function') {
+      return;
+    }
+    if (!this.transformCallbackList) {
+      this.transformCallbackList = [];
+    }
+    this.transformCallbackList.push(callback);
+  };
+
   errorReport = (url: string, fetchConfig: any, fetchResult: any) => {
     this.exceptionManager?.reportErrorMessage?.(`${URL} request error`, Severity.Fatal, {
       req: {

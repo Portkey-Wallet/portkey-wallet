@@ -38,8 +38,8 @@ import { ReferralStateType } from '@portkey-wallet/store/store-ca/referral/type'
 import { CryptoGiftStateType } from '@portkey-wallet/store/store-ca/cryptoGift/type';
 import { configSlice } from '@portkey-wallet/store/store-ca/config/slice';
 import { ConfigStateType } from '@portkey-wallet/store/store-ca/config/types';
-import awakenSlice from '@portkey-wallet/store/store-ca/awaken/slice';
-import { TAwakenState } from '@portkey-wallet/store/store-ca/awaken/type';
+import awakenSlice from '@portkey-wallet/store/awaken/slice';
+import { TAwakenState } from '@portkey-wallet/store/awaken/type';
 
 export type CACommonState = RootCommonState & {
   [tokenManagementSlice.name]: TokenState;

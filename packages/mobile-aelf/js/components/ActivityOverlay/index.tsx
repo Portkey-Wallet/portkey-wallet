@@ -6,10 +6,9 @@ import {
   SHOW_DAPP_TRANSACTION_TYPES,
   TransactionTypes,
 } from '@portkey-wallet/constants/constants-ca/activity';
-import { useCurrentChain, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
-import { useCaAddressInfoList, useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { fetchActivity } from '@portkey-wallet/store/store-ca/activity/api';
-import { ActivityItemType } from '@portkey-wallet/types/types-ca/activity';
+import { useDefaultToken, useExplorerUrl } from '@portkey-wallet/hooks/hooks-eoa/chainList';
+import { fetchActivity } from '@portkey-wallet/store/store-eoa/activity/api';
+import { ActivityItemType } from '@portkey-wallet/types/types-eoa/activity';
 import { addressFormat, getExploreLink, handleLoopFetch } from '@portkey-wallet/utils';
 import {
   AmountSign,
@@ -30,48 +29,49 @@ import { formatActivityTimeDetailRevamp } from '@portkey-wallet/utils/time';
 import { formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import navigationService from 'utils/navigationService';
 import { pTd } from 'utils/unit';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
-import { SHOW_FROM_TRANSACTION_TYPES } from '@portkey-wallet/constants/constants-ca/activity';
-import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
-import { IActivityApiParams } from '@portkey-wallet/store/store-ca/activity/type';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-eoa/network';
+import { SHOW_FROM_TRANSACTION_TYPES } from '@portkey-wallet/constants/constants-eoa/activity';
+import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-eoa/useTokensPrice';
+import { IActivityApiParams } from '@portkey-wallet/store/store-eoa/activity/type';
 import Lottie from 'lottie-react-native';
 import Touchable from 'components/Touchable';
 import NFTAvatar from 'components/NFTAvatar';
 import { useLanguage } from 'i18n/hooks';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { makeStyles, useTheme } from '@rneui/themed';
-import { contractStatusEnum } from '@portkey-wallet/constants/constants-ca/common';
+import { contractStatusEnum } from '@portkey-wallet/constants/constants-eoa/common';
 import CommonAvatar from 'components/CommonAvatar';
 import { ZERO } from '@portkey-wallet/constants/misc';
-import { useAppCASelector } from '@portkey-wallet/hooks/hooks-ca';
+import { useAppEOASelector } from '@portkey-wallet/hooks';
 import { CrossChainTransferParamsType, intervalCrossChainTransfer } from 'utils/transfer/crossChainTransfer';
 import { useGetTokenContract } from 'hooks/contract';
 import { useAppDispatch } from 'store/hooks';
-import { removeFailedActivity } from '@portkey-wallet/store/store-ca/activity/slice';
+import { removeFailedActivity } from '@portkey-wallet/store/store-eoa/activity/slice';
+import { useCurrentAccount, useCurrentAddressInfos } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 
 const ActivityDetail = (props: ActivityItemType & IActivityApiParams) => {
   const { transactionId = '', blockHash = '', isReceived: isReceivedParams, activityType } = props;
-  const { caAddress } = useCurrentWalletInfo();
+  const { address } = useCurrentAccount() ?? { address: '' };
   const { t } = useLanguage();
   const defaultToken = useDefaultToken();
   const isMainnet = useIsMainnet();
   const [resendLoading, setResendLoading] = useState(false);
-  const caAddressesInfoList = useCaAddressInfoList();
+  const addressesInfoList = useCurrentAddressInfos();
   const caAddressInfos = useMemo(() => {
-    let result = caAddressesInfoList;
-    if (caAddress === props.fromAddress) {
-      result = caAddressesInfoList.filter(item => item.chainId === props?.fromChainId);
-    } else if (caAddress === props.toAddress) {
-      result = caAddressesInfoList.filter(item => item.chainId === props?.toChainId);
+    let result = addressesInfoList;
+    if (address === props.fromAddress) {
+      result = addressesInfoList.filter(item => item.chainId === props?.fromChainId);
+    } else if (address === props.toAddress) {
+      result = addressesInfoList.filter(item => item.chainId === props?.toChainId);
     }
-    return result?.length > 0 ? result : caAddressesInfoList;
-  }, [caAddressesInfoList, props, caAddress]);
+    return result?.length > 0 ? result : addressesInfoList;
+  }, [addressesInfoList, props, address]);
 
   const [, getTokenPrice] = useGetCurrentAccountTokenPrice();
   const [initializing, setInitializing] = useState(false);
-  const activity = useAppCASelector(state => state.activity);
+  const activity = useAppEOASelector(state => state.activity);
   const [activityItem, setActivityItem] = useState<ActivityItemType>(props);
-  const { explorerUrl } = useCurrentChain(activityItem?.fromChainId) ?? {};
+  const explorerUrl = useExplorerUrl(activityItem?.fromChainId);
   const styles = getStyles();
   const { theme } = useTheme();
   const getActivityDetail = useCallback(async () => {

@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { FlatList, View } from 'react-native';
-import { IUserTokenItemResponse } from '@portkey-wallet/types/types-ca/token';
-import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
+import { IUserTokenItemResponse } from '@portkey-wallet/types/types-eoa/token';
+import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-eoa/activity';
 import { defaultColors } from 'assets/theme';
 import fonts from 'assets/theme/fonts';
 import { pTd } from 'utils/unit';
@@ -9,11 +9,11 @@ import { useLanguage } from 'i18n/hooks';
 import { useAppCommonDispatch, useLatestRef } from '@portkey-wallet/hooks';
 import useDebounce from 'hooks/useDebounce';
 import useEffectOnce from 'hooks/useEffectOnce';
-import { useChainIdList } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useChainIdList } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 import NoData from 'components/NoData';
-import useToken from '@portkey-wallet/hooks/hooks-ca/useToken';
+import useToken from '@portkey-wallet/hooks/hooks-eoa/useToken';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
-import { PAGE_SIZE_DEFAULT, PAGE_SIZE_IN_ACCOUNT_ASSETS } from '@portkey-wallet/constants/constants-ca/assets';
+import { PAGE_SIZE_DEFAULT, PAGE_SIZE_IN_ACCOUNT_ASSETS } from '@portkey-wallet/constants/constants-eoa/assets';
 import myEvents from 'utils/deviceEvent';
 import navigationService from 'utils/navigationService';
 import PageContainer from 'components/PageContainer';
@@ -28,6 +28,7 @@ import Svg from 'components/Svg';
 import GStyles from 'assets/theme/GStyles';
 
 const SelectToken = () => {
+  console.log('SelectToken!!!!!');
   const { t } = useLanguage();
   const { tokenDataShowInMarket = [], totalRecordCount, fetchTokenInfoList } = useToken();
   const dispatch = useAppCommonDispatch();

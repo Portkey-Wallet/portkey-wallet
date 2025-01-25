@@ -10,7 +10,7 @@ import { getContentStyles, getButtonStyles } from './style';
 import Svg from 'components/Svg';
 import { pTd } from 'utils/unit';
 import { truncateString } from '@portkey-wallet/utils';
-import { TCurrency } from '@portkey-wallet/types/types-ca/awaken';
+import { TCurrency } from '@portkey-wallet/types/awaken';
 import { useAwakenTokenList } from '@portkey-wallet/hooks/hooks-ca/awaken/state';
 import CurrencyItem from '../CurrencyItem';
 import { formatNameWithNoUnderline } from '@portkey-wallet/utils';

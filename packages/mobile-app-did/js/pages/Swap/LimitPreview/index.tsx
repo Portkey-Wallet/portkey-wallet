@@ -10,13 +10,13 @@ import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { getChainSvgName } from 'utils';
 import { pTd } from 'utils/unit';
 import { getStyles } from './style';
-import { TCurrency } from '@portkey-wallet/types/types-ca/awaken';
+import { TCurrency } from '@portkey-wallet/types/awaken';
 import {
   LIMIT_LABS_FEE_RATE,
   LIMIT_PRICE_DECIMAL,
   LIMIT_RECEIVE_RATE,
   LimitExpiryEnum,
-} from '@portkey-wallet/constants/constants-ca/awaken/limit';
+} from '@portkey-wallet/constants/awaken/limit';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { useAwakenGasFee, useAwakenTokenPrices } from '@portkey-wallet/hooks/hooks-ca/awaken/state';
 import moment from 'moment';

@@ -8,17 +8,18 @@ import { TextM, TextXXL } from 'components/CommonText';
 import PageContainer from 'components/PageContainer';
 import { pTd } from 'utils/unit';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
-import { useAccountNFTCollectionInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
-import { useCaAddressInfoList, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useAccountNFTCollectionInfo } from '@portkey-wallet/hooks/hooks-eoa/assets';
+import { useCurrentAddressInfos } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 import { ChainId } from '@portkey-wallet/types';
 import { Skeleton } from '@rneui/base';
 import { PortkeyLinearGradientV2 } from 'components/PortkeyLinearGradient';
 import Touchable from 'components/Touchable';
 import navigationService from 'utils/navigationService';
-import { NFTItemBaseType } from '@portkey-wallet/types/types-ca/assets';
+import { NFTItemBaseType } from '@portkey-wallet/types/types-eoa/assets';
 import { divDecimalsToShow } from '@portkey-wallet/utils/converter';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import NFTAvatar from 'components/NFTAvatar';
+import { useCurrentNetwork } from '@portkey-wallet/hooks/hooks-eoa/network';
 
 export interface ICollectionDetailProps {
   name: string;
@@ -37,9 +38,9 @@ const CollectionDetail = () => {
   const [isInit, setIsInit] = useState<boolean>(true);
   const pageNumRef = useRef<number>(0);
   const [isFetching, setIsFetching] = useState<boolean>(false);
-  const caAddressInfos = useCaAddressInfoList();
+  const addressInfos = useCurrentAddressInfos();
   const { fetchAccountNFTItem, accountNFTList } = useAccountNFTCollectionInfo();
-  const { currentNetwork } = useWallet();
+  const currentNetwork = useCurrentNetwork();
   const currentCollectionObj = useMemo(() => {
     const currentCollection = accountNFTList.find(item => item.symbol === symbol && item.chainId === chainId);
     if ((currentCollection?.children?.length || 0) === 0) {
@@ -50,6 +51,7 @@ const CollectionDetail = () => {
     }
     return currentCollection;
   }, [accountNFTList, chainId, symbol]);
+  console.log('currentCollectionObj', currentCollectionObj);
   const [realItemCount, setRealItemCount] = useState<number>(itemCount);
   useEffect(() => {
     if (currentCollectionObj?.totalRecordCount && currentCollectionObj?.totalRecordCount !== itemCount) {
@@ -67,14 +69,14 @@ const CollectionDetail = () => {
         await fetchAccountNFTItem({
           symbol,
           chainId,
-          caAddressInfos: caAddressInfos.filter(item => item.chainId === chainId),
+          addressInfos: addressInfos.filter(item => item.chainId === chainId),
           pageNum: 0,
         });
         setIsFetching(false);
         pageNumRef.current += 1;
       }
     })();
-  }, [caAddressInfos, chainId, currentCollectionObj?.children?.length, fetchAccountNFTItem, symbol]);
+  }, [addressInfos, chainId, currentCollectionObj?.children?.length, fetchAccountNFTItem, symbol]);
   const showChildren = useMemo(() => currentCollectionObj?.children, [currentCollectionObj?.children]);
 
   const loadMoreItem = useCallback(async () => {
@@ -86,12 +88,12 @@ const CollectionDetail = () => {
     await fetchAccountNFTItem({
       symbol,
       chainId,
-      caAddressInfos: caAddressInfos.filter(item => item.chainId === chainId),
+      addressInfos: addressInfos.filter(item => item.chainId === chainId),
       pageNum: pageNumRef.current,
     });
     setIsFetching(false);
     pageNumRef.current += 1;
-  }, [caAddressInfos, chainId, fetchAccountNFTItem, realItemCount, showChildren?.length, symbol]);
+  }, [addressInfos, chainId, fetchAccountNFTItem, realItemCount, showChildren?.length, symbol]);
   const skeletonList: number[] = useMemo(() => {
     if (!isFetching && !isInit) {
       return [];

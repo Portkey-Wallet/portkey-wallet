@@ -8,7 +8,7 @@ import { ViewStyleType } from 'types/styles';
 import { getStyles } from './style';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { divDecimals } from '@portkey-wallet/utils/converter';
-import { TCurrency } from '@portkey-wallet/types/types-ca/awaken';
+import { TCurrency } from '@portkey-wallet/types/awaken';
 import { formatNameWithNoUnderline } from '@portkey-wallet/utils';
 import { TextM } from 'components/CommonText';
 import { isIOS } from '@rneui/base';

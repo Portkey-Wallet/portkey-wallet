@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useGetPairReserve } from '@portkey-wallet/graphql/awaken/hooks';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { useReturnLastCallback } from '../../index';
-import { LIMIT_TIME_INTERVAL } from '@portkey-wallet/constants/constants-ca/awaken/limit';
+import { LIMIT_TIME_INTERVAL } from '@portkey-wallet/constants/awaken/limit';
 import { useDAppChainId } from '../chainList';
 
 export type TReserveInfo = {
@@ -16,7 +16,6 @@ export const useGetPairMaxReserve = () => {
 
   return useCallback(
     async (symbolIn: string, symbolOut: string): Promise<TReserveInfo> => {
-      console.log('1111');
       const {
         data: {
           pairReserve: { syncRecords },

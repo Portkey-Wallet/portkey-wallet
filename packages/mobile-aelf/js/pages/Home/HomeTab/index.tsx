@@ -181,6 +181,10 @@ const HomeTab: React.FC<any> = ({ _ }) => {
         <CommonButton type="primary" onPress={() => navigationService.push('SwapHome')} style={{ marginTop: 20 }}>
           Swap
         </CommonButton>
+
+        <CommonButton type="primary" onPress={() => navigationService.push('ContactsHome')} style={{ marginTop: 20 }}>
+          Contact
+        </CommonButton>
       </ScrollView>
     </SafeAreaBox>
   );

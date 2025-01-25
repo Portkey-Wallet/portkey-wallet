@@ -14,6 +14,7 @@ import tokenManagementSlice from '@portkey-wallet/store/store-eoa/tokenManagemen
 import { TokenState } from './token';
 import activitySlice from '@portkey-wallet/store/store-eoa/activity/slice';
 import { ActivityStateType } from '@portkey-wallet/store/store-eoa/activity/type';
+import { contactSlice, TContactState } from '@portkey-wallet/store/store-eoa/contact/slice';
 
 export type EOACommonState = {
   [settingsSlice.name]: SettingsState;
@@ -24,4 +25,5 @@ export type EOACommonState = {
   [activitySlice.name]: ActivityStateType;
   [networkSlice.name]: TNetworkState;
   [awakenSlice.name]: TAwakenState;
+  [contactSlice.name]: TContactState;
 };

@@ -6,6 +6,9 @@ import Touchable from 'components/Touchable';
 import CommonButton from 'components/CommonButton';
 import Svg from 'components/Svg';
 import * as Clipboard from 'expo-clipboard';
+import navigationService from 'utils/navigationService';
+import { SetBiometricsTypeEnum } from 'pages/Pin/SetBiometrics';
+import { authenticationReady } from '@portkey-wallet/utils/mobile/authentication';
 
 export default function RecoveryPhrase() {
   const styles = getStyles();
@@ -32,10 +35,7 @@ export default function RecoveryPhrase() {
     }
     // Regex to match a valid hexadecimal string
     const hexRegex = /^[0-9a-fA-F]{64}$/;
-    if (!hexRegex.test(privateKeyWithoutPrefix)) {
-      return false;
-    }
-    return true;
+    return hexRegex.test(privateKeyWithoutPrefix);
   }, [inputText]);
 
   const onPaste = useCallback(async () => {
@@ -54,7 +54,7 @@ export default function RecoveryPhrase() {
         <Text style={styles.buttonText}>Paste from clipboard</Text>
       </Touchable>
     );
-  }, [styles]);
+  }, [onPaste, styles.button, styles.buttonText]);
   const clearButton = useMemo(() => {
     return (
       <Touchable style={styles.button} onPress={onClear}>
@@ -62,7 +62,22 @@ export default function RecoveryPhrase() {
         <Text style={styles.buttonText}>Clear</Text>
       </Touchable>
     );
-  }, [styles]);
+  }, [onClear, styles.button, styles.buttonText, theme.colors.iconBase2]);
+
+  const importWalletByPrivateKey = useCallback(async () => {
+    const isReady = await authenticationReady();
+    if (isReady) {
+      navigationService.push('SetBiometrics', {
+        type: SetBiometricsTypeEnum.create,
+        privateKey: inputText.trim(),
+      });
+      return;
+    }
+
+    navigationService.navigate('SetPin', {
+      privateKey: inputText.trim(),
+    });
+  }, [inputText]);
 
   return (
     <View style={styles.flex}>
@@ -76,7 +91,12 @@ export default function RecoveryPhrase() {
       />
       {inputText.length <= 0 ? pasteButton : clearButton}
       <View style={styles.flex} />
-      <CommonButton style={styles.importButton} disabledStyle={styles.importButtonDisable} disabled={!isPrivateKeyValid}>
+      <CommonButton
+        type="primary"
+        style={styles.importButton}
+        disabledStyle={styles.importButtonDisable}
+        disabled={!isPrivateKeyValid}
+        onPress={importWalletByPrivateKey}>
         Import
       </CommonButton>
     </View>

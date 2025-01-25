@@ -3,16 +3,20 @@ import SafeAreaBox from 'components/SafeAreaBox';
 import { useTheme } from '@rneui/themed';
 import { TextM } from 'components/CommonText';
 import { ScrollView } from 'react-native';
+
+import { useCurrentAccount, useCurrentWallet, useWalletListState } from '@portkey-wallet/hooks/hooks-eoa/wallet';
+import { useCredentials } from '../../../hooks/store';
+
 import { useBackupWalletModal } from '../../Login/hooks/useBackupWalletModal';
 import * as Clipboard from 'expo-clipboard';
 import { useGetContract, useGetViewContract } from 'hooks/contract';
 import { useCurrentNetwork, useSwitchNetwork } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { useDAppChain, useDAppChainId, useGetChainInfo } from '@portkey-wallet/hooks/hooks-eoa/network/chain';
-import { useCurrentAccount, useWalletListState } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 import CommonButton from 'components/CommonButton';
 import navigationService from 'utils/navigationService';
 import { useCheckSecurityLock } from 'hooks/securityLock';
 import { useAppCommonDispatch, useAppEOASelector } from '@portkey-wallet/hooks';
+
 import { resetWallet } from '@portkey-wallet/store/store-eoa/wallet/actions';
 
 const HomeTab: React.FC<any> = ({ _ }) => {
@@ -21,12 +25,16 @@ const HomeTab: React.FC<any> = ({ _ }) => {
   const { theme } = useTheme();
   const currentAccount = useCurrentAccount();
   const walletList = useWalletListState();
+  const currentWallet = useCurrentWallet();
+  const credentials = useCredentials();
+
   const dispatch = useAppCommonDispatch();
   const currentNetwork = useCurrentNetwork();
   useEffect(() => {
     console.log('currentAccount', currentAccount);
     console.log('walletList', walletList);
-  }, [currentAccount, walletList]);
+    console.log('currentWallet', currentWallet);
+  }, [currentAccount, walletList, currentWallet]);
 
   const checkSecurityLock = useCheckSecurityLock();
   const checkPin = useCallback(async () => {
@@ -41,6 +49,7 @@ const HomeTab: React.FC<any> = ({ _ }) => {
   }, [checkSecurityLock]);
 
   const { showBackupWalletModal } = useBackupWalletModal();
+  // const dispatch = useAppCommonDispatch();
 
   const dAppChain = useDAppChain();
   const getContract = useGetContract();
@@ -138,7 +147,27 @@ const HomeTab: React.FC<any> = ({ _ }) => {
           style={{ marginTop: 20 }}>
           WalletImportTypeSelect
         </CommonButton>
-        <CommonButton type="primary" onPress={() => navigationService.push('ConfirmBackup')} style={{ marginTop: 20 }}>
+        <CommonButton
+          type="primary"
+          onPress={() =>
+            navigationService.push('ConfirmBackup', {
+              mnemonics: [
+                'seed',
+                'sock',
+                'milk',
+                'update',
+                'focus',
+                'rotate',
+                'barely',
+                'fade',
+                'car',
+                'face',
+                'mechanic',
+                'mercy',
+              ],
+            })
+          }
+          style={{ marginTop: 40 }}>
           Confirm Backup
         </CommonButton>
         <CommonButton
@@ -147,7 +176,14 @@ const HomeTab: React.FC<any> = ({ _ }) => {
           style={{ marginTop: 20 }}>
           Confirm Backup Success
         </CommonButton>
-        <CommonButton type="primary" onPress={() => navigationService.push('ManualBackup')} style={{ marginTop: 20 }}>
+        <CommonButton
+          type="primary"
+          onPress={() =>
+            navigationService.push('ManualBackup', {
+              pin: credentials?.pin,
+            })
+          }
+          style={{ marginTop: 40 }}>
           Manual Backup
         </CommonButton>
         <CommonButton type="primary" onPress={() => navigationService.push('Referral')} style={{ marginTop: 20 }}>
@@ -164,7 +200,13 @@ const HomeTab: React.FC<any> = ({ _ }) => {
           style={{ marginTop: 20 }}>
           Backup Modal
         </CommonButton>
-
+        <CommonButton
+          type="primary"
+          onPress={() => {
+            dispatch(resetWallet());
+          }}>
+          Reset wallet
+        </CommonButton>
         <CommonButton type="primary" onPress={getBalance} style={{ marginTop: 20 }}>
           ELF Balance tDVW
         </CommonButton>

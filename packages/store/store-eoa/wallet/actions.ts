@@ -15,6 +15,8 @@ export const removeWallet = createAction<{
   key: string;
 }>('wallet/removeWallet');
 
+export const resetWallet = createAction('wallet/resetWallet');
+
 export const addAccount = createAction<{
   key: string;
   account: TAccountInfo;
@@ -24,7 +26,6 @@ export const removeAccount = createAction<{
   key: string;
   address: string;
 }>('wallet/removeAccount');
-export const resetWallet = createAction('wallet/resetWallet');
 
 export const setHideAssetsAction =
   createAction<RequireAtLeastOne<{ hideAssets: boolean }>>('wallet/setHideAssetsAction');

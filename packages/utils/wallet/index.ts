@@ -76,45 +76,47 @@ export const formatWalletInfoV2 = (
   addressName?: string,
 ): TWalletInfo | false => {
   try {
+    console.log('formatWalletInfoV2: walletInfoInput', walletInfoInput);
     if (!walletInfoInput || !password) {
       return false;
     }
     const { mnemonic } = walletInfoInput;
 
-    const AESEncryptMnemonic = aes.encrypt(mnemonic || '', password);
+    const AESEncryptMnemonic = mnemonic ? aes.encrypt(mnemonic || '', password) : '';
 
-    const nextBIP44Path = getNextBIP44Path(walletInfoInput.BIP44Path);
-    const account = AElf.wallet.getWalletByMnemonic(mnemonic, nextBIP44Path);
-    const accountAESEncryptPrivateKey = aes.encrypt(account.privateKey, password);
-    if (!account?.publicKey) {
-      const publicKey = account.keyPair.getPublic();
-      account.publicKey = {
+    // const nextBIP44Path = mnemonic ? getNextBIP44Path(walletInfoInput.BIP44Path) : '';
+    // const account = mnemonic ? AElf.wallet.getWalletByMnemonic(mnemonic, nextBIP44Path) : walletInfoInput;
+    // const account = walletInfoInput;
+    const accountAESEncryptPrivateKey = aes.encrypt(walletInfoInput.privateKey, password);
+    // console.log('account.privateKey', account, account.privateKey);
+    if (!walletInfoInput?.publicKey) {
+      const publicKey = walletInfoInput.keyPair.getPublic();
+      walletInfoInput.publicKey = {
         x: publicKey.x.toString('hex'),
         y: publicKey.y.toString('hex'),
       };
     }
 
     const accountInfo: TAccountInfo = {
-      BIP44Path: nextBIP44Path,
-      address: account.address,
+      BIP44Path: mnemonic ? walletInfoInput.BIP44Path : '',
+      address: walletInfoInput.address,
       AESEncryptPrivateKey: accountAESEncryptPrivateKey,
-      publicKey: account.publicKey,
+      publicKey: walletInfoInput.publicKey,
       name: addressName || 'Address 1',
       isHide: false,
     };
 
-    const walletInfo = {
+    return {
       key: walletInfoInput.address,
       AESEncryptMnemonic,
-      BIP44Path: walletInfoInput.BIP44Path,
-      nextBIP44Path: getNextBIP44Path(nextBIP44Path),
+      BIP44Path: mnemonic ? walletInfoInput.BIP44Path : '',
+      nextBIP44Path: mnemonic ? getNextBIP44Path(walletInfoInput.BIP44Path) : '',
       name: walletName || 'Wallet 1',
       accountList: [accountInfo],
       isBackup: false,
     };
-
-    return walletInfo;
   } catch (error) {
+    console.log('formatWalletInfoV2 error: ', error);
     return false;
   }
 };

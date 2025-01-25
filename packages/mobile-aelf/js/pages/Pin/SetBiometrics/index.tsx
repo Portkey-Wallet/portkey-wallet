@@ -25,6 +25,8 @@ export enum SetBiometricsTypeEnum {
 
 type TRouterParams = {
   type: SetBiometricsTypeEnum;
+  mnemonics?: string;
+  privateKey?: string;
 };
 
 const ScrollViewProps = { disabled: true };
@@ -33,7 +35,8 @@ export default function SetBiometrics() {
   const { theme } = useTheme();
   usePreventHardwareBack();
 
-  const { type = SetBiometricsTypeEnum.create } = useRouterParams<TRouterParams>();
+  // const { type = SetBiometricsTypeEnum.create, mnemonics, privateKey } = useRouterParams<TRouterParams>();
+  const { mnemonics, privateKey } = useRouterParams<TRouterParams>();
 
   const setBiometrics = useSetBiometrics();
 
@@ -45,20 +48,23 @@ export default function SetBiometrics() {
       await setSecureStoreItem('Pin', pin);
       dispatch(setCredentials({ pin }));
       await setBiometrics(true);
-      navigationService.reset('PrepareWallet', { pin });
+      navigationService.reset('PrepareWallet', { pin, mnemonics, privateKey });
     } catch (error) {
       CommonPrompt.failError(error, 'Failed To Verify');
     }
     changeCanLock(true);
-  }, [dispatch, setBiometrics]);
+  }, [dispatch, setBiometrics, mnemonics, privateKey]);
   const onSkip = useCallback(async () => {
     try {
       await setBiometrics(false);
-      navigationService.reset('SetPin');
+      navigationService.reset('SetPin', {
+        mnemonics,
+        privateKey,
+      });
     } catch (error) {
       CommonPrompt.failError(error);
     }
-  }, [setBiometrics]);
+  }, [setBiometrics, mnemonics, privateKey]);
 
   return (
     <PageContainer

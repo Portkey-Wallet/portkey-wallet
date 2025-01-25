@@ -7,10 +7,14 @@ import Touchable from 'components/Touchable';
 import Svg from 'components/Svg';
 import CommonButton from 'components/CommonButton';
 import CommonToast from 'components/CommonToast';
-const bip39 = require('bip39')
+import * as bip39 from 'bip39';
 import * as Clipboard from 'expo-clipboard';
+import { authenticationReady } from '@portkey-wallet/utils/mobile/authentication';
+import navigationService from 'utils/navigationService';
+import { SetBiometricsTypeEnum } from 'pages/Pin/SetBiometrics';
 
 const MnemonicsWordCount = 12;
+let invalidMnemonicsToastTimer: NodeJS.Timeout;
 
 export default function RecoveryPhrase() {
   const styles = getStyles();
@@ -22,7 +26,14 @@ export default function RecoveryPhrase() {
   }, [mnemonics]);
 
   const isMnemonicsValid = useMemo(() => {
-    return bip39.validateMnemonic(mnemonics.join(' '));
+    const isValid = bip39.validateMnemonic(mnemonics.join(' '));
+    if (mnemonics.filter(mnemonic => mnemonic === '').length === 0 && !isValid) {
+      clearTimeout(invalidMnemonicsToastTimer);
+      invalidMnemonicsToastTimer = setTimeout(() => {
+        CommonToast.fail('Invalid seed phrase');
+      }, 500); // gpt4o advice 300-500ms
+    }
+    return isValid;
   }, [mnemonics]);
 
   const handleChangeText = useCallback(
@@ -71,7 +82,22 @@ export default function RecoveryPhrase() {
         <Text style={styles.buttonText}>Clear</Text>
       </Touchable>
     );
-  }, [styles]);
+  }, [onClear, styles.button, styles.buttonText, theme.colors.iconBase2]);
+
+  const importWalletByMnemonic = useCallback(async () => {
+    const isReady = await authenticationReady();
+    if (isReady) {
+      navigationService.push('SetBiometrics', {
+        type: SetBiometricsTypeEnum.create,
+        mnemonics: mnemonics.join(' '),
+      });
+      return;
+    }
+
+    navigationService.navigate('SetPin', {
+      mnemonics: mnemonics.join(' '),
+    });
+  }, [mnemonics]);
 
   return (
     <View style={styles.flex}>
@@ -99,7 +125,12 @@ export default function RecoveryPhrase() {
       </View>
       {isMnemonicsEmpty ? pasteButton : clearButton}
       <View style={styles.flex} />
-      <CommonButton style={styles.importButton} disabledStyle={styles.importButtonDisable} disabled={!isMnemonicsValid}>
+      <CommonButton
+        type="primary"
+        style={styles.importButton}
+        disabledStyle={styles.importButtonDisable}
+        disabled={!isMnemonicsValid}
+        onPress={importWalletByMnemonic}>
         Import
       </CommonButton>
     </View>

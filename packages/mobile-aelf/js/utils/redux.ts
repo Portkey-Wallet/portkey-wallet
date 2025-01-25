@@ -25,19 +25,25 @@ export const getWalletAddress = () => {
 
 export const getWalletPrivateKey = (password: string) => {
   const { AESEncryptPrivateKey } = getWalletInfo() || {};
-  if (!AESEncryptPrivateKey) return;
+  if (!AESEncryptPrivateKey) {
+    return;
+  }
   return aes.decrypt(AESEncryptPrivateKey, password) || '';
 };
 
 export const getWalletMnemonic = (password: string) => {
   const { AESEncryptMnemonic } = getWalletInfo() || {};
-  if (!AESEncryptMnemonic) return;
+  if (!AESEncryptMnemonic) {
+    return;
+  }
   return aes.decrypt(AESEncryptMnemonic, password) || '';
 };
 
 export const checkPin = (pin: string) => {
-  const { walletList, privateKeyAccountList } = getWallet();
-  let AESEncryptContent = privateKeyAccountList[0]?.AESEncryptPrivateKey;
+  // const { walletList, privateKeyAccountList } = getWallet();
+  const { walletList } = getWallet();
+  // console.log('checkPin: ', walletList, privateKeyAccountList);
+  let AESEncryptContent = walletList[0]?.accountList[0].AESEncryptPrivateKey;
   if (!AESEncryptContent) {
     AESEncryptContent = walletList[0]?.AESEncryptMnemonic;
   }
@@ -47,13 +53,19 @@ export const checkPin = (pin: string) => {
 
 export const getManagerAccount = (password: string): AElfWallet | undefined => {
   const walletInfo = getWalletInfo();
-  if (!walletInfo) return;
+  if (!walletInfo) {
+    return;
+  }
 
   // get privateKey
   const privateKey = aes.decrypt(walletInfo.AESEncryptPrivateKey, password);
-  if (!privateKey) return;
+  if (!privateKey) {
+    return;
+  }
 
-  if (!walletMap[walletInfo.address]) walletMap[walletInfo.address] = AElf.wallet.getWalletByPrivateKey(privateKey);
+  if (!walletMap[walletInfo.address]) {
+    walletMap[walletInfo.address] = AElf.wallet.getWalletByPrivateKey(privateKey);
+  }
   return walletMap[walletInfo.address];
 };
 
@@ -107,7 +119,9 @@ export const getCurrentChainInfo = (chainId: ChainId) => {
 
 export const getCurrentCAViewContract = async (chainId: ChainId) => {
   const chainInfo = getCurrentChainInfo(chainId);
-  if (!chainInfo) throw new Error(`${chainId} info not found`);
+  if (!chainInfo) {
+    throw new Error(`${chainId} info not found`);
+  }
   return getContractBasic({
     rpcUrl: chainInfo.endPoint,
     contractAddress: chainInfo.caContractAddress || '',
@@ -123,7 +137,9 @@ export const isMyPayTransactionFee = (address: string, chainId?: ChainId) => {
 
   if (chainId) {
     const currentCaInfo = caInfo?.[chainId];
-    if (!currentCaInfo) return false;
+    if (!currentCaInfo) {
+      return false;
+    }
     return currentCaInfo.caAddress && isEqAddress(currentCaInfo.caAddress, address);
   }
 

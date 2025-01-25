@@ -19,24 +19,51 @@ export const useAddWallet = () => {
   const dispatch = useAppCommonDispatch();
 
   return useCallback(
-    (pin: string) => {
+    (pin: string, mnemonics?: string, privateKey?: string) => {
       if (!pin) {
-        return;
+        return {
+          success: false,
+          message: 'Pin is required',
+        };
       }
 
       const walletListLength = walletListRef.current.length;
-      const walletInfo = AElf.wallet.createNewWallet();
+      let walletInfo;
+      if (mnemonics) {
+        walletInfo = AElf.wallet.getWalletByMnemonic(mnemonics);
+      } else if (privateKey) {
+        walletInfo = AElf.wallet.getWalletByPrivateKey(privateKey);
+      } else {
+        walletInfo = AElf.wallet.createNewWallet();
+      }
 
       const wallet = formatWalletInfoV2(walletInfo, pin, `Wallet ${walletListLength + 1}`);
-      if (!wallet) return;
+      console.log('after: formatWalletInfoV2: ', wallet, walletList);
+      if (!wallet) {
+        return {
+          success: false,
+          message: 'Wallet create failed',
+        };
+      }
+
+      if (walletList.find(item => item.key === wallet.key)) {
+        return {
+          success: false,
+          message: 'Wallet already exists',
+        };
+      }
 
       dispatch(
         addWallet({
           wallet,
         }),
       );
+      return {
+        success: true,
+        message: 'Wallet add success',
+      };
     },
-    [dispatch],
+    [dispatch, walletList],
   );
 };
 

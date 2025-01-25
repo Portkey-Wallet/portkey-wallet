@@ -9,6 +9,8 @@ import navigationService from 'utils/navigationService';
 import { useCheckSecurityLock } from 'hooks/securityLock';
 import { useBackupWalletModal } from '../../Login/hooks/useBackupWalletModal';
 import { useCredentials } from '../../../hooks/store';
+import { useAppCommonDispatch } from '@portkey-wallet/hooks';
+import { resetWallet } from '@portkey-wallet/store/store-eoa/wallet/actions';
 
 const HomeTab: React.FC<any> = ({ _ }) => {
   const { theme } = useTheme();
@@ -36,6 +38,7 @@ const HomeTab: React.FC<any> = ({ _ }) => {
   }, [checkSecurityLock]);
 
   const { showBackupWalletModal } = useBackupWalletModal();
+  const dispatch = useAppCommonDispatch();
 
   return (
     <SafeAreaBox edges={['top', 'right', 'left']} style={{ backgroundColor: theme.colors.bgBase1 }}>
@@ -106,6 +109,13 @@ const HomeTab: React.FC<any> = ({ _ }) => {
           }}
           style={{ marginTop: 40 }}>
           Backup Modal
+        </CommonButton>
+        <CommonButton
+          type="primary"
+          onPress={() => {
+            dispatch(resetWallet());
+          }}>
+          Reset wallet
         </CommonButton>
       </ScrollView>
     </SafeAreaBox>

@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { TWalletState } from './type';
-import { addAccount, addWallet, removeAccount, removeWallet } from './actions';
+import { addAccount, addWallet, resetWallet, removeAccount, removeWallet } from './actions';
 
 const initialState: TWalletState = {
   walletList: [],
@@ -29,6 +29,12 @@ export const walletSlice = createSlice({
         return {
           ...state,
           walletList,
+        };
+      })
+      .addCase(resetWallet, state => {
+        return {
+          ...state,
+          walletList: [],
         };
       })
       .addCase(addAccount, (state, action) => {

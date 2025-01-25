@@ -1,13 +1,13 @@
-import { useCurrentNetwork, useNetworkList } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentNetwork, useNetworkList } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { useCallback, useMemo } from 'react';
 import { ChainId } from '@portkey-wallet/types';
 import {
   fetchTransferSupportNetworkList,
   fetchContactSupportNetworkList,
-} from '@portkey-wallet/store/store-ca/config/slice';
-import { useAppCASelector, useAppCommonDispatch } from '../../index';
+} from '@portkey-wallet/store/store-eoa/config/slice';
+import { useAppEOASelector, useAppCommonDispatch } from '../../index';
 
-export const useConfig = () => useAppCASelector(state => state.config);
+export const useConfig = () => useAppEOASelector(state => state.config);
 
 export const useTransferNetworkConfig = () => {
   const { sendAssetSupportNetworkMap } = useConfig();

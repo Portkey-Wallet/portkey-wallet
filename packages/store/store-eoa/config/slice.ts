@@ -1,13 +1,13 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import {
-  ConfigStateType,
+  TConfigStateType,
   TFetchContactSupportNetworkListPayload,
   TFetchTransferSupportNetworkListPayload,
 } from './types';
-import { request } from '@portkey-wallet/api/api-did';
-import { NetworkItem } from '@portkey-wallet/types/types-ca/network';
+import { request } from '@portkey-wallet/api/api-eoa';
+import { NetworkItem } from '@portkey-wallet/types/types-eoa/network';
 
-const initialState: ConfigStateType = {
+const initialState: TConfigStateType = {
   contactSupportNetworkMap: {},
   sendAssetSupportNetworkMap: {},
 };

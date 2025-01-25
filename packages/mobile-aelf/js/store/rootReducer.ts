@@ -12,6 +12,7 @@ import tokenManagementSlice from '@portkey-wallet/store/store-eoa/tokenManagemen
 import activitySlice from '@portkey-wallet/store/store-eoa/activity/slice';
 import awakenSlice from '@portkey-wallet/store/awaken/slice';
 import { contactSlice } from '@portkey-wallet/store/store-eoa/contact/slice';
+import { configSlice } from '@portkey-wallet/store/store-eoa/config/slice';
 
 const userPersistConfig = {
   key: userSlice.name,
@@ -66,7 +67,7 @@ const rootReducer = combineReducers({
   // [rampSlice.name]: rampSlice.reducer,
   [awakenSlice.name]: awakenSlice.reducer,
   // [referralSlice.name]: referralSlice.reducer,
-  // [configSlice.name]: configSlice.reducer,
+  [configSlice.name]: configSlice.reducer,
 });
 
 export default rootReducer;

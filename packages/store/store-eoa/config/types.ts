@@ -12,7 +12,7 @@ export interface ITransferSupportNetworkItem {
   name: string;
 }
 
-export interface ConfigStateType {
+export interface TConfigStateType {
   contactSupportNetworkMap: {
     [T in NetworkType]?: IContactSupportNetworkItem[];
   };
@@ -25,6 +25,6 @@ export interface ConfigStateType {
   };
 }
 
-export type TFetchContactSupportNetworkListPayload = ConfigStateType['contactSupportNetworkMap'];
+export type TFetchContactSupportNetworkListPayload = TConfigStateType['contactSupportNetworkMap'];
 
-export type TFetchTransferSupportNetworkListPayload = ConfigStateType['sendAssetSupportNetworkMap'];
+export type TFetchTransferSupportNetworkListPayload = TConfigStateType['sendAssetSupportNetworkMap'];

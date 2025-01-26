@@ -37,7 +37,7 @@ export interface TokenItemShowType extends TokenItemType {
   price?: string | number;
   userTokenId?: string;
 }
-export type IUserTokenItem = Omit<TokenItemShowType, 'name' | 'address'> & { isDisplay?: boolean; address?: string };
+export type IUserTokenItem = Omit<TokenItemShowType, 'name'> & { isDisplay?: boolean };
 
 export type ITokenSectionResponse = {
   chainId?: string;

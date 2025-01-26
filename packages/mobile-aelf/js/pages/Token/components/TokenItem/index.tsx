@@ -1,4 +1,4 @@
-import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
+import { TokenItemShowType } from '@portkey-wallet/types/types-eoa/token';
 import { View } from 'react-native';
 import React from 'react';
 import { TextL, TextM } from 'components/CommonText';
@@ -10,7 +10,7 @@ import GStyles from 'assets/theme/GStyles';
 import { darkColors } from 'assets/theme';
 import { makeStyles } from '@rneui/themed';
 import CustomSwitch from 'components/CustomSwitch';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-eoa/network';
 
 type TokenItemProps = {
   item: TokenItemShowType;

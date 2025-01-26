@@ -14,6 +14,7 @@ import { ITokenSectionResponse, TokenItemShowType } from '@portkey-wallet/types/
 import { TAssetsState } from './type';
 import { ChainId, NetworkType } from '@portkey-wallet/types';
 import { NEW_CLIENT_MOCK_ELF_LIST, PAGE_SIZE_IN_NFT_ITEM } from '@portkey-wallet/constants/constants-ca/assets';
+import { ITokenInfoV2, IUserTokenItem, IUserTokenItemResponse } from '@portkey-wallet/types/types-eoa/token';
 // import { WalletState } from '../wallet/type';
 
 export const INIT_ACCOUNT_TOKEN_INFO = {
@@ -365,6 +366,37 @@ export const assetsSlice = createSlice({
       const payload = action.payload;
       state.nftSectionUiType = payload;
     },
+    showLocalShowTokenInfo: (state, action: PayloadAction<{ identify: string; token: IUserTokenItem }>) => {
+      const { token, identify } = action.payload;
+      let preLocalShowTokenInfo = state.accountToken.localShowTokenInfo?.[identify];
+      if (!preLocalShowTokenInfo) {
+        preLocalShowTokenInfo = [];
+      }
+      const existToken = preLocalShowTokenInfo.find(
+        item => item.symbol === token.symbol && item.chainId === token.chainId,
+      );
+      if (existToken) {
+        existToken.isAdded = true;
+      } else {
+        preLocalShowTokenInfo.push({ ...token, isAdded: true });
+      }
+      state.accountToken.localShowTokenInfo = {
+        ...state.accountToken.localShowTokenInfo,
+        [identify]: preLocalShowTokenInfo,
+      };
+    },
+    hideLocalShowTokenInfo: (state, action: PayloadAction<{ identify: string; token: IUserTokenItem }>) => {
+      const { token, identify } = action.payload;
+      const preLocalShowTokenInfo = state.accountToken.localShowTokenInfo?.[identify];
+      if (preLocalShowTokenInfo) {
+        state.accountToken.localShowTokenInfo = {
+          ...state.accountToken.localShowTokenInfo,
+          [identify]: preLocalShowTokenInfo.map(item =>
+            item.symbol === token.symbol && item.chainId === token.chainId ? { ...item, isAdded: false } : item,
+          ),
+        };
+      }
+    },
   },
   extraReducers: builder => {
     builder
@@ -620,6 +652,8 @@ export const {
   clearAccountAssetsInfo,
   clearAccountTokenInfo,
   changeNftSectionUiType,
+  showLocalShowTokenInfo,
+  hideLocalShowTokenInfo,
 } = assetsSlice.actions;
 
 export default assetsSlice;

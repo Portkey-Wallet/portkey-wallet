@@ -51,7 +51,7 @@ const CollectionDetail = () => {
     }
     return currentCollection;
   }, [accountNFTList, chainId, symbol]);
-  console.log('currentCollectionObj', currentCollectionObj);
+  console.log('currentCollectionObj', JSON.stringify(currentCollectionObj));
   const [realItemCount, setRealItemCount] = useState<number>(itemCount);
   useEffect(() => {
     if (currentCollectionObj?.totalRecordCount && currentCollectionObj?.totalRecordCount !== itemCount) {

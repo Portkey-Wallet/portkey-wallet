@@ -31,7 +31,7 @@ export const fetchAllTokenListAsync = createAsyncThunk(
       skipCount,
       maxResultCount,
     });
-
+    console.log('response=====111', JSON.stringify(response));
     return { list: response.items, totalRecordCount: response.totalCount, skipCount, maxResultCount, identify };
   },
 );

@@ -1,5 +1,5 @@
 import React, { forwardRef, memo, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
-import { Linking, StyleSheet, View } from 'react-native';
+import { Linking, StyleSheet } from 'react-native';
 import WebView, { WebViewProps } from 'react-native-webview';
 import useEffectOnce from 'hooks/useEffectOnce';
 import EntryScriptWeb3 from 'utils/EntryScriptWeb3';
@@ -23,6 +23,7 @@ import { ShouldStartLoadRequest } from 'react-native-webview/lib/WebViewTypes';
 import { PROTOCOL_ALLOW_LIST } from 'constants/web';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCMS } from '@portkey-wallet/hooks/hooks-ca/cms/discover';
+import { KeyboardSafeArea } from 'components/KeyboardSafeArea';
 
 export const BLANK_PAGE = 'about:blank';
 const PORTKEY_AUDIO_MANAGER_SCRIPT =
@@ -248,6 +249,7 @@ const ProviderWebview = forwardRef<
     ),
     [entryScriptWeb3, handleUpdate, onFileDownload, onLoadStart, props, source],
   );
+
   if (!entryScriptWeb3) {
     return null;
   }
@@ -256,7 +258,7 @@ const ProviderWebview = forwardRef<
     return webViewDom;
   }
 
-  return <View style={styles.scrollStyle}>{webViewDom}</View>;
+  return <KeyboardSafeArea containerStyle={[styles.scrollStyle]}>{webViewDom}</KeyboardSafeArea>;
 });
 
 export default memo(ProviderWebview);

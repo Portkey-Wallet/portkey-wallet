@@ -24,12 +24,14 @@ const ListItem: {
     isAndroid: true,
     svgName: 'google-drive',
     title: 'Google Drive',
+    importType: 'google',
     subTitle: 'Import your seed phrase from Google Drive.',
   },
   {
     isIOS: true,
     localImage: iCloudImage,
     title: 'iCloud',
+    importType: 'iCloud',
     subTitle: 'Import your seed phrase from iCloud.',
   },
   {
@@ -75,9 +77,15 @@ export default function WalletImportTypeSelect() {
               if (!item.importType) {
                 return;
               }
-              navigationService.push('ImportWallet', {
-                importType: item.importType,
-              });
+              if (item.isAndroid || item.isIOS) {
+                navigationService.push('ImportByCloud', {
+                  importType: item.importType,
+                });
+              } else {
+                navigationService.push('ImportWallet', {
+                  importType: item.importType,
+                });
+              }
             }}>
             <View style={[cardStyles.card, styles.marginVertical16]}>
               {/* TODO: iCloud, google drive loading */}

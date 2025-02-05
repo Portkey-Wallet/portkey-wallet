@@ -186,6 +186,12 @@ const HomeTab: React.FC<any> = ({ _ }) => {
           style={{ marginTop: 40 }}>
           Manual Backup
         </CommonButton>
+        <CommonButton type="primary" onPress={() => navigationService.push('CloudBackup')} style={{ marginTop: 40 }}>
+          CloudBackup
+        </CommonButton>
+        <CommonButton type="primary" onPress={() => navigationService.push('CloudBackupDev')} style={{ marginTop: 10 }}>
+          CloudBackupDev
+        </CommonButton>
         <CommonButton type="primary" onPress={() => navigationService.push('Referral')} style={{ marginTop: 20 }}>
           Referral
         </CommonButton>

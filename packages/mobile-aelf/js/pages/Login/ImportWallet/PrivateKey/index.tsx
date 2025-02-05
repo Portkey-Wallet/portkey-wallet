@@ -6,9 +6,7 @@ import Touchable from 'components/Touchable';
 import CommonButton from 'components/CommonButton';
 import Svg from 'components/Svg';
 import * as Clipboard from 'expo-clipboard';
-import navigationService from 'utils/navigationService';
-import { SetBiometricsTypeEnum } from 'pages/Pin/SetBiometrics';
-import { authenticationReady } from '@portkey-wallet/utils/mobile/authentication';
+import { useImportWallet } from '../../hooks/useImportWallet';
 
 export default function RecoveryPhrase() {
   const styles = getStyles();
@@ -64,20 +62,7 @@ export default function RecoveryPhrase() {
     );
   }, [onClear, styles.button, styles.buttonText, theme.colors.iconBase2]);
 
-  const importWalletByPrivateKey = useCallback(async () => {
-    const isReady = await authenticationReady();
-    if (isReady) {
-      navigationService.push('SetBiometrics', {
-        type: SetBiometricsTypeEnum.create,
-        privateKey: inputText.trim(),
-      });
-      return;
-    }
-
-    navigationService.navigate('SetPin', {
-      privateKey: inputText.trim(),
-    });
-  }, [inputText]);
+  const { importWalletByPrivateKey } = useImportWallet();
 
   return (
     <View style={styles.flex}>
@@ -96,7 +81,7 @@ export default function RecoveryPhrase() {
         style={styles.importButton}
         disabledStyle={styles.importButtonDisable}
         disabled={!isPrivateKeyValid}
-        onPress={importWalletByPrivateKey}>
+        onPress={() => importWalletByPrivateKey(inputText)}>
         Import
       </CommonButton>
     </View>

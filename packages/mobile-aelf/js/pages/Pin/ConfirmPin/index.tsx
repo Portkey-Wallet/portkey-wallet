@@ -47,8 +47,7 @@ export default function ConfirmPin() {
         dispatch(setCredentials({ pin: newPin }));
         await setBiometrics(false);
         CommonToast.success('PIN updated');
-        navigationService.pop(1);
-        navigationService.goBack();
+        navigationService.navigate('Security');
       } catch (error) {
         CommonPrompt.failError(error);
       }

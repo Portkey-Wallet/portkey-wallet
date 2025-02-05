@@ -1,8 +1,8 @@
-import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
+import { TokenItemShowType } from '@portkey-wallet/types/types-eoa/token';
 import { StyleSheet } from 'react-native';
 import gStyles from 'assets/theme/GStyles';
 import { darkColors, defaultColors } from 'assets/theme';
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { FlatList } from 'react-native';
 import { pTd } from 'utils/unit';
 import { useLanguage } from 'i18n/hooks';
@@ -26,7 +26,10 @@ interface IFilterTokenSectionProps {
 
 const FilterTokenSection: React.FC<IFilterTokenSectionProps> = (props: IFilterTokenSectionProps) => {
   const { tokenList, onHandleTokenItem, isSearch } = props;
-
+  const [extraIndex, setExtraIndex] = useState<number>(0);
+  const reload = useCallback(() => {
+    setExtraIndex(extraIndex + 1);
+  }, [extraIndex]);
   const { t } = useLanguage();
 
   const CustomTokenTips = useCallback(
@@ -50,10 +53,19 @@ const FilterTokenSection: React.FC<IFilterTokenSectionProps> = (props: IFilterTo
     <FlatList
       style={pageStyles.list}
       data={tokenList || []}
+      extraData={extraIndex}
+      // eslint-disable-next-line react/no-unstable-nested-components
       ListEmptyComponent={() => (isSearch ? <></> : CustomTokenTips(TipsEnum.NO_RESULT))}
       ListFooterComponent={() => (tokenList?.length > 0 ? CustomTokenTips(TipsEnum.TRY) : null)}
       renderItem={({ item }: { item: TokenItemShowType }) => (
-        <TokenItem item={item} onHandleToken={() => onHandleTokenItem(item, !item?.isAdded)} />
+        <TokenItem
+          item={item}
+          onHandleToken={() => {
+            onHandleTokenItem(item, !item?.isAdded);
+            item.isAdded = !item?.isAdded;
+            reload();
+          }}
+        />
       )}
       keyExtractor={(item: TokenItemShowType) => `${item?.symbol}_${item?.chainId}`}
     />

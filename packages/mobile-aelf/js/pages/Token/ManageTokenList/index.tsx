@@ -1,5 +1,5 @@
 import PageContainer from 'components/PageContainer';
-import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
+import { TokenItemShowType } from '@portkey-wallet/types/types-eoa/token';
 import CommonInput from 'components/CommonInput';
 import { View } from 'react-native';
 import gStyles from 'assets/theme/GStyles';
@@ -8,8 +8,8 @@ import CommonToast from 'components/CommonToast';
 import { useLanguage } from 'i18n/hooks';
 import useDebounce from 'hooks/useDebounce';
 import { useEffectOnce } from '@portkey-wallet/hooks';
-import { request } from '@portkey-wallet/api/api-did';
-import { useCaAddressInfoList, useChainIdList } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { request } from '@portkey-wallet/api/api-eoa';
+import { useChainIdList } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 import Loading from 'components/Loading';
 import FilterTokenSection from '../components/FilterToken';
 import PopularTokenSection from '../components/PopularToken';
@@ -17,14 +17,10 @@ import { pTd } from 'utils/unit';
 import navigationService from 'utils/navigationService';
 import Svg from 'components/Svg';
 import Touchable from 'components/Touchable';
-import {
-  PAGE_SIZE_DEFAULT,
-  PAGE_SIZE_IN_ACCOUNT_ASSETS,
-  PAGE_SIZE_IN_ACCOUNT_TOKEN,
-} from '@portkey-wallet/constants/constants-ca/assets';
-import { useTokenLegacy } from '@portkey-wallet/hooks/hooks-ca/useToken';
+import { PAGE_SIZE_DEFAULT, PAGE_SIZE_IN_ACCOUNT_ASSETS } from '@portkey-wallet/constants/constants-eoa/assets';
+import { useTokenLegacy } from '@portkey-wallet/hooks/hooks-eoa/useToken';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
-import { useAccountTokenInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
+import { useManagerTokenInfo } from '@portkey-wallet/hooks/hooks-eoa/assets';
 import { makeStyles } from '@rneui/themed';
 
 interface ManageTokenListProps {
@@ -36,10 +32,8 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
 
   const [isSearch, setIsSearching] = useState<boolean>(false);
   const { tokenDataShowInMarket, totalRecordCount, fetchTokenInfoList } = useTokenLegacy();
+  const { switchToken } = useManagerTokenInfo();
   const chainIdArray = useChainIdList();
-  const caAddressInfos = useCaAddressInfoList();
-
-  const { fetchAccountTokenInfoList } = useAccountTokenInfo();
 
   const [keyword, setKeyword] = useState<string>('');
   const [filterTokenList, setFilterTokenList] = useState<TokenItemShowType[]>([]);
@@ -83,9 +77,11 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
           maxResultCount: PAGE_SIZE_DEFAULT,
         },
       });
+      console.log('res====', JSON.stringify(res));
       const _target = (res || []).map((item: any) => ({
         ...item,
-        isAdded: item.isDisplay,
+        isAdded:
+          tokenDataShowInMarket?.find(it => it.symbol === item.symbol && it.chainId === item.chainId)?.isAdded || false,
         userTokenId: item.id,
       }));
       setFilterTokenList(_target);
@@ -95,39 +91,22 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
     } finally {
       setIsSearching(false);
     }
-  }, [chainIdArray, debounceWord, keyword]);
+  }, [chainIdArray, debounceWord, keyword, tokenDataShowInMarket]);
 
   const onSwitchTokenDisplay = useCallback(
     async (item: TokenItemShowType, isDisplay: boolean) => {
       Loading.showOnce();
 
       try {
-        await request.token.displayUserToken({
-          resourceUrl: `${item.userTokenId}/display`,
-          params: {
-            isDisplay,
-          },
-        });
-        timerRef.current = setTimeout(async () => {
-          fetchAccountTokenInfoList({
-            caAddressInfos,
-            skipCount: 0,
-            maxResultCount: PAGE_SIZE_IN_ACCOUNT_TOKEN,
-          });
-
-          if (debounceWord) {
-            await searchToken();
-          } else {
-            await getTokenList(true);
-          }
-          Loading.hide();
-        }, 800);
+        switchToken(item, isDisplay);
       } catch (err) {
         Loading.hide();
         CommonToast.failError(err);
+      } finally {
+        Loading.hide();
       }
     },
-    [caAddressInfos, debounceWord, fetchAccountTokenInfoList, getTokenList, searchToken],
+    [switchToken],
   );
 
   const onHandleToken = useCallback(

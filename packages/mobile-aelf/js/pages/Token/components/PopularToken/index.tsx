@@ -1,4 +1,4 @@
-import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
+import { TokenItemShowType } from '@portkey-wallet/types/types-eoa/token';
 import { StyleSheet } from 'react-native';
 import React from 'react';
 import { FlatList } from 'react-native';
@@ -23,7 +23,7 @@ const PopularTokenSection: React.FC<IPopularTokenSectionProps> = (props: IPopula
         <TokenItem item={item} onHandleToken={() => onHandleTokenItem(item, !item?.isAdded)} />
       )}
       onEndReached={() => getTokenList()}
-      keyExtractor={(item: TokenItemShowType) => `${item?.symbol}_${item?.chainId}`}
+      keyExtractor={(item: TokenItemShowType, index: number) => `${item?.symbol}_${item?.chainId}_${index}`}
     />
   );
 };

@@ -9,25 +9,30 @@ import fonts from 'assets/theme/fonts';
 import Touchable from 'components/Touchable';
 import Svg from 'components/Svg';
 import navigationService from 'utils/navigationService';
+import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 
 export default function ConfirmBackup() {
   const styles = getStyles();
   const { theme } = useTheme();
 
-  const mnemonics = [
-    'seed',
-    'sock',
-    'milk',
-    'update',
-    'focus',
-    'rotate',
-    'barely',
-    'fade',
-    'car',
-    'face',
-    'mechanic',
-    'mercy',
-  ];
+  const { mnemonics } = useRouterParams<{
+    mnemonics: string[];
+  }>();
+
+  // const mnemonics = [
+  //   'seed',
+  //   'sock',
+  //   'milk',
+  //   'update',
+  //   'focus',
+  //   'rotate',
+  //   'barely',
+  //   'fade',
+  //   'car',
+  //   'face',
+  //   'mechanic',
+  //   'mercy',
+  // ];
   const testedIndexes = useRef<number[]>([]); // store the tested indexes, user selected the word, neither correct nor incorrect
   const checkedIndexes = useRef<number[]>([]); // store the checked indexes, user selected the correct word
   const [currentIndex, setCurrentIndex] = useState(0);

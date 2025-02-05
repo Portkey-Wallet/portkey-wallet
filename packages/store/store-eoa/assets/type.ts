@@ -1,6 +1,11 @@
 import { ChainId, NetworkType } from '@portkey-wallet/types';
-import { NFTCollectionItemShowType, SeedTypeEnum } from '@portkey-wallet/types/types-ca/assets';
-import { IAccountCryptoBoxAssetItem, ITokenSectionResponse } from '@portkey-wallet/types/types-ca/token';
+import { NFTCollectionItemShowType, SeedTypeEnum } from '@portkey-wallet/types/types-eoa/assets';
+import {
+  IAccountCryptoBoxAssetItem,
+  ITokenSectionResponse,
+  IUserTokenItem,
+} from '@portkey-wallet/types/types-eoa/token';
+import { ITokenInfoV2, IUserTokenItemResponse } from '@portkey-wallet/types/types-eoa/token';
 
 export interface ITokenInfoType {
   balance: string;
@@ -103,6 +108,9 @@ export type TAssetsState = {
     isFetching: boolean;
     accountTokenInfoV2?: {
       [key in string]?: TAccountTokenInfo;
+    };
+    localShowTokenInfo?: {
+      [key in string]?: IUserTokenItem[];
     };
   };
   accountNFT: TAccountNFTInfo & {

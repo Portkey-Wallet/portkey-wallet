@@ -5,14 +5,22 @@ import { ChainId } from '@portkey-wallet/types';
 import { useAppEOASelector } from '../index';
 import { useCurrentNetworkInfo, useIsMainnet } from '../network';
 import {
+  showLocalShowTokenInfo,
   fetchNFTAsync,
   fetchNFTCollectionsAsync,
   fetchTokenListAsync,
   INIT_ACCOUNT_NFT_INFO,
   INIT_ACCOUNT_TOKEN_INFO,
+  hideLocalShowTokenInfo,
 } from '@portkey-wallet/store/store-eoa/assets/slice';
 import { useAppCommonDispatch } from '../..';
 import { useCurrentAddressInfos, useUniqueIdentify } from '../wallet';
+import {
+  ITokenSectionResponse,
+  IUserTokenItem,
+  IUserTokenItemResponse,
+  TokenItemShowType,
+} from '@portkey-wallet/types/types-eoa/token';
 
 export const useAssets = () => useAppEOASelector(state => state.assets);
 
@@ -97,6 +105,45 @@ export const useAccountTokenInfo = () => {
     () => assetsState?.accountToken?.accountTokenInfoV2?.[identify] || INIT_ACCOUNT_TOKEN_INFO,
     [assetsState?.accountToken?.accountTokenInfoV2, identify],
   );
+  const updatedAccountTokenList = useMemo(() => {
+    const originAccountTokenList = accountTokenInfo.accountTokenList;
+    const localShowTokenInfo = assetsState.accountToken.localShowTokenInfo?.[identify];
+    const mergedTokens = localShowTokenInfo
+      ?.filter(item => item.isAdded)
+      ?.reduce((acc: ITokenSectionResponse[], token: IUserTokenItem) => {
+        const existingToken = acc.find(item => item.symbol === token.symbol);
+        if (existingToken) {
+          existingToken?.tokens?.push(token);
+        } else {
+          acc.push({
+            symbol: token.symbol,
+            price: Number(token.price) || 0,
+            balance: token.balance || '0',
+            decimals: Number(token.decimals) || 0,
+            balanceInUsd: token.balanceInUsd || '0',
+            // tokenContractAddress: '',
+            imageUrl: token.imageUrl,
+            label: token.label || '',
+            tokens: [token],
+          });
+        }
+        return acc;
+      }, []);
+    let updatedOriginAccountTokenList: ITokenSectionResponse[] = [];
+    if (originAccountTokenList) {
+      updatedOriginAccountTokenList = [...originAccountTokenList];
+      mergedTokens?.forEach(mergedToken => {
+        const existsInOrigin = updatedOriginAccountTokenList?.some(
+          originToken => originToken.symbol === mergedToken.symbol,
+        );
+        if (!existsInOrigin) {
+          updatedOriginAccountTokenList?.push(mergedToken);
+        }
+      });
+    }
+
+    return updatedOriginAccountTokenList.length > 0 ? updatedOriginAccountTokenList : mergedTokens;
+  }, [accountTokenInfo.accountTokenList, assetsState.accountToken.localShowTokenInfo, identify]);
   const fetchAccountTokenInfoList = useCallback(
     (params: {
       addressInfos: { chainId: ChainId; address: string }[];
@@ -114,7 +161,12 @@ export const useAccountTokenInfo = () => {
     [identify, dispatch],
   );
 
-  return { ...accountTokenInfo, fetchAccountTokenInfoList, isFetching: assetsState?.accountToken?.isFetching };
+  return {
+    ...accountTokenInfo,
+    accountTokenList: updatedAccountTokenList,
+    fetchAccountTokenInfoList,
+    isFetching: assetsState?.accountToken?.isFetching,
+  };
 };
 export const useAccountBalanceUSD = () => {
   const identify = useUniqueIdentify();
@@ -196,4 +248,51 @@ export function useFetchTokenAllowanceList() {
   //   },
   //   [addressInfos],
   // );
+}
+
+export function useManagerTokenInfo() {
+  const dispatch = useAppCommonDispatch();
+  const identify = useUniqueIdentify();
+  const { accountToken } = useAssets();
+  console.log('accountToken===1233', accountToken);
+  const showToken = useCallback(
+    (token: IUserTokenItem) => {
+      dispatch(
+        showLocalShowTokenInfo({
+          identify,
+          token,
+        }),
+      );
+    },
+    [dispatch, identify],
+  );
+
+  const hideToken = useCallback(
+    (token: IUserTokenItem) => {
+      dispatch(
+        hideLocalShowTokenInfo({
+          identify,
+          token,
+        }),
+      );
+    },
+    [dispatch, identify],
+  );
+  const switchToken = useCallback(
+    (item: TokenItemShowType, isDisplay: boolean) => {
+      console.log('item is::', item, 'isDisplay', isDisplay);
+      if (isDisplay) {
+        showToken(item as IUserTokenItem);
+      } else {
+        hideToken(item as IUserTokenItem);
+      }
+    },
+    [hideToken, showToken],
+  );
+  return {
+    showToken,
+    hideToken,
+    switchToken,
+    localToken: accountToken?.localShowTokenInfo?.[identify],
+  };
 }

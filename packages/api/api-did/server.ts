@@ -74,7 +74,6 @@ export class DidService extends ServiceInit {
   send = async (base: BaseConfig, config?: RequestConfig, reCount = 0): Promise<any> => {
     try {
       const result = await this.sendOrigin(base, config, reCount);
-      console.log('this.transformCallbackList.length', this.transformCallbackList.length);
       if (this.transformCallbackList.length > 0) {
         const i = this.transformCallbackList.reduce((prevResult, callback) => {
           return callback(prevResult);

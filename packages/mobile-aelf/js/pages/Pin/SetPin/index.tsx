@@ -10,6 +10,8 @@ import { usePreventHardwareBack } from '@portkey-wallet/hooks/mobile';
 type TRouterParams = {
   oldPin?: string;
   isBackHide?: boolean;
+  mnemonics?: string;
+  privateKey?: string;
 };
 
 const scrollViewProps = {
@@ -18,7 +20,7 @@ const scrollViewProps = {
 
 export default function SetPin() {
   const styles = getStyles();
-  const { oldPin, isBackHide } = useRouterParams<TRouterParams>();
+  const { oldPin, isBackHide, mnemonics, privateKey } = useRouterParams<TRouterParams>();
   const digitInput = useRef<DigitInputInterface>();
   usePreventHardwareBack();
 
@@ -38,6 +40,8 @@ export default function SetPin() {
           navigationService.navigate('ConfirmPin', {
             oldPin,
             pin,
+            mnemonics,
+            privateKey,
           });
         }}
       />

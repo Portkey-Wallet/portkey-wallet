@@ -8,21 +8,28 @@ import navigationService from 'utils/navigationService';
 import { TextH1 } from 'components/CommonText';
 import { LottieView } from 'components/LottieView';
 import { useAddWallet } from '@portkey-wallet/hooks/hooks-eoa/wallet';
+import CommonToast from 'components/CommonToast';
 
 type RouterParams = {
   pin: string;
+  mnemonics?: string;
+  privateKey?: string;
 };
 
 const ScrollViewProps = { disabled: true };
 export default function PrepareWallet() {
   const styles = getStyles();
-  const { pin } = useRouterParams<RouterParams>();
+  const { pin, mnemonics, privateKey } = useRouterParams<RouterParams>();
 
   const addWallet = useAddWallet();
   const init = useCallback(() => {
-    addWallet(pin);
+    const result = addWallet(pin, mnemonics, privateKey);
+    if (!result || !result.success) {
+      CommonToast.fail(result?.message || 'Import failed');
+    }
+    console.log('pin: ', pin, mnemonics, privateKey, result);
     navigationService.reset('Tab');
-  }, [addWallet, pin]);
+  }, [addWallet, pin, mnemonics, privateKey]);
   const initRef = useRef(init);
   initRef.current = init;
 

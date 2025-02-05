@@ -126,7 +126,6 @@ export default function NFTSection() {
       if (totalRecordCount && accountNFTList.length >= totalRecordCount && !isInit) {
         return;
       }
-      console.log('wfs====fetchAccountNFTCollectionInfoList2');
       await fetchAccountNFTCollectionInfoList({
         addressInfos,
         skipCount: isInit ? 0 : accountNFTList.length,
@@ -179,7 +178,6 @@ export default function NFTSection() {
       // setItemId(res.itemId);
       // setImageUrl(res.imageUrl);
       setOpenCollectionObj({});
-      console.log('wfs====fetchAccountNFTCollectionInfoList5');
       getNFTCollectionsAsync(true);
     }, REFRESH_TIME);
     return () => {

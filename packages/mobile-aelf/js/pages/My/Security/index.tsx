@@ -1,6 +1,6 @@
 import PageContainer from 'components/PageContainer';
 import { useLanguage } from 'i18n/hooks';
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { pTd } from 'utils/unit';
 import { ScrollView, View } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
@@ -10,6 +10,8 @@ import { useAppDispatch } from 'store/hooks';
 import { getCaHolderInfoAsync } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { StyleSheet } from 'react-native';
 import useBiometricsReady from 'hooks/useBiometrics';
+import { usePin, useUser } from 'hooks/store';
+import { useCheckSecurityLock } from 'hooks/securityLock';
 
 interface SecurityProps {
   name?: string;
@@ -23,6 +25,20 @@ const Security: React.FC<SecurityProps> = () => {
   useEffect(() => {
     appDispatch(getCaHolderInfoAsync());
   }, [appDispatch]);
+
+  const pin = usePin();
+  const checkSecurityLock = useCheckSecurityLock();
+
+  const changePin = useCallback(() => {
+    checkSecurityLock(() => {
+      navigationService.pop(1);
+      navigationService.push('SetPin', {
+        oldPin: pin,
+      });
+    }, true);
+  }, [checkSecurityLock, pin]);
+
+  const { biometrics } = useUser();
 
   return (
     <PageContainer
@@ -48,13 +64,15 @@ const Security: React.FC<SecurityProps> = () => {
               size={pTd(24)}
             />
           )}
-          <MenuItem
-            style={pageStyles.menuItem}
-            onPress={() => navigationService.navigate('CheckPin')}
-            title={t('Change PIN')}
-            icon="my-pin"
-            size={pTd(24)}
-          />
+          {!biometrics && (
+            <MenuItem
+              style={pageStyles.menuItem}
+              onPress={changePin}
+              title={t('Change PIN')}
+              icon="my-pin"
+              size={pTd(24)}
+            />
+          )}
         </View>
       </ScrollView>
     </PageContainer>

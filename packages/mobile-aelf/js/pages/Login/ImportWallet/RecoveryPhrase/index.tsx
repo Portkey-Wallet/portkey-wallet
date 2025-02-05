@@ -9,9 +9,7 @@ import CommonButton from 'components/CommonButton';
 import CommonToast from 'components/CommonToast';
 import * as bip39 from 'bip39';
 import * as Clipboard from 'expo-clipboard';
-import { authenticationReady } from '@portkey-wallet/utils/mobile/authentication';
-import navigationService from 'utils/navigationService';
-import { SetBiometricsTypeEnum } from 'pages/Pin/SetBiometrics';
+import { useImportWallet } from '../../hooks/useImportWallet';
 
 const MnemonicsWordCount = 12;
 let invalidMnemonicsToastTimer: NodeJS.Timeout;
@@ -84,20 +82,7 @@ export default function RecoveryPhrase() {
     );
   }, [onClear, styles.button, styles.buttonText, theme.colors.iconBase2]);
 
-  const importWalletByMnemonic = useCallback(async () => {
-    const isReady = await authenticationReady();
-    if (isReady) {
-      navigationService.push('SetBiometrics', {
-        type: SetBiometricsTypeEnum.create,
-        mnemonics: mnemonics.join(' '),
-      });
-      return;
-    }
-
-    navigationService.navigate('SetPin', {
-      mnemonics: mnemonics.join(' '),
-    });
-  }, [mnemonics]);
+  const { importWalletByMnemonic } = useImportWallet();
 
   return (
     <View style={styles.flex}>
@@ -130,7 +115,7 @@ export default function RecoveryPhrase() {
         style={styles.importButton}
         disabledStyle={styles.importButtonDisable}
         disabled={!isMnemonicsValid}
-        onPress={importWalletByMnemonic}>
+        onPress={() => importWalletByMnemonic(mnemonics)}>
         Import
       </CommonButton>
     </View>

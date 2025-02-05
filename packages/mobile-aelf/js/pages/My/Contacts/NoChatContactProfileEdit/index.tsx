@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { TextInput, View, Image, TouchableOpacity } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { useLanguage } from 'i18n/hooks';
-import { AddressItem } from '@portkey-wallet/types/types-ca/contact';
+import { IAddressInfo } from '@portkey-wallet/types/types-eoa/contact';
 import Input from 'components/CommonInput';
 import CommonButton from 'components/CommonButton';
 import { pTd } from 'utils/unit';
@@ -11,9 +11,9 @@ import isEqual from 'lodash/isEqual';
 import ActionSheet from 'components/ActionSheet';
 import ListItem from 'components/ListItem';
 import GStyles from 'assets/theme/GStyles';
-import { INIT_NONE_ERROR, ErrorType, INIT_HAS_ERROR } from '@portkey-wallet/constants/constants-ca/common';
+import { INIT_NONE_ERROR, ErrorType, INIT_HAS_ERROR } from '@portkey-wallet/constants/constants-eoa/common';
 import ChainOverlay from 'pages/My/Contacts/ContactChainOverlay';
-import { useAddContact, useDeleteContact, useEditContact } from '@portkey-wallet/hooks/hooks-ca/contactNew';
+import { useAddContact, useDeleteContact, useEditContact } from '@portkey-wallet/hooks/hooks-eoa/contact';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { useInputFocus } from 'hooks/useInputFocus';
 import { makeStyles, useTheme } from '@rneui/themed';
@@ -22,7 +22,7 @@ import {
   IAddContactItemApiType,
   IContactItemType,
   IEditContactItemApiType,
-} from '@portkey-wallet/types/types-ca/contactNew';
+} from '@portkey-wallet/types/types-eoa/contact';
 import { TextL, TextM } from 'components/CommonText';
 import { AELF_NETWORK_NAME } from 'constants/common';
 import Loading from 'components/Loading';
@@ -30,7 +30,7 @@ import CommonToast from 'components/CommonToast';
 import Touchable from 'components/Touchable';
 import { KeyboardSafeArea } from 'components/KeyboardSafeArea';
 import navigationService from 'utils/navigationService';
-import { useContactNetworkConfig } from '@portkey-wallet/hooks/hooks-ca/config';
+import { useContactNetworkConfig } from '@portkey-wallet/hooks/hooks-eoa/config';
 import { RECENT_PAGE_NAME } from 'constants/contact';
 import { SupportedELFChainId } from '@portkey-wallet/utils/eBridge/constants';
 import { getAddressInfo } from '@portkey-wallet/utils/aelf';
@@ -42,7 +42,7 @@ type RouterParams = {
   from?: string;
 };
 
-export type EditAddressType = AddressItem & { error: ErrorType };
+export type EditAddressType = IAddressInfo & { error: ErrorType };
 
 const initEditContact: IEditContactItemApiType = {
   id: '',
@@ -133,7 +133,6 @@ const ContactEdit: React.FC = () => {
     theme: { colors },
   } = useTheme();
   const { supportNetworkList } = useContactNetworkConfig();
-  // const supportNetworkList = useNetworkList();
 
   const selectedNetwork = useMemo(() => {
     const network = supportNetworkList?.find(item => {
@@ -177,7 +176,7 @@ const ContactEdit: React.FC = () => {
     return isEqual(editContact, editDefaultValue);
   }, [editContact, editDefaultValue]);
   const isSaveDisable = isEdit ? isEditDisable : isAddDisable;
-  const hadnleRemove = useCallback(() => {
+  const handleRemove = useCallback(() => {
     ActionSheet.alert({
       showInfoIcon: true,
       title: 'Confirm delete address',
@@ -355,7 +354,7 @@ const ContactEdit: React.FC = () => {
       scrollViewProps={{ disabled: true }}
       rightDom={
         contact && (
-          <Touchable style={{ paddingRight: pTd(16) }} onPress={hadnleRemove}>
+          <Touchable style={{ paddingRight: pTd(16) }} onPress={handleRemove}>
             <Svg icon="remove" size={pTd(24)} />
           </Touchable>
         )

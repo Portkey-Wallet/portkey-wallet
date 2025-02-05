@@ -1,14 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { TWalletState } from './type';
-import {
-  addAccount,
-  addWallet,
-  removeAccount,
-  removeWallet,
-  resetWallet,
-  setChainListAction,
-  setHideAssetsAction,
-} from './actions';
+import { addAccount, addWallet, removeAccount, removeWallet, resetWallet, setHideAssetsAction } from './actions';
 import { getNextBIP44Path } from '@portkey-wallet/utils/wallet';
 import { NetworkType } from '@portkey-wallet/types';
 
@@ -18,7 +10,6 @@ const initialState: TWalletState = {
   currentAccountAddress: undefined,
   networkType: 'MAINNET',
   hideAssets: false,
-  chainInfo: {},
 };
 export const walletSlice = createSlice({
   name: 'wallet',
@@ -91,11 +82,6 @@ export const walletSlice = createSlice({
       .addCase(setHideAssetsAction, (state, action) => {
         const { hideAssets } = action.payload;
         state.hideAssets = hideAssets;
-      })
-      .addCase(setChainListAction, (state, action) => {
-        const { chainList, networkType } = action.payload;
-        if (!state.chainInfo) state.chainInfo = { [networkType]: chainList };
-        state.chainInfo[networkType] = chainList;
       })
       .addCase(resetWallet, () => ({ ...initialState }));
   },

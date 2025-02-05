@@ -11,6 +11,8 @@ import assetsSlice from '@portkey-wallet/store/store-eoa/assets/slice';
 import tokenManagementSlice from '@portkey-wallet/store/store-eoa/tokenManagement/slice';
 import activitySlice from '@portkey-wallet/store/store-eoa/activity/slice';
 import awakenSlice from '@portkey-wallet/store/awaken/slice';
+import { contactSlice } from '@portkey-wallet/store/store-eoa/contact/slice';
+import { configSlice } from '@portkey-wallet/store/store-eoa/config/slice';
 
 const userPersistConfig = {
   key: userSlice.name,
@@ -46,7 +48,7 @@ const rootReducer = combineReducers({
   [settingsSlice.name]: settingsSlice.reducer,
   [chainSlice.name]: chainSlice.reducer,
   [networkSlice.name]: networkSlice.reducer,
-  // [contactSlice.name]: contactSlice.reducer,
+  [contactSlice.name]: contactSlice.reducer,
   // [miscSlice.name]: miscSlice.reducer,
   // [guardiansSlice.name]: guardiansSlice.reducer,
   // [recentSlice.name]: recentSlice.reducer,
@@ -65,7 +67,7 @@ const rootReducer = combineReducers({
   // [rampSlice.name]: rampSlice.reducer,
   [awakenSlice.name]: awakenSlice.reducer,
   // [referralSlice.name]: referralSlice.reducer,
-  // [configSlice.name]: configSlice.reducer,
+  [configSlice.name]: configSlice.reducer,
 });
 
 export default rootReducer;

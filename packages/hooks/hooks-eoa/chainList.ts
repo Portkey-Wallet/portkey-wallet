@@ -1,26 +1,11 @@
-import { useEffect, useMemo, useCallback } from 'react';
-import { useAppCommonDispatch } from '../index';
-import { getChainListAsync } from '@portkey-wallet/store/store-eoa/wallet/actions';
-// import { useCurrentWallet, useOriginChainId, useWallet } from './wallet';
+import { useMemo } from 'react';
 import { ChainId } from '@portkey-wallet/types';
 import { DEFAULT_TOKEN } from '@portkey-wallet/constants/constants-ca/wallet';
-import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
-import { useCurrentNetwork, useIsMainnet } from './network';
-import { useWalletListState, useWalletState } from './wallet';
+import { useIsMainnet } from './network';
+import { useChainList } from './network/chain';
 
-export function useChainListFetch() {
-  const currentNetwork = useCurrentNetwork();
-  const dispatch = useAppCommonDispatch();
-  useEffect(() => {
-    dispatch(getChainListAsync());
-  }, [dispatch, currentNetwork]);
-}
+export const useCurrentChainList = useChainList;
 
-export function useCurrentChainList() {
-  const currentNetwork = useCurrentNetwork();
-  const { chainInfo } = useWalletState();
-  return useMemo(() => chainInfo?.[currentNetwork], [chainInfo, currentNetwork]);
-}
 export const useOriginChainId = () => {
   return 'AELF';
 };
@@ -31,6 +16,7 @@ export function useCurrentChain(_chainId?: ChainId) {
   const currentChainList = useCurrentChainList();
   return useMemo(() => currentChainList?.find(chain => chain.chainId === chainId), [currentChainList, chainId]);
 }
+
 export function useExplorerUrl(chainId: ChainId) {
   const isMainNet = useIsMainnet();
   const exploreUrl = useMemo(() => {

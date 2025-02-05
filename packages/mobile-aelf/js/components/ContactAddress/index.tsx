@@ -1,10 +1,10 @@
-import { IContactItemType } from '@portkey-wallet/types/types-ca/contactNew';
+import { IContactItemType } from '@portkey-wallet/types/types-eoa/contact';
 import { makeStyles } from '@rneui/themed';
 import { addressFormat } from '@portkey-wallet/utils';
 import React, { useImperativeHandle, useMemo, forwardRef } from 'react';
 import { Text, TextStyle } from 'react-native';
 import { AELF_NETWORK_NAME } from 'constants/common';
-import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
+import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-eoa/activity';
 
 export const formatStr2EllipsisStr = (address = '', startDigit = 8, endDigit = 8): string => {
   if (!address) {

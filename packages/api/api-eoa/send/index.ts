@@ -4,7 +4,7 @@ export default {
     config: { method: 'GET' },
   },
   getTransferSupportNetworkMap: {
-    target: '/api/app/transfer/support',
+    target: '/api/app/proxy/api/app/transfer/support',
     config: { method: 'GET' },
   },
 } as const;

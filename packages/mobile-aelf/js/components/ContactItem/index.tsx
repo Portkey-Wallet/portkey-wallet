@@ -1,14 +1,15 @@
-import { IContactItemType } from '@portkey-wallet/types/types-ca/contactNew';
+import { IContactItemType } from '@portkey-wallet/types/types-eoa/contact';
 import { makeStyles, useTheme } from '@rneui/themed';
 import GStyles from 'assets/theme/GStyles';
 import CommonAvatar from 'components/CommonAvatar';
 import { TextL } from 'components/CommonText';
 import Touchable from 'components/Touchable';
-import React, { memo } from 'react';
+import React, { memo, useMemo } from 'react';
 import { View, Image, StyleSheet } from 'react-native';
 import { pTd } from 'utils/unit';
 import ContactAddress from 'components/ContactAddress';
 import Svg from 'components/Svg';
+import { useContactNetworkConfig } from '@portkey-wallet/hooks/hooks-eoa/config';
 export interface ItemType {
   contact: IContactItemType;
   onPress?: (item: any) => void;
@@ -20,10 +21,22 @@ export interface ItemType {
 const ContactItem: React.FC<ItemType> = props => {
   const { contact, onPress, isSaved = true, showInfoIcon = false, onInfoIconPress } = props;
   const styles = getStyles();
+  const { supportNetworkList } = useContactNetworkConfig();
 
   const {
     theme: { colors },
   } = useTheme();
+
+  const imgUri = useMemo(
+    () =>
+      contact.addressInfo.networkImage ||
+      supportNetworkList?.find(
+        item => item.network === contact.addressInfo.network && item.chainId === contact.addressInfo.chainId,
+      )?.imageUrl,
+    [contact.addressInfo.chainId, contact.addressInfo.network, contact.addressInfo.networkImage, supportNetworkList],
+  );
+
+  console.log('imgUri', contact, imgUri);
 
   return (
     <Touchable onPress={() => onPress?.(contact)}>
@@ -31,21 +44,19 @@ const ContactItem: React.FC<ItemType> = props => {
         <View style={[styles.avatarWrap]}>
           <CommonAvatar
             resizeMode="cover"
-            title={(contact?.name || contact?.caHolderInfo?.walletName)?.toUpperCase()}
+            title={(contact?.name || '')?.toUpperCase()}
             avatarSize={pTd(42)}
-            imageUrl={contact.caHolderInfo?.avatar || ''}
+            imageUrl={''}
             style={styles.itemAvatar}
             titleStyle={styles.itemAvatarTitle}
           />
-          {contact.addressInfo.networkImage && (
-            <Image source={{ uri: contact.addressInfo.networkImage }} style={styles.avatarNetworkIcon} />
-          )}
+          {imgUri && <Image source={{ uri: imgUri }} style={styles.avatarNetworkIcon} />}
         </View>
         <View style={styles.itemNameWrap}>
           {isSaved ? (
             <>
               <TextL numberOfLines={1} style={[styles.primaryText]}>
-                {contact?.name || contact?.caHolderInfo?.walletName}
+                {contact?.name || ''}
               </TextL>
               <ContactAddress contact={contact} style={styles.secondaryText} />
             </>

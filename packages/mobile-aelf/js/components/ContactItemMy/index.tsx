@@ -8,7 +8,7 @@ import { View, StyleSheet } from 'react-native';
 import { pTd } from 'utils/unit';
 import Svg from 'components/Svg';
 import { Text } from 'react-native';
-import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
+import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-eoa/activity';
 import { AELF_NETWORK_NAME } from 'constants/common';
 import { addressFormat } from '@portkey-wallet/utils';
 import { ChainId } from '@portkey-wallet/types';

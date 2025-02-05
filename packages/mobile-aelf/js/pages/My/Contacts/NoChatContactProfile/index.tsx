@@ -7,7 +7,7 @@ import fonts from 'assets/theme/fonts';
 import * as Clipboard from 'expo-clipboard';
 import navigationService from 'utils/navigationService';
 import CommonToast from 'components/CommonToast';
-import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { useCurrentChain } from '@portkey-wallet/hooks/hooks-eoa/chainList';
 import { getExploreLink } from '@portkey-wallet/utils';
 import GStyles from 'assets/theme/GStyles';
 import ProfileHeaderSection from 'pages/My/components/ProfileHeaderSection';
@@ -15,7 +15,7 @@ import { pTd } from 'utils/unit';
 import Svg from 'components/Svg';
 import { makeStyles, useTheme } from '@rneui/themed';
 import { TextL } from 'components/CommonText';
-import { IContactItemType } from '@portkey-wallet/types/types-ca/contactNew';
+import { IContactItemType } from '@portkey-wallet/types/types-eoa/contact';
 import ContactAddress, { IContactAddressRef } from 'components/ContactAddress';
 import { AELF_NETWORK_NAME } from 'constants/common';
 import AddressActivity from '../AddressActivity';
@@ -90,8 +90,8 @@ const NoChatContactProfile: React.FC = () => {
           {isSaved && (
             <ProfileHeaderSection
               showRemark={false}
-              name={contact?.name || contact?.caHolderInfo?.walletName || ''}
-              avatarUrl={contact?.caHolderInfo?.avatar || ''}
+              name={contact?.name || ''}
+              avatarUrl={''}
               style={pageStyles.profileHeader}
               nameStyle={pageStyles.profileHeaderName}
             />

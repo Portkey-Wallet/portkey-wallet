@@ -79,7 +79,7 @@ import { SEND_HELP_URL } from 'constants/common';
 import { openOutLink } from 'utils/link';
 import SelectAddressTab from '../components/SelectAddressTab';
 import { useRecent } from '@portkey-wallet/hooks/hooks-ca/recent';
-import { useGetFilterContactList } from '@portkey-wallet/hooks/hooks-ca/contactNew';
+import { useGetFilterContactList } from '@portkey-wallet/hooks/hooks-eoa/contact';
 import { TFormattedRecentItem } from '@portkey-wallet/types/types-ca/contactNew';
 import { IContactItemMyType } from 'components/ContactItemMy';
 import { KeyboardSafeArea } from 'components/KeyboardSafeArea';

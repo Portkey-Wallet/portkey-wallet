@@ -55,7 +55,7 @@ const Security: React.FC<SecurityProps> = () => {
             icon="my_auto_lock"
             size={pTd(24)}
           />
-          {biometricsReady && (
+          {(biometricsReady || biometrics) && (
             <MenuItem
               style={pageStyles.menuItem}
               onPress={() => navigationService.navigate('Biometric')}

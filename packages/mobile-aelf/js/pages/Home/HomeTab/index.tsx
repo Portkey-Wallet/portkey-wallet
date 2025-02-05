@@ -135,6 +135,10 @@ const HomeTab: React.FC<any> = ({ _ }) => {
           Switch Network
         </CommonButton>
 
+        <CommonButton type="primary" onPress={() => navigationService.push('Security')} style={{ marginTop: 20 }}>
+          Security
+        </CommonButton>
+
         <CommonButton type="primary" onPress={() => navigationService.push('Home')} style={{ marginTop: 20 }}>
           Home
         </CommonButton>

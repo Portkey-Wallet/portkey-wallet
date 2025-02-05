@@ -22,5 +22,9 @@ export const removeAccount = createAction<{
   address: string;
 }>('wallet/removeAccount');
 
+export const updateWalletList = createAction<{
+  walletList: TWalletInfo[];
+}>('wallet/updateWalletList');
+
 export const setHideAssetsAction =
   createAction<RequireAtLeastOne<{ hideAssets: boolean }>>('wallet/setHideAssetsAction');

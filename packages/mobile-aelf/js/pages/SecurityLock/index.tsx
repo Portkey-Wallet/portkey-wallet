@@ -21,6 +21,7 @@ import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 type RouterParams = {
   isCheck?: boolean;
   checkCallback?: () => void;
+  isBackAllow?: boolean;
 };
 
 export default function SecurityLock() {
@@ -33,7 +34,7 @@ export default function SecurityLock() {
   const navigation = useNavigation();
   const locked = useRef<boolean>(false);
 
-  const { isCheck, checkCallback } = useRouterParams<RouterParams>();
+  const { isCheck, checkCallback, isBackAllow = false } = useRouterParams<RouterParams>();
 
   const handleRouter = useThrottleCallback(
     () => {
@@ -84,8 +85,14 @@ export default function SecurityLock() {
     },
     [textError.isError, handlePassword, setTextError],
   );
+
   return (
-    <PageContainer hideHeader containerStyles={GStyles.flex1} scrollViewProps={{ disabled: true }}>
+    <PageContainer
+      hideHeader={!isBackAllow}
+      type="leftBack"
+      titleDom=""
+      containerStyles={GStyles.flex1}
+      scrollViewProps={{ disabled: true }}>
       <PinContainer
         ref={digitInput}
         title="Enter PIN"

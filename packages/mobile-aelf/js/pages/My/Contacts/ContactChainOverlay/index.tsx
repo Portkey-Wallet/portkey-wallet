@@ -6,10 +6,10 @@ import getStyles from './styles';
 import Svg from 'components/Svg';
 import { TextL } from 'components/CommonText';
 import { pTd } from 'utils/unit';
-import { useLanguage } from 'i18n/hooks';
+
 import { useGStyles } from 'assets/theme/useGStyles';
 import { ModalBody } from 'components/ModalBody';
-import { INetworkItemType } from '@portkey-wallet/types/types-ca/contactNew';
+import { INetworkItemType } from '@portkey-wallet/types/types-eoa/contact';
 
 interface ISelectListProps {
   list: INetworkItemType[];
@@ -18,12 +18,11 @@ interface ISelectListProps {
 }
 
 const SelectList = ({ list, value, onChange }: ISelectListProps) => {
-  const { t } = useLanguage();
   const gStyle = useGStyles();
   const styles = getStyles();
 
   return (
-    <ModalBody style={gStyle.overlayStyle} title={t('Select Network')} modalBodyType="bottom">
+    <ModalBody style={gStyle.overlayStyle} title={'Select Network'} modalBodyType="bottom">
       {list.length ? (
         <ScrollView alwaysBounceVertical={false} style={styles.scrollWrap}>
           {list.map((item, index) => {
@@ -51,7 +50,7 @@ const SelectList = ({ list, value, onChange }: ISelectListProps) => {
           })}
         </ScrollView>
       ) : (
-        <TextL style={styles.noResult}>{t('No results found')}</TextL>
+        <TextL style={styles.noResult}>{'No results found'}</TextL>
       )}
     </ModalBody>
   );

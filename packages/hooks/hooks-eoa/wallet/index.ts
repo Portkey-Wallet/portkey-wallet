@@ -12,8 +12,9 @@ import {
 import { TAccountInfo, TWalletInfo } from '@portkey-wallet/types/types-eoa/wallet';
 import aes from '@portkey-wallet/utils/aes';
 import { useCurrentNetwork, useIsMainnet } from '../network';
-import { ChainId, NetworkType } from '@portkey-wallet/types';
+import { ChainId } from '@portkey-wallet/types';
 import { changeNetworkType } from '@portkey-wallet/store/store-eoa/wallet/slice';
+import { useChainList } from '../network/chain';
 
 export const useWalletState = () => useAppEOASelector(state => state.wallet);
 
@@ -204,10 +205,8 @@ export const useCurrentHideAssetsState = () => {
   const { hideAssets } = useWalletState();
   return hideAssets;
 };
-export function useCurrentChainList() {
-  const { networkType, chainInfo } = useWalletState();
-  return useMemo(() => chainInfo?.[networkType], [chainInfo, networkType]);
-}
+export const useCurrentChainList = useChainList;
+
 export const useChainIdList = () => {
   const chainList = useCurrentChainList();
   const isMainnet = useIsMainnet();

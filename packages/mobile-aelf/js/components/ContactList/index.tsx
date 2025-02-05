@@ -8,8 +8,8 @@ import ContactFlashList from './ContactFlashList';
 import { TextL, TextM } from 'components/CommonText';
 import GStyles from 'assets/theme/GStyles';
 import { ViewStyleType } from 'types/styles';
-import { useContact, useLocalContactSearch } from '@portkey-wallet/hooks/hooks-ca/contactNew';
-import { IContactIndexType, IContactItemType } from '@portkey-wallet/types/types-ca/contactNew';
+import { useLocalContactSearch, useOriginContactList } from '@portkey-wallet/hooks/hooks-eoa/contact';
+import { IContactIndexType, IContactItemType } from '@portkey-wallet/types/types-eoa/contact';
 interface ContactsListProps {
   isIndexBarShow?: boolean;
   isSearchShow?: boolean;
@@ -21,7 +21,7 @@ interface ContactsListProps {
   // isTransaction?: boolean;
 }
 type FlashItemType = IContactIndexType | IContactItemType;
-const defaultList: IContactIndexType[] = [];
+
 const ContactsList: React.FC<ContactsListProps> = ({
   isIndexBarShow = true,
   isSearchShow = true,
@@ -32,14 +32,16 @@ const ContactsList: React.FC<ContactsListProps> = ({
 }) => {
   const contactListStyles = getContactListStyles();
   const contactItemStyles = getContactItemStyles();
-  const { contactIndexListNew: contactIndexList = defaultList } = useContact();
+  const contactIndexList = useOriginContactList();
   const [list, setList] = useState<IContactIndexType[]>([]);
   const localContactSearch = useLocalContactSearch();
 
   const flashListData = useMemo<FlashItemType[]>(() => {
     let _flashListData: FlashItemType[] = [];
     list.forEach(contactIndex => {
-      if (!contactIndex.contacts.length) return;
+      if (!contactIndex.contacts.length) {
+        return;
+      }
 
       _flashListData.push({
         ...contactIndex,
@@ -75,7 +77,9 @@ const ContactsList: React.FC<ContactsListProps> = ({
   };
 
   const _renderItem = (item: IContactItemType) => {
-    if (renderContactItem) return renderContactItem(item);
+    if (renderContactItem) {
+      return renderContactItem(item);
+    }
     return (
       <ContactItem
         key={item.id}

@@ -15,14 +15,13 @@ import { View, StyleSheet } from 'react-native';
 import navigationService from 'utils/navigationService';
 import { pTd } from 'utils/unit';
 import NoData from 'components/NoData';
-import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
-import { ActivityItemType } from '@portkey-wallet/types/types-ca/activity';
-import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { NFT_MIDDLE_SIZE } from '@portkey-wallet/constants/constants-ca/assets';
-import { request } from '@portkey-wallet/api/api-did';
+import { useCurrentChain } from '@portkey-wallet/hooks/hooks-eoa/chainList';
+import { ActivityItemType } from '@portkey-wallet/types/types-eoa/activity';
+import { NFT_MIDDLE_SIZE } from '@portkey-wallet/constants/constants-eoa/assets';
+import { request } from '@portkey-wallet/api/api-eoa';
 import myEvents from 'utils/deviceEvent';
-import { IActivityListWithAddressApiParams } from '@portkey-wallet/store/store-ca/activity/type';
-import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
+import { IActivityListWithAddressApiParams } from '@portkey-wallet/store/store-eoa/activity/type';
+import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-eoa/activity';
 import CommonAvatar from 'components/CommonAvatar';
 import Touchable from 'components/Touchable';
 import ActivityItem from 'components/ActivityItem';
@@ -30,6 +29,8 @@ import { ListLoadingEnum } from 'constants/misc';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { FlatListFooterLoading } from 'components/FlatListFooterLoading';
 import { FlashList } from '@shopify/flash-list';
+import { useCurrentAccount } from '@portkey-wallet/hooks/hooks-eoa/wallet';
+import { useChainList } from '@portkey-wallet/hooks/hooks-eoa/network/chain';
 
 interface ParamsType {
   fromChainId: ChainId;
@@ -48,7 +49,8 @@ const ContactActivity: React.FC = () => {
 
   const { t } = useLanguage();
   const { explorerUrl } = useCurrentChain(chainId) ?? {};
-  const caAddressInfos = useCaAddressInfoList();
+  const account = useCurrentAccount();
+  const chainList = useChainList();
 
   const [addressName, setAddressName] = useState<string | undefined>(contactName);
   const [addressAvatar, setAddressAvatar] = useState<string | undefined>(avatar);
@@ -62,10 +64,16 @@ const ContactActivity: React.FC = () => {
     () => ({
       maxResultCount: MAX_RESULT_COUNT,
       skipCount: activityList.length,
-      caAddressInfos: caAddressInfos.filter(ele => ele.chainId === fromChainId),
+      addressInfos: (chainList || [])
+        .filter(item => item.chainId === fromChainId)
+        .map(item => ({
+          chainId: item.chainId,
+          address: `AELF_${account}_${item.chainId}`,
+          chainName: '',
+        })),
       targetAddressInfos: [
         {
-          caAddress: address,
+          address: address,
           chainId: chainId,
           chainName: '',
         },
@@ -73,7 +81,7 @@ const ContactActivity: React.FC = () => {
       width: NFT_MIDDLE_SIZE,
       height: -1,
     }),
-    [activityList.length, address, caAddressInfos, chainId, fromChainId],
+    [account, activityList.length, address, chainId, chainList, fromChainId],
   );
 
   const [isLoading, setIsLoading] = useState(ListLoadingEnum.hide);
@@ -97,7 +105,9 @@ const ContactActivity: React.FC = () => {
 
       setTotalCount(result.totalRecordCount);
       setIsLoading(ListLoadingEnum.hide);
-      if (skipActivityNumber !== 0) await sleep(250);
+      if (skipActivityNumber !== 0) {
+        await sleep(250);
+      }
     },
     [activityList, params],
   );
@@ -130,7 +140,9 @@ const ContactActivity: React.FC = () => {
 
   const navToExplore = useCallback(
     (navAddress: string, navChainId: ChainId) => {
-      if (!address) return;
+      if (!address) {
+        return;
+      }
 
       navigationService.navigate('ViewOnWebView', {
         title: t('View on Explorer'),
@@ -213,8 +225,12 @@ const ContactActivity: React.FC = () => {
         renderItem={renderItem}
         onRefresh={() => init()}
         onEndReached={() => {
-          if (!isInitRef.current) return;
-          if (activityList?.length >= totalCount) return;
+          if (!isInitRef.current) {
+            return;
+          }
+          if (activityList?.length >= totalCount) {
+            return;
+          }
           fetchActivityList(activityList?.length);
         }}
         onEndReachedThreshold={ON_END_REACHED_THRESHOLD}
@@ -222,7 +238,9 @@ const ContactActivity: React.FC = () => {
           <>{!isEmpty && <FlatListFooterLoading refreshing={isLoading === ListLoadingEnum.footer} />}</>
         }
         onLoad={() => {
-          if (isInitRef.current) return;
+          if (isInitRef.current) {
+            return;
+          }
           init();
         }}
       />

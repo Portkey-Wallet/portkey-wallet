@@ -1,5 +1,4 @@
 import { NetworkType } from '@portkey-wallet/types';
-import { IChainItemType } from '@portkey-wallet/types/types-eoa/chain';
 import { TAccountInfo, TWalletInfo } from '@portkey-wallet/types/types-eoa/wallet';
 
 export type TWalletState = {
@@ -8,7 +7,6 @@ export type TWalletState = {
   currentAccountAddress?: TAccountInfo['address'];
   networkType: NetworkType;
   hideAssets: boolean;
-  chainInfo?: { [key in NetworkType]?: IChainItemType[] };
 };
 
 // export interface WalletState {

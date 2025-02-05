@@ -2,12 +2,11 @@ import { ChainId } from '@portkey-wallet/types';
 import { sleep } from '@portkey-wallet/utils';
 import fonts from 'assets/theme/fonts';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { ActivityItemType } from '@portkey-wallet/types/types-ca/activity';
-import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { NFT_MIDDLE_SIZE } from '@portkey-wallet/constants/constants-ca/assets';
+import { ActivityItemType } from '@portkey-wallet/types/types-eoa/activity';
+import { NFT_MIDDLE_SIZE } from '@portkey-wallet/constants/constants-eoa/assets';
 import { request } from '@portkey-wallet/api/api-did';
-import { IActivityListWithAddressApiParams } from '@portkey-wallet/store/store-ca/activity/type';
-import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
+import { IActivityListWithAddressApiParams } from '@portkey-wallet/store/store-eoa/activity/type';
+import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-eoa/activity';
 import ActivityItem from 'components/ActivityItem';
 import { showActivityDetail } from 'components/ActivityOverlay';
 import { ListLoadingEnum } from 'constants/misc';
@@ -18,6 +17,8 @@ import { View } from 'react-native';
 import { makeStyles } from '@rneui/themed';
 import { TextL, TextXXL } from 'components/CommonText';
 import { pTd } from 'utils/unit';
+import { useCurrentAccount } from '@portkey-wallet/hooks/hooks-eoa/wallet';
+import { useChainList } from '@portkey-wallet/hooks/hooks-eoa/network/chain';
 
 interface IAddressActivityProps {
   address: string;
@@ -29,7 +30,8 @@ const MAX_RESULT_COUNT = 20;
 
 const AddressActivity: React.FC<IAddressActivityProps> = props => {
   const { address, chainId, onItemPress } = props;
-  const caAddressInfos = useCaAddressInfoList();
+  const account = useCurrentAccount();
+  const chainList = useChainList();
 
   const [totalCount, setTotalCount] = useState(0);
   const [activityList, setActivityList] = useState<ActivityItemType[]>([]);
@@ -42,11 +44,17 @@ const AddressActivity: React.FC<IAddressActivityProps> = props => {
       maxResultCount: MAX_RESULT_COUNT,
       skipCount: activityList.length,
       // portkey address
-      caAddressInfos: caAddressInfos.filter(ele => ele.chainId === chainId),
+      addressInfos: (chainList || [])
+        .filter(item => item.chainId === chainId)
+        .map(item => ({
+          chainId: item.chainId,
+          address: `AELF_${account}_${item.chainId}`,
+          chainName: '',
+        })),
       // contact address
       targetAddressInfos: [
         {
-          caAddress: address,
+          address: address,
           chainId: chainId,
           chainName: '',
         },
@@ -54,7 +62,7 @@ const AddressActivity: React.FC<IAddressActivityProps> = props => {
       width: NFT_MIDDLE_SIZE,
       height: -1,
     }),
-    [activityList.length, address, caAddressInfos, chainId],
+    [account, activityList.length, address, chainId, chainList],
   );
 
   const [isLoading, setIsLoading] = useState(ListLoadingEnum.header);

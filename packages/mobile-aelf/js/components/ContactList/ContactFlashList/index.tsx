@@ -1,7 +1,7 @@
 import React, { useCallback, useRef } from 'react';
 import { View } from 'react-native';
 import { styles as contactListStyles } from './style';
-import { IContactIndexType, IContactItemType } from '@portkey-wallet/types/types-ca/contactNew';
+import { IContactIndexType, IContactItemType } from '@portkey-wallet/types/types-eoa/contact';
 import { FlashList } from '@shopify/flash-list';
 import IndexBar from 'components/IndexBar';
 

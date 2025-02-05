@@ -10,8 +10,7 @@ import { setContactAction, refreshContactMap } from '@portkey-wallet/store/store
 import { useAppCommonDispatch, useAppEOASelector, useEffectOnce } from '../index';
 import { getAelfAddress, isAelfAddress } from '@portkey-wallet/utils/aelf';
 import { randomId } from '@portkey-wallet/utils';
-// TODO: eoa contact
-// import { useTransferNetworkConfig } from './config';
+import { useContactNetworkConfig, useTransferNetworkConfig } from './config';
 import { ChainId } from '@portkey-wallet/types';
 import { convertNameToAlphabet } from '@portkey-wallet/store/store-eoa/contact/utils';
 import { useCurrentNetwork } from './network';
@@ -21,6 +20,7 @@ export const REFRESH_DELAY_TIME = 1.5 * 1000;
 export const useAddContact = () => {
   const dispatch = useAppCommonDispatch();
   const currentNetwork = useCurrentNetwork();
+  const { supportNetworkList } = useContactNetworkConfig();
 
   return useCallback(
     async (contactItem: IAddContactItemApiType): Promise<IContactItemType> => {
@@ -32,8 +32,11 @@ export const useAddContact = () => {
         addressInfo: {
           network: contactItem.network,
           networkName: contactItem.network,
-          // TODO: eoa contact networkImage
-          networkImage: '',
+          chainId: contactItem.chainId,
+          networkImage:
+            supportNetworkList?.find(
+              item => item.network === contactItem.network && item.chainId === contactItem.chainId,
+            )?.imageUrl || '',
           address: contactItem.address,
           isExchange: contactItem.isExchange,
         },
@@ -48,24 +51,29 @@ export const useAddContact = () => {
 
       return item;
     },
-    [currentNetwork, dispatch],
+    [currentNetwork, dispatch, supportNetworkList],
   );
 };
 
 export const useEditContact = () => {
   const dispatch = useAppCommonDispatch();
   const currentNetwork = useCurrentNetwork();
+  const { supportNetworkList } = useContactNetworkConfig();
 
   return useCallback(
     async (contactItem: IEditContactItemApiType): Promise<IContactItemType> => {
       const item: IContactItemType = {
         ...contactItem,
+        id: contactItem.id ?? '',
         index: convertNameToAlphabet(contactItem.name),
         addressInfo: {
           network: contactItem.network,
           networkName: contactItem.network,
-          // TODO: eoa contact networkImage
-          networkImage: '',
+          chainId: contactItem.chainId,
+          networkImage:
+            supportNetworkList?.find(
+              item => item.network === contactItem.network && item.chainId === contactItem.chainId,
+            )?.imageUrl || '',
           address: contactItem.address,
           isExchange: contactItem.isExchange,
         },
@@ -79,7 +87,7 @@ export const useEditContact = () => {
       );
       return item;
     },
-    [currentNetwork, dispatch],
+    [currentNetwork, dispatch, supportNetworkList],
   );
 };
 
@@ -108,14 +116,18 @@ export const useDeleteContact = () => {
 
 export const useContact = () => useAppEOASelector(state => state.contact);
 
-export const useAllContactList = () => {
+export const useOriginContactList = () => {
   const contactIndexListMap = useAppEOASelector(state => state.contact.contactIndexList);
   const currentNetwork = useCurrentNetwork();
+  return useMemo(() => contactIndexListMap?.[currentNetwork] || [], [contactIndexListMap, currentNetwork]);
+};
+
+export const useAllContactList = () => {
+  const contactIndexList = useOriginContactList();
 
   return useMemo(() => {
-    const contactIndexList = contactIndexListMap?.[currentNetwork] || [];
     return contactIndexList.filter(c => c.contacts.length > 0);
-  }, [contactIndexListMap, currentNetwork]);
+  }, [contactIndexList]);
 };
 
 export const useContactList = () => {
@@ -133,8 +145,8 @@ export const useContactList = () => {
 // in send page
 export const useGetFilterContactList = () => {
   const contactList = useContactList();
-  // TODO: eoa contact useTransferNetworkConfig
-  // const { checkIsSupportTargetChain } = useTransferNetworkConfig();
+
+  const { checkIsSupportTargetChain } = useTransferNetworkConfig();
 
   return useCallback(
     (params: { fromChainId: ChainId; tokenId: string; isFt?: boolean }) => {
@@ -145,14 +157,12 @@ export const useGetFilterContactList = () => {
         if (isFt && ele.addressInfo.network !== 'aelf') return false;
         if (ele.addressInfo.network === 'aelf') return true;
 
-        // TODO: eoa contact
-        // return checkIsSupportTargetChain({ fromChainId, symbol: tokenId, network: ele.addressInfo.network });
-        return true;
+        return checkIsSupportTargetChain({ fromChainId, symbol: tokenId, network: ele.addressInfo.network });
       });
 
       return result;
     },
-    [contactList],
+    [checkIsSupportTargetChain, contactList],
   );
 };
 

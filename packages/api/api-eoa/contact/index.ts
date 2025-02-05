@@ -74,7 +74,7 @@ const ApiObjectV2: Record<(typeof KeyListV2)[number], BaseConfig> = {
     config: { method: 'GET' },
   },
   getSupportNetworkList: {
-    target: `${BASE_URL_V2}/network`,
+    target: `/api/app/proxy/api/app/address-book/network`,
     config: { method: 'GET' },
   },
 };

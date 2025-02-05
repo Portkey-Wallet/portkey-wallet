@@ -23,6 +23,7 @@ import { exceptionManager } from 'utils/errorHandler/ExceptionHandler';
 import { service } from 'api/utils';
 import { useInitAwaken } from '@portkey-wallet/hooks/hooks-eoa/awaken';
 import { useCheckContactMap } from '@portkey-wallet/hooks/hooks-eoa/contact';
+import { useContactNetworkConfig, useTransferNetworkConfig } from '@portkey-wallet/hooks/hooks-eoa/config';
 
 request.setExceptionManager(exceptionManager);
 
@@ -127,5 +128,8 @@ export default function Updater() {
   useCheckContactMap();
   // useInitDappWhiteListData();
   useInitAwaken();
+  useContactNetworkConfig(true);
+  useTransferNetworkConfig(true);
+
   return null;
 }

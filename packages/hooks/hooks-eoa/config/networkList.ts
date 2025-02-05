@@ -1,5 +1,5 @@
 import { useCurrentNetwork, useNetworkList } from '@portkey-wallet/hooks/hooks-eoa/network';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { ChainId } from '@portkey-wallet/types';
 import {
   fetchTransferSupportNetworkList,
@@ -9,7 +9,7 @@ import { useAppEOASelector, useAppCommonDispatch } from '../../index';
 
 export const useConfig = () => useAppEOASelector(state => state.config);
 
-export const useTransferNetworkConfig = () => {
+export const useTransferNetworkConfig = (isInit = false) => {
   const { sendAssetSupportNetworkMap } = useConfig();
   const dispatch = useAppCommonDispatch();
   const currentNetwork = useCurrentNetwork();
@@ -35,6 +35,11 @@ export const useTransferNetworkConfig = () => {
     dispatch(fetchTransferSupportNetworkList(networkList));
   }, [dispatch, networkList]);
 
+  useEffect(() => {
+    if (!isInit) return;
+    fetchAssetSupportConfig();
+  }, [fetchAssetSupportConfig, isInit]);
+
   return {
     fetchAssetSupportConfig,
     checkIsSupportTargetChain,
@@ -42,7 +47,7 @@ export const useTransferNetworkConfig = () => {
   };
 };
 
-export const useContactNetworkConfig = () => {
+export const useContactNetworkConfig = (isInit = false) => {
   const { contactSupportNetworkMap } = useConfig();
   const dispatch = useAppCommonDispatch();
   const currentNetwork = useCurrentNetwork();
@@ -56,6 +61,11 @@ export const useContactNetworkConfig = () => {
   const fetchContactSupportConfig = useCallback(() => {
     dispatch(fetchContactSupportNetworkList(networkList));
   }, [dispatch, networkList]);
+
+  useEffect(() => {
+    if (!isInit) return;
+    fetchContactSupportConfig();
+  }, [fetchContactSupportConfig, isInit]);
 
   return {
     supportNetworkList,

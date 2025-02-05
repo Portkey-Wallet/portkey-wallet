@@ -6,10 +6,9 @@ import CommonTopTab from 'components/CommonTopTab';
 import { pTd } from 'utils/unit';
 import fonts from 'assets/theme/fonts';
 import ContactItem from 'components/ContactItem';
-import { IContactItemType, TFormattedRecentItem } from '@portkey-wallet/types/types-ca/contactNew';
-import { useContactNetworkConfig } from '@portkey-wallet/hooks/hooks-ca/config';
+import { IContactItemType, TFormattedRecentItem } from '@portkey-wallet/types/types-eoa/contact';
+import { useContactNetworkConfig } from '@portkey-wallet/hooks/hooks-eoa/config';
 import navigationService from 'utils/navigationService';
-import { ICaAddressInfoListItemType } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { RECENT_PAGE_NAME } from 'constants/contact';
 import { AELF_NETWORK_NAME } from 'constants/common';
 import ContactItemMy, { IContactItemMyType } from 'components/ContactItemMy';
@@ -30,7 +29,9 @@ const AddressList = ({
   isMyAddress = false,
   type = SelectAddressTabTypeEnum.Recent,
 }: {
-  addressList: TFormattedRecentItem[] | ICaAddressInfoListItemType[];
+  // TODO: eoa contact
+  // addressList: TFormattedRecentItem[] | ICaAddressInfoListItemType[];
+  addressList: TFormattedRecentItem[];
   chainId: string;
   onPress?: (item: TFormattedRecentItem) => void;
   isMyAddress?: boolean;
@@ -55,7 +56,8 @@ const AddressList = ({
   );
 
   const renderItem = useCallback(
-    ({ item, index }: { item: TFormattedRecentItem | ICaAddressInfoListItemType | any; index: number }) => {
+    // ({ item, index }: { item: TFormattedRecentItem | ICaAddressInfoListItemType | any; index: number }) => {
+    ({ item, index }: { item: TFormattedRecentItem | any; index: number }) => {
       const address = item?.name ? item?.caHolderInfo?.address : item?.address;
       const contactProps: IContactItemType = item?.name
         ? item

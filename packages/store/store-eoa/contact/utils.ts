@@ -45,7 +45,7 @@ export const convertNameToAlphabet = (name: string): string => {
     return firstChar;
   }
 
-  return '&';
+  return '#';
 };
 
 export const getInitContactIndexList = (): IContactIndexType[] => {

@@ -40,7 +40,7 @@ export const fetchContactSupportNetworkList = createAsyncThunk<TFetchContactSupp
 
       return result;
     } catch (error) {
-      console.log('error', error);
+      console.log('fetchContactSupportNetworkList error', error);
       return result;
     }
   },
@@ -63,10 +63,11 @@ export const fetchTransferSupportNetworkList = createAsyncThunk<TFetchTransferSu
       });
 
       const response = await Promise.allSettled(promiseList);
+
       response.forEach((item, index) => {
         const currentNetwork = networkList[index].networkType;
         if (item.status === 'fulfilled') {
-          result[currentNetwork] = item?.value?.supportedNetworks || {};
+          result[currentNetwork] = item?.value?.supportedNetworks || [];
         } else {
           console.log(`${currentNetwork} request failed:`, item.reason);
         }

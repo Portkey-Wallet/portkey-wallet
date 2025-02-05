@@ -71,6 +71,15 @@ export const contactSlice = createSlice({
         };
       })
       .addCase(refreshContactMap, state => {
+        state.contactIndexList = {
+          MAINNET: state.contactIndexList?.['MAINNET']?.length
+            ? state.contactIndexList?.['MAINNET']
+            : getInitContactIndexList(),
+          TESTNET: state.contactIndexList?.['TESTNET']?.length
+            ? state.contactIndexList?.['TESTNET']
+            : getInitContactIndexList(),
+        };
+
         state.contactMap = {
           MAINNET: transIndexesToContactMap(state.contactIndexList?.['MAINNET'] || []),
           TESTNET: transIndexesToContactMap(state.contactIndexList?.['TESTNET'] || []),

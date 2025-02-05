@@ -11,6 +11,15 @@ export interface IAddressInfo {
   address: string;
 }
 
+export interface AddressItem {
+  chainId: ChainId; // AELF tDVV tDVW
+  chainName?: string;
+  address: string;
+  image?: string;
+  displayChainName?: string;
+  chainImageUrl?: string;
+}
+
 export interface IRecentAddressInfo extends IAddressInfo {
   transactionTime?: string;
 }
@@ -37,7 +46,6 @@ export interface RecentContactItemType extends IContactItemType {
   name: string;
 }
 
-// TODO: eoa contact
 export interface IAddContactItemApiType {
   name: string;
   address: string;
@@ -46,10 +54,9 @@ export interface IAddContactItemApiType {
   isExchange?: boolean;
 }
 
-// TODO: eoa contact
 export interface IEditContactItemApiType {
   name: string;
-  id: string;
+  id?: string;
   chainId?: ChainId;
   network: 'aelf' | string;
   isExchange?: boolean;

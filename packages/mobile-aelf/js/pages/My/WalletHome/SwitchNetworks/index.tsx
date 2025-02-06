@@ -4,22 +4,20 @@ import { useLanguage } from 'i18n/hooks';
 import { pTd } from 'utils/unit';
 import { View, Text } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
-import { useAppSelector } from 'store/hooks';
 import { TextM } from 'components/CommonText';
 import Touchable from 'components/Touchable';
 import { defaultColors } from 'assets/theme';
 import Svg from 'components/Svg';
-import { useNetworkList } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useNetworkList } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { useChangeNetwork } from 'hooks/network';
-import { useRoute } from '@react-navigation/native';
 import { makeStyles, useTheme } from '@rneui/themed';
+import { useCurrentNetwork } from '@portkey-wallet/hooks/hooks-eoa/network';
 
 const SwitchNetworks: React.FC = () => {
   const { t } = useLanguage();
-  const { currentNetwork } = useAppSelector(state => state.wallet);
+  const currentNetwork = useCurrentNetwork();
   const NetworkList = useNetworkList();
-  const route = useRoute();
-  const changeNetwork = useChangeNetwork(route);
+  const changeNetwork = useChangeNetwork();
   const styles = getStyles();
   const theme = useTheme();
 

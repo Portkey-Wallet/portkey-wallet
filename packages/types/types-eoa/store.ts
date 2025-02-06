@@ -17,6 +17,10 @@ import { ActivityStateType } from '@portkey-wallet/store/store-eoa/activity/type
 import { contactSlice, TContactState } from '@portkey-wallet/store/store-eoa/contact/slice';
 import { configSlice } from '@portkey-wallet/store/store-eoa/config/slice';
 import { TConfigStateType } from '@portkey-wallet/store/store-eoa/config/types';
+import { cmsSlice } from '@portkey-wallet/store/store-eoa/cms/slice';
+import { ICMSState } from '@portkey-wallet/store/store-eoa/cms/types';
+import { dappSlice } from '@portkey-wallet/store/store-eoa/dapp/slice';
+import { IDappStoreState } from '@portkey-wallet/store/store-eoa/dapp/type';
 
 export type EOACommonState = {
   [settingsSlice.name]: SettingsState;
@@ -29,4 +33,6 @@ export type EOACommonState = {
   [awakenSlice.name]: TAwakenState;
   [contactSlice.name]: TContactState;
   [configSlice.name]: TConfigStateType;
+  [cmsSlice.name]: ICMSState;
+  [dappSlice.name]: IDappStoreState;
 };

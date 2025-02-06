@@ -21,6 +21,7 @@ import {
   IUserTokenItemResponse,
   TokenItemShowType,
 } from '@portkey-wallet/types/types-eoa/token';
+import token from '@portkey-wallet/api/api-did/token';
 
 export const useAssets = () => useAppEOASelector(state => state.assets);
 
@@ -101,49 +102,12 @@ export const useAccountTokenInfo = () => {
 
   // const currentNetwork = useCurrentNetwork();
   const assetsState = useAssets();
+  console.log('assetsState====', JSON.stringify(assetsState));
   const accountTokenInfo = useMemo(
     () => assetsState?.accountToken?.accountTokenInfoV2?.[identify] || INIT_ACCOUNT_TOKEN_INFO,
     [assetsState?.accountToken?.accountTokenInfoV2, identify],
   );
-  const updatedAccountTokenList = useMemo(() => {
-    const originAccountTokenList = accountTokenInfo.accountTokenList;
-    const localShowTokenInfo = assetsState.accountToken.localShowTokenInfo?.[identify];
-    const mergedTokens = localShowTokenInfo
-      ?.filter(item => item.isAdded)
-      ?.reduce((acc: ITokenSectionResponse[], token: IUserTokenItem) => {
-        const existingToken = acc.find(item => item.symbol === token.symbol);
-        if (existingToken) {
-          existingToken?.tokens?.push(token);
-        } else {
-          acc.push({
-            symbol: token.symbol,
-            price: Number(token.price) || 0,
-            balance: token.balance || '0',
-            decimals: Number(token.decimals) || 0,
-            balanceInUsd: token.balanceInUsd || '0',
-            // tokenContractAddress: '',
-            imageUrl: token.imageUrl,
-            label: token.label || '',
-            tokens: [token],
-          });
-        }
-        return acc;
-      }, []);
-    let updatedOriginAccountTokenList: ITokenSectionResponse[] = [];
-    if (originAccountTokenList) {
-      updatedOriginAccountTokenList = [...originAccountTokenList];
-      mergedTokens?.forEach(mergedToken => {
-        const existsInOrigin = updatedOriginAccountTokenList?.some(
-          originToken => originToken.symbol === mergedToken.symbol,
-        );
-        if (!existsInOrigin) {
-          updatedOriginAccountTokenList?.push(mergedToken);
-        }
-      });
-    }
-
-    return updatedOriginAccountTokenList.length > 0 ? updatedOriginAccountTokenList : mergedTokens;
-  }, [accountTokenInfo.accountTokenList, assetsState.accountToken.localShowTokenInfo, identify]);
+  const updatedAccountTokenList = useAccountTokenInfoMixLocalShowToken();
   const fetchAccountTokenInfoList = useCallback(
     (params: {
       addressInfos: { chainId: ChainId; address: string }[];
@@ -253,8 +217,7 @@ export function useFetchTokenAllowanceList() {
 export function useManagerTokenInfo() {
   const dispatch = useAppCommonDispatch();
   const identify = useUniqueIdentify();
-  const { accountToken } = useAssets();
-  console.log('accountToken===1233', accountToken);
+  const { localShowTokenInfo } = useAssets();
   const showToken = useCallback(
     (token: IUserTokenItem) => {
       dispatch(
@@ -293,6 +256,93 @@ export function useManagerTokenInfo() {
     showToken,
     hideToken,
     switchToken,
-    localToken: accountToken?.localShowTokenInfo?.[identify],
+    localToken: localShowTokenInfo?.[identify],
   };
+}
+export function useAccountTokenInfoMixLocalShowToken() {
+  // const { accountTokenList } = useAccountTokenInfo();
+  const identify = useUniqueIdentify();
+  const assetsState = useAssets();
+  const accountTokenInfo = useMemo(
+    () => assetsState?.accountToken?.accountTokenInfoV2?.[identify] || INIT_ACCOUNT_TOKEN_INFO,
+    [assetsState?.accountToken?.accountTokenInfoV2, identify],
+  );
+  const updatedAccountTokenList = useMemo(() => {
+    const originAccountTokenList = accountTokenInfo.accountTokenList;
+    if (!originAccountTokenList) {
+      return;
+    }
+    let newAccountTokenList = [...originAccountTokenList];
+    const localShowTokenInfo = assetsState.localShowTokenInfo?.[identify];
+    localShowTokenInfo
+      ?.filter(item => item.isAdded)
+      .forEach(localAddedToken => {
+        const funded = newAccountTokenList?.find(innerItem => innerItem.symbol === localAddedToken.symbol);
+        if (funded) {
+          if (!funded.tokens) funded.tokens = [];
+          const index = funded.tokens?.findIndex(token => token.chainId === localAddedToken.chainId);
+          console.log('===index', index, 'funded.tokens===', funded.tokens);
+          if (index !== -1) {
+            console.log('if===');
+            funded.tokens[index] = localAddedToken;
+          } else {
+            console.log('else===');
+            // funded.tokens.push(localAddedToken);
+            const updatedTokens = [...funded.tokens, localAddedToken];
+            const updatedFunded = {
+              ...funded,
+              tokens: updatedTokens,
+            };
+            newAccountTokenList = newAccountTokenList.map(item =>
+              item.symbol === localAddedToken.symbol ? updatedFunded : item,
+            );
+          }
+        } else {
+          newAccountTokenList?.push({
+            symbol: localAddedToken.symbol,
+            price: Number(localAddedToken.price) || 0,
+            balance: localAddedToken.balance || '0',
+            decimals: Number(localAddedToken.decimals) || 0,
+            balanceInUsd: localAddedToken.balanceInUsd || '0',
+            // tokenContractAddress: '',
+            label: localAddedToken.label || '',
+            imageUrl: localAddedToken.imageUrl,
+            displayStatus: 'Partial',
+            tokens: [localAddedToken],
+            // isAdded: token.isAdded,
+          });
+        }
+      });
+    // remove isAdded false
+    localShowTokenInfo
+      ?.filter(item => !item.isAdded)
+      .forEach(hiddenLocalToken => {
+        const funded = newAccountTokenList?.find(innerItem => innerItem.symbol === hiddenLocalToken.symbol);
+        if (funded && funded.tokens) {
+          const index = funded.tokens?.findIndex(token => token.chainId === hiddenLocalToken.chainId);
+          if (index !== -1 && index !== undefined) {
+            // console.log(
+            //   '===index',
+            //   index,
+            //   'hiddenLocalToken===',
+            //   hiddenLocalToken,
+            //   'funded.tokens===',
+            //   funded.tokens?.length,
+            // );
+            // funded.tokens?.splice(index, 1);
+            const updatedTokens = [...funded.tokens.slice(0, index), ...funded.tokens.slice(index + 1)];
+            const updatedFunded = {
+              ...funded,
+              tokens: updatedTokens,
+            };
+            const updatedNewAccountTokenList = newAccountTokenList.map(item =>
+              item.symbol === hiddenLocalToken.symbol ? updatedFunded : item,
+            );
+            newAccountTokenList = updatedNewAccountTokenList;
+          }
+        }
+      });
+    return newAccountTokenList;
+  }, [accountTokenInfo.accountTokenList, assetsState.localShowTokenInfo, identify]);
+  return updatedAccountTokenList;
 }

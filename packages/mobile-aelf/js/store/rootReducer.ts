@@ -19,6 +19,11 @@ const userPersistConfig = {
   storage: AsyncStorage,
   blacklist: ['credentials'],
 };
+const assetsPersistConfig = {
+  key: assetsSlice.name,
+  storage: AsyncStorage,
+  whitelist: ['localShowTokenInfo'],
+};
 
 // const discoverPersistConfig = {
 //   key: discoverSlice.name,
@@ -39,6 +44,7 @@ const userPersistConfig = {
 // };
 
 export const userReducer = persistReducer(userPersistConfig, userSlice.reducer);
+export const assetsReducer = persistReducer(assetsPersistConfig, assetsSlice.reducer);
 // export const discoverReducer = persistReducer(discoverPersistConfig, discoverSlice.reducer);
 // export const imReducer = persistReducer(imPersistConfig, imSlice.reducer);
 
@@ -52,7 +58,7 @@ const rootReducer = combineReducers({
   // [miscSlice.name]: miscSlice.reducer,
   // [guardiansSlice.name]: guardiansSlice.reducer,
   // [recentSlice.name]: recentSlice.reducer,
-  [assetsSlice.name]: assetsSlice.reducer,
+  [assetsSlice.name]: assetsReducer,
   [activitySlice.name]: activitySlice.reducer,
   [tokenManagementSlice.name]: tokenManagementSlice.reducer,
   // [dappSlice.name]: dappSlice.reducer,

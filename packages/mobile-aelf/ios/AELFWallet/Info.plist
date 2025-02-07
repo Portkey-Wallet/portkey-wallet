@@ -14,10 +14,10 @@
 	<array>
 		<dict>
 			<key>CFBundleURLName</key>
-			<string>com.aelf</string>
+			<string>com.portkey.fairyvault</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>aelf</string>
+				<string>fairyvault</string>
 			</array>
 		</dict>
 	</array>
@@ -28,11 +28,11 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>AELFWallet</string>
+	<string>FairyVault</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
-	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<string>com.portkey.fairyvault</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>

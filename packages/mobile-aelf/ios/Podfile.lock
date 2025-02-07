@@ -1609,7 +1609,7 @@ PODS:
     - Yoga
   - react-native-background-timer (2.4.1):
     - React-Core
-  - react-native-cloud-storage (2.2.1):
+  - react-native-cloud-storage (2.2.2):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2818,7 +2818,7 @@ SPEC CHECKSUMS:
   React-Mapbuffer: b982d5bba94a8bc073bda48f0d27c9b28417fae3
   React-microtasksnativemodule: 2b73e68f0462f3175f98782db08896f8501afd20
   react-native-background-timer: 17ea5e06803401a379ebf1f20505b793ac44d0fe
-  react-native-cloud-storage: 7e7398f3271a50ba6380d0100aa102ba705d3163
+  react-native-cloud-storage: 2034aa9cbf5a94577c980e9d2312e4f373f66303
   react-native-compat: 6f315a20c4a80382bd315d01c1672b4536104bcc
   react-native-config: 8f7283449bbb048902f4e764affbbf24504454af
   react-native-fbsdk-next: fcecfa33c37ce63bcda9cd24766ee9d345463230
@@ -2892,4 +2892,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 57ef2243c158c41081f4466b362007984a6dca96
 
-COCOAPODS: 1.16.2
+COCOAPODS: 1.15.2

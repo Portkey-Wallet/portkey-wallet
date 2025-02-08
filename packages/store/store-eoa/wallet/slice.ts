@@ -1,8 +1,18 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { TWalletState } from './type';
-import { addAccount, addWallet, removeAccount, removeWallet, resetWallet, setHideAssetsAction } from './actions';
+import {
+  addAccount,
+  addWallet,
+  updateWallet,
+  removeAccount,
+  removeWallet,
+  resetWallet,
+  setHideAssetsAction,
+  changeCurrentWallet,
+} from './actions';
 import { getNextBIP44Path } from '@portkey-wallet/utils/wallet';
 import { NetworkType } from '@portkey-wallet/types';
+import { MAX_ACCOUNT_NUMBER } from './config';
 
 const initialState: TWalletState = {
   walletList: [],
@@ -38,6 +48,15 @@ export const walletSlice = createSlice({
           currentAccountAddress: wallet.accountList[0]?.address,
         };
       })
+      .addCase(updateWallet, (state, action) => {
+        const { wallet } = action.payload;
+        const newWalletList = state.walletList.map(item => (item.key === wallet.key ? { ...item, ...wallet } : item));
+        return {
+          ...state,
+          walletList: newWalletList,
+          currentAccountAddress: wallet.accountList[0]?.address,
+        };
+      })
       .addCase(removeWallet, (state, action) => {
         const { key } = action.payload;
         const walletList = state.walletList.filter(item => item.key !== key);
@@ -50,18 +69,34 @@ export const walletSlice = createSlice({
       })
       .addCase(addAccount, (state, action) => {
         const { key, account } = action.payload;
-        const walletList = [...state.walletList];
-        const wallet = walletList.find(item => item.key === key);
-        if (!wallet) return state;
+        const newWalletList = state.walletList.map(wallet => {
+          if (wallet.key === key) {
+            const accountListLength = wallet.accountList.length;
+            const lastAccount = wallet.accountList[accountListLength - 1];
+            if (lastAccount.BIP44Path === account.BIP44Path || accountListLength >= MAX_ACCOUNT_NUMBER) {
+              return wallet;
+            }
+            return {
+              ...wallet,
+              accountList: [...wallet.accountList, account],
+              nextBIP44Path: getNextBIP44Path(account.BIP44Path),
+            };
+          }
+          return wallet;
+        });
 
-        wallet.accountList = [...wallet.accountList, account];
-
-        // TODO: eoa add currentAccountAddress logic
-        wallet.nextBIP44Path = getNextBIP44Path(account.BIP44Path);
-        state.currentAccountAddress = account.address;
+        // const walletList = [...state.walletList];
+        // const wallet = walletList.find(item => item.key === key);
+        // if (!wallet) return state;
+        //
+        // wallet.accountList = [...wallet.accountList, account];
+        //
+        // // TODO: eoa add currentAccountAddress logic
+        // wallet.nextBIP44Path = getNextBIP44Path(account.BIP44Path);
+        // state.currentAccountAddress = account.address;
         return {
           ...state,
-          walletList,
+          walletList: newWalletList,
         };
       })
       .addCase(removeAccount, (state, action) => {
@@ -83,7 +118,14 @@ export const walletSlice = createSlice({
         const { hideAssets } = action.payload;
         state.hideAssets = hideAssets;
       })
-      .addCase(resetWallet, () => ({ ...initialState }));
+      .addCase(resetWallet, () => ({ ...initialState }))
+      .addCase(changeCurrentWallet, (state, action) => {
+        const { address } = action.payload;
+        return {
+          ...state,
+          currentAccountAddress: address,
+        };
+      });
   },
 });
 export const { changeNetworkType } = walletSlice.actions;

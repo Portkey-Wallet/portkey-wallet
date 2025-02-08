@@ -7,6 +7,9 @@ export type TAccountInfo = {
   publicKey: PublicKey;
   name?: string;
   isHide?: boolean;
+  icon?: string;
+  // local use
+  totalBalance?: string;
 };
 
 export type TWalletInfo = {

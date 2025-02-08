@@ -52,7 +52,6 @@ export default function Biometric() {
     async (value: boolean) => {
       checkSecurityLock(() => {
         if (value) {
-          navigationService.pop(1);
           navigationService.push('SetBiometrics', {
             type: SetBiometricsTypeEnum.update,
           });

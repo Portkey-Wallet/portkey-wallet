@@ -4,6 +4,7 @@ import accountSettingsNav from './AccountSettings/router';
 import ContactsNav from './Contacts/index';
 import GuardianNav from './Guardian/index';
 import UserReferral from './UserReferral/index';
+import { WalletManagementNav } from './WalletManagement/router';
 
 // import SecurityNav from './Security/router';
 
@@ -15,6 +16,7 @@ const stackNav = [
   ...ContactsNav,
   ...GuardianNav,
   { name: 'UserReferral', component: UserReferral },
+  ...WalletManagementNav,
 ] as const;
 
 export default stackNav;

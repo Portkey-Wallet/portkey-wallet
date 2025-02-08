@@ -31,7 +31,6 @@ const Security: React.FC<SecurityProps> = () => {
 
   const changePin = useCallback(() => {
     checkSecurityLock(() => {
-      navigationService.pop(1);
       navigationService.push('SetPin', {
         oldPin: pin,
       });

@@ -73,12 +73,13 @@ export const useAddAddress = ({ walletInfo }: { walletInfo?: TWalletInfo }) => {
         CommonToast.fail('Failed to be added');
         return;
       }
+      navigationService.pop(1);
       navigationService.push('WalletManagement', {
         routerWallet: walletInfo,
         routerPin: credentials.pin,
         action: 'ADD_ACCOUNT',
       });
-    });
+    }, true);
   }, [checkSecurityLock, credentials, walletInfo]);
 
   return {

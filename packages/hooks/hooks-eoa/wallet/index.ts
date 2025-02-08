@@ -152,15 +152,20 @@ export const useCurrentWallet = () => {
   }, [walletList, currentAccountAddress]);
 };
 
-export const useAccountByWallet = (wallet: TWalletInfo) => {
+export const useAccountByWallet = (wallet?: TWalletInfo) => {
   // const pin = usePin();
   const dispatch = useAppCommonDispatch();
   const addAccount = useCallback(
     (pin: string) => {
+      if (!wallet) {
+        console.log('no wallet');
+        return;
+      }
       const { AESEncryptMnemonic, accountList } = wallet;
-      const lastAccount = accountList[accountList.length - 1];
+      // const lastAccount = accountList[accountList.length - 1];
       const mnemonic = aes.decrypt(AESEncryptMnemonic, pin);
-      const nextBIP44Path = getNextBIP44Path(lastAccount.BIP44Path);
+      // const nextBIP44Path = getNextBIP44Path(lastAccount.BIP44Path);
+      const nextBIP44Path = wallet.nextBIP44Path;
       const account = AElf.wallet.getWalletByMnemonic(mnemonic, nextBIP44Path);
       const accountAESEncryptPrivateKey = aes.encrypt(account.privateKey, pin);
       if (!account?.publicKey) {
@@ -176,7 +181,7 @@ export const useAccountByWallet = (wallet: TWalletInfo) => {
         address: account.address,
         AESEncryptPrivateKey: accountAESEncryptPrivateKey,
         publicKey: account.publicKey,
-        name: 'Address ' + accountList.length,
+        name: 'Address ' + (accountList.length + 1),
         isHide: false,
       };
       dispatch(

@@ -8,12 +8,12 @@ import {
   addWallet,
   resetWallet,
   setHideAssetsAction,
+  updateWalletList,
 } from '@portkey-wallet/store/store-eoa/wallet/actions';
 import { TAccountInfo, TWalletInfo } from '@portkey-wallet/types/types-eoa/wallet';
 import aes from '@portkey-wallet/utils/aes';
 import { useCurrentNetwork, useIsMainnet } from '../network';
 import { ChainId } from '@portkey-wallet/types';
-import { changeNetworkType } from '@portkey-wallet/store/store-eoa/wallet/slice';
 import { useChainList } from '../network/chain';
 
 export const useWalletState = () => useAppEOASelector(state => state.wallet);
@@ -53,7 +53,7 @@ export const useAddWallet = () => {
       }
 
       const wallet = formatWalletInfoV2(walletInfo, pin, `Wallet ${walletListLength + 1}`);
-      console.log('after: formatWalletInfoV2: ', wallet, walletList);
+
       if (!wallet) {
         return {
           success: false,
@@ -67,7 +67,7 @@ export const useAddWallet = () => {
           message: 'Wallet already exists',
         };
       }
-      console.log('wallet======', JSON.stringify(wallet));
+
       dispatch(
         addWallet({
           wallet,
@@ -257,12 +257,35 @@ export const useChainIdList = () => {
   }, [chainList, isMainnet]);
 };
 
-export const useSwitchNetworkType = () => {
+export const useUpdateWalletAES = () => {
+  const walletList = useWalletListState();
   const dispatch = useAppCommonDispatch();
-  const networkType = useCurrentNetwork();
-  const switchNetwork = useCallback(() => {
-    const switchedNetwork = networkType === 'MAINNET' ? 'TESTNET' : 'MAINNET';
-    dispatch(changeNetworkType(switchedNetwork));
-  }, [dispatch, networkType]);
-  return switchNetwork;
+
+  return useCallback(
+    (oldPin: string, newPin: string) => {
+      const newWalletList = walletList.map(wallet => {
+        const newWallet: TWalletInfo = { ...wallet };
+        const isPrivate = newWallet.AESEncryptMnemonic === '';
+        if (!isPrivate) {
+          const mnemonic = aes.decrypt(newWallet.AESEncryptMnemonic, oldPin);
+          if (!mnemonic) throw 'Error Pin mnemonic';
+          newWallet.AESEncryptMnemonic = aes.encrypt(mnemonic, newPin);
+        }
+        newWallet.accountList = newWallet.accountList.map(account => {
+          const newAccount: TAccountInfo = { ...account };
+          const privateKey = aes.decrypt(newAccount.AESEncryptPrivateKey, oldPin);
+          if (!privateKey) throw 'Error Pin privateKey';
+          newAccount.AESEncryptPrivateKey = aes.encrypt(privateKey, newPin);
+          return newAccount;
+        });
+        return newWallet;
+      });
+      dispatch(
+        updateWalletList({
+          walletList: newWalletList,
+        }),
+      );
+    },
+    [dispatch, walletList],
+  );
 };

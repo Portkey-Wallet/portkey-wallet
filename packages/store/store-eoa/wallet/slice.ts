@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 import { TWalletState } from './type';
 import {
   addAccount,
@@ -9,39 +9,26 @@ import {
   resetWallet,
   setHideAssetsAction,
   changeCurrentWallet,
+  updateWalletList,
 } from './actions';
 import { getNextBIP44Path } from '@portkey-wallet/utils/wallet';
-import { NetworkType } from '@portkey-wallet/types';
+// import { NetworkType } from '@portkey-wallet/types';
 import { MAX_ACCOUNT_NUMBER } from './config';
 
 const initialState: TWalletState = {
   walletList: [],
   privateKeyAccountList: [],
   currentAccountAddress: undefined,
-  networkType: 'MAINNET',
   hideAssets: false,
 };
 export const walletSlice = createSlice({
   name: 'wallet',
   initialState,
-  reducers: {
-    changeNetworkType: (state, action: PayloadAction<NetworkType>) => {
-      state.networkType = action.payload;
-    },
-  },
+  reducers: {},
   extraReducers: builder => {
     builder
       .addCase(addWallet, (state, action) => {
         const { wallet } = action.payload;
-        console.log('wallet======2', JSON.stringify(wallet));
-        console.log(
-          'wallet======3',
-          JSON.stringify({
-            ...state,
-            walletList: [...state.walletList, wallet],
-            currentAccountAddress: wallet.accountList[0]?.address,
-          }),
-        );
         return {
           ...state,
           walletList: [...state.walletList, wallet],
@@ -114,6 +101,10 @@ export const walletSlice = createSlice({
           walletList,
         };
       })
+      .addCase(updateWalletList, (state, action) => {
+        const { walletList } = action.payload;
+        state.walletList = walletList;
+      })
       .addCase(setHideAssetsAction, (state, action) => {
         const { hideAssets } = action.payload;
         state.hideAssets = hideAssets;
@@ -128,4 +119,3 @@ export const walletSlice = createSlice({
       });
   },
 });
-export const { changeNetworkType } = walletSlice.actions;

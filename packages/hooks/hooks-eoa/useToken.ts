@@ -6,7 +6,7 @@ import {
 } from '@portkey-wallet/store/store-eoa/tokenManagement/action';
 import { useMemo, useCallback, useEffect } from 'react';
 import { INITIAL_TOKEN_INFO } from '@portkey-wallet/store/store-eoa/tokenManagement/slice';
-import { useAccountTokenInfo, useAssets, useManagerTokenInfo } from './assets';
+import { useAccountTokenInfo, useAccountTokenInfoMixLocalShowToken, useAssets, useManagerTokenInfo } from './assets';
 import { useUniqueIdentify } from './wallet';
 
 export const useToken = () => {
@@ -37,7 +37,7 @@ export const useTokenLegacy = () => {
   const dispatch = useAppCommonDispatch();
   const identify = useUniqueIdentify();
   console.log('identify is:: =====', identify);
-  const { accountTokenList } = useAccountTokenInfo();
+  const updatedAccountTokenLis = useAccountTokenInfoMixLocalShowToken();
   const { localToken } = useManagerTokenInfo();
   const tokenState = useAppEOASelector(state => state.tokenManagement);
 
@@ -47,15 +47,11 @@ export const useTokenLegacy = () => {
   );
   const updatedTokenDataShowInMarket = useMemo(() => {
     console.log('tokenInfo.tokenDataShowInMarket', JSON.stringify(tokenInfo.tokenDataShowInMarket));
-    const flattenedAccountTokens = accountTokenList?.flatMap(item => item.tokens);
+    const flattenedAccountTokens = updatedAccountTokenLis?.flatMap(item => item.tokens);
     console.log('flattenedAccountTokens====', JSON.stringify(flattenedAccountTokens));
-    console.log('localToken====', JSON.stringify(localToken));
-    // const flattenedLocalTokens = localToken?.flatMap(item => item.tokens);
     const updatedMarketTokens = tokenInfo.tokenDataShowInMarket.map(token => ({
       ...token,
-      isAdded:
-        flattenedAccountTokens?.some(item1 => item1?.symbol === token.symbol && item1.chainId === token.chainId) ||
-        localToken?.some(item1 => item1?.symbol === token.symbol && item1.chainId === token.chainId && item1.isAdded),
+      isAdded: flattenedAccountTokens?.some(item1 => item1?.symbol === token.symbol && item1.chainId === token.chainId),
     }));
 
     flattenedAccountTokens?.forEach(token => {
@@ -68,19 +64,18 @@ export const useTokenLegacy = () => {
         updatedMarketTokens.push({ ...token, isAdded: true });
       }
     });
-
-    localToken?.forEach(token => {
-      if (
-        !updatedMarketTokens.some(
-          marketToken => marketToken.symbol === token.symbol && marketToken.chainId === token.chainId,
-        )
-      ) {
-        updatedMarketTokens.push({ ...token, isAdded: token.isAdded });
-      }
-    });
-
+    localToken
+      ?.filter(item => !item.isAdded)
+      .forEach(item => {
+        const isInList = updatedMarketTokens?.some(
+          flattedItem => flattedItem?.symbol === item.symbol && flattedItem.chainId === item.chainId,
+        );
+        if (!isInList) {
+          updatedMarketTokens?.push({ ...item, isAdded: false });
+        }
+      });
     return updatedMarketTokens;
-  }, [accountTokenList, localToken, tokenInfo.tokenDataShowInMarket]);
+  }, [tokenInfo.tokenDataShowInMarket, updatedAccountTokenLis, localToken]);
   const fetchTokenInfoList = useCallback(
     (params: { keyword: string; chainIdArray: string[]; skipCount?: number; maxResultCount?: number }) => {
       return dispatch(

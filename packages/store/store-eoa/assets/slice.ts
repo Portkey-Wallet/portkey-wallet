@@ -368,34 +368,69 @@ export const assetsSlice = createSlice({
     },
     showLocalShowTokenInfo: (state, action: PayloadAction<{ identify: string; token: IUserTokenItem }>) => {
       const { token, identify } = action.payload;
-      let preLocalShowTokenInfo = state.accountToken.localShowTokenInfo?.[identify];
-      if (!preLocalShowTokenInfo) {
-        preLocalShowTokenInfo = [];
-      }
-      const existToken = preLocalShowTokenInfo.find(
-        item => item.symbol === token.symbol && item.chainId === token.chainId,
-      );
-      if (existToken) {
-        existToken.isAdded = true;
+      const preLocalShowTokenInfo = state.localShowTokenInfo?.[identify];
+      // if (!preLocalShowTokenInfo) {
+      //   preLocalShowTokenInfo = [];
+      // }
+      if (preLocalShowTokenInfo) {
+        const existToken = preLocalShowTokenInfo.find(
+          item => item.symbol === token.symbol && item.chainId === token.chainId,
+        );
+        if (existToken) {
+          state.localShowTokenInfo = {
+            ...state.localShowTokenInfo,
+            [identify]: preLocalShowTokenInfo.map(item =>
+              item.symbol === token.symbol && item.chainId === token.chainId ? { ...item, isAdded: true } : item,
+            ),
+          };
+          // existToken.isAdded = true;
+        } else {
+          preLocalShowTokenInfo.push({ ...token, isAdded: true });
+          state.localShowTokenInfo = {
+            ...state.localShowTokenInfo,
+            [identify]: [...preLocalShowTokenInfo, { ...token, isAdded: true }],
+          };
+        }
       } else {
-        preLocalShowTokenInfo.push({ ...token, isAdded: true });
+        const tempLocalShowTokenInfo = [];
+        tempLocalShowTokenInfo.push({ ...token, isAdded: true });
+        state.localShowTokenInfo = {
+          ...state.localShowTokenInfo,
+          [identify]: tempLocalShowTokenInfo,
+        };
       }
-      state.accountToken.localShowTokenInfo = {
-        ...state.accountToken.localShowTokenInfo,
-        [identify]: preLocalShowTokenInfo,
-      };
     },
     hideLocalShowTokenInfo: (state, action: PayloadAction<{ identify: string; token: IUserTokenItem }>) => {
       const { token, identify } = action.payload;
-      const preLocalShowTokenInfo = state.accountToken.localShowTokenInfo?.[identify];
+      const preLocalShowTokenInfo = state.localShowTokenInfo?.[identify];
+      console.log('hideLocalShowTokenInfo====preLocalShowTokenInfo', preLocalShowTokenInfo, 'token', token);
       if (preLocalShowTokenInfo) {
-        state.accountToken.localShowTokenInfo = {
-          ...state.accountToken.localShowTokenInfo,
-          [identify]: preLocalShowTokenInfo.map(item =>
-            item.symbol === token.symbol && item.chainId === token.chainId ? { ...item, isAdded: false } : item,
-          ),
+        const fundedToken = preLocalShowTokenInfo.find(
+          item => item.symbol === token.symbol && item.chainId === token.chainId,
+        );
+        console.log('fundedToken===', fundedToken);
+        if (fundedToken) {
+          state.localShowTokenInfo = {
+            ...state.localShowTokenInfo,
+            [identify]: preLocalShowTokenInfo.map(item =>
+              item.symbol === token.symbol && item.chainId === token.chainId ? { ...item, isAdded: false } : item,
+            ),
+          };
+        } else {
+          state.localShowTokenInfo = {
+            ...state.localShowTokenInfo,
+            [identify]: [...preLocalShowTokenInfo, { ...token, isAdded: false }],
+          };
+        }
+      } else {
+        const tempLocalShowTokenInfo = [];
+        tempLocalShowTokenInfo.push({ ...token, isAdded: false });
+        state.localShowTokenInfo = {
+          ...state.localShowTokenInfo,
+          [identify]: tempLocalShowTokenInfo,
         };
       }
+      console.log('state.localShowTokenInfo=====', state.localShowTokenInfo);
     },
   },
   extraReducers: builder => {

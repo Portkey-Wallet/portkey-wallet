@@ -16,6 +16,7 @@ import { useErrorMessage } from '@portkey-wallet/hooks/hooks-ca/misc';
 import { usePreventHardwareBack } from '@portkey-wallet/hooks/mobile';
 import CommonToast from 'components/CommonToast';
 import { useSetBiometrics } from 'hooks/useBiometrics';
+import { useUpdateWalletAES } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 
 type RouterParams = {
   pin?: string;
@@ -34,6 +35,7 @@ export default function ConfirmPin() {
   const dispatch = useAppDispatch();
 
   const setBiometrics = useSetBiometrics();
+  const updateWalletAES = useUpdateWalletAES();
   const onChangePin = useCallback(
     async (newPin: string) => {
       if (!oldPin) {
@@ -41,42 +43,42 @@ export default function ConfirmPin() {
       }
       changeCanLock(false);
       try {
-        // TODO: eoa update Pin need reEncrypt
-        // dispatch(changePin({ pin: oldPin, newPin }));
+        updateWalletAES(oldPin, newPin);
         dispatch(setCredentials({ pin: newPin }));
+        await setBiometrics(false);
         CommonToast.success('PIN updated');
+        navigationService.navigate('Security');
       } catch (error) {
         CommonPrompt.failError(error);
       }
       changeCanLock(true);
-      // navigationService.reset('PrepareWallet', { pin, _inner_mnemonics, _inner_privateKey });
-      navigationService.reset('PrepareWallet', { pin });
     },
-    [dispatch, oldPin, pin],
+    [dispatch, oldPin, setBiometrics, updateWalletAES],
   );
 
   const { error: textError, setError: setTextError } = useErrorMessage();
   const onChangeText = useCallback(
     async (confirmPin: string) => {
-      if (confirmPin.length !== PIN_SIZE) {
-        if (textError.isError) {
-          setTextError();
+      try {
+        if (confirmPin.length !== PIN_SIZE) {
+          if (textError.isError) {
+            setTextError();
+          }
+          return;
         }
-        return;
-      }
 
-      if (confirmPin !== pin) {
-        pinRef.current?.reset();
-        setTextError('Incorrect PIN, please try again.', VERIFY_INVALID_TIME);
-        return;
-      }
+        if (confirmPin !== pin) {
+          pinRef.current?.reset();
+          setTextError('Incorrect PIN, please try again.', VERIFY_INVALID_TIME);
+          return;
+        }
 
-      if (oldPin) {
-        return onChangePin(confirmPin);
-      }
-
-      await setBiometrics(false);
-      navigationService.reset('PrepareWallet', { pin: confirmPin, mnemonics, privateKey });
+        if (oldPin) {
+          return onChangePin(confirmPin);
+        }
+        await setBiometrics(false);
+        navigationService.reset('PrepareWallet', { pin: confirmPin, mnemonics, privateKey });
+      } catch (error) {}
     },
     [pin, oldPin, setBiometrics, textError.isError, setTextError, onChangePin, mnemonics, privateKey],
   );

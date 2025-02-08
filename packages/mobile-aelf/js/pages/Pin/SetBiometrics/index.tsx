@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { TextH1 } from 'components/CommonText';
 import PageContainer from 'components/PageContainer';
 import CommonButton from 'components/CommonButton';
@@ -17,6 +17,8 @@ import { useAppDispatch } from 'store/hooks';
 import { setCredentials } from 'store/user/actions';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import navigationService from 'utils/navigationService';
+import { usePin } from 'hooks/store';
+import { useUpdateWalletAES } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 
 export enum SetBiometricsTypeEnum {
   'create' = 'CREATE',
@@ -30,30 +32,57 @@ type TRouterParams = {
 };
 
 const ScrollViewProps = { disabled: true };
+
 export default function SetBiometrics() {
   const styles = getStyles();
   const { theme } = useTheme();
   usePreventHardwareBack();
 
-  // const { type = SetBiometricsTypeEnum.create, mnemonics, privateKey } = useRouterParams<TRouterParams>();
-  const { mnemonics, privateKey } = useRouterParams<TRouterParams>();
+  const { type = SetBiometricsTypeEnum.create, mnemonics, privateKey } = useRouterParams<TRouterParams>();
+
+  const isCreate = useMemo(() => type === SetBiometricsTypeEnum.create, [type]);
 
   const setBiometrics = useSetBiometrics();
 
   const dispatch = useAppDispatch();
+
+  const createBiometrics = useCallback(async () => {
+    const newPin = randomId();
+    await setSecureStoreItem('Pin', newPin);
+    dispatch(setCredentials({ pin: newPin }));
+    await setBiometrics(true);
+    navigationService.reset('PrepareWallet', { pin: newPin, mnemonics, privateKey });
+  }, [dispatch, setBiometrics, mnemonics, privateKey]);
+
+  const pin = usePin();
+  const updateWalletAES = useUpdateWalletAES();
+
+  const updateBiometrics = useCallback(async () => {
+    if (!pin) {
+      return;
+    }
+    const newPin = randomId();
+    updateWalletAES(pin, newPin);
+    await setSecureStoreItem('Pin', newPin);
+    dispatch(setCredentials({ pin: newPin }));
+    await setBiometrics(true);
+    navigationService.goBack();
+  }, [dispatch, pin, setBiometrics, updateWalletAES]);
+
   const openBiometrics = useCallback(async () => {
     changeCanLock(false);
     try {
-      const pin = randomId();
-      await setSecureStoreItem('Pin', pin);
-      dispatch(setCredentials({ pin }));
-      await setBiometrics(true);
-      navigationService.reset('PrepareWallet', { pin, mnemonics, privateKey });
+      if (isCreate) {
+        await createBiometrics();
+      } else {
+        await updateBiometrics();
+      }
     } catch (error) {
       CommonPrompt.failError(error, 'Failed To Verify');
     }
     changeCanLock(true);
-  }, [dispatch, setBiometrics, mnemonics, privateKey]);
+  }, [isCreate, createBiometrics, updateBiometrics]);
+
   const onSkip = useCallback(async () => {
     try {
       await setBiometrics(false);
@@ -68,21 +97,23 @@ export default function SetBiometrics() {
 
   return (
     <PageContainer
-      hideHeader
+      hideHeader={isCreate}
+      type="leftBack"
+      titleDom=""
       scrollViewProps={ScrollViewProps}
-      leftDom
-      titleDom
       containerStyles={styles.containerStyles}>
       <View>
         <TextH1 style={styles.headerTitle}>{'Enable biometrics authentication'}</TextH1>
         <Svg iconStyle={GStyles.alignCenter} icon="face-id" size={pTd(64)} />
       </View>
       <View>
-        <CommonButton buttonStyle={styles.buttonWrap} type="primary" onPress={openBiometrics}>
+        <CommonButton type="primary" onPress={openBiometrics}>
           <Svg icon="face-id" iconStyle={styles.buttonIcon} size={pTd(16)} color={theme.colors.iconBrand4} />
           {'Set up now'}
         </CommonButton>
-        <CommonButton type="outline" title="Do it later" onPress={onSkip} />
+        {isCreate && (
+          <CommonButton buttonStyle={styles.buttonWrap} type="outline" title="Do it later" onPress={onSkip} />
+        )}
       </View>
     </PageContainer>
   );
@@ -101,6 +132,6 @@ const getStyles = makeStyles(_theme => ({
     marginBottom: pTd(120),
   },
   buttonWrap: {
-    marginBottom: pTd(24),
+    marginTop: pTd(24),
   },
 }));

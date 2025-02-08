@@ -11,7 +11,7 @@ const HOUR = 60 * 60 * 1000;
 interface IBaseSessionParams {
   origin: string;
   managerAddress: string;
-  caHash: string;
+  caHash?: string;
   expiredPlan: SessionExpiredPlan;
   expiredTime: Timestamp;
 }

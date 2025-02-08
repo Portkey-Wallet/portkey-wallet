@@ -1,56 +1,35 @@
-import { NetworkItem } from '@portkey-wallet/types/types-ca/network';
-import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { changeNetworkType } from '@portkey-wallet/store/store-ca/wallet/actions';
-import { ParamListBase, RouteProp } from '@react-navigation/native';
-import { RootStackParamList } from 'navigation';
-import { useAppDispatch } from 'store/hooks';
-import navigationService, { NavigateName } from 'utils/navigationService';
+import { NetworkItem } from '@portkey-wallet/types/types-eoa/network';
 import { useThrottleCallback } from '@portkey-wallet/hooks';
-import { useResetStore } from '@portkey-wallet/hooks/hooks-ca';
+import { useResetStore } from '@portkey-wallet/hooks/hooks-eoa';
 import { useLanguage } from 'i18n/hooks';
 import ActionSheet from 'components/ActionSheet';
-import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
-import im from '@portkey-wallet/im';
 import { request } from '@portkey-wallet/api/api-did';
 import signalrFCM from '@portkey-wallet/socket/socket-fcm';
-import { useCurrentNetworkInfo, useNetworkList } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentNetworkInfo, useNetworkList, useSwitchNetwork } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { useCallback } from 'react';
 
-const STAY_ROUTE_NAMES: NavigateName[] = ['LoginEmail', 'SignUpEmail', 'LoginQRCode'];
-export function useChangeNetwork(route: RouteProp<ParamListBase>) {
-  const dispatch = useAppDispatch();
-  const wallet = useWallet();
-
+export function useChangeNetwork() {
   const resetStore = useResetStore();
   const { t } = useLanguage();
+  const switchNetwork = useSwitchNetwork();
+
   const onConfirm = useThrottleCallback(
-    async (network: NetworkItem, logged: boolean) => {
-      let routeName: keyof RootStackParamList = 'LoginPortkey';
-      if (logged) {
-        routeName = 'Tab';
-      }
+    async (logged: boolean) => {
+      console.log('logged', logged);
+      // if (logged) {
+      //   routeName = 'Tab';
+      // }
       resetStore();
       request.initService();
-      im.destroy();
-      dispatch(changeNetworkType(network.networkType));
+      switchNetwork();
       signalrFCM.switchNetwork();
-
-      if (
-        routeName !== route.name &&
-        !(routeName === 'LoginPortkey' && STAY_ROUTE_NAMES.includes(route.name as NavigateName))
-      ) {
-        navigationService.reset(routeName);
-      }
     },
-    [dispatch, resetStore, route.name],
+    [resetStore, switchNetwork],
   );
   return useThrottleCallback(
     (network: NetworkItem, isShowAlert = true) => {
-      const { walletInfo, originChainId } = wallet;
-      const { caInfo } = walletInfo || {};
-      const tmpCaInfo = caInfo?.[network.networkType];
-      const tmpChainId = tmpCaInfo?.originChainId || originChainId || DefaultChainId;
-      const logged = tmpCaInfo?.managerInfo && tmpCaInfo[tmpChainId]?.caAddress;
+      // TODO other network logged
+      const logged = false;
       const networkName = network.networkType === 'MAINNET' ? 'Mainnet' : 'Testnet';
 
       if (!isShowAlert) {
@@ -70,19 +49,19 @@ export function useChangeNetwork(route: RouteProp<ParamListBase>) {
           { title: 'Cancel', type: 'outline' },
           {
             title: 'Confirm',
-            onPress: () => onConfirm(network, logged),
+            onPress: () => onConfirm(logged),
           },
         ],
       });
     },
-    [wallet, onConfirm, t],
+    [onConfirm, t],
   );
 }
 
-export function useChangeNetworkDirectly(route: RouteProp<ParamListBase>) {
+export function useChangeNetworkDirectly() {
   const currentNetworkInfo = useCurrentNetworkInfo();
   const networkList = useNetworkList();
-  const changeNetwork = useChangeNetwork(route);
+  const changeNetwork = useChangeNetwork();
 
   return useCallback(() => {
     const targetNetwork = networkList.find(network => network.name !== currentNetworkInfo.name);

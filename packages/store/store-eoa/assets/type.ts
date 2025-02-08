@@ -109,9 +109,9 @@ export type TAssetsState = {
     accountTokenInfoV2?: {
       [key in string]?: TAccountTokenInfo;
     };
-    localShowTokenInfo?: {
-      [key in string]?: IUserTokenItem[];
-    };
+  };
+  localShowTokenInfo?: {
+    [key in string]?: IUserTokenItem[];
   };
   accountNFT: TAccountNFTInfo & {
     isFetching: boolean;

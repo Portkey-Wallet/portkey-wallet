@@ -10,7 +10,7 @@ import { useCredentials } from '../../../hooks/store';
 import { useBackupWalletModal } from '../../Login/hooks/useBackupWalletModal';
 import * as Clipboard from 'expo-clipboard';
 import { useGetContract, useGetViewContract } from 'hooks/contract';
-import { useCurrentNetwork, useSwitchNetwork } from '@portkey-wallet/hooks/hooks-eoa/network';
+import { useCurrentNetwork } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { useDAppChain, useDAppChainId, useGetChainInfo } from '@portkey-wallet/hooks/hooks-eoa/network/chain';
 import CommonButton from 'components/CommonButton';
 import navigationService from 'utils/navigationService';
@@ -99,7 +99,6 @@ const HomeTab: React.FC<any> = ({ _ }) => {
     }
   }, [currentAccount?.address, dAppChainId, getChainInfo, getViewContract]);
 
-  const switchNetwork = useSwitchNetwork();
   const resetWalletClick = useCallback(async () => {
     try {
       dispatch(resetWallet());
@@ -108,14 +107,6 @@ const HomeTab: React.FC<any> = ({ _ }) => {
       console.log('checkPin error', error);
     }
   }, [dispatch]);
-  const switchNetworkClick = useCallback(async () => {
-    try {
-      switchNetwork();
-      // navigationService.reset('Referral');
-    } catch (error) {
-      console.log('checkPin error', error);
-    }
-  }, [switchNetwork]);
   useEffect(() => {
     if (walletList.length < 1) {
       navigationService.reset('Referral');
@@ -134,8 +125,17 @@ const HomeTab: React.FC<any> = ({ _ }) => {
           Copy Address
         </CommonButton>
 
-        <CommonButton type="primary" onPress={switchNetwork} style={{ marginTop: 20 }}>
-          Switch Network
+        <CommonButton type="primary" onPress={() => navigationService.push('SwitchNetworks')} style={{ marginTop: 20 }}>
+          Switch NetworkType (current: {currentNetwork})
+        </CommonButton>
+        <CommonButton type="primary" onPress={() => navigationService.push('AboutUs')} style={{ marginTop: 20 }}>
+          About
+        </CommonButton>
+        <CommonButton type="primary" onPress={() => navigationService.push('DappList')} style={{ marginTop: 20 }}>
+          Connected Dapps
+        </CommonButton>
+        <CommonButton type="primary" onPress={() => navigationService.push('Security')} style={{ marginTop: 20 }}>
+          Security
         </CommonButton>
 
         <CommonButton type="primary" onPress={() => navigationService.push('Home')} style={{ marginTop: 20 }}>
@@ -233,9 +233,6 @@ const HomeTab: React.FC<any> = ({ _ }) => {
         </CommonButton>
         <CommonButton type="primary" onPress={resetWalletClick} style={{ marginTop: 20 }}>
           Reset Wallet
-        </CommonButton>
-        <CommonButton type="primary" onPress={switchNetworkClick} style={{ marginTop: 20 }}>
-          Switch NetworkType (current: {currentNetwork})
         </CommonButton>
 
         <CommonButton type="primary" onPress={() => navigationService.push('SwapHome')} style={{ marginTop: 20 }}>

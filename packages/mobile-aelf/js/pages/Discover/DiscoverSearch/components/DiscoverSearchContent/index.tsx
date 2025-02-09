@@ -9,12 +9,12 @@ import Svg from 'components/Svg';
 import RecordSection from '../../../components/SearchRecordSection';
 import SearchDiscoverSection from '../../../components/SearchDiscoverSection';
 import { checkIsUrl, getHost, prefixUrlWithProtocol } from '@portkey-wallet/utils/dapp/browser';
-import { useDiscoverGroupList } from '@portkey-wallet/hooks/hooks-ca/cms';
-import { DiscoverItem } from '@portkey-wallet/store/store-ca/cms/types';
+import { useDiscoverGroupList } from '@portkey-wallet/hooks/hooks-eoa/cms';
+import { DiscoverItem } from '@portkey-wallet/store/store-eoa/cms/types';
 import { useDiscoverJumpWithNetWork } from 'hooks/discover';
 import Touchable from 'components/Touchable';
-import { useDiscoverData } from '@portkey-wallet/hooks/hooks-ca/cms/discover';
-import { TBaseCardItemType } from '@portkey-wallet/types/types-ca/cms';
+import { useDiscoverData } from '@portkey-wallet/hooks/hooks-eoa/cms/discover';
+import { TBaseCardItemType } from '@portkey-wallet/types/types-eoa/cms';
 import { KeyboardSafeArea } from 'components/KeyboardSafeArea';
 import { makeStyles, useTheme } from '@rneui/themed';
 

@@ -22,15 +22,21 @@ const AppListener: React.FC<AppListenerProps> = props => {
   const { autoLockingTime } = useSettings();
   const originChainId = useOriginChainId();
   const lockingTime = useMemo(() => {
-    if (!walletInfo?.address || (walletInfo.address && !walletInfo[originChainId])) return AutoLockUpTime;
-    if (autoLockingTime === 0 && !isIOS) return 0.5;
+    if (!walletInfo?.address || (walletInfo.address && !walletInfo[originChainId])) {
+      return AutoLockUpTime;
+    }
+    if (autoLockingTime === 0 && !isIOS) {
+      return 0.5;
+    }
     return autoLockingTime;
   }, [autoLockingTime, originChainId, walletInfo]);
   const prevLockingTime = usePrevious(lockingTime);
   const checkUpdate = useCheckUpdate();
 
   useEffect(() => {
-    if (prevLockingTime !== lockingTime) lockManager.current?.updateLockTime(lockingTime * 1000);
+    if (prevLockingTime !== lockingTime) {
+      lockManager.current?.updateLockTime(lockingTime * 1000);
+    }
   }, [lockingTime, prevLockingTime]);
 
   const getLoginControlListAsync = useGetLoginControlListAsync();
@@ -43,7 +49,9 @@ const AppListener: React.FC<AppListenerProps> = props => {
         latestGetLoginControlListAsync.current();
       }
       if (nextAppState === 'background') {
-        if (canLock) appState = nextAppState;
+        if (canLock) {
+          appState = nextAppState;
+        }
         changeTime = currentTime;
       } else {
         appState = nextAppState;

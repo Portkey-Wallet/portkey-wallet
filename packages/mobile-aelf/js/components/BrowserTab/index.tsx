@@ -7,7 +7,7 @@ import Progressbar, { IProgressbar } from 'components/Progressbar';
 import HttpModal from './components/HttpModal';
 import { getProtocolAndHost, isDangerousLink } from '@portkey-wallet/utils/dapp/browser';
 import { WebViewErrorEvent, WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTypes';
-import { useFetchCurrentRememberMeBlackList } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { useFetchCurrentRememberMeBlackList } from '@portkey-wallet/hooks/hooks-eoa/cms';
 import useEffectOnce from 'hooks/useEffectOnce';
 import OverlayModal from 'components/OverlayModal';
 import { WebViewProps } from 'react-native-webview';
@@ -53,7 +53,9 @@ const BrowserTab = forwardRef<IBrowserTab, BrowserTabProps>(function BrowserTab(
   const fetchCurrentRememberMeBlackList = useFetchCurrentRememberMeBlackList();
 
   useEffect(() => {
-    if (isHidden) return;
+    if (isHidden) {
+      return;
+    }
     setTabRef?.(options);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isHidden, options]);
@@ -62,7 +64,9 @@ const BrowserTab = forwardRef<IBrowserTab, BrowserTabProps>(function BrowserTab(
     ({ nativeEvent }: WebViewNavigationEvent | WebViewErrorEvent) => {
       if (!isDangerousLink(getProtocolAndHost(uri)) && !isApproved.current && autoApprove) {
         isApproved.current = true;
-        if (!isHidden) webViewRef.current?.autoApprove();
+        if (!isHidden) {
+          webViewRef.current?.autoApprove();
+        }
       }
       onLoadEnd?.(nativeEvent);
     },

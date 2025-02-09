@@ -21,7 +21,7 @@ import { checkEnabledFunctionalTypes } from '@portkey-wallet/utils/compass';
 import { useAppETransShow } from 'hooks/cms';
 import { SHOW_RAMP_SYMBOL_LIST } from '@portkey-wallet/constants/constants-ca/ramp';
 import { useAppRampEntryShow } from 'hooks/ramp';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { TokenTitle } from 'components/TokenTitle';
 import navigationService from 'utils/navigationService';
 import { ReceivePageTabType } from '../types';
@@ -48,13 +48,17 @@ export default function Receive() {
   const tabs: TabItemType<ReceivePageTabType>[] = useMemo(() => {
     const tabList: TabItemType<ReceivePageTabType>[] = [{ name: t('QR Code'), type: ReceivePageTabType.QR_CODE }];
 
-    if (exchange) tabList.push({ name: t('Exchanges'), type: ReceivePageTabType.EXCHANGES });
+    if (exchange) {
+      tabList.push({ name: t('Exchanges'), type: ReceivePageTabType.EXCHANGES });
+    }
 
-    if (isBuyButtonShow || targetScene === ReceivePageTabType.BUY)
+    if (isBuyButtonShow || targetScene === ReceivePageTabType.BUY) {
       tabList.push({ name: t('Buy'), type: ReceivePageTabType.BUY });
+    }
 
-    if (isDepositShow || targetScene === ReceivePageTabType.DEPOSIT)
+    if (isDepositShow || targetScene === ReceivePageTabType.DEPOSIT) {
       tabList.push({ name: t('Deposit'), type: ReceivePageTabType.DEPOSIT });
+    }
 
     return tabList;
   }, [exchange, isBuyButtonShow, isDepositShow, t, targetScene]);

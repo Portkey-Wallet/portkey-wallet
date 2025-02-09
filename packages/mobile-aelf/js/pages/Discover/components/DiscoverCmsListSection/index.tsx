@@ -1,6 +1,6 @@
-import { useDiscoverGroupList, useGetS3ImageUrl } from '@portkey-wallet/hooks/hooks-ca/cms';
-import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
-import { DiscoverItem } from '@portkey-wallet/store/store-ca/cms/types';
+import { useDiscoverGroupList, useGetS3ImageUrl } from '@portkey-wallet/hooks/hooks-eoa/cms';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-eoa/network';
+import { DiscoverItem } from '@portkey-wallet/store/store-eoa/cms/types';
 import GStyles from 'assets/theme/GStyles';
 import { TextL, TextM } from 'components/CommonText';
 import { useDiscoverJumpWithNetWork } from 'hooks/discover';
@@ -11,8 +11,8 @@ import TextWithProtocolIcon from 'components/TextWithProtocolIcon';
 import fonts from 'assets/theme/fonts';
 import { getFaviconUrl } from '@portkey-wallet/utils/dapp/browser';
 import Touchable from 'components/Touchable';
-import { useCmsBanner } from '@portkey-wallet/hooks/hooks-ca/cms/banner';
-import { parseLink } from '@portkey-wallet/hooks/hooks-ca/cms/util';
+import { useCmsBanner } from '@portkey-wallet/hooks/hooks-eoa/cms/banner';
+import { parseLink } from '@portkey-wallet/hooks/hooks-eoa/cms/util';
 import Banner, { BannerItemProps } from './components/Banner';
 import { makeStyles } from '@rneui/themed';
 

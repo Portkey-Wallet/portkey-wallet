@@ -10,7 +10,7 @@ import { getHost } from '@portkey-wallet/utils/dapp/browser';
 import DiscoverWebsiteImage from 'pages/Discover/components/DiscoverWebsiteImage';
 import TextWithProtocolIcon from 'components/TextWithProtocolIcon';
 import Svg from 'components/Svg';
-import { useGetCmsWebsiteInfo } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { useGetCmsWebsiteInfo } from '@portkey-wallet/hooks/hooks-eoa/cms';
 import { ITokenAllowance } from '@portkey-wallet/types/types-ca/allowance';
 import { formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import { UNKNOWN } from '@portkey-wallet/constants/constants-ca/allowance';

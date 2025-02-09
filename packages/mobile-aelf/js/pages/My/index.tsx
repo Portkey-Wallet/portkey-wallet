@@ -14,7 +14,7 @@ import { useReferral } from '@portkey-wallet/hooks/hooks-ca/referral';
 import { reportReferralClick } from 'utils/analysisiReport';
 import useEffectOnce from 'hooks/useEffectOnce';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
-import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-eoa/network';
 
 interface MenuItemType {
   name: RootStackName;

@@ -20,14 +20,14 @@ import { LoginType, SocialLoginEnum } from '@portkey-wallet/types/types-ca/walle
 import { checkIsUserCancel, handleErrorMessage, sleep } from '@portkey-wallet/utils';
 import { changeCanLock } from 'utils/LockManager';
 import { AppState } from 'react-native';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
 import TelegramOverlay from 'components/OauthOverlay/telegram';
 import FacebookOverlay from 'components/OauthOverlay/facebook';
 import { parseTelegramToken, parseKidFromJWTToken } from '@portkey-wallet/utils/authentication';
 import { useCurrentWalletInfo, useVerifyManagerAddress } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useLatestRef } from '@portkey-wallet/hooks';
-import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-eoa/network';
 import {
   ReportUnsetLoginGuardianProps,
   VerifyTokenParams,

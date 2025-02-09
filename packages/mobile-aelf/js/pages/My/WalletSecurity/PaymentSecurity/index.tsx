@@ -18,7 +18,7 @@ import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
 import Svg from 'components/Svg';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
-import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-eoa/network';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { useTransferLimitList } from '@portkey-wallet/hooks/hooks-ca/security';
 import { darkColors } from 'assets/theme';

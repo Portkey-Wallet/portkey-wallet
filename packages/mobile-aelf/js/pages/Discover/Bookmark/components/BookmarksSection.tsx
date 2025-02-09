@@ -6,16 +6,16 @@ import { darkColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
 import { RefreshControl } from 'react-native-gesture-handler';
 import NoDiscoverData from 'pages/Discover/components/NoDiscoverData';
-import { useBookmarkList } from '@portkey-wallet/hooks/hooks-ca/discover';
+import { useBookmarkList } from '@portkey-wallet/hooks/hooks-eoa/discover';
 import { nextAnimation } from 'utils/animation';
 
-import { IBookmarkItem } from '@portkey-wallet/store/store-ca/discover/type';
+import { IBookmarkItem } from '@portkey-wallet/store/store-eoa/discover/type';
 import CommonToast from 'components/CommonToast';
 import { request } from '@portkey-wallet/api/api-did';
 import Loading from 'components/Loading';
 import { DISCOVER_BOOKMARK_MAX_COUNT } from 'constants/common';
 import { sleep } from '@portkey-wallet/utils';
-import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
+import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-eoa/activity';
 
 function BookmarksSection({ onChange }: { onChange: (n: number) => void }, forward: any) {
   const [isLoading, setIsLoading] = useState(false);

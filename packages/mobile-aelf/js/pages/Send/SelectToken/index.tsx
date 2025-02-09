@@ -10,7 +10,7 @@ import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { IAssetToken } from '@portkey-wallet/store/store-ca/assets/type';
 import NoData from 'components/NoData';
 import CommonAvatar from 'components/CommonAvatar';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { formatAmountUSDShow, formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import GStyles from 'assets/theme/GStyles';
 import { DarkFontStyles } from 'assets/theme/styles';

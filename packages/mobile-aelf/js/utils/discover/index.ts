@@ -1,6 +1,6 @@
 import { useAppCASelector, useAppCommonDispatch } from '@portkey-wallet/hooks';
-import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
-import { changeDrawerOpenStatus } from '@portkey-wallet/store/store-ca/discover/slice';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-eoa/network';
+import { changeDrawerOpenStatus } from '@portkey-wallet/store/store-eoa/discover/slice';
 import { TabContext } from 'components/TabsDrawer/tools';
 import { useCallback, useContext } from 'react';
 

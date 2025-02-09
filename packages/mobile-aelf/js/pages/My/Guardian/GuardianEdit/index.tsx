@@ -57,7 +57,7 @@ import { useSetLoginAccount } from '../hooks/useSetLoginAccount';
 import { AuthTypes } from 'constants/guardian';
 import { useEffectOnce, useLatestRef } from '@portkey-wallet/hooks';
 import { NavigateMultiLevelParams } from 'types/navigate';
-import { changeDrawerOpenStatus } from '@portkey-wallet/store/store-ca/discover/slice';
+import { changeDrawerOpenStatus } from '@portkey-wallet/store/store-eoa/discover/slice';
 import { useIsFocused } from '@react-navigation/native';
 import { TAppleAuthentication } from 'types/authentication';
 import { useLoginModeList } from 'hooks/loginMode';

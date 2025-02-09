@@ -32,7 +32,7 @@ import { useUpdateInfo } from 'store/user/hooks';
 import { codePushOperator, parseLabel } from 'utils/update';
 import * as Application from 'expo-application';
 import { parseVersion } from 'utils';
-import { useCurrentDappList } from '@portkey-wallet/hooks/hooks-ca/dapp';
+import { useCurrentDappList } from '@portkey-wallet/hooks/hooks-eoa/dapp';
 import CommonAvatar from 'components/CommonAvatar';
 import { darkColors } from 'assets/theme';
 import useEffectOnce from 'hooks/useEffectOnce';

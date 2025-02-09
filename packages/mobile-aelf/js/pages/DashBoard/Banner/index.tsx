@@ -1,10 +1,10 @@
 import React, { useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 import Carousel from 'components/Carousel';
-import { useCmsBanner } from '@portkey-wallet/hooks/hooks-ca/cms/banner';
-import { useGetS3ImageUrl } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { useCmsBanner } from '@portkey-wallet/hooks/hooks-eoa/cms/banner';
+import { useGetS3ImageUrl } from '@portkey-wallet/hooks/hooks-eoa/cms';
 import { pTd } from 'utils/unit';
-import { parseLink } from '@portkey-wallet/hooks/hooks-ca/cms/util';
+import { parseLink } from '@portkey-wallet/hooks/hooks-eoa/cms/util';
 
 export const DashBoardBanner: React.FC = () => {
   const getS3ImageUrl = useGetS3ImageUrl();
@@ -18,7 +18,9 @@ export const DashBoardBanner: React.FC = () => {
     });
   }, [getS3ImageUrl, homeBannerList]);
 
-  if (!list?.length) return null;
+  if (!list?.length) {
+    return null;
+  }
   return <Carousel items={list} containerStyle={styles.container} showDivider={true} />;
 };
 

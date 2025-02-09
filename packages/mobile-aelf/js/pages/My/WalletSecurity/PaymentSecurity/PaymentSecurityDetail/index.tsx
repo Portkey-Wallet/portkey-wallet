@@ -21,7 +21,7 @@ import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
 import GStyles from 'assets/theme/GStyles';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
-import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-eoa/network';
 import OverlayModal from 'components/OverlayModal';
 import EditModal from '../components/EditModal';
 import { makeStyles, useTheme } from '@rneui/themed';

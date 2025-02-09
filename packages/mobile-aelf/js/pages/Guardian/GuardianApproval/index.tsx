@@ -41,7 +41,7 @@ import { GuardiansApproved, GuardiansStatus, GuardiansStatusItem } from '../type
 import { handleGuardiansApproved } from 'utils/login';
 import { useOnRequestOrSetPin } from 'hooks/login';
 import { ApproveParams } from 'dapp/dappOverlay';
-import { changeDrawerOpenStatus } from '@portkey-wallet/store/store-ca/discover/slice';
+import { changeDrawerOpenStatus } from '@portkey-wallet/store/store-eoa/discover/slice';
 import { ITransferLimitItem } from '@portkey-wallet/types/types-ca/paymentSecurity';
 import { sleep } from '@portkey-wallet/utils';
 import { ChainId } from '@portkey-wallet/types';

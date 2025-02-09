@@ -3,7 +3,7 @@ import React, { useCallback, useState } from 'react';
 import { View, Image, StyleSheet, StyleProp, ViewStyle, TouchableOpacity, ScrollView } from 'react-native';
 import { pTd } from 'utils/unit';
 import PortkeySkeleton from 'components/PortkeySkeleton';
-import { TAppLink } from '@portkey-wallet/types/types-ca/cms';
+import { TAppLink } from '@portkey-wallet/types/types-eoa/cms';
 import useJump from 'hooks/useJump';
 import { darkColors } from 'assets/theme';
 import { TextM, TextXXL } from 'components/CommonText';

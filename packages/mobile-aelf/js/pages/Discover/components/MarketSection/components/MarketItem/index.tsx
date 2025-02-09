@@ -1,4 +1,4 @@
-import { ICryptoCurrencyItem } from '@portkey-wallet/store/store-ca/discover/type';
+import { ICryptoCurrencyItem } from '@portkey-wallet/store/store-eoa/discover/type';
 import { darkColors, defaultColors } from 'assets/theme';
 import { DarkFontStyles } from 'assets/theme/styles';
 import CommonToast from 'components/CommonToast';

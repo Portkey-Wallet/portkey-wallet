@@ -1,4 +1,4 @@
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { useCallback } from 'react';
 import { track } from 'utils/amplitude';
 import { BaseEvent } from '@amplitude/analytics-types';

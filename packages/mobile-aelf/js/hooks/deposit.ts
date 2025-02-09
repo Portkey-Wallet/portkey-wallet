@@ -2,7 +2,7 @@ import { RampType } from '@portkey-wallet/ramp';
 import { useCallback, useMemo } from 'react';
 import navigationService from 'utils/navigationService';
 import { useAppBridgeButtonShow, useAppETransShow } from './cms';
-import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { useDisclaimer } from '@portkey-wallet/hooks/hooks-ca/disclaimer';
 import DisclaimerModal from 'components/DisclaimerModal';
 import { getUrlObj } from '@portkey-wallet/utils/dapp/browser';
@@ -106,11 +106,12 @@ export function useOnDisclaimerModalPress() {
       try {
         const { origin } = getUrlObj(url);
 
-        if (!checkDappIsConfirmed(origin))
+        if (!checkDappIsConfirmed(origin)) {
           return DisclaimerModal.showDisclaimerModal({
             ...modalDescribe,
             url,
           });
+        }
         navigationService.navigate('ProviderWebPage', {
           title: modalDescribe.title,
           url,
@@ -134,9 +135,13 @@ export function useDepositList() {
   const onDisclaimerModalPress = useOnDisclaimerModalPress();
   return useMemo(() => {
     const list = [];
-    if (isBuySectionShow) list.push(DepositMap.buy);
-    if (isSellSectionShow) list.push(DepositMap.sell);
-    if (isETransDepositShow)
+    if (isBuySectionShow) {
+      list.push(DepositMap.buy);
+    }
+    if (isSellSectionShow) {
+      list.push(DepositMap.sell);
+    }
+    if (isETransDepositShow) {
       list.push({
         ...DepositMap.depositUSDT,
         onPress: () =>
@@ -150,6 +155,7 @@ export function useDepositList() {
             }),
           ),
       });
+    }
     if (isETransWithdrawShow) {
       list.push({
         ...DepositMap.withdrawUSDT,
@@ -165,11 +171,12 @@ export function useDepositList() {
           ),
       });
     }
-    if (isBridgeShow)
+    if (isBridgeShow) {
       list.push({
         ...DepositMap.bridge,
         onPress: () => onDisclaimerModalPress(DepositModalMap.bridge, eBridgeUrl || ''),
       });
+    }
 
     return list;
   }, [

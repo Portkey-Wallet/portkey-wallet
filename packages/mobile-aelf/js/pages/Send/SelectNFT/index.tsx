@@ -7,7 +7,7 @@ import { useLanguage } from 'i18n/hooks';
 import Touchable from 'components/Touchable';
 import { IAssetNftCollection, INftInfoType } from '@portkey-wallet/store/store-ca/assets/type';
 import NoData from 'components/NoData';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-eoa/network';
 import GStyles from 'assets/theme/GStyles';
 import { DarkFontStyles } from 'assets/theme/styles';
 import NFTAvatar from 'components/NFTAvatar';

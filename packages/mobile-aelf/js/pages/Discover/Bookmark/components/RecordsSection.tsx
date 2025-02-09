@@ -8,10 +8,10 @@ import { darkColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
 import NoDiscoverData from 'pages/Discover/components/NoDiscoverData';
 import { useRecordsList } from 'hooks/discover';
-import { removeRecordsItems } from '@portkey-wallet/store/store-ca/discover/slice';
-import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import { removeRecordsItems } from '@portkey-wallet/store/store-eoa/discover/slice';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
-import { ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
+import { ITabItem } from '@portkey-wallet/store/store-eoa/discover/type';
 
 function BookmarksSection() {
   const { networkType } = useCurrentNetworkInfo();

@@ -12,7 +12,7 @@ import { getManagerAccount } from 'utils/redux';
 import AElf from 'aelf-sdk';
 import SparkMD5 from 'spark-md5';
 import ramp, { IGenerateTransactionResult, IOrderInfo } from '@portkey-wallet/ramp';
-import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
+import { DefaultChainId } from '@portkey-wallet/constants/constants-eoa/network';
 import { GuardiansApprovedType } from '@portkey-wallet/types/types-ca/guardian';
 
 export const useHandleRampSell = () => {
@@ -34,7 +34,9 @@ export const useHandleRampSell = () => {
       }
 
       const account = getManagerAccount(pin);
-      if (!account) throw new Error('');
+      if (!account) {
+        throw new Error('');
+      }
 
       const contract = await getContractBasic({
         contractAddress: caContractAddress,

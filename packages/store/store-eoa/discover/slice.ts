@@ -10,7 +10,7 @@ import {
 } from './type';
 import { NetworkType } from '@portkey-wallet/types';
 import { enableMapSet } from 'immer';
-import { RECORD_LIMIT, TAB_LIMIT } from '@portkey-wallet/constants/constants-ca/discover';
+import { RECORD_LIMIT, TAB_LIMIT } from '@portkey-wallet/constants/constants-eoa/discover';
 
 enableMapSet();
 const initNetworkData: IDiscoverNetworkStateType = {

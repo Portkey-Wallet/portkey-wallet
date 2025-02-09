@@ -1,4 +1,4 @@
-import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { useRoute } from '@react-navigation/native';
 import GStyles from 'assets/theme/GStyles';
 import { TextL } from 'components/CommonText';

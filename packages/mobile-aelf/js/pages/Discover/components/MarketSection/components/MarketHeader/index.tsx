@@ -1,4 +1,4 @@
-import { IMarketInfo, IMarketSort, IMarketSortDir } from '@portkey-wallet/store/store-ca/discover/type';
+import { IMarketInfo, IMarketSort, IMarketSortDir } from '@portkey-wallet/store/store-eoa/discover/type';
 import { darkColors } from 'assets/theme';
 import { TextS } from 'components/CommonText';
 import CommonToast from 'components/CommonToast';

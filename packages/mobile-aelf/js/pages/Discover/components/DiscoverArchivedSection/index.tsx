@@ -11,10 +11,10 @@ import navigationService from 'utils/navigationService';
 import { ArchivedTabEnum } from 'pages/Discover/types';
 import NoDiscoverData from '../NoDiscoverData';
 import { useFocusEffect } from '@react-navigation/native';
-import { IBookmarkItem, ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
-import { useBookmarkList } from '@portkey-wallet/hooks/hooks-ca/discover';
-import { useGetCmsWebsiteInfo } from '@portkey-wallet/hooks/hooks-ca/cms';
-import { IRecordsItemType } from '@portkey-wallet/types/types-ca/discover';
+import { IBookmarkItem, ITabItem } from '@portkey-wallet/store/store-eoa/discover/type';
+import { useBookmarkList } from '@portkey-wallet/hooks/hooks-eoa/discover';
+import { useGetCmsWebsiteInfo } from '@portkey-wallet/hooks/hooks-eoa/cms';
+import { IRecordsItemType } from '@portkey-wallet/types/types-eoa/discover';
 import Touchable from 'components/Touchable';
 
 export function DiscoverArchivedSection() {
@@ -66,7 +66,9 @@ export function DiscoverArchivedSection() {
     }, [bookmarkList?.length]),
   );
 
-  if (!isShowArchivedSections) return null;
+  if (!isShowArchivedSections) {
+    return null;
+  }
   return (
     <View style={styles.wrap}>
       <View style={styles.headerWrap}>

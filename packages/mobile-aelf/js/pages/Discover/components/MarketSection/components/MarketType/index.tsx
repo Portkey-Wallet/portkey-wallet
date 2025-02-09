@@ -6,7 +6,7 @@ import { pTd } from 'utils/unit';
 import { darkColors } from 'assets/theme';
 import { TouchableOpacity } from 'react-native';
 import CommonToast from 'components/CommonToast';
-import { IMarketInfo, IMarketType } from '@portkey-wallet/store/store-ca/discover/type';
+import { IMarketInfo, IMarketType } from '@portkey-wallet/store/store-eoa/discover/type';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import FloatOverlay from 'components/FloatOverlay';
 

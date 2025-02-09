@@ -7,7 +7,7 @@ import { IChainItemType } from '@portkey-wallet/types/types-ca/chain';
 import { shrinkSendQrData, QRCodeDataObjType } from '@portkey-wallet/utils/qrCode';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useCurrentNetwork } from '@portkey-wallet/hooks/network';
-import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { makeStyles } from '@rneui/themed';
 import ExchangeIcons from 'components/ExchangeIcons';
 import Svg from 'components/Svg';

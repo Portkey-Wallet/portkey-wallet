@@ -14,12 +14,12 @@ import { setStringAsync } from 'expo-clipboard';
 import CommonToast from 'components/CommonToast';
 import { isIOS } from '@rneui/base';
 import { useAppCASelector } from '@portkey-wallet/hooks';
-import { ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
+import { ITabItem } from '@portkey-wallet/store/store-eoa/discover/type';
 import DiscoverWebsiteImage from 'pages/Discover/components/DiscoverWebsiteImage';
 import TextWithProtocolIcon from 'components/TextWithProtocolIcon';
 import { request } from '@portkey-wallet/api/api-did';
-import { useBookmarkList } from '@portkey-wallet/hooks/hooks-ca/discover';
-import { useGetCmsWebsiteInfo } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { useBookmarkList } from '@portkey-wallet/hooks/hooks-eoa/discover';
+import { useGetCmsWebsiteInfo } from '@portkey-wallet/hooks/hooks-eoa/cms';
 import Touchable from 'components/Touchable';
 
 enum HANDLE_TYPE {
@@ -85,7 +85,9 @@ const BrowserEditModal = ({
           break;
 
         case HANDLE_TYPE.SWITCH:
-          if (!activeTabId) return;
+          if (!activeTabId) {
+            return;
+          }
           activeWebviewScreenShot();
           OverlayModal.hide();
           setPreActiveTabId(Number(browserInfo?.id));

@@ -1,5 +1,5 @@
 import { useAppCASelector, useAppCommonDispatch } from '@portkey-wallet/hooks';
-import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-eoa/network';
 import {
   addUrlToWhiteList,
   changeDrawerOpenStatus,
@@ -15,8 +15,8 @@ import {
   changeMarketSort,
   resetMarketSort,
   rollBackMarketSort,
-} from '@portkey-wallet/store/store-ca/discover/slice';
-import { ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
+} from '@portkey-wallet/store/store-eoa/discover/slice';
+import { ITabItem } from '@portkey-wallet/store/store-eoa/discover/type';
 import { isUrl } from '@portkey-wallet/utils';
 import { prefixUrlWithProtocol } from '@portkey-wallet/utils/dapp/browser';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -25,7 +25,7 @@ import {
   IMarketSort,
   IMarketSortDir,
   IMarketType,
-} from '@portkey-wallet/store/store-ca/discover/type';
+} from '@portkey-wallet/store/store-eoa/discover/type';
 import { useAppSelector } from 'store/hooks';
 import { request } from '@portkey-wallet/api/api-did';
 
@@ -38,7 +38,9 @@ export const useCheckAndInitNetworkDiscoverMap = () => {
   const { discoverMap } = useAppCASelector(state => state.discover);
 
   useEffect(() => {
-    if (!discoverMap || !discoverMap[networkType]) dispatch(initNetworkDiscoverMap(networkType));
+    if (!discoverMap || !discoverMap[networkType]) {
+      dispatch(initNetworkDiscoverMap(networkType));
+    }
   }, [discoverMap, dispatch, networkType]);
 };
 
@@ -55,7 +57,9 @@ export const useDiscoverJumpWithNetWork = () => {
       dispatch(setActiveTab({ ...item, id, networkType }));
       dispatch(addRecordsItem({ ...item, id, networkType }));
       dispatch(changeDrawerOpenStatus(true));
-      if (autoApprove) dispatch(addAutoApproveItem(id));
+      if (autoApprove) {
+        dispatch(addAutoApproveItem(id));
+      }
     },
     [dispatch, networkType],
   );

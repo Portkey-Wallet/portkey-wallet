@@ -6,7 +6,7 @@ import GStyles from 'assets/theme/GStyles';
 import PageContainer from 'components/PageContainer';
 import CommonQRCodeStyled from 'components/CommonQRCodeStyled';
 import { TextL, TextM, TextXXXL } from 'components/CommonText';
-import { LinkPortkeyPath } from '@portkey-wallet/constants/constants-ca/network';
+import { LinkPortkeyPath } from '@portkey-wallet/constants/constants-eoa/network';
 import { ScreenWidth } from '@rneui/base';
 import Touchable from 'components/Touchable';
 import { RouteProp, useRoute } from '@react-navigation/native';

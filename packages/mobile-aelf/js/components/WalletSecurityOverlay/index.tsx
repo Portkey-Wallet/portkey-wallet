@@ -3,7 +3,7 @@ import OverlayModal from '../OverlayModal';
 import { Keyboard } from 'react-native';
 import { CommonButtonProps } from 'components/CommonButton';
 import navigationService from 'utils/navigationService';
-import { changeDrawerOpenStatus } from '@portkey-wallet/store/store-ca/discover/slice';
+import { changeDrawerOpenStatus } from '@portkey-wallet/store/store-eoa/discover/slice';
 import { useAppDispatch } from 'store/hooks';
 import { sleep } from '@portkey-wallet/utils';
 import { useAppCASelector } from '@portkey-wallet/hooks';

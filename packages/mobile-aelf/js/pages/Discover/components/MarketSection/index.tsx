@@ -4,7 +4,7 @@ import { FlatList, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import MarketItem from './components/MarketItem';
 import { useMarket } from 'hooks/discover';
-import { ICryptoCurrencyItem } from '@portkey-wallet/store/store-ca/discover/type';
+import { ICryptoCurrencyItem } from '@portkey-wallet/store/store-eoa/discover/type';
 import CommonToast from 'components/CommonToast';
 import Svg from 'components/Svg';
 import CommonButton from 'components/CommonButton';

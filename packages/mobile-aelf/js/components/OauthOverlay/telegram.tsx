@@ -11,8 +11,8 @@ import { BGStyles } from 'assets/theme/styles';
 import { USER_CANCELED } from '@portkey-wallet/constants/errorMessage';
 import { parseUrl } from 'query-string';
 import { parseTelegramToken } from '@portkey-wallet/utils/authentication';
-import { OpenLogin } from '@portkey-wallet/constants/constants-ca/network';
-import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import { OpenLogin } from '@portkey-wallet/constants/constants-eoa/network';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-eoa/network';
 
 import { TelegramAuthentication } from 'types/authentication';
 import { WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTypes';

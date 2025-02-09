@@ -10,10 +10,10 @@ import { FontStyles } from 'assets/theme/styles';
 import { useLanguage } from 'i18n/hooks';
 import fonts from 'assets/theme/fonts';
 import { SessionExpiredPlan } from '@portkey-wallet/types/session';
-import { DappStoreItem } from '@portkey-wallet/store/store-ca/dapp/type';
-import { SessionKeyMap, SessionKeyArray } from '@portkey-wallet/constants/constants-ca/dapp';
+import { DappStoreItem } from '@portkey-wallet/store/store-eoa/dapp/type';
+import { SessionKeyMap, SessionKeyArray } from '@portkey-wallet/constants/constants-eoa/dapp';
 import GStyles from 'assets/theme/GStyles';
-import { useCheckSiteIsInBlackList } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { useCheckSiteIsInBlackList } from '@portkey-wallet/hooks/hooks-eoa/cms';
 import Touchable from 'components/Touchable';
 import { makeStyles, useTheme } from '@rneui/themed';
 

@@ -6,7 +6,7 @@ import { pTd } from 'utils/unit';
 import { TextL, TextS } from 'components/CommonText';
 import GStyles from 'assets/theme/GStyles';
 import { FontStyles } from 'assets/theme/styles';
-import { DappStoreItem } from '@portkey-wallet/store/store-ca/dapp/type';
+import { DappStoreItem } from '@portkey-wallet/store/store-eoa/dapp/type';
 import DiscoverWebsiteImage from 'pages/Discover/components/DiscoverWebsiteImage';
 import { getHost } from '@portkey-wallet/utils/dapp/browser';
 

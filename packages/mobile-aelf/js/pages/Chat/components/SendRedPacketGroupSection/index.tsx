@@ -27,7 +27,7 @@ import AmountCard from 'components/AmountCard';
 import { networkList } from 'constants/common';
 import { SourceDestinationItem } from 'pages/Receive/components/SourceDestinationPicker';
 import ModeChangeSelector from 'pages/DashBoard/componets/ModeChangeSelector';
-import { useCurrentNetwork as useCurrentNetworkType } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentNetwork as useCurrentNetworkType } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { IAccountCryptoBoxAssetItem } from '@portkey-wallet/types/types-ca/token';
 import { useAccountCryptoBoxAssetList } from '@portkey-wallet/hooks/hooks-ca/balances';
 import { merge } from 'lodash';

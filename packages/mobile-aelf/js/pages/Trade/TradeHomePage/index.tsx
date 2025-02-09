@@ -2,7 +2,7 @@ import React, { useCallback, useMemo } from 'react';
 import SafeAreaBox from 'components/SafeAreaBox';
 import { BGStyles } from 'assets/theme/styles';
 import { ProviderWebPageComponent } from 'pages/ProviderWebPage';
-import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-eoa/network';
 import CommonTopTab from 'components/CommonTopTab';
 import { DepositModalMap } from 'hooks/deposit';
 import navigationService from 'utils/navigationService';
@@ -74,8 +74,12 @@ export const TradeHomePage: React.FC = (props: any) => {
       ),
     };
     list.push(swapTabItem);
-    if (isBridgeShow) list.push(bridgeTabItem);
-    if (isNFTTabShow) list.push(NFTTabItem);
+    if (isBridgeShow) {
+      list.push(bridgeTabItem);
+    }
+    if (isNFTTabShow) {
+      list.push(NFTTabItem);
+    }
     return list;
   }, [awakenUrl, eBridgeUrl, eForestUrl, isBridgeShow, isNFTTabShow, navBackToHome]);
 

@@ -6,7 +6,7 @@ import { defaultColors } from 'assets/theme';
 // import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 // import useLogOut from 'hooks/useLogOut';
 // import useInitData from 'hooks/useInitData';
-// import DiscoverHome from 'pages/Discover/DiscoverHome';
+import DiscoverHome from 'pages/Discover/DiscoverHome';
 import ActivityListPage from 'pages/Activity/ActivityListPage';
 import { pTd } from 'utils/unit';
 // import { resetBadge } from 'utils/notifee';
@@ -53,13 +53,13 @@ export const tabMenuTypeMap: Record<string, IRenderTabMenuItem> = {
     icon: 'clock',
     component: ActivityListPage,
   },
-  // [TabRouteNameEnum.DISCOVER]: {
-  //   name: TabRouteNameEnum.DISCOVER,
-  //   index: 2,
-  //   label: 'Discover',
-  //   icon: 'discover',
-  //   component: DiscoverHome,
-  // },
+  [TabRouteNameEnum.DISCOVER]: {
+    name: TabRouteNameEnum.DISCOVER,
+    index: 2,
+    label: 'Discover',
+    icon: 'discover',
+    component: DiscoverHome,
+  },
 };
 
 export const defaultTabMenuList = Object.values(tabMenuTypeMap).filter(item => item.isDefault);

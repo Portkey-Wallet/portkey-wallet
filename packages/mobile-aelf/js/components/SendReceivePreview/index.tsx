@@ -8,7 +8,7 @@ import CommonInfoRow from 'components/CommonInfoRow';
 import { ActionType } from 'types/common';
 import { SeedTypeEnum } from '@portkey-wallet/types/types-ca/assets';
 import { formatStr2EllipsisStr } from '@portkey-wallet/utils';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { ChainId } from '@portkey-wallet/types';
 import { getChainSvgName } from 'utils';
 import { pTd } from 'utils/unit';

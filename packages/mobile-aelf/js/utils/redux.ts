@@ -2,7 +2,7 @@ import { store } from 'store';
 import aes from '@portkey-wallet/utils/aes';
 import AElf from 'aelf-sdk';
 import { AElfWallet } from '@portkey-wallet/types/aelf';
-import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
+import { DefaultChainId } from '@portkey-wallet/constants/constants-eoa/network';
 import { ChainId } from '@portkey-wallet/types';
 import { InitialTxFee } from '@portkey-wallet/constants/constants-ca/wallet';
 import { getContractBasic } from '@portkey-wallet/contracts/utils';

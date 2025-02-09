@@ -4,8 +4,8 @@ import {
   useBridgeButtonShow,
   useSwapButtonShow,
   useNFTTabShow,
-} from '@portkey-wallet/hooks/hooks-ca/cms';
-import { IEntranceMatchValueMap } from '@portkey-wallet/types/types-ca/cms';
+} from '@portkey-wallet/hooks/hooks-eoa/cms';
+import { IEntranceMatchValueMap } from '@portkey-wallet/types/types-eoa/cms';
 import { useMemo } from 'react';
 import MatchValueMap from 'utils/matchValueMap';
 

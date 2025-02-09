@@ -14,10 +14,10 @@ import { WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTypes';
 import { WebViewMessageEvent } from 'react-native-webview';
 import { InjectFacebookOpenJavaScript, FBAuthPush, FB_FUN, PATHS } from './config';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { OpenLogin } from '@portkey-wallet/constants/constants-ca/network';
+import { OpenLogin } from '@portkey-wallet/constants/constants-eoa/network';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { parseFacebookToken } from '@portkey-wallet/utils/authentication';
-import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { TFacebookAuthentication } from 'types/authentication';
 
 type FacebookProps = {
@@ -47,7 +47,9 @@ function FacebookSign({ onConfirm, onReject }: FacebookProps) {
           const info = JSON.parse(payload.response.access_token);
           if (type === FB_FUN.Login_Success && info.token) {
             const fbInfo = await parseFacebookToken(payload.response.access_token);
-            if (!fbInfo) throw new Error('Failed to parse Facebook token');
+            if (!fbInfo) {
+              throw new Error('Failed to parse Facebook token');
+            }
             onConfirm({ accessToken: payload.response.access_token, user: fbInfo });
             OverlayModal.hide();
           } else {

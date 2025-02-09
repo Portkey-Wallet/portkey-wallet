@@ -13,7 +13,7 @@ import CommonButton from 'components/CommonButton';
 import GStyles from 'mobile-did/js/assets/theme/GStyles';
 import CommonInput from 'mobile-did/js/components/CommonInput';
 import CheckBox from 'components/CheckBox';
-import { OfficialWebsite } from '@portkey-wallet/constants/constants-ca/network';
+import { OfficialWebsite } from '@portkey-wallet/constants/constants-eoa/network';
 import navigationService from 'utils/navigationService';
 import { useCurrentWallet } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 import { useCredentials } from 'hooks/store';

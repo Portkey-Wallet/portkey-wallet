@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 import { View } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
 import navigationService from 'utils/navigationService';
-import { OfficialWebsite } from '@portkey-wallet/constants/constants-ca/network';
+import { OfficialWebsite } from '@portkey-wallet/constants/constants-eoa/network';
 import { FontStyles } from 'assets/theme/styles';
 import { TextM } from 'components/CommonText';
 import { makeStyles } from '@rneui/themed';
@@ -25,11 +25,11 @@ export default function TermsServiceButton() {
         <TextM onPress={() => onJump('Terms of Service')} style={buttonStyles.link} suppressHighlighting>
           Terms of Service
         </TextM>
-        {` and `}
+        {' and '}
         <TextM style={buttonStyles.link} suppressHighlighting onPress={() => onJump('Privacy Policy')}>
           Privacy Policy
         </TextM>
-        {`.`}
+        {'.'}
       </TextM>
     </View>
   );

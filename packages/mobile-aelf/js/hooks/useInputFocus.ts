@@ -1,3 +1,4 @@
+import { useAppEOASelector } from '@portkey-wallet/hooks/hooks-eoa';
 import { useFocusEffect } from '@react-navigation/native';
 import { MutableRefObject, useCallback, useEffect, useRef } from 'react';
 import { TextInput } from 'react-native';
@@ -6,7 +7,7 @@ export const useInputFocus = (iptRef: MutableRefObject<TextInput | undefined | n
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   // if drawer open , not focus
   // TODO: eoa discover
-  // const { isDrawerOpen } = useAppCASelector(state => state.discover);
+  const { isDrawerOpen } = useAppEOASelector(state => state.discover);
 
   useFocusEffect(
     useCallback(() => {
@@ -18,12 +19,14 @@ export const useInputFocus = (iptRef: MutableRefObject<TextInput | undefined | n
       }
 
       // TODO: eoa discover
-      // if (isDrawerOpen) return;
+      if (isDrawerOpen) {
+        return;
+      }
 
       timerRef.current = setTimeout(() => {
         iptRef.current?.focus();
       }, delay);
-    }, [delay, iptRef, isActive]),
+    }, [delay, iptRef, isActive, isDrawerOpen]),
   );
 
   useEffect(

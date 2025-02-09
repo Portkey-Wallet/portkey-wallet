@@ -1,4 +1,4 @@
-import { useCurrentNetwork } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentNetwork } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { useCallback } from 'react';
 import {
   BRIDGE_TOKEN_WHITE_LIST_MAINNET,

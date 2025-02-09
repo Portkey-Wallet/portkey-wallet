@@ -42,7 +42,7 @@ import { extraDataEncode } from '@portkey-wallet/utils/device';
 import { useGetGuardiansInfo, useGetVerifierServers } from './guardian';
 import { handleUserGuardiansList } from '@portkey-wallet/utils/guardian';
 import { useLanguage } from 'i18n/hooks';
-import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
+import { DefaultChainId } from '@portkey-wallet/constants/constants-eoa/network';
 import { useGetChainInfo } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useGetRegisterInfo } from '@portkey-wallet/hooks/hooks-ca/guardian';
 import { usePin, useUser } from './store';
@@ -50,7 +50,7 @@ import { handleGuardiansApproved, queryFailAlert } from 'utils/login';
 import { useResetStore } from '@portkey-wallet/hooks/hooks-ca';
 import { ChainId } from '@portkey-wallet/types';
 import ActionSheet from 'components/ActionSheet';
-import { resetDappList } from '@portkey-wallet/store/store-ca/dapp/actions';
+import { resetDappList } from '@portkey-wallet/store/store-eoa/dapp/actions';
 import { request as globalRequest } from '@portkey-wallet/api/api-did';
 import { useVerifierAuth, useVerifyToken } from './authentication';
 import { verification } from 'utils/api';
@@ -112,8 +112,12 @@ export function useOnManagerAddressAndQueryResult() {
 
   const createTmpWalletInfo = useCallback(
     (walletInfo?: CurrentWalletType) => {
-      if (walletInfo?.address) return walletInfo;
-      if (latestStoreTmpWalletInfo.current?.address) return latestStoreTmpWalletInfo.current;
+      if (walletInfo?.address) {
+        return walletInfo;
+      }
+      if (latestStoreTmpWalletInfo.current?.address) {
+        return latestStoreTmpWalletInfo.current;
+      }
       return AElf.wallet.createNewWallet();
     },
     [latestStoreTmpWalletInfo],
@@ -290,7 +294,9 @@ export function useGoGuardianApproval(isLogin?: boolean) {
             }),
           },
         });
-        if (!req?.verifierSessionId) throw new Error('verifierSessionId does not exist');
+        if (!req?.verifierSessionId) {
+          throw new Error('verifierSessionId does not exist');
+        }
       } catch (error) {
         Loading.hide();
         throw error;

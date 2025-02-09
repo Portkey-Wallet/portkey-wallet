@@ -14,7 +14,10 @@ export const useCheckSecurityLock = () => {
       if (!biometrics) {
         navigationService.push('SecurityLock', {
           isCheck: true,
-          checkCallback: callback,
+          checkCallback: () => {
+            navigationService.pop(1);
+            callback?.();
+          },
           isBackAllow,
         });
         return;

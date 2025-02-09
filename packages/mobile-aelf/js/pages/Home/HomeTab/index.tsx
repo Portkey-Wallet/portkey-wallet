@@ -19,6 +19,7 @@ import { useAppCommonDispatch, useAppEOASelector } from '@portkey-wallet/hooks';
 
 import { resetWallet } from '@portkey-wallet/store/store-eoa/wallet/actions';
 import { resetDiscover } from '@portkey-wallet/store/store-eoa/discover/slice';
+import { useAddressSelect } from '../../My/WalletManagement/hooks/useAddressSelect';
 
 const HomeTab: React.FC<any> = ({ _ }) => {
   const a = useAppEOASelector(state => state);
@@ -115,6 +116,8 @@ const HomeTab: React.FC<any> = ({ _ }) => {
   const clearDiscover = useCallback(() => {
     dispatch(resetDiscover(currentNetwork));
   }, [currentNetwork, dispatch]);
+
+  const { showAddressSelectModal } = useAddressSelect();
   return (
     <SafeAreaBox edges={['top', 'right', 'left']} style={{ backgroundColor: theme.colors.bgBase1 }}>
       <ScrollView>
@@ -145,13 +148,22 @@ const HomeTab: React.FC<any> = ({ _ }) => {
         <CommonButton type="primary" onPress={() => navigationService.push('Home')} style={{ marginTop: 20 }}>
           Home
         </CommonButton>
-        <CommonButton type="primary" onPress={() => navigationService.push('ImportWallet')} style={{ marginTop: 20 }}>
+        <CommonButton
+          type="primary"
+          onPress={() => navigationService.push('WalletManagement')}
+          style={{ marginTop: 20 }}>
+          Wallet Management
+        </CommonButton>
+        <CommonButton type="primary" onPress={showAddressSelectModal} style={{ marginTop: 20 }}>
+          Wallet Management - Address Select Modal
+        </CommonButton>
+        <CommonButton type="primary" onPress={() => navigationService.push('ImportWallet')} style={{ marginTop: 10 }}>
           Import Wallets
         </CommonButton>
         <CommonButton
           type="primary"
           onPress={() => navigationService.push('WalletImportTypeSelect')}
-          style={{ marginTop: 20 }}>
+          style={{ marginTop: 10 }}>
           WalletImportTypeSelect
         </CommonButton>
         <CommonButton
@@ -174,13 +186,13 @@ const HomeTab: React.FC<any> = ({ _ }) => {
               ],
             })
           }
-          style={{ marginTop: 40 }}>
+          style={{ marginTop: 10 }}>
           Confirm Backup
         </CommonButton>
         <CommonButton
           type="primary"
           onPress={() => navigationService.push('ManualBackupSuccess')}
-          style={{ marginTop: 20 }}>
+          style={{ marginTop: 10 }}>
           Confirm Backup Success
         </CommonButton>
         <CommonButton
@@ -190,10 +202,10 @@ const HomeTab: React.FC<any> = ({ _ }) => {
               pin: credentials?.pin,
             })
           }
-          style={{ marginTop: 40 }}>
+          style={{ marginTop: 10 }}>
           Manual Backup
         </CommonButton>
-        <CommonButton type="primary" onPress={() => navigationService.push('CloudBackup')} style={{ marginTop: 40 }}>
+        <CommonButton type="primary" onPress={() => navigationService.push('CloudBackup')} style={{ marginTop: 10 }}>
           CloudBackup
         </CommonButton>
         <CommonButton type="primary" onPress={() => navigationService.push('CloudBackupDev')} style={{ marginTop: 10 }}>

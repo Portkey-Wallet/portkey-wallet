@@ -1,44 +1,34 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import OverlayModal from 'components/OverlayModal';
-import { StyleSheet, View, TextInput } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { ModalBody } from 'components/ModalBody';
 import { darkColors, defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
 import Svg from 'components/Svg';
-import { useLanguage } from 'i18n/hooks';
 import Touchable from 'components/Touchable';
 import CommonInput from 'components/CommonInput';
-// import { useInputFocus } from 'hooks/useInputFocus';
-// import { useKeyboard } from 'hooks/useKeyboardHeight';
-import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import { KeyboardSafeArea } from 'components/KeyboardSafeArea';
 import { TextM } from 'components/CommonText';
 import CommonButton from 'components/CommonButton';
+import { makeStyles } from '@rneui/themed';
+import CommonAvatar from 'components/CommonAvatar';
 
 type SelectModalProps = {
   title?: string;
   nickName?: string;
   onChange?: (name: string) => void;
+  avatarInfo?: {
+    avatar?: string;
+    localAvatar?: any;
+    size: number;
+  };
 };
 
-type AvatarListProps = {
-  onChange: (idx: string | number) => void;
-  itemKey?: string | number;
-};
-
-const SelectModal = ({ title = '', nickName = '', onChange }: SelectModalProps) => {
-  const { t } = useLanguage();
-  const [isFocused, setIsFocused] = useState<boolean>(false);
-  const [selectKey, setSelectKey] = useState<string>('avatar');
-
-  const [selectAvatarKey, setSelectAvatarKey] = useState<string | number | undefined>();
-  // const { isKeyboardOpened, setIsKeyboardOpened } = useKeyboard(0);
+const SelectModal = ({ title = '', nickName = '', onChange, avatarInfo }: SelectModalProps) => {
+  const avatarStyles = getAvatarStyles();
 
   const [value, setValue] = useState<string>(nickName);
   const [error, setError] = useState<boolean>(false);
-
-  // const iptRef = useRef<TextInput>();
-  // useInputFocus(iptRef);
 
   const onSave = () => {
     OverlayModal.hide();
@@ -67,6 +57,22 @@ const SelectModal = ({ title = '', nickName = '', onChange }: SelectModalProps) 
           style={{
             marginHorizontal: pTd(16),
           }}>
+          {avatarInfo && (
+            <View style={avatarStyles.container}>
+              <View style={avatarStyles.avatarIconContainer}>
+                <CommonAvatar
+                  hasBorder={false}
+                  style={avatarStyles.avatarIcon}
+                  svgName={avatarInfo.avatar}
+                  localImage={avatarInfo.localAvatar}
+                  avatarSize={pTd(avatarInfo.size || 32)}
+                  height={pTd(avatarInfo.size || 32)}
+                  width={pTd(avatarInfo.size || 32)}
+                  color={darkColors.textBase1Opacity04}
+                />
+              </View>
+            </View>
+          )}
           <View style={{}}>
             <CommonInput
               type="general"
@@ -164,3 +170,26 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
   },
 });
+
+const getAvatarStyles = makeStyles(theme => ({
+  container: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    width: '100%',
+    position: 'relative',
+  },
+  avatarIconContainer: {
+    backgroundColor: theme.colors.bgBase2,
+    height: pTd(80),
+    width: pTd(80),
+    borderRadius: pTd(40),
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: pTd(8),
+    marginBottom: pTd(24),
+  },
+  avatarIcon: {
+    backgroundColor: 'transparent',
+  },
+}));

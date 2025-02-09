@@ -1,7 +1,7 @@
-import { useGetS3ImageUrl } from '@portkey-wallet/hooks/hooks-ca/cms';
-import { useCmsBanner } from '@portkey-wallet/hooks/hooks-ca/cms/banner';
-import { useDiscoverData } from '@portkey-wallet/hooks/hooks-ca/cms/discover';
-import { TBaseCardItemType } from '@portkey-wallet/types/types-ca/cms';
+import { useGetS3ImageUrl } from '@portkey-wallet/hooks/hooks-eoa/cms';
+import { useCmsBanner } from '@portkey-wallet/hooks/hooks-eoa/cms/banner';
+import { useDiscoverData } from '@portkey-wallet/hooks/hooks-eoa/cms/discover';
+import { TBaseCardItemType } from '@portkey-wallet/types/types-eoa/cms';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import fonts from 'assets/theme/fonts';
@@ -14,7 +14,7 @@ import { View, StyleSheet, ScrollView, Image, TouchableOpacity, TouchableWithout
 import navigationService from 'utils/navigationService';
 import { pTd } from 'utils/unit';
 import { isUrl } from '@portkey-wallet/utils';
-import { parseLink } from '@portkey-wallet/hooks/hooks-ca/cms/util';
+import { parseLink } from '@portkey-wallet/hooks/hooks-eoa/cms/util';
 
 export const LearnPage = () => {
   const { learnBannerList = [] } = useCmsBanner();
@@ -23,7 +23,9 @@ export const LearnPage = () => {
   const discoverJump = useDiscoverJumpWithNetWork();
   const jumpToDiscover = useCallback(
     (url: string, title = '') => {
-      if (!isUrl(url)) return;
+      if (!isUrl(url)) {
+        return;
+      }
       discoverJump({
         item: {
           name: title,

@@ -15,7 +15,7 @@ import { FontStyles } from 'assets/theme/styles';
 import { IRampCryptoItem } from '@portkey-wallet/ramp';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
-import { useCurrentNetwork } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentNetwork } from '@portkey-wallet/hooks/hooks-eoa/network';
 
 type ItemType = IRampCryptoItem;
 

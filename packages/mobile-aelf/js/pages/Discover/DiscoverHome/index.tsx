@@ -10,12 +10,12 @@ import { useQrScanPermissionAndToast } from 'hooks/useQrScan';
 import Svg, { IconName } from 'components/Svg';
 import { pTd } from 'utils/unit';
 import { useCheckAndInitNetworkDiscoverMap } from 'hooks/discover';
-import { useFetchCurrentRememberMeBlackList } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { useFetchCurrentRememberMeBlackList } from '@portkey-wallet/hooks/hooks-eoa/cms';
 import { useFocusEffect } from '@react-navigation/native';
 import Touchable from 'components/Touchable';
 import { useAppCommonDispatch, useEffectOnce } from '@portkey-wallet/hooks';
-import { useCmsBanner } from '@portkey-wallet/hooks/hooks-ca/cms/banner';
-import { useDiscoverData } from '@portkey-wallet/hooks/hooks-ca/cms/discover';
+import { useCmsBanner } from '@portkey-wallet/hooks/hooks-eoa/cms/banner';
+import { useDiscoverData } from '@portkey-wallet/hooks/hooks-eoa/cms/discover';
 import { TextM } from 'components/CommonText';
 import { DiscoverShowOptions, useTabDrawer } from 'utils/discover';
 import fonts from 'assets/theme/fonts';
@@ -27,8 +27,8 @@ import { PullToRefresh } from '@sdcx/pull-to-refresh';
 import { NestedScrollView, NestedScrollViewHeader } from '@sdcx/nested-scroll';
 import CustomPullToRefreshHeader from 'pages/DashBoard/PullToRefresh';
 import { makeStyles } from '@rneui/themed';
-import { setActiveTab } from '@portkey-wallet/store/store-ca/discover/slice';
-import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import { setActiveTab } from '@portkey-wallet/store/store-eoa/discover/slice';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-eoa/network';
 
 export default function DiscoverHome() {
   const styles = getStyles();

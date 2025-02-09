@@ -10,7 +10,7 @@ import { getCurrentCaInfoByChainId, getViewTokenContractByChainId } from 'utils/
 import BigNumber from 'bignumber.js';
 import { requestManagerApprove } from 'dapp/dappOverlay';
 import { randomId, sleep } from '@portkey-wallet/utils';
-import { ApproveMethod } from '@portkey-wallet/constants/constants-ca/dapp';
+import { ApproveMethod } from '@portkey-wallet/constants/constants-eoa/dapp';
 import { getGuardiansApprovedByApprove } from 'utils/guardian';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
 import { USER_CANCELED } from '@portkey-wallet/constants/errorMessage';

@@ -1,6 +1,6 @@
-import { useGetS3ImageUrl } from '@portkey-wallet/hooks/hooks-ca/cms';
-import { useDiscoverData } from '@portkey-wallet/hooks/hooks-ca/cms/discover';
-import { TBaseCardItemType } from '@portkey-wallet/types/types-ca/cms';
+import { useGetS3ImageUrl } from '@portkey-wallet/hooks/hooks-eoa/cms';
+import { useDiscoverData } from '@portkey-wallet/hooks/hooks-eoa/cms/discover';
+import { TBaseCardItemType } from '@portkey-wallet/types/types-eoa/cms';
 import { darkColors } from 'assets/theme';
 import fonts from 'assets/theme/fonts';
 import CommonButton from 'components/CommonButton';

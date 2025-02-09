@@ -11,7 +11,7 @@ import fonts from 'assets/theme/fonts';
 
 import InviteFriends from 'assets/image/pngs/invite-friends.png';
 import navigationService from 'utils/navigationService';
-import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-eoa/network';
 
 export default function InviteFriendsSection() {
   const currentNetworkInfo = useCurrentNetworkInfo();

@@ -1,4 +1,4 @@
-import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { useCurrentWallet, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import useInterval from '@portkey-wallet/hooks/useInterval';
 import { setCAInfo } from '@portkey-wallet/store/store-ca/wallet/actions';
@@ -18,7 +18,9 @@ export const useCaInfoOnChain = () => {
   const originChainId = useOriginChainId();
   const getHolderInfoByChainId = useCallback(
     async ({ chain, caHash }: { chain: IChainItemType; caHash: string; walletType: ChainType }) => {
-      if (!pin) return;
+      if (!pin) {
+        return;
+      }
       try {
         const result = await getHolderInfo({ caHash }, chain);
         if (!result.error) {
@@ -47,9 +49,15 @@ export const useCaInfoOnChain = () => {
     [chainList, walletInfo],
   );
   const fetch = useCallback(async () => {
-    if (!chainList) return;
-    if (!walletInfo.caHash) return;
-    if (!pin) return;
+    if (!chainList) {
+      return;
+    }
+    if (!walletInfo.caHash) {
+      return;
+    }
+    if (!pin) {
+      return;
+    }
     chainList
       .filter(chain => chain.chainId !== originChainId)
       .forEach(chain => {

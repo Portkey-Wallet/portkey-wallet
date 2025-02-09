@@ -10,8 +10,8 @@ import { getHost } from '@portkey-wallet/utils/dapp/browser';
 import DiscoverWebsiteImage from 'pages/Discover/components/DiscoverWebsiteImage';
 import TextWithProtocolIcon from 'components/TextWithProtocolIcon';
 import Svg from 'components/Svg';
-import { DappStoreItem } from '@portkey-wallet/store/store-ca/dapp/type';
-import { useGetCmsWebsiteInfo } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { DappStoreItem } from '@portkey-wallet/store/store-eoa/dapp/type';
+import { useGetCmsWebsiteInfo } from '@portkey-wallet/hooks/hooks-eoa/cms';
 import { makeStyles } from '@rneui/themed';
 
 interface DappListItemProps {

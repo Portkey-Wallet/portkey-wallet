@@ -2,7 +2,7 @@ import React from 'react';
 import PageContainer from 'components/PageContainer';
 import GStyles from 'assets/theme/GStyles';
 import { pTd } from 'utils/unit';
-import { useCurrentDappList } from '@portkey-wallet/hooks/hooks-ca/dapp';
+import { useCurrentDappList } from '@portkey-wallet/hooks/hooks-eoa/dapp';
 import NoData from 'components/NoData';
 import navigationService from 'utils/navigationService';
 import DappListItem from './components/DappListItem';

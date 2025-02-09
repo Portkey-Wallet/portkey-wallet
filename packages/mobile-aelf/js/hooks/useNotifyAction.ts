@@ -8,7 +8,7 @@ import { getFcmMessageNetwork } from 'utils/FCM';
 import ActionSheet from 'components/ActionSheet';
 import { useLanguage } from 'i18n/hooks';
 import { useJumpToChatDetails, useJumpToChatGroupDetails } from './chat';
-import { useCurrentNetwork, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentNetwork, useIsMainnet } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { ChannelTypeEnum } from '@portkey-wallet/im';
 import { useChangeNetwork } from './network';
 import { useLatestRef } from '@portkey-wallet/hooks';
@@ -24,10 +24,16 @@ export const useNotifyAction = () => {
       try {
         switch (action) {
           case NOTIFY_ACTION.openChat: {
-            if (!data) return;
+            if (!data) {
+              return;
+            }
             const { channelId = '', channelType } = data;
-            if (channelType === ChannelTypeEnum.GROUP) await jumpToChatGroupDetails({ channelUuid: channelId });
-            if (channelType === ChannelTypeEnum.P2P) await jumpToChatDetails({ channelUuid: channelId });
+            if (channelType === ChannelTypeEnum.GROUP) {
+              await jumpToChatGroupDetails({ channelUuid: channelId });
+            }
+            if (channelType === ChannelTypeEnum.P2P) {
+              await jumpToChatDetails({ channelUuid: channelId });
+            }
             navigationService.navToBottomTab(TabRouteNameEnum.CHAT);
             break;
           }
@@ -92,7 +98,9 @@ export const useNotify = () => {
 
   useEffect(() => {
     messaging().onNotificationOpenedApp(remoteMessage => {
-      if (!lastLogged.current && !lastOtherNetworkLogged.current) return;
+      if (!lastLogged.current && !lastOtherNetworkLogged.current) {
+        return;
+      }
 
       console.log('--remoteMessage onNotificationOpenedApp', remoteMessage);
       setRemoteData(remoteMessage.data);
@@ -100,7 +108,9 @@ export const useNotify = () => {
     messaging()
       .getInitialNotification()
       .then(remoteMessage => {
-        if (!lastLogged.current && !lastOtherNetworkLogged.current) return;
+        if (!lastLogged.current && !lastOtherNetworkLogged.current) {
+          return;
+        }
         console.log('--remoteMessage getInitialNotification', remoteMessage);
         setRemoteData(remoteMessage?.data);
       });

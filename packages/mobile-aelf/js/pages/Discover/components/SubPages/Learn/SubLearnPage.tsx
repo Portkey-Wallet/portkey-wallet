@@ -1,7 +1,7 @@
-import { useGetS3ImageUrl } from '@portkey-wallet/hooks/hooks-ca/cms';
-import { useDiscoverData } from '@portkey-wallet/hooks/hooks-ca/cms/discover';
+import { useGetS3ImageUrl } from '@portkey-wallet/hooks/hooks-eoa/cms';
+import { useDiscoverData } from '@portkey-wallet/hooks/hooks-eoa/cms/discover';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
-import { TBaseCardItemType } from '@portkey-wallet/types/types-ca/cms';
+import { TBaseCardItemType } from '@portkey-wallet/types/types-eoa/cms';
 import { defaultColors } from 'assets/theme';
 import fonts from 'assets/theme/fonts';
 import { TextL, TextS } from 'components/CommonText';
@@ -48,7 +48,9 @@ const GuardItem = ({
   const discoverJump = useDiscoverJumpWithNetWork();
   const imageUrl = getS3ImgUrl(imgUrl.filename_disk);
   const onPress = useCallback(() => {
-    if (!isUrl(url)) return;
+    if (!isUrl(url)) {
+      return;
+    }
     discoverJump({
       item: {
         name: title,

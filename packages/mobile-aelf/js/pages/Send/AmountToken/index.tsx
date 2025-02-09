@@ -14,7 +14,7 @@ import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
 import { FontStyles } from 'assets/theme/styles';
 import { TextM, TextS } from 'components/CommonText';
 
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { useGetCurrentAccountTokenPrice, useIsTokenHasPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';

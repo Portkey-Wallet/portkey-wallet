@@ -14,7 +14,7 @@ import { DappMiddle } from '@portkey-wallet/utils/dapp/middle';
 import { changeNetworkType, setCAInfo } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { getWallet } from 'utils/redux';
 import { handleAccounts, handleChainIds } from '@portkey-wallet/utils/dapp';
-import { addDapp, removeDapp, resetDappList } from '@portkey-wallet/store/store-ca/dapp/actions';
+import { addDapp, removeDapp, resetDappList } from '@portkey-wallet/store/store-eoa/dapp/actions';
 import { sleep } from '@portkey-wallet/utils';
 
 export interface DappEventPack<T = DappEvents, D = any> {
@@ -28,7 +28,9 @@ export interface DappEventPack<T = DappEvents, D = any> {
 export default class DappEventBus {
   private static operators: Array<DappMobileOperator> = [];
   public static registerOperator(operator: DappMobileOperator) {
-    if (this.operators.includes(operator)) return;
+    if (this.operators.includes(operator)) {
+      return;
+    }
     this.operators.push(operator);
   }
   public static unregisterOperator(operator: DappMobileOperator) {
@@ -49,7 +51,7 @@ export default class DappEventBus {
         break;
       }
       case removeDapp.toString(): {
-        if (payload.origin)
+        if (payload.origin) {
           DappEventBus.dispatchEvent({
             eventName: NotificationEvents.DISCONNECTED,
             origin: payload.origin,
@@ -58,6 +60,7 @@ export default class DappEventBus {
               code: ResponseCode.USER_DENIED,
             },
           });
+        }
         break;
       }
       case addDapp.toString(): {
@@ -102,7 +105,9 @@ export default class DappEventBus {
       origin,
     };
     DappEventBus.operators.forEach(operator => {
-      if (origin && origin !== operator.dapp.origin) return;
+      if (origin && origin !== operator.dapp.origin) {
+        return;
+      }
       operator?.publishEvent?.(event as any);
     });
     callback?.();

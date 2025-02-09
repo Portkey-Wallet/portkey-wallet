@@ -5,12 +5,11 @@ import { useLanguage } from 'i18n/hooks';
 import { pTd } from 'utils/unit';
 import { TextL, TextM } from 'components/CommonText';
 import fonts from 'assets/theme/fonts';
-import { useAppCASelector } from '@portkey-wallet/hooks/hooks-ca';
-import { useAppCommonDispatch } from '@portkey-wallet/hooks';
+import { useAppCommonDispatch, useAppEOASelector } from '@portkey-wallet/hooks';
 import SearchRecordItem from '../SearchRecordItem';
-import { clearRecordsList } from '@portkey-wallet/store/store-ca/discover/slice';
-import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
-import { ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
+import { clearRecordsList } from '@portkey-wallet/store/store-eoa/discover/slice';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-eoa/network';
+import { ITabItem } from '@portkey-wallet/store/store-eoa/discover/type';
 import { useDiscoverJumpWithNetWork } from 'hooks/discover';
 import { makeStyles } from '@rneui/themed';
 
@@ -23,7 +22,7 @@ export default function SearchRecordSection({ onClick }: TSearchRecordSectionPro
 
   const dispatch = useAppCommonDispatch();
   const { networkType } = useCurrentNetworkInfo();
-  const { discoverMap } = useAppCASelector(state => state.discover);
+  const { discoverMap } = useAppEOASelector(state => state.discover);
   const discoverJump = useDiscoverJumpWithNetWork();
 
   const clearRecord = useCallback(() => {

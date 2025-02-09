@@ -5,28 +5,28 @@ import fonts from 'assets/theme/fonts';
 import { useLanguage } from 'i18n/hooks';
 import { ModalBody } from 'components/ModalBody';
 import { TextH1, TextL, TextM } from 'components/CommonText';
-import { useCurrentUserInfo, useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { addressFormat, formatChainInfoToShow, formatStr2EllipsisStr, sleep } from '@portkey-wallet/utils';
 import { divDecimals, formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import GStyles from 'assets/theme/GStyles';
-import { DappStoreItem } from '@portkey-wallet/store/store-ca/dapp/type';
+import { DappStoreItem } from '@portkey-wallet/store/store-eoa/dapp/type';
 import { CommonButtonProps } from 'components/CommonButton';
 import { SendTransactionParams } from '@portkey/provider-types';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { useCurrentChain, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
-import { useAmountInUsdShow, useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
+import { useAmountInUsdShow, useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-eoa/useTokensPrice';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { usePin } from 'hooks/store';
 import { getContractBasic } from '@portkey-wallet/contracts/utils';
 import { getManagerAccount } from 'utils/redux';
 import TransactionDataSection from '../TransactionDataSection';
-import { ELF_DECIMAL } from '@portkey-wallet/constants/constants-ca/activity';
+import { ELF_DECIMAL } from '@portkey-wallet/constants/constants-eoa/activity';
 import { getStyles } from './styles/index';
 import { useCheckManagerSyncState } from 'hooks/wallet';
 import { request } from '@portkey-wallet/api/api-did';
 import { SessionExpiredPlan } from '@portkey-wallet/types/session';
 import { RememberInfoType } from 'components/RememberMe';
-import { useUpdateSessionInfo } from '@portkey-wallet/hooks/hooks-ca/dapp';
+import { useUpdateSessionInfo } from '@portkey-wallet/hooks/hooks-eoa/dapp';
 import { OverlayBottomSection } from '../OverlayBottomSection';
 import { isIOS } from '@rneui/base';
 import TitleInfoSection from '../TitleInfoSection';
@@ -34,10 +34,11 @@ import { pTd } from 'utils/unit';
 import CommonTooltip from 'components/CommonTooltip';
 import Svg from 'components/Svg';
 import Touchable from 'components/Touchable';
-import { SessionKeyMap } from '@portkey-wallet/constants/constants-ca/dapp';
+import { SessionKeyMap } from '@portkey-wallet/constants/constants-eoa/dapp';
 import { showRememberMeModal } from '../RememberMeOverlay';
 import LottieLoading from 'components/LottieLoading';
 import { useTheme } from '@rneui/themed';
+import { useCurrentAccount } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 
 enum ErrorText {
   ESTIMATE_ERROR = 'Insufficient funds for transaction fee.',
@@ -57,7 +58,7 @@ const TransactionModal = (props: TransactionModalPropsType) => {
   const isMainnet = useIsMainnet();
   const defaultToken = useDefaultToken();
   const pin = usePin();
-  const { nickName = '' } = useCurrentUserInfo();
+  const userInfo = useCurrentAccount();
   const wallet = useCurrentWalletInfo();
   const checkManagerSyncState = useCheckManagerSyncState();
   const amountInUsdShow = useAmountInUsdShow();
@@ -269,7 +270,7 @@ const TransactionModal = (props: TransactionModalPropsType) => {
             <View style={[styles.flexSpaceBetween]}>
               <TextL>{t('From')}</TextL>
               <View>
-                <TextL style={[fonts.SGMediumFont, GStyles.alignEnd]}>{nickName}</TextL>
+                <TextL style={[fonts.SGMediumFont, GStyles.alignEnd]}>{userInfo?.name || ''}</TextL>
                 <TextM style={[{ color: theme.colors.textBase2 }, GStyles.alignEnd]}>
                   {formatStr2EllipsisStr(
                     addressFormat(wallet?.[transactionInfo?.chainId]?.caAddress, transactionInfo.chainId),
@@ -420,7 +421,7 @@ const TransactionModal = (props: TransactionModalPropsType) => {
     isFetchingFee,
     isMainnet,
     isTransfer,
-    nickName,
+    userInfo,
     symbol,
     t,
     theme,

@@ -1,4 +1,4 @@
-import { DappStoreItem } from '@portkey-wallet/store/store-ca/dapp/type';
+import { DappStoreItem } from '@portkey-wallet/store/store-eoa/dapp/type';
 import { GetSignatureParams, SendTransactionParams } from '@portkey/provider-types';
 import ConnectOverlay from './components/ConnectOverlay';
 import SignOverlay from './components/SignOverlay';
@@ -7,7 +7,7 @@ import ApproveOverlay from './components/ApproveOverlay';
 import { DeviceEventEmitter } from 'react-native';
 import { GuardiansApproved } from 'pages/Guardian/types';
 import { ChainId } from '@portkey-wallet/types';
-import { BATCH_APPROVAL_SYMBOL } from '@portkey-wallet/constants/constants-ca/dapp';
+import { BATCH_APPROVAL_SYMBOL } from '@portkey-wallet/constants/constants-eoa/dapp';
 
 export type ApproveInfo = {
   symbol: string;
@@ -33,7 +33,9 @@ export async function requestManagerApprove(
     const listener = DeviceEventEmitter.addListener(approveParams.eventName, data => {
       const { success } = data || {};
       listener.remove();
-      if (!success) return resolve(false);
+      if (!success) {
+        return resolve(false);
+      }
       return resolve(data);
     });
     ApproveOverlay.showApproveModal({
@@ -106,12 +108,16 @@ export class DappOverlay implements IDappOverlay {
   ): Promise<{ success: boolean; guardiansApproved: GuardiansApproved; approveInfo: ApproveInfo } | false> {
     return new Promise(resolve => {
       // batch approval from dapp forbidden
-      if (approveParams.approveInfo.symbol === BATCH_APPROVAL_SYMBOL) return resolve(false);
+      if (approveParams.approveInfo.symbol === BATCH_APPROVAL_SYMBOL) {
+        return resolve(false);
+      }
 
       const listener = DeviceEventEmitter.addListener(approveParams.eventName, data => {
         const { success } = data || {};
         listener.remove();
-        if (!success) return resolve(false);
+        if (!success) {
+          return resolve(false);
+        }
         return resolve(data);
       });
       ApproveOverlay.showApproveModal({

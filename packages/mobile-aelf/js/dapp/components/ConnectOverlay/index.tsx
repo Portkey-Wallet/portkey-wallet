@@ -6,14 +6,13 @@ import { pTd } from 'utils/unit';
 import { useLanguage } from 'i18n/hooks';
 import { ModalBody } from 'components/ModalBody';
 import { TextL } from 'components/CommonText';
-import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { sleep } from '@portkey-wallet/utils';
 import GStyles from 'assets/theme/GStyles';
-import { DappStoreItem } from '@portkey-wallet/store/store-ca/dapp/type';
+import { DappStoreItem } from '@portkey-wallet/store/store-eoa/dapp/type';
 import { CommonButtonProps } from 'components/CommonButton';
 import { OverlayBottomSection } from '../OverlayBottomSection';
 import { SessionExpiredPlan } from '@portkey-wallet/types/session';
-import { useUpdateSessionInfo } from '@portkey-wallet/hooks/hooks-ca/dapp';
+import { useUpdateSessionInfo } from '@portkey-wallet/hooks/hooks-eoa/dapp';
 import { usePin } from 'hooks/store';
 import { getManagerAccount } from 'utils/redux';
 import { isIOS } from '@rneui/base';
@@ -25,7 +24,8 @@ import CommonTooltip from 'components/CommonTooltip';
 import { showRememberMeModal } from '../RememberMeOverlay';
 import Svg from 'components/Svg';
 import { RememberInfoType } from 'components/RememberMe';
-import { SessionKeyMap } from '@portkey-wallet/constants/constants-ca/dapp';
+import { SessionKeyMap } from '@portkey-wallet/constants/constants-eoa/dapp';
+import { useCurrentAccount } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 
 type ConnectModalType = {
   dappInfo: DappStoreItem;
@@ -38,7 +38,7 @@ const ConnectModal = (props: ConnectModalType) => {
   const { dappInfo, onReject, onApprove } = props;
   const { t } = useLanguage();
   const pin = usePin();
-  const userInfo = useCurrentUserInfo();
+  const userInfo = useCurrentAccount();
   const updateSessionInfo = useUpdateSessionInfo();
   const styles = getStyles();
   const { theme } = useTheme();
@@ -93,15 +93,15 @@ const ConnectModal = (props: ConnectModalType) => {
           </TextL>
           <View style={[styles.walletInfo, GStyles.flexRow, GStyles.itemCenter]}>
             <CommonAvatar
-              hasBorder={!userInfo?.avatar}
-              title={userInfo?.nickName}
+              hasBorder={true}
+              title={userInfo?.name}
               avatarSize={pTd(32)}
-              imageUrl={userInfo?.avatar || ''}
+              imageUrl={''}
               resizeMode="cover"
               titleStyle={{ fontSize: pTd(14) }}
             />
             <TextL numberOfLines={1} style={[styles.accountName, GStyles.maxWidth(pTd(280))]}>
-              {userInfo.nickName}
+              {userInfo?.name}
             </TextL>
           </View>
           <View style={[styles.authInfo, GStyles.flexRow, GStyles.itemCenter, GStyles.spaceBetween]}>

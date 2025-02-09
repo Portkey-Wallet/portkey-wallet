@@ -6,12 +6,12 @@ import Svg from 'components/Svg';
 
 import { getHost } from '@portkey-wallet/utils/dapp/browser';
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
-import { ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
-import { closeExistingTab, setActiveTab } from '@portkey-wallet/store/store-ca/discover/slice';
+import { ITabItem } from '@portkey-wallet/store/store-eoa/discover/type';
+import { closeExistingTab, setActiveTab } from '@portkey-wallet/store/store-eoa/discover/slice';
 import DiscoverWebsiteImage from 'pages/Discover/components/DiscoverWebsiteImage';
-import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { darkColors } from 'assets/theme';
-import { useGetCmsWebsiteInfo } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { useGetCmsWebsiteInfo } from '@portkey-wallet/hooks/hooks-eoa/cms';
 import Touchable from 'components/Touchable';
 
 interface ICardsProps {

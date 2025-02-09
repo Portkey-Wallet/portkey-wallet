@@ -1,5 +1,5 @@
 import { AELF_CHIAN_TYPE } from '@portkey-wallet/constants/constants-ca/activity';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { ChainId, ChainType } from '@portkey-wallet/types';
 import { addressFormat, formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import { transNetworkTextWithAllChain } from '@portkey-wallet/utils/activity';

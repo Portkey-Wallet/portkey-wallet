@@ -6,21 +6,18 @@ import { useAppDispatch } from 'store/hooks';
 import { useGetCurrentCAViewContract } from './contract';
 import { useRefreshGuardianList } from './guardian';
 import useEffectOnce from './useEffectOnce';
-import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { reportUserCurrentNetwork } from 'utils/analysisiReport';
 import { useCheckAndInitNetworkDiscoverMap } from './discover';
 import { usePin } from './store';
 import { getManagerAccount } from 'utils/redux';
 import { useGetRedPackageConfig, useInitIM } from '@portkey-wallet/hooks/hooks-ca/im';
-import { useBookmarkList } from '@portkey-wallet/hooks/hooks-ca/discover';
-import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
-import im from '@portkey-wallet/im';
+import { useBookmarkList } from '@portkey-wallet/hooks/hooks-eoa/discover';
 import { useInitRampV2 } from '@portkey-wallet/hooks/hooks-ca/ramp';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import { codePushOperator } from 'utils/update';
 import { useGetCryptoGiftConfig } from '@portkey-wallet/hooks/hooks-ca/cryptogift';
-import * as Application from 'expo-application';
-import { fetchContactListAsync, fetchContactListV2Async } from '@portkey-wallet/store/store-ca/contact/actions';
+import { fetchContactListV2Async } from '@portkey-wallet/store/store-ca/contact/actions';
 import { useContactNetworkConfig, useTransferNetworkConfig } from '@portkey-wallet/hooks/hooks-ca/config';
 import { resetBadge } from 'utils/notifee';
 
@@ -99,22 +96,6 @@ export default function useInitData() {
     initRamp,
     loadBookmarkList,
   ]);
-
-  const isChat = useIsChatShow();
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (isChat) {
-        loadIMRef.current();
-        const currentVersion = Application.nativeApplicationVersion;
-        if (currentVersion || '' >= '2.0.0') {
-          dispatch(fetchContactListAsync(true));
-        }
-      } else {
-        im.destroy();
-      }
-    }, 500);
-    return () => clearTimeout(timer);
-  }, [dispatch, isChat]);
 
   useEffectOnce(() => {
     // init data after transition animation

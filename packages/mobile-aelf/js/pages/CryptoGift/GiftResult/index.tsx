@@ -13,7 +13,7 @@ import { TextL, TextM, TextTitle } from 'components/CommonText';
 import CommonButton from 'components/CommonButton';
 import { copyText } from 'utils';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
-import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { DeviceEventEmitter } from 'react-native';
 import { CryptoGiftCreateSuccess, useGetCryptoGiftTgLink } from '@portkey-wallet/hooks/hooks-ca/cryptogift';

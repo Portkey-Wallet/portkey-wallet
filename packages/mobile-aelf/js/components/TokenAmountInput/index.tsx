@@ -12,7 +12,7 @@ import Touchable from 'components/Touchable';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { useEffectOnce } from '@portkey-wallet/hooks';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { useInputFocus } from 'hooks/useInputFocus';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
 

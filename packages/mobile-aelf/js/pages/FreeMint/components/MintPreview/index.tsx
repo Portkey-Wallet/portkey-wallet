@@ -16,7 +16,7 @@ import { FreeMintStep } from '../FreeMintModal';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import fonts from 'assets/theme/fonts';
 import { makeStyles } from '@rneui/themed';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-eoa/network';
 
 interface MintPreviewProps {
   mintInfo?: ICollectionData;

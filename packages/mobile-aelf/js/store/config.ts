@@ -11,6 +11,7 @@ import contactSlice from '@portkey-wallet/store/store-eoa/contact/slice';
 import { configSlice } from '@portkey-wallet/store/store-eoa/config/slice';
 import { cmsSlice } from '@portkey-wallet/store/store-eoa/cms/slice';
 import { dappSlice } from '@portkey-wallet/store/store-eoa/dapp/slice';
+// import discoverSlice from '@portkey-wallet/store/store-eoa/discover/slice';
 
 interface ThunkOptions<E = any> {
   extraArgument: E;

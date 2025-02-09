@@ -1,13 +1,13 @@
 import React, { memo, useCallback, useRef } from 'react';
 import { useLanguage } from 'i18n/hooks';
-import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useGetCurrentCAContract } from 'hooks/contract';
 import { timesDecimals } from '@portkey-wallet/utils/converter';
 import CommonToast from 'components/CommonToast';
 import OutlinedButton, { TOutlinedStyleProps } from 'components/OutlinedButton';
 
-import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
+import { DefaultChainId } from '@portkey-wallet/constants/constants-eoa/network';
 
 type TSendButtonProps = TOutlinedStyleProps;
 

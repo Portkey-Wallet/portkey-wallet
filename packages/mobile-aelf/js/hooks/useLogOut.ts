@@ -22,12 +22,12 @@ import { useLogoutResetStore, useResetStore } from '@portkey-wallet/hooks/hooks-
 import { useGetChainInfo } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { ChainId } from '@portkey-wallet/types';
 import { getWalletInfo, isCurrentCaHash } from 'utils/redux';
-import { resetDappList } from '@portkey-wallet/store/store-ca/dapp/actions';
+import { resetDappList } from '@portkey-wallet/store/store-eoa/dapp/actions';
 import {
   changeDrawerOpenStatus,
   resetDiscover,
   resetDisclaimerConfirmedDapp,
-} from '@portkey-wallet/store/store-ca/discover/slice';
+} from '@portkey-wallet/store/store-eoa/discover/slice';
 import im from '@portkey-wallet/im';
 import { resetIm } from '@portkey-wallet/store/store-ca/im/actions';
 import { resetSecurity } from '@portkey-wallet/store/store-ca/security/actions';

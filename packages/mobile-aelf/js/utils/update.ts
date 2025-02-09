@@ -13,7 +13,7 @@ import { ButtonRowProps } from 'components/ButtonRow';
 import { IStorage } from '@portkey-wallet/types/storage';
 import { baseStore } from '@portkey-wallet/utils/mobile/storage';
 import { getWallet } from 'utils/redux';
-import { getCmsCodePoshControl } from '@portkey-wallet/hooks/hooks-ca/cms/util';
+import { getCmsCodePoshControl } from '@portkey-wallet/hooks/hooks-eoa/cms/util';
 import { getDispatch } from './redux';
 import { setUpdateInfo } from 'store/user/actions';
 import { handleErrorMessage, sleep } from '@portkey-wallet/utils';

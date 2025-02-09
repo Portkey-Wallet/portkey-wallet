@@ -3,7 +3,7 @@ import navigationService from 'utils/navigationService';
 import { StyleProp, ViewProps } from 'react-native';
 import OutlinedButton, { TOutlinedStyleProps } from 'components/OutlinedButton';
 import { useLanguage } from 'i18n/hooks';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 
 type TSendButtonType = TOutlinedStyleProps & {

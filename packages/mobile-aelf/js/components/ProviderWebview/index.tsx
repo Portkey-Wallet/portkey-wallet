@@ -21,8 +21,8 @@ import { useDeepEQMemo } from 'hooks';
 import * as Application from 'expo-application';
 import { ShouldStartLoadRequest } from 'react-native-webview/lib/WebViewTypes';
 import { PROTOCOL_ALLOW_LIST } from 'constants/web';
-import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
-import { useCMS } from '@portkey-wallet/hooks/hooks-ca/cms/discover';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-eoa/network';
+import { useCMS } from '@portkey-wallet/hooks/hooks-eoa/cms/discover';
 import { KeyboardSafeArea } from 'components/KeyboardSafeArea';
 
 export const BLANK_PAGE = 'about:blank';

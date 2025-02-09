@@ -18,7 +18,7 @@ import { useGetCryptoGiftDetail } from '@portkey-wallet/hooks/hooks-ca/cryptogif
 import { RedPackageGrabInfoItem } from '@portkey-wallet/im';
 import { CryptoGiftOriginalStatus } from '@portkey-wallet/types/types-ca/cryptogift';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
-import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import Divider from 'components/Divider';
 import Loading from 'components/Loading';

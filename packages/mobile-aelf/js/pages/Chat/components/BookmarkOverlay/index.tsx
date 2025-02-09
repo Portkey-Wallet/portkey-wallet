@@ -3,19 +3,19 @@ import OverlayModal from 'components/OverlayModal';
 import { FlatList, Keyboard, StyleSheet, View } from 'react-native';
 import { TextS } from 'components/CommonText';
 import { ModalBody } from 'components/ModalBody';
-import { useBookmarkList } from '@portkey-wallet/hooks/hooks-ca/discover';
+import { useBookmarkList } from '@portkey-wallet/hooks/hooks-eoa/discover';
 import Touchable from 'components/Touchable';
 import DiscoverWebsiteImage from 'pages/Discover/components/DiscoverWebsiteImage';
 import { BGStyles, FontStyles } from 'assets/theme/styles';
 import GStyles from 'assets/theme/GStyles';
 import TextWithProtocolIcon from 'components/TextWithProtocolIcon';
 import { pTd } from 'utils/unit';
-import { IBookmarkItem } from '@portkey-wallet/store/store-ca/discover/type';
+import { IBookmarkItem } from '@portkey-wallet/store/store-eoa/discover/type';
 import Lottie from 'lottie-react-native';
 import useEffectOnce from 'hooks/useEffectOnce';
 import NoData from 'components/NoData';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
-import { useGetCmsWebsiteInfo } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { useGetCmsWebsiteInfo } from '@portkey-wallet/hooks/hooks-eoa/cms';
 import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
 
 type SelectListProps = {
@@ -59,7 +59,9 @@ const BookmarksOverlay = (props: SelectListProps) => {
 
   const fetchBookmarkList = useLockCallback(async () => {
     try {
-      if (!initializing && totalAccount <= bookmarkList.length) return;
+      if (!initializing && totalAccount <= bookmarkList.length) {
+        return;
+      }
       const result = await refresh(bookmarkList.length);
       setTotalAccount(result.totalCount);
     } catch (error) {

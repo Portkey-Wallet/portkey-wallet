@@ -18,6 +18,7 @@ import { useCheckSecurityLock } from 'hooks/securityLock';
 import { useAppCommonDispatch, useAppEOASelector } from '@portkey-wallet/hooks';
 
 import { resetWallet } from '@portkey-wallet/store/store-eoa/wallet/actions';
+import { resetDiscover } from '@portkey-wallet/store/store-eoa/discover/slice';
 import { useAddressSelect } from '../../My/WalletManagement/hooks/useAddressSelect';
 
 const HomeTab: React.FC<any> = ({ _ }) => {
@@ -112,6 +113,9 @@ const HomeTab: React.FC<any> = ({ _ }) => {
       navigationService.reset('Referral');
     }
   }, [walletList.length]);
+  const clearDiscover = useCallback(() => {
+    dispatch(resetDiscover(currentNetwork));
+  }, [currentNetwork, dispatch]);
 
   const { showAddressSelectModal } = useAddressSelect();
   return (
@@ -123,6 +127,9 @@ const HomeTab: React.FC<any> = ({ _ }) => {
 
         <CommonButton type="primary" onPress={() => Clipboard.setStringAsync(currentAccount?.address || '')}>
           Copy Address
+        </CommonButton>
+        <CommonButton type="primary" onPress={clearDiscover}>
+          clear discover
         </CommonButton>
 
         <CommonButton type="primary" onPress={() => navigationService.push('SwitchNetworks')} style={{ marginTop: 20 }}>

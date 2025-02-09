@@ -4,7 +4,7 @@ import { TextS } from 'components/CommonText';
 import PageContainer from 'components/PageContainer';
 import React, { useCallback, useMemo, useRef, useState, forwardRef, useImperativeHandle } from 'react';
 import { StyleSheet, ScrollView, View } from 'react-native';
-import { useAppCASelector } from '@portkey-wallet/hooks/hooks-ca/index';
+import { useAppEOASelector } from '@portkey-wallet/hooks/hooks-eoa/index';
 import { pTd } from 'utils/unit';
 import { darkColors, defaultColors } from 'assets/theme';
 import { useLanguage } from 'i18n/hooks';
@@ -17,25 +17,25 @@ import {
   closeAllTabs,
   setActiveTab,
   updateTab,
-} from '@portkey-wallet/store/store-ca/discover/slice';
+} from '@portkey-wallet/store/store-eoa/discover/slice';
 import { showBrowserModal } from './components/TabsOverlay';
 
-import { ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
+import { ITabItem } from '@portkey-wallet/store/store-eoa/discover/type';
 
-import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { BrowserContext, IBrowserTab } from './context';
 import { useHardwareBackPress } from '@portkey-wallet/hooks/mobile';
 import Svg from 'components/Svg';
 import ActionSheet from 'components/ActionSheet';
 import { useNavigation } from '@react-navigation/native';
 import navigationService from 'utils/navigationService';
-import { useCurrentDappList } from '@portkey-wallet/hooks/hooks-ca/dapp';
+import { useCurrentDappList } from '@portkey-wallet/hooks/hooks-eoa/dapp';
 import { getHost, getOrigin } from '@portkey-wallet/utils/dapp/browser';
 import Touchable from 'components/Touchable';
 import { ITabContext } from './tools';
 import TabsDom from './components/TabsDom';
 import DiscoverWebsiteImage from 'pages/Discover/components/DiscoverWebsiteImage';
-import { useGetCmsWebsiteInfo } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { useGetCmsWebsiteInfo } from '@portkey-wallet/hooks/hooks-eoa/cms';
 import { WebViewNavigation } from 'react-native-webview';
 import { getProtocolAndDomain } from 'utils/svgUriUtils';
 import DiscoverSearchContent from 'pages/Discover/DiscoverSearch/components/DiscoverSearchContent';
@@ -50,7 +50,7 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
   const nav = useNavigation();
   const dappList = useCurrentDappList();
   const dispatch = useAppCommonDispatch();
-  const { isDrawerOpen, discoverMap = {}, activeTabId } = useAppCASelector(state => state.discover);
+  const { isDrawerOpen, discoverMap = {}, activeTabId } = useAppEOASelector(state => state.discover);
   const { tabs } = discoverMap[networkType] ?? {};
   const activeItem = useMemo(() => tabs?.find(ele => ele.id === activeTabId) as ITabItem, [activeTabId, tabs]);
   const [tabStateMap, setTabStateMap] = useState<TabStateMap>({

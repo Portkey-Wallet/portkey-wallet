@@ -6,10 +6,7 @@ import navigationService from 'utils/navigationService';
 import CommonToast from 'components/CommonToast';
 import { sleep } from '@portkey-wallet/utils';
 import { useThrottleCallback } from '@portkey-wallet/hooks';
-import { parseLinkPortkeyUrl } from 'utils/scheme';
 import { useDiscoverJumpWithNetWork } from './discover';
-import { useHandlePortkeyId, useHandleGroupId } from './useQrScan';
-import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { prefixUrlWithProtocol } from '@portkey-wallet/utils/dapp/browser';
 import { TabRouteNameEnum } from 'types/navigate';
 
@@ -102,28 +99,11 @@ export function useJumpToChatGroupDetails() {
 
 export function useOnUrlPress() {
   const jump = useDiscoverJumpWithNetWork();
-  const handlePortkeyId = useHandlePortkeyId();
-  const handleGroupId = useHandleGroupId();
-  const isChatShow = useIsChatShow();
   return useThrottleCallback(
     (url: string) => {
       url = prefixUrlWithProtocol(url);
-      const { id, type } = parseLinkPortkeyUrl(url);
-
-      if (type === 'addContact' && isChatShow)
-        return handlePortkeyId({
-          portkeyId: id,
-          showLoading: true,
-        });
-
-      if (type === 'addGroup' && isChatShow)
-        return handleGroupId({
-          channelId: id,
-          showLoading: true,
-        });
-
       jump({ item: { url: url, name: url } });
     },
-    [isChatShow, handlePortkeyId, handleGroupId, jump],
+    [jump],
   );
 }

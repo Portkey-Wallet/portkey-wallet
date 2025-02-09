@@ -2,10 +2,10 @@ import { TextM } from 'components/CommonText';
 import React, { memo } from 'react';
 import { View } from 'react-native';
 import { pTd } from 'utils/unit';
-import { IRecordsItemType } from '@portkey-wallet/types/types-ca/discover';
+import { IRecordsItemType } from '@portkey-wallet/types/types-eoa/discover';
 import DiscoverWebsiteImage from '../DiscoverWebsiteImage';
 import TextWithProtocolIcon from 'components/TextWithProtocolIcon';
-import { useGetCmsWebsiteInfo } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { useGetCmsWebsiteInfo } from '@portkey-wallet/hooks/hooks-eoa/cms';
 import Touchable from 'components/Touchable';
 import { makeStyles } from '@rneui/themed';
 

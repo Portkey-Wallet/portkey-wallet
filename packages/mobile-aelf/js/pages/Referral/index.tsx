@@ -10,7 +10,7 @@ import { sleep } from '@portkey-wallet/utils';
 import GStyles from 'assets/theme/GStyles';
 import { pTd } from 'utils/unit';
 import useLatestIsFocusedRef from 'hooks/useLatestIsFocusedRef';
-import { useGetLoginControlListAsync } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { useGetLoginControlListAsync } from '@portkey-wallet/hooks/hooks-eoa/cms';
 import { makeStyles } from '@rneui/themed';
 import PageContainer from 'components/PageContainer';
 import fonts from 'assets/theme/fonts';

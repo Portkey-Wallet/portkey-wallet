@@ -20,7 +20,7 @@ import ChangeOverlay from './components/ChangePictureOverlay';
 import RenameOverlay from './components/RenameOverlay';
 import { sleep } from '@portkey-wallet/utils';
 import { request } from '@portkey-wallet/api/api-did';
-import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { LoadingBody } from 'components/Loading';
 import CommonAvatar from 'components/CommonAvatar';
 import fonts from 'assets/theme/fonts';

@@ -11,7 +11,7 @@ import { TextL, TextM, TextXXXL } from 'components/CommonText';
 import { LinkPortkeyPath } from '@portkey-wallet/constants/constants-ca/network';
 import { ScreenWidth } from '@rneui/base';
 import Touchable from 'components/Touchable';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-eoa/network';
 
 const ChatQrCodePage: React.FC = () => {
   const isMainnet = useIsMainnet();

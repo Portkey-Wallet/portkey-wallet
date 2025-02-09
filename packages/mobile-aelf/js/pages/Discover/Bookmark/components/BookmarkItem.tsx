@@ -10,9 +10,9 @@ import { pTd } from 'utils/unit';
 import DiscoverWebsiteImage from 'pages/Discover/components/DiscoverWebsiteImage';
 import TextWithProtocolIcon from 'components/TextWithProtocolIcon';
 import { darkColors } from 'assets/theme';
-import { IBookmarkItem } from '@portkey-wallet/store/store-ca/discover/type';
+import { IBookmarkItem } from '@portkey-wallet/store/store-eoa/discover/type';
 import { useDiscoverJumpWithNetWork } from 'hooks/discover';
-import { useGetCmsWebsiteInfo } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { useGetCmsWebsiteInfo } from '@portkey-wallet/hooks/hooks-eoa/cms';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 

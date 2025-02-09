@@ -8,7 +8,7 @@ import { useDeviceList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useIsSecondaryMailSet } from '@portkey-wallet/hooks/hooks-ca/useSecondaryMail';
 import navigationService from 'utils/navigationService';
 import MenuItem from '../components/MenuItem';
-import { useCurrentDappList } from '@portkey-wallet/hooks/hooks-ca/dapp';
+import { useCurrentDappList } from '@portkey-wallet/hooks/hooks-eoa/dapp';
 import { pTd } from 'utils/unit';
 import { useFocusEffect } from '@react-navigation/native';
 import useEffectOnce from 'hooks/useEffectOnce';

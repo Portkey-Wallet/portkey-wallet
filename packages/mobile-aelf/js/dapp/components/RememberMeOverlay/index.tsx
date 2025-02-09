@@ -10,7 +10,7 @@ import { pTd } from 'utils/unit';
 import { SessionExpiredPlan } from '@portkey-wallet/types/session';
 import { TextL } from 'components/CommonText';
 import Svg from 'components/Svg';
-import { SessionKeyArray } from '@portkey-wallet/constants/constants-ca/dapp';
+import { SessionKeyArray } from '@portkey-wallet/constants/constants-eoa/dapp';
 import { RememberInfoType } from 'components/RememberMe';
 
 export type RememberMeModalType = {

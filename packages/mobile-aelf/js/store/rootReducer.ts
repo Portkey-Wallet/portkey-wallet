@@ -15,6 +15,7 @@ import { contactSlice } from '@portkey-wallet/store/store-eoa/contact/slice';
 import { configSlice } from '@portkey-wallet/store/store-eoa/config/slice';
 import { cmsSlice } from '@portkey-wallet/store/store-eoa/cms/slice';
 import { dappSlice } from '@portkey-wallet/store/store-eoa/dapp/slice';
+import discoverSlice from '@portkey-wallet/store/store-eoa/discover/slice';
 
 const userPersistConfig = {
   key: userSlice.name,
@@ -27,28 +28,15 @@ const assetsPersistConfig = {
   whitelist: ['localShowTokenInfo'],
 };
 
-// const discoverPersistConfig = {
-//   key: discoverSlice.name,
-//   storage: AsyncStorage,
-//   blacklist: ['isDrawerOpen', 'initializedList', 'activeTabId', 'autoApproveMap'],
-// };
-
-// const imPersistConfig = {
-//   key: imSlice.name,
-//   storage: AsyncStorage,
-//   blacklist: [
-//     'channelMessageListNetMap',
-//     'groupInfoMapNetMap',
-//     'pinListNetMap',
-//     'lastPinNetMap',
-//     'sendingBotRelationIdNetMap',
-//   ],
-// };
+const discoverPersistConfig = {
+  key: discoverSlice.name,
+  storage: AsyncStorage,
+  blacklist: ['isDrawerOpen', 'initializedList', 'activeTabId', 'autoApproveMap'],
+};
 
 export const userReducer = persistReducer(userPersistConfig, userSlice.reducer);
 export const assetsReducer = persistReducer(assetsPersistConfig, assetsSlice.reducer);
-// export const discoverReducer = persistReducer(discoverPersistConfig, discoverSlice.reducer);
-// export const imReducer = persistReducer(imPersistConfig, imSlice.reducer);
+export const discoverReducer = persistReducer(discoverPersistConfig, discoverSlice.reducer);
 
 const rootReducer = combineReducers({
   [userSlice.name]: userReducer,
@@ -66,12 +54,10 @@ const rootReducer = combineReducers({
   [dappSlice.name]: dappSlice.reducer,
   [cmsSlice.name]: cmsSlice.reducer,
 
-  // [discoverSlice.name]: discoverReducer,
+  [discoverSlice.name]: discoverReducer,
   // [txFeeSlice.name]: txFeeSlice.reducer,
-  // [imSlice.name]: imReducer,
   // [cryptoGiftSlice.name]: cryptoGiftSlice.reducer,
   // [securitySlice.name]: securitySlice.reducer,
-  // [chatSlice.name]: chatSlice.reducer,
   // [rampSlice.name]: rampSlice.reducer,
   [awakenSlice.name]: awakenSlice.reducer,
   // [referralSlice.name]: referralSlice.reducer,

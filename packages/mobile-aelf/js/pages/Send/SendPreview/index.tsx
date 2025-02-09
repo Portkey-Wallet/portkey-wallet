@@ -12,7 +12,7 @@ import crossChainTransfer, {
   CrossChainTransferIntervalParams,
   intervalCrossChainTransfer,
 } from 'utils/transfer/crossChainTransfer';
-import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { formatAmountShow, timesDecimals, unitConverter } from '@portkey-wallet/utils/converter';
 import sameChainTransfer from 'utils/transfer/sameChainTransfer';

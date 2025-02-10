@@ -14,22 +14,25 @@ type RouterParams = {
   pin: string;
   mnemonics?: string;
   privateKey?: string;
+  customTitle?: string;
+  successToastShow?: boolean;
 };
 
 const ScrollViewProps = { disabled: true };
 export default function PrepareWallet() {
   const styles = getStyles();
-  const { pin, mnemonics, privateKey } = useRouterParams<RouterParams>();
+  const { pin, mnemonics, privateKey, customTitle, successToastShow } = useRouterParams<RouterParams>();
 
   const addWallet = useAddWallet();
   const init = useCallback(() => {
     const result = addWallet(pin, mnemonics, privateKey);
     if (!result || !result.success) {
-      CommonToast.fail(result?.message || 'Import failed');
+      CommonToast.fail(result?.message || 'Failed to be imported');
     }
+    successToastShow && CommonToast.success('Successfully imported');
     console.log('pin: ', pin, mnemonics, privateKey, result);
     navigationService.reset('Tab');
-  }, [addWallet, pin, mnemonics, privateKey]);
+  }, [addWallet, pin, mnemonics, privateKey, successToastShow]);
   const initRef = useRef(init);
   initRef.current = init;
 
@@ -46,7 +49,7 @@ export default function PrepareWallet() {
       hideHeader
       notHandleHardwareBackPress
       hideTouchable>
-      <TextH1>{'Creating your wallet...'}</TextH1>
+      <TextH1>{customTitle || 'Creating your wallet...'}</TextH1>
       <View style={styles.loadingWrap}>
         <LottieView source={require('assets/lottieFiles/loading.json')} style={styles.loadingStyle} autoPlay loop />
       </View>

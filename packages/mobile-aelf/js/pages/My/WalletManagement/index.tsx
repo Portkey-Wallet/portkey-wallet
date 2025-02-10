@@ -59,7 +59,9 @@ export default function WalletManagement() {
             <Touchable
               style={addressCardStyles.cardContainer}
               onPress={() => {
-                navigationService.push('WalletImportTypeSelect');
+                navigationService.push('WalletImportTypeSelect', {
+                  needCheckSecurityLock: true,
+                });
               }}>
               <View style={[addressCardStyles.card, addressCardStyles.operationCard]}>
                 <View style={addressCardStyles.info}>

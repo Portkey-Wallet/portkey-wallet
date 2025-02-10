@@ -12,11 +12,12 @@ import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 
 type RouterParams = {
   importType: string;
+  checkedSecurityLock?: boolean;
 };
 
 export default function ImportWallet() {
   const styles = getStyles();
-  const { importType } = useRouterParams<RouterParams>();
+  const { importType, checkedSecurityLock } = useRouterParams<RouterParams>();
 
   const [isPrivateKeySelected, setPrivateKeySelected] = useState(false);
 
@@ -45,7 +46,11 @@ export default function ImportWallet() {
         Import your wallet
       </Text>
       <ImportWalletTabSwitch onSelected={onSelectedTab} />
-      {isPrivateKeySelected ? <PrivateKey /> : <RecoveryPhrase />}
+      {isPrivateKeySelected ? (
+        <PrivateKey checkedSecurityLock={checkedSecurityLock} />
+      ) : (
+        <RecoveryPhrase checkedSecurityLock={checkedSecurityLock} />
+      )}
     </PageContainer>
   );
 }

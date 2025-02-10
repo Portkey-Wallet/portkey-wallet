@@ -11,7 +11,6 @@ import { getAddressCardStyles, getCardStyles, getStyles } from '../styles';
 // import CommonTooltip from '../../../../components/CommonTooltip';
 import { AddressCardHeader } from './AddressCardHeader';
 import { changeCurrentWallet } from '@portkey-wallet/store/store-eoa/wallet/actions';
-// import { MAX_ACCOUNT_NUMBER } from '@portkey-wallet/store/store-eoa/wallet/config';
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 // import { useAccountByWallet } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 import { TWalletInfo, TAccountInfo } from '@portkey-wallet/types/types-eoa/wallet';
@@ -207,11 +206,7 @@ export const AddressCardBase = ({
             );
           })}
           {!viewOnly && walletInfo?.AESEncryptMnemonic && (
-            <Touchable
-              disabled={addAddressDisabled}
-              onPress={addNewAddress}
-              alias-name="add-address"
-              style={addressCardStyles.cardContainer}>
+            <Touchable onPress={addNewAddress} alias-name="add-address" style={addressCardStyles.cardContainer}>
               <View style={[addressCardStyles.card, addressCardStyles.operationCard]}>
                 <View style={addressCardStyles.info}>
                   {accountAdding ? (

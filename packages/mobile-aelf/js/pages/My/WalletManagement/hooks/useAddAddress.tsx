@@ -22,7 +22,7 @@ export const useAddAddress = ({ walletInfo }: { walletInfo?: TWalletInfo }) => {
   const [accountAdded, setAccountAdded] = useState(false);
   const { addAccount } = useAccountByWallet(walletInfo);
   const [addAddressDisabled, setAddAddressDisabled] = useState(false);
-  const [failedToastShowed, setFailedToastShowed] = useState(false);
+  // const [failedToastShowed, setFailedToastShowed] = useState(false);
   const checkSecurityLock = useCheckSecurityLock();
   const credentials = useCredentials();
   const { action, routerPin, routerWallet } = useRouterParams<{
@@ -55,17 +55,21 @@ export const useAddAddress = ({ walletInfo }: { walletInfo?: TWalletInfo }) => {
     }, 100);
   }, [accountAdded, accountAdding, action, addAccount, routerPin, routerWallet, walletInfo]);
 
-  useEffect(() => {
-    if (!walletInfo || failedToastShowed) {
-      return;
-    }
-    if (accountAdded && walletInfo.accountList.length >= MAX_ACCOUNT_NUMBER) {
-      setFailedToastShowed(true);
-      CommonToast.fail(`Add up to ${MAX_ACCOUNT_NUMBER} addresses per wallet`);
-    }
-  }, [accountAdded, walletInfo]);
+  // useEffect(() => {
+  //   if (!walletInfo || failedToastShowed) {
+  //     return;
+  //   }
+  //   if (accountAdded && walletInfo.accountList.length >= MAX_ACCOUNT_NUMBER) {
+  //     setFailedToastShowed(true);
+  //     CommonToast.fail(`Add up to ${MAX_ACCOUNT_NUMBER} addresses per wallet`);
+  //   }
+  // }, [accountAdded, walletInfo]);
 
   const addNewAddress = useCallback(async () => {
+    if (addAddressDisabled) {
+      CommonToast.fail(`Add up to ${MAX_ACCOUNT_NUMBER} addresses per wallet`);
+      return;
+    }
     await checkSecurityLock(() => {
       console.log('securePassword: ', credentials);
       if (!credentials?.pin) {
@@ -80,7 +84,7 @@ export const useAddAddress = ({ walletInfo }: { walletInfo?: TWalletInfo }) => {
         action: 'ADD_ACCOUNT',
       });
     }, true);
-  }, [checkSecurityLock, credentials, walletInfo]);
+  }, [addAddressDisabled, checkSecurityLock, credentials, walletInfo]);
 
   return {
     accountAdding,

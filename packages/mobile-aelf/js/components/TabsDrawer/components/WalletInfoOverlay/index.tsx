@@ -7,12 +7,10 @@ import { pTd } from 'utils/unit';
 import { useLanguage } from 'i18n/hooks';
 import { ModalBody } from 'components/ModalBody';
 import { TextM, TextS } from 'components/CommonText';
-import { useCurrentCaInfo, useCurrentUserInfo, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { CAInfo } from '@portkey-wallet/types/types-ca/wallet';
 import { addressFormat, formatChainInfoToShow, formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import { ChainId } from '@portkey-wallet/types';
 import { DarkFontStyles } from 'assets/theme/styles';
-import { useCurrentChainList, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { useCurrentChainList } from '@portkey-wallet/hooks/hooks-eoa/chainList';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { ITabItem } from '@portkey-wallet/store/store-eoa/discover/type';
 import { removeDapp } from '@portkey-wallet/store/store-eoa/dapp/actions';
@@ -22,8 +20,10 @@ import { useIsInCurrentDappList } from '@portkey-wallet/hooks/hooks-eoa/dapp';
 import Svg from 'components/Svg';
 import { copyText } from 'utils';
 import Touchable from 'components/Touchable';
-import { useAccountTokenInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
 import CommonAvatar from 'components/CommonAvatar';
+import { useCurrentAccount, useCurrentAddressInfos } from '@portkey-wallet/hooks/hooks-eoa/wallet';
+import { useTheme } from '@rneui/themed';
+import { useCurrentNetwork } from '@portkey-wallet/hooks/hooks-eoa/network';
 
 type MyWalletModalType = {
   tabInfo: ITabItem;
@@ -33,12 +33,11 @@ const MyWalletModal = ({ tabInfo }: MyWalletModalType) => {
   const { t } = useLanguage();
   const checkDapp = useIsInCurrentDappList();
   const dispatch = useAppDispatch();
-  const caInfo = useCurrentCaInfo();
-  const { currentNetwork } = useWallet();
-  const userInfo = useCurrentUserInfo();
-  const defaultToken = useDefaultToken();
-  const { accountTokenList } = useAccountTokenInfo();
+  const currentNetwork = useCurrentNetwork();
   const currentChainList = useCurrentChainList();
+  const addressInfos = useCurrentAddressInfos();
+  const { theme } = useTheme();
+  const currentAccount = useCurrentAccount();
 
   const getChainInfoByChainId = useCallback(
     (chainId: string) => {
@@ -49,21 +48,6 @@ const MyWalletModal = ({ tabInfo }: MyWalletModalType) => {
     },
     [currentChainList],
   );
-
-  const caInfoList = useMemo(() => {
-    return Object.entries(caInfo || {})
-      .map(([key, value]) => {
-        const info = value as CAInfo;
-        return info?.caAddress
-          ? {
-              chainId: key,
-              caAddress: info.caAddress,
-              ...accountTokenList.find(token => token.chainId === key && token.symbol === defaultToken.symbol),
-            }
-          : undefined;
-      })
-      .filter(item => !!item);
-  }, [accountTokenList, caInfo, defaultToken.symbol]);
 
   const disconnectDapp = useCallback(() => {
     try {
@@ -82,15 +66,15 @@ const MyWalletModal = ({ tabInfo }: MyWalletModalType) => {
         <View style={styles.userInfoWrap}>
           <View style={styles.userInfo}>
             <CommonAvatar
-              hasBorder={!userInfo?.avatar}
-              title={userInfo?.nickName}
+              hasBorder={!currentAccount?.icon}
+              title={currentAccount?.name}
               avatarSize={pTd(32)}
-              imageUrl={userInfo?.avatar || ''}
+              imageUrl={currentAccount?.icon || ''}
               resizeMode="cover"
               titleStyle={{ fontSize: pTd(14) }}
             />
             <View style={[styles.badgeWrap, showDisconnect && { backgroundColor: darkColors.iconSuccess1 }]} />
-            <TextS style={(DarkFontStyles.textBase1, fonts.mediumFont)}>{userInfo?.nickName}</TextS>
+            <TextS style={(DarkFontStyles.textBase1, fonts.mediumFont)}>{currentAccount?.name}</TextS>
           </View>
           {showDisconnect ? (
             <Touchable onPress={disconnectDapp}>
@@ -101,20 +85,20 @@ const MyWalletModal = ({ tabInfo }: MyWalletModalType) => {
           )}
         </View>
         <View style={styles.group}>
-          {caInfoList?.reverse()?.map(item => (
+          {addressInfos?.reverse()?.map(item => (
             <View key={item?.chainId} style={[styles.itemWrap]}>
               <View key={item?.chainId} style={styles.itemContent}>
-                <CommonAvatar imageUrl={getChainInfoByChainId(item?.chainId)?.chainImageUrl} avatarSize={pTd(24)} />
+                <CommonAvatar imageUrl={getChainInfoByChainId(item.chainId)?.chainImageUrl} avatarSize={pTd(24)} />
                 <View style={{ paddingLeft: pTd(12) }}>
-                  <TextM>{formatStr2EllipsisStr(addressFormat(item?.caAddress, item?.chainId as ChainId), 8)}</TextM>
+                  <TextM>{formatStr2EllipsisStr(addressFormat(item?.address, item?.chainId as ChainId), 8)}</TextM>
                   <TextS style={[styles.itemChainInfo, DarkFontStyles.textBase2]}>
                     {formatChainInfoToShow(item?.chainId as ChainId, currentNetwork)}
                   </TextS>
                 </View>
               </View>
 
-              <Touchable onPress={() => copyText(addressFormat(item?.caAddress, item?.chainId as ChainId))}>
-                <Svg icon="copy" size={pTd(16)} />
+              <Touchable onPress={() => copyText(addressFormat(item?.address, item?.chainId as ChainId))}>
+                <Svg icon="copy" size={pTd(24)} color={theme.colors.iconBase2} />
               </Touchable>
             </View>
           ))}

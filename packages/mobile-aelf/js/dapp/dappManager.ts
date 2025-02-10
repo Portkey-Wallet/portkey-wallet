@@ -1,8 +1,8 @@
-import { CACommonState } from '@portkey-wallet/types/types-ca/store';
-import { DappManager } from '@portkey-wallet/utils/dapp/dappManager';
+import { EOACommonState } from '@portkey-wallet/types/types-eoa/store';
+import { DappManager } from '@portkey-wallet/utils/dappEOA/dappManager';
 import { UserStoreState } from 'store/user/types';
 
-type MobileState = CACommonState & {
+type MobileState = EOACommonState & {
   user: UserStoreState;
 };
 export interface IDappMobileManager {

@@ -3,7 +3,6 @@ import { Accounts, ChainIds, ChainsInfo, WalletName } from '@portkey/provider-ty
 import { DappStoreItem } from '@portkey-wallet/store/store-eoa/dapp/type';
 import { ChainId, NetworkType } from '../index';
 import { SessionInfo } from '../session';
-import { Address } from '../wallet';
 import { IChainItemType } from './chain';
 export interface IDappManager<T = EOACommonState> {
   getState(): Promise<T>;
@@ -20,13 +19,9 @@ export interface IDappManager<T = EOACommonState> {
   isLocked(): Promise<boolean>;
   getRpcUrl(chainId: ChainId): Promise<string | undefined>;
   networkType(): Promise<NetworkType>;
-  caHash(): Promise<string>;
   walletName(): Promise<WalletName>;
-  currentManagerAddress(): Promise<Address | undefined>;
   getSessionInfo(origin: string): Promise<SessionInfo | undefined>;
   getRememberMeBlackList(): Promise<string[] | undefined>;
-  getOriginChainId(): Promise<ChainId>;
-  updateManagerSyncState(chainId: ChainId): Promise<void>;
 }
 export interface IDappManagerStore<T = EOACommonState> {
   getState(): Promise<T>;

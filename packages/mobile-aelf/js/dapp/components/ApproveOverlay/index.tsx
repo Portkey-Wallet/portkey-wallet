@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import OverlayModal from 'components/OverlayModal';
-import { Keyboard, View } from 'react-native';
+import { DeviceEventEmitter, Keyboard, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import { useLanguage } from 'i18n/hooks';
 import { ModalBody } from 'components/ModalBody';
@@ -11,10 +11,8 @@ import CommonInput from 'components/CommonInput';
 import { TextL, TextM } from 'components/CommonText';
 import { OverlayBottomSection } from '../OverlayBottomSection';
 import { ApproveParams } from 'dapp/dappOverlay';
-import navigationService from 'utils/navigationService';
 import { useAppDispatch } from 'store/hooks';
 import { changeDrawerOpenStatus } from '@portkey-wallet/store/store-eoa/discover/slice';
-import { ApprovalType } from '@portkey-wallet/types/verifier';
 import Touchable from 'components/Touchable';
 import { divDecimals, divDecimalsStr, timesDecimals } from '@portkey-wallet/utils/converter';
 import { LANG_MAX, ZERO } from '@portkey-wallet/constants/misc';
@@ -40,7 +38,7 @@ type SignModalPropsType = {
 const ZERO_MESSAGE = 'Please enter a valid amount.';
 const ApproveModal = (props: SignModalPropsType) => {
   const { dappInfo, approveParams, onReject, isEditBatchApprovalInApp } = props;
-  const { amount, targetChainId } = approveParams.approveInfo;
+  const { amount } = approveParams.approveInfo;
   const dispatch = useAppDispatch();
   const { t } = useLanguage();
   const [errorMessage, setErrorMessage] = useState('');
@@ -91,36 +89,21 @@ const ApproveModal = (props: SignModalPropsType) => {
           }
 
           const tmpAmount = timesDecimals(symbolNum, decimals);
-          navigationService.navigate('GuardianApproval', {
-            approveParams: {
-              isDiscover: approveParams.isDiscover,
-              eventName: approveParams.eventName,
-              approveInfo: {
-                ...approveParams.approveInfo,
-                decimals,
-                symbol: approveParams.approveInfo.symbol,
-                amount: (LANG_MAX.lt(tmpAmount) ? LANG_MAX : tmpAmount).toFixed(0),
-              },
-            } as ApproveParams,
-            targetChainId,
-            approvalType: ApprovalType.managerApprove,
+          DeviceEventEmitter.emit(approveParams.eventName, {
+            approveInfo: {
+              ...approveParams.approveInfo,
+              decimals,
+              symbol: approveParams.approveInfo.symbol,
+              amount: (LANG_MAX.lt(tmpAmount) ? LANG_MAX : tmpAmount).toFixed(0),
+            },
+            success: true,
           });
           dispatch(changeDrawerOpenStatus(false));
           OverlayModal.hide(false);
         },
       },
     ],
-    [
-      approveParams.approveInfo,
-      approveParams.eventName,
-      approveParams.isDiscover,
-      decimals,
-      dispatch,
-      onReject,
-      symbolNum,
-      t,
-      targetChainId,
-    ],
+    [approveParams.approveInfo, approveParams.eventName, decimals, dispatch, onReject, symbolNum, t],
   );
 
   const onPressMax = useCallback(() => {

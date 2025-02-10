@@ -11,11 +11,11 @@ import {
 } from '@portkey/provider-types';
 import DappMobileOperator from './dappMobileOperator';
 import { DappMiddle } from '@portkey-wallet/utils/dapp/middle';
-import { changeNetworkType, setCAInfo } from '@portkey-wallet/store/store-ca/wallet/actions';
-import { getWallet } from 'utils/redux';
-import { handleAccounts, handleChainIds } from '@portkey-wallet/utils/dapp';
+import { changeNetworkType } from '@portkey-wallet/store/store-ca/wallet/actions';
+import { getNetwork } from 'utils/redux';
 import { addDapp, removeDapp, resetDappList } from '@portkey-wallet/store/store-eoa/dapp/actions';
 import { sleep } from '@portkey-wallet/utils';
+import { handleChainIds } from '@portkey-wallet/utils/dappEOA';
 
 export interface DappEventPack<T = DappEvents, D = any> {
   eventName: T;
@@ -40,14 +40,8 @@ export default class DappEventBus {
     await sleep(100);
     switch (action) {
       case changeNetworkType.toString(): {
-        const { currentNetwork } = getWallet();
+        const { currentNetwork } = getNetwork();
         DappEventBus.dispatchEvent({ eventName: NotificationEvents.NETWORK_CHANGED, data: currentNetwork });
-        break;
-      }
-      case setCAInfo.toString(): {
-        const wallet = getWallet();
-        DappEventBus.dispatchEvent({ eventName: NotificationEvents.ACCOUNTS_CHANGED, data: handleAccounts(wallet) });
-        DappEventBus.dispatchEvent({ eventName: NotificationEvents.CHAIN_CHANGED, data: handleChainIds(wallet) });
         break;
       }
       case removeDapp.toString(): {
@@ -65,12 +59,12 @@ export default class DappEventBus {
       }
       case addDapp.toString(): {
         if (payload.dapp) {
-          const wallet = getWallet();
+          const networkInfo = getNetwork();
           DappEventBus.dispatchEvent({
             origin: payload.dapp.origin,
             eventName: NotificationEvents.CONNECTED,
             data: {
-              chainIds: handleChainIds(wallet),
+              chainIds: handleChainIds(networkInfo),
             },
           });
         }

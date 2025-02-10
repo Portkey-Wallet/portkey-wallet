@@ -1,5 +1,5 @@
 import React from 'react';
-import { useAppCASelector, useAppCommonDispatch, useLatestRef } from '@portkey-wallet/hooks';
+import { useAppCommonDispatch, useAppEOASelector, useLatestRef } from '@portkey-wallet/hooks';
 import { removeAutoApproveItem } from '@portkey-wallet/store/store-eoa/discover/slice';
 import { isIOS, screenHeight, screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { darkColors } from 'assets/theme';
@@ -12,18 +12,18 @@ import Touchable from 'components/Touchable';
 import { View, GestureResponderEvent, Share, Text } from 'react-native';
 import { pTd } from 'utils/unit';
 import Svg from 'components/Svg';
-import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-eoa/network';
+import { useCurrentNetwork } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { IBookmarkItem, ITabItem } from '@portkey-wallet/store/store-eoa/discover/type';
 import FloatOverlay from 'components/FloatOverlay';
 import { useBookmarkList } from '@portkey-wallet/hooks/hooks-eoa/discover';
 import { request } from '@portkey-wallet/api/api-did';
 import CommonToast from 'components/CommonToast';
-import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { showWalletInfo } from '../WalletInfoOverlay';
 import { getHost } from '@portkey-wallet/utils/dapp/browser';
 import { WebViewNavigation } from 'react-native-webview';
 import { makeStyles } from '@rneui/themed';
 import fonts from 'assets/theme/fonts';
+import { useCurrentAccount } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 
 enum HANDLE_TYPE {
   REFRESH = 'Refresh',
@@ -44,9 +44,10 @@ function TabsDom({ activeWebViewRef, clickBottomActionBtn, onNavigationChange }:
   const styles = getStyles();
   const rightDomStyle = getRightDomStyles();
 
-  const userInfo = useCurrentUserInfo();
-  const { networkType } = useCurrentNetworkInfo();
-  const { discoverMap = {}, initializedList, activeTabId, autoApproveMap } = useAppCASelector(state => state.discover);
+  const currentAccount = useCurrentAccount();
+  const networkType = useCurrentNetwork();
+
+  const { discoverMap = {}, initializedList, activeTabId, autoApproveMap } = useAppEOASelector(state => state.discover);
   const { tabs } = discoverMap[networkType] ?? {};
 
   const checkAndUpDateRecordItemName = useCheckAndUpDateRecordItemName();
@@ -221,10 +222,10 @@ function TabsDom({ activeWebViewRef, clickBottomActionBtn, onNavigationChange }:
         <View style={styles.wrap}>
           <Touchable style={{ paddingHorizontal: pTd(12) }} onPress={() => showWalletInfo({ tabInfo: activeItem })}>
             <CommonAvatar
-              hasBorder={!userInfo?.avatar}
-              title={userInfo?.nickName}
+              hasBorder={!currentAccount?.icon}
+              title={currentAccount?.name}
               avatarSize={pTd(32)}
-              imageUrl={userInfo?.avatar || ''}
+              imageUrl={currentAccount?.icon || ''}
               resizeMode="cover"
               titleStyle={{ fontSize: pTd(14) }}
             />

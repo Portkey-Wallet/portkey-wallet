@@ -18,6 +18,7 @@ import * as Clipboard from 'expo-clipboard';
 import CommonToast from 'components/CommonToast';
 import { ChainId } from '@portkey-wallet/types';
 import { IconName } from 'components/Svg';
+import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 
 interface IAddressInfo {
   address: string;
@@ -61,6 +62,9 @@ export default function ImportByCloud() {
 
   const [addressesInfo, setAddressesInfo] = useState<IAddressInfo[]>([]);
   const [addresses, setAddresses] = useState<string[]>([]);
+  const { checkedSecurityLock } = useRouterParams<{
+    checkedSecurityLock?: boolean;
+  }>();
 
   useEffect(() => {
     const getAddressList = async () => {
@@ -132,6 +136,7 @@ export default function ImportByCloud() {
               }
               navigationService.push('ImportByCloudDecrypt', {
                 walletInCloud: item.info?.wallet,
+                checkedSecurityLock,
               });
             }}>
             <View style={[cardStyles.card, styles.marginVertical16]}>

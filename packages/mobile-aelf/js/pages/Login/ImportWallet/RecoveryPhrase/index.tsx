@@ -14,7 +14,7 @@ import { useImportWallet } from '../../hooks/useImportWallet';
 const MnemonicsWordCount = 12;
 let invalidMnemonicsToastTimer: NodeJS.Timeout;
 
-export default function RecoveryPhrase() {
+export default function RecoveryPhrase({ checkedSecurityLock }: { checkedSecurityLock?: boolean }) {
   const styles = getStyles();
   const { theme } = useTheme();
   const [mnemonics, setMnemonics] = useState(Array(MnemonicsWordCount).fill(''));
@@ -115,7 +115,7 @@ export default function RecoveryPhrase() {
         style={styles.importButton}
         disabledStyle={styles.importButtonDisable}
         disabled={!isMnemonicsValid}
-        onPress={() => importWalletByMnemonic(mnemonics)}>
+        onPress={() => importWalletByMnemonic(mnemonics, checkedSecurityLock)}>
         Import
       </CommonButton>
     </View>

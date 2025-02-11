@@ -5,6 +5,7 @@ import {
   addWallet,
   updateWallet,
   removeAccount,
+  updateAccount,
   removeWallet,
   resetWallet,
   setHideAssetsAction,
@@ -99,6 +100,26 @@ export const walletSlice = createSlice({
         return {
           ...state,
           walletList,
+        };
+      })
+      .addCase(updateAccount, (state, action) => {
+        const { walletKey, accountAddress, account } = action.payload;
+        const newWalletList = state.walletList.map(item => {
+          if (item.key === walletKey) {
+            const newAccountList = item.accountList.map(accountItem =>
+              accountItem.address === accountAddress ? { ...accountItem, ...account } : accountItem,
+            );
+            return {
+              ...item,
+              accountList: newAccountList,
+            };
+          }
+          return item;
+        });
+
+        return {
+          ...state,
+          walletList: newWalletList,
         };
       })
       .addCase(updateWalletList, (state, action) => {

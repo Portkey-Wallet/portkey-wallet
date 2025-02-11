@@ -1,5 +1,5 @@
 // https://github.com/kuatsu/react-native-cloud-storage/blob/master/example/src/views/Home.tsx
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
@@ -13,6 +13,8 @@ import CommonAvatar from '../../../components/CommonAvatar';
 import { useCheckSecurityLock } from 'hooks/securityLock';
 import { getStyles, getAddressCardStyles } from './styles';
 import { AddressCard } from './components/AddressCard';
+import { MAX_WALLET_NUMBER } from '@portkey-wallet/store/store-eoa/wallet/config';
+import CommonToast from 'components/CommonToast';
 
 export default function WalletManagement() {
   const styles = getStyles();
@@ -21,6 +23,15 @@ export default function WalletManagement() {
   const currentWallet = useCurrentWallet();
   const walletList = useWalletListState();
   const [managing, setManaging] = useState(false);
+  const [addWalletDisabled, setAddWalletDisabled] = useState(false);
+  useEffect(() => {
+    if (!walletList) {
+      return;
+    }
+    walletList.length >= MAX_WALLET_NUMBER && setAddWalletDisabled(true);
+  }, [walletList]);
+  const iconColor = addWalletDisabled ? darkColors.textDisabled1 : darkColors.textBase1Opacity07;
+  const failedToastText = `Add up to ${MAX_WALLET_NUMBER} wallets`;
 
   console.log('currentWallet, walletList', currentWallet, walletList);
 
@@ -47,19 +58,19 @@ export default function WalletManagement() {
           return <AddressCard walletInfo={item} currentWallet={currentWallet} addressManaging={managing} key={index} />;
         })}
 
-        {/*<Text>Changed</Text>*/}
-        {/*<AddressCard addressManaging={managing} />*/}
-
-        {/*<Text>Select Show</Text>*/}
-        {/*<AddressCard addressSelecting={true} />*/}
-
         {!managing && (
           <View>
             <View style={styles.divider} />
             <Touchable
               style={addressCardStyles.cardContainer}
               onPress={() => {
-                navigationService.push('WalletImportTypeSelect');
+                if (addWalletDisabled) {
+                  CommonToast.fail(failedToastText);
+                  return;
+                }
+                navigationService.push('WalletImportTypeSelect', {
+                  needCheckSecurityLock: true,
+                });
               }}>
               <View style={[addressCardStyles.card, addressCardStyles.operationCard]}>
                 <View style={addressCardStyles.info}>
@@ -70,10 +81,16 @@ export default function WalletManagement() {
                     avatarSize={pTd(24)}
                     height={pTd(24)}
                     width={pTd(24)}
-                    color={darkColors.textBase1Opacity07}
+                    color={iconColor}
                   />
                   <View>
-                    <Text style={addressCardStyles.operationText}>Import exciting wallet</Text>
+                    <Text
+                      style={[
+                        addressCardStyles.operationText,
+                        addWalletDisabled ? addressCardStyles.operationTextDisabled : '',
+                      ]}>
+                      Import exciting wallet
+                    </Text>
                   </View>
                 </View>
               </View>
@@ -81,6 +98,10 @@ export default function WalletManagement() {
             <Touchable
               style={[addressCardStyles.cardContainer, styles.marginTop16]}
               onPress={async () => {
+                if (addWalletDisabled) {
+                  CommonToast.fail(failedToastText);
+                  return;
+                }
                 await checkSecurityLock(() => {
                   navigationService.push('CreateNewWalletNote');
                 });
@@ -94,14 +115,26 @@ export default function WalletManagement() {
                     avatarSize={pTd(24)}
                     height={pTd(24)}
                     width={pTd(24)}
-                    color={darkColors.textBase1Opacity07}
+                    color={iconColor}
                   />
                   <View>
-                    <Text style={addressCardStyles.operationText}>Create a new wallet</Text>
+                    <Text
+                      style={[
+                        addressCardStyles.operationText,
+                        addWalletDisabled ? addressCardStyles.operationTextDisabled : '',
+                      ]}>
+                      Create a new wallet
+                    </Text>
                   </View>
                 </View>
                 <View style={addressCardStyles.advanced}>
-                  <Text style={addressCardStyles.advancedText}>Advanced</Text>
+                  <Text
+                    style={[
+                      addressCardStyles.advancedText,
+                      addWalletDisabled ? addressCardStyles.operationTextDisabled2 : '',
+                    ]}>
+                    Advanced
+                  </Text>
                 </View>
               </View>
             </Touchable>

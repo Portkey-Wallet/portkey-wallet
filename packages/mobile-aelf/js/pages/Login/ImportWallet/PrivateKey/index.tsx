@@ -8,7 +8,7 @@ import Svg from 'components/Svg';
 import * as Clipboard from 'expo-clipboard';
 import { useImportWallet } from '../../hooks/useImportWallet';
 
-export default function RecoveryPhrase() {
+export default function RecoveryPhrase({ checkedSecurityLock }: { checkedSecurityLock?: boolean }) {
   const styles = getStyles();
   const { theme } = useTheme();
   const [inputText, setInputText] = useState('');
@@ -81,7 +81,7 @@ export default function RecoveryPhrase() {
         style={styles.importButton}
         disabledStyle={styles.importButtonDisable}
         disabled={!isPrivateKeyValid}
-        onPress={() => importWalletByPrivateKey(inputText)}>
+        onPress={() => importWalletByPrivateKey(inputText, checkedSecurityLock)}>
         Import
       </CommonButton>
     </View>

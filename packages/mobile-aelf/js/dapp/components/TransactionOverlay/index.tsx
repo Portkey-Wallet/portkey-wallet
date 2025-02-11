@@ -5,7 +5,6 @@ import fonts from 'assets/theme/fonts';
 import { useLanguage } from 'i18n/hooks';
 import { ModalBody } from 'components/ModalBody';
 import { TextH1, TextL, TextM } from 'components/CommonText';
-import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { addressFormat, formatChainInfoToShow, formatStr2EllipsisStr, sleep } from '@portkey-wallet/utils';
 import { divDecimals, formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import GStyles from 'assets/theme/GStyles';
@@ -13,7 +12,7 @@ import { DappStoreItem } from '@portkey-wallet/store/store-eoa/dapp/type';
 import { CommonButtonProps } from 'components/CommonButton';
 import { SendTransactionParams } from '@portkey/provider-types';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-eoa/network';
-import { useCurrentChain, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { useCurrentChain, useDefaultToken } from '@portkey-wallet/hooks/hooks-eoa/chainList';
 import { useAmountInUsdShow, useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-eoa/useTokensPrice';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { usePin } from 'hooks/store';
@@ -22,7 +21,6 @@ import { getManagerAccount } from 'utils/redux';
 import TransactionDataSection from '../TransactionDataSection';
 import { ELF_DECIMAL } from '@portkey-wallet/constants/constants-eoa/activity';
 import { getStyles } from './styles/index';
-import { useCheckManagerSyncState } from 'hooks/wallet';
 import { request } from '@portkey-wallet/api/api-did';
 import { SessionExpiredPlan } from '@portkey-wallet/types/session';
 import { RememberInfoType } from 'components/RememberMe';
@@ -56,11 +54,9 @@ const TransactionModal = (props: TransactionModalPropsType) => {
   const { dappInfo, transactionInfo, onReject, onSign } = props;
   const { t } = useLanguage();
   const isMainnet = useIsMainnet();
-  const defaultToken = useDefaultToken();
+  const defaultToken = useDefaultToken(transactionInfo.chainId);
   const pin = usePin();
   const userInfo = useCurrentAccount();
-  const wallet = useCurrentWalletInfo();
-  const checkManagerSyncState = useCheckManagerSyncState();
   const amountInUsdShow = useAmountInUsdShow();
   const updateSessionInfo = useUpdateSessionInfo();
   const styles = getStyles();
@@ -86,11 +82,6 @@ const TransactionModal = (props: TransactionModalPropsType) => {
   const [fee, setFee] = useState('');
   const [isFetchingFee, setIsFetchingFee] = useState(true);
   const [errorText, setErrorText] = useState('');
-
-  const isCAContract = useMemo(
-    () => chainInfo?.caContractAddress === transactionInfo?.contractAddress,
-    [chainInfo?.caContractAddress, transactionInfo?.contractAddress],
-  );
 
   const isTransfer = useMemo(() => transactionInfo.method.toLowerCase() === 'transfer', [transactionInfo.method]);
 
@@ -155,28 +146,17 @@ const TransactionModal = (props: TransactionModalPropsType) => {
       return;
     }
 
-    const _isManagerSynced = await checkManagerSyncState(transactionInfo.chainId);
-    if (!_isManagerSynced) {
-      return setErrorText(ErrorText.SYNCHRONIZING);
-    }
-
     const contract = await getContractBasic({
-      contractAddress: chainInfo.caContractAddress,
+      contractAddress: transactionInfo.contractAddress,
       rpcUrl: chainInfo?.endPoint,
       account: account,
     });
 
     try {
-      const paramsOption = isCAContract
-        ? transactionInfo?.params?.paramsOption
-        : {
-            caHash: wallet.caHash,
-            contractAddress: transactionInfo.contractAddress,
-            methodName: transactionInfo.method,
-            args: transactionInfo.params?.paramsOption,
-          };
+      const paramsOption = transactionInfo?.params?.paramsOption;
+      const methodName = transactionInfo.method;
 
-      const req = await contract.calculateTransactionFee('ManagerForwardCall', paramsOption);
+      const req = await contract.calculateTransactionFee(methodName, paramsOption);
       const { TransactionFee } = req.data || {};
 
       if (req.error) {
@@ -195,18 +175,7 @@ const TransactionModal = (props: TransactionModalPropsType) => {
       setErrorText(ErrorText.ESTIMATE_ERROR);
       setIsFetchingFee(false);
     }
-  }, [
-    chainInfo,
-    checkManagerSyncState,
-    defaultToken.symbol,
-    isCAContract,
-    pin,
-    transactionInfo.chainId,
-    transactionInfo.contractAddress,
-    transactionInfo.method,
-    transactionInfo.params?.paramsOption,
-    wallet.caHash,
-  ]);
+  }, [chainInfo, defaultToken.symbol, pin, transactionInfo]);
 
   const showSymbolAmountUI = useMemo(() => {
     return isTransfer ? (
@@ -272,9 +241,7 @@ const TransactionModal = (props: TransactionModalPropsType) => {
               <View>
                 <TextL style={[fonts.SGMediumFont, GStyles.alignEnd]}>{userInfo?.name || ''}</TextL>
                 <TextM style={[{ color: theme.colors.textBase2 }, GStyles.alignEnd]}>
-                  {formatStr2EllipsisStr(
-                    addressFormat(wallet?.[transactionInfo?.chainId]?.caAddress, transactionInfo.chainId),
-                  )}
+                  {formatStr2EllipsisStr(addressFormat(userInfo?.address, transactionInfo.chainId))}
                 </TextM>
               </View>
             </View>
@@ -427,7 +394,6 @@ const TransactionModal = (props: TransactionModalPropsType) => {
     theme,
     transactionInfo,
     styles,
-    wallet,
   ]);
 
   const rememberMeUI = useMemo(() => {
@@ -478,7 +444,7 @@ const TransactionModal = (props: TransactionModalPropsType) => {
   useEffect(() => {
     getFee();
     getDecimals();
-  }, [checkManagerSyncState, getDecimals, getFee, transactionInfo.chainId]);
+  }, [getDecimals, getFee, transactionInfo.chainId]);
 
   useEffect(() => {
     const _symbol = transactionInfo?.params?.paramsOption?.symbol;

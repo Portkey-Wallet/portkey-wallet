@@ -92,7 +92,6 @@ export const KeyboardSafeArea = ({
       paddingBottom: value,
     };
   }, [isKeyboardOpened, disable, sz.height, keyboardHeight, viewPositionY, bottomPad, mode, gap]);
-  console.log('style===', style);
   return (
     <View ref={viewRef} collapsable={false} style={[style, containerStyle]}>
       {children}

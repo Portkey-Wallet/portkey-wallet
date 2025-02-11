@@ -169,14 +169,14 @@ class DepositService implements IDepositService {
     // save request params for retry
     this.tokenRequestParams = params;
     this.tokenRequestApiUrl = apiUrl;
-  //   pubkey: string;
-  // signature: string;
-  // plain_text: string;
-  // ca_hash?: string;
-  // chain_id?: string;
-  // scope: string;
-  // managerAddress: string;
-  // recaptchaToken?: string;
+    //   pubkey: string;
+    // signature: string;
+    // plain_text: string;
+    // ca_hash?: string;
+    // chain_id?: string;
+    // scope: string;
+    // managerAddress: string;
+    // recaptchaToken?: string;
     console.log('params=====', {
       pubkey,
       signature,

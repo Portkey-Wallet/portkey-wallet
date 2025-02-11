@@ -28,7 +28,9 @@ async function verifyHumanMachine(language: any) {
         }}
         onClose={type => {
           OverlayModal.hideKey(key);
-          if (type !== 'verified') reject('You closed the prompt without any action.');
+          if (type !== 'verified') {
+            reject('You closed the prompt without any action.');
+          }
         }}
         webViewProps={{
           onLoadEnd: () => {

@@ -164,7 +164,6 @@ export const useReceiveByETransfer = ({
   const { apiUrl } = useCurrentNetworkInfo();
   console.log('apiUrl====wfs', apiUrl);
   const fetchTransferToken = useCallback(async () => {
-
     /**
      * const aesPrivateKey = AElf.wallet.AESDecrypt(account.AESEncryptPrivateKey, pin);
     console.log(aesPrivateKey, 'aesPrivateKey==');

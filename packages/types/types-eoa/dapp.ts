@@ -10,6 +10,7 @@ export interface IDappManager<T = EOACommonState> {
   originIsAuthorized(origin: string): Promise<boolean>;
   isActive(origin: string): Promise<boolean>;
   accounts(origin: string): Promise<Accounts>;
+  currentManagerAddress(): Promise<string | undefined>;
   chainId(): Promise<ChainIds>;
   chainIds(): Promise<ChainIds>;
   chainsInfo(): Promise<ChainsInfo>;

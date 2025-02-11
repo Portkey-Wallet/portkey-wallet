@@ -32,8 +32,8 @@ export const updateAccount = createAction<{
 }>('wallet/updateAccount');
 
 export const removeAccount = createAction<{
-  key: string;
-  address: string;
+  walletKey: string;
+  accountAddress: string;
 }>('wallet/removeAccount');
 
 export const updateWalletList = createAction<{

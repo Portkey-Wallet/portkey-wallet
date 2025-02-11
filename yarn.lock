@@ -2046,6 +2046,25 @@
     "@etransfer/types" "^1.8.0"
     "@etransfer/utils" "^1.8.0"
 
+"@etransfer/core@^1.12.1":
+  version "1.12.1"
+  resolved "https://registry.yarnpkg.com/@etransfer/core/-/core-1.12.1.tgz#895954cebf89e5376ce0665de3fa8847d2e9b031"
+  integrity sha512-j67Ts7ftvM9Q5XSP3Z5LH7K2wcn7M5Zsbe4YEemLsbQtqV3oKXkScfFsiFqBSFh1OeZLZ6gsVoq3hrB0vrhnBg==
+  dependencies:
+    "@etransfer/services" "^1.12.1"
+    "@etransfer/socket" "^1.12.1"
+    "@etransfer/types" "^1.12.1"
+    "@etransfer/utils" "^1.12.1"
+
+"@etransfer/request@^1.12.1":
+  version "1.12.1"
+  resolved "https://registry.yarnpkg.com/@etransfer/request/-/request-1.12.1.tgz#5d6cb17c25a3af4c3ec10358cb1db86c6baa496e"
+  integrity sha512-1QX17C7/4pOKoTZp6GeSOQnDMxPErc6Kfwm27THWQujqH9xkC39IrXdddjADJslYcT/B4z05Ji0opZ8E4CrJIQ==
+  dependencies:
+    "@etransfer/types" "^1.12.1"
+    "@etransfer/utils" "^1.12.1"
+    axios "^0.24.0"
+
 "@etransfer/request@^1.8.0":
   version "1.8.0"
   resolved "https://registry.npmjs.org/@etransfer/request/-/request-1.8.0.tgz#d8f29f4a14df4e9889e35385fbfb6a4b59a693da"
@@ -2065,6 +2084,24 @@
     "@etransfer/utils" "^1.8.0"
     "@portkey/types" "2.6.6"
 
+"@etransfer/services@^1.12.1":
+  version "1.12.1"
+  resolved "https://registry.yarnpkg.com/@etransfer/services/-/services-1.12.1.tgz#0a50a34fbe2e83004882ffd6f1f00783167a8c5f"
+  integrity sha512-kH7SfGyhxyXSO/1W0Yzs9J6KBRP82M21zrtTK3PtLl5RJqCQ/9T6rExWYAznjYjxSJYj+SBK00lfQtjgkg54pQ==
+  dependencies:
+    "@etransfer/request" "^1.12.1"
+    "@etransfer/types" "^1.12.1"
+    "@etransfer/utils" "^1.12.1"
+    "@portkey/types" "2.15.10"
+
+"@etransfer/socket@^1.12.1":
+  version "1.12.1"
+  resolved "https://registry.yarnpkg.com/@etransfer/socket/-/socket-1.12.1.tgz#beeebff7d0e8bd4bf00652c7b54baea2db84d3d8"
+  integrity sha512-XOmUihQHNrWcVYEfglMfEmLk9F8wnW/Pf6FyiLpkC92C9Rn5A+YztnZweTdq21N7yM67MZf6SiXzgWnK7JrWWA==
+  dependencies:
+    "@abp/signalr" "^7.0.0"
+    "@etransfer/utils" "^1.12.1"
+
 "@etransfer/socket@^1.8.0":
   version "1.8.0"
   resolved "https://registry.npmjs.org/@etransfer/socket/-/socket-1.8.0.tgz#e7d108969b457e080ec9a29f78ffbde3d68ac188"
@@ -2078,6 +2115,32 @@
   resolved "https://registry.npmjs.org/@etransfer/types/-/types-1.8.0.tgz#4404fccf9e406cb520d0b379578b34e3d8bb3059"
   integrity sha512-8ZBegEm1IO832LgzjsTJAtJq4FmACt44rDOel7n9nvCZ6mOSyi78JpR+6QAQM6XnQ0nYxfji4dwniIWtezORUw==
 
+"@etransfer/types@^1.12.1":
+  version "1.12.1"
+  resolved "https://registry.yarnpkg.com/@etransfer/types/-/types-1.12.1.tgz#cf21e92be485d871b5a003aed183333415fe7604"
+  integrity sha512-mP1jOVxB37i3dm3wyvSsVf/gZpa2IPMWYPWdcwud6Jw1msJDhMt0bPYi0mYc26/YcIa/3JjmxddlTwymw8feFA==
+
+"@etransfer/ui-react@^1.0.0-alpha.9":
+  version "1.12.1"
+  resolved "https://registry.yarnpkg.com/@etransfer/ui-react/-/ui-react-1.12.1.tgz#8433f37e8454a7a829ad3cd0c423338d12ce682c"
+  integrity sha512-Fk/IAgSsRHKwoaIYHbjxPeTiflikAVb4qOdgU8AljvDwt24JaMLuoVhQu9zryTGtlfFXkGInfNQBQnCTz+7hSw==
+  dependencies:
+    "@etransfer/core" "^1.12.1"
+    "@etransfer/types" "^1.12.1"
+    "@etransfer/utils" "^1.12.1"
+    "@portkey/types" "2.15.10"
+    "@portkey/utils" "2.15.10"
+    antd "4.24.14"
+    bignumber.js "^9.1.0"
+    clsx "^1.2.1"
+    lottie-web "5.9.6"
+    moment "^2.29.4"
+    query-string "^7.1.1"
+    react-infinite-scroll-component "^6.1.0"
+    react-qrcode-logo "2.9.0"
+    react-use "^17.4.0"
+    uuid "^8.3.2"
+
 "@etransfer/utils@^1.0.0-alpha.9", "@etransfer/utils@^1.8.0":
   version "1.8.0"
   resolved "https://registry.npmjs.org/@etransfer/utils/-/utils-1.8.0.tgz#d9f55c11d2412b3678af0c1766e4251cbbf499f2"
@@ -2085,6 +2148,15 @@
   dependencies:
     "@etransfer/services" "^1.8.0"
     "@etransfer/types" "^1.8.0"
+    bn.js "^5.2.1"
+
+"@etransfer/utils@^1.12.1":
+  version "1.12.1"
+  resolved "https://registry.yarnpkg.com/@etransfer/utils/-/utils-1.12.1.tgz#0811e347c66dda14624d41ea0c17b50c0b9bb287"
+  integrity sha512-ou74k6q/ClUN9OTjXjhb+GC51P83B70u399+pQuTh8UheTfxQRp9r3xWv3RnLexS6rEkCuslwlkyvmxW3KbJnw==
+  dependencies:
+    "@etransfer/services" "^1.12.1"
+    "@etransfer/types" "^1.12.1"
     bn.js "^5.2.1"
 
 "@expo/bunyan@^4.0.0":
@@ -5454,6 +5526,11 @@
     "@abp/signalr" "^7.0.0"
     "@portkey/utils" "^2.13.1"
 
+"@portkey/types@2.15.10":
+  version "2.15.10"
+  resolved "https://registry.yarnpkg.com/@portkey/types/-/types-2.15.10.tgz#35c37803ee4796fe15b7967bea59a6f0fd931fc9"
+  integrity sha512-RQddcR9AfWbapYM4ovAkCXOZGULuuYCbTwYkUTaqRf0WflG3IHB+sQvDMUSMJAw0fo4dPND7Qg0hS2mvHVVWRw==
+
 "@portkey/types@2.6.6":
   version "2.6.6"
   resolved "https://registry.npmjs.org/@portkey/types/-/types-2.6.6.tgz#07af958da36f777aa68149a6bfd7bb0df1c9f992"
@@ -5468,6 +5545,13 @@
   version "2.13.1"
   resolved "https://registry.npmjs.org/@portkey/types/-/types-2.13.1.tgz#c0dc9742d65ca5600924f484abe0590d8f672855"
   integrity sha512-htWT6Uwvyao9k9hUCMW51xU/Rzg3RUxsXAGrnq0YQ/Hv81loUPdgxo/4fsEYfK9y8mTVMbWhe4CmCJNaxD8SGA==
+
+"@portkey/utils@2.15.10":
+  version "2.15.10"
+  resolved "https://registry.yarnpkg.com/@portkey/utils/-/utils-2.15.10.tgz#faaa1e2f239d728b202c226171f838fc22c14a19"
+  integrity sha512-2jV+gnfbavEcrAGndR9ePLMdR8V6I4gvRMo1d76m6hdTRRrFf5VpFOd2VN8624RgXUHon5WQocSQ/Pi++eWtdg==
+  dependencies:
+    node-forge "^1.3.1"
 
 "@portkey/utils@^2.13.1", "@portkey/utils@^2.9.6-alpha.6":
   version "2.13.1"
@@ -24290,6 +24374,13 @@ react-icons@^4.3.1:
   resolved "https://registry.npmjs.org/react-icons/-/react-icons-4.12.0.tgz#54806159a966961bfd5cdb26e492f4dafd6a8d78"
   integrity sha512-IBaDuHiShdZqmfc/TwHu6+d6k2ltNCf3AszxNmjJc1KUfXdEeRJOKyNvLmAHaarhzGmTSVygNdyu8/opXv2gaw==
 
+react-infinite-scroll-component@^6.1.0:
+  version "6.1.0"
+  resolved "https://registry.yarnpkg.com/react-infinite-scroll-component/-/react-infinite-scroll-component-6.1.0.tgz#7e511e7aa0f728ac3e51f64a38a6079ac522407f"
+  integrity sha512-SQu5nCqy8DxQWpnUVLx7V7b7LcA37aM7tvoWjTLZp1dk6EJibM5/4EJKzOnl07/BsM1Y40sKLuqjCwwH/xV0TQ==
+  dependencies:
+    throttle-debounce "^2.1.0"
+
 react-is@^16.12.0, react-is@^16.13.0, react-is@^16.13.1, react-is@^16.7.0, react-is@^16.8.1, react-is@^16.8.4:
   version "16.13.1"
   resolved "https://registry.npmjs.org/react-is/-/react-is-16.13.1.tgz#789729a4dc36de2999dc156dd6c1d9c18cea56a4"
@@ -27554,6 +27645,11 @@ throat@^5.0.0:
   version "5.0.0"
   resolved "https://registry.npmjs.org/throat/-/throat-5.0.0.tgz#c5199235803aad18754a667d659b5e72ce16764b"
   integrity sha512-fcwX4mndzpLQKBS1DVYhGAcYaYt7vsHNIvQV+WXMvnow5cgjPphq5CaayLaGsjRdSCKZFNGt7/GYAuXaNOiYCA==
+
+throttle-debounce@^2.1.0:
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/throttle-debounce/-/throttle-debounce-2.3.0.tgz#fd31865e66502071e411817e241465b3e9c372e2"
+  integrity sha512-H7oLPV0P7+jgvrk+6mwwwBDmxTaxnu9HMXmloNLXwnNO0ZxZ31Orah2n8lU1eMPvsaowP2CX+USCgyovXfdOFQ==
 
 throttle-debounce@^3.0.1:
   version "3.0.1"

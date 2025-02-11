@@ -16,12 +16,12 @@ export const CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL = ['ELF', 'USDT'];
 const ETRANSFER_VERSION = '2.13.0';
 
 class CrossTransfer implements ICrossTransfer {
-  options: ICrossTransferInitOption;
+  options: Partial<ICrossTransferInitOption>;
   authTokenCount = 0;
   constructor() {
     this.options = {} as any;
   }
-  init(options: ICrossTransferInitOption) {
+  init(options: Partial<ICrossTransferInitOption>) {
     this.options = options;
     const eTransferUrl = this.options.eTransferUrl;
     eTransferCore.init({

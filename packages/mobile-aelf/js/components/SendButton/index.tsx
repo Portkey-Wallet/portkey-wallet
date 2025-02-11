@@ -1,7 +1,7 @@
 import React, { memo, useCallback } from 'react';
 import navigationService from 'utils/navigationService';
-import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
-import { IToSendHomeParamsType } from '@portkey-wallet/types/types-ca/routeParams';
+import { TokenItemShowType } from '@portkey-wallet/types/types-eoa/token';
+import { IToSendHomeParamsType } from '@portkey-wallet/types/types-eoa/routeParams';
 import { useLanguage } from 'i18n/hooks';
 import OutlinedButton, { TOutlinedStyleProps } from 'components/OutlinedButton';
 

@@ -206,6 +206,7 @@ export interface CustomFetchConfig extends RequestInit {
   params?: Record<string, any>;
   resourceUrl?: string;
   stringifyOptions?: StringifyOptions;
+  extra?: Record<string, any>;
 }
 
 export type CustomFetchFun = (
@@ -255,6 +256,13 @@ const fetchFormat = (
   Object.entries({ ...defaultHeaders, ...headers }).forEach(([headerItem, value]) => {
     myHeaders.append(headerItem, value);
   });
+  const curlCommand = generateCurlCommand(uri, {
+    ...requestConfig,
+    method: _method,
+    headers: myHeaders,
+    body,
+  });
+  console.log('CURL Command:', curlCommand);
   return fetch(uri, {
     ...requestConfig,
     method: _method,
@@ -263,7 +271,23 @@ const fetchFormat = (
     body,
   });
 };
+const generateCurlCommand = (url: string, options: RequestInit) => {
+  const method = options.method || 'GET';
+  const headers = options.headers ? new Headers(options.headers) : new Headers();
+  const body = options.body ? `--data '${options.body}'` : '';
 
+  let curlCommand = `curl -X ${method} '${url}'`;
+
+  headers.forEach((value: any, key: any) => {
+    curlCommand += ` -H '${key}: ${value}'`;
+  });
+
+  if (body) {
+    curlCommand += ` ${body}`;
+  }
+
+  return curlCommand;
+};
 export const customFetch: CustomFetchFun = (url, _config) => {
   const control = new AbortController();
   const timeout = _config?.timeout ?? DEFAULT_FETCH_TIMEOUT;

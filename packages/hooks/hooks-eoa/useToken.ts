@@ -14,10 +14,10 @@ export const useToken = () => {
   const identify = useUniqueIdentify();
 
   const tokenState = useAppEOASelector(state => state.tokenManagement);
-  console.log('tokenState?.tokenInfoV2=====', JSON.stringify(tokenState?.tokenInfoV2));
+  console.log('tokenState?.tokenInfoV2=====', JSON.stringify(tokenState?.tokenInfo));
   const tokenInfo = useMemo(
-    () => tokenState?.tokenInfoV2?.[identify] || INITIAL_TOKEN_INFO,
-    [identify, tokenState?.tokenInfoV2],
+    () => tokenState?.tokenInfo?.[identify] || INITIAL_TOKEN_INFO,
+    [identify, tokenState?.tokenInfo],
   );
 
   const fetchTokenInfoList = useCallback(
@@ -37,7 +37,7 @@ export const useTokenLegacy = () => {
   const dispatch = useAppCommonDispatch();
   const identify = useUniqueIdentify();
   console.log('identify is:: =====', identify);
-  const updatedAccountTokenLis = useAccountTokenInfoMixLocalShowToken();
+  const updatedAccountTokenList = useAccountTokenInfoMixLocalShowToken();
   const { localToken } = useManagerTokenInfo();
   const tokenState = useAppEOASelector(state => state.tokenManagement);
 
@@ -47,7 +47,7 @@ export const useTokenLegacy = () => {
   );
   const updatedTokenDataShowInMarket = useMemo(() => {
     console.log('tokenInfo.tokenDataShowInMarket', JSON.stringify(tokenInfo.tokenDataShowInMarket));
-    const flattenedAccountTokens = updatedAccountTokenLis?.flatMap(item => item.tokens);
+    const flattenedAccountTokens = updatedAccountTokenList?.flatMap(item => item.tokens);
     console.log('flattenedAccountTokens====', JSON.stringify(flattenedAccountTokens));
     const updatedMarketTokens = tokenInfo.tokenDataShowInMarket.map(token => ({
       ...token,
@@ -75,7 +75,7 @@ export const useTokenLegacy = () => {
         }
       });
     return updatedMarketTokens;
-  }, [tokenInfo.tokenDataShowInMarket, updatedAccountTokenLis, localToken]);
+  }, [tokenInfo.tokenDataShowInMarket, updatedAccountTokenList, localToken]);
   const fetchTokenInfoList = useCallback(
     (params: { keyword: string; chainIdArray: string[]; skipCount?: number; maxResultCount?: number }) => {
       return dispatch(
@@ -87,7 +87,6 @@ export const useTokenLegacy = () => {
     },
     [identify, dispatch],
   );
-  tokenInfo.tokenDataShowInMarket;
   return {
     ...tokenInfo,
     tokenDataShowInMarket: updatedTokenDataShowInMarket,

@@ -136,6 +136,27 @@ export const useCurrentAddressInfos = () => {
   }, [currentAccount?.address, isMainnet]);
   return addressInfos;
 };
+export const useCurrentWrapperAddressInfos = () => {
+  const isMainnet = useIsMainnet();
+  const currentAccount = useCurrentAccount();
+  const addressInfos = useMemo(() => {
+    return [
+      {
+        address: 'ELF_' + currentAccount?.address || '' + '_AELF',
+        // address: '27UsGir6k7UntMtUTmo4fDU3v6mufJjrCCtnmTztXDfkHCcDyq',
+        chainId: 'AELF' as ChainId,
+        chainName: 'MainChain',
+      },
+      {
+        address: 'ELF_' + currentAccount?.address || '' + (isMainnet ? 'tDVV' : 'tDVW'),
+        // address: '27UsGir6k7UntMtUTmo4fDU3v6mufJjrCCtnmTztXDfkHCcDyq',
+        chainId: (isMainnet ? 'tDVV' : 'tDVW') as ChainId,
+        chainName: 'dAppChain',
+      },
+    ];
+  }, [currentAccount?.address, isMainnet]);
+  return addressInfos;
+};
 
 export const useIsAccountExist = () => {
   const list = useAccountList();

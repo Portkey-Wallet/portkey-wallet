@@ -1,11 +1,10 @@
 import React, { useEffect, useMemo } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import { pTd } from 'utils/unit';
-import { TReceiveFromNetworkItem } from '@portkey-wallet/types/types-ca/receive';
-import { IUserTokenItemResponse } from '@portkey-wallet/types/types-ca/token';
-import { IChainItemType } from '@portkey-wallet/types/types-ca/chain';
-import { useReceiveByETransfer } from '@portkey-wallet/hooks/hooks-ca/receive';
-// @ts-expect-error: Importing makeStyles from @rneui/themed
+import { TReceiveFromNetworkItem } from '@portkey-wallet/types/types-eoa/receive';
+import { IUserTokenItemResponse } from '@portkey-wallet/types/types-eoa/token';
+import { IChainItemType } from '@portkey-wallet/types/types-eoa/chain';
+import { useReceiveByETransfer } from '@portkey-wallet/hooks/hooks-eoa/receive';
 import { makeStyles } from '@rneui/themed';
 import fonts from 'assets/theme/fonts';
 import Loading from 'components/Loading';

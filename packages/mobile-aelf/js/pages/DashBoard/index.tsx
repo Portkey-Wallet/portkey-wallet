@@ -24,7 +24,7 @@ import {
   PAGE_SIZE_IN_ACCOUNT_NFT_COLLECTION,
 } from '@portkey-wallet/constants/constants-eoa/assets';
 import { useCurrentAddressInfos } from '@portkey-wallet/hooks/hooks-eoa/wallet';
-import { useIsMainnet } from 'hooks/useNetwork';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-eoa/network';
 
 const DashBoard: React.FC<any> = ({ navigation }) => {
   const { theme } = useTheme();

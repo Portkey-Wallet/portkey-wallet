@@ -60,10 +60,12 @@ const App = () => {
     }
     return barProps;
   }, []);
+
   useEffect(() => {
     // Lock the screen orientation Right-side up portrait only.
     lockScreenOrientation();
   }, []);
+
   useEffectOnce(() => {
     initRequest();
     (async () => {

@@ -4,7 +4,7 @@ import { StyleProp, ViewProps } from 'react-native';
 import OutlinedButton, { TOutlinedStyleProps } from 'components/OutlinedButton';
 import { useLanguage } from 'i18n/hooks';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-eoa/network';
-import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
+import { TokenItemShowType } from '@portkey-wallet/types/types-eoa/token';
 
 type TSendButtonType = TOutlinedStyleProps & {
   wrapStyle?: StyleProp<ViewProps>;

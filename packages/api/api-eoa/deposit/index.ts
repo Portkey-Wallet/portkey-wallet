@@ -17,7 +17,12 @@ export default {
   },
   getDepositInfo: {
     target: '/api/app/transfer/deposit/info',
-    config: { method: 'GET' },
+    config: {
+      method: 'GET',
+      extra: {
+        noTransform: true,
+      },
+    },
   },
   depositCalculator: {
     target: '/api/app/transfer/deposit/calculator',

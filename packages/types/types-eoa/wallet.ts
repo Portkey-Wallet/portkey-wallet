@@ -21,3 +21,16 @@ export type TWalletInfo = {
   accountList: TAccountInfo[];
   isBackup?: boolean;
 };
+export enum LoginType {
+  Email,
+  Phone,
+  Google,
+  Apple,
+  Telegram,
+  Facebook,
+  Twitter,
+}
+
+export type LoginKeyType = string;
+
+export type LoginKey = keyof typeof LoginType;

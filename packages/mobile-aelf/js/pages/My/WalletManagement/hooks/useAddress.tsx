@@ -72,9 +72,6 @@ export const useAddress = ({
           }),
         );
         callback();
-        // CommonToast.success('Wallet removed');
-        // navigationService.pop(2);
-        // navigationService.push('WalletManagement');
       });
       console.log('removeAddress: ');
     },

@@ -181,7 +181,8 @@ export const useAccountByWallet = (wallet?: TWalletInfo) => {
         address: account.address,
         AESEncryptPrivateKey: accountAESEncryptPrivateKey,
         publicKey: account.publicKey,
-        name: 'Address ' + (accountList.length + 1),
+        // name: 'Address ' + (accountList.length + 1),
+        name: 'Address ' + (parseInt(nextBIP44Path.split('/')[5], 10) + 1),
         isHide: false,
       };
       dispatch(

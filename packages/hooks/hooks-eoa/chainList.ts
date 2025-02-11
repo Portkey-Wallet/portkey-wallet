@@ -10,11 +10,9 @@ export const useOriginChainId = () => {
   return 'AELF';
 };
 
-export function useCurrentChain(_chainId?: ChainId) {
-  const originChainId = useOriginChainId();
-  const chainId = useMemo(() => _chainId || originChainId, [_chainId, originChainId]);
+export function useCurrentChain(_chainId: ChainId) {
   const currentChainList = useCurrentChainList();
-  return useMemo(() => currentChainList?.find(chain => chain.chainId === chainId), [currentChainList, chainId]);
+  return useMemo(() => currentChainList?.find(chain => chain.chainId === _chainId), [currentChainList, _chainId]);
 }
 
 export function useExplorerUrl(chainId: ChainId) {
@@ -31,7 +29,7 @@ export function useExplorerUrl(chainId: ChainId) {
   return exploreUrl;
 }
 
-export function useDefaultToken(_chainId?: ChainId) {
+export function useDefaultToken(_chainId: ChainId) {
   const chainInfo = useCurrentChain(_chainId);
   return chainInfo?.defaultToken || DEFAULT_TOKEN;
 }

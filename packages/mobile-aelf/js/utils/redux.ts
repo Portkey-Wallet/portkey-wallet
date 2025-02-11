@@ -2,11 +2,11 @@ import { store } from 'store';
 import aes from '@portkey-wallet/utils/aes';
 import AElf from 'aelf-sdk';
 import { AElfWallet } from '@portkey-wallet/types/aelf';
-import { DefaultChainId } from '@portkey-wallet/constants/constants-eoa/network';
 import { ChainId } from '@portkey-wallet/types';
 import { InitialTxFee } from '@portkey-wallet/constants/constants-ca/wallet';
 import { getContractBasic } from '@portkey-wallet/contracts/utils';
 import { getWallet as getDefaultWallet, isEqAddress } from '@portkey-wallet/utils/aelf';
+import { TAccountInfo } from '@portkey-wallet/types/types-eoa/wallet';
 
 const walletMap: { [address: string]: AElfWallet } = {};
 export const getState = () => store.getState();
@@ -18,7 +18,18 @@ export const getNetwork = () => getState().network;
 export const getUser = () => getState().user;
 export const getPin = () => getUser().credentials?.pin;
 
-export const getWalletInfo = () => getWallet()?.walletInfo;
+export const getWalletInfo = () => {
+  const wallet = getWallet();
+  const walletList = wallet.walletList;
+  const accountList: TAccountInfo[] = [];
+  walletList.forEach(w => accountList.push(...w.accountList));
+  const currentAccountAddress = wallet.currentAccountAddress;
+  const accountMap: Record<string, TAccountInfo> = {};
+  accountList.forEach(item => {
+    accountMap[item.address] = item;
+  });
+  return currentAccountAddress ? accountMap[currentAccountAddress] : undefined;
+};
 
 export const getWalletAddress = () => {
   return getWalletInfo()?.address;
@@ -70,20 +81,6 @@ export const getManagerAccount = (password: string): AElfWallet | undefined => {
   return walletMap[walletInfo.address];
 };
 
-export const isCurrentCaHash = (caHash: string) => {
-  return getCurrentCaHash() === caHash;
-};
-
-export const getCurrentCaInfo = () => {
-  const wallet = getWallet();
-  const { walletInfo, currentNetwork } = wallet || {};
-  return walletInfo?.caInfo?.[currentNetwork];
-};
-
-export const getCurrentCaInfoByChainId = (chainId?: ChainId) => {
-  return getCurrentCaInfo()?.[chainId || DefaultChainId];
-};
-
 export const getTxFee = () => getState().txFee;
 
 export const getCurrentTxFee = () => {
@@ -110,24 +107,12 @@ export const getViewTokenContractByChainId = (chainId: ChainId) => {
 };
 
 export const getCurrentChainList = () => {
-  const { chainInfo, currentNetwork } = getWallet();
-  return chainInfo?.[currentNetwork];
+  const { chainListMap, currentNetwork } = getNetwork();
+  return chainListMap?.[currentNetwork];
 };
 
 export const getCurrentChainInfo = (chainId: ChainId) => {
   return getCurrentChainList()?.find(chain => chain.chainId === chainId);
-};
-
-export const getCurrentCAViewContract = async (chainId: ChainId) => {
-  const chainInfo = getCurrentChainInfo(chainId);
-  if (!chainInfo) {
-    throw new Error(`${chainId} info not found`);
-  }
-  return getContractBasic({
-    rpcUrl: chainInfo.endPoint,
-    contractAddress: chainInfo.caContractAddress || '',
-    account: getDefaultWallet(),
-  });
 };
 
 export const isMyPayTransactionFee = (address: string, chainId?: ChainId) => {
@@ -149,16 +134,4 @@ export const isMyPayTransactionFee = (address: string, chainId?: ChainId) => {
     .filter(i => !!i);
 
   return addressList.some(i => isEqAddress(i, address));
-};
-
-export const getOriginChainId = () => {
-  const wallet = getWallet();
-  const caInfo = getCurrentCaInfo();
-  return caInfo?.originChainId || wallet?.originChainId || DefaultChainId;
-};
-
-export const getCurrentCaHash = () => {
-  const caInfo = getCurrentCaInfo();
-  const originChainId = getOriginChainId();
-  return caInfo?.[originChainId]?.caHash;
 };

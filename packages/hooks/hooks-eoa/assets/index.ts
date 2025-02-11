@@ -102,7 +102,7 @@ export const useAccountTokenInfo = () => {
 
   // const currentNetwork = useCurrentNetwork();
   const assetsState = useAssets();
-  console.log('assetsState====', JSON.stringify(assetsState));
+  // console.log('assetsState====', JSON.stringify(assetsState));
   const accountTokenInfo = useMemo(
     () => assetsState?.accountToken?.accountTokenInfoV2?.[identify] || INIT_ACCOUNT_TOKEN_INFO,
     [assetsState?.accountToken?.accountTokenInfoV2, identify],

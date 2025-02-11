@@ -11,8 +11,6 @@ import CommonInput from 'components/CommonInput';
 import { TextL, TextM } from 'components/CommonText';
 import { OverlayBottomSection } from '../OverlayBottomSection';
 import { ApproveParams } from 'dapp/dappOverlay';
-import { useAppDispatch } from 'store/hooks';
-import { changeDrawerOpenStatus } from '@portkey-wallet/store/store-eoa/discover/slice';
 import Touchable from 'components/Touchable';
 import { divDecimals, divDecimalsStr, timesDecimals } from '@portkey-wallet/utils/converter';
 import { LANG_MAX, ZERO } from '@portkey-wallet/constants/misc';
@@ -39,7 +37,6 @@ const ZERO_MESSAGE = 'Please enter a valid amount.';
 const ApproveModal = (props: SignModalPropsType) => {
   const { dappInfo, approveParams, onReject, isEditBatchApprovalInApp } = props;
   const { amount } = approveParams.approveInfo;
-  const dispatch = useAppDispatch();
   const { t } = useLanguage();
   const [errorMessage, setErrorMessage] = useState('');
   const [symbolNum, setSymbolNum] = useState<string>('');
@@ -98,12 +95,11 @@ const ApproveModal = (props: SignModalPropsType) => {
             },
             success: true,
           });
-          dispatch(changeDrawerOpenStatus(false));
           OverlayModal.hide(false);
         },
       },
     ],
-    [approveParams.approveInfo, approveParams.eventName, decimals, dispatch, onReject, symbolNum, t],
+    [approveParams.approveInfo, approveParams.eventName, decimals, onReject, symbolNum, t],
   );
 
   const onPressMax = useCallback(() => {

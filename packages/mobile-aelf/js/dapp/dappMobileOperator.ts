@@ -19,7 +19,7 @@ import { IDappOverlay } from './dappOverlay';
 import { Operator } from '@portkey/providers';
 import { DappStoreItem } from '@portkey-wallet/store/store-eoa/dapp/type';
 import { getContractBasic } from '@portkey-wallet/contracts/utils';
-import { getCurrentCaHash, getManagerAccount, getPin } from 'utils/redux';
+import { getManagerAccount, getPin } from 'utils/redux';
 import { checkIsCipherText, handleErrorMessage } from '@portkey-wallet/utils';
 import { isEqDapp } from '@portkey-wallet/utils/dapp/browser';
 import {
@@ -48,6 +48,8 @@ const SEND_METHOD: { [key: string]: true } = {
 };
 
 const ACTIVE_VIEW_METHOD: { [key: string]: true } = {
+  [MethodsWallet.GET_WALLET_CURRENT_MANAGER_ADDRESS]: true,
+  [MethodsWallet.GET_WALLET_MANAGER_SYNC_STATUS]: true,
   [MethodsWallet.GET_WALLET_NAME]: true,
 };
 
@@ -140,6 +142,18 @@ export default class DappMobileOperator extends Operator {
           data: await this.dappManager.walletName(),
         });
       }
+      case MethodsWallet.GET_WALLET_CURRENT_MANAGER_ADDRESS: {
+        return generateNormalResponse({
+          eventName,
+          data: await this.dappManager.currentManagerAddress(),
+        });
+      }
+      case MethodsWallet.GET_WALLET_MANAGER_SYNC_STATUS: {
+        return generateNormalResponse({
+          eventName,
+          data: true,
+        });
+      }
     }
     return generateErrorResponse({
       eventName,
@@ -220,6 +234,17 @@ export default class DappMobileOperator extends Operator {
     });
   };
 
+  protected async getTargetContract(chainId: ChainId, contractAddress: string) {
+    const chainInfo = await this.dappManager.getChainInfo(chainId);
+    if (!chainInfo?.endPoint) {
+      return 'invalid chain id';
+    }
+    return {
+      chainInfo,
+      contract: await getContract({ rpcUrl: chainInfo.endPoint, contractAddress }),
+    };
+  }
+
   protected async getTokenContract(chainId: ChainId) {
     const chainInfo = await this.dappManager.getChainInfo(chainId);
     if (!chainInfo?.endPoint) {
@@ -233,18 +258,17 @@ export default class DappMobileOperator extends Operator {
 
   protected handleSendTransaction: SendRequest<SendTransactionParams> = async (eventName, params) => {
     try {
-      const contractInfo = await this.getTokenContract(params.chainId);
+      const contractInfo = await this.getTargetContract(params.chainId, params.contractAddress);
 
       if (typeof contractInfo === 'string') {
         return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS, msg: contractInfo });
       }
-
-      const { tokenContract: contract } = contractInfo || {};
-
+      const { contract } = contractInfo || {};
       const paramsOption = (params.params as { paramsOption: object }).paramsOption,
         functionName = params.method;
-
-      const data = await contract!.callSendMethod(functionName, '', paramsOption, { onMethod: 'transactionHash' });
+      const data = await contract!.callSendMethod(functionName, '', paramsOption, {
+        onMethod: 'transactionHash',
+      });
       if (!data?.error) {
         return generateNormalResponse({
           eventName,
@@ -658,15 +682,13 @@ export default class DappMobileOperator extends Operator {
 
       const sessionInfo = await this.dappManager.getSessionInfo(this.dapp.origin);
       const manager = getManager();
-      const caHash = getCurrentCaHash();
-      if (!manager?.keyPair || !caHash || !sessionInfo) {
+      if (!manager?.keyPair || !sessionInfo) {
         return false;
       }
       const valid = verifySession({
         keyPair: manager.keyPair,
         origin: this.dapp.origin,
         managerAddress: manager.address,
-        caHash,
         expiredPlan: sessionInfo.expiredPlan,
         expiredTime: sessionInfo.expiredTime,
         signature: sessionInfo.signature,

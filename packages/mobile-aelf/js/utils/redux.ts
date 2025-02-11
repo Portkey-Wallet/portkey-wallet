@@ -17,8 +17,36 @@ export const getWallet = () => getState().wallet;
 export const getNetwork = () => getState().network;
 export const getUser = () => getState().user;
 export const getPin = () => getUser().credentials?.pin;
+/**
+ * export const useCurrentWallet = () => {
+   const walletList = useWalletListState();
+   const currentAccountAddress = useCurrentAccountAddressState();
 
-export const getWalletInfo = () => getWallet()?.walletInfo;
+   return useMemo(() => {
+     return walletList.find(wallet => wallet.accountList.some(account => account.address === currentAccountAddress));
+   }, [walletList, currentAccountAddress]);
+ };
+*/
+export const getWalletInfo = () => {
+  const wallet = getWallet();
+  if (!wallet) {
+    return undefined;
+  }
+
+  const { walletList, currentAccountAddress } = wallet;
+  if (!walletList || !currentAccountAddress) {
+    return undefined;
+  }
+
+  const currentWallet = walletList.find(innerWallet =>
+    innerWallet.accountList.some(account => account.address === currentAccountAddress),
+  );
+  const currentAccount = currentWallet?.accountList.find(account => account.address === currentAccountAddress);
+  return {
+    ...currentAccount,
+    AESEncryptMnemonic: currentWallet?.AESEncryptMnemonic,
+  };
+};
 
 export const getWalletAddress = () => {
   return getWalletInfo()?.address;
@@ -54,7 +82,8 @@ export const checkPin = (pin: string) => {
 
 export const getManagerAccount = (password: string): AElfWallet | undefined => {
   const walletInfo = getWalletInfo();
-  if (!walletInfo) {
+  console.log('walletInfo====wfs', JSON.stringify(walletInfo));
+  if (!walletInfo || !walletInfo.AESEncryptPrivateKey || !walletInfo.address) {
     return;
   }
 

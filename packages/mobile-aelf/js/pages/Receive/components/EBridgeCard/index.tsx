@@ -126,7 +126,7 @@ export default function EBridgeCard(props: IEBridgeCardProps) {
               <Svg icon="info" iconStyle={{ marginRight: pTd(12) }} />
               <TextL style={styles.tipInfoMessage}>
                 {t(
-                  `To receive this token from the Ethereum network, connect to an external wallet and bridge the assets to your destination network.`,
+                  'To receive this token from the Ethereum network, connect to an external wallet and bridge the assets to your destination network.',
                 )}
               </TextL>
             </View>

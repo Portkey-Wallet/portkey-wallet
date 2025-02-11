@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect } from 'react';
 import PageContainer from 'components/PageContainer';
 import { pTd } from 'utils/unit';
-import { IUserTokenItemResponse } from '@portkey-wallet/types/types-ca/token';
+import { IUserTokenItemResponse } from '@portkey-wallet/types/types-eoa/token';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
-import { useReceive } from '@portkey-wallet/hooks/hooks-ca/receive';
+import { useReceive } from '@portkey-wallet/hooks/hooks-eoa/receive';
 import SourceDestinationPicker from '../components/SourceDestinationPicker';
 import SourceDestinationSelector, { SourceDestinationTypeEnum } from '../components/SourceDestinationSelector';
 import ReceiveByPortkey from '../components/ReceiveByPortkey';
@@ -13,7 +13,7 @@ import CommonToast from 'components/CommonToast';
 import Touchable from 'components/Touchable';
 import Svg from 'components/Svg';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
-import { ReceiveType } from '@portkey-wallet/types/types-ca/receive';
+import { ReceiveType } from '@portkey-wallet/types/types-eoa/receive';
 import { makeStyles } from '@rneui/themed';
 import EBridgeCard from '../components/EBridgeCard';
 import { ChainId } from '@portkey-wallet/types';
@@ -33,6 +33,7 @@ export default function Receive() {
     sourceChainList,
     setSourceChain,
   } = useReceive(tokenInfo, chainId);
+  console.log('receiveType===', receiveType);
   const styles = getStyles();
 
   useEffect(() => {

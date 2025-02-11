@@ -1,4 +1,4 @@
-package com.aelfwallet
+package com.portkey.fairyvault
 
 import android.app.Application
 import com.facebook.react.PackageList

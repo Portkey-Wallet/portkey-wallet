@@ -24,12 +24,15 @@ import { service } from 'api/utils';
 import { useInitAwaken } from '@portkey-wallet/hooks/hooks-eoa/awaken';
 import { useCheckContactMap } from '@portkey-wallet/hooks/hooks-eoa/contact';
 import { useContactNetworkConfig, useTransferNetworkConfig } from '@portkey-wallet/hooks/hooks-eoa/config';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import CrossTransfer from '@portkey-wallet/utils/withdraw';
+const crossTransfer = new CrossTransfer();
 
 request.setExceptionManager(exceptionManager);
 
 export default function Updater() {
   // const isMainnet = useIsMainnet();
-
+  const { eTransferUrl } = useCurrentNetworkInfo();
   // FIXME: delete language
   const { changeLanguage } = useLanguage();
   useEffectOnce(() => {
@@ -71,6 +74,14 @@ export default function Updater() {
     if (service.defaults.baseURL !== apiUrl) {
       service.defaults.baseURL = apiUrl;
     }
+    crossTransfer.init({
+      eTransferUrl: eTransferUrl,
+      storage: AsyncStorage,
+      // walletInfo: undefined,
+      // pin: '',
+      // chainList: [],
+      // eTransferCA: undefined,
+    });
   }, [apiUrl]);
 
   // useMemo(() => {

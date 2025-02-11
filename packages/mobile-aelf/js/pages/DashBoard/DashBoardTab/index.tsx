@@ -11,7 +11,7 @@ import { View } from 'react-native';
 import Touchable from 'components/Touchable';
 import ModeChangeSelector from '../componets/ModeChangeSelector';
 import { useNFTSection } from '@portkey-wallet/hooks/hooks-eoa';
-import navigationService from 'utils/navigationService';
+// import navigationService from 'utils/navigationService';
 import GStyles from 'assets/theme/GStyles';
 
 enum TabName {
@@ -63,6 +63,9 @@ const DashBoardTab: React.FC = () => {
     ];
   }, []);
   const suffixIconDom = useMemo(() => {
+    if (totalNftItemCount === 0) {
+      return null;
+    }
     return (
       <View style={[styles.suffixDomWrapper]}>
         {/* <View style={[GStyles.flex1, { backgroundColor: 'red'}]} /> */}
@@ -85,12 +88,12 @@ const DashBoardTab: React.FC = () => {
             />
           )}
         </Touchable>
-        <Touchable
+        {/* <Touchable
           onPress={() => {
             navigationService.navigate('FreeMintHome');
           }}>
           <Svg icon="free-mint-entry" size={pTd(22)} />
-        </Touchable>
+        </Touchable> */}
       </View>
     );
   }, [changeNFTSectionMode, modeList, nftSectionUiType, styles.suffixDomWrapper, totalNftItemCount]);
@@ -123,7 +126,7 @@ export const getStyles = makeStyles(theme => ({
   suffixDomWrapper: {
     alignSelf: 'center',
     flexDirection: 'row',
-    marginLeft: pTd(115),
+    marginLeft: pTd(165),
   },
 }));
 

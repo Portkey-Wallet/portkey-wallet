@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import OverlayModal from 'components/OverlayModal';
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, ImageRequireSource } from 'react-native';
 import { ModalBody } from 'components/ModalBody';
 import { darkColors, defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
@@ -16,21 +16,24 @@ import GStyles from 'assets/theme/GStyles';
 
 type SelectModalProps = {
   title?: string;
-  avatar?: string;
+  avatar?: string | ImageRequireSource;
   nickName: string;
-  avatarList: string[];
-  selectPhoto: (url: string) => Promise<void>;
+  avatarList: string[] | ImageRequireSource[];
+  avatarListLocal?: boolean;
+  selectPhoto: (url: string | ImageRequireSource) => Promise<void>;
   photoUpload: () => void;
+  photoUploadHide?: boolean;
 };
 
 type AvatarListProps = {
   onChange: (idx: number) => void;
   itemKey?: string | number;
-  avatarList: string[];
+  avatarList: string[] | ImageRequireSource[];
+  avatarListLocal?: boolean;
 };
 
 const AvatarList = (props: AvatarListProps) => {
-  const { onChange, itemKey, avatarList } = props;
+  const { onChange, itemKey, avatarList, avatarListLocal } = props;
   const marginWidth = (screenWidth - 40 - 60 * 5) / 4;
   console.log('marginWidth:', marginWidth, screenWidth);
 
@@ -74,7 +77,7 @@ const AvatarList = (props: AvatarListProps) => {
                 borderRadius: pTd(52) / 2,
               }}
               resizeMode="cover"
-              source={{ uri }}
+              source={avatarListLocal ? (uri as ImageRequireSource) : ({ uri } as { uri: string })}
             />
             {itemKey === idx && (
               <View
@@ -95,11 +98,20 @@ const AvatarList = (props: AvatarListProps) => {
   );
 };
 
-const SelectModal = ({ title = '', avatar = '', nickName, selectPhoto, avatarList, photoUpload }: SelectModalProps) => {
+const SelectModal = ({
+  title = '',
+  avatar = '',
+  nickName,
+  selectPhoto,
+  avatarList,
+  avatarListLocal,
+  photoUpload,
+  photoUploadHide,
+}: SelectModalProps) => {
   // const { t } = useLanguage();
   // const [isFocused, setIsFocused] = useState<boolean>(false);
   const [selectKey, setSelectKey] = useState<string>('avatar');
-  const [icon, setIcon] = useState<string>(avatar);
+  const [icon, setIcon] = useState<string | ImageRequireSource>(avatar);
 
   const [selectAvatarKey, setSelectAvatarKey] = useState<number | undefined>();
 
@@ -155,7 +167,13 @@ const SelectModal = ({ title = '', avatar = '', nickName, selectPhoto, avatarLis
             position: 'relative',
             marginHorizontal: pTd(32),
           }}>
-          <CommonAvatar resizeMode="cover" avatarSize={pTd(80)} imageUrl={icon || ''} title={nickName} />
+          <CommonAvatar
+            resizeMode="cover"
+            avatarSize={pTd(80)}
+            imageUrl={typeof icon === 'string' ? icon : ''}
+            localImage={typeof icon === 'number' ? icon : undefined}
+            title={nickName}
+          />
         </View>
         <View
           style={{
@@ -179,31 +197,35 @@ const SelectModal = ({ title = '', avatar = '', nickName, selectPhoto, avatarLis
               Select avatar
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.tagWrapper, selectKey === 'photo' && { backgroundColor: darkColors.bgBase2 }]}
-            key={'photo'}
-            onPress={() => {
-              setSelectKey('photo');
-            }}>
-            <Text
-              style={[
-                {
-                  color: selectKey === 'photo' ? defaultColors.white : darkColors.textBase2,
-                },
-              ]}>
-              Upload photo
-            </Text>
-          </TouchableOpacity>
+          {!photoUploadHide && (
+            <TouchableOpacity
+              style={[styles.tagWrapper, selectKey === 'photo' && { backgroundColor: darkColors.bgBase2 }]}
+              key={'photo'}
+              onPress={() => {
+                setSelectKey('photo');
+              }}>
+              <Text
+                style={[
+                  {
+                    color: selectKey === 'photo' ? defaultColors.white : darkColors.textBase2,
+                  },
+                ]}>
+                Upload photo
+              </Text>
+            </TouchableOpacity>
+          )}
         </View>
 
         {selectKey === 'avatar' ? (
           <View>
             <AvatarList
               avatarList={avatarList}
+              avatarListLocal={avatarListLocal}
               onChange={key => {
                 setSelectAvatarKey(key);
                 const item = avatarList[key];
                 setIcon(item);
+                console.log('item: ', item, avatarList, key);
               }}
               itemKey={selectAvatarKey}
             />

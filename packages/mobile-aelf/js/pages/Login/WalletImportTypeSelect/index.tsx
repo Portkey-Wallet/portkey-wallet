@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Text, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
@@ -10,8 +10,10 @@ import { IconName } from 'components/Svg';
 import iCloudImage from 'assets/image/pngs/iCloud.png';
 import navigationService from 'utils/navigationService';
 import Touchable from 'components/Touchable';
+import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
+import { useCheckSecurityLock } from 'hooks/securityLock';
 
-const ListItem: {
+interface IListItem {
   isAndroid?: boolean;
   isIOS?: boolean;
   svgName?: IconName;
@@ -19,7 +21,8 @@ const ListItem: {
   localImage?: number;
   title: string;
   subTitle: string;
-}[] = [
+}
+const ListItem: IListItem[] = [
   {
     isAndroid: true,
     svgName: 'google-drive',
@@ -52,6 +55,30 @@ export default function WalletImportTypeSelect() {
   const styles = getStyles();
   const commonStyles = useWalletCommonStyles();
   const cardStyles = useCardStyles();
+  const { needCheckSecurityLock } = useRouterParams<{
+    needCheckSecurityLock?: boolean;
+  }>();
+  const checkSecurityLock = useCheckSecurityLock();
+
+  const importWalletPress = useCallback(
+    (item: IListItem) => {
+      if (!item.importType) {
+        return;
+      }
+      if (item.isAndroid || item.isIOS) {
+        navigationService.push('ImportByCloud', {
+          importType: item.importType,
+          checkedSecurityLock: needCheckSecurityLock,
+        });
+      } else {
+        navigationService.push('ImportWallet', {
+          importType: item.importType,
+          checkedSecurityLock: needCheckSecurityLock,
+        });
+      }
+    },
+    [needCheckSecurityLock],
+  );
 
   return (
     <PageContainer
@@ -73,19 +100,14 @@ export default function WalletImportTypeSelect() {
         return (
           <Touchable
             key={index}
-            onPress={() => {
-              if (!item.importType) {
+            onPress={async () => {
+              if (needCheckSecurityLock) {
+                await checkSecurityLock(() => {
+                  importWalletPress(item);
+                });
                 return;
               }
-              if (item.isAndroid || item.isIOS) {
-                navigationService.push('ImportByCloud', {
-                  importType: item.importType,
-                });
-              } else {
-                navigationService.push('ImportWallet', {
-                  importType: item.importType,
-                });
-              }
+              importWalletPress(item);
             }}>
             <View style={[cardStyles.card, styles.marginVertical16]}>
               {/* TODO: iCloud, google drive loading */}

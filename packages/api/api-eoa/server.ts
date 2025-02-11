@@ -21,9 +21,12 @@ export class DidService extends ServiceInit {
   }
 
   send = async (base: BaseConfig, config?: RequestConfig, reCount = 0): Promise<any> => {
+    console.log('send=== base', base, 'config', config, 'reCount', reCount);
+
     try {
+      const noTransform = typeof base !== 'string' ? base?.config?.extra?.noTransform : undefined;
       const result = await this.sendOrigin(base, config, reCount);
-      if (this.transformCallbackList.length > 0) {
+      if (this.transformCallbackList.length > 0 && !noTransform) {
         const i = this.transformCallbackList.reduce((prevResult, callback) => {
           return callback(prevResult);
         }, result);

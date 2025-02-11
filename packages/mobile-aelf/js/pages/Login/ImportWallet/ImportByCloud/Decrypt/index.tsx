@@ -21,8 +21,9 @@ import { useImportWallet } from '../../../hooks/useImportWallet';
 export default function DecryptByPassword() {
   const styles = getStyles();
 
-  const { walletInCloud } = useRouterParams<{
+  const { walletInCloud, checkedSecurityLock } = useRouterParams<{
     walletInCloud: string;
+    checkedSecurityLock?: boolean;
   }>();
 
   console.log('walletInCloud: ', walletInCloud);
@@ -101,7 +102,7 @@ export default function DecryptByPassword() {
                 return;
               }
               console.log('mnemonic: ', mnemonic);
-              importWalletByMnemonic(mnemonic);
+              importWalletByMnemonic(mnemonic, checkedSecurityLock);
             } else {
               const privateKey = aes.decrypt(wallet.accountList[0].AESEncryptPrivateKey, password);
               if (!privateKey) {
@@ -109,7 +110,7 @@ export default function DecryptByPassword() {
                 return;
               }
               console.log('privateKey: ', privateKey);
-              importWalletByPrivateKey(privateKey);
+              importWalletByPrivateKey(privateKey, checkedSecurityLock);
             }
           }}>
           Continue

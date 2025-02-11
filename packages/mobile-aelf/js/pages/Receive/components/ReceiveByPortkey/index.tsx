@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import { pTd } from 'utils/unit';
-import { TReceiveFromNetworkItem } from '@portkey-wallet/types/types-ca/receive';
-import { IUserTokenItemResponse } from '@portkey-wallet/types/types-ca/token';
-import { IChainItemType } from '@portkey-wallet/types/types-ca/chain';
+import { TReceiveFromNetworkItem } from '@portkey-wallet/types/types-eoa/receive';
+import { IUserTokenItemResponse } from '@portkey-wallet/types/types-eoa/token';
+import { IChainItemType } from '@portkey-wallet/types/types-eoa/chain';
 import { shrinkSendQrData, QRCodeDataObjType } from '@portkey-wallet/utils/qrCode';
-import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentAccount } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 import { useCurrentNetwork } from '@portkey-wallet/hooks/network';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { makeStyles } from '@rneui/themed';
@@ -15,7 +15,7 @@ import ExchangeTabSwitch from './ExchangeTabSwitch';
 import ReceiveFromExchangeModal from '../ReceiveFromExchangeModal';
 import ReceiveQRCode from '../ReceiveQRCode';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
-import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
+import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-eoa/activity';
 import { TextM } from 'components/CommonText';
 import { defaultColors } from 'assets/theme';
 
@@ -61,18 +61,16 @@ export default function ReceiveByPortkey({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const currentWallet = useCurrentWalletInfo();
+  // const currentWallet = useCurrentWalletInfo();
   const { chainType } = useCurrentNetwork();
   const currentNetWork = useCurrentNetworkInfo();
-  const currentCaAddress = currentWallet?.[destinationChain.chainId]?.caAddress;
-  const toCaAddress = useMemo(
-    () => `ELF_${currentCaAddress}_${destinationChain.chainId}`,
-    [currentCaAddress, destinationChain.chainId],
-  );
+  const { address } = useCurrentAccount() || { address: '' };
+  // const currentAddress = currentWallet?.[destinationChain.chainId]?.caAddress;
+  const toCaAddress = useMemo(() => `ELF_${address}_${destinationChain.chainId}`, [address, destinationChain.chainId]);
 
   const qrcodeData = useMemo(() => {
     if (isSupportExchange && isExchangeSelected) {
-      return currentCaAddress;
+      return address;
     } else {
       const info: QRCodeDataObjType = {
         address: toCaAddress,
@@ -94,23 +92,27 @@ export default function ReceiveByPortkey({
       return JSON.stringify(shrinkSendQrData(info));
     }
   }, [
+    address,
     chainType,
-    currentCaAddress,
     currentNetWork.networkType,
     destinationChain.chainId,
     isExchangeSelected,
     isSupportExchange,
     toCaAddress,
-    tokenInfo,
-    tokenItem,
+    tokenInfo.label,
+    tokenInfo?.symbol,
+    tokenItem?.address,
+    tokenItem?.chainId,
+    tokenItem?.decimals,
+    tokenItem?.tokenContractAddress,
   ]);
   const qrcodeAddress = useMemo(() => {
     if (isSupportExchange && isExchangeSelected) {
-      return currentCaAddress;
+      return address;
     } else {
       return toCaAddress;
     }
-  }, [currentCaAddress, isExchangeSelected, isSupportExchange, toCaAddress]);
+  }, [address, isExchangeSelected, isSupportExchange, toCaAddress]);
 
   const reminderUI = useMemo(() => {
     return (

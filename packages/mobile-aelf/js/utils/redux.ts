@@ -6,7 +6,6 @@ import { ChainId } from '@portkey-wallet/types';
 import { InitialTxFee } from '@portkey-wallet/constants/constants-ca/wallet';
 import { getContractBasic } from '@portkey-wallet/contracts/utils';
 import { getWallet as getDefaultWallet, isEqAddress } from '@portkey-wallet/utils/aelf';
-import { TAccountInfo } from '@portkey-wallet/types/types-eoa/wallet';
 
 const walletMap: { [address: string]: AElfWallet } = {};
 export const getState = () => store.getState();
@@ -17,6 +16,10 @@ export const getWallet = () => getState().wallet;
 export const getNetwork = () => getState().network;
 export const getUser = () => getState().user;
 export const getPin = () => getUser().credentials?.pin;
+/**
+ * export const useCurrentWallet = () => {
+   const walletList = useWalletListState();
+   const currentAccountAddress = useCurrentAccountAddressState();
 
 export const getWalletInfo = () => {
   const wallet = getWallet();
@@ -29,6 +32,30 @@ export const getWalletInfo = () => {
     accountMap[item.address] = item;
   });
   return currentAccountAddress ? accountMap[currentAccountAddress] : undefined;
+   return useMemo(() => {
+     return walletList.find(wallet => wallet.accountList.some(account => account.address === currentAccountAddress));
+   }, [walletList, currentAccountAddress]);
+ };
+*/
+export const getWalletInfo = () => {
+  const wallet = getWallet();
+  if (!wallet) {
+    return undefined;
+  }
+
+  const { walletList, currentAccountAddress } = wallet;
+  if (!walletList || !currentAccountAddress) {
+    return undefined;
+  }
+
+  const currentWallet = walletList.find(innerWallet =>
+    innerWallet.accountList.some(account => account.address === currentAccountAddress),
+  );
+  const currentAccount = currentWallet?.accountList.find(account => account.address === currentAccountAddress);
+  return {
+    ...currentAccount,
+    AESEncryptMnemonic: currentWallet?.AESEncryptMnemonic,
+  };
 };
 
 export const getWalletAddress = () => {
@@ -65,7 +92,8 @@ export const checkPin = (pin: string) => {
 
 export const getManagerAccount = (password: string): AElfWallet | undefined => {
   const walletInfo = getWalletInfo();
-  if (!walletInfo) {
+  console.log('walletInfo====wfs', JSON.stringify(walletInfo));
+  if (!walletInfo || !walletInfo.AESEncryptPrivateKey || !walletInfo.address) {
     return;
   }
 

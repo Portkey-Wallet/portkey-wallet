@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, ViewStyle } from 'react-native';
 import { pTd } from 'utils/unit';
 import Svg from 'components/Svg';
 import { useLanguage } from 'i18n/hooks';
-import { IUserTokenItemResponse } from '@portkey-wallet/types/types-ca/token';
+import { IUserTokenItemResponse } from '@portkey-wallet/types/types-eoa/token';
 import { makeStyles } from '@rneui/themed';
 import TokenBalanceShow from 'components/TokenBalanceShow';
 import TokenAmountInput from 'components/TokenAmountInput';
@@ -13,8 +13,8 @@ import GStyles from 'assets/theme/GStyles';
 import navigationService from 'utils/navigationService';
 import WalletConnect from '../WalletConnect';
 import { useWalletConnectModal } from '@walletconnect/modal-react-native';
-import { IChainItemType } from '@portkey-wallet/types/types-ca/chain';
-import { TReceiveFromNetworkItem } from '@portkey-wallet/types/types-ca/receive';
+import { IChainItemType } from '@portkey-wallet/types/types-eoa/chain';
+import { TReceiveFromNetworkItem } from '@portkey-wallet/types/types-eoa/receive';
 import { EBridge } from '@portkey-wallet/utils/eBridge';
 import useGetEBridgeConfig from 'hooks/ebridge';
 import { TLimitData } from '@portkey-wallet/utils/eBridge/types';
@@ -37,13 +37,16 @@ export default function EBridgeCard(props: IEBridgeCardProps) {
   const { getTokenConfig, getAELFChainInfoConfig, getEVMChainInfoConfig } = useGetEBridgeConfig();
   const [fee, setFee] = useState('');
   const [limit, setLimit] = useState<TLimitData>();
+  console.log(fee, limit, setIsExceed);
   const eBridgeInstanceRef = useRef<EBridge>();
   const { isConnected } = useWalletConnectModal();
   const btnDisabled = useMemo(() => {
     return !(value || usdValue) || isExceed;
   }, [isExceed, usdValue, value]);
   const btnTitleText = useMemo(() => {
-    if (isExceed) return `Insufficient ${tokenInfo.label || tokenInfo.symbol} balance`;
+    if (isExceed) {
+      return `Insufficient ${tokenInfo.label || tokenInfo.symbol} balance`;
+    }
     return 'Preview';
   }, [isExceed, tokenInfo]);
   const onPressBtn = useCallback(() => {
@@ -126,7 +129,7 @@ export default function EBridgeCard(props: IEBridgeCardProps) {
               <Svg icon="info" iconStyle={{ marginRight: pTd(12) }} />
               <TextL style={styles.tipInfoMessage}>
                 {t(
-                  `To receive this token from the Ethereum network, connect to an external wallet and bridge the assets to your destination network.`,
+                  'To receive this token from the Ethereum network, connect to an external wallet and bridge the assets to your destination network.',
                 )}
               </TextL>
             </View>

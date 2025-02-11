@@ -15,7 +15,9 @@ import { PAGE_SIZE_IN_ACCOUNT_NFT_COLLECTION, REFRESH_TIME } from '@portkey-wall
 import myEvents from 'utils/deviceEvent';
 import { useNFTSection } from '@portkey-wallet/hooks/hooks-eoa';
 import { makeStyles } from '@rneui/themed';
-import navigationService from 'utils/navigationService';
+// import navigationService from 'utils/navigationService';
+import { TextL } from 'components/CommonText';
+import { useLanguage } from 'i18n/hooks';
 // import MintStatusLine from 'pages/FreeMint/components/MintStatusLine';
 // import { FreeMintStatus } from '@portkey-wallet/types/types-ca/freeMint';
 
@@ -76,12 +78,16 @@ const ItemSeparatorComponent = () => {
 
 const ListEmptyComponent = () => {
   const styles = getStyles();
+  const { t } = useLanguage();
   return (
     <View>
       <Touchable
         onPress={() => {
-          navigationService.navigate('FreeMintHome');
+          // navigationService.navigate('FreeMintHome');
         }}>
+        <View style={styles.noData}>
+          <TextL>{t('No NFTs')}</TextL>
+        </View>
         <Image source={require('../../../assets/image/pngs/no-nft-banner.png')} style={[styles.imageEmpty]} />
       </Touchable>
     </View>
@@ -379,5 +385,13 @@ const getStyles = makeStyles(theme => ({
   imageEmpty: {
     width: pTd(361),
     height: pTd(152),
+  },
+  noData: {
+    display: 'flex',
+    flexDirection: 'row',
+    height: pTd(490),
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+    color: theme.colors.textBase2,
   },
 }));

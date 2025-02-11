@@ -5,7 +5,7 @@ import {
   PAGE_SIZE_IN_ACCOUNT_ASSETS,
   PAGE_SIZE_IN_ACCOUNT_TOKEN,
 } from '@portkey-wallet/constants/constants-eoa/assets';
-import useToken from '@portkey-wallet/hooks/hooks-ca/useToken';
+import useToken from '@portkey-wallet/hooks/hooks-eoa/useToken';
 
 export function useGetAccountTokenList() {
   // const addressList = useCurrentAddressInfos();

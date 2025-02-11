@@ -13,7 +13,7 @@ import { useChainIdList } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 import NoData from 'components/NoData';
 import useToken from '@portkey-wallet/hooks/hooks-eoa/useToken';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
-import { PAGE_SIZE_DEFAULT, PAGE_SIZE_IN_ACCOUNT_ASSETS } from '@portkey-wallet/constants/constants-eoa/assets';
+import { PAGE_SIZE_IN_ACCOUNT_ASSETS } from '@portkey-wallet/constants/constants-eoa/assets';
 import myEvents from 'utils/deviceEvent';
 import navigationService from 'utils/navigationService';
 import PageContainer from 'components/PageContainer';
@@ -21,16 +21,19 @@ import CommonInput from 'components/CommonInput';
 import gStyles from 'assets/theme/GStyles';
 import Touchable from 'components/Touchable';
 import CommonAvatar from 'components/CommonAvatar';
-import { request } from '@portkey-wallet/api/api-did';
 import { TextL } from 'components/CommonText';
 import { makeStyles } from '@rneui/themed';
 import Svg from 'components/Svg';
 import GStyles from 'assets/theme/GStyles';
+import { useAccountTokenInfoMixLocalShowToken } from '@portkey-wallet/hooks/hooks-eoa/assets';
 
 const SelectToken = () => {
   console.log('SelectToken!!!!!');
   const { t } = useLanguage();
-  const { tokenDataShowInMarket = [], totalRecordCount, fetchTokenInfoList } = useToken();
+  const { totalRecordCount, fetchTokenInfoList } = useToken();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const tokenDataShowInMarket = useAccountTokenInfoMixLocalShowToken() ?? [];
+  console.log('tokenDataShowInMarket=== is', JSON.stringify(tokenDataShowInMarket));
   const dispatch = useAppCommonDispatch();
   const chainIdList = useChainIdList();
   const [keyword, setKeyword] = useState('');
@@ -92,23 +95,25 @@ const SelectToken = () => {
     }
     try {
       setIsSearch(true);
-      const res = await request.token.fetchTokenListBySearchV2({
-        params: {
-          symbol: debounceKeyword.trim(),
-          chainIds: chainIdList,
-          version: '1.11.1',
-          skipCount: 0,
-          maxResultCount: PAGE_SIZE_DEFAULT,
-        },
-      });
-      setFilteredShowList(res?.data);
+      // const res = await request.token.fetchTokenListBySearchV2({
+      //   params: {
+      //     symbol: debounceKeyword.trim(),
+      //     chainIds: chainIdList,
+      //     version: '1.11.1',
+      //     skipCount: 0,
+      //     maxResultCount: PAGE_SIZE_DEFAULT,
+      //   },
+      // });
+      const upperSearchValue = debounceKeyword.trim().toUpperCase();
+      const result = tokenDataShowInMarket.filter(item => item.symbol.toUpperCase().includes(upperSearchValue));
+      setFilteredShowList(result);
     } catch (error) {
       setFilteredShowList([]);
       console.log('fetchTokenListByFilter error', error);
     } finally {
       setIsSearch(false);
     }
-  }, [chainIdList, debounceKeyword]);
+  }, [debounceKeyword, tokenDataShowInMarket]);
 
   useEffect(() => {
     if (debounceKeyword.trim()) {

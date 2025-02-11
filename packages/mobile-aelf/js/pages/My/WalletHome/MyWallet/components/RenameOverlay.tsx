@@ -93,7 +93,9 @@ const SelectModal = ({ title = '', nickName = '', onChange, avatarInfo }: Select
                 setValue(text);
               }}
               maxLength={16}
-              errorMessage={error ? 'only a-z, A-Z, 0-9, space and "_" allowed' : undefined}
+              errorMessage={
+                error ? 'Only letters (a-z, A-Z), numbers (0-9), spaces, and underscores ("_") are allowed.' : undefined
+              }
             />
           </View>
           {!error && <TextM style={{}}>{value?.length || 0}/16</TextM>}

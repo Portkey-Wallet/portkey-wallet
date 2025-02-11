@@ -5,7 +5,7 @@ import { pTd } from 'utils/unit';
 import { LOCAL_AVATARS } from 'assets/image/avatars';
 import { darkColors } from 'assets/theme';
 import React, { ReactNode, useCallback } from 'react';
-// import navigationService from 'utils/navigationService';
+import navigationService from 'utils/navigationService';
 import { getAddressCardStyles, getCardStyles, getStyles } from '../styles';
 // import Svg from '../../../../components/Svg';
 // import CommonTooltip from '../../../../components/CommonTooltip';
@@ -124,10 +124,10 @@ export const AddressCardBase = ({
   const cardOperation = useCallback(
     (account: TAccountInfo) => {
       if (addressManageView) {
-        // TODO: WalletHome page need dev...
-        // TODO: not WalletHome, a new page address detail.
-        // logic like WalletHome/MyWallet/index.ts
-        // navigationService.push('WalletHome');
+        navigationService.push('AddressDetail', {
+          currentWalletKey: walletInfo?.key,
+          currentAddress: account.address,
+        });
       }
       if (addressSelecting) {
         dispatch(

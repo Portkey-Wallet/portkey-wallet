@@ -8,8 +8,9 @@ import avatar_7 from 'assets/image/avatars/avatar_7.png';
 import avatar_8 from 'assets/image/avatars/avatar_8.png';
 import avatar_9 from 'assets/image/avatars/avatar_9.png';
 import avatar_10 from 'assets/image/avatars/avatar_10.png';
+import { ImageRequireSource } from 'react-native';
 
-export const LOCAL_AVATARS: { [key: string]: any } = {
+export const LOCAL_AVATARS: { [key: string]: ImageRequireSource } = {
   avatar_1,
   avatar_2,
   avatar_3,
@@ -21,3 +22,4 @@ export const LOCAL_AVATARS: { [key: string]: any } = {
   avatar_9,
   avatar_10,
 };
+export const LOCAL_AVATARS_ARRAY = Object.values(LOCAL_AVATARS);

@@ -8,18 +8,21 @@ import navigationService from 'utils/navigationService';
 import { useCheckSecurityLock } from 'hooks/securityLock';
 import { useCredentials } from 'hooks/store';
 
+type IAccountState = 'idle' | 'adding' | 'added';
 export const useEmptyAddress = () => {
   return {
     addAddressDisabled: false,
-    accountAdding: false,
+    // accountAdding: false,
+    accountState: 'idle',
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     addNewAddress: () => {},
   };
 };
 
 export const useAddAddress = ({ walletInfo }: { walletInfo?: TWalletInfo }) => {
-  const [accountAdding, setAccountAdding] = useState(false);
-  const [accountAdded, setAccountAdded] = useState(false);
+  // const [accountAdding, setAccountAdding] = useState(false);
+  // const [accountAdded, setAccountAdded] = useState(false);
+  const [accountState, setAccountState] = useState<IAccountState>('idle');
   const { addAccount } = useAccountByWallet(walletInfo);
   const [addAddressDisabled, setAddAddressDisabled] = useState(false);
   // const [failedToastShowed, setFailedToastShowed] = useState(false);
@@ -39,21 +42,24 @@ export const useAddAddress = ({ walletInfo }: { walletInfo?: TWalletInfo }) => {
   }, [walletInfo]);
 
   useEffect(() => {
-    if (action !== 'ADD_ACCOUNT' || accountAdding || accountAdded) {
+    // if (action !== 'ADD_ACCOUNT' || accountAdding || accountAdded) {
+    if (action !== 'ADD_ACCOUNT' || accountState !== 'idle') {
       return;
     }
     const walletMatched = routerWallet && routerWallet.key === walletInfo?.key;
     if (!walletMatched) {
       return;
     }
-    console.log('ADD_ACCOUNT: ', walletMatched, accountAdding);
-    setAccountAdding(true);
+    console.log('ADD_ACCOUNT: ', walletMatched, accountState);
+    // setAccountAdding(true);
+    setAccountState('adding');
     setTimeout(() => {
       addAccount(routerPin);
-      setAccountAdding(false);
-      setAccountAdded(true);
+      setAccountState('added');
+      // setAccountAdding(false);
+      // setAccountAdded(true);
     }, 100);
-  }, [accountAdded, accountAdding, action, addAccount, routerPin, routerWallet, walletInfo]);
+  }, [accountState, action, addAccount, routerPin, routerWallet, walletInfo]);
 
   // useEffect(() => {
   //   if (!walletInfo || failedToastShowed) {
@@ -87,8 +93,9 @@ export const useAddAddress = ({ walletInfo }: { walletInfo?: TWalletInfo }) => {
   }, [addAddressDisabled, checkSecurityLock, credentials, walletInfo]);
 
   return {
-    accountAdding,
-    accountAdded,
+    // accountAdding,
+    // accountAdded,
+    accountState,
     // setAccountAdded,
     // setAccountAdding,
     addAddressDisabled,

@@ -24,7 +24,7 @@ import { useCurrentChain, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca
 import {
   CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL,
   useCrossTransferByEtransfer,
-} from '@portkey-wallet/hooks/hooks-ca/useWithdrawByETransfer';
+} from '@portkey-wallet/hooks/hooks-eoa/useWithdrawByETransfer';
 import {
   divDecimals,
   formatAmountShow,

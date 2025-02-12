@@ -8,11 +8,13 @@ import { IBridgeOperator, ICheckAndApproveParams, ICreateReceiptHandlerParams } 
 import { LIMIT_ABI } from '../abis';
 import { WB3ContractBasic } from '../utils/web3Contract';
 import Web3 from 'web3';
-import { ChainId, IContract } from '@portkey/types';
+import { ChainId, IContract, IBlockchainWallet } from '@portkey/types';
 import { getChainIdByMap, getReceiptLimit } from '../utils';
 import type { Contract } from 'web3-eth-contract';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { divDecimals, timesDecimals } from '../../converter';
+import { TAccountInfo } from '@portkey-wallet/types/types-eoa/wallet';
+import { AElfWallet } from '@portkey-wallet/types/aelf';
 
 export const ELF_NATIVE_TOKEN = 'ELF';
 
@@ -63,13 +65,22 @@ export class EVMBridgeOperator implements IBridgeOperator {
 
 export class ELFBridgeOperator implements IBridgeOperator {
   public chainInfo: IEBridgeELFChainInfo;
-  constructor(chainInfo: IEBridgeELFChainInfo) {
+  private wallet: AElfWallet | undefined;
+
+  constructor(chainInfo: IEBridgeELFChainInfo, wallet?: AElfWallet) {
     this.chainInfo = chainInfo;
+    this.wallet = wallet;
   }
 
   public getBridgeContract = () => {
+    console.log('getBridgeContract params', {
+      account: this.wallet,
+      rpcUrl: this.chainInfo.rpcUrl,
+      contractAddress: this.chainInfo.bridgeContract,
+    });
+
     return getContractBasic({
-      account: aelf.getWallet(VIEW_PRIVATE),
+      account: this.wallet || aelf.getWallet(VIEW_PRIVATE),
       rpcUrl: this.chainInfo.rpcUrl,
       contractAddress: this.chainInfo.bridgeContract,
     });
@@ -87,7 +98,10 @@ export class ELFBridgeOperator implements IBridgeOperator {
   };
 
   getELFFee = async (toChainId: string) => {
+    console.log('getELFFee1111');
+
     const bridgeContract = await this.getBridgeContract();
+    console.log('getELFFee2222');
     const ELFFee = await bridgeContract.callViewMethod('GetFeeByChainId', {
       value: toChainId,
     });
@@ -104,56 +118,72 @@ export class ELFBridgeOperator implements IBridgeOperator {
     return limit;
   };
 
-  checkAllowanceAndApprove = async ({
-    tokenContract,
-    portkeyContract,
-    symbol,
-    spender,
-    owner,
-    amount,
-    caHash,
-  }: ICheckAndApproveParams) => {
+  checkAllowanceAndApprove = async ({ tokenContract, symbol, spender, owner, amount }: ICheckAndApproveParams) => {
     const [allowance, info] = await Promise.all([
       tokenContract.callViewMethod('GetAllowance', { symbol, owner, spender }),
       tokenContract.callViewMethod('GetTokenInfo', { symbol }),
     ]);
     if (allowance?.error) throw allowance?.error;
     if (info?.error) throw info?.error;
+
+    console.log('checkAllowanceAndApprove---- ', symbol, allowance, amount);
+
     const allowanceBN = ZERO.plus(allowance.data.allowance ?? allowance.data.amount ?? 0);
     const pivotBalanceBN = timesDecimals(amount, info.data.decimals ?? 8);
+
     if (allowanceBN.lt(pivotBalanceBN)) {
-      const approveResult = await portkeyContract.callSendMethod('ManagerApprove', '', {
-        caHash,
+      console.log('checkAllowanceAndApprove3333', owner, [spender, symbol, pivotBalanceBN.toFixed()]);
+
+      const approveResult = await tokenContract.callSendMethod('approve', owner, {
         spender,
         symbol,
         amount: pivotBalanceBN.toFixed(),
       });
+
       if (approveResult?.error) throw approveResult?.error;
+
       return true;
     }
+
     return true;
   };
 
   async createReceipt(params: ICreateReceiptHandlerParams): Promise<any> {
-    const { amount, tokenContract, portkeyContract, owner, caHash, tokenInfo, targetChainId, targetAddress } = params;
+    const { amount, tokenContract, account, owner, tokenInfo, targetChainId, targetAddress } = params;
     const symbol = tokenInfo.symbol;
     const approveParams = {
       tokenContract,
-      portkeyContract,
       symbol,
       spender: this.chainInfo.bridgeContract,
       owner,
       amount,
-      caHash,
     };
     const toBridgeChainId = getChainIdByMap(String(targetChainId));
 
     const ELFFee = await this.getELFFee(toBridgeChainId);
     const ELFFeeAmount = divDecimals(ELFFee, 8).toFixed(0);
-    console.log(ELFFee);
+
+    if (symbol === ELF_NATIVE_TOKEN) {
+      approveParams.amount = ZERO.plus(amount).plus(ELFFeeAmount).toFixed(0);
+      approveParams.symbol = tokenInfo.symbol;
+    }
+
+    const bridgeContract = await this.getBridgeContract();
+
+    console.log('callSendMethod CreateReceipt', [
+      symbol,
+      account,
+      targetAddress,
+      amount,
+      getChainIdByMap(targetChainId),
+      0,
+    ]);
+
     if (symbol !== ELF_NATIVE_TOKEN) {
       await this.checkAllowanceAndApprove({
         ...approveParams,
+        spender: this.chainInfo.bridgeContract,
+        owner: account,
         amount: ELFFeeAmount,
         symbol: ELF_NATIVE_TOKEN,
       });
@@ -164,21 +194,40 @@ export class ELFBridgeOperator implements IBridgeOperator {
       approveParams.symbol = tokenInfo.symbol;
     }
 
-    await this.checkAllowanceAndApprove({
+    const approveResult = await this.checkAllowanceAndApprove({
       ...approveParams,
+      spender: this.chainInfo.bridgeContract,
+      owner: account,
+    });
+    console.log('approveResult==', approveResult);
+
+    console.log('======CreateReceipt params', account || '', {
+      symbol,
+      owner,
+      targetAddress,
+      amount: timesDecimals(amount, tokenInfo.decimals ?? 8).toFixed(0),
+      targetChainId: getChainIdByMap(targetChainId),
     });
 
-    return portkeyContract.callSendMethod('ManagerForwardCall', '', {
-      caHash,
-      contractAddress: this.chainInfo.bridgeContract,
-      methodName: 'CreateReceipt',
-      args: {
-        symbol,
-        owner,
-        targetAddress,
-        amount: timesDecimals(amount, tokenInfo.decimals ?? 8).toFixed(0),
-        targetChainId: getChainIdByMap(targetChainId),
-      },
+    return bridgeContract.callSendMethod('CreateReceipt', account || '', {
+      symbol,
+      owner,
+      targetAddress,
+      amount: timesDecimals(amount, tokenInfo.decimals ?? 8).toFixed(0),
+      targetChainId: getChainIdByMap(targetChainId),
     });
+
+    // return portkeyContract.callSendMethod('ManagerForwardCall', '', {
+    //   caHash,
+    //   contractAddress: this.chainInfo.bridgeContract,
+    //   methodName: 'CreateReceipt',
+    //   args: {
+    //     symbol,
+    //     owner,
+    //     targetAddress,
+    //     amount: timesDecimals(amount, tokenInfo.decimals ?? 8).toFixed(0),
+    //     targetChainId: getChainIdByMap(targetChainId),
+    //   },
+    // });
   }
 }

@@ -186,7 +186,7 @@ const TokenDetailPage: React.FC<TokenDetailParams> = ({ tokenInfo, tokenSection 
   const onReceivePress = useCallback(() => {
     navigationService.navigate('Receive', { tokenInfo: tokenSection, chainId: tokenInfo.chainId });
   }, [tokenInfo.chainId, tokenSection]);
-  console.log('currentTokenInfo====', JSON.stringify(currentTokenInfo));
+
   const renderButtonItems = useCallback(() => {
     return (
       <View style={[styles.buttonGroupWrap]}>

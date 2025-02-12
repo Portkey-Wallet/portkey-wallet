@@ -17,8 +17,8 @@ async function verifyHumanMachine(language: any) {
       <Recaptcha
         lang={language}
         headerComponent={null}
-        siteKey={Config.RECAPTCHA_SITE_KEY}
-        baseUrl={Config.RECAPTCHA_BASE_URL}
+        siteKey={Config.RECAPTCHA_SITE_KEY || ''}
+        baseUrl={Config.RECAPTCHA_BASE_URL || ''}
         onVerify={token => {
           OverlayModal.hideKey(key);
           resolve(token as string);
@@ -28,7 +28,9 @@ async function verifyHumanMachine(language: any) {
         }}
         onClose={type => {
           OverlayModal.hideKey(key);
-          if (type !== 'verified') reject('You closed the prompt without any action.');
+          if (type !== 'verified') {
+            reject('You closed the prompt without any action.');
+          }
         }}
         webViewProps={{
           onLoadEnd: () => {

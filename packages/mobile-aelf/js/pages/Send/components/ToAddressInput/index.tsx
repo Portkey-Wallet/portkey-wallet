@@ -22,7 +22,7 @@ import { getSendNetworkList } from 'pages/Send/utils';
 import { IToSendAssetParamsType, IToSendHomeParamsType } from '@portkey-wallet/types/types-ca/routeParams';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
 import { getAelfAddress, isCrossChain, isDIDAelfAddress } from '@portkey-wallet/utils/aelf';
-import { useIsValidSuffix, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { useIsValidSuffix, useDefaultToken } from '@portkey-wallet/hooks/hooks-eoa/chainList';
 import { warning1Arr, WarningKey } from 'pages/Send/constant';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { INetworkItem } from '../SelectNetwork';
@@ -116,13 +116,15 @@ export const ToAddressInputRef = forwardRef<IToAddressInputRef, IToAddressInput>
           setCheckedPass(false);
           setWarning([WarningKey.SAME_ADDRESS]);
         } else if (!isValidChainId(suffix)) {
+          console.log('isValidChainId===', suffix);
           // invalid chainId
           setCheckedPass(false);
           setWarning([WarningKey.INVALID_ADDRESS]);
         } else if (isCrossChain(v, selectedToken?.chainId || 'AELF')) {
           // cross chain
-          setCheckedPass(false);
-          setWarning([WarningKey.CROSS_CHAIN]);
+          // setCheckedPass(false);
+          // setWarning([WarningKey.CROSS_CHAIN]);
+          return false;
         } else {
           setWarning([]);
           setCheckedPass(true);
@@ -178,19 +180,18 @@ export const ToAddressInputRef = forwardRef<IToAddressInputRef, IToAddressInput>
 
       try {
         setIsChecking(true);
-        const { data, code } = await getSendNetworkList({
+
+        const { networkList } = await getSendNetworkList({
           symbol: selectedToken?.symbol || '',
           chainId: selectedToken?.chainId || 'AELF',
-          toAddress,
+          toAddress: getAelfAddress(toAddress),
         });
 
-        if (code === '40001') {
-          setWarning([WarningKey.INVALID_ADDRESS]);
-        } else {
-          setCheckedPass(true);
-          setChainList(data.networkList);
-          setWarning([WarningKey.MAKE_SURE_SUPPORT_PLATFORM]);
-        }
+        const _networkList = networkList.filter((ele: any) => ele?.serviceList?.length > 0);
+
+        setCheckedPass(true);
+        setChainList(_networkList);
+        setWarning([WarningKey.MAKE_SURE_SUPPORT_PLATFORM]);
       } catch (error) {
         console.log('getNetworkList err', error);
         setWarning([WarningKey.INVALID_ADDRESS]);
@@ -203,7 +204,6 @@ export const ToAddressInputRef = forwardRef<IToAddressInputRef, IToAddressInput>
   );
 
   const onInput = useCallback((v: string) => {
-    console.log('!!!aaa', v);
     const _v = v.trim();
 
     setSelectedToContact((pre: any) => {
@@ -236,6 +236,8 @@ export const ToAddressInputRef = forwardRef<IToAddressInputRef, IToAddressInput>
 
   const checkAddress = useDebounceCallback(async () => {
     const FEPass = checkAddressByFE(selectedToContact.address);
+
+    console.log('checkAddress FE', FEPass);
 
     // when send nft other chain is not support
     if (!FEPass && sendType === 'nft' && !!selectedToContact.address) {

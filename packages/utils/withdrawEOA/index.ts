@@ -183,19 +183,16 @@ class CrossTransfer implements ICrossTransfer {
 
   withdrawPreview: ICrossTransfer['withdrawPreview'] = async (params: IWithdrawPreviewParams) => {
     try {
-      const { chainId, address, symbol, amount, network } = params;
-
+      const { chainId, address, symbol, amount, network, currentAccountAddress } = params;
       const authParams = this.formatAuthTokenParams();
 
-      let aToken = '';
-      const recaptchaToken = ((await verifyHumanMachine('en')) || '') as string;
-
-      console.log('!!!!params', {
-        ...authParams,
-        source: AuthTokenSource.NightElf,
-        recaptchaToken,
+      const isNewAccountInETransfer = await eTransferCore.services.checkEOARegistration({
+        address: currentAccountAddress,
       });
-      aToken = await eTransferCore.getAuthToken({
+
+      const recaptchaToken = isNewAccountInETransfer ? (((await verifyHumanMachine('en')) || '') as string) : undefined;
+
+      const aToken = await eTransferCore.getAuthToken({
         ...authParams,
         source: AuthTokenSource.NightElf,
         recaptchaToken,

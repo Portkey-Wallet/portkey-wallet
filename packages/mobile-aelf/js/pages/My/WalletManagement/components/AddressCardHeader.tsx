@@ -10,22 +10,27 @@ import { updateWallet } from '@portkey-wallet/store/store-eoa/wallet/actions';
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 import { TWalletInfo } from '@portkey-wallet/types/types-eoa/wallet';
 import RenameOverlay from '../../WalletHome/MyWallet/components/RenameOverlay';
-// import { LOCAL_AVATARS } from 'assets/image/avatars';
-// import avatar_1 from "../../../../assets/image/avatars/avatar_1.png";
+import ActionSheet from 'components/ActionSheet';
+import { useRemoveWallet } from '../hooks/useRemoveWallet';
+import CommonToast from 'components/CommonToast';
+import navigationService from 'utils/navigationService';
 
 export const AddressCardHeader = ({
   privateKeyTipShow = false,
   useManageStyle = false,
+  removeWalletDisabled = false,
   walletInfo,
 }: {
   privateKeyTipShow?: boolean;
   useManageStyle?: boolean;
+  removeWalletDisabled?: boolean;
   walletInfo?: TWalletInfo;
 }) => {
   const cardStyles = getCardStyles();
   const walletName = walletInfo?.name || 'Wallet 1';
   const isPrivateKeyWallet = !walletInfo?.AESEncryptMnemonic;
   const dispatch = useAppCommonDispatch();
+  const { removeWallet } = useRemoveWallet();
 
   return (
     <>
@@ -79,7 +84,50 @@ export const AddressCardHeader = ({
               <Svg size={pTd(24)} icon="edit_thin" />
             </Touchable>
             <Svg size={pTd(16)} icon="Vector 2" iconStyle={cardStyles.iconVector2} />
-            <Svg size={pTd(24)} icon="delete" color={defaultColors.iconDanger2} />
+            <Touchable
+              onPress={() => {
+                if (removeWalletDisabled) {
+                  CommonToast.fail('This is the only wallet and cannot be removed.');
+                  return;
+                }
+                ActionSheet.alert({
+                  isCloseShow: true,
+                  title: <Svg size={pTd(32)} icon="error" color={defaultColors.iconBase1} />,
+                  title2: 'Ensure your seed phrase is backed up before removal',
+                  message:
+                    'Please make sure your seed phrase is securely backed up before removing the wallet. Losing access to your seed phrase or sharing it with others could lead to permanent loss of your assets.',
+                  buttonGroupDirection: 'column',
+                  buttons: [
+                    {
+                      title: 'View seed phrase',
+                      type: 'primary',
+                    },
+                    {
+                      title: 'Remove',
+                      type: 'warningNoBorder',
+                      onPress: () => {
+                        if (!walletInfo) {
+                          return;
+                        }
+                        removeWallet(walletInfo.key, () => {
+                          CommonToast.success('Wallet removed');
+                          console.log('removeWallet success');
+                          navigationService.pop(1);
+                          navigationService.push('WalletManagement', {
+                            showManaging: true,
+                          });
+                        });
+                      },
+                    },
+                  ],
+                });
+              }}>
+              <Svg
+                size={pTd(24)}
+                icon="delete"
+                color={removeWalletDisabled ? defaultColors.iconDisabled : defaultColors.iconDanger2}
+              />
+            </Touchable>
           </View>
         </View>
       )}

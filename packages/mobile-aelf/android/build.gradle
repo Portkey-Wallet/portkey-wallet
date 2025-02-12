@@ -80,4 +80,10 @@ subprojects {
 //        languageVersion.set(JavaLanguageVersion.of(17))
 //    }
 //}
+configurations.configureEach {
+    resolutionStrategy {
+        force 'androidx.core:core:1.13.1'
+        force 'androidx.media:media:1.0.0'
+    }
+}
 apply plugin: "com.facebook.react.rootproject"

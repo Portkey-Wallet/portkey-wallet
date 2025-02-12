@@ -25,9 +25,15 @@ export const addAccount = createAction<{
   account: TAccountInfo;
 }>('wallet/addAccount');
 
+export const updateAccount = createAction<{
+  accountAddress: string;
+  walletKey: string;
+  account: TAccountInfo;
+}>('wallet/updateAccount');
+
 export const removeAccount = createAction<{
-  key: string;
-  address: string;
+  walletKey: string;
+  accountAddress: string;
 }>('wallet/removeAccount');
 
 export const updateWalletList = createAction<{

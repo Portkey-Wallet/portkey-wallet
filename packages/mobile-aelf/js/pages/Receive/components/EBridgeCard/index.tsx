@@ -37,6 +37,7 @@ export default function EBridgeCard(props: IEBridgeCardProps) {
   const { getTokenConfig, getAELFChainInfoConfig, getEVMChainInfoConfig } = useGetEBridgeConfig();
   const [fee, setFee] = useState('');
   const [limit, setLimit] = useState<TLimitData>();
+  console.log(fee, limit, setIsExceed);
   const eBridgeInstanceRef = useRef<EBridge>();
   const { isConnected } = useWalletConnectModal();
   const btnDisabled = useMemo(() => {

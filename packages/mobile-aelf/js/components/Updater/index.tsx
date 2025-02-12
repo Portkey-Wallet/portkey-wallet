@@ -75,13 +75,13 @@ export default function Updater() {
       service.defaults.baseURL = apiUrl;
     }
     crossTransfer.init({
-        eTransferUrl: eTransferUrl,
-        storage: AsyncStorage,
-        // walletInfo: undefined,
-        // pin: '',
-        // chainList: [],
-        // eTransferCA: undefined,
-      });
+      eTransferUrl: eTransferUrl,
+      storage: AsyncStorage,
+      // walletInfo: undefined,
+      // pin: '',
+      // chainList: [],
+      // eTransferCA: undefined,
+    });
   }, [apiUrl]);
 
   // useMemo(() => {

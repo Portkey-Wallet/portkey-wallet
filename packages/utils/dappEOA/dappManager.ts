@@ -44,6 +44,9 @@ export abstract class DappManager<T extends EOACommonState = EOACommonState>
     const currentAccount = handleCurrentAccount(wallet);
     return currentAccount;
   }
+  async currentManagerAddress(): Promise<string | undefined> {
+    return (await this.walletInfo())?.address;
+  }
   async networkType(): Promise<NetworkType> {
     return (await this.getNetwork()).currentNetwork;
   }

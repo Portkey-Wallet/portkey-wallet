@@ -5,6 +5,7 @@ import {
   addWallet,
   updateWallet,
   removeAccount,
+  updateAccount,
   removeWallet,
   resetWallet,
   setHideAssetsAction,
@@ -87,18 +88,50 @@ export const walletSlice = createSlice({
         };
       })
       .addCase(removeAccount, (state, action) => {
-        const { key, address } = action.payload;
-        const walletList = [...state.walletList];
-        const wallet = walletList.find(item => item.key === key);
-        if (!wallet) return state;
-        const account = wallet.accountList.find(item => item.address === address);
-        if (!account) return state;
-        account.isHide = true;
+        // const { key, address } = action.payload;
+        // const walletList = [...state.walletList];
+        // const wallet = walletList.find(item => item.key === key);
+        // if (!wallet) return state;
+        // const account = wallet.accountList.find(item => item.address === address);
+        // if (!account) return state;
+        // account.isHide = true;
 
+        const { walletKey, accountAddress } = action.payload;
+
+        const newWalletList = state.walletList.map(item => {
+          if (item.key === walletKey) {
+            const newAccountList = item.accountList.filter(accountItem => accountItem.address !== accountAddress);
+            return {
+              ...item,
+              accountList: newAccountList,
+            };
+          }
+          return item;
+        });
         // TODO: eoa add currentAccountAddress logic
         return {
           ...state,
-          walletList,
+          walletList: newWalletList,
+        };
+      })
+      .addCase(updateAccount, (state, action) => {
+        const { walletKey, accountAddress, account } = action.payload;
+        const newWalletList = state.walletList.map(item => {
+          if (item.key === walletKey) {
+            const newAccountList = item.accountList.map(accountItem =>
+              accountItem.address === accountAddress ? { ...accountItem, ...account } : accountItem,
+            );
+            return {
+              ...item,
+              accountList: newAccountList,
+            };
+          }
+          return item;
+        });
+
+        return {
+          ...state,
+          walletList: newWalletList,
         };
       })
       .addCase(updateWalletList, (state, action) => {

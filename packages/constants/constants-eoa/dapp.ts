@@ -28,8 +28,6 @@ export enum ApproveMethod {
   ca = 'ManagerApprove',
 }
 
-export const CA_METHOD_WHITELIST = ['ManagerForwardCall', 'ManagerTransfer', ApproveMethod.ca];
-
 export const DAPP_WHITELIST_ACTION_WHITELIST: string[] = [
   MethodsBase.REQUEST_ACCOUNTS,
   MethodsBase.SEND_TRANSACTION,

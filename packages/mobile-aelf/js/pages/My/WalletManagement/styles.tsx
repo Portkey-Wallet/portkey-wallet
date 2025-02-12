@@ -100,6 +100,9 @@ export const getAddressCardStyles = makeStyles(theme => ({
   operationTextDisabled: {
     color: theme.colors.textDisabled1,
   },
+  operationTextDisabled2: {
+    color: theme.colors.textDisabled2,
+  },
   subtitle: {
     color: theme.colors.textBase1Opacity07,
     fontSize: pTd(14),

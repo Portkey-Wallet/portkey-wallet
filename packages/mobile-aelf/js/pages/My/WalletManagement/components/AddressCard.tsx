@@ -5,13 +5,12 @@ import { pTd } from 'utils/unit';
 import { LOCAL_AVATARS } from 'assets/image/avatars';
 import { darkColors } from 'assets/theme';
 import React, { ReactNode, useCallback } from 'react';
-// import navigationService from 'utils/navigationService';
+import navigationService from 'utils/navigationService';
 import { getAddressCardStyles, getCardStyles, getStyles } from '../styles';
 // import Svg from '../../../../components/Svg';
 // import CommonTooltip from '../../../../components/CommonTooltip';
 import { AddressCardHeader } from './AddressCardHeader';
 import { changeCurrentWallet } from '@portkey-wallet/store/store-eoa/wallet/actions';
-// import { MAX_ACCOUNT_NUMBER } from '@portkey-wallet/store/store-eoa/wallet/config';
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 // import { useAccountByWallet } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 import { TWalletInfo, TAccountInfo } from '@portkey-wallet/types/types-eoa/wallet';
@@ -28,6 +27,7 @@ export interface IAddressCardProps {
   addressManageView?: boolean;
   currentWallet?: TWalletInfo;
   walletInfo?: TWalletInfo;
+  removeWalletDisabled?: boolean;
 }
 
 export const TouchOrView = ({
@@ -64,9 +64,16 @@ export const AddressCard = ({
   // cardTouchable = false,
   // addressManageView = false,
   addressManaging = false,
+  removeWalletDisabled = false,
 }: IAddressCardProps) => {
   if (addressManaging) {
-    return <AddressCardManaging walletInfo={walletInfo} currentWallet={currentWallet} />;
+    return (
+      <AddressCardManaging
+        walletInfo={walletInfo}
+        currentWallet={currentWallet}
+        removeWalletDisabled={removeWalletDisabled}
+      />
+    );
   }
   if (addressSelecting) {
     return <AddressCardSelect walletInfo={walletInfo} currentWallet={currentWallet} />;
@@ -86,9 +93,15 @@ export const AddressCardManageView = ({ walletInfo, currentWallet }: IAddressCar
   );
 };
 
-export const AddressCardManaging = ({ walletInfo, currentWallet }: IAddressCardProps) => {
+export const AddressCardManaging = ({ walletInfo, currentWallet, removeWalletDisabled }: IAddressCardProps) => {
   return (
-    <AddressCardBase viewOnly={true} addressManaging={true} walletInfo={walletInfo} currentWallet={currentWallet} />
+    <AddressCardBase
+      viewOnly={true}
+      addressManaging={true}
+      walletInfo={walletInfo}
+      currentWallet={currentWallet}
+      removeWalletDisabled={removeWalletDisabled}
+    />
   );
 };
 
@@ -110,6 +123,7 @@ export const AddressCardBase = ({
   cardTouchable = false,
   addressManaging = false,
   addressManageView = false,
+  removeWalletDisabled = false,
   walletInfo,
   currentWallet,
 }: IAddressCardProps) => {
@@ -125,10 +139,10 @@ export const AddressCardBase = ({
   const cardOperation = useCallback(
     (account: TAccountInfo) => {
       if (addressManageView) {
-        // TODO: WalletHome page need dev...
-        // TODO: not WalletHome, a new page address detail.
-        // logic like WalletHome/MyWallet/index.ts
-        // navigationService.push('WalletHome');
+        navigationService.push('AddressDetail', {
+          currentWalletKey: walletInfo?.key,
+          currentAddress: account.address,
+        });
       }
       if (addressSelecting) {
         dispatch(
@@ -148,6 +162,7 @@ export const AddressCardBase = ({
         privateKeyTipShow={addressManageView}
         useManageStyle={addressManaging}
         walletInfo={walletInfo}
+        removeWalletDisabled={removeWalletDisabled}
       />
       <View alias-name="address-card">
         <View style={addressCardStyles.cardListContainer}>
@@ -207,11 +222,7 @@ export const AddressCardBase = ({
             );
           })}
           {!viewOnly && walletInfo?.AESEncryptMnemonic && (
-            <Touchable
-              disabled={addAddressDisabled}
-              onPress={addNewAddress}
-              alias-name="add-address"
-              style={addressCardStyles.cardContainer}>
+            <Touchable onPress={addNewAddress} alias-name="add-address" style={addressCardStyles.cardContainer}>
               <View style={[addressCardStyles.card, addressCardStyles.operationCard]}>
                 <View style={addressCardStyles.info}>
                   {accountAdding ? (

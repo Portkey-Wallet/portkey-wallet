@@ -12,6 +12,8 @@ import navigationService from 'utils/navigationService';
 import Touchable from 'components/Touchable';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { useCheckSecurityLock } from 'hooks/securityLock';
+import { useCloudStorage } from '../CloudBackup/useCloudStorage';
+import CommonToast from 'components/CommonToast';
 
 interface IListItem {
   isAndroid?: boolean;
@@ -59,6 +61,7 @@ export default function WalletImportTypeSelect() {
     needCheckSecurityLock?: boolean;
   }>();
   const checkSecurityLock = useCheckSecurityLock();
+  const { cloudAvailable } = useCloudStorage();
 
   const importWalletPress = useCallback(
     (item: IListItem) => {
@@ -66,6 +69,10 @@ export default function WalletImportTypeSelect() {
         return;
       }
       if (item.isAndroid || item.isIOS) {
+        if (!cloudAvailable) {
+          CommonToast.fail('Cloud is not available');
+          return;
+        }
         navigationService.push('ImportByCloud', {
           importType: item.importType,
           checkedSecurityLock: needCheckSecurityLock,
@@ -77,7 +84,7 @@ export default function WalletImportTypeSelect() {
         });
       }
     },
-    [needCheckSecurityLock],
+    [cloudAvailable, needCheckSecurityLock],
   );
 
   return (

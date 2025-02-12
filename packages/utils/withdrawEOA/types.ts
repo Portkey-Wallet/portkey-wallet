@@ -17,6 +17,7 @@ export interface ICrossTransferInitOption {
 }
 
 export interface IWithdrawPreviewParams {
+  currentAccountAddress: string;
   chainId: ChainId;
   address: string;
   symbol: string;

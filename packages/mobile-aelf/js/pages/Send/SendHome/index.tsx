@@ -14,17 +14,8 @@ import AmountNFT from '../AmountNFT';
 import NFTInfo from '../NFTInfo';
 import CommonButton from 'components/CommonButton';
 import myEvents from 'utils/deviceEvent';
-import {
-  useCaAddressInfoList,
-  useCurrentUserInfo,
-  useCurrentWalletInfo,
-  useMainChainCaInfo,
-} from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { useCurrentChain, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
-import {
-  CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL,
-  useCrossTransferByEtransfer,
-} from '@portkey-wallet/hooks/hooks-ca/useWithdrawByETransfer';
+import { useCurrentChain, useDefaultToken } from '@portkey-wallet/hooks/hooks-eoa/chainList';
+import { useCrossTransferByEtransfer } from '@portkey-wallet/hooks/hooks-eoa/useWithdrawByETransfer';
 import {
   divDecimals,
   formatAmountShow,
@@ -35,21 +26,14 @@ import {
   IToSendHomeParamsType,
   IToSendPreviewParamsType,
   TransferType,
-  TToInfo,
-} from '@portkey-wallet/types/types-ca/routeParams';
+} from '@portkey-wallet/types/types-eoa/routeParams';
 
-import { getELFChainBalance } from '@portkey-wallet/utils/balance';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import Loading from 'components/Loading';
 import { useFetchTxFee, useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
 
 import { TransactionError } from '@portkey-wallet/constants/constants-ca/send';
-import { useCheckManagerSyncState } from 'hooks/wallet';
-import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
-import { useCheckTransferLimitWithJump, useSecuritySafeCheckAndToast } from 'hooks/security';
-import CommonToast from 'components/CommonToast';
 import Touchable from 'components/Touchable';
-import { useGetCAContract, useGetTokenViewContract } from 'hooks/contract';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { useGetTransferFee } from 'hooks/transfer';
 import { usePin } from 'hooks/store';
@@ -57,9 +41,7 @@ import GStyles from 'assets/theme/GStyles';
 import { TextTitle } from 'components/CommonText';
 import { useEtransferFee } from 'hooks/etransfer';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
-import { getAssetsEstimation } from '@portkey-wallet/store/store-ca/assets/api';
-import { addressFormat, getChainIdByAddress, sleep } from '@portkey-wallet/utils';
-import { ChainId } from '@portkey-wallet/types';
+import { addressFormat, sleep } from '@portkey-wallet/utils';
 import ToAddressInput, { IToAddressInputRef } from '../components/ToAddressInput';
 import TokenBalanceShow from 'components/TokenBalanceShow';
 import TokenAmountInput from 'components/TokenAmountInput';
@@ -74,17 +56,18 @@ import useGetEBridgeConfig from 'hooks/ebridge';
 import { EBridge } from '@portkey-wallet/utils/eBridge';
 import ActionSheet from 'components/ActionSheet';
 import OverlayModal from 'components/OverlayModal';
-import { eBridgeActionSheet, getLimitTips, getSendNetworkList, getSmallerValue, isValidAmount } from '../utils';
+import { eBridgeActionSheet, getLimitTips, getSmallerValue, isValidAmount } from '../utils';
 import { SEND_HELP_URL } from 'constants/common';
 import { openOutLink } from 'utils/link';
-import SelectAddressTab from '../components/SelectAddressTab';
-import { useRecent } from '@portkey-wallet/hooks/hooks-ca/recent';
-import { useGetFilterContactList } from '@portkey-wallet/hooks/hooks-eoa/contact';
-import { TFormattedRecentItem } from '@portkey-wallet/types/types-ca/contactNew';
-import { IContactItemMyType } from 'components/ContactItemMy';
+// import SelectAddressTab from '../components/SelectAddressTab';
+// import { useRecent } from '@portkey-wallet/hooks/hooks-ca/recent';
+// import { useGetFilterContactList } from '@portkey-wallet/hooks/hooks-eoa/contact';
+// import { TFormattedRecentItem } from '@portkey-wallet/types/types-ca/contactNew';
+// import { IContactItemMyType } from 'components/ContactItemMy';
 import { KeyboardSafeArea } from 'components/KeyboardSafeArea';
-import { isAelfAddress } from 'utils/contacts';
-import { useKeyboardListener } from 'hooks/useKeyboardHeight';
+// import { useKeyboardListener } from 'hooks/useKeyboardHeight';
+import { useCurrentAccount } from '@portkey-wallet/hooks/hooks-eoa/wallet';
+import { useBalanceByContract } from 'hooks/balanceByContract';
 
 const SendHome: React.FC = () => {
   const {
@@ -92,20 +75,16 @@ const SendHome: React.FC = () => {
   } = useRoute<RouteProp<{ params: IToSendHomeParamsType }>>();
   const { t } = useLanguage();
   const inputRef = useRef<IToAddressInputRef>(null);
-
+  const currentAccount = useCurrentAccount();
   const styles = getStyles();
   useFetchTxFee();
   const defaultToken = useDefaultToken();
-  const mainChainCaInfo = useMainChainCaInfo();
-  const wallet = useCurrentWalletInfo();
   const chainInfo = useCurrentChain(assetInfo?.chainId);
-  const securitySafeCheckAndToast = useSecuritySafeCheckAndToast();
   const [tokenPriceObject] = useGetCurrentAccountTokenPrice();
   const [chainList, setChainList] = useState<INetworkItem[]>([]);
   const [targetNetwork, setTargetNetwork] = useState<INetworkItem>();
-  const [recentList, setRecentList] = useState<TFormattedRecentItem[]>();
-  const [savedList, setSavedList] = useState<TFormattedRecentItem[]>();
-  const caAddressInfoList = useCaAddressInfoList();
+  // const [recentList, setRecentList] = useState<TFormattedRecentItem[]>();
+  // const [savedList, setSavedList] = useState<TFormattedRecentItem[]>();
 
   const recommendETransfer = useMemo(
     () => targetNetwork?.serviceList?.find(ele => ele?.serviceName?.toLocaleLowerCase()?.includes('transfer')),
@@ -117,16 +96,11 @@ const SendHome: React.FC = () => {
     [targetNetwork?.serviceList],
   );
 
-  const isSupportCross = useMemo(
-    () => CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL.includes(assetInfo.symbol),
-    [assetInfo.symbol],
-  );
-
   const [isSendToExchange, setIsSendToExchange] = useState(true);
   const [isCheckAddressFinish, setIsCheckAddressFinish] = useState(false);
 
   const isFixedToContact = useMemo(() => false, []);
-  const { max: maxFee, crossChain: crossFee } = useGetTxFee(assetInfo?.chainId);
+  const { max: maxFee } = useGetTxFee(assetInfo?.chainId);
   const { getEtransferMaxFee } = useEtransferFee(assetInfo?.chainId);
 
   const pin = usePin();
@@ -135,6 +109,7 @@ const SendHome: React.FC = () => {
   const { getTokenConfig, getAELFChainInfoConfig, getEVMChainInfoConfig } = useGetEBridgeConfig();
 
   const [warning, setWarning] = useState<WarningKey[]>([]);
+  const { getELFBalanceByContract } = useBalanceByContract();
 
   const [selectedToContact, setSelectedToContact] = useState(toInfo); // to
   const [balance, setBalance] = useState<string>(assetInfo?.balance || '');
@@ -152,36 +127,29 @@ const SendHome: React.FC = () => {
   const [step, setStep] = useState<1 | 2>(isFixedToContact ? 2 : 1);
   const [isLoading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const [isKeyboardShow, setKeyboardShow] = useState(false);
+  // const [isKeyboardShow, setKeyboardShow] = useState(false);
 
-  const checkManagerSyncState = useCheckManagerSyncState();
-  const getCAContract = useGetCAContract();
-
-  useKeyboardListener({
-    show: () => {
-      setKeyboardShow(true);
-    },
-    hide: () => {
-      setKeyboardShow(false);
-    },
-  });
+  // useKeyboardListener({
+  //   show: () => {
+  //     setKeyboardShow(true);
+  //   },
+  //   hide: () => {
+  //     setKeyboardShow(false);
+  //   },
+  // });
 
   // get transfer fee
   const getTransferFee = useGetTransferFee();
   const getTransactionFee = useCallback(
-    async (isCross: boolean, sendAmount?: string) => {
+    async (sendAmount?: string) => {
       if (!chainInfo) {
         return;
       }
-      const caContract = await getCAContract(chainInfo.chainId);
 
       return getTransferFee({
-        isCross,
         sendAmount: sendAmount ?? debounceSendNumber,
         decimals: assetInfo.decimals,
         symbol: assetInfo.symbol,
-        caContract,
-        tokenContractAddress: assetInfo.tokenContractAddress,
         toAddress: getEntireDIDAelfAddress(selectedToContact.address, undefined, assetInfo.chainId),
         chainId: assetInfo.chainId,
       });
@@ -192,10 +160,8 @@ const SendHome: React.FC = () => {
       debounceSendNumber,
       assetInfo.decimals,
       assetInfo.symbol,
-      assetInfo.tokenContractAddress,
       assetInfo.chainId,
       selectedToContact.address,
-      getCAContract,
     ],
   );
 
@@ -222,10 +188,10 @@ const SendHome: React.FC = () => {
       return setMaxAmountSend(divDecimals(balance, assetInfo.decimals || '0').toFixed());
     }
 
-    const isAELFCross = !!(selectedToContact.chainId && selectedToContact.chainId !== assetInfo.chainId);
+    // const isAELFCross = !!(selectedToContact.chainId && selectedToContact.chainId !== assetInfo.chainId);
     let fee;
     try {
-      fee = await getTransactionFee(isAELFCross, divDecimals(balance, assetInfo.decimals).toFixed());
+      fee = await getTransactionFee(divDecimals(balance, assetInfo.decimals).toFixed());
     } catch (error) {
       fee = '0';
       console.log('FEE ERROR');
@@ -236,25 +202,11 @@ const SendHome: React.FC = () => {
       ? balanceBN.minus(etransferFee)
       : ZERO.plus(divDecimals(balance, assetInfo.decimals)).minus(maxFee).minus(etransferFee);
     setMaxAmountSend(_max.gt(ZERO) ? _max.toFixed() : '0');
-  }, [
-    balance,
-    assetInfo,
-    defaultToken.symbol,
-    maxFee,
-    selectedToContact.chainId,
-    getEtransferMaxFee,
-    toInfo,
-    getTransactionFee,
-  ]);
+  }, [balance, assetInfo, defaultToken.symbol, maxFee, getEtransferMaxFee, toInfo, getTransactionFee]);
 
   const onPressMax = useCallback(async () => {
     try {
       Loading.hide();
-      // check is SYNCHRONIZING
-      const _isManagerSynced = await checkManagerSyncState(chainInfo?.chainId || 'AELF');
-      if (!_isManagerSynced) {
-        return CommonToast.warn(TransactionError.SYNCHRONIZING);
-      }
 
       setSendNumber(maxAmountSend);
       setSendUsdNumber(maxAmountSendUsd);
@@ -264,25 +216,21 @@ const SendHome: React.FC = () => {
     } finally {
       Loading.hide();
     }
-  }, [checkManagerSyncState, chainInfo?.chainId, maxAmountSend, maxAmountSendUsd]);
+  }, [maxAmountSend, maxAmountSendUsd]);
 
-  const getTokenViewContract = useGetTokenViewContract();
   const initBalance = useCallback(async () => {
-    console.log('initBalance assetInfo1', assetInfo);
-    console.log('initBalance assetInfo2', assetInfo.symbol || assetInfo.collectionName);
-    const caAddress = wallet?.[assetInfo.chainId]?.caAddress;
-    if (!assetInfo || !caAddress) {
+    // TODO: back to
+    if (!assetInfo) {
       return;
     }
     try {
-      const tokenContract = await getTokenViewContract(assetInfo.chainId);
-      const _balance = await getELFChainBalance(tokenContract, assetInfo.symbol, caAddress);
-      console.log('__balance', _balance);
-      setBalance(_balance);
+      const _balance = await getELFBalanceByContract(assetInfo.chainId);
+      console.log('====assetInfo', assetInfo);
+      setBalance(divDecimals(_balance, assetInfo.decimals).valueOf());
     } catch (error) {
-      console.log('initBalance', error);
+      console.log('initBalance error', error);
     }
-  }, [assetInfo, getTokenViewContract, wallet]);
+  }, [assetInfo, getELFBalanceByContract]);
 
   useEffectOnce(() => {
     initBalance();
@@ -346,36 +294,36 @@ const SendHome: React.FC = () => {
     );
   }, [chainList, selectTargetNetwork]);
 
-  const { getTransformedRecentList } = useRecent();
+  // const { getTransformedRecentList } = useRecent();
 
-  const getSavedList = useGetFilterContactList();
+  // const getSavedList = useGetFilterContactList();
 
-  const initSavedList = useCallback(() => {
-    const list = getSavedList({
-      fromChainId: assetInfo.chainId,
-      tokenId: assetInfo.symbol,
-      isFt: sendType !== 'token',
-    });
-    setSavedList(list || []);
-  }, [assetInfo.chainId, assetInfo.symbol, getSavedList, sendType]);
+  // const initSavedList = useCallback(() => {
+  //   const list = getSavedList({
+  //     fromChainId: assetInfo.chainId,
+  //     tokenId: assetInfo.symbol,
+  //     isFt: sendType !== 'token',
+  //   });
+  //   setSavedList(list || []);
+  // }, [assetInfo.chainId, assetInfo.symbol, getSavedList, sendType]);
 
-  const initBookList = useCallback(() => {
-    const reList = getTransformedRecentList({
-      fromChainId: assetInfo.chainId,
-      tokenId: assetInfo.symbol,
-      isFt: sendType === 'token',
-    });
-    setRecentList(reList || []);
-  }, [assetInfo.chainId, assetInfo.symbol, getTransformedRecentList, sendType]);
+  // const initBookList = useCallback(() => {
+  //   const reList = getTransformedRecentList({
+  //     fromChainId: assetInfo.chainId,
+  //     tokenId: assetInfo.symbol,
+  //     isFt: sendType === 'token',
+  //   });
+  //   setRecentList(reList || []);
+  // }, [assetInfo.chainId, assetInfo.symbol, getTransformedRecentList, sendType]);
 
-  const initList = useCallback(() => {
-    initBookList();
-    initSavedList();
-  }, [initBookList, initSavedList]);
-  getListFnRef.current = initList;
-  useEffectOnce(() => {
-    initList();
-  });
+  // const initList = useCallback(() => {
+  //   initBookList();
+  //   initSavedList();
+  // }, [initBookList, initSavedList]);
+  // getListFnRef.current = initList;
+  // useEffectOnce(() => {
+  //   initList();
+  // });
   useEffectOnce(() => {
     const listener = myEvents.updateSendAddressList.addListener(() => {
       getListFnRef.current?.();
@@ -392,11 +340,7 @@ const SendHome: React.FC = () => {
     if (!warning[0]) {
       return null;
     }
-    if (
-      warning[0] === WarningKey.CROSS_CHAIN ||
-      warning[0] === WarningKey.INVALID_ADDRESS ||
-      warning[0] === WarningKey.SAME_ADDRESS
-    ) {
+    if (warning[0] === WarningKey.INVALID_ADDRESS || warning[0] === WarningKey.SAME_ADDRESS) {
       return JustWarningOrErrorDom;
     }
 
@@ -451,7 +395,7 @@ const SendHome: React.FC = () => {
             onPress: () => {
               setSelectedToContact(pre => ({
                 ...pre,
-                address: addressFormat(mainChainCaInfo?.caAddress || '', DefaultChainId),
+                address: addressFormat(currentAccount?.address || '', DefaultChainId),
                 chainId: DefaultChainId,
               }));
               OverlayModal.hide();
@@ -470,7 +414,7 @@ const SendHome: React.FC = () => {
     // to dappChain Address
     setStep(2);
     setSelectedToContact(pre => ({ ...pre, chainId: assetInfo.chainId }));
-  }, [assetInfo.chainId, assetInfo.symbol, defaultToken.symbol, isSendToExchange, mainChainCaInfo?.caAddress, t]);
+  }, [assetInfo.chainId, assetInfo.symbol, currentAccount?.address, defaultToken.symbol, isSendToExchange, t]);
 
   const mainChainToNoAffixAddressAction = useCallback(() => {
     setSelectedToContact(pre => ({ ...pre, chainId: DefaultChainId }));
@@ -529,10 +473,9 @@ const SendHome: React.FC = () => {
     [assetInfo, defaultToken.symbol, selectedToContact, sendNumber, sendType],
   );
 
-  const checkTransferLimitWithJump = useCheckTransferLimitWithJump();
-
   const checkCanPreview = useCallback(async () => {
     setErrorMessage('');
+    setLoading(true);
 
     if (!chainInfo) {
       console.log('checkCanPreview 1');
@@ -540,7 +483,7 @@ const SendHome: React.FC = () => {
     }
 
     const assetBalanceBigNumber = ZERO.plus(balance);
-    const isAELFCross = !!(selectedToContact.chainId && selectedToContact.chainId !== assetInfo.chainId);
+    // const isAELFCross = !!(selectedToContact.chainId && selectedToContact.chainId !== assetInfo.chainId);
     const sendBigNumber = timesDecimals(sendNumber, assetInfo.decimals || '0');
     // input check
     if (sendType === 'token') {
@@ -550,12 +493,6 @@ const SendHome: React.FC = () => {
         if (sendBigNumber.isGreaterThan(assetBalanceBigNumber)) {
           setErrorMessage(TransactionError.TOKEN_NOT_ENOUGH);
           console.log('checkCanPreview 2');
-          return { status: false };
-        }
-
-        if (isAELFCross && sendBigNumber.isLessThanOrEqualTo(timesDecimals(crossFee, defaultToken.decimals))) {
-          setErrorMessage(TransactionError.CROSS_NOT_ENOUGH);
-          console.log('checkCanPreview 3');
           return { status: false };
         }
       } else {
@@ -575,105 +512,6 @@ const SendHome: React.FC = () => {
         return { status: false };
       }
     }
-    try {
-      Loading.show();
-
-      // cross chain interception
-      if (isAELFCross) {
-        const sendChainId = selectedToContact.chainId || (getChainIdByAddress(selectedToContact.address) as ChainId);
-        const interceptResult = await getAssetsEstimation({
-          symbol: assetInfo.symbol,
-          chainId: sendChainId,
-          type: sendType,
-        });
-        if (!interceptResult) {
-          ActionSheet.alert({
-            showInfoIcon: true,
-            title: 'Unsupported asset',
-            message: t(
-              'The asset does not exist on the target chain, so the transfer cannot be completed. Please check the asset and try again with a supported chain.',
-            ),
-            buttons: [
-              {
-                title: t('OK'),
-                type: 'primary',
-              },
-            ],
-            closeAction: () => {
-              setLoading(false);
-              Loading.hide();
-            },
-          });
-          console.log('checkCanPreview 6');
-          return;
-        }
-      }
-      // check is security safe
-      const securitySafeResult = await securitySafeCheckAndToast(assetInfo.chainId);
-      if (!securitySafeResult) {
-        Loading.hide();
-        console.log('checkCanPreview 7');
-        return { status: false };
-      }
-    } catch (err) {
-      CommonToast.failError(err);
-      Loading.hide();
-      console.log('checkCanPreview 8');
-      return { status: false };
-    }
-
-    // checkTransferLimitResult
-    let caContract: ContractBasic;
-    try {
-      caContract = await getCAContract(chainInfo.chainId);
-    } catch (error) {
-      Loading.hide();
-      console.log('checkCanPreview 9');
-      return { status: false };
-    }
-
-    // just aelf transfer need limit
-    if (isAelfAddress(selectedToContact.address)) {
-      try {
-        const checkTransferLimitResult = await checkTransferLimitWithJump({
-          caContract,
-          symbol: assetInfo.symbol,
-          decimals: assetInfo.decimals,
-          amount: sendNumber,
-          balance: balance,
-          chainId: chainInfo.chainId,
-          approveMultiLevelParams: {
-            sendTransferPreviewApprove: {
-              successNavigateName: 'SendPreview',
-              params: {
-                ...previewParamsWithoutFee,
-                transferType: isAELFCross ? TransferType.GENERAL_CROSS_CHAIN : TransferType.GENERAL_SAME_CHAIN,
-              },
-            },
-          },
-        });
-        console.log('checkTransferLimitResult', checkTransferLimitResult);
-        if (!checkTransferLimitResult) {
-          Loading.hide();
-          console.log('checkCanPreview 10');
-          return { status: false };
-        }
-      } catch (error) {
-        CommonToast.failError(error);
-        Loading.hide();
-        console.log('checkCanPreview 11');
-        return { status: false };
-      }
-    }
-
-    // check is SYNCHRONIZING
-    const _isManagerSynced = await checkManagerSyncState(chainInfo?.chainId || 'AELF');
-    if (!_isManagerSynced) {
-      Loading.hide();
-      setErrorMessage(TransactionError.SYNCHRONIZING);
-      console.log('checkCanPreview 12');
-      return { status: false };
-    }
 
     let networkFee: string | undefined;
     let networkFeeUnit: string | undefined;
@@ -683,7 +521,7 @@ const SendHome: React.FC = () => {
     let receiveAmountUsd: string | undefined;
     let transferType = TransferType.GENERAL_SAME_CHAIN;
 
-    // isRecommendEtransfer(to evm) fee check
+    // isRecommendEtransfer fee check
     if (
       warning[0] === WarningKey.MAKE_SURE_SUPPORT_PLATFORM &&
       recommendETransfer &&
@@ -691,6 +529,7 @@ const SendHome: React.FC = () => {
     ) {
       try {
         const { withdrawInfo } = await crossTransferByEtransfer.withdrawPreview({
+          currentAccountAddress: currentAccount?.address || '',
           symbol: assetInfo.symbol,
           address: selectedToContact.address,
           chainId: assetInfo.chainId,
@@ -735,7 +574,7 @@ const SendHome: React.FC = () => {
       }
     }
 
-    // isRecommendEBridge(to evm) fee check
+    // isRecommendEBridge fee check
     if (warning[0] === WarningKey.MAKE_SURE_SUPPORT_PLATFORM && recommendEBridge) {
       try {
         const fromChainInfo = getAELFChainInfoConfig(assetInfo.chainId);
@@ -788,51 +627,11 @@ const SendHome: React.FC = () => {
       }
     }
 
-    console.log('isAELFCross', isAELFCross, selectedToContact);
-
-    // SameChain or CrossChain in aelf
+    // SameChain
     try {
-      if (isAELFCross && isSupportCross) {
-        const network = selectedToContact?.chainId || 'AELF';
-        let isEtransferCrossInLimit = false;
-
-        try {
-          const { withdrawInfo } = await crossTransferByEtransfer.withdrawPreview({
-            symbol: assetInfo.symbol,
-            address: selectedToContact.address,
-            chainId: assetInfo.chainId,
-            amount: sendNumber,
-            network,
-          });
-
-          transactionFee = withdrawInfo?.aelfTransactionFee;
-          const maxAmount = Number(withdrawInfo?.maxAmount);
-          const minAmount = Number(withdrawInfo?.minAmount);
-          transactionFee = withdrawInfo.transactionFee;
-          transactionUnit = withdrawInfo.transactionUnit;
-          isEtransferCrossInLimit = Number(sendNumber) >= minAmount && Number(sendNumber) <= maxAmount;
-
-          // eTransfer
-          if (isEtransferCrossInLimit) {
-            receiveAmount = withdrawInfo?.receiveAmount;
-            receiveAmountUsd = withdrawInfo?.receiveAmountUsd;
-            transferType = TransferType.E_TRANSFER;
-          }
-        } catch (error) {
-          console.log('isEtransferCrossInLimit', error);
-          isEtransferCrossInLimit = false;
-        }
-        // GENERAL_CROSS_CHAIN
-        if (!isEtransferCrossInLimit) {
-          transferType = TransferType.GENERAL_CROSS_CHAIN;
-          networkFee = await getTransactionFee(isAELFCross, sendNumber);
-          networkFeeUnit = 'ELF';
-        }
-      } else {
-        networkFee = await getTransactionFee(isAELFCross, sendNumber);
-        networkFeeUnit = 'ELF';
-        transferType = isAELFCross ? TransferType.GENERAL_CROSS_CHAIN : TransferType.GENERAL_SAME_CHAIN;
-      }
+      networkFee = await getTransactionFee(sendNumber);
+      networkFeeUnit = 'ELF';
+      transferType = TransferType.GENERAL_SAME_CHAIN;
     } catch (err: any) {
       if (err?.code === 500) {
         setErrorMessage(TransactionError.FEE_NOT_ENOUGH);
@@ -842,7 +641,6 @@ const SendHome: React.FC = () => {
     } finally {
       Loading.hide();
     }
-    console.log('checkCanPreview 20', transferType);
     return {
       status: true,
       networkFee,
@@ -856,44 +654,38 @@ const SendHome: React.FC = () => {
   }, [
     chainInfo,
     balance,
-    selectedToContact,
+    selectedToContact.address,
     assetInfo.chainId,
     assetInfo.decimals,
     assetInfo.symbol,
     assetInfo.label,
     sendNumber,
     sendType,
-    checkManagerSyncState,
     warning,
     recommendETransfer,
     recommendEBridge,
     defaultToken.symbol,
     defaultToken.decimals,
-    crossFee,
-    securitySafeCheckAndToast,
-    t,
-    getCAContract,
-    checkTransferLimitWithJump,
-    previewParamsWithoutFee,
     crossTransferByEtransfer,
+    currentAccount?.address,
     targetNetwork,
     getAELFChainInfoConfig,
     getEVMChainInfoConfig,
     getTokenConfig,
     tokenPriceObject,
-    isSupportCross,
     getTransactionFee,
   ]);
 
   const preview = useCallback(async () => {
     const result = await checkCanPreview();
+    setLoading(false);
     console.log('preview preview', result);
 
     if (!result?.status) {
       return;
     }
 
-    console.log('nav params', {
+    console.log('navigationService SendPreview', {
       ...previewParamsWithoutFee,
       transactionFee: result?.transactionFee || '0',
       transactionFeeUnit: result?.transactionUnit || '',
@@ -963,74 +755,74 @@ const SendHome: React.FC = () => {
     onGetMaxAmount();
   }, [onGetMaxAmount]);
 
-  const caAddressInfos = useCaAddressInfoList();
-  const userInfo = useCurrentUserInfo();
+  // const caAddressInfos = useCaAddressInfoList();
+  // const userInfo = useCurrentUserInfo();
 
-  const myAddress = useMemo(() => {
-    return caAddressInfos.filter(item => item.chainId !== assetInfo.chainId)?.[0];
-  }, [assetInfo.chainId, caAddressInfos]);
+  // const myAddress = useMemo(() => {
+  //   return caAddressInfos.filter(item => item.chainId !== assetInfo.chainId)?.[0];
+  // }, [assetInfo.chainId, caAddressInfos]);
 
-  const myAddressesList: Array<IContactItemMyType> = useMemo(() => {
-    const myOtherAddress: IContactItemMyType = {
-      address: myAddress?.caAddress || '',
-      avatarImg: userInfo?.avatar || '',
-      network: 'aelf',
-      chainId: myAddress?.chainId || '',
-      addressInfo: {
-        chainId: myAddress?.chainId || '',
-        network: 'aelf',
-        address: myAddress?.caAddress || '',
-      },
-    };
-    return [myOtherAddress];
-  }, [myAddress?.caAddress, myAddress?.chainId, userInfo?.avatar]);
+  // const myAddressesList: Array<IContactItemMyType> = useMemo(() => {
+  //   const myOtherAddress: IContactItemMyType = {
+  //     address: myAddress?.caAddress || '',
+  //     avatarImg: userInfo?.avatar || '',
+  //     network: 'aelf',
+  //     chainId: myAddress?.chainId || '',
+  //     addressInfo: {
+  //       chainId: myAddress?.chainId || '',
+  //       network: 'aelf',
+  //       address: myAddress?.caAddress || '',
+  //     },
+  //   };
+  //   return [myOtherAddress];
+  // }, [myAddress?.caAddress, myAddress?.chainId, userInfo?.avatar]);
 
-  const onPressTabItem = useCallback(
-    async (i: TFormattedRecentItem) => {
-      console.log('onPressTabItem', i);
-      try {
-        if (i.addressInfo?.address === caAddressInfoList[0].caAddress) {
-          // anther chain address
-          inputRef.current?.onInput(
-            addressFormat(i.address || i.addressInfo?.address, i.chainId || i.addressInfo?.chainId),
-          );
-        } else if (i.network !== 'aelf' && i.addressInfo?.network !== 'aelf') {
-          Loading.show();
-          const { data } = await getSendNetworkList({
-            symbol: assetInfo?.symbol || '',
-            chainId: assetInfo?.chainId || 'AELF',
-            toAddress: i?.address || i?.addressInfo?.address || '',
-          });
+  // const onPressTabItem = useCallback(
+  //   async (i: TFormattedRecentItem) => {
+  //     console.log('onPressTabItem', i);
+  //     try {
+  //       if (i.addressInfo?.address === caAddressInfoList[0].caAddress) {
+  //         // anther chain address
+  //         inputRef.current?.onInput(
+  //           addressFormat(i.address || i.addressInfo?.address, i.chainId || i.addressInfo?.chainId),
+  //         );
+  //       } else if (i.network !== 'aelf' && i.addressInfo?.network !== 'aelf') {
+  //         Loading.show();
+  //         const { data } = await getSendNetworkList({
+  //           symbol: assetInfo?.symbol || '',
+  //           chainId: assetInfo?.chainId || 'AELF',
+  //           toAddress: i?.address || i?.addressInfo?.address || '',
+  //         });
 
-          console.log('getSendNetworkList', data, i);
-          const tmpNetwork = data?.networkList?.find(
-            (ele: any) => ele.network === (i?.network || i.addressInfo?.network),
-          );
+  //         console.log('getSendNetworkList', data, i);
+  //         const tmpNetwork = data?.networkList?.find(
+  //           (ele: any) => ele.network === (i?.network || i.addressInfo?.network),
+  //         );
 
-          if (!tmpNetwork) {
-            throw 'not supported';
-          }
-          console.log('tmpNetwork', tmpNetwork);
-          setTargetNetwork(tmpNetwork);
-          setChainList(data?.networkList);
-          setSelectedToContact({ name: i?.name, address: i.address || i.addressInfo?.address } as TToInfo);
-          setWarning([WarningKey.MAKE_SURE_SUPPORT_PLATFORM]);
-          setStep(2);
-        } else {
-          inputRef.current?.onInput(
-            i.addressInfo?.isExchange || !i.addressInfo
-              ? i.address || i.addressInfo?.address || ''
-              : addressFormat(i.address || i.addressInfo?.address || '', i.chainId || i.addressInfo?.chainId),
-          );
-        }
-      } catch (error) {
-        CommonToast.failError(error);
-      } finally {
-        Loading.hide();
-      }
-    },
-    [assetInfo?.chainId, assetInfo?.symbol, caAddressInfoList],
-  );
+  //         if (!tmpNetwork) {
+  //           throw 'not supported';
+  //         }
+  //         console.log('tmpNetwork', tmpNetwork);
+  //         setTargetNetwork(tmpNetwork);
+  //         setChainList(data?.networkList);
+  //         setSelectedToContact({ name: i?.name, address: i.address || i.addressInfo?.address } as TToInfo);
+  //         setWarning([WarningKey.MAKE_SURE_SUPPORT_PLATFORM]);
+  //         setStep(2);
+  //       } else {
+  //         inputRef.current?.onInput(
+  //           i.addressInfo?.isExchange || !i.addressInfo
+  //             ? i.address || i.addressInfo?.address || ''
+  //             : addressFormat(i.address || i.addressInfo?.address || '', i.chainId || i.addressInfo?.chainId),
+  //         );
+  //       }
+  //     } catch (error) {
+  //       CommonToast.failError(error);
+  //     } finally {
+  //       Loading.hide();
+  //     }
+  //   },
+  //   [assetInfo?.chainId, assetInfo?.symbol, caAddressInfoList],
+  // );
 
   return (
     <PageContainer
@@ -1108,7 +900,7 @@ const SendHome: React.FC = () => {
             </View>
           </>
         )}
-        {step === 1 && !selectedToContact.address && !isKeyboardShow && (
+        {/* {step === 1 && !selectedToContact.address && !isKeyboardShow && (
           <SelectAddressTab
             recentAddressList={recentList || []}
             savedAddressList={savedList || []}
@@ -1116,7 +908,7 @@ const SendHome: React.FC = () => {
             chainId={assetInfo.chainId}
             onPress={onPressTabItem}
           />
-        )}
+        )} */}
       </View>
 
       <KeyboardSafeArea>{renderBottomSection()}</KeyboardSafeArea>

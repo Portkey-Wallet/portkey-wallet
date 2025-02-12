@@ -5,11 +5,11 @@ import { ChainId } from '@portkey-wallet/types';
 import { useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { divDecimals } from '@portkey-wallet/utils/converter';
-import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
-import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-eoa/network';
+import { useCurrentChain } from '@portkey-wallet/hooks/hooks-eoa/chainList';
 import { useGetTokenViewContract } from './contract';
-import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { IToSendAssetParamsType, TToInfo } from '@portkey-wallet/types/types-ca/routeParams';
+import { useCurrentAccount } from '@portkey-wallet/hooks/hooks-eoa/wallet';
+import { IToSendAssetParamsType, TToInfo } from '@portkey-wallet/types/types-eoa/routeParams';
 
 export const useEtransferFee = (chainId: ChainId) => {
   const pin = usePin();
@@ -19,11 +19,13 @@ export const useEtransferFee = (chainId: ChainId) => {
   const { withdrawPreview } = useCrossTransferByEtransfer(pin);
   const currentNetwork = useCurrentNetworkInfo();
   const getTokenViewContract = useGetTokenViewContract();
-  const wallet = useCurrentWalletInfo();
+  const wallet = useCurrentAccount();
 
-  const getEtransferCAAllowance = useCallback(
+  const getEtransferAllowance = useCallback(
     async (token: IToSendAssetParamsType) => {
-      if (!currentChain) throw 'No currentChain';
+      if (!currentChain) {
+        throw 'No currentChain';
+      }
 
       const tokenContract = await getTokenViewContract(chainId);
       const allowanceRes = await tokenContract.callViewMethod('GetAllowance', {
@@ -32,7 +34,9 @@ export const useEtransferFee = (chainId: ChainId) => {
         spender: currentNetwork?.eTransferCA?.[token.chainId],
       });
 
-      if (allowanceRes?.error) throw allowanceRes?.error;
+      if (allowanceRes?.error) {
+        throw allowanceRes?.error;
+      }
       const allowance = divDecimals(allowanceRes.data.allowance ?? allowanceRes.data.amount ?? 0, token.decimals);
       return allowance;
     },
@@ -49,7 +53,7 @@ export const useEtransferFee = (chainId: ChainId) => {
           const arr = toInfo.address.split('_');
           network = arr[arr.length - 1];
         } else {
-          network = toInfo.network || toInfo.chainId;
+          network = toInfo.network || toInfo.chainId || '';
         }
 
         const [{ withdrawInfo }, allowance] = await Promise.all([
@@ -57,10 +61,9 @@ export const useEtransferFee = (chainId: ChainId) => {
             chainId: token.chainId,
             address: toInfo.address,
             symbol: token.symbol,
-            // TODO: change it
-            network: 'SETH',
+            network,
           }),
-          getEtransferCAAllowance(tokenInfo),
+          getEtransferAllowance(tokenInfo),
         ]);
 
         console.log(withdrawInfo, allowance, 'checkEtransferMaxFee==');
@@ -71,7 +74,9 @@ export const useEtransferFee = (chainId: ChainId) => {
         const isLTMin = withdrawInfo?.minAmount ? ZERO.plus(amount).gte(withdrawInfo.minAmount) : true;
         const amountAllowed = withdrawInfo ? isGTMax && isLTMin : false;
 
-        if (amountAllowed && allowance.gte(amount)) _etransferFee = 0;
+        if (amountAllowed && allowance.gte(amount)) {
+          _etransferFee = 0;
+        }
         console.log(_etransferFee, '_etransferFee==checkEtransferMaxFee');
         return _etransferFee.toString();
       } catch (error) {
@@ -79,7 +84,7 @@ export const useEtransferFee = (chainId: ChainId) => {
         return etransferFee.toString();
       }
     },
-    [withdrawPreview, getEtransferCAAllowance, etransferFee],
+    [withdrawPreview, getEtransferAllowance, etransferFee],
   );
 
   return { getEtransferMaxFee };

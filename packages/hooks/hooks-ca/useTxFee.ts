@@ -23,7 +23,7 @@ export const useFetchTxFee = () => {
 export const useGetTxFee = (chainId: ChainId) => {
   const txFee = useAppCASelector(state => state.txFee);
   const currentNetwork = useCurrentNetwork();
-  const targetTxFee = useMemo(() => txFee[currentNetwork]?.[chainId], [chainId, currentNetwork, txFee]);
+  const targetTxFee = useMemo(() => txFee?.[currentNetwork]?.[chainId], [chainId, currentNetwork, txFee]);
 
   return useMemo(() => targetTxFee ?? InitialTxFee, [targetTxFee]);
 };

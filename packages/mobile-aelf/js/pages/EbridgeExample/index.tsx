@@ -2,7 +2,6 @@ import React, { useCallback } from 'react';
 import PageContainer from 'components/PageContainer';
 import CommonButton from 'components/CommonButton';
 import { EBridge } from '@portkey-wallet/utils/eBridge';
-import { getContractBasic } from '@portkey-wallet/contracts/utils';
 import { IEBridgeChainInfo } from '@portkey-wallet/utils/eBridge/types';
 import { useGetCAContract, useGetTokenContract } from 'hooks/contract';
 import { ChainId } from '@portkey-wallet/types';
@@ -70,7 +69,9 @@ export default function EbridgeExample() {
       console.log(limit, 'limit===EBridge');
       const tokenContract: any = await getTokenContract(fromChainInfo.chainId as ChainId);
       const portkeyContract: any = await getCAContract(fromChainInfo.chainId as ChainId);
-      if (!currentWallet.caAddress || !currentWallet.caHash) throw 'currentWallet is null';
+      if (!currentWallet.caAddress || !currentWallet.caHash) {
+        throw 'currentWallet is null';
+      }
       const createReceiptResult = await bridge.createReceipt({
         tokenContract,
         portkeyContract,
@@ -104,6 +105,7 @@ export default function EbridgeExample() {
           address: '0xeD24FC36d5Ee211Ea25A80239Fb8C4Cfd80f12Ee',
         },
       };
+
       const bridge = new EBridge({
         fromChainInfo,
         toChainInfo,
@@ -116,7 +118,9 @@ export default function EbridgeExample() {
       console.log(limit, 'limit===EBridge');
       const tokenContract: any = await getTokenContract(fromChainInfo.chainId as ChainId);
       const portkeyContract: any = await getCAContract(fromChainInfo.chainId as ChainId);
-      if (!currentWallet.caAddress || !currentWallet.caHash) throw 'currentWallet is null';
+      if (!currentWallet.caAddress || !currentWallet.caHash) {
+        throw 'currentWallet is null';
+      }
       const createReceiptResult = await bridge.createReceipt({
         tokenContract,
         portkeyContract,

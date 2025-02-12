@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { ChainId } from '@portkey-wallet/types';
 import { DEFAULT_TOKEN } from '@portkey-wallet/constants/constants-ca/wallet';
 import { useIsMainnet } from './network';
@@ -34,17 +34,18 @@ export function useDefaultToken(_chainId: ChainId) {
   return chainInfo?.defaultToken || DEFAULT_TOKEN;
 }
 
-// export function useIsValidSuffix() {
-//   const currentChainList = useCurrentChainList();
-//   const chainIdArr = useMemo(() => currentChainList?.map(chain => chain.chainId as string) || [], [currentChainList]);
-//   return useCallback(
-//     (suffix?: string) => {
-//       if (!suffix) return false;
-//       return chainIdArr.includes(suffix);
-//     },
-//     [chainIdArr],
-//   );
-// }
+export function useIsValidSuffix() {
+  const currentChainList = useCurrentChainList();
+
+  const chainIdArr = useMemo(() => currentChainList?.map(chain => chain.chainId as string) || [], [currentChainList]);
+  return useCallback(
+    (suffix?: string) => {
+      if (!suffix) return false;
+      return chainIdArr.includes(suffix);
+    },
+    [chainIdArr],
+  );
+}
 
 // export function useGetChainInfo() {
 //   const currentChainList = useCurrentChainList();

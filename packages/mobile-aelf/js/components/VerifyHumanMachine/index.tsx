@@ -17,8 +17,8 @@ async function verifyHumanMachine(language: any) {
       <Recaptcha
         lang={language}
         headerComponent={null}
-        siteKey={Config.RECAPTCHA_SITE_KEY}
-        baseUrl={Config.RECAPTCHA_BASE_URL}
+        siteKey={Config.RECAPTCHA_SITE_KEY || ''}
+        baseUrl={Config.RECAPTCHA_BASE_URL || ''}
         onVerify={token => {
           OverlayModal.hideKey(key);
           resolve(token as string);

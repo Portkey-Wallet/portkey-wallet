@@ -9,11 +9,10 @@ import { pTd } from 'utils/unit';
 import { useLanguage } from 'i18n/hooks';
 import { ChainId } from '@portkey-wallet/types';
 import FormItem from 'components/FormItem';
-import { useCurrentWallet, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import SelectChain from 'components/SelectChain';
 import CommonButton from 'components/CommonButton';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
-import { request } from '@portkey-wallet/api/api-did';
+import { request } from '@portkey-wallet/api/api-eoa';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
 import Loading from 'components/Loading';
 import navigationService from 'utils/navigationService';
@@ -22,6 +21,11 @@ import CommonToast from 'components/CommonToast';
 import { FontStyles } from 'assets/theme/styles';
 import GStyles from 'assets/theme/GStyles';
 import { makeStyles } from '@rneui/themed';
+import { useChainList } from '@portkey-wallet/hooks/hooks-eoa/network/chain';
+import { useCurrentNetwork } from '@portkey-wallet/hooks/hooks-eoa/network';
+import { useTokenLegacy } from '@portkey-wallet/hooks/hooks-eoa/useToken';
+import { useManagerTokenInfo } from '@portkey-wallet/hooks/hooks-eoa/assets';
+import { TokenItemShowType } from '@portkey-wallet/types/types-eoa/token';
 
 interface CustomTokenProps {
   route?: any;
@@ -29,10 +33,13 @@ interface CustomTokenProps {
 
 const CustomToken: React.FC<CustomTokenProps> = () => {
   const { t } = useLanguage();
+  const { tokenDataShowInMarket } = useTokenLegacy();
+  const { switchToken } = useManagerTokenInfo();
 
-  const originChainId = useOriginChainId();
-  const { chainList = [], currentNetwork } = useCurrentWallet();
-
+  // const originChainId = useOriginChainId();
+  // const {currentNetwork } = useCurrentWallet();
+  const currentNetwork = useCurrentNetwork();
+  const chainList = useChainList() || [];
   const [keyword, setKeyword] = useState<string>('');
   const [tokenItem, setTokenItem] = useState<{
     symbol: string;
@@ -43,7 +50,7 @@ const CustomToken: React.FC<CustomTokenProps> = () => {
     isDisplay?: boolean;
   }>({
     symbol: '',
-    chainId: originChainId,
+    chainId: 'AELF',
     decimals: '-',
     id: '',
   });
@@ -68,6 +75,7 @@ const CustomToken: React.FC<CustomTokenProps> = () => {
           chainId: tokenItem.chainId,
         },
       });
+      console.log('===res', JSON.stringify(res));
       const { symbol, id } = res || {};
 
       if (symbol && id) {
@@ -106,17 +114,23 @@ const CustomToken: React.FC<CustomTokenProps> = () => {
   );
 
   const addToken = useCallback(async () => {
-    if (tokenItem?.isDefault || tokenItem?.isDisplay) {
+    // console.log('tokenItem====', JSON.stringify(tokenItem));
+    // return;
+    const fundItem = tokenDataShowInMarket.find(
+      item => item.symbol === tokenItem.symbol && item.chainId === tokenItem.chainId,
+    );
+    if (tokenItem?.isDefault || (fundItem && fundItem.isAdded)) {
       setErrorMessage('This token has already been added.');
     } else {
       try {
         Loading.show();
-        await request.token.displayUserToken({
-          resourceUrl: `${tokenItem?.id}/display`,
-          params: {
-            isDisplay: true,
-          },
-        });
+        // await request.token.displayUserToken({
+        //   resourceUrl: `${tokenItem?.id}/display`,
+        //   params: {
+        //     isDisplay: true,
+        //   },
+        // });
+        switchToken(tokenItem as TokenItemShowType, true);
         CommonToast.success('success');
         await sleep(500);
         navigationService.navigate('ManageTokenList');
@@ -127,7 +141,7 @@ const CustomToken: React.FC<CustomTokenProps> = () => {
         Loading.hide();
       }
     }
-  }, [tokenItem]);
+  }, [switchToken, tokenDataShowInMarket, tokenItem]);
 
   return (
     <PageContainer
@@ -157,7 +171,7 @@ const CustomToken: React.FC<CustomTokenProps> = () => {
       <FormItem title={'Network'} style={pageStyles.networkWrap} titleStyle={pageStyles.labelWrap}>
         <SelectChain
           currentNetwork={currentNetwork}
-          chainId={tokenItem.chainId || originChainId}
+          chainId={tokenItem.chainId || 'AELF'}
           chainList={chainList}
           onChainPress={onChainChange}
         />

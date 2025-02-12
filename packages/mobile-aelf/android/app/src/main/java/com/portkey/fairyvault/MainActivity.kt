@@ -1,4 +1,4 @@
-package com.aelfwallet
+package com.portkey.fairyvault
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate

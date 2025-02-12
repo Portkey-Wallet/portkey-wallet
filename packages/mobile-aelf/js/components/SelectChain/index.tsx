@@ -6,7 +6,7 @@ import GStyles from 'assets/theme/GStyles';
 import { ChainId, NetworkType } from '@portkey-wallet/types';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import ChainOverlay from 'components/ChainOverlay';
-import { IChainItemType } from '@portkey-wallet/types/types-ca/chain';
+import { IChainItemType } from '@portkey-wallet/types/types-eoa/chain';
 import { makeStyles, useTheme } from '@rneui/themed';
 
 interface SelectChainProps {

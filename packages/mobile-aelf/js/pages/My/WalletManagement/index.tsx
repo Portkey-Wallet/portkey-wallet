@@ -15,6 +15,7 @@ import { getStyles, getAddressCardStyles } from './styles';
 import { AddressCard } from './components/AddressCard';
 import { MAX_WALLET_NUMBER } from '@portkey-wallet/store/store-eoa/wallet/config';
 import CommonToast from 'components/CommonToast';
+import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 
 export default function WalletManagement() {
   const styles = getStyles();
@@ -22,7 +23,10 @@ export default function WalletManagement() {
   const checkSecurityLock = useCheckSecurityLock();
   const currentWallet = useCurrentWallet();
   const walletList = useWalletListState();
-  const [managing, setManaging] = useState(false);
+  const { showManaging } = useRouterParams<{
+    showManaging?: boolean;
+  }>();
+  const [managing, setManaging] = useState(!!showManaging);
   const [addWalletDisabled, setAddWalletDisabled] = useState(false);
   useEffect(() => {
     if (!walletList) {
@@ -37,6 +41,7 @@ export default function WalletManagement() {
 
   return (
     <PageContainer
+      noLeftDom={managing}
       titleDom="Your Wallets"
       rightDom={
         <Touchable
@@ -55,7 +60,15 @@ export default function WalletManagement() {
       scrollViewProps={{ disabled: false }}>
       <View>
         {walletList.map((item: TWalletInfo, index: number) => {
-          return <AddressCard walletInfo={item} currentWallet={currentWallet} addressManaging={managing} key={index} />;
+          return (
+            <AddressCard
+              walletInfo={item}
+              currentWallet={currentWallet}
+              addressManaging={managing}
+              key={index}
+              removeWalletDisabled={walletList.length <= 1}
+            />
+          );
         })}
 
         {!managing && (

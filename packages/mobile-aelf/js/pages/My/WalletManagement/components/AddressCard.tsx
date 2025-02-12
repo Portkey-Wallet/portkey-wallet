@@ -27,6 +27,7 @@ export interface IAddressCardProps {
   addressManageView?: boolean;
   currentWallet?: TWalletInfo;
   walletInfo?: TWalletInfo;
+  removeWalletDisabled?: boolean;
 }
 
 export const TouchOrView = ({
@@ -63,9 +64,16 @@ export const AddressCard = ({
   // cardTouchable = false,
   // addressManageView = false,
   addressManaging = false,
+  removeWalletDisabled = false,
 }: IAddressCardProps) => {
   if (addressManaging) {
-    return <AddressCardManaging walletInfo={walletInfo} currentWallet={currentWallet} />;
+    return (
+      <AddressCardManaging
+        walletInfo={walletInfo}
+        currentWallet={currentWallet}
+        removeWalletDisabled={removeWalletDisabled}
+      />
+    );
   }
   if (addressSelecting) {
     return <AddressCardSelect walletInfo={walletInfo} currentWallet={currentWallet} />;
@@ -85,9 +93,15 @@ export const AddressCardManageView = ({ walletInfo, currentWallet }: IAddressCar
   );
 };
 
-export const AddressCardManaging = ({ walletInfo, currentWallet }: IAddressCardProps) => {
+export const AddressCardManaging = ({ walletInfo, currentWallet, removeWalletDisabled }: IAddressCardProps) => {
   return (
-    <AddressCardBase viewOnly={true} addressManaging={true} walletInfo={walletInfo} currentWallet={currentWallet} />
+    <AddressCardBase
+      viewOnly={true}
+      addressManaging={true}
+      walletInfo={walletInfo}
+      currentWallet={currentWallet}
+      removeWalletDisabled={removeWalletDisabled}
+    />
   );
 };
 
@@ -109,6 +123,7 @@ export const AddressCardBase = ({
   cardTouchable = false,
   addressManaging = false,
   addressManageView = false,
+  removeWalletDisabled = false,
   walletInfo,
   currentWallet,
 }: IAddressCardProps) => {
@@ -147,6 +162,7 @@ export const AddressCardBase = ({
         privateKeyTipShow={addressManageView}
         useManageStyle={addressManaging}
         walletInfo={walletInfo}
+        removeWalletDisabled={removeWalletDisabled}
       />
       <View alias-name="address-card">
         <View style={addressCardStyles.cardListContainer}>

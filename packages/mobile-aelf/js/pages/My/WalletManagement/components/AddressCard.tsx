@@ -30,6 +30,12 @@ export interface IAddressCardProps {
   removeWalletDisabled?: boolean;
 }
 
+export interface IAddressCardPropsExtend extends IAddressCardProps {
+  addAddressDisabled: boolean;
+  accountState: string;
+  addNewAddress: () => void;
+}
+
 export const TouchOrView = ({
   touchable = false,
   children,
@@ -66,34 +72,72 @@ export const AddressCard = ({
   addressManaging = false,
   removeWalletDisabled = false,
 }: IAddressCardProps) => {
+  const useDynamicHook = addressSelecting ? useEmptyAddress : useAddAddress;
+  const { addAddressDisabled, accountState, addNewAddress } = useDynamicHook({ walletInfo });
+
   if (addressManaging) {
     return (
       <AddressCardManaging
         walletInfo={walletInfo}
         currentWallet={currentWallet}
         removeWalletDisabled={removeWalletDisabled}
+        addAddressDisabled={addAddressDisabled}
+        accountState={accountState}
+        addNewAddress={addNewAddress}
       />
     );
   }
   if (addressSelecting) {
-    return <AddressCardSelect walletInfo={walletInfo} currentWallet={currentWallet} />;
+    return (
+      <AddressCardSelect
+        walletInfo={walletInfo}
+        currentWallet={currentWallet}
+        addAddressDisabled={addAddressDisabled}
+        accountState={accountState}
+        addNewAddress={addNewAddress}
+      />
+    );
   }
   // addressManageView; default
-  return <AddressCardManageView walletInfo={walletInfo} currentWallet={currentWallet} />;
+  return (
+    <AddressCardManageView
+      walletInfo={walletInfo}
+      currentWallet={currentWallet}
+      addAddressDisabled={addAddressDisabled}
+      accountState={accountState}
+      addNewAddress={addNewAddress}
+    />
+  );
 };
 
-export const AddressCardManageView = ({ walletInfo, currentWallet }: IAddressCardProps) => {
+export const AddressCardManageView = ({
+  walletInfo,
+  currentWallet,
+  addAddressDisabled,
+  accountState,
+  addNewAddress,
+}: IAddressCardPropsExtend) => {
   return (
     <AddressCardBase
       cardTouchable={true}
       addressManageView={true}
       walletInfo={walletInfo}
       currentWallet={currentWallet}
+      addAddressDisabled={addAddressDisabled}
+      accountState={accountState}
+      addNewAddress={addNewAddress}
     />
   );
 };
 
-export const AddressCardManaging = ({ walletInfo, currentWallet, removeWalletDisabled }: IAddressCardProps) => {
+export const AddressCardManaging = ({
+  walletInfo,
+  currentWallet,
+  removeWalletDisabled,
+  addAddressDisabled,
+  accountState,
+  addNewAddress,
+}: IAddressCardPropsExtend) => {
   return (
     <AddressCardBase
       viewOnly={true}
@@ -101,11 +145,20 @@ export const AddressCardManaging = ({ walletInfo, currentWallet, removeWalletDis
       walletInfo={walletInfo}
       currentWallet={currentWallet}
       removeWalletDisabled={removeWalletDisabled}
+      addAddressDisabled={addAddressDisabled}
+      accountState={accountState}
+      addNewAddress={addNewAddress}
     />
   );
 };
 
-export const AddressCardSelect = ({ walletInfo, currentWallet }: IAddressCardProps) => {
+export const AddressCardSelect = ({
+  walletInfo,
+  currentWallet,
+  addAddressDisabled,
+  accountState,
+  addNewAddress,
+}: IAddressCardPropsExtend) => {
   return (
     <AddressCardBase
       viewOnly={true}
@@ -113,6 +166,9 @@ export const AddressCardSelect = ({ walletInfo, currentWallet }: IAddressCardPro
       cardTouchable={true}
       walletInfo={walletInfo}
       currentWallet={currentWallet}
+      addAddressDisabled={addAddressDisabled}
+      accountState={accountState}
+      addNewAddress={addNewAddress}
     />
   );
 };
@@ -126,15 +182,18 @@ export const AddressCardBase = ({
   removeWalletDisabled = false,
   walletInfo,
   currentWallet,
-}: IAddressCardProps) => {
+  addAddressDisabled,
+  accountState,
+  addNewAddress,
+}: IAddressCardPropsExtend) => {
   const styles = getStyles();
   const cardStyles = getCardStyles();
   const addressCardStyles = getAddressCardStyles();
   const dispatch = useAppCommonDispatch();
   // const isSelected = currentWallet?.key === walletInfo?.key;
-
-  const useDynamicHook = addressSelecting ? useEmptyAddress : useAddAddress;
-  const { addAddressDisabled, accountAdding, addNewAddress } = useDynamicHook({ walletInfo });
+  //
+  // const useDynamicHook = addressSelecting ? useEmptyAddress : useAddAddress;
+  // const { addAddressDisabled, accountState, addNewAddress } = useDynamicHook({ walletInfo });
 
   const cardOperation = useCallback(
     (account: TAccountInfo) => {
@@ -225,7 +284,7 @@ export const AddressCardBase = ({
             <Touchable onPress={addNewAddress} alias-name="add-address" style={addressCardStyles.cardContainer}>
               <View style={[addressCardStyles.card, addressCardStyles.operationCard]}>
                 <View style={addressCardStyles.info}>
-                  {accountAdding ? (
+                  {accountState === 'adding' ? (
                     <LottieView
                       source={require('assets/lottieFiles/loading.json')}
                       style={[addressCardStyles.loadingStyle, addressCardStyles.avatarIcon]}

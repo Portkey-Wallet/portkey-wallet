@@ -21,6 +21,7 @@ import { useCloudStorage } from './useCloudStorage';
 import CommonToast from 'components/CommonToast';
 import { useCredentials } from 'hooks/store';
 import { TWalletInfo } from '@portkey-wallet/types/types-eoa/wallet';
+import { validatePassword } from 'utils/password';
 
 function generateDots(length: number) {
   if (length < 0) {
@@ -65,6 +66,7 @@ export default function CloudBackup() {
   const [secureTextEntry, setSecureTextEntry] = useState(true);
   const [confirmSecureTextEntry, setConfirmSecureTextEntry] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
+  const [enterPasswordErrorMessage, setEnterPasswordErrorMessage] = useState('');
 
   const [isChecked, setIsChecked] = useState(false);
   const onClickCheckBox = useCallback(() => {
@@ -94,14 +96,20 @@ export default function CloudBackup() {
             keyboardType="numeric"
             value={passwordShow}
             placeholder="Enter password"
+            errorMessage={enterPasswordErrorMessage}
             onChangeText={(value: string) => {
               const { newPassword, passwordShow: _passwordShow } = getPasswords(value, password, secureTextEntry);
               setPassword(newPassword);
               setPasswordShow(_passwordShow);
-              if (confirmPassword !== newPassword) {
+              if (confirmPassword !== newPassword && confirmPassword.length) {
                 setErrorMessage('Not match, please try again.');
               } else {
                 setErrorMessage('');
+              }
+              if (!validatePassword(newPassword)) {
+                setEnterPasswordErrorMessage('Must be at least 8 characters long, including at least 1 number.');
+              } else {
+                setEnterPasswordErrorMessage('');
               }
             }}
             rightIcon={
@@ -144,7 +152,7 @@ export default function CloudBackup() {
               );
               setConfirmPassword(newPassword);
               setConfirmPasswordShow(_passwordShow);
-              if (password !== newPassword) {
+              if (password !== newPassword && newPassword.length) {
                 setErrorMessage('Not match, please try again.');
               } else {
                 setErrorMessage('');
@@ -210,7 +218,7 @@ export default function CloudBackup() {
           </Text>
         </View>
         <CommonButton
-          disabled={!isChecked || !!errorMessage}
+          disabled={!isChecked || !!errorMessage || !!enterPasswordErrorMessage}
           loading={loading}
           type="primary"
           style={styles.continueButton}
@@ -221,6 +229,7 @@ export default function CloudBackup() {
               return;
             }
             const _currentWallet: TWalletInfo = JSON.parse(JSON.stringify(currentWallet));
+            _currentWallet.name = '';
             if (!credentials?.pin) {
               // almost impossible
               CommonToast.fail('Wallet is locked');
@@ -240,6 +249,8 @@ export default function CloudBackup() {
                 CommonToast.fail('Decrypt failed');
               }
               account.AESEncryptPrivateKey = aes.encrypt(result as string, password);
+              account.name = '';
+              account.icon = '';
             });
             console.log('_currentWallet: ', _currentWallet, currentWallet);
             // if directory exists, will not create again.

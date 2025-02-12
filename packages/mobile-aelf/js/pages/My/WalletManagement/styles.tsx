@@ -148,4 +148,16 @@ export const getStyles = makeStyles(theme => ({
     height: pTd(1),
     backgroundColor: theme.colors.bgBase3,
   },
+  deleteWalletWrap: {
+    // height: pTd(48),
+    height: pTd(48),
+    alignContent: 'center',
+    justifyContent: 'center',
+  },
+  deleteWalletText: {
+    ...fonts.SGMediumFont,
+    color: theme.colors.textDanger1,
+    fontSize: 16,
+    textAlign: 'center',
+  },
 }));

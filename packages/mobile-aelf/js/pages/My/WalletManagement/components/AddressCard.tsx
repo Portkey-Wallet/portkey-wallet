@@ -12,7 +12,7 @@ import { getAddressCardStyles, getCardStyles, getStyles } from '../styles';
 import { AddressCardHeader } from './AddressCardHeader';
 import { changeCurrentWallet } from '@portkey-wallet/store/store-eoa/wallet/actions';
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
-// import { useAccountByWallet } from '@portkey-wallet/hooks/hooks-eoa/wallet';
+import { useCurrentAccount } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 import { TWalletInfo, TAccountInfo } from '@portkey-wallet/types/types-eoa/wallet';
 import OverlayModal from 'components/OverlayModal';
 // import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
@@ -181,7 +181,7 @@ export const AddressCardBase = ({
   addressManageView = false,
   removeWalletDisabled = false,
   walletInfo,
-  currentWallet,
+  // currentWallet,
   addAddressDisabled,
   accountState,
   addNewAddress,
@@ -190,6 +190,7 @@ export const AddressCardBase = ({
   const cardStyles = getCardStyles();
   const addressCardStyles = getAddressCardStyles();
   const dispatch = useAppCommonDispatch();
+  const currentAccount = useCurrentAccount();
   // const isSelected = currentWallet?.key === walletInfo?.key;
   //
   // const useDynamicHook = addressSelecting ? useEmptyAddress : useAddAddress;
@@ -212,7 +213,7 @@ export const AddressCardBase = ({
         OverlayModal.hide();
       }
     },
-    [addressManageView, addressSelecting, dispatch],
+    [addressManageView, addressSelecting, dispatch, walletInfo?.key],
   );
 
   return (
@@ -226,7 +227,7 @@ export const AddressCardBase = ({
       <View alias-name="address-card">
         <View style={addressCardStyles.cardListContainer}>
           {walletInfo?.accountList.map((account: TAccountInfo, index: number) => {
-            const isSelected = currentWallet?.key === account.address;
+            const isSelected = currentAccount?.address === account.address;
             return (
               <View key={index}>
                 <TouchOrView

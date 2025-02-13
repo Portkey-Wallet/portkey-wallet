@@ -57,6 +57,8 @@ export const AddressDetail: React.FC = () => {
     console.log('address detail', accountSelected, walletSelected);
   }, [walletList, currentWalletKey, currentAddress]);
 
+  const theOnlyAddress = walletList.length === 1 && walletList[0].accountList.length === 1;
+
   return (
     <PageContainer
       titleDom={t('Address details')}
@@ -229,13 +231,17 @@ export const AddressDetail: React.FC = () => {
       <View style={pageStyles.deleteWalletWrap}>
         <Text
           onPress={() => {
+            if (theOnlyAddress) {
+              CommonToast.fail('This is the only address and cannot be removed.');
+              return;
+            }
             removeAddress(() => {
               CommonToast.success('Wallet removed');
               navigationService.pop(2);
               navigationService.push('WalletManagement');
             });
           }}
-          style={pageStyles.deleteWalletText}>
+          style={[pageStyles.deleteWalletText, theOnlyAddress && pageStyles.deleteDisabled]}>
           Remove address
         </Text>
       </View>
@@ -321,5 +327,8 @@ const getStyles = makeStyles(theme => ({
     color: theme.colors.textDanger1,
     fontSize: 16,
     textAlign: 'center',
+  },
+  deleteDisabled: {
+    color: theme.colors.textDisabled1,
   },
 }));

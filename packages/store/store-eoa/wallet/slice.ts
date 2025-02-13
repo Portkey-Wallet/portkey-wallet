@@ -13,8 +13,23 @@ import {
   updateWalletList,
 } from './actions';
 import { getNextBIP44Path } from '@portkey-wallet/utils/wallet';
+import { TWalletInfo } from '@portkey-wallet/types/types-eoa/wallet';
 // import { NetworkType } from '@portkey-wallet/types';
 import { MAX_ACCOUNT_NUMBER } from './config';
+
+const getCurrentAccountAddress = (newWalletList: TWalletInfo[], currentAccountAddress: string | undefined) => {
+  if (!newWalletList || newWalletList.length === 0) {
+    return initialState.currentAccountAddress;
+  }
+  const accountExists = newWalletList.some(wallet =>
+    wallet.accountList.some(account => account.address === currentAccountAddress),
+  );
+  console.log('getCurrentAccountAddress:', accountExists, newWalletList[0].accountList[0].address);
+  if (!accountExists && newWalletList.length > 0) {
+    return newWalletList[0].accountList[0].address;
+  }
+  return currentAccountAddress;
+};
 
 const initialState: TWalletState = {
   walletList: [],
@@ -39,20 +54,23 @@ export const walletSlice = createSlice({
       .addCase(updateWallet, (state, action) => {
         const { wallet } = action.payload;
         const newWalletList = state.walletList.map(item => (item.key === wallet.key ? { ...item, ...wallet } : item));
+        const _currentAddressAccount = getCurrentAccountAddress(newWalletList, state.currentAccountAddress);
         return {
           ...state,
           walletList: newWalletList,
-          currentAccountAddress: wallet.accountList[0]?.address,
+          // currentAccountAddress: wallet.accountList[0]?.address,
+          currentAccountAddress: _currentAddressAccount,
         };
       })
       .addCase(removeWallet, (state, action) => {
         const { key } = action.payload;
         const walletList = state.walletList.filter(item => item.key !== key);
 
-        // TODO: eoa add currentAccountAddress logic
+        const _currentAddressAccount = getCurrentAccountAddress(walletList, state.currentAccountAddress);
         return {
           ...state,
           walletList,
+          currentAccountAddress: _currentAddressAccount,
         };
       })
       .addCase(addAccount, (state, action) => {
@@ -73,45 +91,33 @@ export const walletSlice = createSlice({
           return wallet;
         });
 
-        // const walletList = [...state.walletList];
-        // const wallet = walletList.find(item => item.key === key);
-        // if (!wallet) return state;
-        //
-        // wallet.accountList = [...wallet.accountList, account];
-        //
-        // // TODO: eoa add currentAccountAddress logic
-        // wallet.nextBIP44Path = getNextBIP44Path(account.BIP44Path);
-        // state.currentAccountAddress = account.address;
         return {
           ...state,
           walletList: newWalletList,
+          currentAccountAddress: account.address,
         };
       })
       .addCase(removeAccount, (state, action) => {
-        // const { key, address } = action.payload;
-        // const walletList = [...state.walletList];
-        // const wallet = walletList.find(item => item.key === key);
-        // if (!wallet) return state;
-        // const account = wallet.accountList.find(item => item.address === address);
-        // if (!account) return state;
-        // account.isHide = true;
-
         const { walletKey, accountAddress } = action.payload;
 
-        const newWalletList = state.walletList.map(item => {
-          if (item.key === walletKey) {
-            const newAccountList = item.accountList.filter(accountItem => accountItem.address !== accountAddress);
-            return {
-              ...item,
-              accountList: newAccountList,
-            };
-          }
-          return item;
-        });
-        // TODO: eoa add currentAccountAddress logic
+        const newWalletList = state.walletList
+          .map(item => {
+            if (item.key === walletKey) {
+              const newAccountList = item.accountList.filter(accountItem => accountItem.address !== accountAddress);
+              return {
+                ...item,
+                accountList: newAccountList,
+              };
+            }
+            return item;
+          })
+          .filter(item => item.accountList.length > 0);
+
+        const _currentAddressAccount = getCurrentAccountAddress(newWalletList, state.currentAccountAddress);
         return {
           ...state,
           walletList: newWalletList,
+          currentAccountAddress: _currentAddressAccount,
         };
       })
       .addCase(updateAccount, (state, action) => {

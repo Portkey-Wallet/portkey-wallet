@@ -16,6 +16,7 @@ import { configSlice } from '@portkey-wallet/store/store-eoa/config/slice';
 import { cmsSlice } from '@portkey-wallet/store/store-eoa/cms/slice';
 import { dappSlice } from '@portkey-wallet/store/store-eoa/dapp/slice';
 import discoverSlice from '@portkey-wallet/store/store-eoa/discover/slice';
+import { recentSlice } from '@portkey-wallet/store/store-eoa/recent/slice';
 
 const userPersistConfig = {
   key: userSlice.name,
@@ -47,7 +48,7 @@ const rootReducer = combineReducers({
   [contactSlice.name]: contactSlice.reducer,
   // [miscSlice.name]: miscSlice.reducer,
   // [guardiansSlice.name]: guardiansSlice.reducer,
-  // [recentSlice.name]: recentSlice.reducer,
+  [recentSlice.name]: recentSlice.reducer,
   [assetsSlice.name]: assetsReducer,
   [activitySlice.name]: activitySlice.reducer,
   [tokenManagementSlice.name]: tokenManagementSlice.reducer,

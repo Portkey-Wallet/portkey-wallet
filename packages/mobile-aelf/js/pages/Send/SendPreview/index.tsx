@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useMemo, useRef, useState } from 'react';
-import { formatChainInfoToShow } from '@portkey-wallet/utils';
+import { formatChainInfoToShow, getChainIdByAddress } from '@portkey-wallet/utils';
 import { useCurrentChain, useDefaultToken } from '@portkey-wallet/hooks/hooks-eoa/chainList';
 import { usePin } from 'hooks/store';
 import { getManagerAccount } from 'utils/redux';
@@ -16,7 +16,6 @@ import { ZERO } from '@portkey-wallet/constants/misc';
 import { sleep } from '@portkey-wallet/utils';
 import { useAmountInUsdShow, useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-eoa/useTokensPrice';
 import useEffectOnce from 'hooks/useEffectOnce';
-// import { useFetchTxFee, useGetTxFee } from '@portkey-wallet/hooks/hooks-eoa/useTxFee';
 import { useCrossTransferByEtransfer } from '@portkey-wallet/hooks/hooks-eoa/useWithdrawByETransfer';
 import { useFocusEffect } from '@react-navigation/native';
 
@@ -27,12 +26,14 @@ import SendReceivePreview, { FooterType } from 'components/SendReceivePreview';
 import { ActionType } from 'types/common';
 import { getEstimatedTime } from '../utils';
 import { useGetTokenContract } from 'hooks/contract';
-// import { useRecent } from '@portkey-wallet/hooks/hooks-eoa/recent';
-// import { IRecentItem } from '@portkey-wallet/store/store-eoa/recent/type';
+import { useRecent } from '@portkey-wallet/hooks/hooks-eoa/recent';
+import { IRecentItem } from '@portkey-wallet/store/store-eoa/recent/type';
 
 import myEvents from 'utils/deviceEvent';
 import { useCurrentAccount } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 import { useBalanceByContract } from 'hooks/balanceByContract';
+import { useCurrentChainList } from '@portkey-wallet/hooks/hooks-eoa/chainList';
+import { ChainId } from '@portkey-wallet/types';
 
 enum ErrorType {
   NO_TOAST = 'noToast',
@@ -40,11 +41,13 @@ enum ErrorType {
 
 const SendPreview: React.FC = () => {
   const isMainnet = useIsMainnet();
-  const defaultToken = useDefaultToken();
   const { getELFBalanceByContract } = useBalanceByContract();
   const routerParams = useRouterEffectParams<IToSendPreviewParamsType>();
   const currentAccount = useCurrentAccount();
   const getTokenContract = useGetTokenContract();
+
+  const { addRecent } = useRecent();
+  const currentChainList = useCurrentChainList();
 
   console.log('===preview params', routerParams);
 
@@ -64,6 +67,8 @@ const SendPreview: React.FC = () => {
     targetNetwork,
   } = routerParams;
 
+  const defaultToken = useDefaultToken(assetInfo.chainId);
+
   const [isLoading, setIsLoading] = useState(false);
   const { getAELFChainInfoConfig, getEVMChainInfoConfig, getTokenConfig } = useGetEBridgeConfig();
   const amountInUsdShow = useAmountInUsdShow();
@@ -79,8 +84,6 @@ const SendPreview: React.FC = () => {
   const [tokenPriceObject, getTokenPrice] = useGetCurrentAccountTokenPrice();
 
   const crossTransferByEtransfer = useCrossTransferByEtransfer(pin);
-  // TODO: add recent
-  // const { addRecent } = useRecent();
 
   const isETransferOrEBridge = useMemo(
     () => transferType === TransferType.E_TRANSFER || transferType === TransferType.E_BRIDGE,
@@ -169,21 +172,21 @@ const SendPreview: React.FC = () => {
   const estimatedTime = useMemo(() => getEstimatedTime(targetNetwork, transferType), [targetNetwork, transferType]);
 
   const actionAfterTransfer = useCallback(async () => {
-    // const _chainId = toInfo?.chainId || getChainIdByAddress(toInfo.address);
+    const _chainId = toInfo?.chainId || getChainIdByAddress(toInfo.address);
 
-    // const aelfIcon = currentChainList?.find(ele => ele?.chainId === _chainId)?.chainImageUrl;
+    const aelfIcon = currentChainList?.find(ele => ele?.chainId === _chainId)?.chainImageUrl;
 
-    // const recentItem: IRecentItem = {
-    //   address: toInfo?.address || '',
-    //   chainId: targetNetwork?.network ? undefined : (_chainId as ChainId),
-    //   network: targetNetwork?.network || 'aelf',
-    //   networkIcon: targetNetwork?.imageUrl || aelfIcon,
-    //   transferTime: Date.now(),
-    // };
+    const recentItem: IRecentItem = {
+      address: toInfo?.address || '',
+      chainId: targetNetwork?.network ? undefined : (_chainId as ChainId),
+      network: targetNetwork?.network || 'aelf',
+      networkIcon: targetNetwork?.imageUrl || aelfIcon,
+      transferTime: Date.now(),
+    };
 
-    // console.log('recent', routerParams, recentItem);
+    console.log('recent', routerParams, recentItem);
 
-    // addRecent({ recentItem });
+    addRecent({ recentItem });
 
     if (sendType === 'nft') {
       console.log('wfs====fetchAccountNFTCollectionInfoList3');
@@ -226,7 +229,7 @@ const SendPreview: React.FC = () => {
       const result = await tokenContractRef.current.callSendMethod('Transfer', currentAccount?.address || '', {
         to: toInfo.address,
         symbol: assetInfo.symbol,
-        amount: timesDecimals(amount, assetInfo.decimals).toString(),
+        amount,
         memo: '',
       });
       console.log('sameTransfer result', result);

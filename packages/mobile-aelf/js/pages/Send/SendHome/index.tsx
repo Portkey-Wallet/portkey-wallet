@@ -26,6 +26,7 @@ import {
   IToSendHomeParamsType,
   IToSendPreviewParamsType,
   TransferType,
+  TToInfo,
 } from '@portkey-wallet/types/types-eoa/routeParams';
 
 import { RouteProp, useRoute } from '@react-navigation/native';
@@ -45,29 +46,31 @@ import { addressFormat, sleep } from '@portkey-wallet/utils';
 import ToAddressInput, { IToAddressInputRef } from '../components/ToAddressInput';
 import TokenBalanceShow from 'components/TokenBalanceShow';
 import TokenAmountInput from 'components/TokenAmountInput';
-import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
+import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-eoa/useTokensPrice';
 import { TransferErrorMessage, warning1Arr, WarningKey, WarningTips } from '../constant';
 import { CommonPromptCard, PromptCardType } from 'components/CommonPromptCard';
 import SupportedExchangesCard from '../components/SupportedExchangesCard';
 import SelectExchangeCard from '../components/SelectExchangeCard';
 import SelectNetwork, { INetworkItem } from '../components/SelectNetwork';
-import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network-mainnet-v2';
+import { DefaultChainId } from '@portkey-wallet/constants/constants-eoa/network';
 import useGetEBridgeConfig from 'hooks/ebridge';
 import { EBridge } from '@portkey-wallet/utils/eBridge';
 import ActionSheet from 'components/ActionSheet';
 import OverlayModal from 'components/OverlayModal';
-import { eBridgeActionSheet, getLimitTips, getSmallerValue, isValidAmount } from '../utils';
+import { eBridgeActionSheet, getLimitTips, getSendNetworkList, getSmallerValue, isValidAmount } from '../utils';
 import { SEND_HELP_URL } from 'constants/common';
 import { openOutLink } from 'utils/link';
-// import SelectAddressTab from '../components/SelectAddressTab';
-// import { useRecent } from '@portkey-wallet/hooks/hooks-ca/recent';
-// import { useGetFilterContactList } from '@portkey-wallet/hooks/hooks-eoa/contact';
-// import { TFormattedRecentItem } from '@portkey-wallet/types/types-ca/contactNew';
-// import { IContactItemMyType } from 'components/ContactItemMy';
+import SelectAddressTab from '../components/SelectAddressTab';
+import { useRecent } from '@portkey-wallet/hooks/hooks-eoa/recent';
+import { useGetFilterContactList } from '@portkey-wallet/hooks/hooks-eoa/contact';
+import { TFormattedRecentItem } from '@portkey-wallet/types/types-eoa/contact';
 import { KeyboardSafeArea } from 'components/KeyboardSafeArea';
-// import { useKeyboardListener } from 'hooks/useKeyboardHeight';
+import { useKeyboardListener } from 'hooks/useKeyboardHeight';
 import { useCurrentAccount } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 import { useBalanceByContract } from 'hooks/balanceByContract';
+import CommonToast from 'components/CommonToast';
+import { useChainList } from '@portkey-wallet/hooks/hooks-eoa/network/chain';
+import { IContactItemMyType } from 'components/ContactItemMy';
 
 const SendHome: React.FC = () => {
   const {
@@ -78,13 +81,15 @@ const SendHome: React.FC = () => {
   const currentAccount = useCurrentAccount();
   const styles = getStyles();
   useFetchTxFee();
-  const defaultToken = useDefaultToken();
+  const defaultToken = useDefaultToken(assetInfo.chainId);
   const chainInfo = useCurrentChain(assetInfo?.chainId);
   const [tokenPriceObject] = useGetCurrentAccountTokenPrice();
   const [chainList, setChainList] = useState<INetworkItem[]>([]);
   const [targetNetwork, setTargetNetwork] = useState<INetworkItem>();
-  // const [recentList, setRecentList] = useState<TFormattedRecentItem[]>();
-  // const [savedList, setSavedList] = useState<TFormattedRecentItem[]>();
+  const [recentList, setRecentList] = useState<TFormattedRecentItem[]>();
+  const [savedList, setSavedList] = useState<TFormattedRecentItem[]>();
+  const { getRecentList } = useRecent();
+  const getFilterContactList = useGetFilterContactList();
 
   const recommendETransfer = useMemo(
     () => targetNetwork?.serviceList?.find(ele => ele?.serviceName?.toLocaleLowerCase()?.includes('transfer')),
@@ -127,16 +132,16 @@ const SendHome: React.FC = () => {
   const [step, setStep] = useState<1 | 2>(isFixedToContact ? 2 : 1);
   const [isLoading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  // const [isKeyboardShow, setKeyboardShow] = useState(false);
+  const [isKeyboardShow, setKeyboardShow] = useState(false);
 
-  // useKeyboardListener({
-  //   show: () => {
-  //     setKeyboardShow(true);
-  //   },
-  //   hide: () => {
-  //     setKeyboardShow(false);
-  //   },
-  // });
+  useKeyboardListener({
+    show: () => {
+      setKeyboardShow(true);
+    },
+    hide: () => {
+      setKeyboardShow(false);
+    },
+  });
 
   // get transfer fee
   const getTransferFee = useGetTransferFee();
@@ -219,14 +224,12 @@ const SendHome: React.FC = () => {
   }, [maxAmountSend, maxAmountSendUsd]);
 
   const initBalance = useCallback(async () => {
-    // TODO: back to
     if (!assetInfo) {
       return;
     }
     try {
-      const _balance = await getELFBalanceByContract(assetInfo.chainId);
-      console.log('====assetInfo', assetInfo);
-      setBalance(divDecimals(_balance, assetInfo.decimals).valueOf());
+      const { balance: _balance } = await getELFBalanceByContract(assetInfo.chainId);
+      setBalance(_balance);
     } catch (error) {
       console.log('initBalance error', error);
     }
@@ -752,77 +755,97 @@ const SendHome: React.FC = () => {
   }, [renderButtonUI, styles.bottomWrapStyle]);
 
   useEffect(() => {
+    // TODO: change it
     onGetMaxAmount();
   }, [onGetMaxAmount]);
 
-  // const caAddressInfos = useCaAddressInfoList();
   // const userInfo = useCurrentUserInfo();
 
-  // const myAddress = useMemo(() => {
-  //   return caAddressInfos.filter(item => item.chainId !== assetInfo.chainId)?.[0];
-  // }, [assetInfo.chainId, caAddressInfos]);
+  const aelfChainList = useChainList();
+  const myAddressesList = useMemo((): IContactItemMyType[] => {
+    const chainIdInfo = aelfChainList?.find(ele => ele.chainId !== assetInfo.chainId);
+    const myOtherAddress = {
+      address: currentAccount?.address || '',
+      avatarImg: '',
+      network: 'aelf',
+      chainId: chainIdInfo?.chainId || 'AELF',
+      addressInfo: {
+        chainId: chainIdInfo?.chainId || 'AELF',
+        network: 'aelf',
+        address: currentAccount?.address || '',
+      },
+    };
+    return [myOtherAddress];
+  }, [aelfChainList, assetInfo.chainId, currentAccount?.address]);
 
-  // const myAddressesList: Array<IContactItemMyType> = useMemo(() => {
-  //   const myOtherAddress: IContactItemMyType = {
-  //     address: myAddress?.caAddress || '',
-  //     avatarImg: userInfo?.avatar || '',
-  //     network: 'aelf',
-  //     chainId: myAddress?.chainId || '',
-  //     addressInfo: {
-  //       chainId: myAddress?.chainId || '',
-  //       network: 'aelf',
-  //       address: myAddress?.caAddress || '',
-  //     },
-  //   };
-  //   return [myOtherAddress];
-  // }, [myAddress?.caAddress, myAddress?.chainId, userInfo?.avatar]);
+  const onPressTabItem = useCallback(
+    async (i: TFormattedRecentItem) => {
+      console.log('onPressTabItem', i);
+      try {
+        if (i.addressInfo?.address === currentAccount?.address) {
+          // anther chain address
+          inputRef.current?.onInput(
+            addressFormat(i.address || i.addressInfo?.address, i.chainId || i.addressInfo?.chainId),
+          );
+        } else if (i.network !== 'aelf' && i.addressInfo?.network !== 'aelf') {
+          Loading.show();
+          const { data } = await getSendNetworkList({
+            symbol: assetInfo?.symbol || '',
+            chainId: assetInfo?.chainId || 'AELF',
+            toAddress: i?.address || i?.addressInfo?.address || '',
+          });
 
-  // const onPressTabItem = useCallback(
-  //   async (i: TFormattedRecentItem) => {
-  //     console.log('onPressTabItem', i);
-  //     try {
-  //       if (i.addressInfo?.address === caAddressInfoList[0].caAddress) {
-  //         // anther chain address
-  //         inputRef.current?.onInput(
-  //           addressFormat(i.address || i.addressInfo?.address, i.chainId || i.addressInfo?.chainId),
-  //         );
-  //       } else if (i.network !== 'aelf' && i.addressInfo?.network !== 'aelf') {
-  //         Loading.show();
-  //         const { data } = await getSendNetworkList({
-  //           symbol: assetInfo?.symbol || '',
-  //           chainId: assetInfo?.chainId || 'AELF',
-  //           toAddress: i?.address || i?.addressInfo?.address || '',
-  //         });
+          console.log('getSendNetworkList', data, i);
+          const tmpNetwork = data?.networkList?.find(
+            (ele: any) => ele.network === (i?.network || i.addressInfo?.network),
+          );
 
-  //         console.log('getSendNetworkList', data, i);
-  //         const tmpNetwork = data?.networkList?.find(
-  //           (ele: any) => ele.network === (i?.network || i.addressInfo?.network),
-  //         );
+          if (!tmpNetwork) {
+            throw 'not supported';
+          }
+          console.log('tmpNetwork', tmpNetwork);
+          setTargetNetwork(tmpNetwork);
+          setChainList(data?.networkList);
+          setSelectedToContact({ name: i?.name, address: i.address || i.addressInfo?.address } as TToInfo);
+          setWarning([WarningKey.MAKE_SURE_SUPPORT_PLATFORM]);
+          setStep(2);
+        } else {
+          inputRef.current?.onInput(
+            i.addressInfo?.isExchange || !i.addressInfo
+              ? i.address || i.addressInfo?.address || ''
+              : addressFormat(i.address || i.addressInfo?.address || '', i.chainId || i.addressInfo?.chainId),
+          );
+        }
+      } catch (error) {
+        CommonToast.failError(error);
+      } finally {
+        Loading.hide();
+      }
+    },
+    [assetInfo?.chainId, assetInfo?.symbol, currentAccount?.address],
+  );
 
-  //         if (!tmpNetwork) {
-  //           throw 'not supported';
-  //         }
-  //         console.log('tmpNetwork', tmpNetwork);
-  //         setTargetNetwork(tmpNetwork);
-  //         setChainList(data?.networkList);
-  //         setSelectedToContact({ name: i?.name, address: i.address || i.addressInfo?.address } as TToInfo);
-  //         setWarning([WarningKey.MAKE_SURE_SUPPORT_PLATFORM]);
-  //         setStep(2);
-  //       } else {
-  //         inputRef.current?.onInput(
-  //           i.addressInfo?.isExchange || !i.addressInfo
-  //             ? i.address || i.addressInfo?.address || ''
-  //             : addressFormat(i.address || i.addressInfo?.address || '', i.chainId || i.addressInfo?.chainId),
-  //         );
-  //       }
-  //     } catch (error) {
-  //       CommonToast.failError(error);
-  //     } finally {
-  //       Loading.hide();
-  //     }
-  //   },
-  //   [assetInfo?.chainId, assetInfo?.symbol, caAddressInfoList],
-  // );
+  useEffectOnce(() => {
+    try {
+      const _recentList = getRecentList();
+      setRecentList(_recentList);
+    } catch (error) {
+      console.log('get recent err', error);
+    }
+  });
+
+  useEffectOnce(() => {
+    try {
+      const _recentList = getFilterContactList({
+        fromChainId: assetInfo.chainId,
+        tokenId: assetInfo.symbol || assetInfo.tokenId,
+        isFt: sendType !== 'token',
+      });
+      setSavedList(_recentList);
+    } catch (error) {
+      console.log('get recent err', error);
+    }
+  });
 
   return (
     <PageContainer
@@ -900,15 +923,15 @@ const SendHome: React.FC = () => {
             </View>
           </>
         )}
-        {/* {step === 1 && !selectedToContact.address && !isKeyboardShow && (
+        {step === 1 && !selectedToContact.address && !isKeyboardShow && (
           <SelectAddressTab
             recentAddressList={recentList || []}
             savedAddressList={savedList || []}
-            myAddressList={myAddressesList}
+            myAddressList={myAddressesList || []}
             chainId={assetInfo.chainId}
             onPress={onPressTabItem}
           />
-        )} */}
+        )}
       </View>
 
       <KeyboardSafeArea>{renderBottomSection()}</KeyboardSafeArea>

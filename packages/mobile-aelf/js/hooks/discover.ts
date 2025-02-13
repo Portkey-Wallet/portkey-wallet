@@ -27,7 +27,7 @@ import {
   IMarketType,
 } from '@portkey-wallet/store/store-eoa/discover/type';
 import { useAppSelector } from 'store/hooks';
-import { request } from '@portkey-wallet/api/api-did';
+import { request } from '@portkey-wallet/api/api-eoa';
 
 export const useIsDrawerOpen = () => useAppCASelector(state => state.discover.isDrawerOpen);
 

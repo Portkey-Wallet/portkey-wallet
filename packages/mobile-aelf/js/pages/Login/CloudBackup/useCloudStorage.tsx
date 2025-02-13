@@ -47,12 +47,13 @@ export const useCloudStorage = () => {
 
   const isDirectoryExists = useCallback(async () => {
     setLoading(true);
+    console.log('useCloudStorage -  isDirectoryExists: start');
     try {
       const exists = await cloudStorage.exists(parentDirectory);
       console.log('useCloudStorage -  isDirectoryExists: ', exists);
       setIsParentDirectoryExist(exists);
     } catch (e) {
-      // console.warn(e);
+      console.warn('useCloudStorage -  isDirectoryExists: catch', e);
       setIsParentDirectoryExist(false);
       commonCloudStorageError(e);
     } finally {
@@ -175,8 +176,12 @@ export const useCloudStorage = () => {
   };
 
   useEffect(() => {
+    console.log('cloudAvailable: ', cloudAvailable);
+    if (!cloudAvailable) {
+      return;
+    }
     isDirectoryExists();
-  }, [isDirectoryExists]);
+  }, [isDirectoryExists, cloudAvailable]);
 
   return {
     loading,

@@ -1,6 +1,7 @@
 import WalletManagement from './index';
 import CreateNewWalletNote from './CreateNewWalletNote';
 import { AddressDetail } from './AddressDetail';
+import ResetApp from './ResetApp';
 
 export const WalletManagementNav = [
   {
@@ -14,5 +15,9 @@ export const WalletManagementNav = [
   {
     name: 'AddressDetail',
     component: AddressDetail,
+  },
+  {
+    name: 'ResetApp',
+    component: ResetApp,
   },
 ] as const;

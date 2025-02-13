@@ -48,6 +48,7 @@ export default function CloudBackupCases() {
 
   const {
     // cloudStorage,
+    cloudAvailable,
     readFile,
     handleCreateDirectory,
     handleDeleteDirectory,
@@ -64,11 +65,15 @@ export default function CloudBackupCases() {
       containerStyles={styles.containerStyles}
       scrollViewProps={{ disabled: true }}>
       <View>
-        <CommonButton disabled={loading} type="primary" onPress={handleCreateDirectory} style={{ marginTop: 10 }}>
+        <CommonButton
+          disabled={!cloudAvailable || loading}
+          type="primary"
+          onPress={handleCreateDirectory}
+          style={{ marginTop: 10 }}>
           handleCreateDirectory
         </CommonButton>
         <CommonButton
-          disabled={loading}
+          disabled={!cloudAvailable || loading}
           type="primary"
           onPress={() => {
             if (!currentWallet) {
@@ -81,17 +86,21 @@ export default function CloudBackupCases() {
           readFile
         </CommonButton>
         <CommonButton
-          disabled={loading}
+          disabled={!cloudAvailable || loading}
           type="primary"
           onPress={() => handleDeleteDirectory(true)}
           style={{ marginTop: 10 }}>
           handleDeleteDirectory
         </CommonButton>
-        <CommonButton disabled={loading} type="primary" onPress={handleListContents} style={{ marginTop: 10 }}>
+        <CommonButton
+          disabled={!cloudAvailable || loading}
+          type="primary"
+          onPress={handleListContents}
+          style={{ marginTop: 10 }}>
           handleListContents/Wallet List in Cloud
         </CommonButton>
         <CommonButton
-          disabled={loading}
+          disabled={!cloudAvailable || loading}
           type="primary"
           onPress={() => {
             if (!currentWallet) {

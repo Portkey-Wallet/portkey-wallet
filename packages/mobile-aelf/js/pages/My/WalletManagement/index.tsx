@@ -71,6 +71,18 @@ export default function WalletManagement() {
           );
         })}
 
+        {managing && (
+          <View style={styles.deleteWalletWrap}>
+            <Text
+              onPress={() => {
+                navigationService.push('ResetApp');
+              }}
+              style={styles.deleteWalletText}>
+              Reset app
+            </Text>
+          </View>
+        )}
+
         {!managing && (
           <View>
             <View style={styles.divider} />

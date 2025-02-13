@@ -14,6 +14,7 @@ import ActionSheet from 'components/ActionSheet';
 import { useRemoveWallet } from '../hooks/useRemoveWallet';
 import CommonToast from 'components/CommonToast';
 import navigationService from 'utils/navigationService';
+import { showModal } from '../AddressDetail/BackupAddressOverlay';
 
 export const AddressCardHeader = ({
   privateKeyTipShow = false,
@@ -29,6 +30,7 @@ export const AddressCardHeader = ({
   const cardStyles = getCardStyles();
   const walletName = walletInfo?.name || 'Wallet 1';
   const isPrivateKeyWallet = !walletInfo?.AESEncryptMnemonic;
+  const typeText = isPrivateKeyWallet ? 'private key' : 'seed phrase';
   const dispatch = useAppCommonDispatch();
   const { removeWallet } = useRemoveWallet();
 
@@ -93,14 +95,33 @@ export const AddressCardHeader = ({
                 ActionSheet.alert({
                   isCloseShow: true,
                   title: <Svg size={pTd(32)} icon="error" color={defaultColors.iconBase1} />,
-                  title2: 'Ensure your seed phrase is backed up before removal',
-                  message:
-                    'Please make sure your seed phrase is securely backed up before removing the wallet. Losing access to your seed phrase or sharing it with others could lead to permanent loss of your assets.',
+                  title2: `Ensure your ${typeText} is backed up before removal`,
+                  message: isPrivateKeyWallet
+                    ? 'Please make sure your private key is securely backed up before removing the wallet to avoid losing access in the future.'
+                    : 'Please make sure your seed phrase is securely backed up before removing the wallet. Losing access to your seed phrase or sharing it with others could lead to permanent loss of your assets.',
                   buttonGroupDirection: 'column',
                   buttons: [
                     {
-                      title: 'View seed phrase',
+                      title: `View ${typeText}`,
                       type: 'primary',
+                      onPress: () => {
+                        if (!walletInfo) {
+                          return;
+                        }
+                        if (isPrivateKeyWallet) {
+                          showModal({
+                            type: 'private key',
+                            walletToBeBackup: walletInfo,
+                            accountToBeBackup: walletInfo.accountList[0],
+                          });
+                        } else {
+                          showModal({
+                            type: 'seed phrase',
+                            walletToBeBackup: walletInfo,
+                            accountToBeBackup: walletInfo.accountList[0],
+                          });
+                        }
+                      },
                     },
                     {
                       title: 'Remove',

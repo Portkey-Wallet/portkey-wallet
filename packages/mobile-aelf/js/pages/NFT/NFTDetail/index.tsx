@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { StyleSheet, View, ScrollView, GestureResponderEvent, Animated, FlatList } from 'react-native';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { StyleSheet, View, ScrollView, Animated, FlatList } from 'react-native';
 import { useLanguage } from 'i18n/hooks';
 import GStyles from 'assets/theme/GStyles';
 import { pTd } from 'utils/unit';
@@ -13,7 +13,7 @@ import SafeAreaBox from 'components/SafeAreaBox';
 import Svg from 'components/Svg';
 import { addressFormat, formatChainInfoToShow, formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import { ScreenWidth, Skeleton } from '@rneui/base';
-import { bottomBarHeight, screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { bottomBarHeight } from '@portkey-wallet/utils/mobile/device';
 import { copyText } from 'utils';
 import { formatTransferTime } from '@portkey-wallet/utils/time';
 import Touchable from 'components/Touchable';
@@ -22,13 +22,8 @@ import { formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/convert
 import { SeedTypeEnum, NFTItemBaseType } from '@portkey-wallet/types/types-ca/assets';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { useNFTItemDetail } from '@portkey-wallet/hooks/hooks-ca/assets';
-import FloatOverlay from 'components/FloatOverlay';
-import { ListItemType } from 'components/FloatOverlay/Popover';
-import { measurePageY } from 'utils/measure';
-import { useSetUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import Loading from 'components/Loading';
 import CommonToast from 'components/CommonToast';
-import { makeStyles, useTheme } from '@rneui/themed';
+import { makeStyles } from '@rneui/themed';
 import OutlinedTextButton from 'components/OutlinedTextButton';
 import CommonAvatar from 'components/CommonAvatar';
 import Divider from 'components/Divider';
@@ -56,7 +51,6 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
   const timerRef = useRef<NodeJS.Timeout>();
   const nftItem = useRouterParams<INftDetailPage>();
   const fetchNftDetail = useNFTItemDetail();
-  const setUserInfo = useSetUserInfo();
   const [scrollY] = useState(new Animated.Value(0));
   const styles = getStyles();
   const [nftDetailInfo, setNftDetailInfo] = useState<INftDetailPage>(nftItem);
@@ -89,7 +83,6 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
     displayChainName,
     description,
   } = nftDetailInfo;
-  const { theme } = useTheme();
 
   const isFetchingTraits = useMemo(() => traitsPercentages && traitsPercentages?.length === 0, [traitsPercentages]);
 
@@ -105,62 +98,6 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
       CommonToast.failError(error);
     }
   }, [fetchNftDetail, chainId, symbol]);
-
-  const handleList = useMemo((): ListItemType[] => {
-    return [
-      {
-        title: 'Set as Profile Photo',
-        iconName: 'profile',
-        iconSize: 22,
-        textStyle: {
-          fontSize: pTd(16),
-          lineHeight: pTd(23),
-          // height: pTd(23),
-        },
-        iconColor: theme.colors.iconBase1,
-        onPress: async () => {
-          try {
-            Loading.show();
-            await setUserInfo({
-              avatar: imageUrl,
-            });
-            CommonToast.success('Profile photo set successfully.');
-          } catch (error) {
-            CommonToast.fail('Failed to set profile photo. Please try again.');
-            console.log('error', error);
-          } finally {
-            Loading.hide();
-          }
-        },
-      },
-    ];
-  }, [imageUrl, setUserInfo, theme.colors.iconBase1]);
-
-  const onPressMore = useCallback(
-    async (event: GestureResponderEvent) => {
-      const { pageY } = event.nativeEvent;
-
-      const top = await measurePageY(event.target);
-      FloatOverlay.showFloatPopover({
-        list: handleList,
-        formatType: 'fixedWidth',
-        customPosition: { right: pTd(8), top: (top || pageY) + 30 },
-        customBounds: {
-          x: screenWidth - pTd(20),
-          y: pageY,
-          width: 0,
-          height: 0,
-        },
-        contentStyle: { color: theme.colors.textBase1, width: pTd(212) },
-        containerStyle: {
-          backgroundColor: theme.colors.bgBase1,
-          borderColor: theme.colors.borderBase1,
-          borderWidth: 1,
-        },
-      });
-    },
-    [handleList, theme.colors.bgBase1, theme.colors.borderBase1, theme.colors.textBase1],
-  );
 
   useEffect(() => {
     if (traitsPercentages && recommendedRefreshSeconds) {
@@ -184,9 +121,9 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
           <Svg icon="left-arrow-v2" size={pTd(20)} />
         </Touchable>
         <Animated.Text style={[styles.title, { opacity: titleOpacity }]}>{alias}</Animated.Text>
-        <Touchable onPress={onPressMore}>
+        {/* <Touchable onPress={onPressMore}>
           <Svg icon="more_verti" size={pTd(24)} color={theme.colors.icon2} />
-        </Touchable>
+        </Touchable> */}
       </View>
 
       <ScrollView

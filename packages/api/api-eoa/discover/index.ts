@@ -10,7 +10,7 @@ export default {
     config: { method: 'GET' },
   },
   getCryptoCurrencyList: {
-    target: '/api/app/cryptocurrency/list',
+    target: '/api/app/proxy/api/app/cryptocurrency/noAuth/list',
     config: { method: 'GET' },
   },
   markFavorite: {

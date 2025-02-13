@@ -88,7 +88,7 @@ export default function RecoveryPhrase({ checkedSecurityLock }: { checkedSecurit
   );
 }
 
-const getStyles = makeStyles(theme => ({
+export const getStyles = makeStyles(theme => ({
   flex: {
     flex: 1,
   },

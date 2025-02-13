@@ -127,7 +127,7 @@ export default function ManualBackup() {
   );
 }
 
-const getStyles = makeStyles(theme => ({
+export const getStyles = makeStyles(theme => ({
   containerStyles: {
     backgroundColor: theme.colors.bgBase1,
   },

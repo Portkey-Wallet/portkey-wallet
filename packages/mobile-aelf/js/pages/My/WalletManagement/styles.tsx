@@ -74,6 +74,9 @@ export const getAddressCardStyles = makeStyles(theme => ({
   operationCard: {
     height: pTd(64),
   },
+  iconBase: {
+    backgroundColor: 'transparent',
+  },
   info: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -91,6 +94,9 @@ export const getAddressCardStyles = makeStyles(theme => ({
     fontSize: pTd(16),
     lineHeight: pTd(16) * 1.4,
     // marginTop: pTd(8),
+  },
+  titleRegular: {
+    ...fonts.SGRegularFont,
   },
   operationText: {
     color: theme.colors.textBase1,
@@ -121,6 +127,11 @@ export const getAddressCardStyles = makeStyles(theme => ({
   },
   advancedText: {
     fontSize: pTd(12),
+  },
+  rightContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 }));
 

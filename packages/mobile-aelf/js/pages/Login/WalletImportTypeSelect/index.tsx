@@ -108,6 +108,10 @@ export default function WalletImportTypeSelect() {
           <Touchable
             key={index}
             onPress={async () => {
+              if (['iCloud', 'google'].includes(item.importType || '') && !cloudAvailable) {
+                CommonToast.fail('Cloud is not available');
+                return;
+              }
               if (needCheckSecurityLock) {
                 await checkSecurityLock(() => {
                   importWalletPress(item);

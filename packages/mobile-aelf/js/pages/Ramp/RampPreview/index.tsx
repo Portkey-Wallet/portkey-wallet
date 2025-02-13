@@ -14,7 +14,7 @@ import { useReceive } from '../hooks';
 import navigationService from 'utils/navigationService';
 import CommonToast from 'components/CommonToast';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { useDefaultToken } from '@portkey-wallet/hooks/hooks-eoa/chainList';
 import ramp, {
   IBuyProviderPrice,
   IRampCryptoItem,

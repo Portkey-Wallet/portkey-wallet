@@ -1,23 +1,25 @@
 import { useCallback } from 'react';
 import { useAppEOASelector } from '../index';
-import { useCurrentNetwork } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentNetwork } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { useAppCommonDispatch } from '../../index';
 import { ChainId } from '@portkey-wallet/types';
-import { addRecentItem, resetTargetNetworkRecent } from '@portkey-wallet/store/store-ca/recent/slice';
-import { IRecentItem } from '@portkey-wallet/store/store-ca/recent/type';
+import { addRecentItem, resetTargetNetworkRecent } from '@portkey-wallet/store/store-eoa/recent/slice';
+import { IRecentItem } from '@portkey-wallet/store/store-eoa/recent/type';
 import { useTransferNetworkConfig } from '../config';
 import { useContact } from '../contact';
-import { TFormattedRecentItem } from '@portkey-wallet/types/types-ca/contactNew';
+import { TFormattedRecentItem } from '@portkey-wallet/types/types-eoa/contact';
 import { getAelfAddress } from '@portkey-wallet/utils/aelf';
 import { isSameAddresses } from '@portkey-wallet/utils';
+import { useCurrentAccount } from '../wallet';
 
 export const useRecentState = () => useAppEOASelector(state => state?.recent);
 
 export function useRecent() {
   const dispatch = useAppCommonDispatch();
   const currentNetwork = useCurrentNetwork();
+  const currentAccount = useCurrentAccount();
 
-  const { contactMapNew } = useContact();
+  const { contactMap } = useContact();
   const { recentMap } = useRecentState();
   const { fetchAssetSupportConfig, checkIsSupportTargetChain } = useTransferNetworkConfig();
 
@@ -33,11 +35,7 @@ export function useRecent() {
       // aelf is OK, others need check
       const result = targetList.filter(ele => {
         // itself
-        if (
-          ele.network === 'aelf' &&
-          fromChainId === ele.chainId &&
-          getAelfAddress(ele.address) === caAddressInfos?.[0]?.caAddress
-        ) {
+        if (ele.network === 'aelf' && fromChainId === ele.chainId && getAelfAddress(ele.address) === '') {
           return false;
         }
 
@@ -50,7 +48,7 @@ export function useRecent() {
 
       return result || [];
     },
-    [caAddressInfos, checkIsSupportTargetChain, currentNetwork, fetchAssetSupportConfig, recentMap],
+    [checkIsSupportTargetChain, currentNetwork, fetchAssetSupportConfig, recentMap],
   );
 
   // adjust my contact
@@ -66,7 +64,7 @@ export function useRecent() {
 
           const addr = getAelfAddress(ele.address);
 
-          const target = contactMapNew?.[addr] || [];
+          const target = contactMap?.[currentNetwork]?.[addr] || [];
 
           const aelfResult = target.find(
             m =>
@@ -83,7 +81,7 @@ export function useRecent() {
 
           if (aelfResult) return { ...aelfResult, ...ele };
           if (otherResult) return { ...otherResult, ...ele };
-          if (isSameAddresses(getAelfAddress(ele.address), caAddressInfos?.[0]?.caAddress)) {
+          if (isSameAddresses(getAelfAddress(ele.address), currentAccount?.address || '')) {
             return {
               ...ele,
               addressInfo: {
@@ -93,7 +91,6 @@ export function useRecent() {
                 networkImage: ele.networkIcon || '',
                 address: ele.address,
               },
-              caHolderInfo: userInfo,
             };
           }
         })
@@ -101,7 +98,7 @@ export function useRecent() {
 
       return list;
     },
-    [caAddressInfos, contactMapNew, getFilterRecentList, userInfo],
+    [contactMap, currentAccount?.address, currentNetwork, getFilterRecentList],
   );
 
   const addRecent = useCallback(

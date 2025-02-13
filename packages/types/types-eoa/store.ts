@@ -23,6 +23,8 @@ import { dappSlice } from '@portkey-wallet/store/store-eoa/dapp/slice';
 import { IDappStoreState } from '@portkey-wallet/store/store-eoa/dapp/type';
 import { discoverSlice } from '@portkey-wallet/store/store-eoa/discover/slice';
 import { IDiscoverStateType } from '@portkey-wallet/store/store-eoa/discover/type';
+import { recentSlice } from '@portkey-wallet/store/store-eoa/recent/slice';
+import { RecentStateType } from '@portkey-wallet/store/store-eoa/recent/type';
 
 export type EOACommonState = {
   [settingsSlice.name]: SettingsState;
@@ -38,4 +40,5 @@ export type EOACommonState = {
   [cmsSlice.name]: ICMSState;
   [dappSlice.name]: IDappStoreState;
   [discoverSlice.name]: IDiscoverStateType;
+  [recentSlice.name]: RecentStateType;
 };

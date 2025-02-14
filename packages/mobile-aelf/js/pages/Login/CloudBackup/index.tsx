@@ -61,10 +61,14 @@ export default function CloudBackup() {
     walletToBeBackup,
     navigateTo = 'Home',
     navigatePop = 0,
+    title = 'Create password',
+    successToast = 'Backup completed',
   } = useRouterParams<{
     walletToBeBackup: TWalletInfo;
     navigateTo: string;
     navigatePop?: number;
+    title?: string;
+    successToast?: string;
   }>();
 
   const currentWalletLocal = useCurrentWallet();
@@ -101,7 +105,7 @@ export default function CloudBackup() {
       containerStyles={styles.containerStyles}
       scrollViewProps={{ disabled: true }}>
       <View>
-        <Text style={styles.title}>Create password</Text>
+        <Text style={styles.title}>{title}</Text>
         <Text style={styles.desc}>
           This password will secure your seed phrase in the cloud. We cannot reset it if you lose it, so please keep it
           safe.
@@ -236,7 +240,7 @@ export default function CloudBackup() {
           </Text>
         </View>
         <CommonButton
-          disabled={!isChecked || !!errorMessage || !!enterPasswordErrorMessage}
+          disabled={!isChecked || !!errorMessage || !!enterPasswordErrorMessage || !password || !confirmPassword}
           loading={loading}
           type="primary"
           style={styles.continueButton}
@@ -295,7 +299,7 @@ export default function CloudBackup() {
             } else if (navigatePop >= 0) {
               navigationService.pop(navigatePop);
             }
-            CommonToast.success('Backup completed');
+            CommonToast.success(successToast);
           }}>
           Continue
         </CommonButton>

@@ -11,6 +11,7 @@ import { TWalletInfo } from '@portkey-wallet/types/types-eoa/wallet';
 import { useCurrentWallet, useWalletListState } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 import { AddressCard } from '../components/AddressCard';
 import Touchable from 'components/Touchable';
+import OverlayModal from 'components/OverlayModal';
 
 export const useAddressSelect = () => {
   const styles = getStyles();
@@ -28,7 +29,8 @@ export const useAddressSelect = () => {
               onPress={() => {
                 // TODO: confirm the router
                 // navigationService.push('ProfileSettings');
-                // navigationService.push('AboutUs');
+                OverlayModal.hide();
+                navigationService.push('AboutUs');
               }}>
               <Svg icon="gear" size={pTd(20)} />
             </Touchable>

@@ -163,6 +163,8 @@ export default function AddressBackup() {
           onPress={() => {
             navigationService.push('CloudBackup', {
               walletToBeBackup,
+              navigateTo: 'AddressBackup',
+              navigatePop: 1,
             });
           }}>
           Backup on {isIOS ? 'iCloud' : 'Google Drive'}

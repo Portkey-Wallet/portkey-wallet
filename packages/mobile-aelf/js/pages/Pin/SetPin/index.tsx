@@ -13,6 +13,7 @@ type TRouterParams = {
   isBackHide?: boolean;
   mnemonics?: string;
   privateKey?: string;
+  isBackup?: boolean;
 };
 
 const scrollViewProps = {
@@ -21,7 +22,7 @@ const scrollViewProps = {
 
 export default function SetPin() {
   const styles = getStyles();
-  const { oldPin, isBackHide, mnemonics, privateKey } = useRouterParams<TRouterParams>();
+  const { oldPin, isBackHide, mnemonics, privateKey, isBackup = false } = useRouterParams<TRouterParams>();
   const digitInput = useRef<DigitInputInterface>();
   usePreventHardwareBack();
 
@@ -49,6 +50,7 @@ export default function SetPin() {
             pin,
             mnemonics,
             privateKey,
+            isBackup,
           });
         }}
       />

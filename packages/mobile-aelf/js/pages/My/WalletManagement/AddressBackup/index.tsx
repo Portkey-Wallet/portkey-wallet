@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState, useEffect } from 'react';
 import { Text, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
@@ -21,6 +21,8 @@ import { BlurView } from '@react-native-community/blur';
 import { updateWallet } from '@portkey-wallet/store/store-eoa/wallet/actions';
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 import { useCloudStorage } from '../../../Login/CloudBackup/useCloudStorage';
+import ActionSheet from 'components/ActionSheet';
+import { defaultColors } from 'assets/theme';
 
 export default function AddressBackup() {
   const styles = getStyles();
@@ -29,7 +31,9 @@ export default function AddressBackup() {
   const [copied, setCopied] = useState(false);
   const [visible, setVisible] = useState(false);
   const dispatch = useAppCommonDispatch();
-  const { cloudAvailable } = useCloudStorage();
+  const { cloudAvailable, handleListContents, handleDeleteFile } = useCloudStorage();
+  // const [walletsKeyInCloud, setWalletsKeyInCloud] = useState<string[]>([]);
+  const [walletBackedUp, setWalletBackedUp] = useState<boolean>(false);
 
   const { walletToBeBackup, accountToBeBackup, backupType } = useRouterParams<{
     walletToBeBackup: TWalletInfo;
@@ -64,6 +68,29 @@ export default function AddressBackup() {
   const inputWidth = useMemo(() => {
     return (screenWidth - pTd(16) * 3) / 2;
   }, []);
+
+  const getWalletsInCloud = useCallback(async () => {
+    const wallets = await handleListContents();
+    if (!wallets) {
+      CommonToast.fail('Get wallets in cloud failed');
+      return;
+    }
+    console.log('wallets in cloud', wallets);
+    // setWalletsKeyInCloud(wallets);
+    setWalletBackedUp(wallets.includes(walletToBeBackup.key));
+  }, [handleListContents, walletToBeBackup.key]);
+  useEffect(() => {
+    if (!cloudAvailable) {
+      return;
+    }
+    getWalletsInCloud();
+    const timer = setInterval(() => {
+      getWalletsInCloud();
+    }, 1000);
+    return () => {
+      clearInterval(timer);
+    };
+  }, [cloudAvailable, getWalletsInCloud]);
 
   const onCopy = useCallback(async () => {
     const isCopy = await Clipboard.setStringAsync(backupType === 'Private key' ? privateKey : mnemonics.join(' '));
@@ -102,6 +129,8 @@ export default function AddressBackup() {
       </View>
     );
   }, [backupType, styles.button, styles.copyText, theme.colors.iconSuccess2]);
+
+  const cloudType = isIOS ? 'iCloud' : 'Google Drive';
 
   return (
     <PageContainer
@@ -155,18 +184,83 @@ export default function AddressBackup() {
         {copied ? copiedView : copyButton}
       </View>
       {backupType === 'Seed phrase' && (
-        <CommonButton
-          disabled={!cloudAvailable}
-          type="primary"
-          // type="outline"
-          style={styles.continueButton}
-          onPress={() => {
-            navigationService.push('CloudBackup', {
-              walletToBeBackup,
-            });
-          }}>
-          Backup on {isIOS ? 'iCloud' : 'Google Drive'}
-        </CommonButton>
+        <>
+          {!walletBackedUp ? (
+            <CommonButton
+              disabled={!cloudAvailable}
+              type="primary"
+              // type="outline"
+              style={styles.continueButton}
+              onPress={() => {
+                navigationService.push('CloudBackup', {
+                  walletToBeBackup,
+                  navigateTo: 'AddressBackup',
+                  navigatePop: 1,
+                });
+              }}>
+              Backup on {cloudType}
+            </CommonButton>
+          ) : (
+            <>
+              <CommonButton
+                disabled={!cloudAvailable}
+                type="outline"
+                style={styles.continueButton}
+                onPress={() => {
+                  navigationService.push('CloudBackup', {
+                    walletToBeBackup,
+                    navigateTo: 'AddressBackup',
+                    navigatePop: 1,
+                    title: 'Reset password',
+                    successToast: 'Password changed',
+                  });
+                }}>
+                Change backup password
+              </CommonButton>
+              <CommonButton
+                disabled={!cloudAvailable}
+                type="warningNoBorder"
+                style={[
+                  styles.continueButton,
+                  {
+                    marginTop: pTd(16),
+                  },
+                ]}
+                onPress={() => {
+                  ActionSheet.alert({
+                    isCloseShow: true,
+                    title: <Svg size={pTd(32)} icon="error" color={defaultColors.iconBase1} />,
+                    title2: 'Remove backup?',
+                    message:
+                      'Are you sure you want to remove your recovery phrase backup? You can back it up again at any time.',
+                    buttonGroupDirection: 'column',
+                    buttons: [
+                      {
+                        title: 'Remove',
+                        type: 'warning',
+                        onPress: async () => {
+                          try {
+                            await handleDeleteFile(walletToBeBackup.key);
+                            await getWalletsInCloud();
+                            CommonToast.success(`${cloudType} backup removed`);
+                          } catch (e) {
+                            console.warn('Remove backup failed', e);
+                            CommonToast.fail(`Remove ${cloudType} backup failed`);
+                          }
+                        },
+                      },
+                      {
+                        title: 'Cancel',
+                        type: 'outline',
+                      },
+                    ],
+                  });
+                }}>
+                Remove {cloudType} backup
+              </CommonButton>
+            </>
+          )}
+        </>
       )}
     </PageContainer>
   );

@@ -29,6 +29,7 @@ type TRouterParams = {
   type: SetBiometricsTypeEnum;
   mnemonics?: string;
   privateKey?: string;
+  isBackup?: boolean;
 };
 
 const ScrollViewProps = { disabled: true };
@@ -38,7 +39,7 @@ export default function SetBiometrics() {
   const { theme } = useTheme();
   usePreventHardwareBack();
 
-  const { type = SetBiometricsTypeEnum.create, mnemonics, privateKey } = useRouterParams<TRouterParams>();
+  const { type = SetBiometricsTypeEnum.create, mnemonics, privateKey, isBackup } = useRouterParams<TRouterParams>();
 
   const isCreate = useMemo(() => type === SetBiometricsTypeEnum.create, [type]);
 
@@ -51,8 +52,8 @@ export default function SetBiometrics() {
     await setSecureStoreItem('Pin', newPin);
     dispatch(setCredentials({ pin: newPin }));
     await setBiometrics(true);
-    navigationService.reset('PrepareWallet', { pin: newPin, mnemonics, privateKey });
-  }, [dispatch, setBiometrics, mnemonics, privateKey]);
+    navigationService.reset('PrepareWallet', { pin: newPin, mnemonics, privateKey, isBackup });
+  }, [dispatch, setBiometrics, mnemonics, privateKey, isBackup]);
 
   const pin = usePin();
   const updateWalletAES = useUpdateWalletAES();
@@ -89,11 +90,12 @@ export default function SetBiometrics() {
       navigationService.reset('SetPin', {
         mnemonics,
         privateKey,
+        isBackup,
       });
     } catch (error) {
       CommonPrompt.failError(error);
     }
-  }, [setBiometrics, mnemonics, privateKey]);
+  }, [setBiometrics, mnemonics, privateKey, isBackup]);
 
   return (
     <PageContainer

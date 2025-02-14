@@ -34,7 +34,7 @@ export const useAddWallet = () => {
   const dispatch = useAppCommonDispatch();
 
   return useCallback(
-    (pin: string, mnemonics?: string, privateKey?: string) => {
+    (pin: string, mnemonics?: string, privateKey?: string, isBackup?: boolean) => {
       if (!pin) {
         return {
           success: false,
@@ -52,7 +52,13 @@ export const useAddWallet = () => {
         walletInfo = AElf.wallet.createNewWallet();
       }
 
-      const wallet = formatWalletInfoV2(walletInfo, pin, `Wallet ${walletListLength + 1}`);
+      // const wallet = formatWalletInfoV2(walletInfo, pin, `Wallet ${walletListLength + 1}`, isBackup);
+      const wallet = formatWalletInfoV2({
+        walletInfoInput: walletInfo,
+        password: pin,
+        walletName: `Wallet ${walletListLength + 1}`,
+        isBackup,
+      });
 
       if (!wallet) {
         return {

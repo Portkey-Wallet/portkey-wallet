@@ -23,11 +23,12 @@ type RouterParams = {
   oldPin?: string;
   mnemonics?: string;
   privateKey?: string;
+  isBackup?: boolean;
 };
 
 export default function ConfirmPin() {
   const styles = getStyles();
-  const { pin, oldPin, mnemonics, privateKey } = useRouterParams<RouterParams>();
+  const { pin, oldPin, mnemonics, privateKey, isBackup = false } = useRouterParams<RouterParams>();
 
   usePreventHardwareBack();
 
@@ -77,7 +78,7 @@ export default function ConfirmPin() {
           return onChangePin(confirmPin);
         }
         await setBiometrics(false);
-        navigationService.reset('PrepareWallet', { pin: confirmPin, mnemonics, privateKey });
+        navigationService.reset('PrepareWallet', { pin: confirmPin, mnemonics, privateKey, isBackup });
       } catch (error) {}
     },
     [pin, oldPin, setBiometrics, textError.isError, setTextError, onChangePin, mnemonics, privateKey],

@@ -17,6 +17,7 @@ import { resetWallet } from '@portkey-wallet/store/store-eoa/wallet/actions';
 import CommonAvatar from 'components/CommonAvatar';
 import { LOCAL_AVATARS } from 'assets/image/avatars';
 import Touchable from 'components/Touchable';
+import { showModal } from '../AddressDetail/BackupAddressOverlay';
 
 export default function ResetApp() {
   const dispatch = useAppCommonDispatch();
@@ -65,7 +66,11 @@ export default function ResetApp() {
                 <Touchable
                   style={styles.viewButton}
                   onPress={() => {
-                    console.log(111);
+                    showModal({
+                      type: wallet.AESEncryptMnemonic ? 'seed phrase' : 'private key',
+                      walletToBeBackup: wallet,
+                      accountToBeBackup: wallet.accountList[0],
+                    });
                   }}>
                   <Text style={styles.viewButtonText}>View</Text>
                 </Touchable>

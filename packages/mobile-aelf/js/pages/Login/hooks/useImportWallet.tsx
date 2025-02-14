@@ -18,6 +18,7 @@ export const useImportWallet = () => {
           mnemonics: mnemonicsFormatted,
           customTitle: 'Importing your wallet...',
           successToastShow: true,
+          isBackup: true,
         });
         return;
       }
@@ -27,12 +28,14 @@ export const useImportWallet = () => {
         navigationService.push('SetBiometrics', {
           type: SetBiometricsTypeEnum.create,
           mnemonics: mnemonicsFormatted,
+          isBackup: true,
         });
         return;
       }
 
       navigationService.navigate('SetPin', {
         mnemonics: mnemonicsFormatted,
+        isBackup: true,
       });
     },
     [credentials?.pin],
@@ -47,6 +50,7 @@ export const useImportWallet = () => {
           privateKey: privateKeyFormatted,
           customTitle: 'Importing your wallet...',
           successToastShow: true,
+          isBackup: true,
         });
         return;
       }
@@ -56,12 +60,14 @@ export const useImportWallet = () => {
         navigationService.push('SetBiometrics', {
           type: SetBiometricsTypeEnum.create,
           privateKey: privateKeyFormatted,
+          isBackup: true,
         });
         return;
       }
 
       navigationService.navigate('SetPin', {
         privateKey: privateKeyFormatted,
+        isBackup: true,
       });
     },
     [credentials?.pin],

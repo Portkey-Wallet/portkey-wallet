@@ -12,8 +12,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     # Step to decode JSON key and save it as a temporary file
-      - name: Decode Google Play JSON Key
+      - name: Decode Google Play JSON Key And Load As File
         run: echo "${{ secrets.GOOGLE_PLAY_JSON_KEY }}" | base64 -d > /tmp/google-play-key.json
+    # Step to decode Keystore file
       - name: Decode Keystore File
         run: |
           echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > /tmp/release-key.keystore

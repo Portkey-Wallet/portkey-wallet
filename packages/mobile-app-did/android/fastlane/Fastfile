@@ -1,8 +1,18 @@
 #android/fastlane/Fastlane
+def get_version_name_from_gradle(file_path)
+  gradle_file = File.read(file_path)
+  version_name_match = gradle_file.match(/versionName\s+["']([\d.]+)["']/)
+  if version_name_match
+    return version_name_match[1]
+  else
+    UI.user_error!("Could not find versionName in #{file_path}")
+  end
+end
+
 default_platform(:android)
 platform :android do
   desc 'build beta'
-  lane :beta do
+  lane :beta_local do
     # Adjust the `build_type` and `flavor` params as needed to build the right APK for your setup
     gradle(
       task: 'assemble',
@@ -10,6 +20,23 @@ platform :android do
     )
   
     # ...
+  end
+  lane :internal_sharing do
+     #clean the build and create an .aab android build
+     gradle(task: 'clean bundle', build_type: 'Release', project_dir: '../android', properties: {
+      "android.injected.signing.store.file" => ENV['ANDROID_KEYSTORE_FILE'],
+      "android.injected.signing.store.password" => ENV['ANDROID_KEYSTORE_PASSWORD'],
+      "android.injected.signing.key.alias" => ENV['ANDROID_KEYSTORE_ALIAS'],
+      "android.injected.signing.key.password" => ENV['ANDROID_KEYSTORE_PASSWORD']
+      })
+  
+    upload_to_play_store_internal_app_sharing(
+      package_name: 'com.portkey.finance',
+      # release_status: "draft",
+      json_key: "/tmp/google-play-key.json",
+      # json_key: "/Users/fengfeiyang/Downloads/eastern-entity-450908-h3-ef0bc1224a74.json",
+      aab: File.absolute_path('../app/build/outputs/bundle/release/app-release.aab'),
+    )
   end
   desc 'Submit a new build to play store'
   lane :deploy_to_play_store do |options|
@@ -27,6 +54,7 @@ platform :android do
       json_key: "/tmp/google-play-key.json",
       # json_key: "/Users/fengfeiyang/Downloads/eastern-entity-450908-h3-ef0bc1224a74.json",
       aab: File.absolute_path('../app/build/outputs/bundle/release/app-release.aab'),
+      sync_image_upload: true
     )
   end
   lane :echo_deploy_to_play_store do

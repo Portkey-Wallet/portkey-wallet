@@ -3,7 +3,7 @@ name: Create build for both Android and IoS, upload to Google and Apple Store
 on:
   pull_request:
     branches:
-      - temp_production_ios_android # This branch should be used for both Android and IOS build triggers.
+      - temp_internal_sharing_ios_android # This branch should be used for both Android and IOS build triggers.
 jobs:
   # ----------------------- ANDROID -----------------------------
   # -------------------------------------------------------------
@@ -19,6 +19,11 @@ jobs:
         run: |
           echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > /tmp/release-key.keystore
           echo "ANDROID_KEYSTORE_FILE=/tmp/release-key.keystore" >> $GITHUB_ENV
+    # Step debug ANDROID_KEYSTORE_FILE
+      - name: Check ANDROID_KEYSTORE_FILE
+        run: |
+          echo "ANDROID_KEYSTORE_FILE: $ANDROID_KEYSTORE_FILE"
+          ls -al $ANDROID_KEYSTORE_FILE
       # Step 1: Setup java and node
       - uses: actions/checkout@v3
       - name: Set up JDK 17
@@ -75,7 +80,7 @@ jobs:
       - name : Build android App via fastlane
         run : |
           cd packages/mobile-app-did/android
-          fastlane deploy_to_play_store 
+          fastlane internal_sharing 
         env:
           CI: true
           CD: true

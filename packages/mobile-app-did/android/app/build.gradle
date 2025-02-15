@@ -206,6 +206,10 @@ def releaseTime() {
     return new Date().format("MMddhhmm",TimeZone.getDefault())
 }
 
+def getCurrentTimestamp() {
+    return (System.currentTimeMillis() / 1000).intValue()
+}
+
 android {
     ndkVersion rootProject.ext.ndkVersion
 //    buildToolsVersion rootProject.ext.buildToolsVersion
@@ -215,8 +219,8 @@ android {
         applicationId "com.portkey.finance"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 430
-        versionName "3.0.4"
+        versionCode getCurrentTimestamp()
+        versionName "3.0.5"
 
 //        if (isNewArchitectureEnabled()) {
 //            // We configure the NDK build only if you decide to opt-in for the New Architecture.

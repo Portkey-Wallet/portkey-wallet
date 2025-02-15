@@ -206,6 +206,10 @@ def releaseTime() {
     return new Date().format("MMddhhmm",TimeZone.getDefault())
 }
 
+def getCurrentTimestamp() {
+    return (System.currentTimeMillis() / 1000).intValue()
+}
+
 android {
     ndkVersion rootProject.ext.ndkVersion
 //    buildToolsVersion rootProject.ext.buildToolsVersion
@@ -215,8 +219,8 @@ android {
         applicationId "com.portkey.finance"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 430
-        versionName "3.0.4"
+        versionCode getCurrentTimestamp()
+        versionName "3.0.5"
 
 //        if (isNewArchitectureEnabled()) {
 //            // We configure the NDK build only if you decide to opt-in for the New Architecture.
@@ -300,18 +304,22 @@ android {
 //           include 'armeabi-v7a', 'arm64-v8a'
 //       }
 //   }
+    println("Loaded environment variables:")
+    project.env.each { key, value ->
+        println("$key=$value")
+    }
     signingConfigs {
         debug {
-            storeFile file(project.env.get("RELEASE_STORE_FILE"))
-            storePassword project.env.get("RELEASE_STORE_PASSWORD")
-            keyAlias project.env.get("RELEASE_KEY_ALIAS")
-            keyPassword project.env.get("RELEASE_KEY_PASSWORD")
+            storeFile file(project.env.get("ANDROID_KEYSTORE_FILE"))
+            storePassword project.env.get("ANDROID_KEYSTORE_PASSWORD")
+            keyAlias project.env.get("ANDROID_KEYSTORE_ALIAS")
+            keyPassword project.env.get("ANDROID_KEYSTORE_PASSWORD")
         }
         release{
-            storeFile file(project.env.get("RELEASE_STORE_FILE"))
-            storePassword project.env.get("RELEASE_STORE_PASSWORD")
-            keyAlias project.env.get("RELEASE_KEY_ALIAS")
-            keyPassword project.env.get("RELEASE_KEY_PASSWORD")
+            storeFile file(project.env.get("ANDROID_KEYSTORE_FILE"))
+            storePassword project.env.get("ANDROID_KEYSTORE_PASSWORD")
+            keyAlias project.env.get("ANDROID_KEYSTORE_ALIAS")
+            keyPassword project.env.get("ANDROID_KEYSTORE_PASSWORD")
         }
         releaseSigningConfigAppcenter {
             storeFile rootProject.file("app/release-key.keystore")
@@ -329,7 +337,7 @@ android {
             // Caution! In production, you need to generate your own keystore file.
             // see https://reactnative.dev/docs/signed-apk-android.
 
-            if(project.env.get("RELEASE_STORE_FILE") !=  "appcenter"){
+            if(project.env.get("ANDROID_KEYSTORE_FILE") !=  "appcenter"){
                 signingConfig signingConfigs.release
             }
             minifyEnabled enableProguardInReleaseBuilds
@@ -453,3 +461,4 @@ dependencies {
 //    // - Set an environment variable `ORG_GRADLE_PROJECT_newArchEnabled=true`
 //    return project.hasProperty("newArchEnabled") && project.newArchEnabled == "true"
 //}
+

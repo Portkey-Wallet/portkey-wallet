@@ -38,10 +38,8 @@ export const useAddressSelect = () => {
             <Text style={styles.headerTitle}>Your wallets</Text>
             <Touchable
               onPress={() => {
-                // TODO: confirm the router
-                // navigationService.push('ProfileSettings');
                 OverlayModal.hide();
-                navigationService.push('AboutUs');
+                navigationService.push('ProfileSettings');
               }}>
               <Svg icon="gear" size={pTd(20)} />
             </Touchable>

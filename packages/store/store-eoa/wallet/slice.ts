@@ -36,6 +36,7 @@ const initialState: TWalletState = {
   privateKeyAccountList: [],
   currentAccountAddress: undefined,
   hideAssets: false,
+  walletAddedCount: 0,
 };
 export const walletSlice = createSlice({
   name: 'wallet',
@@ -49,6 +50,7 @@ export const walletSlice = createSlice({
           ...state,
           walletList: [...state.walletList, wallet],
           currentAccountAddress: wallet.accountList[0]?.address,
+          walletAddedCount: state.walletAddedCount + 1,
         };
       })
       .addCase(updateWallet, (state, action) => {

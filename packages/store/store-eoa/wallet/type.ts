@@ -5,6 +5,7 @@ export type TWalletState = {
   privateKeyAccountList: TAccountInfo[];
   currentAccountAddress?: TAccountInfo['address'];
   hideAssets: boolean;
+  walletAddedCount: number;
 };
 
 // export interface WalletState {

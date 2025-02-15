@@ -77,47 +77,47 @@ jobs:
   # ----------------------- IOS ---------------------------------
   # -------------------------------------------------------------
   # build-prod-ios:
-    runs-on: macos-12
-    steps:
-    - uses: actions/checkout@v2
-    # Step 1: Install Node Version 14
-    - name: Set up Node.js
-      uses: actions/setup-node@v1
-      with:
-        node-version: 14
-   # Step 2: Install Ruby
-    - name: Install Ruby
-      uses: actions/setup-ruby@v1
-      with:
-          ruby-version: 2.7
-    # Step 3: Install Node Modules
-    - name: Install Node Modules
-      run: yarn  
-      env:
-        CI: true
+  #   runs-on: macos-12
+  #   steps:
+  #   - uses: actions/checkout@v2
+  #   # Step 1: Install Node Version 14
+  #   - name: Set up Node.js
+  #     uses: actions/setup-node@v1
+  #     with:
+  #       node-version: 14
+  #  # Step 2: Install Ruby
+  #   - name: Install Ruby
+  #     uses: actions/setup-ruby@v1
+  #     with:
+  #         ruby-version: 2.7
+  #   # Step 3: Install Node Modules
+  #   - name: Install Node Modules
+  #     run: yarn  
+  #     env:
+  #       CI: true
 
-    # Step 6: Install Pods 
-    - name: Install pods
-      run: cd ios && pod install --repo-update && cd ..
+  #   # Step 6: Install Pods 
+  #   - name: Install pods
+  #     run: cd ios && pod install --repo-update && cd ..
   
-    # Step 7: Install Fastlane 
-    - name: Install Fastlane
-      run:  bundle install && bundle update
-    # Step 8: Run Fastlane to build and ship the build 
-    - name: Build and upload to TestFlight
-      run: fastlane deploy_to_app_store
-      env:
-            APP_STORE_CONNECT_TEAM_ID: '${{ secrets.APP_STORE_CONNECT_TEAM_ID }}'
-            DEVELOPER_APP_ID: '${{ secrets.DEVELOPER_APP_ID }}'
-            DEVELOPER_APP_IDENTIFIER: '${{ secrets.DEVELOPER_APP_IDENTIFIER }}'
-            DEVELOPER_PORTAL_TEAM_ID: '${{ secrets.DEVELOPER_PORTAL_TEAM_ID }}'
-            FASTLANE_APPLE_ID: '${{ secrets.FASTLANE_APPLE_ID }}'
-            FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD: '${{ secrets.FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD }}'
-            MATCH_PASSWORD: '${{ secrets.TEMP_KEYCHAIN_PASSWORD }}'
-            GIT_AUTHORIZATION: '${{ secrets.GIT_AUTHORIZATION }}'
-            PROVISIONING_PROFILE_SPECIFIER: '${{ secrets.PROVISIONING_PROFILE_SPECIFIER }}'
-            TEMP_KEYCHAIN_PASSWORD: '${{ secrets.TEMP_KEYCHAIN_PASSWORD }}'
-            TEMP_KEYCHAIN_USER: '${{ secrets.TEMP_KEYCHAIN_USER }}'
-            APPLE_KEY_ID: '${{ secrets.APPLE_KEY_ID }}'
-            APPLE_ISSUER_ID: '${{ secrets.APPLE_ISSUER_ID }}'
-            APPLE_KEY_CONTENT: '${{ secrets.APPLE_KEY_CONTENT }}'
+  #   # Step 7: Install Fastlane 
+  #   - name: Install Fastlane
+  #     run:  bundle install && bundle update
+  #   # Step 8: Run Fastlane to build and ship the build 
+  #   - name: Build and upload to TestFlight
+  #     run: fastlane deploy_to_app_store
+  #     env:
+  #           APP_STORE_CONNECT_TEAM_ID: '${{ secrets.APP_STORE_CONNECT_TEAM_ID }}'
+  #           DEVELOPER_APP_ID: '${{ secrets.DEVELOPER_APP_ID }}'
+  #           DEVELOPER_APP_IDENTIFIER: '${{ secrets.DEVELOPER_APP_IDENTIFIER }}'
+  #           DEVELOPER_PORTAL_TEAM_ID: '${{ secrets.DEVELOPER_PORTAL_TEAM_ID }}'
+  #           FASTLANE_APPLE_ID: '${{ secrets.FASTLANE_APPLE_ID }}'
+  #           FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD: '${{ secrets.FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD }}'
+  #           MATCH_PASSWORD: '${{ secrets.TEMP_KEYCHAIN_PASSWORD }}'
+  #           GIT_AUTHORIZATION: '${{ secrets.GIT_AUTHORIZATION }}'
+  #           PROVISIONING_PROFILE_SPECIFIER: '${{ secrets.PROVISIONING_PROFILE_SPECIFIER }}'
+  #           TEMP_KEYCHAIN_PASSWORD: '${{ secrets.TEMP_KEYCHAIN_PASSWORD }}'
+  #           TEMP_KEYCHAIN_USER: '${{ secrets.TEMP_KEYCHAIN_USER }}'
+  #           APPLE_KEY_ID: '${{ secrets.APPLE_KEY_ID }}'
+  #           APPLE_ISSUER_ID: '${{ secrets.APPLE_ISSUER_ID }}'
+  #           APPLE_KEY_CONTENT: '${{ secrets.APPLE_KEY_CONTENT }}'

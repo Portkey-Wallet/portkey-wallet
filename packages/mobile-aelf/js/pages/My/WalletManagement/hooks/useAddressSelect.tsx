@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import ActionSheet from 'components/ActionSheet';
 import { Text, View } from 'react-native';
 import { pTd } from 'utils/unit';
@@ -12,11 +12,22 @@ import { useCurrentWallet, useWalletListState } from '@portkey-wallet/hooks/hook
 import { AddressCard } from '../components/AddressCard';
 import Touchable from 'components/Touchable';
 import OverlayModal from 'components/OverlayModal';
+import { useAddressesTokensInfo } from './useAddressesTokensInfo';
 
 export const useAddressSelect = () => {
   const styles = getStyles();
   const currentWallet = useCurrentWallet();
   const walletList = useWalletListState();
+
+  const accountsAddress = useMemo(
+    () =>
+      walletList
+        .map(wallet => wallet.accountList)
+        .flat()
+        .map(account => account.address),
+    [walletList],
+  );
+  const { addressesTotalBalanceInUsd } = useAddressesTokensInfo(accountsAddress);
 
   const showAddressSelectModal = useCallback(() => {
     ActionSheet.alert({
@@ -27,10 +38,8 @@ export const useAddressSelect = () => {
             <Text style={styles.headerTitle}>Your wallets</Text>
             <Touchable
               onPress={() => {
-                // TODO: confirm the router
-                // navigationService.push('ProfileSettings');
                 OverlayModal.hide();
-                navigationService.push('AboutUs');
+                navigationService.push('ProfileSettings');
               }}>
               <Svg icon="gear" size={pTd(20)} />
             </Touchable>
@@ -43,7 +52,15 @@ export const useAddressSelect = () => {
       message: (
         <View style={styles.container}>
           {walletList.map((item: TWalletInfo, index: number) => {
-            return <AddressCard walletInfo={item} currentWallet={currentWallet} addressSelecting={true} key={index} />;
+            return (
+              <AddressCard
+                walletInfo={item}
+                currentWallet={currentWallet}
+                addressSelecting={true}
+                key={index}
+                addressesTotalBalanceInUsd={addressesTotalBalanceInUsd}
+              />
+            );
           })}
         </View>
       ),

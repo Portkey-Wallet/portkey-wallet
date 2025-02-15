@@ -28,6 +28,7 @@ export interface IAddressCardProps {
   currentWallet?: TWalletInfo;
   walletInfo?: TWalletInfo;
   removeWalletDisabled?: boolean;
+  addressesTotalBalanceInUsd?: { [key: string]: number | string };
 }
 
 export interface IAddressCardPropsExtend extends IAddressCardProps {
@@ -71,6 +72,7 @@ export const AddressCard = ({
   // addressManageView = false,
   addressManaging = false,
   removeWalletDisabled = false,
+  addressesTotalBalanceInUsd,
 }: IAddressCardProps) => {
   const useDynamicHook = addressSelecting ? useEmptyAddress : useAddAddress;
   const { addAddressDisabled, accountState, addNewAddress } = useDynamicHook({ walletInfo });
@@ -84,6 +86,7 @@ export const AddressCard = ({
         addAddressDisabled={addAddressDisabled}
         accountState={accountState}
         addNewAddress={addNewAddress}
+        addressesTotalBalanceInUsd={addressesTotalBalanceInUsd}
       />
     );
   }
@@ -95,6 +98,7 @@ export const AddressCard = ({
         addAddressDisabled={addAddressDisabled}
         accountState={accountState}
         addNewAddress={addNewAddress}
+        addressesTotalBalanceInUsd={addressesTotalBalanceInUsd}
       />
     );
   }
@@ -106,6 +110,7 @@ export const AddressCard = ({
       addAddressDisabled={addAddressDisabled}
       accountState={accountState}
       addNewAddress={addNewAddress}
+      addressesTotalBalanceInUsd={addressesTotalBalanceInUsd}
     />
   );
 };
@@ -116,6 +121,7 @@ export const AddressCardManageView = ({
   addAddressDisabled,
   accountState,
   addNewAddress,
+  addressesTotalBalanceInUsd,
 }: IAddressCardPropsExtend) => {
   return (
     <AddressCardBase
@@ -126,6 +132,7 @@ export const AddressCardManageView = ({
       addAddressDisabled={addAddressDisabled}
       accountState={accountState}
       addNewAddress={addNewAddress}
+      addressesTotalBalanceInUsd={addressesTotalBalanceInUsd}
     />
   );
 };
@@ -137,6 +144,7 @@ export const AddressCardManaging = ({
   addAddressDisabled,
   accountState,
   addNewAddress,
+  addressesTotalBalanceInUsd,
 }: IAddressCardPropsExtend) => {
   return (
     <AddressCardBase
@@ -148,6 +156,7 @@ export const AddressCardManaging = ({
       addAddressDisabled={addAddressDisabled}
       accountState={accountState}
       addNewAddress={addNewAddress}
+      addressesTotalBalanceInUsd={addressesTotalBalanceInUsd}
     />
   );
 };
@@ -158,6 +167,7 @@ export const AddressCardSelect = ({
   addAddressDisabled,
   accountState,
   addNewAddress,
+  addressesTotalBalanceInUsd,
 }: IAddressCardPropsExtend) => {
   return (
     <AddressCardBase
@@ -169,6 +179,7 @@ export const AddressCardSelect = ({
       addAddressDisabled={addAddressDisabled}
       accountState={accountState}
       addNewAddress={addNewAddress}
+      addressesTotalBalanceInUsd={addressesTotalBalanceInUsd}
     />
   );
 };
@@ -185,6 +196,7 @@ export const AddressCardBase = ({
   addAddressDisabled,
   accountState,
   addNewAddress,
+  addressesTotalBalanceInUsd = {},
 }: IAddressCardPropsExtend) => {
   const styles = getStyles();
   const cardStyles = getCardStyles();
@@ -228,6 +240,7 @@ export const AddressCardBase = ({
         <View style={addressCardStyles.cardListContainer}>
           {walletInfo?.accountList.map((account: TAccountInfo, index: number) => {
             const isSelected = currentAccount?.address === account.address;
+            const totalBalanceInUsd = addressesTotalBalanceInUsd[account.address];
             return (
               <View key={index}>
                 <TouchOrView
@@ -246,7 +259,10 @@ export const AddressCardBase = ({
                       />
                       <View>
                         <Text style={addressCardStyles.title}>{account.name}</Text>
-                        <Text style={addressCardStyles.subtitle}>{account.totalBalance || '-'}</Text>
+                        {/*<Text style={addressCardStyles.subtitle}>{account.totalBalance || '-'}</Text>*/}
+                        <Text style={addressCardStyles.subtitle}>
+                          {totalBalanceInUsd ? `$${totalBalanceInUsd}` : '-'}
+                        </Text>
                       </View>
                     </View>
                     {/* TODO: addressManageView && notSelected */}

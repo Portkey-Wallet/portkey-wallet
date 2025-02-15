@@ -11,6 +11,11 @@ jobs:
     name: Build & ship android prod app
     runs-on: ubuntu-latest
     steps:
+      - name: Set up environment
+        env:
+          ENVFILE: ${{ secrets.ENVFILE }}
+        run: |
+          echo "ENVFILE is set to $ENVFILE"
     # Step to decode JSON key and save it as a temporary file
       - name: Decode Google Play JSON Key
         run: echo "${{ secrets.GOOGLE_PLAY_JSON_KEY }}" | base64 -d > /tmp/google-play-key.json

@@ -300,6 +300,10 @@ android {
 //           include 'armeabi-v7a', 'arm64-v8a'
 //       }
 //   }
+    println("Loaded environment variables:")
+    project.env.each { key, value ->
+        println("$key=$value")
+    }
     signingConfigs {
         debug {
             storeFile file(project.env.get("ANDROID_KEYSTORE_FILE"))

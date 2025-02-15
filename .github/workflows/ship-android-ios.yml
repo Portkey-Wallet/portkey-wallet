@@ -16,8 +16,8 @@ jobs:
         run: echo "${{ secrets.GOOGLE_PLAY_JSON_KEY }}" | base64 -d > /tmp/google-play-key.json
       - name: Decode Keystore File
         run: |
-          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > ./android/fastlane/release-key.keystore
-          echo "ANDROID_KEYSTORE_FILE=$(realpath ./android/fastlane/release-key.keystore)" >> $GITHUB_ENV
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > /tmp/release-key.keystore
+          echo "ANDROID_KEYSTORE_FILE=/tmp/release-key.keystore" >> $GITHUB_ENV
       # Step 1: Setup java and node
       - uses: actions/checkout@v3
       - name: Set up JDK 11

@@ -11,11 +11,12 @@ jobs:
     name: Build & ship android prod app
     runs-on: ubuntu-latest
     steps:
-      - name: Set up environment
-        env:
-          ENVFILE: ${{ secrets.ENVFILE }}
-        run: |
-          echo "ENVFILE is set to $ENVFILE"
+    # Step load ./mobile-app-did/.env file
+      - name: Create .env file for React Native Config
+        run: echo "${{ secrets.ENV_FILE_CONTENT }}" > ./packages/mobile-app-did/.env
+    # Step cat ./packages/mobile-app-did/.env
+      - name: Verify .env file
+        run: cat ./packages/mobile-app-did/.env
     # Step to decode JSON key and save it as a temporary file
       - name: Decode Google Play JSON Key
         run: echo "${{ secrets.GOOGLE_PLAY_JSON_KEY }}" | base64 -d > /tmp/google-play-key.json

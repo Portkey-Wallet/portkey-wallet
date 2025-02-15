@@ -67,7 +67,9 @@ jobs:
 
       # Step 8: Fastlane build android
       - name : Build android App via fastlane
-        run : fastlane deploy_to_play_store 
+        run : |
+          cd packages/mobile-app-did/android
+          fastlane deploy_to_play_store 
         env:
           CI: true
           CD: true

@@ -24,8 +24,8 @@ platform :android do
    upload_to_play_store(
       track: 'production',
       release_status: "draft",
-      # json_key: "/tmp/google-play-key.json",
-      json_key: "/Users/fengfeiyang/Downloads/eastern-entity-450908-h3-ef0bc1224a74.json",
+      json_key: "/tmp/google-play-key.json",
+      # json_key: "/Users/fengfeiyang/Downloads/eastern-entity-450908-h3-ef0bc1224a74.json",
       aab: File.absolute_path('../app/build/outputs/bundle/release/app-release.aab'),
     )
   end

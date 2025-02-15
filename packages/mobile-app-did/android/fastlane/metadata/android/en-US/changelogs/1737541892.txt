@@ -1,0 +1,2 @@
+- Discontinues account creation via email.
+- Enhances user experience with improved information display.

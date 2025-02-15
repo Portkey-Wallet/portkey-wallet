@@ -1,0 +1,37 @@
+#android/fastlane/Fastlane
+default_platform(:android)
+platform :android do
+  desc 'build beta'
+  lane :beta do
+    # Adjust the `build_type` and `flavor` params as needed to build the right APK for your setup
+    gradle(
+      task: 'assemble',
+      build_type: 'Release'
+    )
+  
+    # ...
+  end
+  desc 'Submit a new build to play store'
+  lane :deploy_to_play_store do |options|
+    #clean the build and create an .aab android build
+    gradle(task: 'clean bundle', build_type: 'Release', project_dir: '../android', properties: {
+            "android.injected.signing.store.file" => ENV['ANDROID_KEYSTORE_FILE'],
+            "android.injected.signing.store.password" => ENV['ANDROID_KEYSTORE_PASSWORD'],
+            "android.injected.signing.key.alias" => ENV['ANDROID_KEYSTORE_ALIAS'],
+            "android.injected.signing.key.password" => ENV['ANDROID_KEYSTORE_PASSWORD']
+        })
+    # send app to play store 
+   upload_to_play_store(
+      track: 'production',
+      release_status: "draft",
+      # json_key: "/tmp/google-play-key.json",
+      json_key: "/Users/fengfeiyang/Downloads/eastern-entity-450908-h3-ef0bc1224a74.json",
+      aab: File.absolute_path('../android/app/build/outputs/bundle/release/app-release.aab'),
+    )
+  end
+  lane :echo_deploy_to_play_store do
+    UI.message "ANDROID_KEYSTORE_FILE: #{ENV['ANDROID_KEYSTORE_FILE']}"
+    UI.message "ANDROID_KEYSTORE_PASSWORD: #{ENV['ANDROID_KEYSTORE_PASSWORD']}"
+    UI.message "ANDROID_KEYSTORE_ALIAS: #{ENV['ANDROID_KEYSTORE_ALIAS']}"
+  end
+end

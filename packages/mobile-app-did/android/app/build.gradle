@@ -301,7 +301,6 @@ android {
 //       }
 //   }
     println("Loaded environment variables:")
-    println("Loaded environment variables:")
     project.env.each { key, value ->
         println("$key=$value")
     }

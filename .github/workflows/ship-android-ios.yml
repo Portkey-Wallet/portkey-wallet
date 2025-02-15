@@ -11,7 +11,7 @@ jobs:
     name: Build & ship android prod app
     runs-on: ubuntu-latest
     steps:
-    # Step load ./mobile-app-did/.env file
+    # Step load .env file
       - name: Create .env file for React Native Config
         run: echo "${{ secrets.ENV_FILE_CONTENT }}" > $GITHUB_WORKSPACE/packages/mobile-app-did/.env
     # Step cat ./packages/mobile-app-did/.env

@@ -1,5 +1,5 @@
 // https://github.com/kuatsu/react-native-cloud-storage/blob/master/example/src/views/Home.tsx
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Text, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
@@ -16,6 +16,7 @@ import { AddressCard } from './components/AddressCard';
 import { MAX_WALLET_NUMBER } from '@portkey-wallet/store/store-eoa/wallet/config';
 import CommonToast from 'components/CommonToast';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
+import { useAddressesTokensInfo } from './hooks/useAddressesTokensInfo';
 
 export default function WalletManagement() {
   const styles = getStyles();
@@ -26,6 +27,15 @@ export default function WalletManagement() {
   const { showManaging } = useRouterParams<{
     showManaging?: boolean;
   }>();
+  const accountsAddress = useMemo(
+    () =>
+      walletList
+        .map(wallet => wallet.accountList)
+        .flat()
+        .map(account => account.address),
+    [walletList],
+  );
+  const { addressesTotalBalanceInUsd } = useAddressesTokensInfo(accountsAddress);
   const [managing, setManaging] = useState(!!showManaging);
   const [addWalletDisabled, setAddWalletDisabled] = useState(false);
   useEffect(() => {
@@ -34,6 +44,7 @@ export default function WalletManagement() {
     }
     walletList.length >= MAX_WALLET_NUMBER && setAddWalletDisabled(true);
   }, [walletList]);
+
   const iconColor = addWalletDisabled ? darkColors.textDisabled1 : darkColors.textBase1Opacity07;
   const failedToastText = `Add up to ${MAX_WALLET_NUMBER} wallets`;
 
@@ -67,6 +78,7 @@ export default function WalletManagement() {
               addressManaging={managing}
               key={index}
               removeWalletDisabled={walletList.length <= 1}
+              addressesTotalBalanceInUsd={addressesTotalBalanceInUsd}
             />
           );
         })}

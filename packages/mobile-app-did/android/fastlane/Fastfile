@@ -9,6 +9,10 @@ def get_version_name_from_gradle(file_path)
   end
 end
 
+def get_current_timestamp()
+  return Time.now.strftime("%Y-%m-%d %H:%M:%S")
+end
+
 default_platform(:android)
 platform :android do
   desc 'build beta'
@@ -22,21 +26,50 @@ platform :android do
     # ...
   end
   lane :internal_sharing do
-     #clean the build and create an .aab android build
-     gradle(task: 'clean bundle', build_type: 'Release', project_dir: '../android', properties: {
-      "android.injected.signing.store.file" => ENV['ANDROID_KEYSTORE_FILE'],
-      "android.injected.signing.store.password" => ENV['ANDROID_KEYSTORE_PASSWORD'],
-      "android.injected.signing.key.alias" => ENV['ANDROID_KEYSTORE_ALIAS'],
-      "android.injected.signing.key.password" => ENV['ANDROID_KEYSTORE_PASSWORD']
-      })
+    #clean the build and create an .aab android build
+    gradle(task: 'clean bundle', build_type: 'Release', project_dir: '../android', properties: {
+    "android.injected.signing.store.file" => ENV['ANDROID_KEYSTORE_FILE'],
+    "android.injected.signing.store.password" => ENV['ANDROID_KEYSTORE_PASSWORD'],
+    "android.injected.signing.key.alias" => ENV['ANDROID_KEYSTORE_ALIAS'],
+    "android.injected.signing.key.password" => ENV['ANDROID_KEYSTORE_PASSWORD']
+    })
   
-    upload_to_play_store_internal_app_sharing(
-      package_name: 'com.portkey.finance',
-      # release_status: "draft",
-      json_key: "/tmp/google-play-key.json",
-      # json_key: "/Users/fengfeiyang/Downloads/eastern-entity-450908-h3-ef0bc1224a74.json",
-      aab: File.absolute_path('../app/build/outputs/bundle/release/app-release.aab'),
+    download_url = upload_to_play_store_internal_app_sharing(
+        package_name: 'com.portkey.finance',
+        # release_status: "draft",
+        json_key: "/tmp/google-play-key.json",
+        # json_key: "/Users/fengfeiyang/Downloads/eastern-entity-450908-h3-ef0bc1224a74.json",
+        aab: File.absolute_path('../app/build/outputs/bundle/release/app-release.aab'),
     )
+    UI.message "Download URL: #{download_url}"
+
+    app_name = 'Portkey Wallet'
+    version_name = get_version_name_from_gradle('../app/build.gradle')
+    build_time = get_current_timestamp()
+    lark_message = {
+      "msg_type" => "text",
+      "content" => {
+        "text" => "New version of #{app_name} has been uploaded to Google Play (Internal Sharing) 🎉\n" \
+                 "App Name: #{app_name}\n" \
+                 "Version: #{version_name}\n" \
+                 "Build Time: #{build_time}\n" \
+                 "Download URL: #{download_url}"
+      }
+    }
+    lark_webhook_url = "https://open.larksuite.com/open-apis/bot/v2/hook/7ff82584-0b49-4d63-bd8a-81449b77c38f"
+    uri = URI.parse(lark_webhook_url)
+    http = Net::HTTP.new(uri.host, uri.port)
+    http.use_ssl = true
+    request = Net::HTTP::Post.new(uri.path, {'Content-Type' => 'application/json'})
+    request.body = lark_message.to_json
+    response = http.request(request)
+
+    UI.message "Lark response: #{response.body}"
+    if response.code.to_i >= 200 && response.code.to_i < 300
+      UI.success("Message successfully sent to Lark group! 🎉")
+    else
+      UI.error("Failed to send message to Lark, error code: #{response.code}")
+    end
   end
   desc 'Submit a new build to play store'
   lane :deploy_to_play_store do |options|
@@ -48,7 +81,7 @@ platform :android do
             "android.injected.signing.key.password" => ENV['ANDROID_KEYSTORE_PASSWORD']
         })
     # send app to play store 
-   upload_to_play_store(
+    upload_to_play_store(
       track: 'production',
       release_status: "draft",
       json_key: "/tmp/google-play-key.json",
@@ -56,10 +89,44 @@ platform :android do
       aab: File.absolute_path('../app/build/outputs/bundle/release/app-release.aab'),
       sync_image_upload: true
     )
+
+    app_name = 'Portkey Wallet'
+    version_name = get_version_name_from_gradle('../app/build.gradle')
+    build_time = get_current_timestamp()
+    lark_message = {
+      "msg_type" => "text",
+      "content" => {
+        "text" => "New version of #{app_name} has been uploaded to Google Play (Production) 🎉\n" \
+                 "App Name: #{app_name}\n" \
+                 "Version: #{version_name}\n" \
+                 "Build Time: #{build_time}\n" 
+      }
+    }
+    lark_webhook_url = "https://open.larksuite.com/open-apis/bot/v2/hook/7ff82584-0b49-4d63-bd8a-81449b77c38f"
+    uri = URI.parse(lark_webhook_url)
+    http = Net::HTTP.new(uri.host, uri.port)
+    http.use_ssl = true
+    request = Net::HTTP::Post.new(uri.path, {'Content-Type' => 'application/json'})
+    request.body = lark_message.to_json
+    response = http.request(request)
+
+    UI.message "Lark response: #{response.body}"
+    if response.code.to_i >= 200 && response.code.to_i < 300
+      UI.success("Message successfully sent to Lark group! 🎉")
+    else
+      UI.error("Failed to send message to Lark, error code: #{response.code}")
+    end
   end
   lane :echo_deploy_to_play_store do
+    app_name = 'Portkey Wallet'
+    version_name = get_version_name_from_gradle('../app/build.gradle')
+    build_time = get_current_timestamp()
     UI.message "ANDROID_KEYSTORE_FILE: #{ENV['ANDROID_KEYSTORE_FILE']}"
     UI.message "ANDROID_KEYSTORE_PASSWORD: #{ENV['ANDROID_KEYSTORE_PASSWORD']}"
     UI.message "ANDROID_KEYSTORE_ALIAS: #{ENV['ANDROID_KEYSTORE_ALIAS']}"
+
+    UI.message "app_name: #{app_name}"
+    UI.message "version_name: #{version_name}"
+    UI.message "build_time: #{build_time}"
   end
 end

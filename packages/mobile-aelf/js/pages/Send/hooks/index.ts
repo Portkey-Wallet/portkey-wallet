@@ -5,7 +5,6 @@ import { useCallback } from 'react';
 
 export const useShowDialog = () => {
   const { t } = useLanguage();
-
   return useCallback(
     (type: 'crossChainInterception' | 'exchange', confirmCallBack?: () => void) => {
       console.log(type, confirmCallBack);

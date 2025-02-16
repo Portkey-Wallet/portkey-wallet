@@ -1,4 +1,4 @@
-name: Create build for both Android and IoS, upload to Google and Apple Store
+name: Create build for iOS, upload to testFlight
 on:
   pull_request:
     branches:

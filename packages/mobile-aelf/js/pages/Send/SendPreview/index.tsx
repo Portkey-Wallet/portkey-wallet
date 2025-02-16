@@ -100,7 +100,6 @@ const SendPreview: React.FC = () => {
   const EstimateAmount = useMemo(() => {
     let _amount = sendNumber;
 
-    // adjust etransfer
     if (
       ZERO.plus(sendNumber).isLessThanOrEqualTo(transactionFee || '') &&
       assetInfo.symbol === defaultToken.symbol &&

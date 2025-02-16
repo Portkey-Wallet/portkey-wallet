@@ -208,7 +208,16 @@ const SendPreview: React.FC = () => {
       actionType: ActionType.SEND,
       address: toInfo.address,
     });
-  }, [sendType, toInfo.address]);
+  }, [
+    addRecent,
+    currentChainList,
+    routerParams,
+    sendType,
+    targetNetwork?.imageUrl,
+    targetNetwork?.network,
+    toInfo.address,
+    toInfo?.chainId,
+  ]);
 
   const transfer = useCallback(async () => {
     setIsError(false);

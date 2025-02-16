@@ -2,7 +2,7 @@ name: Create build for both Android and IoS, upload to Google and Apple Store
 on:
   pull_request:
     branches:
-      - production_ios_android # This branch should be used for both Android and IOS build triggers.
+      - feature/fastlane-eoa
 jobs:
 
     name: Build & ship android prod app

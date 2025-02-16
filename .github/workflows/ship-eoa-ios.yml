@@ -1,4 +1,3 @@
-#./github/workflows/ship-android-ios.yml
 name: Create build for both Android and IoS, upload to Google and Apple Store
 on:
   pull_request:

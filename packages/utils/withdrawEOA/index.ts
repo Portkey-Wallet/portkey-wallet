@@ -186,13 +186,13 @@ class CrossTransfer implements ICrossTransfer {
       const { chainId, address, symbol, amount, network, currentAccountAddress } = params;
       const authParams = this.formatAuthTokenParams();
 
-      const isNewAccountInETransfer = await eTransferCore.services.checkEOARegistration({
+      const isRegistered = await eTransferCore.services.checkEOARegistration({
         address: currentAccountAddress,
       });
 
-      const recaptchaToken = isNewAccountInETransfer?.result
-        ? (((await verifyHumanMachine('en')) || '') as string)
-        : undefined;
+      console.log('isRegistered', isRegistered);
+
+      const recaptchaToken = isRegistered?.result ? undefined : (((await verifyHumanMachine('en')) || '') as string);
 
       const aToken = await eTransferCore.getAuthToken({
         ...authParams,

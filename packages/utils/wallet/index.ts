@@ -183,6 +183,11 @@ export const getNextBIP44Path: GetNextBIP44Path = BIP44Path => {
   return BIPArr.join('/');
 };
 
+export const getAvatarIndex = (BIP44Path: string): number => {
+  const lastNumber = BIP44Path[BIP44Path.length - 1];
+  return parseInt(lastNumber) + 1;
+};
+
 export function checkPasswordInput(password?: string): void | string {
   if (!password || password.length < 8) return PasswordErrorMessage.passwordNotLong;
   if (!isValidPassword(password)) return PasswordErrorMessage.invalidPassword;

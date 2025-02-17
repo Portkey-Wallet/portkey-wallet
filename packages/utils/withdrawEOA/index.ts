@@ -190,7 +190,9 @@ class CrossTransfer implements ICrossTransfer {
         address: currentAccountAddress,
       });
 
-      const recaptchaToken = isNewAccountInETransfer ? (((await verifyHumanMachine('en')) || '') as string) : undefined;
+      const recaptchaToken = isNewAccountInETransfer?.result
+        ? (((await verifyHumanMachine('en')) || '') as string)
+        : undefined;
 
       const aToken = await eTransferCore.getAuthToken({
         ...authParams,

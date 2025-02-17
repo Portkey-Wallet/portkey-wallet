@@ -39,8 +39,10 @@ export default function PrepareWallet() {
     }
     successToastShow && CommonToast.success('Successfully imported');
     console.log('pin: ', pin, mnemonics, privateKey, result);
-    navigationService.reset('Tab');
-  }, [addWallet, pin, mnemonics, privateKey, successToastShow]);
+    navigationService.reset('Tab', {
+      backupWalletModalShow: !(mnemonics || privateKey),
+    });
+  }, [addWallet, pin, mnemonics, privateKey, isBackup, successToastShow]);
   const initRef = useRef(init);
   initRef.current = init;
 

@@ -29,7 +29,7 @@ build beta
 [bundle exec] fastlane android internal_sharing
 ```
 
-
+Internal Sharing Upload Lane
 
 ### android deploy_to_play_store
 
@@ -37,7 +37,7 @@ build beta
 [bundle exec] fastlane android deploy_to_play_store
 ```
 
-Submit a new build to play store
+Google Play Store Deployment Lane
 
 ### android echo_deploy_to_play_store
 
@@ -45,7 +45,7 @@ Submit a new build to play store
 [bundle exec] fastlane android echo_deploy_to_play_store
 ```
 
-
+Echo details
 
 ----
 

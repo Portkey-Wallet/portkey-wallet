@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import DashBoard from 'pages/DashBoard';
 import Svg, { IconName } from 'components/Svg';
@@ -12,6 +12,8 @@ import { pTd } from 'utils/unit';
 // import { resetBadge } from 'utils/notifee';
 import { TabRouteNameEnum } from 'types/navigate';
 import HomeTab from 'pages/Home/HomeTab';
+import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
+import { useBackupWalletModal } from '../pages/Login/hooks/useBackupWalletModal';
 // import { TextM } from 'components/CommonText';
 // import { useIsAccountExist } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 
@@ -68,6 +70,20 @@ export default function TabRoot() {
   // TODO: eoa stashes
   // const isAccountExist = useIsAccountExist();
   // const logOut = useLogOut();
+  const { backupWalletModalShow = false } = useRouterParams<{
+    backupWalletModalShow?: boolean;
+  }>();
+  const { showBackupWalletModal } = useBackupWalletModal();
+  const [backupWalletShowState, setBackupWalletShowState] = useState<'idle' | 'opened'>('idle');
+
+  useEffect(() => {
+    console.log('backupWalletModalShow: ', backupWalletModalShow);
+    if (!backupWalletModalShow || backupWalletShowState !== 'idle') {
+      return;
+    }
+    setBackupWalletShowState('opened');
+    showBackupWalletModal();
+  }, [backupWalletModalShow, showBackupWalletModal, backupWalletShowState]);
 
   const tabMenuList = useMemo(() => {
     return Object.values(tabMenuTypeMap);

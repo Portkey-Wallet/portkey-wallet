@@ -72,7 +72,6 @@ export default function AddressBackup() {
   const getWalletsInCloud = useCallback(async () => {
     const wallets = await handleListContents();
     if (!wallets) {
-      CommonToast.fail('Get wallets in cloud failed');
       return;
     }
     console.log('wallets in cloud', wallets);

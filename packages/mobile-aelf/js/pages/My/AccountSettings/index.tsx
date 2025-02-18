@@ -86,7 +86,7 @@ export default function AccountSettings() {
       },
       {
         name: 'AboutUs',
-        label: 'About Portkey',
+        label: 'About aelf wallet',
         icon: 'ELF',
       },
     ],
@@ -130,8 +130,8 @@ export default function AccountSettings() {
         <View style={styles.userInfoRight}>
           <Text style={styles.userInfoUSDBalance}>
             {addressesTotalBalanceInUsd && userInfo?.address
-              ? `$${addressesTotalBalanceInUsd[userInfo?.address]}`
-              : '-'}
+              ? `$${addressesTotalBalanceInUsd[userInfo?.address] || '0'}`
+              : ''}
           </Text>
           <Svg icon="chevron_right" size={pTd(12)} />
         </View>

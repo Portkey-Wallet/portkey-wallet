@@ -22,7 +22,7 @@ export const getTagItemStyles = makeStyles(theme => ({
     backgroundColor: 'transparent',
   },
   tagItemSelected: {
-    backgroundColor: theme.colors.bgBrand1,
+    backgroundColor: theme.colors.bgBrandDefault,
   },
   mdTagItem: {
     height: pTd(32),

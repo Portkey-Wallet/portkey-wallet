@@ -173,13 +173,14 @@ export const useAwakenTokenListState = () => useAppEOASelector(state => state.aw
 
 export const useAwakenTokenList = (isInit = false) => {
   const awakenTokenListState = useAwakenTokenListState();
-  const network = useCurrentNetwork();
+  // const network = useCurrentNetwork();
   const chainId = useDAppChainId();
   const dispatch = useAppCommonDispatch();
 
-  const list = useMemo(() => awakenTokenListState[network] || [], [awakenTokenListState, network]);
   const account = useCurrentAccount();
   const key = useUniqueIdentify();
+  // const list = useMemo(() => awakenTokenListState[network] || [], [awakenTokenListState, network]);
+  const list = useMemo(() => awakenTokenListState[key] || [], [awakenTokenListState, key]);
 
   const refresh = useCallback(async () => {
     try {
@@ -190,6 +191,7 @@ export const useAwakenTokenList = (isInit = false) => {
           page: 1,
           chainId,
           caAddress: account?.address || '',
+          address: account?.address || '',
         },
       });
       dispatch(

@@ -14,6 +14,7 @@ export function useGetAccountTokenList() {
   const { fetchAccountTokenInfoList } = useAccountTokenInfo();
 
   const lastCaAddressInfoList = useLatestRef(addressInfoList);
+  lastCaAddressInfoList.current = addressInfoList;
   return useThrottleCallback(
     () => {
       if (addressInfoList?.length === 0) {

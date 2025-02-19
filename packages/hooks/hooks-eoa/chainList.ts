@@ -7,7 +7,7 @@ import { useChainList } from './network/chain';
 export const useCurrentChainList = useChainList;
 
 export const useOriginChainId = () => {
-  return 'AELF';
+  return 'AELF' as ChainId;
 };
 
 export function useCurrentChain(_chainId: ChainId) {
@@ -29,8 +29,8 @@ export function useExplorerUrl(chainId: ChainId) {
   return exploreUrl;
 }
 
-export function useDefaultToken(_chainId: ChainId) {
-  const chainInfo = useCurrentChain(_chainId);
+export function useDefaultToken(_chainId?: ChainId) {
+  const chainInfo = useCurrentChain(_chainId || 'AELF');
   return chainInfo?.defaultToken || DEFAULT_TOKEN;
 }
 

@@ -20,7 +20,7 @@ import {
 import CommonButton from 'components/CommonButton';
 import navigationService from 'utils/navigationService';
 import { useCheckSecurityLock } from 'hooks/securityLock';
-import { useAppCommonDispatch, useAppEOASelector } from '@portkey-wallet/hooks';
+import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 
 import { resetWallet } from '@portkey-wallet/store/store-eoa/wallet/actions';
 import { resetDiscover } from '@portkey-wallet/store/store-eoa/discover/slice';
@@ -32,8 +32,8 @@ import { EBridge } from '@portkey-wallet/utils/eBridgeEOA';
 import { getManagerAccount } from 'utils/redux';
 
 const HomeTab: React.FC<any> = ({ _ }) => {
-  const a = useAppEOASelector(state => state);
-  console.log('a=========', JSON.stringify(a));
+  // const a = useAppEOASelector(state => state);
+  // console.log('a=========', JSON.stringify(a));
   const { theme } = useTheme();
   const currentAccount = useCurrentAccount();
   const walletList = useWalletListState();
@@ -98,7 +98,7 @@ const HomeTab: React.FC<any> = ({ _ }) => {
     } catch (error) {
       console.log('sendElf error', error);
     }
-  }, [currentAccount?.address, dAppChain, getContract]);
+  }, [currentAccount?.address, dAppChain, getContract, mainChain]);
 
   // const getTokenViewContract = useGetTokenViewContract();
   const getViewContract = useGetViewContract();

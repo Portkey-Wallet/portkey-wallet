@@ -10,9 +10,8 @@ export const getActivityListAsync = createAsyncThunk(
       if (error?.error?.message) throw Error(error.error.message);
       throw Error(JSON.stringify(error));
     });
-    console.log('=====getActivityListAsync', JSON.stringify(response));
+    console.log('=====getActivityListAsync', JSON.stringify(params), JSON.stringify(response));
     if (!response?.data || !response?.totalRecordCount) throw Error('No data');
-
     return {
       data: response.data,
       totalRecordCount: response.totalRecordCount,
@@ -21,6 +20,7 @@ export const getActivityListAsync = createAsyncThunk(
       chainId: params.chainId,
       symbol: params.symbol,
       hasNextPage: response.hasNextPage,
+      identify: params.identify,
     };
   },
 );

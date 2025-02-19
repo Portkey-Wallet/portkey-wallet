@@ -26,20 +26,46 @@ export const activitySlice = createSlice({
   },
   extraReducers: builder => {
     builder.addCase(getActivityListAsync.fulfilled, (state, action) => {
-      const { data, totalRecordCount, skipCount, maxResultCount, chainId, symbol, hasNextPage } = action.payload;
-      const currentMapKey = getCurrentActivityMapKey(chainId, symbol);
-
-      if (!state.activityMap) state.activityMap = {};
-
-      state.activityMap[currentMapKey] = {
-        data: skipCount === 0 ? data : [...(state.activityMap[currentMapKey] ?? { data: [] }).data, ...data],
+      const {
+        data,
         totalRecordCount,
         skipCount,
         maxResultCount,
         chainId,
         symbol,
         hasNextPage,
-      };
+        identify = '',
+      } = action.payload;
+      const currentMapKey = getCurrentActivityMapKey(chainId, symbol);
+
+      if (!state.activityMap) state.activityMap = {};
+      const identifyActivityMap = state.activityMap?.[identify];
+      if (!identifyActivityMap) {
+        state.activityMap = {
+          ...state.activityMap,
+          [identify]: {
+            [currentMapKey]: {
+              data: skipCount === 0 ? data : [...data],
+              totalRecordCount,
+              skipCount,
+              maxResultCount,
+              chainId,
+              symbol,
+              hasNextPage,
+            },
+          },
+        };
+      } else {
+        identifyActivityMap[currentMapKey] = {
+          data: skipCount === 0 ? data : [...(identifyActivityMap[currentMapKey] ?? { data: [] }).data, ...data],
+          totalRecordCount,
+          skipCount,
+          maxResultCount,
+          chainId,
+          symbol,
+          hasNextPage,
+        };
+      }
       // console.log('fetching=====state key', currentMapKey, 'state content======', JSON.stringify({
       //   data: skipCount === 0 ? data : [...(state.activityMap[currentMapKey] ?? { data: [] }).data, ...data],
       //   totalRecordCount,

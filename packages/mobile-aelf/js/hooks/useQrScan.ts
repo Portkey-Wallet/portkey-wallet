@@ -1,12 +1,7 @@
 import { useCallback, useState } from 'react';
 import { Camera } from 'expo-camera';
 import { changeCanLock } from 'utils/LockManager';
-import { useCurrentUserInfo, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import navigationService from 'utils/navigationService';
-import im from '@portkey-wallet/im';
-import { GetOtherUserInfoDefaultResult } from '@portkey-wallet/im/types/service';
-import Loading from 'components/Loading';
-import CommonToast from 'components/CommonToast';
 import { checkIsUrl, prefixUrlWithProtocol } from '@portkey-wallet/utils/dapp/browser';
 import { expandQrData } from '@portkey-wallet/utils/qrCode';
 import { useDiscoverJumpWithNetWork } from './discover';
@@ -21,12 +16,10 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import ActionSheet from 'components/ActionSheet';
 import { useLanguage } from 'i18n/hooks';
-import { useJoinGroupChannel } from '@portkey-wallet/hooks/hooks-ca/im';
-import { useJumpToChatGroupDetails } from './chat';
-import { ALREADY_JOINED_GROUP_CODE } from '@portkey-wallet/constants/constants-ca/chat';
 import { isAelfAddress } from '@portkey-wallet/utils/aelf';
 import { NetworkType } from '@portkey-wallet/types';
 import { parseLinkPortkeyUrl } from 'utils/scheme';
+import { useCurrentNetwork } from '@portkey-wallet/hooks/hooks-eoa/network';
 
 export const useQrScanPermission = (): [boolean, () => Promise<boolean>] => {
   const [hasPermission, setHasPermission] = useState<any>(null);
@@ -78,87 +71,6 @@ export const useQrScanPermissionAndToast = () => {
   }, [requirePermission, showDialog]);
 };
 
-export const useHandleGroupId = () => {
-  const joinGroup = useJoinGroupChannel();
-  const jumpToGroup = useJumpToChatGroupDetails();
-
-  return useCallback(
-    async (params: { channelId: string; showLoading?: boolean; goBack?: boolean }) => {
-      const { channelId, showLoading = true, goBack = false } = params;
-      try {
-        if (showLoading) {
-          Loading.show();
-        }
-        await joinGroup(channelId);
-        if (goBack) {
-          navigationService.goBack();
-        }
-        jumpToGroup({ channelUuid: channelId || '' });
-      } catch (error: any) {
-        console.log('error', error);
-        if (error.code === ALREADY_JOINED_GROUP_CODE) {
-          if (goBack) {
-            navigationService.goBack();
-          }
-          return jumpToGroup({ channelUuid: channelId || '' });
-        } else {
-          CommonToast.fail("This group doesn't exist. Please check the Portkey group ID/QR code before you try again.");
-        }
-      } finally {
-        if (showLoading) {
-          Loading.hide();
-        }
-      }
-    },
-    [joinGroup, jumpToGroup],
-  );
-};
-
-export const useHandlePortkeyId = () => {
-  const { userId } = useCurrentUserInfo();
-
-  return useCallback(
-    async (params: { portkeyId: string; showLoading?: boolean; goBack?: boolean }) => {
-      const { portkeyId, showLoading = true, goBack = false } = params;
-
-      if (showLoading) {
-        Loading.show();
-      }
-      try {
-        // myself
-        if (userId === portkeyId) {
-          if (goBack) {
-            navigationService.goBack();
-          }
-          return navigationService.navigate('WalletName'); // my did
-        }
-
-        // others
-        const { data } = await im.service.getUserInfo<GetOtherUserInfoDefaultResult>({
-          address: portkeyId,
-          fields: ['ADDRESS_WITH_CHAIN'],
-        });
-        if (goBack) {
-          navigationService.goBack();
-        }
-        // data standard
-        if (data) {
-          return navigationService.navigate('ChatContactProfile', { contact: data, relationId: data.relationId });
-        }
-
-        return CommonToast.fail("This user doesn't exist. Please check the Portkey ID/QR code before you try again.");
-      } catch (error) {
-        CommonToast.fail("This user doesn't exist. Please check the Portkey ID/QR code before you try again.");
-      } finally {
-        if (showLoading) {
-          Loading.hide();
-        }
-      }
-    },
-    [userId],
-  );
-};
-
 export const useHandleUrl = () => {
   const jumpToWebview = useDiscoverJumpWithNetWork();
 
@@ -185,7 +97,7 @@ export const useHandleUrl = () => {
 
 export const useHandleAelfAddress = () => {
   const navigation = useNavigation();
-  const routesArr: RouteInfoType[] = navigation?.getState()?.routes;
+  const routesArr: RouteInfoType[] = navigation?.getState()?.routes || [];
   const previousRouteInfo = routesArr[routesArr.length - 2];
   return useCallback(
     (data: string) => {
@@ -196,7 +108,7 @@ export const useHandleAelfAddress = () => {
 };
 
 export const useHandleObjectData = () => {
-  const { currentNetwork } = useWallet();
+  const currentNetwork = useCurrentNetwork();
   const navigation = useNavigation();
   const routesArr: RouteInfoType[] = navigation?.getState()?.routes || [];
   const previousRouteInfo = routesArr[routesArr.length - 2];

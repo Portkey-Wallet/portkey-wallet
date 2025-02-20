@@ -11,7 +11,7 @@ import CommonToast from 'components/CommonToast';
 import navigationService from 'utils/navigationService';
 import { IToSendPreviewParamsType, TransferType } from '@portkey-wallet/types/types-eoa/routeParams';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
-import { getAelfTxResult, isDIDAelfAddress } from '@portkey-wallet/utils/aelf';
+import { getAelfTxResult, getChainNumber, isDIDAelfAddress } from '@portkey-wallet/utils/aelf';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { sleep } from '@portkey-wallet/utils';
 import { useAmountInUsdShow, useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-eoa/useTokensPrice';
@@ -34,6 +34,8 @@ import { useCurrentAccount } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 import { useBalanceByContract } from 'hooks/balanceByContract';
 import { useCurrentChainList } from '@portkey-wallet/hooks/hooks-eoa/chainList';
 import { ChainId } from '@portkey-wallet/types';
+import { crossChainTransferToCa } from 'utils/transfer/crossChainTransferToCa';
+import { getTokenIssueChainId } from 'utils/transfer/getTokenInfo';
 
 enum ErrorType {
   NO_TOAST = 'noToast',
@@ -208,7 +210,16 @@ const SendPreview: React.FC = () => {
       actionType: ActionType.SEND,
       address: toInfo.address,
     });
-  }, [sendType, toInfo.address]);
+  }, [
+    addRecent,
+    currentChainList,
+    routerParams,
+    sendType,
+    targetNetwork?.imageUrl,
+    targetNetwork?.network,
+    toInfo.address,
+    toInfo?.chainId,
+  ]);
 
   const transfer = useCallback(async () => {
     setIsError(false);
@@ -238,6 +249,35 @@ const SendPreview: React.FC = () => {
         throw result?.error?.message;
       }
       console.log('sameTransferResult', result);
+    } else if (transferType === TransferType.GENERAL_CROSS_CHAIN) {
+      const issueChainId = await getTokenIssueChainId({
+        tokenContract: tokenContractRef.current,
+        paramsOption: { symbol: assetInfo.symbol },
+      });
+
+      console.log('====CrossChain params', {
+        contract: tokenContractRef.current,
+        paramsOption: {
+          issueChainId,
+          toChainId: getChainIdByAddress(toInfo.address) || toInfo.chainId || '',
+          symbol: assetInfo?.symbol,
+          to: toInfo.address,
+          amount,
+        },
+      });
+
+      const crossChainTransferResult = await crossChainTransferToCa({
+        contract: tokenContractRef.current,
+        paramsOption: {
+          issueChainId,
+          toChainId: getChainNumber(getChainIdByAddress(toInfo.address) || toInfo.chainId || ''),
+          symbol: assetInfo?.symbol,
+          to: toInfo.address,
+          amount,
+        },
+      });
+
+      console.log('crossChainTransferResult', crossChainTransferResult);
     } else if (transferType === TransferType.E_TRANSFER) {
       let network = '';
       if (isDIDAelfAddress(toInfo.address)) {
@@ -341,25 +381,6 @@ const SendPreview: React.FC = () => {
       setIsLoading(false);
     }
   }, [actionAfterTransfer, transfer]);
-
-  // const testSend = useCallback(async () => {
-  //   const contract = await getContract(assetInfo.chainId, assetInfo?.tokenContractAddress || assetInfo?.address || '');
-
-  //   console.log('token contract', contract);
-
-  //   const result = await contract.callSendMethod('Transfer', currentAccount?.address || '', {
-  //     to: toInfo.address,
-  //     symbol: assetInfo.symbol,
-  //     amount,
-  //     memo: '',
-  //   });
-  //   console.log('sameTransfer result', result);
-
-  //   if (result.error) {
-  //     throw result?.error?.message;
-  //   }
-  //   console.log('sameTransferResult', result);
-  // }, []);
 
   useFocusEffect(
     useCallback(() => {

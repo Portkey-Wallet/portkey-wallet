@@ -33,7 +33,6 @@ import { getManagerAccount } from 'utils/redux';
 
 const HomeTab: React.FC<any> = ({ _ }) => {
   // const a = useAppEOASelector(state => state);
-  // console.log('a=========', JSON.stringify(a));
   const { theme } = useTheme();
   const currentAccount = useCurrentAccount();
   const walletList = useWalletListState();
@@ -354,6 +353,7 @@ const HomeTab: React.FC<any> = ({ _ }) => {
               chainId: 'AELF',
               amount: '1',
               network: 'tDVW',
+              currentAccountAddress: '',
             });
             console.log('===result', result);
           }}

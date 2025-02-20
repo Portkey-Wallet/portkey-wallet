@@ -105,6 +105,7 @@ export class ELFBridgeOperator implements IBridgeOperator {
     const ELFFee = await bridgeContract.callViewMethod('GetFeeByChainId', {
       value: toChainId,
     });
+
     return ELFFee.data.value;
   };
   getToLimit = async (toChainId: string, target: string) => {

@@ -8,11 +8,11 @@ export const crossChainTransferToCa = ({
 }: {
   contract: ContractBasic;
   paramsOption: {
-    issueChainId: string;
+    issueChainId: string | number;
     toChainId: string;
     symbol: string;
     to: string;
-    amount: number;
+    amount: string | number;
     memo?: string;
   };
   sendOptions?: SendOptions;

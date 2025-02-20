@@ -56,7 +56,7 @@ export class DidService extends ServiceInit {
       ...fetchConfig,
       method,
     });
-    console.log('sendOrigin====', JSON.stringify(fetchResult), URL);
+    // console.log('sendOrigin====', JSON.stringify(fetchResult), URL);
     return fetchResult;
   };
   setLockCallBack = (callBack: (expired?: boolean) => void) => {

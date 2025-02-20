@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
-import { View, FlatList, Image } from 'react-native';
+import { View, FlatList } from 'react-native';
 import { pTd } from 'utils/unit';
 import NFTItem from './NFTsModeItem';
 import CollectionItem from './CollectionsModeItem';
@@ -88,7 +88,6 @@ const ListEmptyComponent = () => {
         <View style={styles.noData}>
           <TextL>{t('No NFTs')}</TextL>
         </View>
-        <Image source={require('../../../assets/image/pngs/no-nft-banner.png')} style={[styles.imageEmpty]} />
       </Touchable>
     </View>
   );

@@ -1,5 +1,5 @@
 import { ZERO } from '@portkey-wallet/constants/misc';
-import { fetchTokensPriceAsync } from '@portkey-wallet/store/store-ca/assets/slice';
+import { fetchTokensPriceAsync } from '@portkey-wallet/store/store-eoa/assets/slice';
 import { divDecimals, formatAmountUSDShow } from '@portkey-wallet/utils/converter';
 import { useCallback, useEffect, useRef } from 'react';
 import { useAppEOASelector, useAppCommonDispatch } from '../index';

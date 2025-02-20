@@ -15,7 +15,10 @@ import NFTInfo from '../NFTInfo';
 import CommonButton from 'components/CommonButton';
 import myEvents from 'utils/deviceEvent';
 import { useCurrentChain, useDefaultToken } from '@portkey-wallet/hooks/hooks-eoa/chainList';
-import { useCrossTransferByEtransfer } from '@portkey-wallet/hooks/hooks-eoa/useWithdrawByETransfer';
+import {
+  CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL,
+  useCrossTransferByEtransfer,
+} from '@portkey-wallet/hooks/hooks-eoa/useWithdrawByETransfer';
 import {
   divDecimals,
   formatAmountShow,
@@ -101,6 +104,11 @@ const SendHome: React.FC = () => {
     [targetNetwork?.serviceList],
   );
 
+  const isSupportCross = useMemo(
+    () => CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL.includes(assetInfo.symbol),
+    [assetInfo.symbol],
+  );
+
   const [isSendToExchange, setIsSendToExchange] = useState(true);
   const [isCheckAddressFinish, setIsCheckAddressFinish] = useState(false);
 
@@ -114,7 +122,7 @@ const SendHome: React.FC = () => {
   const { getTokenConfig, getAELFChainInfoConfig, getEVMChainInfoConfig } = useGetEBridgeConfig();
 
   const [warning, setWarning] = useState<WarningKey[]>([]);
-  const { getELFBalanceByContract } = useBalanceByContract();
+  const { getTokenBalanceByContract } = useBalanceByContract();
 
   const [selectedToContact, setSelectedToContact] = useState(toInfo); // to
   const [balance, setBalance] = useState<string>(assetInfo?.balance || '');
@@ -146,12 +154,12 @@ const SendHome: React.FC = () => {
   // get transfer fee
   const getTransferFee = useGetTransferFee();
   const getTransactionFee = useCallback(
-    async (sendAmount?: string) => {
+    async (isAELFCross: boolean, sendAmount?: string) => {
       if (!chainInfo) {
         return;
       }
 
-      return getTransferFee({
+      return getTransferFee(isAELFCross, {
         sendAmount: sendAmount ?? debounceSendNumber,
         decimals: assetInfo.decimals,
         symbol: assetInfo.symbol,
@@ -193,10 +201,10 @@ const SendHome: React.FC = () => {
       return setMaxAmountSend(divDecimals(balance, assetInfo.decimals || '0').toFixed());
     }
 
-    // const isAELFCross = !!(selectedToContact.chainId && selectedToContact.chainId !== assetInfo.chainId);
+    const isAELFCross = !!(selectedToContact.chainId && selectedToContact.chainId !== assetInfo.chainId);
     let fee;
     try {
-      fee = await getTransactionFee(divDecimals(balance, assetInfo.decimals).toFixed());
+      fee = await getTransactionFee(isAELFCross, divDecimals(balance, assetInfo.decimals).toFixed());
     } catch (error) {
       fee = '0';
       console.log('FEE ERROR');
@@ -207,7 +215,16 @@ const SendHome: React.FC = () => {
       ? balanceBN.minus(etransferFee)
       : ZERO.plus(divDecimals(balance, assetInfo.decimals)).minus(maxFee).minus(etransferFee);
     setMaxAmountSend(_max.gt(ZERO) ? _max.toFixed() : '0');
-  }, [balance, assetInfo, defaultToken.symbol, maxFee, getEtransferMaxFee, toInfo, getTransactionFee]);
+  }, [
+    balance,
+    assetInfo,
+    defaultToken.symbol,
+    maxFee,
+    selectedToContact.chainId,
+    getEtransferMaxFee,
+    toInfo,
+    getTransactionFee,
+  ]);
 
   const onPressMax = useCallback(async () => {
     try {
@@ -228,12 +245,15 @@ const SendHome: React.FC = () => {
       return;
     }
     try {
-      const { balance: _balance } = await getELFBalanceByContract(assetInfo.chainId);
+      const { balance: _balance } = await getTokenBalanceByContract(
+        assetInfo.chainId,
+        assetInfo.symbol || assetInfo.tokenId,
+      );
       setBalance(_balance);
     } catch (error) {
       console.log('initBalance error', error);
     }
-  }, [assetInfo, getELFBalanceByContract]);
+  }, [assetInfo, getTokenBalanceByContract]);
 
   useEffectOnce(() => {
     initBalance();
@@ -343,7 +363,11 @@ const SendHome: React.FC = () => {
     if (!warning[0]) {
       return null;
     }
-    if (warning[0] === WarningKey.INVALID_ADDRESS || warning[0] === WarningKey.SAME_ADDRESS) {
+    if (
+      warning[0] === WarningKey.CROSS_CHAIN ||
+      warning[0] === WarningKey.INVALID_ADDRESS ||
+      warning[0] === WarningKey.SAME_ADDRESS
+    ) {
       return JustWarningOrErrorDom;
     }
 
@@ -486,7 +510,7 @@ const SendHome: React.FC = () => {
     }
 
     const assetBalanceBigNumber = ZERO.plus(balance);
-    // const isAELFCross = !!(selectedToContact.chainId && selectedToContact.chainId !== assetInfo.chainId);
+    const isAELFCross = !!(selectedToContact.chainId && selectedToContact.chainId !== assetInfo.chainId);
     const sendBigNumber = timesDecimals(sendNumber, assetInfo.decimals || '0');
     // input check
     if (sendType === 'token') {
@@ -508,7 +532,7 @@ const SendHome: React.FC = () => {
       }
     } else {
       // nft
-      console.log('sendBigNumber', sendBigNumber, 'assetBalanceBigNumber', assetBalanceBigNumber);
+
       if (sendBigNumber.isGreaterThan(assetBalanceBigNumber)) {
         setErrorMessage(TransactionError.NFT_NOT_ENOUGH);
         console.log('checkCanPreview 5');
@@ -595,8 +619,11 @@ const SendHome: React.FC = () => {
         // fee
         const f = await bridge.getELFFee();
 
+        console.log('fff');
+
         // limit
         const limit = await bridge.getLimit();
+
         const targetLimit = getSmallerValue(limit.remain, limit.currentCapacity);
         if (limit.isEnable && sendBigNumber.isGreaterThan(targetLimit)) {
           console.log('checkCanPreview 16');
@@ -630,11 +657,51 @@ const SendHome: React.FC = () => {
       }
     }
 
-    // SameChain
+    // SameChain or CrossChain in aelf
     try {
-      networkFee = await getTransactionFee(sendNumber);
-      networkFeeUnit = 'ELF';
-      transferType = TransferType.GENERAL_SAME_CHAIN;
+      if (isAELFCross && isSupportCross) {
+        const network = selectedToContact?.chainId || 'AELF';
+        let isEtransferCrossInLimit = false;
+
+        try {
+          const { withdrawInfo } = await crossTransferByEtransfer.withdrawPreview({
+            symbol: assetInfo.symbol,
+            address: selectedToContact.address,
+            chainId: assetInfo.chainId,
+            amount: sendNumber,
+            network,
+            currentAccountAddress: currentAccount?.address || '',
+          });
+
+          transactionFee = withdrawInfo?.aelfTransactionFee;
+          const maxAmount = Number(withdrawInfo?.maxAmount);
+          const minAmount = Number(withdrawInfo?.minAmount);
+          transactionFee = withdrawInfo.transactionFee;
+          transactionUnit = withdrawInfo.transactionUnit;
+          isEtransferCrossInLimit = Number(sendNumber) >= minAmount && Number(sendNumber) <= maxAmount;
+
+          // eTransfer
+          if (isEtransferCrossInLimit) {
+            receiveAmount = withdrawInfo?.receiveAmount;
+            receiveAmountUsd = withdrawInfo?.receiveAmountUsd;
+            transferType = TransferType.E_TRANSFER;
+          }
+        } catch (error) {
+          console.log('isEtransferCrossInLimit', error);
+          isEtransferCrossInLimit = false;
+        }
+        // GENERAL_CROSS_CHAIN
+        if (!isEtransferCrossInLimit) {
+          transferType = TransferType.GENERAL_CROSS_CHAIN;
+          networkFee = await getTransactionFee(isAELFCross, sendNumber);
+          networkFeeUnit = 'ELF';
+        }
+      } else {
+        console.log('fffff');
+        networkFee = await getTransactionFee(isAELFCross, sendNumber);
+        networkFeeUnit = 'ELF';
+        transferType = isAELFCross ? TransferType.GENERAL_CROSS_CHAIN : TransferType.GENERAL_SAME_CHAIN;
+      }
     } catch (err: any) {
       if (err?.code === 500) {
         setErrorMessage(TransactionError.FEE_NOT_ENOUGH);
@@ -644,6 +711,21 @@ const SendHome: React.FC = () => {
     } finally {
       Loading.hide();
     }
+
+    // // SameChain
+    // try {
+    //   networkFee = await getTransactionFee(,sendNumber);
+    //   networkFeeUnit = 'ELF';
+    //   transferType = TransferType.GENERAL_SAME_CHAIN;
+    // } catch (err: any) {
+    //   if (err?.code === 500) {
+    //     setErrorMessage(TransactionError.FEE_NOT_ENOUGH);
+    //     Loading.hide();
+    //   }
+    //   return { status: false };
+    // } finally {
+    //   Loading.hide();
+    // }
     return {
       status: true,
       networkFee,
@@ -657,6 +739,7 @@ const SendHome: React.FC = () => {
   }, [
     chainInfo,
     balance,
+    selectedToContact.chainId,
     selectedToContact.address,
     assetInfo.chainId,
     assetInfo.decimals,
@@ -676,6 +759,7 @@ const SendHome: React.FC = () => {
     getEVMChainInfoConfig,
     getTokenConfig,
     tokenPriceObject,
+    isSupportCross,
     getTransactionFee,
   ]);
 

@@ -189,10 +189,10 @@ export const BRIDGE_INFO_EVM_MAINNET: {
 // aelf testnet
 export const BRIDGE_INFO_AELF_TESTNET: { [key: string]: { BRIDGE_CONTRACT: string } } = {
   AELF: {
-    BRIDGE_CONTRACT: 'foDLAM2Up3xLjg43SvCy5Ed6zaY5CKG8uczj6yUVZUweqQUmz',
+    BRIDGE_CONTRACT: '2rC1X1fudEkJ4Yungj5tYNJ93GmBxbSRiyJqfBkzcT6JshSqz9',
   },
   tDVW: {
-    BRIDGE_CONTRACT: 'JKjoabe2wyrdP1P8TvNyD4GZP6z1PuMvU2y5yJ4JTeBjTMAoX',
+    BRIDGE_CONTRACT: '293dHYMKjfEuTEkveb5h775avTyW69jBgHMYiWQqtdSdTfsfEP',
   },
 };
 

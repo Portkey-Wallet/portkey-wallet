@@ -35,9 +35,15 @@ import { logBoxTextColorSaver } from 'utils/textColor';
 import { CODE_PUSH_OPTIONS } from 'constants/codePush';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { init, track } from './js/utils/amplitude';
+import firebase from '@react-native-firebase/app';
 
 if (__DEV__) {
   logBoxTextColorSaver();
+  if (firebase.apps.length === 0) {
+    console.log('Firebase has not been initialized.');
+  } else {
+    console.log('Firebase initialized:', firebase.apps);
+  }
 }
 
 // Keep the splash screen visible while we fetch resources

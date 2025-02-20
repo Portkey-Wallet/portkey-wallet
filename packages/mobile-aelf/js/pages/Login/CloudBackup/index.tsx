@@ -59,7 +59,8 @@ export default function CloudBackup() {
 
   const {
     walletToBeBackup,
-    navigateTo = 'Home',
+    // navigateTo = 'Home',
+    navigateTo = 'Tab',
     navigatePop = 0,
     title = 'Create password',
     successToast = 'Backup completed',
@@ -294,8 +295,8 @@ export default function CloudBackup() {
                 },
               }),
             );
-            if (navigateTo === 'Home') {
-              navigationService.navigate('Home');
+            if (navigateTo === 'Tab') {
+              navigationService.navigate('Tab');
             } else if (navigatePop >= 0) {
               navigationService.pop(navigatePop);
             }

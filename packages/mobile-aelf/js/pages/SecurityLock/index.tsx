@@ -75,7 +75,7 @@ export default function SecurityLock() {
       if (enterPin.length === PIN_SIZE) {
         if (!checkPin(enterPin)) {
           digitInput.current?.reset();
-          setTextError('Incorrect Pin', VERIFY_INVALID_TIME);
+          setTextError('Test: Incorrect Pin:' + enterPin, VERIFY_INVALID_TIME);
           return;
         }
         handlePassword(enterPin);

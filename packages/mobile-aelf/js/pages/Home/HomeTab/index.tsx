@@ -97,7 +97,7 @@ const HomeTab: React.FC<any> = ({ _ }) => {
     } catch (error) {
       console.log('sendElf error', error);
     }
-  }, [currentAccount?.address, dAppChain, getContract]);
+  }, [currentAccount?.address, dAppChain, getContract, mainChain]);
 
   // const getTokenViewContract = useGetTokenViewContract();
   const getViewContract = useGetViewContract();
@@ -353,6 +353,7 @@ const HomeTab: React.FC<any> = ({ _ }) => {
               chainId: 'AELF',
               amount: '1',
               network: 'tDVW',
+              currentAccountAddress: '',
             });
             console.log('===result', result);
           }}

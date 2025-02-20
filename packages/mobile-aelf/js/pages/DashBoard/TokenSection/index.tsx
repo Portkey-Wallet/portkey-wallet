@@ -12,12 +12,15 @@ import Touchable from 'components/Touchable';
 import { useAccountTokenInfo } from '@portkey-wallet/hooks/hooks-eoa/assets';
 import { useAccountBalanceUSD } from '@portkey-wallet/hooks/hooks-eoa/assets';
 import { useLatestRef } from '@portkey-wallet/hooks';
-import { useCurrentAddressInfos, useCurrentHideAssetsState } from '@portkey-wallet/hooks/hooks-eoa/wallet';
+import {
+  useCurrentAddressInfos,
+  useCurrentHideAssetsState,
+  useUniqueIdentify,
+} from '@portkey-wallet/hooks/hooks-eoa/wallet';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { makeStyles } from '@rneui/themed';
 import Svg from 'components/Svg';
 import { TextL } from 'components/CommonText';
-import { request } from '@portkey-wallet/api/api-did';
 
 export default function TokenSection() {
   const { t } = useLanguage();
@@ -73,7 +76,6 @@ export default function TokenSection() {
       if (totalRecordCount && (accountTokenList?.length || 0) >= totalRecordCount && !isInit) {
         return;
       }
-      console.log('====abcd', request);
       try {
         await fetchAccountTokenInfoList({
           addressInfos: addressInfosList.current || [],
@@ -91,6 +93,10 @@ export default function TokenSection() {
     getAccountTokenList(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [addressInfosList]);
+  const identify = useUniqueIdentify();
+  useEffect(() => {
+    getAccountTokenList(true);
+  }, [identify]);
 
   useEffect(() => {
     if (timerRef.current) {

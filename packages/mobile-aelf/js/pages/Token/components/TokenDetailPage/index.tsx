@@ -8,8 +8,8 @@ import { useLanguage } from 'i18n/hooks';
 import { FlashList } from '@shopify/flash-list';
 import { TextL, TextS } from 'components/CommonText';
 import { TokenItemShowType, ITokenSectionResponse } from '@portkey-wallet/types/types-eoa/token';
-import { useAppCASelector, useAppCommonDispatch } from '@portkey-wallet/hooks';
-import { useCurrentAddressInfos } from '@portkey-wallet/hooks/hooks-eoa/wallet';
+import { useAppCommonDispatch, useAppEOASelector } from '@portkey-wallet/hooks';
+import { useCurrentAddressInfos, useUniqueIdentify } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 import { ActivityItemType } from '@portkey-wallet/types/types-eoa/activity';
 import { getActivityListAsync } from '@portkey-wallet/store/store-eoa/activity/action';
 import { getCurrentActivityMapKey } from '@portkey-wallet/utils/activity';
@@ -49,13 +49,13 @@ const INIT_PAGE_INFO = {
 
 const TokenDetailPage: React.FC<TokenDetailParams> = ({ tokenInfo, tokenSection }: TokenDetailParams) => {
   const { t } = useLanguage();
+  const identify = useUniqueIdentify();
   const currentTokenInfo = useTokenInfoFromStore(tokenInfo.symbol, tokenInfo.chainId) || tokenInfo;
   const isMainnet = useIsMainnet();
   const addressInfos = useCurrentAddressInfos();
   const dispatch = useAppCommonDispatch();
-  const activity = useAppCASelector(state => state.activity);
+  const activity = useAppEOASelector(state => state.activity);
   const defaultToken = useDefaultToken(tokenInfo.chainId);
-  // const { isSwapShow } = useAppSwapButtonShow();
   const isSwapShow = true;
   // const { buy, swap } = checkEnabledFunctionalTypes(tokenInfo.symbol, tokenInfo.chainId === 'AELF');
   const { swap } = checkEnabledFunctionalTypes(tokenInfo.symbol, tokenInfo.chainId === 'AELF');
@@ -85,8 +85,8 @@ const TokenDetailPage: React.FC<TokenDetailParams> = ({ tokenInfo, tokenSection 
   );
 
   const currentActivity = useMemo(
-    () => activity?.activityMap?.[getCurrentActivityMapKey(tokenInfo.chainId, tokenInfo.symbol)],
-    [activity?.activityMap, tokenInfo.chainId, tokenInfo.symbol],
+    () => activity?.activityMap?.[identify]?.[getCurrentActivityMapKey(tokenInfo.chainId, tokenInfo.symbol)],
+    [activity?.activityMap, tokenInfo.chainId, tokenInfo.symbol, identify],
   );
   const currentActivityRef = useRef(currentActivity);
   currentActivityRef.current = currentActivity;
@@ -117,6 +117,7 @@ const TokenDetailPage: React.FC<TokenDetailParams> = ({ tokenInfo, tokenSection 
         ...fixedParamObj,
         skipCount: isInit ? 0 : skipCount + maxResultCount,
         maxResultCount,
+        identify,
       };
       await sleep(250);
       await dispatch(getActivityListAsync(params));

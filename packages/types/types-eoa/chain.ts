@@ -13,6 +13,7 @@ export interface IChainItemType {
   endPoint: string;
   explorerUrl: string;
   defaultToken: DefaultToken;
+  caContractAddress: string;
   chainImageUrl?: string;
   displayChainName?: string;
 }

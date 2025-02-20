@@ -20,7 +20,7 @@ const Card: React.FC<{ title: string }> = ({ title }) => {
   const setHideAssets = useSetHideAssets();
   // const { isRampShow } = useAppRampEntryShow();
   // const { isSwapShow } = useAppSwapButtonShow();
-  const isRampShow = true;
+  const isRampShow = false;
   const isSwapShow = true;
   const styles = getStyles();
   const buttonCount = useMemo(() => {

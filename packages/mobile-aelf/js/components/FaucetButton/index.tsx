@@ -1,9 +1,7 @@
 import React, { memo, useCallback, useRef } from 'react';
 import { useLanguage } from 'i18n/hooks';
-import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-eoa/network';
-import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { useGetCurrentCAContract } from 'hooks/contract';
-import { timesDecimals } from '@portkey-wallet/utils/converter';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-eoa/network';
+import { useGetCurrentTokenClaimContract } from 'hooks/contract';
 import CommonToast from 'components/CommonToast';
 import OutlinedButton, { TOutlinedStyleProps } from 'components/OutlinedButton';
 
@@ -15,15 +13,10 @@ const FaucetButton = (props: TSendButtonProps) => {
   const isMainnet = useIsMainnet();
   const { t } = useLanguage();
 
-  const currentWallet = useCurrentWalletInfo();
-  const currentNetworkInfo = useCurrentNetworkInfo();
-  const getCurrentCAContract = useGetCurrentCAContract(DefaultChainId);
+  const getCurrentTokenClaimContract = useGetCurrentTokenClaimContract(DefaultChainId);
   const isLoading = useRef<boolean>(false);
 
   const claimToken = useCallback(async () => {
-    if (!currentWallet.address || !currentWallet.caHash || !currentNetworkInfo.tokenClaimContractAddress) {
-      return;
-    }
     CommonToast.loading('Your ELF is on its way');
 
     if (isLoading.current) {
@@ -31,16 +24,9 @@ const FaucetButton = (props: TSendButtonProps) => {
     }
     isLoading.current = true;
     try {
-      const caContract = await getCurrentCAContract();
-      const rst = await caContract.callSendMethod('ManagerForwardCall', currentWallet.address, {
-        caHash: currentWallet.caHash,
-        contractAddress: currentNetworkInfo.tokenClaimContractAddress,
-        methodName: 'ClaimToken',
-        args: {
-          symbol: 'ELF',
-          amount: timesDecimals(100, 8).toFixed(0),
-        },
-      });
+      const tokenClaimContract = await getCurrentTokenClaimContract();
+
+      const rst = await tokenClaimContract.callSendMethod('ClaimToken', '');
       if (rst.error) {
         throw rst.error;
       }
@@ -50,7 +36,7 @@ const FaucetButton = (props: TSendButtonProps) => {
       CommonToast.fail("Today's limit has been reached");
     }
     isLoading.current = false;
-  }, [currentNetworkInfo.tokenClaimContractAddress, currentWallet.address, currentWallet.caHash, getCurrentCAContract]);
+  }, [getCurrentTokenClaimContract]);
 
   const onPressButton = useCallback(() => {
     if (isMainnet) {

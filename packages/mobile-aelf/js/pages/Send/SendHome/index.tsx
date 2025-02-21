@@ -317,36 +317,6 @@ const SendHome: React.FC = () => {
     );
   }, [chainList, selectTargetNetwork]);
 
-  // const { getTransformedRecentList } = useRecent();
-
-  // const getSavedList = useGetFilterContactList();
-
-  // const initSavedList = useCallback(() => {
-  //   const list = getSavedList({
-  //     fromChainId: assetInfo.chainId,
-  //     tokenId: assetInfo.symbol,
-  //     isFt: sendType !== 'token',
-  //   });
-  //   setSavedList(list || []);
-  // }, [assetInfo.chainId, assetInfo.symbol, getSavedList, sendType]);
-
-  // const initBookList = useCallback(() => {
-  //   const reList = getTransformedRecentList({
-  //     fromChainId: assetInfo.chainId,
-  //     tokenId: assetInfo.symbol,
-  //     isFt: sendType === 'token',
-  //   });
-  //   setRecentList(reList || []);
-  // }, [assetInfo.chainId, assetInfo.symbol, getTransformedRecentList, sendType]);
-
-  // const initList = useCallback(() => {
-  //   initBookList();
-  //   initSavedList();
-  // }, [initBookList, initSavedList]);
-  // getListFnRef.current = initList;
-  // useEffectOnce(() => {
-  //   initList();
-  // });
   useEffectOnce(() => {
     const listener = myEvents.updateSendAddressList.addListener(() => {
       getListFnRef.current?.();
@@ -873,23 +843,20 @@ const SendHome: React.FC = () => {
           );
         } else if (i.network !== 'aelf' && i.addressInfo?.network !== 'aelf') {
           Loading.show();
-          const { data } = await getSendNetworkList({
+          const { networkList } = await getSendNetworkList({
             symbol: assetInfo?.symbol || '',
             chainId: assetInfo?.chainId || 'AELF',
             toAddress: i?.address || i?.addressInfo?.address || '',
           });
 
-          console.log('getSendNetworkList', data, i);
-          const tmpNetwork = data?.networkList?.find(
-            (ele: any) => ele.network === (i?.network || i.addressInfo?.network),
-          );
+          const tmpNetwork = networkList?.find((ele: any) => ele.network === (i?.network || i.addressInfo?.network));
 
           if (!tmpNetwork) {
             throw 'not supported';
           }
           console.log('tmpNetwork', tmpNetwork);
           setTargetNetwork(tmpNetwork);
-          setChainList(data?.networkList);
+          setChainList(networkList);
           setSelectedToContact({ name: i?.name, address: i.address || i.addressInfo?.address } as TToInfo);
           setWarning([WarningKey.MAKE_SURE_SUPPORT_PLATFORM]);
           setStep(2);

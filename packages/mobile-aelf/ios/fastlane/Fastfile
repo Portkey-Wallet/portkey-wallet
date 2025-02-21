@@ -190,15 +190,17 @@ platform :ios do
 
 
        # get version info
-      title = "TestFlight Upgrade"
+      title = "TestFlight Push Notification "
       version_name = get_version_name("../AELFWallet/info.plist")
       build_time = get_timestamp
       commit = get_latest_commit
 
+      version_name_with_build = "#{version_name} (#{latest_build_number})"
+
 
      send_lark_notification(
       title: title,
-      version_name: version_name,
+      version_name: version_name_with_build,
       build_time: build_time,
       commit: commit
      )

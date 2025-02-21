@@ -254,7 +254,6 @@ export const fetchAssetV2Async = createAsyncThunk(
     { getState },
   ) => {
     const response = await fetchAssetListV2({ addressInfos, keyword, skipCount, maxResultCount });
-
     return {
       ...response,
       keyword,
@@ -285,7 +284,7 @@ export const fetchTokensPriceAsync = createAsyncThunk(
       },
     } = getState() as { assets: TAssetsState };
 
-    const response = await fetchTokenPrices({ symbols: symbols || accountTokenList.map(ele => ele.symbol) });
+    const response = await fetchTokenPrices({ symbols: symbols || accountTokenList?.map(ele => ele.symbol) || [] });
 
     return { list: response.items };
   },

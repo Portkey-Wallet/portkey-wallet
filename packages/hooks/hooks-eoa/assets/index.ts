@@ -12,6 +12,8 @@ import {
   INIT_ACCOUNT_NFT_INFO,
   INIT_ACCOUNT_TOKEN_INFO,
   hideLocalShowTokenInfo,
+  fetchAssetV2Async,
+  INIT_ACCOUNT_ASSETS_INFO_V2,
 } from '@portkey-wallet/store/store-eoa/assets/slice';
 import { useAppCommonDispatch } from '../..';
 import { useCurrentAddressInfos, useUniqueIdentify } from '../wallet';
@@ -346,3 +348,33 @@ export function useAccountTokenInfoMixLocalShowToken() {
   }, [accountTokenInfo.accountTokenList, assetsState.localShowTokenInfo, identify]);
   return updatedAccountTokenList;
 }
+
+export const useAccountAssetsInfoV2 = () => {
+  const dispatch = useAppCommonDispatch();
+  const currentNetworkInfo = useCurrentNetworkInfo();
+  const assetsState = useAssets();
+  const identify = useUniqueIdentify();
+  const accountAssetsInfo = useMemo(
+    () => assetsState.accountAssetsV2?.accountAssetsInfo?.[identify] || INIT_ACCOUNT_ASSETS_INFO_V2,
+    [assetsState.accountAssetsV2?.accountAssetsInfo, identify],
+  );
+
+  const fetchAccountAssetsInfoList = useCallback(
+    (params: {
+      keyword: string;
+      addressInfos: { chainId: ChainId; address: string }[];
+      skipCount?: number;
+      maxResultCount?: number;
+    }) => {
+      return dispatch(
+        fetchAssetV2Async({
+          ...params,
+          identify: identify,
+        }),
+      );
+    },
+    [identify, dispatch],
+  );
+
+  return { ...accountAssetsInfo, fetchAccountAssetsInfoList, isFetching: assetsState.accountAssetsV2?.isFetching };
+};

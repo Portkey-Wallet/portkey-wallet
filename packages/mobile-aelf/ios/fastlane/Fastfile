@@ -45,6 +45,69 @@ def ensure_temp_keychain(name, password)
   delete_temp_keychain(name)
   create_temp_keychain(name, password)
 end
+# the last commit id & commit msg
+def get_latest_commit
+  commit_id = `git log -1 --pretty=format:"%H"`.strip
+  commit_message = `git log -1 --pretty=format:"%s"`.strip
+  { id: commit_id, message: commit_message }
+end
+# get time stamp
+def get_timestamp
+  Time.now.strftime("%Y-%m-%d %H:%M:%S")
+end
+# get version name
+def get_version_name(file_path)
+  plist_content = File.read(file_path)
+  version_name_match = plist_content.match(/<key>CFBundleShortVersionString<\/key>\s*<string>([\d.]+)<\/string>/)
+  if version_name_match
+    return version_name_match[1]
+  else
+    UI.user_error!("Could not find CFBundleShortVersionString in #{file_path}")
+  end
+end
+# lark notification
+def send_lark_notification(title:,version_name:, build_time:, commit:)
+  lark_message = {
+    "msg_type" => "post",
+    "content" => {
+      "post" => {
+        "en_us" => {
+          "title" => "#{title} 🚀",
+          "content" => [
+            [
+              { "tag" => "text", "text" => "🌟 App(iOS): EOA Wallet" },
+              { "tag" => "text", "text" => "\n🌟 Version: " },
+              { "tag" => "text", "text" => version_name },
+              { "tag" => "text", "text" => "\n📅 Build Time#{ENV['CI']? '(UTC)':''}: " },
+              { "tag" => "text", "text" => build_time },
+              { "tag" => "text", "text" => "\n\n🛠️ Latest Commit:" },
+              { "tag" => "text", "text" => "\nID: #{commit[:id]}" },
+              { "tag" => "text", "text" => "\nMessage: #{commit[:message]}" }
+            ]
+          ]
+        }
+      }
+    }
+  }
+
+  lark_webhook_url = ENV['LARK_WEBHOOK_URL'] || "https://open.larksuite.com/open-apis/bot/v2/hook/7ff82584-0b49-4d63-bd8a-81449b77c38f"
+  unless lark_webhook_url
+    UI.user_error!("LARK_WEBHOOK_URL is not set!")
+  end
+
+  uri = URI.parse(lark_webhook_url)
+  http = Net::HTTP.new(uri.host, uri.port)
+  http.use_ssl = true
+  request = Net::HTTP::Post.new(uri.path, { 'Content-Type' => 'application/json' })
+  request.body = lark_message.to_json
+  response = http.request(request)
+
+  if response.code.to_i >= 200 && response.code.to_i < 300
+    UI.success("Lark notification sent successfully! 🚀")
+  else
+    UI.error("Failed to send Lark notification: #{response.code} - #{response.body}")
+  end
+end
 
 
 platform :ios do
@@ -125,8 +188,19 @@ platform :ios do
       changelog: "Build #{Time.now.strftime('%Y.%m.%d')}: Regular update and improvements"
      )
 
-    # increment_build_number(xcodeproj: "AELFWallet.xcodeproj")
-    # build_app(workspace: "AELFWallet.xcworkspace", scheme: "AELFWallet")
-    # upload_to_testflight
+
+       # get version info
+      title = "TestFlight Upgrade"
+      version_name = get_version_name("../AELFWallet/info.plist")
+      build_time = get_timestamp
+      commit = get_latest_commit
+
+
+     send_lark_notification(
+      title: title,
+      version_name: version_name,
+      build_time: build_time,
+      commit: commit
+     )
   end
 end

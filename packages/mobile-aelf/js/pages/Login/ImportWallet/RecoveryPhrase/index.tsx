@@ -12,43 +12,45 @@ import * as Clipboard from 'expo-clipboard';
 import { useImportWallet } from '../../hooks/useImportWallet';
 
 const MnemonicsWordCount = 12;
-let invalidMnemonicsToastTimer: NodeJS.Timeout;
+
+function validateMnemonicFormat(input: string, expectedLength = 12) {
+  const words = input.trim().split(/\s+/);
+  if (words.length !== expectedLength) {
+    return false;
+  }
+  return words.every(word => /^[a-zA-Z]+$/.test(word));
+}
 
 export default function RecoveryPhrase({ checkedSecurityLock }: { checkedSecurityLock?: boolean }) {
   const styles = getStyles();
   const { theme } = useTheme();
   const [mnemonics, setMnemonics] = useState(Array(MnemonicsWordCount).fill(''));
+  const [isMnemonicsValid, setIsMnemonicsValid] = useState(false);
 
   const isMnemonicsEmpty = useMemo(() => {
-    return mnemonics.every(mnemonic => mnemonic === '');
-  }, [mnemonics]);
-
-  const isMnemonicsValid = useMemo(() => {
-    const isValid = bip39.validateMnemonic(mnemonics.join(' '));
-    if (mnemonics.filter(mnemonic => mnemonic === '').length === 0 && !isValid) {
-      clearTimeout(invalidMnemonicsToastTimer);
-      invalidMnemonicsToastTimer = setTimeout(() => {
-        CommonToast.fail('Invalid seed phrase');
-      }, 500); // gpt4o advice 300-500ms
-    }
-    return isValid;
+    const isNotEmpty = validateMnemonicFormat(mnemonics.join(' '));
+    setIsMnemonicsValid(isNotEmpty);
+    return !isNotEmpty;
   }, [mnemonics]);
 
   const handleChangeText = useCallback(
     (text: string, index: number) => {
       const newMnemonics = [...mnemonics];
-      newMnemonics[index] = text;
+      newMnemonics[index] = text.replace(/[^a-zA-Z]/g, '').toLowerCase();
       setMnemonics(newMnemonics);
     },
     [mnemonics, setMnemonics],
   );
 
+  // only check format, one work, one space.
   const onPaste = useCallback(async () => {
     const clipboardText = (await Clipboard.getStringAsync()).trim();
-    if (bip39.validateMnemonic(clipboardText)) {
+    // if (bip39.validateMnemonic(clipboardText)) {
+    if (validateMnemonicFormat(clipboardText)) {
       const clipboardMnemonics = clipboardText.split(' ');
       if (clipboardMnemonics.length === MnemonicsWordCount) {
         setMnemonics(clipboardMnemonics);
+        setIsMnemonicsValid(true);
       } else {
         CommonToast.fail('Invalid recovery phrase');
       }
@@ -115,7 +117,13 @@ export default function RecoveryPhrase({ checkedSecurityLock }: { checkedSecurit
         style={styles.importButton}
         disabledStyle={styles.importButtonDisable}
         disabled={!isMnemonicsValid}
-        onPress={() => importWalletByMnemonic(mnemonics, checkedSecurityLock)}>
+        onPress={() => {
+          if (!bip39.validateMnemonic(mnemonics.join(' '))) {
+            CommonToast.fail('Invalid recovery phrase');
+            return;
+          }
+          importWalletByMnemonic(mnemonics, checkedSecurityLock);
+        }}>
         Import
       </CommonButton>
     </View>

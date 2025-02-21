@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef, useMemo } from 'react';
+import React, { useState, useCallback, useRef, useMemo, useEffect } from 'react';
 import { RefreshControl, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import { useLanguage } from 'i18n/hooks';
@@ -6,7 +6,7 @@ import { getActivityListAsync } from '@portkey-wallet/store/store-eoa/activity/a
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 import { useActivity } from '@portkey-wallet/hooks/hooks-eoa/activity';
 import { IActivitiesApiParams } from '@portkey-wallet/store/store-eoa/activity/type';
-import { useCurrentAddressInfos } from '@portkey-wallet/hooks/hooks-eoa/wallet';
+import { useCurrentAddressInfos, useUniqueIdentify } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { ActivityItemType } from '@portkey-wallet/types/types-eoa/activity';
 import { getCurrentActivityMapKey } from '@portkey-wallet/utils/activity';
@@ -34,12 +34,13 @@ interface RouterParams {
 const ActivityListPage = () => {
   const { chainId, symbol } = useRouterParams<RouterParams>();
   const { t } = useLanguage();
+  const identify = useUniqueIdentify();
   const dispatch = useAppCommonDispatch();
   const addressInfos = useCurrentAddressInfos();
   const activity = useActivity();
   const currentActivity = useMemo(
-    () => activity?.activityMap?.[getCurrentActivityMapKey(chainId, symbol)],
-    [activity?.activityMap, chainId, symbol],
+    () => activity?.activityMap?.[identify]?.[getCurrentActivityMapKey(chainId, symbol)],
+    [activity?.activityMap, chainId, symbol, identify],
   );
   const currentActivityRef = useRef(currentActivity);
   currentActivityRef.current = currentActivity;
@@ -62,6 +63,7 @@ const ActivityListPage = () => {
         // managerAddresses: address,
         chainId: chainId,
         symbol: symbol,
+        identify,
       };
 
       await dispatch(getActivityListAsync(params));
@@ -70,7 +72,7 @@ const ActivityListPage = () => {
         await sleep(250);
       }
     },
-    [addressInfos, chainId, currentActivity, dispatch, symbol],
+    [addressInfos, chainId, currentActivity, dispatch, symbol, identify],
   );
 
   const isInitRef = useRef(false);
@@ -79,7 +81,9 @@ const ActivityListPage = () => {
     await getActivityList(true);
     isInitRef.current = true;
   }, [getActivityList]);
-
+  useEffect(() => {
+    init();
+  }, [identify]);
   const renderItem = useCallback(({ item, index }: { item: ActivityItemType; index: number }) => {
     const preItem = currentActivityRef.current?.data[index - 1];
     return <ActivityItem preItem={preItem} item={item} index={index} onPress={() => showActivityDetail(item)} />;

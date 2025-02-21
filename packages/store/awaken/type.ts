@@ -15,6 +15,7 @@ export type TAwakenState = {
     [T in NetworkType]?: Record<string, string>;
   };
   tokenList: {
-    [T in NetworkType]?: TCurrency[];
+    // [T in NetworkType]?: TCurrency[];
+    [T: string]: TCurrency[];
   };
 };

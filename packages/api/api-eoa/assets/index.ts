@@ -12,7 +12,7 @@ export default {
   },
   // nft and tokens
   fetchAccountAssetsByKeywords: '/api/app/user/assets/searchUserAssets',
-  fetchAccountAssetsByKeywordsV2: '/api/app/v2/user/assets/searchUserAssets',
+  fetchAccountAssetsByKeywordsV2: '/api/app/user/assets/searchUserAssets', // no need v2
   // nft and token in crypto box
   fetchCryptoBoxAccountAssetsByKeywords: '/api/app/v2/user/assets/searchUserPackageAssets',
   fetchTokenPrice: {

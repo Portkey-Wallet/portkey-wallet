@@ -57,7 +57,7 @@ const ActivityDetail = (props: ActivityItemType & IActivityApiParams) => {
   const isMainnet = useIsMainnet();
   const [resendLoading, setResendLoading] = useState(false);
   const addressesInfoList = useCurrentAddressInfos();
-  const caAddressInfos = useMemo(() => {
+  const addressInfos = useMemo(() => {
     let result = addressesInfoList;
     if (address === props.fromAddress) {
       result = addressesInfoList.filter(item => item.chainId === props?.fromChainId);
@@ -76,7 +76,7 @@ const ActivityDetail = (props: ActivityItemType & IActivityApiParams) => {
   const { theme } = useTheme();
   const getActivityDetail = useCallback(async () => {
     const params = {
-      caAddressInfos,
+      addressInfos,
       transactionId,
       blockHash,
       activityType,
@@ -97,7 +97,7 @@ const ActivityDetail = (props: ActivityItemType & IActivityApiParams) => {
     } catch (error) {
       CommonToast.fail('This transfer is being processed on the blockchain. Please check the details later.');
     }
-  }, [activityType, blockHash, caAddressInfos, isReceivedParams, transactionId]);
+  }, [activityType, blockHash, addressInfos, isReceivedParams, transactionId]);
 
   useEffectOnce(() => {
     getActivityDetail();

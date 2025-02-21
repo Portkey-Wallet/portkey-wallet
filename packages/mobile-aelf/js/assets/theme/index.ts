@@ -259,6 +259,12 @@ export const darkColors = {
   bgBrand2: '#0996EE',
   bgBrand3: '#DFF0FF',
   bgBrand4: '#33B0FD',
+  bgBrandDefault: '#B697FF',
+  bgBrandHover: '#CFBAFF',
+  bgBrandSecondary: '#8B64E7',
+  bgBrandSecondaryHover: '#A17EF3',
+  bgBrandTertiary: '#8B64E7',
+  bgBrandTertiaryHover: '#A17EF3',
   bgNeutral1: '#B2B2B2',
   bgNeutral2: '#303030',
   bgNeutral3: '#949494',
@@ -293,6 +299,12 @@ export const darkColors = {
   textBrand4: '#0A4370',
   textBrand5: '#DFF0FF',
 
+  textBrandDefault: '#B697FF',
+  textBrandSecondary: '#CFBAFF',
+  textBrandTertiary: '#8B64E7',
+  textBrandOn: '#151318',
+  textBrandOnSecondary: '#F2EDFF',
+
   textNeutral1: '#E3E3E3',
   textNeutral2: '#CDCDCD',
   textNeutral3: '#B2B2B2',
@@ -317,6 +329,12 @@ export const darkColors = {
   textDanger4: '#FCECE6',
   textDanger5: '#F6C7B4',
   textDanger6: '#F1A282',
+
+  iconBrandDefault: '#B697FF',
+  iconBrandSecondary: '#CFBAFF',
+  iconBrandTertiary: '#8B64E7',
+  iconBrandOn: '#151318',
+  iconBrandOnSecondary: '#F2EDFF',
 
   iconBase1: '#FFFFFF',
   iconBase2: '#FFFFFFB2',
@@ -361,6 +379,10 @@ export const darkColors = {
   borderBrand1: '#DFF0FF',
   borderBrand2: '#68C3FF',
   borderBrand3: '#33B0FD',
+
+  borderBrandDefault: '#6649AB',
+  borderBrandSecondary: '#A17EF3',
+  borderBrandTertiary: '#B697FF',
 
   borderNeutral1: '#E3E3E3',
   borderNeutral2: '#5A5A5A',

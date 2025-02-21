@@ -18,6 +18,6 @@ export const getStyles = makeStyles(theme => ({
     width: pTd(40),
     height: pTd(40),
     borderRadius: pTd(40),
-    backgroundColor: theme.colors.bgBrand1,
+    backgroundColor: theme.colors.bgBrandDefault,
   },
 }));

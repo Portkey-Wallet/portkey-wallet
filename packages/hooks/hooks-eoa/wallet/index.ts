@@ -17,6 +17,7 @@ import { ChainId } from '@portkey-wallet/types';
 import { useChainList } from '../network/chain';
 
 export const useWalletState = () => useAppEOASelector(state => state.wallet);
+export const useWalletAddedCount = () => useAppEOASelector(state => state.wallet.walletAddedCount);
 
 export const useWalletListState = () => useAppEOASelector(state => state.wallet.walletList);
 export const usePrivateKeyAccountListState = () => useAppEOASelector(state => state.wallet.privateKeyAccountList);
@@ -30,11 +31,12 @@ export const useResetWallet = () => {
 export const useAddWallet = () => {
   const walletList = useWalletListState();
   const walletListRef = useRef(walletList);
+  const walletAddedCount = useWalletAddedCount();
   walletListRef.current = walletList;
   const dispatch = useAppCommonDispatch();
 
   return useCallback(
-    (pin: string, mnemonics?: string, privateKey?: string) => {
+    (pin: string, mnemonics?: string, privateKey?: string, isBackup?: boolean) => {
       if (!pin) {
         return {
           success: false,
@@ -42,7 +44,7 @@ export const useAddWallet = () => {
         };
       }
 
-      const walletListLength = walletListRef.current.length;
+      // const walletListLength = walletListRef.current.length;
       let walletInfo;
       if (mnemonics) {
         walletInfo = AElf.wallet.getWalletByMnemonic(mnemonics);
@@ -52,7 +54,13 @@ export const useAddWallet = () => {
         walletInfo = AElf.wallet.createNewWallet();
       }
 
-      const wallet = formatWalletInfoV2(walletInfo, pin, `Wallet ${walletListLength + 1}`);
+      // const wallet = formatWalletInfoV2(walletInfo, pin, `Wallet ${walletListLength + 1}`, isBackup);
+      const wallet = formatWalletInfoV2({
+        walletInfoInput: walletInfo,
+        password: pin,
+        walletName: `Wallet ${walletAddedCount + 1}`,
+        isBackup,
+      });
 
       if (!wallet) {
         return {

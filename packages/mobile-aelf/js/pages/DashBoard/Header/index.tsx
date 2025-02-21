@@ -14,6 +14,8 @@ import navigationService from 'utils/navigationService';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { makeStyles, useTheme } from '@rneui/themed';
 import { useCurrentAccount } from '@portkey-wallet/hooks/hooks-eoa/wallet';
+import { useAddressSelect } from '../../My/WalletManagement/hooks/useAddressSelect';
+import { LOCAL_AVATARS } from 'assets/image/avatars';
 
 const DashBoardHeader: React.FC = () => {
   // const userInfo = useCurrentUserInfo();
@@ -21,6 +23,7 @@ const DashBoardHeader: React.FC = () => {
   const qrScanPermissionAndToast = useQrScanPermissionAndToast();
   const styles = getStyles();
   const { theme } = useTheme();
+  const { showAddressSelectModal } = useAddressSelect();
 
   const onCopyAddress = useCallback(() => {
     showCopyUserAddress();
@@ -32,8 +35,9 @@ const DashBoardHeader: React.FC = () => {
     return screenWidth - nickNameLeft - nickNameMinRight;
   }, []);
   const onShowAccountSetting = useCallback(() => {
-    navigationService.navigate('ProfileSettings');
-  }, []);
+    // navigationService.navigate('ProfileSettings');
+    showAddressSelectModal();
+  }, [showAddressSelectModal]);
   const leftDom = useMemo(() => {
     return (
       <Animated.View style={styles.leftDomWrap}>
@@ -43,7 +47,8 @@ const DashBoardHeader: React.FC = () => {
               hasBorder={true}
               title={userInfo?.name}
               avatarSize={pTd(24)}
-              imageUrl={''}
+              localImage={LOCAL_AVATARS[userInfo.icon || 'avatar_1']}
+              // imageUrl=""
               resizeMode="cover"
               titleStyle={{ fontSize: pTd(14) }}
             />

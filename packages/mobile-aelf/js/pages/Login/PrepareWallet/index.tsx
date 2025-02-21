@@ -16,23 +16,33 @@ type RouterParams = {
   privateKey?: string;
   customTitle?: string;
   successToastShow?: boolean;
+  isBackup?: boolean;
 };
 
 const ScrollViewProps = { disabled: true };
 export default function PrepareWallet() {
   const styles = getStyles();
-  const { pin, mnemonics, privateKey, customTitle, successToastShow } = useRouterParams<RouterParams>();
+  const {
+    pin,
+    mnemonics,
+    privateKey,
+    customTitle,
+    successToastShow,
+    isBackup = false,
+  } = useRouterParams<RouterParams>();
 
   const addWallet = useAddWallet();
   const init = useCallback(() => {
-    const result = addWallet(pin, mnemonics, privateKey);
+    const result = addWallet(pin, mnemonics, privateKey, isBackup);
     if (!result || !result.success) {
       CommonToast.fail(result?.message || 'Failed to be imported');
     }
     successToastShow && CommonToast.success('Successfully imported');
     console.log('pin: ', pin, mnemonics, privateKey, result);
-    navigationService.reset('Tab');
-  }, [addWallet, pin, mnemonics, privateKey, successToastShow]);
+    navigationService.reset('Tab', {
+      backupWalletModalShow: !(mnemonics || privateKey),
+    });
+  }, [addWallet, pin, mnemonics, privateKey, isBackup, successToastShow]);
   const initRef = useRef(init);
   initRef.current = init;
 

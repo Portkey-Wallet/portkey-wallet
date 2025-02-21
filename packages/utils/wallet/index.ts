@@ -69,12 +69,19 @@ export const formatWalletInfo = (
   }
 };
 
-export const formatWalletInfoV2 = (
-  walletInfoInput: any,
-  password: Password,
-  walletName?: string,
-  addressName?: string,
-): TWalletInfo | false => {
+export const formatWalletInfoV2 = ({
+  walletInfoInput,
+  password,
+  walletName,
+  addressName,
+  isBackup = false,
+}: {
+  walletInfoInput: any;
+  password: Password;
+  walletName?: string;
+  addressName?: string;
+  isBackup?: boolean;
+}): TWalletInfo | false => {
   try {
     console.log('formatWalletInfoV2: walletInfoInput', walletInfoInput);
     if (!walletInfoInput || !password) {
@@ -113,7 +120,7 @@ export const formatWalletInfoV2 = (
       nextBIP44Path: mnemonic ? getNextBIP44Path(walletInfoInput.BIP44Path) : '',
       name: walletName || 'Wallet 1',
       accountList: [accountInfo],
-      isBackup: false,
+      isBackup,
     };
   } catch (error) {
     console.log('formatWalletInfoV2 error: ', error);
@@ -174,6 +181,11 @@ export const getNextBIP44Path: GetNextBIP44Path = BIP44Path => {
   }
   BIPArr.splice(-1, 1, (+BIPArr[BIPArr.length - 1] + 1).toString());
   return BIPArr.join('/');
+};
+
+export const getAvatarIndex = (BIP44Path: string): number => {
+  const lastNumber = BIP44Path[BIP44Path.length - 1];
+  return parseInt(lastNumber) + 1;
 };
 
 export function checkPasswordInput(password?: string): void | string {

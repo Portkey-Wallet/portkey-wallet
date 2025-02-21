@@ -5,13 +5,14 @@ import { screenWidth, screenHeight } from '@portkey-wallet/utils/mobile/device';
 
 import Config from 'react-native-config';
 import { clearBackgroundTimeout, setBackgroundTimeout } from 'utils/backgroundTimer';
+import { Keyboard } from 'react-native';
 
 const TIME_OUT = 20000; // recaptcha timeout 20 seconds
 
 async function verifyHumanMachine(language: any) {
   let timer: undefined | NodeJS.Timer;
-  console.log('Config.RECAPTCHA_SITE_KEY', Config.RECAPTCHA_SITE_KEY);
-  console.log('Config.RECAPTCHA_BASE_URL', Config.RECAPTCHA_BASE_URL);
+  Keyboard.dismiss();
+
   return new Promise((resolve, reject) => {
     const key = OverlayModal.show(
       <Recaptcha

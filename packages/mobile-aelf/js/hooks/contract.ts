@@ -1,4 +1,3 @@
-import { useCurrentWalletInfo, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { ChainId } from '@portkey-wallet/types';
 import aes from '@portkey-wallet/utils/aes';
 import { useInterface } from 'contexts/useInterface';
@@ -9,9 +8,12 @@ import { getDefaultWallet } from '@portkey-wallet/utils/aelfUtils';
 import AElf from 'aelf-sdk';
 import { usePin } from './store';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
-import { IChainItemType } from '@portkey-wallet/types/types-ca/chain';
+import { IChainItemType } from '@portkey-wallet/types/types-eoa/chain';
 import { useChainInfo, useGetChainInfo } from '@portkey-wallet/hooks/hooks-eoa/network/chain';
 import { useCurrentAccount } from '@portkey-wallet/hooks/hooks-eoa/wallet';
+import { useOriginChainId } from '@portkey-wallet/hooks/hooks-eoa/chainList';
+import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-eoa/network';
 
 // TODO: eoa delete deprecated
 
@@ -60,7 +62,7 @@ export function useGetCurrentCAContract(_chainId?: ChainId) {
   const chainId = useMemo(() => _chainId || originChainId, [_chainId, originChainId]);
   const chainInfo = useChainInfo(chainId);
   const pin = usePin();
-  const { AESEncryptPrivateKey, address } = useCurrentWalletInfo();
+  const { AESEncryptPrivateKey, address } = useCurrentAccount() || {};
   const [{ caContracts }, dispatch] = useInterface();
   const key = useMemo(
     () => `${address}_${chainInfo?.caContractAddress}_${chainInfo?.chainId}`,
@@ -94,7 +96,34 @@ export function useGetCurrentCAContract(_chainId?: ChainId) {
     return contract as ContractBasic;
   }, [AESEncryptPrivateKey, caContract, chainId, chainInfo, dispatch, key, pin]);
 }
+export function useGetCurrentTokenClaimContract(_chainId?: ChainId) {
+  const currentNetworkInfo = useCurrentNetworkInfo();
+  const originChainId = useOriginChainId();
+  const chainId = useMemo(() => _chainId || originChainId, [_chainId, originChainId]);
+  const chainInfo = useChainInfo(chainId);
+  console.log('chainInfo is::', JSON.stringify(chainInfo));
+  const pin = usePin();
+  const { AESEncryptPrivateKey } = useCurrentAccount() || {};
 
+  return useCallback(async () => {
+    if (!chainInfo) {
+      throw Error('Could not find chain information');
+    }
+    if (!pin || !AESEncryptPrivateKey) {
+      throw Error('Could not find wallet information');
+    }
+
+    const privateKey = aes.decrypt(AESEncryptPrivateKey, pin);
+    const wallet = AElf.wallet.getWalletByPrivateKey(privateKey);
+
+    const contract = await getContractBasic({
+      contractAddress: currentNetworkInfo.tokenClaimContractAddress || '',
+      rpcUrl: chainInfo.endPoint,
+      account: wallet,
+    });
+    return contract as ContractBasic;
+  }, [AESEncryptPrivateKey, chainInfo, currentNetworkInfo.tokenClaimContractAddress, pin]);
+}
 /**
  * @deprecated This method is deprecated and will be removed in future versions.
  * Please use the `useGetContract` instead.

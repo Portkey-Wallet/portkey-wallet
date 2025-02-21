@@ -170,7 +170,7 @@ const getStyles = makeStyles(theme => ({
     backgroundColor: theme.colors.bgDanger1,
   },
   pinSecureText: {
-    backgroundColor: theme.colors.textBrand2,
+    backgroundColor: theme.colors.bgBrandDefault,
     height: pTd(14),
     width: pTd(14),
     borderRadius: pTd(7),

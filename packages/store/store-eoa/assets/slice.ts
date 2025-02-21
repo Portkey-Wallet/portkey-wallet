@@ -14,7 +14,7 @@ import { ITokenSectionResponse, TokenItemShowType } from '@portkey-wallet/types/
 import { TAssetsState } from './type';
 import { ChainId, NetworkType } from '@portkey-wallet/types';
 import { NEW_CLIENT_MOCK_ELF_LIST, PAGE_SIZE_IN_NFT_ITEM } from '@portkey-wallet/constants/constants-ca/assets';
-import { ITokenInfoV2, IUserTokenItem, IUserTokenItemResponse } from '@portkey-wallet/types/types-eoa/token';
+import { IUserTokenItem } from '@portkey-wallet/types/types-eoa/token';
 // import { WalletState } from '../wallet/type';
 
 export const INIT_ACCOUNT_TOKEN_INFO = {
@@ -254,7 +254,6 @@ export const fetchAssetV2Async = createAsyncThunk(
     { getState },
   ) => {
     const response = await fetchAssetListV2({ addressInfos, keyword, skipCount, maxResultCount });
-
     return {
       ...response,
       keyword,
@@ -285,7 +284,7 @@ export const fetchTokensPriceAsync = createAsyncThunk(
       },
     } = getState() as { assets: TAssetsState };
 
-    const response = await fetchTokenPrices({ symbols: symbols || accountTokenList.map(ele => ele.symbol) });
+    const response = await fetchTokenPrices({ symbols: symbols || accountTokenList?.map(ele => ele.symbol) || [] });
 
     return { list: response.items };
   },
@@ -478,6 +477,7 @@ export const assetsSlice = createSlice({
           maxResultCount,
         };
         state.accountToken.isFetching = false;
+        console.log('state.accountToken.accountTokenInfoV2', JSON.stringify(state.accountToken.accountTokenInfoV2));
       })
       .addCase(fetchTokenListAsync.rejected, state => {
         state.accountToken.isFetching = false;

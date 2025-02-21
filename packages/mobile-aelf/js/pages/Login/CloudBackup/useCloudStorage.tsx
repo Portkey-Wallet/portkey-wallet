@@ -28,7 +28,8 @@ export const useCloudStorage = () => {
   const [provider] = useState(CloudStorage.getDefaultProvider());
   // const [scope, setScope] = useState(CloudStorageScope.AppData);
   // const [parentDirectory, setParentDirectory] = useState('/portkey-eoa/wallet');
-  const [parentDirectory] = useState('/portkey-eoa/wallet');
+  // const [parentDirectory] = useState('/portkey-eoa/wallet');
+  const [parentDirectory] = useState('/eoa/wallets');
   const [isParentDirectoryExist, setIsParentDirectoryExist] = useState<boolean>();
   // const [filename, setFilename] = useState('test.txt');
   // const [stats, setStats] = useState<CloudStorageFileStat | null>(null);
@@ -47,16 +48,18 @@ export const useCloudStorage = () => {
 
   const isDirectoryExists = useCallback(async () => {
     setLoading(true);
-    console.log('useCloudStorage -  isDirectoryExists: start');
+    console.log('useCloudStorage -  isDirectoryExists: start 1');
     try {
+      console.log('useCloudStorage -  isDirectoryExists: start 2');
       const exists = await cloudStorage.exists(parentDirectory);
-      console.log('useCloudStorage -  isDirectoryExists: ', exists);
+      console.log('useCloudStorage -  isDirectoryExists: 3', exists);
       setIsParentDirectoryExist(exists);
     } catch (e) {
-      console.warn('useCloudStorage -  isDirectoryExists: catch', e);
+      console.warn('useCloudStorage -  isDirectoryExists: catch 4', e);
       setIsParentDirectoryExist(false);
       commonCloudStorageError(e);
     } finally {
+      console.warn('useCloudStorage -  isDirectoryExists: finally 5');
       setLoading(false);
     }
   }, [cloudStorage, parentDirectory]);
@@ -151,6 +154,21 @@ export const useCloudStorage = () => {
     }
   }, [cloudStorage, parentDirectory]);
 
+  const handleDeleteFile = useCallback(
+    async (filename: string) => {
+      setLoading(true);
+      try {
+        await cloudStorage.unlink(parentDirectory + '/' + filename);
+        await readFile(filename);
+      } catch (e) {
+        console.warn(e);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [cloudStorage, parentDirectory, readFile],
+  );
+
   const handleDeleteDirectory = async (recursive?: boolean) => {
     if (recursive === undefined) {
       handleDeleteDirectory(false);
@@ -188,6 +206,7 @@ export const useCloudStorage = () => {
     cloudStorage,
     cloudAvailable,
     handleCreateDirectory,
+    handleDeleteFile,
     handleDeleteDirectory,
     handleListContents,
     handleCreateFile,

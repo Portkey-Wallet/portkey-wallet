@@ -2,12 +2,12 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { pTd } from 'utils/unit';
 import { useLanguage } from 'i18n/hooks';
 import useDebounce from 'hooks/useDebounce';
-import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { fetchAssetListV2 } from '@portkey-wallet/store/store-ca/assets/api';
-import { IAssetItemV2 } from '@portkey-wallet/store/store-ca/assets/type';
+import { useCurrentAddressInfos } from '@portkey-wallet/hooks/hooks-eoa/wallet';
+import { fetchAssetListV2 } from '@portkey-wallet/store/store-eoa/assets/api';
+import { IAssetItemV2 } from '@portkey-wallet/store/store-eoa/assets/type';
 import useEffectOnce from 'hooks/useEffectOnce';
-import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
-import { useAccountAssetsInfoV2 } from '@portkey-wallet/hooks/hooks-ca/assets';
+import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-eoa/useTokensPrice';
+import { useAccountAssetsInfoV2 } from '@portkey-wallet/hooks/hooks-eoa/assets';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import GStyles from 'assets/theme/GStyles';
 import CommonInput from 'components/CommonInput';
@@ -24,7 +24,7 @@ const AssetList = () => {
   const { toAddress = '' } = useRouterParams<{ toAddress?: string }>();
 
   const { t } = useLanguage();
-  const caAddressInfos = useCaAddressInfoList();
+  const addressInfos = useCurrentAddressInfos();
   const [keyword, setKeyword] = useState('');
   const { accountAssetsList, fetchAccountAssetsInfoList } = useAccountAssetsInfoV2();
   const styles = getStyles();
@@ -46,7 +46,7 @@ const AssetList = () => {
       setIsFetching(true);
       Loading.show();
       await fetchAccountAssetsInfoList({
-        caAddressInfos,
+        addressInfos,
         keyword: '',
       });
       Loading.hide();
@@ -54,7 +54,7 @@ const AssetList = () => {
     } catch (error) {
       console.log('fetchAccountAssetsByKeywords err:', error);
     }
-  }, [caAddressInfos, fetchAccountAssetsInfoList]);
+  }, [addressInfos, fetchAccountAssetsInfoList]);
 
   const getFilteredAssetsList = useLockCallback(async () => {
     if (!debounceKeyword.trim()) {
@@ -64,7 +64,7 @@ const AssetList = () => {
       setIsFetching(true);
       Loading.show();
       const { nftInfos, tokenInfos } = await fetchAssetListV2({
-        caAddressInfos,
+        addressInfos,
         keyword: debounceKeyword,
       });
       Loading.hide();
@@ -73,7 +73,7 @@ const AssetList = () => {
     } catch (err) {
       console.log('fetchAccountAssetsByKeywords err:', err);
     }
-  }, [caAddressInfos, debounceKeyword]);
+  }, [addressInfos, debounceKeyword]);
 
   useEffect(() => {
     getFilteredAssetsList();

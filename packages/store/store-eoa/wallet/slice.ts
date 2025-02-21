@@ -12,8 +12,8 @@ import {
   changeCurrentWallet,
   updateWalletList,
 } from './actions';
-import { getNextBIP44Path } from '@portkey-wallet/utils/wallet';
-import { TWalletInfo } from '@portkey-wallet/types/types-eoa/wallet';
+import { getAvatarIndex, getNextBIP44Path } from '@portkey-wallet/utils/wallet';
+import { TWalletInfo, TAccountInfo } from '@portkey-wallet/types/types-eoa/wallet';
 // import { NetworkType } from '@portkey-wallet/types';
 import { MAX_ACCOUNT_NUMBER } from './config';
 
@@ -36,6 +36,7 @@ const initialState: TWalletState = {
   privateKeyAccountList: [],
   currentAccountAddress: undefined,
   hideAssets: false,
+  walletAddedCount: 0,
 };
 export const walletSlice = createSlice({
   name: 'wallet',
@@ -49,6 +50,7 @@ export const walletSlice = createSlice({
           ...state,
           walletList: [...state.walletList, wallet],
           currentAccountAddress: wallet.accountList[0]?.address,
+          walletAddedCount: state.walletAddedCount + 1,
         };
       })
       .addCase(updateWallet, (state, action) => {
@@ -82,9 +84,13 @@ export const walletSlice = createSlice({
             if (lastAccount.BIP44Path === account.BIP44Path || accountListLength >= MAX_ACCOUNT_NUMBER) {
               return wallet;
             }
+            const accountFormat: TAccountInfo = {
+              ...account,
+              icon: account.icon || `avatar_${getAvatarIndex(account.BIP44Path)}`,
+            };
             return {
               ...wallet,
-              accountList: [...wallet.accountList, account],
+              accountList: [...wallet.accountList, accountFormat],
               nextBIP44Path: getNextBIP44Path(account.BIP44Path),
             };
           }

@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>339329964702-ap4huoocu9l2l0r9mda0hpttubnkdrpn.apps.googleusercontent.com</string>
+	<string>339329964702-6da5m8eunq73mrrhsruhltinvhp8tafk.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.339329964702-ap4huoocu9l2l0r9mda0hpttubnkdrpn</string>
+	<string>com.googleusercontent.apps.339329964702-6da5m8eunq73mrrhsruhltinvhp8tafk</string>
 	<key>ANDROID_CLIENT_ID</key>
 	<string>339329964702-qbe65qoheb6g142qn8og79gba7dpdd7j.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
@@ -19,7 +19,7 @@
 	<key>PROJECT_ID</key>
 	<string>wallet-test-dev-88ace</string>
 	<key>STORAGE_BUCKET</key>
-	<string>wallet-test-dev-88ace.appspot.com</string>
+	<string>wallet-test-dev-88ace.firebasestorage.app</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -31,6 +31,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:339329964702:ios:fff602b489432d1e5df98f</string>
+	<string>1:339329964702:ios:f7f434cbc6b7ccc65df98f</string>
 </dict>
 </plist>

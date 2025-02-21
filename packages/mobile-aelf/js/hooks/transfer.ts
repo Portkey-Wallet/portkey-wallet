@@ -4,6 +4,8 @@ import { divDecimalsStr, timesDecimals } from '@portkey-wallet/utils/converter';
 import { request } from '@portkey-wallet/api/api-did';
 import { CalculateTransactionFeeResponse, ChainId } from '@portkey-wallet/types';
 import { useGetTokenContract } from './contract';
+import { getTokenIssueChainId } from 'utils/transfer/getTokenInfo';
+import { getChainIdByAddress } from '@portkey-wallet/utils';
 
 export type GetTransferFeeParams = {
   sendAmount: string;
@@ -17,8 +19,8 @@ export const useGetTransferFee = () => {
   const getTokenContract = useGetTokenContract();
 
   const getTransferFee = useCallback(
-    async ({ sendAmount, decimals, symbol, toAddress, chainId }: GetTransferFeeParams) => {
-      const calculateParams = {
+    async (isAELFCross: boolean, { sendAmount, decimals, symbol, toAddress, chainId }: GetTransferFeeParams) => {
+      let calculateParams: any = {
         symbol,
         to: toAddress,
         amount: timesDecimals(sendAmount, decimals).toFixed(),
@@ -26,8 +28,16 @@ export const useGetTransferFee = () => {
       };
 
       const tokenContract = await getTokenContract(chainId);
+      if (isAELFCross) {
+        const toChainId = getChainIdByAddress(toAddress);
+        const issueChainId = await getTokenIssueChainId({ tokenContract, paramsOption: { symbol } });
+        calculateParams = { ...calculateParams, toChainId, issueChainId };
+      }
 
-      const req = await tokenContract.calculateTransactionFee('Transfer', calculateParams);
+      const req = await tokenContract.calculateTransactionFee(
+        isAELFCross ? 'CrossChainTransfer' : 'Transfer',
+        calculateParams,
+      );
 
       if (req?.error) {
         request.errorReport('calculateTransactionFee', calculateParams, req.error);

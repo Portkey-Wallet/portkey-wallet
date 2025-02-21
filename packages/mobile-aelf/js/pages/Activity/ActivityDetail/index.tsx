@@ -1,6 +1,6 @@
 import { ELF_DECIMAL, TransactionTypes } from '@portkey-wallet/constants/constants-ca/activity';
 import { useCurrentChain, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
-import { useCurrentWallet, useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { fetchActivity } from '@portkey-wallet/store/store-ca/activity/api';
 import { ActivityItemType, TransactionStatus } from '@portkey-wallet/types/types-ca/activity';
@@ -35,6 +35,7 @@ import { IActivityApiParams } from '@portkey-wallet/store/store-ca/activity/type
 import Lottie from 'lottie-react-native';
 import Touchable from 'components/Touchable';
 import NFTAvatar from 'components/NFTAvatar';
+import { useCurrentAddressInfos } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 
 const ActivityDetail = () => {
   const { t } = useLanguage();
@@ -42,11 +43,11 @@ const ActivityDetail = () => {
   const isMainnet = useIsMainnet();
   const activityItemFromRoute = useRouterParams<ActivityItemType & IActivityApiParams>();
   const { transactionId = '', blockHash = '', isReceived: isReceivedParams, activityType } = activityItemFromRoute;
-  const caAddressesInfoList = useCaAddressInfoList();
-  const caAddressInfos = useMemo(() => {
-    const result = caAddressesInfoList.filter(item => item.chainId === activityItemFromRoute?.fromChainId);
-    return result?.length > 0 ? result : caAddressesInfoList;
-  }, [activityItemFromRoute?.fromChainId, caAddressesInfoList]);
+  const addressesInfoList = useCurrentAddressInfos();
+  const addressInfos = useMemo(() => {
+    const result = addressesInfoList.filter(item => item.chainId === activityItemFromRoute?.fromChainId);
+    return result?.length > 0 ? result : addressesInfoList;
+  }, [activityItemFromRoute?.fromChainId, addressesInfoList]);
 
   const [, getTokenPrice] = useGetCurrentAccountTokenPrice();
   const { currentNetwork } = useCurrentWallet();
@@ -58,7 +59,7 @@ const ActivityDetail = () => {
 
   const getActivityDetail = useCallback(async () => {
     const params = {
-      caAddressInfos,
+      addressInfos,
       transactionId,
       blockHash,
       activityType,
@@ -79,7 +80,7 @@ const ActivityDetail = () => {
     } catch (error) {
       CommonToast.fail('This transfer is being processed on the blockchain. Please check the details later.');
     }
-  }, [activityType, blockHash, caAddressInfos, isReceivedParams, transactionId]);
+  }, [activityType, blockHash, addressInfos, isReceivedParams, transactionId]);
 
   useEffectOnce(() => {
     getActivityDetail();

@@ -1,5 +1,5 @@
 // https://github.com/kuatsu/react-native-cloud-storage/blob/master/example/src/views/Home.tsx
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Text, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
@@ -22,6 +22,9 @@ import CommonToast from 'components/CommonToast';
 import { useCredentials } from 'hooks/store';
 import { TWalletInfo } from '@portkey-wallet/types/types-eoa/wallet';
 import { validatePassword } from 'utils/password';
+import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
+import { updateWallet } from '@portkey-wallet/store/store-eoa/wallet/actions';
+import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 
 function generateDots(length: number) {
   if (length < 0) {
@@ -53,11 +56,31 @@ export function getPasswords(newValue: string, prePassword: string, isSecure: bo
 
 export default function CloudBackup() {
   const styles = getStyles();
-  // const { theme } = useTheme();
-  // const [copied, setCopied] = useState(false);
-  //
-  // // const currentAccount = useCurrentAccount();
-  const currentWallet = useCurrentWallet();
+
+  const {
+    walletToBeBackup,
+    // navigateTo = 'Home',
+    navigateTo = 'Tab',
+    navigatePop = 0,
+    title = 'Create password',
+    successToast = 'Backup completed',
+  } = useRouterParams<{
+    walletToBeBackup: TWalletInfo;
+    navigateTo: string;
+    navigatePop?: number;
+    title?: string;
+    successToast?: string;
+  }>();
+
+  const currentWalletLocal = useCurrentWallet();
+  const currentWallet = useMemo(() => {
+    if (walletToBeBackup) {
+      return walletToBeBackup;
+    }
+    return currentWalletLocal;
+  }, [currentWalletLocal, walletToBeBackup]);
+
+  const dispatch = useAppCommonDispatch();
   const credentials = useCredentials();
   const [password, setPassword] = useState('');
   const [passwordShow, setPasswordShow] = useState('');
@@ -83,7 +106,7 @@ export default function CloudBackup() {
       containerStyles={styles.containerStyles}
       scrollViewProps={{ disabled: true }}>
       <View>
-        <Text style={styles.title}>Create password</Text>
+        <Text style={styles.title}>{title}</Text>
         <Text style={styles.desc}>
           This password will secure your seed phrase in the cloud. We cannot reset it if you lose it, so please keep it
           safe.
@@ -218,7 +241,7 @@ export default function CloudBackup() {
           </Text>
         </View>
         <CommonButton
-          disabled={!isChecked || !!errorMessage || !!enterPasswordErrorMessage}
+          disabled={!isChecked || !!errorMessage || !!enterPasswordErrorMessage || !password || !confirmPassword}
           loading={loading}
           type="primary"
           style={styles.continueButton}
@@ -252,6 +275,7 @@ export default function CloudBackup() {
               account.name = '';
               account.icon = '';
             });
+            _currentWallet.isBackup = true;
             console.log('_currentWallet: ', _currentWallet, currentWallet);
             // if directory exists, will not create again.
             await handleCreateDirectory();
@@ -263,8 +287,20 @@ export default function CloudBackup() {
                 wallet: aes.encrypt(JSON.stringify(_currentWallet), password),
               }),
             });
-            navigationService.navigate('Home');
-            CommonToast.success('Backup completed');
+            dispatch(
+              updateWallet({
+                wallet: {
+                  ...currentWallet,
+                  isBackup: true,
+                },
+              }),
+            );
+            if (navigateTo === 'Tab') {
+              navigationService.navigate('Tab');
+            } else if (navigatePop >= 0) {
+              navigationService.pop(navigatePop);
+            }
+            CommonToast.success(successToast);
           }}>
           Continue
         </CommonButton>

@@ -45,7 +45,7 @@ export default function ImportWallet() {
         {/*{isPrivateKeySelected ? 'Import your Private key' : 'Import your Recovery phrase'}*/}
         Import your wallet
       </Text>
-      <ImportWalletTabSwitch onSelected={onSelectedTab} />
+      <ImportWalletTabSwitch onSelected={onSelectedTab} privateKeySelected={isPrivateKeySelected} />
       {isPrivateKeySelected ? (
         <PrivateKey checkedSecurityLock={checkedSecurityLock} />
       ) : (

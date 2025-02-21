@@ -3,7 +3,8 @@ import { darkColors, defaultColors } from 'assets/theme/index';
 import { pTd } from 'utils/unit';
 import fonts from 'assets/theme/fonts';
 
-const { font4, font2, primaryColor, bg5, bg6, bg14 } = defaultColors;
+// const { font4, font2, primaryColor, bg5, bg6, bg14 } = defaultColors;
+const { font2, bg5, bg6 } = defaultColors;
 
 export const styles = StyleSheet.create({
   buttonStyle: {
@@ -31,10 +32,11 @@ export const styles = StyleSheet.create({
     borderColor: darkColors.borderNeutral2,
   },
   primaryButtonStyle: {
-    backgroundColor: darkColors.bgBrand1,
+    backgroundColor: darkColors.bgBrandDefault,
   },
   primaryTitleStyle: {
-    color: darkColors.textBrand4,
+    // color: darkColors.textBrand4,
+    color: darkColors.bgBase1,
   },
   disabledStyle: {
     opacity: 0.4,

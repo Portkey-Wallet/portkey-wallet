@@ -10,6 +10,12 @@ declare module '@rneui/themed' {
     bgBrand2: string;
     bgBrand3: string;
     bgBrand4: string;
+    bgBrandDefault: string;
+    bgBrandHover: string;
+    bgBrandSecondary: string;
+    bgBrandSecondaryHover: string;
+    bgBrandTertiary: string;
+    bgBrandTertiaryHover: string;
     bgNeutral1: string;
     bgNeutral2: string;
     bgNeutral3: string;
@@ -44,6 +50,12 @@ declare module '@rneui/themed' {
     textBrand4: string;
     textBrand5: string;
 
+    textBrandDefault: string;
+    textBrandSecondary: string;
+    textBrandTertiary: string;
+    textBrandOn: string;
+    textBrandOnSecondary: string;
+
     textNeutral1: string;
     textNeutral2: string;
     textNeutral3: string;
@@ -68,6 +80,12 @@ declare module '@rneui/themed' {
     textDanger4: string;
     textDanger5: string;
     textDanger6: string;
+
+    iconBrandDefault: string;
+    iconBrandSecondary: string;
+    iconBrandTertiary: string;
+    iconBrandOn: string;
+    iconBrandOnSecondary: string;
 
     iconBase1: string;
     iconBase2: string;

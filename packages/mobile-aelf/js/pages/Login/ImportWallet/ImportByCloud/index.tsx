@@ -14,6 +14,8 @@ import { addressFormat, formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import dayjs from 'dayjs';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { useMultiChainAddressesModal } from 'hooks/useMultiChainAddressesModal';
+import { useWalletListState } from '@portkey-wallet/hooks/hooks-eoa/wallet';
+import CommonToast from 'components/CommonToast';
 
 interface IAddressInfo {
   address: string;
@@ -31,8 +33,11 @@ export default function ImportByCloud() {
 
   const { handleListContents, readFile } = useCloudStorage();
   const { showMultiChainAddressesModal } = useMultiChainAddressesModal();
+  const walletList = useWalletListState();
 
   const [addressesInfo, setAddressesInfo] = useState<IAddressInfo[]>([]);
+  const [importedAddressesInfo, setImportedAddressesInfo] = useState<IAddressInfo[]>([]);
+  const [notImportedAddressesInfo, setNotImportedAddressesInfo] = useState<IAddressInfo[]>([]);
   const [addresses, setAddresses] = useState<string[]>([]);
   const { checkedSecurityLock } = useRouterParams<{
     checkedSecurityLock?: boolean;
@@ -57,6 +62,8 @@ export default function ImportByCloud() {
         setAddressesInfo(_addressesInfo);
         setAddresses(addressList);
         // getAddressInfo(addressList, _addressesInfo);
+      } else {
+        CommonToast.fail('No backup found');
       }
     };
     getAddressList();
@@ -71,21 +78,37 @@ export default function ImportByCloud() {
       for (const address of addressList) {
         promiseList.push(readFile(address));
       }
-      const _addressesInfo = JSON.parse(JSON.stringify(addressesInfo)) as IAddressInfo[];
+      let _addressesInfo = JSON.parse(JSON.stringify(addressesInfo)) as IAddressInfo[];
       await Promise.all(promiseList).then(results => {
         results.forEach((result, index) => {
           const address = addressList[index];
           const _index = _addressesInfo.findIndex(item => item.address === address);
           if (result && _index >= 0) {
-            console.log('addressInfo result ', result, _index);
+            // console.log('addressInfo result ', result, _index);
             _addressesInfo[_index].info = JSON.parse(result);
           }
         });
       });
-      setAddressesInfo(_addressesInfo);
+      // sort by updateTime
+      _addressesInfo = _addressesInfo.sort((a, b) => {
+        if (a.info?.updateTime && b.info?.updateTime) {
+          return new Date(b.info.updateTime).getTime() - new Date(a.info.updateTime).getTime();
+        }
+        return 0;
+      });
+      console.log('addressInfo filter ', walletList, _addressesInfo);
+      const _addressesInfoNotImported = _addressesInfo.filter(item => {
+        return !walletList.find(wallet => wallet.key === item.address);
+      });
+      const _addressesInfoImported = _addressesInfo.filter(item => {
+        return walletList.find(wallet => wallet.key === item.address);
+      });
+      // setAddressesInfo(_addressesInfo);
+      setImportedAddressesInfo(_addressesInfoImported);
+      setNotImportedAddressesInfo(_addressesInfoNotImported);
     };
     getAddressInfo(addresses);
-  }, [addresses, readFile]);
+  }, [addresses, addressesInfo, readFile, walletList]);
 
   return (
     <PageContainer
@@ -97,8 +120,7 @@ export default function ImportByCloud() {
       <Text style={commonStyles.title}>Choose backup</Text>
       <Text style={[commonStyles.desc, styles.marginBottom40]}>Select the backup you wish to import.</Text>
 
-      {/*{loading ? <LottieLoading lottieWrapStyle={GStyles.marginTop(pTd(24))} /> : null}*/}
-      {addressesInfo.map((item, index) => {
+      {notImportedAddressesInfo.map((item, index) => {
         return (
           <Touchable
             key={index}
@@ -147,6 +169,40 @@ export default function ImportByCloud() {
               </View>
             </View>
           </Touchable>
+        );
+      })}
+      {importedAddressesInfo.map((item, index) => {
+        return (
+          <View key={index}>
+            <View style={[cardStyles.card, styles.marginVertical16]}>
+              <View style={cardStyles.textContainer}>
+                <Touchable
+                  style={styles.tagContainer}
+                  onPress={() => {
+                    showMultiChainAddressesModal({
+                      address: item.address,
+                    });
+                  }}>
+                  <Text style={styles.tagText}>Multichain</Text>
+                  <CommonAvatar
+                    hasBorder={false}
+                    style={styles.tagIcon}
+                    svgName="chevron_down"
+                    avatarSize={pTd(14)}
+                    height={pTd(14)}
+                    width={pTd(14)}
+                  />
+                </Touchable>
+                <Text style={styles.title}>{item.addressShow}</Text>
+                <Text style={styles.subtitle}>
+                  {item.info?.updateTime ? 'Added on ' + dayjs(item.info.updateTime).format('MMM DD, YYYY') : ' '}
+                </Text>
+              </View>
+              <View style={styles.rightContainer}>
+                <Text style={styles.textDisabled}>Backed up</Text>
+              </View>
+            </View>
+          </View>
         );
       })}
     </PageContainer>
@@ -205,5 +261,8 @@ const getStyles = makeStyles(theme => ({
     fontSize: pTd(14),
     lineHeight: pTd(14) * 1.4,
     marginTop: pTd(12),
+  },
+  textDisabled: {
+    color: theme.colors.textDisabled1,
   },
 }));

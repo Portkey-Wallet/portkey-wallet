@@ -22,7 +22,7 @@ const CheckBox = ({ label = '', checked, onChange, labelStyle = {}, boxStyle = {
   };
   return (
     <Touchable style={[styles.container, boxStyle]} onPress={onPress}>
-      <Svg size={pTd(16)} icon={checked ? 'checkbox-Checked' : 'checkbox-new'} />
+      <Svg size={pTd(16)} icon={checked ? 'checkbox-checked-v2' : 'checkbox-new'} />
       {label && <Text style={[styles.label, labelStyle]}>{label}</Text>}
     </Touchable>
   );

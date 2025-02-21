@@ -32,11 +32,7 @@ export const useBackupWalletModal = () => {
           type: 'primary',
           title: isIOS ? 'Back up on iCloud' : 'Back up on Google Drive',
           onPress: async () => {
-            if (isIOS) {
-              // TODO: iCloud
-            } else {
-              // TODO: Google Drive
-            }
+            navigationService.push('CloudBackup');
           },
         },
         {

@@ -1,12 +1,21 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { pTd } from 'utils/unit';
 import { makeStyles } from '@rneui/themed';
 
-export default function ImportWalletTabSwitch({ onSelected }: { onSelected: (isExchangeSelected: boolean) => void }) {
+export default function ImportWalletTabSwitch({
+  onSelected,
+  privateKeySelected = false,
+}: {
+  onSelected: (isExchangeSelected: boolean) => void;
+  privateKeySelected?: boolean;
+}) {
   const styles = getStyles();
 
-  const [isPrivateKeySelected, setPrivateKeySelected] = useState(false);
+  const [isPrivateKeySelected, setPrivateKeySelected] = useState(privateKeySelected);
+  useEffect(() => {
+    setPrivateKeySelected(privateKeySelected);
+  }, [privateKeySelected]);
 
   return (
     <View style={styles.container}>

@@ -3,7 +3,7 @@ import LockManager, { canLock } from 'utils/LockManager';
 import useEffectOnce from 'hooks/useEffectOnce';
 import usePrevious from 'hooks/usePrevious';
 import { useSettings } from 'hooks/store';
-import { useCurrentWallet, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentAccount } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import { AppState, AppStateStatus } from 'react-native';
 import { useCheckUpdate } from 'hooks/device';
@@ -20,18 +20,17 @@ const AppListener: React.FC<AppListenerProps> = props => {
   // TODO: eoa stashes
 
   const lockManager = useRef<LockManager>();
-  const { walletInfo } = useCurrentWallet();
+  const walletInfo = useCurrentAccount();
   const { autoLockingTime } = useSettings();
-  const originChainId = useOriginChainId();
   const lockingTime = useMemo(() => {
-    if (!walletInfo?.address || (walletInfo.address && !walletInfo[originChainId])) {
+    if (!walletInfo?.address) {
       return AutoLockUpTime;
     }
     if (autoLockingTime === 0 && !isIOS) {
       return 0.5;
     }
     return autoLockingTime;
-  }, [autoLockingTime, originChainId, walletInfo]);
+  }, [autoLockingTime, walletInfo]);
   const prevLockingTime = usePrevious(lockingTime);
   const checkUpdate = useCheckUpdate();
 

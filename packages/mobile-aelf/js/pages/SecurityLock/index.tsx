@@ -1,10 +1,12 @@
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
+import { getSecureStoreItem } from '@portkey-wallet/utils/mobile/biometric';
 import { useAppDispatch } from 'store/hooks';
 import { setCredentials } from 'store/user/actions';
 import PageContainer from 'components/PageContainer';
 import { DigitInputInterface } from 'components/DigitInput';
 import { PIN_SIZE } from '@portkey-wallet/constants/misc';
 import { checkPin } from 'utils/redux';
+import { View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import navigationService from 'utils/navigationService';
 import { usePreventHardwareBack } from '@portkey-wallet/hooks/mobile';
@@ -17,6 +19,10 @@ import { useErrorMessage } from '@portkey-wallet/hooks/hooks-ca/misc';
 import { makeStyles } from '@rneui/themed';
 import { pTd } from 'utils/unit';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
+import { useUser } from 'hooks/store';
+import CommonButton from 'components/CommonButton';
+import Svg from 'components/Svg';
+import { AppState, AppStateStatus, NativeEventSubscription } from 'react-native';
 
 type RouterParams = {
   isCheck?: boolean;
@@ -26,6 +32,9 @@ type RouterParams = {
 
 export default function SecurityLock() {
   const styles = getStyles();
+  const { biometrics } = useUser();
+  const listener = useRef<NativeEventSubscription>();
+  const appStateRef = useRef<AppStateStatus>();
 
   const isFocusedRef = useLatestIsFocusedRef();
   usePreventHardwareBack();
@@ -86,6 +95,31 @@ export default function SecurityLock() {
     [textError.isError, handlePassword, setTextError],
   );
 
+  const handleBio = useCallback(async () => {
+    const securePassword = await getSecureStoreItem('Pin');
+    if (!securePassword) {
+      return;
+    }
+    handlePassword(securePassword);
+  }, [handlePassword]);
+
+  useEffect(() => {
+    if (!biometrics) {
+      return;
+    }
+    handleBio();
+    listener.current = AppState.addEventListener('change', nextAppState => {
+      console.log('LockScreen biometrics appStateRef', nextAppState, appStateRef.current);
+      if (appStateRef.current === 'background' && nextAppState === 'active') {
+        handleBio();
+      }
+      appStateRef.current = nextAppState;
+    });
+    return () => {
+      listener.current?.remove();
+    };
+  }, [biometrics, handleBio]);
+
   return (
     <PageContainer
       hideHeader={!isBackAllow}
@@ -93,14 +127,24 @@ export default function SecurityLock() {
       titleDom=""
       containerStyles={GStyles.flex1}
       scrollViewProps={{ disabled: true }}>
-      <PinContainer
-        ref={digitInput}
-        title="Enter PIN"
-        titleStyle={styles.pinTitle}
-        onChangeText={onChangeText}
-        errorMessage={textError.errorMsg}
-        isBiometrics={false}
-      />
+      {biometrics ? (
+        <View style={styles.bioPageContainer}>
+          <View style={styles.bioSvgContainer}>
+            <Svg icon="aelf-logo-with-aelf" size={pTd(150)} />
+          </View>
+          <CommonButton style={styles.buttonStyle} title={'Unlock'} type="primary" onPress={handleBio} />
+        </View>
+      ) : (
+        <PinContainer
+          ref={digitInput}
+          title="Enter PIN"
+          titleStyle={styles.pinTitle}
+          onChangeText={onChangeText}
+          errorMessage={textError.errorMsg}
+          // isBiometrics={false}
+          isBiometrics={biometrics}
+        />
+      )}
     </PageContainer>
   );
 }
@@ -109,5 +153,18 @@ const getStyles = makeStyles(_ => ({
   pinTitle: {
     textAlign: 'center',
     marginBottom: pTd(36),
+  },
+  bioPageContainer: {
+    flex: 1,
+    justifyContent: 'flex-start',
+  },
+  bioSvgContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  buttonStyle: {
+    marginHorizontal: pTd(16),
+    marginBottom: pTd(16),
   },
 }));

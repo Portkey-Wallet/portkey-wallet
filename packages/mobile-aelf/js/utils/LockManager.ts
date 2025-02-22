@@ -25,7 +25,9 @@ export default class LockManager {
 
   handleAppStateChange = async (nextAppState: AppStateStatus) => {
     // Don't auto-lock
-    if (this.lockTime === Infinity) return;
+    if (this.lockTime === Infinity) {
+      return;
+    }
     if (nextAppState !== 'active') {
       // Auto-lock immediately
       if (this.lockTime === 0) {
@@ -54,8 +56,9 @@ export default class LockManager {
 
   gotoLockScreen = () => {
     OverlayModal.destroy();
-    if (!getWalletAddress()) navigationService.reset('Referral');
-    else {
+    if (!getWalletAddress()) {
+      navigationService.reset('Referral');
+    } else {
       getDispatch()(setCredentials(undefined));
       navigationService.navigate('SecurityLock');
     }

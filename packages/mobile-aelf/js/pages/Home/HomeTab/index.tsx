@@ -30,6 +30,7 @@ import { useCrossTransferByEtransfer } from '@portkey-wallet/hooks/hooks-eoa/use
 import useGetEBridgeConfig from 'hooks/ebridge';
 import { EBridge } from '@portkey-wallet/utils/eBridgeEOA';
 import { getManagerAccount } from 'utils/redux';
+import GoogleTest from '../../../Test/GoogleTest/index.android';
 
 const HomeTab: React.FC<any> = ({ _ }) => {
   // const a = useAppEOASelector(state => state);
@@ -192,6 +193,20 @@ const HomeTab: React.FC<any> = ({ _ }) => {
         <TextM>{`Address: ${currentAccount?.address}`}</TextM>
         <TextM>{`Network: ${currentNetwork}`}</TextM>
 
+        <GoogleTest />
+        <CommonButton
+          type="primary"
+          onPress={() =>
+            navigationService.push('SecurityLock', {
+              isCheck: true,
+              checkCallback: () => {
+                navigationService.reset('Tab');
+              },
+              isBackAllow: true,
+            })
+          }>
+          SecurityLock
+        </CommonButton>
         <CommonButton type="primary" onPress={() => Clipboard.setStringAsync(currentAccount?.address || '')}>
           Copy Address
         </CommonButton>

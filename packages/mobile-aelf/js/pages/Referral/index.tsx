@@ -45,8 +45,12 @@ export default function Referral() {
       if (credentials) {
         navigationService.reset('Tab');
       } else {
-        checkSecurityLock(() => {
-          navigationService.reset('Tab');
+        navigationService.push('SecurityLock', {
+          isCheck: true,
+          checkCallback: () => {
+            navigationService.reset('Tab');
+          },
+          isBackAllow: false,
         });
       }
     }

@@ -18,6 +18,7 @@ import { makeStyles } from '@rneui/themed';
 // import navigationService from 'utils/navigationService';
 import { TextL } from 'components/CommonText';
 import { useLanguage } from 'i18n/hooks';
+import { DarkFontStyles } from 'assets/theme/styles';
 // import MintStatusLine from 'pages/FreeMint/components/MintStatusLine';
 // import { FreeMintStatus } from '@portkey-wallet/types/types-ca/freeMint';
 
@@ -86,7 +87,7 @@ const ListEmptyComponent = () => {
           // navigationService.navigate('FreeMintHome');
         }}>
         <View style={styles.noData}>
-          <TextL>{t('No NFTs')}</TextL>
+          <TextL style={DarkFontStyles.textBase1Opacity07}>{t('No NFTs')}</TextL>
         </View>
       </Touchable>
     </View>
@@ -388,9 +389,9 @@ const getStyles = makeStyles(theme => ({
   noData: {
     display: 'flex',
     flexDirection: 'row',
-    height: pTd(490),
+    height: pTd(192),
     justifyContent: 'center',
-    alignItems: 'flex-start',
-    color: theme.colors.textBase2,
+    alignItems: 'center',
+    color: theme.colors.textBase1Opacity07,
   },
 }));

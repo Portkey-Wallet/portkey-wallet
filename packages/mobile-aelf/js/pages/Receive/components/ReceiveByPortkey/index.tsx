@@ -17,7 +17,7 @@ import ReceiveQRCode from '../ReceiveQRCode';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-eoa/activity';
 import { TextM } from 'components/CommonText';
-import { defaultColors } from 'assets/theme';
+import { darkColors, defaultColors } from 'assets/theme';
 
 export default function ReceiveByPortkey({
   sourceChain,
@@ -117,7 +117,7 @@ export default function ReceiveByPortkey({
   const reminderUI = useMemo(() => {
     return (
       <View style={styles.reminderWrap}>
-        <Svg icon="info" size={pTd(22)} />
+        <Svg icon="info" size={pTd(22)} color={darkColors.iconBrandTertiary} />
         <Text style={styles.reminderText}>
           {`Send ${tokenInfo.label || tokenInfo.symbol} on `}
           <Text style={styles.reminderHighlightText}>{`${sourceChain.name}${

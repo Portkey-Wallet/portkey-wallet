@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import DashBoard from 'pages/DashBoard';
 import Svg, { IconName } from 'components/Svg';
-import { defaultColors } from 'assets/theme';
+import { darkColors, defaultColors } from 'assets/theme';
 // import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 // import useLogOut from 'hooks/useLogOut';
 // import useInitData from 'hooks/useInitData';
@@ -124,7 +124,7 @@ export default function TabRoot() {
             <Svg
               icon={tabMenu?.icon || 'my'}
               size={pTd(24)}
-              color={focused ? defaultColors.primaryColorV2 : defaultColors.font26}
+              color={focused ? darkColors.iconBrandDefault : defaultColors.font26}
             />
           );
         },

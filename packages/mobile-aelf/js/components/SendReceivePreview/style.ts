@@ -15,7 +15,7 @@ export const getStyles = makeStyles(theme => ({
     marginBottom: pTd(16),
     marginLeft: 'auto',
     borderRadius: pTd(200),
-    backgroundColor: theme.colors.bgBrand2,
+    backgroundColor: theme.colors.iconBrandTertiary,
   },
   amountInfoWrap: {
     display: 'flex',

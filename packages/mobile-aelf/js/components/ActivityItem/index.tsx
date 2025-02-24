@@ -311,6 +311,7 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
                     svgName={item.isReceived ? 'arrow-down-thin' : 'send-thin'}
                     style={itemStyle.cornerMarkIcon}
                     avatarSize={pTd(14)}
+                    color={darkColors.iconBrandOn}
                     titleStyle={itemStyle.avatarTitleStyle}
                   />
                 </View>
@@ -377,6 +378,7 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
                   svgName={item.isReceived ? 'arrow-down-thin' : 'send-thin'}
                   style={itemStyle.cornerMarkIcon}
                   avatarSize={pTd(14)}
+                  hasBorder
                   titleStyle={itemStyle.avatarTitleStyle}
                 />
               </View>
@@ -514,13 +516,13 @@ const getStyles = makeStyles(theme => ({
     position: 'absolute',
     right: 0,
     bottom: 0,
-    backgroundColor: theme.colors.bgBrand2,
+    backgroundColor: theme.colors.bgBrandSecondary,
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: theme.colors.borderBase1,
     borderRadius: pTd(10),
   },
   cornerMarkIcon: {
-    backgroundColor: theme.colors.bgBrand2,
+    backgroundColor: theme.colors.bgBrandSecondary,
   },
   center: {
     width: pTd(165),

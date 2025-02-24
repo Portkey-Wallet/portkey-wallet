@@ -80,6 +80,7 @@ const ActivityDetail = (props: ActivityItemType & IActivityApiParams) => {
       transactionId,
       blockHash,
       activityType,
+      chainId: addressInfos?.[0].chainId,
     };
     try {
       const res = await handleLoopFetch({
@@ -88,7 +89,6 @@ const ActivityDetail = (props: ActivityItemType & IActivityApiParams) => {
         interval: 1000,
         checkIsContinue: data => !data.transactionId,
       });
-
       if (isReceivedParams !== undefined) {
         res.isReceived = isReceivedParams;
       }
@@ -165,7 +165,6 @@ const ActivityDetail = (props: ActivityItemType & IActivityApiParams) => {
       prefix = isReceived ? AmountSign.PLUS : AmountSign.MINUS;
     }
     const suffix = nftInfo?.alias || symbol || '';
-
     return (
       <TextXXL
         numberOfLines={1}

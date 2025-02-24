@@ -15,6 +15,7 @@ import { pTd } from 'utils/unit';
 import { RECEIVE_HELP_URL, SEND_HELP_URL } from 'constants/common';
 import { getStyles } from './style';
 import { formatAmountUSDShow } from '@portkey-wallet/utils/converter';
+import { darkColors } from 'assets/theme';
 
 export enum FooterType {
   'E_BRIDGE' = 'eBridge',
@@ -58,11 +59,11 @@ interface ISendReceivePreviewProps {
 
 const ACTION_CONFIG = {
   [ActionType.SEND]: {
-    topIcon: <Svg icon="send-thin" size={pTd(44)} />,
+    topIcon: <Svg icon="send-thin" size={pTd(44)} color={darkColors.iconBrandOnSecondary} />,
     buttonText: 'Send',
   },
   [ActionType.RECEIVE]: {
-    topIcon: <Svg icon="arrow-down-thin" size={pTd(44)} />,
+    topIcon: <Svg icon="arrow-down-thin" size={pTd(44)} color={darkColors.iconBrandTertiary} />,
     buttonText: 'Bridge to aelf',
   },
 } as const;

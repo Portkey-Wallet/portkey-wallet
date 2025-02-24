@@ -36,7 +36,6 @@ const TokenDetail: React.FC = () => {
       />
     );
   }, [index, t, tokenSection]);
-
   return (
     <PageContainer
       type="leftBack"

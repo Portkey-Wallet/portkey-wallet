@@ -46,7 +46,7 @@ const getStyles = makeStyles(theme => ({
     padding: pTd(3),
   },
   switchOn: {
-    backgroundColor: theme.colors.iconBrand6,
+    backgroundColor: theme.colors.iconBrandTertiary,
   },
   switchOff: {
     backgroundColor: theme.colors.bgNeutral2,

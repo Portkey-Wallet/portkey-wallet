@@ -126,7 +126,7 @@ const TokenDetailPage: React.FC<TokenDetailParams> = ({ tokenInfo, tokenSection 
         await sleep(250);
       }
     },
-    [currentActivity, dispatch, fixedParamObj],
+    [currentActivity, dispatch, fixedParamObj, identify],
   );
 
   const onRefreshList = useCallback(async () => {

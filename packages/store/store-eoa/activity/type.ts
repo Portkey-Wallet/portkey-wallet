@@ -54,6 +54,7 @@ export interface IActivityApiParams {
   blockHash: string;
   addressInfos?: IAddressInfoListItemType[];
   activityType?: ActivityTypeEnum;
+  chainId?: ChainId;
 }
 
 export interface IActivityListWithAddressApiParams {

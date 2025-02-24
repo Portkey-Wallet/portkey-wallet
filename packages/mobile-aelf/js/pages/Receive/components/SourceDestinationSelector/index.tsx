@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback } from 'react';
 import OverlayModal from 'components/OverlayModal';
 import { Keyboard, ScrollView, View, Text } from 'react-native';
 import Touchable from 'components/Touchable';
@@ -7,7 +7,8 @@ import { pTd } from 'utils/unit';
 import { ModalBody } from 'components/ModalBody';
 import { makeStyles } from '@rneui/themed';
 import CommonAvatar from 'components/CommonAvatar';
-import { TextM } from 'components/CommonText';
+// import { TextM } from 'components/CommonText';
+import { darkColors } from 'assets/theme';
 
 type TSelectItem = {
   name: string;
@@ -28,14 +29,15 @@ type SelectListProps = {
   onSelected: (item: TSelectItem, key: string) => void;
 };
 
-const SelectList = ({ type, title, list, selectedIndex, onSelected }: SelectListProps) => {
+// const SelectList = ({ type, title, list, selectedIndex, onSelected }: SelectListProps) => {
+const SelectList = ({ title, list, selectedIndex, onSelected }: SelectListProps) => {
   const styles = getStyles();
-  const aelfChainArr = useMemo(() => {
-    return type === SourceDestinationTypeEnum.Source ? list.filter(item => item.name.includes('aelf')) : [];
-  }, [list, type]);
-  const otherChainArr = useMemo(() => {
-    return type === SourceDestinationTypeEnum.Source ? list.filter(item => !item.name.includes('aelf')) : [];
-  }, [list, type]);
+  // const aelfChainArr = useMemo(() => {
+  //   return type === SourceDestinationTypeEnum.Source ? list.filter(item => item.name.includes('aelf')) : [];
+  // }, [list, type]);
+  // const otherChainArr = useMemo(() => {
+  //   return type === SourceDestinationTypeEnum.Source ? list.filter(item => !item.name.includes('aelf')) : [];
+  // }, [list, type]);
 
   const renderList = useCallback(
     (_list: TSelectItem[]) => {
@@ -55,7 +57,12 @@ const SelectList = ({ type, title, list, selectedIndex, onSelected }: SelectList
                   <Text style={styles.nameText}>{item.name}</Text>
                 </View>
                 {selectedIndex === item.key && (
-                  <Svg icon="checked_circle" size={pTd(24)} iconStyle={styles.checkedIcon} />
+                  <Svg
+                    icon="checked_circle"
+                    size={pTd(24)}
+                    iconStyle={styles.checkedIcon}
+                    color={darkColors.iconBrandDefault}
+                  />
                 )}
               </Touchable>
             );
@@ -66,24 +73,24 @@ const SelectList = ({ type, title, list, selectedIndex, onSelected }: SelectList
     [onSelected, selectedIndex, styles],
   );
 
-  const renderSourceChainList = useCallback(() => {
-    return (
-      <>
-        {aelfChainArr.length && (
-          <View>
-            <TextM style={styles.chainTitle}>{`aelf chains`}</TextM>
-            {renderList(aelfChainArr)}
-          </View>
-        )}
-        {otherChainArr.length && (
-          <View>
-            <TextM style={styles.chainTitle}>{`Other chains via bridge`}</TextM>
-            {renderList(otherChainArr)}
-          </View>
-        )}
-      </>
-    );
-  }, [aelfChainArr, otherChainArr, renderList, styles.chainTitle]);
+  // const renderSourceChainList = useCallback(() => {
+  //   return (
+  //     <>
+  //       {aelfChainArr.length && (
+  //         <View>
+  //           <TextM style={styles.chainTitle}>{`aelf chains`}</TextM>
+  //           {renderList(aelfChainArr)}
+  //         </View>
+  //       )}
+  //       {otherChainArr.length && (
+  //         <View>
+  //           <TextM style={styles.chainTitle}>{`Other chains via bridge`}</TextM>
+  //           {renderList(otherChainArr)}
+  //         </View>
+  //       )}
+  //     </>
+  //   );
+  // }, [aelfChainArr, otherChainArr, renderList, styles.chainTitle]);
 
   return (
     <ModalBody title={title} modalBodyType="bottom">

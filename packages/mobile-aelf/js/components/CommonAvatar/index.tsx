@@ -148,6 +148,10 @@ const getStyles = makeStyles(() => ({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  // svgBorderStyle: {
+  //   borderWidth: pTd(1),
+  //   borderColor: defaultColors.borderBase1,
+  // },
   squareStyle: {
     borderRadius: pTd(6),
     backgroundColor: '#000000B2',

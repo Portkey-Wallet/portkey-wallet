@@ -9,6 +9,7 @@ import { pTd } from 'utils/unit';
 import { useLanguage } from 'i18n/hooks';
 import { useGStyles } from 'assets/theme/useGStyles';
 import { ModalBody } from 'components/ModalBody';
+import { darkColors } from 'assets/theme';
 
 type ValueType = string | number;
 type DefaultValueType = string;
@@ -55,7 +56,12 @@ const SelectList = <ItemType extends ItemTypeBase<ItemValueType>, ItemValueType 
                   <View style={styles.itemContent}>
                     <TextL style={styles.chainTitle}>{item[labelAttrName]}</TextL>
                     {value !== undefined && value === item.chainId && (
-                      <Svg iconStyle={styles.itemIcon} icon="selected" size={pTd(24)} />
+                      <Svg
+                        iconStyle={styles.itemIcon}
+                        icon="selected"
+                        size={pTd(24)}
+                        color={darkColors.iconBrandDefault}
+                      />
                     )}
                   </View>
                 </View>

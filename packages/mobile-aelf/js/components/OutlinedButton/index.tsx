@@ -49,14 +49,14 @@ const getStyles = makeStyles(theme => ({
     alignItems: 'center',
   },
   buttonWrap: {
-    backgroundColor: theme.colors.bgBrand1,
+    backgroundColor: theme.colors.bgBrandDefault,
     width: pTd(81),
     height: pTd(58),
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: pTd(29),
     borderWidth: pTd(1.5),
-    borderColor: theme.colors.borderBrand2,
+    borderColor: theme.colors.borderNeutral2,
   },
   buttonPressWrap: {
     backgroundColor: theme.colors.bgBrand3,

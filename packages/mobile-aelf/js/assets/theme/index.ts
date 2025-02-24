@@ -293,7 +293,7 @@ export const darkColors = {
   textBase4: '#B697FF',
   textDisabled1: '#626264',
   textDisabled2: '#848485',
-  textBrand1: '#68C3FF',
+  textBrand1: '#B697FF',
   textBrand2: '#B8E1FF',
   textBrand3: '#33B0FD',
   textBrand4: '#0A4370',

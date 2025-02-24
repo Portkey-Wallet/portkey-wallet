@@ -102,6 +102,7 @@ export const DarkFontStyles = StyleSheet.create({
   textBase1: { color: darkColors.textBase1 },
   textBase2: { color: darkColors.textBase2 },
   textBase3: { color: darkColors.textBase3 },
+  textBase1Opacity07: { color: darkColors.textBase1Opacity07 },
 });
 
 export const BorderStyles = StyleSheet.create({

@@ -107,7 +107,7 @@ export const customTokenTipsStyle = StyleSheet.create({
     paddingRight: pTd(16),
     borderRadius: pTd(20),
     height: pTd(40),
-    backgroundColor: darkColors.bgBrand1,
+    backgroundColor: darkColors.iconBrandDefault,
   },
   addText: {
     marginLeft: pTd(8),

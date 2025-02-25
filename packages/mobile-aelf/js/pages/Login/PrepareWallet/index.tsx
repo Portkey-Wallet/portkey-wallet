@@ -47,7 +47,12 @@ export default function PrepareWallet() {
   initRef.current = init;
 
   useEffect(() => {
-    initRef.current();
+    const timer = setTimeout(() => {
+      initRef.current();
+    }, 100);
+    return () => {
+      clearTimeout(timer);
+    };
   }, []);
 
   return (

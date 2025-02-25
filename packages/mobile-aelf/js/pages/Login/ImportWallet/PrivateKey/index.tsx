@@ -93,6 +93,7 @@ export const getStyles = makeStyles(theme => ({
     flex: 1,
   },
   input: {
+    textAlignVertical: 'top',
     marginTop: pTd(40),
     width: '100%',
     height: pTd(160),

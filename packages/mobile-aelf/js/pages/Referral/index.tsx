@@ -103,7 +103,7 @@ export default function Referral() {
 
       <View style={styles.buttonStyle}>
         <CommonButton
-          style={styles.buttonStyle}
+          // style={styles.buttonStyle}
           titleStyle={styles.buttonText}
           title={'Create a wallet'}
           type="primary"
@@ -113,7 +113,7 @@ export default function Referral() {
 
       <View style={styles.buttonStyle}>
         <CommonButton
-          style={styles.buttonStyle}
+          // style={styles.buttonStyle}
           titleStyle={styles.buttonText}
           title={'Import an existing wallet'}
           type="outline"

@@ -215,8 +215,9 @@ function TabsDom({ activeWebViewRef, clickBottomActionBtn, onNavigationChange }:
             }
             latestCheckAndUpDateRecordItemName.current({ id: ele.id, name: nativeEvent.title });
             latestCheckAndUpDateTabItemName.current({ id: ele.id, name: nativeEvent.title });
+            onNavigationStateChange(nativeEvent);
           }}
-          onNavigationStateChange={onNavigationStateChange}
+          // onNavigationStateChange={onNavigationStateChange}
         />
         <View style={styles.wrap}>
           <Touchable style={{ paddingHorizontal: pTd(12) }} onPress={() => showWalletInfo({ tabInfo: activeItem })}>

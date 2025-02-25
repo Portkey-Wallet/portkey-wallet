@@ -101,23 +101,27 @@ export default function Referral() {
         </View>
       )}
 
-      <CommonButton
-        style={styles.buttonStyle}
-        titleStyle={styles.buttonText}
-        title={'Create a wallet'}
-        type="primary"
-        onPress={createWallet}
-      />
+      <View style={styles.buttonStyle}>
+        <CommonButton
+          style={styles.buttonStyle}
+          titleStyle={styles.buttonText}
+          title={'Create a wallet'}
+          type="primary"
+          onPress={createWallet}
+        />
+      </View>
 
-      <CommonButton
-        style={styles.buttonStyle}
-        titleStyle={styles.buttonText}
-        title={'Import an existing wallet'}
-        type="outline"
-        onPress={() => {
-          navigationService.navigate('WalletImportTypeSelect');
-        }}
-      />
+      <View style={styles.buttonStyle}>
+        <CommonButton
+          style={styles.buttonStyle}
+          titleStyle={styles.buttonText}
+          title={'Import an existing wallet'}
+          type="outline"
+          onPress={() => {
+            navigationService.navigate('WalletImportTypeSelect');
+          }}
+        />
+      </View>
     </PageContainer>
   );
 }

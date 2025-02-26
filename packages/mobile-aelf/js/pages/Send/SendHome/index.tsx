@@ -873,13 +873,13 @@ const SendHome: React.FC = () => {
           );
         } else if (i.network !== 'aelf' && i.addressInfo?.network !== 'aelf') {
           Loading.show();
-          const { data } = await getSendNetworkList({
+          const data = await getSendNetworkList({
             symbol: assetInfo?.symbol || '',
             chainId: assetInfo?.chainId || 'AELF',
             toAddress: i?.address || i?.addressInfo?.address || '',
           });
 
-          console.log('getSendNetworkList', data, i);
+          console.log('getSendNetworkList === ', data, i);
           const tmpNetwork = data?.networkList?.find(
             (ele: any) => ele.network === (i?.network || i.addressInfo?.network),
           );

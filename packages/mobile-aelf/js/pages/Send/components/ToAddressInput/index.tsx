@@ -178,19 +178,15 @@ export const ToAddressInputRef = forwardRef<IToAddressInputRef, IToAddressInput>
 
       try {
         setIsChecking(true);
-        const { data, code } = await getSendNetworkList({
+        const { networkList } = await getSendNetworkList({
           symbol: selectedToken?.symbol || '',
           chainId: selectedToken?.chainId || 'AELF',
           toAddress,
         });
 
-        if (code === '40001') {
-          setWarning([WarningKey.INVALID_ADDRESS]);
-        } else {
-          setCheckedPass(true);
-          setChainList(data.networkList);
-          setWarning([WarningKey.MAKE_SURE_SUPPORT_PLATFORM]);
-        }
+        setCheckedPass(true);
+        setChainList(networkList);
+        setWarning([WarningKey.MAKE_SURE_SUPPORT_PLATFORM]);
       } catch (error) {
         console.log('getNetworkList err', error);
         setWarning([WarningKey.INVALID_ADDRESS]);

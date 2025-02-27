@@ -50,9 +50,9 @@ export const useMultiChainAddressesModal = () => {
       });
       ActionSheet.alert({
         isCloseShow: false,
-        title: (
+        title: <Text style={addressCardStyles.header}>Multichain addresses</Text>,
+        title2: (
           <View>
-            <Text style={addressCardStyles.header}>Multichain addresses</Text>
             <View style={addressCardStyles.cardContainer}>
               {addressesShowInfo.map((addressShowInfo, addressesShowInfoIndex) => {
                 return (
@@ -119,7 +119,7 @@ const getAddressCardStyles = makeStyles(theme => ({
     ...fonts.BGMediumFont,
     color: theme.colors.textBase1,
     fontSize: pTd(20),
-    lineHeight: pTd(16) * 1.2,
+    // lineHeight: pTd(16) * 1.2,
   },
   cardContainer: {
     flexDirection: 'column',

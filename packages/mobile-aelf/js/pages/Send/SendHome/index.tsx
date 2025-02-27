@@ -91,7 +91,7 @@ const SendHome: React.FC = () => {
   const [targetNetwork, setTargetNetwork] = useState<INetworkItem>();
   const [recentList, setRecentList] = useState<TFormattedRecentItem[]>();
   const [savedList, setSavedList] = useState<TFormattedRecentItem[]>();
-  const { getRecentList } = useRecent();
+  const { getTransformedRecentList } = useRecent();
   const getFilterContactList = useGetFilterContactList();
 
   const recommendETransfer = useMemo(
@@ -873,13 +873,13 @@ const SendHome: React.FC = () => {
           );
         } else if (i.network !== 'aelf' && i.addressInfo?.network !== 'aelf') {
           Loading.show();
-          const { data } = await getSendNetworkList({
+          const data = await getSendNetworkList({
             symbol: assetInfo?.symbol || '',
             chainId: assetInfo?.chainId || 'AELF',
             toAddress: i?.address || i?.addressInfo?.address || '',
           });
 
-          console.log('getSendNetworkList', data, i);
+          console.log('getSendNetworkList === ', data, i);
           const tmpNetwork = data?.networkList?.find(
             (ele: any) => ele.network === (i?.network || i.addressInfo?.network),
           );
@@ -911,8 +911,12 @@ const SendHome: React.FC = () => {
 
   useEffectOnce(() => {
     try {
-      const _recentList = getRecentList();
-      setRecentList(_recentList);
+      const _recentList = getTransformedRecentList({
+        fromChainId: assetInfo.chainId,
+        tokenId: assetInfo.symbol || assetInfo.tokenId,
+        isFt: sendType !== 'token',
+      });
+      setRecentList(_recentList || []);
     } catch (error) {
       console.log('get recent err', error);
     }

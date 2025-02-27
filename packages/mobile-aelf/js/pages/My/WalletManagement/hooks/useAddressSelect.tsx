@@ -32,8 +32,8 @@ export const useAddressSelect = () => {
   const showAddressSelectModal = useCallback(() => {
     ActionSheet.alert({
       isCloseShow: false,
-      title: (
-        <View style={styles.container}>
+      title2: (
+        <View style={[styles.container, styles.modalTitle]}>
           <View style={styles.header}>
             <Text style={styles.headerTitle}>Your wallets</Text>
             <Touchable
@@ -46,9 +46,6 @@ export const useAddressSelect = () => {
           </View>
         </View>
       ),
-      titleStyle: {
-        marginBottom: pTd(16),
-      },
       message: (
         <View style={styles.container}>
           {walletList.map((item: TWalletInfo, index: number) => {
@@ -87,6 +84,9 @@ const getStyles = makeStyles(() => ({
     // alignItems: 'center',
     // width: '100%',
     // position: 'relative',
+  },
+  modalTitle: {
+    marginBottom: pTd(16),
   },
   header: {
     flexDirection: 'row',

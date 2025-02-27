@@ -17,7 +17,7 @@ export const useBackupWalletModal = () => {
   const showBackupWalletModal = useCallback(() => {
     ActionSheet.alert({
       isCloseShow: false,
-      title: (
+      title2: (
         <View style={styles.container}>
           <View style={styles.logoContainer}>
             <CommonAvatar style={styles.logo} hasBorder={false} localImage={backUpWalletLogo} avatarSize={pTd(240)} />

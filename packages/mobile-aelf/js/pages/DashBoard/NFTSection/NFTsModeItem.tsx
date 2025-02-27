@@ -366,7 +366,7 @@ const getStyles = makeStyles(theme => ({
     marginBottom: pTd(16),
   },
   noDataButton: {
-    width: pTd(74),
-    height: pTd(40),
+    width: pTd(90),
+    // height: pTd(40),
   },
 }));

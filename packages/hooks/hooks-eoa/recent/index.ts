@@ -9,7 +9,7 @@ import { useTransferNetworkConfig } from '../config';
 import { useContact } from '../contact';
 import { TFormattedRecentItem } from '@portkey-wallet/types/types-eoa/contact';
 import { getAelfAddress } from '@portkey-wallet/utils/aelf';
-import { isSameAddresses } from '@portkey-wallet/utils';
+import { getChainIdByAddress, isSameAddresses } from '@portkey-wallet/utils';
 import { useCurrentAccount } from '../wallet';
 
 export const useRecentState = () => useAppEOASelector(state => state?.recent);
@@ -81,6 +81,13 @@ export function useRecent() {
 
           if (aelfResult) return { ...aelfResult, ...ele };
           if (otherResult) return { ...otherResult, ...ele };
+
+          if (
+            isSameAddresses(getAelfAddress(ele.address), currentAccount?.address || '') &&
+            getChainIdByAddress(ele.address) === params.fromChainId
+          )
+            return;
+
           if (isSameAddresses(getAelfAddress(ele.address), currentAccount?.address || '')) {
             return {
               ...ele,

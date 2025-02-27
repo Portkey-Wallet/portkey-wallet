@@ -26,7 +26,7 @@ const userPersistConfig = {
 const assetsPersistConfig = {
   key: assetsSlice.name,
   storage: AsyncStorage,
-  whitelist: ['localShowTokenInfo'],
+  whitelist: ['localShowTokenInfo', 'nftSectionUiType'],
 };
 
 const discoverPersistConfig = {

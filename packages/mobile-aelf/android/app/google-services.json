@@ -86,6 +86,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "339329964702-jmn2ghd99t0p7ghmvoj1rqm3g0btc7fm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.portkey.fairyvault",
+            "certificate_hash": "91d08342dc9273e75b1da450d6ba5ef128184567"
+          }
+        },
+        {
           "client_id": "339329964702-markii56adkceg9gpp4o93gl82tj5e88.apps.googleusercontent.com",
           "client_type": 3
         }

@@ -5,7 +5,10 @@ import { useCurrentNetwork } from '@portkey-wallet/hooks/hooks-eoa/network';
 
 const ChainIdsMainnet: ChainId[] = ['AELF', 'tDVV'];
 const ChainIdsTestnet: ChainId[] = ['AELF', 'tDVW'];
-let cachedAddressesTotalBalanceInUsdMemory = {};
+const cachedAddressesTotalBalanceInUsdMemory = {
+  MAINNET: {},
+  TESTNET: {},
+};
 export const useAddressesTokensInfo = (addresses: string[]) => {
   const [addressesTotalBalanceInUsd, setAddressesTotalBalanceInUsd] = useState<{ [key: string]: string }>();
   const currentNetwork = useCurrentNetwork();
@@ -28,8 +31,8 @@ export const useAddressesTokensInfo = (addresses: string[]) => {
     addresses.forEach((address, index) => {
       _addressesTotalBalanceInUsd[address] = result[index].totalBalanceInUsd;
     });
-    cachedAddressesTotalBalanceInUsdRef.current = _addressesTotalBalanceInUsd;
-    cachedAddressesTotalBalanceInUsdMemory = _addressesTotalBalanceInUsd;
+    cachedAddressesTotalBalanceInUsdRef.current[currentNetwork] = _addressesTotalBalanceInUsd;
+    cachedAddressesTotalBalanceInUsdMemory[currentNetwork] = _addressesTotalBalanceInUsd;
     console.log('getTokensInfo TokensInfo: ', result, addresses, addressInfosList, _addressesTotalBalanceInUsd);
     console.log('getTokensInfo time:', Date.now() - start);
     return _addressesTotalBalanceInUsd;
@@ -39,19 +42,32 @@ export const useAddressesTokensInfo = (addresses: string[]) => {
     if (addresses.length === 0) {
       return;
     }
-    console.log('cachedAddressesTotalBalanceInUsdMemory: ', cachedAddressesTotalBalanceInUsdMemory);
+    // console.log(
+    //   'cachedAddressesTotalBalanceInUsdMemory: ',
+    //   cachedAddressesTotalBalanceInUsdMemory,
+    //   cachedAddressesTotalBalanceInUsdRef.current,
+    //   cachedAddressesTotalBalanceInUsdRef.current && cachedAddressesTotalBalanceInUsdRef.current[currentNetwork]
+    //     ? Object.keys(cachedAddressesTotalBalanceInUsdRef.current[currentNetwork]).length
+    //     : null,
+    //   cachedAddressesTotalBalanceInUsdMemory[currentNetwork],
+    //   currentNetwork,
+    // );
     const fetchData = async () => {
-      if (Object.keys(cachedAddressesTotalBalanceInUsdRef.current).length > 0) {
-        setAddressesTotalBalanceInUsd(cachedAddressesTotalBalanceInUsdRef.current);
+      const dataExist =
+        cachedAddressesTotalBalanceInUsdRef.current &&
+        cachedAddressesTotalBalanceInUsdRef.current[currentNetwork] &&
+        Object.keys(cachedAddressesTotalBalanceInUsdRef.current[currentNetwork]).length > 0;
+      if (dataExist) {
+        setAddressesTotalBalanceInUsd(cachedAddressesTotalBalanceInUsdRef.current[currentNetwork]);
       } else {
-        setAddressesTotalBalanceInUsd(cachedAddressesTotalBalanceInUsdMemory);
+        setAddressesTotalBalanceInUsd(cachedAddressesTotalBalanceInUsdMemory[currentNetwork]);
         const result = await getTokensInfo();
         setAddressesTotalBalanceInUsd(result);
       }
     };
 
     fetchData();
-  }, [addresses, getTokensInfo]);
+  }, [addresses, currentNetwork, getTokensInfo]);
 
   return {
     getTokensInfo,

@@ -106,6 +106,22 @@ export default function NFTSection() {
   const { clearType } = useRoute<any>();
   const { nftSectionUiType } = useNFTSection();
   const styles = getStyles();
+  const updateNFTItems = useCallback(() => {
+    if (nftSectionUiType === 'NFTs') {
+      const parsedKeys = Object.keys(openCollectionObj).map(key => {
+        const [symbol, chainId] = key.split(CONNECTION_KEY_FLAG);
+        return { symbol, chainId };
+      });
+      parsedKeys.forEach(async parsedKeysItem => {
+        await fetchAccountNFTItem({
+          symbol: parsedKeysItem.symbol,
+          chainId: parsedKeysItem.chainId as ChainId,
+          addressInfos: addressInfos.filter(item => item.chainId === parsedKeysItem.chainId),
+          pageNum: 0,
+        });
+      });
+    }
+  }, [addressInfos, fetchAccountNFTItem, nftSectionUiType, openCollectionObj]);
   useEffect(() => {
     const updateNFTSubscription = myEvents.updateNFT.addListener(async () => {
       updateNFTItems();
@@ -140,22 +156,7 @@ export default function NFTSection() {
     },
     [accountNFTList.length, addressInfos, fetchAccountNFTCollectionInfoList, totalRecordCount],
   );
-  const updateNFTItems = useCallback(() => {
-    if (nftSectionUiType === 'NFTs') {
-      const parsedKeys = Object.keys(openCollectionObj).map(key => {
-        const [symbol, chainId] = key.split(CONNECTION_KEY_FLAG);
-        return { symbol, chainId };
-      });
-      parsedKeys.forEach(async parsedKeysItem => {
-        await fetchAccountNFTItem({
-          symbol: parsedKeysItem.symbol,
-          chainId: parsedKeysItem.chainId as ChainId,
-          addressInfos: addressInfos.filter(item => item.chainId === parsedKeysItem.chainId),
-          pageNum: 0,
-        });
-      });
-    }
-  }, [addressInfos, fetchAccountNFTItem, nftSectionUiType, openCollectionObj]);
+
   useEffect(() => {
     const listener = myEvents.updateMintStatus.addListener(async params => {
       const onlyUpdateRecentStatus = params?.onlyUpdateRecentStatus;

@@ -116,7 +116,7 @@ export default function ImportByCloud() {
       type="leftBack"
       pageSafeBottomPadding={!isIOS}
       containerStyles={commonStyles.containerStyles}
-      scrollViewProps={{ disabled: true }}>
+      scrollViewProps={{ disabled: false }}>
       <Text style={commonStyles.title}>Choose backup</Text>
       <Text style={[commonStyles.desc, styles.marginBottom40]}>Select the backup you wish to import.</Text>
 

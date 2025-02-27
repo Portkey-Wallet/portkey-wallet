@@ -3,7 +3,7 @@ import { useCallback, useMemo } from 'react';
 // import { useCaAddressInfoList } from './wallet';
 import { ChainId } from '@portkey-wallet/types';
 import { useAppEOASelector } from '../index';
-import { useCurrentNetworkInfo, useIsMainnet } from '../network';
+// import { useCurrentNetworkInfo, useIsMainnet } from '../network';
 import {
   showLocalShowTokenInfo,
   fetchNFTAsync,
@@ -17,27 +17,22 @@ import {
 } from '@portkey-wallet/store/store-eoa/assets/slice';
 import { useAppCommonDispatch } from '../..';
 import { useCurrentAddressInfos, useUniqueIdentify } from '../wallet';
-import {
-  ITokenSectionResponse,
-  IUserTokenItem,
-  IUserTokenItemResponse,
-  TokenItemShowType,
-} from '@portkey-wallet/types/types-eoa/token';
-import token from '@portkey-wallet/api/api-did/token';
+import { IUserTokenItem, TokenItemShowType } from '@portkey-wallet/types/types-eoa/token';
+import { fetchNFTItem } from '@portkey-wallet/store/store-eoa/assets/api';
 
 export const useAssets = () => useAppEOASelector(state => state.assets);
 
-// export function useNFTItemDetail() {
-//   const addressInfos = useCaAddressInfoList();
+export function useNFTItemDetail() {
+  const addressInfos = useCurrentAddressInfos();
 
-//   return useCallback(
-//     async ({ symbol, chainId }: { symbol: string; chainId: ChainId }) => {
-//       const caAddressInfo = addressInfos.filter(item => item.chainId === chainId);
-//       return fetchNFTItem({ addressInfos: caAddressInfo, symbol });
-//     },
-//     [addressInfos],
-//   );
-// }
+  return useCallback(
+    async ({ symbol, chainId }: { symbol: string; chainId: ChainId }) => {
+      const addressInfo = addressInfos.filter(item => item.chainId === chainId);
+      return fetchNFTItem({ addressInfos: addressInfo, symbol });
+    },
+    [addressInfos],
+  );
+}
 
 // export const useAccountAssetsInfo = () => {
 //   const dispatch = useAppCommonDispatch();
@@ -145,7 +140,7 @@ export const useAccountBalanceUSD = () => {
 
 export const useAccountNFTCollectionInfo = () => {
   const dispatch = useAppCommonDispatch();
-  const currentNetworkInfo = useCurrentNetworkInfo();
+  // const currentNetworkInfo = useCurrentNetworkInfo();
   const identify = useUniqueIdentify();
   const assetsState = useAssets();
   const accountNFTCollectionInfo = useMemo(
@@ -204,17 +199,17 @@ export const useTokenInfoFromStore = (symbol: string, chainId: ChainId) => {
   }, [accountTokenList, chainId, symbol]);
 };
 
-export function useFetchTokenAllowanceList() {
-  const isMainnet = useIsMainnet();
-  const addressInfos = useCurrentAddressInfos();
+// export function useFetchTokenAllowanceList() {
+// const isMainnet = useIsMainnet();
+// const addressInfos = useCurrentAddressInfos();
 
-  // return useCallback(
-  //   async ({ skipCount, maxResultCount }: { skipCount: number; maxResultCount: number }) => {
-  //     return fetchTokenAllowanceList({ skipCount, maxResultCount, addressInfos });
-  //   },
-  //   [addressInfos],
-  // );
-}
+// return useCallback(
+//   async ({ skipCount, maxResultCount }: { skipCount: number; maxResultCount: number }) => {
+//     return fetchTokenAllowanceList({ skipCount, maxResultCount, addressInfos });
+//   },
+//   [addressInfos],
+// );
+// }
 
 export function useManagerTokenInfo() {
   const dispatch = useAppCommonDispatch();
@@ -344,14 +339,15 @@ export function useAccountTokenInfoMixLocalShowToken() {
           }
         }
       });
-    return newAccountTokenList;
+    const updatedNewAccountTokenList = newAccountTokenList.filter(item => item.tokens && item.tokens.length > 0);
+    return updatedNewAccountTokenList;
   }, [accountTokenInfo.accountTokenList, assetsState.localShowTokenInfo, identify]);
   return updatedAccountTokenList;
 }
 
 export const useAccountAssetsInfoV2 = () => {
   const dispatch = useAppCommonDispatch();
-  const currentNetworkInfo = useCurrentNetworkInfo();
+  // const currentNetworkInfo = useCurrentNetworkInfo();
   const assetsState = useAssets();
   const identify = useUniqueIdentify();
   const accountAssetsInfo = useMemo(

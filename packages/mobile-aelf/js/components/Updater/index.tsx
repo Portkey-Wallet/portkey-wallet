@@ -70,6 +70,7 @@ export default function Updater() {
   // useFetchTxFee();
   useMemo(() => {
     console.log('apiUrl===', apiUrl);
+    console.log('eTransferUrl===', eTransferUrl);
     request.set('baseURL', apiUrl);
     if (service.defaults.baseURL !== apiUrl) {
       service.defaults.baseURL = apiUrl;
@@ -82,7 +83,7 @@ export default function Updater() {
       // chainList: [],
       // eTransferCA: undefined,
     });
-  }, [apiUrl]);
+  }, [apiUrl, eTransferUrl]);
 
   // useMemo(() => {
   //   im.setUrl({

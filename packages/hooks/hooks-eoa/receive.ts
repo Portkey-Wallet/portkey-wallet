@@ -13,7 +13,7 @@ import { useCurrentChainList } from '@portkey-wallet/hooks/hooks-eoa/chainList';
 import { IChainItemType } from '@portkey-wallet/types/types-eoa/chain';
 import AElf from 'aelf-sdk';
 // import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-eoa/wallet';
-import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-eoa/network';
+import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { AElfWallet } from '@portkey-wallet/types/aelf';
 import depositService from '@portkey-wallet/utils/deposit-eoa';
 import { TDepositInfo } from '@portkey-wallet/types/types-eoa/deposit';
@@ -162,6 +162,7 @@ export const useReceiveByETransfer = ({
   // const { caHash, address, originChainId } = useCurrentWalletInfo();
   // const { address } = useCurrentAccount() || { address: '' };
   const { apiUrl } = useCurrentNetworkInfo();
+  const isMainnet = useIsMainnet();
   console.log('apiUrl====wfs', apiUrl);
   const fetchTransferToken = useCallback(async () => {
     /**
@@ -188,7 +189,7 @@ export const useReceiveByETransfer = ({
       console.log('isRegistered=====is', isRegistered);
       let reCaptchaToken = undefined;
       if (!isRegistered.result) {
-        reCaptchaToken = (await verifyHumanMachine('en')) as string;
+        reCaptchaToken = (await verifyHumanMachine('en', true, isMainnet)) as string;
       }
       // // // const recaptchaToken = undefined;
       console.log('recaptchaToken===', reCaptchaToken);

@@ -61,17 +61,27 @@ export default function WalletImportTypeSelect() {
     needCheckSecurityLock?: boolean;
   }>();
   const checkSecurityLock = useCheckSecurityLock();
-  const { cloudAvailable } = useCloudStorage();
+  const { cloudAvailable, googleSignAndConfig } = useCloudStorage();
 
   const importWalletPress = useCallback(
-    (item: IListItem) => {
+    async (item: IListItem) => {
       if (!item.importType) {
         return;
       }
       if (item.isAndroid || item.isIOS) {
-        if (!cloudAvailable) {
+        if (item.isIOS && !cloudAvailable) {
           CommonToast.fail('Cloud is not available');
           return;
+        }
+        if (item.isAndroid) {
+          const result = await googleSignAndConfig();
+          console.log('googleSignAndConfig result', result, cloudAvailable);
+          if (!result || !result.success) {
+            CommonToast.fail('Cloud is not available');
+            return;
+          }
+          // CommonToast.fail('Android login');
+          // return;
         }
         navigationService.push('ImportByCloud', {
           importType: item.importType,
@@ -84,7 +94,7 @@ export default function WalletImportTypeSelect() {
         });
       }
     },
-    [cloudAvailable, needCheckSecurityLock],
+    [cloudAvailable, googleSignAndConfig, needCheckSecurityLock],
   );
 
   return (
@@ -108,10 +118,12 @@ export default function WalletImportTypeSelect() {
           <Touchable
             key={index}
             onPress={async () => {
-              if (['iCloud', 'google'].includes(item.importType || '') && !cloudAvailable) {
+              // if (['iCloud', 'google'].includes(item.importType || '') && !cloudAvailable) {
+              if (['iCloud'].includes(item.importType || '') && !cloudAvailable) {
                 CommonToast.fail('Cloud is not available');
                 return;
               }
+              // if (['iCloud', 'google'].includes(item.importType || '') && !cloudAvailable) {
               if (needCheckSecurityLock) {
                 await checkSecurityLock(() => {
                   importWalletPress(item);

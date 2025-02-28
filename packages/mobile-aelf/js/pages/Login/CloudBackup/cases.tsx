@@ -52,9 +52,11 @@ export default function CloudBackupCases() {
     readFile,
     handleCreateDirectory,
     handleDeleteDirectory,
+    handleDeleteDirectoryAndroid,
     handleListContents,
     handleCreateFile,
     loading,
+    googleSignAndConfig,
   } = useCloudStorage();
 
   return (
@@ -63,8 +65,15 @@ export default function CloudBackupCases() {
       type="leftBack"
       pageSafeBottomPadding={!isIOS}
       containerStyles={styles.containerStyles}
-      scrollViewProps={{ disabled: true }}>
+      scrollViewProps={{ disabled: false }}>
       <View>
+        <CommonButton
+          disabled={loading}
+          type="primary"
+          onPress={() => googleSignAndConfig(true)}
+          style={{ marginTop: 10 }}>
+          Google Sign And Config
+        </CommonButton>
         <CommonButton
           disabled={!cloudAvailable || loading}
           type="primary"
@@ -91,6 +100,13 @@ export default function CloudBackupCases() {
           onPress={() => handleDeleteDirectory(true)}
           style={{ marginTop: 10 }}>
           handleDeleteDirectory
+        </CommonButton>
+        <CommonButton
+          disabled={!cloudAvailable || loading}
+          type="primary"
+          onPress={() => handleDeleteDirectoryAndroid()}
+          style={{ marginTop: 10 }}>
+          handleDeleteDirectoryAndroid
         </CommonButton>
         <CommonButton
           disabled={!cloudAvailable || loading}
@@ -260,7 +276,11 @@ export default function CloudBackupCases() {
             await handleCreateFile({
               filename: currentWallet.key,
               // TODO, encrypt before create
-              input: aes.encrypt(JSON.stringify(currentWallet), password),
+              input: JSON.stringify({
+                updateTime: Date.now(),
+                wallet: aes.encrypt(JSON.stringify(currentWallet), password),
+              }),
+              // input: aes.encrypt(JSON.stringify(currentWallet), password),
             });
           }}>
           Continue

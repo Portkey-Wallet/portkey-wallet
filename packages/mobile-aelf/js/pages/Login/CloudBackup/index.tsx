@@ -1,5 +1,5 @@
 // https://github.com/kuatsu/react-native-cloud-storage/blob/master/example/src/views/Home.tsx
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Text, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
@@ -96,7 +96,13 @@ export default function CloudBackup() {
     setIsChecked(!isChecked);
   }, [isChecked]);
 
-  const { handleCreateDirectory, handleCreateFile, loading } = useCloudStorage();
+  const { handleCreateDirectory, handleCreateFile, loading, googleSignAndConfig, cloudAvailable } = useCloudStorage();
+
+  useEffect(() => {
+    if (!isIOS) {
+      googleSignAndConfig(false);
+    }
+  }, [googleSignAndConfig]);
 
   return (
     <PageContainer
@@ -241,7 +247,14 @@ export default function CloudBackup() {
           </Text>
         </View>
         <CommonButton
-          disabled={!isChecked || !!errorMessage || !!enterPasswordErrorMessage || !password || !confirmPassword}
+          disabled={
+            !isChecked ||
+            !!errorMessage ||
+            !!enterPasswordErrorMessage ||
+            !password ||
+            !confirmPassword ||
+            !cloudAvailable
+          }
           loading={loading}
           type="primary"
           style={styles.continueButton}

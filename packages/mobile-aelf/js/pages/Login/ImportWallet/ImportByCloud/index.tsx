@@ -31,7 +31,7 @@ export default function ImportByCloud() {
   const commonStyles = useWalletCommonStyles();
   const cardStyles = useCardStyles();
 
-  const { handleListContents, readFile } = useCloudStorage();
+  const { handleListContents, readFile, cloudAvailable, googleSignAndConfig } = useCloudStorage();
   const { showMultiChainAddressesModal } = useMultiChainAddressesModal();
   const walletList = useWalletListState();
 
@@ -44,9 +44,19 @@ export default function ImportByCloud() {
   }>();
 
   useEffect(() => {
+    if (!isIOS) {
+      googleSignAndConfig(false);
+    }
+  }, [googleSignAndConfig]);
+
+  useEffect(() => {
+    console.log('cloudAvailable: ', cloudAvailable);
+    if (!cloudAvailable) {
+      return;
+    }
     const getAddressList = async () => {
       const addressList = await handleListContents();
-      console.log('address list', addressList);
+      console.log('address list: ', addressList, cloudAvailable);
       if (addressList) {
         const _addressesInfo = addressList.map(item => {
           return {
@@ -67,7 +77,7 @@ export default function ImportByCloud() {
       }
     };
     getAddressList();
-  }, [handleListContents, readFile]);
+  }, [handleListContents, cloudAvailable]);
 
   useEffect(() => {
     if (addresses.length === 0) {
@@ -89,6 +99,7 @@ export default function ImportByCloud() {
           }
         });
       });
+      console.log('sort by updateTime start');
       // sort by updateTime
       _addressesInfo = _addressesInfo.sort((a, b) => {
         if (a.info?.updateTime && b.info?.updateTime) {

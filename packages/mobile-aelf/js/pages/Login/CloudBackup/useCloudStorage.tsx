@@ -2,40 +2,39 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import {
   CloudStorage,
   CloudStorageError,
-  CloudStorageErrorCode,
+  // CloudStorageErrorCode,
   // type CloudStorageFileStat,
   CloudStorageProvider,
   // CloudStorageScope,
   useIsCloudAvailable,
 } from 'react-native-cloud-storage';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import CommonToast from '../../../components/CommonToast';
+import Config from 'react-native-config';
+GoogleSignin.configure({
+  webClientId: Config.GOOGLE_WEB_CLIENT_ID,
+  scopes: ['https://www.googleapis.com/auth/drive.appdata'],
+});
 
-function commonCloudStorageError(e: any) {
-  console.warn('commonCloudStorageError', e);
+function commonCloudStorageError(e: any, from = '') {
+  console.warn('commonCloudStorageError', e, from);
   if (e instanceof CloudStorageError) {
-    if (e.code === CloudStorageErrorCode.READ_ERROR) {
-      CommonToast.fail('No backup found');
-    } else {
-      CommonToast.fail(e.code);
-    }
+    // if (e.code === CloudStorageErrorCode.READ_ERROR) {
+    //   CommonToast.fail('No backup found');
+    // } else {
+    //   CommonToast.fail(e.code);
+    // }
   } else {
     CommonToast.fail('Something went wrong. Please try backing up later.');
   }
 }
 
 export const useCloudStorage = () => {
-  // const [provider, setProvider] = useState(CloudStorage.getDefaultProvider());
-  const [provider] = useState(CloudStorage.getDefaultProvider());
-  // const [scope, setScope] = useState(CloudStorageScope.AppData);
-  // const [parentDirectory, setParentDirectory] = useState('/portkey-eoa/wallet');
-  // const [parentDirectory] = useState('/portkey-eoa/wallet');
-  const [parentDirectory] = useState('/eoa/wallets');
+  const [provider, setProvider] = useState(CloudStorage.getDefaultProvider());
+
+  const [parentDirectory] = useState('/');
   const [isParentDirectoryExist, setIsParentDirectoryExist] = useState<boolean>();
-  // const [filename, setFilename] = useState('test.txt');
-  // const [stats, setStats] = useState<CloudStorageFileStat | null>(null);
-  // const [input, setInput] = useState('');
-  // const [appendInput, setAppendInput] = useState('');
-  // const [accessToken, setAccessToken] = useState('');
+
   const [loading, setLoading] = useState(false);
 
   const cloudStorage = useMemo(() => {
@@ -45,6 +44,42 @@ export const useCloudStorage = () => {
     );
   }, [provider]);
   const cloudAvailable = useIsCloudAvailable(cloudStorage);
+
+  // always alert google account select modal.
+  const googleSignAndConfig = useCallback(
+    async (needLogout = true) => {
+      if (cloudStorage.getProvider() !== CloudStorageProvider.GoogleDrive) {
+        setProvider(CloudStorageProvider.GoogleDrive);
+      }
+      try {
+        await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+        console.log('CloudStorage, google services are available');
+        if (needLogout) {
+          await GoogleSignin.signOut();
+        }
+
+        const userInfo = await GoogleSignin.signIn();
+        console.log(userInfo, '====userInfo CloudStorage');
+        console.log('accessToken get start: ');
+        const { accessToken } = await GoogleSignin.getTokens();
+        console.log('accessToken: ', accessToken);
+        cloudStorage.setProviderOptions({
+          accessToken: accessToken.length ? accessToken : null,
+        });
+        return {
+          success: true,
+        };
+      } catch (e) {
+        console.log('googleSignAndConfig failed: ', e);
+        return {
+          success: false,
+          message: 'Google Sign failed',
+          error: e,
+        };
+      }
+    },
+    [cloudStorage],
+  );
 
   const isDirectoryExists = useCallback(async () => {
     setLoading(true);
@@ -57,7 +92,7 @@ export const useCloudStorage = () => {
     } catch (e) {
       console.warn('useCloudStorage -  isDirectoryExists: catch 4', e);
       setIsParentDirectoryExist(false);
-      commonCloudStorageError(e);
+      commonCloudStorageError(e, 'isDirectoryExists');
     } finally {
       console.warn('useCloudStorage -  isDirectoryExists: finally 5');
       setLoading(false);
@@ -71,16 +106,15 @@ export const useCloudStorage = () => {
       try {
         const newStats = await cloudStorage.stat(parentDirectory + '/' + filename);
         // setStats(newStats);
-        console.log('File stats', newStats);
+        console.log('File stats', newStats, newStats.isDirectory());
         if (newStats.isDirectory()) {
           return;
         }
         const fileContent = await cloudStorage.readFile(parentDirectory + '/' + filename);
-        console.log('File content', fileContent);
+        console.log('File content: ', fileContent, ' ---- filename: ', filename);
         return fileContent;
       } catch (e) {
-        // console.log('readFile: ', e);
-        commonCloudStorageError(e);
+        commonCloudStorageError(e, 'readFile');
         return false;
         // if (e instanceof CloudStorageError) {
         //   // TODO: return to page use, show Toast.
@@ -108,9 +142,9 @@ export const useCloudStorage = () => {
       try {
         await cloudStorage.writeFile(parentDirectory + '/' + filename, input);
         readFile(filename);
+        console.log('handleCreateFile done');
       } catch (e) {
-        // console.warn(e);
-        commonCloudStorageError(e);
+        commonCloudStorageError(e, 'handleCreateFile');
       } finally {
         setLoading(false);
       }
@@ -131,8 +165,7 @@ export const useCloudStorage = () => {
       await isDirectoryExists();
       // readFile(filename);
     } catch (e) {
-      // console.warn(e);
-      commonCloudStorageError(e);
+      commonCloudStorageError(e, 'handleCreateDirectory');
     } finally {
       setLoading(false);
     }
@@ -142,12 +175,17 @@ export const useCloudStorage = () => {
   const handleListContents = useCallback(async () => {
     setLoading(true);
     try {
+      console.log('useCloudStorage - Directory contents v3 read file');
       const contents = await cloudStorage.readdir(parentDirectory);
-      console.log('useCloudStorage - Directory contents', contents.length, contents.map(c => `• ${c}`).join('\n'));
+      console.log(
+        'useCloudStorage - Directory contents v3',
+        contents,
+        contents.length,
+        contents.map(c => `• ${c}`).join('\n'),
+      );
       return contents;
     } catch (e) {
-      // console.warn(e);
-      commonCloudStorageError(e);
+      commonCloudStorageError(e, 'handleListContents');
       return false;
     } finally {
       setLoading(false);
@@ -185,11 +223,28 @@ export const useCloudStorage = () => {
         // setStats(null);
         // setInput('');
       } catch (e) {
-        // console.warn(e);
-        commonCloudStorageError(e);
+        commonCloudStorageError(e, 'handleDeleteDirectory');
       } finally {
         setLoading(false);
       }
+    }
+  };
+
+  const handleDeleteDirectoryAndroid = async () => {
+    setLoading(true);
+    try {
+      const contents = await cloudStorage.readdir(parentDirectory);
+      for (const file of contents) {
+        console.log(`🗑️ unlink file: ${file}`);
+        await cloudStorage.unlink(`${parentDirectory}/${file}`);
+      }
+      await isDirectoryExists();
+      // setStats(null);
+      // setInput('');
+    } catch (e) {
+      commonCloudStorageError(e, 'handleDeleteDirectoryAndroid');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -208,8 +263,10 @@ export const useCloudStorage = () => {
     handleCreateDirectory,
     handleDeleteFile,
     handleDeleteDirectory,
+    handleDeleteDirectoryAndroid,
     handleListContents,
     handleCreateFile,
     readFile,
+    googleSignAndConfig,
   };
 };

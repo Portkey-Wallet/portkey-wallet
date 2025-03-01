@@ -16,6 +16,10 @@ GoogleSignin.configure({
   scopes: ['https://www.googleapis.com/auth/drive.appdata'],
 });
 
+function getFullPath(parentDirectory: string, fileName: string): string {
+  return parentDirectory.endsWith('/') ? `${parentDirectory}${fileName}` : `${parentDirectory}/${fileName}`;
+}
+
 function commonCloudStorageError(e: any, from = '') {
   console.warn('commonCloudStorageError', e, from);
   if (e instanceof CloudStorageError) {
@@ -104,13 +108,13 @@ export const useCloudStorage = () => {
     async (filename: string) => {
       setLoading(true);
       try {
-        const newStats = await cloudStorage.stat(parentDirectory + '/' + filename);
+        const newStats = await cloudStorage.stat(getFullPath(parentDirectory, filename));
         // setStats(newStats);
         console.log('File stats', newStats, newStats.isDirectory());
         if (newStats.isDirectory()) {
           return;
         }
-        const fileContent = await cloudStorage.readFile(parentDirectory + '/' + filename);
+        const fileContent = await cloudStorage.readFile(getFullPath(parentDirectory, filename));
         console.log('File content: ', fileContent, ' ---- filename: ', filename);
         return fileContent;
       } catch (e) {
@@ -140,7 +144,7 @@ export const useCloudStorage = () => {
     async ({ filename, input }: { filename: string; input: string }) => {
       setLoading(true);
       try {
-        await cloudStorage.writeFile(parentDirectory + '/' + filename, input);
+        await cloudStorage.writeFile(getFullPath(parentDirectory, filename), input);
         readFile(filename);
         console.log('handleCreateFile done');
       } catch (e) {
@@ -196,7 +200,7 @@ export const useCloudStorage = () => {
     async (filename: string) => {
       setLoading(true);
       try {
-        await cloudStorage.unlink(parentDirectory + '/' + filename);
+        await cloudStorage.unlink(getFullPath(parentDirectory, filename));
         await readFile(filename);
       } catch (e) {
         console.warn(e);
@@ -236,7 +240,8 @@ export const useCloudStorage = () => {
       const contents = await cloudStorage.readdir(parentDirectory);
       for (const file of contents) {
         console.log(`🗑️ unlink file: ${file}`);
-        await cloudStorage.unlink(`${parentDirectory}/${file}`);
+        // await cloudStorage.unlink(`${parentDirectory}/${file}`);
+        await cloudStorage.unlink(getFullPath(parentDirectory, file));
       }
       await isDirectoryExists();
       // setStats(null);

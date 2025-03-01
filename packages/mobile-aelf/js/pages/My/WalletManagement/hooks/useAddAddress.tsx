@@ -55,6 +55,7 @@ export const useAddAddress = ({ walletInfo }: { walletInfo?: TWalletInfo }) => {
     setAccountState('adding');
     setTimeout(() => {
       addAccount(routerPin);
+      CommonToast.success('New address added');
       setAccountState('added');
       // setAccountAdding(false);
       // setAccountAdded(true);

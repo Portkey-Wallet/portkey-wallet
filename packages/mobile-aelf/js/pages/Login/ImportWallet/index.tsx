@@ -4,7 +4,7 @@ import PageContainer from 'components/PageContainer';
 import ImportWalletTabSwitch from './ImportWalletTabSwitch';
 import RecoveryPhrase from './RecoveryPhrase';
 import PrivateKey from './PrivateKey';
-import { isIOS } from '@portkey-wallet/utils/mobile/device';
+import { isIOS, screenHeight } from '@portkey-wallet/utils/mobile/device';
 import { makeStyles } from '@rneui/themed';
 import { pTd } from 'utils/unit';
 import fonts from 'assets/theme/fonts';
@@ -40,7 +40,7 @@ export default function ImportWallet() {
       type="leftBack"
       pageSafeBottomPadding={!isIOS}
       containerStyles={styles.containerStyles}
-      scrollViewProps={{ disabled: true }}>
+      scrollViewProps={{ disabled: false }}>
       <Text style={styles.title}>
         {/*{isPrivateKeySelected ? 'Import your Private key' : 'Import your Recovery phrase'}*/}
         Import your wallet
@@ -58,6 +58,7 @@ export default function ImportWallet() {
 const getStyles = makeStyles(theme => ({
   containerStyles: {
     backgroundColor: theme.colors.bgBase1,
+    height: screenHeight - pTd(130),
   },
   title: {
     marginTop: pTd(24),

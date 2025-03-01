@@ -131,7 +131,7 @@ export const AddressCardHeader = ({
                           return;
                         }
                         removeWallet(walletInfo.key, () => {
-                          CommonToast.success('Wallet removed');
+                          CommonToast.success(isPrivateKeyWallet ? 'Private key removed' : 'Wallet removed');
                           console.log('removeWallet success');
                           navigationService.pop(1);
                           navigationService.push('WalletManagement', {

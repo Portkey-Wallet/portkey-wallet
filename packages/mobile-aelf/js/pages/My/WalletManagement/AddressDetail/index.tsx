@@ -236,7 +236,7 @@ export const AddressDetail: React.FC = () => {
               return;
             }
             removeAddress(() => {
-              CommonToast.success('Wallet removed');
+              CommonToast.success('Address removed');
               navigationService.pop(2);
               navigationService.push('WalletManagement');
             });

@@ -23,6 +23,7 @@ export interface IWithdrawPreviewParams {
   symbol: string;
   network: string;
   amount?: string;
+  isMainnet?: boolean;
 }
 
 export interface IWithdrawParams {

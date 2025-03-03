@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react';
-import ActionSheet from 'components/ActionSheet';
+import ActionSheet from 'components/ActionSheetNoPadding';
 import { Text, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import navigationService from 'utils/navigationService';
@@ -81,6 +81,8 @@ export const useAddressSelect = () => {
 const getStyles = makeStyles(() => ({
   container: {
     flexDirection: 'column',
+    // backgroundColor: 'red',
+    paddingHorizontal: pTd(16),
     // alignItems: 'center',
     // width: '100%',
     // position: 'relative',

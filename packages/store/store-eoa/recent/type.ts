@@ -1,4 +1,4 @@
-import { ChainId, NetworkType } from '@portkey-wallet/types';
+import { ChainId } from '@portkey-wallet/types';
 
 export interface loginInfo {
   account: string;
@@ -20,6 +20,6 @@ export interface IRecentItem {
 
 export interface RecentStateType {
   recentMap: {
-    [T in NetworkType]?: IRecentItem[];
+    [key: string]: IRecentItem[];
   };
 }

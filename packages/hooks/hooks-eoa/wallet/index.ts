@@ -13,7 +13,7 @@ import {
 import { TAccountInfo, TWalletInfo } from '@portkey-wallet/types/types-eoa/wallet';
 import aes from '@portkey-wallet/utils/aes';
 import { useCurrentNetwork, useIsMainnet } from '../network';
-import { ChainId } from '@portkey-wallet/types';
+import { ChainId, NetworkType } from '@portkey-wallet/types';
 import { useChainList } from '../network/chain';
 
 export const useWalletState = () => useAppEOASelector(state => state.wallet);
@@ -260,6 +260,18 @@ export const useUniqueIdentify = () => {
   const identify = useMemo(
     () => `aelf_#${currentAccount?.address}_#${currentNetwork}`,
     [currentAccount?.address, currentNetwork],
+  );
+  return identify;
+};
+
+export const useUniqueIdentifyAnotherNetwork = () => {
+  const currentAccount = useCurrentAccount();
+  const isMainnet = useIsMainnet();
+  const anotherNetwork: NetworkType = isMainnet ? 'TESTNET' : 'MAINNET';
+
+  const identify = useMemo(
+    () => `aelf_#${currentAccount?.address}_#${anotherNetwork}`,
+    [anotherNetwork, currentAccount?.address],
   );
   return identify;
 };

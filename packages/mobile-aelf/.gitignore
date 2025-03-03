@@ -42,6 +42,7 @@ yarn-error.log
 buck-out/
 \.buckd/
 *.keystore
+eoa-release-keystore.txt
 !debug.keystore
 
 # fastlane

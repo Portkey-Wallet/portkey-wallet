@@ -31,7 +31,7 @@ export default function AddressBackup() {
   const [copied, setCopied] = useState(false);
   const [visible, setVisible] = useState(false);
   const dispatch = useAppCommonDispatch();
-  const { cloudAvailable, handleListContents, handleDeleteFile, googleSignAndConfig } = useCloudStorage();
+  const { cloudAvailable, handleListContents, handleDeleteFile, googleSignAndConfig, loading } = useCloudStorage();
   // const [walletsKeyInCloud, setWalletsKeyInCloud] = useState<string[]>([]);
   const [walletBackedUp, setWalletBackedUp] = useState<boolean>(false);
 
@@ -182,23 +182,31 @@ export default function AddressBackup() {
         </View>
         {copied ? copiedView : copyButton}
       </View>
-      {backupType === 'Seed phrase' && (
+      {!isIOS && !cloudAvailable && (
+        <CommonButton
+          type="primary"
+          style={styles.continueButton}
+          loading={loading}
+          onPress={async () => {
+            const result = await googleSignAndConfig();
+            console.log('googleSignAndConfig result', result, cloudAvailable);
+            if (!result || !result.success) {
+              CommonToast.fail('Please login');
+              return;
+            }
+          }}>
+          Login Google to Backup
+        </CommonButton>
+      )}
+      {backupType === 'Seed phrase' && !(!isIOS && !cloudAvailable) && (
         <>
           {!walletBackedUp ? (
             <CommonButton
-              disabled={!cloudAvailable && isIOS}
+              disabled={!cloudAvailable}
               type="primary"
               // type="outline"
               style={styles.continueButton}
               onPress={async () => {
-                if (!isIOS) {
-                  const result = await googleSignAndConfig();
-                  console.log('googleSignAndConfig result', result, cloudAvailable);
-                  if (!result || !result.success) {
-                    CommonToast.fail('Cloud is not available');
-                    return;
-                  }
-                }
                 navigationService.push('CloudBackup', {
                   walletToBeBackup,
                   navigateTo: 'AddressBackup',

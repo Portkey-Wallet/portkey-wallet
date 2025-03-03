@@ -52,6 +52,7 @@ export const useCloudStorage = () => {
   // always alert google account select modal.
   const googleSignAndConfig = useCallback(
     async (needLogout = true) => {
+      setLoading(true);
       if (cloudStorage.getProvider() !== CloudStorageProvider.GoogleDrive) {
         setProvider(CloudStorageProvider.GoogleDrive);
       }
@@ -80,6 +81,8 @@ export const useCloudStorage = () => {
           message: 'Google Sign failed',
           error: e,
         };
+      } finally {
+        setLoading(false);
       }
     },
     [cloudStorage],

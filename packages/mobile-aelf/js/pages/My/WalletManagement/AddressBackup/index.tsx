@@ -31,7 +31,7 @@ export default function AddressBackup() {
   const [copied, setCopied] = useState(false);
   const [visible, setVisible] = useState(false);
   const dispatch = useAppCommonDispatch();
-  const { cloudAvailable, handleListContents, handleDeleteFile } = useCloudStorage();
+  const { cloudAvailable, handleListContents, handleDeleteFile, googleSignAndConfig } = useCloudStorage();
   // const [walletsKeyInCloud, setWalletsKeyInCloud] = useState<string[]>([]);
   const [walletBackedUp, setWalletBackedUp] = useState<boolean>(false);
 
@@ -186,11 +186,19 @@ export default function AddressBackup() {
         <>
           {!walletBackedUp ? (
             <CommonButton
-              disabled={!cloudAvailable}
+              disabled={!cloudAvailable && isIOS}
               type="primary"
               // type="outline"
               style={styles.continueButton}
-              onPress={() => {
+              onPress={async () => {
+                if (!isIOS) {
+                  const result = await googleSignAndConfig();
+                  console.log('googleSignAndConfig result', result, cloudAvailable);
+                  if (!result || !result.success) {
+                    CommonToast.fail('Cloud is not available');
+                    return;
+                  }
+                }
                 navigationService.push('CloudBackup', {
                   walletToBeBackup,
                   navigateTo: 'AddressBackup',

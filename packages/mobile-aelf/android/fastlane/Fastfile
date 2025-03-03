@@ -78,9 +78,9 @@ def build_and_notify(track:, title:)
     project_dir: "../android",
     properties: {
       "android.injected.signing.store.file" => ENV['RELEASE_STORE_FILE'],
-      "android.injected.signing.store.password" => ENV['RELEASE_KEYSTORE_PASSWORD'],
-      "android.injected.signing.key.alias" => ENV['RELEASE_KEYSTORE_ALIAS'],
-      "android.injected.signing.key.password" => ENV['RELEASE_KEYSTORE_PASSWORD']
+      "android.injected.signing.store.password" => ENV['RELEASE_STORE_PASSWORD'],
+      "android.injected.signing.key.alias" => ENV['RELEASE_KEY_ALIAS'],
+      "android.injected.signing.key.password" => ENV['RELEASE_KEY_PASSWORD']
     }
   )
 

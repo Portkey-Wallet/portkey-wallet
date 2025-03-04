@@ -54,7 +54,7 @@ export const useContactNetworkConfig = (isInit = false) => {
   const networkList = useNetworkList();
 
   const supportNetworkList = useMemo(
-    () => contactSupportNetworkMap[currentNetwork],
+    () => contactSupportNetworkMap?.[currentNetwork] || [],
     [contactSupportNetworkMap, currentNetwork],
   );
 
@@ -63,9 +63,10 @@ export const useContactNetworkConfig = (isInit = false) => {
   }, [dispatch, networkList]);
 
   useEffect(() => {
-    if (!isInit) return;
-    fetchContactSupportConfig();
-  }, [fetchContactSupportConfig, isInit]);
+    if (isInit || supportNetworkList?.length === 0) {
+      fetchContactSupportConfig();
+    }
+  }, [fetchContactSupportConfig, isInit, supportNetworkList?.length]);
 
   return {
     supportNetworkList,

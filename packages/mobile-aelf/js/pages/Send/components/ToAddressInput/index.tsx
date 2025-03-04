@@ -19,19 +19,19 @@ import { makeStyles } from '@rneui/themed';
 import Divider from 'components/Divider';
 import { useQrScanPermissionAndToast } from 'hooks/useQrScan';
 import { getSendNetworkList } from 'pages/Send/utils';
-import { IToSendAssetParamsType, IToSendHomeParamsType } from '@portkey-wallet/types/types-ca/routeParams';
+import { IToSendAssetParamsType, IToSendHomeParamsType } from '@portkey-wallet/types/types-eoa/routeParams';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
 import { getAelfAddress, isCrossChain, isDIDAelfAddress } from '@portkey-wallet/utils/aelf';
 import { useIsValidSuffix, useDefaultToken } from '@portkey-wallet/hooks/hooks-eoa/chainList';
 import { warning1Arr, WarningKey } from 'pages/Send/constant';
-import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentAccount } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 import { INetworkItem } from '../SelectNetwork';
 import { getStringAsync } from 'expo-clipboard';
 import { RouteProp, useRoute } from '@react-navigation/native';
-import { SendType } from '@portkey-wallet/types/types-ca/send';
+import { SendType } from '@portkey-wallet/types/types-eoa/send';
 import navigationService from 'utils/navigationService';
 import fonts from 'assets/theme/fonts';
-import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network-mainnet-v2';
+import { DefaultChainId } from '@portkey-wallet/constants/constants-eoa/network';
 
 export interface IToAddressInputRef {
   onInput: (address: string) => void;
@@ -85,7 +85,7 @@ export const ToAddressInputRef = forwardRef<IToAddressInputRef, IToAddressInput>
   const [checkedPass, setCheckedPass] = useState(false);
 
   const isValidChainId = useIsValidSuffix();
-  const wallet = useCurrentWalletInfo();
+  const wallet = useCurrentAccount();
   const defaultToken = useDefaultToken(selectedToken?.chainId || 'AELF');
 
   const isDangerWarning = useMemo(() => warning1Arr.includes(warning?.[0]), [warning]);
@@ -108,11 +108,10 @@ export const ToAddressInputRef = forwardRef<IToAddressInputRef, IToAddressInput>
       if (v.includes('_')) {
         const suffix = getAddressChainId(v);
 
+        console.log('isSameAddresses!!!!', wallet?.address, getAelfAddress(v), suffix, selectedToken?.chainId);
+
         // same address
-        if (
-          isSameAddresses(wallet?.[selectedToken?.chainId || 'AELF']?.caAddress || '', getAelfAddress(v)) &&
-          suffix === selectedToken?.chainId
-        ) {
+        if (isSameAddresses(wallet?.address || '', getAelfAddress(v)) && suffix === selectedToken?.chainId) {
           setCheckedPass(false);
           setWarning([WarningKey.SAME_ADDRESS]);
         } else if (!isValidChainId(suffix)) {
@@ -129,7 +128,7 @@ export const ToAddressInputRef = forwardRef<IToAddressInputRef, IToAddressInput>
         }
       } else {
         console.log('checkAddressByFE1111');
-        const isSameAddress = isSameAddresses(wallet?.[selectedToken?.chainId || 'AELF']?.caAddress || '', v);
+        const isSameAddress = isSameAddresses(wallet?.address || '', v);
         // same address
         if (selectedToken?.chainId === 'AELF' && !isSameAddress && selectedToken?.symbol === defaultToken.symbol) {
           setCheckedPass(false);

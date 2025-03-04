@@ -1,4 +1,4 @@
-import { LoginQRData, QRData, SendTokenQRDataType } from '@portkey-wallet/types/types-ca/qrcode';
+import { QRData, SendTokenQRDataType } from '@portkey-wallet/types/types-ca/qrcode';
 import { getChainIdByAddress, isAddress } from '@portkey-wallet/utils';
 import CommonPrompt from 'components/CommonPromptCard';
 import navigationService from './navigationService';
@@ -30,7 +30,7 @@ export function handlePortkeyQRCodeData(data: QRData, previousRouteInfo: RouteIn
   }
 
   if (type === 'login') {
-    return navigationService.navigate('ScanLogin', { data: data as LoginQRData });
+    return;
   }
 
   // send event

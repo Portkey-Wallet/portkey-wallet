@@ -358,6 +358,7 @@ export const getStyles = makeStyles((theme: any) => ({
     alignItems: 'center',
     paddingVertical: pTd(12),
     paddingHorizontal: pTd(16),
+    height: pTd(59),
   },
   grayColor: {
     ...fonts.SGMediumFont,

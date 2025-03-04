@@ -1,5 +1,5 @@
 #./github/workflows/build-android-internal-ca.yml
-name: Internal Sharing:\build for Android, upload to Google Play Store
+name: Internal Sharing:\build for Android, upload to S3 Bucket
 on:
   push:
     branches:

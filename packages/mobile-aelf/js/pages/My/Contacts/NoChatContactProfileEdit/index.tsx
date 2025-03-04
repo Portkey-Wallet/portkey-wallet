@@ -33,7 +33,7 @@ import navigationService from 'utils/navigationService';
 import { useContactNetworkConfig } from '@portkey-wallet/hooks/hooks-eoa/config';
 import { RECENT_PAGE_NAME } from 'constants/contact';
 import { SupportedELFChainId } from '@portkey-wallet/utils/eBridge/constants';
-import { getAddressInfo } from '@portkey-wallet/utils/aelf';
+import { getAddressInfo, isAelfAddress } from '@portkey-wallet/utils/aelf';
 import myEvents from 'utils/deviceEvent';
 
 type RouterParams = {
@@ -247,11 +247,41 @@ const ContactEdit: React.FC = () => {
       }
       return INIT_NONE_ERROR;
     };
+    const checkAddressIsValid = ({ address, network }: { address: string; network: string; isExchange: boolean }) => {
+      let isPass = true;
+
+      if (network === 'aelf') {
+        isPass = !!isAelfAddress(address);
+      } else {
+        const pattern = supportNetworkList?.find(ele => ele.network === network)?.pattern || '';
+        const regex = new RegExp(pattern);
+        isPass = regex.test(address);
+      }
+
+      console.log('===pass', isPass);
+
+      return isPass
+        ? INIT_NONE_ERROR
+        : {
+            ...INIT_HAS_ERROR,
+            errorMsg: invalidAddressMessage,
+          };
+    };
+
     const [errorNameList, errorAddressList] = await Promise.all([
       [checkRequired(_nameValue), checkRegex(_nameValue)],
-      [checkAddressChainId(_addressValue)],
+      [
+        checkAddressChainId(_addressValue),
+        checkAddressIsValid({
+          address: editContact.address,
+          network: editContact.network,
+          isExchange: !!editContact?.isExchange,
+        }),
+      ],
     ]);
+
     const errorName = errorNameList.find(item => item.isError);
+
     if (errorName) {
       setFormError(preFormError => ({
         ...preFormError,
@@ -277,7 +307,15 @@ const ContactEdit: React.FC = () => {
     }
 
     return errorName || errorAddress;
-  }, [editContact, selectedNetwork, t]);
+  }, [
+    editContact.address,
+    editContact?.isExchange,
+    editContact.name,
+    editContact.network,
+    selectedNetwork?.chainId,
+    supportNetworkList,
+    t,
+  ]);
   const onFinish = useCallback(async () => {
     try {
       Loading.show();

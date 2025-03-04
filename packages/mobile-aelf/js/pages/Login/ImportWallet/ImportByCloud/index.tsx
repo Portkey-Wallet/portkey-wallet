@@ -16,6 +16,8 @@ import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { useMultiChainAddressesModal } from 'hooks/useMultiChainAddressesModal';
 import { useWalletListState } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 import CommonToast from 'components/CommonToast';
+import LottieLoading from 'components/LottieLoading';
+import GStyles from 'assets/theme/GStyles';
 
 interface IAddressInfo {
   address: string;
@@ -39,6 +41,7 @@ export default function ImportByCloud() {
   const [importedAddressesInfo, setImportedAddressesInfo] = useState<IAddressInfo[]>([]);
   const [notImportedAddressesInfo, setNotImportedAddressesInfo] = useState<IAddressInfo[]>([]);
   const [addresses, setAddresses] = useState<string[]>([]);
+  const [googleDriveLoaded, setGoogleDriveLoaded] = useState(false);
   const { checkedSecurityLock } = useRouterParams<{
     checkedSecurityLock?: boolean;
   }>();
@@ -73,6 +76,7 @@ export default function ImportByCloud() {
         setAddresses(addressList);
         // getAddressInfo(addressList, _addressesInfo);
       } else {
+        setGoogleDriveLoaded(true);
         CommonToast.fail('No backup found');
       }
     };
@@ -118,7 +122,9 @@ export default function ImportByCloud() {
       setImportedAddressesInfo(_addressesInfoImported);
       setNotImportedAddressesInfo(_addressesInfoNotImported);
     };
-    getAddressInfo(addresses);
+    getAddressInfo(addresses).finally(() => {
+      setGoogleDriveLoaded(true);
+    });
   }, [addresses, addressesInfo, readFile, walletList]);
 
   return (
@@ -131,6 +137,7 @@ export default function ImportByCloud() {
       <Text style={commonStyles.title}>Choose backup</Text>
       <Text style={[commonStyles.desc, styles.marginBottom40]}>Select the backup you wish to import.</Text>
 
+      {!isIOS && !googleDriveLoaded && <LottieLoading lottieWrapStyle={GStyles.marginTop(pTd(24))} />}
       {notImportedAddressesInfo.map((item, index) => {
         return (
           <Touchable

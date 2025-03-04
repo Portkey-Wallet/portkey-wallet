@@ -1,6 +1,9 @@
 #./github/workflows/build-android-internal-ca.yml
 name: Internal Sharing:\build for Android, upload to Google Play Store
 on:
+  push:
+    branches:
+      - fastlane-build/eoa-app-internal-test 
   pull_request:
     branches:
       - fastlane-build/eoa-app-internal-test # This branch should be used for both Android and IOS build triggers.
@@ -18,12 +21,12 @@ jobs:
       - name: Decode Keystore File
         run: |
           echo "${{ secrets.ANDROID_EOA_KEYSTORE_BASE64 }}" | base64 -d > /tmp/release-key.keystore
-          echo "ANDROID_KEYSTORE_FILE=/tmp/release-key.keystore" >> $GITHUB_ENV
-    # Step debug ANDROID_KEYSTORE_FILE
-      - name: Check ANDROID_KEYSTORE_FILE
+          echo "EOA_ANDROID_KEYSTORE_FILE=/tmp/release-key.keystore" >> $GITHUB_ENV
+    # Step debug EOA_ANDROID_KEYSTORE_FILE
+      - name: Check EOA_ANDROID_KEYSTORE_FILE
         run: |
-          echo "ANDROID_KEYSTORE_FILE: $ANDROID_KEYSTORE_FILE"
-          ls -al $ANDROID_KEYSTORE_FILE
+          echo "EOA_ANDROID_KEYSTORE_FILE: $EOA_ANDROID_KEYSTORE_FILE"
+          ls -al $EOA_ANDROID_KEYSTORE_FILE
       # Step 1: Setup java and node
       - uses: actions/checkout@v3
       - name: Set up JDK 17
@@ -87,10 +90,10 @@ jobs:
         env:
           CI: true
           CD: true
-          ANDROID_KEYSTORE_FILE: ${{ secrets.ANDROID_KEYSTORE_FILE }}
+          ANDROID_KEYSTORE_FILE: ${{ secrets.EOA_ANDROID_KEYSTORE_FILE }}
           GOOGLE_JSON_KEY_FILE: /tmp/google-play-key.json
-          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-          ANDROID_KEYSTORE_ALIAS: ${{ secrets.ANDROID_KEYSTORE_ALIAS }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.EOA_ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEYSTORE_ALIAS: ${{ secrets.EOA_ANDROID_KEYSTORE_ALIAS }}
           LARK_WEBHOOK_URL: ${{ secrets.LARK_WEBHOOK_URL }}
           EOA_APK_S3_KEY: ${{ secrets.EOA_APK_S3_KEY }}
           EOA_APK_S3_SECRET: ${{ secrets.EOA_APK_S3_SECRET }}

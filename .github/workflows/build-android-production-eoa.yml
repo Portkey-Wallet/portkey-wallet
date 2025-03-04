@@ -1,9 +1,12 @@
 #./github/workflows/build-android-production-ca.yml
 name: Production Build:\build for Android, upload to Google Play Store
 on:
+  push:
+    branches:
+      - fastlane-build/eoa-app-production 
   pull_request:
     branches:
-      - fastlane-build/ca-app-production # This branch should be used for both Android and IOS build triggers.
+      - fastlane-build/eoa-app-production # This branch should be used for both Android and IOS build triggers.
 jobs:
   # ----------------------- ANDROID -----------------------------
   # -------------------------------------------------------------
@@ -17,8 +20,8 @@ jobs:
     # Step to decode Keystore file
       - name: Decode Keystore File
         run: |
-          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > /tmp/release-key.keystore
-          echo "ANDROID_KEYSTORE_FILE=/tmp/release-key.keystore" >> $GITHUB_ENV
+          echo "${{ secrets.ANDROID_EOA_KEYSTORE_BASE64 }}" | base64 -d > /tmp/release-key.keystore
+          echo "EOA_ANDROID_KEYSTORE_FILE=/tmp/release-key.keystore" >> $GITHUB_ENV
       # Step 1: Setup java and node
       - uses: actions/checkout@v3
       - name: Set up JDK 17
@@ -55,34 +58,34 @@ jobs:
           ruby-version: "2.7"
       # Step 5: Install bundler, and fastlane
       - name: Install Fastlane
-        run: cd packages/mobile-app-did/android && bundle install && cd ../
+        run: cd packages/mobile-aelf/android && bundle install && cd ../
         env:
           CI: true
       # Step 6: Install reactnative community pacakge manually
       - name: Add @react-native-community/cli-platform-android Dependency to Project
         run: |
-          cd packages/mobile-app-did
+          cd packages/mobile-aelf
           yarn add @react-native-community/cli-platform-android@7.0.1
         env:
           CI: true
     # Step load .env file
       - name: Create .env file for React Native Config
-        run: echo "${{ secrets.ENV_FILE_CONTENT }}" > $GITHUB_WORKSPACE/packages/mobile-app-did/.env
-    # Step cat ./packages/mobile-app-did/.env
+        run: echo "${{ secrets.ENV_EOA_FILE_CONTENT }}" > $GITHUB_WORKSPACE/packages/mobile-aelf/.env
+    # Step cat ./packages/mobile-aelf/.env
       - name: Verify .env file
-        run: cat $GITHUB_WORKSPACE/packages/mobile-app-did/.env
+        run: cat $GITHUB_WORKSPACE/packages/mobile-aelf/.env
       # Step 8: Fastlane build android
       - name : Build android App via fastlane
         run : |
-          cd packages/mobile-app-did/android
+          cd packages/mobile-aelf/android
           fastlane deploy_to_play_store 
         env:
           CI: true
           CD: true
-          ANDROID_KEYSTORE_FILE: ${{ secrets.ANDROID_KEYSTORE_FILE }}
+          ANDROID_KEYSTORE_FILE: ${{ secrets.EOA_ANDROID_KEYSTORE_FILE }}
           GOOGLE_JSON_KEY_FILE: /tmp/google-play-key.json
-          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-          ANDROID_KEYSTORE_ALIAS: ${{ secrets.ANDROID_KEYSTORE_ALIAS }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.EOA_ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEYSTORE_ALIAS: ${{ secrets.EOA_ANDROID_KEYSTORE_ALIAS }}
           LARK_WEBHOOK_URL: ${{ secrets.LARK_WEBHOOK_URL }}
           # production, beta, alpha, internal
           PLAY_STORE_TRACK: production

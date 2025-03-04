@@ -35,6 +35,7 @@ import { RECENT_PAGE_NAME } from 'constants/contact';
 import { SupportedELFChainId } from '@portkey-wallet/utils/eBridge/constants';
 import { getAddressInfo, isAelfAddress } from '@portkey-wallet/utils/aelf';
 import myEvents from 'utils/deviceEvent';
+import { isIOS } from '@rneui/base';
 
 type RouterParams = {
   contact?: IContactItemType;
@@ -80,7 +81,7 @@ const ContactEdit: React.FC = () => {
   const isEdit = useMemo(() => contact !== undefined, [contact]);
 
   const iptRef = useRef<TextInput>();
-  useInputFocus(iptRef, !isEdit);
+  useInputFocus(iptRef, !isEdit, isIOS ? undefined : 100);
 
   // const defaultToken = useDefaultToken();
   const { t } = useLanguage();

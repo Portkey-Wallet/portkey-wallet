@@ -1,0 +1,231 @@
+#android/fastlane/Fastlane
+require 'aws-sdk-s3'
+
+def upload_s3_file(s3_client, bucket_name, region, file_path, s3_key)
+  s3_client.put_object(
+    bucket: bucket_name,
+    key: s3_key,
+    body: File.read(file_path),
+    acl: 'public-read'
+  )
+  apkUrl = "https://#{bucket_name}.s3.#{region}.amazonaws.com/#{s3_key}";
+  puts "File uploaded successfully to  #{apkUrl}"
+  return apkUrl
+  # puts "File uploaded successfully to response is: #{response}"
+end
+
+# get version name
+def get_version_name(file_path)
+  gradle_file = File.read(file_path)
+  version_name_match = gradle_file.match(/versionName\s+["']([\d.]+)["']/)
+  if version_name_match
+    return version_name_match[1]
+  else
+    UI.user_error!("Could not find versionName in #{file_path}")
+  end
+end
+
+# get time stamp
+def get_timestamp
+  Time.now.strftime("%Y-%m-%d %H:%M:%S")
+end
+
+# the last commit id & commit msg
+def get_latest_commit
+  commit_id = `git log -1 --pretty=format:"%H"`.strip
+  commit_message = `git log -1 --pretty=format:"%s"`.strip
+  { id: commit_id, message: commit_message }
+end
+
+# lark notification
+def send_lark_notification(title:, app_name:, version_name:, build_time:, download_url:, commit:)
+  lark_message = {
+    "msg_type" => "post",
+    "content" => {
+      "post" => {
+        "en_us" => {
+          "title" => "#{title} 🚀",
+          "content" => [
+            [
+              { "tag" => "text", "text" => "🌟 App(Android): " },
+              { "tag" => "text", "text" => app_name },
+              { "tag" => "text", "text" => "\n🌟 Version: " },
+              { "tag" => "text", "text" => version_name },
+              { "tag" => "text", "text" => "\n📅 Build Time#{ENV['CI']? '(UTC)':''}: " },
+              { "tag" => "text", "text" => build_time },
+              { "tag" => "text", "text" => "\n🔗 Download Link: " },
+              download_url && { "tag" => "a", "text" => "Click here to download", "href" => download_url },
+              { "tag" => "text", "text" => "\n\n🛠️ Latest Commit:" },
+              { "tag" => "text", "text" => "\nID: #{commit[:id]}" },
+              { "tag" => "text", "text" => "\nMessage: #{commit[:message]}" }
+            ]
+          ]
+        }
+      }
+    }
+  }
+
+  lark_webhook_url = ENV['LARK_WEBHOOK_URL'] || "https://open.larksuite.com/open-apis/bot/v2/hook/7ff82584-0b49-4d63-bd8a-81449b77c38f"
+  unless lark_webhook_url
+    UI.user_error!("LARK_WEBHOOK_URL is not set!")
+  end
+
+  uri = URI.parse(lark_webhook_url)
+  http = Net::HTTP.new(uri.host, uri.port)
+  http.use_ssl = true
+  request = Net::HTTP::Post.new(uri.path, { 'Content-Type' => 'application/json' })
+  request.body = lark_message.to_json
+  response = http.request(request)
+
+  if response.code.to_i >= 200 && response.code.to_i < 300
+    UI.success("Lark notification sent successfully! 🚀")
+  else
+    UI.error("Failed to send Lark notification: #{response.code} - #{response.body}")
+  end
+end
+
+# build & notification
+def build_and_notify(track:, title:)
+  # if track == "internal_sharing"
+  #   # Build APK file
+  #   gradle(
+  #   task: "clean assemble",
+  #   build_type: "Release",
+  #   project_dir: "../android",
+  #   properties: {
+  #     "android.injected.signing.store.file" => ENV['RELEASE_STORE_FILE'],
+  #     "android.injected.signing.store.password" => ENV['RELEASE_STORE_PASSWORD'],
+  #     "android.injected.signing.key.alias" => ENV['RELEASE_KEY_ALIAS'],
+  #     "android.injected.signing.key.password" => ENV['RELEASE_KEY_PASSWORD']
+  #     }
+  #   )
+  # elsif track == "play_store"
+  #   # Build AAB file
+  #   gradle(
+  #     task: "clean bundle",
+  #     build_type: "Release",
+  #     project_dir: "../android",
+  #     properties: {
+  #       "android.injected.signing.store.file" => ENV['RELEASE_STORE_FILE'],
+  #       "android.injected.signing.store.password" => ENV['RELEASE_STORE_PASSWORD'],
+  #       "android.injected.signing.key.alias" => ENV['RELEASE_KEY_ALIAS'],
+  #       "android.injected.signing.key.password" => ENV['RELEASE_KEY_PASSWORD']
+  #     }
+  #   )
+
+  # Upload and get download URL
+  if track == "internal_sharing"
+    gradle(
+      task: "clean assemble",
+      build_type: "Release",
+      project_dir: "../android",
+      properties: {
+        "android.injected.signing.store.file" => ENV['ANDROID_KEYSTORE_FILE'],
+        "android.injected.signing.store.password" => ENV['ANDROID_KEYSTORE_PASSWORD'],
+        "android.injected.signing.key.alias" => ENV['ANDROID_KEYSTORE_ALIAS'],
+        "android.injected.signing.key.password" => ENV['ANDROID_KEYSTORE_PASSWORD']
+        }
+    )
+    s3_key = ENV['EOA_APK_S3_KEY']
+    s3_secret = ENV['EOA_APK_S3_SECRET']
+    bucket_name = 'portkey-eoa-cms-testnet'
+    region = 'ap-northeast-1'
+
+    s3_client = Aws::S3::Client.new(
+      access_key_id: s3_key,
+      secret_access_key: s3_secret,
+      region: region
+    )
+    apk_path = lane_context[SharedValues::GRADLE_APK_OUTPUT_PATH]
+    apk_file_name = File.basename(apk_path)
+
+    s3_key_file = "eoa-apk/#{apk_file_name}"
+    download_url = upload_s3_file(s3_client, bucket_name, region, apk_path, s3_key_file)
+    # download_url = upload_to_play_store_internal_app_sharing(
+    #   package_name: "com.portkey.fairyvault",
+    #   json_key: ENV['GOOGLE_JSON_KEY_FILE'],
+    #   aab: File.absolute_path('../app/build/outputs/bundle/release/app-release.aab'),
+    #   )
+  elsif track == "play_store"
+    gradle(
+      task: "clean bundle",
+      build_type: "Release",
+      project_dir: "../android",
+      properties: {
+        "android.injected.signing.store.file" => ENV['RELEASE_STORE_FILE'],
+        "android.injected.signing.store.password" => ENV['RELEASE_STORE_PASSWORD'],
+        "android.injected.signing.key.alias" => ENV['RELEASE_KEY_ALIAS'],
+        "android.injected.signing.key.password" => ENV['RELEASE_KEY_PASSWORD']
+      }
+    )
+    upload_to_play_store(
+      track: ENV['PLAY_STORE_TRACK'], # or alpha, beta
+      release_status: "draft",
+      json_key: ENV['GOOGLE_JSON_KEY_FILE'],
+      aab: File.absolute_path('../app/build/outputs/bundle/release/app-release.aab'),
+      sync_image_upload: true
+    )
+    download_url = nil
+  else
+    UI.user_error!("Unsupported track: #{track}")
+  end
+
+  # get version info
+  app_name = "Portkey EOA Wallet"
+  version_name = get_version_name("../app/build.gradle")
+  build_time = get_timestamp
+  commit = get_latest_commit
+
+  # send notification
+  send_lark_notification(
+    title: title,
+    app_name: app_name,
+    version_name: version_name,
+    build_time: build_time,
+    download_url: download_url,
+    commit: commit
+  )
+end
+
+default_platform(:android)
+platform :android do
+  desc 'build beta'
+  lane :beta_local do
+    # Adjust the `build_type` and `flavor` params as needed to build the right APK for your setup
+    gradle(
+      task: 'assemble',
+      build_type: 'Release'
+    )
+  
+    # ...
+  end
+
+  desc "Internal Sharing Upload Lane"
+  lane :internal_sharing do
+    build_and_notify(track: "internal_sharing", title: "Internal App Deployment")
+  end
+
+  desc "Google Play Store Deployment Lane"
+  lane :deploy_to_play_store do
+    build_and_notify(track: "play_store", title: "Play Store App Deployment")
+  end
+
+  desc "Echo details"
+  lane :echo_deploy_to_play_store do
+    app_name = "Portkey Wallet"
+    version_name = get_version_name("../app/build.gradle")
+    build_time = get_timestamp
+    commit = get_latest_commit
+    s3_key = ENV['EOA_APK_S3_KEY']
+    s3_secret = ENV['EOA_APK_S3_SECRET']
+
+    UI.message "Latest Commit ID: #{commit[:id]}"
+    UI.message "Latest Commit Message: #{commit[:message]}"
+    UI.message "App Name: #{app_name}"
+    UI.message "Version Name: #{version_name}"
+    UI.message "Build Time: #{build_time}"
+    UI.message "KeyStore File: #{ENV['RELEASE_STORE_FILE']}"
+    UI.message "EOA_APK_S3_KEY: #{s3_key}"
+    UI.message "EOA_APK_S3_SECRET: #{s3_secret}"
+  end
+end

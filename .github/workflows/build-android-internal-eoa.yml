@@ -63,7 +63,10 @@ jobs:
         run: cd packages/mobile-aelf/android && bundle install && cd ../
         env:
           CI: true
-      # Step 6: Install reactnative community pacakge manually
+       # Step 6: Install aws-sdk-s3 gem
+      - name: Install aws-sdk-s3 gem
+        run: gem install aws-sdk-s3
+      # Step 7: Install reactnative community pacakge manually
       - name: Add @react-native-community/cli-platform-android Dependency to Project
         run: |
           cd packages/mobile-aelf
@@ -89,3 +92,5 @@ jobs:
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           ANDROID_KEYSTORE_ALIAS: ${{ secrets.ANDROID_KEYSTORE_ALIAS }}
           LARK_WEBHOOK_URL: ${{ secrets.LARK_WEBHOOK_URL }}
+          EOA_APK_S3_KEY: ${{ secrets.EOA_APK_S3_KEY }}
+          EOA_APK_S3_SECRET: ${{ secrets.EOA_APK_S3_SECRET }}

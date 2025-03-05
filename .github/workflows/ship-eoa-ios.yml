@@ -2,7 +2,7 @@ name: Ship EOA Wallet to TestFlight
 on:
   push:
     branches:
-      - fastlane-build/eoa-app-internal-test
+      - fastlane-build/eoa-ios-testFlight
 
 jobs:
   # ----------------------- ANDROID -----------------------------

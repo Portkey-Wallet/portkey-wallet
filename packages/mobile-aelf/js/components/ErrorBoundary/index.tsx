@@ -5,6 +5,7 @@ import { Severity } from '@portkey-wallet/utils/ExceptionManager';
 import ReactErrorBoundary, { ErrorBoundaryTrue, handleReportError } from '@portkey-wallet/utils/errorBoundary';
 import * as errorUtils from 'utils/errorUtils';
 import crashlytics from '@react-native-firebase/crashlytics';
+import * as Clipboard from 'expo-clipboard';
 
 export type ErrorBoundaryProps = {
   children: ReactNode;
@@ -27,11 +28,15 @@ class ReactNativeErrorBoundary extends ReactErrorBoundary {
 
 export default function ErrorBoundary({ children, view }: ErrorBoundaryProps) {
   const onCaptureException = useCallback(
-    ({ error, componentStack }: Omit<ErrorBoundaryTrue, 'hasError'>) => {
+    async ({ error, componentStack }: Omit<ErrorBoundaryTrue, 'hasError'>) => {
       const handleError = handleReportError({ error, componentStack, view });
       crashlytics().recordError(handleError, view);
 
       console.log('Severity.Error', JSON.stringify(handleError), Severity.Error);
+
+      // TODO: delete it
+      await Clipboard.setStringAsync(JSON.stringify(handleError));
+
       exceptionManager.reportError(handleError, Severity.Error);
     },
     [view],

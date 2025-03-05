@@ -100,7 +100,9 @@ export default function SecurityLock() {
   const handleBio = useCallback(async () => {
     try {
       // always cancel. If not, multi call will cause 'app_cancel' in Android.
-      await cancelAuthenticate();
+      if (!isIOS) {
+        await cancelAuthenticate();
+      }
       const securePassword = await getSecureStoreItem('Pin');
       if (!securePassword) {
         return;

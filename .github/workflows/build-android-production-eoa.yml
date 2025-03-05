@@ -4,9 +4,9 @@ on:
   push:
     branches:
       - fastlane-build/eoa-app-production 
-  pull_request:
-    branches:
-      - fastlane-build/eoa-app-production # This branch should be used for both Android and IOS build triggers.
+  # pull_request:
+  #   branches:
+  #     - fastlane-build/eoa-app-production # This branch should be used for both Android and IOS build triggers.
 jobs:
   # ----------------------- ANDROID -----------------------------
   # -------------------------------------------------------------

@@ -95,7 +95,7 @@ export default function Receive() {
         </Touchable>
       }
       containerStyles={styles.containerStyles}
-      scrollViewProps={{ disabled: true }}>
+      scrollViewProps={{ disabled: false }}>
       {sourceChain && destinationChain && (
         <>
           <SourceDestinationPicker

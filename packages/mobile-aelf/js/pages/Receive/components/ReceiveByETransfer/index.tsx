@@ -12,6 +12,8 @@ import Svg from 'components/Svg';
 import ReceiveQRCode from '../ReceiveQRCode';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import { getManagerAccount, getPin } from 'utils/redux';
+import { isIOS } from '@portkey-wallet/utils/mobile/device';
+import GStyles from 'assets/theme/GStyles';
 
 export default function ReceiveByETransfer({
   sourceChain,
@@ -81,7 +83,11 @@ export default function ReceiveByETransfer({
     return (
       <View style={styles.supportWrap}>
         <Text style={styles.supportText}>Powered by</Text>
-        <Svg icon="ETransferLogo" size={pTd(70)} iconStyle={styles.etransferIcon} />
+        <Svg
+          icon="ETransferLogo"
+          iconStyle={[styles.etransferIcon, !isIOS && GStyles.marginTop(pTd(3))]}
+          size={pTd(70)}
+        />
       </View>
     );
   }, [styles]);

@@ -9,16 +9,20 @@ import { Keyboard } from 'react-native';
 
 const TIME_OUT = 20000; // recaptcha timeout 20 seconds
 
-async function verifyHumanMachine(language: any) {
+async function verifyHumanMachine(language: any, isEtransfer = false, isMainnet?: boolean) {
   let timer: undefined | NodeJS.Timer;
   Keyboard.dismiss();
+  let siteKey = '';
+  if (isEtransfer) {
+    siteKey = isMainnet ? Config.RECAPTCHA_SITE_MAINNET_KEY || '' : Config.RECAPTCHA_SITE_TESTNET_KEY || '';
+  }
 
   return new Promise((resolve, reject) => {
     const key = OverlayModal.show(
       <Recaptcha
         lang={language}
         headerComponent={null}
-        siteKey={Config.RECAPTCHA_SITE_KEY || ''}
+        siteKey={siteKey || Config.RECAPTCHA_SITE_KEY || ''}
         baseUrl={Config.RECAPTCHA_BASE_URL || ''}
         onVerify={token => {
           OverlayModal.hideKey(key);

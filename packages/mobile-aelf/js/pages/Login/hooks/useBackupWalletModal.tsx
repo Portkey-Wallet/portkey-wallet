@@ -10,10 +10,13 @@ import { makeStyles } from '@rneui/themed';
 import fonts from 'assets/theme/fonts';
 import { useCheckSecurityLock } from 'hooks/securityLock';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
+import CommonToast from 'components/CommonToast';
+import { useCloudStorage } from '../CloudBackup/useCloudStorage';
 
 export const useBackupWalletModal = () => {
   const checkSecurityLock = useCheckSecurityLock();
   const styles = getStyles();
+  const { googleSignAndConfig } = useCloudStorage();
   const showBackupWalletModal = useCallback(() => {
     ActionSheet.alert({
       isCloseShow: false,
@@ -32,6 +35,13 @@ export const useBackupWalletModal = () => {
           type: 'primary',
           title: isIOS ? 'Back up on iCloud' : 'Back up on Google Drive',
           onPress: async () => {
+            if (!isIOS) {
+              const result = await googleSignAndConfig(true);
+              if (!result || !result.success) {
+                CommonToast.fail('Cloud is not available');
+                return;
+              }
+            }
             navigationService.push('CloudBackup');
           },
         },

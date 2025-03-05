@@ -41,7 +41,7 @@ const QrScanner: React.FC<QrScannerProps> = () => {
     useCallback(() => {
       (async () => {
         setRefresh(true);
-        await sleep(10);
+        await sleep(isIOS ? 300 : 10);
         setRefresh(false);
       })();
     }, []),
@@ -85,14 +85,14 @@ const QrScanner: React.FC<QrScannerProps> = () => {
 
   return (
     <View style={PageStyle.wrapper}>
-      <CameraView
-        ratio={'16:9'}
-        barcodeScannerSettings={{
-          barcodeTypes: ['qr', 'pdf417'],
-        }}
-        style={[PageStyle.barCodeScanner, !isIOS && PageStyle.barCodeScannerAndroid]}
-        onBarcodeScanned={handleBarCodeScanned}>
-        {!refresh && (
+      {!refresh && (
+        <CameraView
+          ratio={'16:9'}
+          barcodeScannerSettings={{
+            barcodeTypes: ['qr', 'pdf417'],
+          }}
+          style={[PageStyle.barCodeScanner, !isIOS && PageStyle.barCodeScannerAndroid]}
+          onBarcodeScanned={handleBarCodeScanned}>
           <SafeAreaView style={PageStyle.innerView}>
             <View style={PageStyle.iconWrap}>
               <Touchable
@@ -109,8 +109,8 @@ const QrScanner: React.FC<QrScannerProps> = () => {
             <Svg icon="scan-square" size={pTd(240)} iconStyle={PageStyle.scan} />
             <TextM style={PageStyle.tips}>{t('Send crypto and connect to dApps \n by scanning a QR code')}</TextM>
           </SafeAreaView>
-        )}
-      </CameraView>
+        </CameraView>
+      )}
     </View>
   );
 };

@@ -6,6 +6,7 @@ import PageContainer from 'components/PageContainer';
 import { DigitInputInterface } from 'components/DigitInput';
 import { PIN_SIZE } from '@portkey-wallet/constants/misc';
 import { checkPin } from 'utils/redux';
+import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import { View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import navigationService from 'utils/navigationService';
@@ -23,6 +24,7 @@ import { useUser } from 'hooks/store';
 import CommonButton from 'components/CommonButton';
 import Svg from 'components/Svg';
 import { AppState, AppStateStatus, NativeEventSubscription } from 'react-native';
+import { cancelAuthenticate } from 'expo-local-authentication';
 
 type RouterParams = {
   isCheck?: boolean;
@@ -96,21 +98,34 @@ export default function SecurityLock() {
   );
 
   const handleBio = useCallback(async () => {
-    const securePassword = await getSecureStoreItem('Pin');
-    if (!securePassword) {
-      return;
+    try {
+      // always cancel. If not, multi call will cause 'app_cancel' in Android.
+      if (!isIOS) {
+        await cancelAuthenticate();
+      }
+      const securePassword = await getSecureStoreItem('Pin');
+      if (!securePassword) {
+        return;
+      }
+      handlePassword(securePassword);
+    } catch (e) {
+      console.warn(e, '==handleBio');
+      // CommonToast.fail('Please try again');
     }
-    handlePassword(securePassword);
   }, [handlePassword]);
 
   useEffect(() => {
     if (!biometrics) {
       return;
     }
+    console.log(appStateRef.current, '===appStateRef.current');
     handleBio();
     listener.current = AppState.addEventListener('change', nextAppState => {
       console.log('LockScreen biometrics appStateRef', nextAppState, appStateRef.current);
-      if (appStateRef.current === 'background' && nextAppState === 'active') {
+      const validCurrentAndroid = !isIOS && (appStateRef.current === 'background' || appStateRef.current === undefined);
+      const validCurrentIOS = isIOS && appStateRef.current === 'background';
+      const validCurrent = validCurrentAndroid || validCurrentIOS;
+      if (validCurrent && nextAppState === 'active') {
         handleBio();
       }
       appStateRef.current = nextAppState;

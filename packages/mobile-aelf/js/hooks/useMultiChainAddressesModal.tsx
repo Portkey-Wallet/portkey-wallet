@@ -10,15 +10,17 @@ import * as Clipboard from 'expo-clipboard';
 import CommonToast from 'components/CommonToast';
 import { addressFormat, formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import { makeStyles } from '@rneui/themed';
+import { useCurrentNetwork } from '@portkey-wallet/hooks/hooks-eoa/network';
 import fonts from '../assets/theme/fonts';
 
-const modalAddressInfo: {
+interface IModalAddressInfo {
   chain: ChainId;
   name: string;
   icon: IconName;
   addressFormatted: string;
   addressShow: string;
-}[] = [
+}
+const modalAddressInfoMainnet: IModalAddressInfo[] = [
   {
     chain: 'tDVV',
     icon: 'Chain=AELF Side',
@@ -35,19 +37,39 @@ const modalAddressInfo: {
   },
 ];
 
+const modalAddressInfoTestnet: IModalAddressInfo[] = [
+  {
+    chain: 'tDVW',
+    icon: 'Chain=AELF Side',
+    name: 'aelf dAppChain',
+    addressFormatted: '',
+    addressShow: '',
+  },
+  {
+    chain: 'AELF',
+    icon: 'Chain=AELF Main',
+    name: 'aelf MainChain',
+    addressFormatted: '',
+    addressShow: '',
+  },
+];
+
 export const useMultiChainAddressesModal = () => {
   const addressCardStyles = getAddressCardStyles();
+  const currentNetwork = useCurrentNetwork();
 
   const showMultiChainAddressesModal = useCallback(
     ({ address }: { address: string }) => {
-      const addressesShowInfo = modalAddressInfo.map(_addressInfo => {
-        const addressFormatted = addressFormat(address, _addressInfo.chain);
-        return {
-          ..._addressInfo,
-          addressFormatted,
-          addressShow: formatStr2EllipsisStr(addressFormatted, 8),
-        };
-      });
+      const addressesShowInfo = (currentNetwork === 'TESTNET' ? modalAddressInfoTestnet : modalAddressInfoMainnet).map(
+        _addressInfo => {
+          const addressFormatted = addressFormat(address, _addressInfo.chain);
+          return {
+            ..._addressInfo,
+            addressFormatted,
+            addressShow: formatStr2EllipsisStr(addressFormatted, 8),
+          };
+        },
+      );
       ActionSheet.alert({
         isCloseShow: false,
         title: <Text style={addressCardStyles.header}>Multichain addresses</Text>,

@@ -74,6 +74,7 @@ import { useBalanceByContract } from 'hooks/balanceByContract';
 import CommonToast from 'components/CommonToast';
 import { useChainList } from '@portkey-wallet/hooks/hooks-eoa/network/chain';
 import { IContactItemMyType } from 'components/ContactItemMy';
+import { useCurrentNetwork } from '@portkey-wallet/hooks/hooks-eoa/network';
 
 const SendHome: React.FC = () => {
   const {
@@ -120,6 +121,8 @@ const SendHome: React.FC = () => {
   const crossTransferByEtransfer = useCrossTransferByEtransfer(pin);
 
   const { getTokenConfig, getAELFChainInfoConfig, getEVMChainInfoConfig } = useGetEBridgeConfig();
+
+  const currentNetwork = useCurrentNetwork();
 
   const [warning, setWarning] = useState<WarningKey[]>([]);
   const { getTokenBalanceByContract } = useBalanceByContract();
@@ -562,6 +565,7 @@ const SendHome: React.FC = () => {
           chainId: assetInfo.chainId,
           amount: sendNumber,
           network: targetNetwork?.network || '',
+          isMainnet: currentNetwork === 'MAINNET',
         });
         console.log('withdrawInfo result', withdrawInfo);
         networkFee = withdrawInfo?.aelfTransactionFee;
@@ -671,6 +675,7 @@ const SendHome: React.FC = () => {
             amount: sendNumber,
             network,
             currentAccountAddress: currentAccount?.address || '',
+            isMainnet: currentNetwork === 'MAINNET',
           });
 
           transactionFee = withdrawInfo?.aelfTransactionFee;

@@ -1,10 +1,10 @@
-import { LoginQRData, QRData, SendTokenQRDataType } from '@portkey-wallet/types/types-ca/qrcode';
+import { QRData, SendTokenQRDataType } from '@portkey-wallet/types/types-ca/qrcode';
 import { getChainIdByAddress, isAddress } from '@portkey-wallet/utils';
 import CommonPrompt from 'components/CommonPromptCard';
 import navigationService from './navigationService';
 
 import { IToSendHomeParamsType } from '@portkey-wallet/types/types-ca/routeParams';
-import { request } from '@portkey-wallet/api/api-did';
+import { request } from '@portkey-wallet/api/api-eoa';
 import Loading from 'components/Loading';
 import { ChainId } from '@portkey-wallet/types';
 
@@ -30,7 +30,7 @@ export function handlePortkeyQRCodeData(data: QRData, previousRouteInfo: RouteIn
   }
 
   if (type === 'login') {
-    return navigationService.navigate('ScanLogin', { data: data as LoginQRData });
+    return;
   }
 
   // send event
@@ -82,7 +82,8 @@ export function handleAelfQrCode(data: string, previousRouteInfo: RouteInfoType)
 export async function isWeb3Address(str: string) {
   try {
     Loading.show();
-    const { data } = await request.sendApi.getSendNetworkList({
+
+    const data = await request.sendApi.getSendNetworkList({
       params: {
         symbol: 'ELF',
         chainId: 'AELF',

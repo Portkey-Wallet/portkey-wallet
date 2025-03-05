@@ -16,6 +16,8 @@ import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { useMultiChainAddressesModal } from 'hooks/useMultiChainAddressesModal';
 import { useWalletListState } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 import CommonToast from 'components/CommonToast';
+import LottieLoading from 'components/LottieLoading';
+import GStyles from 'assets/theme/GStyles';
 
 interface IAddressInfo {
   address: string;
@@ -31,7 +33,7 @@ export default function ImportByCloud() {
   const commonStyles = useWalletCommonStyles();
   const cardStyles = useCardStyles();
 
-  const { handleListContents, readFile } = useCloudStorage();
+  const { handleListContents, readFile, cloudAvailable, googleSignAndConfig } = useCloudStorage();
   const { showMultiChainAddressesModal } = useMultiChainAddressesModal();
   const walletList = useWalletListState();
 
@@ -39,14 +41,25 @@ export default function ImportByCloud() {
   const [importedAddressesInfo, setImportedAddressesInfo] = useState<IAddressInfo[]>([]);
   const [notImportedAddressesInfo, setNotImportedAddressesInfo] = useState<IAddressInfo[]>([]);
   const [addresses, setAddresses] = useState<string[]>([]);
+  const [googleDriveLoaded, setGoogleDriveLoaded] = useState(false);
   const { checkedSecurityLock } = useRouterParams<{
     checkedSecurityLock?: boolean;
   }>();
 
   useEffect(() => {
+    if (!isIOS) {
+      googleSignAndConfig(false);
+    }
+  }, [googleSignAndConfig]);
+
+  useEffect(() => {
+    console.log('cloudAvailable: ', cloudAvailable);
+    if (!cloudAvailable) {
+      return;
+    }
     const getAddressList = async () => {
       const addressList = await handleListContents();
-      console.log('address list', addressList);
+      console.log('address list: ', addressList, cloudAvailable);
       if (addressList) {
         const _addressesInfo = addressList.map(item => {
           return {
@@ -63,11 +76,12 @@ export default function ImportByCloud() {
         setAddresses(addressList);
         // getAddressInfo(addressList, _addressesInfo);
       } else {
+        setGoogleDriveLoaded(true);
         CommonToast.fail('No backup found');
       }
     };
     getAddressList();
-  }, [handleListContents, readFile]);
+  }, [handleListContents, cloudAvailable]);
 
   useEffect(() => {
     if (addresses.length === 0) {
@@ -89,6 +103,7 @@ export default function ImportByCloud() {
           }
         });
       });
+      console.log('sort by updateTime start');
       // sort by updateTime
       _addressesInfo = _addressesInfo.sort((a, b) => {
         if (a.info?.updateTime && b.info?.updateTime) {
@@ -107,7 +122,9 @@ export default function ImportByCloud() {
       setImportedAddressesInfo(_addressesInfoImported);
       setNotImportedAddressesInfo(_addressesInfoNotImported);
     };
-    getAddressInfo(addresses);
+    getAddressInfo(addresses).finally(() => {
+      setGoogleDriveLoaded(true);
+    });
   }, [addresses, addressesInfo, readFile, walletList]);
 
   return (
@@ -120,6 +137,7 @@ export default function ImportByCloud() {
       <Text style={commonStyles.title}>Choose backup</Text>
       <Text style={[commonStyles.desc, styles.marginBottom40]}>Select the backup you wish to import.</Text>
 
+      {!isIOS && !googleDriveLoaded && <LottieLoading lottieWrapStyle={GStyles.marginTop(pTd(24))} />}
       {notImportedAddressesInfo.map((item, index) => {
         return (
           <Touchable

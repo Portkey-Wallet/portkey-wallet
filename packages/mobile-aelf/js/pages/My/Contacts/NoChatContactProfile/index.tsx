@@ -65,7 +65,7 @@ const NoChatContactProfile: React.FC = () => {
     };
   }, [contact]);
 
-  const { explorerUrl } = useCurrentChain(contact?.addressInfo?.chainId) ?? {};
+  const { explorerUrl } = useCurrentChain(contact?.addressInfo?.chainId || 'AELF') ?? {};
 
   return (
     <PageContainer

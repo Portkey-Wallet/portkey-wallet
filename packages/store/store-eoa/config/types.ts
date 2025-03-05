@@ -5,6 +5,7 @@ export interface IContactSupportNetworkItem {
   name: string;
   chainId: ChainId;
   imageUrl: string;
+  pattern?: string;
 }
 
 export interface ITransferSupportNetworkItem {

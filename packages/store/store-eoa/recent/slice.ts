@@ -17,12 +17,12 @@ export const recentSlice = createSlice({
       state,
       action: PayloadAction<{
         recentItem: IRecentItem;
-        network: NetworkType;
+        id: string;
       }>,
     ) => {
-      const { network, recentItem } = action.payload;
+      const { id, recentItem } = action.payload;
 
-      const targetList = [...(state.recentMap?.[network] || [])];
+      const targetList = [...(state.recentMap?.[id] || [])];
 
       const existingIndex = targetList.findIndex(ele => {
         return recentItem.network && recentItem.network !== 'aelf'
@@ -41,10 +41,10 @@ export const recentSlice = createSlice({
 
       state.recentMap = {
         ...state.recentMap,
-        [network]: targetList,
+        [id]: targetList,
       };
     },
-    resetTargetNetworkRecent: (state, action: PayloadAction<NetworkType>) => {
+    resetTargetIdRecent: (state, action: PayloadAction<string>) => {
       state.recentMap = {
         ...state.recentMap,
         [action.payload]: [],
@@ -54,6 +54,6 @@ export const recentSlice = createSlice({
   },
 });
 
-export const { addRecentItem, resetRecent, resetTargetNetworkRecent } = recentSlice.actions;
+export const { addRecentItem, resetRecent, resetTargetIdRecent } = recentSlice.actions;
 
 export default recentSlice;

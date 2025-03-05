@@ -165,56 +165,74 @@ class DepositService implements IDepositService {
   }
 
   async getTransferToken(params: TQueryTransferAuthTokenRequest, apiUrl: string): Promise<string> {
-    const { pubkey, signature, plain_text, managerAddress, recaptchaToken } = params;
     // save request params for retry
     this.tokenRequestParams = params;
     this.tokenRequestApiUrl = apiUrl;
-    //   pubkey: string;
-    // signature: string;
-    // plain_text: string;
-    // ca_hash?: string;
-    // chain_id?: string;
-    // scope: string;
-    // managerAddress: string;
-    // recaptchaToken?: string;
-    console.log('params=====', {
-      pubkey,
-      signature,
-      plainText: plain_text,
-      managerAddress,
-      recaptchaToken,
-      version: PortkeyVersion.v2,
-      source: AuthTokenSource.NightElf,
+
+    const a = await customFetch(apiUrl + '/api/app/transfer/connect/token', {
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      method: 'POST',
+      body: stringify(params),
     });
-    try {
-      const token = await eTransferCore.getAuthToken({
-        pubkey,
-        signature,
-        plainText: plain_text,
-        managerAddress,
-        recaptchaToken,
-        version: PortkeyVersion.v2,
-        source: AuthTokenSource.NightElf,
-      });
-      // console.log('token is====', typeof token, 'token1111', token);
-      this.transferToken = token;
-      request.set('headers', { 'T-Authorization': this.transferToken });
-      return token;
-    } catch (e) {
-      console.log('error wfswfs222', JSON.stringify(e), ' eTransferCore.baseUrl;', eTransferCore.baseUrl);
-    }
-    // const a = await customFetch(apiUrl + '/api/app/transfer/connect/token', {
-    //   headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    //   method: 'POST',
-    //   body: stringify(params),
-    // });
-    // console.log('result=====', a);
-    // const { access_token, token_type } = a;
-    // const token = `${token_type} ${access_token}`;
-    // this.transferToken = token;
-    // request.set('headers', { 'T-Authorization': this.transferToken });
-    // return token;
+    console.log('wfs====aaaaa', a);
+    const { access_token, token_type } = a.data;
+    const token = `${token_type} ${access_token}`;
+    this.transferToken = token;
+    request.set('headers', { 'T-Authorization': this.transferToken });
+    return token;
   }
+
+  // async getTransferToken(params: TQueryTransferAuthTokenRequest, apiUrl: string): Promise<string> {
+  //   const { pubkey, signature, plain_text, managerAddress, recaptchaToken } = params;
+  //   // save request params for retry
+  //   this.tokenRequestParams = params;
+  //   this.tokenRequestApiUrl = apiUrl;
+  //   //   pubkey: string;
+  //   // signature: string;
+  //   // plain_text: string;
+  //   // ca_hash?: string;
+  //   // chain_id?: string;
+  //   // scope: string;
+  //   // managerAddress: string;
+  //   // recaptchaToken?: string;
+  //   console.log('params=====', {
+  //     pubkey,
+  //     signature,
+  //     plainText: plain_text,
+  //     managerAddress,
+  //     recaptchaToken,
+  //     version: PortkeyVersion.v2,
+  //     source: AuthTokenSource.NightElf,
+  //   });
+  //   try {
+  //     const token = await eTransferCore.getAuthToken({
+  //       pubkey,
+  //       signature,
+  //       plainText: plain_text,
+  //       managerAddress,
+  //       recaptchaToken,
+  //       version: PortkeyVersion.v2,
+  //       source: AuthTokenSource.NightElf,
+  //     });
+  //     console.log('token is====', typeof token, 'token1111', token);
+  //     this.transferToken = token;
+  //     request.set('headers', { 'T-Authorization': this.transferToken });
+  //     return token;
+  //   } catch (e) {
+  //     console.log('error wfswfs222', JSON.stringify(e), ' eTransferCore.baseUrl;', eTransferCore.baseUrl);
+  //   }
+  //   // const a = await customFetch(apiUrl + '/api/app/transfer/connect/token', {
+  //   //   headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+  //   //   method: 'POST',
+  //   //   body: stringify(params),
+  //   // });
+  //   // console.log('result=====', a);
+  //   // const { access_token, token_type } = a;
+  //   // const token = `${token_type} ${access_token}`;
+  //   // this.transferToken = token;
+  //   // request.set('headers', { 'T-Authorization': this.transferToken });
+  //   // return token;
+  // }
 }
 
 const depositService = new DepositService();

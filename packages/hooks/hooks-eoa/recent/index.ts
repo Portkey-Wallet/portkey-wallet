@@ -3,34 +3,35 @@ import { useAppEOASelector } from '../index';
 import { useCurrentNetwork } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { useAppCommonDispatch } from '../../index';
 import { ChainId } from '@portkey-wallet/types';
-import { addRecentItem, resetTargetNetworkRecent } from '@portkey-wallet/store/store-eoa/recent/slice';
+import { addRecentItem, resetTargetIdRecent } from '@portkey-wallet/store/store-eoa/recent/slice';
 import { IRecentItem } from '@portkey-wallet/store/store-eoa/recent/type';
 import { useTransferNetworkConfig } from '../config';
 import { useContact } from '../contact';
 import { TFormattedRecentItem } from '@portkey-wallet/types/types-eoa/contact';
 import { getAelfAddress } from '@portkey-wallet/utils/aelf';
 import { getChainIdByAddress, isSameAddresses } from '@portkey-wallet/utils';
-import { useCurrentAccount } from '../wallet';
+import { useCurrentAccount, useUniqueIdentify, useUniqueIdentifyAnotherNetwork } from '../wallet';
 
 export const useRecentState = () => useAppEOASelector(state => state?.recent);
 
 export function useRecent() {
   const dispatch = useAppCommonDispatch();
-  const currentNetwork = useCurrentNetwork();
   const currentAccount = useCurrentAccount();
+  const currentNetwork = useCurrentNetwork();
+
+  const id = useUniqueIdentify();
+  const anotherId = useUniqueIdentifyAnotherNetwork();
 
   const { contactMap } = useContact();
   const { recentMap } = useRecentState();
   const { fetchAssetSupportConfig, checkIsSupportTargetChain } = useTransferNetworkConfig();
 
-  const getRecentList = useCallback(() => {
-    return recentMap?.[currentNetwork] || [];
-  }, [currentNetwork, recentMap]);
+  const getRecentList = useCallback(() => recentMap?.[id] || [], [id, recentMap]);
 
   const getFilterRecentList = useCallback(
     ({ fromChainId, tokenId, isFt }: { fromChainId: ChainId; tokenId: string; isFt: boolean }) => {
       fetchAssetSupportConfig();
-      const targetList = recentMap?.[currentNetwork] || [];
+      const targetList = recentMap?.[id] || [];
 
       // aelf is OK, others need check
       const result = targetList.filter(ele => {
@@ -48,7 +49,7 @@ export function useRecent() {
 
       return result || [];
     },
-    [checkIsSupportTargetChain, currentNetwork, fetchAssetSupportConfig, recentMap],
+    [fetchAssetSupportConfig, recentMap, id, checkIsSupportTargetChain],
   );
 
   // adjust my contact
@@ -110,14 +111,15 @@ export function useRecent() {
 
   const addRecent = useCallback(
     (params: { recentItem: IRecentItem }) => {
-      return dispatch(addRecentItem({ ...params, network: currentNetwork }));
+      return dispatch(addRecentItem({ ...params, id }));
     },
-    [currentNetwork, dispatch],
+    [dispatch, id],
   );
 
   const resetRecentCurrentNetwork = useCallback(() => {
-    return dispatch(resetTargetNetworkRecent(currentNetwork));
-  }, [currentNetwork, dispatch]);
+    dispatch(resetTargetIdRecent(id));
+    dispatch(resetTargetIdRecent(anotherId));
+  }, [anotherId, dispatch, id]);
 
   return { getTransformedRecentList, getRecentList, addRecent, resetRecentCurrentNetwork };
 }

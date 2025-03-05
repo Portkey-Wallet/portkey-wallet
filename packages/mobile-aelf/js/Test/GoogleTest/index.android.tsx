@@ -7,16 +7,20 @@ GoogleSignin.configure({
 });
 
 export default function GoogleTest() {
+  console.log('Config.GOOGLE_WEB_CLIENT_ID:', Config.GOOGLE_WEB_CLIENT_ID);
   return (
     <>
       <Button
         title="Login Android"
         onPress={async () => {
           try {
-            await GoogleSignin.hasPlayServices();
+            console.log('GoogleSignin.hasPlayServices');
+            await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+            console.log('GoogleSignin.hasPlayServices, google services are available');
             const userInfo = await GoogleSignin.signIn();
             console.log(userInfo, '====userInfo');
           } catch (error: any) {
+            console.log('error.code', error, error.code, error.stack);
             if (error.code === statusCodes.SIGN_IN_CANCELLED) {
               // user cancelled the login flow
             } else if (error.code === statusCodes.IN_PROGRESS) {

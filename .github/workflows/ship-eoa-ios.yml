@@ -3,9 +3,6 @@ on:
   push:
     branches:
       - fastlane-build/eoa-app-internal-test
-  pull_request:
-    branches:
-      - fastlane-build/eoa-app-internal-test
 
 jobs:
   # ----------------------- ANDROID -----------------------------
@@ -123,7 +120,6 @@ jobs:
           cd packages/mobile-aelf/ios
           bundle install
           bundle update
-
 
       # Step load .env file
       - name: Create .env file for React Native Config

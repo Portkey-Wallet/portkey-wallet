@@ -35,7 +35,7 @@ export const useAddContact = () => {
           chainId: contactItem.chainId,
           networkImage:
             supportNetworkList?.find(
-              item => item.network === contactItem.network && item.chainId === contactItem.chainId,
+              item => item.network === contactItem.network && item.chainId == contactItem.chainId,
             )?.imageUrl || '',
           address: contactItem.address,
           isExchange: contactItem.isExchange,
@@ -72,7 +72,7 @@ export const useEditContact = () => {
           chainId: contactItem.chainId,
           networkImage:
             supportNetworkList?.find(
-              item => item.network === contactItem.network && item.chainId === contactItem.chainId,
+              item => item.network === contactItem.network && item.chainId == contactItem.chainId,
             )?.imageUrl || '',
           address: contactItem.address,
           isExchange: contactItem.isExchange,

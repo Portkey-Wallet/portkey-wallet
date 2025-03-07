@@ -3,6 +3,7 @@ require 'dotenv/load'
 require 'net/http'
 require 'uri'
 require 'json'
+require 'active_support/time'
 
 def list_recent_files(s3_client, bucket_name, directory, n)
   response = s3_client.list_objects_v2(
@@ -62,24 +63,57 @@ def send_lark_notification22()
   end
 end
 
-def send_lark_notification(title, files, bucket_name, region)
+def send_lark_notification(title, files, bucket_name, region, directory)
+  # lark_message = {
+  #   "msg_type" => "post",
+  #   "content" => {
+  #     "post" => {
+  #       "en_us" => {
+  #         "title" => title,
+  #         "content" => [ files.map do |file|
+  #           size_in_mb = (file.size.to_f / (1024 * 1024)).round(2)
+  #           [
+  #             { "tag" => "text", "text" => "Name: #{file.key}\nLast Modified: #{file.last_modified}\nSize: #{size_in_mb} MB\nETag: #{file.etag}\n" },
+  #             { "tag" => "a", "text" => "Click here to download", "href" => "https://#{bucket_name}.s3.#{region}.amazonaws.com/#{file.key}" },
+  #             { "tag" => "text", "text" => "\n================================================================\n" }
+  #           ]
+  #         end.flatten
+  #         ]
+  #       }
+  #     }
+  #   }
+  # }
   lark_message = {
-    "msg_type" => "post",
-    "content" => {
-      "post" => {
-        "en_us" => {
-          "title" => title,
-          "content" => [ files.map do |file|
-            size_in_mb = (file.size.to_f / (1024 * 1024)).round(2)
-            [
-              { "tag" => "text", "text" => "Name: #{file.key}\nLast Modified: #{file.last_modified}\nSize: #{size_in_mb} MB\nETag: #{file.etag}\n" },
-              { "tag" => "a", "text" => "Click here to download", "href" => "https://#{bucket_name}.s3.#{region}.amazonaws.com/#{file.key}" },
-              { "tag" => "text", "text" => "\n================================================================\n" }
-            ]
-          end.flatten
-          ]
+    "msg_type" => "interactive",
+    "card" => {
+      "config" => {
+        "wide_screen_mode" => true
+      },
+      "header" => {
+        "title" => {
+          "tag" => "plain_text",
+          "content" => title
+        },
+        "template" => "green"
+      },
+      "elements" => files.map do |file|
+        size_in_mb = (file.size.to_f / (1024 * 1024)).round(2)
+        file_name = file.key.sub("#{directory}", "")
+        last_modified_utc8 = file.last_modified.in_time_zone('UTC').advance(hours: 8).strftime('%Y-%m-%d %H:%M:%S')
+        {
+          "tag" => "div",
+          "text" => {
+            "tag" => "lark_md",
+            "content" => "**Name:** #{file_name} \n **Size:** #{size_in_mb} MB \n **Last Modified(UTC+8):** #{last_modified_utc8} \n"
+          },
+          "extra" => {
+            "tag" => "button",
+            "text" => { "tag" => "plain_text", "content" => "Download" },
+            "url" => "https://#{bucket_name}.s3.#{region}.amazonaws.com/#{file.key}",
+            "type" => "primary"
+          }
         }
-      }
+      end
     }
   }
   lark_webhook_url = ENV['LARK_WEBHOOK_URL'] || "https://open.larksuite.com/open-apis/bot/v2/hook/7ff82584-0b49-4d63-bd8a-81449b77c38f"
@@ -123,8 +157,8 @@ puts "S3 client initialized."
 
 begin
   recent_files = list_recent_files(s3_client, bucket_name, directory, n)
-
-  send_lark_notification("The Last #{n} APK Files", recent_files, bucket_name, region)
+  count = recent_files.length < n ? 'All' : n;
+  send_lark_notification("The Last #{count} APK Files", recent_files, bucket_name, region, directory)
 rescue Aws::S3::Errors::AccessDenied => e
   puts "Access Denied: #{e.message}"
 rescue Aws::S3::Errors::ServiceError => e

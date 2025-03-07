@@ -8,7 +8,7 @@ export interface IProgressbar {
 }
 
 const Progressbar = forwardRef<IProgressbar>(function Progressbar(props, ref) {
-  const [percentage, setPercentage] = useState<number>(0);
+  const [percentage, setPercentage] = useState<number>(20);
 
   const innerBarWidthStyle = useMemo(() => {
     const num = Number(percentage);

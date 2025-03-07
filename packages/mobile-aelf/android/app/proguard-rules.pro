@@ -8,3 +8,13 @@
 #   http://developer.android.com/guide/developing/tools/proguard.html
 
 # Add any project specific keep options here:
+# Keep WebView related classes
+-keep class android.webkit.** { *; }
+-keepclassmembers class * extends android.webkit.WebView {
+    public <init>(android.content.Context);
+    public <init>(android.content.Context, android.util.AttributeSet);
+    public <init>(android.content.Context, android.util.AttributeSet, int);
+    public <init>(android.content.Context, android.util.AttributeSet, int, int);
+    public void addJavascriptInterface(java.lang.Object, java.lang.String);
+    public void removeJavascriptInterface(java.lang.String);
+}

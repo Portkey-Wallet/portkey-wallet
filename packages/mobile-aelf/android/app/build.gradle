@@ -20,8 +20,8 @@ project.ext.vectoricons = [
 apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
 
 preBuild.doFirst {
-   System.err.println("Build fresh bundle..." + getRootProject().rootDir.path.replace("/android","") + "/script/build-android-bundle.sh")
-   def process = (getRootProject().rootDir.path.replace("/android","") + "/script/build-android-bundle.sh").execute()
+   System.err.println("Build fresh bundle..." + getRootProject().rootDir.path.replace("/android","") + "/scripts/build-android-bundle.sh")
+   def process = (getRootProject().rootDir.path.replace("/android","") + "/scripts/build-android-bundle.sh").execute()
    process.waitForProcessOutput(System.out, System.err)
 }
 import com.android.build.OutputFile

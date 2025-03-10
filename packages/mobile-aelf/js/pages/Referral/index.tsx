@@ -159,7 +159,7 @@ const getStyles = makeStyles(theme => ({
     height: pTd(240),
     padding: 0,
     margin: 0,
-    marginTop: pTd(16),
+    marginTop: pTd(20),
   },
   brandLabel: {
     marginBottom: pTd(16),

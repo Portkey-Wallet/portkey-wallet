@@ -31,6 +31,7 @@ import useGetEBridgeConfig from 'hooks/ebridge';
 import { EBridge } from '@portkey-wallet/utils/eBridgeEOA';
 import { getManagerAccount } from 'utils/redux';
 import GoogleTest from '../../../Test/GoogleTest/index.android';
+import { SetBiometricsTypeEnum } from '../../Pin/SetBiometrics';
 
 const HomeTab: React.FC<any> = ({ _ }) => {
   // const a = useAppEOASelector(state => state);
@@ -195,6 +196,9 @@ const HomeTab: React.FC<any> = ({ _ }) => {
 
         <GoogleTest />
         <CommonButton
+          titleStyle={{
+            color: 'red',
+          }}
           type="primary"
           onPress={() =>
             navigationService.push('SecurityLock', {
@@ -213,11 +217,26 @@ const HomeTab: React.FC<any> = ({ _ }) => {
         <CommonButton type="primary" onPress={clearDiscover}>
           clear discover
         </CommonButton>
+        <CommonButton
+          type="primary"
+          onPress={() => {
+            navigationService.push('SetBiometrics', {
+              type: SetBiometricsTypeEnum.create,
+            });
+          }}>
+          SetBiometrics
+        </CommonButton>
 
-        <CommonButton type="primary" onPress={() => navigationService.push('SwitchNetworks')} style={{ marginTop: 20 }}>
+        <CommonButton
+          type="primary"
+          onPress={() => navigationService.push('SwitchNetworks')}
+          containerStyle={{ marginTop: 20 }}>
           Switch NetworkType (current: {currentNetwork})
         </CommonButton>
-        <CommonButton type="primary" onPress={() => navigationService.push('AboutUs')} style={{ marginTop: 20 }}>
+        <CommonButton
+          type="primary"
+          onPress={() => navigationService.push('AboutUs')}
+          containerStyle={{ marginTop: 20 }}>
           About
         </CommonButton>
         <CommonButton type="primary" onPress={() => navigationService.push('DappList')} style={{ marginTop: 20 }}>
@@ -304,7 +323,7 @@ const HomeTab: React.FC<any> = ({ _ }) => {
           onPress={() => {
             showBackupWalletModal();
           }}
-          style={{ marginTop: 20 }}>
+          containerStyle={{ marginTop: 20 }}>
           Backup Modal
         </CommonButton>
         <CommonButton

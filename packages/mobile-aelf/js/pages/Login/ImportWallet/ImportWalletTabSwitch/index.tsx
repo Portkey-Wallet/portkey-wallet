@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { pTd } from 'utils/unit';
 import { makeStyles } from '@rneui/themed';
 
@@ -27,7 +27,7 @@ export default function ImportWalletTabSwitch({
             setPrivateKeySelected(false);
           }
         }}>
-        <Text style={[styles.buttonText, isPrivateKeySelected && styles.buttonTextSelected]}>Recovery Phrase</Text>
+        <Text style={[styles.buttonText, !isPrivateKeySelected && styles.buttonTextSelected]}>Seed Phrase</Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={[styles.button, isPrivateKeySelected && styles.buttonSelected]}
@@ -37,7 +37,7 @@ export default function ImportWalletTabSwitch({
             setPrivateKeySelected(true);
           }
         }}>
-        <Text style={[styles.buttonText, !isPrivateKeySelected && styles.buttonTextSelected]}>Private Key</Text>
+        <Text style={[styles.buttonText, isPrivateKeySelected && styles.buttonTextSelected]}>Private Key</Text>
       </TouchableOpacity>
     </View>
   );
@@ -46,7 +46,8 @@ export default function ImportWalletTabSwitch({
 const getStyles = makeStyles(theme => ({
   container: {
     height: pTd(38),
-    borderWidth: StyleSheet.hairlineWidth,
+    // borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: pTd(1),
     borderColor: theme.colors.borderBase1,
     borderRadius: pTd(8),
     flexDirection: 'row',
@@ -55,7 +56,7 @@ const getStyles = makeStyles(theme => ({
     paddingHorizontal: pTd(4),
   },
   button: {
-    height: pTd(28),
+    height: pTd(30),
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',

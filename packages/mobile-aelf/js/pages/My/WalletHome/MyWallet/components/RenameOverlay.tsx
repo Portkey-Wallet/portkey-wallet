@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import OverlayModal from 'components/OverlayModal';
 import { StyleSheet, View } from 'react-native';
 import { ModalBody } from 'components/ModalBody';
@@ -26,6 +26,12 @@ type SelectModalProps = {
 
 const SelectModal = ({ title = '', nickName = '', onChange, avatarInfo }: SelectModalProps) => {
   const avatarStyles = getAvatarStyles();
+  const inputRef = useRef<any>(null);
+  useEffect(() => {
+    if (inputRef && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, []);
 
   const [value, setValue] = useState<string>(nickName);
   const [error, setError] = useState<boolean>(false);
@@ -61,6 +67,7 @@ const SelectModal = ({ title = '', nickName = '', onChange, avatarInfo }: Select
             <View style={avatarStyles.container}>
               <View style={avatarStyles.avatarIconContainer}>
                 <CommonAvatar
+                  shapeType="square"
                   hasBorder={false}
                   style={avatarStyles.avatarIcon}
                   svgName={avatarInfo.avatar}
@@ -73,10 +80,15 @@ const SelectModal = ({ title = '', nickName = '', onChange, avatarInfo }: Select
               </View>
             </View>
           )}
-          <View style={{}}>
+          <View
+            style={{
+              // backgroundColor: 'red',
+              position: 'relative',
+            }}>
             <CommonInput
               type="general"
               allowClear
+              ref={inputRef}
               // keyboardType={isIOS ? 'number-pad' : 'numeric'}
               value={value}
               rightIcon={
@@ -97,10 +109,18 @@ const SelectModal = ({ title = '', nickName = '', onChange, avatarInfo }: Select
                 error ? 'Only letters (a-z, A-Z), numbers (0-9), spaces, and underscores ("_") are allowed.' : undefined
               }
             />
+            {!error && (
+              <TextM
+                style={{
+                  position: 'absolute',
+                  top: pTd(48),
+                }}>
+                {value?.length || 0}/16
+              </TextM>
+            )}
           </View>
-          {!error && <TextM style={{}}>{value?.length || 0}/16</TextM>}
           <CommonButton
-            style={{
+            containerStyle={{
               marginTop: pTd(32),
               marginBottom: pTd(16),
             }}

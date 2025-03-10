@@ -92,6 +92,14 @@ export default function ResetApp() {
                 buttons: [
                   {
                     title: 'Reset app',
+                    titleStyle: {
+                      ...fonts.SGMediumFont,
+                      fontSize: pTd(16),
+                      lineHeight: pTd(16) * 1.2,
+                    },
+                    buttonStyle: {
+                      height: pTd(48),
+                    },
                     type: 'warning',
                     onPress: () => {
                       checkSecurityLock(
@@ -105,6 +113,14 @@ export default function ResetApp() {
                   },
                   {
                     title: 'Cancel',
+                    titleStyle: {
+                      ...fonts.SGMediumFont,
+                      fontSize: pTd(16),
+                      lineHeight: pTd(16) * 1.2,
+                    },
+                    buttonStyle: {
+                      height: pTd(48),
+                    },
                     type: 'outline',
                   },
                 ],

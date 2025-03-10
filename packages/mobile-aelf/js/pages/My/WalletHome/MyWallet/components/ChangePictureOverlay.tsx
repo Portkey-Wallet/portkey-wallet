@@ -166,6 +166,7 @@ const SelectModal = ({
             justifyContent: 'center',
             position: 'relative',
             marginHorizontal: pTd(32),
+            marginTop: pTd(14),
           }}>
           <CommonAvatar
             resizeMode="cover"
@@ -229,7 +230,15 @@ const SelectModal = ({
               }}
               itemKey={selectAvatarKey}
             />
-            <CommonButton disabled={selectAvatarKey === undefined} title={'Save'} type="primary" onPress={onSave} />
+            <CommonButton
+              containerStyle={{
+                marginBottom: pTd(14),
+              }}
+              disabled={selectAvatarKey === undefined}
+              title={'Save'}
+              type="primary"
+              onPress={onSave}
+            />
           </View>
         ) : (
           <View

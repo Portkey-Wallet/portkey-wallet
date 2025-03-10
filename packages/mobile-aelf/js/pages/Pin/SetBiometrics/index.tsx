@@ -3,7 +3,7 @@ import { TextH1 } from 'components/CommonText';
 import PageContainer from 'components/PageContainer';
 import CommonButton from 'components/CommonButton';
 import { setSecureStoreItem } from '@portkey-wallet/utils/mobile/biometric';
-import { View } from 'react-native';
+import { View, Text } from 'react-native';
 import { makeStyles, useTheme } from '@rneui/themed';
 import GStyles from 'assets/theme/GStyles';
 import { usePreventHardwareBack } from '@portkey-wallet/hooks/mobile';
@@ -19,6 +19,7 @@ import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import navigationService from 'utils/navigationService';
 import { usePin } from 'hooks/store';
 import { useUpdateWalletAES } from '@portkey-wallet/hooks/hooks-eoa/wallet';
+import fonts from '../../../assets/theme/fonts';
 
 export enum SetBiometricsTypeEnum {
   'create' = 'CREATE',
@@ -110,8 +111,18 @@ export default function SetBiometrics() {
       </View>
       <View>
         <CommonButton type="primary" onPress={openBiometrics}>
-          <Svg icon="face-id" iconStyle={styles.buttonIcon} size={pTd(16)} color={theme.colors.iconBrand4} />
-          {'Set up now'}
+          <View style={styles.buttonIcon}>
+            <Svg
+              icon="face-id"
+              iconStyle={{
+                marginRight: pTd(8),
+              }}
+              size={pTd(16)}
+              color={theme.colors.iconBrandOn}
+            />
+            <Text style={styles.buttonText}>Set up now</Text>
+          </View>
+          {/*{'Set up now'}*/}
         </CommonButton>
         {isCreate && (
           <CommonButton buttonStyle={styles.buttonWrap} type="outline" title="Do it later" onPress={onSkip} />
@@ -125,15 +136,26 @@ const getStyles = makeStyles(_theme => ({
   containerStyles: {
     justifyContent: 'space-between',
     paddingTop: pTd(58),
-    paddingBottom: pTd(32),
+    paddingBottom: pTd(14),
   },
   buttonIcon: {
-    marginRight: pTd(8),
+    // marginRight: pTd(8),
+    // backgroundColor: 'red',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    // marginTop: pTd(4),
+  },
+  buttonText: {
+    ...fonts.SGMediumFont,
+    fontSize: pTd(16),
+    lineHeight: pTd(16) * 1.2,
+    color: _theme.colors.textBrandOn,
   },
   headerTitle: {
     marginBottom: pTd(120),
   },
   buttonWrap: {
-    marginTop: pTd(24),
+    marginTop: pTd(16),
   },
 }));

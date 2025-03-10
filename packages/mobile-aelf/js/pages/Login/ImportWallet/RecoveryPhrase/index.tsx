@@ -1,5 +1,5 @@
-import React, { useCallback, useMemo, useState } from 'react';
-import { TextInput, View, Text, StyleSheet } from 'react-native';
+import React, { useCallback, useMemo, useState, useRef } from 'react';
+import { TextInput, View, Text } from 'react-native';
 import { pTd } from 'utils/unit';
 import { makeStyles, useTheme } from '@rneui/themed';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
@@ -26,6 +26,8 @@ export default function RecoveryPhrase({ checkedSecurityLock }: { checkedSecurit
   const { theme } = useTheme();
   const [mnemonics, setMnemonics] = useState(Array(MnemonicsWordCount).fill(''));
   const [isMnemonicsValid, setIsMnemonicsValid] = useState(false);
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const inputRefs = Array.from({ length: 12 }, () => useRef<TextInput>(null));
 
   const isMnemonicsEmpty = useMemo(() => {
     const isNotEmpty = validateMnemonicFormat(mnemonics.join(' '));
@@ -52,10 +54,10 @@ export default function RecoveryPhrase({ checkedSecurityLock }: { checkedSecurit
         setMnemonics(clipboardMnemonics);
         setIsMnemonicsValid(true);
       } else {
-        CommonToast.fail('Invalid recovery phrase');
+        CommonToast.fail('Invalid seed phrase');
       }
     } else {
-      CommonToast.fail('Invalid recovery phrase');
+      CommonToast.fail('Invalid seed phrase');
     }
   }, [setMnemonics]);
 
@@ -100,10 +102,17 @@ export default function RecoveryPhrase({ checkedSecurityLock }: { checkedSecurit
             ]}>
             <Text style={styles.inputLabel}>{index + 1}</Text>
             <TextInput
+              ref={inputRefs[index]}
               key={index}
               style={styles.input}
               value={mnemonic}
               onChangeText={text => handleChangeText(text, index)}
+              onSubmitEditing={() => {
+                if (index < inputRefs.length - 1) {
+                  inputRefs[index + 1].current?.focus();
+                }
+              }}
+              blurOnSubmit={index === inputRefs.length - 1}
               autoCorrect={false}
               autoCapitalize="none"
             />
@@ -119,7 +128,7 @@ export default function RecoveryPhrase({ checkedSecurityLock }: { checkedSecurit
         disabled={!isMnemonicsValid}
         onPress={() => {
           if (!bip39.validateMnemonic(mnemonics.join(' '))) {
-            CommonToast.fail('Invalid recovery phrase');
+            CommonToast.fail('Invalid seed phrase');
             return;
           }
           importWalletByMnemonic(mnemonics, checkedSecurityLock);
@@ -143,7 +152,8 @@ const getStyles = makeStyles(theme => ({
     height: pTd(40),
     borderColor: theme.colors.borderBase1,
     borderRadius: pTd(20),
-    borderWidth: StyleSheet.hairlineWidth,
+    // borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: pTd(1),
     flexDirection: 'row',
     alignItems: 'center',
   },
@@ -155,7 +165,7 @@ const getStyles = makeStyles(theme => ({
   },
   input: {
     height: pTd(40),
-    color: theme.colors.textBase2,
+    color: theme.colors.textBase1,
     flex: 1,
     marginHorizontal: pTd(16),
   },

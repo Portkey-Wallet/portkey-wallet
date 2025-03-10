@@ -101,27 +101,27 @@ export default function Referral() {
         </View>
       )}
 
-      <View style={styles.buttonStyle}>
-        <CommonButton
-          // style={styles.buttonStyle}
-          titleStyle={styles.buttonText}
-          title={'Create a wallet'}
-          type="primary"
-          onPress={createWallet}
-        />
-      </View>
+      {/*<View style={styles.buttonStyle}>*/}
+      <CommonButton
+        containerStyle={styles.buttonStyle}
+        titleStyle={styles.buttonText}
+        title={'Create a wallet'}
+        type="primary"
+        onPress={createWallet}
+      />
+      {/*</View>*/}
 
-      <View style={styles.buttonStyle}>
-        <CommonButton
-          // style={styles.buttonStyle}
-          titleStyle={styles.buttonText}
-          title={'Import an existing wallet'}
-          type="outline"
-          onPress={() => {
-            navigationService.navigate('WalletImportTypeSelect');
-          }}
-        />
-      </View>
+      {/*<View style={styles.buttonStyle}>*/}
+      <CommonButton
+        containerStyle={styles.buttonStyle}
+        titleStyle={styles.buttonText}
+        title={'Import an existing wallet'}
+        type="outline"
+        onPress={() => {
+          navigationService.navigate('WalletImportTypeSelect');
+        }}
+      />
+      {/*</View>*/}
     </PageContainer>
   );
 }
@@ -159,7 +159,7 @@ const getStyles = makeStyles(theme => ({
     height: pTd(240),
     padding: 0,
     margin: 0,
-    marginTop: pTd(16),
+    marginTop: pTd(20),
   },
   brandLabel: {
     marginBottom: pTd(16),

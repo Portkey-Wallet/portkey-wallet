@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { Text, View, StyleSheet } from 'react-native';
+import { Text, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import aes from '@portkey-wallet/utils/aes';
@@ -76,7 +76,7 @@ export default function ManualBackup() {
   const reminderUI = useMemo(() => {
     return (
       <View style={styles.reminderWrap}>
-        <Svg icon="info" size={pTd(22)} color={theme.colors.bgBrand4} />
+        <Svg icon="info" size={pTd(22)} color={theme.colors.iconBrandTertiary} />
         <Text style={styles.reminderText}>
           Next, verify your seed phrase by selecting the words in the correct order.
         </Text>
@@ -91,38 +91,42 @@ export default function ManualBackup() {
       pageSafeBottomPadding={!isIOS}
       containerStyles={styles.containerStyles}
       scrollViewProps={{ disabled: true }}>
-      <Text style={styles.title}>Manual backup</Text>
-      <Text style={styles.desc}>
-        Keep a copy of your seed phrase at a safe place. DO NOT share it with anyone as this could result in wallet and
-        asset loss.
-      </Text>
-      <View style={styles.mnemonicsWrap}>
-        {mnemonics.map((mnemonic, index) => (
-          <View
-            key={index}
-            style={[
-              styles.wordWrap,
-              { width: inputWidth },
-              index % 2 === 1 && styles.wordMarginLeft,
-              index > 1 && styles.wordMarginTop,
-            ]}>
-            <Text style={styles.wordLabel}>{index + 1}</Text>
-            <Text style={styles.mnemonicsLabel}>{mnemonic}</Text>
-          </View>
-        ))}
+      <View>
+        <Text style={styles.title}>Manual backup</Text>
+        <Text style={styles.desc}>
+          Keep a copy of your seed phrase at a safe place. DO NOT share it with anyone as this could result in wallet
+          and asset loss.
+        </Text>
+        <View style={styles.mnemonicsWrap}>
+          {mnemonics.map((mnemonic, index) => (
+            <View
+              key={index}
+              style={[
+                styles.wordWrap,
+                { width: inputWidth },
+                index % 2 === 1 && styles.wordMarginLeft,
+                index > 1 && styles.wordMarginTop,
+              ]}>
+              <Text style={styles.wordLabel}>{index + 1}</Text>
+              <Text style={styles.mnemonicsLabel}>{mnemonic}</Text>
+            </View>
+          ))}
+        </View>
+        {copied ? copiedView : copyButton}
       </View>
-      {copied ? copiedView : copyButton}
-      {reminderUI}
-      <CommonButton
-        type="primary"
-        style={styles.continueButton}
-        onPress={() => {
-          navigationService.push('ConfirmBackup', {
-            mnemonics,
-          });
-        }}>
-        Continue
-      </CommonButton>
+      <View>
+        {reminderUI}
+        <CommonButton
+          type="primary"
+          containerStyle={styles.continueButton}
+          onPress={() => {
+            navigationService.push('ConfirmBackup', {
+              mnemonics,
+            });
+          }}>
+          Continue
+        </CommonButton>
+      </View>
     </PageContainer>
   );
 }
@@ -130,6 +134,7 @@ export default function ManualBackup() {
 export const getStyles = makeStyles(theme => ({
   containerStyles: {
     backgroundColor: theme.colors.bgBase1,
+    justifyContent: 'space-between',
   },
   title: {
     marginTop: pTd(24),
@@ -185,8 +190,8 @@ export const getStyles = makeStyles(theme => ({
   },
   reminderWrap: {
     marginTop: pTd(24),
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: theme.colors.borderWarning3,
+    borderWidth: pTd(1),
+    borderColor: '#414142', // theme.colors.borderWarning3,
     borderRadius: pTd(16),
     padding: pTd(16),
     flexDirection: 'row',

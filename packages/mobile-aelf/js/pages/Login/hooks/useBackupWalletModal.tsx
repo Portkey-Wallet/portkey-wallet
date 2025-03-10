@@ -32,6 +32,14 @@ export const useBackupWalletModal = () => {
       buttonGroupDirection: 'column',
       buttons: [
         {
+          titleStyle: {
+            ...fonts.SGMediumFont,
+            fontSize: pTd(16),
+            lineHeight: pTd(16) * 1.2,
+          },
+          buttonStyle: {
+            height: pTd(48),
+          },
           type: 'primary',
           title: isIOS ? 'Back up on iCloud' : 'Back up on Google Drive',
           onPress: async () => {
@@ -47,6 +55,14 @@ export const useBackupWalletModal = () => {
         },
         {
           type: 'outline',
+          titleStyle: {
+            ...fonts.SGMediumFont,
+            fontSize: pTd(16),
+            lineHeight: pTd(16) * 1.2,
+          },
+          buttonStyle: {
+            height: pTd(48),
+          },
           title: 'Back up manually',
           onPress: async () => {
             try {

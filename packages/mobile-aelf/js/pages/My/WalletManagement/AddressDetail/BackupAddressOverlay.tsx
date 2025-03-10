@@ -85,7 +85,7 @@ const SelectModal = ({ type = 'private key', walletToBeBackup, accountToBeBackup
 
         <View>
           <CommonButton
-            style={{
+            containerStyle={{
               marginTop: pTd(24),
               marginBottom: pTd(16),
             }}

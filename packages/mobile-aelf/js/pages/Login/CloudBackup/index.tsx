@@ -120,6 +120,9 @@ export default function CloudBackup() {
         <View style={styles.inputContainer}>
           <CommonInput
             labelStyle={styles.inputLabel}
+            errorStyle={{
+              marginBottom: enterPasswordErrorMessage ? pTd(20) : pTd(0),
+            }}
             label="Set password"
             type="general"
             keyboardType="numeric"
@@ -143,13 +146,15 @@ export default function CloudBackup() {
             }}
             rightIcon={
               <View style={[GStyles.flexRow, GStyles.itemCenter]}>
-                <Touchable
-                  onPress={() => {
-                    setPassword('');
-                    setPasswordShow('');
-                  }}>
-                  <Svg icon="clear4" iconStyle={{ marginRight: pTd(12) }} size={pTd(16)} />
-                </Touchable>
+                {passwordShow && (
+                  <Touchable
+                    onPress={() => {
+                      setPassword('');
+                      setPasswordShow('');
+                    }}>
+                    <Svg icon="clear4" iconStyle={{ marginRight: pTd(12) }} size={pTd(16)} />
+                  </Touchable>
+                )}
                 <Touchable
                   onPress={() => {
                     const newSecureTextEntry = !secureTextEntry;
@@ -181,7 +186,12 @@ export default function CloudBackup() {
               );
               setConfirmPassword(newPassword);
               setConfirmPasswordShow(_passwordShow);
-              if (password !== newPassword && newPassword.length) {
+              if (password === newPassword) {
+                setErrorMessage('');
+              }
+            }}
+            onBlur={() => {
+              if (password !== confirmPassword && confirmPassword.length) {
                 setErrorMessage('Not match, please try again.');
               } else {
                 setErrorMessage('');
@@ -189,13 +199,16 @@ export default function CloudBackup() {
             }}
             rightIcon={
               <View style={[GStyles.flexRow, GStyles.itemCenter]}>
-                <Touchable
-                  onPress={() => {
-                    setConfirmPassword('');
-                    setConfirmPasswordShow('');
-                  }}>
-                  <Svg icon="clear4" iconStyle={{ marginRight: pTd(12) }} size={pTd(16)} />
-                </Touchable>
+                {confirmPasswordShow && (
+                  <Touchable
+                    onPress={() => {
+                      setConfirmPassword('');
+                      setConfirmPasswordShow('');
+                      setErrorMessage('');
+                    }}>
+                    <Svg icon="clear4" iconStyle={{ marginRight: pTd(12) }} size={pTd(16)} />
+                  </Touchable>
+                )}
                 <Touchable
                   onPress={() => {
                     const newSecureTextEntry = !confirmSecureTextEntry;
@@ -360,7 +373,7 @@ const getStyles = makeStyles(theme => ({
   },
   link: {
     fontSize: pTd(14),
-    color: theme.colors.textBrand3,
+    color: theme.colors.textBrand1,
   },
   continueButton: {
     marginTop: pTd(24),

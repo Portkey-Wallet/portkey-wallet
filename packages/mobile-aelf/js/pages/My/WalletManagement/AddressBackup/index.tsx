@@ -185,7 +185,7 @@ export default function AddressBackup() {
       {!isIOS && !cloudAvailable && (
         <CommonButton
           type="primary"
-          style={styles.continueButton}
+          style={[styles.continueButton, pageStyles.continueButton]}
           loading={loading}
           onPress={async () => {
             const result = await googleSignAndConfig();
@@ -205,7 +205,7 @@ export default function AddressBackup() {
               disabled={!cloudAvailable}
               type="primary"
               // type="outline"
-              style={styles.continueButton}
+              style={[styles.continueButton, pageStyles.continueButton]}
               onPress={async () => {
                 navigationService.push('CloudBackup', {
                   walletToBeBackup,
@@ -247,7 +247,7 @@ export default function AddressBackup() {
                     title: <Svg size={pTd(32)} icon="error" color={defaultColors.iconBase1} />,
                     title2: 'Remove backup?',
                     message:
-                      'Are you sure you want to remove your recovery phrase backup? You can back it up again at any time.',
+                      'Are you sure you want to remove your seed phrase backup? You can back it up again at any time.',
                     buttonGroupDirection: 'column',
                     buttons: [
                       {
@@ -345,5 +345,8 @@ const getBackupStyles = makeStyles(theme => ({
     height: pTd(40),
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  continueButton: {
+    marginBottom: pTd(16),
   },
 }));

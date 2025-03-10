@@ -1,5 +1,5 @@
 import React, { useCallback, useState, useMemo } from 'react';
-import { StyleSheet, TextInput, View, Text } from 'react-native';
+import { TextInput, View, Text } from 'react-native';
 import { pTd } from 'utils/unit';
 import { makeStyles, useTheme } from '@rneui/themed';
 import Touchable from 'components/Touchable';
@@ -48,7 +48,7 @@ export default function RecoveryPhrase({ checkedSecurityLock }: { checkedSecurit
   const pasteButton = useMemo(() => {
     return (
       <Touchable style={styles.button} onPress={onPaste}>
-        <Svg icon="paste" size={pTd(20)} />
+        <Svg icon="paste" size={pTd(20)} color={theme.colors.textBase1Opacity07} />
         <Text style={styles.buttonText}>Paste from clipboard</Text>
       </Touchable>
     );
@@ -99,7 +99,9 @@ export const getStyles = makeStyles(theme => ({
     height: pTd(160),
     borderColor: theme.colors.borderBase1,
     borderRadius: pTd(8),
-    borderWidth: StyleSheet.hairlineWidth,
+    fontSize: pTd(16),
+    // borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: pTd(1),
     padding: pTd(16),
   },
   button: {
@@ -112,6 +114,7 @@ export const getStyles = makeStyles(theme => ({
   },
   buttonText: {
     marginLeft: pTd(8),
+    fontSize: pTd(16),
   },
   importButton: {
     marginBottom: pTd(16),

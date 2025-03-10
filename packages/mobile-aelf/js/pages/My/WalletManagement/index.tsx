@@ -115,6 +115,7 @@ export default function WalletManagement() {
                     hasBorder={false}
                     style={addressCardStyles.avatarIcon}
                     svgName="inport"
+                    shapeType="square"
                     avatarSize={pTd(24)}
                     height={pTd(24)}
                     width={pTd(24)}
@@ -126,7 +127,7 @@ export default function WalletManagement() {
                         addressCardStyles.operationText,
                         addWalletDisabled ? addressCardStyles.operationTextDisabled : '',
                       ]}>
-                      Import exciting wallet
+                      Import existing wallet
                     </Text>
                   </View>
                 </View>
@@ -149,6 +150,7 @@ export default function WalletManagement() {
                     hasBorder={false}
                     style={addressCardStyles.avatarIcon}
                     svgName="wallet_fill"
+                    shapeType="square"
                     avatarSize={pTd(24)}
                     height={pTd(24)}
                     width={pTd(24)}

@@ -59,7 +59,7 @@ function TagItem<T extends string>({
       ]}
       onPress={() => onSelect?.(item.value, item)}>
       {isSelected && !item.hideCheckIcon && (
-        <Svg iconStyle={styles.checkIcon} icon="check" size={pTd(16)} color={theme.colors.iconBrand4} />
+        <Svg iconStyle={styles.checkIcon} icon="check" size={pTd(16)} color={theme.colors.iconBrandOn} />
       )}
       {typeof item.label === 'string' ? (
         <Text style={[styles.label, isSelected && styles.selectedLabel, size && styles[`${size}Label`]]}>

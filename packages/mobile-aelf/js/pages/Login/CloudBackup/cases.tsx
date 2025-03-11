@@ -124,9 +124,15 @@ export default function CloudBackupCases() {
               return;
             }
             handleCreateFile({
+              // filename: currentWallet.key,
+              // // TODO, encrypt before create
+              // input: JSON.stringify(currentWallet),
               filename: currentWallet.key,
               // TODO, encrypt before create
-              input: JSON.stringify(currentWallet),
+              input: JSON.stringify({
+                updateTime: Date.now(),
+                wallet: aes.encrypt(JSON.stringify(currentWallet), password),
+              }),
             });
           }}
           style={{ marginTop: 10 }}>

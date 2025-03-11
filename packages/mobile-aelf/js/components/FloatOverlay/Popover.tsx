@@ -118,7 +118,7 @@ function FloatPopover({
                 </TextM>
               </View>
               {item.active && (
-                <Svg size={pTd(20)} icon="check-circle" color={item.iconColor || darkColors.textBrand2} />
+                <Svg size={pTd(20)} icon="check-circle" color={item.iconColor || darkColors.textBrandDefault} />
               )}
             </Touchable>
           );

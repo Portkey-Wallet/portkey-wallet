@@ -13,6 +13,7 @@ import { useTheme } from '@rneui/themed';
 import { TextM } from 'components/CommonText';
 import { TBalancesV2 } from 'hooks/awaken';
 import { TCurrency } from '@portkey-wallet/types/awaken';
+import { darkColors } from 'assets/theme';
 
 interface IAmountCardGroupProps {
   style?: ViewStyleType;
@@ -121,7 +122,7 @@ const AmountCardGroup = ({
         isInput
       />
       <Touchable style={styles.swapIconWrap} onPress={switchToken}>
-        <Svg icon={'swap-arrow'} size={pTd(20)} />
+        <Svg icon={'swap-arrow'} size={pTd(20)} color={darkColors.textBrandOn} />
       </Touchable>
     </View>
   );

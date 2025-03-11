@@ -9,6 +9,7 @@ import {
   useIsCloudAvailable,
 } from 'react-native-cloud-storage';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import CommonToast from '../../../components/CommonToast';
 import Config from 'react-native-config';
 GoogleSignin.configure({
@@ -33,10 +34,12 @@ function commonCloudStorageError(e: any, from = '') {
   }
 }
 
+const PARENT_DIRECTORY = isIOS ? '/eoa/wallets' : '/';
+
 export const useCloudStorage = () => {
   const [provider, setProvider] = useState(CloudStorage.getDefaultProvider());
 
-  const [parentDirectory] = useState('/');
+  const [parentDirectory] = useState(PARENT_DIRECTORY);
   const [isParentDirectoryExist, setIsParentDirectoryExist] = useState<boolean>();
 
   const [loading, setLoading] = useState(false);
@@ -113,7 +116,7 @@ export const useCloudStorage = () => {
       try {
         const newStats = await cloudStorage.stat(getFullPath(parentDirectory, filename));
         // setStats(newStats);
-        console.log('File stats', newStats, newStats.isDirectory());
+        console.log('File stats', newStats, newStats.isDirectory(), getFullPath(parentDirectory, filename));
         if (newStats.isDirectory()) {
           return;
         }

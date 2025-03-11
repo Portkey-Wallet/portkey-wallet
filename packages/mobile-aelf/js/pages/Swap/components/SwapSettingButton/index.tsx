@@ -122,7 +122,7 @@ const SwapSettingContent = () => {
               autoCorrect={false}
               keyboardType="numeric"
               placeholder="0"
-              placeholderTextColor={theme.colors.textBrand4}
+              placeholderTextColor={theme.colors.textBrandOn}
               rightIcon={<Text style={styles.slippageToleranceUnitText}>%</Text>}
               value={slippageTolerance}
               onChangeText={handleSlippageToleranceInputChange}
@@ -141,7 +141,7 @@ const SwapSettingContent = () => {
       handleSlippageToleranceInputBlur,
       slippageToleranceSelectedValue,
       styles,
-      theme.colors.textBrand4,
+      theme.colors.textBrandOn,
     ],
   );
 

@@ -20,6 +20,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     width: '100%',
     height: pTd(64),
-    backgroundColor: defaultColors.neutralDefaultBG,
+    backgroundColor: defaultColors.bgBase1,
   },
 });

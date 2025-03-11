@@ -1,0 +1,91 @@
+#./github/workflows/build-android-internal-ca.yml
+name: Internal Sharing:\build for Android, upload to Google Play Store
+on:
+  pull_request:
+    branches:
+      - fastlane-build/ca-app-internal-test # This branch should be used for both Android and IOS build triggers.
+jobs:
+  # ----------------------- ANDROID -----------------------------
+  # -------------------------------------------------------------
+  build-prod-android:
+    name: Build & ship android prod app
+    runs-on: ubuntu-latest
+    steps:
+    # Step to decode JSON key and save it as a temporary file
+      - name: Decode Google Play JSON Key And Load As File
+        run: echo "${{ secrets.GOOGLE_PLAY_JSON_KEY }}" | base64 -d > /tmp/google-play-key.json
+    # Step to decode Keystore file
+      - name: Decode Keystore File
+        run: |
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > /tmp/release-key.keystore
+          echo "ANDROID_KEYSTORE_FILE=/tmp/release-key.keystore" >> $GITHUB_ENV
+    # Step debug ANDROID_KEYSTORE_FILE
+      - name: Check ANDROID_KEYSTORE_FILE
+        run: |
+          echo "ANDROID_KEYSTORE_FILE: $ANDROID_KEYSTORE_FILE"
+          ls -al $ANDROID_KEYSTORE_FILE
+      # Step 1: Setup java and node
+      - uses: actions/checkout@v3
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: zulu
+          java-version: 17
+      - name: Set up NODE
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18  # using the .nvmrc file in future
+      # Step 2: Configure gradle and gradle wrapper with cache
+      - name: Cache Gradle Wrapper
+        uses: actions/cache@v2
+        with:
+          path: ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
+      - name: Cache Gradle Dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-caches-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-caches-
+      # Step 3: Install node packages
+      - name: Install node modules
+        run: yarn install
+        env:
+          CI: true
+      # Step 4: Setup ruby
+      - uses: actions/checkout@v3
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "2.7"
+      # Step 5: Install bundler, and fastlane
+      - name: Install Fastlane
+        run: cd packages/mobile-app-did/android && bundle install && cd ../
+        env:
+          CI: true
+      # Step 6: Install reactnative community pacakge manually
+      - name: Add @react-native-community/cli-platform-android Dependency to Project
+        run: |
+          cd packages/mobile-app-did
+          yarn add @react-native-community/cli-platform-android@7.0.1
+        env:
+          CI: true
+    # Step load .env file
+      - name: Create .env file for React Native Config
+        run: echo "${{ secrets.ENV_FILE_CONTENT }}" > $GITHUB_WORKSPACE/packages/mobile-app-did/.env
+    # Step cat ./packages/mobile-app-did/.env
+      - name: Verify .env file
+        run: cat $GITHUB_WORKSPACE/packages/mobile-app-did/.env
+      # Step 8: Fastlane build android
+      - name : Build android App via fastlane
+        run : |
+          cd packages/mobile-app-did/android
+          fastlane internal_sharing 
+        env:
+          CI: true
+          CD: true
+          ANDROID_KEYSTORE_FILE: ${{ secrets.ANDROID_KEYSTORE_FILE }}
+          GOOGLE_JSON_KEY_FILE: /tmp/google-play-key.json
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEYSTORE_ALIAS: ${{ secrets.ANDROID_KEYSTORE_ALIAS }}
+          LARK_WEBHOOK_URL: ${{ secrets.LARK_WEBHOOK_URL }}

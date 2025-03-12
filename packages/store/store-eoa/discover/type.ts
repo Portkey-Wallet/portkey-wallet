@@ -34,6 +34,9 @@ export interface IDiscoverStateType {
   disclaimerConfirmedMap?: {
     [key in NetworkType]?: string[];
   };
+  favorites: {
+    [key in NetworkType]?: string[];
+  };
 }
 
 export interface ICryptoCurrencyItem {

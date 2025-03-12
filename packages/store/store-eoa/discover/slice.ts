@@ -36,6 +36,7 @@ const initialState: IDiscoverStateType = {
   activeTabId: undefined,
   initializedList: new Set<number>(),
   disclaimerConfirmedMap: {},
+  favorites: {},
 };
 
 //it automatically uses the immer library to let you write simpler immutable updates with normal mutative code
@@ -267,6 +268,28 @@ export const discoverSlice = createSlice({
       };
       console.log('wfs=== resetMarketSort after', state.discoverMap);
     },
+    markFavorites: (state, { payload }: { payload: { tokenId: string; networkType: NetworkType } }) => {
+      console.log('wfs=== markFavorites before', state.favorites);
+      const preNetworkFavorites = [...(state.favorites[payload.networkType] || [])];
+      if (preNetworkFavorites.includes(payload.tokenId)) {
+        console.log('wfs=== markFavorites after, donothing', state.favorites);
+        return;
+      }
+      state.favorites = {
+        ...state.favorites,
+        [payload.networkType]: [...preNetworkFavorites, payload.tokenId],
+      };
+      console.log('wfs=== markFavorites after', state.favorites);
+    },
+    unMarkFavorites: (state, { payload }: { payload: { tokenId: string; networkType: NetworkType } }) => {
+      console.log('wfs=== unMarkFavorites before', state.favorites);
+      const preNetworkFavorites = [...(state.favorites[payload.networkType] || [])];
+      state.favorites = {
+        ...state.favorites,
+        [payload.networkType]: preNetworkFavorites.filter(tokenId => tokenId !== payload.tokenId),
+      };
+      console.log('wfs=== unMarkFavorites after', state.discoverMap);
+    },
   },
 });
 
@@ -295,6 +318,8 @@ export const {
   changeMarketList,
   rollBackMarketSort,
   resetMarketSort,
+  markFavorites,
+  unMarkFavorites,
 } = discoverSlice.actions;
 
 export default discoverSlice;

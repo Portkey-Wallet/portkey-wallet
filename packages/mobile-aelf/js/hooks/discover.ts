@@ -1,3 +1,4 @@
+// import { useAppCASelector, useAppCommonDispatch, useAppEOASelector } from '@portkey-wallet/hooks';
 import { useAppCASelector, useAppCommonDispatch } from '@portkey-wallet/hooks';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-eoa/network';
 import {
@@ -15,6 +16,8 @@ import {
   changeMarketSort,
   resetMarketSort,
   rollBackMarketSort,
+  markFavorites,
+  unMarkFavorites,
 } from '@portkey-wallet/store/store-eoa/discover/slice';
 import { ITabItem } from '@portkey-wallet/store/store-eoa/discover/type';
 import { isUrl } from '@portkey-wallet/utils';
@@ -147,17 +150,38 @@ const sorDirList: IMarketSortDir[] = ['desc', 'asc', ''];
 export const useMarket = () => {
   const dispatch = useAppCommonDispatch();
   const { networkType } = useCurrentNetworkInfo();
-  const { discoverMap } = useAppSelector(state => state.discover);
+  const { discoverMap, favorites } = useAppSelector(state => state.discover);
+  const currentNetworkFavorites = favorites[networkType];
   const marketInfo = discoverMap?.[networkType]?.marketInfo;
   const initMarketInfo = useRef(marketInfo);
   const [refreshing, setRefreshing] = useState(false);
+
   const fetchCryptoCurrencyList = useCallback(
-    async (type: IMarketType, sort?: IMarketSort, sortDir?: IMarketSortDir): Promise<ICryptoCurrencyItem[]> => {
+    async (
+      // type: IMarketType,
+      // sort?: IMarketSort,
+      // sortDir?: IMarketSortDir,
+      // favoriteTokenIds?: string[],
+      {
+        type,
+        sort,
+        sortDir,
+        favoriteTokenIds = [],
+      }: {
+        type: IMarketType;
+        sort?: IMarketSort;
+        sortDir?: IMarketSortDir;
+        favoriteTokenIds?: string[];
+      },
+    ): Promise<ICryptoCurrencyItem[]> => {
       try {
         setRefreshing(true);
         const params: { type?: IMarketType; sort?: IMarketSort; sortDir?: IMarketSortDir } = {};
         if (type) {
           params.type = type;
+          if (type === 'Favorites') {
+            params.type = 'Hot';
+          }
         }
         if (sort) {
           params.sort = sort;
@@ -165,10 +189,23 @@ export const useMarket = () => {
         if (sortDir) {
           params.sortDir = sortDir;
         }
-        const result = await request.discover.getCryptoCurrencyList({
+        let result = await request.discover.getCryptoCurrencyList({
           params: params,
         });
-        return result;
+        console.log('getCryptoCurrencyList: ', result, type);
+        if (type === 'Favorites') {
+          const favoritesList = result.filter((item: ICryptoCurrencyItem) => favoriteTokenIds.includes(item.id + ''));
+          console.log('getCryptoCurrencyList: favoritesList', favoritesList, favoriteTokenIds);
+          result = favoritesList;
+        }
+        const output = result.map((item: ICryptoCurrencyItem) => {
+          return {
+            ...item,
+            collected: favoriteTokenIds.includes(item.id + ''),
+          };
+        });
+        console.log('getCryptoCurrencyList: output', output, favoriteTokenIds);
+        return output;
       } catch (e) {
         throw `fetch market data failed,  caused by: ${JSON.stringify(e)}`;
       } finally {
@@ -177,45 +214,97 @@ export const useMarket = () => {
     },
     [],
   );
+  // not Favorites
   useEffect(() => {
     //init
+    if (marketInfo?.type === 'Favorites' || refreshing) {
+      return;
+    }
     (async () => {
-      const localCryptoCurrencyList = await fetchCryptoCurrencyList(
-        initMarketInfo.current?.type || 'Hot',
-        !initMarketInfo.current?.sortDir ? undefined : initMarketInfo.current?.sort,
-        initMarketInfo.current?.sortDir,
-      );
+      console.log('useEffect fetchCryptoCurrencyList: ', initMarketInfo, marketInfo);
+      // const localCryptoCurrencyList = await fetchCryptoCurrencyList(
+      //   // initMarketInfo.current?.type || 'Hot',
+      //   marketInfo?.type || 'Hot',
+      //   !initMarketInfo.current?.sortDir ? undefined : initMarketInfo.current?.sort,
+      //   initMarketInfo.current?.sortDir,
+      // );
+      const localCryptoCurrencyList = await fetchCryptoCurrencyList({
+        type: marketInfo?.type || 'Hot',
+        sort: !initMarketInfo.current?.sortDir ? undefined : initMarketInfo.current?.sort,
+        sortDir: initMarketInfo.current?.sortDir,
+        favoriteTokenIds: currentNetworkFavorites,
+      });
       dispatch(changeMarketList({ networkType, cryptoCurrencyList: localCryptoCurrencyList }));
     })();
   }, [
+    marketInfo?.type,
     dispatch,
-    fetchCryptoCurrencyList,
+    // marketInfo,
+    // fetchCryptoCurrencyList,
     initMarketInfo.current?.sort,
     initMarketInfo.current?.sortDir,
     initMarketInfo.current?.type,
     networkType,
   ]);
+
+  // update Favorites list only
+  useEffect(() => {
+    if (marketInfo?.type !== 'Favorites' || refreshing) {
+      return;
+    }
+    (async () => {
+      console.log('useEffect fetchCryptoCurrencyList, Favorites only: ', initMarketInfo);
+      const localCryptoCurrencyList = await fetchCryptoCurrencyList({
+        type: 'Favorites',
+        sort: !initMarketInfo.current?.sortDir ? undefined : initMarketInfo.current?.sort,
+        sortDir: initMarketInfo.current?.sortDir,
+        favoriteTokenIds: currentNetworkFavorites,
+      });
+      dispatch(changeMarketList({ networkType, cryptoCurrencyList: localCryptoCurrencyList }));
+    })();
+  }, [dispatch, currentNetworkFavorites, marketInfo?.type, networkType]);
+
   const handleType = useCallback(
     //market type change
     async (type: IMarketType) => {
       dispatch(resetMarketSort({ networkType }));
       dispatch(changeMarketType({ networkType, marketType: type }));
-      const localCryptoCurrencyList = await fetchCryptoCurrencyList(type);
+      const localCryptoCurrencyList = await fetchCryptoCurrencyList({
+        type,
+        favoriteTokenIds: currentNetworkFavorites,
+      });
       dispatch(changeMarketList({ networkType, cryptoCurrencyList: localCryptoCurrencyList }));
+      console.log('handleType: ', type);
     },
-    [dispatch, fetchCryptoCurrencyList, networkType],
+    [dispatch, fetchCryptoCurrencyList, networkType, currentNetworkFavorites],
   );
   const refreshList = useCallback(
     //market type change
     async () => {
-      const localCryptoCurrencyList = await fetchCryptoCurrencyList(
-        marketInfo?.type || 'Hot',
-        marketInfo?.sort,
-        marketInfo?.sortDir,
-      );
+      console.log('refreshList: ', marketInfo, currentNetworkFavorites);
+      // const localCryptoCurrencyList = await fetchCryptoCurrencyList(
+      //   marketInfo?.type || 'Hot',
+      //   marketInfo?.sort,
+      //   marketInfo?.sortDir,
+      // );
+      const localCryptoCurrencyList = await fetchCryptoCurrencyList({
+        type: marketInfo?.type || 'Hot',
+        sort: marketInfo?.sort,
+        sortDir: marketInfo?.sortDir,
+        favoriteTokenIds: currentNetworkFavorites,
+      });
       dispatch(changeMarketList({ networkType, cryptoCurrencyList: localCryptoCurrencyList }));
     },
-    [dispatch, fetchCryptoCurrencyList, marketInfo?.sort, marketInfo?.sortDir, marketInfo?.type, networkType],
+    [
+      dispatch,
+      fetchCryptoCurrencyList,
+      currentNetworkFavorites,
+      marketInfo,
+      networkType,
+      // marketInfo?.sort,
+      // marketInfo?.sortDir,
+      // marketInfo?.type,
+    ],
   );
   const handleSort = useCallback(
     // market sort change
@@ -243,11 +332,16 @@ export const useMarket = () => {
         }
         console.log('wfs=== handleSort', { sort, sortDir: nextSortDir });
         dispatch(changeMarketSort({ networkType, markSort: { sort, sortDir: nextSortDir } }));
-        const localCryptoCurrencyList = await fetchCryptoCurrencyList(
-          marketInfo?.type || 'Hot',
-          nextSortDir === '' ? '' : sort,
-          nextSortDir,
-        );
+        // const localCryptoCurrencyList = await fetchCryptoCurrencyList(
+        //   marketInfo?.type || 'Hot',
+        //   nextSortDir === '' ? '' : sort,
+        //   nextSortDir,
+        // );
+        const localCryptoCurrencyList = await fetchCryptoCurrencyList({
+          type: marketInfo?.type || 'Hot',
+          sort: nextSortDir === '' ? '' : sort,
+          sortDir: nextSortDir,
+        });
         dispatch(changeMarketList({ networkType, cryptoCurrencyList: localCryptoCurrencyList }));
       } catch (e) {
         dispatch(rollBackMarketSort({ networkType }));
@@ -273,30 +367,50 @@ export const useMarket = () => {
   };
 };
 export const useMarketFavorite = () => {
-  const markFavorite = useCallback(async (id: number, symbol: string) => {
-    console.log('wfs=== markFavorite', {
-      id,
-      symbol,
-    });
-    await request.discover.markFavorite({
-      params: {
+  const dispatch = useAppCommonDispatch();
+  const { networkType } = useCurrentNetworkInfo();
+  const markFavorite = useCallback(
+    async (id: string, symbol: string) => {
+      console.log('wfs=== markFavorite', {
         id,
         symbol,
-      },
-    });
-  }, []);
-  const unMarkFavorite = useCallback(async (id: number, symbol: string) => {
-    console.log('wfs=== unMarkFavorite', {
-      id,
-      symbol,
-    });
-    await request.discover.unMarkFavorite({
-      params: {
+      });
+      dispatch(
+        markFavorites({
+          tokenId: id,
+          networkType,
+        }),
+      );
+      // await request.discover.markFavorite({
+      //   params: {
+      //     id,
+      //     symbol,
+      //   },
+      // });
+    },
+    [dispatch, networkType],
+  );
+  const unMarkFavorite = useCallback(
+    async (id: string, symbol: string) => {
+      console.log('wfs=== unMarkFavorite', {
         id,
         symbol,
-      },
-    });
-  }, []);
+      });
+      dispatch(
+        unMarkFavorites({
+          tokenId: id,
+          networkType,
+        }),
+      );
+      // await request.discover.unMarkFavorite({
+      //   params: {
+      //     id,
+      //     symbol,
+      //   },
+      // });
+    },
+    [dispatch, networkType],
+  );
   return {
     markFavorite,
     unMarkFavorite,

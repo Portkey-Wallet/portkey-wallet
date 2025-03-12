@@ -35,7 +35,7 @@ export default function MarketType({
             },
           },
           {
-            title: 'Favourites',
+            title: 'Favorites',
             iconName: 'collect',
             active: marketInfo?.type === 'Favorites',
             onPress: async () => {

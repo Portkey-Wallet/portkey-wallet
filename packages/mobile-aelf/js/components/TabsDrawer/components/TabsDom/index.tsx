@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAppCommonDispatch, useAppEOASelector, useLatestRef } from '@portkey-wallet/hooks';
-import { removeAutoApproveItem } from '@portkey-wallet/store/store-eoa/discover/slice';
+import { removeAutoApproveItem, addBookmarkList, deleteBookmark } from '@portkey-wallet/store/store-eoa/discover/slice';
 import { isIOS, screenHeight, screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { darkColors } from 'assets/theme';
 import BrowserTab from 'components/BrowserTab';
@@ -16,7 +16,7 @@ import { useCurrentNetwork } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { IBookmarkItem, ITabItem } from '@portkey-wallet/store/store-eoa/discover/type';
 import FloatOverlay from 'components/FloatOverlay';
 import { useBookmarkList } from '@portkey-wallet/hooks/hooks-eoa/discover';
-import { request } from '@portkey-wallet/api/api-did';
+// import { request } from '@portkey-wallet/api/api-did';
 import CommonToast from 'components/CommonToast';
 import { showWalletInfo } from '../WalletInfoOverlay';
 import { getHost } from '@portkey-wallet/utils/dapp/browser';
@@ -77,21 +77,35 @@ function TabsDom({ activeWebViewRef, clickBottomActionBtn, onNavigationChange }:
       if (!isBookmarkLoading.current) {
         isBookmarkLoading.current = true;
         try {
-          await request.discover.addBookmark({
-            params: {
-              name: browserInfo?.name || browserInfo?.url || '',
-              url: browserInfo?.url || '',
-            },
-          });
+          // await request.discover.addBookmark({
+          //   params: {
+          //     name: browserInfo?.name || browserInfo?.url || '',
+          //     url: browserInfo?.url || '',
+          //   },
+          // });
+          dispatch(
+            addBookmarkList({
+              networkType,
+              list: [
+                {
+                  name: browserInfo?.name || browserInfo?.url || '',
+                  url: browserInfo?.url || '',
+                  id: 'LOCAL STORE. time:' + Date.now() + ' random:' + Math.random(),
+                  index: -1,
+                },
+              ],
+            }),
+          );
           CommonToast.success('Bookmark added');
           refresh();
         } catch (error) {
+          console.log(error, 'handleMark failed, TabsDom/index.tsx');
           CommonToast.failError('Added failed');
         }
         isBookmarkLoading.current = false;
       }
     },
-    [refresh],
+    [dispatch, networkType, refresh],
   );
 
   const removeMark = useCallback(
@@ -99,25 +113,32 @@ function TabsDom({ activeWebViewRef, clickBottomActionBtn, onNavigationChange }:
       if (!isBookmarkLoading.current) {
         isBookmarkLoading.current = true;
         try {
-          await request.discover.deleteBookmark({
-            params: {
-              deleteInfos: [
-                {
-                  id: mark?.id,
-                  index: mark?.index,
-                },
-              ],
-            },
-          });
+          // await request.discover.deleteBookmark({
+          //   params: {
+          //     deleteInfos: [
+          //       {
+          //         id: mark?.id,
+          //         index: mark?.index,
+          //       },
+          //     ],
+          //   },
+          // });
+          dispatch(
+            deleteBookmark({
+              networkType,
+              id: mark?.id,
+            }),
+          );
           CommonToast.success('Bookmark removed');
           refresh();
         } catch (error) {
+          console.log(error, mark, 'removeMark failed, TabsDom/index.tsx');
           CommonToast.failError('Remove failed');
         }
         isBookmarkLoading.current = false;
       }
     },
-    [refresh],
+    [dispatch, networkType, refresh],
   );
 
   const onTouch = useCallback(

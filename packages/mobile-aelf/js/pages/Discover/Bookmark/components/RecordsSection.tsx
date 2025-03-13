@@ -60,6 +60,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'space-between',
     paddingVertical: pTd(16),
+    paddingTop: pTd(8),
   },
   listWrap: {
     paddingHorizontal: pTd(4),

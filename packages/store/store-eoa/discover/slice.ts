@@ -172,6 +172,19 @@ export const discoverSlice = createSlice({
         },
       };
     },
+    deleteBookmark: (state, { payload }: { payload: { networkType: NetworkType; id: string } }) => {
+      if (!state.discoverMap?.[payload.networkType]?.bookmarkList) return;
+
+      state.discoverMap = {
+        ...(state.discoverMap || {}),
+        [payload.networkType]: {
+          ...(state.discoverMap?.[payload.networkType] || {}),
+          bookmarkList: state.discoverMap[payload.networkType]?.bookmarkList?.filter(
+            bookmark => bookmark.id !== payload.id,
+          ),
+        },
+      };
+    },
     addAutoApproveItem: (state, { payload }: { payload: number }) => {
       if (!state.autoApproveMap) state.autoApproveMap = {};
       state.autoApproveMap = { ...state.autoApproveMap, [payload]: true };
@@ -309,6 +322,7 @@ export const {
   changeDrawerOpenStatus,
   cleanBookmarkList,
   addBookmarkList,
+  deleteBookmark,
   addAutoApproveItem,
   removeAutoApproveItem,
   addDisclaimerConfirmedDapp,

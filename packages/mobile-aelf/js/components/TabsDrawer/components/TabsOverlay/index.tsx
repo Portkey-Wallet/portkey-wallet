@@ -107,6 +107,7 @@ const BrowserEditModal = ({
               CommonToast.success('Added successfully');
               refresh();
             } catch (error) {
+              console.log(error, 'HANDLE_TYPE.BOOKMARK failed, TabsOverlay/index.tsx');
               CommonToast.failError('Added failed');
             }
             isBookmarkLoading.current = false;

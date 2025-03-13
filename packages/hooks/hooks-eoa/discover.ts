@@ -1,8 +1,9 @@
-import { request } from '@portkey-wallet/api/api-did';
+// import { request } from '@portkey-wallet/api/api-did';
 import { useAppCASelector, useAppCommonDispatch } from '@portkey-wallet/hooks';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-eoa/network';
-import { cleanBookmarkList, addBookmarkList } from '@portkey-wallet/store/store-eoa/discover/slice';
-import { IBookmarkItem } from '@portkey-wallet/store/store-eoa/discover/type';
+// import { cleanBookmarkList, addBookmarkList } from '@portkey-wallet/store/store-eoa/discover/slice';
+import { cleanBookmarkList } from '@portkey-wallet/store/store-eoa/discover/slice';
+// import { IBookmarkItem } from '@portkey-wallet/store/store-eoa/discover/type';
 import { DISCOVER_BOOKMARK_MAX_COUNT } from '@portkey-wallet/constants/constants-eoa/discover';
 import { useCallback, useMemo } from 'react';
 
@@ -16,24 +17,30 @@ export const useBookmarkList = () => {
   }, [dispatch, networkType]);
 
   const refresh = useCallback(
+    // async () => {
     async (skipCount = 0, maxResultCount = DISCOVER_BOOKMARK_MAX_COUNT) => {
-      const result = await request.discover.getBookmarks({
-        params: {
-          skipCount,
-          maxResultCount,
-        },
-      });
-
-      if (skipCount === 0) {
-        clean();
-      }
-      dispatch(addBookmarkList({ networkType, list: result.items || [] }));
-      return result as {
-        items: IBookmarkItem[];
-        totalCount: number;
+      // const result = await request.discover.getBookmarks({
+      //   params: {
+      //     skipCount,
+      //     maxResultCount,
+      //   },
+      // });
+      //
+      // if (skipCount === 0) {
+      //   clean();
+      // }
+      // dispatch(addBookmarkList({ networkType, list: result.items || [] }));
+      // return result as {
+      //   items: IBookmarkItem[];
+      //   totalCount: number;
+      // };
+      const bookmarkList = discoverMap?.[networkType]?.bookmarkList || [];
+      return {
+        items: bookmarkList,
+        totalCount: bookmarkList.length,
       };
     },
-    [clean, dispatch, networkType],
+    [discoverMap, networkType],
   );
 
   const bookmarkList = useMemo(() => discoverMap?.[networkType]?.bookmarkList || [], [discoverMap, networkType]);

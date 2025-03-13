@@ -8,7 +8,10 @@ import { RefreshControl } from 'react-native-gesture-handler';
 import NoDiscoverData from 'pages/Discover/components/NoDiscoverData';
 import { useBookmarkList } from '@portkey-wallet/hooks/hooks-eoa/discover';
 import { nextAnimation } from 'utils/animation';
+import { useCurrentNetwork } from '@portkey-wallet/hooks/hooks-eoa/network';
 
+import { useAppCommonDispatch } from '@portkey-wallet/hooks';
+import { cleanBookmarkList } from '@portkey-wallet/store/store-eoa/discover/slice';
 import { IBookmarkItem } from '@portkey-wallet/store/store-eoa/discover/type';
 import CommonToast from 'components/CommonToast';
 import { request } from '@portkey-wallet/api/api-did';
@@ -20,6 +23,8 @@ import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-eo
 function BookmarksSection({ onChange }: { onChange: (n: number) => void }, forward: any) {
   const [isLoading, setIsLoading] = useState(false);
   const itemRefs = useRef(new Map());
+  const dispatch = useAppCommonDispatch();
+  const networkType = useCurrentNetwork();
 
   const { refresh, clean } = useBookmarkList();
   const [list, setList] = useState<IBookmarkItem[]>([]);
@@ -62,6 +67,7 @@ function BookmarksSection({ onChange }: { onChange: (n: number) => void }, forwa
         pagerRef.current.skipCount = result.items.length + skipCount;
         pagerRef.current.totalCount = result.totalCount;
       } catch (error) {
+        console.log(error, 'getBookmarkList error');
         CommonToast.failError(error);
       }
 
@@ -78,7 +84,8 @@ function BookmarksSection({ onChange }: { onChange: (n: number) => void }, forwa
   const onDeleteAll = useCallback(async () => {
     Loading.show();
     try {
-      await request.discover.deleteAllBookmark();
+      // await request.discover.deleteAllBookmark();
+      dispatch(cleanBookmarkList(networkType));
       setList([]);
       await sleep(100);
       getBookmarkListRef.current(true);
@@ -87,7 +94,7 @@ function BookmarksSection({ onChange }: { onChange: (n: number) => void }, forwa
     }
     Loading.hide();
     nextAnimation();
-  }, []);
+  }, [dispatch, networkType]);
 
   useEffect(() => {
     const timer = setTimeout(() => {

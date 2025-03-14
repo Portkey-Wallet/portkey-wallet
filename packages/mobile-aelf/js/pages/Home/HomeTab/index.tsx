@@ -23,6 +23,7 @@ import { useCheckSecurityLock } from 'hooks/securityLock';
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 
 import { resetWallet } from '@portkey-wallet/store/store-eoa/wallet/actions';
+import { resetDapp } from '@portkey-wallet/store/store-eoa/dapp/actions';
 import { resetDiscover } from '@portkey-wallet/store/store-eoa/discover/slice';
 import { useAddressSelect } from '../../My/WalletManagement/hooks/useAddressSelect';
 import { IToSendHomeParamsType } from '@portkey-wallet/types/types-ca/routeParams';
@@ -168,6 +169,7 @@ const HomeTab: React.FC<any> = ({ _ }) => {
 
   const resetWalletClick = useCallback(async () => {
     try {
+      dispatch(resetDapp());
       dispatch(resetWallet());
       navigationService.reset('Referral');
     } catch (error) {

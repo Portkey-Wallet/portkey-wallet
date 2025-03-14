@@ -14,6 +14,7 @@ import { useCheckSecurityLock } from 'hooks/securityLock';
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 import { useWalletListState } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 import { resetWallet } from '@portkey-wallet/store/store-eoa/wallet/actions';
+import { resetDapp } from '@portkey-wallet/store/store-eoa/dapp/actions';
 import CommonAvatar from 'components/CommonAvatar';
 import { LOCAL_AVATARS } from 'assets/image/avatars';
 import Touchable from 'components/Touchable';
@@ -104,6 +105,7 @@ export default function ResetApp() {
                     onPress: () => {
                       checkSecurityLock(
                         () => {
+                          dispatch(resetDapp());
                           dispatch(resetWallet());
                         },
                         true,

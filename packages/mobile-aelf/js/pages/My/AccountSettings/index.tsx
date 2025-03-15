@@ -175,7 +175,8 @@ export default function AccountSettings() {
 const getStyles = makeStyles(theme => ({
   containerStyles: {},
   info: {
-    height: pTd(72),
+    marginTop: pTd(16),
+    height: pTd(74),
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',

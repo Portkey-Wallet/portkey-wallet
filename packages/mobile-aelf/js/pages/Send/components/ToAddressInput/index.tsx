@@ -199,6 +199,7 @@ export const ToAddressInputRef = forwardRef<IToAddressInputRef, IToAddressInput>
 
   const onInput = useCallback((v: string) => {
     const _v = v.trim();
+    setCheckFinish(false);
 
     setSelectedToContact((pre: any) => {
       let chainId = DefaultChainId;

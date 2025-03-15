@@ -67,7 +67,9 @@ export default function VerifierDetails() {
   const originChainId = useOriginChainId();
   const countdown = useRef<VerifierCountdownInterface>();
   useEffectOnce(() => {
-    if (!startResend) countdown.current?.resetTime(60);
+    if (!startResend) {
+      countdown.current?.resetTime(60);
+    }
   });
   const [requestCodeResult, setRequestCodeResult] =
     useState<RouterParams['requestCodeResult']>(paramsRequestCodeResult);
@@ -103,7 +105,9 @@ export default function VerifierDetails() {
         verifierSessionId: string;
       };
     }) => {
-      if (!guardianItem) return CommonToast.fail('Guardian not found');
+      if (!guardianItem) {
+        return CommonToast.fail('Guardian not found');
+      }
       const key = guardianItem.key as string;
       onRequestOrSetPin({
         managerInfo: {
@@ -128,7 +132,9 @@ export default function VerifierDetails() {
 
   const onGeneralVerify = useLockCallback(
     async (code: string) => {
-      if (!requestCodeResult || !guardianItem || !code) return;
+      if (!requestCodeResult || !guardianItem || !code) {
+        return;
+      }
       const isRequestResult = pin && verificationType === VerificationType.register && managerAddress;
       digitInput.current?.lockInput();
       // const loadingKey = Loading.show(isRequestResult ? { text: CreateAddressLoading } : undefined, true);
@@ -239,7 +245,9 @@ export default function VerifierDetails() {
 
   const onRevokeVerify = useLockCallback(
     async (code: string) => {
-      if (!guardianItem || !code) return;
+      if (!guardianItem || !code) {
+        return;
+      }
       digitInput.current?.lockInput();
       Loading.show();
       try {
@@ -346,7 +354,7 @@ export default function VerifierDetails() {
       <TextM style={styles.headerContent}>
         {`${guardianItem?.verifier?.name || ''}, your assigned Guardian Verifier, has sent a verification email to `}
         <TextM style={styles.headerContentAccount}>{`${guardianItem?.guardianAccount || ''}`}</TextM>
-        {`. Please enter the 6-digit code from the email to continue.`}
+        {'. Please enter the 6-digit code from the email to continue.'}
       </TextM>
 
       <DigitInput

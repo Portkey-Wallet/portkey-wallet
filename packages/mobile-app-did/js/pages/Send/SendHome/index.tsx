@@ -24,7 +24,7 @@ import { useCurrentChain, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca
 import {
   CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL,
   useCrossTransferByEtransfer,
-} from '@portkey-wallet/hooks/hooks-eoa/useWithdrawByETransfer';
+} from '@portkey-wallet/hooks/hooks-ca/useWithdrawByETransfer';
 import {
   divDecimals,
   formatAmountShow,
@@ -842,6 +842,43 @@ const SendHome: React.FC = () => {
     } finally {
       Loading.hide();
     }
+
+    // just aelf transfer need limit
+    // if (
+    //   isAelfAddress(selectedToContact.address) &&
+    //   (transferType === TransferType.GENERAL_SAME_CHAIN || transferType === TransferType.GENERAL_CROSS_CHAIN)
+    // ) {
+    //   try {
+    //     const checkTransferLimitResult = await checkTransferLimitWithJump({
+    //       caContract,
+    //       symbol: assetInfo.symbol,
+    //       decimals: assetInfo.decimals,
+    //       amount: sendNumber,
+    //       balance: balance,
+    //       chainId: chainInfo.chainId,
+    //       approveMultiLevelParams: {
+    //         sendTransferPreviewApprove: {
+    //           successNavigateName: 'SendPreview',
+    //           params: {
+    //             ...previewParamsWithoutFee,
+    //             transferType: isAELFCross ? TransferType.GENERAL_CROSS_CHAIN : TransferType.GENERAL_SAME_CHAIN,
+    //           },
+    //         },
+    //       },
+    //     });
+    //     console.log('checkTransferLimitResult', checkTransferLimitResult);
+    //     if (!checkTransferLimitResult) {
+    //       Loading.hide();
+    //       console.log('checkCanPreview 10');
+    //       return { status: false };
+    //     }
+    //   } catch (error) {
+    //     CommonToast.failError(error);
+    //     Loading.hide();
+    //     console.log('checkCanPreview 11');
+    //     return { status: false };
+    //   }
+    // }
     console.log('checkCanPreview 20', transferType);
     return {
       status: true,

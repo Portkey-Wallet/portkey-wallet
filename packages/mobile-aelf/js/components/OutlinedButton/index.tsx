@@ -56,10 +56,11 @@ const getStyles = makeStyles(theme => ({
     justifyContent: 'center',
     borderRadius: pTd(29),
     borderWidth: pTd(1.5),
-    borderColor: theme.colors.borderNeutral2,
+    borderColor: theme.colors.bgBrandSecondary,
   },
   buttonPressWrap: {
-    backgroundColor: theme.colors.bgBrand3,
+    backgroundColor: theme.colors.bgBrandHover,
+    borderColor: theme.colors.bgBrandSecondaryHover,
   },
   buttonInnerWrap: {
     width: '100%',

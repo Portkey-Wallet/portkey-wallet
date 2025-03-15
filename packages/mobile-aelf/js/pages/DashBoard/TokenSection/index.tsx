@@ -18,9 +18,10 @@ import {
   useUniqueIdentify,
 } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
-import { darkColors, makeStyles } from '@rneui/themed';
 import Svg from 'components/Svg';
 import { TextL } from 'components/CommonText';
+import { darkColors } from 'assets/theme';
+import { makeStyles } from '@rneui/themed';
 
 export default function TokenSection() {
   const { t } = useLanguage();

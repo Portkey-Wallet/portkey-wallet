@@ -34,6 +34,9 @@ export const styles = StyleSheet.create({
   primaryButtonStyle: {
     backgroundColor: darkColors.bgBrandDefault,
   },
+  primaryButtonHoverStyle: {
+    backgroundColor: darkColors.bgBrandHover,
+  },
   primaryTitleStyle: {
     // color: darkColors.textBrand4,
     color: darkColors.bgBase1,
@@ -64,7 +67,11 @@ export const styles = StyleSheet.create({
     width: pTd(16),
   },
   waringButtonStyle: {
-    backgroundColor: darkColors.bgDanger1,
+    backgroundColor: darkColors.bgDangerDefault,
+    borderWidth: 0,
+  },
+  waringButtonHoverStyle: {
+    backgroundColor: darkColors.bgDangerHover,
     borderWidth: 0,
   },
   warningTitleStyle: {

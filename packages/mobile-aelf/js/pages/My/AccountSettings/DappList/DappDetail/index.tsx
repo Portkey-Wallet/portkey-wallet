@@ -3,7 +3,7 @@ import PageContainer from 'components/PageContainer';
 import { View } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
-import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
+// import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { TextL, TextM } from 'components/CommonText';
 import { FontStyles } from 'assets/theme/styles';
@@ -31,6 +31,7 @@ import CommonButton from 'components/CommonButton';
 import Touchable from 'components/Touchable';
 import { makeStyles } from '@rneui/themed';
 import CommonTooltip from 'components/CommonTooltip';
+import { useCurrentNetwork } from '@portkey-wallet/hooks/hooks-eoa/network';
 
 interface RouterParams {
   origin: string;
@@ -46,7 +47,7 @@ const DappDetail: React.FC = () => {
   const dappInfo = useCurrentDappInfo(origin);
   const { sessionInfo } = dappInfo || {};
   const dispatch = useAppCommonDispatch();
-  const { currentNetwork } = useWallet();
+  const currentNetwork = useCurrentNetwork();
   const updateSessionInfo = useUpdateSessionInfo();
   const discoverJump = useDiscoverJumpWithNetWork();
 

@@ -32,7 +32,7 @@ import useGetEBridgeConfig from 'hooks/ebridge';
 import { EBridge } from '@portkey-wallet/utils/eBridgeEOA';
 import { getManagerAccount } from 'utils/redux';
 import GoogleTest from '../../../Test/GoogleTest/index.android';
-import { SetBiometricsTypeEnum } from '../../Pin/SetBiometrics';
+// import { SetBiometricsTypeEnum } from '../../Pin/SetBiometrics';
 
 const HomeTab: React.FC<any> = ({ _ }) => {
   // const a = useAppEOASelector(state => state);
@@ -213,21 +213,21 @@ const HomeTab: React.FC<any> = ({ _ }) => {
           }>
           SecurityLock
         </CommonButton>
-        <CommonButton type="primary" onPress={() => Clipboard.setStringAsync(currentAccount?.address || '')}>
+        <CommonButton type="warning" onPress={() => Clipboard.setStringAsync(currentAccount?.address || '')}>
           Copy Address
         </CommonButton>
-        <CommonButton type="primary" onPress={clearDiscover}>
+        <CommonButton type="warningNoBorder" onPress={clearDiscover}>
           clear discover
         </CommonButton>
-        <CommonButton
-          type="primary"
-          onPress={() => {
-            navigationService.push('SetBiometrics', {
-              type: SetBiometricsTypeEnum.create,
-            });
-          }}>
-          SetBiometrics
-        </CommonButton>
+        {/*<CommonButton*/}
+        {/*  type="primary"*/}
+        {/*  onPress={() => {*/}
+        {/*    navigationService.push('SetBiometrics', {*/}
+        {/*      type: SetBiometricsTypeEnum.create,*/}
+        {/*    });*/}
+        {/*  }}>*/}
+        {/*  SetBiometrics*/}
+        {/*</CommonButton>*/}
 
         <CommonButton
           type="primary"
@@ -236,7 +236,7 @@ const HomeTab: React.FC<any> = ({ _ }) => {
           Switch NetworkType (current: {currentNetwork})
         </CommonButton>
         <CommonButton
-          type="primary"
+          type="transparent"
           onPress={() => navigationService.push('AboutUs')}
           containerStyle={{ marginTop: 20 }}>
           About

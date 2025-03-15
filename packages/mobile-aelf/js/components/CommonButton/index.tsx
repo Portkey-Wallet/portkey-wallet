@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button, ButtonProps } from '@rneui/themed';
 import { styles } from './style';
 import { pTd } from 'utils/unit';
@@ -27,6 +27,7 @@ const stylesMap: any = {
   },
   primary: {
     buttonStyle: styles.primaryButtonStyle,
+    buttonHoverStyle: styles.primaryButtonHoverStyle,
     titleStyle: styles.primaryTitleStyle,
     disabledStyle: [styles.primaryButtonStyle, styles.disabledStyle, styles.disabledPrimaryStyle],
     disabledTitleStyle: styles.disabledPrimaryStyle,
@@ -36,6 +37,7 @@ const stylesMap: any = {
   },
   warning: {
     buttonStyle: styles.waringButtonStyle,
+    buttonHoverStyle: styles.waringButtonHoverStyle,
     titleStyle: styles.warningTitleStyle,
     disabledStyle: styles.waringDisabledStyle,
     disabledTitleStyle: styles.waringDisabledTitleStyle,
@@ -65,6 +67,7 @@ const CommonButton: React.FC<CommonButtonProps> = props => {
     ...buttonProps
   } = props;
   const mapStyles = type ? stylesMap[type] : undefined;
+  const [isPressed, setIsPressed] = useState(false);
 
   const handleOnPressIn = useThrottleCallback(onPressIn, [onPressIn], onPressWithSecond);
   const handleOnPress = useThrottleCallback(onPress, [onPress], onPressWithSecond);
@@ -74,14 +77,24 @@ const CommonButton: React.FC<CommonButtonProps> = props => {
       radius={radius || pTd(24)}
       iconPosition="left"
       size="md"
+      activeOpacity={['primary', 'warning'].includes(type || '') ? 1 : 0.85}
       containerStyle={[containerStyle]}
-      buttonStyle={[styles.buttonStyle, mapStyles?.buttonStyle, buttonStyle]}
+      buttonStyle={[
+        styles.buttonStyle,
+        mapStyles?.buttonStyle,
+        isPressed ? mapStyles?.buttonHoverStyle || {} : {},
+        buttonStyle,
+      ]}
       titleStyle={[styles.titleStyle, mapStyles?.titleStyle, titleStyle]}
       disabledStyle={[styles.disabledStyle, mapStyles?.disabledStyle, disabledStyle]}
       disabledTitleStyle={[styles.disabledTitleStyle, mapStyles?.disabledTitleStyle, disabledTitleStyle]}
       {...buttonProps}
       onPress={onPress ? handleOnPress : undefined}
-      onPressIn={onPressIn ? handleOnPressIn : undefined}
+      onPressIn={() => {
+        setIsPressed(true);
+        onPressIn ? handleOnPressIn() : undefined;
+      }}
+      onPressOut={() => setIsPressed(false)}
       type={
         type === 'primary' || type === 'transparent' || type === 'warning' || type === 'warningNoBorder'
           ? undefined

@@ -69,14 +69,14 @@ const AboutUs = () => {
 
   return (
     <PageContainer
-      titleDom={t('About aelf Wallet')}
+      titleDom={t('About FairyVault')}
       safeAreaColor={['black', 'black']}
       containerStyles={styles.pageContainer}
       scrollViewProps={{ disabled: false }}>
       <View style={styles.logoWrap}>
         <Svg icon="app-logo-new" size={pTd(80)} />
       </View>
-      <TextTitle style={[fonts.BGMediumFont]}>{t('aelf Wallet')}</TextTitle>
+      <TextTitle style={[fonts.BGMediumFont]}>{t('FairyVault Wallet')}</TextTitle>
       <TextM style={[styles.version, FontStyles.font7]}>
         {parseVersion([`v${Application.nativeApplicationVersion}`, parseLabel(codePushOperator.localPackage?.label)])}
       </TextM>

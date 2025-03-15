@@ -164,6 +164,8 @@ export const getStyles = makeStyles(theme => ({
   },
   deleteWalletWrap: {
     // height: pTd(48),
+    marginTop: pTd(12),
+    marginBottom: pTd(16),
     height: pTd(48),
     alignContent: 'center',
     justifyContent: 'center',

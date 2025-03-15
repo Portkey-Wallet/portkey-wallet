@@ -122,7 +122,7 @@ const SelectModal = ({ title = '', nickName = '', onChange, avatarInfo }: Select
           <CommonButton
             containerStyle={{
               marginTop: pTd(32),
-              marginBottom: pTd(16),
+              // marginBottom: pTd(16),
             }}
             disabled={isDisabled}
             title={'Save'}

@@ -312,6 +312,7 @@ export const AddressCardBase = ({
                     <CommonAvatar
                       hasBorder={false}
                       style={addressCardStyles.avatarIcon}
+                      shapeType="square"
                       // svgName={addressShowInfo.icon}
                       color={addAddressDisabled ? darkColors.textDisabled1 : ''}
                       svgName="add_v2"

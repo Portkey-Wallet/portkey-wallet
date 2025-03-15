@@ -60,7 +60,9 @@ export default function InnerSettings() {
               dispatch(changeLockingTime({ time: Number(ele.value) }));
             }}>
             <TextL>{ele.label}</TextL>
-            {autoLockingTime === ele.value && <Svg icon="selected" size={pTd(24)} color={theme.colors.iconBrand2} />}
+            {autoLockingTime === ele.value && (
+              <Svg icon="selected" size={pTd(24)} color={theme.colors.iconBrandDefault} />
+            )}
           </Touchable>
         ))}
       </ScrollView>

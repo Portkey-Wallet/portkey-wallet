@@ -58,7 +58,7 @@ const getStyles = makeStyles(theme => ({
     position: 'relative',
   },
   logoContainer: {
-    marginTop: pTd(100),
+    marginTop: pTd(104),
     height: pTd(240),
     width: '100%',
     flexDirection: 'column',

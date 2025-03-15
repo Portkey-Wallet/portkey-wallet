@@ -1,5 +1,4 @@
-import { darkColors, defaultColors } from 'assets/theme';
-import GStyles from 'assets/theme/GStyles';
+import { defaultColors } from 'assets/theme';
 import CommonButton, { CommonButtonProps } from 'components/CommonButton';
 import React from 'react';
 import { StyleProp, StyleSheet, TextStyle, View, ViewStyle } from 'react-native';
@@ -12,6 +11,8 @@ export type ButtonRowProps = {
     title: string;
     loading?: CommonButtonProps['loading'];
     disabled?: boolean;
+    titleStyle?: StyleProp<TextStyle>;
+    buttonStyle?: StyleProp<ViewStyle>;
   }[];
   style?: StyleProp<ViewStyle>;
 } & CommonButtonProps;
@@ -25,12 +26,12 @@ export default function ButtonCol({
     <View style={[styles.buttonsBox, style]}>
       {Array.isArray(buttons) &&
         buttons.map((item, index) => {
-          const buttonStyle: StyleProp<ViewStyle> = [styles.buttonStyle];
+          const buttonStyle: StyleProp<ViewStyle> = [styles.buttonStyle, item.buttonStyle];
           const containerStyle: StyleProp<ViewStyle> = [
             styles.containerStyle,
             index === buttons.length - 1 && styles.lastContainerStyle,
           ];
-          const titleStyle: StyleProp<TextStyle> = [styles.titleStyle];
+          const titleStyle: StyleProp<TextStyle> = [styles.titleStyle, item.titleStyle];
           if (item.type === 'outline') {
             buttonStyle.push(styles.outlineButtonStyle);
             titleStyle.push(styles.outlineTitleStyle);

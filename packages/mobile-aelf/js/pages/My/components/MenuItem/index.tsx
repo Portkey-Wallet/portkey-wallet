@@ -16,6 +16,7 @@ export interface IMenuItemProps {
   size?: number;
   TextComponent?: React.FC<TextProps>;
   arrowSize?: number;
+  arrowColor?: string;
   suffix?: string | number | React.ReactNode;
   iconColor?: string;
   iconStyle?: StyleProp<ViewStyle>;
@@ -31,6 +32,7 @@ const MenuItem: React.FC<IMenuItemProps> = ({
   size = pTd(28),
   hideArrow = false,
   arrowSize = pTd(20),
+  arrowColor,
   suffix,
   iconColor,
   iconStyle,
@@ -38,9 +40,12 @@ const MenuItem: React.FC<IMenuItemProps> = ({
   showWarningCycle = false,
 }) => {
   const SuffixDom = useMemo((): React.ReactNode => {
-    if (!suffix) return null;
-    if (typeof suffix === 'number' || typeof suffix === 'string')
+    if (!suffix) {
+      return null;
+    }
+    if (typeof suffix === 'number' || typeof suffix === 'string') {
       return <TextM style={styles.suffixWrap}>{suffix}</TextM>;
+    }
 
     return suffix;
   }, [suffix]);
@@ -66,7 +71,9 @@ const MenuItem: React.FC<IMenuItemProps> = ({
       )}
       <TextL style={styles.titleWrap}>{title}</TextL>
       {SuffixDom}
-      {!hideArrow && <Svg icon="right-arrow" size={arrowSize} color={defaultColors.icon1} />}
+      {!hideArrow && (
+        <Svg icon="chevron_right" size={arrowSize} color={arrowColor ? arrowColor : defaultColors.icon1} />
+      )}
     </Touchable>
   );
 };

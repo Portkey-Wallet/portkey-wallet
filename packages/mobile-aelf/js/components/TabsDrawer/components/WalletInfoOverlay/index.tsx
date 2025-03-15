@@ -24,6 +24,7 @@ import CommonAvatar from 'components/CommonAvatar';
 import { useCurrentAccount, useCurrentAddressInfos } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 import { useTheme } from '@rneui/themed';
 import { useCurrentNetwork } from '@portkey-wallet/hooks/hooks-eoa/network';
+import { LOCAL_AVATARS } from 'assets/image/avatars';
 
 type MyWalletModalType = {
   tabInfo: ITabItem;
@@ -69,7 +70,8 @@ const MyWalletModal = ({ tabInfo }: MyWalletModalType) => {
               hasBorder={!currentAccount?.icon}
               title={currentAccount?.name}
               avatarSize={pTd(32)}
-              imageUrl={currentAccount?.icon || ''}
+              // imageUrl={currentAccount?.icon || ''}
+              localImage={LOCAL_AVATARS[currentAccount?.icon || 'avatar_1']}
               resizeMode="cover"
               titleStyle={{ fontSize: pTd(14) }}
             />
@@ -78,7 +80,7 @@ const MyWalletModal = ({ tabInfo }: MyWalletModalType) => {
           </View>
           {showDisconnect ? (
             <Touchable onPress={disconnectDapp}>
-              <Svg icon="logout" size={pTd(24)} />
+              <Svg icon="logout" size={pTd(24)} color={darkColors.iconBrandDefault} />
             </Touchable>
           ) : (
             <TextS style={(fonts.mediumFont, DarkFontStyles.textBase3)}>Not connected</TextS>

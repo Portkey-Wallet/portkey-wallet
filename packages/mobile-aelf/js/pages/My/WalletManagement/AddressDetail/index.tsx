@@ -122,7 +122,7 @@ export const AddressDetail: React.FC = () => {
           <Touchable
             onPress={() => {
               RenameOverlay.showModal({
-                title: t('Rename wallet'),
+                title: t('Rename address'),
                 nickName: nickName,
                 onChange: updateAddressName,
               });
@@ -178,7 +178,7 @@ export const AddressDetail: React.FC = () => {
                 style={[addressCardStyles.card, pageStyles.cardContainer, pageStyles.marginBottom0]}>
                 <View style={addressCardStyles.info}>
                   <View>
-                    <Text style={[addressCardStyles.title, addressCardStyles.titleRegular]}>Show Recovery phrase</Text>
+                    <Text style={[addressCardStyles.title, addressCardStyles.titleRegular]}>Show Seed phrase</Text>
                   </View>
                 </View>
                 <View style={addressCardStyles.rightContainer}>

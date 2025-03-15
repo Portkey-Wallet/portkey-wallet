@@ -50,11 +50,12 @@ const stylesMap: any = {
 
 const CommonButton: React.FC<CommonButtonProps> = props => {
   const {
-    size,
+    // size,
     radius,
     type,
     buttonStyle,
     titleStyle,
+    containerStyle,
     disabledStyle,
     disabledTitleStyle,
     onPress,
@@ -73,6 +74,7 @@ const CommonButton: React.FC<CommonButtonProps> = props => {
       radius={radius || pTd(24)}
       iconPosition="left"
       size="md"
+      containerStyle={[containerStyle]}
       buttonStyle={[styles.buttonStyle, mapStyles?.buttonStyle, buttonStyle]}
       titleStyle={[styles.titleStyle, mapStyles?.titleStyle, titleStyle]}
       disabledStyle={[styles.disabledStyle, mapStyles?.disabledStyle, disabledStyle]}

@@ -86,8 +86,8 @@ export default function AccountSettings() {
       },
       {
         name: 'AboutUs',
-        label: 'About aelf wallet',
-        icon: 'ELF',
+        label: 'About FairyVault',
+        icon: 'logo-fairy-vault',
       },
     ],
     [dappList?.length, styles],

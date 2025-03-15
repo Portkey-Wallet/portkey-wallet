@@ -334,7 +334,9 @@ const SendPreview: React.FC = () => {
     }
 
     // transfer limit check
-    if (!isApproved) {
+    const needCheckLimit =
+      transferType === TransferType.GENERAL_SAME_CHAIN || transferType === TransferType.GENERAL_CROSS_CHAIN;
+    if (!isApproved && needCheckLimit) {
       const checkTransferLimitResult = await checkTransferLimitWithJump({
         caContract: portkeyContractRef.current,
         symbol: tokenInfo.symbol,

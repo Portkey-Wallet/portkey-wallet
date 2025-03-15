@@ -129,7 +129,7 @@ const ActivityListPage = () => {
         ListEmptyComponent={
           <>
             {isLoading === ListLoadingEnum.hide && (
-              <View style={[GStyles.flexRow, GStyles.alignCenter, { marginTop: pTd(16) }]}>
+              <View style={[GStyles.flexRow, GStyles.alignCenter, { marginTop: pTd(96) }]}>
                 <TextL style={{ color: theme.colors.textBase2 }}>{t('No activity')}</TextL>
               </View>
             )}

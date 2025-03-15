@@ -379,6 +379,7 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
                   style={itemStyle.cornerMarkIcon}
                   avatarSize={pTd(14)}
                   hasBorder
+                  color={darkColors.iconBrandOn}
                   titleStyle={itemStyle.avatarTitleStyle}
                 />
               </View>

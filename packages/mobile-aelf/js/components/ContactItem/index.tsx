@@ -89,7 +89,7 @@ export const getStyles = makeStyles(theme => ({
     ...GStyles.paddingArg(12, 16),
   },
   itemAvatar: {
-    backgroundColor: theme.colors.iconBrand2,
+    backgroundColor: theme.colors.iconBrandDefault,
   },
   itemAvatarTitle: {
     color: theme.colors.textBrand4,

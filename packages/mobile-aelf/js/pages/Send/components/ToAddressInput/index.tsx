@@ -365,7 +365,7 @@ export const getStyles = makeStyles((theme: any) => ({
     color: theme.colors.textBase2,
   },
   brand2Color: {
-    color: theme.colors.textBrand2,
+    color: theme.colors.textBrandDefault,
   },
   leftTitle: {
     width: pTd(49),

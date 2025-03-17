@@ -15,6 +15,7 @@ import { useRemoveWallet } from '../hooks/useRemoveWallet';
 import CommonToast from 'components/CommonToast';
 import navigationService from 'utils/navigationService';
 import { showModal } from '../AddressDetail/BackupAddressOverlay';
+import fonts from 'assets/theme/fonts';
 
 export const AddressCardHeader = ({
   privateKeyTipShow = false,
@@ -103,6 +104,14 @@ export const AddressCardHeader = ({
                   buttons: [
                     {
                       title: `View ${typeText}`,
+                      titleStyle: {
+                        ...fonts.SGMediumFont,
+                        fontSize: pTd(16),
+                        lineHeight: pTd(16) * 1.2,
+                      },
+                      buttonStyle: {
+                        height: pTd(48),
+                      },
                       type: 'primary',
                       onPress: () => {
                         if (!walletInfo) {
@@ -125,6 +134,14 @@ export const AddressCardHeader = ({
                     },
                     {
                       title: 'Remove',
+                      titleStyle: {
+                        ...fonts.SGMediumFont,
+                        fontSize: pTd(16),
+                        lineHeight: pTd(16) * 1.2,
+                      },
+                      buttonStyle: {
+                        height: pTd(48),
+                      },
                       type: 'warningNoBorder',
                       onPress: () => {
                         if (!walletInfo) {

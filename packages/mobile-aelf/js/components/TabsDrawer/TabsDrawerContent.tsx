@@ -117,7 +117,7 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
         {
           title: t('Confirm'),
           type: 'solid',
-          style: { backgroundColor: darkColors.textBrand2 },
+          style: { backgroundColor: darkColors.textBrandOn },
           titleStyle: { color: darkColors.iconBrand4 },
           onPress: () => {
             dispatch(closeAllTabs({ networkType }));

@@ -40,7 +40,9 @@ export const Popover = forwardRef(function Popover(_, _ref) {
   const styles = getStyles();
   const onSetPopoverInfo = useCallback(
     (info: PopoverInfo) => {
-      if (!info) return;
+      if (!info) {
+        return;
+      }
       marginTop.setValue(info.top - (styles.popover.height - info.indexHeight) / 2);
       setPopoverInfo(info);
       // Animated ?
@@ -56,7 +58,9 @@ export const Popover = forwardRef(function Popover(_, _ref) {
   );
   useImperativeHandle(_ref, () => ({ setPopoverInfo: onSetPopoverInfo, setShow }), [onSetPopoverInfo]);
 
-  if (!popoverInfo || !popoverInfo.text || !show) return null;
+  if (!popoverInfo || !popoverInfo.text || !show) {
+    return null;
+  }
   return (
     <Animated.View style={[styles.popover, { marginTop }]}>
       <TextL style={[styles.popoverItem]}>{popoverInfo.text}</TextL>
@@ -112,10 +116,14 @@ const IndexBar = forwardRef(function IndexBar(
   const [scrollSelectIndex, setScrollSelectIndex] = useState(-1);
 
   const getIndex = useCallback((nativePageY: number) => {
-    if (!indexInfoRef.current) return;
+    if (!indexInfoRef.current) {
+      return;
+    }
     const { pageY, height, indexHeight } = indexInfoRef.current;
     const nativeClientY = nativePageY - pageY;
-    if (nativeClientY < 0 || nativeClientY > height) return;
+    if (nativeClientY < 0 || nativeClientY > height) {
+      return;
+    }
     return Math.floor(nativeClientY / indexHeight);
   }, []);
   const selectIndex = useMemo(
@@ -133,7 +141,9 @@ const IndexBar = forwardRef(function IndexBar(
 
   const setCurrentIndex = useCallback(
     (nativePageY: number) => {
-      if (!indexInfoRef.current) return;
+      if (!indexInfoRef.current) {
+        return;
+      }
       const { currentIndex, indexHeight } = indexInfoRef.current;
       const nowIndex = getIndex(nativePageY);
       if (nowIndex !== undefined && nowIndex !== currentIndex) {
@@ -261,7 +271,7 @@ const getStyles = makeStyles(theme => ({
     overflow: 'hidden',
   },
   indexWrapSelectStyle: {
-    backgroundColor: theme.colors.textBrand2,
+    backgroundColor: theme.colors.textBrandOn,
   },
   indexTextSelectStyle: {
     color: theme.colors.textBrand4,

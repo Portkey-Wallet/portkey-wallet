@@ -92,7 +92,7 @@ export const getStyles = makeStyles(theme => ({
     backgroundColor: theme.colors.iconBrandDefault,
   },
   itemAvatarTitle: {
-    color: theme.colors.textBrand4,
+    color: theme.colors.textBrandOn,
     fontSize: pTd(16),
     lineHeight: pTd(22),
   },

@@ -45,7 +45,7 @@ export const useGetTransferFee = () => {
 
       const { TransactionFee } = (req.data as CalculateTransactionFeeResponse) || {};
 
-      console.log('TransactionFee ===', req);
+      console.log('TransactionFee ===', req, calculateParams);
       // // V2 calculateTransactionFee
       // if (TransactionFees) {
       //   const { ChargingAddress, Fee } = TransactionFees;

@@ -81,7 +81,7 @@ const ContactEdit: React.FC = () => {
   const isEdit = useMemo(() => contact !== undefined, [contact]);
 
   const iptRef = useRef<TextInput>();
-  useInputFocus(iptRef, !isEdit, isIOS ? undefined : 100);
+  useInputFocus(iptRef, !isEdit, 100);
 
   // const defaultToken = useDefaultToken();
   const { t } = useLanguage();
@@ -385,6 +385,15 @@ const ContactEdit: React.FC = () => {
     }
   }, [handleAddressChange]);
 
+  const renderSaveButton = useCallback(() => {
+    return (
+      <View style={pageStyles.btnContainer}>
+        <CommonButton onPress={onFinish} disabled={isSaveDisable} type="primary">
+          Save address
+        </CommonButton>
+      </View>
+    );
+  }, [isSaveDisable, onFinish, pageStyles.btnContainer]);
   return (
     <PageContainer
       safeAreaColor={['black', 'black']}
@@ -498,14 +507,7 @@ const ContactEdit: React.FC = () => {
           </View>
         </View>
       </View>
-
-      <KeyboardSafeArea>
-        <View style={pageStyles.btnContainer}>
-          <CommonButton onPress={onFinish} disabled={isSaveDisable} type="primary">
-            Save address
-          </CommonButton>
-        </View>
-      </KeyboardSafeArea>
+      {isIOS ? <KeyboardSafeArea>{renderSaveButton()}</KeyboardSafeArea> : renderSaveButton()}
     </PageContainer>
   );
 };

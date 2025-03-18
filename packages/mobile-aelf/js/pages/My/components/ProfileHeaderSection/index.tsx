@@ -52,10 +52,10 @@ const getStyles = makeStyles(theme => ({
   },
   avatarStyle: {
     fontSize: pTd(40),
-    backgroundColor: theme.colors.iconBrand2,
+    backgroundColor: theme.colors.iconBrandDefault,
   },
   avatarTitleStyle: {
-    color: theme.colors.textBrand4,
+    color: theme.colors.textBrandOn,
     fontSize: pTd(24),
     lineHeight: pTd(28),
     ...fonts.BGRegularFont,

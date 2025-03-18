@@ -472,7 +472,7 @@ const ContactEdit: React.FC = () => {
                     isExchange: false,
                   }));
                 }}>
-                {!editContact.isExchange && <Svg size={pTd(20)} icon="check" color={colors.iconBrand4} />}
+                {!editContact.isExchange && <Svg size={pTd(20)} icon="check" color={colors.iconBrandOn} />}
                 <TextL style={[pageStyles.exchangeItem, !editContact.isExchange && pageStyles.exchangeItemActive]}>
                   Non-exchange
                 </TextL>
@@ -549,7 +549,7 @@ export const getPageStyles = makeStyles(theme => ({
     backgroundColor: theme.colors.bgNeutral2,
   },
   exchangeItemActiveWrap: {
-    backgroundColor: theme.colors.bgBrand1,
+    backgroundColor: theme.colors.bgBrandDefault,
   },
   isExchangeItemWrap: {
     marginRight: pTd(4),
@@ -574,13 +574,13 @@ export const getPageStyles = makeStyles(theme => ({
     paddingLeft: pTd(4),
   },
   exchangeItemActive: {
-    color: theme.colors.textBrand4,
+    color: theme.colors.textBrandOn,
   },
   btnContainer: {
     marginBottom: pTd(14),
   },
   pasteAddressText: {
-    color: theme.colors.textBrand2,
+    color: theme.colors.textBrandDefault,
   },
   networkImage: {
     width: pTd(16),

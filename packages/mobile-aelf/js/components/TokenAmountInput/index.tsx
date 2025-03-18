@@ -94,7 +94,7 @@ const TokenAmountInput: React.FC<ITokenAmountInput> = props => {
         <>
           {isRevert ? (
             <>
-              <Text style={styles.label}>{'$ '}</Text>
+              <Text style={[styles.label, !isIOS && styles.labelPaddingBottom]}>{'$ '}</Text>
               <TextInput
                 value={usdValue}
                 onChangeText={onUsdValueInputChange}
@@ -173,7 +173,7 @@ export const getStyles = makeStyles(theme => ({
     ...fonts.BGMediumFont,
   },
   labelPaddingBottom: {
-    paddingBottom: pTd(9),
+    paddingBottom: pTd(8),
   },
   input: {
     color: theme.colors.textBase1,

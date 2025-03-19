@@ -3,7 +3,7 @@ name: Production Build:\build for Android, upload to Google Play Store
 on:
   push:
     branches:
-      - fastlane-build/eoa-app-production 
+      - fastlane-build/eoa-app-production
   # pull_request:
   #   branches:
   #     - fastlane-build/eoa-app-production # This branch should be used for both Android and IOS build triggers.
@@ -68,20 +68,20 @@ jobs:
           yarn add @react-native-community/cli-platform-android@7.0.1
         env:
           CI: true
-      # change file permission 
+      # change file permission
       - name: Make build-android-bundle.sh executable
         run: chmod +x packages/mobile-aelf/scripts/build-android-bundle.sh
     # Step load .env file
       - name: Create .env file for React Native Config
         run: echo "${{ secrets.ENV_EOA_FILE_CONTENT }}" > $GITHUB_WORKSPACE/packages/mobile-aelf/.env
     # Step cat ./packages/mobile-aelf/.env
-      - name: Verify .env file
-        run: cat $GITHUB_WORKSPACE/packages/mobile-aelf/.env
+      #- name: Verify .env file
+      #  run: cat $GITHUB_WORKSPACE/packages/mobile-aelf/.env
       # Step 8: Fastlane build android
       - name : Build android App via fastlane
         run : |
           cd packages/mobile-aelf/android
-          fastlane deploy_to_play_store 
+          fastlane deploy_to_play_store
         env:
           CI: true
           CD: true

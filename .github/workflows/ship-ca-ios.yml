@@ -128,8 +128,8 @@ jobs:
       - name: Create .env file for React Native Config
         run: echo "${{ secrets.ENV_FILE_CONTENT }}" > $GITHUB_WORKSPACE/packages/mobile-app-did/.env
       # Step cat ./packages/mobile-app-did/.env
-      - name: Verify .env file
-        run: cat $GITHUB_WORKSPACE/packages/mobile-app-did/.env
+      #- name: Verify .env file
+      #  run: cat $GITHUB_WORKSPACE/packages/mobile-app-did/.env
 
       # Step 8: Run Fastlane to build and ship the build
       - name: Build and upload to TestFlight

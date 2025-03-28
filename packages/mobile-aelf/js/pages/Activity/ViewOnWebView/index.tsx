@@ -1,6 +1,6 @@
 import React, { useCallback, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { darkColors, defaultColors } from 'assets/theme';
+import { defaultColors } from 'assets/theme';
 import WebView from 'react-native-webview';
 import CustomHeader from 'components/CustomHeader';
 import SafeAreaBox from 'components/SafeAreaBox';
@@ -48,7 +48,9 @@ const ViewOnWebView: React.FC = () => {
 
   const handleNavigationStateChange = useCallback(
     (navState: any) => {
-      if (webViewPageType === 'default') return;
+      if (webViewPageType === 'default') {
+        return;
+      }
 
       if (webViewPageType === 'ramp-buy') {
         if (navState.url.startsWith(RAMP_BUY_URL)) {
@@ -89,7 +91,7 @@ const ViewOnWebView: React.FC = () => {
           // cacheEnabled={false}
           injectedJavaScript={injectedJavaScript}
           // incognito={incognito}
-          applicationNameForUserAgent={'View Only WebView Portkey did Mobile'}
+          applicationNameForUserAgent={'View Only WebView FairyVault Mobile'}
           onLoadProgress={({ nativeEvent }) => progressBarRef.current?.changeInnerBarWidth(nativeEvent.progress)}
         />
       </View>

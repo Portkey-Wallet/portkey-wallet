@@ -69,7 +69,7 @@ const getStyles = makeStyles(theme => ({
     justifyContent: 'center',
     borderRadius: pTd(29),
     borderWidth: pTd(4),
-    borderColor: '#062A4B',
+    borderColor: '#151318',
   },
   title: {
     marginTop: pTd(6),

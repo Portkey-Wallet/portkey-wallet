@@ -98,7 +98,11 @@ const TokenAmountInput: React.FC<ITokenAmountInput> = props => {
               <TextInput
                 value={usdValue}
                 onChangeText={onUsdValueInputChange}
-                style={[styles.input, showErrorInput && warningTip && styles.errorInput]}
+                style={[
+                  styles.input,
+                  showErrorInput && warningTip && styles.errorInput,
+                  !isIOS && styles.androidMargin,
+                ]}
                 placeholder="0"
                 placeholderTextColor={darkColors.textBase3}
                 keyboardType="numeric"
@@ -192,6 +196,9 @@ export const getStyles = makeStyles(theme => ({
     fontSize: pTd(32),
     ...fonts.BGMediumFont,
     paddingHorizontal: 0,
+  },
+  androidMargin: {
+    marginTop: pTd(3),
   },
   middleText: {
     fontSize: pTd(24),

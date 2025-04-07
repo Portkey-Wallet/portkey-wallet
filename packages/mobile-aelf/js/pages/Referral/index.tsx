@@ -54,7 +54,8 @@ export default function Referral() {
         });
       }
     }
-    await sleep(500);
+    // https://docs.expo.dev/versions/v51.0.0/sdk/splash-screen/#splashscreenhideasync
+    await sleep(2000);
     SplashScreen.hideAsync();
     setIsSplashScreen(false);
   }, [isFocusedRef, isAccountExist, getLoginControlListAsync, credentials, checkSecurityLock]);

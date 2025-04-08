@@ -11,6 +11,8 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+  [NSThread sleepForTimeInterval:0.5];
+  
   [RNFBAppCheckModule sharedInstance]; // ADD FB AppCheck
   [FIRApp configure];
   

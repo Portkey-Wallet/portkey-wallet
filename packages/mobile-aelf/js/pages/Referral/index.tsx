@@ -55,7 +55,7 @@ export default function Referral() {
       }
     }
     // https://docs.expo.dev/versions/v51.0.0/sdk/splash-screen/#splashscreenhideasync
-    await sleep(2000);
+    await sleep(500);
     SplashScreen.hideAsync();
     setIsSplashScreen(false);
   }, [isFocusedRef, isAccountExist, getLoginControlListAsync, credentials, checkSecurityLock]);
@@ -87,7 +87,7 @@ export default function Referral() {
       hideTouchable
       hideHeader>
       {isSplashScreen ? (
-        <View style={[isIOS ? { marginTop: -1 * getStatusBarHeight() } : styles.backgroundSplashContainerWrap]}>
+        <View style={[isIOS ? styles.iOSBackgroundSplashContainerWrap : styles.backgroundSplashContainerWrap]}>
           <ImageBackground
             style={isIOS ? styles.backgroundSplashContainerIOS : styles.backgroundSplashContainer}
             resizeMode="cover"
@@ -139,6 +139,10 @@ const getStyles = makeStyles(theme => ({
     height: '100%',
     padding: 50,
     paddingTop: 70,
+    backgroundColor: theme.colors.bgBase1,
+  },
+  iOSBackgroundSplashContainerWrap: {
+    marginTop: -1 * getStatusBarHeight(),
     backgroundColor: theme.colors.bgBase1,
   },
   backgroundSplashContainer: {

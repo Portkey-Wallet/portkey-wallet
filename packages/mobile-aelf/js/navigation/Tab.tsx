@@ -11,7 +11,7 @@ import ActivityListPage from 'pages/Activity/ActivityListPage';
 import { pTd } from 'utils/unit';
 // import { resetBadge } from 'utils/notifee';
 import { TabRouteNameEnum } from 'types/navigate';
-import HomeTab from 'pages/Home/HomeTab';
+// import HomeTab from 'pages/Home/HomeTab';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { useBackupWalletModal } from '../pages/Login/hooks/useBackupWalletModal';
 // import { TextM } from 'components/CommonText';
@@ -31,14 +31,14 @@ export interface IRenderTabMenuItem {
 
 // export const tabMenuTypeMap: Record<TabRouteNameEnum, IRenderTabMenuItem> = {
 export const tabMenuTypeMap: Record<string, IRenderTabMenuItem> = {
-  ['Home']: {
-    name: TabRouteNameEnum.TEST,
-    index: 0,
-    label: 'Wallet',
-    icon: 'home',
-    isDefault: true,
-    component: HomeTab,
-  },
+  // ['Home']: {
+  //   name: TabRouteNameEnum.TEST,
+  //   index: 0,
+  //   label: 'Wallet',
+  //   icon: 'home',
+  //   isDefault: true,
+  //   component: HomeTab,
+  // },
   [TabRouteNameEnum.WALLET]: {
     name: TabRouteNameEnum.WALLET,
     index: 0,

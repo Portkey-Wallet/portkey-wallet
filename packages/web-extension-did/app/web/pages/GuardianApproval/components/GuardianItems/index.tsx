@@ -179,7 +179,9 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount,
           if (from === FromPageEnum.setTransferLimit) {
             return navigate('/setting/wallet-security/payment-security/verifier-account', { state: locationParams });
           }
-          return navigate('/login/verifier-account', { state: { previousPage: FromPageEnum.login } });
+          return navigate('/login/verifier-account', {
+            state: { previousPage: FromPageEnum.login, operationDetails: locationParams.operationDetails },
+          });
         }
       } catch (error: any) {
         console.log(error, 'error===');
@@ -188,17 +190,7 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount,
         singleMessage.error(_error);
       }
     },
-    [
-      locationParams,
-      setLoading,
-      loginAccount,
-      originChainId,
-      operationType,
-      targetChainId,
-      guardianSendCode,
-      dispatch,
-      navigate,
-    ],
+    [locationParams, loginAccount, originChainId, operationType, targetChainId, guardianSendCode, dispatch, navigate],
   );
 
   const socialVerify = useSocialVerify();

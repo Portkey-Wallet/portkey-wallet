@@ -16,6 +16,7 @@ interface RegisterDIDWalletParams extends IContext {
   signature?: string;
   chainId: string;
   source?: RequestSourceEnum;
+  zkLoginInfo?: ZKLoginInfo;
 }
 
 export const registerDIDWallet = async (

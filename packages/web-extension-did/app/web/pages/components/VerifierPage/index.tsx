@@ -142,11 +142,10 @@ export default function VerifierPage({
       if (!currentGuardian?.guardianAccount) throw 'Missing loginGuardianType';
       if (!guardianType && guardianType !== 0) throw 'Missing guardiansType';
       setChecking(true);
-
       const res = await verification.sendVerificationCode({
         params: {
           guardianIdentifier: currentGuardian.guardianAccount.replaceAll(' ', ''),
-          type: LoginType[guardianType],
+          type: LoginType[currentGuardian.guardianType],
           verifierId: currentGuardian.verifier?.id || '',
           chainId: originChainId,
           operationType,

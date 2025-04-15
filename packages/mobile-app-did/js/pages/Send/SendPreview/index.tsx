@@ -432,7 +432,6 @@ const SendPreview: React.FC = () => {
       } else {
         network = targetNetwork?.network || toInfo?.network || String(toInfo?.chainId);
       }
-
       const crossTransferByEtransferResult = await crossTransferByEtransfer.withdraw({
         chainId: chainInfo.chainId,
         tokenContract: tokenContractRef.current,

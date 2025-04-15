@@ -379,6 +379,17 @@ export default function Send() {
         const { privateKey } = await getSeed();
         if (!privateKey) throw t(WalletError.invalidPrivateKey);
         if (!currentChain) throw 'No ChainInfo';
+        console.log('getFee==', {
+          caAddress,
+          managerAddress: wallet.address,
+          toAddress: toAccount?.address,
+          privateKey,
+          chainInfo: currentChain,
+          chainType: currentNetwork.walletType,
+          token: tokenInfo,
+          caHash: wallet.caHash as string,
+          amount: timesDecimals(num || amount, tokenInfo.decimals).toFixed(),
+        });
         const feeRes = await getTransferFee({
           caAddress,
           managerAddress: wallet.address,
@@ -393,6 +404,9 @@ export default function Send() {
         return feeRes;
       } catch (error) {
         console.log('getFee===error', error);
+        if (error === TransactionError.TRANSFER_AMOUNT_EXCEEDED) {
+          return '0';
+        }
       }
     },
     [
@@ -449,7 +463,17 @@ export default function Send() {
         } else {
           network = targetNetwork?.network || getAddressChainId(toAccount?.address, 'AELF') || 'AELF';
         }
-
+        console.log('params', {
+          chainId,
+          toAddress: toAccount.address,
+          network,
+          amount,
+          tokenInfo: {
+            address: tokenInfo.address,
+            symbol: tokenInfo.symbol,
+            decimals: Number(tokenInfo.decimals),
+          },
+        });
         const crossTransferByEtransferResult = await withdraw({
           chainId,
           toAddress: toAccount.address,
@@ -759,6 +783,7 @@ export default function Send() {
   const previewCheck = useCallback(async () => {
     setAmountErrMsg('');
     setBtnLoading(true);
+    console.log('previewCheck click!');
     try {
       if (!currentChain) {
         console.log('previewCheck error === currentChain is not exist');
@@ -827,28 +852,29 @@ export default function Send() {
         return { status: false };
       }
 
+      // fixed: Moved Step 5 to after step 6
       // CHECK 5: transfer limit
-      const limitRes = await checkLimit({
-        chainId: tokenInfo.chainId,
-        symbol: tokenInfo.symbol,
-        amount: amount,
-        decimals: tokenInfo.decimals,
-        from: ICheckLimitBusiness.SEND,
-        balance,
-        extra: {
-          stage,
-          amount: amount,
-          address: tokenInfo.address,
-          imageUrl: tokenInfo.imageUrl,
-          alias: tokenInfo.alias,
-          tokenId: tokenInfo.tokenId,
-          toAccount,
-        },
-        onOneTimeApproval: handleOneTimeApproval,
-      });
-      if (!limitRes) {
-        return { status: false };
-      }
+      // const limitRes = await checkLimit({
+      //   chainId: tokenInfo.chainId,
+      //   symbol: tokenInfo.symbol,
+      //   amount: amount,
+      //   decimals: tokenInfo.decimals,
+      //   from: ICheckLimitBusiness.SEND,
+      //   balance,
+      //   extra: {
+      //     stage,
+      //     amount: amount,
+      //     address: tokenInfo.address,
+      //     imageUrl: tokenInfo.imageUrl,
+      //     alias: tokenInfo.alias,
+      //     tokenId: tokenInfo.tokenId,
+      //     toAccount,
+      //   },
+      //   onOneTimeApproval: handleOneTimeApproval,
+      // });
+      // if (!limitRes) {
+      //   return { status: false };
+      // }
 
       // CHECK 6: fee check
       let networkFee: string | undefined;
@@ -858,6 +884,7 @@ export default function Send() {
       let receiveAmount: string | undefined;
       let receiveAmountUsd: string | undefined;
       let transferType = TransferType.GENERAL_SAME_CHAIN;
+
       // CHECK 6.1 isRecommendEtransfer(to evm) fee check
       if (
         warning === WarningKey.MAKE_SURE_SUPPORT_PLATFORM &&
@@ -903,6 +930,7 @@ export default function Send() {
             setReceiveAmountUsd(receiveAmountUsd);
             setTransactionFee(transactionFee);
             setTransactionUnit(transactionUnit);
+            console.log('transferType1', transferType);
             setTransferType(transferType);
             return {
               status: true,
@@ -973,6 +1001,7 @@ export default function Send() {
           setReceiveAmountUsd(receiveAmountUsd);
           setTransactionFee(transactionFee);
           setTransactionUnit(transactionUnit);
+          console.log('transferType2', transferType);
           setTransferType(transferType);
           return {
             status: true,
@@ -1034,6 +1063,7 @@ export default function Send() {
           setReceiveAmountUsd(receiveAmountUsd);
           setTransactionFee(transactionFee);
           setTransactionUnit(transactionUnit);
+          console.log('transferType3', transferType);
           setTransferType(transferType);
           return {
             status: true,
@@ -1048,13 +1078,45 @@ export default function Send() {
           };
         }
       }
+
+      // const limitRes = await checkLimit({
+      //   chainId: tokenInfo.chainId,
+      //   symbol: tokenInfo.symbol,
+      //   amount: amount,
+      //   decimals: tokenInfo.decimals,
+      //   from: ICheckLimitBusiness.SEND,
+      //   balance,
+      //   extra: {
+      //     stage,
+      //     amount: amount,
+      //     address: tokenInfo.address,
+      //     imageUrl: tokenInfo.imageUrl,
+      //     alias: tokenInfo.alias,
+      //     tokenId: tokenInfo.tokenId,
+      //     toAccount,
+      //   },
+      //   onOneTimeApproval: handleOneTimeApproval,
+      // });
+      // console.log('wfs===limitRes', limitRes);
+      // if (!limitRes) {
+      //   return { status: false };
+      // }
+
       // CHECK 6.4 SameChain or Default CrossChain
       networkFeeUnit = 'ELF';
       transferType = isCrossChain(toAccount.address, chainId)
         ? TransferType.GENERAL_CROSS_CHAIN
         : TransferType.GENERAL_SAME_CHAIN;
       const fee = await getTransactionFee();
-
+      console.log(
+        'wfs===isCrossChain',
+        isCrossChain(toAccount.address, chainId),
+        'toAccount.address, chainId',
+        toAccount.address,
+        chainId,
+        'fee',
+        fee,
+      );
       if (fee) {
         networkFee = fee;
       } else {
@@ -1068,7 +1130,31 @@ export default function Send() {
       setReceiveAmountUsd(receiveAmountUsd);
       setTransactionFee(transactionFee);
       setTransactionUnit(transactionUnit);
+      console.log('transferType4', transferType);
       setTransferType(transferType);
+
+      const limitRes = await checkLimit({
+        chainId: tokenInfo.chainId,
+        symbol: tokenInfo.symbol,
+        amount: amount,
+        decimals: tokenInfo.decimals,
+        from: ICheckLimitBusiness.SEND,
+        balance,
+        extra: {
+          stage,
+          amount: amount,
+          address: tokenInfo.address,
+          imageUrl: tokenInfo.imageUrl,
+          alias: tokenInfo.alias,
+          tokenId: tokenInfo.tokenId,
+          toAccount,
+        },
+        onOneTimeApproval: handleOneTimeApproval,
+      });
+      console.log('wfs===limitRes', limitRes);
+      if (!limitRes) {
+        return { status: false };
+      }
       return {
         status: true,
         networkFee,
@@ -1120,7 +1206,7 @@ export default function Send() {
   ]);
   const toPreviewStage = useCallback(async () => {
     const result = await previewCheck();
-
+    console.log('wfs===', result);
     if (!result?.status) {
       return;
     }
@@ -1131,7 +1217,10 @@ export default function Send() {
   }, [previewCheck, transferType]);
 
   const sendHandler = useCallback(async (): Promise<string | void> => {
-    if (!oneTimeApprovalList.current || oneTimeApprovalList.current.length === 0) {
+    const needCheckLimit =
+      transferType === TransferType.GENERAL_SAME_CHAIN || transferType === TransferType.GENERAL_CROSS_CHAIN;
+    console.log('wfs===needCheckLimit', needCheckLimit);
+    if ((!oneTimeApprovalList.current || oneTimeApprovalList.current.length === 0) && needCheckLimit) {
       if (!tokenInfo) throw 'No Symbol info';
       setBtnLoading(true);
       try {
@@ -1169,7 +1258,7 @@ export default function Send() {
     } else {
       await sendTransfer();
     }
-  }, [amount, balance, checkLimit, handleOneTimeApproval, sendTransfer, stage, toAccount, tokenInfo]);
+  }, [amount, balance, checkLimit, handleOneTimeApproval, sendTransfer, stage, toAccount, tokenInfo, transferType]);
 
   const showStrangerAddress = useMemo(() => {
     if (toAccount.address) {
@@ -1445,6 +1534,7 @@ export default function Send() {
       amount,
       usdAmount,
       sendHandler,
+      chainId,
       targetNetwork,
       transferType,
       eBridgeFeeNotEnough,

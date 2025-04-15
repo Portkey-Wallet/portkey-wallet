@@ -20,6 +20,8 @@ import { CurrentWalletType } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { aelf } from '@portkey/utils';
 import { getContractBasic as portkeyGetContractBasic } from '@portkey/contracts';
 import { VIEW_PRIVATE } from '@portkey-wallet/utils/eBridge/constants';
+import { isTransferAmountExceeded } from 'utils/errorHandler';
+import { TransactionError } from '@portkey-wallet/constants/constants-ca/send';
 const localStore: Record<string, string> = {};
 
 export class BaseAsyncStorage implements IStorageSuite {
@@ -340,7 +342,12 @@ class SandboxUtil {
           RawTransaction: raw.data,
         },
       });
-      if (!transaction?.Success) throw 'Transaction failed';
+      if (!transaction?.Success) {
+        if (isTransferAmountExceeded(transaction.Error)) {
+          throw TransactionError.TRANSFER_AMOUNT_EXCEEDED;
+        }
+        throw 'Transaction failed';
+      }
       callback(event, {
         code: SandboxErrorCode.success,
         message: transaction,
@@ -349,7 +356,7 @@ class SandboxUtil {
     } catch (e) {
       return callback(event, {
         code: SandboxErrorCode.error,
-        message: e,
+        error: e,
         sid: data.sid,
       });
     }

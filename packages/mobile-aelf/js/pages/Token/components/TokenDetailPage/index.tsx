@@ -30,6 +30,7 @@ import { ListLoadingEnum } from 'constants/misc';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { pTd } from 'utils/unit';
 import { useGetAccountTokenList } from 'hooks/account';
+import { useAppSwapButtonShow } from 'hooks/cms';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-eoa/chainList';
 import FaucetButton from 'components/FaucetButton';
 import { darkColors } from 'assets/theme';
@@ -56,7 +57,7 @@ const TokenDetailPage: React.FC<TokenDetailParams> = ({ tokenInfo, tokenSection 
   const dispatch = useAppCommonDispatch();
   const activity = useAppEOASelector(state => state.activity);
   const defaultToken = useDefaultToken(tokenInfo.chainId);
-  const isSwapShow = true;
+  const { isSwapShow } = useAppSwapButtonShow();
   // const { buy, swap } = checkEnabledFunctionalTypes(tokenInfo.symbol, tokenInfo.chainId === 'AELF');
   const { swap } = checkEnabledFunctionalTypes(tokenInfo.symbol, tokenInfo.chainId === 'AELF');
   // const { isRampShow } = useAppRampEntryShow();

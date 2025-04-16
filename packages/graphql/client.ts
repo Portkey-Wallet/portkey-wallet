@@ -1,7 +1,8 @@
 import { ApolloClient, InMemoryCache, HttpLink, DefaultOptions } from '@apollo/client';
 
-export const graphQLClientProvider = (graphqlUrl: string, defaultOptions: DefaultOptions = {}) =>
-  new ApolloClient({
+export const graphQLClientProvider = (graphqlUrl: string, defaultOptions: DefaultOptions = {}) => {
+  console.log('graphQLClientProvider init: ', graphqlUrl);
+  return new ApolloClient({
     cache: new InMemoryCache(),
     queryDeduplication: false,
     defaultOptions: {
@@ -15,3 +16,4 @@ export const graphQLClientProvider = (graphqlUrl: string, defaultOptions: Defaul
     },
     link: new HttpLink({ uri: graphqlUrl }),
   });
+};

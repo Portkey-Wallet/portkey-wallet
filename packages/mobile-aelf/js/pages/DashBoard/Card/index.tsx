@@ -11,7 +11,7 @@ import BuyButton from 'components/BuyButton';
 // import { useAppRampEntryShow } from 'hooks/ramp';
 import { pTd } from 'utils/unit';
 import Svg from 'components/Svg';
-// import { useAppSwapButtonShow } from 'hooks/cms';
+import { useAppSwapButtonShow } from 'hooks/cms';
 import navigationService from 'utils/navigationService';
 
 const Card: React.FC<{ title: string }> = ({ title }) => {
@@ -19,9 +19,9 @@ const Card: React.FC<{ title: string }> = ({ title }) => {
   const hideAssets = useCurrentHideAssetsState();
   const setHideAssets = useSetHideAssets();
   // const { isRampShow } = useAppRampEntryShow();
-  // const { isSwapShow } = useAppSwapButtonShow();
+  const { isSwapShow } = useAppSwapButtonShow();
   const isRampShow = false;
-  const isSwapShow = true;
+  // const isSwapShow = true;
   const styles = getStyles();
   const buttonCount = useMemo(() => {
     let count = 2;

@@ -38,9 +38,10 @@ type IProps = {
   activeWebViewRef: any;
   clickBottomActionBtn: (type: 'back' | 'forward' | 'showTab' | 'home' | 'more' | 'search') => void;
   onNavigationChange: (navState: WebViewNavigation) => void;
+  onMessage: ({ url, title }: { url: string; title: string }) => void;
 };
 
-function TabsDom({ activeWebViewRef, clickBottomActionBtn, onNavigationChange }: IProps) {
+function TabsDom({ activeWebViewRef, clickBottomActionBtn, onNavigationChange, onMessage }: IProps) {
   const styles = getStyles();
   const rightDomStyle = getRightDomStyles();
 
@@ -184,7 +185,7 @@ function TabsDom({ activeWebViewRef, clickBottomActionBtn, onNavigationChange }:
     const onNavigationStateChange = (navState: WebViewNavigation) => {
       if (ele.id === activeTabId) {
         setTabStateMap(pre => ({
-          url: navState?.url,
+          url: pre.url,
           canGoBack: {
             ...pre.canGoBack,
             [ele.id]: navState?.canGoBack,
@@ -216,6 +217,29 @@ function TabsDom({ activeWebViewRef, clickBottomActionBtn, onNavigationChange }:
             latestCheckAndUpDateRecordItemName.current({ id: ele.id, name: nativeEvent.title });
             latestCheckAndUpDateTabItemName.current({ id: ele.id, name: nativeEvent.title });
             onNavigationStateChange(nativeEvent);
+          }}
+          onMessage={event => {
+            const message = JSON.parse(event.nativeEvent.data);
+            if (message.type === 'URL_UPDATE') {
+              // setCurrentUrl(message.data);
+              const url = message.url;
+              const title = message.title;
+              if (ele.id === activeTabId) {
+                setTabStateMap(pre => ({
+                  url: url,
+                  canGoBack: {
+                    ...pre.canGoBack,
+                  },
+                  canGoForward: {
+                    ...pre.canGoForward,
+                  },
+                }));
+                onMessage({
+                  url,
+                  title,
+                });
+              }
+            }
           }}
           // onNavigationStateChange={onNavigationStateChange}
         />

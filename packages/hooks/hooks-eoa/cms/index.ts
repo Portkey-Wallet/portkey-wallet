@@ -6,6 +6,7 @@ import {
   getSocialMediaAsync,
   getRememberMeBlackListAsync,
   getTabMenuAsync,
+  getDiscoverTabAsync,
   setEntrance,
   getLoginControlListAsync,
 } from '@portkey-wallet/store/store-eoa/cms/actions';
@@ -41,6 +42,35 @@ export function useTabMenuList(isInit = false) {
   }, [dispatch, isInit, networkType]);
 
   return tabMenuList;
+}
+
+export function useDiscoverTabList(isInit = false) {
+  const dispatch = useAppCommonDispatch();
+  const { discoverTabListMap } = useCMS();
+  const { networkType } = useCurrentNetworkInfo();
+  const networkList = useNetworkList();
+
+  const discoverTabList = useMemo(
+    () => (discoverTabListMap ? discoverTabListMap[networkType] : []),
+    [networkType, discoverTabListMap],
+  );
+
+  useEffect(() => {
+    if (isInit) {
+      networkList.forEach(item => {
+        dispatch(getTabMenuAsync(item.networkType));
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (!isInit) {
+      dispatch(getDiscoverTabAsync(networkType));
+    }
+  }, [dispatch, isInit, networkType]);
+
+  return discoverTabList;
 }
 
 export function useSocialMediaList(isInit = false) {

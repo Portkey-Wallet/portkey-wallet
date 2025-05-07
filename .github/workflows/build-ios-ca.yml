@@ -1,11 +1,12 @@
-name: Ship EOA Wallet to TestFlight
+name: Ship Portkey Wallet App to TestFlight
 on:
   push:
     branches:
+      - fastlane-build/ca-app-internal-test
       - fastlane-build/ca-ios-testFlight
-  pull_request:
-    branches:
-      - fastlane-build/ca-ios-testFlight
+  # pull_request:
+  #   branches:
+  #     - fastlane-build/ca-ios-testFlight
 jobs:
   # ----------------------- ANDROID -----------------------------
   # -------------------------------------------------------------

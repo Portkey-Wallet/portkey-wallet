@@ -115,12 +115,12 @@ jobs:
 
       # Step 6: Install Pods
       - name: Install pods
-        run: cd packages/mobile-aelf/ios && pod install --repo-update && cd ..
+        run: cd packages/mobile-app-did/ios && pod install --repo-update && cd ..
 
       # Step 7: Install Fastlane
       - name: Install Fastlane
         run: |
-          cd packages/mobile-aelf/ios
+          cd packages/mobile-app-did/ios
           bundle install
           bundle update
 
@@ -135,7 +135,7 @@ jobs:
       # Step 8: Run Fastlane to build and ship the build
       - name: Build and upload to TestFlight
         run: |
-          cd packages/mobile-aelf/ios
+          cd packages/mobile-app-did/ios
           fastlane beta
         env:
           APP_STORE_CONNECT_TEAM_ID: '${{ secrets.APP_STORE_CONNECT_TEAM_ID }}'

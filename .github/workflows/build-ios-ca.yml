@@ -121,8 +121,8 @@ jobs:
       - name: Install Fastlane
         run: |
           cd packages/mobile-app-did/ios
-          gem install bundler
-          bundle install
+          gem install bundler -v 2.6.8
+          bundle _2.6.8_ install
           bundle update
 
 

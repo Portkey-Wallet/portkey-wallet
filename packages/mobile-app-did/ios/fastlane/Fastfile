@@ -131,7 +131,7 @@ platform :ios do
       use_automatic_signing: false,
       path: "Portkey.xcodeproj",
       team_id: "#{DEVELOPER_PORTAL_TEAM_ID}",
-      targets: "AELFWallet",
+      targets: "Portkey",
       build_configurations: ["Release", "Debug"],
       code_sign_identity: "Apple Distribution: PORTKEY PTE. LTD. (#{DEVELOPER_PORTAL_TEAM_ID})",
       profile_name: PROVISIONING_PROFILE_SPECIFIER,
@@ -165,8 +165,8 @@ platform :ios do
     ipa = gym(
       configuration: "Release",
       export_xcargs: "-allowProvisioningUpdates",
-      workspace: 'AELFWallet.xcworkspace',
-      scheme: "AELFWallet", 
+      workspace: 'Portkey.xcworkspace',
+      scheme: "Portkey", 
       export_method: "app-store",
       export_options: {
       provisioningProfiles: { 
@@ -191,7 +191,7 @@ platform :ios do
 
        # get version info
       title = "TestFlight Push Notification "
-      version_name = get_version_name("../AELFWallet/info.plist")
+      version_name = get_version_name("../Portkey/info.plist")
       build_time = get_timestamp
       commit = get_latest_commit
 

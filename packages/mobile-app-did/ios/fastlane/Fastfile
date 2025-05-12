@@ -129,7 +129,7 @@ platform :ios do
 
      update_code_signing_settings(
       use_automatic_signing: false,
-      path: "AELFWallet.xcodeproj",
+      path: "Portkey.xcodeproj",
       team_id: "#{DEVELOPER_PORTAL_TEAM_ID}",
       targets: "AELFWallet",
       build_configurations: ["Release", "Debug"],
@@ -157,7 +157,7 @@ platform :ios do
 
 
     increment_build_number(
-      xcodeproj: "AELFWallet.xcodeproj",
+      xcodeproj: "Portkey.xcodeproj",
       build_number: latest_build_number.to_i + 1
     )
 

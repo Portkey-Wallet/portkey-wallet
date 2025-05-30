@@ -1,0 +1,81 @@
+@import '../../../assets/theme/color.less';
+@import '../../../assets/theme/constants.less';
+
+.create-chat-group {
+  height: 100%;
+  background-color: @neutral-default-bg;
+
+  .create-chat-top {
+    overflow: hidden;
+    z-index: 100;
+  }
+
+  .create-chat-body {
+    height: calc(100% - @common-header-height);
+  }
+
+  .create-chat-form {
+    height: 100%;
+
+    .form-content {
+      overflow-y: auto;
+      flex: 1;
+
+      .group-name-input {
+        padding: 12px 24px 0;
+
+        .@{app-prefix}-input-affix-wrapper {
+          border-radius: 6px;
+        }
+        .group-avatar-upload {
+          margin: 7px 8px 7px 4px;
+        }
+      }
+
+      .@{app-prefix}-form-item .@{app-prefix}-form-item-label {
+        padding-bottom: 8px;
+      }
+      .@{app-prefix}-form-item-label > label {
+        color: @neutral-primary-text;
+        font-size: 14px;
+        line-height: 20px;
+      }
+      .@{app-prefix}-input:placeholder-shown {
+        color: @neutral-disable-text;
+        line-height: 20px;
+      }
+    }
+  }
+
+  .no-search-result {
+    margin-top: 60px;
+    font-size: 16px;
+    line-height: 22px;
+    color: @neutral-disable-text;
+  }
+
+  .create-chat-search {
+    .search-title {
+      padding: 0 24px 8px;
+    }
+    .contacts-search-input {
+      margin: 0 24px 8px;
+    }
+  }
+
+  .form-btn {
+    width: 100%;
+    padding: 16px;
+    border-top: 1px solid @neutral-divider;
+    margin-bottom: 0 !important;
+
+    .create-btn {
+      color: @neutral-white-text;
+      font-size: 16px;
+      line-height: 22px;
+      height: 48px;
+      border-radius: 22px;
+      background-color: @brand-normal;
+    }
+  }
+}

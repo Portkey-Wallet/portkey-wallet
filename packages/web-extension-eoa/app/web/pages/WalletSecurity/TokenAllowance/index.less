@@ -1,0 +1,53 @@
+@import '../../../assets/theme/color.less';
+@import '../../../assets/theme/constants.less';
+
+.token-allowance-page {
+  .menu-item .menu-item-title {
+    height: 44px;
+  }
+  .content {
+    align-items: center;
+    width: 100%;
+    .icon {
+      width: 32px;
+      height: 32px;
+      flex-shrink: 0;
+      border-radius: 50%;
+    }
+    .desc {
+      flex: 1;
+      width: 0;
+      word-wrap: break-word;
+      margin-left: 16px;
+      .text {
+        word-break: break-all;
+        .text-overflow(1);
+      }
+      .name {
+        display: flex;
+        font-size: 16px;
+        line-height: 22px;
+        color: @neutral-primary-text;
+        .dapp-name {
+          word-break: break-all;
+          .text-overflow(1);
+        }
+        .custom-svg {
+          margin-left: 4px;
+        }
+      }
+      .contract-address {
+        margin-top: 2px;
+        font-size: 14px;
+        line-height: 20px;
+        color: @neutral-tertiary-text;
+      }
+    }
+  }
+  .no-data {
+    margin-top: 100px;
+    font-size: 16px;
+    line-height: 22px;
+    color: @neutral-disable-text;
+  }
+}

@@ -1,0 +1,27 @@
+@import '../../../../assets/theme/color.less';
+
+.edit-contact-form {
+  .edit-contact-form-body {
+    overflow-y: auto;
+  }
+  .form-content {
+    padding: 24px 24px 0;
+
+    .@{app-prefix}-form-item .@{app-prefix}-form-item-label {
+      padding-bottom: 8px;
+    }
+    .@{app-prefix}-form-item-label > label {
+      color: @neutral-primary-text;
+      font-size: 14px;
+      line-height: 20px;
+    }
+    .@{app-prefix}-input:placeholder-shown {
+      color: @neutral-disable-text;
+      line-height: 20px;
+    }
+
+    .upload-avatar-wrapper {
+      margin-bottom: 24px;
+    }
+  }
+}

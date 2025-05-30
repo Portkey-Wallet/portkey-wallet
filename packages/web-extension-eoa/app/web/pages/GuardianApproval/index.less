@@ -1,0 +1,195 @@
+@import '../../assets/theme/color.less';
+@import '../../assets/theme/constants.less';
+
+.guardian-approval-wrapper {
+  .guardian-approval-content {
+    margin-bottom: 40px;
+    .title {
+      margin-bottom: 16px;
+      font-size: 40px;
+      line-height: 47px;
+      text-align: center;
+    }
+    .description {
+      margin-bottom: 42px;
+    }
+  }
+  .approve-count {
+    line-height: 20px;
+    font-size: 14px;
+    margin-bottom: 8px;
+    padding-bottom: 12px;
+    color: @neutral-secondary-text;
+    border-bottom: 1px solid @neutral-divider;
+    .tooltip-icon {
+      margin-left: 8px;
+      width: 14px;
+      height: 14px;
+    }
+    .already-approval {
+      color: @brand-normal;
+    }
+    .common-tooltip {
+      max-width: 272px;
+    }
+  }
+  .verifier-content {
+    padding-bottom: 24px;
+    .verifier-item {
+      position: relative;
+      padding: 24px 0;
+      border-bottom: 1px solid @neutral-divider;
+      &.verifier-item-disabled {
+        &::after {
+          content: '';
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          background-color: @neutral-default-bg;
+          opacity: 0.3;
+          cursor: not-allowed;
+        }
+      }
+      .account-text {
+        margin-left: 12px;
+        line-height: 20px;
+        color: @neutral-primary-text;
+        font-size: 14px;
+        width: 0; // responsive text, to fix overflow
+        flex: 1;
+        .detail {
+          font-size: 12px;
+          line-height: 16px;
+          color: @neutral-secondary-text;
+        }
+      }
+      .account-text-one-row {
+        word-wrap: break-word;
+        .text-overflow(2);
+      }
+      .account-text-two-row {
+        .name,
+        .detail {
+          word-wrap: break-word;
+          .text-overflow(1);
+        }
+      }
+      .not-verified,
+      .verifying,
+      .@{app-prefix}-btn-text {
+        width: auto;
+        display: block;
+      }
+      .not-verified,
+      .verifying {
+        border-radius: 6px;
+        line-height: 24px;
+        font-size: 12px;
+        padding: 0 12px;
+        margin-left: 16px;
+      }
+      .@{app-prefix}-btn-text {
+        color: @brand-normal;
+        padding: 0;
+        margin-left: 16px;
+        &.verified {
+          color: @functional-success-default;
+        }
+        &.expired {
+          color: @neutral-disable-text;
+        }
+        &:hover {
+          background-color: transparent;
+        }
+        span {
+          line-height: 20px;
+          font-size: 14px;
+        }
+      }
+    }
+  }
+  .popup-verifier-content {
+    // max-height: 320px;
+    overflow: auto;
+  }
+  .popup-verifier-content::-webkit-scrollbar {
+    display: none;
+  }
+  .login-icon {
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-bottom-right-radius: 9px;
+    border-top-left-radius: 9px;
+    line-height: 18px;
+    background-color: @bg-4;
+    padding: 0 8px;
+    text-align: center;
+    color: @functional-warning-default;
+    font-size: 12px;
+  }
+
+  .recovery-wallet-btn {
+    line-height: 44px;
+    border-radius: 22px;
+  }
+}
+.popup-page.guardian-approval-wrapper {
+  .guardian-approval-header {
+    position: sticky;
+    top: 0;
+  }
+  .guardian-approval-content {
+    padding-top: 0;
+    margin: 0 24px;
+    width: auto;
+    height: calc(100% - 64px);
+    .title {
+      height: 28px;
+      line-height: 28px;
+      color: @neutral-primary-text;
+      font-size: 24px;
+      margin-bottom: 4px;
+      text-align: center;
+    }
+    .description {
+      line-height: 20px;
+      color: @neutral-secondary-text;
+      font-size: 14px;
+      margin-bottom: 32px;
+    }
+  }
+  .approve-count {
+    .tooltip-icon {
+      margin-left: 8px;
+      width: 14px;
+      height: 14px;
+    }
+    .already-approval {
+      color: @brand-normal;
+    }
+    .common-tooltip {
+      max-width: 272px;
+    }
+  }
+  .verifier-content {
+    .verifier-item {
+      border-bottom: 1px solid @neutral-divider;
+    }
+  }
+  .btn-wrap {
+    position: fixed;
+    bottom: 0;
+    margin-left: -24px;
+    width: 100vw;
+    border-top: 1px solid @neutral-divider;
+    padding: 16px;
+    background-color: @neutral-default-bg;
+    button {
+      height: 48px;
+    }
+  }
+  .recovery-wallet-btn-wrap {
+    padding-bottom: 24px;
+  }
+}

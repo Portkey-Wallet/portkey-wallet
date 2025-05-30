@@ -1,0 +1,44 @@
+@import '../../assets/theme/color.less';
+
+.wallet-security-approve .portkey-ui-security-check-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  width: 328px;
+  height: auto;
+  .portkey-ui-security-check-body {
+    padding: 0;
+    border-bottom: none;
+    .portkey-ui-security-check-banner {
+      margin-bottom: 24px;
+      .security-icon {
+        svg {
+          width: 180px;
+          height: 108px;
+        }
+      }
+    }
+    .portkey-ui-security-check-title {
+      margin-bottom: 8px;
+      padding: 0;
+      font-size: 24px;
+      line-height: 28px;
+      font-weight: 700;
+    }
+    .portkey-ui-security-check-description {
+      margin-bottom: 0;
+    }
+  }
+  .btn-wrapper {
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 16px;
+    line-height: 20px;
+    button {
+      border-radius: var(--portkey-ui-primary-border-radius);
+      line-height: var(--portkey-ui-default-btn-h);
+      font-size: 16px;
+    }
+  }
+}

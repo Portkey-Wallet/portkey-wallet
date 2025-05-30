@@ -1,0 +1,58 @@
+@import '../../../assets/theme/color.less';
+
+.bottom-bar-warp {
+  width: 100%;
+  height: 60px;
+  border-top: 1px solid @neutral-divider;
+  background-color: @neutral-default-bg;
+  .function-item {
+    flex: 1;
+    padding: 8px 28px;
+    .function-item-click-wrap {
+      width: 100%;
+      gap: 4px;
+      cursor: pointer;
+      .function-item-icon.custom-svg {
+        width: 24px;
+        height: 24px;
+        svg {
+          width: 100%;
+          height: 100%;
+          path {
+            fill: @neutral-tertiary-text;
+          }
+        }
+      }
+      .function-item-title {
+        font-size: 12px;
+        line-height: 16px;
+        color: @neutral-tertiary-text;
+        text-align: center;
+      }
+    } 
+
+    .chat-icon-wrap {
+      position: relative;
+      .chat-entry-unread {
+        position: absolute;
+        top: -4px;
+        left: 20px;
+      }
+    }
+
+    &.is-active {
+      .function-item-click-wrap {
+        .function-item-title {
+          color: @brand-normal;
+        }
+        .function-item-icon.custom-svg {
+          svg {
+            path {
+              fill: @brand-normal;
+            }
+          }
+        }
+      }
+    }
+  }
+}

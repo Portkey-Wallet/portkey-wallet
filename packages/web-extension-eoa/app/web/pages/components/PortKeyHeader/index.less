@@ -1,0 +1,66 @@
+@import '../../../assets/theme/color.less';
+
+.portkey-header,
+.prompt-portkey-header {
+  .portkey-header-body {
+    display: flex;
+    align-items: center;
+    height: 72px;
+  }
+
+  top: 0;
+  z-index: 10;
+
+  .portkey-area {
+    flex: 1;
+    display: flex;
+    align-items: center;
+
+    .portkey-logo {
+      width: 31px;
+      height: 32px;
+    }
+    .portkey-logo-prompt {
+      width: 142px;
+      height: 32px;
+    }
+
+  }
+
+  .chain-select {
+    flex-shrink: 0;
+  }
+
+  .custom-logo-wrap {
+    position: relative;
+    .unread-badge {
+      right: -1px;
+      top: -1px;
+    }
+  }
+
+  .custom-logo {
+    flex-shrink: 0;
+    margin-left: 28px;
+    cursor: pointer;
+    overflow: hidden;
+  }
+}
+
+.portkey-header {
+  position: sticky;
+
+  .portkey-header-body {
+    padding: 0 16px 0 17px;
+    min-width: 345px;
+  }
+}
+
+.prompt-portkey-header {
+  position: relative;
+
+  .portkey-header-body {
+    width: 900px;
+    margin: 0 auto;
+  }
+}

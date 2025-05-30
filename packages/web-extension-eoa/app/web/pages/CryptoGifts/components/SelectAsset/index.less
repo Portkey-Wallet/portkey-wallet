@@ -1,0 +1,32 @@
+@import '../../../../assets/theme/constants.less';
+
+.crypto-gift-select-asset {
+  height: 100%;
+  .show-asset-list {
+    overflow: auto;
+    .asset-item {
+      gap: 10px;
+      padding: 12px 16px;
+      cursor: pointer;
+      .icon {
+        flex-shrink: 0;
+      }
+      .symbol,
+      .network {
+        .text-overflow(1);
+
+        word-break: break-all;
+      }
+      .symbol {
+        font-size: 16px;
+        line-height: 24px;
+        color: @neutral-primary-text;
+      }
+      .network {
+        font-size: 12px;
+        line-height: 16px;
+        color: @neutral-tertiary-text;
+      }
+    }
+  }
+}

@@ -29,6 +29,8 @@
     "app:aelf": "yarn workspace mobile-aelf run",
     "extension:did": "yarn workspace web-extension-did run",
     "extension-did:dev": "yarn extension:did dev:watch",
+    "extension:eoa": "yarn workspace web-extension-eoa run",
+    "extension-eoa:dev": "yarn extension:eoa dev:watch",
     "graphql": "yarn workspace @portkey-wallet/graphql run",
     "page": "yarn workspace web-page run",
     "test": "jest",

@@ -1,0 +1,31 @@
+@import './../../../../assets/theme/color.less';
+
+.verify-account-cancel-prompt {
+  width: 100%;
+  border-left: 1px solid @neutral-divider;
+
+  .account-cancel-code-body {
+    padding: 14px 24px 0;
+
+    .verifier-account-wrapper {
+      .portkey-ui-code-verify-passcode {
+        .adm-passcode-input.adm-passcode-input-seperated {
+          display: flex;
+          justify-content: center;
+          .adm-passcode-input-cell-container {
+            gap: 2px;
+            justify-content: space-between;
+            max-width: 408px;
+            .adm-passcode-input-cell {
+              width: auto;
+              min-width: 36px;
+              margin-right: 0;
+              flex: 0 1;
+              flex-basis: 48px;
+            }
+          }
+        }
+      }
+    }
+  }
+}

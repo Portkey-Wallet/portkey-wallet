@@ -1,0 +1,46 @@
+@import '../../assets/theme/color.less';
+.address-container {
+  border-radius: 6px;
+  border-style: solid;
+  border-color: @neutral-border;
+  border-width: 0.5px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 100%;
+  position: relative;
+  .address-title {
+    color: @neutral-tertiary-text;
+    text-align: left;
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: 400;
+    position: relative;
+  }
+  .address-wrapper {
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    align-items: center;
+    justify-content: flex-start;
+    align-self: stretch;
+    flex-shrink: 0;
+    position: relative;
+    .address {
+      color: @neutral-primary-text;
+      text-align: left;
+      font-size: 14px;
+      line-height: 22px;
+      font-weight: 500;
+      position: relative;
+      flex: 1;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      min-width: 0;
+    }
+  }
+}

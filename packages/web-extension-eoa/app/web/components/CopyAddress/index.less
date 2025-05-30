@@ -1,0 +1,45 @@
+@import '../../assets/theme/color.less';
+
+.copy-icon-wrapper {
+  border-radius: 4px;
+  path {
+    fill: #808080;
+  }
+}
+
+.copy-icon-wrapper-small {
+  width: 24px;
+  height: 24px;
+}
+
+.copy-icon-wrapper-middle {
+  width: 28px;
+  height: 28px;
+}
+
+.copy-icon-wrapper-normal {
+  width: 32px;
+  height: 32px;
+}
+
+.copy-icon-wrapper-background-color {
+    background-color: @neutral-container-bg;
+    &:active {
+      background-color: @brand-light;
+      .copy-svg path {
+        fill: @brand-normal;
+      }
+    }
+    &:hover {
+      background-color: @brand-light;
+      .copy-svg path {
+        fill: @brand-normal;
+      }
+    }
+}
+.copy-svg{
+  svg{
+    width: 16px;
+    height: 16px;
+  }
+}

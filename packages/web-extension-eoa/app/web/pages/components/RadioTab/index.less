@@ -1,0 +1,42 @@
+@import '../../../assets/theme/color.less';
+
+.radio-tab-wrap {
+  width: 100%;
+  .@{app-prefix}-radio-group-solid {
+    display: flex;
+    gap: 8px;
+    padding: 3px;
+    background-color: @neutral-container-bg;
+    border-radius: 6px;
+    .@{app-prefix}-radio-button-wrapper {
+      height: 30px;
+      padding: 0;
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 14px;
+      line-height: 22px;
+      font-weight: 500;
+      color: @neutral-tertiary-text;
+      background-color: @neutral-container-bg;
+      border: none;
+      &:not(:first-child)::before {
+        display: none;
+      }
+      &:focus-within {
+        box-shadow: none;
+      }
+    }
+    .@{app-prefix}-radio-button-wrapper-checked {
+      background-color: @neutral-default-bg;
+      box-shadow: none;
+      color: @neutral-primary-text;
+      border-radius: 6px;
+      &:hover {
+        color: @neutral-primary-text;
+        background-color: @neutral-default-bg;
+      }
+    }
+  }
+}

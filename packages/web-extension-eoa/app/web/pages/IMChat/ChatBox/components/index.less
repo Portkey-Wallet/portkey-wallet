@@ -1,0 +1,55 @@
+@import '../../../../assets/theme/color.less';
+
+.chat-box-top {
+  flex-shrink: 0;
+  background-color: @bg-13;
+  .title-element {
+    align-items: center;
+    gap: 8px;
+    .title-content {
+      gap: 8px;
+      cursor: pointer;
+    }
+    .title-avatar {
+      width: 32px;
+      height: 32px;
+    }
+    .title-name {
+      max-width: 200px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+    .custom-svg.more-icon {
+      svg {
+        path {
+          fill: @neutral-secondary-text;
+        }
+      }
+    }
+    .custom-svg.mute-icon {
+      width: 12px;
+      height: 12px;
+      display: flex;
+      align-items: center;
+      svg {
+        path {
+          fill: @neutral-tertiary-text;
+        }
+      }
+    }
+  }
+}
+
+.chat-box-popover {
+  top: 35px !important;
+  left: 230px !important;
+  .portkey-popover-inner {
+    min-width: 120px;
+    border-radius: 6px;
+    box-shadow: 0 2px 12px 0 @shadow-1;
+    .portkey-popover-inner-content {
+      padding: 0 12px;
+    }
+  }
+}

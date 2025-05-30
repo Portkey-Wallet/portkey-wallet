@@ -1,0 +1,37 @@
+@import '../../assets/theme/color.less';
+
+.portkey-home {
+  margin: auto;
+  height: 100%;
+  .portkey-header {
+    background-color: @bg-13 !important;
+  }
+  .portkey-body {
+    overflow-y: auto;
+  }
+}
+
+.prompt-body {
+  .portkey-home {
+    width: 100%;
+    min-height: 100%;
+    background-color: @bg-13;
+  }
+
+  .portkey-body {
+    width: 900px;
+    margin: 0 auto;
+    background: @neutral-default-bg;
+  }
+}
+.empty-dropdown {
+  .empty-tip {
+    background-color: @neutral-default-bg;
+    font-size: 14px;
+    color: @neutral-primary-text;
+    padding: 17px 16px;
+    border-radius: 6px;
+    box-shadow: 0 2px 6px 0 #eee;
+    margin-top: -3px;
+  }
+}

@@ -1,4 +1,5 @@
-import { ChainId, NetworkType } from '@portkey-wallet/types';
+// import { ChainId, NetworkType } from '@portkey-wallet/types';
+import { ChainId } from '@portkey-wallet/types';
 import { NFTCollectionItemShowType, SeedTypeEnum } from '@portkey-wallet/types/types-eoa/assets';
 import {
   IAccountCryptoBoxAssetItem,

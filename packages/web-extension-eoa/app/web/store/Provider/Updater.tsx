@@ -20,7 +20,7 @@ import { exceptionManager } from 'utils/errorHandler/ExceptionHandler';
 import usePortkeyUIConfig from 'hooks/usePortkeyUIConfig';
 import im from '@portkey-wallet/im';
 import s3Instance from '@portkey-wallet/utils/s3';
-import initIm from 'hooks/im';
+// import initIm from 'hooks/im';
 import { useCheckContactMap } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { useExtensionEntrance } from 'hooks/cms';
 import { useEffectOnce } from '@portkey-wallet/hooks';
@@ -66,7 +66,7 @@ export default function Updater() {
   useEffect(() => {
     setTokenConfig(passwordSeed);
   }, [passwordSeed, setTokenConfig]);
-  initIm();
+  // initIm();
   useVerifierList();
   useUpdateRedux();
   useLocationChange();

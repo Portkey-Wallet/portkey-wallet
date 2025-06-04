@@ -162,7 +162,8 @@ export default class ServiceWorkerInstantiate {
         this.notificationServiceClose(sendResponse, message.payload);
         break;
       case PortkeyMessageTypes.REGISTER_WALLET:
-        this.checkRegisterStatus(sendResponse);
+        console.log('PortkeyMessageTypes.REGISTER_WALLET, do nothing');
+        // this.checkRegisterStatus(sendResponse);
         break;
       case PortkeyMessageTypes.REGISTER_START_WALLET:
         ServiceWorkerInstantiate.registerStartWallet();
@@ -529,8 +530,8 @@ export default class ServiceWorkerInstantiate {
     });
   }
 
-  checkRegisterStatus = async (sendResponse?: SendResponseFun) => {
-    const registerStatus = await this.permissionController.registerCurrentNetworkWallet();
-    sendResponse?.(registerStatus);
-  };
+  // checkRegisterStatus = async (sendResponse?: SendResponseFun) => {
+  //   const registerStatus = await this.permissionController.registerCurrentNetworkWallet();
+  //   sendResponse?.(registerStatus);
+  // };
 }

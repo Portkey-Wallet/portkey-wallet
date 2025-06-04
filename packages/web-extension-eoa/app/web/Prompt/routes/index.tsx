@@ -39,8 +39,8 @@ import WalletName from 'pages/Wallet/WalletName';
 import MyQRCode from 'pages/MyQRCode';
 import Devices from 'pages/WalletSecurity/ManageDevices/Devices';
 import DeviceDetail from 'pages/WalletSecurity/ManageDevices/DeviceDetail';
-import Buy from 'pages/Buy';
-import BuyPreview from 'pages/Buy/Preview';
+// import Buy from 'pages/Buy';
+// import BuyPreview from 'pages/Buy/Preview';
 import { useCommonState } from 'store/Provider/hooks';
 import My from 'pages/My';
 import RecentDetail from 'pages/Send/components/RecentDetail';
@@ -147,11 +147,13 @@ export const PageRouter = () => {
     },
     {
       path: '/buy',
-      element: <Buy />,
+      // element: <Buy />,
+      element: <>buy</>,
     },
     {
       path: '/buy/preview',
-      element: <BuyPreview />,
+      // element: <BuyPreview />,
+      element: <>BuyPreview</>,
     },
     {
       path: '/nft',

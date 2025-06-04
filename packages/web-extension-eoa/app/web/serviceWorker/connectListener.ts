@@ -4,7 +4,7 @@
  */
 import { ENVIRONMENT_TYPE_SERVICE_WORKER } from 'constants/envType';
 import { ACK_KEEP_ALIVE_MESSAGE, WORKER_KEEP_ALIVE_MESSAGE } from 'constants/index';
-import SWEventController from 'controllers/SWEventController';
+// import SWEventController from 'controllers/SWEventController';
 import { getEnvironmentType } from 'utils';
 import { apis } from 'utils/BrowserApis';
 import errorHandler from 'utils/errorHandler';
@@ -27,7 +27,10 @@ export default function connectListener() {
     }
     const isContentConnect = portType === ENVIRONMENT_TYPE_SERVICE_WORKER;
     if (isContentConnect) {
-      SWEventController.registerOperator(port.sender);
+      // SWEventController.registerOperator(port.sender);
+      import('controllers/SWEventController').then(({ default: SWEventController }) => {
+        SWEventController.registerOperator(port.sender);
+      });
     }
 
     // use setInterval

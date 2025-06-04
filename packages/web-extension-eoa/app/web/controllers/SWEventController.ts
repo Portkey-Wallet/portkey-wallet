@@ -82,7 +82,8 @@ export default class SWEventController {
   }
 
   public static check(eventName: string, data: any): boolean {
-    return SWEventController.checkEventMethod(eventName) && SWEventController.checkDispatchEventParams(data);
+    // return SWEventController.checkEventMethod(eventName) && SWEventController.checkDispatchEventParams(data);
+    return this.checkEventMethod(eventName) && this.checkDispatchEventParams(data);
   }
 
   public static dispatchEvent(params: DappEventPack): void;
@@ -123,7 +124,8 @@ export default class SWEventController {
         };
         apis.tabs.sendMessage(tabId, event, (res) => {
           const { lastError } = apis.runtime;
-          if (lastError) SWEventController.unregisterOperator(tabId);
+          // if (lastError) SWEventController.unregisterOperator(tabId);
+          if (lastError) this.unregisterOperator(tabId);
           console.error('dispatchEvent:tabs.sendMessage', lastError, res);
         });
       });

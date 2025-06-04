@@ -23,10 +23,15 @@ export default function BottomBar({ className }: IBottomBarProps) {
         icon: 'PortkeyBar',
         link: '/',
       },
+      // {
+      //   title: 'Trade',
+      //   icon: 'TradeBar',
+      //   link: '/trade',
+      // },
       {
-        title: 'Trade',
+        title: 'Activity',
         icon: 'TradeBar',
-        link: '/trade',
+        link: '/activity',
       },
     ],
     [],

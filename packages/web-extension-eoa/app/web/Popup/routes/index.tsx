@@ -24,8 +24,8 @@ import WalletSecurity from 'pages/WalletSecurity';
 import SetNewPin from 'pages/AccountSetting/SetNewPin';
 import Devices from 'pages/WalletSecurity/ManageDevices/Devices';
 import DeviceDetail from 'pages/WalletSecurity/ManageDevices/DeviceDetail';
-import Buy from 'pages/Buy';
-import BuyPreview from 'pages/Buy/Preview';
+// import Buy from 'pages/Buy';
+// import BuyPreview from 'pages/Buy/Preview';
 import AboutUs from 'pages/Wallet/AboutUs';
 import AutoLock from 'pages/Wallet/AutoLock';
 import SwitchNetworks from 'pages/Wallet/SwitchNetwork';
@@ -50,7 +50,7 @@ import TransferSettingsEdit from 'pages/WalletSecurity/PaymentSecurity/TransferS
 // import HandleMember from 'pages/IMChat/HandleMember';
 // import GroupQRCode from 'pages/IMChat/GroupQRCode';
 // import PinnedMsg from 'pages/IMChat/PinnedMsgPage';
-import TradePage from 'pages/Trade';
+// import TradePage from 'pages/Trade';
 import TokenAllowance from 'pages/WalletSecurity/TokenAllowance';
 import TokenAllowanceDetail from 'pages/WalletSecurity/TokenAllowance/TokenAllowanceDetail';
 import DepositHome from 'pages/DepositHome';
@@ -150,11 +150,13 @@ export const PageRouter = () =>
     },
     {
       path: '/buy',
-      element: <Buy />,
+      // element: <Buy />,
+      element: <>buy</>,
     },
     {
       path: '/buy/preview',
-      element: <BuyPreview />,
+      // element: <BuyPreview />,
+      element: <>buy/preview</>,
     },
     {
       path: '/nft',
@@ -322,7 +324,11 @@ export const PageRouter = () =>
     // },
     {
       path: '/trade',
-      element: <TradePage />,
+      element: <>Trade</>,
+    },
+    {
+      path: '/activity',
+      element: <>activity</>,
     },
     {
       path: '/unlock',

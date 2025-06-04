@@ -1,7 +1,8 @@
 import { useAppCASelector } from './index';
 import { useMemo } from 'react';
 import { useAppCommonDispatch } from '../index';
-import { initCurrentChainRecentData } from '@portkey-wallet/store/store-ca/recent/slice';
+import { NetworkType } from '@portkey-wallet/types';
+// import initCurrentChainRecentData from '@portkey-wallet/store/store-ca/recent/slice';
 
 export const initialRecentData = {
   isFetching: false,
@@ -16,10 +17,10 @@ export const useRecent = (caAddress: string) => {
   const dispatch = useAppCommonDispatch();
 
   return useMemo(() => {
-    if (recentState?.[caAddress]) {
-      return recentState?.[caAddress];
+    if (recentState?.recentMap?.[caAddress as NetworkType]) {
+      return recentState.recentMap[caAddress as NetworkType];
     } else {
-      dispatch(initCurrentChainRecentData({ caAddress }));
+      // dispatch(initCurrentChainRecentData({ caAddress }));
       return initialRecentData;
     }
   }, [recentState, caAddress, dispatch]);

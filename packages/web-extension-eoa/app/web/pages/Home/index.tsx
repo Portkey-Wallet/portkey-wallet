@@ -11,7 +11,7 @@ import { useStorage } from 'hooks/useStorage';
 import walletMessage from 'messages/walletMessage';
 import { useEffectOnce } from 'react-use';
 import { useIsImputation } from '@portkey-wallet/hooks/hooks-ca/contact';
-import initIm from 'hooks/im';
+// import initIm from 'hooks/im';
 import { sleep } from '@portkey-wallet/utils';
 import { useDiscoverGroupList } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { useReferral } from '@portkey-wallet/hooks/hooks-ca/referral';
@@ -58,7 +58,7 @@ export default function Home() {
     getReferralLink();
     fetchAndSetBlockList();
   });
-  initIm();
+  // initIm();
 
   return (
     <div className={clsx(['portkey-home', 'flex-column', isPrompt && 'portkey-prompt'])}>

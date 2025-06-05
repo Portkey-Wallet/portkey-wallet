@@ -1,0 +1,18 @@
+@import '../../assets/theme/color.less';
+
+.base-modal {
+  // height: 600px;
+  .@{app-prefix}-modal-content {
+    height: 100%;
+    border-radius: 8px;
+    overflow: auto;
+    background-color: @bg-base1;
+    border: 1px solid @border-base1;
+    color: @text-base1;
+    .@{app-prefix}-modal-body {
+      height: 100%;
+      padding: 0;
+      border: none;
+    }
+  }
+}

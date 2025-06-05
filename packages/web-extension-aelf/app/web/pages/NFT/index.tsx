@@ -1,0 +1,351 @@
+// import { Button } from 'antd';
+// import PromptFrame from 'pages/components/PromptFrame';
+import CommonHeader from 'components/CommonHeader';
+import { useCommonState } from 'store/Provider/hooks';
+import clsx from 'clsx';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { transNetworkText } from '@portkey-wallet/utils/activity';
+import { addressFormat } from '@portkey-wallet/utils';
+import Copy from 'components/Copy';
+import { formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
+import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
+// import PromptEmptyElement from 'pages/components/PromptEmptyElement';
+import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useLocationState, useNavigateState } from 'hooks/router';
+import { THomePageLocationState, TNFTLocationState, TSendLocationState } from 'types/router';
+import { NFTSizeEnum, getSeedTypeTag } from 'utils/assets';
+import CustomSvg from 'components/CustomSvg';
+import { useEffectOnce } from '@portkey-wallet/hooks';
+import { formatTransferTime } from '@portkey-wallet/utils/time';
+import { SeedTypeEnum } from '@portkey-wallet/types/types-ca/assets';
+import { useNFTItemDetail } from '@portkey-wallet/hooks/hooks-ca/assets';
+import useInterval from '@portkey-wallet/hooks/useInterval';
+import { PopoverMenuList } from '@portkey-wallet/im-ui-web';
+import { useSetUserAvatar } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import singleMessage from 'utils/singleMessage';
+import './index.less';
+import { CustomSvgV3 } from 'components/CustomSvgV3';
+import { CommonButton } from '@portkey/did-ui-react';
+import TokenImageDisplay from 'pages/components/TokenImageDisplay';
+
+export default function NFT() {
+  const navigate = useNavigateState<TSendLocationState | THomePageLocationState>();
+  const { state } = useLocationState<TNFTLocationState>();
+  const { isPrompt } = useCommonState();
+  const isMainNet = useIsMainnet();
+  const currentNetwork = useCurrentNetworkInfo();
+  const [nftDetail, setNftDetail] = useState<TNFTLocationState>(state);
+  const setUserAvatar = useSetUserAvatar();
+  const refreshTime = useMemo(() => {
+    if (nftDetail.recommendedRefreshSeconds && nftDetail.traitsPercentages) {
+      return nftDetail.recommendedRefreshSeconds * 1000;
+    }
+    return 0;
+  }, [nftDetail.recommendedRefreshSeconds, nftDetail.traitsPercentages]);
+  const fetchNFTItemDetail = useNFTItemDetail();
+
+  const updateNFTItemDetail = useCallback(async () => {
+    try {
+      const data = await fetchNFTItemDetail({ symbol: nftDetail.symbol, chainId: nftDetail.chainId });
+      setNftDetail((pre) => ({ ...pre, ...data }));
+    } catch (error) {
+      console.log('fetch nft item error', error);
+    }
+  }, [fetchNFTItemDetail, nftDetail.symbol, nftDetail.chainId]);
+
+  const getNFTDetailTimer = useInterval(
+    () => {
+      if (refreshTime) {
+        updateNFTItemDetail();
+      } else {
+        getNFTDetailTimer.remove();
+      }
+    },
+    [refreshTime, updateNFTItemDetail],
+    refreshTime,
+  );
+
+  useEffectOnce(() => {
+    const app = document.getElementById('portkey-ui-root');
+    if (!app) return;
+    app.scrollTop = 0;
+  });
+
+  const renderBasicInfo = useMemo(() => {
+    const { tokenContractAddress, chainId, chainImageUrl } = nftDetail;
+    const formatTokenContractAds = addressFormat(tokenContractAddress, chainId, currentNetwork.walletType);
+
+    console.log('nftDetail', nftDetail);
+    return (
+      <div className="info basic-info">
+        <div className="info-title">Basic Info</div>
+        <div className="contract info-item flex-between">
+          <div className="label">Contract Address</div>
+          <div className="contract-title flex">
+            {formatTokenContractAds.replace(/(?<=^\w{8})\w+(?=\w{9})/, '...')}
+            <Copy toCopy={formatTokenContractAds} iconType="copy" />
+          </div>
+        </div>
+        <div className="chain info-item flex-between">
+          <div className="label">Network</div>
+          <div className="flex">
+            <TokenImageDisplay src={chainImageUrl} width={18} />
+            {transNetworkText(nftDetail.chainId, !isMainNet)}
+          </div>
+        </div>
+        <div className="info-item flex-between">
+          <div className="label">Symbol</div>
+          <div className="content">{nftDetail.symbol}</div>
+        </div>
+        <div className="total-supply info-item flex-between">
+          <div className="label">Total Supply</div>
+          <div>{formatTokenAmountShowWithDecimals(nftDetail.totalSupply, nftDetail.decimals || 0)}</div>
+        </div>
+      </div>
+    );
+  }, [currentNetwork.walletType, isMainNet, nftDetail]);
+
+  const renderIsSeedInfo = useMemo(() => {
+    const { seedType, expires, seedOwnedSymbol, isSeed } = nftDetail;
+    return isSeed ? (
+      <div className="info seed-info">
+        <div className="info-title">Token Creation via This Seed</div>
+        <div className="info-item flex-between">
+          <div className="label">Type</div>
+          <div>{SeedTypeEnum[seedType || SeedTypeEnum.None]}</div>
+        </div>
+        <div className="info-item flex-between">
+          <div className="label">Token Symbol</div>
+          <div className="content">{seedOwnedSymbol}</div>
+        </div>
+        <div className="info-item flex-between">
+          <div className="label">Expires</div>
+          <div>{formatTransferTime(expires ?? '')}</div>
+        </div>
+      </div>
+    ) : null;
+  }, [nftDetail]);
+
+  const renderInscriptionInfo = useMemo(() => {
+    const { inscriptionName, limitPerMint } = nftDetail;
+    return inscriptionName ? (
+      <div className="info inscription-info">
+        <div className="info-title">Inscription Info</div>
+        <div className="info-item flex-between">
+          <div className="label">Inscription Name</div>
+          <div className="content">{inscriptionName}</div>
+        </div>
+        {limitPerMint != null && (
+          <div className="info-item flex-between">
+            <div className="label">Limit Per Mint</div>
+            <div>{limitPerMint}</div>
+          </div>
+        )}
+      </div>
+    ) : null;
+  }, [nftDetail]);
+
+  const renderTraitsInfo = useMemo(() => {
+    const { traitsPercentages } = nftDetail;
+    return traitsPercentages ? (
+      <div className="info traits-info">
+        <div className="info-title">Traits</div>
+        <div className="traits-items">
+          {traitsPercentages.map((trait, i) => (
+            <div key={`${trait.traitType}_${i}`} className="info-item">
+              <div className="label">
+                <div className="trait-type">{trait.traitType}</div>
+                <div className="label-bold">{trait.value}</div>
+              </div>
+              <div className="content">{trait.percent}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    ) : null;
+  }, [nftDetail]);
+
+  const renderGenerationInfo = useMemo(() => {
+    const { generation } = nftDetail;
+    return generation ? (
+      <div className="info generation-info">
+        <div className="info-title">Generation Info</div>
+        <div className="info-item flex-between-center">
+          <div className="label">Generation</div>
+          <div>{generation}</div>
+        </div>
+      </div>
+    ) : null;
+  }, [nftDetail]);
+
+  const renderDescInfo = useMemo(() => {
+    const { description } = nftDetail;
+    return description && <div className="info description-info">{description}</div>;
+  }, [nftDetail]);
+
+  const [popVisible, setPopVisible] = useState(false);
+
+  const moreData = useMemo(() => {
+    return [
+      {
+        key: 'profile',
+        leftIcon: <CustomSvgV3 type="profile" />,
+        children: 'Set as Profile Photo',
+        onClick: async () => {
+          try {
+            await setUserAvatar(nftDetail.imageUrl);
+            singleMessage.success('Profile photo is set.');
+          } catch (error) {
+            singleMessage.error('Failed to set profile photo. Please try again.');
+          }
+        },
+      },
+    ];
+  }, [nftDetail.imageUrl, setUserAvatar]);
+
+  const hidePop = useCallback((e: Event) => {
+    try {
+      const _target = e?.target as Element;
+      const _className = _target?.className;
+      const isFunc = _className.includes instanceof Function;
+      if (isFunc && !_className.includes('nft-detail-more')) {
+        setPopVisible(false);
+      }
+    } catch (e) {
+      console.log('===chat box hidePop error', e);
+    }
+  }, []);
+  useEffect(() => {
+    document.addEventListener('click', hidePop);
+    return () => document.removeEventListener('click', hidePop);
+  }, [hidePop]);
+
+  const scrollableRef = useRef(null);
+
+  const [titleName, setTitleName] = useState('');
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const handleScroll = (e: any) => {
+    if (e.target.scrollTop > 530) {
+      setTitleName(nftDetail.alias);
+    } else {
+      setTitleName('');
+    }
+  };
+
+  const mainContent = useCallback(() => {
+    const { collectionName, collectionImageUrl, tokenId, imageUrl, symbol, balance, alias, decimals = 0 } = nftDetail;
+    const seedTypeTag = getSeedTypeTag(nftDetail, NFTSizeEnum.large);
+
+    return (
+      <div id="nft-detail" className={clsx(['nft-detail', isPrompt && 'detail-page-prompt'])}>
+        <CommonHeader
+          onLeftBack={() => navigate('/', { state: { key: BalanceTab.NFT } })}
+          title={titleName}
+          rightElementList={[
+            {
+              customSvgWrapClassName: 'nft-detail-more',
+              customSvgType: 'more_verti',
+              popoverProps: {
+                overlayClassName: `nft-detail-popover ${isPrompt ? '' : 'nft-detail-popover-popup'}`,
+                open: popVisible,
+                trigger: 'click',
+                showArrow: false,
+                placement: 'bottomLeft',
+                getPopupContainer: (triggerNode: any) => triggerNode.parentNode,
+                content: <PopoverMenuList className="profile-popover" data={moreData} />,
+              },
+              onClick: () => setPopVisible(!popVisible),
+            },
+          ]}
+        />
+        <div className="nft-detail-body" ref={scrollableRef} onScroll={handleScroll}>
+          <div className="picture flex-center">
+            {imageUrl ? (
+              // <img className="picture-common" src={imageUrl} />
+              <div className="picture-common" style={{ backgroundImage: `url(${imageUrl})` }}>
+                {seedTypeTag && <CustomSvg type={seedTypeTag} />}
+              </div>
+            ) : (
+              <div className="picture-text picture-common flex-center">{symbol?.slice(0, 1)}</div>
+            )}
+          </div>
+          <div className="btn-wrap flex-column-center">
+            <div className="balance">{`You own: ${formatTokenAmountShowWithDecimals(balance, decimals)}`}</div>
+
+            <CommonButton
+              className="common-button"
+              type="primaryOutline"
+              block
+              onClick={() =>
+                navigate(`/send/nft/${symbol}`, {
+                  state: {
+                    ...nftDetail,
+                    address: nftDetail.tokenContractAddress,
+                    decimals: Number(nftDetail.decimals),
+                  },
+                })
+              }>
+              <CustomSvgV3 type="send" className="send-icon" />
+              <span>Send</span>
+            </CommonButton>
+            {/* <Button
+              type="primary"
+              onClick={() =>
+                navigate(`/send/nft/${symbol}`, {
+                  state: {
+                    ...nftDetail,
+                    address: nftDetail.tokenContractAddress,
+                    decimals: Number(nftDetail.decimals),
+                  },
+                })
+              }>
+              Send
+            </Button> */}
+          </div>
+          <div className="token-id">{`${alias} #${tokenId}`}</div>
+          <div
+            className="collection flex-start-center"
+            onClick={() => {
+              const params: any = { state: { ...nftDetail } };
+              navigate('/collection', params);
+            }}>
+            <div className="img">
+              {collectionImageUrl ? (
+                <img src={collectionImageUrl} />
+              ) : (
+                <div className="img-text flex-center">{collectionName?.slice(0, 1)}</div>
+              )}
+            </div>
+            <div className="name">{collectionName}</div>
+            <CustomSvgV3 type="collection-arrow" />
+          </div>
+          {renderDescInfo}
+          <div className="nft-info flex-column">
+            {renderBasicInfo}
+            {renderIsSeedInfo}
+            {renderTraitsInfo}
+            {renderGenerationInfo}
+            {renderInscriptionInfo}
+          </div>
+        </div>
+      </div>
+    );
+  }, [
+    nftDetail,
+    isPrompt,
+    popVisible,
+    moreData,
+    handleScroll,
+    renderDescInfo,
+    renderBasicInfo,
+    renderIsSeedInfo,
+    renderTraitsInfo,
+    renderGenerationInfo,
+    renderInscriptionInfo,
+    navigate,
+    titleName,
+  ]);
+
+  return <>{mainContent()}</>;
+}

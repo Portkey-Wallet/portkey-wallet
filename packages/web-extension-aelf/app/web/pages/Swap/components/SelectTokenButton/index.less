@@ -1,0 +1,118 @@
+@import '../../../../assets/theme/color.less';
+
+.swap-select-token-button {
+  display: flex;
+  flex-direction: row;
+  padding: 3px;
+  border: 1px solid @border-base1;
+  border-radius: 17px;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  background-color: @bg-base1;
+
+  .swap-select-token-button-image-wrap {
+    padding-right: 5px;
+    padding-bottom: 1px;
+    position: relative;
+
+    .swap-select-token-button-chain-image {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      border: 1px solid @border-base1;
+      border-radius: 100%;
+      overflow: hidden;
+    }
+  }
+
+  .swap-select-token-button-symbol {
+    font-size: 16px;
+    line-height: 16px;
+    color: @text-base1;
+    font-weight: 600;
+  }
+
+  .swap-select-token-button-icon {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+.swap-select-token-modal {
+  .close-icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .portkey-ant-drawer-body,
+  .portkey-ant-modal-content {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .swap-select-token-modal-wrap,
+  .portkey-ant-modal-body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  .swap-select-token-modal-title {
+    margin-top: 16px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    font-size: 20px;
+    line-height: 24px;
+    color: @text-base1;
+    font-weight: 700;
+    padding: 0 16px;
+    margin-bottom: 12px;
+    font-family: BG;
+  }
+
+  .swap-select-token-modal-input-wrap {
+    padding: 0 16px;
+  }
+  .swap-select-token-modal-input {
+    height: 40px;
+    border-radius: 20px;
+    background-color: @bg-base1;
+    border: 1px solid @border-base1;
+    .swap-select-token-modal-input-search-icon,
+    .swap-select-token-modal-input-close-icon {
+      width: 16px;
+      height: 16px;
+      svg {
+        width: 16px;
+        height: 16px;
+      }
+    }
+  }
+
+  .swap-select-token-modal-body {
+    margin-top: 12px;
+    flex: 1;
+    overflow: auto;
+    padding-bottom: 16px;
+  }
+
+  .swap-select-token-modal-empty {
+    margin: 12px 0;
+    padding: 16px 0;
+    font-size: 16px;
+    line-height: 22px;
+    color: @text-base2;
+    text-align: center;
+  }
+}
+
+.portkey-ui-common-modals {
+  .portkey-ant-modal-body {
+    .swap-select-token-modal-wrap {
+      max-height: 80vh;
+    }
+  }
+}

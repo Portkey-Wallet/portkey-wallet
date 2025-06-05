@@ -87,25 +87,25 @@ export const configSlice = createSlice({
   reducers: {},
   extraReducers: builder => {
     builder
-      .addCase(fetchContactSupportNetworkList.fulfilled, (state, action) => {
+      .addCase(fetchContactSupportNetworkList.fulfilled, (_state, action) => {
         const result = action.payload;
 
-        state.contactSupportNetworkMap = {
-          ...state.contactSupportNetworkMap,
+        _state.contactSupportNetworkMap = {
+          ..._state.contactSupportNetworkMap,
           ...result,
         };
       })
-      .addCase(fetchContactSupportNetworkList.rejected, (state, action) => {
+      .addCase(fetchContactSupportNetworkList.rejected, (_state, action) => {
         console.log('fetchContactSupportNetworkItem.rejected: error', action.error.message);
       })
-      .addCase(fetchTransferSupportNetworkList.fulfilled, (state, action) => {
+      .addCase(fetchTransferSupportNetworkList.fulfilled, (_state, action) => {
         const result = action.payload;
-        state.sendAssetSupportNetworkMap = {
-          ...state.sendAssetSupportNetworkMap,
+        _state.sendAssetSupportNetworkMap = {
+          ..._state.sendAssetSupportNetworkMap,
           ...result,
         };
       })
-      .addCase(fetchTransferSupportNetworkList.rejected, (state, action) => {
+      .addCase(fetchTransferSupportNetworkList.rejected, (_state, action) => {
         console.log('fetchTransferSupportNetworkItem.rejected: error', action.error.message);
       });
   },

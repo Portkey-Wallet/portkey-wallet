@@ -1,0 +1,60 @@
+@import '../../assets/theme/color.less';
+
+.common-page-wrap {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: @bg-base2;
+
+  .common-page-content {
+    flex: 1;
+    width: 100%;
+    overflow: hidden;
+    background: @bg-base1;
+    border-radius: 12px 12px 0 0;
+  }
+
+  .common-page-inner {
+    padding: 0 24px;
+    height: 100%;
+    overflow: auto;
+  }
+
+  &.register-page {
+    .common-page-inner {
+      overflow: auto;
+      scrollbar-width: none;
+      &::-webkit-scrollbar {
+        display: none;
+      }
+    }
+  }
+
+  &.large-logo-page {
+    .portkey-logo-prompt {
+      height: 24px;
+    }
+  }
+
+  &.dark-full-page {
+    background: @bg-base1;
+    .portkey-header-body {
+      background: transparent;
+    }
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .common-page-wrap {
+    .common-page-content {
+      .common-page-inner {
+        padding: 0 16px;
+      }
+    }
+
+    .common-page-header {
+      display: none;
+    }
+  }
+}

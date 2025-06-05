@@ -1,0 +1,21 @@
+@import '../../assets/theme/color.less';
+
+.base-drawer {
+  .@{app-prefix}-drawer-content {
+    min-width: 375px;
+    // border-top-left-radius: 8px;
+    // border-top-right-radius: 8px;
+    overflow: auto;
+    background-color: @bg-base1;
+    border-top: 1px solid @border-base1;
+    color: @text-base1;
+    .@{app-prefix}-drawer-header {
+      padding: 0;
+      border: none;
+    }
+    .@{app-prefix}-drawer-body {
+      height: 100%;
+      padding: 0;
+    }
+  }
+}

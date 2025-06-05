@@ -1,0 +1,510 @@
+@import './color.less';
+
+/* dark-wrapper */
+.portkey-ui-dark-wrapper {
+  background-color: var(--sds-color-background-default-default);
+}
+
+/* button */
+.@{app-prefix}-btn-dangerous.@{app-prefix}-btn-link span {
+  text-decoration: underline;
+}
+
+.@{app-prefix}-btn {
+  border-radius: 4px;
+  width: 100%;
+  height: auto;
+  padding: 0;
+  box-shadow: none;
+}
+
+button.@{app-prefix}-btn-default {
+  border-color: @border-neutral2;
+  background-color: @bg-base1;
+  color: @text-base1;
+
+  &:hover,
+  &:focus {
+    color: @text-base1;
+  }
+  &:focus {
+    background-color: @bg-base2;
+    border-color: @border-neutral3;
+  }
+  &:hover {
+    background-color: @bg-base2;
+    border-color: @border-neutral3;
+  }
+
+  &:disabled,
+  &:disabled:hover,
+  &:disabled:focus,
+  &:disabled:active {
+    color: @text-disabled2;
+    background-color: @bg-base2 !important;
+    border-color: @bg-base2 !important;
+    box-shadow: none !important;
+  }
+}
+
+.@{app-prefix}-btn-primary {
+  border-width: 0;
+  color: @text-brand4;
+
+  &:hover,
+  &:focus {
+    color: @text-neutral4;
+  }
+  &:focus {
+    background-color: @brand-click;
+    border-color: @brand-click;
+  }
+  &:hover {
+    background-color: @brand-hover;
+    border-color: @brand-hover;
+  }
+
+  &:disabled,
+  &:disabled:hover,
+  &:disabled:focus,
+  &:disabled:active {
+    color: @text-disabled2 !important;
+    background-color: @brand-disable !important;
+    border-color: @brand-disable !important;
+    box-shadow: none !important;
+  }
+}
+
+.@{app-prefix}-btn-loading > span:not(.@{app-prefix}-btn-loading-icon) {
+  display: none;
+}
+
+.@{app-prefix}-btn-dangerous.@{app-prefix}-btn-primary {
+  border-width: 0;
+  color: @text-danger4;
+
+  &:hover,
+  &:focus {
+    color: @text-danger4;
+  }
+  &:focus {
+    background-color: @bg-danger4;
+    border-color: @bg-danger4;
+  }
+  &:hover {
+    background-color: @bg-danger4;
+    border-color: @bg-danger4;
+  }
+
+  &:disabled,
+  &:disabled:hover,
+  &:disabled:focus,
+  &:disabled:active {
+    color: @text-disabled2;
+    background-color: @bg-base2 !important;
+    border-color: @bg-base2 !important;
+    box-shadow: none !important;
+  }
+}
+
+/* input */
+
+.@{app-prefix}-input,
+.@{app-prefix}-input-password {
+  padding: 12px 16px;
+  border-radius: 6px;
+  //color: @font-2;
+  color: @text-base1;
+  line-height: 22px;
+  //border-color: @neutral-border;
+  border-color: @border-base1;
+  background: @bg-base1;
+
+  &:hover {
+    //border-color: @brand-normal;
+    border-color: @border-focus !important;
+    box-shadow: none;
+  }
+  &:focus {
+    border-color: @border-base1 !important;
+    box-shadow: none;
+  }
+}
+
+.@{app-prefix}-input {
+  font-size: 16px;
+  line-height: 24px;
+  color: @text-base1;
+  background: @bg-base1;
+
+  &::placeholder {
+    font-size: 14px;
+    line-height: 20px;
+    //color: @neutral-disable-text;
+    color: @text-disabled2;
+  }
+}
+
+.@{app-prefix}-input-password-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.clear-input-border {
+  border: none !important;
+  box-shadow: none !important;
+
+  &:focus {
+    box-shadow: none !important;
+  }
+}
+
+/* form */
+.@{app-prefix}-form {
+  .@{app-prefix}-form-item-explain {
+    line-height: 16px;
+    height: 16px;
+    margin-top: 8px;
+    color: @text-opacity70;
+  }
+
+  .@{app-prefix}-form-item-has-error {
+    padding-bottom: 24px;
+
+    .@{app-prefix}-form-item-control {
+      & > div:nth-of-type(2) {
+        line-height: 20px;
+        height: 20px !important;
+
+        & > div:nth-of-type(2) {
+          height: 16px !important;
+        }
+      }
+    }
+  }
+
+  .@{app-prefix}-input-affix-wrapper-status-error {
+    border-color: @border-danger1;
+  }
+
+  .@{app-prefix}-form-item-explain-error {
+    color: @text-danger2;
+    font-size: 14px;
+  }
+
+  .@{app-prefix}-form-item {
+    margin-bottom: 16px;
+  }
+
+  .@{app-prefix}-form-item-label {
+    line-height: 22px;
+    font-size: 16px;
+    padding-bottom: 16px;
+    color: @font-2;
+  }
+
+  .@{app-prefix}-form-item-label > label {
+    color: @font-2;
+    line-height: 22px;
+    font-size: 16px;
+  }
+
+  .@{app-prefix}-btn-primary {
+    line-height: 48px;
+    font-size: 16px;
+  }
+}
+
+// to change  border color of the errored input
+.@{app-prefix}-input-status-error:not(.@{app-prefix}-input-disabled):not(
+    .@{app-prefix}-input-borderless
+  ).@{app-prefix}-input:hover,
+.@{app-prefix}-input-affix-wrapper-status-error:not(.@{app-prefix}-input-affix-wrapper-disabled):not(
+    .@{app-prefix}-input-affix-wrapper-borderless
+  ).@{app-prefix}-input-affix-wrapper,
+.@{app-prefix}-input-affix-wrapper-status-error:not(.@{app-prefix}-input-affix-wrapper-disabled):not(
+    .@{app-prefix}-input-affix-wrapper-borderless
+  ).@{app-prefix}-input-affix-wrapper:hover {
+  //border-color: @brand-normal !important;
+  border-color: @border-danger1 !important;
+  background: @bg-base1;
+}
+
+.@{app-prefix}-input-status-error:not(.@{app-prefix}-input-disabled):not(
+    .@{app-prefix}-input-borderless
+  ).@{app-prefix}-input,
+.@{app-prefix}-input-affix-wrapper-status-error:not(.@{app-prefix}-input-affix-wrapper-disabled):not(
+    .@{app-prefix}-input-affix-wrapper-borderless
+  ).@{app-prefix}-input-affix-wrapper,
+.@{app-prefix}-input-affix-wrapper-status-error:not(.@{app-prefix}-input-affix-wrapper-disabled):not(
+    .@{app-prefix}-input-affix-wrapper-borderless
+  ).@{app-prefix}-input-affix-wrapper:focus {
+  //border-color: #dcdee1;
+  border-color: @border-danger1;
+  background: @bg-base1;
+}
+
+.@{app-prefix}-input-status-error:not(.@{app-prefix}-input-disabled):not(
+    .@{app-prefix}-input-borderless
+  ).@{app-prefix}-input:focus,
+.@{app-prefix}-input-affix-wrapper-status-error:not(.@{app-prefix}-input-affix-wrapper-disabled):not(
+    .@{app-prefix}-input-affix-wrapper-borderless
+  ).@{app-prefix}-input-affix-wrapper-focused {
+  //border-color: @brand-normal !important;
+  border-color: @border-danger1 !important;
+  //box-shadow: 0 0 0 2px rgb(91 142 244 / 20%);
+  box-shadow: none;
+}
+
+// to change input disable
+.@{app-prefix}-input[disabled] {
+  background-color: @bg-base2;
+  border: 1px solid @border-disabled;
+  color: @text-disabled2;
+}
+
+.customer-form {
+  .@{app-prefix}-form-item .@{app-prefix}-form-item-label {
+    padding-bottom: 8px;
+  }
+
+  .@{app-prefix}-form-item-label > label {
+    color: @text-base1;
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  .@{app-prefix}-input:placeholder-shown {
+    color: @neutral-disable-text;
+    line-height: 20px;
+  }
+
+  .@{app-prefix}-input-affix-wrapper {
+    //height: 48px;
+    height: 40px;
+    border-radius: 6px;
+    padding: 0 16px !important;
+    background: @bg-base1;
+    color: @text-base1;
+    border: 1px solid @border-base1 !important;
+    box-shadow: none;
+
+    .@{app-prefix}-input-suffix {
+      .@{app-prefix}-input-clear-icon {
+        height: 16px;
+      }
+      .anticon-close-circle {
+        width: 16px;
+        height: 16px;
+        background: url('../../assets/iconV3/icons/close-circle.svg') no-repeat center;
+        background-size: inherit;
+
+        & > svg {
+          display: none;
+        }
+      }
+    }
+  }
+}
+
+.@{app-prefix}-switch {
+  width: 43px;
+  height: 24px;
+  background-color: @bg-neutral2;
+  border: 2px solid @bg-neutral2;
+  position: relative;
+
+  &:focus {
+    box-shadow: none;
+  }
+
+  .@{app-prefix}-switch-handle {
+    top: 1px;
+  }
+
+  .@{app-prefix}-switch-inner {
+    font-size: 16px;
+    line-height: 22px;
+    color: @neutral-secondary-text;
+    margin-left: 16px;
+    position: absolute;
+    top: 0;
+    right: -46px;
+  }
+
+  .@{app-prefix}-switch-handle::before {
+    background-color: @neutral-tertiary-text;
+  }
+}
+
+.@{app-prefix}-switch-checked {
+  border: 2px solid @icon-brand6;
+  background: @icon-brand6;
+
+  .@{app-prefix}-switch-handle::before {
+    //background-color: @brand-normal;
+    background-color: @text-base1;
+  }
+
+  .@{app-prefix}-switch-inner {
+    right: -62px;
+  }
+}
+
+.footer-btn-wrap {
+  width: 100%;
+  padding: 16px 0;
+  //border-top: 1px solid @border-neutral3;
+  margin-bottom: 0 !important;
+
+  .footer-btn {
+    color: #0a4370;
+    font-size: 16px;
+    line-height: 22px;
+    height: 48px;
+    border-radius: 22px;
+    background-color: @brand-normal;
+  }
+}
+
+.cross-modal {
+  border-radius: 8px;
+  overflow: hidden;
+
+  .@{app-prefix}-modal-body {
+    padding: 0;
+
+    .@{app-prefix}-modal-confirm-content {
+      padding: 24px;
+      margin: 0;
+      border-bottom: 1px solid @border-neutral3;
+      text-align: center;
+      line-height: 20px;
+      font-size: 14px;
+      color: @neutral-secondary-text;
+    }
+
+    .@{app-prefix}-modal-confirm-btns {
+      padding: 15px 16px 17px;
+      margin: 0;
+      display: flex;
+      gap: 16px;
+
+      button {
+        width: 136px;
+        height: 48px;
+        border-radius: 24px;
+        margin: 0 !important;
+        line-height: 22px;
+        font-size: 16px;
+      }
+    }
+  }
+}
+
+.transfer-limit-modal {
+  border-radius: 8px;
+  overflow: hidden;
+
+  .@{app-prefix}-modal-content {
+    .@{app-prefix}-modal-body {
+      padding: 0;
+
+      .@{app-prefix}-modal-confirm-body-wrapper {
+        .@{app-prefix}-modal-confirm-content {
+          padding: 32px 24px 24px;
+          margin: 0;
+          border-bottom: 1px solid @border-neutral3;
+          text-align: center;
+          line-height: 20px;
+          font-size: 14px;
+          color: @neutral-secondary-text;
+          position: relative;
+
+          .close-icon {
+            width: 24px;
+            height: 24px;
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            cursor: pointer;
+          }
+        }
+      }
+    }
+
+    .@{app-prefix}-modal-confirm-btns {
+      padding: 15px 16px 17px !important;
+      margin: 0;
+      display: flex;
+      flex-direction: column-reverse;
+      gap: 13px;
+
+      button {
+        width: 100% !important;
+        height: 48px;
+        border-radius: 24px;
+        margin: 0 !important;
+        line-height: 22px;
+        font-size: 16px;
+      }
+
+      .@{app-prefix}-btn-default {
+        border: none;
+        height: auto !important;
+        width: 100% !important;
+      }
+    }
+  }
+}
+
+/* tooltip */
+.common-tooltip-gray {
+  .@{app-prefix}-tooltip-inner {
+    box-shadow: none;
+    background-color: @neutral-tooltip-bg;
+    opacity: 1;
+  }
+  .@{app-prefix}-tooltip-arrow-content {
+    box-shadow: none;
+    /* stylelint-disable-next-line custom-property-empty-line-before */
+    --antd-arrow-background-color: @neutral-tooltip-bg;
+  }
+}
+
+/* drawer */
+.common-drawer {
+  overflow-x: auto;
+  .@{app-prefix}-drawer-mask {
+    min-width: 360px;
+  }
+  .@{app-prefix}-drawer-content-wrapper {
+    min-width: 360px;
+  }
+  .@{app-prefix}-drawer-content {
+    border-radius: 0;
+  }
+}
+
+/* message tip */
+.@{app-prefix}-message {
+  .@{app-prefix}-message-custom-content {
+    display: flex;
+    text-align: left;
+  }
+}
+
+/* modal */
+.@{app-prefix}-modal-mask,
+.@{app-prefix}-drawer-mask,
+.portkey-ant-modal-mask,
+.portkey-ant-drawer-mask {
+  background: @bg-opacity80 !important;
+  backdrop-filter: blur(2px);
+}
+
+@media screen and (max-width: 600px) {
+  .portkey-ant-message {
+    top: 16px !important;
+  }
+}

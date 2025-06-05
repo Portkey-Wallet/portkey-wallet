@@ -3,13 +3,13 @@ import { customFetch } from '@portkey-wallet/utils/fetch';
 import { IExceptionManager, Severity } from '@portkey-wallet/utils/ExceptionManager';
 import { BaseConfig, RequestConfig } from '../types';
 import { getRequestConfig, spliceUrl } from '../utils';
-import { isValidRefreshTokenConfig, queryAuthorization, RefreshTokenConfig } from './utils/index';
-import { sleep } from '@portkey-wallet/utils';
-import im from '@portkey-wallet/im';
-import { IM_TOKEN_ERROR_ARRAY } from '@portkey-wallet/im/constant';
-import signalrFCM from '@portkey-wallet/socket/socket-fcm';
+// import { isValidRefreshTokenConfig, queryAuthorization, RefreshTokenConfig } from './utils/index';
+import { RefreshTokenConfig } from './utils/index';
+// import { sleep } from '@portkey-wallet/utils';
+// import { IM_TOKEN_ERROR_ARRAY } from '@portkey-wallet/im/constant';
+// import signalrFCM from '@portkey-wallet/socket/socket-fcm';
+// const C_T_EVENT_NAME = 'connectTokenChange';
 
-const C_T_EVENT_NAME = 'connectTokenChange';
 export class DidService extends ServiceInit {
   protected refreshTokenConfig?: RefreshTokenConfig;
   protected onLockApp?: (expired?: boolean) => void;

@@ -1,0 +1,97 @@
+@import '../../../assets/theme/color.less';
+@import '../../../assets/theme/common-class.less';
+
+.success-page-wrapper {
+  position: relative;
+
+  .success-page-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    .congratulations-icon {
+      width: 64px;
+      height: 64px;
+      display: inline-block;
+    }
+
+    & > h1 {
+      .font-bg();
+
+      text-align: center;
+      color: @text-base1;
+      padding: 24px 0;
+      font-size: 32px;
+      font-weight: 700;
+    }
+    .open-btn {
+      margin-top: 164px;
+      line-height: 48px;
+      width: 100%;
+      border-radius: 28px;
+      font-size: 16px;
+      font-weight: 600;
+      border: 1px solid @border-brand2;
+    }
+  }
+
+  .created-tip-wrapper {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    padding: 24px 16px 16px 24px;
+    width: 298px;
+    box-shadow: 0 3px 10px #4d4e591f;
+    border-radius: 6px;
+    background-color: @bg-base2;
+    border: 1px solid @border-base1;
+
+    .created-tip-content {
+      .tip-wrapper {
+        padding: 12px 24px;
+        border-radius: 6px;
+        border: 1px solid @border-base1;
+        margin-bottom: 16px;
+        position: relative;
+        &::before {
+          content: '';
+          text-align: center;
+          width: 24px;
+          height: 24px;
+          line-height: 24px;
+          font-size: 16px;
+          font-weight: 500;
+          position: absolute;
+          top: 0;
+          left: 0;
+          transform: translate(-50%, -50%);
+          border-radius: 100%;
+          color: @text-base1;
+          background-color: @bg-brand2;
+        }
+        &.tip1::before {
+          content: '1';
+        }
+        &.tip2::before {
+          content: '2';
+        }
+        .custom-svg {
+          width: auto;
+          height: auto;
+          line-height: 1;
+        }
+      }
+
+      .tip-title {
+        font-size: 14px;
+        line-height: 20px;
+        margin-bottom: 8px;
+        color: @text-base1;
+      }
+      .tip3 {
+        font-size: 14px;
+        line-height: 20px;
+        color: @text-base1;
+      }
+    }
+  }
+}

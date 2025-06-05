@@ -1,0 +1,32 @@
+@import '../../../assets/theme/color.less';
+
+.wallet-popup {
+  justify-content: space-between;
+  //max-width: 600px;
+  width: 100%;
+
+  .wallet-icon {
+    padding: 24px 0 16px;
+    .wallet-svg {
+      width: 64px;
+      height: 64px;
+    }
+  }
+  .wallet-entry.menu-item {
+    border-bottom: 0;
+  }
+  .empty-placeholder {
+    //width: 100%;
+    height: 1px;
+    background-color: @border-neutral3;
+    margin: 0 16px;
+  }
+  .menu-list {
+    .menu-item:last-child {
+      border-bottom: none;
+    }
+  }
+  .exit-btn {
+    border-top: 1px solid @border-neutral3;
+  }
+}

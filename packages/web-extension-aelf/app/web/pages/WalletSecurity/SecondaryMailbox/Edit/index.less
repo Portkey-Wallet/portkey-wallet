@@ -1,0 +1,49 @@
+@import '../../../../assets/theme/color.less';
+
+.secondary-mailbox-popup {
+  height: 100%;
+  width: 100%;
+
+  .mailbox-tip {
+    margin-top: 24px;
+  }
+}
+
+.secondary-mailbox-page {
+  .secondary-mailbox-body {
+    padding: 16px 0;
+    font-size: 16px;
+    line-height: 20px;
+    .mailbox-container {
+      .common-card {
+        margin: 0;
+        display: flex;
+        align-items: center;
+        flex-direction: row;
+      }
+      .guardians-email-icon {
+        height: 40px;
+        width: 40px;
+        margin-right: 8px;
+      }
+    }
+    &.secondary-mailbox-body-popup {
+      padding: 16px 0;
+    }
+    .mailbox-label {
+      color: @text-base1;
+      margin-bottom: 8px;
+      line-height: 140%;
+    }
+    .err-msg {
+      margin-top: 8px;
+      font-size: 14px;
+      line-height: 140%;
+      color: @text-danger2;
+    }
+    .portkey-btn-primary {
+      height: 48px;
+      border-radius: 48px;
+    }
+  }
+}

@@ -1,0 +1,125 @@
+@import '../../../assets/theme/color.less';
+
+.page-custom-token {
+  width: 100%;
+  height: calc(100vh - 72px);
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  @media screen and (max-width: 768px) {
+    height: 100vh;
+  }
+
+  .page-content {
+    padding: 24px 0;
+    flex: 1;
+    gap: 16px;
+    overflow: hidden;
+    background-color: @bg-base1;
+    font-size: 16px;
+    line-height: 20px;
+    font-weight: 400;
+    color: @text-base1;
+  }
+  .symbol-input {
+    font-size: 16px;
+    height: 40px;
+    border-radius: 8px;
+    &::placeholder {
+      font-size: 16px;
+    }
+  }
+  .decimals-input {
+    height: 40px;
+  }
+
+  .tip {
+    color: @neutral-secondary-text;
+    line-break: anywhere;
+  }
+
+  .label {
+    font-size: 16px;
+    margin-bottom: 8px;
+  }
+  .@{app-prefix}-input[disabled] {
+    border-radius: 8px;
+    color: @text-base1;
+    background-color: '#848485';
+  }
+
+  .err-msg {
+    margin: 4px;
+    font-size: 12px;
+    line-height: 16px;
+    color: @font-14;
+  }
+
+  .btn-wrap {
+    background-color: @bg-base1;
+    padding: 16px 0;
+    .btn {
+      border-radius: 100px;
+      height: 48px;
+      font-weight: 600;
+      font-size: 16px;
+    }
+  }
+}
+
+.select-btn {
+  height: 40px;
+  padding: 0 12px;
+  .select-custom-token-option {
+    align-items: center;
+    gap: 8px;
+    /* stylelint-disable-next-line no-descending-specificity */
+    .custom-svg {
+      display: none;
+    }
+  }
+}
+
+.select-chain-box-drawer {
+  .modal-content {
+    .select-custom-token-option {
+      align-items: center;
+      gap: 8px;
+      .title {
+        font-size: 16px;
+        line-height: normal;
+      }
+    }
+  }
+}
+
+.select-chain-box {
+  width: 420px !important;
+  .portkey-modal-content {
+    padding: 0 16px;
+  }
+  .select-network-header {
+    // padding: 0 16px !important;
+  }
+  .common-header-title {
+    font-size: 20px;
+    text-align: left;
+  }
+  .select-list {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 0;
+    .select-custom-token-option {
+      font-size: 16px;
+      align-items: center;
+      gap: 8px;
+      .title {
+        font-size: 16px;
+      }
+    }
+  }
+}

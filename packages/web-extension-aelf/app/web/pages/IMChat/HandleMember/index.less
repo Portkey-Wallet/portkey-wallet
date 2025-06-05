@@ -1,0 +1,41 @@
+@import '../../../assets/theme/color.less';
+
+.handle-member-page {
+  height: 100%;
+  background-color: @bg-base1;
+  font-size: 16px;
+  line-height: 22px;
+  .handle-member-top {
+    width: 100%;
+    z-index: 100;
+    .dropdown-search-wrapper {
+      padding: 0 24px 10px;
+    }
+  }
+  .handle-member-body {
+    height: calc(100% - 138px);
+    .member-list-container {
+      overflow-y: auto;
+      .member-list-empty {
+        margin-top: 60px;
+        font-size: 16px;
+        line-height: 22px;
+        color: @neutral-disable-text;
+      }
+    }
+    .handle-member-btn {
+      padding: 16px;
+      width: 100%;
+      height: 80px;
+      border-top: 1px solid @border-neutral3;
+      .portkey-btn-primary {
+        height: 48px;
+        color: @neutral-white-text;
+        border-radius: 22px;
+        font-size: 16px;
+        line-height: 22px;
+        cursor: pointer;
+      }
+    }
+  }
+}

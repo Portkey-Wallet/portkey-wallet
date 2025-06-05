@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RecentStateType, IRecentItem } from './type';
-import { NetworkType } from '@portkey-wallet/types';
+// import { NetworkType } from '@portkey-wallet/types';
 
 // TODO: BACK TO 100
 const MAX_RECENT_COUNT = 5;

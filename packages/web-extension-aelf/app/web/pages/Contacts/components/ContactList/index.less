@@ -1,0 +1,33 @@
+@import '../../../../assets/theme/color.less';
+
+.contact-list {
+  .adm-list {
+    --border-top: solid 1px @border-neutral3;
+    --border-bottom: solid 1px @border-neutral3;
+  }
+  .adm-list-item {
+    padding-left: 0;
+  }
+  .adm-list-item-content {
+    border-top: none;
+  }
+  .adm-list-item-content-arrow {
+    display: none;
+  }
+  .adm-index-bar-sidebar-item-active {
+    color: inherit;
+    background-color: inherit;
+  }
+  .adm-list-default .adm-list-body {
+    border: none;
+    background-color: @bg-base1;
+    .contact-index-logo {
+      width: 40px;
+      height: 40px;
+    }
+    .avatar-img {
+      width: 40px !important;
+      height: 40px !important;
+    }
+  }
+}

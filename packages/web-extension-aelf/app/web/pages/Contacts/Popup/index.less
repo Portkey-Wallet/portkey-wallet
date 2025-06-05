@@ -1,0 +1,56 @@
+@import '../../../assets/theme/color.less';
+
+.contacts-popup {
+  width: 100%;
+  height: 100%;
+  .loading-container {
+    width: 100%;
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .contacts-body {
+    overflow-y: hidden;
+
+    .contact-search-list {
+      .adm-list-body {
+        border-top: none;
+      }
+    }
+
+    .contact-item {
+      padding-right: 20px;
+    }
+
+    .adm-index-bar-sidebar {
+      .adm-index-bar-sidebar-row {
+        padding-right: 6px;
+      }
+    }
+
+    .testnet-list {
+      height: 100%;
+    }
+    .adm-index-bar {
+      background: @bg-base1!important;
+      color: @text-base1;
+
+      .adm-index-bar-anchor-title {
+        background: @bg-base1;
+      }
+
+      .adm-list-item {
+        padding-left: 0;
+        background: @bg-base1;
+      }
+    }
+  }
+}
+.contacts-popup-header {
+  .add-icon {
+    width: 24px !important;
+    height: 24px !important;
+  }
+}

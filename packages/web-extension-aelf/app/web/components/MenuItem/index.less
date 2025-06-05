@@ -1,0 +1,39 @@
+@import '../../assets/theme/color.less';
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  //padding: 0 16px;
+  //border-bottom: 1px solid @border-neutral3;
+  cursor: pointer;
+
+  .icon-area {
+    margin-right: 12px;
+  }
+
+  .menu-item-title {
+    flex: 1;
+    font-size: 16px;
+    color: @text-base1;
+    line-height: 140%;
+    //height: 22px;
+  }
+  .enter-btn {
+    flex-shrink: 0;
+    .custom-svg {
+      width: 16px;
+      height: 16px;
+      svg {
+        width: 100%;
+        height: 100%;
+      }
+    }
+  }
+}
+
+.item-selected {
+  background: @bg-brand1;
+  .menu-item-title {
+    color: @text-brand4;
+  }
+}

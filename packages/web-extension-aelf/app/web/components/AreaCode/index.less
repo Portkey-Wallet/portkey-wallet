@@ -1,0 +1,81 @@
+@import '../../assets/theme/color.less';
+
+.area-code-wrapper {
+  position: absolute;
+  width: 100%;
+  margin-top: 9px;
+  background: @bg-base1;
+  border-radius: 6px;
+  z-index: 99;
+  height: 260px;
+  display: flex;
+  flex-direction: column;
+  filter: drop-shadow(0 3px 10px rgb(0 0 0 / 24%));
+  .input-wrapper {
+    padding: 16px;
+  }
+  .search-input {
+    background-color: @bg-13;
+    border-radius: 6px;
+    padding: 7px 8px;
+    .@{app-prefix}-input {
+      background-color: transparent;
+      color: @text-base1;
+    }
+    .portkey-input-prefix {
+      margin-right: 8px;
+    }
+    .search-svg {
+      path {
+        fill: @neutral-secondary-text;
+      }
+    }
+  }
+
+  .area-code-content {
+    flex: 1;
+    overflow-y: auto;
+    &::-webkit-scrollbar {
+      width: 6px;
+      height: 10px;
+      border-radius: 5px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background-color: @neutral-border;
+      border-radius: 8px;
+    }
+  }
+  .area-code-item {
+    padding: 13px 16px;
+    padding-right: 10px;
+    cursor: pointer;
+    & > span:first-child {
+      color: @text-base1;
+      font-size: 16px;
+      line-height: 22px;
+    }
+    & > span:last-child {
+      font-size: 14px;
+      line-height: 20px;
+      color: @neutral-secondary-text;
+      text-align: right;
+    }
+    &:hover {
+      & > span {
+        color: @brand-normal;
+      }
+    }
+  }
+  // .area-code-item.active-item {
+  //   background-color: @bg-9;
+  //   & > span {
+  //     color: @brand-normal;
+  //   }
+  // }
+  .no-search-result {
+    margin-top: 72px;
+    font-size: 14px;
+    line-height: 20px;
+    color: @text-opacity70;
+  }
+}

@@ -1,0 +1,65 @@
+@import '../../../assets/theme/color.less';
+
+.chat-list-search-page {
+  height: 100%;
+  background-color: @bg-base1;
+  font-size: 16px;
+  line-height: 22px;
+  .chat-list-search-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 100;
+    .chat-list-search {
+      flex-shrink: 0;
+      .dropdown-search-wrapper {
+        padding: 0 24px 10px;
+      }
+    }
+    .find-more {
+      padding: 14px 24px;
+      gap: 16px;
+      color: @brand-normal;
+      border-bottom: 1px solid @border-neutral3;
+      background-color: @bg-base1;
+      cursor: pointer;
+      .addmorepeople-icon {
+        width: 20px;
+        height: 20px;
+      }
+    }
+  }
+  .chat-list-search-content {
+    position: relative;
+    margin-top: 189px;
+    padding-top: 16px;
+    overflow-y: auto;
+    .search-empty {
+      margin-top: 60px;
+      font-size: 16px;
+      line-height: 22px;
+      color: @neutral-disable-text;
+    }
+    .search-result-list {
+      .chat-title-text {
+        margin-left: 24px;
+        font-size: 16px;
+        line-height: 22px;
+        font-weight: 500;
+        color: @text-base1;
+      }
+      .adm-list-default {
+        .adm-list-body {
+          border-top: none;
+          border-bottom: 1px solid @border-neutral3;
+          .adm-list-item {
+            .contact-item .contact-item-right .contact-index-logo-wrap .unread-badge {
+              display: none;
+            }
+          }
+        }
+      }
+    }
+  }
+}

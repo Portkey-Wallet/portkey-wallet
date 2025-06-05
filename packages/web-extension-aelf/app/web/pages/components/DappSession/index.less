@@ -1,0 +1,85 @@
+@import '../../../assets/theme/color.less';
+
+.dapp-session {
+  width: 100%;
+
+  .dapp-session-button {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 52px;
+    border-radius: 16px;
+    background-color: @bg-base2;
+    cursor: pointer;
+    padding: 0 16px;
+    font-size: 14px;
+    line-height: 20px;
+    color: @text-base1;
+  }
+
+  .dapp-session-title-wrap {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+  }
+
+  .dapp-session-value-wrap {
+    display: flex;
+    align-items: center;
+
+    .dapp-session-value-icon {
+      width: 24px;
+      height: 24px;
+      margin-right: -6px;
+
+      svg {
+        path {
+          fill: @icon-neutral3;
+        }
+      }
+    }
+  }
+}
+
+.dapp-session-modal {
+  .dapp-session-modal-title {
+    margin-top: 16px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    font-size: 20px;
+    line-height: 24px;
+    color: @text-base1;
+    font-weight: 700;
+    padding: 0 16px;
+    margin-bottom: 12px;
+  }
+
+  .dapp-session-list-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 16px;
+
+    .dapp-session-item-wrap {
+      display: flex;
+      justify-content: space-between;
+      height: 48px;
+      padding: 0 16px;
+      align-items: center;
+      cursor: pointer;
+
+      .dapp-session-item-check-icon {
+        width: 24px;
+        height: 24px;
+
+        svg {
+          path {
+            fill: @icon-brand2;
+          }
+        }
+      }
+    }
+  }
+}

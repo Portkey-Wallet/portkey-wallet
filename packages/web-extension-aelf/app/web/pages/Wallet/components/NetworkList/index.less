@@ -1,0 +1,53 @@
+@import '../../../../assets/theme/color.less';
+
+.network-list {
+  .network-item {
+
+    .network-item-checked {
+      width: 16px;
+      height: 16px;
+      .selected-svg {
+        width: 16px;
+        height: 16px;
+      }
+    }
+    .network-item-icon {
+      margin-left: 8px;
+      margin-right: 8px;
+      .custom-svg {
+        width: 42px;
+        height: 42px;
+        svg {
+          width: 42px;
+          height: 42px;
+        }
+      }
+    }
+    .network-current-tag {
+      margin-left: 4px;
+      height: 20px;
+      padding: 4px 6px;
+      color: @text-success5;
+      background: @bg-success2;
+      border-radius: 4px;
+      font-size: 12px;
+      line-height: 100%;
+    }
+  }
+
+  .disabled {
+    //opacity: 0.6;
+    //cursor: not-allowed;
+    cursor: default;
+  }
+}
+
+.change-network-modal {
+  .title {
+    margin-bottom: 8px;
+    font-size: 18px;
+    line-height: 22px;
+    font-weight: 500;
+    color: @text-base1;
+  }
+}

@@ -1,0 +1,21 @@
+@import '../../../../assets/theme/color.less';
+
+.divider-center {
+  &.@{app-prefix}-divider-with-text {
+    margin: 32px 0;
+    border-top-color: @border-base1;
+    &::before {
+      border-width: 0.5px;
+    }
+    &::after {
+      border-width: 0.5px;
+    }
+  }
+  .@{app-prefix}-divider-inner-text {
+    padding: 0 16px;
+    font-size: 12px;
+    line-height: 20px;
+    font-weight: 400;
+    color: @text-base3;
+  }
+}

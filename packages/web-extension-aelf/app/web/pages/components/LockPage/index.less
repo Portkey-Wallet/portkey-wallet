@@ -1,0 +1,85 @@
+@import '../../../assets/theme/color.less';
+
+.lock-page-wrapper {
+  width: 100%;
+  margin: 0 auto;
+  .lock-page-header {
+    .portkeylogov2-icon {
+      width: 28px;
+      height: 28px;
+      svg {
+        width: 100%;
+        height: 100%;
+      }
+    }
+  }
+  .lock-page-content {
+    width: 552px;
+    padding: 32px;
+    margin: 64px auto;
+    border: 1px solid @border-base1;
+    border-radius: 16px;
+    .portkeyprompt-icon {
+      width: 208px;
+      height: 48px;
+      margin: 88px auto 120px;
+    }
+    .unlock-form {
+      width: 100%;
+    }
+    .customer-password {
+      &.@{app-prefix}-form-item-has-error {
+        padding-bottom: 32px;
+      }
+    }
+    .customer-password-button {
+      margin-bottom: 0;
+    }
+
+    .custom-password {
+      .@{app-prefix}-input-clear-icon {
+        margin-right: 12px;
+      }
+      &.@{app-prefix}-input-password {
+        font-size: 16px;
+        color: @text-base1;
+        height: 40px;
+        box-shadow: none;
+        input {
+          border-radius: 0;
+        }
+      }
+      &.@{app-prefix}-input::placeholder {
+        font-size: 16px;
+        line-height: 16;
+        color: @text-base3;
+      }
+      .close-circle-icon {
+        width: 16px;
+        height: 16px;
+      }
+    }
+    .portkey-form-item-explain-error {
+      font-size: 16px;
+      line-height: 22px;
+    }
+
+    .submit-btn {
+      margin-top: 24px;
+      width: 100%;
+      height: 48px;
+      border-radius: 24px;
+      font-weight: 600;
+    }
+  }
+}
+.lock-page-wrapper.lock-page-wrapper-popup {
+  height: 100%;
+  .lock-page-content {
+    height: 100%;
+    width: 100%;
+    padding: 120px 0 24px;
+    margin: 0 auto;
+    border: none;
+  }
+}

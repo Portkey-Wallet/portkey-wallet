@@ -1,0 +1,63 @@
+@import '../../../../assets/theme/color.less';
+@import '../../../../assets/theme/constants.less';
+
+.device-detail-common {
+  height: calc(100% - @common-header-height);
+  .content-item {
+    height: 96px;
+    border-bottom: 1px solid @border-neutral3;
+    .item-desc {
+      width: 100%;
+      display: flex;
+      justify-content: left;
+      margin-bottom: 4px;
+      .icon {
+        height: 22px;
+        margin: 0 16px;
+        .custom-svg {
+          width: 16px;
+          height: 16px;
+        }
+      }
+      .name {
+        line-height: 22px;
+        color: @text-base1;
+        font-size: 16px;
+      }
+      .tag {
+        margin-left: 10px;
+        padding: 0 12px;
+        height: 22px;
+        line-height: 16px;
+        color: @neutral-secondary-text;
+        font-size: 12px;
+        border: 1px solid @neutral-border;
+        border-radius: 12px;
+      }
+    }
+    .item-time {
+      padding-left: 48px;
+      line-height: 20px;
+      color: @neutral-disable-text;
+      font-size: 14px;
+    }
+  }
+  .content-desc {
+    padding: 24px;
+    font-size: 14px;
+    line-height: 20px;
+    color: @neutral-secondary-text;
+  }
+  .content-btn {
+    width: 100%;
+    background-color: @bg-base1;
+    .@{app-prefix}-btn-primary {
+      color: @font-14;
+      height: 48px;
+      background-color: @bg-base1;
+      border-radius: 24px;
+      border: 1px solid @border-7;
+      text-shadow: none;
+    }
+  }
+}

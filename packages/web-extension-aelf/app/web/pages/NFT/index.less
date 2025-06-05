@@ -1,0 +1,335 @@
+@import '../../assets/theme/color.less';
+@import '../../assets/theme/constants.less';
+
+.nft-detail {
+  height: 100vh !important;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  @media screen and (min-width: 768px) {
+    height: calc(100vh - 72px) !important;
+  }
+
+  .nft-detail-body {
+    background: @bg-base1;
+    height: calc(100% - 48px);
+    overflow: overlay;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    .more-icon {
+      transform: rotate(90deg);
+    }
+  }
+  .nft-detail-more {
+    .custom-svg {
+      width: 24px;
+      height: 24px;
+    }
+  }
+
+  .collection {
+    margin: 8px 0 0;
+    cursor: pointer;
+    .img {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+      img,
+      .img-text {
+        width: 100%;
+        height: 100%;
+        border-radius: 8px;
+      }
+      .img-text {
+        background-color: @border-neutral3;
+        font-size: 12px;
+        line-height: 14px;
+        color: @neutral-disable-text;
+      }
+    }
+    .name {
+      margin-left: 8px;
+      font-size: 14px;
+      line-height: 20px;
+      font-weight: 500;
+      color: @text-opacity70;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .collection-arrow-icon {
+      width: 6.55px;
+      height: 12.55px;
+      margin-left: 8px;
+    }
+  }
+
+  .token-id {
+    margin: 24px 0 0;
+    font-size: 20px;
+    line-height: 24px;
+    font-weight: 700;
+    color: @text-base1;
+    word-wrap: break-word;
+    word-break: break-all;
+    font-family: BG;
+  }
+
+  .picture {
+    margin: 8px auto 0;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    max-width: 400px;
+    max-height: 400px;
+    .tokentaglarge-icon,
+    .nfttaglarge-icon {
+      // position: absolute;
+      width: 48px;
+      height: 24px;
+      top: 0;
+      right: 16px;
+    }
+    /* stylelint-disable-next-line no-descending-specificity */
+    img {
+      object-fit: contain;
+      border-radius: 8px;
+    }
+    .picture-text {
+      background-color: @border-neutral3;
+      font-size: 40px;
+      color: @neutral-disable-text;
+    }
+  }
+
+  .picture-common {
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    display: flex;
+    justify-content: flex-end;
+    padding-right: 10px;
+  }
+
+  .nft-info {
+    margin: 16px 0;
+    gap: 16px;
+    .info {
+      border-bottom: 1px solid @border-base1;
+      padding-bottom: 10px;
+      &:last-child {
+        border-bottom: none;
+      }
+      .info-title {
+        font-size: 16px;
+        line-height: 22px;
+        font-weight: 500;
+        padding: 12px 0 8px;
+        color: @text-base1;
+        opacity: 0.4;
+        .text-overflow(1);
+      }
+      .info-item {
+        padding: 16px 0;
+        font-size: 16px;
+        line-height: 20px;
+        font-weight: 400;
+        color: @text-base1;
+        gap: 16px;
+        .label {
+          color: @text-base1;
+          .label-bold {
+            margin-top: 4px;
+            font-weight: 500;
+            color: @text-base1;
+          }
+        }
+      }
+      .contract-title {
+        gap: 8px;
+        .copy-icon {
+          width: 16px;
+          height: 16px;
+        }
+      }
+      &.basic-info,
+      &.seed-info,
+      &.inscription-info {
+        .label {
+          flex-shrink: 0;
+        }
+        .content {
+          word-break: break-all;
+        }
+      }
+      &.traits-info {
+        .label {
+          word-break: break-all;
+        }
+        .content {
+          flex-shrink: 0;
+        }
+        .traits-items {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+          gap: 16px;
+          padding: 20px 0;
+          .info-item {
+            display: flex;
+            flex-direction: column;
+            padding: 16px;
+            background-color: @bg-base2;
+            border: 1px solid @border-base1;
+            border-radius: 16px;
+            font-size: 12px;
+            justify-content: space-between;
+
+            .trait-type {
+              color: @text-opacity70;
+              .text-overflow(1);
+            }
+            .label {
+              color: @text-base1;
+            }
+            .label-bold {
+              height: 40px;
+              line-height: 20px;
+              font-size: 14px;
+              font-weight: 600;
+              .text-overflow(2);
+            }
+          }
+        }
+
+        .traits-info-skeleton {
+          margin-top: 12px;
+          gap: 4px;
+          .@{app-prefix}-skeleton-element {
+            .@{app-prefix}-skeleton-avatar {
+              width: 100px;
+              height: 20px;
+              border-radius: 6px;
+              background-color: @bg-31;
+              .@{app-prefix}-skeleton-element {
+                .@{app-prefix}-skeleton-active {
+                  .@{app-prefix}-skeleton-avatar {
+                    &::after {
+                      background: linear-gradient(
+                        90deg,
+                        hsl(0deg 0% 96% / 20%) 25%,
+                        hsl(0deg 0% 92% / 24%) 37%,
+                        hsl(0deg 0% 96% / 20%) 63%
+                      );
+                    }
+                  }
+                }
+              }
+            }
+            &.skeleton-desc {
+              .@{app-prefix}-skeleton-avatar {
+                width: 140px;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  .description-info {
+    font-family: SG;
+    color: @text-opacity70;
+    font-size: 16px;
+    margin-top: 12px;
+    font-weight: 400;
+  }
+  .chain {
+    .flex {
+      gap: 4px;
+    }
+  }
+  .btn-wrap {
+    background: @bg-base1;
+    width: 100%;
+    .balance {
+      word-break: break-all;
+      flex-wrap: wrap;
+      margin: 24px auto 12px;
+      font-size: 14px;
+      line-height: 20px;
+      font-weight: 400;
+      color: @text-opacity70;
+      text-align: center;
+    }
+    .common-button {
+      width: 100%;
+      height: 48px;
+      font-size: 16px;
+      color: @text-neutral4;
+      border: 1.5px solid @text-brand1;
+      .send-icon {
+        width: 16px;
+        height: 16px;
+        margin-right: 8px;
+      }
+    }
+  }
+}
+
+.portkey-prompt {
+  padding-bottom: 0 !important;
+}
+
+.nft-detail-prompt {
+  .nft-detail {
+    position: relative;
+    background: @bg-base1;
+
+    .picture {
+      width: 320px;
+      height: 320px;
+    }
+
+    .btn-wrap {
+      width: 100%;
+    }
+  }
+}
+
+.nft-detail-popover {
+  padding-top: 0;
+  .portkey-popover-inner {
+    min-width: 200px;
+    border-radius: 8px;
+    border: 1px solid @border-base1;
+    background-color: @bg-base1;
+
+    .portkey-popover-inner-content {
+      padding: 16px;
+      .popover-menu-list .menu-item {
+        gap: 12px;
+        padding: 0;
+        height: auto;
+        .profile-icon {
+          width: 24px;
+          height: 24px;
+          svg {
+            width: 100%;
+            height: 100%;
+            path {
+              fill: @text-base1;
+            }
+          }
+        }
+        .menu-item-container {
+          font-size: 16px;
+          min-width: 150px;
+          color: @text-base1;
+        }
+      }
+    }
+  }
+}

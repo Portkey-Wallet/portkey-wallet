@@ -104,9 +104,18 @@ export function useRecent() {
         })
         .filter(i => !!i);
 
-      return list;
+      // return list;
+      return (list || []) as TFormattedRecentItem[];
     },
     [contactMap, currentAccount?.address, currentNetwork, getFilterRecentList],
+  );
+
+  const checkAddressIsRecent = useCallback(
+    (props: { fromChainId: ChainId; tokenId: string; isFt: boolean; address: string }) => {
+      const _list = getFilterRecentList(props);
+      return !!_list.find(ele => ele.address === props.address);
+    },
+    [getFilterRecentList],
   );
 
   const addRecent = useCallback(
@@ -121,5 +130,5 @@ export function useRecent() {
     dispatch(resetTargetIdRecent(anotherId));
   }, [anotherId, dispatch, id]);
 
-  return { getTransformedRecentList, getRecentList, addRecent, resetRecentCurrentNetwork };
+  return { getTransformedRecentList, getRecentList, addRecent, checkAddressIsRecent, resetRecentCurrentNetwork };
 }

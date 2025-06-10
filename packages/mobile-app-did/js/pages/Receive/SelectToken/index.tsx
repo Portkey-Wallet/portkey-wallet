@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
-import { FlatList, View } from 'react-native';
+// import { FlatList, View } from 'react-native';
+import { FlatList } from 'react-native';
 import { IUserTokenItemResponse } from '@portkey-wallet/types/types-ca/token';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import { defaultColors } from 'assets/theme';
@@ -24,8 +25,8 @@ import CommonAvatar from 'components/CommonAvatar';
 import { request } from '@portkey-wallet/api/api-did';
 import { TextL } from 'components/CommonText';
 import { makeStyles } from '@rneui/themed';
-import Svg from 'components/Svg';
-import GStyles from 'assets/theme/GStyles';
+// import Svg from 'components/Svg';
+// import GStyles from 'assets/theme/GStyles';
 
 const SelectToken = () => {
   const { t } = useLanguage();
@@ -157,26 +158,26 @@ const SelectToken = () => {
           }
         }}
         // eslint-disable-next-line react/no-unstable-nested-components
-        ListHeaderComponent={() => {
-          return (
-            <Touchable
-              style={[
-                GStyles.flexRow,
-                GStyles.itemCenter,
-                GStyles.marginArg(8),
-                GStyles.paddingArg(16, 12),
-                styles.receiveNFTs,
-              ]}
-              onPress={() => {
-                navigationService.navigate('ReceiveNFTs');
-              }}>
-              <Svg icon="photo" size={pTd(24)} />
-              <TextL style={GStyles.marginLeft(12)}>Receive NFTs</TextL>
-              <View style={GStyles.flex1} />
-              <Svg icon="vector-right" size={pTd(12)} />
-            </Touchable>
-          );
-        }}
+        // ListHeaderComponent={() => {
+        //   return (
+        //     <Touchable
+        //       style={[
+        //         GStyles.flexRow,
+        //         GStyles.itemCenter,
+        //         GStyles.marginArg(8),
+        //         GStyles.paddingArg(16, 12),
+        //         styles.receiveNFTs,
+        //       ]}
+        //       onPress={() => {
+        //         navigationService.navigate('ReceiveNFTs');
+        //       }}>
+        //       <Svg icon="photo" size={pTd(24)} />
+        //       <TextL style={GStyles.marginLeft(12)}>Receive NFTs</TextL>
+        //       <View style={GStyles.flex1} />
+        //       <Svg icon="vector-right" size={pTd(12)} />
+        //     </Touchable>
+        //   );
+        // }}
         data={debounceKeyword ? filteredShowList : tokenDataShowInMarket}
         renderItem={renderItem}
         ListEmptyComponent={noData}

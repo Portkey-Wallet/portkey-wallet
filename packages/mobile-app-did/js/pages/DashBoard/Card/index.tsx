@@ -5,9 +5,9 @@ import SendButton from 'components/SendButton';
 import ReceiveButton from 'components/ReceiveButton';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCurrentUserInfo, useSetHideAssets } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import FaucetButton from 'components/FaucetButton';
-import OutlinedButton from 'components/OutlinedButton';
-import BuyButton from 'components/BuyButton';
+// import FaucetButton from 'components/FaucetButton';
+// import OutlinedButton from 'components/OutlinedButton';
+// import BuyButton from 'components/BuyButton';
 import { useAppRampEntryShow } from 'hooks/ramp';
 import { pTd } from 'utils/unit';
 import Svg from 'components/Svg';
@@ -86,30 +86,30 @@ const Card: React.FC<{ title: string }> = ({ title }) => {
           buttonWrapStyle={styles.buttonWrap}
           containerStyle={[styles.buttonContainer, buttonWrapStyle]}
         />
-        {isRampShow && (
-          <BuyButton
-            wrapStyle={buttonWrapStyle}
-            buttonWrapStyle={styles.buttonWrap}
-            containerStyle={[styles.buttonContainer, buttonWrapStyle]}
-          />
-        )}
-        {isSwapShow && (
-          <OutlinedButton
-            title="Swap"
-            iconName="swap"
-            containerStyle={[styles.buttonContainer, buttonWrapStyle]}
-            buttonWrapStyle={styles.buttonWrap}
-            onPress={() => {
-              navigationService.navigate('SwapHome');
-            }}
-          />
-        )}
-        {!isMainnet && (
-          <FaucetButton
-            containerStyle={[styles.buttonContainer, buttonWrapStyle]}
-            buttonWrapStyle={styles.buttonWrap}
-          />
-        )}
+        {/*{isRampShow && (*/}
+        {/*  <BuyButton*/}
+        {/*    wrapStyle={buttonWrapStyle}*/}
+        {/*    buttonWrapStyle={styles.buttonWrap}*/}
+        {/*    containerStyle={[styles.buttonContainer, buttonWrapStyle]}*/}
+        {/*  />*/}
+        {/*)}*/}
+        {/*{isSwapShow && (*/}
+        {/*  <OutlinedButton*/}
+        {/*    title="Swap"*/}
+        {/*    iconName="swap"*/}
+        {/*    containerStyle={[styles.buttonContainer, buttonWrapStyle]}*/}
+        {/*    buttonWrapStyle={styles.buttonWrap}*/}
+        {/*    onPress={() => {*/}
+        {/*      navigationService.navigate('SwapHome');*/}
+        {/*    }}*/}
+        {/*  />*/}
+        {/*)}*/}
+        {/*{!isMainnet && (*/}
+        {/*  <FaucetButton*/}
+        {/*    containerStyle={[styles.buttonContainer, buttonWrapStyle]}*/}
+        {/*    buttonWrapStyle={styles.buttonWrap}*/}
+        {/*  />*/}
+        {/*)}*/}
       </View>
     </View>
   );

@@ -160,19 +160,19 @@ export default function AccountSettings() {
           navigationService.navigate('ContactsHome');
         },
       },
-      {
-        name: 'CryptoGift',
-        label: 'Crypto gift',
-        icon: 'gift_thin',
-        suffixDom: () => {
-          return (
-            <View style={styles.newLabelWrap}>
-              <TextM style={styles.newLabelText}>New</TextM>
-            </View>
-          );
-        },
-        showDivider: true,
-      },
+      // {
+      //   name: 'CryptoGift',
+      //   label: 'Crypto gift',
+      //   icon: 'gift_thin',
+      //   suffixDom: () => {
+      //     return (
+      //       <View style={styles.newLabelWrap}>
+      //         <TextM style={styles.newLabelText}>New</TextM>
+      //       </View>
+      //     );
+      //   },
+      //   showDivider: true,
+      // },
       // {
       //   name: 'Referral',
       //   label: 'Referral',

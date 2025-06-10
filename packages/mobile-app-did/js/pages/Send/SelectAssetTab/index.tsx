@@ -3,7 +3,7 @@ import CommonTopTab from 'components/CommonTopTab';
 import { useLanguage } from 'i18n/hooks';
 import { IAssetNftCollection, IAssetToken } from '@portkey-wallet/store/store-ca/assets/type';
 import SelectToken from '../SelectToken';
-import SelectNFT from '../SelectNFT';
+// import SelectNFT from '../SelectNFT';
 
 type SelectAssetTabProps = {
   nftInfos: IAssetNftCollection[];
@@ -25,12 +25,12 @@ const SelectAssetTab: React.FC<SelectAssetTabProps> = (props: SelectAssetTabProp
           <SelectToken loading={loading} toAddress={toAddress} tokenInfos={tokenInfos} noDataMessage={noDataMessage} />
         ),
       },
-      {
-        name: t('NFTs'),
-        tabItemDom: (
-          <SelectNFT loading={loading} toAddress={toAddress} nftInfos={nftInfos} noDataMessage={'No NFTs available'} />
-        ),
-      },
+      // {
+      //   name: t('NFTs'),
+      //   tabItemDom: (
+      //     <SelectNFT loading={loading} toAddress={toAddress} nftInfos={nftInfos} noDataMessage={'No NFTs available'} />
+      //   ),
+      // },
     ];
   }, [nftInfos, noDataMessage, t, toAddress, tokenInfos, loading]);
 

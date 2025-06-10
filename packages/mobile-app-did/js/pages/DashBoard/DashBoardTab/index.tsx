@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import TokenSection from '../TokenSection';
-import NFTSection from '../NFTSection/index';
+// import NFTSection from '../NFTSection/index';
 import CommonTopTab from 'components/CommonTopTab';
 import { useLanguage } from 'i18n/hooks';
 import { pTd } from 'utils/unit';
@@ -41,11 +41,11 @@ const DashBoardTab: React.FC = () => {
         tabItemDom: <TokenSection />,
         suffix: (totalDisplayCount || 0) + '',
       },
-      {
-        name: tabNameMap[TabName.NFTs],
-        tabItemDom: <NFTSection />,
-        suffix: (totalNftItemCount || 0) + '',
-      },
+      // {
+      //   name: tabNameMap[TabName.NFTs],
+      //   tabItemDom: <NFTSection />,
+      //   suffix: (totalNftItemCount || 0) + '',
+      // },
     ];
   }, [tabNameMap, totalDisplayCount, totalNftItemCount]);
   const modeList = useMemo(() => {

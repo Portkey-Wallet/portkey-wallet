@@ -26,6 +26,12 @@ const IP14PRO_HEIGHT = 852;
 const IP14PROMAX_WIDTH = 430;
 const IP14PROMAX_HEIGHT = 932;
 
+const IP16PRO_WIDTH = 402;
+const IP16PRO_HEIGHT = 874;
+
+const IP16PROMAX_WIDTH = 440;
+const IP16PROMAX_HEIGHT = 956;
+
 const { height: W_HEIGHT, width: W_WIDTH } = Dimensions.get('window');
 
 let statusBarHeight = STATUSBAR_DEFAULT_HEIGHT;
@@ -57,6 +63,12 @@ if (Platform.OS === 'ios' && !Platform.isPad && !Platform.isTVOS) {
     isIPhoneWithDynamicIsland_v = true;
     statusBarHeight = STATUSBAR_IP14PRO_HEIGHT;
   } else if (W_WIDTH === IP14PRO_WIDTH && W_HEIGHT === IP14PRO_HEIGHT) {
+    isIPhoneWithDynamicIsland_v = true;
+    statusBarHeight = STATUSBAR_IP14PRO_HEIGHT;
+  } else if (W_WIDTH === IP16PROMAX_WIDTH && W_HEIGHT === IP16PROMAX_HEIGHT) {
+    isIPhoneWithDynamicIsland_v = true;
+    statusBarHeight = STATUSBAR_IP14PRO_HEIGHT;
+  } else if (W_WIDTH === IP16PRO_WIDTH && W_HEIGHT === IP16PRO_HEIGHT) {
     isIPhoneWithDynamicIsland_v = true;
     statusBarHeight = STATUSBAR_IP14PRO_HEIGHT;
   }

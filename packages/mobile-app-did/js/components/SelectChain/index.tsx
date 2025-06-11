@@ -24,7 +24,8 @@ const SelectChain: React.FC<SelectChainProps> = ({ currentNetwork, chainId, chai
       chainList
         .map(ele => ({
           ...ele,
-          customChainName: formatChainInfoToShow(ele.chainId, currentNetwork),
+          // customChainName: formatChainInfoToShow(ele.chainId, currentNetwork),
+          customChainName: formatChainInfoToShow(ele.chainId, 'MAINNET'),
         }))
         .reverse(),
     [chainList, currentNetwork],
@@ -46,7 +47,8 @@ const SelectChain: React.FC<SelectChainProps> = ({ currentNetwork, chainId, chai
       titleStyle={[GStyles.flexRowWrap, GStyles.itemCenter]}
       titleTextStyle={styles.chainSelectTitleStyle}
       style={styles.selectedItem}
-      title={formatChainInfoToShow(chainId, currentNetwork)}
+      // title={formatChainInfoToShow(chainId, currentNetwork)}
+      title={formatChainInfoToShow(chainId, 'MAINNET')}
       rightElement={<Svg size={pTd(16)} icon="down-arrow" color={theme.colors.iconBase1} />}
     />
   );

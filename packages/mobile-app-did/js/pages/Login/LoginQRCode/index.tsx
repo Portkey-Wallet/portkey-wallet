@@ -2,7 +2,7 @@ import React from 'react';
 import PageContainer from 'components/PageContainer';
 import navigationService from 'utils/navigationService';
 import { isIOS, screenHeight } from '@portkey-wallet/utils/mobile/device';
-import SwitchNetwork from '../components/SwitchNetwork';
+// import SwitchNetwork from '../components/SwitchNetwork';
 import { makeStyles } from '@rneui/themed';
 import QRCode from '../components/QRCode';
 
@@ -18,7 +18,8 @@ export default function LoginQRCode() {
       containerStyles={styles.containerStyles}
       style={styles.mainContainer}
       leftCallback={() => navigationService.goBack()}
-      rightDom={<SwitchNetwork />}>
+      // rightDom={<SwitchNetwork />}>
+      rightDom={<></>}>
       <QRCode />
     </PageContainer>
   );

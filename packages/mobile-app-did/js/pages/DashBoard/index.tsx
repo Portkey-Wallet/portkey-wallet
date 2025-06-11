@@ -87,7 +87,7 @@ const DashBoard: React.FC<any> = ({ navigation }) => {
   }, []);
 
   const title = useMemo(
-    () => (isMainnet ? formatAmountUSDShow(accountBalanceUSD) : 'Dev Mode'),
+    () => (isMainnet ? formatAmountUSDShow(accountBalanceUSD) : 'Portkey Lite'),
     [isMainnet, accountBalanceUSD],
   );
 

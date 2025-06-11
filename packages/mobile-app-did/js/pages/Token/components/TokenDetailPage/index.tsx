@@ -24,7 +24,7 @@ import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca
 import { checkEnabledFunctionalTypes } from '@portkey-wallet/utils/compass';
 import { useTokenInfoFromStore } from '@portkey-wallet/hooks/hooks-ca/assets';
 import ActivityItem from 'components/ActivityItem';
-import OutlinedButton from 'components/OutlinedButton';
+// import OutlinedButton from 'components/OutlinedButton';
 import { FlatListFooterLoading } from 'components/FlatListFooterLoading';
 import { ListLoadingEnum } from 'constants/misc';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
@@ -34,7 +34,7 @@ import { useGetAccountTokenList } from 'hooks/account';
 import { SHOW_RAMP_SYMBOL_LIST } from '@portkey-wallet/constants/constants-ca/ramp';
 import { useAppSwapButtonShow } from 'hooks/cms';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
-import FaucetButton from 'components/FaucetButton';
+// import FaucetButton from 'components/FaucetButton';
 import { darkColors } from 'assets/theme';
 import { showActivityDetail } from 'components/ActivityOverlay';
 import CustomPullToRefreshHeader from 'pages/DashBoard/PullToRefresh';
@@ -209,23 +209,23 @@ const TokenDetailPage: React.FC<TokenDetailParams> = ({ tokenInfo, tokenSection 
             tokenInfo={tokenInfo}
           />
         )}
-        {isFaucetButtonShow && (
-          <FaucetButton
-            containerStyle={[styles.buttonContainer, buttonWrapStyle]}
-            buttonWrapStyle={styles.buttonWrap}
-          />
-        )}
-        {isSwapShow && swap && (
-          <OutlinedButton
-            title="Swap"
-            iconName="swap"
-            containerStyle={[styles.buttonContainer, buttonWrapStyle]}
-            buttonWrapStyle={styles.buttonWrap}
-            onPress={() => {
-              navigationService.navigate('SwapHome');
-            }}
-          />
-        )}
+        {/*{isFaucetButtonShow && (*/}
+        {/*  <FaucetButton*/}
+        {/*    containerStyle={[styles.buttonContainer, buttonWrapStyle]}*/}
+        {/*    buttonWrapStyle={styles.buttonWrap}*/}
+        {/*  />*/}
+        {/*)}*/}
+        {/*{isSwapShow && swap && (*/}
+        {/*  <OutlinedButton*/}
+        {/*    title="Swap"*/}
+        {/*    iconName="swap"*/}
+        {/*    containerStyle={[styles.buttonContainer, buttonWrapStyle]}*/}
+        {/*    buttonWrapStyle={styles.buttonWrap}*/}
+        {/*    onPress={() => {*/}
+        {/*      navigationService.navigate('SwapHome');*/}
+        {/*    }}*/}
+        {/*  />*/}
+        {/*)}*/}
       </View>
     );
   }, [

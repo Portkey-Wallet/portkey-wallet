@@ -19,7 +19,7 @@ export default function SwitchNetwork() {
   return (
     <Touchable onPress={changeNetworkDirectly} style={[GStyles.flexRow, GStyles.itemCenter, styles.networkSwitchWrap]}>
       <Svg icon={'change'} size={pTd(24)} iconStyle={GStyles.marginRight(4)} />
-      <TextL>{networkName}</TextL>
+      <TextL>{networkName === 'Testnet' ? 'Lite' : networkName}</TextL>
     </Touchable>
   );
 }

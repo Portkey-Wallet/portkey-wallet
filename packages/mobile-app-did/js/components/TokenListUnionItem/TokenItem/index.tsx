@@ -13,7 +13,7 @@ import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import fonts from 'assets/theme/fonts';
 import { ViewStyleType, TextStyleType } from 'types/styles';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
-import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
+// import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 
 interface TokenListItemType {
   wrapStyle?: ViewStyleType;
@@ -27,7 +27,7 @@ interface TokenListItemType {
 const TokenItem: React.FC<TokenListItemType> = props => {
   const { onPress, item, hideBalance = false, wrapStyle, balanceTextStyle, balanceInUseTextStyle } = props;
   const isMainnet = useIsMainnet();
-  const { currentNetwork } = useWallet();
+  // const { currentNetwork } = useWallet();
   return (
     <Touchable style={[itemStyle.wrap, wrapStyle]} onPress={() => onPress?.(item)}>
       <View style={itemStyle.left}>
@@ -63,7 +63,8 @@ const TokenItem: React.FC<TokenListItemType> = props => {
         <View style={itemStyle.rightBottom}>
           {item.displayChainName && (
             <TextM numberOfLines={1} ellipsizeMode={'tail'} style={itemStyle.chainText}>
-              {formatChainInfoToShow(item.chainId, currentNetwork, item.displayChainName)}
+              {/*{formatChainInfoToShow(item.chainId, currentNetwork, item.displayChainName)}*/}
+              {formatChainInfoToShow(item.chainId, 'MAINNET', item.displayChainName)}
             </TextM>
           )}
           {item.balanceInUsd && isMainnet && (

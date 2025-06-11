@@ -179,12 +179,12 @@ export default function AccountSettings() {
       //   icon: 'my_referral',
       //   showDivider: true,
       // },
-      {
-        name: 'SwitchNetworks',
-        label: 'Switch network',
-        icon: 'my_change',
-        showDivider: true,
-      },
+      // {
+      //   name: 'SwitchNetworks',
+      //   label: 'Switch network',
+      //   icon: 'my_change',
+      //   showDivider: true,
+      // },
       {
         name: 'Help center',
         label: 'Help center',

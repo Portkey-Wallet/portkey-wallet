@@ -37,7 +37,7 @@ const SwitchNetworks: React.FC = () => {
           <View style={styles.networkItemWrap}>
             <View style={styles.networkItem}>
               <Svg icon={item.networkType === 'MAINNET' ? 'mainnet' : 'testnet'} size={pTd(42)} />
-              <TextM style={styles.networkText}>{item.name}</TextM>
+              <TextM style={styles.networkText}>{item.name === 'aelf Testnet' ? 'aelf Lite' : item.name}</TextM>
               {item.networkType === currentNetwork && (
                 <View style={styles.curLabel}>
                   <Text style={{ color: theme.theme.colors.textSuccess5 }}>Current</Text>

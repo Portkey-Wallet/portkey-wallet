@@ -1,16 +1,18 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+// import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import navigationService from 'utils/navigationService';
-import { View, FlatList, Image } from 'react-native';
+// import { View, FlatList, Image } from 'react-native';
+import { View, FlatList } from 'react-native';
 import { ITokenSectionResponse } from '@portkey-wallet/types/types-ca/token';
 import fonts from 'assets/theme/fonts';
 import { pTd } from 'utils/unit';
 import TokenListUnionItem from 'components/TokenListUnionItem';
 import { useLanguage } from 'i18n/hooks';
 import { PAGE_SIZE_IN_ACCOUNT_TOKEN, REFRESH_TIME } from '@portkey-wallet/constants/constants-ca/assets';
-import { screenWidth } from '@portkey-wallet/utils/mobile/device';
+// import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import Touchable from 'components/Touchable';
 import { useAccountTokenInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
-import { useAccountBalanceUSD } from '@portkey-wallet/hooks/hooks-ca/balances';
+// import { useAccountBalanceUSD } from '@portkey-wallet/hooks/hooks-ca/balances';
 import { useLatestRef } from '@portkey-wallet/hooks';
 import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
@@ -25,7 +27,7 @@ export default function TokenSection() {
   const styles = getStyles();
 
   const { accountTokenList, totalRecordCount, fetchAccountTokenInfoList } = useAccountTokenInfo();
-  const accountBalanceUSD = useAccountBalanceUSD();
+  // const accountBalanceUSD = useAccountBalanceUSD();
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const caAddressInfos = useCaAddressInfoList();
   const caAddressInfosList = useLatestRef(caAddressInfos);
@@ -106,31 +108,31 @@ export default function TokenSection() {
     };
   }, [getAccountTokenList]);
 
-  const listHeader = useMemo(() => {
-    const accountBalanceNumber = parseFloat(accountBalanceUSD || '0');
-    if (accountBalanceNumber <= 0) {
-      const bannerWidth = screenWidth - pTd(32);
-      const bannerHeight = (bannerWidth * 152) / 361;
-      return (
-        <Touchable
-          onPress={() => {
-            navigationService.navigate('ReceiveSelectToken');
-          }}>
-          <Image
-            style={[styles.banner, { width: bannerWidth, height: bannerHeight }]}
-            source={require('assets/image/pngs/receive_token_banner.png')}
-          />
-        </Touchable>
-      );
-    } else {
-      return <View />;
-    }
-  }, [accountBalanceUSD, styles]);
+  // const listHeader = useMemo(() => {
+  //   const accountBalanceNumber = parseFloat(accountBalanceUSD || '0');
+  //   if (accountBalanceNumber <= 0) {
+  //     const bannerWidth = screenWidth - pTd(32);
+  //     const bannerHeight = (bannerWidth * 152) / 361;
+  //     return (
+  //       <Touchable
+  //         onPress={() => {
+  //           navigationService.navigate('ReceiveSelectToken');
+  //         }}>
+  //         <Image
+  //           style={[styles.banner, { width: bannerWidth, height: bannerHeight }]}
+  //           source={require('assets/image/pngs/receive_token_banner.png')}
+  //         />
+  //       </Touchable>
+  //     );
+  //   } else {
+  //     return <View />;
+  //   }
+  // }, [accountBalanceUSD, styles]);
 
   return (
     <View style={styles.tokenListPageWrap}>
       <FlatList
-        ListHeaderComponent={listHeader}
+        // ListHeaderComponent={listHeader}
         nestedScrollEnabled
         refreshing={false}
         extraData={extraIndex}

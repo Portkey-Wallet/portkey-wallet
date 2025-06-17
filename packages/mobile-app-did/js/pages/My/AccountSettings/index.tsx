@@ -29,9 +29,9 @@ import ActionSheet from 'components/ActionSheet';
 import { CommonPromptCard, PromptCardType } from 'components/CommonPromptCard';
 import fonts from 'assets/theme/fonts';
 import { useUpdateInfo } from 'store/user/hooks';
-import { codePushOperator, parseLabel } from 'utils/update';
-import * as Application from 'expo-application';
-import { parseVersion } from 'utils';
+// import { codePushOperator, parseLabel } from 'utils/update';
+// import * as Application from 'expo-application';
+// import { parseVersion } from 'utils';
 import { useCurrentDappList } from '@portkey-wallet/hooks/hooks-ca/dapp';
 import CommonAvatar from 'components/CommonAvatar';
 import { darkColors } from 'assets/theme';
@@ -145,12 +145,12 @@ export default function AccountSettings() {
         icon: 'my_device',
         suffixDom: () => <TextM style={styles.setBackupMailText}>{deviceAmount}</TextM>,
       },
-      {
-        name: 'DappList',
-        label: 'Connected dApps',
-        icon: 'my_connect',
-        suffixDom: () => <TextM style={styles.setBackupMailText}>{dappList?.length}</TextM>,
-      },
+      // {
+      //   name: 'DappList',
+      //   label: 'Connected dApps',
+      //   icon: 'my_connect',
+      //   suffixDom: () => <TextM style={styles.setBackupMailText}>{dappList?.length}</TextM>,
+      // },
       {
         name: 'Address book',
         label: 'Address book',
@@ -201,28 +201,28 @@ export default function AccountSettings() {
         label: 'About Portkey',
         icon: 'my_about',
       },
-      {
-        name: 'Check for updates',
-        label: 'Check for updates',
-        icon: 'my_update',
-        suffixDom: () => {
-          return (
-            <TextM style={{ color: theme.colors.textBase2 }}>
-              {parseVersion([
-                `v${Application.nativeApplicationVersion}`,
-                parseLabel(codePushOperator.localPackage?.label),
-              ])}
-            </TextM>
-          );
-        },
-        onPress: () => {
-          if (updateInfo) {
-            codePushOperator.checkToUpdate();
-          } else {
-            CommonToast.info("You're using the latest version.");
-          }
-        },
-      },
+      // {
+      //   name: 'Check for updates',
+      //   label: 'Check for updates',
+      //   icon: 'my_update',
+      //   suffixDom: () => {
+      //     return (
+      //       <TextM style={{ color: theme.colors.textBase2 }}>
+      //         {parseVersion([
+      //           `v${Application.nativeApplicationVersion}`,
+      //           parseLabel(codePushOperator.localPackage?.label),
+      //         ])}
+      //       </TextM>
+      //     );
+      //   },
+      //   onPress: () => {
+      //     if (updateInfo) {
+      //       codePushOperator.checkToUpdate();
+      //     } else {
+      //       CommonToast.info("You're using the latest version.");
+      //     }
+      //   },
+      // },
     ],
     [dappList?.length, deviceAmount, fetching, secondaryEmail, showNotSet, styles, theme.colors.textBase2, updateInfo],
   );

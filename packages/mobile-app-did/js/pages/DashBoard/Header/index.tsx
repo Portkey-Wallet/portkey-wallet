@@ -70,16 +70,16 @@ const DashBoardHeader: React.FC = () => {
         <Touchable style={styles.svgWrap} onPress={onCopyAddress}>
           <Svg icon="copy" size={pTd(24)} color={theme.colors.iconBase2} />
         </Touchable>
-        <Touchable
-          style={styles.svgWrap}
-          onPress={async () => {
-            if (!(await qrScanPermissionAndToast())) {
-              return;
-            }
-            navigationService.navigate('QrScanner');
-          }}>
-          <Svg icon="scan" size={pTd(24)} color={theme.colors.iconBase2} />
-        </Touchable>
+        {/*<Touchable*/}
+        {/*  style={styles.svgWrap}*/}
+        {/*  onPress={async () => {*/}
+        {/*    if (!(await qrScanPermissionAndToast())) {*/}
+        {/*      return;*/}
+        {/*    }*/}
+        {/*    navigationService.navigate('QrScanner');*/}
+        {/*  }}>*/}
+        {/*  <Svg icon="scan" size={pTd(24)} color={theme.colors.iconBase2} />*/}
+        {/*</Touchable>*/}
       </View>
     );
   }, [onCopyAddress, qrScanPermissionAndToast, styles, theme]);

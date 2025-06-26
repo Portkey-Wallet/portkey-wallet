@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - fastlane-build/ca-app-internal-test # This branch should be used for both Android and IOS build triggers.
+      - fastlane-build/ca-android-playstore
 jobs:
   # ----------------------- ANDROID -----------------------------
   # -------------------------------------------------------------

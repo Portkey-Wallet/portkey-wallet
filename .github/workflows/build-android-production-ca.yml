@@ -1,7 +1,7 @@
 #./github/workflows/build-android-production-ca.yml
 name: Production Build:\build for Android, upload to Google Play Store
 on:
-  pull_request:
+  push:
     branches:
       - fastlane-build/ca-app-production # This branch should be used for both Android and IOS build triggers.
 jobs:
@@ -32,12 +32,12 @@ jobs:
           node-version: 18  # using the .nvmrc file in future
       # Step 2: Configure gradle and gradle wrapper with cache
       - name: Cache Gradle Wrapper
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ~/.gradle/wrapper
           key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
       - name: Cache Gradle Dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle-caches-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}

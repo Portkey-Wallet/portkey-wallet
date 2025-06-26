@@ -74,6 +74,7 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
         verifierId: verifier.verifierId,
         verificationDoc: verifier.verificationDoc,
         signature: verifier.signature,
+        zkLoginInfo: verifier.zkLoginInfo,
         context: {
           clientId: managerAddress,
           requestId,

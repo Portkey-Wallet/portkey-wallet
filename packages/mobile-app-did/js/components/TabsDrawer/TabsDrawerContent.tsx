@@ -201,10 +201,10 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
 
   const onNavigationChange = useCallback((nState: WebViewNavigation) => {
     console.log('onNavigationChange', nState);
-    setTabStateMap({
+    setTabStateMap(prev => ({
       name: nState?.title,
-      url: getProtocolAndDomain(nState?.url),
-    });
+      url: getProtocolAndDomain(prev.url),
+    }));
   }, []);
 
   const provider = useMemo<ITabContext>(() => {
@@ -293,6 +293,12 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
           activeWebViewRef={tabRef}
           clickBottomActionBtn={clickBottomActionBtn}
           onNavigationChange={onNavigationChange}
+          onMessage={data => {
+            setTabStateMap(() => ({
+              name: data.title,
+              url: getProtocolAndDomain(data.url),
+            }));
+          }}
         />
         {!activeTabId && isDrawerOpen && CardGroupDom}
         {isSearchShow && (

@@ -19,12 +19,13 @@ type BrowserTabProps = {
   autoApprove?: boolean;
   onLoadEnd?: (nativeEvent: any) => void;
   onNavigationStateChange?: WebViewProps['onNavigationStateChange'];
+  onMessage?: WebViewProps['onMessage'];
 };
 
 const Options: CaptureOptions = { quality: 0.2, format: 'jpg' };
 
 const BrowserTab = forwardRef<IBrowserTab, BrowserTabProps>(function BrowserTab(
-  { isHidden, uri, onLoadEnd, autoApprove, onNavigationStateChange },
+  { isHidden, uri, onLoadEnd, autoApprove, onNavigationStateChange, onMessage },
   forward,
 ) {
   const viewRef = useRef<any>(null);
@@ -53,7 +54,9 @@ const BrowserTab = forwardRef<IBrowserTab, BrowserTabProps>(function BrowserTab(
   const fetchCurrentRememberMeBlackList = useFetchCurrentRememberMeBlackList();
 
   useEffect(() => {
-    if (isHidden) return;
+    if (isHidden) {
+      return;
+    }
     setTabRef?.(options);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isHidden, options]);
@@ -62,7 +65,9 @@ const BrowserTab = forwardRef<IBrowserTab, BrowserTabProps>(function BrowserTab(
     ({ nativeEvent }: WebViewNavigationEvent | WebViewErrorEvent) => {
       if (!isDangerousLink(getProtocolAndHost(uri)) && !isApproved.current && autoApprove) {
         isApproved.current = true;
-        if (!isHidden) webViewRef.current?.autoApprove();
+        if (!isHidden) {
+          webViewRef.current?.autoApprove();
+        }
       }
       onLoadEnd?.(nativeEvent);
     },
@@ -86,6 +91,7 @@ const BrowserTab = forwardRef<IBrowserTab, BrowserTabProps>(function BrowserTab(
         source={{ uri }}
         isHidden={isHidden}
         onLoadEnd={onPageLoadEnd}
+        onMessage={onMessage}
         onNavigationStateChange={onNavigationStateChange}
         onLoadProgress={({ nativeEvent }) => progressbarRef.current?.changeInnerBarWidth(nativeEvent.progress)}
       />

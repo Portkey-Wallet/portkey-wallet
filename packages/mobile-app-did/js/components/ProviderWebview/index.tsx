@@ -194,6 +194,17 @@ const ProviderWebview = forwardRef<
     // }
     return false;
   };
+  const getRealUrl = `
+   (function() {
+    const message = {
+      type: 'URL_UPDATE',
+      url: document.location.href,
+      title: document.title
+    };
+    window.ReactNativeWebView.postMessage(JSON.stringify(message));
+    true;
+  })();
+`;
   const webViewDom = useMemo(
     () => (
       <WebView
@@ -201,7 +212,7 @@ const ProviderWebview = forwardRef<
         // style={styles.webView}
         decelerationRate="normal"
         originWhitelist={['*']}
-        injectedJavaScript={!isIOS ? entryScriptWeb3 : undefined}
+        injectedJavaScript={!isIOS ? entryScriptWeb3 + getRealUrl : getRealUrl}
         injectedJavaScriptBeforeContentLoaded={isIOS ? entryScriptWeb3 : undefined}
         applicationNameForUserAgent={`WebView Portkey did Mobile PortkeyV${Application.nativeApplicationVersion}`}
         {...props}

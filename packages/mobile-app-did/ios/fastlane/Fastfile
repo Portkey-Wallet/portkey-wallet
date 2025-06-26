@@ -15,60 +15,195 @@
 
 default_platform(:ios)
 
+DEVELOPER_APP_ID = ENV["DEVELOPER_APP_ID"]
+DEVELOPER_APP_IDENTIFIER = ENV["DEVELOPER_APP_IDENTIFIER"]
+PROVISIONING_PROFILE_SPECIFIER = ENV["PROVISIONING_PROFILE_SPECIFIER"]
+TEMP_KEYCHAIN_USER = ENV[ "TEMP_KEYCHAIN_USER" ] 
+TEMP_KEYCHAIN_PASSWORD = ENV[ "TEMP_KEYCHAIN_PASSWORD" ] 
+APPLE_ISSUER_ID = ENV["APPLE_ISSUER_ID"]
+APPLE_KEY_ID = ENV["APPLE_KEY_ID"]
+APPLE_KEY_CONTENT = ENV["APPLE_KEY_CONTENT"]
+GIT_AUTHORIZATION = ENV["GIT_AUTHORIZATION"]
+DEVELOPER_PORTAL_TEAM_ID = ENV["DEVELOPER_PORTAL_TEAM_ID"]
+
+
+# We will download and store our keychain into a file
+def delete_temp_keychain(name)
+  delete_keychain(
+    name: name
+  ) if File.exist? File.expand_path("~/Library/Keychains/#{name}-db")
+end
+def create_temp_keychain(name, password)
+  create_keychain(
+    name: name,
+    password: password,
+    unlock: false,
+    timeout: 0
+  )
+end
+def ensure_temp_keychain(name, password)
+  delete_temp_keychain(name)
+  create_temp_keychain(name, password)
+end
+# the last commit id & commit msg
+def get_latest_commit
+  commit_id = `git log -1 --pretty=format:"%H"`.strip
+  commit_message = `git log -1 --pretty=format:"%s"`.strip
+  { id: commit_id, message: commit_message }
+end
+# get time stamp
+def get_timestamp
+  Time.now.strftime("%Y-%m-%d %H:%M:%S")
+end
+# get version name
+def get_version_name(file_path)
+  plist_content = File.read(file_path)
+  version_name_match = plist_content.match(/<key>CFBundleShortVersionString<\/key>\s*<string>([\d.]+)<\/string>/)
+  if version_name_match
+    return version_name_match[1]
+  else
+    UI.user_error!("Could not find CFBundleShortVersionString in #{file_path}")
+  end
+end
+# lark notification
+def send_lark_notification(title:,version_name:, build_time:, commit:)
+  lark_message = {
+    "msg_type" => "post",
+    "content" => {
+      "post" => {
+        "en_us" => {
+          "title" => "#{title} 🚀",
+          "content" => [
+            [
+              { "tag" => "text", "text" => "🌟 App(iOS): EOA Wallet" },
+              { "tag" => "text", "text" => "\n🌟 Version: " },
+              { "tag" => "text", "text" => version_name },
+              { "tag" => "text", "text" => "\n📅 Build Time#{ENV['CI']? '(UTC)':''}: " },
+              { "tag" => "text", "text" => build_time },
+              { "tag" => "text", "text" => "\n\n🛠️ Latest Commit:" },
+              { "tag" => "text", "text" => "\nID: #{commit[:id]}" },
+              { "tag" => "text", "text" => "\nMessage: #{commit[:message]}" }
+            ]
+          ]
+        }
+      }
+    }
+  }
+
+  lark_webhook_url = ENV['LARK_WEBHOOK_URL'] || "https://open.larksuite.com/open-apis/bot/v2/hook/7ff82584-0b49-4d63-bd8a-81449b77c38f"
+  unless lark_webhook_url
+    UI.user_error!("LARK_WEBHOOK_URL is not set!")
+  end
+
+  uri = URI.parse(lark_webhook_url)
+  http = Net::HTTP.new(uri.host, uri.port)
+  http.use_ssl = true
+  request = Net::HTTP::Post.new(uri.path, { 'Content-Type' => 'application/json' })
+  request.body = lark_message.to_json
+  response = http.request(request)
+
+  if response.code.to_i >= 200 && response.code.to_i < 300
+    UI.success("Lark notification sent successfully! 🚀")
+  else
+    UI.error("Failed to send Lark notification: #{response.code} - #{response.body}")
+  end
+end
+
+
 platform :ios do
   desc "Push a new beta build to TestFlight"
   lane :beta do
-    sync_code_signing(
-      type: "appstore"
-      )    # see code signing guide for more information
-    build_app(workspace: "Portkey.xcworkspace", scheme: "Portkey")
-    upload_to_testflight
-    slack(message: "Successfully distributed a new beta build")
-  end
-  desc "builds and packages iOS"
-  lane :build_ipa do
-    # sync certificates and profiles
-    sync_code_signing(
-      type: "adhoc",
-      # readonly: true,
-      force_for_new_devices: true,
-      app_identifier: ["com.aelf.portkeyapp"],
+
+    # Create the KeyChain certaficate and install it
+    ensure_temp_keychain(TEMP_KEYCHAIN_USER, TEMP_KEYCHAIN_PASSWORD)
+    
+    # access to App Store Connect API
+    api_key = app_store_connect_api_key(
+      key_id: APPLE_KEY_ID,
+      issuer_id: APPLE_ISSUER_ID,
+      key_content: APPLE_KEY_CONTENT,    
+      duration: 1200,            
+      in_house: false
+     )
+
+
+     update_code_signing_settings(
+      use_automatic_signing: false,
+      path: "Portkey.xcodeproj",
+      team_id: "#{DEVELOPER_PORTAL_TEAM_ID}",
+      targets: "AELFWallet",
+      build_configurations: ["Release", "Debug"],
+      code_sign_identity: "Apple Distribution: PORTKEY PTE. LTD. (#{DEVELOPER_PORTAL_TEAM_ID})",
+      profile_name: PROVISIONING_PROFILE_SPECIFIER,
+      bundle_identifier: DEVELOPER_APP_IDENTIFIER
     )
-    # builds and packages iOS
-    # gym(
-    #   scheme: "walletAppNew",
-    #   export_method: "ad-hoc",
-    #   silent: true,  # Hide all information that's not necessary while building
-    #   clean: true,  # Should the project be cleaned before building it?	
-    # )
-    # builds and packages iOS
-    build_ios_app(
-      workspace: "Portkey.xcworkspace",
-      scheme: "Portkey",
-      export_method: "ad-hoc",
-      silent: true,  # Hide all information that's not necessary while building	
-      clean: true,  # Should the project be cleaned before building it?	
-      output_name: "my-app.ipa",       # specify the name of the .ipa file to generate (including file extension)
-      # sdk: "iphoneos16.1",
-    ) 
-  end
-  desc "Distributes the staging app via Firebase App Distribution"
-  lane :distribute_firebase do
-    # builds to Firebase App Distribution
-    firebase_app_distribution(
-      app: "1:339329964702:ios:6d93597292bfaa2a5df98f",
-      # service_credentials_file: "$projectDir/tangential-box-328411-52e4b821bdcf.json",
-      # service_credentials_file: "#{Dir.pwd.chomp("/fastlane")}/fastlane/tangential-box-328411-52e4b821bdcf.json",
-      groups: "test",
-      release_notes: "Stub"
+
+      # get the certaficates from the Github account
+      match(
+          type: 'appstore',
+          app_identifier: "#{DEVELOPER_APP_IDENTIFIER}",
+          git_basic_authorization: Base64.strict_encode64(GIT_AUTHORIZATION),
+          readonly: true,
+          keychain_name: TEMP_KEYCHAIN_USER,
+          keychain_password: TEMP_KEYCHAIN_PASSWORD,
+          api_key: api_key
+      )
+
+    latest_build_number = latest_testflight_build_number(
+      app_identifier: DEVELOPER_APP_IDENTIFIER,
+      api_key: api_key
     )
-  end
-  desc "Automatically increment the build number"
-  lane :push_telegram do
-    # Automatically increment the build number
-    latest_release = firebase_app_distribution_get_latest_release(
-      app: "1:339329964702:ios:6d93597292bfaa2a5df98f"
+    latest_build_number = latest_build_number.nil? ? 0 : latest_build_number
+
+
+    increment_build_number(
+      xcodeproj: "Portkey.xcodeproj",
+      build_number: latest_build_number.to_i + 1
     )
-    increment_build_number({ build_number: latest_release[:buildVersion].to_i + 1 })
+
+    # Build the App   
+    ipa = gym(
+      configuration: "Release",
+      export_xcargs: "-allowProvisioningUpdates",
+      workspace: 'AELFWallet.xcworkspace',
+      scheme: "AELFWallet", 
+      export_method: "app-store",
+      export_options: {
+      provisioningProfiles: { 
+          DEVELOPER_APP_ID => PROVISIONING_PROFILE_SPECIFIER
+      }
+    })
+
+
+    #Ship to TestFlight
+    pilot(
+      apple_id: "#{DEVELOPER_APP_ID}",
+      app_identifier: "#{DEVELOPER_APP_IDENTIFIER}",
+      distribute_external: true,
+      notify_external_testers: true,
+      uses_non_exempt_encryption: false,
+      ipa: ipa,
+      skip_waiting_for_build_processing: true,
+      verbose: true,
+      changelog: "Build #{Time.now.strftime('%Y.%m.%d')}: Regular update and improvements"
+     )
+
+
+       # get version info
+      title = "TestFlight Push Notification "
+      version_name = get_version_name("../AELFWallet/info.plist")
+      build_time = get_timestamp
+      commit = get_latest_commit
+
+      build_num = latest_build_number.to_i + 1
+      version_name_with_build = "#{version_name} (#{build_num})"
+
+
+     send_lark_notification(
+      title: title,
+      version_name: version_name_with_build,
+      build_time: build_time,
+      commit: commit
+     )
   end
 end

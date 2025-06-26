@@ -370,7 +370,7 @@ export default function RegisterStart() {
         });
       } catch (error) {
         setLoading(false);
-        console.log(error, 'error===onSocialSignFinish');
+        console.log(error, 'wfs error===onSocialSignFinish');
         const msg = handleErrorMessage(error);
         singleMessage.error(msg);
       }
@@ -390,7 +390,6 @@ export default function RegisterStart() {
   const onSocialStart = useCallback((type: ISocialLogin) => {
     googleAnalytics.loginStartEvent(type);
   }, []);
-
   return (
     <div id="register-start-wrapper">
       <div className="flex-column-center register-start-content">

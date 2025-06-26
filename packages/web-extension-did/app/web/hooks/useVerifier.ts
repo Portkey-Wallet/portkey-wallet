@@ -110,6 +110,8 @@ const useCheckVerifier = () => {
           chainId: originChainId,
           operationType: OperationTypeEnum.register,
         });
+        // const res = await InternalMessage.payload(PortkeyMessageTypes.CHECK_WALLET_STATUS).send();
+        // return;
         dispatch(
           setRegisterVerifierAction({
             verifierId: verifierItem.id as string,
@@ -127,6 +129,7 @@ const useCheckVerifier = () => {
               verifierId: verifierItem.id as string,
               verificationDoc: rst.verificationDoc,
               signature: rst.signature,
+              ...rst,
             },
           });
         } else {

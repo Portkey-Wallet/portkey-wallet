@@ -90,3 +90,11 @@ export default function errorHandler(code: keyof typeof errorMap, error?: any | 
   }
   return output;
 }
+
+export function isTransferAmountExceeded(error: string): boolean {
+  // const regex = /The transfer amount \d+ has exceeded the single transfer limit \d+/;
+  const singleTransferLimitRegex = /The transfer amount \d+ has exceeded the single transfer limit \d+/;
+  const dailyTransferBalanceRegex = /The transfer amount \d+ has exceeded the daily transfer balance/;
+
+  return singleTransferLimitRegex.test(error) || dailyTransferBalanceRegex.test(error);
+}

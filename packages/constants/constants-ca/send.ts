@@ -10,6 +10,7 @@ export enum TransactionError {
   FEE_NOT_ENOUGH = 'Insufficient funds for transaction fee',
   CROSS_NOT_ENOUGH = 'Insufficient funds for cross chain transaction fee',
   SYNCHRONIZING = 'Synchronizing on-chain account information...',
+  TRANSFER_AMOUNT_EXCEEDED = 'Transfer amount exceeded',
 }
 
 export const AddressErrorArray = Object.values(AddressError);

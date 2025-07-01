@@ -99,7 +99,7 @@ jobs:
 
       # Step 3: Set Xcode version
       - name: Set Xcode version
-        run: sudo xcode-select -s /Applications/Xcode_15.4.app/Contents/Developer
+        run: sudo xcode-select -s /Applications/Xcode_16.2.app/Contents/Developer
 
       # Step: Verify Xcode version
       - name: Verify Xcode version2
@@ -141,8 +141,10 @@ jobs:
           DEVELOPER_PORTAL_TEAM_ID: '${{ secrets.DEVELOPER_PORTAL_TEAM_ID }}'
           FASTLANE_APPLE_ID: '${{ secrets.FASTLANE_APPLE_ID }}'
           FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD: '${{ secrets.FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD }}'
-          MATCH_PASSWORD: '${{ secrets.TEMP_KEYCHAIN_PASSWORD }}'
-          GIT_AUTHORIZATION: '${{ secrets.GIT_AUTHORIZATION }}'
+          # MATCH_PASSWORD: '${{ secrets.TEMP_KEYCHAIN_PASSWORD }}'
+          MATCH_PASSWORD: '${{ secrets.CA_MATCH_PASSWORD }}'
+          # GIT_AUTHORIZATION: '${{ secrets.GIT_AUTHORIZATION }}'
+          GIT_AUTHORIZATION: '${{ secrets.CA_GIT_AUTHORIZATION }}'
           PROVISIONING_PROFILE_SPECIFIER: '${{ secrets.PROVISIONING_PROFILE_SPECIFIER }}'
           TEMP_KEYCHAIN_PASSWORD: '${{ secrets.TEMP_KEYCHAIN_PASSWORD }}'
           TEMP_KEYCHAIN_USER: '${{ secrets.TEMP_KEYCHAIN_USER }}'

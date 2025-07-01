@@ -1,10 +1,12 @@
 DEVELOPER_APP_IDENTIFIER = ENV["DEVELOPER_APP_IDENTIFIER"]
 APP_STORE_CONNECT_TEAM_ID = ENV["APP_STORE_CONNECT_TEAM_ID"]
 DEVELOPER_PORTAL_TEAM_ID = ENV["DEVELOPER_PORTAL_TEAM_ID"]
-
+# DEVELOPER_APP_IDENTIFIER = "com.portkey.fairyvault"
+# APP_STORE_CONNECT_TEAM_ID = "956XWQ54U7"
+# DEVELOPER_PORTAL_TEAM_ID = "956XWQ54U7"
 
 app_identifier("#{DEVELOPER_APP_IDENTIFIER}") # The bundle identifier of your app
-apple_id("david.wei@aelf.io") # Your Apple Developer Portal username
+apple_id("yellow.ptk@portkey.finance") # Your Apple Developer Portal username
 
 itc_team_id("#{APP_STORE_CONNECT_TEAM_ID}") # App Store Connect Team ID
 team_id("#{DEVELOPER_PORTAL_TEAM_ID}") # Developer Portal Team ID

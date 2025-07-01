@@ -1,13 +1,19 @@
-Portkey is the first account abstraction (AA) wallet from aelf's ecosystem, migrating Web2 users and developers into Web3. Users can swiftly log into Portkey via their Web2 social info with no private keys or mnemonics required. Account creation is free for all users, thanks to Portkey's delegation mechanism that covers associated fees. With a robust social recovery mechanism integrating guardians and decentralised verifiers, Portkey ensures the security of users' assets, safeguarding them against centralised control and theft. 
+FairyVault – Your ultimate gateway to Web3
 
-Portkey offers a wide range of services, including asset storage, crypto on/off-ramp, digital identity management, and chat. Users can directly purchase cryptos using fiat currencies and manage their tokens, NFTs, and more. Portkey also provides access to various Web3 projects, such as GameFi, DeFi, SocialFi, and NFT marketplace. The chat function enables easy and secure communication amongst users, and the multi-chain compatibility makes Portkey a versatile gateway to the Web3 world.
+Magical, Secure, Effortless.
+With FairyVault, you gain complete control over your crypto assets, ensuring top-level security while easily navigating the decentralised world. With just a few taps, you can access a wide range of crypto assets, dApps, and Web3 services. 
+  
+Robust Security
+  - Create or import your wallet in a few quick steps 
+  - Safeguard your assets with Face ID,  fingerprint authentication, or PIN
+  - Securely back up your account with seed phrases, secret keys, or cloud storage via Google Drive or iCloud
 
-Try Portkey today and unlock your ultimate Web3 world:
-- Simple login with your Web2 social credentials, no seed phrase
-- Full decentralisation backed by guardians and verifiers
-- Advanced security through social recovery and customisable DApp limit settings
-- Low cost with a delegation system covering various fees
+Fuss-Free Asset Management
+  - View your tokens, NFTs, and transaction history in a simple, intuitive dashboard
+  - Send, receive, and swap assets in seconds – all in one place
 
-Portkey comes both as an App and an extension. Download Portkey to enter Web3 in the easiest, safest and cheapest way with full control over your Web3 accounts, identities, and digital assets.
-
-Terms of service: https://portkey.finance/terms-of-service
+Boundless Web3 Discovery
+  - Effortlessly connect to a diverse selection of Web3 dApps, including games, marketplaces, and decentralised exchanges (DEXs)
+  - Multi-chain support
+  
+Get started with FairyVault – your entry into the future of Web3. Download now and experience the next level of digital asset management.

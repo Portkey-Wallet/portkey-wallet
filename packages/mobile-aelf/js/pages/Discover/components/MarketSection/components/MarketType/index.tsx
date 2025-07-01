@@ -35,7 +35,7 @@ export default function MarketType({
             },
           },
           {
-            title: 'Favourites',
+            title: 'Favorites',
             iconName: 'collect',
             active: marketInfo?.type === 'Favorites',
             onPress: async () => {
@@ -89,7 +89,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: pTd(32),
     height: pTd(32),
-    borderWidth: StyleSheet.hairlineWidth,
+    // borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: pTd(1),
     borderColor: darkColors.borderBase1,
     borderRadius: pTd(16),
   },

@@ -23,6 +23,7 @@ export const dappSlice = createSlice({
       .addCase(removeDapp, (state, action) => {
         const { networkType, origin } = action.payload;
         const dappList = state.dappMap[networkType];
+        console.log(JSON.stringify(state.dappMap), networkType, dappList, 'dappList: removeDapp');
         if (!dappList || !dappList.some(item => item.origin === origin)) throw Error('origin does not exist');
         state.dappMap[networkType] = dappList.filter(item => item.origin !== origin);
       })

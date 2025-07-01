@@ -47,7 +47,7 @@ export const useAddressSelect = () => {
         </View>
       ),
       message: (
-        <View style={styles.container}>
+        <View style={[styles.container]}>
           {walletList.map((item: TWalletInfo, index: number) => {
             return (
               <AddressCard
@@ -62,10 +62,22 @@ export const useAddressSelect = () => {
         </View>
       ),
       buttonGroupDirection: 'column',
+      buttonColWrapStyle: {
+        marginTop: 0,
+        paddingHorizontal: pTd(16),
+      },
       buttons: [
         {
           type: 'outline',
           title: 'Add & manage wallets',
+          titleStyle: {
+            ...fonts.SGMediumFont,
+            fontSize: pTd(16),
+            lineHeight: pTd(16) * 1.2,
+          },
+          buttonStyle: {
+            height: pTd(48),
+          },
           onPress: async () => {
             navigationService.push('WalletManagement');
           },

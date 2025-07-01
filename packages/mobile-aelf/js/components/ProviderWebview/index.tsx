@@ -176,7 +176,7 @@ const ProviderWebview = forwardRef<
     try {
       await Linking.openURL(event.nativeEvent.downloadUrl);
     } catch (er: any) {
-      console.log('Failed to open Link:', er.message);
+      console.log('Failed to open Link:', er.message, er, 179);
     } finally {
       webViewRef.current?.reload();
     }
@@ -188,8 +188,9 @@ const ProviderWebview = forwardRef<
     }
     // if (SCHEME_ALLOW_LIST.includes(protocol)) {
     // open natively
+    // Linking.openURL(url).catch(er => {
     Linking.openURL(url).catch(er => {
-      console.log('Failed to open Link:', er.message);
+      console.log('Failed to open Link:', url, er.message, er, 192);
     });
     // }
     return false;
@@ -203,7 +204,7 @@ const ProviderWebview = forwardRef<
         originWhitelist={['*']}
         injectedJavaScript={!isIOS ? entryScriptWeb3 : undefined}
         injectedJavaScriptBeforeContentLoaded={isIOS ? entryScriptWeb3 : undefined}
-        applicationNameForUserAgent={`WebView Portkey did Mobile PortkeyV${Application.nativeApplicationVersion}`}
+        applicationNameForUserAgent={`WebView FairyVault Mobile FairyVaultV${Application.nativeApplicationVersion}`}
         {...props}
         style={styles.webView}
         source={source}

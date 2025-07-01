@@ -86,8 +86,8 @@ export default function AccountSettings() {
       },
       {
         name: 'AboutUs',
-        label: 'About aelf wallet',
-        icon: 'ELF',
+        label: 'About FairyVault',
+        icon: 'logo-fairy-vault',
       },
     ],
     [dappList?.length, styles],
@@ -175,7 +175,8 @@ export default function AccountSettings() {
 const getStyles = makeStyles(theme => ({
   containerStyles: {},
   info: {
-    height: pTd(72),
+    marginTop: pTd(16),
+    height: pTd(74),
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',

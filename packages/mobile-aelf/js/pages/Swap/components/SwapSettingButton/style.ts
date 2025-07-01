@@ -28,7 +28,7 @@ export const getStyles = makeStyles(theme => ({
   slippageToleranceInputStyle: {
     ...fonts.SGRegularFont,
     fontSize: pTd(16),
-    color: theme.colors.textBrand4,
+    color: theme.colors.textBrandOn,
     textAlign: 'right',
     paddingTop: 0,
     paddingBottom: 0,
@@ -36,7 +36,7 @@ export const getStyles = makeStyles(theme => ({
   },
   slippageToleranceUnitText: {
     fontSize: pTd(16),
-    color: theme.colors.textBrand4,
+    color: theme.colors.textBrandOn,
   },
   expiresByWrap: {
     marginTop: pTd(16),

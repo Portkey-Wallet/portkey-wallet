@@ -94,11 +94,15 @@ const TokenAmountInput: React.FC<ITokenAmountInput> = props => {
         <>
           {isRevert ? (
             <>
-              <Text style={styles.label}>{'$ '}</Text>
+              <Text style={[styles.label]}>{'$ '}</Text>
               <TextInput
                 value={usdValue}
                 onChangeText={onUsdValueInputChange}
-                style={[styles.input, showErrorInput && warningTip && styles.errorInput]}
+                style={[
+                  styles.input,
+                  showErrorInput && warningTip && styles.errorInput,
+                  !isIOS && styles.androidMargin,
+                ]}
                 placeholder="0"
                 placeholderTextColor={darkColors.textBase3}
                 keyboardType="numeric"
@@ -112,7 +116,7 @@ const TokenAmountInput: React.FC<ITokenAmountInput> = props => {
                 value={value}
                 style={[
                   styles.input,
-                  showErrorInput && warningTip && styles.errorInput,
+                  // showErrorInput && warningTip && styles.errorInput,
                   value?.length > 12 && styles.middleText,
                   value?.length > 18 && styles.smallText,
                 ]}
@@ -125,7 +129,8 @@ const TokenAmountInput: React.FC<ITokenAmountInput> = props => {
               <Text
                 style={[
                   styles.label,
-                  !isIOS && styles.labelPaddingBottom,
+                  // !isIOS && styles.labelPaddingBottom,
+                  value?.length > 12 && styles.labelPaddingBottom0,
                   value?.length > 12 && styles.middleText,
                   value?.length > 18 && styles.smallText,
                 ]}>{` ${label || symbol}`}</Text>
@@ -169,11 +174,18 @@ export const getStyles = makeStyles(theme => ({
     justifyContent: 'center',
   },
   label: {
+    // backgroundColor: 'red',
     fontSize: pTd(32),
+    paddingBottom: isIOS ? pTd(0) : pTd(2),
+    textAlignVertical: 'center', // Android
+    includeFontPadding: false, // Android
     ...fonts.BGMediumFont,
   },
-  labelPaddingBottom: {
-    paddingBottom: pTd(9),
+  // labelPaddingBottom: {
+  //   paddingBottom: pTd(8),
+  // },
+  labelPaddingBottom0: {
+    paddingBottom: pTd(0),
   },
   input: {
     color: theme.colors.textBase1,
@@ -184,6 +196,9 @@ export const getStyles = makeStyles(theme => ({
     fontSize: pTd(32),
     ...fonts.BGMediumFont,
     paddingHorizontal: 0,
+  },
+  androidMargin: {
+    marginTop: pTd(3),
   },
   middleText: {
     fontSize: pTd(24),

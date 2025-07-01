@@ -44,6 +44,7 @@ buck-out/
 *.keystore
 eoa-release-keystore.txt
 !debug.keystore
+fairyvault_v1.0.0_03070604.apk
 
 # fastlane
 #

@@ -3,7 +3,7 @@ name: Internal Sharing:\build for Android, upload to S3 Bucket
 on:
   push:
     branches:
-      - fastlane-build/eoa-app-internal-test 
+      - fastlane-build/eoa-app-internal-test
   # pull_request:
   #   branches:
   #     - fastlane-build/eoa-app-internal-test # This branch should be used for both Android and IOS build triggers.
@@ -76,17 +76,20 @@ jobs:
           yarn add @react-native-community/cli-platform-android@7.0.1
         env:
           CI: true
+      # change file permission
+      - name: Make build-android-bundle.sh executable
+        run: chmod +x packages/mobile-aelf/scripts/build-android-bundle.sh
     # Step load .env file
       - name: Create .env file for React Native Config
         run: echo "${{ secrets.ENV_EOA_FILE_CONTENT }}" > $GITHUB_WORKSPACE/packages/mobile-aelf/.env
     # Step cat ./packages/mobile-aelf/.env
-      - name: Verify .env file
-        run: cat $GITHUB_WORKSPACE/packages/mobile-aelf/.env
+      #- name: Verify .env file
+      #  run: cat $GITHUB_WORKSPACE/packages/mobile-aelf/.env
       # Step 8: Fastlane build android
       - name : Build android App via fastlane
         run : |
           cd packages/mobile-aelf/android
-          fastlane internal_sharing 
+          fastlane internal_sharing
         env:
           CI: true
           CD: true

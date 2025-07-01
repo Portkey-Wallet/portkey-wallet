@@ -12,7 +12,8 @@ export type ButtonRowProps = {
     type?: CommonButtonProps['type'];
     title: string;
     style?: any;
-    titleStyle?: any;
+    titleStyle?: StyleProp<TextStyle>;
+    buttonStyle?: StyleProp<ViewStyle>;
     loading?: CommonButtonProps['loading'];
     disabled?: boolean;
   }[];

@@ -7,6 +7,7 @@ import EarnPage from '../SubPages/Earn';
 import MarketType from '../MarketSection/components/MarketType';
 import { useMarket } from 'hooks/discover';
 import { pTd } from 'utils/unit';
+import { useDiscoverTabList } from '@portkey-wallet/hooks/hooks-eoa/cms';
 
 enum TabName {
   Dapp = 'dApps',
@@ -18,9 +19,10 @@ export default forwardRef(function DiscoverTab(_, _ref) {
   const [currentRouteName, setCurrentRouteName] = useState<TabName>(TabName.Dapp);
   const { marketInfo, handleType } = useMarket();
   const marketRef = useRef<any>([]);
+  const discoverTabList = useDiscoverTabList();
 
-  const defaultList = useMemo(
-    () => [
+  const defaultList = useMemo(() => {
+    const DEFAULT_LIST = [
       {
         name: 'dApps',
         value: 'dApps',
@@ -36,9 +38,15 @@ export default forwardRef(function DiscoverTab(_, _ref) {
         value: 'Earn',
         tabItemDom: <EarnPage ref={(ref: any) => (marketRef.current[TabName.Earn] = ref)} />,
       },
-    ],
-    [],
-  );
+    ];
+    let outputList = [...DEFAULT_LIST];
+    if (discoverTabList && discoverTabList.length !== 0) {
+      outputList = outputList.filter(item => {
+        return discoverTabList.find(tab => tab.value === item.value);
+      });
+    }
+    return outputList.length ? outputList : DEFAULT_LIST;
+  }, [discoverTabList]);
 
   const tabList = useMemo(
     () =>

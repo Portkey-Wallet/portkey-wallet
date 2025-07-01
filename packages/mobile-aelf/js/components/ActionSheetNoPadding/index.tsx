@@ -7,7 +7,7 @@ import ButtonRow, { ButtonRowProps } from 'components/ButtonRow';
 import ButtonCol from 'components/ButtonCol';
 import { pTd } from 'utils/unit';
 import Svg from 'components/Svg';
-import { TextStyleType } from 'types/styles';
+import { TextStyleType, ViewStyleType } from 'types/styles';
 import Touchable from 'components/Touchable';
 import { useTheme } from '@rneui/themed';
 
@@ -70,6 +70,8 @@ type AlertBodyProps = {
   isModalCloseDisable?: boolean;
   enabledNestScrollView?: boolean;
   enabledCloseModalByScroll?: boolean;
+  buttonRowWrapStyle?: ViewStyleType;
+  buttonColWrapStyle?: ViewStyleType;
 };
 
 export function AlertBody({
@@ -87,6 +89,8 @@ export function AlertBody({
   bgImage,
   showInfoIcon = false,
   closeAction,
+  buttonRowWrapStyle,
+  buttonColWrapStyle,
 }: AlertBodyProps) {
   const styles = getStyles();
   const { theme } = useTheme();
@@ -163,7 +167,7 @@ export function AlertBody({
         </ScrollView>
         {buttonGroupDirection === 'row' ? (
           <ButtonRow
-            style={styles.buttonRowWrap}
+            style={[styles.buttonRowWrap, buttonRowWrapStyle]}
             buttons={buttons?.map(i => ({
               ...i,
               onPress: () => {
@@ -177,6 +181,7 @@ export function AlertBody({
           />
         ) : (
           <ButtonCol
+            style={[buttonColWrapStyle]}
             buttons={buttons?.map(i => ({
               ...i,
               onPress: () => {

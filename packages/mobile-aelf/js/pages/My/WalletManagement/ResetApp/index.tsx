@@ -14,6 +14,7 @@ import { useCheckSecurityLock } from 'hooks/securityLock';
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 import { useWalletListState } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 import { resetWallet } from '@portkey-wallet/store/store-eoa/wallet/actions';
+import { resetDapp } from '@portkey-wallet/store/store-eoa/dapp/actions';
 import CommonAvatar from 'components/CommonAvatar';
 import { LOCAL_AVATARS } from 'assets/image/avatars';
 import Touchable from 'components/Touchable';
@@ -92,10 +93,19 @@ export default function ResetApp() {
                 buttons: [
                   {
                     title: 'Reset app',
+                    titleStyle: {
+                      ...fonts.SGMediumFont,
+                      fontSize: pTd(16),
+                      lineHeight: pTd(16) * 1.2,
+                    },
+                    buttonStyle: {
+                      height: pTd(48),
+                    },
                     type: 'warning',
                     onPress: () => {
                       checkSecurityLock(
                         () => {
+                          dispatch(resetDapp());
                           dispatch(resetWallet());
                         },
                         true,
@@ -105,6 +115,14 @@ export default function ResetApp() {
                   },
                   {
                     title: 'Cancel',
+                    titleStyle: {
+                      ...fonts.SGMediumFont,
+                      fontSize: pTd(16),
+                      lineHeight: pTd(16) * 1.2,
+                    },
+                    buttonStyle: {
+                      height: pTd(48),
+                    },
                     type: 'outline',
                   },
                 ],

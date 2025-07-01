@@ -81,7 +81,7 @@ const ContactEdit: React.FC = () => {
   const isEdit = useMemo(() => contact !== undefined, [contact]);
 
   const iptRef = useRef<TextInput>();
-  useInputFocus(iptRef, !isEdit, isIOS ? undefined : 100);
+  useInputFocus(iptRef, !isEdit, 100);
 
   // const defaultToken = useDefaultToken();
   const { t } = useLanguage();
@@ -385,6 +385,15 @@ const ContactEdit: React.FC = () => {
     }
   }, [handleAddressChange]);
 
+  const renderSaveButton = useCallback(() => {
+    return (
+      <View style={pageStyles.btnContainer}>
+        <CommonButton onPress={onFinish} disabled={isSaveDisable} type="primary">
+          Save address
+        </CommonButton>
+      </View>
+    );
+  }, [isSaveDisable, onFinish, pageStyles.btnContainer]);
   return (
     <PageContainer
       safeAreaColor={['black', 'black']}
@@ -472,7 +481,7 @@ const ContactEdit: React.FC = () => {
                     isExchange: false,
                   }));
                 }}>
-                {!editContact.isExchange && <Svg size={pTd(20)} icon="check" color={colors.iconBrand4} />}
+                {!editContact.isExchange && <Svg size={pTd(20)} icon="check" color={colors.iconBrandOn} />}
                 <TextL style={[pageStyles.exchangeItem, !editContact.isExchange && pageStyles.exchangeItemActive]}>
                   Non-exchange
                 </TextL>
@@ -498,14 +507,7 @@ const ContactEdit: React.FC = () => {
           </View>
         </View>
       </View>
-
-      <KeyboardSafeArea>
-        <View style={pageStyles.btnContainer}>
-          <CommonButton onPress={onFinish} disabled={isSaveDisable} type="primary">
-            Save address
-          </CommonButton>
-        </View>
-      </KeyboardSafeArea>
+      {isIOS ? <KeyboardSafeArea>{renderSaveButton()}</KeyboardSafeArea> : renderSaveButton()}
     </PageContainer>
   );
 };
@@ -549,7 +551,7 @@ export const getPageStyles = makeStyles(theme => ({
     backgroundColor: theme.colors.bgNeutral2,
   },
   exchangeItemActiveWrap: {
-    backgroundColor: theme.colors.bgBrand1,
+    backgroundColor: theme.colors.bgBrandDefault,
   },
   isExchangeItemWrap: {
     marginRight: pTd(4),
@@ -574,13 +576,13 @@ export const getPageStyles = makeStyles(theme => ({
     paddingLeft: pTd(4),
   },
   exchangeItemActive: {
-    color: theme.colors.textBrand4,
+    color: theme.colors.textBrandOn,
   },
   btnContainer: {
     marginBottom: pTd(14),
   },
   pasteAddressText: {
-    color: theme.colors.textBrand2,
+    color: theme.colors.textBrandDefault,
   },
   networkImage: {
     width: pTd(16),

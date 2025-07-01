@@ -16,6 +16,12 @@ declare module '@rneui/themed' {
     bgBrandSecondaryHover: string;
     bgBrandTertiary: string;
     bgBrandTertiaryHover: string;
+    bgDangerDefault: string;
+    bgDangerHover: string;
+    bgDangerSecondary: string;
+    bgDangerSecondaryHover: string;
+    bgDangerTertiary: string;
+    bgDangerTertiaryHover: string;
     bgNeutral1: string;
     bgNeutral2: string;
     bgNeutral3: string;

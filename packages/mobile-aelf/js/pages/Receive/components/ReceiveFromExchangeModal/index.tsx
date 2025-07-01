@@ -70,14 +70,14 @@ const getStyles = makeStyles((theme: any) => ({
   positiveButton: {
     marginTop: pTd(24),
     height: pTd(48),
-    backgroundColor: theme.colors.bgBrand1,
+    backgroundColor: theme.colors.bgBrandDefault,
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: pTd(24),
   },
   positiveText: {
     fontSize: pTd(16),
-    color: theme.colors.textBrand4,
+    color: theme.colors.textBrandOn,
     ...fonts.SGMediumFont,
   },
   negativeButton: {

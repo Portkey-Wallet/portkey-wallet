@@ -5,7 +5,7 @@
 
 #import "RNFBAppCheckModule.h" // ADD FB AppCheck
 #import <Firebase.h>
-#import <CodePush/CodePush.h>
+//#import <CodePush/CodePush.h>
 
 @implementation AppDelegate
 
@@ -18,6 +18,7 @@
   // You can add your custom initial props in the dictionary below.
   // They will be passed down to the ViewController used by React Native.
   self.initialProps = @{};
+  self.window.backgroundColor = [UIColor colorWithRed:21/255.0 green:19/255.0 blue:24/255.0 alpha:1.0];
 
   return [super application:application didFinishLaunchingWithOptions:launchOptions];
 }
@@ -39,7 +40,8 @@
 #if DEBUG
   return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index"];
 #else
-  return [CodePush bundleURL];
+//  return [CodePush bundleURL];
+  return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
 #endif
 }
 

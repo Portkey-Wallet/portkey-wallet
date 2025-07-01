@@ -41,7 +41,7 @@ const FilterTokenSection: React.FC<IFilterTokenSectionProps> = (props: IFilterTo
           containerStyle={customTokenTipsStyle.addButtonWrap}
           buttonStyle={customTokenTipsStyle.addButton}
           onPress={() => navigationService.navigate('CustomToken')}>
-          <Svg icon="add1" size={pTd(16)} color={darkColors.iconBrand4} />
+          <Svg icon="add1" size={pTd(16)} color={darkColors.iconBrandOn} />
           <TextL style={[customTokenTipsStyle.addText, fonts.SGMediumFont]}>{t('Import token')}</TextL>
         </CommonButton>
       </>
@@ -111,7 +111,7 @@ export const customTokenTipsStyle = StyleSheet.create({
   },
   addText: {
     marginLeft: pTd(8),
-    color: darkColors.textBrand4,
+    color: darkColors.textBrandOn,
   },
   try: {
     marginTop: pTd(24),

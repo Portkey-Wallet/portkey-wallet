@@ -42,14 +42,14 @@ export const CommonPromptCard: React.FC<ICommonPromptCardProps> = ({
       case PromptCardType.LOADING:
         return <Lottie style={styles.icon} source={require('assets/lottieFiles/spinnerWhite.json')} autoPlay loop />;
       case PromptCardType.SUCCESS:
-        return <Svg iconStyle={styles.icon} size={pTd(22)} color={colors.iconSuccess1} icon="check-circle" />;
+        return <Svg iconStyle={styles.icon} size={pTd(20)} color={colors.iconSuccess1} icon="check-circle" />;
       case PromptCardType.WARNING:
-        return <Svg iconStyle={styles.icon} size={pTd(22)} color={colors.iconWarning5} icon="info" />;
+        return <Svg iconStyle={styles.icon} size={pTd(20)} color={colors.iconWarning5} icon="info" />;
       case PromptCardType.ERROR:
-        return <Svg iconStyle={styles.icon} size={pTd(22)} color={colors.iconDanger3} icon="info" />;
+        return <Svg iconStyle={styles.icon} size={pTd(20)} color={colors.iconDanger3} icon="info" />;
       case PromptCardType.INFO:
       default:
-        return <Svg iconStyle={styles.icon} size={pTd(22)} color={colors.bgBrand4} icon="info" />;
+        return <Svg iconStyle={styles.icon} size={pTd(20)} color={colors.bgBrand4} icon="info" />;
     }
   }, [colors.bgBrand4, colors.iconDanger3, colors.iconSuccess1, colors.iconWarning5, styles.icon, type]);
 
@@ -74,7 +74,9 @@ const getStyles = makeStyles(theme => ({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'flex-start',
-    padding: pTd(16),
+    // padding: pTd(16),
+    paddingVertical: pTd(12),
+    paddingHorizontal: pTd(16),
     borderRadius: pTd(16),
     borderWidth: pTd(1),
     borderStyle: 'solid',
@@ -101,18 +103,18 @@ const getStyles = makeStyles(theme => ({
   },
   icon: {
     flexShrink: 0,
-    width: pTd(22),
-    height: pTd(22),
-    marginRight: pTd(12),
+    width: pTd(20),
+    height: pTd(20),
+    marginRight: pTd(8),
   },
   content: {
     flexShrink: 1,
   },
   title: {
-    marginBottom: pTd(4),
+    // marginBottom: pTd(4),
     ...fonts.SGMediumFont,
-    fontSize: pTd(16),
-    lineHeight: pTd(22),
+    fontSize: pTd(14),
+    lineHeight: pTd(14) * 1.4,
   },
   loadingTitle: {
     color: theme.colors.textBase1,

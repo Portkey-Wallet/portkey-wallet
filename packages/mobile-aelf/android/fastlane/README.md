@@ -47,6 +47,22 @@ Google Play Store Deployment Lane
 
 Echo details
 
+### android download_metadata
+
+```sh
+[bundle exec] fastlane android download_metadata
+```
+
+
+
+### android upload_metadata
+
+```sh
+[bundle exec] fastlane android upload_metadata
+```
+
+
+
 ----
 
 This README.md is auto-generated and will be re-generated every time [_fastlane_](https://fastlane.tools) is run.

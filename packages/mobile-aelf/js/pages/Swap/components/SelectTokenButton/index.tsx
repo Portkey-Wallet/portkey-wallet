@@ -1,5 +1,5 @@
-import React, { memo, useCallback, useMemo, useState } from 'react';
-import { Text, FlatList, View, Keyboard } from 'react-native';
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { Text, FlatList, View, Keyboard, KeyboardAvoidingView, Platform, TouchableWithoutFeedback } from 'react-native';
 import OverlayModal from 'components/OverlayModal';
 import { ModalBody } from 'components/ModalBody';
 import CommonInput from 'components/CommonInput';
@@ -57,29 +57,54 @@ const SelectTokenContent: React.FC<ISelectTokenContentProps> = ({ title, onSelec
     [styles.tokenItem, handleSelect],
   );
 
+  const [modalPadding, setModalPadding] = useState(0);
+  useEffect(() => {
+    if (Platform.OS === 'ios') {
+      return;
+    }
+    const showSubscription = Keyboard.addListener('keyboardDidShow', () => setModalPadding(50));
+
+    const hideSubscription = Keyboard.addListener('keyboardDidHide', () => setModalPadding(0));
+
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
+
   return (
-    <ModalBody modalBodyType="bottom" title={title}>
-      <CommonInput
-        allowClear
-        clearIcon="clear4"
-        placeholder={t('Search')}
-        containerStyle={styles.containerStyle}
-        inputContainerStyle={styles.inputContainerStyle}
-        value={keyword}
-        onChangeText={v => {
-          setKeyword(v.trim());
-        }}
-      />
-      <FlatList
-        style={{ height: '100%' }}
-        nestedScrollEnabled
-        refreshing={false}
-        data={filterList}
-        renderItem={renderItem}
-        keyExtractor={item => `${item.symbol}${item.chainId}`}
-        ListEmptyComponent={() => <Text style={styles.emptyText}>No tokens available</Text>}
-      />
-    </ModalBody>
+    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <View
+          style={{
+            // backgroundColor: 'red',
+            paddingTop: pTd(modalPadding),
+          }}>
+          <ModalBody modalBodyType="bottom" title={title}>
+            <CommonInput
+              allowClear
+              clearIcon="clear4"
+              placeholder={t('Search')}
+              containerStyle={styles.containerStyle}
+              inputContainerStyle={styles.inputContainerStyle}
+              value={keyword}
+              onChangeText={v => {
+                setKeyword(v.trim());
+              }}
+            />
+            <FlatList
+              style={{ height: '100%' }}
+              nestedScrollEnabled
+              refreshing={false}
+              data={filterList}
+              renderItem={renderItem}
+              keyExtractor={item => `${item.symbol}${item.chainId}`}
+              ListEmptyComponent={() => <Text style={styles.emptyText}>No tokens available</Text>}
+            />
+          </ModalBody>
+        </View>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 };
 

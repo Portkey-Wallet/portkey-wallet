@@ -156,11 +156,16 @@ export const getStyles = makeStyles(theme => ({
   divider: {
     // marginTop: pTd(24),
     marginBottom: pTd(24),
-    height: pTd(1),
+    // height: pTd(0.5),
+    height: 1,
+    borderBottomWidth: 0.5,
+    width: '100%',
     backgroundColor: theme.colors.bgBase3,
   },
   deleteWalletWrap: {
     // height: pTd(48),
+    marginTop: pTd(12),
+    marginBottom: pTd(16),
     height: pTd(48),
     alignContent: 'center',
     justifyContent: 'center',

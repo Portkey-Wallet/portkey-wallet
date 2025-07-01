@@ -154,10 +154,10 @@ def build_and_notify(track:, title:)
       build_type: "Release",
       project_dir: "../android",
       properties: {
-        "android.injected.signing.store.file" => ENV['RELEASE_STORE_FILE'],
-        "android.injected.signing.store.password" => ENV['RELEASE_STORE_PASSWORD'],
-        "android.injected.signing.key.alias" => ENV['RELEASE_KEY_ALIAS'],
-        "android.injected.signing.key.password" => ENV['RELEASE_KEY_PASSWORD']
+        "android.injected.signing.store.file" => ENV['ANDROID_KEYSTORE_FILE'],
+        "android.injected.signing.store.password" => ENV['ANDROID_KEYSTORE_PASSWORD'],
+        "android.injected.signing.key.alias" => ENV['ANDROID_KEYSTORE_ALIAS'],
+        "android.injected.signing.key.password" => ENV['ANDROID_KEYSTORE_PASSWORD']
       }
     )
     upload_to_play_store(
@@ -226,7 +226,8 @@ platform :android do
     UI.message "App Name: #{app_name}"
     UI.message "Version Name: #{version_name}"
     UI.message "Build Time: #{build_time}"
-    UI.message "KeyStore File: #{ENV['RELEASE_STORE_FILE']}"
+    # UI.message "KeyStore File: #{ENV['RELEASE_STORE_FILE']}"
+    UI.message "KeyStore File: #{ENV['ANDROID_KEYSTORE_FILE']}"
     UI.message "EOA_APK_S3_KEY: #{s3_key}"
     UI.message "EOA_APK_S3_SECRET: #{s3_secret}"
   end

@@ -16,6 +16,7 @@
     ]
   },
   "scripts": {
+    "postinstall": "lerna run postinstall",
     "prepare": "husky install",
     "bootstrap": "lerna bootstrap",
     "build": "lerna run build",

@@ -199,6 +199,7 @@ export const ToAddressInputRef = forwardRef<IToAddressInputRef, IToAddressInput>
 
   const onInput = useCallback((v: string) => {
     const _v = v.trim();
+    setCheckFinish(false);
 
     setSelectedToContact((pre: any) => {
       let chainId = DefaultChainId;
@@ -364,7 +365,7 @@ export const getStyles = makeStyles((theme: any) => ({
     color: theme.colors.textBase2,
   },
   brand2Color: {
-    color: theme.colors.textBrand2,
+    color: theme.colors.textBrandDefault,
   },
   leftTitle: {
     width: pTd(49),

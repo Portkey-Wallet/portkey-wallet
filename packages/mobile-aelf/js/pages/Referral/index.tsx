@@ -54,6 +54,7 @@ export default function Referral() {
         });
       }
     }
+    // https://docs.expo.dev/versions/v51.0.0/sdk/splash-screen/#splashscreenhideasync
     await sleep(500);
     SplashScreen.hideAsync();
     setIsSplashScreen(false);
@@ -86,7 +87,7 @@ export default function Referral() {
       hideTouchable
       hideHeader>
       {isSplashScreen ? (
-        <View style={[isIOS ? { marginTop: -1 * getStatusBarHeight() } : styles.backgroundSplashContainerWrap]}>
+        <View style={[isIOS ? styles.iOSBackgroundSplashContainerWrap : styles.backgroundSplashContainerWrap]}>
           <ImageBackground
             style={isIOS ? styles.backgroundSplashContainerIOS : styles.backgroundSplashContainer}
             resizeMode="cover"
@@ -101,27 +102,27 @@ export default function Referral() {
         </View>
       )}
 
-      <View style={styles.buttonStyle}>
-        <CommonButton
-          // style={styles.buttonStyle}
-          titleStyle={styles.buttonText}
-          title={'Create a wallet'}
-          type="primary"
-          onPress={createWallet}
-        />
-      </View>
+      {/*<View style={styles.buttonStyle}>*/}
+      <CommonButton
+        containerStyle={styles.buttonStyle}
+        titleStyle={styles.buttonText}
+        title={'Create a wallet'}
+        type="primary"
+        onPress={createWallet}
+      />
+      {/*</View>*/}
 
-      <View style={styles.buttonStyle}>
-        <CommonButton
-          // style={styles.buttonStyle}
-          titleStyle={styles.buttonText}
-          title={'Import an existing wallet'}
-          type="outline"
-          onPress={() => {
-            navigationService.navigate('WalletImportTypeSelect');
-          }}
-        />
-      </View>
+      {/*<View style={styles.buttonStyle}>*/}
+      <CommonButton
+        containerStyle={styles.buttonStyle}
+        titleStyle={styles.buttonText}
+        title={'Import an existing wallet'}
+        type="outline"
+        onPress={() => {
+          navigationService.navigate('WalletImportTypeSelect');
+        }}
+      />
+      {/*</View>*/}
     </PageContainer>
   );
 }
@@ -138,6 +139,10 @@ const getStyles = makeStyles(theme => ({
     height: '100%',
     padding: 50,
     paddingTop: 70,
+    backgroundColor: theme.colors.bgBase1,
+  },
+  iOSBackgroundSplashContainerWrap: {
+    marginTop: -1 * getStatusBarHeight(),
     backgroundColor: theme.colors.bgBase1,
   },
   backgroundSplashContainer: {
@@ -159,7 +164,7 @@ const getStyles = makeStyles(theme => ({
     height: pTd(240),
     padding: 0,
     margin: 0,
-    marginTop: pTd(16),
+    marginTop: pTd(20),
   },
   brandLabel: {
     marginBottom: pTd(16),

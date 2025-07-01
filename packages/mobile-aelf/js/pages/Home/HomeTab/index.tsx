@@ -23,6 +23,7 @@ import { useCheckSecurityLock } from 'hooks/securityLock';
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 
 import { resetWallet } from '@portkey-wallet/store/store-eoa/wallet/actions';
+import { resetDapp } from '@portkey-wallet/store/store-eoa/dapp/actions';
 import { resetDiscover } from '@portkey-wallet/store/store-eoa/discover/slice';
 import { useAddressSelect } from '../../My/WalletManagement/hooks/useAddressSelect';
 import { IToSendHomeParamsType } from '@portkey-wallet/types/types-ca/routeParams';
@@ -31,6 +32,7 @@ import useGetEBridgeConfig from 'hooks/ebridge';
 import { EBridge } from '@portkey-wallet/utils/eBridgeEOA';
 import { getManagerAccount } from 'utils/redux';
 import GoogleTest from '../../../Test/GoogleTest/index.android';
+// import { SetBiometricsTypeEnum } from '../../Pin/SetBiometrics';
 
 const HomeTab: React.FC<any> = ({ _ }) => {
   // const a = useAppEOASelector(state => state);
@@ -167,6 +169,7 @@ const HomeTab: React.FC<any> = ({ _ }) => {
 
   const resetWalletClick = useCallback(async () => {
     try {
+      dispatch(resetDapp());
       dispatch(resetWallet());
       navigationService.reset('Referral');
     } catch (error) {
@@ -195,6 +198,9 @@ const HomeTab: React.FC<any> = ({ _ }) => {
 
         <GoogleTest />
         <CommonButton
+          titleStyle={{
+            color: 'red',
+          }}
           type="primary"
           onPress={() =>
             navigationService.push('SecurityLock', {
@@ -207,17 +213,32 @@ const HomeTab: React.FC<any> = ({ _ }) => {
           }>
           SecurityLock
         </CommonButton>
-        <CommonButton type="primary" onPress={() => Clipboard.setStringAsync(currentAccount?.address || '')}>
+        <CommonButton type="warning" onPress={() => Clipboard.setStringAsync(currentAccount?.address || '')}>
           Copy Address
         </CommonButton>
-        <CommonButton type="primary" onPress={clearDiscover}>
+        <CommonButton type="warningNoBorder" onPress={clearDiscover}>
           clear discover
         </CommonButton>
+        {/*<CommonButton*/}
+        {/*  type="primary"*/}
+        {/*  onPress={() => {*/}
+        {/*    navigationService.push('SetBiometrics', {*/}
+        {/*      type: SetBiometricsTypeEnum.create,*/}
+        {/*    });*/}
+        {/*  }}>*/}
+        {/*  SetBiometrics*/}
+        {/*</CommonButton>*/}
 
-        <CommonButton type="primary" onPress={() => navigationService.push('SwitchNetworks')} style={{ marginTop: 20 }}>
+        <CommonButton
+          type="primary"
+          onPress={() => navigationService.push('SwitchNetworks')}
+          containerStyle={{ marginTop: 20 }}>
           Switch NetworkType (current: {currentNetwork})
         </CommonButton>
-        <CommonButton type="primary" onPress={() => navigationService.push('AboutUs')} style={{ marginTop: 20 }}>
+        <CommonButton
+          type="transparent"
+          onPress={() => navigationService.push('AboutUs')}
+          containerStyle={{ marginTop: 20 }}>
           About
         </CommonButton>
         <CommonButton type="primary" onPress={() => navigationService.push('DappList')} style={{ marginTop: 20 }}>
@@ -304,7 +325,7 @@ const HomeTab: React.FC<any> = ({ _ }) => {
           onPress={() => {
             showBackupWalletModal();
           }}
-          style={{ marginTop: 20 }}>
+          containerStyle={{ marginTop: 20 }}>
           Backup Modal
         </CommonButton>
         <CommonButton

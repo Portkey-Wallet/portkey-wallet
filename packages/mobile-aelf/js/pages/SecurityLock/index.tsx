@@ -145,7 +145,7 @@ export default function SecurityLock() {
       {biometrics ? (
         <View style={styles.bioPageContainer}>
           <View style={styles.bioSvgContainer}>
-            <Svg icon="aelf-logo-with-aelf" size={pTd(150)} />
+            <Svg icon="logo-with-fairy-vault" size={pTd(240)} />
           </View>
           <CommonButton style={styles.buttonStyle} title={'Unlock'} type="primary" onPress={handleBio} />
         </View>
@@ -179,7 +179,7 @@ const getStyles = makeStyles(_ => ({
     justifyContent: 'center',
   },
   buttonStyle: {
-    marginHorizontal: pTd(16),
+    // marginHorizontal: pTd(16),
     marginBottom: pTd(16),
   },
 }));

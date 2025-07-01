@@ -117,7 +117,7 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
         {
           title: t('Confirm'),
           type: 'solid',
-          style: { backgroundColor: darkColors.textBrand2 },
+          style: { backgroundColor: darkColors.textBrandOn },
           titleStyle: { color: darkColors.iconBrand4 },
           onPress: () => {
             dispatch(closeAllTabs({ networkType }));
@@ -231,7 +231,13 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
         </ScrollView>
         <View style={handleButtonStyle.container}>
           <Touchable style={handleButtonStyle.handleItem} onPress={closeAll}>
-            <TextS style={[FontStyles.fontBase1, fonts.SGMediumFont, tabs?.length === 0 && handleButtonStyle.noTap]}>
+            <TextS
+              style={[
+                handleButtonStyle.close,
+                FontStyles.fontBase1,
+                fonts.SGMediumFont,
+                tabs?.length === 0 && handleButtonStyle.noTap,
+              ]}>
               {t('Close all')}
             </TextS>
           </Touchable>
@@ -239,7 +245,7 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
           <Touchable
             style={[handleButtonStyle.handleItem, handleButtonStyle.add]}
             onPress={() => dispatch(changeDrawerOpenStatus(false))}>
-            <Svg icon="add-tab" size={pTd(24)} color={defaultColors.iconBrand1} />
+            <Svg icon="add-tab" size={pTd(24)} color={darkColors.iconBrandDefault} />
           </Touchable>
           <Touchable style={handleButtonStyle.handleItem} onPress={onDone}>
             <TextS style={[handleButtonStyle.done, fonts.SGMediumFont, FontStyles.fontBase1]}>{t('Done')}</TextS>
@@ -399,6 +405,7 @@ const handleButtonStyle = StyleSheet.create({
   },
   close: {
     textAlign: 'left',
+    fontSize: pTd(14),
     // fontWeight: '600',
   },
   add: {
@@ -408,6 +415,7 @@ const handleButtonStyle = StyleSheet.create({
   },
   done: {
     textAlign: 'right',
+    fontSize: pTd(14),
     // fontWeight: '600',
   },
   noTap: {

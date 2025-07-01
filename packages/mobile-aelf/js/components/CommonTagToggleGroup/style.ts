@@ -46,7 +46,7 @@ export const getTagItemStyles = makeStyles(theme => ({
     lineHeight: pTd(17.5),
   },
   selectedLabel: {
-    color: theme.colors.textBrand4,
+    color: theme.colors.textBrandOn,
   },
 }));
 

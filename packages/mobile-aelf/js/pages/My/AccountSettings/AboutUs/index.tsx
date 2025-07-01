@@ -18,6 +18,7 @@ import { makeStyles } from '@rneui/themed';
 import { FontStyles } from 'assets/theme/styles';
 import fonts from 'assets/theme/fonts';
 import { useSocialMediaList } from '@portkey-wallet/hooks/hooks-eoa/cms';
+import { darkColors } from 'assets/theme';
 
 const AboutUs = () => {
   const { t } = useLanguage();
@@ -68,14 +69,14 @@ const AboutUs = () => {
 
   return (
     <PageContainer
-      titleDom={t('About aelf Wallet')}
+      titleDom={t('About FairyVault')}
       safeAreaColor={['black', 'black']}
       containerStyles={styles.pageContainer}
       scrollViewProps={{ disabled: false }}>
       <View style={styles.logoWrap}>
         <Svg icon="app-logo-new" size={pTd(80)} />
       </View>
-      <TextTitle style={[fonts.BGMediumFont]}>{t('aelf Wallet')}</TextTitle>
+      <TextTitle style={[fonts.BGMediumFont]}>{t('FairyVault Wallet')}</TextTitle>
       <TextM style={[styles.version, FontStyles.font7]}>
         {parseVersion([`v${Application.nativeApplicationVersion}`, parseLabel(codePushOperator.localPackage?.label)])}
       </TextM>
@@ -84,6 +85,8 @@ const AboutUs = () => {
           <View key={index}>
             <MenuItem
               style={styles.menuItem}
+              arrowSize={12}
+              arrowColor={darkColors.iconNeutral3}
               // svgUrl={s3Url && item.svgUrl?.filename_disk ? `${s3Url}/${item.svgUrl.filename_disk}` : ''}
               title={item.title}
               onPress={() => {
@@ -98,7 +101,13 @@ const AboutUs = () => {
       <View style={styles.btnContainer}>
         {officialList.map((item, index) => (
           <View key={index}>
-            <MenuItem title={item.title} onPress={item.onPress} style={styles.menuItem} />
+            <MenuItem
+              title={item.title}
+              arrowColor={darkColors.iconNeutral3}
+              arrowSize={12}
+              onPress={item.onPress}
+              style={styles.menuItem}
+            />
           </View>
         ))}
       </View>
@@ -163,7 +172,8 @@ const getStyles = makeStyles(theme => ({
     marginBottom: 0,
   },
   dividerStyle: {
-    marginVertical: pTd(4),
+    // marginVertical: pTd(12),
+    marginTop: pTd(12),
     // marginHorizontal: pTd(16),
   },
 }));

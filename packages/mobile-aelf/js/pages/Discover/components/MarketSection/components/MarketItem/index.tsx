@@ -70,19 +70,21 @@ export default function MarketItem(props: IMarketItemProps) {
             console.log('wfs=== favorite', favorite);
             if (favorite) {
               try {
-                await unMarkFavorite(data.id, data.symbol);
+                await unMarkFavorite(data.id + '', data.symbol);
                 CommonToast.success('Removed');
                 setFavorite(false);
               } catch (e) {
-                CommonToast.failError('Failed to remove favourites');
+                console.log(e, 'Failed to remove favorites');
+                CommonToast.failError('Failed to remove favorites');
               }
             } else {
               try {
-                await markFavorite(data.id, data.symbol);
-                CommonToast.success('Added to favourites');
+                await markFavorite(data.id + '', data.symbol);
+                CommonToast.success('Added to favorites');
                 setFavorite(true);
               } catch (e) {
-                CommonToast.failError('Failed to add favourites');
+                console.log(e, 'Failed to add favorites');
+                CommonToast.failError('Failed to add favorites');
               }
             }
             setShowTips(false);

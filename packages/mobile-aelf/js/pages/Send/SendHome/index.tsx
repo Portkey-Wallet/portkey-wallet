@@ -876,6 +876,8 @@ const SendHome: React.FC = () => {
           inputRef.current?.onInput(
             addressFormat(i.address || i.addressInfo?.address, i.chainId || i.addressInfo?.chainId),
           );
+        } else if (i.addressInfo?.isExchange) {
+          inputRef.current?.onInput(i.address || i.addressInfo?.address);
         } else if (i.network !== 'aelf' && i.addressInfo?.network !== 'aelf') {
           Loading.show();
           const data = await getSendNetworkList({

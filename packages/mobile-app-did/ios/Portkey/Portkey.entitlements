@@ -6,7 +6,12 @@
 	<string>development</string>
 	<key>com.apple.developer.applesignin</key>
 	<array>
-  	<string>Default</string>
+		<string>Default</string>
+	</array>
+	<key>keychain-access-groups</key>
+	<array>
+		<string>$(AppIdentifierPrefix)956XWQ54U7.com.portkey.finance</string>
+		<string>$(AppIdentifierPrefix)56DKXVFJS2.com.portkey.finance</string>
 	</array>
 </dict>
 </plist>

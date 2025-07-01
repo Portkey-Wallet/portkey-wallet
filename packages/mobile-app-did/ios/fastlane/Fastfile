@@ -75,7 +75,7 @@ def send_lark_notification(title:,version_name:, build_time:, commit:)
           "title" => "#{title} 🚀",
           "content" => [
             [
-              { "tag" => "text", "text" => "🌟 App(iOS): EOA Wallet" },
+              { "tag" => "text", "text" => "🌟 App(iOS): Portkey v2 Wallet" },
               { "tag" => "text", "text" => "\n🌟 Version: " },
               { "tag" => "text", "text" => version_name },
               { "tag" => "text", "text" => "\n📅 Build Time#{ENV['CI']? '(UTC)':''}: " },

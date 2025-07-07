@@ -5,7 +5,8 @@ import {
 import { FLUSH, PAUSE, PERSIST, PURGE, REGISTER, REHYDRATE } from 'redux-persist';
 import { localStorage } from 'redux-persist-webextension-storage';
 import { reduxStorageRoot } from 'constants/index';
-import { walletSlice } from '@portkey-wallet/store/store-ca/wallet/slice';
+// import { walletSlice } from '@portkey-wallet/store/store-ca/wallet/slice';
+import { walletSlice } from '@portkey-wallet/store/store-eoa/wallet/slice';
 import chainSlice from '@portkey-wallet/store/network/slice';
 import tokenBalanceSlice from '@portkey-wallet/store/tokenBalance/slice';
 import tradeSlice from '@portkey-wallet/store/trade/slice';

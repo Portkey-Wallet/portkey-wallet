@@ -13,7 +13,7 @@ import useLocationChange from 'hooks/useLocationChange';
 import { useCheckManagerOnLogout } from 'hooks/useLogout';
 import { useCheckManager } from '@portkey-wallet/hooks/hooks-ca/graphql';
 import { useCheckUpdate } from 'hooks/useCheckUpdate';
-import { usePhoneCountryCode } from '@portkey-wallet/hooks/hooks-ca/misc';
+// import { usePhoneCountryCode } from '@portkey-wallet/hooks/hooks-ca/misc';
 import { useFetchTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
 import { useLocation } from 'react-router';
 import { useRememberMeBlackList, useSocialMediaList, useTabMenuList } from '@portkey-wallet/hooks/hooks-ca/cms';
@@ -98,7 +98,7 @@ export default function Updater() {
   useMemo(() => {
     request.setLockCallBack(onLocking);
   }, [onLocking]);
-  usePhoneCountryCode(true);
+  // usePhoneCountryCode(true);
   useSocialMediaList(true);
   useExtensionEntrance(true);
   useRememberMeBlackList(true);

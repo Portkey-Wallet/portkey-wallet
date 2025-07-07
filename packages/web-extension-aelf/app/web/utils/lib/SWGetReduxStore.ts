@@ -1,5 +1,6 @@
 import { IDappStoreState } from '@portkey-wallet/store/store-ca/dapp/type';
 import { WalletState } from '@portkey-wallet/store/store-ca/wallet/type';
+import { TWalletState } from '@portkey-wallet/store/store-eoa/wallet/type';
 import { getStoreState as getDefaultState } from 'store/utils/getStore';
 import { getStoredState } from 'redux-persist';
 import { walletPersistConfig, dappPersistConfig, cmsPersistConfig, loginPersistConfig } from 'store/Provider/config';
@@ -14,6 +15,13 @@ export async function getSWReduxState() {
     cms: await getCmsState(),
   };
 }
+
+// new for eoa
+export const getWalletsInfo = async () => {
+  let wallet = await getStoredState(walletPersistConfig);
+  if (!wallet) wallet = getDefaultState().wallet;
+  return wallet as TWalletState;
+};
 
 export const getWalletState = async () => {
   let wallet = await getStoredState(walletPersistConfig);

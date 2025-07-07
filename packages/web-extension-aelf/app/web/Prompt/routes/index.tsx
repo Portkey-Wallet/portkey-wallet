@@ -3,6 +3,7 @@ import { useRoutes } from 'react-router-dom';
 import ScreenOpeningPage from 'pages/ScreenOpening';
 import VerifierAccount from 'pages/VerifierAccount';
 import SetWalletPin from 'pages/SetWalletPin';
+import SetPin from 'pages/SetPin';
 import SuccessPage from 'pages/SuccessPage';
 import GuardianApproval from 'pages/GuardianApproval';
 import Unlock from 'pages/Unlock';
@@ -80,6 +81,7 @@ import SecondaryMailboxEdit from 'pages/WalletSecurity/SecondaryMailbox/Edit';
 import SecondaryMailboxVerify from 'pages/WalletSecurity/SecondaryMailbox/Verify';
 import Security from '../../pages/My/SettingList/Security';
 import { PrepareWallet } from 'pages/PrepareWallet';
+import CreateNewWallet from 'pages/CreateNewWallet';
 import { SelectAssetListPage } from 'pages/Send/components/SelectAssetList';
 import ReceiveListPage from 'pages/Receive/ReceiveListPage';
 import ReceiveCardPage from 'pages/Receive/ReceiveCardPage';
@@ -119,8 +121,16 @@ export const PageRouter = () => {
       element: <SetWalletPin />,
     },
     {
+      path: '/pin/set',
+      element: <SetPin />,
+    },
+    {
       path: '/success-page/:type',
       element: <SuccessPage />,
+    },
+    {
+      path: '/wallet/create',
+      element: <CreateNewWallet />,
     },
     {
       path: '/prepare-wallet/:type',

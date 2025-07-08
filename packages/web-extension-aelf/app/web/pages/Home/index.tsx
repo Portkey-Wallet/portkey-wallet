@@ -19,13 +19,23 @@ import { useReferral } from '@portkey-wallet/hooks/hooks-ca/referral';
 import BottomBar from 'pages/components/BottomBar';
 // import SetNewWalletNameModal from './components/SetNewWalletNameModal';
 import { useBlockAndReport } from '@portkey-wallet/hooks/hooks-ca/im';
+import { useBackupWalletModal } from 'hooks/wallet/useBackupWalletModal';
+import { useLocationState } from 'hooks/router';
 // import { hideReferral } from '@portkey-wallet/constants/referral';
+
+type TRouterParams = {
+  pin: string;
+  backupWalletModalShow?: boolean;
+};
 
 export default function Home() {
   // const navigate = useNavigate();
+  const { state } = useLocationState<TRouterParams>();
+  const { backupWalletModalShow = false } = state;
   const { isPrompt, isNotLessThan768 } = useCommonState();
   // const isImputation = useIsImputation();
   const { getViewReferralStatusStatus, getReferralLink } = useReferral();
+  const { showBackupWalletModal } = useBackupWalletModal();
   // const onUserClick = useCallback(() => {
   //   const url = isNotLessThan768 ? `/setting/wallet` : `/setting`;
   //   navigate(url);
@@ -57,6 +67,7 @@ export default function Home() {
     getViewReferralStatusStatus();
     getReferralLink();
     fetchAndSetBlockList();
+    backupWalletModalShow && showBackupWalletModal();
   });
   // initIm();
 

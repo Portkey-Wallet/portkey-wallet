@@ -7,13 +7,25 @@ import { setCountryModal } from 'store/reducers/modal/slice';
 import googleAnalytics from 'utils/googleAnalytics';
 import { setPinAction } from 'utils/lib/serviceWorkerAction';
 import { clearLocalStorage } from 'utils/storage/chromeStorage';
+import { useBackupWalletModal } from 'hooks/wallet/useBackupWalletModal';
 
 export default function Example() {
   const dispatch = useAppDispatch();
   const { withdraw, withdrawPreview } = useCrossTransferByEtransfer();
+  const { showBackupWalletModal } = useBackupWalletModal();
 
   return (
     <div>
+      <div>
+        wallet
+        <Button
+          onClick={async () => {
+            showBackupWalletModal();
+          }}>
+          showBackupWalletModal
+        </Button>
+      </div>
+
       <Button
         onClick={async () => {
           await clearLocalStorage();

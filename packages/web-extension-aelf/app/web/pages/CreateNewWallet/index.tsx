@@ -37,11 +37,12 @@ const CreateNewWallet: React.FC = () => {
     } else {
       successToastShow && singleMessage.success('Successfully imported');
     }
-    console.log('pin: ', pin, mnemonics, privateKey, result);
-    // navigationService.reset('Tab', {
-    //   backupWalletModalShow: !(mnemonics || privateKey),
-    // });
-    navigate('/');
+    // console.log('pin: ', pin, mnemonics, privateKey, result);
+    navigate('/', {
+      state: {
+        backupWalletModalShow: !(mnemonics || privateKey),
+      },
+    });
     setLoading(false);
   }, [addWallet, pin, mnemonics, privateKey, isBackup, successToastShow, navigate]);
   const initRef = useRef(init);

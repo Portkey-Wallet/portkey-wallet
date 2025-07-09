@@ -1,0 +1,76 @@
+@import '../../../assets/theme/color.less';
+
+.confirm-backup-modal {
+  .portkey-modal-confirm-btns {
+    display: none !important;
+  }
+}
+
+.confirm-backup-modal-container {
+  background: @bg-base1;
+  //min-width: 320px;
+  //max-width: 420px;
+  margin: 0 auto;
+  //padding: 32px 24px 24px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.confirm-backup-modal-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: @text-base1;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.confirm-backup-modal-desc {
+  color: @text-base2;
+  font-size: 14px;
+  margin-bottom: 24px;
+  text-align: left;
+}
+
+.confirm-backup-modal-index-title {
+  margin-top: 32px;
+  font-size: 20px;
+  font-weight: 600;
+  color: @text-base1;
+  text-align: center;
+}
+
+.confirm-backup-modal-index-desc {
+  color: @text-base2;
+  font-size: 14px;
+  margin-bottom: 16px;
+  text-align: left;
+}
+
+.confirm-backup-modal-words-wrap {
+  width: 100%;
+  margin: 0 auto 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.confirm-backup-modal-word-btn {
+  height: 48px;
+  border-radius: 24px;
+  font-size: 16px;
+  font-weight: 600;
+  background: @bg-base2;
+  color: @text-base1;
+  border: none;
+  transition: background 0.2s;
+  &:hover {
+    background: @bg-hover;
+  }
+}
+
+.confirm-backup-modal-error {
+  width: 100%;
+  margin: 16px auto 0;
+  text-align: center;
+}

@@ -31,7 +31,7 @@ type TRouterParams = {
 export default function Home() {
   // const navigate = useNavigate();
   const { state } = useLocationState<TRouterParams>();
-  const { backupWalletModalShow = false } = state;
+  const { backupWalletModalShow = false } = state || {};
   const { isPrompt, isNotLessThan768 } = useCommonState();
   // const isImputation = useIsImputation();
   const { getViewReferralStatusStatus, getReferralLink } = useReferral();

@@ -1,10 +1,11 @@
 import { addDapp, removeDapp } from '@portkey-wallet/store/store-ca/dapp/actions';
-import { SocialLoginEnum } from '@portkey-wallet/types/types-ca/wallet';
+import { useNavigate } from 'react-router-dom';
+// import { SocialLoginEnum } from '@portkey-wallet/types/types-ca/wallet';
 import { Button } from 'antd';
 import { useCrossTransferByEtransfer } from 'hooks/useCrossTransferByEtransfer';
 import { useAppDispatch } from 'store/Provider/hooks';
 import { setCountryModal } from 'store/reducers/modal/slice';
-import googleAnalytics from 'utils/googleAnalytics';
+// import googleAnalytics from 'utils/googleAnalytics';
 import { setPinAction } from 'utils/lib/serviceWorkerAction';
 import { clearLocalStorage } from 'utils/storage/chromeStorage';
 import { useBackupWalletModal } from 'hooks/wallet/useBackupWalletModal';
@@ -13,16 +14,36 @@ export default function Example() {
   const dispatch = useAppDispatch();
   const { withdraw, withdrawPreview } = useCrossTransferByEtransfer();
   const { showBackupWalletModal } = useBackupWalletModal();
+  const navigate = useNavigate();
 
   return (
     <div>
-      <div>
+      {/* eslint-disable-next-line no-inline-styles/no-inline-styles */}
+      <div style={{ margin: '8px 0px' }}>
         wallet
         <Button
           onClick={async () => {
             showBackupWalletModal();
           }}>
           showBackupWalletModal
+        </Button>
+        <Button
+          onClick={async () => {
+            navigate('/wallet/backup/manual');
+          }}>
+          ManualBackup
+        </Button>
+        <Button
+          onClick={async () => {
+            navigate('/wallet/backup/manual/success');
+          }}>
+          ManualBackupSuccess
+        </Button>
+        <Button
+          onClick={async () => {
+            navigate('/wallet/backup/manual/confirm');
+          }}>
+          ConfirmBackup
         </Button>
       </div>
 
@@ -83,13 +104,13 @@ export default function Example() {
           }}>
           removeDapp
         </Button>
-        <Button
-          onClick={() => {
-            // googleAnalytics.loginEvent('login_tesetttt', { date: Date.now() });
-            googleAnalytics.loginStartEvent(SocialLoginEnum.Apple, { extra: Date.now() });
-          }}>
-          Analytics
-        </Button>
+        {/*<Button*/}
+        {/*  onClick={() => {*/}
+        {/*    // googleAnalytics.loginEvent('login_tesetttt', { date: Date.now() });*/}
+        {/*    googleAnalytics.loginStartEvent(SocialLoginEnum.Apple, { extra: Date.now() });*/}
+        {/*  }}>*/}
+        {/*  Analytics*/}
+        {/*</Button>*/}
         <Button
           onClick={() => {
             setPinAction('111111');

@@ -3,16 +3,26 @@ import { useState } from 'react';
 import CustomModal from 'pages/components/CustomModal';
 import CustomPassword from 'components/CustomPassword';
 import { CommonButton } from '@portkey/did-ui-react';
+import { useCurrentWallet } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 import './useUnlockModal.less';
+import getPrivateKeyAndMnemonic from 'utils/Wallet/getPrivateKeyAndMnemonic';
 
 /**
  * useUnlockModal
  * 弹窗输入密码解锁，支持自定义标题和回调
- * @returns showUnlockModal({ title, onUnlock })
+ * @returns showUnlockModal({ title, callback })
  */
 export const useUnlockModal = () => {
+  const walletInfo = useCurrentWallet();
+
   const showUnlockModal = useCallback(
-    ({ title = 'Enter Password', onUnlock }: { title?: string; onUnlock: (password: string) => void }) => {
+    ({
+      title = 'Enter Password',
+      callback,
+    }: {
+      title?: string;
+      callback: (password: string, mnemonic: string) => void;
+    }) => {
       const UnlockContent = () => {
         const [password, setPassword] = useState('');
         const [loading, setLoading] = useState(false);
@@ -22,8 +32,17 @@ export const useUnlockModal = () => {
           setLoading(true);
           setError('');
           try {
-            await onUnlock(password);
-            modal.destroy();
+            if (walletInfo?.AESEncryptMnemonic && password) {
+              const res = await getPrivateKeyAndMnemonic(walletInfo, password);
+              if (!res?.mnemonic) {
+                setError('No mnemonic');
+              } else {
+                callback(password, res.mnemonic);
+                modal.destroy();
+              }
+            } else {
+              setError('No mnemonic');
+            }
           } catch (e: any) {
             setError('Unlock failed');
           } finally {

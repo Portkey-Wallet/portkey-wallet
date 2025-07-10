@@ -1,0 +1,45 @@
+@import '../../assets/theme/color.less';
+
+.unlock-modal {
+  .portkey-modal-confirm-btns {
+    display: none !important;
+  }
+}
+
+.unlock-modal-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  //padding: 24px 16px 16px 16px;
+  background: @bg-base1;
+}
+
+.unlock-modal-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: @text-base1;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.unlock-modal-password {
+  width: 100%;
+  max-width: 320px;
+  margin-bottom: 16px;
+}
+
+.unlock-modal-error {
+  color: @text-danger1;
+  font-size: 14px;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.unlock-modal-btn {
+  width: 100%;
+  max-width: 320px;
+  height: 44px;
+  border-radius: 24px;
+  font-size: 16px;
+  font-weight: 600;
+}

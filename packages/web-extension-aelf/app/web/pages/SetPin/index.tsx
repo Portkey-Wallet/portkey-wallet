@@ -10,11 +10,12 @@ type TRouterParams = {
   mnemonics?: string;
   privateKey?: string;
   isBackup?: boolean;
+  targetPage?: string;
 };
 
 export default function SetPin() {
   const { state } = useLocationState<TRouterParams>();
-  const { mnemonics, privateKey, isBackup = false } = state || {};
+  const { mnemonics, privateKey, isBackup = false, targetPage } = state || {};
   const navigate = useNavigateState();
 
   return (
@@ -31,7 +32,7 @@ export default function SetPin() {
                 className={clsx('portkey-card-height', 'portkey-ui-set-pin-pc')}
                 onFinish={async (pin: string) => {
                   console.log('onFinish', pin);
-                  navigate('/wallet/create', {
+                  navigate(targetPage ? targetPage : '/wallet/create', {
                     state: {
                       pin,
                       mnemonics,

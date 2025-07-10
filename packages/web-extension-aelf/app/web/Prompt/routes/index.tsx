@@ -93,6 +93,7 @@ import Example from 'pages/Example';
 import { ManualBackup } from 'pages/WalletBackup/ManualBackup/index';
 import { ManualBackupSuccess } from 'pages/WalletBackup/ManualBackup/Success';
 import { ConfirmBackup } from 'pages/WalletBackup/ConfirmBackup/ConfirmBackup';
+import { ImportWallet } from 'pages/WalletManage/WalletImport/ImportWallet';
 
 // 2025-06-05
 export const PageRouter = () => {
@@ -134,6 +135,10 @@ export const PageRouter = () => {
     {
       path: '/wallet/create',
       element: <CreateNewWallet />,
+    },
+    {
+      path: '/wallet/import',
+      element: <ImportWallet />,
     },
     {
       path: '/wallet/backup/manual',

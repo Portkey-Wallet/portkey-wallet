@@ -17,7 +17,17 @@ export default function ScreenOpeningPage() {
         <CommonButton className="referral-btn" type="primary" block onClick={() => navigate('/pin/set')}>
           Create a wallet
         </CommonButton>
-        <CommonButton className="referral-btn" type="outline" block onClick={() => navigate('/register/import')}>
+        <CommonButton
+          className="referral-btn"
+          type="outline"
+          block
+          onClick={() =>
+            navigate('/pin/set', {
+              state: {
+                targetPage: '/wallet/import',
+              },
+            })
+          }>
           Import an existing wallet
         </CommonButton>
       </div>

@@ -29,6 +29,12 @@ export default function Example() {
         </Button>
         <Button
           onClick={async () => {
+            navigate('/wallet/import');
+          }}>
+          ImportWallet
+        </Button>
+        <Button
+          onClick={async () => {
             navigate('/wallet/backup/manual');
           }}>
           ManualBackup

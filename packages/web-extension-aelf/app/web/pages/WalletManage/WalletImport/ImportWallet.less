@@ -1,0 +1,109 @@
+@import '../../../assets/theme/color.less';
+
+.import-wallet-container {
+  background: @bg-base1;
+  padding: 32px 24px 24px;
+  border-radius: 12px;
+  max-width: 480px;
+  margin: 40px auto;
+  box-shadow: 0 2px 16px rgb(0 0 0 / 4%);
+}
+
+.import-wallet-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: @text-base1;
+  margin-bottom: 24px;
+  text-align: left;
+}
+
+.import-wallet-tab-switch {
+  display: flex;
+  border: 1px solid @border-base1;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 32px;
+}
+.import-wallet-tab-btn {
+  flex: 1;
+  padding: 10px 0;
+  background: transparent;
+  border: none;
+  font-size: 16px;
+  color: @text-neutral3;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.import-wallet-tab-btn.selected {
+  background: @bg-base2;
+  color: @text-neutral1;
+}
+
+.import-wallet-private-key,
+.import-wallet-recover-phrase {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.import-wallet-input {
+  width: 100%;
+  min-height: 120px;
+  border: 1px solid @border-base1;
+  border-radius: 8px;
+  font-size: 16px;
+  padding: 16px;
+  margin-bottom: 12px;
+  resize: none;
+  color: @text-base1;
+  background: @bg-base1;
+}
+
+.import-wallet-btn-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 16px;
+}
+.import-wallet-action-btn {
+  background: none;
+  border: none;
+  color: @text-base1;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 0 8px;
+  transition: color 0.2s;
+}
+.import-wallet-action-btn:hover {
+  color: @text-base2;
+}
+
+.import-wallet-main-btn {
+  margin-top: 16px;
+  width: 100%;
+  height: 48px;
+  border-radius: 24px;
+}
+
+.import-wallet-mnemonics-wrap {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.import-wallet-mnemonic-input {
+  width: 100%;
+  height: 40px;
+  border: 1px solid @border-base1;
+  border-radius: 8px;
+  font-size: 16px;
+  padding: 0 12px;
+  color: @text-base1;
+  background: @bg-base1;
+  box-sizing: border-box;
+}
+
+.import-wallet-icon {
+  margin-right: 4px;
+}

@@ -8,12 +8,7 @@ import TokenList from '../Tokens';
 import { Transaction } from '@portkey-wallet/types/types-ca/trade';
 import NFT from '../NFT/NFT';
 import { useAppDispatch, useUserInfo, useCommonState, useLoading } from 'store/Provider/hooks';
-import {
-  useCurrentUserInfo,
-  useCurrentWallet,
-  useOriginChainId,
-  useSetHideAssets,
-} from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { getSymbolImagesAsync } from '@portkey-wallet/store/store-ca/tokenManagement/action';
 import { getCaHolderInfoAsync } from '@portkey-wallet/store/store-ca/wallet/actions';
 import CustomTokenModal from 'pages/components/CustomTokenModal';
@@ -22,7 +17,7 @@ import { useFreshTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPric
 import useVerifierList from 'hooks/useVerifierList';
 import useGuardianList from 'hooks/useGuardianList';
 import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
-import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useUnreadCount } from '@portkey-wallet/hooks/hooks-ca/im';
 import { fetchContactListV2Async } from '@portkey-wallet/store/store-ca/contact/actions';
 import { useCheckSecurity } from 'hooks/useSecurity';
@@ -39,7 +34,7 @@ import { TRampLocationState, TSendLocationState } from 'types/router';
 import { useExtensionRampEntryShow } from 'hooks/ramp';
 import { SeedTypeEnum } from '@portkey-wallet/types/types-ca/assets';
 import { clsx } from 'clsx';
-import { useAccountBalanceUSD } from '@portkey-wallet/hooks/hooks-ca/balances';
+import { useAccountBalanceUSD } from '@portkey-wallet/hooks/hooks-eoa/assets';
 import { formatAmountUSDShow } from '@portkey-wallet/utils/converter';
 import { RampType } from '@portkey-wallet/ramp';
 import { getDisclaimerData } from 'utils/disclaimer';
@@ -49,15 +44,22 @@ import { CustomSvgV3 } from 'components/CustomSvgV3';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import SkeletonCom from 'pages/components/SkeletonCom';
 import CommonBanner from 'components/CommonBanner';
-import { useCmsBanner } from '@portkey-wallet/hooks/hooks-ca/cms/banner';
+import { useCmsBanner } from '@portkey-wallet/hooks/hooks-eoa/cms/banner';
 // import BigScreenHeader from 'pages/components/BigScreenHeader';
 import HomeHeader from 'pages/components/HomeHeader';
 import { SelectAssetListModal } from 'pages/Send/components/SelectAssetList';
-import { useAccountTokenInfo, useAccountNFTCollectionInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
+import { useAccountTokenInfo, useAccountNFTCollectionInfo } from '@portkey-wallet/hooks/hooks-eoa/assets';
+
 import Activity from '../Activity';
 import { PAGE_SIZE_IN_ACCOUNT_NFT_COLLECTION } from '@portkey-wallet/constants/constants-ca/assets';
 import useGAReport from 'hooks/useGAReport';
-import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import {
+  useCurrentAccount,
+  useCurrentAddressInfos,
+  useCurrentHideAssetsState,
+  useSetHideAssets,
+} from '@portkey-wallet/hooks/hooks-eoa/wallet';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-eoa/network';
 
 export interface TransactionResult {
   total: number;
@@ -79,13 +81,14 @@ export default function MyBalance() {
   const { passwordSeed } = useUserInfo();
   const appDispatch = useAppDispatch();
   const isMainNet = useIsMainnet();
-  const { walletInfo } = useCurrentWallet();
   const { eTransferUrl = '' } = useCurrentNetworkInfo();
   const isFCMEnable = useFCMEnable();
   const { setLoading } = useLoading();
   const setHideAssets = useSetHideAssets();
+  const hideAssets = useCurrentHideAssetsState();
 
   const { totalDisplayCount: tokenCount } = useAccountTokenInfo();
+
   const {
     totalNftItemCount: nftCount,
     fetchAccountNFTCollectionInfoList,
@@ -102,16 +105,16 @@ export default function MyBalance() {
   });
   const maxNftNum = totalNftItemCount;
 
-  const caAddressInfos = useCaAddressInfoList();
+  const addressInfos = useCurrentAddressInfos();
 
   useEffect(() => {
     fetchAccountNFTCollectionInfoList({
       maxNFTCount: maxNftNum,
-      caAddressInfos,
+      addressInfos,
       skipCount: 0,
       maxResultCount: PAGE_SIZE_IN_ACCOUNT_NFT_COLLECTION,
     }).then(() => endReport('Home-NFTsList'));
-  }, [caAddressInfos, endReport, fetchAccountNFTCollectionInfoList, maxNftNum]);
+  }, [addressInfos, endReport, fetchAccountNFTCollectionInfoList, maxNftNum]);
 
   const renderTabsData = useMemo(() => {
     const tabsData = [
@@ -148,7 +151,6 @@ export default function MyBalance() {
     }
     return tabsData;
   }, [t, tokenCount, nftCount, isNotLessThan768]);
-  const getGuardianList = useGuardianList();
   useFreshTokenPrice();
   useVerifierList();
   const initRamp = useInitRamp({ clientType: 'Extension' });
@@ -161,7 +163,9 @@ export default function MyBalance() {
   const { checkDappIsConfirmed } = useDisclaimer();
   const { isETransShow } = useExtensionETransShow();
   const reportFCMStatus = useReportFCMStatus();
-  const userInfo = useCurrentUserInfo();
+  const userInfo = useCurrentAccount();
+  console.log(userInfo, '===userInfo');
+
   const accountBalanceUSD = useAccountBalanceUSD();
   const usdShow = useMemo(() => formatAmountUSDShow(accountBalanceUSD), [accountBalanceUSD]);
   const [detailScroll, setDetailScroll] = useState(false);
@@ -180,7 +184,6 @@ export default function MyBalance() {
   }, [appDispatch, passwordSeed]);
 
   useEffect(() => {
-    getGuardianList({ caHash: walletInfo?.caHash });
     initRamp();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isMainNet]);
@@ -316,7 +319,7 @@ export default function MyBalance() {
     let isHideAssets = false;
     let showSkeleton = false;
     if (isMainNet) {
-      if (userInfo.hideAssets) {
+      if (hideAssets) {
         text = '******';
         isHideAssets = true;
       } else {
@@ -346,8 +349,8 @@ export default function MyBalance() {
               <div className="hide-assets-icon-wrap">
                 <CustomSvgV3
                   className="hide-assets-icon cursor-pointer"
-                  type={userInfo.hideAssets ? 'EyeInvisibleOutlined' : 'EyeOutlined'}
-                  onClick={() => setHideAssets(!userInfo.hideAssets)}
+                  type={hideAssets ? 'EyeInvisibleOutlined' : 'EyeOutlined'}
+                  onClick={() => setHideAssets(!hideAssets)}
                 />
               </div>
             )}
@@ -355,7 +358,7 @@ export default function MyBalance() {
         )}
       </div>
     );
-  }, [isMainNet, setHideAssets, usdShow, userInfo.hideAssets]);
+  }, [hideAssets, isMainNet, setHideAssets, usdShow]);
 
   return (
     <>
@@ -366,15 +369,15 @@ export default function MyBalance() {
         <div className="main-content-wrap flex-column">
           <div className={clsx('balance-amount-wrap', 'flex-column', isPrompt && 'is-prompt')}>
             {/* <div className="wallet-name-wrap flex-row-center">
-            {userInfo.nickName ? (
-              <>
-                <div className="wallet-name">{userInfo.nickName}</div>
-                <SetNewWalletNameIcon />
-              </>
-            ) : (
-              <SkeletonCom />
-            )}
-          </div> */}
+              {userInfo?.name ? (
+                <>
+                  <div className="wallet-name">{userInfo.name}</div>
+                  <SetNewWalletNameIcon />
+                </>
+              ) : (
+                <SkeletonCom />
+              )}
+            </div> */}
             {renderUsdShow()}
           </div>
           <MainCards

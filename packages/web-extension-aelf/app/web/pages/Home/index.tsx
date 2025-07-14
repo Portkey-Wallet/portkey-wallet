@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import { useCallback, useRef } from 'react';
 import { useLocation } from 'react-router';
 import { useCommonState } from 'store/Provider/hooks';
-// import MyBalance from './components/MyBalance';
+import MyBalance from './components/MyBalance';
 import './index.less';
 import qs from 'query-string';
 import { useHandleAchSell } from 'pages/Buy/hooks/useHandleAchSell';
@@ -76,8 +76,7 @@ export default function Home() {
       {/* {isPrompt && isNotLessThan768 && (
         <PortKeyHeader unReadShow={isImputation || (!hideReferral && !viewReferralStatus)} onUserClick={onUserClick} />
       )} */}
-      <>MyBalance</>
-      {/*<MyBalance />*/}
+      <MyBalance />
       {!isPrompt && <BottomBar />}
       {/*<SetNewWalletNameModal />*/}
     </div>

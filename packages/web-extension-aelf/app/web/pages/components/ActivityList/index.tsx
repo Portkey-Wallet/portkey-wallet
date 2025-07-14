@@ -1,5 +1,5 @@
-import { TransactionTypes } from '@portkey-wallet/constants/constants-ca/activity';
-import { ActivityItemType, the2ThFailedActivityItemType } from '@portkey-wallet/types/types-ca/activity';
+import { TransactionTypes } from '@portkey-wallet/constants/constants-eoa/activity';
+import { ActivityItemType, the2ThFailedActivityItemType } from '@portkey-wallet/types/types-eoa/activity';
 import {
   AmountSign,
   formatWithCommas,
@@ -11,17 +11,16 @@ import { useCallback, useMemo } from 'react';
 import './index.less';
 import LoadingMore from 'components/LoadingMore/LoadingMore';
 import { Button, Modal } from 'antd';
-import { useAppCASelector } from '@portkey-wallet/hooks/hooks-ca';
 import { formatActivityTimeRevamp, isSameDay } from '@portkey-wallet/utils/time';
 import { useTranslation } from 'react-i18next';
 import { intervalCrossChainTransfer } from 'utils/sandboxUtil/crossChainTransfer';
 import { useAppDispatch, useCommonState, useLoading } from 'store/Provider/hooks';
-import { removeFailedActivity } from '@portkey-wallet/store/store-ca/activity/slice';
-import { useCurrentChainList } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { removeFailedActivity } from '@portkey-wallet/store/store-eoa/activity/slice';
+import { useCurrentChainList } from '@portkey-wallet/hooks/hooks-eoa/chainList';
 import { addressFormat } from '@portkey-wallet/utils';
-import { useFreshTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
-import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
-import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useFreshTokenPrice } from '@portkey-wallet/hooks/hooks-eoa/useTokensPrice';
+import { BalanceTab } from '@portkey-wallet/constants/constants-eoa/assets';
+import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-eoa/network';
 import getSeed from 'utils/getSeed';
 import clsx from 'clsx';
 import NFTImageDisplay from '../NFTImageDisplay';
@@ -29,11 +28,10 @@ import TokenImageDisplay from '../TokenImageDisplay';
 import dayjs from 'dayjs';
 import ImageForTwo from '../ImageForTwo';
 import ImageDisplay from '../ImageDisplay';
-// import { contractStatusEnum } from '@portkey-wallet/constants/constants-ca/common';
 import { CommonBaseModal } from '@portkey/did-ui-react';
 import { useState } from 'react';
-// import CommonHeader, { CustomSvgPlaceholderSize } from 'components/CommonHeader';
 import Transaction from 'components/Transaction';
+import { useActivity } from '@portkey-wallet/hooks/hooks-eoa/activity';
 
 export interface IActivityListProps {
   data?: ActivityItemType[];
@@ -50,7 +48,7 @@ export interface IActivityMultiplyToken {
 }
 
 export default function ActivityList({ data, chainId, hasMore, loadMore }: IActivityListProps) {
-  const activity = useAppCASelector((state) => state.activity);
+  const activity = useActivity();
   const isMainnet = useIsMainnet();
   const { t } = useTranslation();
   const { setLoading } = useLoading();
@@ -62,11 +60,14 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
 
   const [selectItem, setSelectItem] = useState<any>();
   const [open, setOpen] = useState(false);
-  const navToDetail = (item: ActivityItemType) => {
-    setSelectItem({ item, chainId, previousPage: chainId ? '' : BalanceTab.ACTIVITY });
-    setOpen(true);
-    // nav('/transaction', { state: { item, chainId, previousPage: chainId ? '' : BalanceTab.ACTIVITY } });
-  };
+  const navToDetail = useCallback(
+    (item: ActivityItemType) => {
+      setSelectItem({ item, chainId, previousPage: chainId ? '' : BalanceTab.ACTIVITY });
+      setOpen(true);
+      // nav('/transaction', { state: { item, chainId, previousPage: chainId ? '' : BalanceTab.ACTIVITY } });
+    },
+    [chainId],
+  );
 
   const showErrorModal = useCallback(
     (error: the2ThFailedActivityItemType) => {

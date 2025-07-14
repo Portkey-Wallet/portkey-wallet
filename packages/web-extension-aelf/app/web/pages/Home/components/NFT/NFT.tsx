@@ -1,6 +1,5 @@
-import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { ChainId } from '@portkey-wallet/types';
-import { NFTCollectionItemShowType, NFTItemBaseType } from '@portkey-wallet/types/types-ca/assets';
+import { NFTCollectionItemShowType, NFTItemBaseType } from '@portkey-wallet/types/types-eoa/assets';
 import { Collapse, Skeleton } from 'antd';
 import CustomSvg from 'components/CustomSvg';
 import { CustomSvgV3 } from 'components/CustomSvgV3';
@@ -18,7 +17,7 @@ import {
 // import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { getSeedTypeTag } from 'utils/assets';
 import LoadingMore from 'components/LoadingMore/LoadingMore';
-import { useAccountNFTCollectionInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
+import { useAccountNFTCollectionInfo } from '@portkey-wallet/hooks/hooks-eoa/assets';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import useGAReport from 'hooks/useGAReport';
@@ -27,6 +26,8 @@ import { useEffectOnce } from 'react-use';
 // import { FreeMintStatus } from '@portkey-wallet/types/types-ca/freeMint';
 import { useNavigate } from 'react-router';
 import TokenImageDisplay from 'pages/components/TokenImageDisplay';
+import { useCurrentAddressInfos } from '@portkey-wallet/hooks/hooks-eoa/wallet';
+import { useLatestRef } from '@portkey-wallet/hooks';
 // import chain from '@portkey-wallet/api/api-did/chain';
 
 export default function NFT() {
@@ -46,8 +47,8 @@ export default function NFT() {
     isFetching,
   } = useAccountNFTCollectionInfo();
   // const { isPrompt } = useCommonState();
-  const caAddressInfos = useCaAddressInfoList();
-  // const [getMoreFlag, setGetMoreFlag] = useState(false);
+  const addressInfos = useCurrentAddressInfos();
+  const addressInfosList = useLatestRef(addressInfos); // const [getMoreFlag, setGetMoreFlag] = useState(false);
   // const maxNftNum = useMemo(() => (isPrompt ? PAGE_SIZE_IN_NFT_ITEM_PROMPT : PAGE_SIZE_IN_NFT_ITEM), [isPrompt]);
 
   const maxNftNum = totalNftItemCount;
@@ -69,22 +70,22 @@ export default function NFT() {
   useEffect(() => {
     fetchAccountNFTCollectionInfoList({
       maxNFTCount: maxNftNum,
-      caAddressInfos,
+      addressInfos: addressInfosList.current || [],
       skipCount: 0,
       maxResultCount: PAGE_SIZE_IN_ACCOUNT_NFT_COLLECTION,
     }).then(() => endReport('Home-NFTsList'));
-  }, [caAddressInfos, endReport, fetchAccountNFTCollectionInfoList, maxNftNum]);
+  }, [addressInfosList, endReport, fetchAccountNFTCollectionInfoList, maxNftNum]);
 
   const getMoreNFTCollection = useCallback(async () => {
     if (accountNFTList.length < totalRecordCount) {
       await fetchAccountNFTCollectionInfoList({
         maxNFTCount: maxNftNum,
-        caAddressInfos,
+        addressInfos: addressInfosList.current || [],
         skipCount: accountNFTList.length,
         maxResultCount: PAGE_SIZE_IN_ACCOUNT_NFT_COLLECTION,
       });
     }
-  }, [accountNFTList.length, caAddressInfos, fetchAccountNFTCollectionInfoList, maxNftNum, totalRecordCount]);
+  }, [accountNFTList.length, addressInfosList, fetchAccountNFTCollectionInfoList, maxNftNum, totalRecordCount]);
 
   // const getMoreNFTItem = useCallback(
   //   async (symbol: string, chainId: ChainId) => {
@@ -126,14 +127,14 @@ export default function NFT() {
             symbol: curTmp[0],
             chainId: curTmp[1] as ChainId,
             pageNum: 0,
-            caAddressInfos: caAddressInfos.filter((item) => item.chainId === curTmp[1]),
+            addressInfos: addressInfosList.current.filter((item) => item.chainId === curTmp[1]),
           });
           setNftNum((pre) => ({ ...pre, [cur]: 1 }));
         }
       });
       setOpenPanel(openArr);
     },
-    [caAddressInfos, fetchAccountNFTItem, openPanel],
+    [addressInfosList, fetchAccountNFTItem, openPanel],
   );
 
   // const handleClickForest = useCallback(() => {
@@ -229,7 +230,6 @@ export default function NFT() {
                     chainId: nft.chainId,
                     chainImageUrl: nft.chainImageUrl,
                     collectionName: nft.collectionName,
-                    displayChainName: nft?.displayChainName,
                     itemCount: nft.itemCount,
                     isSeed: nft.isSeed,
                     symbol: nft.symbol,

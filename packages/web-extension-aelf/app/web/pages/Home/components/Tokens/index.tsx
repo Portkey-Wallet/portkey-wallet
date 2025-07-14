@@ -1,15 +1,15 @@
-import { ITokenSectionResponse } from '@portkey-wallet/types/types-ca/token';
+import { ITokenSectionResponse } from '@portkey-wallet/types/types-eoa/token';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
 import { formatAmountUSDShow, formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 import TokenImageDisplay from 'pages/components/TokenImageDisplay';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-eoa/network';
 import LoadingMore from 'components/LoadingMore/LoadingMore';
 import { PAGE_SIZE_IN_ACCOUNT_TOKEN } from '@portkey-wallet/constants/constants-ca/assets';
-import { useCaAddressInfoList, useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { useAccountTokenInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
+import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useAccountTokenInfo } from '@portkey-wallet/hooks/hooks-eoa/assets';
 import './index.less';
 import { useEffectOnce } from 'react-use';
 import useGAReport from 'hooks/useGAReport';
@@ -18,6 +18,8 @@ import { Row, Col, Collapse } from 'antd';
 // import CustomSvg from 'components/CustomSvg';
 import { CustomSvgV3 } from 'components/CustomSvgV3';
 import { useCommonState } from 'store/Provider/hooks';
+import { useCurrentAddressInfos } from '@portkey-wallet/hooks/hooks-eoa/wallet';
+import { useLatestRef } from '@portkey-wallet/hooks';
 
 export default function TokenList() {
   const { isPrompt } = useCommonState();
@@ -25,13 +27,20 @@ export default function TokenList() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const isMainnet = useIsMainnet();
-  const caAddressInfos = useCaAddressInfoList();
+  const addressInfos = useCurrentAddressInfos();
+  console.log(addressInfos, '=====addressInfos');
+
   const userInfo = useCurrentUserInfo();
   const { accountTokenList, totalRecordCount, fetchAccountTokenInfoList } = useAccountTokenInfo();
+  console.log(accountTokenList, '=====accountTokenList');
+
+  const addressInfosList = useLatestRef(addressInfos);
   const hasMoreTokenList = useMemo(
-    () => accountTokenList.length < totalRecordCount,
-    [accountTokenList.length, totalRecordCount],
+    () => accountTokenList && totalRecordCount && accountTokenList.length < totalRecordCount,
+    [accountTokenList, totalRecordCount],
   );
+  console.log('===useAccountTokenInfo');
+
   const [, setOpenPanel] = useState<string[]>([]);
 
   const { startReport, endReport } = useGAReport();
@@ -41,10 +50,14 @@ export default function TokenList() {
   });
 
   useEffect(() => {
-    fetchAccountTokenInfoList({ caAddressInfos, skipCount: 0, maxResultCount: PAGE_SIZE_IN_ACCOUNT_TOKEN }).then(() => {
+    fetchAccountTokenInfoList({
+      addressInfos: addressInfosList.current || [],
+      skipCount: 0,
+      maxResultCount: PAGE_SIZE_IN_ACCOUNT_TOKEN,
+    }).then(() => {
       endReport('Home-TokenList');
     });
-  }, [caAddressInfos, endReport, fetchAccountTokenInfoList]);
+  }, [addressInfosList, endReport, fetchAccountTokenInfoList]);
 
   const onNavigate = useCallback(
     (tokenInfo: any, chainId?: string) => {
@@ -54,14 +67,14 @@ export default function TokenList() {
   );
 
   const getMoreTokenList = useCallback(async () => {
-    if (accountTokenList.length < totalRecordCount) {
+    if (accountTokenList && totalRecordCount && accountTokenList.length < totalRecordCount) {
       await fetchAccountTokenInfoList({
-        caAddressInfos,
+        addressInfos: addressInfosList.current || [],
         skipCount: accountTokenList.length,
         maxResultCount: PAGE_SIZE_IN_ACCOUNT_TOKEN,
       });
     }
-  }, [accountTokenList.length, caAddressInfos, fetchAccountTokenInfoList, totalRecordCount]);
+  }, [accountTokenList, addressInfosList, fetchAccountTokenInfoList, totalRecordCount]);
 
   const handleAddToken = useCallback(() => {
     navigate('/add-token');
@@ -204,8 +217,8 @@ export default function TokenList() {
   );
   return (
     <div className={clsx('tab-token', !hasMoreTokenList && 'hidden-loading-more')}>
-      <Collapse onChange={handleChange}>{accountTokenList.map((item) => renderItem(item))}</Collapse>
-      <LoadingMore hasMore={hasMoreTokenList} loadMore={getMoreTokenList} className="load-more" />
+      <Collapse onChange={handleChange}>{accountTokenList?.map((item) => renderItem(item))}</Collapse>
+      <LoadingMore hasMore={!!hasMoreTokenList} loadMore={getMoreTokenList} className="load-more" />
       <div
         className={clsx(['add-token-wrapper flex-center', !isPrompt && 'add-token-wrapper-margin'])}
         onClick={handleAddToken}>

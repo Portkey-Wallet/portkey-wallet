@@ -3,7 +3,6 @@ import { useRef } from 'react';
 // import CustomSvg from 'components/CustomSvg';
 // import Avatar from '../Avatar';
 // import AccountConnect from '../AccountConnect';
-import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 // import UnReadBadge from '../UnReadBadge';
 import CopyAddressDrawerOrModal, { ICopyAddressDrawerOrModalInstance } from '../CopyAddressDrawerOrModal';
 // import { useNavigate } from 'react-router';
@@ -19,6 +18,7 @@ import { Popover } from 'antd';
 import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 import InternalMessage from 'messages/InternalMessage';
 import SkeletonCom from 'pages/components/SkeletonCom';
+import { useCurrentAccount } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 
 export interface IHomeHeaderProps {
   onUserClick?: (e?: any) => void;
@@ -27,7 +27,7 @@ export interface IHomeHeaderProps {
 
 export default function HomeHeader({ onUserClick, unReadShow }: IHomeHeaderProps) {
   console.log(onUserClick, unReadShow);
-  const userInfo = useCurrentUserInfo();
+  const userInfo = useCurrentAccount();
   console.log('userInfo', userInfo);
   const copyAddressDrawerOrModalRef = useRef<ICopyAddressDrawerOrModalInstance | null>(null);
   // const navigate = useNavigate();
@@ -47,10 +47,10 @@ export default function HomeHeader({ onUserClick, unReadShow }: IHomeHeaderProps
         {/* <CustomSvgV3 type="Guardians=Portkey" className="portkey-logo-prompt" /> */}
         <div className="header-left" onClick={() => navigate('/setting')}>
           {/* <img src={userInfo.avatar} alt="" /> */}
-          {userInfo.nickName ? (
+          {userInfo?.name ? (
             <>
-              <TokenImageDisplay symbol={userInfo.nickName} src={userInfo.avatar} width={20} subDisplay={false} />
-              <span>{userInfo.nickName}</span>
+              <TokenImageDisplay symbol={userInfo.name} src={userInfo.icon} width={20} subDisplay={false} />
+              <span>{userInfo.name}</span>
               <CustomSvgV3
                 type="arrow-down"
                 className="portkey-logo-prompt"

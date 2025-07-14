@@ -1,15 +1,16 @@
-import { useAppCASelector, useAppCommonDispatch, useEffectOnce } from '@portkey-wallet/hooks';
+import { useAppCommonDispatch, useEffectOnce } from '@portkey-wallet/hooks';
 import ActivityList from 'pages/components/ActivityList';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { getActivityListAsync } from '@portkey-wallet/store/store-ca/activity/action';
-import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { getActivityListAsync } from '@portkey-wallet/store/store-eoa/activity/action';
 import { useLoading, useUserInfo } from 'store/Provider/hooks';
-import { IActivitiesApiParams } from '@portkey-wallet/store/store-ca/activity/type';
+import { IActivitiesApiParams } from '@portkey-wallet/store/store-eoa/activity/type';
 import { getCurrentActivityMapKey } from '@portkey-wallet/utils/activity';
 import { ChainId } from '@portkey-wallet/types';
 import './index.less';
 import useGAReport from 'hooks/useGAReport';
+import { useCurrentAddressInfos, useUniqueIdentify } from '@portkey-wallet/hooks/hooks-eoa/wallet';
+import { useActivity } from '@portkey-wallet/hooks/hooks-eoa/activity';
 
 export interface ActivityProps {
   appendData?: Function;
@@ -29,20 +30,15 @@ const SKIP_COUNT = 0;
 
 export default function Activity({ chainId, symbol, pageKey = 'Home-Activity' }: ActivityProps) {
   const { t } = useTranslation();
-  const activity = useAppCASelector((state) => state.activity);
-  const caAddressInfos = useCaAddressInfoList();
-  const currentActivity = useMemo(() => {
-    return (
-      activity.activityMap[getCurrentActivityMapKey(chainId, symbol)] || {
-        data: [],
-        maxResultCount: 0,
-        skipCount: 0,
-        totalRecordCount: 0,
-        hasNextPage: false,
-      }
-    );
-  }, [activity.activityMap, chainId, symbol]);
-  const [hasMore, setHasMore] = useState(!!currentActivity.hasNextPage);
+  const activity = useActivity();
+  const addressInfos = useCurrentAddressInfos();
+  const identify = useUniqueIdentify();
+
+  const currentActivity = useMemo(
+    () => activity?.activityMap?.[identify]?.[getCurrentActivityMapKey(chainId, symbol)],
+    [activity?.activityMap, chainId, symbol, identify],
+  );
+  const [hasMore, setHasMore] = useState(!!currentActivity?.hasNextPage);
   const dispatch = useAppCommonDispatch();
   const { passwordSeed } = useUserInfo();
   const [initLoading, setInitLoading] = useState(false);
@@ -71,9 +67,10 @@ export default function Activity({ chainId, symbol, pageKey = 'Home-Activity' }:
       const params: IActivitiesApiParams = {
         maxResultCount: MAX_RESULT_COUNT,
         skipCount: SKIP_COUNT,
-        caAddressInfos: chainId ? caAddressInfos.filter((item) => item.chainId === chainId) : caAddressInfos,
         chainId: chainId,
         symbol: symbol,
+        identify,
+        addressInfos,
       };
       setInitLoading(true);
       dispatch(getActivityListAsync(params))
@@ -91,17 +88,18 @@ export default function Activity({ chainId, symbol, pageKey = 'Home-Activity' }:
           setInitLoading(false);
         });
     }
-  }, [caAddressInfos, chainId, dispatch, endReport, pageKey, passwordSeed, symbol]);
+  }, [addressInfos, chainId, dispatch, endReport, identify, pageKey, passwordSeed, symbol]);
 
   const loadMoreActivities = useCallback(async () => {
-    const { data, maxResultCount, skipCount, totalRecordCount } = currentActivity;
-    if (data.length < totalRecordCount) {
+    const { data, maxResultCount, skipCount, totalRecordCount } = currentActivity || {};
+    if (data && totalRecordCount && data.length < totalRecordCount) {
       const params = {
         maxResultCount: MAX_RESULT_COUNT,
-        skipCount: skipCount + maxResultCount,
-        caAddressInfos: chainId ? caAddressInfos.filter((item) => item.chainId === chainId) : caAddressInfos,
+        skipCount: (skipCount ?? 0) + (maxResultCount ?? 0),
+        caAddressInfos: chainId ? addressInfos.filter((item) => item.chainId === chainId) : addressInfos,
         chainId: chainId,
         symbol: symbol,
+        identify,
       };
       const res = await dispatch(getActivityListAsync(params));
       if (res.payload) {
@@ -114,14 +112,21 @@ export default function Activity({ chainId, symbol, pageKey = 'Home-Activity' }:
         }
       }
     }
-  }, [currentActivity, chainId, caAddressInfos, symbol, dispatch]);
+  }, [currentActivity, chainId, addressInfos, symbol, identify, dispatch]);
 
   return (
     <div className="activity-wrapper">
       {currentActivity?.totalRecordCount ? (
         <>
           <div className="token-detail-activity-title">Activity</div>
-          <ActivityList data={currentActivity.data} chainId={chainId} hasMore={hasMore} loadMore={loadMoreActivities} />
+          {!!currentActivity?.data && (
+            <ActivityList
+              data={currentActivity?.data}
+              chainId={chainId}
+              hasMore={hasMore}
+              loadMore={loadMoreActivities}
+            />
+          )}
         </>
       ) : (
         <div className="no-activity-data flex-column-center">{!initLoading && t('No activity')}</div>

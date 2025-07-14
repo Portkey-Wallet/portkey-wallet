@@ -7,17 +7,8 @@ import { useLocation, useNavigate } from 'react-router';
 import { useAppDispatch, useWalletInfo } from 'store/Provider/hooks';
 import { setIsPrompt } from 'store/reducers/common/slice';
 import { useStorage } from 'hooks/useStorage';
-import { sleep } from '@portkey-wallet/utils';
 import { useIsNotLessThan768 } from 'hooks/useScreen';
 import { useEffectOnce } from 'react-use';
-// import OpenNewTabController from 'controllers/openNewTabController';
-import { useOtherNetworkLogged } from '@portkey-wallet/hooks/hooks-ca/wallet';
-
-const timeout = async () => {
-  // TODO This is a bug
-  await sleep(2000);
-  return 'Chrome serviceworker is not working';
-};
 
 export default function PermissionCheck({
   children,
@@ -28,10 +19,8 @@ export default function PermissionCheck({
 }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { walletInfo, currentNetwork } = useWalletInfo();
-  // const networkList = useNetworkList();
+  const { walletAddedCount } = useWalletInfo();
   const location = useLocation();
-  const otherNetworkLogged = useOtherNetworkLogged();
 
   const appDispatch = useAppDispatch();
 
@@ -41,7 +30,7 @@ export default function PermissionCheck({
 
   useIsNotLessThan768();
 
-  // Check register on current network, if registered and current page is register page, redirect to home page
+  // Check register, if registered and current page is register page, redirect to home page
 
   const noCheckRegister = useMemo(
     () =>
@@ -49,6 +38,8 @@ export default function PermissionCheck({
       location.pathname.includes('/register') ||
       location.pathname.includes('/success-page') ||
       location.pathname.includes('/prepare-wallet') ||
+      location.pathname.includes('/pin') ||
+      location.pathname.includes('/wallet') ||
       location.pathname === '/permission',
     [location.pathname],
   );
@@ -65,92 +56,59 @@ export default function PermissionCheck({
 
   const getPassword = useCallback(async () => {
     try {
-      const res = await Promise.race([
-        InternalMessage.payload(PortkeyMessageTypes.CHECK_WALLET_STATUS).send(),
-        timeout(),
-      ]);
-      console.log(res, 'CHECK_WALLET_STATUS');
-      if (typeof res === 'string') return chrome.runtime.reload();
+      const res = await InternalMessage.payload(PortkeyMessageTypes.GET_SEED).send();
       const detail = (res as any)?.data;
-      if (detail?.registerStatus) {
-        detail?.privateKey && dispatch(setPasswordSeed(detail.privateKey));
-        // navigate to unlock except dapp connect
-        location.pathname !== '/permission' && !detail?.privateKey && navigate('/unlock');
+
+      if (detail?.privateKey) {
+        dispatch(setPasswordSeed(detail.privateKey));
+        return detail.privateKey;
       } else {
-        InternalMessage.payload(PortkeyMessageTypes.REGISTER_WALLET, {}).send();
+        return false;
       }
     } catch (error) {
-      console.error(error, 'CHECK_WALLET_STATUS==error');
+      console.error(error, 'GET_SEED==error');
+      return false;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [dispatch]);
 
-  const getWalletStatus = useCallback(
-    () => Promise.race([InternalMessage.payload(PortkeyMessageTypes.CHECK_WALLET_STATUS).send(), timeout()]),
-    [],
-  );
+  const checkRegisterHandler = useCallback(async () => {
+    console.log(walletAddedCount, 'walletAddedCount===');
 
-  const checkNeedUnlock = useCallback(
-    async (checkOtherNetworkLogged = true) => {
-      // Check: Chrome serviceworker is working
-      const res = await getWalletStatus();
-      if (typeof res === 'string') return chrome.runtime.reload();
-
-      if (checkOtherNetworkLogged) {
-        if (!otherNetworkLogged) return false;
-      }
-
-      const detail = (res as any)?.data;
-      detail?.privateKey && dispatch(setPasswordSeed(detail.privateKey));
-      if (detail.privateKey) return false;
-      return true;
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [getWalletStatus, otherNetworkLogged],
-  );
-
-  const checkCurrentNetworkRegisterHandler = useCallback(async () => {
-    const caInfo = walletInfo?.caInfo?.[currentNetwork];
-    const caHash = caInfo?.[caInfo?.originChainId || 'AELF']?.caHash;
-
-    console.log(caInfo, 'caInfo===');
-    // CurrentNetwork Register
-    if (caHash) return getPassword();
-    // CurrentNetwork not Register
-
-    // Check other network is Resister
-    const needPin = await checkNeedUnlock();
-    if (needPin) return navigate('/unlock');
-    if (pageType == 'Popup') {
-      // await OpenNewTabController.closeOpenTabs();
-      return InternalMessage.payload(PortkeyMessageTypes.REGISTER_WALLET, {}).send();
-    } else {
-      if (caInfo?.managerInfo) return navigate('/query-page');
+    if (pageType === 'Prompt') {
       const isRegisterPage =
         location.pathname.includes('/login') ||
         location.pathname.includes('/register') ||
         location.pathname.includes('/success-page') ||
         location.pathname === '/query-page';
       if (isRegisterPage) return;
-      return navigate('/register');
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentNetwork, getPassword, pageType, walletInfo?.caInfo]);
+
+    const password = await getPassword();
+    if (walletAddedCount <= 0) {
+      if (pageType === 'Prompt') {
+        navigate('/register');
+        return;
+      }
+      InternalMessage.payload(PortkeyMessageTypes.REGISTER_WALLET, {}).send();
+    }
+    if (!password) {
+      navigate('/unlock');
+    }
+  }, [getPassword, location.pathname, navigate, pageType, walletAddedCount]);
 
   useEffect(() => {
     if (location.pathname.includes('/test')) return;
 
     if (locked && !noCheckRegister && !isRegisterPage) {
-      checkNeedUnlock(false).then((needUnlock) => {
-        needUnlock && navigate('/unlock');
+      getPassword().then((password) => {
+        !password && navigate('/unlock');
       });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isRegisterPage, locked, navigate, noCheckRegister]);
+  }, [getPassword, isRegisterPage, location.pathname, locked, navigate, noCheckRegister]);
 
   useEffectOnce(() => {
     if (location.pathname.includes('/test')) return;
-    checkCurrentNetworkRegisterHandler();
+    checkRegisterHandler();
   });
 
   return <>{children}</>;

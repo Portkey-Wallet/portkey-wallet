@@ -12,7 +12,7 @@ import './index.less';
 import { useTranslation } from 'react-i18next';
 import aes from '@portkey-wallet/utils/aes';
 import { sleep } from '@portkey-wallet/utils';
-import { getWalletState } from 'utils/lib/SWGetReduxStore';
+import { getWalletsInfo } from 'utils/lib/SWGetReduxStore';
 import singleMessage from 'utils/singleMessage';
 import { useSetTokenConfig } from 'hooks/useSetTokenConfig';
 import { useCommonState } from 'store/Provider/hooks';
@@ -36,12 +36,12 @@ export default function LockPage({ onUnLockHandler, ...props }: LockPageProps) {
       setLoading(true);
       const { password } = values;
       setIsPassword(-1);
-      const wallet = await getWalletState();
+      const wallet = await getWalletsInfo();
 
-      if (!wallet.walletInfo) return singleMessage.error(WalletError.noCreateWallet);
+      if (wallet.walletAddedCount <= 0) return singleMessage.error(WalletError.noCreateWallet);
 
-      const privateKey = aes.decrypt(wallet.walletInfo.AESEncryptPrivateKey, password);
-      if (privateKey) {
+      const mnemonic = aes.decrypt(wallet.walletList[0].AESEncryptMnemonic, password);
+      if (mnemonic) {
         setIsPassword(1);
         dispatch(setPasswordSeed(password));
         await setTokenConfig(password);

@@ -3,6 +3,7 @@ import { useRoutes } from 'react-router-dom';
 import ScreenOpeningPage from 'pages/ScreenOpening';
 import VerifierAccount from 'pages/VerifierAccount';
 import SetWalletPin from 'pages/SetWalletPin';
+import SetPin from 'pages/SetPin';
 import SuccessPage from 'pages/SuccessPage';
 import GuardianApproval from 'pages/GuardianApproval';
 import Unlock from 'pages/Unlock';
@@ -80,6 +81,7 @@ import SecondaryMailboxEdit from 'pages/WalletSecurity/SecondaryMailbox/Edit';
 import SecondaryMailboxVerify from 'pages/WalletSecurity/SecondaryMailbox/Verify';
 import Security from '../../pages/My/SettingList/Security';
 import { PrepareWallet } from 'pages/PrepareWallet';
+import CreateNewWallet from 'pages/CreateNewWallet';
 import { SelectAssetListPage } from 'pages/Send/components/SelectAssetList';
 import ReceiveListPage from 'pages/Receive/ReceiveListPage';
 import ReceiveCardPage from 'pages/Receive/ReceiveCardPage';
@@ -88,6 +90,10 @@ import ReceiveCardPage from 'pages/Receive/ReceiveCardPage';
 import { Swap } from 'pages/Swap';
 import Example from 'pages/Example';
 // import TokenNetworkList from 'pages/DepositHome/components/TokenNetworkList';
+import { ManualBackup } from 'pages/WalletBackup/ManualBackup/index';
+import { ManualBackupSuccess } from 'pages/WalletBackup/ManualBackup/Success';
+import { ConfirmBackup } from 'pages/WalletBackup/ConfirmBackup/ConfirmBackup';
+import { ImportWallet } from 'pages/WalletManage/WalletImport/ImportWallet';
 
 // 2025-06-05
 export const PageRouter = () => {
@@ -119,8 +125,32 @@ export const PageRouter = () => {
       element: <SetWalletPin />,
     },
     {
+      path: '/pin/set',
+      element: <SetPin />,
+    },
+    {
       path: '/success-page/:type',
       element: <SuccessPage />,
+    },
+    {
+      path: '/wallet/create',
+      element: <CreateNewWallet />,
+    },
+    {
+      path: '/wallet/import',
+      element: <ImportWallet />,
+    },
+    {
+      path: '/wallet/backup/manual',
+      element: <ManualBackup />,
+    },
+    {
+      path: '/wallet/backup/manual/success',
+      element: <ManualBackupSuccess />,
+    },
+    {
+      path: '/wallet/backup/manual/confirm',
+      element: <ConfirmBackup />,
     },
     {
       path: '/prepare-wallet/:type',

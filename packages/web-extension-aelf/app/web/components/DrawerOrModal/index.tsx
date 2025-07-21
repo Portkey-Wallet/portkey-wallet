@@ -11,7 +11,7 @@ export interface IDrawerOrModalInstance {
 
 interface IDrawerOrModal {
   content: React.ReactNode;
-  title: string;
+  title: string | React.ReactNode;
   className: string;
   height?: number;
 }

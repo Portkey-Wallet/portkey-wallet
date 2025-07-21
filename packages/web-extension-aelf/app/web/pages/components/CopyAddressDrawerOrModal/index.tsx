@@ -1,30 +1,86 @@
-import { useState, forwardRef, useImperativeHandle, useMemo, useCallback, Fragment } from 'react';
-import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useState, forwardRef, useImperativeHandle, useMemo, useCallback, Fragment, useEffect } from 'react';
 import { ChainId } from '@portkey-wallet/types';
 import { addressFormat } from '@portkey-wallet/utils';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { formatStr2EllipsisStr } from '@portkey-wallet/utils/converter';
 import CommonCloseHeader from 'components/CommonCloseHeader';
 import singleMessage from 'utils/singleMessage';
 import { useCopyToClipboard } from 'react-use';
-// import { NetworkType } from '@portkey-wallet/types';
-// import { IconType } from 'types/icon';
+import { useCurrentAccount } from '@portkey-wallet/hooks/hooks-eoa/wallet';
+import { useCurrentNetwork } from '@portkey-wallet/hooks/hooks-eoa/network';
 import BaseDrawer from '../BaseDrawer';
 import { useCommonState } from 'store/Provider/hooks';
 import BaseModal from 'components/BaseModal';
 import './index.less';
 import { CustomSvgV3 } from 'components/CustomSvgV3';
-// import CustomSvg from 'components/CustomSvg';
 
 export interface ICopyAddressDrawerOrModalInstance {
   open: () => void;
 }
 
+interface IModalAddressInfo {
+  chain: ChainId;
+  name: string;
+  // icon: IconName;
+  addressFormatted: string;
+  addressShow: string;
+}
+const modalAddressInfoMainnet: IModalAddressInfo[] = [
+  {
+    chain: 'tDVV',
+    // icon: 'Chain=AELF Side',
+    name: 'aelf dAppChain',
+    addressFormatted: '',
+    addressShow: '',
+  },
+  {
+    chain: 'AELF',
+    // icon: 'Chain=AELF Main',
+    name: 'aelf MainChain',
+    addressFormatted: '',
+    addressShow: '',
+  },
+];
+
+const modalAddressInfoTestnet: IModalAddressInfo[] = [
+  {
+    chain: 'tDVW',
+    // icon: 'Chain=AELF Side',
+    name: 'aelf dAppChain',
+    addressFormatted: '',
+    addressShow: '',
+  },
+  {
+    chain: 'AELF',
+    // icon: 'Chain=AELF Main',
+    name: 'aelf MainChain',
+    addressFormatted: '',
+    addressShow: '',
+  },
+];
+
 const CopyAddressDrawerOrModal = forwardRef((_, ref) => {
   const { isNotLessThan768 } = useCommonState();
-  const isMainnet = useIsMainnet();
-  const caAddressInfos = useCaAddressInfoList();
+  const userInfo = useCurrentAccount();
+  const currentNetwork = useCurrentNetwork();
+
+  const [addressesShowInfo, setAddressesShowInfo] = useState<IModalAddressInfo[]>([]);
+
+  useEffect(() => {
+    const address = userInfo?.address || '';
+    const addressesShowInfo = (currentNetwork === 'TESTNET' ? modalAddressInfoTestnet : modalAddressInfoMainnet).map(
+      (_addressInfo) => {
+        const addressFormatted = addressFormat(address, _addressInfo.chain);
+        return {
+          ..._addressInfo,
+          addressFormatted,
+          // addressShow: formatStr2EllipsisStr(addressFormatted, 8),
+          addressShow: address,
+        };
+      },
+    );
+    setAddressesShowInfo(addressesShowInfo);
+  }, [currentNetwork, userInfo?.address]);
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -36,15 +92,8 @@ const CopyAddressDrawerOrModal = forwardRef((_, ref) => {
   }));
   const [, setCopied] = useCopyToClipboard();
 
-  const renderAddressItem = ({
-    address,
-    chainId,
-  }: {
-    address: string;
-    chainId: ChainId;
-    imgUrl: string | undefined;
-  }) => {
-    const formatChain = transNetworkText(chainId, !isMainnet);
+  const renderAddressItem = ({ address, chainId }: { address: string; chainId: ChainId }) => {
+    const formatChain = transNetworkText(chainId, !(currentNetwork === 'MAINNET'));
     const formatAddress = addressFormat(address, chainId);
 
     return (
@@ -73,12 +122,12 @@ const CopyAddressDrawerOrModal = forwardRef((_, ref) => {
 
   const renderAddressList = () => (
     <div className="address-list">
-      {caAddressInfos.map((item, index) => (
+      {addressesShowInfo.map((item, index) => (
         <Fragment key={index}>
           {renderAddressItem({
-            address: item.caAddress,
-            chainId: item.chainId,
-            imgUrl: item.chainImageUrl,
+            address: item.addressShow,
+            chainId: item.chain,
+            // imgUrl: item.chainImageUrl,
           })}
         </Fragment>
       ))}

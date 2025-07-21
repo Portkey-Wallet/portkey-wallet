@@ -1,0 +1,59 @@
+@import '../../../assets/theme/color.less';
+
+.wallet-management-wrap {
+  min-height: calc(100vh - 130px);
+  display: flex;
+  flex-direction: column;
+  //justify-content: space-between;
+}
+.wallet-management-header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 16px;
+}
+.wallet-management-manage-btn {
+  color: #1890ff;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 16px;
+}
+.wallet-management-divider {
+  border-top: 1px solid @border-neutral3;
+  margin: 24px 0;
+}
+.wallet-management-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.wallet-management-btn {
+  background: #fff;
+  color: #1890ff;
+  font-size: 15px;
+  font-weight: 500;
+  border: none;
+  border-radius: 8px;
+  height: 48px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.wallet-management-btn:disabled {
+  color: #ccc;
+  cursor: not-allowed;
+}
+.wallet-management-advanced {
+  margin-left: 8px;
+  font-size: 12px;
+  color: #999;
+}
+.wallet-management-reset-wrap {
+  text-align: center;
+  margin-top: 32px;
+}
+.wallet-management-reset-btn {
+  color: #ff4d4f;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 16px;
+}

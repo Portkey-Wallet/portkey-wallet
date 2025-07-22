@@ -5,11 +5,11 @@ import CommonHeader from 'components/CommonHeader';
 import CustomSvg from 'components/CustomSvg';
 import { CustomSvgV3 } from 'components/CustomSvgV3';
 
-import { IUserTokenItemResponse } from '@portkey-wallet/types/types-ca/token';
+import { IUserTokenItem, IUserTokenItemResponse } from '@portkey-wallet/types/types-eoa/token';
 import DropdownSearch from 'components/DropdownSearch';
 import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useCommonState, useLoading, useUserInfo } from 'store/Provider/hooks';
-import { useChainIdList } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useChainIdList } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 // import PromptFrame from 'pages/components/PromptFrame';
 import clsx from 'clsx';
 import { request } from '@portkey-wallet/api/api-did';
@@ -17,26 +17,28 @@ import { useDebounceCallback } from '@portkey-wallet/hooks';
 import { handleErrorMessage, sleep } from '@portkey-wallet/utils';
 import TokenImageDisplay from 'pages/components/TokenImageDisplay';
 import singleMessage from 'utils/singleMessage';
-import useToken from '@portkey-wallet/hooks/hooks-ca/useToken';
 import LoadingMore from 'components/LoadingMore/LoadingMore';
-import { PAGE_SIZE_DEFAULT, PAGE_SIZE_IN_ACCOUNT_ASSETS } from '@portkey-wallet/constants/constants-ca/assets';
+import { PAGE_SIZE_DEFAULT, PAGE_SIZE_IN_ACCOUNT_ASSETS } from '@portkey-wallet/constants/constants-eoa/assets';
 import './index.less';
 import CustomChainSelectDrawer from 'pages/components/CustomChainSelectDrawer';
 import CustomChainSelectModal from 'pages/components/CustomChainSelectModal';
+import { useTokenLegacy } from '@portkey-wallet/hooks/hooks-eoa/useToken';
 // import { transNetworkText } from '@portkey-wallet/utils/activity';
-// import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+// import { useIsMainnet } from '@portkey-wallet/hooks/hooks-eoa/network';
 
 export default function AddToken() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { tokenDataShowInMarket, totalRecordCount, fetchTokenInfoList } = useToken();
+  const { tokenDataShowInMarket, totalRecordCount, fetchTokenInfoList } = useTokenLegacy();
   const [filterWord, setFilterWord] = useState<string>('');
   const { passwordSeed } = useUserInfo();
   const appDispatch = useAppDispatch();
   const chainIdArray = useChainIdList();
   // const isMainnet = useIsMainnet();
   const { setLoading } = useLoading();
-  const [tokenShowList, setTokenShowList] = useState<IUserTokenItemResponse[]>(tokenDataShowInMarket);
+  const [tokenShowList, setTokenShowList] = useState(tokenDataShowInMarket);
+  console.log(tokenDataShowInMarket, tokenShowList, tokenShowList.length, '====tokenDataShowInMarket');
+
   const hasMoreToken = useMemo(
     () => tokenDataShowInMarket.length < totalRecordCount,
     [tokenDataShowInMarket.length, totalRecordCount],
@@ -225,33 +227,21 @@ export default function AddToken() {
   //   [isMainnet],
   // );
   const renderTokenItem = useCallback(
-    (item: IUserTokenItemResponse) => {
+    (list: IUserTokenItem) => {
       return (
-        item?.tokens &&
-        item?.tokens
-          .map((list) => {
-            return (
-              <div className="token-item" key={list.id}>
-                <div className="token-item-content">
-                  <div className="token-icon-box">
-                    <TokenImageDisplay className="custom-logo" width={40} symbol={list.symbol} src={list.imageUrl} />
-                    <TokenImageDisplay
-                      className="custom-chain"
-                      width={20}
-                      symbol={list.symbol}
-                      src={list.chainImageUrl}
-                    />
-                  </div>
-                  <p className="token-info">
-                    <span className="token-item-symbol">{list.label || item.label || list.symbol}</span>
-                    <span className="token-item-net">{list.displayChainName}</span>
-                  </p>
-                </div>
-                <div className="token-item-action">{renderTokenItemBtn(list)}</div>
-              </div>
-            );
-          })
-          .reverse()
+        <div className="token-item" key={list?.id}>
+          <div className="token-item-content">
+            <div className="token-icon-box">
+              <TokenImageDisplay className="custom-logo" width={40} symbol={list.symbol} src={list.imageUrl} />
+              <TokenImageDisplay className="custom-chain" width={20} symbol={list.symbol} src={list.chainImageUrl} />
+            </div>
+            <p className="token-info">
+              <span className="token-item-symbol">{list.label || list.symbol}</span>
+              <span className="token-item-net">{list.displayChainName}</span>
+            </p>
+          </div>
+          <div className="token-item-action">{renderTokenItemBtn(list)}</div>
+        </div>
       );
     },
     [renderTokenItemBtn],

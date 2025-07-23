@@ -19,7 +19,7 @@ import { useAppCommonDispatch } from '../..';
 import { useCurrentAddressInfos, useUniqueIdentify } from '../wallet';
 import { IUserTokenItem, TokenItemShowType } from '@portkey-wallet/types/types-eoa/token';
 import { fetchNFTItem } from '@portkey-wallet/store/store-eoa/assets/api';
-
+import cloneDeep from 'lodash/cloneDeep';
 export const useAssets = () => useAppEOASelector(state => state.assets);
 
 export function useNFTItemDetail() {
@@ -269,7 +269,7 @@ export function useAccountTokenInfoMixLocalShowToken() {
     if (!originAccountTokenList) {
       return;
     }
-    let newAccountTokenList = [...originAccountTokenList];
+    let newAccountTokenList = cloneDeep(originAccountTokenList);
     const localShowTokenInfo = assetsState.localShowTokenInfo?.[identify];
     localShowTokenInfo
       ?.filter(item => item.isAdded)

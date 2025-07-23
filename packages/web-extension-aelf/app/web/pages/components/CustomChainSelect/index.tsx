@@ -1,10 +1,10 @@
-import { IUserTokenItemResponse } from '@portkey-wallet/types/types-ca/token';
+import { IUserTokenItemResponse } from '@portkey-wallet/types/types-eoa/token';
 import CustomSvg from 'components/CustomSvg';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
 import TokenImageDisplay from '../TokenImageDisplay';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { Switch } from 'antd';
 import './index.less';
 

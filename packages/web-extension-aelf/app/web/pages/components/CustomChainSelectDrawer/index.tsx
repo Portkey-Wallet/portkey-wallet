@@ -2,7 +2,7 @@ import { DrawerProps } from 'antd';
 import BaseDrawer from '../BaseDrawer';
 import './index.less';
 import CustomChainSelect from '../CustomChainSelect';
-import { IUserTokenItemResponse } from '@portkey-wallet/types/types-ca/token';
+import { IUserTokenItemResponse } from '@portkey-wallet/types/types-eoa/token';
 
 interface CustomChainSelectProps extends DrawerProps {
   onChange?: (display: boolean, id?: string) => void;

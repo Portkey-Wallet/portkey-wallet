@@ -7,6 +7,7 @@ import './index.less';
 
 export interface IDrawerOrModalInstance {
   open: () => void;
+  close: () => void;
 }
 
 interface IDrawerOrModal {
@@ -26,6 +27,7 @@ export const DrawerOrModal = forwardRef(({ content, title, className, height }: 
 
   useImperativeHandle(ref, () => ({
     open: handleOpen,
+    close: handleClose,
   }));
 
   const commonProps = useMemo(

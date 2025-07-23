@@ -57,19 +57,32 @@
         &.disabled {
           color: @icon-disabled;
           cursor: not-allowed;
+          svg {
+            /* stylelint-disable-next-line no-descending-specificity */
+            path {
+              fill: @icon-disabled !important;
+            }
+          }
         }
 
         // 删除图标特殊颜色
-        &.anticon-delete {
-          color: @icon-danger2;
+        &.delete-icon {
+          svg {
+            /* stylelint-disable-next-line no-descending-specificity */
+            path {
+              fill: @icon-danger2 !important;
+            }
+          }
 
           &:hover {
-            color: @icon-danger1;
+            svg {
+              /* stylelint-disable-next-line no-descending-specificity */
+              path {
+                fill: @icon-danger1 !important;
+              }
+            }
           }
 
-          &.disabled {
-            color: @icon-disabled;
-          }
         }
       }
 

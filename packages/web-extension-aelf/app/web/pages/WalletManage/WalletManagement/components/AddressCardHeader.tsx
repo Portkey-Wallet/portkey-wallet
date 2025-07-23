@@ -1,11 +1,12 @@
 import React, { useEffect, useRef } from 'react';
-import { EditOutlined, DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { DrawerOrModal, IDrawerOrModalInstance } from 'components/DrawerOrModal';
 import { CommonButton } from '@portkey/did-ui-react';
 import { useRemoveWallet } from '../hooks/useRemoveWallet';
 import singleMessage from 'utils/singleMessage';
 import { useNavigateState, useLocationState } from 'hooks/router';
 import './AddressCardHeader.less';
+import { CustomSvgV3 } from 'components/CustomSvgV3';
 
 export interface TWalletInfo {
   name?: string;
@@ -131,9 +132,10 @@ const AddressCardHeader: React.FC<AddressCardHeaderProps> = ({
         <>
           <span className="address-card-wallet-name address-card-wallet-name-edit">{walletName}</span>
           <span className="address-card-header-actions">
-            <EditOutlined className="address-card-header-icon" onClick={handleEdit} />
+            <CustomSvgV3 type="edit thin" className="address-card-header-icon" onClick={handleEdit} />
             <div className="address-card-header-icon-separator"></div>
-            <DeleteOutlined
+            <CustomSvgV3
+              type="delete"
               className={`address-card-header-icon${removeWalletDisabled ? ' disabled' : ''}`}
               onClick={removeWalletDisabled ? undefined : handleRemove}
             />

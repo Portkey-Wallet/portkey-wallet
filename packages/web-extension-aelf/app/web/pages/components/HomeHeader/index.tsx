@@ -19,6 +19,8 @@ import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 import InternalMessage from 'messages/InternalMessage';
 import SkeletonCom from 'pages/components/SkeletonCom';
 import { useCurrentAccount } from '@portkey-wallet/hooks/hooks-eoa/wallet';
+import { DrawerOrModal, IDrawerOrModalInstance } from 'components/DrawerOrModal';
+import { AddressSelectModalContent } from '../../WalletManage/WalletManagement/components/AddressSelectModal';
 
 export interface IHomeHeaderProps {
   onUserClick?: (e?: any) => void;
@@ -30,6 +32,7 @@ export default function HomeHeader({ onUserClick, unReadShow }: IHomeHeaderProps
   const userInfo = useCurrentAccount();
   console.log('userInfo', userInfo);
   const copyAddressDrawerOrModalRef = useRef<ICopyAddressDrawerOrModalInstance | null>(null);
+  const walletSelectDrawerOrModalRef = useRef<IDrawerOrModalInstance | null>(null);
   // const navigate = useNavigate();
   // const { isPrompt } = useCommonState();
   // const isMainnet = useIsMainnet();
@@ -45,7 +48,9 @@ export default function HomeHeader({ onUserClick, unReadShow }: IHomeHeaderProps
     <>
       <div className="portkey-home-header">
         {/* <CustomSvgV3 type="Guardians=Portkey" className="portkey-logo-prompt" /> */}
-        <div className="header-left" onClick={() => navigate('/setting')}>
+        {/*<div className="header-left" onClick={() => navigate('/setting')}>*/}
+        {/*<div className="header-left" onClick={() => showAddressSelectModal()}>*/}
+        <div className="header-left" onClick={() => walletSelectDrawerOrModalRef.current?.open()}>
           {/* <img src={userInfo.avatar} alt="" /> */}
           {userInfo?.name ? (
             <>
@@ -132,6 +137,12 @@ export default function HomeHeader({ onUserClick, unReadShow }: IHomeHeaderProps
         ]}
       /> */}
       <CopyAddressDrawerOrModal ref={copyAddressDrawerOrModalRef} />
+      <DrawerOrModal
+        ref={walletSelectDrawerOrModalRef}
+        content={<AddressSelectModalContent />}
+        title="Your wallets"
+        className="wallet-select-modal"
+      />
     </>
   );
 }

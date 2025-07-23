@@ -12,9 +12,9 @@ import { useAppDispatch, useCommonState, useLoading, useUserInfo } from 'store/P
 import { useChainIdList } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 // import PromptFrame from 'pages/components/PromptFrame';
 import clsx from 'clsx';
-import { request } from '@portkey-wallet/api/api-did';
+import { request } from '@portkey-wallet/api/api-eoa';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
-import { handleErrorMessage, sleep } from '@portkey-wallet/utils';
+import { handleErrorMessage } from '@portkey-wallet/utils';
 import TokenImageDisplay from 'pages/components/TokenImageDisplay';
 import singleMessage from 'utils/singleMessage';
 import LoadingMore from 'components/LoadingMore/LoadingMore';
@@ -23,6 +23,7 @@ import './index.less';
 import CustomChainSelectDrawer from 'pages/components/CustomChainSelectDrawer';
 import CustomChainSelectModal from 'pages/components/CustomChainSelectModal';
 import { useTokenLegacy } from '@portkey-wallet/hooks/hooks-eoa/useToken';
+import { useManagerTokenInfo } from '@portkey-wallet/hooks/hooks-eoa/assets';
 // import { transNetworkText } from '@portkey-wallet/utils/activity';
 // import { useIsMainnet } from '@portkey-wallet/hooks/hooks-eoa/network';
 
@@ -30,14 +31,27 @@ export default function AddToken() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { tokenDataShowInMarket, totalRecordCount, fetchTokenInfoList } = useTokenLegacy();
+  const { switchToken } = useManagerTokenInfo();
+
   const [filterWord, setFilterWord] = useState<string>('');
   const { passwordSeed } = useUserInfo();
   const appDispatch = useAppDispatch();
   const chainIdArray = useChainIdList();
   // const isMainnet = useIsMainnet();
   const { setLoading } = useLoading();
-  const [tokenShowList, setTokenShowList] = useState(tokenDataShowInMarket);
-  console.log(tokenDataShowInMarket, tokenShowList, tokenShowList.length, '====tokenDataShowInMarket');
+  const [showList, setTokenShowList] = useState(tokenDataShowInMarket);
+
+  const tokenShowList = useMemo(() => {
+    return showList.map((i) => {
+      const item = tokenDataShowInMarket.find((t) => t.id === i.id);
+      if (item)
+        return {
+          ...item,
+          isAdded: item?.isAdded,
+        };
+      return i;
+    });
+  }, [showList, tokenDataShowInMarket]);
 
   const hasMoreToken = useMemo(
     () => tokenDataShowInMarket.length < totalRecordCount,
@@ -77,7 +91,7 @@ export default function AddToken() {
     async (keyword: string) => {
       try {
         if (!keyword) return;
-        const res = await request.token.fetchTokenListBySearchV2({
+        const res = await request.token.fetchTokenListBySearch({
           params: {
             symbol: keyword,
             chainIds: chainIdArray,
@@ -87,13 +101,20 @@ export default function AddToken() {
           },
         });
         console.log('search result:', res);
-        setTokenShowList(res.data);
+        const _target = (res || []).map((item: any) => ({
+          ...item,
+          isAdded:
+            tokenDataShowInMarket?.find((it) => it.symbol === item.symbol && it.chainId === item.chainId)?.isAdded ||
+            false,
+          userTokenId: item.id,
+        }));
+        setTokenShowList(_target);
       } catch (error) {
         setTokenShowList([]);
         console.log('filter search error', error);
       }
     },
-    [chainIdArray],
+    [chainIdArray, tokenDataShowInMarket],
   );
 
   const searchDebounce = useDebounceCallback(
@@ -142,28 +163,12 @@ export default function AddToken() {
   // );
   const handleUserTokenSingleDisplay = useCallback(
     async (display: boolean, id: string) => {
-      if (!id) {
-        return;
-      }
+      if (!id) return;
+      const item = tokenShowList.find((i) => i.id === id);
+      if (!item) return;
       try {
         setLoading(true);
-        await request.token.userTokensDisplaySwitch({
-          params: {
-            isDisplay: display,
-            ids: [id],
-          },
-        });
-        await sleep(1000);
-        if (!filterWord) {
-          await fetchTokenInfoList({
-            chainIdArray,
-            keyword: '',
-            skipCount: 0,
-            maxResultCount: PAGE_SIZE_IN_ACCOUNT_ASSETS,
-          });
-        } else {
-          await handleSearch(filterWord);
-        }
+        switchToken(item as any, display);
         singleMessage.success('success');
       } catch (error: any) {
         const err = handleErrorMessage(error, 'handle display error');
@@ -173,12 +178,12 @@ export default function AddToken() {
         setLoading(false);
       }
     },
-    [chainIdArray, fetchTokenInfoList, filterWord, handleSearch, setLoading],
+    [setLoading, switchToken, tokenShowList],
   );
   const renderTokenItemBtn = useCallback(
     (item: any) => {
       const isDefault = item.isDefault;
-      const isAdded = item.isDisplay;
+      const isAdded = item.isAdded;
       if (isDefault) {
         return (
           <span className="add-token-btn-icon">

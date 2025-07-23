@@ -66,7 +66,7 @@ const AddressCardHeader: React.FC<AddressCardHeaderProps> = ({
   };
 
   return (
-    <div className="address-card-header">
+    <div className={`address-card-header${useManageStyle ? ' manage-style' : ''}`}>
       <DrawerOrModal
         ref={walletRemoveDrawerOrModalRef}
         className="wallet-remove-modal"
@@ -78,7 +78,7 @@ const AddressCardHeader: React.FC<AddressCardHeaderProps> = ({
         content={
           <div className="address-card-header-modal-content">
             <div className="address-card-header-modal-title">Ensure your {typeText} is backed up before removal.</div>
-            <div>
+            <div className="address-card-header-modal-desc">
               {isPrivateKeyWallet
                 ? 'Please make sure your private key is securely backed up before removing the wallet to avoid losing access in the future.'
                 : 'Please make sure your seed phrase is securely backed up before removing the wallet. Losing access to your seed phrase or sharing it with others could lead to permanent loss of your assets.'}
@@ -93,7 +93,7 @@ const AddressCardHeader: React.FC<AddressCardHeaderProps> = ({
               </CommonButton>
               <CommonButton
                 className="remove"
-                type="link"
+                type="outline"
                 disabled={removeWalletDisabled}
                 onClick={() => {
                   /* TODO: removeWallet, navigation, toast */
@@ -120,7 +120,7 @@ const AddressCardHeader: React.FC<AddressCardHeaderProps> = ({
       />
       {!useManageStyle ? (
         <>
-          <span className="address-card-wallet-name">{walletName}</span>
+          <span className="address-card-wallet-name address-card-wallet-name-show">{walletName}</span>
           {privateKeyTipShow && isPrivateKeyWallet && (
             <span className="address-card-header-tip">
               Wallets imported using private key do not support the addition of addresses.
@@ -129,9 +129,10 @@ const AddressCardHeader: React.FC<AddressCardHeaderProps> = ({
         </>
       ) : (
         <>
-          <span className="address-card-wallet-name">{walletName}</span>
+          <span className="address-card-wallet-name address-card-wallet-name-edit">{walletName}</span>
           <span className="address-card-header-actions">
             <EditOutlined className="address-card-header-icon" onClick={handleEdit} />
+            <div className="address-card-header-icon-separator"></div>
             <DeleteOutlined
               className={`address-card-header-icon${removeWalletDisabled ? ' disabled' : ''}`}
               onClick={removeWalletDisabled ? undefined : handleRemove}

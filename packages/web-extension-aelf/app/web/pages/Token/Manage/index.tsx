@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
-import { Button, Switch } from 'antd';
+import { Switch } from 'antd';
 import CommonHeader from 'components/CommonHeader';
-import CustomSvg from 'components/CustomSvg';
 import { CustomSvgV3 } from 'components/CustomSvgV3';
 
 import { IUserTokenItem, IUserTokenItemResponse } from '@portkey-wallet/types/types-eoa/token';
@@ -256,31 +255,31 @@ export default function AddToken() {
     () => (
       <div className="flex-column-center no-result">
         <p className="desc">{t('No tokens available')}</p>
-        <div className="flex-center">
+        {/* <div className="flex-center">
           <Button className="flex-row-center add-button flex-center" type="primary" onClick={handleAddCustomToken}>
             <CustomSvg type="Plus" className="plug-svg" />
             {t('Import token')}
           </Button>
-        </div>
+        </div> */}
       </div>
     ),
-    [handleAddCustomToken, t],
+    [t],
   );
 
-  const renderSearchResultTip = useMemo(
-    () => (
-      <div className="flex-column-center search-result-tip">
-        <p className="desc">{t('Don’t see your token?')}</p>
-        <div className="flex-center">
-          <Button className="flex-row-center add-button flex-center" type="primary" onClick={handleAddCustomToken}>
-            <CustomSvg type="Plus" className="plug-svg" />
-            {t('Import token')}
-          </Button>
-        </div>
-      </div>
-    ),
-    [handleAddCustomToken, t],
-  );
+  // const renderSearchResultTip = useMemo(
+  //   () => (
+  //     <div className="flex-column-center search-result-tip">
+  //       <p className="desc">{t('Don’t see your token?')}</p>
+  //       <div className="flex-center">
+  //         <Button className="flex-row-center add-button flex-center" type="primary" onClick={handleAddCustomToken}>
+  //           <CustomSvg type="Plus" className="plug-svg" />
+  //           {t('Import token')}
+  //         </Button>
+  //       </div>
+  //     </div>
+  //   ),
+  //   [handleAddCustomToken, t],
+  // );
 
   const renderTokenList = useMemo(
     () =>
@@ -290,20 +289,11 @@ export default function AddToken() {
             {tokenShowList.map((item) => renderTokenItem(item))}
             {!filterWord && <LoadingMore hasMore={hasMoreToken} loadMore={getMoreTokenInfo} className="load-more" />}
           </div>
-          {filterWord && renderSearchResultTip}
         </div>
       ) : (
         <>{filterWord ? renderNoSearchResult : ''}</>
       ),
-    [
-      filterWord,
-      getMoreTokenInfo,
-      hasMoreToken,
-      renderNoSearchResult,
-      renderSearchResultTip,
-      renderTokenItem,
-      tokenShowList,
-    ],
+    [filterWord, getMoreTokenInfo, hasMoreToken, renderNoSearchResult, renderTokenItem, tokenShowList],
   );
 
   const { isNotLessThan768 } = useCommonState();

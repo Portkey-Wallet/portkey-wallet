@@ -96,6 +96,7 @@ import { ConfirmBackup } from 'pages/WalletBackup/ConfirmBackup/ConfirmBackup';
 import { ImportWallet } from 'pages/WalletManage/WalletImport/ImportWallet';
 import { WalletManagement } from 'pages/WalletManage/WalletManagement/index';
 import { ResetApp } from 'pages/WalletManage/WalletManagement/ResetApp';
+import { AddressBackup } from 'pages/WalletManage/WalletManagement/AddressBackup';
 
 // 2025-06-05
 export const PageRouter = () => {
@@ -161,6 +162,10 @@ export const PageRouter = () => {
     {
       path: '/wallet/backup/manual/confirm',
       element: <ConfirmBackup />,
+    },
+    {
+      path: '/wallet/backup/view',
+      element: <AddressBackup />,
     },
     {
       path: '/prepare-wallet/:type',

@@ -12,7 +12,6 @@
   font-size: 24px;
   font-weight: 600;
   color: @text-base1;
-  margin-top: 32px;
   margin-bottom: 8px;
   text-align: left;
   width: 100%;
@@ -48,6 +47,13 @@
   border-radius: 20px;
   background: @bg-base3;
   margin-right: 12px;
+  .reset-app-wallet-avatar-img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 12px;
+    object-fit: cover;
+  }
 }
 .reset-app-wallet-name {
   font-size: 16px;
@@ -87,7 +93,7 @@
       background-color: transparent;
 
       &:hover {
-        color: @text-danger2;
+        color: @text-base1;
         border-color: @border-danger2;
         background-color: @bg-danger4;
       }
@@ -97,6 +103,10 @@
 }
 
 .reset-app-confirm-modal {
+  .reset-app-confirm-modal-title-icon {
+    width: 32px;
+    height: 32px;
+  }
   .reset-app-confirm-warning-icon {
     color: @icon-danger2;
     font-size: 32px;
@@ -104,10 +114,19 @@
     vertical-align: middle;
   }
   .reset-app-confirm-content {
-    padding: 24px 0 0;
+    padding: 16px 0 0;
     display: flex;
     flex-direction: column;
     align-items: center;
+    .reset-app-confirm-modal-title {
+      font-size: 20px;
+      line-height: 1.4;
+      font-weight: 500;
+      font-family: BG;
+      color: @text-base1;
+      margin-bottom: 16px;
+      width: 100%;
+    }
   }
   .reset-app-confirm-message {
     font-size: 16px;
@@ -123,6 +142,12 @@
     font-size: 16px;
     font-weight: 500;
     margin-bottom: 12px;
+    background: @bg-danger1;
+    color: @text-base1;
+    &:hover,&:focus {
+      background: @bg-danger4;
+      color: @text-base1;
+    }
   }
   .reset-app-cancel-btn {
     width: 100%;

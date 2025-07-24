@@ -6,6 +6,7 @@ import { TWalletInfo, TAccountInfo } from '@portkey-wallet/types/types-eoa/walle
 import { useCurrentAccount } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 import { changeCurrentWallet } from '@portkey-wallet/store/store-eoa/wallet/actions';
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
+import { CustomSvgV3 } from 'components/CustomSvgV3';
 
 interface AddressCardBaseProps {
   viewOnly?: boolean;
@@ -83,9 +84,7 @@ const AddressCardBase: React.FC<AddressCardBaseProps> = ({
                   <span className="address-card-base-balance">{totalBalanceInUsd ? `$${totalBalanceInUsd}` : '-'}</span>
                 </div>
                 {addressManageView && !isSelected && <span className="address-card-base-chevron">›</span>}
-                {(addressSelecting || addressManageView) && isSelected && (
-                  <span className="address-card-base-selected-icon">✔</span>
-                )}
+                {(addressSelecting || addressManageView) && isSelected && <CustomSvgV3 type="selected" />}
               </div>
               <div className="address-card-base-divider" />
             </div>
@@ -102,7 +101,7 @@ const AddressCardBase: React.FC<AddressCardBaseProps> = ({
               <span className="address-card-base-add-loading">Loading...</span>
             ) : (
               <>
-                <span className="address-card-base-add-icon">＋</span>
+                <CustomSvgV3 className="address-card-base-add-icon" type="add" />
                 <span className="address-card-base-add-text">Add address</span>
               </>
             )}

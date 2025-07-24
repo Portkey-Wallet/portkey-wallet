@@ -1,20 +1,16 @@
 import React, { useEffect, useRef } from 'react';
-import { EditOutlined, DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { DrawerOrModal, IDrawerOrModalInstance } from 'components/DrawerOrModal';
 import { CommonButton } from '@portkey/did-ui-react';
 import { useRemoveWallet } from '../hooks/useRemoveWallet';
 import singleMessage from 'utils/singleMessage';
 import { useNavigateState, useLocationState } from 'hooks/router';
 import './AddressCardHeader.less';
-
-export interface TWalletInfo {
-  name?: string;
-  avatarUrl?: string;
-  AESEncryptMnemonic?: string;
-  accountList: Array<{ address: string }>;
-  key?: string;
-  // ...other wallet fields
-}
+import './WalletRenameModal.less';
+import { CustomSvgV3 } from 'components/CustomSvgV3';
+import { useAppCommonDispatch } from '@portkey-wallet/hooks';
+import { updateWallet } from '@portkey-wallet/store/store-eoa/wallet/actions';
+import { TWalletInfo } from '@portkey-wallet/types/types-eoa/wallet';
 
 export interface AddressCardHeaderProps {
   privateKeyTipShow?: boolean;
@@ -35,7 +31,12 @@ const AddressCardHeader: React.FC<AddressCardHeaderProps> = ({
   const typeText = isPrivateKeyWallet ? 'private key' : 'seed phrase';
 
   const walletRemoveDrawerOrModalRef = useRef<IDrawerOrModalInstance | null>(null);
+  const walletRenameDrawerOrModalRef = useRef<IDrawerOrModalInstance | null>(null);
+  const [renameValue, setRenameValue] = React.useState(walletName);
+  const [renameError, setRenameError] = React.useState<string | undefined>(undefined);
+
   // TODO: dispatch, updateWallet, removeWallet, showModal, navigation, etc. 需业务层注入
+  const dispatch = useAppCommonDispatch();
   const { removeWallet } = useRemoveWallet();
 
   const { state } = useLocationState<{
@@ -58,7 +59,37 @@ const AddressCardHeader: React.FC<AddressCardHeaderProps> = ({
   }, [action, isPrivateKeyWallet, navigate, removeWallet, walletKeyToBeRemove]);
 
   const handleEdit = () => {
-    // TODO: 显示重命名弹窗，调用 updateWallet
+    setRenameValue(walletName);
+    setRenameError(undefined);
+    walletRenameDrawerOrModalRef.current?.open();
+  };
+
+  // 校验函数
+  const validateRename = (val: string) => {
+    if (!val) return 'Wallet name is required';
+    if (!/^[a-zA-Z0-9 _]+$/.test(val)) return 'Only letters, numbers, spaces, and underscores are allowed.';
+    if (val.length > 16) return 'Max 16 characters.';
+    return undefined;
+  };
+
+  const handleRenameChange = (val: string) => {
+    setRenameValue(val);
+    setRenameError(validateRename(val));
+  };
+
+  const handleRenameSave = () => {
+    if (!walletInfo || !renameValue) {
+      return;
+    }
+    dispatch(
+      updateWallet({
+        wallet: {
+          ...walletInfo,
+          name: renameValue,
+        },
+      }),
+    );
+    walletRenameDrawerOrModalRef.current?.close();
   };
 
   const handleRemove = () => {
@@ -66,7 +97,7 @@ const AddressCardHeader: React.FC<AddressCardHeaderProps> = ({
   };
 
   return (
-    <div className="address-card-header">
+    <div className={`address-card-header${useManageStyle ? ' manage-style' : ''}`}>
       <DrawerOrModal
         ref={walletRemoveDrawerOrModalRef}
         className="wallet-remove-modal"
@@ -78,7 +109,7 @@ const AddressCardHeader: React.FC<AddressCardHeaderProps> = ({
         content={
           <div className="address-card-header-modal-content">
             <div className="address-card-header-modal-title">Ensure your {typeText} is backed up before removal.</div>
-            <div>
+            <div className="address-card-header-modal-desc">
               {isPrivateKeyWallet
                 ? 'Please make sure your private key is securely backed up before removing the wallet to avoid losing access in the future.'
                 : 'Please make sure your seed phrase is securely backed up before removing the wallet. Losing access to your seed phrase or sharing it with others could lead to permanent loss of your assets.'}
@@ -93,7 +124,7 @@ const AddressCardHeader: React.FC<AddressCardHeaderProps> = ({
               </CommonButton>
               <CommonButton
                 className="remove"
-                type="link"
+                type="outline"
                 disabled={removeWalletDisabled}
                 onClick={() => {
                   /* TODO: removeWallet, navigation, toast */
@@ -118,9 +149,48 @@ const AddressCardHeader: React.FC<AddressCardHeaderProps> = ({
           </div>
         }
       />
+      <DrawerOrModal
+        ref={walletRenameDrawerOrModalRef}
+        className="wallet-rename-modal"
+        title={<span>Rename your wallet</span>}
+        content={
+          <div className="address-card-header-modal-content">
+            <div className="wallet-rename-avatar-wrap">
+              {/* TODO: 头像可换成钱包自定义头像 */}
+              <CustomSvgV3 type="Wallet" className="wallet-rename-avatar" />
+            </div>
+            <div className="wallet-rename-input-wrap">
+              <input
+                className="wallet-rename-input"
+                maxLength={16}
+                value={renameValue}
+                onChange={(e) => handleRenameChange(e.target.value)}
+                placeholder="Enter wallet name"
+              />
+              {renameValue && (
+                <span className="wallet-rename-clear" onClick={() => handleRenameChange('')}>
+                  ×
+                </span>
+              )}
+            </div>
+            <div className="wallet-rename-count-error">
+              <span className="wallet-rename-count">{renameValue.length}/16</span>
+              {renameError && <span className="wallet-rename-error">{renameError}</span>}
+            </div>
+            <CommonButton
+              type="primary"
+              block
+              className="wallet-rename-save-btn"
+              disabled={!!renameError || !renameValue}
+              onClick={handleRenameSave}>
+              Save
+            </CommonButton>
+          </div>
+        }
+      />
       {!useManageStyle ? (
         <>
-          <span className="address-card-wallet-name">{walletName}</span>
+          <span className="address-card-wallet-name address-card-wallet-name-show">{walletName}</span>
           {privateKeyTipShow && isPrivateKeyWallet && (
             <span className="address-card-header-tip">
               Wallets imported using private key do not support the addition of addresses.
@@ -129,10 +199,12 @@ const AddressCardHeader: React.FC<AddressCardHeaderProps> = ({
         </>
       ) : (
         <>
-          <span className="address-card-wallet-name">{walletName}</span>
+          <span className="address-card-wallet-name address-card-wallet-name-edit">{walletName}</span>
           <span className="address-card-header-actions">
-            <EditOutlined className="address-card-header-icon" onClick={handleEdit} />
-            <DeleteOutlined
+            <CustomSvgV3 type="edit thin" className="address-card-header-icon" onClick={handleEdit} />
+            <div className="address-card-header-icon-separator"></div>
+            <CustomSvgV3
+              type="delete"
               className={`address-card-header-icon${removeWalletDisabled ? ' disabled' : ''}`}
               onClick={removeWalletDisabled ? undefined : handleRemove}
             />

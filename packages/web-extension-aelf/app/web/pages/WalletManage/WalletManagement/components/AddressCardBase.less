@@ -63,15 +63,37 @@
   align-items: center;
   justify-content: flex-start;
 }
-.address-card-base-list-item.add-address.disabled {
-  color: @border-base2;
-  cursor: not-allowed;
-  background: @bg-base1;
-}
+
 .address-card-base-add-icon {
   font-size: 20px;
   margin-right: 8px;
+  svg {
+    /* stylelint-disable-next-line no-descending-specificity */
+    path {
+      fill: @icon-base2 !important;
+    }
+  }
 }
 .address-card-base-add-text {
   font-size: 15px;
+  color:  @text-base1;
+}
+
+.address-card-base-list-item.add-address.disabled {
+  color:  @text-disabled1;
+  cursor: not-allowed;
+  background: @bg-base1;
+
+  .address-card-base-add-icon {
+    svg {
+      /* stylelint-disable-next-line no-descending-specificity */
+      path {
+        fill: @icon-disabled !important;
+      }
+    }
+  }
+
+  .address-card-base-add-text {
+    color:  @text-disabled1;
+  }
 }

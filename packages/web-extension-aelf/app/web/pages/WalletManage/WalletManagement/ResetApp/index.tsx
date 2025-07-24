@@ -42,7 +42,14 @@ export const ResetApp: React.FC = () => {
   const handleBackupContinue = useCallback(() => {
     setBackupModal((prev) => ({ ...prev, open: false }));
     // TODO: 跳转到备份页面并安全校验
-  }, []);
+    navigate('/wallet/backup/view', {
+      state: {
+        walletToBeBackup: backupModal.wallet,
+        accountToBeBackup: backupModal.account,
+        backupType: backupModal.type === 'private key' ? 'Private key' : 'Seed phrase',
+      },
+    });
+  }, [backupModal.account, backupModal.type, backupModal.wallet, navigate]);
 
   const handleResetApp = useCallback(() => {
     setConfirmModalOpen(true);
@@ -77,7 +84,6 @@ export const ResetApp: React.FC = () => {
       <div className="reset-app-wallet-list">
         {walletList.map((wallet, idx) => {
           const account = wallet.accountList[0];
-          console.log('wallet', wallet, account);
           return (
             <div className="reset-app-wallet-card" key={wallet.key || idx}>
               <div className="reset-app-wallet-info">

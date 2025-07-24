@@ -1,11 +1,24 @@
 @import '../../../../assets/theme/color.less';
 
 .backup-address-overlay-modal {
+  .backup-address-overlay-title-icon {
+    width: 32px;
+    height: 32px;
+  }
   .backup-address-overlay-content {
-    padding: 24px 0 0;
+    padding: 16px 0 0;
     display: flex;
     flex-direction: column;
     align-items: center;
+    .backup-address-overlay-title {
+      font-size: 20px;
+      line-height: 1.4;
+      font-weight: 500;
+      font-family: BG;
+      color: @text-base1;
+      margin-bottom: 16px;
+      width: 100%;
+    }
   }
   .backup-address-overlay-notes {
     width: 100%;
@@ -54,5 +67,13 @@
     border-radius: 48px;
     font-size: 16px;
     font-weight: 500;
+  }
+  .backup-note-icon {
+    svg {
+      /* stylelint-disable-next-line no-descending-specificity */
+      path {
+        fill: @icon-danger2 !important;
+      }
+    }
   }
 }

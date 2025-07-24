@@ -1,11 +1,11 @@
 import { useCallback } from 'react';
-import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { IAssetToken } from '@portkey-wallet/store/store-ca/assets/type';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { IAssetToken } from '@portkey-wallet/store/store-eoa/assets/type';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { formatAmountUSDShow, formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import TokenImageDisplay from 'pages/components/TokenImageDisplay';
 import CircleLoading from 'components/CircleLoading';
 import './index.less';
+import { useCurrentHideAssetsState } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 
 export interface SelectTokenProps {
   tokenInfos: IAssetToken[];
@@ -16,7 +16,7 @@ export interface SelectTokenProps {
 }
 
 export default function SelectToken({ tokenInfos = [], noDataMessage, loading, onSelect }: SelectTokenProps) {
-  const userInfo = useCurrentUserInfo();
+  const hideAssets = useCurrentHideAssetsState();
   const isMainnet = useIsMainnet();
 
   const renderItem = useCallback(
@@ -48,19 +48,17 @@ export default function SelectToken({ tokenInfos = [], noDataMessage, loading, o
             </div>
             <div className="token-info-amount">
               <div className="token-amount">
-                {userInfo.hideAssets ? '******' : formatTokenAmountShowWithDecimals(item.balance, item.decimals)}
+                {hideAssets ? '******' : formatTokenAmountShowWithDecimals(item.balance, item.decimals)}
               </div>
               {!isMainnet && item.balanceInUsd && (
-                <div className="token-usd">
-                  {userInfo.hideAssets ? '******' : formatAmountUSDShow(item.balanceInUsd)}
-                </div>
+                <div className="token-usd">{hideAssets ? '******' : formatAmountUSDShow(item.balanceInUsd)}</div>
               )}
             </div>
           </div>
         </div>
       );
     },
-    [isMainnet, onSelect, userInfo.hideAssets],
+    [isMainnet, onSelect, hideAssets],
   );
 
   return (

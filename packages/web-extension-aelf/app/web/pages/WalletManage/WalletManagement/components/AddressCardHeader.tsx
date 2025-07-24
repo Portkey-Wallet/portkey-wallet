@@ -11,6 +11,7 @@ import { CustomSvgV3 } from 'components/CustomSvgV3';
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 import { updateWallet } from '@portkey-wallet/store/store-eoa/wallet/actions';
 import { TWalletInfo } from '@portkey-wallet/types/types-eoa/wallet';
+import { CommonTooltip } from 'components/CommonTooltipV2';
 
 export interface AddressCardHeaderProps {
   privateKeyTipShow?: boolean;
@@ -192,9 +193,7 @@ const AddressCardHeader: React.FC<AddressCardHeaderProps> = ({
         <>
           <span className="address-card-wallet-name address-card-wallet-name-show">{walletName}</span>
           {privateKeyTipShow && isPrivateKeyWallet && (
-            <span className="address-card-header-tip">
-              Wallets imported using private key do not support the addition of addresses.
-            </span>
+            <CommonTooltip title="Wallets imported using private key do not support the addition of addresses." />
           )}
         </>
       ) : (

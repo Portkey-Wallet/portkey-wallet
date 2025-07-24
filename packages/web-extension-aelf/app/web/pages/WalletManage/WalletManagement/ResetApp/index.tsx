@@ -12,6 +12,7 @@ import BackupAddressOverlay, { BackupType } from '../AddressDetail/BackupAddress
 import { TWalletInfo, TAccountInfo } from '@portkey-wallet/types/types-eoa/wallet';
 import './index.less';
 import { UnlockOverlay } from '../../../components/UnlockModal';
+import { LOCAL_AVATARS } from 'assets/images/avatars/avatars';
 
 export const ResetApp: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -81,7 +82,13 @@ export const ResetApp: React.FC = () => {
             <div className="reset-app-wallet-card" key={wallet.key || idx}>
               <div className="reset-app-wallet-info">
                 {/* TODO: 头像可用CustomSvgV3或自定义 */}
-                <div className="reset-app-wallet-avatar" />
+                <div className="reset-app-wallet-avatar">
+                  <img
+                    className="reset-app-wallet-avatar-img"
+                    src={LOCAL_AVATARS[account.icon || 'avatar_1']}
+                    alt="avatar"
+                  />
+                </div>
                 <div>
                   <div className="reset-app-wallet-name">{account.name}</div>
                   <div className="reset-app-wallet-type">

@@ -1,4 +1,4 @@
-git_url("git@github.com:Portkey-Wallet/ca-fastlane-ios-file.git")
+git_url("https://github.com/Portkey-Wallet/ca-fastlane-ios-file.git")
 
 storage_mode("git")
 

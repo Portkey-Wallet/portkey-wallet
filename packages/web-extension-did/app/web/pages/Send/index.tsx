@@ -383,7 +383,7 @@ export default function Send() {
           caAddress,
           managerAddress: wallet.address,
           toAddress: toAccount?.address,
-          privateKey,
+          privateKey: 'No show here',
           chainInfo: currentChain,
           chainType: currentNetwork.walletType,
           token: tokenInfo,
@@ -1630,7 +1630,7 @@ export default function Send() {
             getApproveRes={getOneTimeApproveRes}
             operationDetails={getOperationDetails(OperationTypeEnum.transferApprove, {
               symbol: tokenInfo?.symbol,
-              amount,
+              amount: timesDecimals(amount, tokenInfo?.decimals || '0').toString(),
               toAddress: toAccount.address,
               caHash: wallet.caHash,
               verifyManagerAddress: wallet.address,

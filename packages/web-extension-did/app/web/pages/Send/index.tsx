@@ -60,7 +60,7 @@ import { getOperationDetails } from '@portkey-wallet/utils/operation.util';
 import ToAddressInput, { IToAddressInputRef } from './components/ToAddressInput';
 import SelectNetwork, { INetworkItem } from './components/SelectNetwork';
 import AddressTypeSelect, { AddressTypeEnum, ExchangeTypeShow } from './components/AddressTypeSelect';
-import { CommonButton, CommonPromptCard } from '@portkey/did-ui-react';
+import { CommonButton, CommonPromptCard, isAelfAddress } from '@portkey/did-ui-react';
 import SendModalTip, { ButtonGroupType, ButtonType } from './components/SendModalTip';
 import { getLimitTips, getSendNetworkList, getSmallerValue, isValidAmount } from './utils';
 import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
@@ -407,6 +407,10 @@ export default function Send() {
         if (error === TransactionError.TRANSFER_AMOUNT_EXCEEDED) {
           return '0';
         }
+        // same as mobile; GuardianApproval/index.tsx: if (sendTransferPreviewApprove) {
+        if (oneTimeApprovalList.current && oneTimeApprovalList.current.length !== 0) {
+          return '0';
+        }
       }
     },
     [
@@ -424,6 +428,7 @@ export default function Send() {
 
   const sendTransfer = useCallback(async () => {
     try {
+      console.log('sendTransfer transferType: ', transferType);
       setBtnLoading(true);
 
       const { privateKey } = await getSeed();
@@ -757,26 +762,6 @@ export default function Send() {
   const onCloseGuardianApprove = useCallback(() => {
     setOpenGuardiansApprove(false);
   }, []);
-  const getOneTimeApproveRes = useCallback(
-    async (approveList: GuardianItem[]) => {
-      try {
-        oneTimeApprovalList.current = approveList;
-        if (Array.isArray(approveList) && approveList.length > 0) {
-          setOpenGuardiansApprove(false);
-          if (stage === SendStage.Amount) {
-            setStage(SendStage.Preview);
-          } else if (stage === SendStage.Preview) {
-            await sendTransfer();
-          }
-        } else {
-          throw Error('approve failed, please try again');
-        }
-      } catch (error) {
-        throw Error('approve failed, please try again');
-      }
-    },
-    [sendTransfer, stage],
-  );
 
   const checkSecurity = useCheckSecurity();
 
@@ -790,8 +775,10 @@ export default function Send() {
         return { status: false };
       }
       const tokenSymbol = tokenInfo.symbol;
+      let isCrossTransfer = false;
       // CHECK 1: cross chain whether has assets
       if (isCrossChain(toAccount.address, chainId)) {
+        isCrossTransfer = true;
         const sendChainId = getChainIdByAddress(toAccount.address) as ChainId;
         const interceptResult = await getAssetsEstimation({
           symbol: tokenSymbol,
@@ -854,27 +841,35 @@ export default function Send() {
 
       // fixed: Moved Step 5 to after step 6
       // CHECK 5: transfer limit
-      // const limitRes = await checkLimit({
-      //   chainId: tokenInfo.chainId,
-      //   symbol: tokenInfo.symbol,
-      //   amount: amount,
-      //   decimals: tokenInfo.decimals,
-      //   from: ICheckLimitBusiness.SEND,
-      //   balance,
-      //   extra: {
-      //     stage,
-      //     amount: amount,
-      //     address: tokenInfo.address,
-      //     imageUrl: tokenInfo.imageUrl,
-      //     alias: tokenInfo.alias,
-      //     tokenId: tokenInfo.tokenId,
-      //     toAccount,
-      //   },
-      //   onOneTimeApproval: handleOneTimeApproval,
-      // });
-      // if (!limitRes) {
-      //   return { status: false };
-      // }
+      // after handleOneTimeApproval will re previewCheck
+      if (!oneTimeApprovalList.current || oneTimeApprovalList.current.length === 0) {
+        const isAELFAddress = isAelfAddress(toAccount.address);
+        if (isAELFAddress) {
+          setTransferType(isCrossTransfer ? TransferType.GENERAL_CROSS_CHAIN : TransferType.GENERAL_SAME_CHAIN);
+        }
+        const limitRes = await checkLimit({
+          chainId: tokenInfo.chainId,
+          symbol: tokenInfo.symbol,
+          amount: amount,
+          decimals: tokenInfo.decimals,
+          from: ICheckLimitBusiness.SEND,
+          balance,
+          extra: {
+            stage,
+            amount: amount,
+            address: tokenInfo.address,
+            imageUrl: tokenInfo.imageUrl,
+            alias: tokenInfo.alias,
+            tokenId: tokenInfo.tokenId,
+            toAccount,
+          },
+          onOneTimeApproval: handleOneTimeApproval,
+        });
+
+        if (!limitRes) {
+          return { status: false };
+        }
+      }
 
       // CHECK 6: fee check
       let networkFee: string | undefined;
@@ -1079,29 +1074,6 @@ export default function Send() {
         }
       }
 
-      // const limitRes = await checkLimit({
-      //   chainId: tokenInfo.chainId,
-      //   symbol: tokenInfo.symbol,
-      //   amount: amount,
-      //   decimals: tokenInfo.decimals,
-      //   from: ICheckLimitBusiness.SEND,
-      //   balance,
-      //   extra: {
-      //     stage,
-      //     amount: amount,
-      //     address: tokenInfo.address,
-      //     imageUrl: tokenInfo.imageUrl,
-      //     alias: tokenInfo.alias,
-      //     tokenId: tokenInfo.tokenId,
-      //     toAccount,
-      //   },
-      //   onOneTimeApproval: handleOneTimeApproval,
-      // });
-      // console.log('wfs===limitRes', limitRes);
-      // if (!limitRes) {
-      //   return { status: false };
-      // }
-
       // CHECK 6.4 SameChain or Default CrossChain
       networkFeeUnit = 'ELF';
       transferType = isCrossChain(toAccount.address, chainId)
@@ -1133,28 +1105,6 @@ export default function Send() {
       console.log('transferType4', transferType);
       setTransferType(transferType);
 
-      const limitRes = await checkLimit({
-        chainId: tokenInfo.chainId,
-        symbol: tokenInfo.symbol,
-        amount: amount,
-        decimals: tokenInfo.decimals,
-        from: ICheckLimitBusiness.SEND,
-        balance,
-        extra: {
-          stage,
-          amount: amount,
-          address: tokenInfo.address,
-          imageUrl: tokenInfo.imageUrl,
-          alias: tokenInfo.alias,
-          tokenId: tokenInfo.tokenId,
-          toAccount,
-        },
-        onOneTimeApproval: handleOneTimeApproval,
-      });
-      console.log('wfs===limitRes', limitRes);
-      if (!limitRes) {
-        return { status: false };
-      }
       return {
         status: true,
         networkFee,
@@ -1216,10 +1166,32 @@ export default function Send() {
     setStage(SendStage.Preview);
   }, [previewCheck, transferType]);
 
+  const getOneTimeApproveRes = useCallback(
+    async (approveList: GuardianItem[]) => {
+      try {
+        oneTimeApprovalList.current = approveList;
+        if (Array.isArray(approveList) && approveList.length > 0) {
+          setOpenGuardiansApprove(false);
+          if (stage === SendStage.Amount) {
+            setStage(SendStage.Preview);
+            // await toPreviewStage();
+          } else if (stage === SendStage.Preview) {
+            await sendTransfer();
+          }
+        } else {
+          throw Error('approve failed, please try again');
+        }
+      } catch (error) {
+        throw Error('approve failed, please try again');
+      }
+    },
+    [sendTransfer, stage],
+  );
+
   const sendHandler = useCallback(async (): Promise<string | void> => {
     const needCheckLimit =
       transferType === TransferType.GENERAL_SAME_CHAIN || transferType === TransferType.GENERAL_CROSS_CHAIN;
-    console.log('wfs===needCheckLimit', needCheckLimit);
+    console.log('wfs===needCheckLimit', needCheckLimit, transferType);
     if ((!oneTimeApprovalList.current || oneTimeApprovalList.current.length === 0) && needCheckLimit) {
       if (!tokenInfo) throw 'No Symbol info';
       setBtnLoading(true);

@@ -1,5 +1,4 @@
 import React, { useEffect, useRef } from 'react';
-import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { DrawerOrModal, IDrawerOrModalInstance } from 'components/DrawerOrModal';
 import { CommonButton } from '@portkey/did-ui-react';
 import { useRemoveWallet } from '../hooks/useRemoveWallet';
@@ -104,7 +103,7 @@ const AddressCardHeader: React.FC<AddressCardHeaderProps> = ({
         className="wallet-remove-modal"
         title={
           <span>
-            <ExclamationCircleOutlined className="address-card-header-warning-icon" />
+            <CustomSvgV3 type="error" className="address-card-header-warning-icon" />
           </span>
         }
         content={

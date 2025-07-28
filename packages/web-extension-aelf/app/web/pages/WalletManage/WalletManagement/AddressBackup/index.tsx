@@ -17,8 +17,10 @@ export const AddressBackup = () => {
     walletToBeBackup: any;
     accountToBeBackup: any;
     backupType: 'Private key' | 'Seed phrase';
+    backUrl?: string;
+    backParams?: any;
   }>();
-  const { walletToBeBackup, accountToBeBackup, backupType } = state || {};
+  const { walletToBeBackup, accountToBeBackup, backupType, backUrl, backParams } = state || {};
 
   const [mnemonics, setMnemonics] = useState<string[]>([]);
   const [privateKey, setPrivateKey] = useState('');
@@ -149,6 +151,12 @@ export const AddressBackup = () => {
         className="my-header"
         title=""
         onLeftBack={() => {
+          if (backUrl) {
+            navigate(backUrl, {
+              state: backParams || {},
+            });
+            return;
+          }
           navigate('/wallet/reset');
         }}
         onLeftBackShowClose={false}

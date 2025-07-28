@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useState, useEffect } from 'react';
 import { CustomSvgV3 } from 'components/CustomSvgV3';
+import CustomSvg from 'components/CustomSvg';
 import singleMessage from 'utils/singleMessage';
 import getPrivateKeyAndMnemonic from 'utils/Wallet/getPrivateKeyAndMnemonic';
 import { useAppDispatch } from 'store/Provider/hooks';
@@ -132,7 +133,7 @@ export const AddressBackup = () => {
   // 顶部风险提示
   const tipView = (
     <div className="address-backup-tip-wrap">
-      <CustomSvgV3 type="warning" className="address-backup-tip-icon" />
+      <CustomSvg type="WarningIcon" className="address-backup-tip-icon" />
       <div className="address-backup-tip-text-container">
         <div className="address-backup-tip-title">DO NOT share your seed phrase with anyone!</div>
         <div className="address-backup-tip-sub-title">

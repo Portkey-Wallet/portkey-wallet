@@ -8,48 +8,21 @@ import { CustomSvgV3 } from 'components/CustomSvgV3';
 import { CommonButton } from '@portkey/did-ui-react';
 import { resetWallet } from '@portkey-wallet/store/store-eoa/wallet/actions';
 import { resetDapp } from '@portkey-wallet/store/store-eoa/dapp/actions';
-import BackupAddressOverlay, { BackupType } from '../AddressDetail/BackupAddressOverlay';
-import { TWalletInfo, TAccountInfo } from '@portkey-wallet/types/types-eoa/wallet';
+import BackupAddressOverlay from '../AddressDetail/BackupAddressOverlay';
 import './index.less';
 import { UnlockOverlay } from '../../../components/UnlockModal';
 import { LOCAL_AVATARS } from 'assets/images/avatars/avatars';
+import { useAddressBackupModal } from '../AddressBackup/useAddressBackupModal';
 
 export const ResetApp: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigateState();
   const walletList = useWalletListState();
 
-  const [backupModal, setBackupModal] = useState<{
-    open: boolean;
-    type: BackupType;
-    wallet?: TWalletInfo;
-    account?: TAccountInfo;
-  }>({ open: false, type: 'seed phrase', wallet: undefined, account: undefined });
+  const { backupModal, setBackupModal, handleView, handleBackupContinue } = useAddressBackupModal();
 
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const [unlockOverlayOpen, setUnlockOverlayOpen] = useState(false);
-
-  const handleView = useCallback((wallet: TWalletInfo, account: TAccountInfo) => {
-    setBackupModal({
-      open: true,
-      type: wallet.AESEncryptMnemonic ? 'seed phrase' : 'private key',
-      wallet,
-      account,
-    });
-    console.log('handleView click: ', backupModal);
-  }, []);
-
-  const handleBackupContinue = useCallback(() => {
-    setBackupModal((prev) => ({ ...prev, open: false }));
-    // TODO: 跳转到备份页面并安全校验
-    navigate('/wallet/backup/view', {
-      state: {
-        walletToBeBackup: backupModal.wallet,
-        accountToBeBackup: backupModal.account,
-        backupType: backupModal.type === 'private key' ? 'Private key' : 'Seed phrase',
-      },
-    });
-  }, [backupModal.account, backupModal.type, backupModal.wallet, navigate]);
 
   const handleResetApp = useCallback(() => {
     setConfirmModalOpen(true);
@@ -87,7 +60,6 @@ export const ResetApp: React.FC = () => {
           return (
             <div className="reset-app-wallet-card" key={wallet.key || idx}>
               <div className="reset-app-wallet-info">
-                {/* TODO: 头像可用CustomSvgV3或自定义 */}
                 <div className="reset-app-wallet-avatar">
                   <img
                     className="reset-app-wallet-avatar-img"
@@ -124,7 +96,7 @@ export const ResetApp: React.FC = () => {
         type={backupModal.type}
         walletToBeBackup={backupModal.wallet}
         accountToBeBackup={backupModal.account}
-        onContinue={handleBackupContinue}
+        onContinue={() => handleBackupContinue({})}
         onClose={() => setBackupModal((prev) => ({ ...prev, open: false }))}
       />
       {/* 确认重置弹窗 */}

@@ -1,5 +1,4 @@
 import React, { useEffect, useRef } from 'react';
-import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { DrawerOrModal, IDrawerOrModalInstance } from 'components/DrawerOrModal';
 import { CommonButton } from '@portkey/did-ui-react';
 import { useRemoveWallet } from '../hooks/useRemoveWallet';
@@ -12,6 +11,8 @@ import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 import { updateWallet } from '@portkey-wallet/store/store-eoa/wallet/actions';
 import { TWalletInfo } from '@portkey-wallet/types/types-eoa/wallet';
 import { CommonTooltip } from 'components/CommonTooltipV2';
+import BackupAddressOverlay from '../AddressDetail/BackupAddressOverlay';
+import { useAddressBackupModal } from '../AddressBackup/useAddressBackupModal';
 
 export interface AddressCardHeaderProps {
   privateKeyTipShow?: boolean;
@@ -45,6 +46,9 @@ const AddressCardHeader: React.FC<AddressCardHeaderProps> = ({
     walletKeyToBeRemove?: string | undefined;
   }>();
   const { action, walletKeyToBeRemove } = state || {};
+
+  const { backupModal, setBackupModal, handleView, handleBackupContinue } = useAddressBackupModal();
+
   useEffect(() => {
     if (action === 'REMOVE_WALLET' && walletKeyToBeRemove) {
       removeWallet(walletKeyToBeRemove, () => {
@@ -104,7 +108,7 @@ const AddressCardHeader: React.FC<AddressCardHeaderProps> = ({
         className="wallet-remove-modal"
         title={
           <span>
-            <ExclamationCircleOutlined className="address-card-header-warning-icon" />
+            <CustomSvgV3 type="error" className="address-card-header-warning-icon" />
           </span>
         }
         content={
@@ -119,7 +123,10 @@ const AddressCardHeader: React.FC<AddressCardHeaderProps> = ({
               <CommonButton
                 type="primary"
                 onClick={() => {
-                  /* TODO: show backup modal */
+                  if (!walletInfo || !walletInfo.key) {
+                    return;
+                  }
+                  handleView(walletInfo, walletInfo.accountList[0]);
                 }}>
                 View {typeText}
               </CommonButton>
@@ -188,6 +195,19 @@ const AddressCardHeader: React.FC<AddressCardHeaderProps> = ({
             </CommonButton>
           </div>
         }
+      />
+      <BackupAddressOverlay
+        open={backupModal.open}
+        type={backupModal.type}
+        walletToBeBackup={backupModal.wallet}
+        accountToBeBackup={backupModal.account}
+        onContinue={() =>
+          handleBackupContinue({
+            backUrl: '/wallet/manage',
+            backParams: { showManaging: true },
+          })
+        }
+        onClose={() => setBackupModal((prev) => ({ ...prev, open: false }))}
       />
       {!useManageStyle ? (
         <>

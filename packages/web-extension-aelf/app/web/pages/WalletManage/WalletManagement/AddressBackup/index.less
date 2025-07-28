@@ -20,8 +20,8 @@
   display: flex;
   flex-direction: row;
   align-items: flex-start;
-  background: #2a1e1e;
-  border: 1px solid #4e2323;
+  background: @bg-danger3;
+  border: 1px solid @border-danger3;
   border-radius: 16px;
   padding: 16px;
   margin-bottom: 24px;
@@ -32,6 +32,12 @@
   height: 22px;
   margin-right: 12px;
   flex-shrink: 0;
+  svg {
+    /* stylelint-disable-next-line no-descending-specificity */
+    path {
+      fill: @icon-danger3 !important;
+    }
+  }
 }
 
 .address-backup-tip-text-container {
@@ -39,14 +45,14 @@
 }
 
 .address-backup-tip-title {
-  color: #ff4d4f;
+  color: @text-danger6;
   font-size: 16px;
   font-weight: 500;
   margin-bottom: 4px;
 }
 
 .address-backup-tip-sub-title {
-  color: #ff4d4f;
+  color: @text-danger6;
   font-size: 14px;
 }
 
@@ -148,11 +154,17 @@
 
 .address-backup-copy-success {
   margin-left: 8px;
-  color: #52c41a;
+  color: @text-success2;
 }
 
 .success-color {
-  color: #52c41a !important;
+  color: @icon-success2 !important;
+  svg {
+    /* stylelint-disable-next-line no-descending-specificity */
+    path {
+      fill: @icon-success2 !important;
+    }
+  }
 }
 
 .address-backup-wallet-list {

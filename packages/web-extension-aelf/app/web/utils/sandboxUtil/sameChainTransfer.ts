@@ -1,46 +1,36 @@
 import { ChainType } from '@portkey-wallet/types';
 import { BaseToken } from '@portkey-wallet/types/types-eoa/token';
-import { managerForwardCall } from './managerForwardCall';
-import { GuardianItem } from 'types/guardians';
 import { IChainItemType } from '@portkey-wallet/types/types-ca/chain';
+import { callContract } from './callContract';
 
 const sameChainTransfer = async ({
   chainInfo,
   chainType,
   privateKey,
-  caHash,
   amount,
   tokenInfo,
   memo = '',
   toAddress: to,
-  guardiansApproved,
 }: {
   chainInfo: IChainItemType;
   chainType: ChainType;
   privateKey: string;
   tokenInfo: BaseToken;
-  caHash: string;
   amount: number | string;
   toAddress: string;
   memo?: string;
-  guardiansApproved?: GuardianItem[];
 }) => {
-  return managerForwardCall({
+  return callContract({
     rpcUrl: chainInfo.endPoint,
     chainType,
-    address: chainInfo.caContractAddress,
+    address: chainInfo.defaultToken.address,
     privateKey,
+    methodName: 'Transfer',
     paramsOption: {
-      caHash,
-      contractAddress: tokenInfo.address,
-      methodName: 'Transfer',
-      args: {
-        symbol: tokenInfo.symbol,
-        to,
-        amount,
-        memo,
-      },
-      guardiansApproved,
+      symbol: tokenInfo.symbol,
+      to,
+      amount,
+      memo,
     },
   });
 };

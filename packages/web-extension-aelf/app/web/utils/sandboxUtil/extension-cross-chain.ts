@@ -2,8 +2,8 @@ import { IChainItemType } from '@portkey-wallet/types/types-ca/chain';
 import { CurrentWalletType } from '@portkey-wallet/types/wallet';
 import { EBridge, TEBridgeOptions } from '@portkey-wallet/utils/eBridge';
 import { ICreateReceiptParams } from '@portkey-wallet/utils/eBridge/types/bridge';
-import CrossTransfer from '@portkey-wallet/utils/withdraw';
-import { IWithdrawParams } from '@portkey-wallet/utils/withdraw/types';
+import CrossTransfer from '@portkey-wallet/utils/withdrawEOA';
+import { IWithdrawParams } from '@portkey-wallet/utils/withdrawEOA/types';
 import SandboxEventTypes from 'messages/SandboxEventTypes';
 import SandboxEventService, { SandboxErrorCode } from 'service/SandboxEventService';
 

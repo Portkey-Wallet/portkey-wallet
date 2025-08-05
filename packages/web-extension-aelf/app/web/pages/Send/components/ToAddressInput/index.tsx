@@ -12,18 +12,19 @@ import { CustomSvgV3 } from 'components/CustomSvgV3';
 import CircleLoading from 'components/CircleLoading';
 import { Input } from 'antd';
 import { SendPageTypeEnum, SendStage, ToAccount } from 'pages/Send';
-import { IAssetToken, INftInfoType } from '@portkey-wallet/store/store-ca/assets/type';
+import { IToSendAssetParamsType } from '@portkey-wallet/types/types-eoa/routeParams';
 import { Warning1Arr, WarningKey } from '@portkey-wallet/constants/constants-ca/send';
 import { INetworkItem } from '../SelectNetwork';
-import { useDefaultToken, useIsValidSuffix } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { useDefaultToken, useIsValidSuffix } from '@portkey-wallet/hooks/hooks-eoa/chainList';
 import { formatStr2EllipsisStr, getAddressChainId, isSameAddresses } from '@portkey-wallet/utils';
 import clsx from 'clsx';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
 import { getSendNetworkList } from 'pages/Send/utils';
 import { ChainId } from '@portkey-wallet/types';
 import { getAelfAddress, isCrossChain, isDIDAelfAddress } from '@portkey-wallet/utils/aelf';
-import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
+import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-eoa/activity';
 import './index.less';
+import { useCurrentAccount } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 
 const { TextArea } = Input;
 export interface IToAddressInputRef {
@@ -35,8 +36,7 @@ export interface IToAddressInputProps {
   toAccount: ToAccount;
   setToAccount: Dispatch<SetStateAction<ToAccount>>;
   stage: SendStage;
-  selectedToken?: IAssetToken | INftInfoType;
-  caAddress: string;
+  selectedToken?: IToSendAssetParamsType;
   warning: WarningKey | undefined;
   checkFinish: boolean;
   setStage: (v: SendStage) => void;
@@ -54,7 +54,6 @@ const ToAddressInput = forwardRef(
       setToAccount,
       stage,
       selectedToken,
-      caAddress,
       sendType,
       warning,
       checkFinish,
@@ -71,6 +70,8 @@ const ToAddressInput = forwardRef(
     const [checkedPass, setCheckedPass] = useState(false);
     const isValidChainId = useIsValidSuffix();
     const defaultToken = useDefaultToken();
+    const wallet = useCurrentAccount();
+
     const isDangerWarning = useMemo(() => warning && Warning1Arr.includes(warning), [warning]);
 
     const changeValue = useCallback(
@@ -111,10 +112,12 @@ const ToAddressInput = forwardRef(
         // include chainId
         if (v.includes('_') && selectedToken) {
           const suffix = getAddressChainId(v, selectedToken?.chainId as ChainId);
-          console.log('checkAddressByFE _', v);
 
           // same address
-          if (isSameAddresses(getAelfAddress(caAddress), getAelfAddress(v)) && suffix === selectedToken?.chainId) {
+          if (
+            isSameAddresses(getAelfAddress(wallet?.address), getAelfAddress(v)) &&
+            suffix === selectedToken?.chainId
+          ) {
             setCheckedPass(false);
             setWarning(WarningKey.SAME_ADDRESS);
           } else if (!isValidChainId(suffix)) {
@@ -130,7 +133,7 @@ const ToAddressInput = forwardRef(
             setCheckedPass(true);
           }
         } else {
-          const isSameAddress = isSameAddresses(getAelfAddress(caAddress) || '', v);
+          const isSameAddress = isSameAddresses(getAelfAddress(wallet?.address) || '', v);
           // same address
           if (
             selectedToken?.chainId === MAIN_CHAIN_ID &&
@@ -160,11 +163,13 @@ const ToAddressInput = forwardRef(
         setCheckFinish(true);
         return true;
       },
-      [caAddress, defaultToken.symbol, isValidChainId, selectedToken, setCheckFinish, setToAccount, setWarning],
+      [defaultToken.symbol, isValidChainId, selectedToken, setCheckFinish, setToAccount, setWarning, wallet?.address],
     );
 
     const getNetworkList = useCallback(
       async (toAddress: string) => {
+        console.log('getNetworkList', '===getNetworkList');
+
         if (!toAddress) {
           setWarning(undefined);
           setIsChecking(false);
@@ -174,13 +179,12 @@ const ToAddressInput = forwardRef(
 
         try {
           setIsChecking(true);
-          const { data, code } = await getSendNetworkList({
+          const data = await getSendNetworkList({
             symbol: selectedToken?.symbol || '',
             chainId: (selectedToken?.chainId || 'AELF') as ChainId,
             toAddress,
           });
-
-          if (code === '40001') {
+          if (!data?.networkList?.length) {
             setCheckedPass(false);
             setWarning(WarningKey.INVALID_ADDRESS);
           } else {
@@ -214,6 +218,8 @@ const ToAddressInput = forwardRef(
 
     useEffect(() => {
       checkAddress();
+      // disable checkAddress
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [toAccount.address]);
 
     useImperativeHandle(ref, () => ({

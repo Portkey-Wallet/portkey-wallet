@@ -7,8 +7,8 @@ import { customFetch } from '@portkey-wallet/utils/fetch';
 import { getContractBasic, getTxResult } from '@portkey-wallet/contracts/utils';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
 import UISdkSandboxEventTypes from 'messages/UISdkSandboxEventTypes';
-import { ICrossTransferInitOption, IWithdrawParams } from '@portkey-wallet/utils/withdraw/types';
-import CrossTransfer from '@portkey-wallet/utils/withdraw';
+import { ICrossTransferInitOption, IWithdrawParams } from '@portkey-wallet/utils/withdrawEOA/types';
+import CrossTransfer from '@portkey-wallet/utils/withdrawEOA';
 import { IContract, IStorageSuite } from '@portkey/types';
 import AElf from 'aelf-sdk';
 import { handleErrorMessage } from '@portkey/did-ui-react';
@@ -407,28 +407,22 @@ class SandboxUtil {
     const data = event.data.data ?? {};
     try {
       const { options: _options, params: _params, chainType } = data;
-      console.log(data, 'etransferCrossTransfer===', _options, _params);
       if (chainType !== 'aelf') throw 'Not support';
       const options: Omit<ICrossTransferInitOption, 'storage'> = JSON.parse(_options);
       const params: Omit<IWithdrawParams, 'tokenContract' | 'portkeyContract'> = JSON.parse(_params);
+      console.log(data, 'etransferCrossTransfer===', options, params);
       const crossTransfer = new CrossTransfer();
       crossTransfer.init({ ...options, storage: asyncStorage });
       const chainInfo = options.chainList.find((chain) => chain.chainId === params.chainId);
       const rpcUrl = chainInfo?.endPoint;
       if (!rpcUrl) throw 'Can not get rpcUrl';
-      const privateKey = AElf.wallet.AESDecrypt(options.walletInfo.AESEncryptPrivateKey, options.pin);
+      const privateKey = AElf.wallet.AESDecrypt(options.account.AESEncryptPrivateKey, options.pin);
       const tokenContract = await SandboxUtil._getELFSendContract(
         rpcUrl,
         chainInfo.defaultToken.address || '',
         privateKey,
       );
-
-      const portkeyContract = await SandboxUtil._getELFSendContract(
-        rpcUrl,
-        chainInfo.caContractAddress || '',
-        privateKey,
-      );
-      const result = await crossTransfer.withdraw({ ...params, tokenContract, portkeyContract });
+      const result = await crossTransfer.withdraw({ ...params, tokenContract });
       if (!result?.transactionId) throw 'Transfer error';
       const aelf = getAelfInstance(rpcUrl);
 

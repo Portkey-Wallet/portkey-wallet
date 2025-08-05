@@ -6,6 +6,7 @@ import aes from '@portkey-wallet/utils/aes';
 import { ChainId } from '@portkey/provider-types';
 import { store } from 'store/Provider/store';
 import AElf from 'aelf-sdk';
+import { TAccountInfo } from '@portkey-wallet/types/types-eoa/wallet';
 
 const walletMap: { [address: string]: AElfWallet } = {};
 export const getStoreState = () => {
@@ -13,6 +14,23 @@ export const getStoreState = () => {
 };
 
 export const getWallet = () => getStoreState().wallet;
+export const getCurrentAccountAddress = () => getWallet()?.currentAccountAddress;
+
+export const getAccountList = () => {
+  const walletList = getWallet().walletList;
+  const privateKeyAccountList = getWallet().privateKeyAccountList;
+  const list: TAccountInfo[] = [];
+  walletList.forEach((wallet) => list.push(...wallet.accountList));
+  list.push(...privateKeyAccountList);
+  return list;
+};
+
+export const getCurrentAccount = () => {
+  const list = getAccountList();
+  const currentAccountAddress = getCurrentAccountAddress();
+  return list.find((i) => i.address === currentAccountAddress);
+};
+
 export const getWalletInfo = () => getWallet()?.walletInfo;
 export const getUser = () => getStoreState().userInfo;
 export const getPin = () => getUser().passwordSeed;

@@ -23,7 +23,7 @@ export interface WalletInfoType {
   AESEncryptPrivateKey: string;
   AESEncryptMnemonic: string;
   walletName?: string;
-  publicKey?: PublicKey;
+  publicKey: PublicKey;
   isBackup?: boolean;
 }
 

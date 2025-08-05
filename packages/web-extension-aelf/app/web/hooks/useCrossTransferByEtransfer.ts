@@ -1,30 +1,38 @@
 import { useEffect, useMemo } from 'react';
 import { CrossTransferExtension } from 'utils/sandboxUtil/extension-cross-chain';
 import { usePin } from './usePin';
-import { useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
-import { useCurrentChainList } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-eoa/network';
+import { useCurrentChainList } from '@portkey-wallet/hooks/hooks-eoa/chainList';
 import { localStorage } from 'redux-persist-webextension-storage';
+import { useCurrentAccount } from '@portkey-wallet/hooks/hooks-eoa/wallet';
+import { reCAPTCHAActionETransfer } from 'utils/lib/serviceWorkerAction';
 
 const crossChainTransfer = new CrossTransferExtension();
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const verifyHumanMachine = async (_language: any, _isEtransfer = false, isMainnet?: boolean) => {
+  const req = await reCAPTCHAActionETransfer(isMainnet);
+  return req.response;
+};
+
 export const useCrossTransferByEtransfer = () => {
   const pin = usePin();
-  const wallet = useCurrentWallet();
+  const account = useCurrentAccount();
   const { eTransferUrl, eTransferCA } = useCurrentNetworkInfo();
   const currentChainList = useCurrentChainList();
 
   useEffect(() => {
-    if (!eTransferUrl || !pin || !currentChainList || !eTransferCA) return;
+    if (!eTransferUrl || !pin || !currentChainList || !eTransferCA || !account) return;
     crossChainTransfer.init({
-      walletInfo: wallet.walletInfo,
+      account,
       eTransferUrl: eTransferUrl,
       pin,
       chainList: currentChainList,
       eTransferCA,
       storage: localStorage,
+      verifyHumanMachine: verifyHumanMachine,
     });
-  }, [currentChainList, eTransferCA, eTransferUrl, pin, wallet.walletInfo]);
+  }, [account, currentChainList, eTransferCA, eTransferUrl, pin]);
 
   return useMemo(
     () => ({

@@ -1,9 +1,0 @@
-{
-  "extends": "../../tsconfig.json",
-  "compilerOptions": {
-    "target": "ES6",
-    "lib": ["dom", "dom.iterable", "esnext", "ES2017"],
-    "baseUrl": "app/web"
-  },
-  "include": ["app/web", "react-app-env.d.ts"]
-}

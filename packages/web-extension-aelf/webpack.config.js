@@ -44,9 +44,9 @@ let config = {
 
   resolve: {
     extensions: ['.js', '.ts', '.tsx', '.json'],
-    alias: {
-      'aelf-sdk$': 'aelf-sdk/dist/aelf.umd.js',
-    },
+    // alias: {
+    //   'aelf-sdk$': 'aelf-sdk/dist/aelf.umd.js',
+    // },
     fallback: {
       // crypto: false,
       crypto: require.resolve('crypto-browserify'),
@@ -54,7 +54,7 @@ let config = {
       buffer: require.resolve('buffer'),
       fs: false,
       child_process: false,
-      "vm": require.resolve("vm-browserify"),
+      // "vm": require.resolve("vm-browserify"),
       "http": require.resolve("stream-http"),
       "https": require.resolve("https-browserify"),
       "zlib": require.resolve("browserify-zlib")
@@ -218,6 +218,9 @@ let config = {
     }),
     new webpack.ProvidePlugin({
       Buffer: ['buffer', 'Buffer'],
+    }),
+    new webpack.ProvidePlugin({
+      process: 'process/browser'
     }),
     new CircularDependencyPlugin({
       // exclude detection of files based on a RegExp

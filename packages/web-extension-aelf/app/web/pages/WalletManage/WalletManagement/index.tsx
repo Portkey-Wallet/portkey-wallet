@@ -9,6 +9,7 @@ import { CommonButton } from '@portkey/did-ui-react';
 import './components/AddressCardBase.less';
 import './WalletManagement.less';
 import CommonHeader from 'components/CommonHeader';
+import { CustomSvgV3 } from 'components/CustomSvgV3';
 
 export const WalletManagement: React.FC = () => {
   const currentWallet = useCurrentWallet();
@@ -111,6 +112,7 @@ export const WalletManagement: React.FC = () => {
                 disabled={addWalletDisabled}
                 type="outline"
                 block>
+                <CustomSvgV3 type="inport" />
                 Import existing wallet
               </CommonButton>
               <CommonButton
@@ -119,7 +121,9 @@ export const WalletManagement: React.FC = () => {
                 disabled={addWalletDisabled}
                 type="outline"
                 block>
-                Create a new wallet <span className="wallet-management-advanced">Advanced</span>
+                <CustomSvgV3 type="Wallet" />
+                Create a new wallet
+                {/*<span className="wallet-management-advanced">Advanced</span>*/}
               </CommonButton>
             </div>
           </>

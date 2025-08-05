@@ -40,8 +40,11 @@ export default function LockPage({ onUnLockHandler, ...props }: LockPageProps) {
 
       if (wallet.walletAddedCount <= 0) return singleMessage.error(WalletError.noCreateWallet);
 
-      const mnemonic = aes.decrypt(wallet.walletList[0].AESEncryptMnemonic, password);
-      if (mnemonic) {
+      const unlockedData = aes.decrypt(
+        wallet.walletList[0].AESEncryptMnemonic || wallet.walletList[0].accountList[0].AESEncryptPrivateKey,
+        password,
+      );
+      if (unlockedData) {
         setIsPassword(1);
         dispatch(setPasswordSeed(password));
         await setTokenConfig(password);

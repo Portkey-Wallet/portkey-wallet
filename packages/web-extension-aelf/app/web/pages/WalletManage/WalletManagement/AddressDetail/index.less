@@ -1,0 +1,187 @@
+@import '../../../../assets/theme/color.less';
+
+.address-detail-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  background: @bg-base1;
+}
+
+.address-detail-header {
+  width: 100%;
+}
+
+.address-detail-user-info-wrap {
+  margin-top: 24px;
+  margin-bottom: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.address-detail-avatar-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.address-detail-avatar-container {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  margin: 0 8px;
+  cursor: pointer;
+}
+
+.address-detail-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.address-detail-edit-icon {
+  position: absolute;
+  right: -10px;
+  bottom: 0;
+  z-index: 1;
+  width: 32px;
+  height: 32px;
+  border-radius: 16px;
+  border: 1px solid @border-base1;
+  background: @bg-base2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.address-detail-edit-icon-svg {
+  width: 20px;
+  height: 20px;
+  color: @text-base1;
+}
+
+.address-detail-nickname {
+  margin-top: 12px;
+  margin-right: -16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+}
+
+.address-detail-nickname-text {
+  color: @text-base1;
+  text-align: center;
+  margin-right: 4px;
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.address-detail-nickname-edit {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.address-detail-content {
+  flex: 1;
+  width: 100%;
+  padding: 0 16px;
+}
+
+.address-detail-card {
+  border-radius: 8px;
+  background: @bg-base2;
+  height: 56px;
+  padding: 0 16px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background: @bg-base3;
+  }
+}
+
+.address-detail-card-info {
+  display: flex;
+  align-items: center;
+}
+
+.address-detail-card-title {
+  color: @text-base1;
+  font-size: 16px;
+  font-weight: 400;
+}
+
+.address-detail-card-right {
+  display: flex;
+  align-items: center;
+}
+
+.address-detail-card-sub-text {
+  color: @textBase1Opacity07;
+  font-size: 14px;
+  line-height: 19.6px;
+  margin-right: 12px;
+}
+
+.address-detail-not-backup {
+  color: @text-danger1;
+}
+
+.address-detail-card-icon {
+  width: 12px;
+  height: 12px;
+  color: @textBase1Opacity07;
+}
+
+.address-detail-card-list {
+  .address-detail-card {
+    margin-bottom: 0;
+  }
+}
+
+.address-detail-divider {
+  height: 1px;
+  background: transparent;
+  margin: 0 16px;
+}
+
+.address-detail-delete-wrap {
+  height: 88px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.address-detail-delete-text {
+  color: @text-danger1;
+  font-size: 16px;
+  font-weight: 500;
+  text-align: center;
+  cursor: pointer;
+  transition: color 0.2s;
+
+  &:hover {
+    color: @text-danger2;
+  }
+}
+
+.address-detail-delete-disabled {
+  color: @text-disabled1;
+  cursor: not-allowed;
+
+  &:hover {
+    color: @text-disabled1;
+  }
+}

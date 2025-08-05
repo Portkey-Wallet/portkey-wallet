@@ -1,0 +1,87 @@
+@import '../../../../assets/theme/color.less';
+
+.wallet-rename-modal {
+  .address-card-header-modal-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 0 0;
+  }
+  .wallet-rename-avatar-wrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: @bg-base2;
+    width: 80px;
+    height: 80px;
+    border-radius: 40px;
+    margin-top: 8px;
+    margin-bottom: 24px;
+  }
+  .wallet-rename-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 32px;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    svg {
+      /* stylelint-disable-next-line no-descending-specificity */
+      path {
+        fill: @textBase1Opacity04 !important;
+      }
+    }
+  }
+  .wallet-rename-input-wrap {
+    position: relative;
+    width: 100%;
+    margin-bottom: 8px;
+  }
+  .wallet-rename-input {
+    width: 100%;
+    height: 48px;
+    border-radius: 8px;
+    border: 1px solid @border-base1;
+    padding: 0 40px 0 16px;
+    font-size: 16px;
+    color: @text-base1;
+    background: @bg-base1;
+    outline: none;
+    box-sizing: border-box;
+  }
+  .wallet-rename-clear {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 18px;
+    color: @text-disabled1;
+    cursor: pointer;
+    user-select: none;
+  }
+  .wallet-rename-count-error {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 8px;
+  }
+  .wallet-rename-count {
+    font-size: 12px;
+    color: @text-base3;
+  }
+  .wallet-rename-error {
+    font-size: 12px;
+    color: @text-danger1;
+  }
+  .wallet-rename-save-btn {
+    width: 100%;
+    height: 48px;
+    border-radius: 48px;
+    font-size: 16px;
+    font-weight: 500;
+    &:disabled {
+      cursor: not-allowed;
+    }
+  }
+}

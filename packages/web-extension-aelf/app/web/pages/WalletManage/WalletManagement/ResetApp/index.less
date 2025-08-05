@@ -1,0 +1,159 @@
+@import '../../../../assets/theme/color.less';
+
+.reset-app-page {
+  min-height: 100%;
+  background: @bg-base1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 16px 32px;
+}
+.reset-app-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: @text-base1;
+  margin-bottom: 8px;
+  text-align: left;
+  width: 100%;
+}
+.reset-app-desc {
+  font-size: 16px;
+  color: @text-base3;
+  margin-bottom: 24px;
+  text-align: left;
+  width: 100%;
+}
+.reset-app-wallet-list {
+  width: 100%;
+  margin-bottom: 32px;
+}
+.reset-app-wallet-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: @bg-base2;
+  border-radius: 8px;
+  height: 72px;
+  padding: 0 16px;
+  margin-bottom: 16px;
+}
+.reset-app-wallet-info {
+  display: flex;
+  align-items: center;
+}
+.reset-app-wallet-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 20px;
+  background: @bg-base3;
+  margin-right: 12px;
+  .reset-app-wallet-avatar-img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 12px;
+    object-fit: cover;
+  }
+}
+.reset-app-wallet-name {
+  font-size: 16px;
+  font-weight: 500;
+  color: @text-base1;
+}
+.reset-app-wallet-type {
+  font-size: 14px;
+  color: @text-base3;
+  margin-top: 4px;
+}
+.reset-app-view-btn {
+  min-width: 66px;
+  height: 32px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 0 16px;
+}
+.reset-app-footer {
+  width: 100%;
+  margin-top: auto;
+
+  .reset-app-reset-btn,.ant-btn {
+    width: 100%;
+    height: 48px;
+    color: @text-danger1;
+    border-color: transparent;
+    border-radius: 48px;
+    font-size: 16px;
+    font-weight: 500;
+
+    &.reset-app-reset-btn {
+      margin-top: 8px;
+      color: @text-danger1;
+      border-color: transparent;
+      background-color: transparent;
+
+      &:hover {
+        color: @text-base1;
+        border-color: @border-danger2;
+        background-color: @bg-danger4;
+      }
+    }
+
+  }
+}
+
+.reset-app-confirm-modal {
+  .reset-app-confirm-modal-title-icon {
+    width: 32px;
+    height: 32px;
+  }
+  .reset-app-confirm-warning-icon {
+    color: @icon-danger2;
+    font-size: 32px;
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+  .reset-app-confirm-content {
+    padding: 16px 0 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    .reset-app-confirm-modal-title {
+      font-size: 20px;
+      line-height: 1.4;
+      font-weight: 500;
+      font-family: BG;
+      color: @text-base1;
+      margin-bottom: 16px;
+      width: 100%;
+    }
+  }
+  .reset-app-confirm-message {
+    font-size: 16px;
+    color: @text-base1;
+    margin-bottom: 24px;
+    text-align: left;
+    width: 100%;
+  }
+  .reset-app-confirm-btn {
+    width: 100%;
+    height: 48px;
+    border-radius: 48px;
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 12px;
+    background: @bg-danger1;
+    color: @text-base1;
+    &:hover,&:focus {
+      background: @bg-danger4;
+      color: @text-base1;
+    }
+  }
+  .reset-app-cancel-btn {
+    width: 100%;
+    height: 48px;
+    border-radius: 48px;
+    font-size: 16px;
+    font-weight: 500;
+  }
+}

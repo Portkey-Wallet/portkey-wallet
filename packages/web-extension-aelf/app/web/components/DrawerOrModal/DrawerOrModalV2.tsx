@@ -1,42 +1,31 @@
-import { useState, forwardRef, useImperativeHandle, useMemo, useCallback } from 'react';
+import { useMemo } from 'react';
 import CommonCloseHeader from 'components/CommonCloseHeader';
 import BaseDrawer from '../BaseDrawer';
 import { useCommonState } from 'store/Provider/hooks';
 import BaseModal from 'components/BaseModal';
 import './index.less';
 
-export interface IDrawerOrModalInstance {
-  open: () => void;
-  close: () => void;
-}
-
 interface IDrawerOrModal {
   content: React.ReactNode;
   title: string | React.ReactNode;
   className: string;
   height?: number;
+  open?: boolean;
+  onClose: () => void;
 }
 
-export const DrawerOrModal = forwardRef(({ content, title, className, height }: IDrawerOrModal, ref) => {
+export const DrawerOrModal = ({ content, title, className, height, open = false, onClose }: IDrawerOrModal) => {
   const { isNotLessThan768 } = useCommonState();
 
-  const [isOpen, setIsOpen] = useState(false);
-
-  const handleOpen = useCallback(() => setIsOpen(true), []);
-  const handleClose = useCallback(() => setIsOpen(false), []);
-
-  useImperativeHandle(ref, () => ({
-    open: handleOpen,
-    close: handleClose,
-  }));
+  console.log('DrawerOrModal v2 open', open);
 
   const commonProps = useMemo(
     () => ({
       destroyOnClose: true,
-      open: isOpen,
-      onClose: handleClose,
+      open: open,
+      onClose: onClose,
     }),
-    [isOpen, handleClose],
+    [open, onClose],
   );
 
   return isNotLessThan768 ? (
@@ -47,7 +36,7 @@ export const DrawerOrModal = forwardRef(({ content, title, className, height }: 
       // closable={false}
       className={'common-drawer-or-modal-modal ' + className}
       maskClosable>
-      <CommonCloseHeader title={title} onClose={handleClose} />
+      <CommonCloseHeader title={title} onClose={onClose} />
       {content}
     </BaseModal>
   ) : (
@@ -57,8 +46,8 @@ export const DrawerOrModal = forwardRef(({ content, title, className, height }: 
       height={height || 'auto'}
       maskClosable
       placement="bottom">
-      <CommonCloseHeader title={title} onClose={handleClose} />
+      <CommonCloseHeader title={title} onClose={onClose} />
       {content}
     </BaseDrawer>
   );
-});
+};

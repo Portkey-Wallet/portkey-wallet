@@ -6,6 +6,8 @@ import { TWalletInfo, TAccountInfo } from '@portkey-wallet/types/types-eoa/walle
 import { useCurrentAccount } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 import { changeCurrentWallet } from '@portkey-wallet/store/store-eoa/wallet/actions';
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
+import { CustomSvgV3 } from 'components/CustomSvgV3';
+import { useNavigateState } from 'hooks/router';
 
 interface AddressCardBaseProps {
   viewOnly?: boolean;
@@ -38,11 +40,18 @@ const AddressCardBase: React.FC<AddressCardBaseProps> = ({
 }) => {
   const currentAccount = useCurrentAccount();
   const dispatch = useAppCommonDispatch();
+  const navigate = useNavigateState();
 
   const cardOperation = useCallback(
-    (account: TAccountInfo) => {
+    (account: TAccountInfo, currentWalletKey: string) => {
       if (addressManageView) {
         // TODO: 跳转到地址详情页
+        navigate('/wallet/address/detail', {
+          state: {
+            currentWalletKey: currentWalletKey,
+            currentAddress: account.address,
+          },
+        });
       }
       if (addressSelecting) {
         dispatch(
@@ -53,7 +62,7 @@ const AddressCardBase: React.FC<AddressCardBaseProps> = ({
         // TODO: 关闭选择弹窗
       }
     },
-    [addressManageView, addressSelecting, dispatch, walletInfo?.key],
+    [addressManageView, addressSelecting, dispatch, navigate],
   );
 
   return (
@@ -72,7 +81,7 @@ const AddressCardBase: React.FC<AddressCardBaseProps> = ({
             <div key={index}>
               <div
                 className="address-card-base-list-item"
-                onClick={cardTouchable ? () => cardOperation(account) : undefined}>
+                onClick={cardTouchable ? () => cardOperation(account, walletInfo?.key) : undefined}>
                 <img
                   className="address-card-base-avatar"
                   src={LOCAL_AVATARS[account.icon || 'avatar_1']}
@@ -83,9 +92,7 @@ const AddressCardBase: React.FC<AddressCardBaseProps> = ({
                   <span className="address-card-base-balance">{totalBalanceInUsd ? `$${totalBalanceInUsd}` : '-'}</span>
                 </div>
                 {addressManageView && !isSelected && <span className="address-card-base-chevron">›</span>}
-                {(addressSelecting || addressManageView) && isSelected && (
-                  <span className="address-card-base-selected-icon">✔</span>
-                )}
+                {(addressSelecting || addressManageView) && isSelected && <CustomSvgV3 type="selected" />}
               </div>
               <div className="address-card-base-divider" />
             </div>
@@ -102,7 +109,7 @@ const AddressCardBase: React.FC<AddressCardBaseProps> = ({
               <span className="address-card-base-add-loading">Loading...</span>
             ) : (
               <>
-                <span className="address-card-base-add-icon">＋</span>
+                <CustomSvgV3 className="address-card-base-add-icon" type="add" />
                 <span className="address-card-base-add-text">Add address</span>
               </>
             )}

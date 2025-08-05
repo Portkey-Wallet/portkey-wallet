@@ -12,7 +12,7 @@ import singleMessage from 'utils/singleMessage';
 type ValidateStatus = Parameters<typeof Form.Item>[0]['validateStatus'];
 
 export interface ISetWalletNameFormProps {
-  data: IProfileDetailDataProps;
+  data?: IProfileDetailDataProps;
   saveCallback?: () => void;
   nickName?: string;
   setUserInfo: (params: RequireAtLeastOne<{ nickName: string; avatar: string }>) => Promise<void>;

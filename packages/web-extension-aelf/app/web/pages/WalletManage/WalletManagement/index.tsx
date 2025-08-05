@@ -122,7 +122,8 @@ export const WalletManagement: React.FC = () => {
                 type="outline"
                 block>
                 <CustomSvgV3 type="Wallet" />
-                Create a new wallet <span className="wallet-management-advanced">Advanced</span>
+                Create a new wallet
+                {/*<span className="wallet-management-advanced">Advanced</span>*/}
               </CommonButton>
             </div>
           </>

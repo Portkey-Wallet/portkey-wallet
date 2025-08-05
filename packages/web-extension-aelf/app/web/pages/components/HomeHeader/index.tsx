@@ -21,6 +21,7 @@ import SkeletonCom from 'pages/components/SkeletonCom';
 import { useCurrentAccount } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 import { DrawerOrModal, IDrawerOrModalInstance } from 'components/DrawerOrModal';
 import { AddressSelectModalContent } from '../../WalletManage/WalletManagement/components/AddressSelectModal';
+import { LOCAL_AVATARS } from 'assets/images/avatars/avatars';
 
 export interface IHomeHeaderProps {
   onUserClick?: (e?: any) => void;
@@ -54,7 +55,12 @@ export default function HomeHeader({ onUserClick, unReadShow }: IHomeHeaderProps
           {/* <img src={userInfo.avatar} alt="" /> */}
           {userInfo?.name ? (
             <>
-              <TokenImageDisplay symbol={userInfo.name} src={userInfo.icon} width={20} subDisplay={false} />
+              <TokenImageDisplay
+                symbol={userInfo.name}
+                src={LOCAL_AVATARS[userInfo.icon || 'avatar_1']}
+                width={20}
+                subDisplay={false}
+              />
               <span>{userInfo.name}</span>
               <CustomSvgV3
                 type="arrow-down"

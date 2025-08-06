@@ -1,4 +1,4 @@
-import { useCurrentNetwork } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentNetwork } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { useCallback } from 'react';
 import {
   BRIDGE_TOKEN_WHITE_LIST_MAINNET,
@@ -8,7 +8,7 @@ import {
   BRIDGE_INFO_EVM_MAINNET,
   BRIDGE_INFO_EVM_TESTNET,
 } from '@portkey-wallet/constants/constants-ca/ebridge';
-import { useCurrentChainList } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { useCurrentChainList } from '@portkey-wallet/hooks/hooks-eoa/chainList';
 import { ChainId } from '@portkey-wallet/types';
 import { IEBridgeChainInfo } from '@portkey-wallet/utils/eBridge/types';
 

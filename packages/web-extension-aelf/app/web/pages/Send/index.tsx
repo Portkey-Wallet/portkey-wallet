@@ -1,6 +1,4 @@
 import { useCurrentChain, useCurrentChainList, useDefaultToken } from '@portkey-wallet/hooks/hooks-eoa/chainList';
-import { useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
-
 import { BaseToken } from '@portkey-wallet/types/types-eoa/token';
 import {
   addressFormat,
@@ -232,7 +230,6 @@ export default function Send() {
   const [transferType, setTransferType] = useState(TransferType.GENERAL_SAME_CHAIN);
   const [eBridgeFeeNotEnough, setEBridgeFeeNotEnough] = useState(false);
   const pin = usePin();
-  const { walletInfo } = useCurrentWallet();
   useFetchTxFee();
   const defaultToken = useDefaultToken(chainId);
   useEffectOnce(() => {
@@ -435,7 +432,7 @@ export default function Send() {
             tokenInfo: tokenEBridgeInfo,
           },
           pin,
-          walletInfo,
+          wallet,
           currentChain,
         );
 
@@ -462,14 +459,13 @@ export default function Send() {
 
         const limit = bridge.getLimit();
         console.log('fee,limit', fee, limit);
-        // TODO:createReceipt
-        // const createReceiptResult = await bridge.createReceipt({
-        //   targetAddress: toAccount.address,
-        //   amount: String(amount),
-        //   owner: caAddress,
-        //   caHash: wallet.caHash,
-        // });
-        // console.log(createReceiptResult, 'createReceiptResult===EBridge');
+        const createReceiptResult = await bridge.createReceipt({
+          targetAddress: toAccount.address,
+          amount: String(amount),
+          owner: wallet?.address,
+          account: wallet?.address,
+        });
+        console.log(createReceiptResult, 'createReceiptResult===EBridge');
       }
       setStage(SendStage.Completed);
 
@@ -505,12 +501,11 @@ export default function Send() {
     amount,
     chainId,
     withdraw,
-    wallet?.address,
     getAELFChainInfoConfig,
     getEVMChainInfoConfig,
     getTokenConfig,
     pin,
-    walletInfo,
+    wallet,
     defaultToken.symbol,
     defaultToken.decimals,
     currentNetworkInfo.walletType,
@@ -841,7 +836,7 @@ export default function Send() {
               tokenInfo: tokenEBridgeInfo,
             },
             pin,
-            walletInfo,
+            wallet,
             currentChain,
           );
 
@@ -1039,7 +1034,6 @@ export default function Send() {
     }
   }, [
     currentChain,
-    wallet?.address,
     tokenInfo,
     currentNetworkInfo.walletType,
     type,
@@ -1063,7 +1057,7 @@ export default function Send() {
     getEVMChainInfoConfig,
     getTokenConfig,
     pin,
-    walletInfo,
+    wallet,
     tokenPriceObject,
   ]);
   const toPreviewStage = useCallback(async () => {

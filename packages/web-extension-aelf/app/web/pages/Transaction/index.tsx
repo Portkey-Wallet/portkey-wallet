@@ -1,7 +1,6 @@
-import { SHOW_FROM_TRANSACTION_TYPES } from '@portkey-wallet/constants/constants-ca/activity';
-import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { fetchActivity } from '@portkey-wallet/store/store-ca/activity/api';
-import { ActivityItemType, TransactionStatus } from '@portkey-wallet/types/types-ca/activity';
+import { SHOW_FROM_TRANSACTION_TYPES } from '@portkey-wallet/constants/constants-eoa/activity';
+import { fetchActivity } from '@portkey-wallet/store/store-eoa/activity/api';
+import { ActivityItemType, TransactionStatus } from '@portkey-wallet/types/types-eoa/activity';
 import { getExploreLink } from '@portkey-wallet/utils';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
 import {
@@ -19,19 +18,20 @@ import { useTranslation } from 'react-i18next';
 import { useEffectOnce } from 'react-use';
 import './index.less';
 import { formatTransferTime } from '@portkey-wallet/utils/time';
-import { useCurrentChain, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { useCurrentChain, useDefaultToken } from '@portkey-wallet/hooks/hooks-eoa/chainList';
 import { addressFormat } from '@portkey-wallet/utils';
 import { useCommonState } from 'store/Provider/hooks';
 import PromptFrame from 'pages/components/PromptFrame';
-import { useFreshTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
-import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
+import { useFreshTokenPrice } from '@portkey-wallet/hooks/hooks-eoa/useTokensPrice';
+import { BalanceTab } from '@portkey-wallet/constants/constants-eoa/assets';
 import PromptEmptyElement from 'pages/components/PromptEmptyElement';
-import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { ChainId } from '@portkey-wallet/types';
 import { useLocationState, useNavigateState } from 'hooks/router';
 import { ITransactionLocationState, THomePageLocationState } from 'types/router';
 import { getSeedTypeTag } from 'utils/assets';
 import CommonHeader, { CustomSvgPlaceholderSize } from 'components/CommonHeader';
+import { useCurrentAccount, useCurrentAddressInfos } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 
 export default function Transaction() {
   const { t } = useTranslation();
@@ -39,17 +39,25 @@ export default function Transaction() {
   const chainId = state.chainId;
   const from = state?.previousPage;
   const isMainnet = useIsMainnet();
-  const caAddressInfoList = useCaAddressInfoList();
-  const caAddressInfos = useMemo(() => {
-    const result = caAddressInfoList.filter((ele) => ele.chainId === chainId);
-    return result?.length > 0 ? result : caAddressInfoList;
-  }, [caAddressInfoList, chainId]);
+  const addressesInfoList = useCurrentAddressInfos();
+  const { address } = useCurrentAccount() ?? { address: '' };
 
   useFreshTokenPrice();
   const defaultToken = useDefaultToken(chainId ? (chainId as ChainId) : undefined);
 
   // Obtain data through routing to ensure that the page must have data and prevent Null Data Errors.
   const [activityItem, setActivityItem] = useState<ActivityItemType>(state.item);
+
+  const addressInfos = useMemo(() => {
+    let result = addressesInfoList;
+    if (address === activityItem.fromAddress) {
+      result = addressesInfoList.filter((item) => item.chainId === activityItem?.fromChainId);
+    } else if (address === activityItem.toAddress) {
+      result = addressesInfoList.filter((item) => item.chainId === activityItem?.toChainId);
+    }
+    return result?.length > 0 ? result : addressesInfoList;
+  }, [addressesInfoList, activityItem, address]);
+
   const feeInfo = useMemo(() => activityItem.transactionFees, [activityItem.transactionFees]);
   const chainInfo = useCurrentChain(activityItem.fromChainId);
 
@@ -57,9 +65,10 @@ export default function Transaction() {
   // Because some data is not returned in the Activities API. Such as from, to.
   useEffectOnce(() => {
     const params = {
-      caAddressInfos,
+      addressInfos: addressInfos,
       transactionId: activityItem.transactionId,
       blockHash: activityItem.blockHash,
+      chainId: addressInfos?.[0].chainId,
     };
     fetchActivity(params)
       .then((res) => {

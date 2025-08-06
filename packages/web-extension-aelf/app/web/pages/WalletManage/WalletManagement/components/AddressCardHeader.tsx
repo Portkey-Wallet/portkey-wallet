@@ -41,7 +41,7 @@ const AddressCardHeader: React.FC<AddressCardHeaderProps> = ({
   const dispatch = useAppCommonDispatch();
   const { removeWallet } = useRemoveWallet();
 
-  const { state } = useLocationState<{
+  const { state, search } = useLocationState<{
     action?: string | undefined;
     walletKeyToBeRemove?: string | undefined;
   }>();
@@ -54,14 +54,14 @@ const AddressCardHeader: React.FC<AddressCardHeaderProps> = ({
       removeWallet(walletKeyToBeRemove, () => {
         singleMessage.success(isPrivateKeyWallet ? 'Private key removed' : 'Wallet removed');
 
-        navigate('/wallet/manage', {
+        navigate('/wallet/manage' + search, {
           state: {
             showManaging: true,
           },
         });
       });
     }
-  }, [action, isPrivateKeyWallet, navigate, removeWallet, walletKeyToBeRemove]);
+  }, [action, isPrivateKeyWallet, navigate, removeWallet, search, walletKeyToBeRemove]);
 
   const handleEdit = () => {
     setRenameValue(walletName);
@@ -139,10 +139,10 @@ const AddressCardHeader: React.FC<AddressCardHeaderProps> = ({
                   if (!walletInfo || !walletInfo.key) {
                     return;
                   }
-                  console.log('removeWallet start');
+                  console.log('removeWallet start', search);
                   navigate('/unlock', {
                     state: {
-                      navigateUrl: '/wallet/manage',
+                      navigateUrl: '/wallet/manage' + search,
                       params: {
                         showManaging: true,
                         action: 'REMOVE_WALLET',
@@ -203,7 +203,7 @@ const AddressCardHeader: React.FC<AddressCardHeaderProps> = ({
         accountToBeBackup={backupModal.account}
         onContinue={() =>
           handleBackupContinue({
-            backUrl: '/wallet/manage',
+            backUrl: '/wallet/manage' + search,
             backParams: { showManaging: true },
           })
         }

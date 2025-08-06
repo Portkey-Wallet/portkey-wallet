@@ -17,7 +17,7 @@ import { EditWalletAvatarForm } from '../../../Wallet/components/EditWalletAvata
 
 export const AddressDetail: React.FC = () => {
   const navigate = useNavigateState();
-  const { state } = useLocationState<{
+  const { state, search } = useLocationState<{
     currentWalletKey: string;
     currentAddress: string;
   }>();
@@ -141,7 +141,7 @@ export const AddressDetail: React.FC = () => {
     }
     removeAddress(() => {
       singleMessage.success('Address removed');
-      navigate('/wallet/manage');
+      navigate('/wallet/manage' + search);
     });
   };
 
@@ -150,7 +150,7 @@ export const AddressDetail: React.FC = () => {
       <CommonHeader
         className="address-detail-header"
         title="Address details"
-        onLeftBack={() => navigate('/wallet/manage')}
+        onLeftBack={() => navigate('/wallet/manage' + search)}
       />
 
       <div className="address-detail-user-info-wrap">
@@ -223,7 +223,7 @@ export const AddressDetail: React.FC = () => {
             accountToBeBackup={backupModal.account}
             onContinue={() =>
               handleBackupContinue({
-                backUrl: '/wallet/address/detail',
+                backUrl: '/wallet/address/detail' + search,
                 backParams: {
                   currentWalletKey,
                   currentAddress,

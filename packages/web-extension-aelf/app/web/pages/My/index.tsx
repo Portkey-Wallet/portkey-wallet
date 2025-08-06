@@ -1,23 +1,23 @@
+import { useMemo } from 'react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import MenuItem from 'components/MenuItem';
 import CommonHeader from 'components/CommonHeader';
 import './index.less';
-import { useIsImputation } from '@portkey-wallet/hooks/hooks-ca/contact';
+// import { useIsImputation } from '@portkey-wallet/hooks/hooks-ca/contact';
 import UnReadBadge from 'pages/components/UnReadBadge';
 import WalletEntry from '../Wallet/components/WalletEntry';
-import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentAccount, useCurrentWallet } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 import { IMenuItemInfo, useMenuList } from './useMenuList';
 import { IconTypeV3 } from 'types/icon';
 import { CustomSvgV3 } from 'components/CustomSvgV3';
-import ExitWallet from '../Wallet/components/ExitWallet';
-import { useState } from 'react';
 import SetNewWalletNameIcon from '../Home/components/SetNewWalletNameIcon';
+import { LOCAL_AVATARS } from 'assets/images/avatars/avatars';
+import { useAddressesTokensInfo } from 'pages/WalletManage/WalletManagement/hooks/useAddressesTokensInfo';
 
 export default function My() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const isImputation = useIsImputation();
 
   const MenuList: IMenuItemInfo[] = useMenuList();
 
@@ -31,15 +31,13 @@ export default function My() {
     );
   };
 
-  const { nickName, avatar, userId } = useCurrentUserInfo();
+  const currentWallet = useCurrentWallet();
+  const currentAccount = useCurrentAccount();
+  const { name: nickName, icon: avatar } = currentAccount || {};
 
-  const [exitVisible, setExitVisible] = useState<boolean>(false);
-  const onExit = () => {
-    setExitVisible(true);
-  };
-  const onCancelExit = () => {
-    setExitVisible(false);
-  };
+  const accountsAddress = useMemo(() => (currentAccount?.address ? [currentAccount.address] : []), [currentAccount]);
+
+  const { addressesTotalBalanceInUsd } = useAddressesTokensInfo(accountsAddress);
 
   return (
     <div className="flex-column my-frame">
@@ -59,11 +57,18 @@ export default function My() {
 
       <div className="wallet-entry-container">
         <WalletEntry
-          walletAvatar={avatar}
-          walletName={nickName}
-          portkeyId={userId}
+          walletAvatar={LOCAL_AVATARS[avatar || 'avatar_1']}
+          walletName={nickName || 'Address 1'}
+          addressesTotalBalanceInUsd={addressesTotalBalanceInUsd}
+          currentAccount={currentAccount}
           clickAvatar={() => {
-            navigate('/setting/wallet/wallet-name');
+            navigate('/wallet/address/detail', {
+              state: {
+                backUrl: '/setting',
+                currentWalletKey: currentWallet?.key,
+                currentAddress: currentAccount?.address,
+              },
+            });
           }}
         />
       </div>
@@ -80,7 +85,9 @@ export default function My() {
               <MenuItem
                 key={item.label}
                 height={48}
-                icon={menuItemIcon(item.icon, isImputation && item.label === 'Contacts')}
+                // TODO: Unread badge for imputation contacts
+                // icon={menuItemIcon(item.icon, isImputation && item.label === 'Contacts')}
+                icon={menuItemIcon(item.icon, false)}
                 onClick={() => {
                   if (item.router.match('http')) {
                     window.open(item.router);
@@ -96,16 +103,6 @@ export default function My() {
             );
           })}
         </div>
-      </div>
-
-      <div>
-        <ExitWallet
-          exitText={t('Sign out')}
-          exitVisible={exitVisible}
-          className="exit-btn"
-          onExit={onExit}
-          onCancelExit={onCancelExit}
-        />
       </div>
     </div>
   );

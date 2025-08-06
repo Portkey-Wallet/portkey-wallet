@@ -1,4 +1,4 @@
-import { IUserTokenItemResponse } from '@portkey-wallet/types/types-ca/token';
+import { IUserTokenItemResponse } from '@portkey-wallet/types/types-eoa/token';
 import {
   CustomSvg,
   formatStr2EllipsisStr,
@@ -7,19 +7,25 @@ import {
   singleMessage,
 } from '@portkey/did-ui-react';
 import { useLocationState } from 'hooks/router';
-import { useReceive, useReceiveByETransfer } from '@portkey-wallet/hooks/hooks-ca/receive';
-import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
+import { useReceive, useReceiveByETransfer } from '@portkey-wallet/hooks/hooks-eoa/receive';
+import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-eoa/activity';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { ChainId } from '@portkey/provider-types';
-import { ChainInfo, ReceiveType, TDepositInfo, TReceiveFromNetworkItem } from '@portkey/services';
-import { useCurrentCaInfo, useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { getManagerAccount, getPin } from 'store/utils/getStore';
-import { CAInfo } from '@portkey/did';
+import { aelf } from '@portkey/utils';
+
 import './index.less';
 import { QRCodeDataObjType, shrinkSendQrData } from '@portkey-wallet/utils/qrCode';
-import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { useCurrentNetwork } from '@portkey-wallet/hooks/network';
+import { ReceiveType, TReceiveFromNetworkItem } from '@portkey-wallet/types/types-eoa/receive';
+import { TDepositInfo } from '@portkey-wallet/types/types-eoa/deposit';
+import { useCurrentAccount } from '@portkey-wallet/hooks/hooks-eoa/wallet';
+import { IChainItemType } from '@portkey-wallet/types/types-eoa/chain';
+import { verifyHumanMachine } from 'hooks/useCrossTransferByEtransfer';
+import { usePin } from 'hooks/usePin';
+import aes from '@portkey-wallet/utils/aes';
+import { useCurrentChainList } from '@portkey-wallet/hooks/hooks-eoa/chainList';
 
 enum CHAIN_ID {
   AELF = 'AELF',
@@ -37,7 +43,7 @@ type NetworkItem = {
   name: string;
   key: string;
 };
-export type TokenItem = TReceiveFromNetworkItem | ChainInfo | NetworkItem;
+export type TokenItem = TReceiveFromNetworkItem | IChainItemType | NetworkItem;
 
 const NETWORK_LIST: NetworkItem[] = [
   {
@@ -72,7 +78,7 @@ export default function ReceiveCardMain() {
   >();
   const chainId = useMemo(() => (selectToken.symbol === 'ELF' ? MAIN_CHAIN_ID : undefined), [selectToken.symbol]);
   const {
-    loading,
+    loading: receiveLoading,
     errorMsg,
     receiveType,
     destinationChain,
@@ -98,29 +104,44 @@ export default function ReceiveCardMain() {
   const [isExchangeSelected, setIsExchangeSelected] = useState(selectToken.symbol === 'ELF');
   const [selectedType, setSelectedType] = useState<string>('');
   const [selectedSource, setSelectedSource] = useState<TReceiveFromNetworkItem>();
-  const [selectedDestination, setSelectedDestination] = useState<ChainInfo | undefined>();
+
+  const [selectedDestination, setSelectedDestination] = useState<IChainItemType | undefined>();
   const [isSelectionModalOpen, setIsSelectionModalOpen] = useState(false);
   const [isReceivedExchangeModalOpen, setIsReceivedExchangeModalOpen] = useState(false);
   const [currentDepositInfo, setCurrentDepositInfo] = useState<TDepositInfo>();
-  const caInfo = useCurrentCaInfo();
-  const currentWallet = useCurrentWalletInfo();
   const { chainType } = useCurrentNetwork();
   const currentNetWork = useCurrentNetworkInfo();
-  const isMainnet = useIsMainnet();
-  const currentCaAddress = currentWallet?.[destinationChain?.chainId || 'AELF']?.caAddress;
-  const toCaAddress = useMemo(
-    () => `ELF_${currentCaAddress}_${destinationChain?.chainId || 'AELF'}`,
-    [currentCaAddress, destinationChain?.chainId],
-  );
+  const currentChainList = useCurrentChainList();
 
-  const { loading: eTransferLoading, depositInfo } = useReceiveByETransfer({
-    manager: getManagerAccount(getPin() ?? ''),
+  const isMainnet = useIsMainnet();
+
+  const account = useCurrentAccount();
+  const { address } = account || { address: '' };
+  const toCaAddress = useMemo(
+    () => `ELF_${address}_${destinationChain?.chainId || 'AELF'}`,
+    [address, destinationChain?.chainId],
+  );
+  const pin = usePin();
+  const manager = useMemo(() => {
+    if (!account || !pin) return;
+    const pk = aes.decrypt(account.AESEncryptPrivateKey, pin);
+    if (pk) return aelf.getWallet(pk);
+  }, [account, pin]);
+  const loading = useMemo(() => receiveLoading || !manager, [manager, receiveLoading]);
+  const { loading: _eTransferLoading, depositInfo } = useReceiveByETransfer({
+    manager,
     toChainId: destinationChain?.chainId as ChainId,
     toSymbol: selectToken.symbol,
     fromNetwork: selectedSource?.network || '',
     fromSymbol: selectToken.symbol,
-    // receiveType,
+    verifyHumanMachine,
   });
+
+  const eTransferLoading = useMemo(() => {
+    const chainInfo = currentChainList?.find((i) => i.chainId === sourceChain?.network);
+    if (chainInfo) return false;
+    return _eTransferLoading;
+  }, [_eTransferLoading, currentChainList, sourceChain?.network]);
 
   const isMainChainToMainChain =
     selectedSource?.network === MAIN_CHAIN_ID && selectedDestination?.chainId === MAIN_CHAIN_ID;
@@ -137,7 +158,7 @@ export default function ReceiveCardMain() {
     }
 
     if (destinationChain) {
-      setSelectedDestination(destinationChain as ChainInfo);
+      setSelectedDestination(destinationChain as IChainItemType);
     }
 
     if (isMainChainToMainChain && !selectToken.isNFT && selectToken.symbol === 'ELF') {
@@ -162,12 +183,12 @@ export default function ReceiveCardMain() {
       }
       if (selectedType === SELECTION_TYPE.NFT) {
         setSourceChain(item as TReceiveFromNetworkItem);
-        updateDestinationChain(item as ChainInfo);
+        updateDestinationChain(item as IChainItemType);
         return;
       }
       if (selectedType === SELECTION_TYPE.DESITNATION) {
-        setSelectedDestination(item as ChainInfo);
-        updateDestinationChain(item as ChainInfo);
+        setSelectedDestination(item as IChainItemType);
+        updateDestinationChain(item as IChainItemType);
       }
     },
     [selectedType, setSourceChain, updateDestinationChain],
@@ -207,7 +228,7 @@ export default function ReceiveCardMain() {
       return sourceChainList;
     }
 
-    return (destinationChainList as ChainInfo[]) || [];
+    return (destinationChainList as IChainItemType[]) || [];
   }, [destinationChainList, isMainnet, selectedType, sourceChainList]);
 
   const renderTip = useCallback(() => {
@@ -258,7 +279,6 @@ export default function ReceiveCardMain() {
     return selectToken.tokens?.find((item) => item.chainId === destinationChain?.chainId);
   }, [destinationChain?.chainId, selectToken.tokens]);
   const generateAddress = useCallback(() => {
-    const address = caInfo?.[destinationChain?.chainId as ChainId]?.caAddress;
     if (currentDepositInfo && selectedSource && !Object.keys(CHAIN_ID).includes(selectedSource?.network)) {
       return {
         value: currentDepositInfo.depositAddress,
@@ -317,19 +337,17 @@ export default function ReceiveCardMain() {
       value: '',
       label: '',
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    caInfo,
+    address,
     chainType,
     currentDepositInfo,
     currentNetWork.networkType,
-    destinationChain,
     isExchangeSelected,
     isMainChainToMainChain,
-    selectToken,
     selectedDestination,
     selectedSource,
     toCaAddress,
-    tokenItem,
   ]);
   const mainContent = useMemo(
     () => (
@@ -338,10 +356,11 @@ export default function ReceiveCardMain() {
           onBack={() => {
             navigate(-1);
           }}
+          caInfo={undefined}
           selectToken={selectToken}
           setSelectedType={setSelectedType}
           setIsSelectionModalOpen={setIsSelectionModalOpen}
-          selectedDestination={selectedDestination}
+          selectedDestination={selectedDestination as any}
           selectedSource={selectedSource}
           loading={loading}
           eTransferLoading={eTransferLoading}
@@ -349,21 +368,14 @@ export default function ReceiveCardMain() {
           isExchangeSelected={isExchangeSelected}
           setIsExchangeSelected={setIsExchangeSelected}
           generateAddress={generateAddress}
-          caInfo={
-            caInfo as
-              | {
-                  [key: string]: CAInfo;
-                }
-              | undefined
-          }
-          destinationChain={destinationChain as ChainInfo}
+          destinationChain={destinationChain as any}
           receiveType={receiveType}
           currentDepositInfo={currentDepositInfo}
           renderTip={renderTip}
           showExchangeTip={showExchangeTip}
           isSelectionModalOpen={isSelectionModalOpen}
           selectedType={selectedType}
-          renderSelectionList={renderSelectionList}
+          renderSelectionList={renderSelectionList as any}
           onSelectedChange={onSelectedChange}
           renderSelected={renderSelected}
           isReceivedExchangeModalOpen={isReceivedExchangeModalOpen}
@@ -372,7 +384,6 @@ export default function ReceiveCardMain() {
       </PortkeyStyleProvider>
     ),
     [
-      caInfo,
       currentDepositInfo,
       destinationChain,
       eTransferLoading,

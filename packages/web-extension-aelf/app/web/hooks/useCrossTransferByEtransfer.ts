@@ -10,7 +10,7 @@ import { reCAPTCHAActionETransfer } from 'utils/lib/serviceWorkerAction';
 const crossChainTransfer = new CrossTransferExtension();
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const verifyHumanMachine = async (_language: any, _isEtransfer = false, isMainnet?: boolean) => {
+export const verifyHumanMachine = async (_language: any, _isEtransfer = false, isMainnet?: boolean) => {
   const req = await reCAPTCHAActionETransfer(isMainnet);
   return req.response;
 };

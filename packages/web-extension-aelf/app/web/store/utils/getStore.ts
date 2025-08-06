@@ -75,7 +75,7 @@ export const getTxFee = (chainId: ChainId) => {
 };
 
 export const getManagerAccount = (password: string): AElfWallet | undefined => {
-  const walletInfo = getWalletInfo();
+  const walletInfo = getCurrentAccount();
   if (!walletInfo) return;
 
   // get privateKey

@@ -16,7 +16,7 @@
   },
   "action": {
     "default_icon": "assets/images/extension_logo.png",
-    "default_title": "Portkey Wallet",
+    "default_title": "FairyVault Wallet",
     "default_popup": "popup.html"
   },
   "sandbox": {

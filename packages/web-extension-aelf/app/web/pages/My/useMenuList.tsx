@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useDapp } from 'store/Provider/hooks';
+import { useCurrentDappList } from '@portkey-wallet/hooks/hooks-eoa/dapp';
 import { useCurrentNetwork } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { IconTypeV3 } from '../../types/icon';
 
@@ -13,9 +13,8 @@ export interface IMenuItemInfo {
 
 export const useMenuList = () => {
   // Connected dApps
+  const dappList = useCurrentDappList();
   const currentNetwork = useCurrentNetwork();
-  const { dappMap } = useDapp();
-  const currentDapp = useMemo(() => dappMap[currentNetwork] || [], [currentNetwork, dappMap]);
 
   const MenuList: IMenuItemInfo[] = useMemo(
     () => [
@@ -39,7 +38,7 @@ export const useMenuList = () => {
         label: 'Connected dApps',
         icon: 'my_connect site',
         router: '/setting/wallet-security/connected-sites',
-        element: <div className="item-extra-info">{currentDapp.length}</div>,
+        element: <div className="item-extra-info">{dappList?.length || 0}</div>,
       },
       // TODO: to be added in the future
       // {
@@ -51,6 +50,9 @@ export const useMenuList = () => {
         label: 'Switch network',
         icon: 'change',
         router: '/setting/wallet/switch-networks',
+        element: (
+          <div className="item-extra-info">{currentNetwork === 'MAINNET' ? 'aelf Mainnet' : 'aelf Testnet'}</div>
+        ),
       },
       // {
       //   label: 'Help center',
@@ -64,7 +66,7 @@ export const useMenuList = () => {
         router: '/setting/wallet/about-us',
       },
     ],
-    [currentDapp.length],
+    [currentNetwork, dappList?.length],
   );
   return MenuList;
 };

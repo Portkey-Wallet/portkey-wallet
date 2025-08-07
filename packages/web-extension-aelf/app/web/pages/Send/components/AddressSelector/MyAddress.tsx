@@ -1,15 +1,23 @@
 import { ChainId } from '@portkey-wallet/types';
 import { IClickAddressProps } from '@portkey-wallet/types/types-ca/contact';
-import { ICaAddressInfoListItemType, useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { useEffect, useState } from 'react';
+import { useMemo } from 'react';
 import { formatStr2EllipsisStr } from '@portkey-wallet/utils/converter';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { useTranslation } from 'react-i18next';
-import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import TokenImageDisplay from 'pages/components/TokenImageDisplay';
+import { useChainList } from '@portkey-wallet/hooks/hooks-eoa/network/chain';
+import { useCurrentAccount } from '@portkey-wallet/hooks/hooks-eoa/wallet';
+import { LOCAL_AVATARS } from 'assets/images/avatars/avatars';
 
-// import { useLocalContactSearch } from '@portkey-wallet/hooks/hooks-ca/contactNew';
+export interface IContactItemMyType {
+  address: string;
+  avatarImg: string;
+  network: string;
+  isExchange?: boolean;
+  chainId: ChainId;
+  [key: string]: any;
+}
 
 export default function MyAddress({
   chainId,
@@ -20,30 +28,45 @@ export default function MyAddress({
 }) {
   const isMainnet = useIsMainnet();
   const { t } = useTranslation();
-  const [addressList, setAddressList] = useState<ICaAddressInfoListItemType[]>([]);
-  const caAddressInfos = useCaAddressInfoList();
+  const currentAccount = useCurrentAccount();
 
-  const [info] = useState(useCurrentUserInfo());
+  const aelfChainList = useChainList();
+  const myAddressesList = useMemo((): IContactItemMyType[] => {
+    const chainIdInfo = aelfChainList?.find((ele) => ele.chainId !== chainId);
+    console.log(chainIdInfo, chainId, '=====chainIdInfo');
 
-  useEffect(() => {
-    const list = caAddressInfos.filter((item) => item.chainId === chainId);
-    setAddressList(list);
-  }, [caAddressInfos, chainId]);
+    const myOtherAddress = {
+      address: currentAccount?.address || '',
+      avatarImg: '',
+      network: 'aelf',
+      chainId: chainIdInfo?.chainId || 'AELF',
+      addressInfo: {
+        chainId: chainIdInfo?.chainId || 'AELF',
+        network: 'aelf',
+        address: currentAccount?.address || '',
+      },
+    };
+    return [myOtherAddress];
+  }, [aelfChainList, chainId, currentAccount?.address]);
 
   return (
     <div className="my-address">
-      {addressList.length === 0 && <p className="no-data">{t('There is no address')}</p>}
-      {addressList?.map((item, idx) => {
-        const _address = `ELF_${formatStr2EllipsisStr(item.caAddress, [6, 6])}_${item.chainId}`;
+      {myAddressesList.length === 0 && <p className="no-data">{t('There is no address')}</p>}
+      {myAddressesList?.map((item, idx) => {
+        const _address = `ELF_${formatStr2EllipsisStr(item.address, [6, 6])}_${item.chainId}`;
         return (
           <div
             className="my-address-item"
             key={idx + _address}
             onClick={() => {
-              onClick({ chainId: item.chainId, address: item.caAddress });
+              onClick({ chainId: item.chainId, address: item.address });
             }}>
             <div className="info-box">
-              <TokenImageDisplay src={info.avatar} subDisplay={true} chain={item.chainId == 'AELF' ? 'main' : 'dApp'} />
+              <TokenImageDisplay
+                src={LOCAL_AVATARS[currentAccount?.icon || 'avatar_1']}
+                subDisplay={true}
+                chain={item.chainId == 'AELF' ? 'main' : 'dApp'}
+              />
             </div>
             <div className="info-detail">
               <div className="address">{_address}</div>

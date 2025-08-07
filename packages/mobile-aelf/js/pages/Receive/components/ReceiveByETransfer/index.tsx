@@ -14,6 +14,7 @@ import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import { getManagerAccount, getPin } from 'utils/redux';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import GStyles from 'assets/theme/GStyles';
+import { verifyHumanMachine } from 'components/VerifyHumanMachine';
 
 export default function ReceiveByETransfer({
   sourceChain,
@@ -31,6 +32,7 @@ export default function ReceiveByETransfer({
     fromSymbol: tokenInfo.symbol,
     toChainId: destinationChain.chainId,
     toSymbol: tokenInfo.symbol,
+    verifyHumanMachine,
   });
 
   useEffect(() => {

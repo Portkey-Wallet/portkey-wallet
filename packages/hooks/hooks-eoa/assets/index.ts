@@ -256,6 +256,17 @@ export function useManagerTokenInfo() {
     localToken: localShowTokenInfo?.[identify],
   };
 }
+
+export function useOriginAccountTokenList() {
+  const identify = useUniqueIdentify();
+  const assetsState = useAssets();
+  const accountTokenInfo = useMemo(
+    () => assetsState?.accountToken?.accountTokenInfoV2?.[identify] || INIT_ACCOUNT_TOKEN_INFO,
+    [assetsState?.accountToken?.accountTokenInfoV2, identify],
+  );
+  return useMemo(() => accountTokenInfo.accountTokenList, [accountTokenInfo.accountTokenList]);
+}
+
 export function useAccountTokenInfoMixLocalShowToken() {
   // const { accountTokenList } = useAccountTokenInfo();
   const identify = useUniqueIdentify();

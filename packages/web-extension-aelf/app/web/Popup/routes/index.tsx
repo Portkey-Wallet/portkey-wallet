@@ -2,7 +2,6 @@ import { useRoutes } from 'react-router';
 import Home from 'pages/Home';
 import Wallet from 'pages/Wallet';
 import Contacts from 'pages/Contacts';
-import GuardianApproval from 'pages/GuardianApproval';
 import AddToken from 'pages/Token/Manage';
 import CustomToken from 'pages/Token/Custom';
 import Receive from 'pages/Receive';
@@ -13,10 +12,6 @@ import Send from 'pages/Send';
 import NFT from 'pages/NFT';
 import Collection from 'pages/Collection';
 import Transaction from 'pages/Transaction';
-import Guardians from 'pages/Guardians';
-import AddGuardian from 'pages/Guardians/GuardiansAdd';
-import GuardiansEdit from 'pages/Guardians/GuardiansEdit';
-import GuardiansView from 'pages/Guardians/GuardiansView';
 import VerifierAccount from 'pages/VerifierAccount';
 import Unlock from 'pages/Unlock';
 import ContactDetail from 'pages/Contacts/ContactDetail';
@@ -87,28 +82,8 @@ export const PageRouter = () =>
       element: <My />,
     },
     {
-      path: '/setting/guardians',
-      element: <Guardians />,
-    },
-    {
-      path: '/setting/guardians/add',
-      element: <AddGuardian />,
-    },
-    {
-      path: '/setting/guardians/edit',
-      element: <GuardiansEdit />,
-    },
-    {
-      path: '/setting/guardians/view',
-      element: <GuardiansView />,
-    },
-    {
       path: '/setting/guardians/verifier-account',
       element: <VerifierAccount />,
-    },
-    {
-      path: '/setting/guardians/guardian-approval',
-      element: <GuardianApproval />,
     },
     {
       path: '/setting/wallet',
@@ -273,10 +248,6 @@ export const PageRouter = () =>
       element: <VerifierAccount />,
     },
     {
-      path: '/setting/wallet-security/manage-devices/guardian-approval',
-      element: <GuardianApproval />,
-    },
-    {
       path: '/setting/wallet-security/connected-sites',
       element: <ConnectedSites />,
     },
@@ -299,10 +270,6 @@ export const PageRouter = () =>
     {
       path: '/setting/wallet-security/payment-security/verifier-account',
       element: <VerifierAccount />,
-    },
-    {
-      path: '/setting/wallet-security/payment-security/guardian-approval',
-      element: <GuardianApproval />,
     },
     {
       path: '/setting/wallet-security/token-allowance',

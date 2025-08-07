@@ -7,7 +7,7 @@ export default function AboutUs() {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const title = t('About Portkey');
+  const title = t('About FairyVault');
   const goBack = useCallback(() => navigate('/setting'), [navigate]);
 
   return <AboutUsPopup headerTitle={title} goBack={goBack} />;

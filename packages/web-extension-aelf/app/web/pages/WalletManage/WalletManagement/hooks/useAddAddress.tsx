@@ -44,7 +44,7 @@ export const useAddAddress = ({ walletInfo }: { walletInfo?: TWalletInfo }) => {
   //   routerPin: string;
   //   routerWallet: TWalletInfo;
   // }>();
-  const { state } = useLocationState<TRouterParams>();
+  const { state, search } = useLocationState<TRouterParams>();
   const { action, routerPin, pin, routerWallet } = state || {};
   console.log('useAddAddress: ', action, routerPin, routerWallet, walletInfo);
 
@@ -73,7 +73,7 @@ export const useAddAddress = ({ walletInfo }: { walletInfo?: TWalletInfo }) => {
       singleMessage.success('New address added');
       setAccountState('added');
 
-      navigate('/wallet/manage', {
+      navigate('/wallet/manage' + search, {
         state: {
           action: 'ADDED_ACCOUNT',
         },
@@ -81,7 +81,7 @@ export const useAddAddress = ({ walletInfo }: { walletInfo?: TWalletInfo }) => {
       // setAccountAdding(false);
       // setAccountAdded(true);
     }, 100);
-  }, [accountState, action, addAccount, routerPin, routerWallet, walletInfo]);
+  }, [accountState, action, addAccount, routerPin, routerWallet, walletInfo, search]);
 
   // useEffect(() => {
   //   if (!walletInfo || failedToastShowed) {
@@ -115,7 +115,7 @@ export const useAddAddress = ({ walletInfo }: { walletInfo?: TWalletInfo }) => {
     // }, true);
     navigate('/unlock', {
       state: {
-        navigateUrl: '/wallet/manage',
+        navigateUrl: '/wallet/manage' + search,
         params: {
           routerWallet: walletInfo,
           // routerPin: pin,
@@ -135,7 +135,7 @@ export const useAddAddress = ({ walletInfo }: { walletInfo?: TWalletInfo }) => {
     //     action: 'ADD_ACCOUNT',
     //   },
     // });
-  }, [addAddressDisabled, navigate, walletInfo]);
+  }, [addAddressDisabled, navigate, walletInfo, search]);
 
   // const addNewAddress = useCallback(async () => {
   //   if (addAddressDisabled) {

@@ -15,7 +15,7 @@ export const WalletManagement: React.FC = () => {
   const currentWallet = useCurrentWallet();
   const walletList = useWalletListState();
   const navigate = useNavigateState();
-  const { state } = useLocationState<{ showManaging?: boolean }>();
+  const { state, search } = useLocationState<{ showManaging?: boolean }>();
   const { showManaging } = state || {};
   const [managing, setManaging] = useState(!!showManaging);
   const [addWalletDisabled, setAddWalletDisabled] = useState(false);
@@ -82,7 +82,7 @@ export const WalletManagement: React.FC = () => {
         className="my-header"
         title="Your Wallets"
         onLeftBack={() => {
-          navigate('/');
+          navigate(search.match('backTo=setting') ? '/setting' : '/');
         }}
         onLeftBackShowClose={true}
       />

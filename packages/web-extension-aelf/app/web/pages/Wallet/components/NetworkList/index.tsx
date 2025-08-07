@@ -1,16 +1,16 @@
 import { useTranslation } from 'react-i18next';
 import { CustomSvgV3 } from 'components/CustomSvgV3';
-import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentNetwork } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { useChangeNetwork } from 'hooks/useChangeNetwork';
-import { useNetworkList } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useNetworkList } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { NetworkType } from '@portkey-wallet/types';
 import { IconTypeV3 } from 'types/icon';
 import { useCallback } from 'react';
-import { NetworkItem } from '@portkey-wallet/types/types-ca/network';
-import { CustomModalBottom } from 'pages/components/CustomModalBottom';
-import useChangeNetworkText from 'hooks/useChangeNetworkText';
+import { NetworkItem } from '@portkey-wallet/types/types-eoa/network';
+// import { CustomModalBottom } from 'pages/components/CustomModalBottom';
+// import useChangeNetworkText from 'hooks/useChangeNetworkText';
 import clsx from 'clsx';
-import { useCommonState } from 'store/Provider/hooks';
+// import { useCommonState } from 'store/Provider/hooks';
 import MenuItem from 'components/MenuItem';
 import './index.less';
 
@@ -21,41 +21,42 @@ const netWorkIcon: Record<NetworkType, IconTypeV3> = {
 
 export default function NetworkList() {
   const { t } = useTranslation();
-  const { isPrompt } = useCommonState();
+  // const { isPrompt } = useCommonState();
 
-  const { currentNetwork } = useWallet();
+  const currentNetwork = useCurrentNetwork();
   const NetworkList = useNetworkList();
   const changeNetwork = useChangeNetwork();
-  const changeNetworkModalText = useChangeNetworkText();
+  // const changeNetworkModalText = useChangeNetworkText();
   // const isMainnet = useIsMainnet();
   const handleChangeNetwork = useCallback(
     (network: NetworkItem) => {
       if (network.networkType === currentNetwork) return;
       if (!network.isActive) return;
+      changeNetwork(network);
       // const { title, content } = changeNetworkModalText(network.networkType);
-      const { content } = changeNetworkModalText(network.networkType);
-      CustomModalBottom({
-        isPrompt,
-        type: 'confirm',
-        content: (
-          <div className="change-network-modal">
-            <div className="title">
-              {/*{title}*/}
-              Confirm network switch
-              {/*<br />*/}
-              {/*{`aelf ${isMainnet ? 'Testnet' : 'Mainnet'}`}*/}
-            </div>
-            <div className="content">{content}</div>
-          </div>
-        ),
-        onOk: () => {
-          changeNetwork(network);
-        },
-        cancelText: 'Cancel',
-        okText: 'Confirm',
-      });
+      // const { content } = changeNetworkModalText(network.networkType);
+      // CustomModalBottom({
+      //   isPrompt,
+      //   type: 'confirm',
+      //   content: (
+      //     <div className="change-network-modal">
+      //       <div className="title">
+      //         {/*{title}*/}
+      //         Confirm network switch
+      //         {/*<br />*/}
+      //         {/*{`aelf ${isMainnet ? 'Testnet' : 'Mainnet'}`}*/}
+      //       </div>
+      //       <div className="content">{content}</div>
+      //     </div>
+      //   ),
+      //   onOk: () => {
+      //     changeNetwork(network);
+      //   },
+      //   cancelText: 'Cancel',
+      //   okText: 'Confirm',
+      // });
     },
-    [changeNetwork, changeNetworkModalText, currentNetwork, isPrompt],
+    [changeNetwork, currentNetwork],
   );
 
   return (

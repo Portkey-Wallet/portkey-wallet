@@ -7,7 +7,7 @@ import { useCurrentAccount } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 import { changeCurrentWallet } from '@portkey-wallet/store/store-eoa/wallet/actions';
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 import { CustomSvgV3 } from 'components/CustomSvgV3';
-import { useNavigateState } from 'hooks/router';
+import { useNavigateState, useLocationState } from 'hooks/router';
 
 interface AddressCardBaseProps {
   viewOnly?: boolean;
@@ -41,12 +41,13 @@ const AddressCardBase: React.FC<AddressCardBaseProps> = ({
   const currentAccount = useCurrentAccount();
   const dispatch = useAppCommonDispatch();
   const navigate = useNavigateState();
+  const { search } = useLocationState();
 
   const cardOperation = useCallback(
     (account: TAccountInfo, currentWalletKey: string) => {
       if (addressManageView) {
         // TODO: 跳转到地址详情页
-        navigate('/wallet/address/detail', {
+        navigate('/wallet/address/detail' + search, {
           state: {
             currentWalletKey: currentWalletKey,
             currentAddress: account.address,

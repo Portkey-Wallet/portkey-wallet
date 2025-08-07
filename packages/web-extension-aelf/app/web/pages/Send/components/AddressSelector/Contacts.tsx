@@ -11,9 +11,9 @@ import { useTranslation } from 'react-i18next';
 import { ChainId } from '@portkey-wallet/types';
 import TokenImageDisplay from 'pages/components/TokenImageDisplay';
 
-import { useGetFilterContactList } from '@portkey-wallet/hooks/hooks-ca/contactNew';
+import { useGetFilterContactList } from '@portkey-wallet/hooks/hooks-eoa/contact';
 import { useEffectOnce } from '@portkey-wallet/hooks';
-import { IContactItemType } from '@portkey-wallet/types/types-ca/contactNew';
+import { IContactItemType } from '@portkey-wallet/types/types-eoa/contact';
 import { useNavigate } from 'react-router';
 
 export const ContactListItem = ({
@@ -34,13 +34,9 @@ export const ContactListItem = ({
     <div className="contact-list" onClick={() => onChange(item)}>
       {item?.addressInfo?.network === 'aelf' ? (
         <>
-          <TokenImageDisplay
-            src={item?.caHolderInfo?.avatar}
-            subDisplay={true}
-            chain={item?.addressInfo?.chainId === 'AELF' ? 'main' : 'dApp'}
-          />
+          <TokenImageDisplay subDisplay={true} chain={item?.addressInfo?.chainId === 'AELF' ? 'main' : 'dApp'} />
           <div className="info-box">
-            <div className="name">{item.name || item?.caHolderInfo?.walletName}</div>
+            <div className="name">{item.name}</div>
             <div className="address">
               {formatStr2EllipsisStr(`ELF_${item?.addressInfo?.address}_${item.addressInfo?.chainId}`)}
             </div>
@@ -53,7 +49,7 @@ export const ContactListItem = ({
             <TokenImageDisplay className="chain-logo" src={item?.addressInfo.networkImage} subDisplay={false} />
           </div>
           <div className="info-box">
-            <div className="name">{item.name || item?.caHolderInfo?.walletName}</div>
+            <div className="name">{item.name}</div>
             <div className="address">{formatStr2EllipsisStr(item?.addressInfo?.address)}</div>
           </div>
         </>

@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
-import { IAssetNftCollection, INftInfoType } from '@portkey-wallet/store/store-ca/assets/type';
+import { IAssetNftCollection, INftInfoType } from '@portkey-wallet/store/store-eoa/assets/type';
 import NFTImageDisplay from 'pages/components/NFTImageDisplay';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import CircleLoading from 'components/CircleLoading';
 import './index.less';

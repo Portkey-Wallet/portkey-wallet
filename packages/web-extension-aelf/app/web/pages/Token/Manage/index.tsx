@@ -337,7 +337,7 @@ export default function AddToken() {
           <CommonHeader
             title={t('Manage Token List')}
             onLeftBack={() => navigate('/')}
-            rightElementList={[{ customSvgType: 'add-token', onClick: handleAddCustomToken }]}
+            // rightElementList={[{ customSvgType: 'add-token', onClick: handleAddCustomToken }]}
           />
           <DropdownSearch
             overlay={<></>}
@@ -357,7 +357,7 @@ export default function AddToken() {
         {SelectChainELe}
       </div>
     );
-  }, [SelectChainELe, filterWord, handleAddCustomToken, navigate, renderTokenList, searchDebounce, t]);
+  }, [SelectChainELe, filterWord, navigate, renderTokenList, searchDebounce, t]);
 
   return <>{mainContent()}</>;
 }

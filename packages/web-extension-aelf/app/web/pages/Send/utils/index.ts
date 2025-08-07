@@ -1,4 +1,4 @@
-import { request } from '@portkey-wallet/api/api-did';
+import { request } from '@portkey-wallet/api/api-eoa';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { ChainId } from '@portkey-wallet/types';
 import { INetworkItem } from '../components/SelectNetwork';

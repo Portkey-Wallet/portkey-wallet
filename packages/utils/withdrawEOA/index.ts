@@ -2,7 +2,7 @@ import { eTransferCore } from '@etransfer/core';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
 import { getWallet } from '../aelf';
 import { IBlockchainWallet } from '@portkey/types';
-import { PortkeyVersion, TWalletType, AuthTokenSource, TGetAuthRequest } from '@etransfer/types';
+import { PortkeyVersion, TWalletType, AuthTokenSource } from '@etransfer/types';
 import AElf from 'aelf-sdk';
 import { ICrossTransfer, ICrossTransferInitOption, IWithdrawParams, IWithdrawPreviewParams } from './types';
 import { ZERO } from '@portkey-wallet/constants/misc';
@@ -11,7 +11,6 @@ import { handleErrorMessage, sleep } from '../index';
 import { isAuthTokenError } from '@etransfer/utils';
 import { LocalStorageKey } from '@etransfer/utils';
 import { removeDIDAddressSuffix } from '@etransfer/utils';
-import { verifyHumanMachine } from 'components/VerifyHumanMachine';
 
 export const CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL = ['ELF', 'USDT'];
 const ETRANSFER_VERSION = '2.13.0';
@@ -194,7 +193,7 @@ class CrossTransfer implements ICrossTransfer {
 
       const recaptchaToken = isRegistered?.result
         ? undefined
-        : (((await verifyHumanMachine('en', true, isMainnet)) || '') as string);
+        : (((await this.options.verifyHumanMachine?.('en', true, isMainnet)) || '') as string);
 
       const aToken = await eTransferCore.getAuthToken({
         ...authParams,

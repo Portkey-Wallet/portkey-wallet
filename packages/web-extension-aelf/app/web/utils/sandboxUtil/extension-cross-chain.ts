@@ -1,9 +1,9 @@
 import { IChainItemType } from '@portkey-wallet/types/types-ca/chain';
-import { CurrentWalletType } from '@portkey-wallet/types/wallet';
-import { EBridge, TEBridgeOptions } from '@portkey-wallet/utils/eBridge';
-import { ICreateReceiptParams } from '@portkey-wallet/utils/eBridge/types/bridge';
-import CrossTransfer from '@portkey-wallet/utils/withdraw';
-import { IWithdrawParams } from '@portkey-wallet/utils/withdraw/types';
+import { TAccountInfo } from '@portkey-wallet/types/types-eoa/wallet';
+import { EBridge, TEBridgeOptions } from '@portkey-wallet/utils/eBridgeEOA';
+import { ICreateReceiptParams } from '@portkey-wallet/utils/eBridgeEOA/types/bridge';
+import CrossTransfer from '@portkey-wallet/utils/withdrawEOA';
+import { IWithdrawParams } from '@portkey-wallet/utils/withdrawEOA/types';
 import SandboxEventTypes from 'messages/SandboxEventTypes';
 import SandboxEventService, { SandboxErrorCode } from 'service/SandboxEventService';
 
@@ -33,12 +33,12 @@ export class CrossTransferExtension extends CrossTransfer {
 
 export class CrossEBridgeExtension extends EBridge {
   public pin: string;
-  public walletInfo: CurrentWalletType;
+  public wallet: TAccountInfo;
   public chainInfo: IChainItemType;
-  constructor(options: TEBridgeOptions, pin: string, walletInfo: CurrentWalletType, chainInfo: IChainItemType) {
+  constructor(options: TEBridgeOptions, pin: string, wallet: TAccountInfo, chainInfo: IChainItemType) {
     super(options);
     this.pin = pin;
-    this.walletInfo = walletInfo;
+    this.wallet = wallet;
     this.chainInfo = chainInfo;
   }
 
@@ -72,7 +72,7 @@ export class CrossEBridgeExtension extends EBridge {
       rpcUrl: '',
       pin: this.pin,
       chainInfo: JSON.stringify(this.chainInfo),
-      walletInfo: JSON.stringify(this.walletInfo),
+      walletInfo: JSON.stringify(this.wallet),
       options: JSON.stringify(this.options),
       params: JSON.stringify(params),
     });

@@ -1,4 +1,3 @@
-import { CurrentWalletType } from '@portkey-wallet/types/wallet';
 import { ChainId } from '@portkey-wallet/types';
 import { TGetWithdrawInfoResult, TCreateWithdrawOrderResult } from '@etransfer/types';
 import { IChainItemType } from '@portkey-wallet/types/types-eoa/chain';
@@ -14,6 +13,7 @@ export interface ICrossTransferInitOption {
     [x in ChainId]?: string;
   };
   storage?: IStorageSuite;
+  verifyHumanMachine?: any;
 }
 
 export interface IWithdrawPreviewParams {

@@ -17,11 +17,8 @@ import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks
 import { AElfWallet } from '@portkey-wallet/types/aelf';
 import depositService from '@portkey-wallet/utils/deposit-eoa';
 import { TDepositInfo } from '@portkey-wallet/types/types-eoa/deposit';
-import { getETransferReCaptcha } from '@etransfer/ui-react';
-import { useCurrentAccount } from './wallet';
-import { verifyHumanMachine } from 'components/VerifyHumanMachine';
 import { eTransferCore } from '@etransfer/core';
-
+import { useThrottleCallback } from '../index';
 export const useReceive = (token: IUserTokenItemResponse, initToChainId?: ChainId) => {
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState('');
@@ -29,6 +26,14 @@ export const useReceive = (token: IUserTokenItemResponse, initToChainId?: ChainI
   const [destinationMap, setDestinationMap] = useState<TReceiveTokenMap | undefined>();
   const [sourceChain, setSourceChain] = useState<TReceiveFromNetworkItem | undefined>();
   const currentChainList = useCurrentChainList();
+
+  const { eTransferUrl, eTransferCA } = useCurrentNetworkInfo();
+
+  useEffect(() => {
+    eTransferCore.init({
+      etransferUrl: eTransferUrl,
+    });
+  }, [eTransferCA, eTransferUrl]);
 
   const getChainInfoByChainId = useCallback(
     (chainId: ChainId) => {
@@ -150,12 +155,14 @@ export const useReceiveByETransfer = ({
   toSymbol,
   fromNetwork,
   fromSymbol,
+  verifyHumanMachine,
 }: {
   manager?: AElfWallet;
   toChainId: ChainId;
   toSymbol: string;
   fromNetwork: string;
   fromSymbol: string;
+  verifyHumanMachine: any;
 }) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [depositInfo, setDepositInfo] = useState<TDepositInfo | undefined>();
@@ -164,7 +171,7 @@ export const useReceiveByETransfer = ({
   const { apiUrl } = useCurrentNetworkInfo();
   const isMainnet = useIsMainnet();
   console.log('apiUrl====wfs', apiUrl);
-  const fetchTransferToken = useCallback(async () => {
+  const fetchTransferToken = useThrottleCallback(async () => {
     /**
      * const aesPrivateKey = AElf.wallet.AESDecrypt(account.AESEncryptPrivateKey, pin);
     console.log(aesPrivateKey, 'aesPrivateKey==');
@@ -210,7 +217,7 @@ export const useReceiveByETransfer = ({
       console.log('exception===', JSON.stringify(e));
       console.log('exception===', e);
     }
-  }, [manager, apiUrl]);
+  }, [manager, apiUrl, verifyHumanMachine, isMainnet]);
 
   const fetchDepositInfo = useCallback(async () => {
     if (!toChainId || !fromNetwork || !fromSymbol || !toSymbol) {

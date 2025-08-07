@@ -256,6 +256,17 @@ export function useManagerTokenInfo() {
     localToken: localShowTokenInfo?.[identify],
   };
 }
+
+export function useOriginAccountTokenList() {
+  const identify = useUniqueIdentify();
+  const assetsState = useAssets();
+  const accountTokenInfo = useMemo(
+    () => assetsState?.accountToken?.accountTokenInfoV2?.[identify] || INIT_ACCOUNT_TOKEN_INFO,
+    [assetsState?.accountToken?.accountTokenInfoV2, identify],
+  );
+  return useMemo(() => accountTokenInfo.accountTokenList, [accountTokenInfo.accountTokenList]);
+}
+
 export function useAccountTokenInfoMixLocalShowToken() {
   // const { accountTokenList } = useAccountTokenInfo();
   const identify = useUniqueIdentify();
@@ -266,9 +277,7 @@ export function useAccountTokenInfoMixLocalShowToken() {
   );
   const updatedAccountTokenList = useMemo(() => {
     const originAccountTokenList = accountTokenInfo.accountTokenList;
-    if (!originAccountTokenList) {
-      return;
-    }
+    if (!originAccountTokenList) return;
     let newAccountTokenList = cloneDeep(originAccountTokenList);
     const localShowTokenInfo = assetsState.localShowTokenInfo?.[identify];
     localShowTokenInfo
@@ -281,7 +290,7 @@ export function useAccountTokenInfoMixLocalShowToken() {
           console.log('===index', index, 'funded.tokens===', funded.tokens);
           if (index !== -1) {
             console.log('if===');
-            funded.tokens[index] = localAddedToken;
+            funded.tokens[index] = { ...funded.tokens[index], ...localAddedToken };
           } else {
             console.log('else===');
             // funded.tokens.push(localAddedToken);

@@ -1,15 +1,15 @@
-import useToken from '@portkey-wallet/hooks/hooks-ca/useToken';
-import { useChainIdList } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import useToken from '@portkey-wallet/hooks/hooks-eoa/useToken';
+import { useChainIdList } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 import { ChangeEvent, useEffect, useMemo, useState } from 'react';
 import { ReceiveListPureComponent } from '@portkey/did-ui-react';
 import { useNavigate } from 'react-router';
 import { ChainId } from '@portkey-wallet/types';
 import useDebounce from 'hooks/useDebounce';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
-import { PAGE_SIZE_DEFAULT, PAGE_SIZE_IN_ACCOUNT_ASSETS } from '@portkey-wallet/constants/constants-ca/assets';
+import { PAGE_SIZE_DEFAULT, PAGE_SIZE_IN_ACCOUNT_ASSETS } from '@portkey-wallet/constants/constants-eoa/assets';
 import { useEffectOnce, useLatestRef } from '@portkey-wallet/hooks';
 import { request } from '@portkey-wallet/api/api-did';
-import { IUserTokenItemResponse } from '@portkey-wallet/types/types-ca/token';
+import { IUserTokenItemResponse } from '@portkey-wallet/types/types-eoa/token';
 import './index.less';
 
 export interface BaseToken {
@@ -100,7 +100,7 @@ export default function ReceiveList() {
         }}
         onInputChange={onInputChange}
         isLoading={isLoading}
-        currentTokenList={debounceKeyword ? filteredShowList : tokenDataShowInMarket}
+        currentTokenList={(debounceKeyword ? filteredShowList : tokenDataShowInMarket) as any}
         onItemClick={function (item: any): void {
           navigate('/receive-card', {
             state: item,

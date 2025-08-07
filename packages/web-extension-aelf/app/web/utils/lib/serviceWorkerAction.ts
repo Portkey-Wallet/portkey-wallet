@@ -109,3 +109,13 @@ export const reCAPTCHAAction = async (): Promise<ReCaptchaResponseParams> => {
     externalLink: `${RECAPTCHA_URL}?version=v2`,
   }).send();
 };
+
+export const reCAPTCHAActionETransfer = async (isMainnet?: boolean): Promise<ReCaptchaResponseParams> => {
+  // TODO: change provider
+  const RECAPTCHA_URL = `https://test.fairyvault.com/recaptcha-check?sitekey=${
+    isMainnet ? process.env.RECAPTCHA_SITE_KEY_MAINNET : process.env.RECAPTCHA_SITE_KEY_TESTNET
+  }&provider=Portkey`;
+  return await InternalMessage.payload(PortkeyMessageTypes.OPEN_RECAPTCHA_PAGE, {
+    externalLink: RECAPTCHA_URL,
+  }).send();
+};

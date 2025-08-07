@@ -9,7 +9,7 @@ import { useIsMainnet } from '@portkey-wallet/hooks/hooks-eoa/network';
 import LoadingMore from 'components/LoadingMore/LoadingMore';
 import { PAGE_SIZE_IN_ACCOUNT_TOKEN } from '@portkey-wallet/constants/constants-ca/assets';
 import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { useAccountTokenInfo } from '@portkey-wallet/hooks/hooks-eoa/assets';
+import { useAccountTokenInfo, useOriginAccountTokenList } from '@portkey-wallet/hooks/hooks-eoa/assets';
 import './index.less';
 import { useEffectOnce } from 'react-use';
 import useGAReport from 'hooks/useGAReport';
@@ -28,19 +28,17 @@ export default function TokenList() {
   const navigate = useNavigate();
   const isMainnet = useIsMainnet();
   const addressInfos = useCurrentAddressInfos();
-  console.log(addressInfos, '=====addressInfos');
 
   const userInfo = useCurrentUserInfo();
   const { accountTokenList, totalRecordCount, fetchAccountTokenInfoList } = useAccountTokenInfo();
-  console.log(accountTokenList, '=====accountTokenList');
+
+  const originAccountTokenList = useOriginAccountTokenList();
 
   const addressInfosList = useLatestRef(addressInfos);
   const hasMoreTokenList = useMemo(
-    () => accountTokenList && totalRecordCount && accountTokenList.length < totalRecordCount,
-    [accountTokenList, totalRecordCount],
+    () => originAccountTokenList && totalRecordCount && originAccountTokenList.length < totalRecordCount,
+    [originAccountTokenList, totalRecordCount],
   );
-  console.log('===useAccountTokenInfo');
-
   const [, setOpenPanel] = useState<string[]>([]);
 
   const { startReport, endReport } = useGAReport();
@@ -139,7 +137,7 @@ export default function TokenList() {
               </div>
               <div className="token-desc">
                 <div className="info flex-between">
-                  <span>{item.label ?? item.symbol}</span>
+                  <span>{item.label || item.symbol}</span>
                   <span>{getTokenAmount(item)}</span>
                 </div>
                 <div className="amount flex-between">

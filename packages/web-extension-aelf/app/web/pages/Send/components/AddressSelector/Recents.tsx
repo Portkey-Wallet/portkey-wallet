@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useEffectOnce } from 'react-use';
 import RecentItem from './RecentItem';
 import { ChainId } from '@portkey-wallet/types';
-import { useRecent } from '@portkey-wallet/hooks/hooks-ca/recent';
+import { useRecent } from '@portkey-wallet/hooks/hooks-eoa/recent';
 import { TFormattedRecentItem } from '@portkey-wallet/types/types-ca/contactNew';
 
 export default function Recents({

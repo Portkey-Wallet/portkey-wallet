@@ -1,7 +1,6 @@
-import { SHOW_FROM_TRANSACTION_TYPES, TransactionTypes } from '@portkey-wallet/constants/constants-ca/activity';
-import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { fetchActivity } from '@portkey-wallet/store/store-ca/activity/api';
-import { ActivityItemType, TransactionStatus } from '@portkey-wallet/types/types-ca/activity';
+import { SHOW_FROM_TRANSACTION_TYPES, TransactionTypes } from '@portkey-wallet/constants/constants-eoa/activity';
+import { fetchActivity } from '@portkey-wallet/store/store-eoa/activity/api';
+import { ActivityItemType, TransactionStatus } from '@portkey-wallet/types/types-eoa/activity';
 import { getExploreLink } from '@portkey-wallet/utils';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
 import {
@@ -22,13 +21,13 @@ import { useTranslation } from 'react-i18next';
 import { useEffectOnce } from 'react-use';
 import './index.less';
 import { formatTransferTime } from '@portkey-wallet/utils/time';
-import { useCurrentChain, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { useCurrentChain, useDefaultToken } from '@portkey-wallet/hooks/hooks-eoa/chainList';
 import { addressFormat } from '@portkey-wallet/utils';
 // import PromptFrame from 'pages/components/PromptFrame';
-import { useFreshTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
+import { useFreshTokenPrice } from '@portkey-wallet/hooks/hooks-eoa/useTokensPrice';
 // import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
 // import PromptEmptyElement from 'pages/components/PromptEmptyElement';
-import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { ChainId } from '@portkey-wallet/types';
 // import { useLocationState, useNavigateState } from 'hooks/router';
 // import { ITransactionLocationState, THomePageLocationState } from 'types/router';
@@ -43,6 +42,7 @@ import { contractStatusEnum } from '@portkey-wallet/constants/constants-ca/commo
 
 import NFTImageDisplay from 'pages/components/NFTImageDisplay';
 import TokenImageDisplay from 'pages/components/TokenImageDisplay';
+import { useCurrentAddressInfos } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 
 export interface IActivityMultiplyToken {
   symbol: string;
@@ -64,17 +64,18 @@ export default function Transaction(props: {
   const chainId = state.chainId;
   const from = state?.previousPage;
   const isMainnet = useIsMainnet();
-  const caAddressInfoList = useCaAddressInfoList();
-  const caAddressInfos = useMemo(() => {
-    const result = caAddressInfoList.filter((ele) => ele.chainId === chainId);
-    return result?.length > 0 ? result : caAddressInfoList;
-  }, [caAddressInfoList, chainId]);
+  const addressesInfoList = useCurrentAddressInfos();
 
   useFreshTokenPrice();
   const defaultToken = useDefaultToken(chainId ? (chainId as ChainId) : undefined);
 
   // Obtain data through routing to ensure that the page must have data and prevent Null Data Errors.
   const [activityItem, setActivityItem] = useState<ActivityItemType>(state.item);
+
+  const addressInfos = useMemo(() => {
+    const result = addressesInfoList.filter((item) => item.chainId === activityItem?.fromChainId);
+    return result?.length > 0 ? result : addressesInfoList;
+  }, [activityItem?.fromChainId, addressesInfoList]);
   const feeInfo = useMemo(() => activityItem.transactionFees, [activityItem.transactionFees]);
   const chainInfo = useCurrentChain(activityItem.fromChainId);
 
@@ -82,9 +83,10 @@ export default function Transaction(props: {
   // Because some data is not returned in the Activities API. Such as from, to.
   useEffectOnce(() => {
     const params = {
-      caAddressInfos,
+      addressInfos: addressInfos,
       transactionId: activityItem.transactionId,
       blockHash: activityItem.blockHash,
+      chainId: addressInfos?.[0].chainId,
     };
     fetchActivity(params)
       .then((res) => {
@@ -751,8 +753,8 @@ export default function Transaction(props: {
       </div>
     );
   }, [
+    activityItem.isSystem,
     activityItem.transactionName,
-    activityItem.transactionType,
     fromToUI,
     isNft,
     networkUI,

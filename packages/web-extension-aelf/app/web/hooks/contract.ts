@@ -4,6 +4,7 @@ import { useCurrentChainList } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { ExtensionContractBasic } from 'utils/sandboxUtil/ExtensionContractBasic';
 import AElf from 'aelf-sdk';
 import getSeed from 'utils/getSeed';
+import { useGetChainInfo } from '@portkey-wallet/hooks/hooks-eoa/network/chain';
 
 const Wallet = AElf.wallet;
 
@@ -48,3 +49,27 @@ export const useGetCAContract = () => {
     [currentChainList],
   );
 };
+
+export function useGetTokenContract() {
+  const getChainInfo = useGetChainInfo();
+
+  return useCallback(
+    async (chainId: ChainId) => {
+      const chainInfo = getChainInfo(chainId);
+      if (!chainInfo) {
+        throw Error('Could not find chain information');
+      }
+
+      const { privateKey } = await getSeed();
+      if (!privateKey) throw new Error('invalid wallet');
+
+      const contract = new ExtensionContractBasic({
+        rpcUrl: chainInfo.endPoint,
+        contractAddress: chainInfo.defaultToken.address,
+        privateKey: privateKey,
+      });
+      return contract;
+    },
+    [getChainInfo],
+  );
+}

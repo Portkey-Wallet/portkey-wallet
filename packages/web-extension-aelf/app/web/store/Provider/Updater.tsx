@@ -32,6 +32,7 @@ import { useInitLoginModeList } from 'hooks/loginModal';
 import { useUserInfo } from './hooks';
 import { useInitCmsBanner } from '@portkey-wallet/hooks/hooks-ca/cms/banner';
 import { useInitRampV2 } from '@portkey-wallet/hooks/hooks-ca/ramp';
+import { useInitChainList } from '@portkey-wallet/hooks/hooks-eoa/network/chain';
 // import { useInitAwaken } from '@portkey-wallet/hooks/hooks-eoa/awaken';
 
 keepAliveOnPages({});
@@ -46,6 +47,8 @@ export default function Updater() {
   const initLoginModeList = useInitLoginModeList();
   const { passwordSeed } = useUserInfo();
   const initRamp = useInitRampV2({ clientType: 'Extension' });
+
+  useInitChainList();
 
   // const { apiUrl, imApiUrl, imWsUrl, imS3Bucket } = useCurrentNetworkInfo();
   const { apiUrl } = useCurrentNetworkInfo();

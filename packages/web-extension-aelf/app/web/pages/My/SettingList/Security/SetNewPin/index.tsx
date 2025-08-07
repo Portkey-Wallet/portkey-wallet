@@ -5,17 +5,18 @@ import SetNewPinPopup from './Popup';
 import { useCallback, useEffect } from 'react';
 import { Form } from 'antd';
 import { setPinAction } from 'utils/lib/serviceWorkerAction';
-import { changePin } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { useNavigate } from 'react-router-dom';
 import { setPasswordSeed } from 'store/reducers/user/slice';
 import { BaseHeaderProps } from 'types/UI';
 import singleMessage from 'utils/singleMessage';
 import { useLocationState } from 'hooks/router';
 import { TSetNewPinLocationState } from 'types/router';
+import { useUpdateWalletAES } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 
 export type ISetNewPinProps = ISetNewPinFormProps & BaseHeaderProps;
 
 export default function SetNewPin() {
+  const updateWalletAES = useUpdateWalletAES();
   const [form] = Form.useForm();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -35,16 +36,11 @@ export default function SetNewPin() {
   const handleSave = useCallback(async () => {
     const newPin = form.getFieldValue('confirmPassword');
     dispatch(setPasswordSeed(newPin));
-    dispatch(
-      changePin({
-        pin,
-        newPin,
-      }),
-    );
+    updateWalletAES(pin, newPin);
     await setPinAction(newPin);
     singleMessage.success(t('PIN updated'));
     navigate('/setting/security');
-  }, [dispatch, form, navigate, pin, t]);
+  }, [dispatch, form, navigate, pin, t, updateWalletAES]);
 
   const onFinishFailed = useCallback(() => {
     singleMessage.error('Something error');

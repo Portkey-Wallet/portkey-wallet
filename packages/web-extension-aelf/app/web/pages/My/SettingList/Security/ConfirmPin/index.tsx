@@ -1,6 +1,5 @@
 import { ChangeEventHandler, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import aes from '@portkey-wallet/utils/aes';
 import ConfirmPinPopup from './Popup';
 // import ConfirmPinPrompt from './Prompt';
@@ -8,6 +7,9 @@ import { BaseHeaderProps } from 'types/UI';
 // import { useCommonState } from 'store/Provider/hooks';
 import { useNavigateState } from 'hooks/router';
 import { TSetNewPinLocationState } from 'types/router';
+import singleMessage from 'utils/singleMessage';
+import { getWalletsInfo } from 'utils/lib/SWGetReduxStore';
+import { WalletError } from '@portkey-wallet/store/wallet/type';
 
 export interface IConfirmPinProps extends BaseHeaderProps {
   pinLabel: string;
@@ -26,12 +28,18 @@ export default function ConfirmPin() {
   const [disable, setDisable] = useState<boolean>(true);
   const [pin, setPin] = useState('');
   const [errMsg, setErrMsg] = useState('');
-  const walletInfo = useCurrentWalletInfo();
   // const { isNotLessThan768 } = useCommonState();
 
-  const handleNext = useCallback(() => {
-    const privateKey = aes.decrypt(walletInfo.AESEncryptPrivateKey, pin);
-    if (privateKey) {
+  const handleNext = useCallback(async () => {
+    const wallet = await getWalletsInfo();
+
+    if (wallet.walletAddedCount <= 0) return singleMessage.error(WalletError.noCreateWallet);
+
+    const unlockedData = aes.decrypt(
+      wallet.walletList[0].AESEncryptMnemonic || wallet.walletList[0].accountList[0].AESEncryptPrivateKey,
+      pin,
+    );
+    if (unlockedData) {
       setErrMsg('');
       setDisable(false);
       navigate('/setting/security/set-new-pin', { state: { pin: pin } });
@@ -40,7 +48,7 @@ export default function ConfirmPin() {
       setErrMsg('Incorrect Pin');
       setDisable(true);
     }
-  }, [navigate, pin, walletInfo.AESEncryptPrivateKey]);
+  }, [navigate, pin]);
 
   const handleInputChange = useCallback((v: string) => {
     setErrMsg('');

@@ -20,8 +20,9 @@ export const AddressDetail: React.FC = () => {
   const { state, search } = useLocationState<{
     currentWalletKey: string;
     currentAddress: string;
+    backUrl?: string;
   }>();
-  const { currentWalletKey, currentAddress } = state || {};
+  const { currentWalletKey, currentAddress, backUrl } = state || {};
 
   const walletList = useWalletListState();
   const [currentAccount, setCurrentAccount] = useState<TAccountInfo>();
@@ -150,7 +151,7 @@ export const AddressDetail: React.FC = () => {
       <CommonHeader
         className="address-detail-header"
         title="Address details"
-        onLeftBack={() => navigate('/wallet/manage' + search)}
+        onLeftBack={() => navigate(backUrl || '/wallet/manage' + search)}
       />
 
       <div className="address-detail-user-info-wrap">

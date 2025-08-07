@@ -62,7 +62,7 @@ export const useMenuList = () => {
       // },
       {
         label: 'About FairyVault',
-        icon: 'my_about',
+        icon: 'logo-fairy-vault',
         router: '/setting/wallet/about-us',
       },
     ],

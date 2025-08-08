@@ -2,7 +2,6 @@ import { useRoutes } from 'react-router';
 import Home from 'pages/Home';
 import Wallet from 'pages/Wallet';
 import Contacts from 'pages/Contacts';
-import GuardianApproval from 'pages/GuardianApproval';
 import AddToken from 'pages/Token/Manage';
 import CustomToken from 'pages/Token/Custom';
 import Receive from 'pages/Receive';
@@ -13,11 +12,6 @@ import Send from 'pages/Send';
 import NFT from 'pages/NFT';
 import Collection from 'pages/Collection';
 import Transaction from 'pages/Transaction';
-import Guardians from 'pages/Guardians';
-import AddGuardian from 'pages/Guardians/GuardiansAdd';
-import GuardiansEdit from 'pages/Guardians/GuardiansEdit';
-import GuardiansView from 'pages/Guardians/GuardiansView';
-import VerifierAccount from 'pages/VerifierAccount';
 import Unlock from 'pages/Unlock';
 import ContactDetail from 'pages/Contacts/ContactDetail';
 // import ConfirmPin from 'pages/AccountSetting/ConfirmPin';
@@ -42,20 +36,20 @@ import FindMore from 'pages/Contacts/FindMore';
 import PaymentSecurity from 'pages/WalletSecurity/PaymentSecurity/PaymentSecurity';
 import TransferSettings from 'pages/WalletSecurity/PaymentSecurity/TransferSettings';
 import TransferSettingsEdit from 'pages/WalletSecurity/PaymentSecurity/TransferSettingsEdit';
-import ChatList from 'pages/IMChat/ChatList';
-import ChatBox from 'pages/IMChat/ChatBox';
-import NewChat from 'pages/IMChat/NewChat';
-import ChatListSearch from 'pages/IMChat/ChatListSearch';
-import CreateChatGroup from 'pages/IMChat/CreateChatGroup';
-import GroupInfo from 'pages/IMChat/GroupInfo';
-import EditGroupInfo from 'pages/IMChat/EditGroupInfo';
-import TransferOwnership from 'pages/IMChat/TransferOwnership';
-import MemberList from 'pages/IMChat/MemberList';
-import HandleMember from 'pages/IMChat/HandleMember';
-import ChatPrivacy from 'pages/AccountSetting/ChatPrivacy';
-import ChatPrivacyEdit from 'pages/AccountSetting/ChatPrivacyEdit';
-import GroupQRCode from 'pages/IMChat/GroupQRCode';
-import PinnedMsg from 'pages/IMChat/PinnedMsgPage';
+// import ChatList from 'pages/IMChat/ChatList';
+// import ChatBox from 'pages/IMChat/ChatBox';
+// import NewChat from 'pages/IMChat/NewChat';
+// import ChatListSearch from 'pages/IMChat/ChatListSearch';
+// import CreateChatGroup from 'pages/IMChat/CreateChatGroup';
+// import GroupInfo from 'pages/IMChat/GroupInfo';
+// import EditGroupInfo from 'pages/IMChat/EditGroupInfo';
+// import TransferOwnership from 'pages/IMChat/TransferOwnership';
+// import MemberList from 'pages/IMChat/MemberList';
+// import HandleMember from 'pages/IMChat/HandleMember';
+// import ChatPrivacy from 'pages/AccountSetting/ChatPrivacy';
+// import ChatPrivacyEdit from 'pages/AccountSetting/ChatPrivacyEdit';
+// import GroupQRCode from 'pages/IMChat/GroupQRCode';
+// import PinnedMsg from 'pages/IMChat/PinnedMsgPage';
 import TradePage from 'pages/Trade';
 import TokenAllowance from 'pages/WalletSecurity/TokenAllowance';
 import TokenAllowanceDetail from 'pages/WalletSecurity/TokenAllowance/TokenAllowanceDetail';
@@ -85,30 +79,6 @@ export const PageRouter = () =>
     {
       path: '/setting',
       element: <My />,
-    },
-    {
-      path: '/setting/guardians',
-      element: <Guardians />,
-    },
-    {
-      path: '/setting/guardians/add',
-      element: <AddGuardian />,
-    },
-    {
-      path: '/setting/guardians/edit',
-      element: <GuardiansEdit />,
-    },
-    {
-      path: '/setting/guardians/view',
-      element: <GuardiansView />,
-    },
-    {
-      path: '/setting/guardians/verifier-account',
-      element: <VerifierAccount />,
-    },
-    {
-      path: '/setting/guardians/guardian-approval',
-      element: <GuardianApproval />,
     },
     {
       path: '/setting/wallet',
@@ -226,14 +196,14 @@ export const PageRouter = () =>
       path: '/setting/account-setting/set-new-pin',
       element: <SetNewPin />,
     },
-    {
-      path: '/setting/account-setting/chat-privacy',
-      element: <ChatPrivacy />,
-    },
-    {
-      path: '/setting/account-setting/chat-privacy-edit',
-      element: <ChatPrivacyEdit />,
-    },
+    // {
+    //   path: '/setting/account-setting/chat-privacy',
+    //   element: <ChatPrivacy />,
+    // },
+    // {
+    //   path: '/setting/account-setting/chat-privacy-edit',
+    //   element: <ChatPrivacyEdit />,
+    // },
     // Revamp security
     {
       path: '/setting/security',
@@ -269,14 +239,6 @@ export const PageRouter = () =>
       element: <DeviceDetail />,
     },
     {
-      path: '/setting/wallet-security/manage-devices/verifier-account',
-      element: <VerifierAccount />,
-    },
-    {
-      path: '/setting/wallet-security/manage-devices/guardian-approval',
-      element: <GuardianApproval />,
-    },
-    {
       path: '/setting/wallet-security/connected-sites',
       element: <ConnectedSites />,
     },
@@ -295,14 +257,6 @@ export const PageRouter = () =>
     {
       path: '/setting/wallet-security/payment-security/transfer-settings-edit',
       element: <TransferSettingsEdit />,
-    },
-    {
-      path: '/setting/wallet-security/payment-security/verifier-account',
-      element: <VerifierAccount />,
-    },
-    {
-      path: '/setting/wallet-security/payment-security/guardian-approval',
-      element: <GuardianApproval />,
     },
     {
       path: '/setting/wallet-security/token-allowance',
@@ -328,63 +282,63 @@ export const PageRouter = () =>
       path: '/activity-list',
       element: <ActivityList />,
     },
-    {
-      path: '/chat-list',
-      element: <ChatList />,
-    },
-
-    {
-      path: '/chat-list-search',
-      element: <ChatListSearch />,
-    },
-    {
-      path: '/chat-box/:channelUuid',
-      element: <ChatBox />,
-    },
-    {
-      path: '/chat-box-group/:channelUuid',
-      element: <ChatBox />,
-    },
-    {
-      path: '/chat-box-group/:channelUuid/pinned-msg',
-      element: <PinnedMsg />,
-    },
-    {
-      path: '/chat-group-info/:channelUuid',
-      element: <GroupInfo />,
-    },
-    {
-      path: '/chat-group-info/:channelUuid/edit',
-      element: <EditGroupInfo />,
-    },
-    {
-      path: '/chat-group-info/:channelUuid/transfer-ownership',
-      element: <TransferOwnership />,
-    },
-    {
-      path: '/chat-group-info/:channelUuid/member-list',
-      element: <MemberList />,
-    },
-    {
-      path: '/chat-group-info/:channelUuid/member-list/:operate',
-      element: <HandleMember />,
-    },
-    {
-      path: '/chat-group-info/:channelUuid/share',
-      element: <GroupQRCode />,
-    },
-    {
-      path: '/new-chat',
-      element: <NewChat />,
-    },
+    // {
+    //   path: '/chat-list',
+    //   element: <ChatList />,
+    // },
+    //
+    // {
+    //   path: '/chat-list-search',
+    //   element: <ChatListSearch />,
+    // },
+    // {
+    //   path: '/chat-box/:channelUuid',
+    //   element: <ChatBox />,
+    // },
+    // {
+    //   path: '/chat-box-group/:channelUuid',
+    //   element: <ChatBox />,
+    // },
+    // {
+    //   path: '/chat-box-group/:channelUuid/pinned-msg',
+    //   element: <PinnedMsg />,
+    // },
+    // {
+    //   path: '/chat-group-info/:channelUuid',
+    //   element: <GroupInfo />,
+    // },
+    // {
+    //   path: '/chat-group-info/:channelUuid/edit',
+    //   element: <EditGroupInfo />,
+    // },
+    // {
+    //   path: '/chat-group-info/:channelUuid/transfer-ownership',
+    //   element: <TransferOwnership />,
+    // },
+    // {
+    //   path: '/chat-group-info/:channelUuid/member-list',
+    //   element: <MemberList />,
+    // },
+    // {
+    //   path: '/chat-group-info/:channelUuid/member-list/:operate',
+    //   element: <HandleMember />,
+    // },
+    // {
+    //   path: '/chat-group-info/:channelUuid/share',
+    //   element: <GroupQRCode />,
+    // },
+    // {
+    //   path: '/new-chat',
+    //   element: <NewChat />,
+    // },
     {
       path: '/trade',
       element: <TradePage />,
     },
-    {
-      path: '/create-chat-group',
-      element: <CreateChatGroup />,
-    },
+    // {
+    //   path: '/create-chat-group',
+    //   element: <CreateChatGroup />,
+    // },
     {
       path: '/unlock',
       element: <Unlock />,

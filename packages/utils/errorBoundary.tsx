@@ -20,6 +20,8 @@ export type ErrorBoundaryTrue = {
 
 export type ErrorBoundaryFalse = {
   hasError: false;
+  error: undefined;
+  componentStack: undefined;
 };
 export default class ReactErrorBoundary extends Component<
   ReactErrorBoundaryProps,
@@ -27,7 +29,7 @@ export default class ReactErrorBoundary extends Component<
 > {
   constructor(props: Readonly<ReactErrorBoundaryProps>) {
     super(props);
-    this.state = { hasError: false };
+    this.state = { hasError: false, error: undefined, componentStack: undefined };
   }
 
   resetError = () => {
@@ -35,8 +37,8 @@ export default class ReactErrorBoundary extends Component<
   };
 
   componentDidCatch(error: Error & { cause?: Error }, { componentStack }: React.ErrorInfo) {
-    this.setState({ hasError: true, error, componentStack });
-    this.props.onError?.(error, componentStack);
+    this.setState({ hasError: true, error, componentStack: componentStack || '' });
+    this.props.onError?.(error, componentStack || '');
   }
   render() {
     if (this.state.hasError) {

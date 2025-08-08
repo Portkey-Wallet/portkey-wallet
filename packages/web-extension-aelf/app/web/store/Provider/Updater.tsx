@@ -3,15 +3,15 @@ import { useEffect, useMemo } from 'react';
 import { keepAliveOnPages } from 'utils/keepSWActive';
 import useUpdateRedux from './useUpdateRedux';
 import { useChainListFetch } from '@portkey-wallet/hooks/hooks-ca/chainList';
-import { useCaInfoOnChain } from 'hooks/useCaInfoOnChain';
+// import { useCaInfoOnChain } from 'hooks/useCaInfoOnChain';
 // import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { request } from '@portkey-wallet/api/api-eoa';
 import useLocking from 'hooks/useLocking';
 import { useActiveLockStatus } from 'hooks/useActiveLockStatus';
 import useLocationChange from 'hooks/useLocationChange';
-import { useCheckManagerOnLogout } from 'hooks/useLogout';
-import { useCheckManager } from '@portkey-wallet/hooks/hooks-ca/graphql';
+// import { useCheckManagerOnLogout } from 'hooks/useLogout';
+// import { useCheckManager } from '@portkey-wallet/hooks/hooks-ca/graphql';
 import { useCheckUpdate } from 'hooks/useCheckUpdate';
 // import { usePhoneCountryCode } from '@portkey-wallet/hooks/hooks-ca/misc';
 import { useFetchTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
@@ -41,7 +41,7 @@ request.setExceptionManager(exceptionManager);
 export default function Updater() {
   const onLocking = useLocking();
   const { pathname } = useLocation();
-  const checkManagerOnLogout = useCheckManagerOnLogout();
+  // const checkManagerOnLogout = useCheckManagerOnLogout();
   const setTokenConfig = useSetTokenConfig();
   // const isMainnet = useIsMainnet();
   const initLoginModeList = useInitLoginModeList();
@@ -83,7 +83,7 @@ export default function Updater() {
   const checkUpdate = useCheckUpdate();
   useFCM();
 
-  useCheckManager(checkManagerOnLogout);
+  // useCheckManager(checkManagerOnLogout);
   useFetchTxFee();
   useEffect(() => {
     checkUpdate();
@@ -91,7 +91,7 @@ export default function Updater() {
 
   usePortkeyUIConfig();
 
-  useCaInfoOnChain();
+  // useCaInfoOnChain();
   useActiveLockStatus();
   useEffect(() => {
     const app = document.getElementById('root');

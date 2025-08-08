@@ -7,6 +7,7 @@ import { getWalletInfo } from 'store/utils/getStore';
 export default async function getManager() {
   const getSeedResult = await InternalMessage.payload(InternalMessageTypes.GET_SEED).send();
   const pin = getSeedResult.data.privateKey;
+  // TODO just a hack. use eoa first wallet's account
   const walletInfo = getWalletInfo();
   if (!walletInfo?.AESEncryptPrivateKey) return;
   const privateKey = aes.decrypt(walletInfo.AESEncryptPrivateKey, pin);

@@ -1,6 +1,7 @@
-import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
+// import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
 // import { InitialTxFee } from '@portkey-wallet/constants/constants-ca/wallet';
 import { getCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+// import { WalletState } from '@portkey-wallet/store/store-ca/wallet/type';
 // import { AElfWallet } from '@portkey-wallet/types/aelf';
 // import aes from '@portkey-wallet/utils/aes';
 import { ChainId } from '@portkey/provider-types';
@@ -14,6 +15,7 @@ export const getStoreState = () => {
 };
 
 export const getWallet = () => getStoreState().wallet;
+export const getNetwork = () => getStoreState().network;
 export const getCurrentAccountAddress = () => getWallet()?.currentAccountAddress;
 
 export const getAccountList = () => {
@@ -31,20 +33,24 @@ export const getCurrentAccount = () => {
   return list.find((i) => i.address === currentAccountAddress);
 };
 
-export const getWalletInfo = () => getWallet()?.walletInfo;
+// export const getWalletInfo = () => getWallet()?.walletInfo;
+export const getWalletInfo = () => getWallet()?.walletList[0].accountList[0];
 export const getUser = () => getStoreState().userInfo;
 export const getPin = () => getUser().passwordSeed;
 
-export const getCurrentCaInfo = () => {
-  const wallet = getWallet();
-  const { walletInfo, currentNetwork } = wallet || {};
-  return walletInfo?.caInfo?.[currentNetwork];
-};
+// export const getCurrentCaInfo = () => {
+//   const wallet = getWallet();
+//   const { walletInfo, currentNetwork } = wallet || {};
+//   return walletInfo?.caInfo?.[currentNetwork];
+// };
+// TODO: to be remove
 export const getOriginChainId = () => {
-  const wallet = getWallet();
-  const caInfo = getCurrentCaInfo();
-
-  return wallet.originChainId || caInfo?.originChainId || DefaultChainId;
+  // const wallet = getWallet();
+  // const { currentNetwork } = getNetwork();
+  // return currentNetwork;
+  // const caInfo = getCurrentCaInfo();
+  // return wallet.originChainId || caInfo?.originChainId || DefaultChainId;
+  return 'AELF' as ChainId;
 };
 
 // export const getCurrentOriginCaInfo = () => {
@@ -55,15 +61,17 @@ export const getOriginChainId = () => {
 
 export const getCurrentWallet = () => {
   const wallet = getWallet();
-  const { walletInfo, currentNetwork } = wallet || {};
+  // TODO: to be remove;
+  const { walletInfo, currentNetwork } = (wallet as any) || {};
   const originChainId = getOriginChainId();
   return getCurrentWalletInfo(walletInfo, currentNetwork, originChainId);
 };
 
 export const getChainInfo = (chainId: ChainId) => {
   const wallet = getWallet();
-  const { chainInfo, currentNetwork } = wallet || {};
-  return chainInfo?.[currentNetwork]?.filter((chain) => chain.chainId === chainId)[0];
+  // TODO: to be remove;
+  const { chainInfo, currentNetwork } = (wallet as any) || {};
+  return chainInfo?.[currentNetwork]?.filter((chain: any) => chain.chainId === chainId)[0];
 };
 
 // export const isCurrentCaHash = (caHash: string) => getCurrentOriginCaInfo()?.caHash === caHash;

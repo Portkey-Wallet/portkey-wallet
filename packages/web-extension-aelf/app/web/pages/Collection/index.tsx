@@ -1,16 +1,17 @@
 import clsx from 'clsx';
 import CommonHeader from 'components/CommonHeader';
 import { useLocationState, useNavigateState } from 'hooks/router';
-import { useEffect, useMemo, useCallback } from 'react';
+import { useMemo, useCallback } from 'react';
 import { useCommonState } from 'store/Provider/hooks';
 import { THomePageLocationState, TSendLocationState, TNFTLocationState } from 'types/router';
-import { useAccountNFTCollectionInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
-import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useAccountNFTCollectionInfo } from '@portkey-wallet/hooks/hooks-eoa/assets';
 import { formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 
 import './index.less';
 import CustomSvg from 'components/CustomSvg';
 import { getSeedTypeTag, NFTSizeEnum } from 'utils/assets';
+import { useCurrentAddressInfos } from '@portkey-wallet/hooks/hooks-eoa/wallet';
+import { useEffectOnce } from 'react-use';
 
 const Collection = () => {
   const { isPrompt } = useCommonState();
@@ -20,7 +21,7 @@ const Collection = () => {
 
   const { accountNFTList, fetchAccountNFTItem } = useAccountNFTCollectionInfo();
 
-  const caAddressInfos = useCaAddressInfoList();
+  const addressInfos = useCurrentAddressInfos();
 
   console.log('accountNFTList', accountNFTList);
 
@@ -35,13 +36,13 @@ const Collection = () => {
       symbol: state.symbol,
       chainId: state.chainId,
       pageNum: currentCollection.itemCount,
-      caAddressInfos: caAddressInfos.filter((item) => item.chainId === state.chainId),
+      addressInfos,
     });
-  }, []);
+  }, [addressInfos, currentCollection.itemCount, fetchAccountNFTItem, state.chainId, state.symbol]);
 
-  useEffect(() => {
+  useEffectOnce(() => {
     getNFTItems();
-  }, []);
+  });
 
   const content = () => {
     return (

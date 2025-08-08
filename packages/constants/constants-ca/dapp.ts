@@ -41,3 +41,5 @@ export { DAPP_WHITELIST };
 export const ETransTokenList = ['USDT'];
 
 export const BATCH_APPROVAL_SYMBOL = '*';
+export const DAPP_SECURITY_DOMAIN_HINT = `The dApp's logo or domain may not be authentic. Please proceed with caution.`;
+export const DAPP_SECURITY_SPENDER_INVALID = `The dApp's logo, domain, or address you're approving may not be authentic. Please proceed with caution.`;

@@ -1,7 +1,8 @@
 import { useCallback, useMemo, useRef } from 'react';
 import { useAppEOASelector } from '../index';
 import AElf from 'aelf-sdk';
-import { formatWalletInfoV2, getNextBIP44Path } from '@portkey-wallet/utils/wallet';
+// import { formatWalletInfoV2, getNextBIP44Path } from '@portkey-wallet/utils/wallet';
+import { formatWalletInfoV2 } from '@portkey-wallet/utils/wallet';
 import { useAppCommonDispatch } from '../../index';
 import {
   addAccount as addAccountAction,

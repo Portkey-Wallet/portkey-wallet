@@ -3,7 +3,8 @@ import { Button } from 'antd';
 import usePromptSearch from 'hooks/usePromptSearch';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAppDispatch, useWalletInfo } from 'store/Provider/hooks';
+import { useAppDispatch } from 'store/Provider/hooks';
+import { useCurrentNetwork } from '@portkey-wallet/hooks/hooks-eoa/network';
 import errorHandler from 'utils/errorHandler';
 import { closePrompt } from 'utils/lib/serviceWorkerAction';
 import DappSession from 'pages/components/DappSession';
@@ -24,7 +25,7 @@ export default function ConnectWallet() {
   const detail = usePromptSearch();
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const { currentNetwork } = useWalletInfo();
+  const currentNetwork = useCurrentNetwork();
   const disabled = useMemo(() => !detail.appHref, [detail]);
   const [open, setOpen] = useState<boolean>(false);
   const [exp, setExp] = useState<SessionExpiredPlan>(SessionExpiredPlan.hour1);

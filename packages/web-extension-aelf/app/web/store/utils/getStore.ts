@@ -1,14 +1,14 @@
 import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
-import { InitialTxFee } from '@portkey-wallet/constants/constants-ca/wallet';
+// import { InitialTxFee } from '@portkey-wallet/constants/constants-ca/wallet';
 import { getCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { AElfWallet } from '@portkey-wallet/types/aelf';
-import aes from '@portkey-wallet/utils/aes';
+// import { AElfWallet } from '@portkey-wallet/types/aelf';
+// import aes from '@portkey-wallet/utils/aes';
 import { ChainId } from '@portkey/provider-types';
 import { store } from 'store/Provider/store';
-import AElf from 'aelf-sdk';
+// import AElf from 'aelf-sdk';
 import { TAccountInfo } from '@portkey-wallet/types/types-eoa/wallet';
 
-const walletMap: { [address: string]: AElfWallet } = {};
+// const walletMap: { [address: string]: AElfWallet } = {};
 export const getStoreState = () => {
   return store.getState();
 };
@@ -47,11 +47,11 @@ export const getOriginChainId = () => {
   return wallet.originChainId || caInfo?.originChainId || DefaultChainId;
 };
 
-export const getCurrentOriginCaInfo = () => {
-  const caInfo = getCurrentCaInfo();
-  const originChainId = getOriginChainId();
-  return caInfo?.[originChainId || DefaultChainId];
-};
+// export const getCurrentOriginCaInfo = () => {
+//   const caInfo = getCurrentCaInfo();
+//   const originChainId = getOriginChainId();
+//   return caInfo?.[originChainId || DefaultChainId];
+// };
 
 export const getCurrentWallet = () => {
   const wallet = getWallet();
@@ -66,22 +66,22 @@ export const getChainInfo = (chainId: ChainId) => {
   return chainInfo?.[currentNetwork]?.filter((chain) => chain.chainId === chainId)[0];
 };
 
-export const isCurrentCaHash = (caHash: string) => getCurrentOriginCaInfo()?.caHash === caHash;
+// export const isCurrentCaHash = (caHash: string) => getCurrentOriginCaInfo()?.caHash === caHash;
 
-export const getTxFee = (chainId: ChainId) => {
-  const currentNetwork = getStoreState().wallet.currentNetwork;
-  const targetTxFee = getStoreState().txFee?.[currentNetwork]?.[chainId];
-  return targetTxFee ?? InitialTxFee;
-};
+// export const getTxFee = (chainId: ChainId) => {
+//   const currentNetwork = getStoreState().wallet.currentNetwork;
+//   const targetTxFee = getStoreState().txFee?.[currentNetwork]?.[chainId];
+//   return targetTxFee ?? InitialTxFee;
+// };
 
-export const getManagerAccount = (password: string): AElfWallet | undefined => {
-  const walletInfo = getCurrentAccount();
-  if (!walletInfo) return;
-
-  // get privateKey
-  const privateKey = aes.decrypt(walletInfo.AESEncryptPrivateKey, password);
-  if (!privateKey) return;
-
-  if (!walletMap[walletInfo.address]) walletMap[walletInfo.address] = AElf.wallet.getWalletByPrivateKey(privateKey);
-  return walletMap[walletInfo.address];
-};
+// export const getManagerAccount = (password: string): AElfWallet | undefined => {
+//   const walletInfo = getCurrentAccount();
+//   if (!walletInfo) return;
+//
+//   // get privateKey
+//   const privateKey = aes.decrypt(walletInfo.AESEncryptPrivateKey, password);
+//   if (!privateKey) return;
+//
+//   if (!walletMap[walletInfo.address]) walletMap[walletInfo.address] = AElf.wallet.getWalletByPrivateKey(privateKey);
+//   return walletMap[walletInfo.address];
+// };

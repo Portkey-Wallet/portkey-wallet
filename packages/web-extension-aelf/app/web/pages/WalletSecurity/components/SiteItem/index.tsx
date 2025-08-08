@@ -2,7 +2,8 @@ import { Button, Switch } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { DappStoreItem } from '@portkey-wallet/store/store-ca/dapp/type';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useAppDispatch, useWalletInfo } from 'store/Provider/hooks';
+import { useAppDispatch } from 'store/Provider/hooks';
+import { useCurrentNetwork } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { removeDapp } from '@portkey-wallet/store/store-ca/dapp/actions';
 import CustomSelect from 'pages/components/CustomSelect';
 import { SessionExpiredPlan } from '@portkey-wallet/types/session';
@@ -15,7 +16,7 @@ import { useCheckSiteIsInBlackList } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { isSafeOrigin } from 'pages/WalletSecurity/utils';
 import singleMessage from 'utils/singleMessage';
 import { useNavigateState } from 'hooks/router';
-import { useDappInfo } from '@portkey-wallet/hooks/hooks-ca/discover';
+import { useDappInfo } from '@portkey-wallet/hooks/hooks-eoa/discover';
 import { CustomSvgV3 } from 'components/CustomSvgV3';
 import { PromptCardType } from '@portkey/did-ui-react/dist/_types/src/components/CommonPromptCard';
 import { CommonPromptCard } from '@portkey/did-ui-react';
@@ -30,7 +31,7 @@ export interface ISiteItemProps {
 export default function SiteItem({ siteItem }: ISiteItemProps) {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const { currentNetwork } = useWalletInfo();
+  const currentNetwork = useCurrentNetwork();
   const navigate = useNavigateState();
   const { sessionInfo } = siteItem;
   const [open, setOpen] = useState(!!sessionInfo?.expiredPlan);

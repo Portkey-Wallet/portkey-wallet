@@ -244,12 +244,16 @@ module.exports = (env, argv) => {
     envConfig.IM_S3_TESTNET_KEY = devConfig.IM_S3_TESTNET_KEY;
     envConfig.FCM_PROJECT_ID = devConfig.FCM_PROJECT_ID;
     envConfig.GA_API_SECRET = devConfig.GA_API_SECRET;
+    envConfig.RECAPTCHA_SITE_KEY_TESTNET = devConfig.RECAPTCHA_SITE_KEY_TESTNET;
+    envConfig.RECAPTCHA_SITE_KEY_MAINNET = devConfig.RECAPTCHA_SITE_KEY_MAINNET;
   } else {
     envConfig.SENTRY_DSN = productionConfig.SENTRY_DSN;
     envConfig.IM_S3_KEY = productionConfig.IM_S3_KEY;
     envConfig.IM_S3_TESTNET_KEY = productionConfig.IM_S3_TESTNET_KEY;
     envConfig.FCM_PROJECT_ID = productionConfig.FCM_PROJECT_ID;
     envConfig.GA_API_SECRET = productionConfig.GA_API_SECRET;
+    envConfig.RECAPTCHA_SITE_KEY_TESTNET = productionConfig.RECAPTCHA_SITE_KEY_TESTNET;
+    envConfig.RECAPTCHA_SITE_KEY_MAINNET = productionConfig.RECAPTCHA_SITE_KEY_MAINNET;
   }
 
   // console.log(JSON.stringify(envConfig.SENTRY_DSN), 'SENTRY_DSN===')
@@ -264,6 +268,8 @@ module.exports = (env, argv) => {
     'process.env.IM_S3_TESTNET_KEY': JSON.stringify(envConfig.IM_S3_TESTNET_KEY),
     'process.env.FCM_PROJECT_ID': JSON.stringify(envConfig.FCM_PROJECT_ID),
     'process.env.GA_API_SECRET': JSON.stringify(envConfig.GA_API_SECRET),
+    'process.env.RECAPTCHA_SITE_KEY_TESTNET': JSON.stringify(envConfig.RECAPTCHA_SITE_KEY_TESTNET),
+    'process.env.RECAPTCHA_SITE_KEY_MAINNET': JSON.stringify(envConfig.RECAPTCHA_SITE_KEY_MAINNET),
   });
 
   if (argv.mode === 'development') {

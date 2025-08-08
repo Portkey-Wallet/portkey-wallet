@@ -27,6 +27,21 @@ import { usePin } from 'hooks/usePin';
 import aes from '@portkey-wallet/utils/aes';
 import { useCurrentChainList } from '@portkey-wallet/hooks/hooks-eoa/chainList';
 
+const CA_INFO = {
+  AELF: {
+    caAddress: 'string',
+    caHash: 'string',
+  },
+  tDVV: {
+    caAddress: 'string',
+    caHash: 'string',
+  },
+  tDVW: {
+    caAddress: 'string',
+    caHash: 'string',
+  },
+};
+
 enum CHAIN_ID {
   AELF = 'AELF',
   tDVV = 'tDVV',
@@ -356,7 +371,7 @@ export default function ReceiveCardMain() {
           onBack={() => {
             navigate(-1);
           }}
-          caInfo={undefined}
+          caInfo={CA_INFO}
           selectToken={selectToken}
           setSelectedType={setSelectedType}
           setIsSelectionModalOpen={setIsSelectionModalOpen}

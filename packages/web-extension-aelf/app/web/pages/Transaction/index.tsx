@@ -58,7 +58,7 @@ export default function Transaction() {
     return result?.length > 0 ? result : addressesInfoList;
   }, [addressesInfoList, activityItem, address]);
 
-  const feeInfo = useMemo(() => activityItem.transactionFees, [activityItem.transactionFees]);
+  const feeInfo = useMemo(() => activityItem?.transactionFees, [activityItem?.transactionFees]);
   const chainInfo = useCurrentChain(activityItem.fromChainId);
 
   // Obtain data through api to ensure data integrity.

@@ -76,7 +76,7 @@ export default function Transaction(props: {
     const result = addressesInfoList.filter((item) => item.chainId === activityItem?.fromChainId);
     return result?.length > 0 ? result : addressesInfoList;
   }, [activityItem?.fromChainId, addressesInfoList]);
-  const feeInfo = useMemo(() => activityItem.transactionFees, [activityItem.transactionFees]);
+  const feeInfo = useMemo(() => activityItem?.transactionFees, [activityItem?.transactionFees]);
   const chainInfo = useCurrentChain(activityItem.fromChainId);
 
   // Obtain data through api to ensure data integrity.

@@ -12,7 +12,6 @@ import Send from 'pages/Send';
 import NFT from 'pages/NFT';
 import Collection from 'pages/Collection';
 import Transaction from 'pages/Transaction';
-import VerifierAccount from 'pages/VerifierAccount';
 import Unlock from 'pages/Unlock';
 import ContactDetail from 'pages/Contacts/ContactDetail';
 // import ConfirmPin from 'pages/AccountSetting/ConfirmPin';
@@ -80,10 +79,6 @@ export const PageRouter = () =>
     {
       path: '/setting',
       element: <My />,
-    },
-    {
-      path: '/setting/guardians/verifier-account',
-      element: <VerifierAccount />,
     },
     {
       path: '/setting/wallet',
@@ -244,10 +239,6 @@ export const PageRouter = () =>
       element: <DeviceDetail />,
     },
     {
-      path: '/setting/wallet-security/manage-devices/verifier-account',
-      element: <VerifierAccount />,
-    },
-    {
       path: '/setting/wallet-security/connected-sites',
       element: <ConnectedSites />,
     },
@@ -266,10 +257,6 @@ export const PageRouter = () =>
     {
       path: '/setting/wallet-security/payment-security/transfer-settings-edit',
       element: <TransferSettingsEdit />,
-    },
-    {
-      path: '/setting/wallet-security/payment-security/verifier-account',
-      element: <VerifierAccount />,
     },
     {
       path: '/setting/wallet-security/token-allowance',

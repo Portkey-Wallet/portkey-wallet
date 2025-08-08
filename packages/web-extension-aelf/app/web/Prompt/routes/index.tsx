@@ -1,6 +1,5 @@
 import { useRoutes } from 'react-router-dom';
 import ScreenOpeningPage from 'pages/ScreenOpening';
-import VerifierAccount from 'pages/VerifierAccount';
 import SetWalletPin from 'pages/SetWalletPin';
 import SetPin from 'pages/SetPin';
 import SuccessPage from 'pages/SuccessPage';
@@ -58,8 +57,6 @@ import AllowanceApprove from 'pages/AllowanceApprove';
 import WalletSecurityApprove from 'pages/WalletSecurityApprove';
 // import ChatPrivacy from 'pages/AccountSetting/ChatPrivacy';
 // import ChatPrivacyEdit from 'pages/AccountSetting/ChatPrivacyEdit';
-import AccountCancelation from 'pages/Wallet/AccountCancelation';
-import VerifyAccountCancelation from 'pages/Wallet/VerifyAccountCancelation';
 import TokenAllowance from 'pages/WalletSecurity/TokenAllowance';
 import TokenAllowanceDetail from 'pages/WalletSecurity/TokenAllowance/TokenAllowanceDetail';
 import DepositHome from 'pages/DepositHome';
@@ -105,18 +102,6 @@ export const PageRouter = () => {
     {
       path: '/register',
       element: <ScreenOpeningPage />,
-    },
-    // {
-    //   path: '/register/start',
-    //   element: <RegisterStart />,
-    // },
-    // {
-    //   path: '/register/start/:type',
-    //   element: <RegisterStart />,
-    // },
-    {
-      path: '/register/verifier-account',
-      element: <VerifierAccount />,
     },
     {
       path: '/login/set-pin/:type',
@@ -169,10 +154,6 @@ export const PageRouter = () => {
     {
       path: '/prepare-wallet/:type',
       element: <PrepareWallet />,
-    },
-    {
-      path: '/login/verifier-account',
-      element: <VerifierAccount />,
     },
     {
       path: '/add-token',
@@ -337,24 +318,12 @@ export const PageRouter = () => {
       element: <My />,
     },
     {
-      path: '/setting/guardians/verifier-account',
-      element: <VerifierAccount />,
-    },
-    {
       path: '/setting/wallet',
       element: <Wallet />,
     },
     {
       path: '/setting/wallet/wallet-name',
       element: <WalletName />,
-    },
-    {
-      path: '/setting/wallet/account-cancelation',
-      element: <AccountCancelation />,
-    },
-    {
-      path: '/setting/wallet/account-cancelation-code',
-      element: <VerifyAccountCancelation />,
     },
     {
       path: '/setting/wallet/auto-lock',
@@ -449,10 +418,6 @@ export const PageRouter = () => {
       element: <DeviceDetail />,
     },
     {
-      path: '/setting/wallet-security/manage-devices/verifier-account',
-      element: <VerifierAccount />,
-    },
-    {
       path: '/setting/wallet-security/connected-sites',
       element: <ConnectedSites />,
     },
@@ -471,10 +436,6 @@ export const PageRouter = () => {
     {
       path: '/setting/wallet-security/payment-security/transfer-settings-edit',
       element: <TransferSettingsEdit />,
-    },
-    {
-      path: '/setting/wallet-security/payment-security/verifier-account',
-      element: <VerifierAccount />,
     },
     {
       path: '/setting/wallet-security/token-allowance',

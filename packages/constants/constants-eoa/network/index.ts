@@ -9,7 +9,7 @@ export const NetworkList: NetworkItem[] = [
 
 export const DefaultChainId = 'AELF';
 
-export const OfficialWebsite = 'https://portkey.finance';
+export const OfficialWebsite = 'https://fairyvault.com';
 
 export const ThirdParty = `https://thirdparty.portkey.finance`;
 

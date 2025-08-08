@@ -1,12 +1,10 @@
-// import { Image } from 'antd';
 import { useMemo } from 'react';
 import { CustomSvgV3 } from 'components/CustomSvgV3';
 import MenuItem from 'components/MenuItem';
 import { useTranslation } from 'react-i18next';
 import { IconType } from 'types/icon';
-import { OfficialWebsite } from '@portkey-wallet/constants/constants-ca/network';
-import { useSocialMediaList } from '@portkey-wallet/hooks/hooks-ca/cms';
-// import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import { OfficialWebsite } from '@portkey-wallet/constants/constants-eoa/network';
+import { useSocialMediaList } from '@portkey-wallet/hooks/hooks-eoa/cms';
 import './index.less';
 
 interface IMenuItem {
@@ -18,7 +16,6 @@ interface IMenuItem {
 export default function AboutUsBody() {
   const { t } = useTranslation();
   const socialMediaList = useSocialMediaList();
-  // const { s3Url } = useCurrentNetworkInfo();
 
   const serviceList: IMenuItem[] = useMemo(
     () => [
@@ -40,9 +37,9 @@ export default function AboutUsBody() {
     <div className="about-us-body">
       <div className="flex-column-center logo-wrapper">
         <div className="flex-center logo">
-          <CustomSvgV3 type="Guardians=Portkey" className="portkey-icon" />
+          <CustomSvgV3 type="app-logo-fairy-vault" className="portkey-icon" />
         </div>
-        <span className="name">{t('Portkey')}</span>
+        <span className="name">{t('FairyVault Wallet')}</span>
         <span className="version">{`${process.env.SDK_VERSION?.toUpperCase()}`}</span>
       </div>
       <div className="content">
@@ -52,7 +49,7 @@ export default function AboutUsBody() {
               <MenuItem height={54}>{t(item.title)}</MenuItem>
             </a>
           ))}
-          <a href="https://portkey.finance/" target="_blank" rel="noreferrer">
+          <a href={OfficialWebsite} target="_blank" rel="noreferrer">
             <MenuItem height={54}>{t('View website')}</MenuItem>
           </a>
         </div>

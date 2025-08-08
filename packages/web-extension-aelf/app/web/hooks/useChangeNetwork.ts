@@ -1,54 +1,44 @@
-import { NetworkItem } from '@portkey-wallet/types/types-ca/network';
-import { useOtherNetworkLogged } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { changeNetworkType } from '@portkey-wallet/store/store-ca/wallet/actions';
-import InternalMessage from 'messages/InternalMessage';
-import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
-import { useCallback } from 'react';
-import { useNavigate } from 'react-router';
-import { useAppDispatch, useCommonState } from 'store/Provider/hooks';
-import { useResetStore } from '@portkey-wallet/hooks/hooks-ca';
-import { sleep } from '@portkey-wallet/utils';
-// import OpenNewTabController from 'controllers/openNewTabController';
-import im from '@portkey-wallet/im';
+import { NetworkItem } from '@portkey-wallet/types/types-eoa/network';
+import { useAppCommonDispatch, useThrottleCallback } from '@portkey-wallet/hooks';
+import { useResetStore } from '@portkey-wallet/hooks/hooks-eoa';
+import { request } from '@portkey-wallet/api/api-did';
 import signalrFCM from '@portkey-wallet/socket/socket-fcm';
-import { resetRecent } from '@portkey-wallet/store/store-ca/recent/slice';
+import { useCurrentNetworkInfo, useNetworkList, useSwitchNetwork } from '@portkey-wallet/hooks/hooks-eoa/network';
+import { useCallback } from 'react';
+import { initNetworkDiscoverMap } from '@portkey-wallet/store/store-eoa/discover/slice';
+import { resetDapp } from '@portkey-wallet/store/store-eoa/dapp/actions';
 
 export function useChangeNetwork() {
-  const dispatch = useAppDispatch();
-  const navigate = useNavigate();
-  const { isPrompt } = useCommonState();
   const resetStore = useResetStore();
-  const otherNetworkLogged = useOtherNetworkLogged();
+  const switchNetwork = useSwitchNetwork();
+  const dispatch = useAppCommonDispatch();
 
-  return useCallback(
-    async (network: NetworkItem, redirect = true) => {
+  const onConfirm = useThrottleCallback(
+    async (network: NetworkItem) => {
+      dispatch(resetDapp());
+      dispatch(initNetworkDiscoverMap(network.networkType));
       resetStore();
-      im.destroy();
-      // TODO
-      dispatch(resetRecent());
+      request.initService();
+      switchNetwork();
       signalrFCM.switchNetwork();
-      dispatch(changeNetworkType(network.networkType));
-      if (otherNetworkLogged) {
-        if (!isPrompt) {
-          await sleep(500);
-          await InternalMessage.payload(PortkeyMessageTypes.EXPAND_FULL_SCREEN).send();
-        } else {
-          // await OpenNewTabController.closeOpenTabs(true);
-
-          navigate('/');
-        }
-      } else {
-        if (!isPrompt) {
-          await sleep(500);
-          await InternalMessage.payload(PortkeyMessageTypes.REGISTER_START_WALLET).send();
-        } else {
-          // await OpenNewTabController.closeOpenTabs(true);
-          if (redirect) {
-            navigate('/register/start');
-          }
-        }
-      }
     },
-    [resetStore, dispatch, otherNetworkLogged, isPrompt, navigate],
+    [dispatch, resetStore, switchNetwork],
   );
+  return useThrottleCallback(
+    (network: NetworkItem) => {
+      onConfirm(network);
+    },
+    [onConfirm],
+  );
+}
+
+export function useChangeNetworkDirectly() {
+  const currentNetworkInfo = useCurrentNetworkInfo();
+  const networkList = useNetworkList();
+  const changeNetwork = useChangeNetwork();
+
+  return useCallback(() => {
+    const targetNetwork = networkList.find((network) => network.name !== currentNetworkInfo.name);
+    changeNetwork(targetNetwork, false);
+  }, [changeNetwork, currentNetworkInfo.name, networkList]);
 }

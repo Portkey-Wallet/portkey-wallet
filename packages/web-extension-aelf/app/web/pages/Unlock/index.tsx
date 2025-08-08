@@ -23,17 +23,16 @@ const Unlock = () => {
     if (locked === false) {
       return navigate('/');
     }
-  }, [locked, navigate]);
+  }, [locked, navigate, navigateUrl]);
 
   const handleNavigate = useCallback(
     (pwd: string) => {
       if (navigateUrl) {
         return navigate(navigateUrl, {
-          state:
-            {
-              ...params,
-              pin: pwd,
-            } || {},
+          state: {
+            ...params,
+            pin: pwd,
+          },
         });
       }
       if (walletAddedCount > 0) {

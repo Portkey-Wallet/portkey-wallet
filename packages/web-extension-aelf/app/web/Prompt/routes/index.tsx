@@ -25,7 +25,7 @@ import Collection from 'pages/Collection';
 import ContactDetail from 'pages/Contacts/ContactDetail';
 import AccountSetting from 'pages/AccountSetting';
 // import PromptMy from 'pages/PromptMy';
-import Wallet from 'pages/Wallet';
+// import Wallet from 'pages/Wallet';
 import Contacts from 'pages/Contacts';
 import WalletSecurity from 'pages/WalletSecurity';
 // import SetNewPin from 'pages/AccountSetting/SetNewPin';
@@ -315,10 +315,10 @@ export const PageRouter = () => {
       path: '/setting',
       element: <My />,
     },
-    {
-      path: '/setting/wallet',
-      element: <Wallet />,
-    },
+    // {
+    //   path: '/setting/wallet',
+    //   element: <Wallet />,
+    // },
     {
       path: '/setting/wallet/wallet-name',
       element: <WalletName />,

@@ -1,6 +1,6 @@
 import { useRoutes } from 'react-router';
 import Home from 'pages/Home';
-import Wallet from 'pages/Wallet';
+// import Wallet from 'pages/Wallet';
 import Contacts from 'pages/Contacts';
 import AddToken from 'pages/Token/Manage';
 import CustomToken from 'pages/Token/Custom';
@@ -66,10 +66,10 @@ export const PageRouter = () =>
       path: '/setting',
       element: <My />,
     },
-    {
-      path: '/setting/wallet',
-      element: <Wallet />,
-    },
+    // {
+    //   path: '/setting/wallet',
+    //   element: <Wallet />,
+    // },
     {
       path: '/setting/wallet/wallet-name',
       element: <WalletName />,

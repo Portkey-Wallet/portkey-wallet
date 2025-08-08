@@ -1,11 +1,11 @@
-// import { request } from '@portkey-wallet/api/api-did';
+import { request } from '@portkey-wallet/api/api-did';
 import { useAppCASelector, useAppCommonDispatch } from '@portkey-wallet/hooks';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-eoa/network';
 // import { cleanBookmarkList, addBookmarkList } from '@portkey-wallet/store/store-eoa/discover/slice';
 import { cleanBookmarkList } from '@portkey-wallet/store/store-eoa/discover/slice';
 // import { IBookmarkItem } from '@portkey-wallet/store/store-eoa/discover/type';
-import { DISCOVER_BOOKMARK_MAX_COUNT } from '@portkey-wallet/constants/constants-eoa/discover';
-import { useCallback, useMemo } from 'react';
+// import { DISCOVER_BOOKMARK_MAX_COUNT } from '@portkey-wallet/constants/constants-eoa/discover';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 export const useBookmarkList = () => {
   const { networkType } = useCurrentNetworkInfo();
@@ -18,7 +18,8 @@ export const useBookmarkList = () => {
 
   const refresh = useCallback(
     // async () => {
-    async (skipCount = 0, maxResultCount = DISCOVER_BOOKMARK_MAX_COUNT) => {
+    // async (skipCount = 0, maxResultCount = DISCOVER_BOOKMARK_MAX_COUNT) => {
+    async () => {
       // const result = await request.discover.getBookmarks({
       //   params: {
       //     skipCount,
@@ -51,3 +52,22 @@ export const useBookmarkList = () => {
     bookmarkList,
   };
 };
+
+export function useDappInfo(website: string, logo: string) {
+  const [isInWebSet, setIsInWebSet] = useState<boolean>(true);
+  const checkDappIsLegal = useCallback(async (website: string, logo: string) => {
+    const result = await request.discover.checkDappInfo({
+      params: {
+        website,
+        logo,
+      },
+    });
+    setIsInWebSet(result);
+  }, []);
+  useEffect(() => {
+    (async () => {
+      await checkDappIsLegal(website, logo);
+    })();
+  }, [checkDappIsLegal, logo, website]);
+  return isInWebSet;
+}

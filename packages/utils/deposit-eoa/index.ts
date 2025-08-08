@@ -19,8 +19,6 @@ import {
 import { ChainId } from '@portkey-wallet/types';
 import { customFetch } from '@portkey-wallet/utils/fetch';
 import { stringify } from 'query-string';
-import { eTransferCore } from '@etransfer/core';
-import { PortkeyVersion, AuthTokenSource } from '@etransfer/types';
 
 const UNAUTHRORIZED_TOKEN_CODE = 40001;
 const MAX_RETRY_TIMES = 5;

@@ -8,12 +8,11 @@ import { IBridgeOperator, ICheckAndApproveParams, ICreateReceiptHandlerParams } 
 import { LIMIT_ABI } from '../abis';
 import { WB3ContractBasic } from '../utils/web3Contract';
 import Web3 from 'web3';
-import { ChainId, IContract, IBlockchainWallet } from '@portkey/types';
+import { ChainId, IContract } from '@portkey/types';
 import { getChainIdByMap, getReceiptLimit } from '../utils';
 import type { Contract } from 'web3-eth-contract';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { divDecimals, timesDecimals } from '../../converter';
-import { TAccountInfo } from '@portkey-wallet/types/types-eoa/wallet';
 import { AElfWallet } from '@portkey-wallet/types/aelf';
 
 export const ELF_NATIVE_TOKEN = 'ELF';
@@ -23,10 +22,10 @@ export class EVMBridgeOperator implements IBridgeOperator {
   constructor(chainInfo: IEBridgeEVMChainInfo) {
     this.chainInfo = chainInfo;
   }
-  checkAllowanceAndApprove(params: ICheckAndApproveParams): Promise<boolean> {
+  checkAllowanceAndApprove(_: ICheckAndApproveParams): Promise<boolean> {
     throw new Error('Method not implemented.');
   }
-  createReceipt(params: ICreateReceiptHandlerParams): Promise<any> {
+  createReceipt(_: ICreateReceiptHandlerParams): Promise<any> {
     throw new Error('Method not implemented.');
   }
 

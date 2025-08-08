@@ -1,12 +1,17 @@
 import { useAppCommonDispatch, useAppEOASelector } from '../index';
 import {
   fetchAllTokenListAsync,
-  fetchAllTokenListV2Async,
+  // fetchAllTokenListV2Async,
   getSymbolImagesAsync,
 } from '@portkey-wallet/store/store-eoa/tokenManagement/action';
 import { useMemo, useCallback, useEffect } from 'react';
 import { INITIAL_TOKEN_INFO } from '@portkey-wallet/store/store-eoa/tokenManagement/slice';
-import { useAccountTokenInfo, useAccountTokenInfoMixLocalShowToken, useAssets, useManagerTokenInfo } from './assets';
+import {
+  useAccountTokenInfo,
+  useAccountTokenInfoMixLocalShowToken,
+  // useAssets,
+  useManagerTokenInfo,
+} from './assets';
 import { useUniqueIdentify } from './wallet';
 
 export const useToken = () => {

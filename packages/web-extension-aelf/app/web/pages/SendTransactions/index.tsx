@@ -8,7 +8,7 @@ import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import usePromptSearch from 'hooks/usePromptSearch';
 import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
-import { useDapp, useWalletInfo } from 'store/Provider/hooks';
+import { useDapp } from 'store/Provider/hooks';
 import errorHandler from 'utils/errorHandler';
 import { closePrompt } from 'utils/lib/serviceWorkerAction';
 import { callSendMethod } from 'utils/sandboxUtil/sendTransactions';
@@ -37,6 +37,7 @@ import { PromptCardType } from 'pages/Send';
 import { CommonPromptCard, formatStr2EllipsisStr } from '@portkey/did-ui-react';
 import { CustomSvgV3 } from 'components/CustomSvgV3';
 import { ToggleContent } from 'pages/components/ToggleContent';
+import { useCurrentNetwork } from '@portkey-wallet/hooks/hooks-eoa/network';
 
 type TInfoItem = {
   title: string;
@@ -55,7 +56,7 @@ export default function SendTransactions() {
     transactionInfoId: string;
   }>();
 
-  const { currentNetwork } = useWalletInfo();
+  const currentNetwork = useCurrentNetwork();
   const { dappMap } = useDapp();
   const curDapp = useMemo(
     () => dappMap[currentNetwork]?.find((item) => item.origin === origin),

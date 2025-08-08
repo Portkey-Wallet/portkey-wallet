@@ -25,7 +25,7 @@ import Collection from 'pages/Collection';
 import ContactDetail from 'pages/Contacts/ContactDetail';
 import AccountSetting from 'pages/AccountSetting';
 // import PromptMy from 'pages/PromptMy';
-import Wallet from 'pages/Wallet';
+// import Wallet from 'pages/Wallet';
 import Contacts from 'pages/Contacts';
 import WalletSecurity from 'pages/WalletSecurity';
 // import SetNewPin from 'pages/AccountSetting/SetNewPin';
@@ -55,8 +55,6 @@ import TransferSettings from 'pages/WalletSecurity/PaymentSecurity/TransferSetti
 import TransferSettingsEdit from 'pages/WalletSecurity/PaymentSecurity/TransferSettingsEdit';
 import AllowanceApprove from 'pages/AllowanceApprove';
 import WalletSecurityApprove from 'pages/WalletSecurityApprove';
-// import ChatPrivacy from 'pages/AccountSetting/ChatPrivacy';
-// import ChatPrivacyEdit from 'pages/AccountSetting/ChatPrivacyEdit';
 import TokenAllowance from 'pages/WalletSecurity/TokenAllowance';
 import TokenAllowanceDetail from 'pages/WalletSecurity/TokenAllowance/TokenAllowanceDetail';
 import DepositHome from 'pages/DepositHome';
@@ -317,10 +315,10 @@ export const PageRouter = () => {
       path: '/setting',
       element: <My />,
     },
-    {
-      path: '/setting/wallet',
-      element: <Wallet />,
-    },
+    // {
+    //   path: '/setting/wallet',
+    //   element: <Wallet />,
+    // },
     {
       path: '/setting/wallet/wallet-name',
       element: <WalletName />,
@@ -373,14 +371,6 @@ export const PageRouter = () => {
       path: '/setting/account-setting/set-new-pin',
       element: <SetNewPin />,
     },
-    // {
-    //   path: '/setting/account-setting/chat-privacy',
-    //   element: <ChatPrivacy />,
-    // },
-    // {
-    //   path: '/setting/account-setting/chat-privacy-edit',
-    //   element: <ChatPrivacyEdit />,
-    // },
     // Revamp security
     {
       path: '/setting/security',

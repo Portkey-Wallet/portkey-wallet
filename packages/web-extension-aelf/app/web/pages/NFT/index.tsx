@@ -3,7 +3,7 @@
 import CommonHeader from 'components/CommonHeader';
 import { useCommonState } from 'store/Provider/hooks';
 import clsx from 'clsx';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
 import { addressFormat } from '@portkey-wallet/utils';
 import Copy from 'components/Copy';
@@ -20,9 +20,6 @@ import { formatTransferTime } from '@portkey-wallet/utils/time';
 import { SeedTypeEnum } from '@portkey-wallet/types/types-ca/assets';
 import { useNFTItemDetail } from '@portkey-wallet/hooks/hooks-ca/assets';
 import useInterval from '@portkey-wallet/hooks/useInterval';
-import { PopoverMenuList } from '@portkey-wallet/im-ui-web';
-import { useSetUserAvatar } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import singleMessage from 'utils/singleMessage';
 import './index.less';
 import { CustomSvgV3 } from 'components/CustomSvgV3';
 import { CommonButton } from '@portkey/did-ui-react';
@@ -35,7 +32,6 @@ export default function NFT() {
   const isMainNet = useIsMainnet();
   const currentNetwork = useCurrentNetworkInfo();
   const [nftDetail, setNftDetail] = useState<TNFTLocationState>(state);
-  const setUserAvatar = useSetUserAvatar();
   const refreshTime = useMemo(() => {
     if (nftDetail.recommendedRefreshSeconds && nftDetail.traitsPercentages) {
       return nftDetail.recommendedRefreshSeconds * 1000;
@@ -183,42 +179,42 @@ export default function NFT() {
     return description && <div className="info description-info">{description}</div>;
   }, [nftDetail]);
 
-  const [popVisible, setPopVisible] = useState(false);
+  // const [popVisible, setPopVisible] = useState(false);
 
-  const moreData = useMemo(() => {
-    return [
-      {
-        key: 'profile',
-        leftIcon: <CustomSvgV3 type="profile" />,
-        children: 'Set as Profile Photo',
-        onClick: async () => {
-          try {
-            await setUserAvatar(nftDetail.imageUrl);
-            singleMessage.success('Profile photo is set.');
-          } catch (error) {
-            singleMessage.error('Failed to set profile photo. Please try again.');
-          }
-        },
-      },
-    ];
-  }, [nftDetail.imageUrl, setUserAvatar]);
+  // // const moreData = useMemo(() => {
+  // //   return [
+  // //     {
+  // //       key: 'profile',
+  // //       leftIcon: <CustomSvgV3 type="profile" />,
+  // //       children: 'Set as Profile Photo',
+  // //       onClick: async () => {
+  // //         try {
+  // //           await setUserAvatar(nftDetail.imageUrl);
+  // //           singleMessage.success('Profile photo is set.');
+  // //         } catch (error) {
+  // //           singleMessage.error('Failed to set profile photo. Please try again.');
+  // //         }
+  // //       },
+  // //     },
+  // //   ];
+  // // }, [nftDetail.imageUrl, setUserAvatar]);
 
-  const hidePop = useCallback((e: Event) => {
-    try {
-      const _target = e?.target as Element;
-      const _className = _target?.className;
-      const isFunc = _className.includes instanceof Function;
-      if (isFunc && !_className.includes('nft-detail-more')) {
-        setPopVisible(false);
-      }
-    } catch (e) {
-      console.log('===chat box hidePop error', e);
-    }
-  }, []);
-  useEffect(() => {
-    document.addEventListener('click', hidePop);
-    return () => document.removeEventListener('click', hidePop);
-  }, [hidePop]);
+  // const hidePop = useCallback((e: Event) => {
+  //   try {
+  //     const _target = e?.target as Element;
+  //     const _className = _target?.className;
+  //     const isFunc = _className.includes instanceof Function;
+  //     if (isFunc && !_className.includes('nft-detail-more')) {
+  //       setPopVisible(false);
+  //     }
+  //   } catch (e) {
+  //     console.log('===chat box hidePop error', e);
+  //   }
+  // }, []);
+  // useEffect(() => {
+  //   document.addEventListener('click', hidePop);
+  //   return () => document.removeEventListener('click', hidePop);
+  // }, [hidePop]);
 
   const scrollableRef = useRef(null);
 
@@ -242,22 +238,22 @@ export default function NFT() {
         <CommonHeader
           onLeftBack={() => navigate('/', { state: { key: BalanceTab.NFT } })}
           title={titleName}
-          rightElementList={[
-            {
-              customSvgWrapClassName: 'nft-detail-more',
-              customSvgType: 'more_verti',
-              popoverProps: {
-                overlayClassName: `nft-detail-popover ${isPrompt ? '' : 'nft-detail-popover-popup'}`,
-                open: popVisible,
-                trigger: 'click',
-                showArrow: false,
-                placement: 'bottomLeft',
-                getPopupContainer: (triggerNode: any) => triggerNode.parentNode,
-                content: <PopoverMenuList className="profile-popover" data={moreData} />,
-              },
-              onClick: () => setPopVisible(!popVisible),
-            },
-          ]}
+          // rightElementList={[
+          //   {
+          //     customSvgWrapClassName: 'nft-detail-more',
+          //     customSvgType: 'more_verti',
+          //     popoverProps: {
+          //       overlayClassName: `nft-detail-popover ${isPrompt ? '' : 'nft-detail-popover-popup'}`,
+          //       open: popVisible,
+          //       trigger: 'click',
+          //       showArrow: false,
+          //       placement: 'bottomLeft',
+          //       getPopupContainer: (triggerNode: any) => triggerNode.parentNode,
+          //       content: <PopoverMenuList className="profile-popover" data={moreData} />,
+          //     },
+          //     onClick: () => setPopVisible(!popVisible),
+          //   },
+          // ]}
         />
         <div className="nft-detail-body" ref={scrollableRef} onScroll={handleScroll}>
           <div className="picture flex-center">
@@ -334,8 +330,6 @@ export default function NFT() {
   }, [
     nftDetail,
     isPrompt,
-    popVisible,
-    moreData,
     handleScroll,
     renderDescInfo,
     renderBasicInfo,

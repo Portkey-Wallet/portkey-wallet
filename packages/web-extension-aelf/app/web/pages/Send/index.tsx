@@ -688,7 +688,7 @@ export default function Send() {
         setAmountErrMsg(TransactionError.TOKEN_NOT_ENOUGH);
         return { status: false };
       }
-      if (type === 'token') {
+      if (type === SendPageTypeEnum.token) {
         // insufficient balance check
         if (timesDecimals(amount, tokenInfo.decimals).isGreaterThan(balance)) {
           setAmountErrMsg(TransactionError.TOKEN_NOT_ENOUGH);
@@ -701,7 +701,7 @@ export default function Send() {
           }
         }
       } else if (type === SendPageTypeEnum.nft) {
-        if (ZERO.plus(amount).isGreaterThan(balance)) {
+        if (timesDecimals(amount, tokenInfo.decimals).isGreaterThan(balance)) {
           setAmountErrMsg(TransactionError.NFT_NOT_ENOUGH);
           return { status: false };
         }

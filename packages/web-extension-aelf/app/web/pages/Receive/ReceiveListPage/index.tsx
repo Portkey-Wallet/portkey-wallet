@@ -11,6 +11,7 @@ import { useEffectOnce, useLatestRef } from '@portkey-wallet/hooks';
 import { request } from '@portkey-wallet/api/api-did';
 import { IUserTokenItemResponse } from '@portkey-wallet/types/types-eoa/token';
 import './index.less';
+import { useAccountTokenInfoMixLocalShowToken } from '@portkey-wallet/hooks/hooks-eoa/assets';
 
 export interface BaseToken {
   id?: string; // id
@@ -24,7 +25,10 @@ export interface BaseToken {
   isNFT?: boolean;
 }
 export default function ReceiveList() {
-  const { tokenDataShowInMarket = [], totalRecordCount, fetchTokenInfoList } = useToken();
+  const { totalRecordCount, fetchTokenInfoList } = useToken();
+  const _tokenDataShowInMarket = useAccountTokenInfoMixLocalShowToken();
+
+  const tokenDataShowInMarket = useMemo(() => _tokenDataShowInMarket || [], [_tokenDataShowInMarket]);
   const [filteredShowList, setFilteredShowList] = useState<IUserTokenItemResponse[]>([]);
   const chainIdList = useChainIdList();
   const navigate = useNavigate();

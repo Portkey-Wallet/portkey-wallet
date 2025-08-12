@@ -20,9 +20,11 @@ export interface IContactItemMyType {
 }
 
 export default function MyAddress({
+  isEqChain,
   chainId,
   onClick,
 }: {
+  isEqChain?: boolean;
   chainId: ChainId;
   onClick: (account: IClickAddressProps) => void;
 }) {
@@ -32,9 +34,7 @@ export default function MyAddress({
 
   const aelfChainList = useChainList();
   const myAddressesList = useMemo((): IContactItemMyType[] => {
-    const chainIdInfo = aelfChainList?.find((ele) => ele.chainId !== chainId);
-    console.log(chainIdInfo, chainId, '=====chainIdInfo');
-
+    const chainIdInfo = aelfChainList?.find((ele) => (isEqChain ? ele.chainId === chainId : ele.chainId !== chainId));
     const myOtherAddress = {
       address: currentAccount?.address || '',
       avatarImg: '',
@@ -47,7 +47,7 @@ export default function MyAddress({
       },
     };
     return [myOtherAddress];
-  }, [aelfChainList, chainId, currentAccount?.address]);
+  }, [aelfChainList, chainId, currentAccount?.address, isEqChain]);
 
   return (
     <div className="my-address">

@@ -1,10 +1,8 @@
-import { IClickAddressProps } from '@portkey-wallet/types/types-ca/contact';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
 import { useNavigate } from 'react-router';
 import clsx from 'clsx';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
-import { IContactItemType, TFormattedRecentItem } from '@portkey-wallet/types/types-ca/contactNew';
-import { useCaAddresses } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-eoa/network';
+import { IContactItemType, TFormattedRecentItem } from '@portkey-wallet/types/types-eoa/contact';
 import MyAddress from './MyAddress';
 import { getAelfAddress } from '@portkey-wallet/utils/aelf';
 import { ContactListItem } from './Contacts';
@@ -12,6 +10,8 @@ import { CustomSvgV3 } from 'components/CustomSvgV3';
 import TokenImageDisplay from 'pages/components/TokenImageDisplay';
 import { formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import { useCallback } from 'react';
+import { useCurrentAccount } from '@portkey-wallet/hooks/hooks-eoa/wallet';
+import { IClickAddressProps } from '@portkey-wallet/types/types-ca/contact';
 
 export default function RecentItem({
   item,
@@ -45,17 +45,31 @@ export default function RecentItem({
     navigate('/recent-detail', { state: { ...item, isFromSend: true } });
   };
 
-  const caAddresses = useCaAddresses();
+  const wallet = useCurrentAccount();
   const isMyAddress =
-    getAelfAddress(item.addressInfo?.address) === caAddresses?.[0] || getAelfAddress(item.address) === caAddresses?.[0];
+    getAelfAddress(item.addressInfo?.address) === wallet?.address || getAelfAddress(item.address) === wallet?.address;
   const isMyContact = !!item?.name;
-  console.log('isMyContact', isMyContact);
 
-  if (isMyAddress) return <MyAddress chainId={item.chainId || item.addressInfo?.chainId || 'AELF'} onClick={onClick} />;
+  if (isMyAddress)
+    return (
+      <MyAddress
+        isEqChain
+        chainId={item.chainId || item.addressInfo?.chainId || 'AELF'}
+        onClick={(item) => {
+          onClick(item);
+        }}
+      />
+    );
 
-  if (isMyContact) return <ContactListItem item={item as IContactItemType} onChange={onClick} />;
-
-  console.log('item', item);
+  if (isMyContact)
+    return (
+      <ContactListItem
+        item={item as IContactItemType}
+        onChange={(item) => {
+          onClick(item as unknown as IClickAddressProps);
+        }}
+      />
+    );
 
   return (
     // In order to keep the format of Recents and Contacts consistent, this can use like {item.addresses[0]}
@@ -64,11 +78,7 @@ export default function RecentItem({
       onClick={() => {
         onClick(item as IClickAddressProps);
       }}>
-      <TokenImageDisplay
-        src={item?.caHolderInfo?.avatar}
-        subDisplay={true}
-        chain={item?.addressInfo?.chainId === 'AELF' ? 'main' : 'dApp'}
-      />
+      <TokenImageDisplay subDisplay={true} chain={item?.addressInfo?.chainId === 'AELF' ? 'main' : 'dApp'} />
       <div className="center">
         <p className="address">{formatStr2EllipsisStr(item.address || item.addressInfo?.address)}</p>
         <p className="gap" />

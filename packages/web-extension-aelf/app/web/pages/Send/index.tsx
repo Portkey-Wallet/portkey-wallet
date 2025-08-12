@@ -603,9 +603,7 @@ export default function Send() {
   });
 
   const getMaxAmount = useCallback(async () => {
-    if (!balance) {
-      return setMaxAmount('0');
-    }
+    if (!balance) return setMaxAmount('0');
 
     const balanceBN = divDecimals(balance, tokenInfo.decimals);
     const balanceStr = balanceBN.toString();
@@ -710,30 +708,6 @@ export default function Send() {
       } else {
         return { status: false };
       }
-
-      // fixed: Moved Step 5 to after step 6
-      // CHECK 5: transfer limit
-      // const limitRes = await checkLimit({
-      //   chainId: tokenInfo.chainId,
-      //   symbol: tokenInfo.symbol,
-      //   amount: amount,
-      //   decimals: tokenInfo.decimals,
-      //   from: ICheckLimitBusiness.SEND,
-      //   balance,
-      //   extra: {
-      //     stage,
-      //     amount: amount,
-      //     address: tokenInfo.address,
-      //     imageUrl: tokenInfo.imageUrl,
-      //     alias: tokenInfo.alias,
-      //     tokenId: tokenInfo.tokenId,
-      //     toAccount,
-      //   },
-      //   onOneTimeApproval: handleOneTimeApproval,
-      // });
-      // if (!limitRes) {
-      //   return { status: false };
-      // }
 
       // CHECK 6: fee check
       let networkFee: string | undefined;
@@ -948,29 +922,6 @@ export default function Send() {
           };
         }
       }
-
-      // const limitRes = await checkLimit({
-      //   chainId: tokenInfo.chainId,
-      //   symbol: tokenInfo.symbol,
-      //   amount: amount,
-      //   decimals: tokenInfo.decimals,
-      //   from: ICheckLimitBusiness.SEND,
-      //   balance,
-      //   extra: {
-      //     stage,
-      //     amount: amount,
-      //     address: tokenInfo.address,
-      //     imageUrl: tokenInfo.imageUrl,
-      //     alias: tokenInfo.alias,
-      //     tokenId: tokenInfo.tokenId,
-      //     toAccount,
-      //   },
-      //   onOneTimeApproval: handleOneTimeApproval,
-      // });
-      // console.log('wfs===limitRes', limitRes);
-      // if (!limitRes) {
-      //   return { status: false };
-      // }
 
       // CHECK 6.4 SameChain or Default CrossChain
       networkFeeUnit = 'ELF';

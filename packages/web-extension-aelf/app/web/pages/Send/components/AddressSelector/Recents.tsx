@@ -20,7 +20,6 @@ export default function Recents({
 }) {
   const { t } = useTranslation();
   const [recentList, setRecentList] = useState<TFormattedRecentItem[]>([]);
-
   const { getTransformedRecentList } = useRecent();
 
   useEffectOnce(() => {

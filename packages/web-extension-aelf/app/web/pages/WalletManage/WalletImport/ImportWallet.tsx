@@ -5,6 +5,8 @@ import { CopyOutlined, DeleteOutlined } from '@ant-design/icons';
 import './ImportWallet.less';
 import { useLocationState, useNavigateState } from 'hooks/router';
 import { useAddWallet } from '@portkey-wallet/hooks/hooks-eoa/wallet';
+import CommonHeader from 'components/CommonHeader';
+import { useNavigate } from 'react-router';
 
 // Shared import logic hook
 function useWalletImportHandler() {
@@ -186,16 +188,26 @@ type TRouterParams = {
 // Main Page Component
 export const ImportWallet: React.FC<{}> = () => {
   const { state } = useLocationState<TRouterParams>();
+  const navigate = useNavigate();
   const { pin } = state;
   const [privateKeySelected, setPrivateKeySelected] = useState(false);
   const onSelectedTab = useCallback((isPrivateKey: boolean) => setPrivateKeySelected(isPrivateKey), []);
 
   return (
-    <div className="import-wallet-container">
-      <h2 className="import-wallet-title">Import your wallet</h2>
-      <ImportWalletTabSwitch onSelected={onSelectedTab} privateKeySelected={privateKeySelected} />
-      {privateKeySelected ? <PrivateKey pin={pin} /> : <RecoverPhrase pin={pin} />}
-      {/* ImportByCloud 预留，后续扩展 */}
-    </div>
+    <>
+      <CommonHeader
+        className="my-header"
+        title=""
+        onLeftBack={() => {
+          navigate(-1);
+        }}
+      />
+      <div className="import-wallet-container">
+        <h2 className="import-wallet-title">Import your wallet</h2>
+        <ImportWalletTabSwitch onSelected={onSelectedTab} privateKeySelected={privateKeySelected} />
+        {privateKeySelected ? <PrivateKey pin={pin} /> : <RecoverPhrase pin={pin} />}
+        {/* ImportByCloud 预留，后续扩展 */}
+      </div>
+    </>
   );
 };

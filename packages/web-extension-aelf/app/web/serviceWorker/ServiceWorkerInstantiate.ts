@@ -38,6 +38,7 @@ const permissionWhitelist = [
   PortkeyMessageTypes.SET_SEED,
   PortkeyMessageTypes.CLEAR_SEED,
   PortkeyMessageTypes.LOCK_WALLET,
+  PortkeyMessageTypes.WALLET_MANAGE,
   PortkeyMessageTypes.CLOSE_PROMPT,
   PortkeyMessageTypes.REGISTER_WALLET,
   PortkeyMessageTypes.REGISTER_START_WALLET,
@@ -163,6 +164,9 @@ export default class ServiceWorkerInstantiate {
         break;
       case PortkeyMessageTypes.REGISTER_WALLET:
         this.checkRegisterStatus(sendResponse);
+        break;
+      case PortkeyMessageTypes.WALLET_MANAGE:
+        ServiceWorkerInstantiate.openPromptWalletManage();
         break;
       case PortkeyMessageTypes.REGISTER_START_WALLET:
         ServiceWorkerInstantiate.registerStartWallet();
@@ -301,6 +305,15 @@ export default class ServiceWorkerInstantiate {
     );
     // close this(chrome.runtime.id) other tabs when register wallet
     // await OpenNewTabController.closeOpenTabs(true);
+  };
+
+  static openPromptWalletManage = async () => {
+    await notificationService.openPrompt(
+      {
+        method: PromptRouteTypes.WALLET_MANAGE,
+      },
+      'tabs',
+    );
   };
 
   static loginWallet = () => {
@@ -495,7 +508,8 @@ export default class ServiceWorkerInstantiate {
     if (seed) {
       // MV2 -> MV3 setTimeout -> alarms.create
       apis.alarms.create('timingLock', {
-        delayInMinutes: pageState.lockTime ?? AutoLockDataType.OneHour,
+        // delayInMinutes: pageState.lockTime ?? AutoLockDataType.OneHour,
+        delayInMinutes: pageState.lockTime ?? AutoLockDataType.Never,
       });
       apis.alarms.onAlarm.addListener((alarm) => {
         if (alarm.name !== 'timingLock') return;

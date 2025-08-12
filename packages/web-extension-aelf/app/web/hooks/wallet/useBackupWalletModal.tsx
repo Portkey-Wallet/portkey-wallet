@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 import CustomModal from 'pages/components/CustomModal';
 import backupWalletLogo from 'assets/images/backupWalletLogo.png';
 import { CommonButton } from '@portkey/did-ui-react';
+import { useNavigate } from 'react-router-dom';
 import './useBackupWalletModal.less';
 
 /**
@@ -13,6 +14,7 @@ import './useBackupWalletModal.less';
  * - 代码结构清晰，便于维护
  */
 export const useBackupWalletModal = () => {
+  const navigate = useNavigate();
   /**
    * 显示备份钱包弹窗
    * @param onManualBackup 手动备份回调
@@ -61,6 +63,7 @@ export const useBackupWalletModal = () => {
                 onClick={() => {
                   modal.destroy();
                   onManualBackup?.();
+                  navigate('/wallet/backup/manual');
                 }}>
                 Back up manually
               </CommonButton>

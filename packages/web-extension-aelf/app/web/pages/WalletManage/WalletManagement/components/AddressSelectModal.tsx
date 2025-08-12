@@ -5,11 +5,15 @@ import { useCurrentWallet, useWalletListState } from '@portkey-wallet/hooks/hook
 import { useNavigateState } from 'hooks/router';
 import './AddressSelectModal.less';
 import { useAddressesTokensInfo } from '../hooks/useAddressesTokensInfo';
+import { useCommonState } from 'store/Provider/hooks';
+import InternalMessage from 'messages/InternalMessage';
+import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 
-export const AddressSelectModalContent = () => {
+export const AddressSelectModalContent = ({ afterSelect }: { afterSelect?: () => void }) => {
   const currentWallet = useCurrentWallet();
   const walletList = useWalletListState();
   const navigate = useNavigateState();
+  const { isPrompt } = useCommonState();
 
   const accountsAddress = useMemo(
     () =>
@@ -30,6 +34,7 @@ export const AddressSelectModalContent = () => {
             currentWallet={currentWallet}
             key={item.name || '_' + index}
             addressSelecting={true}
+            afterSelect={afterSelect}
             addressesTotalBalanceInUsd={addressesTotalBalanceInUsd}
           />
         ))}
@@ -40,6 +45,10 @@ export const AddressSelectModalContent = () => {
           className="address-select-modal-manage-btn"
           block
           onClick={() => {
+            if (!isPrompt) {
+              InternalMessage.payload(PortkeyMessageTypes.WALLET_MANAGE).send();
+              return;
+            }
             navigate('/wallet/manage');
           }}>
           Add & manage wallets

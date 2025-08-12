@@ -145,7 +145,7 @@ export default function HomeHeader({ onUserClick, unReadShow }: IHomeHeaderProps
       <CopyAddressDrawerOrModal ref={copyAddressDrawerOrModalRef} />
       <DrawerOrModal
         ref={walletSelectDrawerOrModalRef}
-        content={<AddressSelectModalContent />}
+        content={<AddressSelectModalContent afterSelect={() => walletSelectDrawerOrModalRef.current?.close()} />}
         title="Your wallets"
         className="wallet-select-modal"
       />

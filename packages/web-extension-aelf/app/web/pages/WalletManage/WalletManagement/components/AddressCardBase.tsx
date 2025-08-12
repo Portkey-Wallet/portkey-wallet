@@ -12,6 +12,7 @@ import { useNavigateState, useLocationState } from 'hooks/router';
 interface AddressCardBaseProps {
   viewOnly?: boolean;
   addressSelecting?: boolean;
+  afterSelect?: () => void;
   cardTouchable?: boolean;
   addressManaging?: boolean;
   addressManageView?: boolean;
@@ -27,6 +28,7 @@ interface AddressCardBaseProps {
 const AddressCardBase: React.FC<AddressCardBaseProps> = ({
   viewOnly = false,
   addressSelecting = false,
+  afterSelect,
   cardTouchable = false,
   addressManaging = false,
   addressManageView = false,
@@ -61,9 +63,12 @@ const AddressCardBase: React.FC<AddressCardBaseProps> = ({
           }),
         );
         // TODO: 关闭选择弹窗
+        if (afterSelect) {
+          afterSelect();
+        }
       }
     },
-    [addressManageView, addressSelecting, dispatch, navigate],
+    [addressManageView, addressSelecting, dispatch, navigate, afterSelect, search],
   );
 
   return (

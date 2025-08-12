@@ -6,7 +6,7 @@ import { useNavigateState } from 'hooks/router';
 import './AddressSelectModal.less';
 import { useAddressesTokensInfo } from '../hooks/useAddressesTokensInfo';
 
-export const AddressSelectModalContent = () => {
+export const AddressSelectModalContent = ({ afterSelect }: { afterSelect?: () => void }) => {
   const currentWallet = useCurrentWallet();
   const walletList = useWalletListState();
   const navigate = useNavigateState();
@@ -30,6 +30,7 @@ export const AddressSelectModalContent = () => {
             currentWallet={currentWallet}
             key={item.name || '_' + index}
             addressSelecting={true}
+            afterSelect={afterSelect}
             addressesTotalBalanceInUsd={addressesTotalBalanceInUsd}
           />
         ))}

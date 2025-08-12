@@ -5,6 +5,7 @@ import { TWalletInfo } from '@portkey-wallet/types/types-eoa/wallet';
 
 export interface IAddressCardProps {
   addressSelecting?: boolean;
+  afterSelect?: () => void;
   addressManaging?: boolean;
   addressManageView?: boolean;
   walletInfo?: TWalletInfo;
@@ -21,6 +22,7 @@ export interface IAddressCardPropsExtend extends IAddressCardProps {
 
 export const AddressCard: React.FC<IAddressCardProps> = ({
   addressSelecting = false,
+  afterSelect,
   walletInfo,
   currentWallet,
   addressManaging = false,
@@ -52,6 +54,7 @@ export const AddressCard: React.FC<IAddressCardProps> = ({
         accountState={accountState}
         addNewAddress={addNewAddress}
         addressesTotalBalanceInUsd={addressesTotalBalanceInUsd}
+        afterSelect={afterSelect}
       />
     );
   }

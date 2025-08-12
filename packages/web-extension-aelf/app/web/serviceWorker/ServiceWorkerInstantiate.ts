@@ -495,7 +495,8 @@ export default class ServiceWorkerInstantiate {
     if (seed) {
       // MV2 -> MV3 setTimeout -> alarms.create
       apis.alarms.create('timingLock', {
-        delayInMinutes: pageState.lockTime ?? AutoLockDataType.OneHour,
+        // delayInMinutes: pageState.lockTime ?? AutoLockDataType.OneHour,
+        delayInMinutes: pageState.lockTime ?? AutoLockDataType.Never,
       });
       apis.alarms.onAlarm.addListener((alarm) => {
         if (alarm.name !== 'timingLock') return;

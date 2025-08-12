@@ -10,6 +10,7 @@ import CopyOutlined from '@ant-design/icons/CopyOutlined';
 import { useUnlockModal } from 'hooks/wallet/useUnlockModal';
 import './ManualBackup.less';
 import { useConfirmBackupModal } from '../ConfirmBackupModal';
+import CommonHeader from 'components/CommonHeader';
 
 export const ManualBackup: React.FC = () => {
   const navigate = useNavigate();
@@ -91,6 +92,14 @@ export const ManualBackup: React.FC = () => {
 
   return (
     <div className="manual-backup-container">
+      <CommonHeader
+        className="my-header"
+        title={''}
+        onLeftBack={() => {
+          navigate(-1);
+        }}
+        onLeftBackShowClose={true}
+      />
       <div className="manual-backup-title">Manual backup</div>
       <div className="manual-backup-desc">
         Keep a copy of your seed phrase at a safe place. DO NOT share it with anyone as this could result in wallet and

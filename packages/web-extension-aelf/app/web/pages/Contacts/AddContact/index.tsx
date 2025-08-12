@@ -2,7 +2,6 @@ import { useCallback, useMemo, useEffect, useState } from 'react';
 import { Form } from 'antd';
 import { useNavigate, useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { fetchContactListV2Async } from '@portkey-wallet/store/store-ca/contact/actions';
 import { useAppDispatch, useLoading } from 'store/Provider/hooks';
 // import { getAelfAddress, isAelfAddress } from '@portkey-wallet/utils/aelf';
 // import { isValidCAWalletName } from '@portkey-wallet/utils/reg';
@@ -13,12 +12,12 @@ import { BaseHeaderProps } from 'types/UI';
 
 import { ContactHandleActionTypeEnum, ContactHandleActionType } from 'types/Profile';
 import { handleErrorMessage } from '@portkey-wallet/utils';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-eoa/network';
 import singleMessage from 'utils/singleMessage';
 import { useLocationState } from 'hooks/router';
 import { useContactAction, useDefaultContactFormValue, useNetworkModalShow } from './hooks';
 import { IEditContactItemFormType } from './types';
-import { IContactItemType } from '@portkey-wallet/types/types-ca/contactNew';
+import { IContactItemType } from '@portkey-wallet/types/types-eoa/contact';
 
 export enum ContactInfoError {
   invalidAddress = 'Please enter a valid address.',
@@ -110,7 +109,6 @@ export default function AddContact() {
       const action = isEdit ? editContactApi : addContactApi;
       const tips = isEdit ? 'Edit Address Successful' : 'Add Address Successful';
       await action(params);
-      dispatch(fetchContactListV2Async());
       singleMessage.success(tips);
       handleGoBack();
     } catch (err: any) {
@@ -133,7 +131,7 @@ export default function AddContact() {
     } finally {
       setLoading(false);
     }
-  }, [addContactApi, dispatch, editContactApi, form, handleGoBack, isEdit, setLoading]);
+  }, [addContactApi, editContactApi, form, handleGoBack, isEdit, setLoading]);
 
   const deleteContact = useCallback(async () => {
     try {

@@ -1,7 +1,7 @@
-import { IContactIndexType, IContactItemType } from '@portkey-wallet/types/types-ca/contactNew';
 import { IndexBar } from 'antd-mobile';
 import './index.less';
 import ContactList from '../ContactList';
+import { IContactIndexType, IContactItemType } from '@portkey-wallet/types/types-eoa/contact';
 
 export interface IContactListIndexBarProps {
   list: IContactIndexType[];

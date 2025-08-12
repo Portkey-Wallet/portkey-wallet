@@ -27,7 +27,7 @@ const PortKeyHeader = forwardRef(
       <div className={clsx('portkey-header', className)}>
         <div className="portkey-header-body">
           <div className="portkey-area">
-            <CustomSvgV3 type="logo" className="portkey-logo-prompt" />
+            <CustomSvgV3 type="fairy-vault-with-icon-logo" className="portkey-logo-prompt" />
           </div>
 
           {/* {customLogoShow && (

@@ -1,15 +1,10 @@
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { ChangeEvent, ChangeEventHandler, useCallback, useEffect, useMemo, useState } from 'react';
-import { useLocalContactSearch } from '@portkey-wallet/hooks/hooks-ca/contactNew';
-import { useAppDispatch } from 'store/Provider/hooks';
-import { fetchContactListV2Async } from '@portkey-wallet/store/store-ca/contact/actions';
-import { IContactIndexType } from '@portkey-wallet/types/types-ca/contactNew';
-import { useEffectOnce } from 'react-use';
+import { useLocalContactSearch, useOriginContactList } from '@portkey-wallet/hooks/hooks-eoa/contact';
+import { IContactIndexType } from '@portkey-wallet/types/types-eoa/contact';
 import ContactsPopup from './Popup';
-// import ContactsPrompt from './Prompt';
 import { BaseHeaderProps } from 'types/UI';
-// import { useCommonState } from 'store/Provider/hooks';
 import { useGoAddNewContact } from 'hooks/useProfile';
 import { ContactHandleActionTypeEnum } from 'types/Profile';
 import { defaultContactFormData } from './AddContact/hooks';
@@ -31,7 +26,6 @@ export interface IContactsProps extends BaseHeaderProps {
 export default function Contacts() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const appDispatch = useAppDispatch();
   const localSearch = useLocalContactSearch();
   const [curList, setCurList] = useState<IContactIndexType[]>([]);
   const [isSearch, setIsSearch] = useState<boolean>(false);
@@ -39,17 +33,13 @@ export default function Contacts() {
 
   const [loading, setLoading] = useState(true);
 
-  useEffectOnce(() => {
-    appDispatch(fetchContactListV2Async());
-  });
+  const contactIndexList = useOriginContactList();
 
   useEffect(() => {
-    setLoading(true);
-    const { contactIndexFilterList: searchResult } = localSearch('');
-    setCurList(searchResult);
+    setCurList(contactIndexList ?? []);
     setLoading(false);
     setIsSearch(false);
-  }, [localSearch]);
+  }, [contactIndexList]);
 
   const searchChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {

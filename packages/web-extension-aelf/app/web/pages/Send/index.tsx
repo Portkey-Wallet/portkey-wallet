@@ -28,7 +28,7 @@ import './index.less';
 import { GuardianItem } from 'types/guardians';
 import { getBalance } from 'utils/sandboxUtil/getBalance';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
-import { SEND_HELP_URL, TransactionError, WarningKey } from '@portkey-wallet/constants/constants-ca/send';
+import { SEND_HELP_URL, TransactionError, WarningKey } from '@portkey-wallet/constants/constants-eoa/send';
 import getSeed from 'utils/getSeed';
 import singleMessage from 'utils/singleMessage';
 import { usePromptLocationParams } from 'hooks/router';
@@ -603,9 +603,7 @@ export default function Send() {
   });
 
   const getMaxAmount = useCallback(async () => {
-    if (!balance) {
-      return setMaxAmount('0');
-    }
+    if (!balance) return setMaxAmount('0');
 
     const balanceBN = divDecimals(balance, tokenInfo.decimals);
     const balanceStr = balanceBN.toString();
@@ -690,7 +688,7 @@ export default function Send() {
         setAmountErrMsg(TransactionError.TOKEN_NOT_ENOUGH);
         return { status: false };
       }
-      if (type === 'token') {
+      if (type === SendPageTypeEnum.token) {
         // insufficient balance check
         if (timesDecimals(amount, tokenInfo.decimals).isGreaterThan(balance)) {
           setAmountErrMsg(TransactionError.TOKEN_NOT_ENOUGH);
@@ -703,37 +701,13 @@ export default function Send() {
           }
         }
       } else if (type === SendPageTypeEnum.nft) {
-        if (ZERO.plus(amount).isGreaterThan(balance)) {
+        if (timesDecimals(amount, tokenInfo.decimals).isGreaterThan(balance)) {
           setAmountErrMsg(TransactionError.NFT_NOT_ENOUGH);
           return { status: false };
         }
       } else {
         return { status: false };
       }
-
-      // fixed: Moved Step 5 to after step 6
-      // CHECK 5: transfer limit
-      // const limitRes = await checkLimit({
-      //   chainId: tokenInfo.chainId,
-      //   symbol: tokenInfo.symbol,
-      //   amount: amount,
-      //   decimals: tokenInfo.decimals,
-      //   from: ICheckLimitBusiness.SEND,
-      //   balance,
-      //   extra: {
-      //     stage,
-      //     amount: amount,
-      //     address: tokenInfo.address,
-      //     imageUrl: tokenInfo.imageUrl,
-      //     alias: tokenInfo.alias,
-      //     tokenId: tokenInfo.tokenId,
-      //     toAccount,
-      //   },
-      //   onOneTimeApproval: handleOneTimeApproval,
-      // });
-      // if (!limitRes) {
-      //   return { status: false };
-      // }
 
       // CHECK 6: fee check
       let networkFee: string | undefined;
@@ -948,29 +922,6 @@ export default function Send() {
           };
         }
       }
-
-      // const limitRes = await checkLimit({
-      //   chainId: tokenInfo.chainId,
-      //   symbol: tokenInfo.symbol,
-      //   amount: amount,
-      //   decimals: tokenInfo.decimals,
-      //   from: ICheckLimitBusiness.SEND,
-      //   balance,
-      //   extra: {
-      //     stage,
-      //     amount: amount,
-      //     address: tokenInfo.address,
-      //     imageUrl: tokenInfo.imageUrl,
-      //     alias: tokenInfo.alias,
-      //     tokenId: tokenInfo.tokenId,
-      //     toAccount,
-      //   },
-      //   onOneTimeApproval: handleOneTimeApproval,
-      // });
-      // console.log('wfs===limitRes', limitRes);
-      // if (!limitRes) {
-      //   return { status: false };
-      // }
 
       // CHECK 6.4 SameChain or Default CrossChain
       networkFeeUnit = 'ELF';

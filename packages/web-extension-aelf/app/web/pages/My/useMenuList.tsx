@@ -40,7 +40,6 @@ export const useMenuList = () => {
         router: '/setting/wallet-security/connected-sites',
         element: <div className="item-extra-info">{dappList?.length || 0}</div>,
       },
-      // TODO: to be added in the future
       // {
       //   label: 'Address book',
       //   icon: 'my_contact',

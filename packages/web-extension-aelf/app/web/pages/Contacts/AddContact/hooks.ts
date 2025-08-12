@@ -1,12 +1,7 @@
-import {
-  useEditContact,
-  useAddContact,
-  useDeleteContact,
-  useCheckContactName,
-} from '@portkey-wallet/hooks/hooks-ca/contactNew';
-import { IContactItemType } from '@portkey-wallet/types/types-ca/contactNew';
+import { useEditContact, useAddContact, useDeleteContact } from '@portkey-wallet/hooks/hooks-eoa/contact';
 import { useCallback, useMemo, useState } from 'react';
 import { IEditContactItemFormType } from './types';
+import { IContactItemType } from '@portkey-wallet/types/types-eoa/contact';
 
 export const defaultContactFormData: IEditContactItemFormType = {
   contactName: '',
@@ -22,9 +17,8 @@ export const useContactAction = () => {
   const addContactApi = useAddContact();
   const editContactApi = useEditContact();
   const deleteContactApi = useDeleteContact();
-  const checkName = useCheckContactName();
 
-  return { addContactApi, editContactApi, deleteContactApi, checkName };
+  return { addContactApi, editContactApi, deleteContactApi };
 };
 
 export const useDefaultContactFormValue = (contact?: IContactItemType) => {

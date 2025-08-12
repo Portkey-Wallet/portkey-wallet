@@ -2,12 +2,11 @@ import { IEditContactItemFormType } from 'pages/Contacts/AddContact/types';
 import './index.less';
 import { FormInstance, Form } from 'antd';
 import { useCallback, useMemo } from 'react';
-// import { useContactNetworkConfig } from '@portkey-wallet/hooks/hooks-ca/config';
 import { CustomSvgV3 } from 'components/CustomSvgV3';
 import { Input } from 'antd';
 import { CommonModal } from '@portkey/did-ui-react';
 import CommonCloseHeader from 'components/CommonCloseHeader';
-import { useContactNetworkConfig } from '@portkey-wallet/hooks/hooks-ca/config';
+import { useContactNetworkConfig } from '@portkey-wallet/hooks/hooks-eoa/config';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 
 const { Item: FormItem } = Form;
@@ -33,7 +32,7 @@ export default function AddressInfoForm({
 
   const selectedNetworkInfo = useMemo(
     () =>
-      supportNetworkList.find((ele) => {
+      supportNetworkList?.find((ele) => {
         if (ele.network == 'aelf') {
           return ele.chainId === value?.chainId;
         } else {

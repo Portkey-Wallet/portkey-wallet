@@ -1,4 +1,3 @@
-import { IContactItemType } from '@portkey-wallet/types/types-ca/contactNew';
 import { List } from 'antd-mobile';
 import type { ListProps } from 'antd-mobile/es/components/list';
 import type { ListItemProps } from 'antd-mobile/es/components/list/list-item';
@@ -6,6 +5,7 @@ import type { ListItemProps } from 'antd-mobile/es/components/list/list-item';
 import ContactItem from '../ContactItem';
 import './index.less';
 import clsx from 'clsx';
+import { IContactItemType } from '@portkey-wallet/types/types-eoa/contact';
 
 export interface IContactListProps {
   className?: string;

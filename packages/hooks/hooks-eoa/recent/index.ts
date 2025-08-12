@@ -101,6 +101,7 @@ export function useRecent() {
               },
             };
           }
+          return ele;
         })
         .filter(i => !!i);
 

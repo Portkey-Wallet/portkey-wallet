@@ -1,10 +1,10 @@
 import clsx from 'clsx';
 import ContactListIndexBar from '../ContactListIndexBar';
 import NoContacts from '../NoContacts';
-import { IContactIndexType } from '@portkey-wallet/types/types-ca/contactNew';
 import { useMemo } from 'react';
 import { useGoProfile } from 'hooks/useProfile';
 import './index.less';
+import { IContactIndexType } from '@portkey-wallet/types/types-eoa/contact';
 
 export interface IContactsBodyProps {
   isSearch: boolean;

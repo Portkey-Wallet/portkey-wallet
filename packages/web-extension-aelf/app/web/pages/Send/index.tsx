@@ -28,7 +28,7 @@ import './index.less';
 import { GuardianItem } from 'types/guardians';
 import { getBalance } from 'utils/sandboxUtil/getBalance';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
-import { SEND_HELP_URL, TransactionError, WarningKey } from '@portkey-wallet/constants/constants-ca/send';
+import { SEND_HELP_URL, TransactionError, WarningKey } from '@portkey-wallet/constants/constants-eoa/send';
 import getSeed from 'utils/getSeed';
 import singleMessage from 'utils/singleMessage';
 import { usePromptLocationParams } from 'hooks/router';

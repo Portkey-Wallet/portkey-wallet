@@ -70,7 +70,7 @@ export default function Activity({ chainId, symbol, pageKey = 'Home-Activity' }:
         chainId: chainId,
         symbol: symbol,
         identify,
-        addressInfos,
+        addressInfos: chainId ? addressInfos.filter((ele) => ele.chainId === chainId) : addressInfos,
       };
       setInitLoading(true);
       dispatch(getActivityListAsync(params))

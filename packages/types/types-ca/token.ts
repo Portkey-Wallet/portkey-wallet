@@ -1,4 +1,4 @@
-import { IconName } from 'components/Svg';
+// import { IconName } from 'components/Svg';
 import { ChainId, NetworkType } from '..';
 import { ChainItemType } from '../chain';
 import { AccountType } from '../wallet';
@@ -33,8 +33,8 @@ export interface TokenItemShowType extends TokenItemType {
   isAdded?: boolean; // boolean
   tokenContractAddress?: string;
   imageUrl?: string;
-  svgName?: IconName;
-  chainSvgName?: IconName;
+  svgName?: string;
+  chainSvgName?: string;
   balance?: string;
   balanceInUsd?: string;
   price?: string | number;

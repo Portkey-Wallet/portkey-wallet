@@ -191,7 +191,8 @@ export const useAccountByWallet = (wallet?: TWalletInfo) => {
         console.log('no wallet');
         return;
       }
-      const { AESEncryptMnemonic, accountList } = wallet;
+      // const { AESEncryptMnemonic, accountList } = wallet;
+      const { AESEncryptMnemonic } = wallet;
       // const lastAccount = accountList[accountList.length - 1];
       const mnemonic = aes.decrypt(AESEncryptMnemonic, pin);
       // const nextBIP44Path = getNextBIP44Path(lastAccount.BIP44Path);

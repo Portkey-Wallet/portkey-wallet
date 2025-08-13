@@ -14,6 +14,10 @@ export default class Inject {
       });
       new InitializeProvider({
         connectionStream: portkeyStream,
+        options: {
+          initKey: 'FairyVault',
+          initMessage: 'FairyVault is ready.',
+        },
       });
     }
   }

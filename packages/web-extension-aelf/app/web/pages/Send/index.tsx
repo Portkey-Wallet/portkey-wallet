@@ -329,13 +329,14 @@ export default function Send() {
 
         const sendAmount = num || amount;
 
-        return getTransferFee(isAELFCross, {
+        const fee = await getTransferFee(isAELFCross, {
           sendAmount,
           decimals: tokenInfo.decimals,
           symbol: tokenInfo.symbol,
           toAddress: getEntireDIDAelfAddress(toAccount.address, undefined, tokenInfo.chainId),
           chainId: tokenInfo.chainId,
         });
+        return fee;
       } catch (error) {
         console.log('getFee===error', error);
         if (error === TransactionError.TRANSFER_AMOUNT_EXCEEDED) {

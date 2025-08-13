@@ -13,7 +13,6 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { ChainId } from '@portkey/provider-types';
 import { aelf } from '@portkey/utils';
-
 import './index.less';
 import { QRCodeDataObjType, shrinkSendQrData } from '@portkey-wallet/utils/qrCode';
 import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-eoa/network';
@@ -26,6 +25,8 @@ import { verifyHumanMachine } from 'hooks/useCrossTransferByEtransfer';
 import { usePin } from 'hooks/usePin';
 import aes from '@portkey-wallet/utils/aes';
 import { useCurrentChainList } from '@portkey-wallet/hooks/hooks-eoa/chainList';
+import { SEND_RECEIVE_HELP_URL } from '@portkey-wallet/constants/constants-eoa/send';
+import FairyVaultLogo from '../../../assets/svgIcon/FairyVaultLogo.svg';
 
 const CA_INFO = {
   AELF: {
@@ -368,6 +369,8 @@ export default function ReceiveCardMain() {
     () => (
       <PortkeyStyleProvider>
         <ReceiveCardPureComponent
+          logoImage={FairyVaultLogo}
+          helpLink={SEND_RECEIVE_HELP_URL}
           onBack={() => {
             navigate(-1);
           }}

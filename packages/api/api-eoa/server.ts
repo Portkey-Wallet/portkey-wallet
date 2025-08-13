@@ -51,6 +51,7 @@ export class DidService extends ServiceInit {
     };
   };
   sendOrigin = async (base: BaseConfig, config?: RequestConfig, reCount = 0): Promise<any> => {
+    console.log('sendOrigin=== reCount', reCount);
     const { URL, fetchConfig, method } = this.getConfig(base, config);
     const fetchResult = await customFetch(URL, {
       ...fetchConfig,

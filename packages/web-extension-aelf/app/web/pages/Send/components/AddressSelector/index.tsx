@@ -1,7 +1,7 @@
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/actions';
 import { ChainId } from '@portkey-wallet/types';
-import { IClickAddressProps } from '@portkey-wallet/types/types-ca/contact';
+import { IContactItemType } from '@portkey-wallet/types/types-eoa/contact';
 
 // import { useTranslation } from 'react-i18next';
 import { useEffectOnce } from 'react-use';
@@ -20,7 +20,7 @@ export default function AddressSelector({
   tokenId,
 }: {
   isFt: boolean;
-  onClick: (account: IClickAddressProps) => void;
+  onClick: (account: IContactItemType) => void;
   chainId: ChainId;
   tokenId: string;
 }) {

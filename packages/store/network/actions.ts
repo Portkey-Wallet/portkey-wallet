@@ -3,6 +3,7 @@ import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
 import { fetchChainList } from './api';
 import { checkRpcUrlFormat } from './utils';
 import { getELFTokenAddress } from '@portkey-wallet/contracts/index';
+import { ChainId } from '@portkey-wallet/types';
 import type { BaseToken } from '@portkey-wallet/types/types-eoa/token';
 import { ChainActionError } from './types';
 
@@ -31,6 +32,9 @@ export const addCustomChainItem = createAsyncThunk('chain/addCustomChainItem', a
         const tokenAddress = await getELFTokenAddress(chain.rpcUrl, chainStatus.GenesisContractAddress);
         nativeCurrency = {
           id: '', // TODO
+          // chain.chainId maybe // ELF: string; ethereum: number;
+          // This logic is nativeCurrency only.
+          chainId: chain.chainId as ChainId,
           // name: 'ELF',
           symbol: 'ELF',
           decimals: 8,

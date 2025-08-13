@@ -6,7 +6,7 @@ import {
   ITokenSectionResponse,
   IUserTokenItem,
 } from '@portkey-wallet/types/types-eoa/token';
-import { ITokenInfoV2, IUserTokenItemResponse } from '@portkey-wallet/types/types-eoa/token';
+// import { ITokenInfoV2, IUserTokenItemResponse } from '@portkey-wallet/types/types-eoa/token';
 
 export interface ITokenInfoType {
   balance: string;

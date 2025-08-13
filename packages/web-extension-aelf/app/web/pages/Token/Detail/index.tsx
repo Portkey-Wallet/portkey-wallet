@@ -3,22 +3,24 @@ import { formatAmountUSDShow, formatTokenAmountShowWithDecimals } from '@portkey
 import Activity from 'pages/Home/components/Activity';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import clsx from 'clsx';
-import { useCommonState, useLoading } from 'store/Provider/hooks';
+// import { useCommonState, useLoading } from 'store/Provider/hooks';
+import { useCommonState } from 'store/Provider/hooks';
 // import PromptFrame from 'pages/components/PromptFrame';
 import { useFreshTokenPrice } from '@portkey-wallet/hooks/hooks-eoa/useTokensPrice';
 import { FAUCET_URL } from '@portkey-wallet/constants/constants-ca/wallet';
-import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-eoa/network';
+// import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-eoa/network';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { useExtensionETransShow } from 'hooks/cms';
-import { useCheckSecurity } from 'hooks/useSecurity';
-import { useDisclaimer } from '@portkey-wallet/hooks/hooks-ca/disclaimer';
+// import { useCheckSecurity } from 'hooks/useSecurity';
+// import { useDisclaimer } from '@portkey-wallet/hooks/hooks-ca/disclaimer';
 import DisclaimerModal, { IDisclaimerProps, initDisclaimerData } from 'pages/components/DisclaimerModal';
 import { useLocationState, useNavigateState } from 'hooks/router';
 import { TReceiveLocationState, TSendLocationState, TTokenDetailLocationState } from 'types/router';
 import { useExtensionRampEntryShow } from 'hooks/ramp';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-eoa/chainList';
-import { TradeTypeEnum } from 'constants/trade';
-import { getDisclaimerData } from 'utils/disclaimer';
+// import { TradeTypeEnum } from 'constants/trade';
+// import { getDisclaimerData } from 'utils/disclaimer';
 import { checkEnabledFunctionalTypes } from '@portkey-wallet/utils/compass';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-eoa/activity';
 import CommonTokenHeader from 'components/CommonTokenHeader';
@@ -42,15 +44,15 @@ function TokenDetail() {
   const navigate = useNavigateState<TTokenDetailNavigateState | Partial<TSendLocationState> | TReceiveLocationState>();
   const { state } = useLocationState<any>();
   const isMainNet = useIsMainnet();
-  const { checkDappIsConfirmed } = useDisclaimer();
-  const checkSecurity = useCheckSecurity();
+  // const { checkDappIsConfirmed } = useDisclaimer();
+  // const checkSecurity = useCheckSecurity();
   const { getTokenDetailBannerList } = useCmsBanner();
   const [tokenDetailBannerList, setTokenDetailBannerList] = useState<TBaseCardItemType[]>([]);
   const [disclaimerOpen, setDisclaimerOpen] = useState<boolean>(false);
-  const { awakenUrl = '' } = useCurrentNetworkInfo();
+  // const { awakenUrl = '' } = useCurrentNetworkInfo();
   const { isPrompt, isNotLessThan768 } = useCommonState();
   const { isRampShow } = useExtensionRampEntryShow();
-  const { setLoading } = useLoading();
+  // const { setLoading } = useLoading();
 
   const [currentChain, setCurrentChain] = useState(state.chainId);
 
@@ -98,44 +100,44 @@ function TokenDetail() {
     () => formatTokenAmountShowWithDecimals(currentToken.balance, currentToken.decimals),
     [currentToken.balance, currentToken.decimals],
   );
-  const handleCheckSecurity = useCallback(async () => {
-    try {
-      setLoading(true);
-      const isSafe = await checkSecurity(currentToken.chainId);
-      setLoading(false);
-      return isSafe;
-    } catch (error) {
-      setLoading(false);
-      console.log('===handleCheckSecurity error', error);
-      return false;
-    }
-  }, [checkSecurity, currentToken.chainId, setLoading]);
+  // const handleCheckSecurity = useCallback(async () => {
+  //   try {
+  //     setLoading(true);
+  //     const isSafe = await checkSecurity(currentToken.chainId);
+  //     setLoading(false);
+  //     return isSafe;
+  //   } catch (error) {
+  //     setLoading(false);
+  //     console.log('===handleCheckSecurity error', error);
+  //     return false;
+  //   }
+  // }, [checkSecurity, currentToken.chainId, setLoading]);
 
-  const handleClickTrade = useCallback(
-    async (type: TradeTypeEnum) => {
-      const isSecurity = await handleCheckSecurity();
-      if (!isSecurity) return;
-
-      let originUrl = '';
-      let targetUrl = '';
-      switch (type) {
-        case TradeTypeEnum.Swap:
-          originUrl = awakenUrl;
-          targetUrl = `${awakenUrl}/trading/EFL_USDT_0.05`;
-          break;
-      }
-      if (checkDappIsConfirmed(originUrl)) {
-        const openWinder = window.open(targetUrl, '_blank');
-        if (openWinder) {
-          openWinder.opener = null;
-        }
-      } else {
-        disclaimerData.current = getDisclaimerData({ type, originUrl, targetUrl });
-        setDisclaimerOpen(true);
-      }
-    },
-    [awakenUrl, checkDappIsConfirmed, handleCheckSecurity],
-  );
+  // const handleClickTrade = useCallback(
+  //   async (type: TradeTypeEnum) => {
+  //     const isSecurity = await handleCheckSecurity();
+  //     if (!isSecurity) return;
+  //
+  //     let originUrl = '';
+  //     let targetUrl = '';
+  //     switch (type) {
+  //       case TradeTypeEnum.Swap:
+  //         originUrl = awakenUrl;
+  //         targetUrl = `${awakenUrl}/trading/EFL_USDT_0.05`;
+  //         break;
+  //     }
+  //     if (checkDappIsConfirmed(originUrl)) {
+  //       const openWinder = window.open(targetUrl, '_blank');
+  //       if (openWinder) {
+  //         openWinder.opener = null;
+  //       }
+  //     } else {
+  //       disclaimerData.current = getDisclaimerData({ type, originUrl, targetUrl });
+  //       setDisclaimerOpen(true);
+  //     }
+  //   },
+  //   [awakenUrl, checkDappIsConfirmed, handleCheckSecurity],
+  // );
 
   const handleSendOrReceive = useCallback(
     (type: 'send' | 'receive', pageSide?: ReceiveTabEnum) => {

@@ -1,5 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { IUserTokenItemResponse, TokenItemShowType, TokenState } from '@portkey-wallet/types/types-eoa/token';
+import {
+  IUserTokenItem,
+  IUserTokenItemResponse,
+  TokenItemShowType,
+  TokenState,
+} from '@portkey-wallet/types/types-eoa/token';
 import { fetchAllTokenListAsync, fetchAllTokenListV2Async, getSymbolImagesAsync, resetTokenInfo } from './action';
 
 export const INITIAL_TOKEN_INFO = {
@@ -76,7 +81,9 @@ export const tokenManagementSlice = createSlice({
         const preTokenDataShowInMarket = state.tokenInfoV2?.[identify]?.tokenDataShowInMarket || [];
         if (skipCount !== 0 && preTokenDataShowInMarket?.length === totalRecordCount) return;
         const tmpToken: IUserTokenItemResponse[] = list.map(item => ({
-          tokens: item.tokens,
+          // item.tokens, address is string | undefined is IUserTokenItem[]
+          // but IUserTokenItem address is string.
+          tokens: item.tokens as IUserTokenItem[],
           symbol: item.symbol,
           displayStatus: item.displayStatus,
           label: item.label,

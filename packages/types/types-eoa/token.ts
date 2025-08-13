@@ -111,6 +111,16 @@ export type UseTokenDeleteType = (
 
 export type FilterTokenList = (token_name: string, address: string) => TokenItemShowType;
 
+export interface TokenStatePreVersion {
+  addedTokenData: {
+    [rpcUrl: string]: {
+      [accountAddress: string]: TokenItemType[];
+    };
+  };
+  tokenDataShowInMarket: TokenListShowInMarketType;
+  isFetchingTokenList: Boolean;
+}
+
 export interface ITokenInfo {
   isFetching: boolean;
   tokenDataShowInMarket: TokenItemShowType[];

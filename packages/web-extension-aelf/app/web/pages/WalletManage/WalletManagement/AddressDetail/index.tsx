@@ -14,6 +14,7 @@ import { useAddress } from '../hooks/useAddress';
 import './index.less';
 import EditWalletNameForm from '../../../Wallet/components/EditWalletNameForm';
 import { EditWalletAvatarForm } from '../../../Wallet/components/EditWalletAvatarForm/indexV2';
+import { UnlockOverlay } from '../../../components/UnlockModal';
 
 export const AddressDetail: React.FC = () => {
   const navigate = useNavigateState();
@@ -30,6 +31,7 @@ export const AddressDetail: React.FC = () => {
   const [avatar, setAvatar] = useState<string | number>();
   const [nickName, setNickName] = useState<string>('');
   const [multiChainAddressesShow, setMultiChainAddressesShow] = useState<boolean>(false);
+  const [unlockOverlayOpen, setUnlockOverlayOpen] = useState(false);
   const { backupModal, setBackupModal, handleView, handleBackupContinue } = useAddressBackupModal();
   const { updateAddressName, updateAddressIcon, removeAddress } = useAddress({
     currentAccount,
@@ -239,9 +241,14 @@ export const AddressDetail: React.FC = () => {
       <div className="address-detail-delete-wrap">
         <span
           className={`address-detail-delete-text ${theOnlyAddress ? 'address-detail-delete-disabled' : ''}`}
-          onClick={handleRemoveAddress}>
+          onClick={() => setUnlockOverlayOpen(true)}>
           Remove address
         </span>
+        <UnlockOverlay
+          open={unlockOverlayOpen}
+          onClose={() => setUnlockOverlayOpen(false)}
+          onUnLockHandler={handleRemoveAddress}
+        />
       </div>
     </div>
   );

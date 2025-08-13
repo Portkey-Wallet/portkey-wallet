@@ -125,34 +125,33 @@ export const fetchTokenListAsync = createAsyncThunk(
 // fetch nftCollectionList on Dashboard
 export const fetchNFTCollectionsAsync = createAsyncThunk(
   'fetchNFTCollectionsAsync',
-  async (
+  async ({
+    addressInfos,
+    maxNFTCount = PAGE_SIZE_IN_NFT_ITEM,
+    skipCount = 0,
+    maxResultCount = 1000,
+    identify,
+  }: {
+    addressInfos: { chainId: ChainId; address: string }[];
+    maxNFTCount?: number;
+    skipCount?: number;
+    maxResultCount?: number;
+    identify: string;
+  }) =>
+    // { getState },
     {
-      addressInfos,
-      maxNFTCount = PAGE_SIZE_IN_NFT_ITEM,
-      skipCount = 0,
-      maxResultCount = 1000,
-      identify,
-    }: {
-      addressInfos: { chainId: ChainId; address: string }[];
-      maxNFTCount?: number;
-      skipCount?: number;
-      maxResultCount?: number;
-      identify: string;
+      // const { wallet } = getState() as { wallet: WalletState };
+      const response = await fetchNFTSeriesList({ addressInfos, skipCount, maxResultCount });
+      return {
+        list: response.data,
+        totalRecordCount: response.totalRecordCount,
+        totalNftItemCount: response.totalNftItemCount,
+        maxNFTCount,
+        skipCount,
+        maxResultCount,
+        identify,
+      };
     },
-    { getState },
-  ) => {
-    // const { wallet } = getState() as { wallet: WalletState };
-    const response = await fetchNFTSeriesList({ addressInfos, skipCount, maxResultCount });
-    return {
-      list: response.data,
-      totalRecordCount: response.totalRecordCount,
-      totalNftItemCount: response.totalNftItemCount,
-      maxNFTCount,
-      skipCount,
-      maxResultCount,
-      identify,
-    };
-  },
 );
 
 // fetch current nftItem on Dashboard
@@ -206,62 +205,60 @@ export const fetchNFTAsync = createAsyncThunk(
 // fetch current assets when add sent button
 export const fetchAssetAsync = createAsyncThunk(
   'fetchAssetsAsync',
-  async (
+  async ({
+    keyword,
+    addressInfos,
+    skipCount = 0,
+    maxResultCount = 1000,
+    identify,
+  }: {
+    keyword: string;
+    addressInfos: { chainId: ChainId; address: string }[];
+    skipCount?: number;
+    maxResultCount?: number;
+    identify: string;
+  }) =>
+    // { getState },
     {
-      keyword,
-      addressInfos,
-      skipCount = 0,
-      maxResultCount = 1000,
-      identify,
-    }: {
-      keyword: string;
-      addressInfos: { chainId: ChainId; address: string }[];
-      skipCount?: number;
-      maxResultCount?: number;
-      identify: string;
-    },
-    { getState },
-  ) => {
-    const response = await fetchAssetList({ addressInfos, keyword, skipCount, maxResultCount });
+      const response = await fetchAssetList({ addressInfos, keyword, skipCount, maxResultCount });
 
-    return {
-      list: response.data,
-      totalRecordCount: response.totalRecordCount,
-      keyword,
-      skipCount,
-      maxResultCount,
-      identify,
-    };
-  },
+      return {
+        list: response.data,
+        totalRecordCount: response.totalRecordCount,
+        keyword,
+        skipCount,
+        maxResultCount,
+        identify,
+      };
+    },
 );
 
 export const fetchAssetV2Async = createAsyncThunk(
   'fetchAssetV2Async',
-  async (
+  async ({
+    keyword,
+    addressInfos,
+    skipCount = 0,
+    maxResultCount = 1000,
+    identify,
+  }: {
+    keyword: string;
+    addressInfos: { chainId: ChainId; address: string }[];
+    skipCount?: number;
+    maxResultCount?: number;
+    identify: string;
+  }) =>
+    // { getState },
     {
-      keyword,
-      addressInfos,
-      skipCount = 0,
-      maxResultCount = 1000,
-      identify,
-    }: {
-      keyword: string;
-      addressInfos: { chainId: ChainId; address: string }[];
-      skipCount?: number;
-      maxResultCount?: number;
-      identify: string;
+      const response = await fetchAssetListV2({ addressInfos, keyword, skipCount, maxResultCount });
+      return {
+        ...response,
+        keyword,
+        skipCount,
+        maxResultCount,
+        identify,
+      };
     },
-    { getState },
-  ) => {
-    const response = await fetchAssetListV2({ addressInfos, keyword, skipCount, maxResultCount });
-    return {
-      ...response,
-      keyword,
-      skipCount,
-      maxResultCount,
-      identify,
-    };
-  },
 );
 
 // fetch current cryptoBox assets when add sent button
@@ -661,7 +658,10 @@ export const assetsSlice = createSlice({
             ? {
                 ...ele,
                 tokens: newTokens({
-                  tokens: ele.tokens,
+                  // Types of property decimals are incompatible.
+                  // Type string | number is not assignable to type number
+                  // Type string is not assignable to type number
+                  tokens: ele.tokens as TokenItemShowType[],
                   chainId,
                   balance: response.balance,
                   balanceInUsd: response.balanceInUsd,

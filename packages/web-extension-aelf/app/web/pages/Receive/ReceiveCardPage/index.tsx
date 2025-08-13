@@ -27,6 +27,10 @@ import aes from '@portkey-wallet/utils/aes';
 import { useCurrentChainList } from '@portkey-wallet/hooks/hooks-eoa/chainList';
 import { SEND_RECEIVE_HELP_URL } from '@portkey-wallet/constants/constants-eoa/send';
 import FairyVaultLogo from '../../../assets/svgIcon/FairyVaultLogo.svg';
+import InternalMessage from 'messages/InternalMessage';
+import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
+import { useCheckETransferIsRegistration } from 'hooks/etransfer';
+import { usePrevious } from 'react-use';
 
 const CA_INFO = {
   AELF: {
@@ -87,11 +91,19 @@ const getNetworkList = (isMainnet: boolean) => {
 };
 export default function ReceiveCardMain() {
   const navigate = useNavigate();
-  const { state: selectToken } = useLocationState<
+  const { state: stateToken, search } = useLocationState<
     IUserTokenItemResponse & {
       isNFT: boolean;
     }
   >();
+
+  const paramsToken = useMemo(() => {
+    const detail = new URLSearchParams(search).get('detail');
+    if (detail) return JSON.parse(detail);
+  }, [search]);
+
+  const selectToken = useMemo(() => stateToken || paramsToken, [paramsToken, stateToken]);
+
   const chainId = useMemo(() => (selectToken.symbol === 'ELF' ? MAIN_CHAIN_ID : undefined), [selectToken.symbol]);
   const {
     loading: receiveLoading,
@@ -104,6 +116,8 @@ export default function ReceiveCardMain() {
     sourceChainList,
     setSourceChain,
   } = useReceive(selectToken, chainId);
+
+  const previousSourceChain = usePrevious(sourceChain);
   // useEffect(() => {
   //   if (loading) {
   //     setLoading(true);
@@ -128,23 +142,14 @@ export default function ReceiveCardMain() {
   const { chainType } = useCurrentNetwork();
   const currentNetWork = useCurrentNetworkInfo();
   const currentChainList = useCurrentChainList();
-
-  const isMainnet = useIsMainnet();
-
   const account = useCurrentAccount();
-  const { address } = account || { address: '' };
-  const toCaAddress = useMemo(
-    () => `ELF_${address}_${destinationChain?.chainId || 'AELF'}`,
-    [address, destinationChain?.chainId],
-  );
   const pin = usePin();
   const manager = useMemo(() => {
     if (!account || !pin) return;
     const pk = aes.decrypt(account.AESEncryptPrivateKey, pin);
     if (pk) return aelf.getWallet(pk);
   }, [account, pin]);
-  const loading = useMemo(() => receiveLoading || !manager, [manager, receiveLoading]);
-  const { loading: _eTransferLoading, depositInfo } = useReceiveByETransfer({
+  const { loading: _eTransferLoading, getDepositInfo } = useReceiveByETransfer({
     manager,
     toChainId: destinationChain?.chainId as ChainId,
     toSymbol: selectToken.symbol,
@@ -152,21 +157,44 @@ export default function ReceiveCardMain() {
     fromSymbol: selectToken.symbol,
     verifyHumanMachine,
   });
+  const isMainnet = useIsMainnet();
+
+  useCheckETransferIsRegistration(
+    useCallback(() => {
+      InternalMessage.payload(PortkeyMessageTypes.RECEIVE_CARD, JSON.stringify(selectToken)).send();
+    }, [selectToken]),
+  );
+
+  const onGetDepositInfo = useCallback(async () => {
+    const info = await getDepositInfo();
+    if (info) {
+      setCurrentDepositInfo(info);
+    } else {
+      setSourceChain(previousSourceChain);
+    }
+  }, [getDepositInfo, previousSourceChain, setSourceChain]);
+
+  useEffect(() => {
+    if (receiveType === ReceiveType.ETransfer && !currentDepositInfo) onGetDepositInfo();
+  }, [currentDepositInfo, onGetDepositInfo, receiveType]);
+
+  const { address } = account || { address: '' };
+  const toCaAddress = useMemo(
+    () => `ELF_${address}_${destinationChain?.chainId || 'AELF'}`,
+    [address, destinationChain?.chainId],
+  );
+
+  const loading = useMemo(() => receiveLoading || !manager, [manager, receiveLoading]);
 
   const eTransferLoading = useMemo(() => {
     const chainInfo = currentChainList?.find((i) => i.chainId === sourceChain?.network);
     if (chainInfo) return false;
+    if (!currentDepositInfo?.depositAddress) return true;
     return _eTransferLoading;
-  }, [_eTransferLoading, currentChainList, sourceChain?.network]);
+  }, [_eTransferLoading, currentChainList, currentDepositInfo?.depositAddress, sourceChain?.network]);
 
   const isMainChainToMainChain =
     selectedSource?.network === MAIN_CHAIN_ID && selectedDestination?.chainId === MAIN_CHAIN_ID;
-
-  useEffect(() => {
-    if (depositInfo) {
-      setCurrentDepositInfo(depositInfo);
-    }
-  }, [depositInfo]);
 
   useEffect(() => {
     if (sourceChain) {

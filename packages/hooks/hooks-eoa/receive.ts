@@ -16,7 +16,6 @@ import AElf from 'aelf-sdk';
 import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { AElfWallet } from '@portkey-wallet/types/aelf';
 import depositService from '@portkey-wallet/utils/deposit-eoa';
-import { TDepositInfo } from '@portkey-wallet/types/types-eoa/deposit';
 import { eTransferCore } from '@etransfer/core';
 import { useThrottleCallback } from '../index';
 export const useReceive = (token: IUserTokenItemResponse, initToChainId?: ChainId) => {
@@ -134,7 +133,9 @@ export const useReceive = (token: IUserTokenItemResponse, initToChainId?: ChainI
     },
     [destinationChain?.chainId, destinationMap, sourceChain?.network],
   );
-
+  const checkIsRegistration = useCallback((address: string) => {
+    return eTransferCore.services.checkEOARegistration({ address: address });
+  }, []);
   return {
     loading,
     errorMsg,
@@ -146,9 +147,9 @@ export const useReceive = (token: IUserTokenItemResponse, initToChainId?: ChainI
     sourceChainList,
     destinationMap,
     receiveType,
+    checkIsRegistration,
   };
 };
-
 export const useReceiveByETransfer = ({
   manager,
   toChainId,
@@ -165,12 +166,20 @@ export const useReceiveByETransfer = ({
   verifyHumanMachine: any;
 }) => {
   const [loading, setLoading] = useState<boolean>(true);
-  const [depositInfo, setDepositInfo] = useState<TDepositInfo | undefined>();
   // const { caHash, address, originChainId } = useCurrentWalletInfo();
   // const { address } = useCurrentAccount() || { address: '' };
   const { apiUrl } = useCurrentNetworkInfo();
   const isMainnet = useIsMainnet();
   console.log('apiUrl====wfs', apiUrl);
+
+  const { eTransferUrl, eTransferCA } = useCurrentNetworkInfo();
+
+  useEffect(() => {
+    eTransferCore.init({
+      etransferUrl: eTransferUrl,
+    });
+  }, [eTransferCA, eTransferUrl]);
+
   const fetchTransferToken = useThrottleCallback(async () => {
     /**
      * const aesPrivateKey = AElf.wallet.AESDecrypt(account.AESEncryptPrivateKey, pin);
@@ -233,23 +242,21 @@ export const useReceiveByETransfer = ({
     return info;
   }, [fromNetwork, fromSymbol, toChainId, toSymbol]);
 
-  useEffect(() => {
-    (async () => {
-      try {
-        if (!manager) return;
-        setLoading(false);
-        setDepositInfo(undefined);
-        await fetchTransferToken();
-        const info = await fetchDepositInfo();
-        console.log('depositInfo: ', info);
-        setDepositInfo(info);
-      } catch (e) {
-        console.log('fetchDepositInfo error', JSON.stringify(e));
-      } finally {
-        setLoading(false);
-      }
-    })();
+  const getDepositInfo = useCallback(async () => {
+    try {
+      if (!manager) return;
+      setLoading(false);
+      await fetchTransferToken();
+      const info = await fetchDepositInfo();
+      console.log('depositInfo: ', info);
+      return info;
+    } catch (e) {
+      console.log('fetchDepositInfo error', e);
+      return false;
+    } finally {
+      setLoading(false);
+    }
   }, [fetchDepositInfo, fetchTransferToken, manager]);
 
-  return { loading, depositInfo };
+  return { loading, getDepositInfo };
 };

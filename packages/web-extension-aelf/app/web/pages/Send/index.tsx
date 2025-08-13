@@ -61,7 +61,10 @@ import { useContactNetworkConfig } from '@portkey-wallet/hooks/hooks-ca/config';
 import { useGetTransferFee } from 'hooks/transfer';
 import { useCurrentAccount } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 import { useCurrentNetwork, useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-eoa/network';
-
+import { INITIAL_TX_FEE } from '@portkey-wallet/constants/constants-eoa/fee';
+import InternalMessage from 'messages/InternalMessage';
+import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
+import { useCheckETransferIsRegistration } from 'hooks/etransfer';
 export enum SendPageTypeEnum {
   token = 'token',
   nft = 'nft',
@@ -236,6 +239,13 @@ export default function Send() {
     getTokenPrice(tokenInfo.symbol);
     fetchContactSupportConfig();
   });
+
+  useCheckETransferIsRegistration(
+    useCallback(() => {
+      InternalMessage.payload(PortkeyMessageTypes.SEND_CARD, `token/${symbol}`).send();
+    }, [symbol]),
+  );
+
   const modalTipContent = useMemo(() => {
     return {
       [ModalTipKeyEnum.dAppChainToExchange]: {
@@ -672,16 +682,29 @@ export default function Send() {
       const tokenSymbol = tokenInfo.symbol;
 
       // CHECK 4: balance
-      const result = await getBalance({
-        rpcUrl: currentChain.endPoint,
-        address: tokenInfo.address,
-        chainType: currentNetworkInfo.walletType,
-        paramsOption: {
-          owner: wallet?.address,
-          symbol: tokenInfo.symbol,
-        },
-      });
-      console.log(result, '=====result');
+      const [result, defaultTokenResult] = await Promise.all([
+        getBalance({
+          rpcUrl: currentChain.endPoint,
+          address: tokenInfo.address,
+          chainType: currentNetworkInfo.walletType,
+          paramsOption: {
+            owner: wallet?.address,
+            symbol: tokenInfo.symbol,
+          },
+        }),
+        getBalance({
+          rpcUrl: currentChain.endPoint,
+          address: tokenInfo.address,
+          chainType: currentNetworkInfo.walletType,
+          paramsOption: {
+            owner: wallet?.address,
+            symbol: defaultToken.symbol,
+          },
+        }),
+      ]);
+
+      const defaultTokenBalance = timesDecimals(defaultTokenResult.result.balance, defaultToken.decimals);
+      console.log(result, defaultTokenResult, '=====result');
 
       setBalance(result.result.balance);
       const balance = result.result.balance;
@@ -894,8 +917,15 @@ export default function Send() {
           return { status: false };
         }
 
+        if (defaultTokenBalance.lt(INITIAL_TX_FEE.etransfer)) {
+          setAmountErrMsg(TransactionError.FEE_NOT_ENOUGH);
+          return { status: false };
+        }
         if (amountAllowed) {
           networkFee = withdrawInfo?.aelfTransactionFee;
+
+          // if(defaultTokenResult.result.balance)
+
           networkFeeUnit = 'ELF';
           transactionFee = withdrawInfo.transactionFee;
           transactionUnit = withdrawInfo.transactionUnit;

@@ -18,8 +18,10 @@ import { useLocationState } from 'hooks/router';
 import { useContactAction, useDefaultContactFormValue, useNetworkModalShow } from './hooks';
 import { IEditContactItemFormType } from './types';
 import { IContactItemType } from '@portkey-wallet/types/types-eoa/contact';
-import { getAelfAddress } from '@portkey-wallet/utils/aelf';
-
+import { getAelfAddress, isAelfAddress } from '@portkey-wallet/utils/aelf';
+import { INIT_HAS_ERROR, INIT_NONE_ERROR } from '@portkey-wallet/constants/constants-ca/common';
+import { useContactNetworkConfig } from '@portkey-wallet/hooks/hooks-eoa/config';
+const invalidAddressMessage = 'Please enter a valid address.';
 export enum ContactInfoError {
   invalidAddress = 'Please enter a valid address.',
   recipientAddressIsInvalid = 'Recipient address is invalid',
@@ -64,6 +66,7 @@ export default function AddContact() {
   const { extra }: { extra?: ContactHandleActionType } = useParams();
   const isEdit = useMemo(() => extra === 'edit-contact', [extra]);
   const { isNetworkModalOpen, handleNetworkModalState } = useNetworkModalShow();
+  const { supportNetworkList } = useContactNetworkConfig();
 
   const [validName] = useState<ValidData>({
     validateStatus: '',
@@ -99,11 +102,31 @@ export default function AddContact() {
     [form],
   );
 
+  const checkAddressIsValid = ({ address, network }: { address: string; network: string }) => {
+    let isPass = true;
+
+    if (network === 'aelf') {
+      isPass = !!isAelfAddress(address);
+    } else {
+      const pattern = supportNetworkList?.find((ele) => ele.network === network)?.pattern || '';
+      const regex = new RegExp(pattern);
+      isPass = regex.test(address);
+    }
+
+    return isPass
+      ? INIT_NONE_ERROR
+      : {
+          ...INIT_HAS_ERROR,
+          errorMsg: invalidAddressMessage,
+        };
+  };
+
   const onFinish = useCallback(async () => {
     const { addressInfo, contactName } = form.getFieldsValue();
     if (!form.validateFields()) return;
-
     try {
+      const { isError, errorMsg } = checkAddressIsValid(addressInfo);
+      if (isError) return singleMessage.error(errorMsg);
       setLoading(true);
       const params = { name: contactName, ...addressInfo, address: getAelfAddress(addressInfo.address) };
       const action = isEdit ? editContactApi : addContactApi;

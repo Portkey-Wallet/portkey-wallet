@@ -202,12 +202,13 @@ export default function MyBalance() {
         address: isNFT ? `${v?.nftInfo?.tokenContractAddress}` : `${v?.tokenInfo?.tokenContractAddress}`,
         symbol: v.symbol,
         name: v.symbol,
-        imageUrl: isNFT ? v.nftInfo?.imageUrl || '' : v.tokenInfo?.imageUrl || '',
-        alias: isNFT ? v.nftInfo?.alias : '',
-        tokenId: isNFT ? v.nftInfo?.tokenId : '',
+        imageUrl: (isNFT ? v.nftInfo?.imageUrl : v.tokenInfo?.imageUrl) || '',
+        alias: isNFT ? v.nftInfo?.alias || '' : '',
+        tokenId: isNFT ? v.nftInfo?.tokenId || '' : '',
         isSeed: isNFT ? v.nftInfo?.isSeed : false,
         seedType: isNFT ? v.nftInfo?.seedType : SeedTypeEnum.None,
         label: v.label,
+        balance: (isNFT ? v.nftInfo?.balance : v.tokenInfo?.balance) || '',
       };
       navigate(`/${navTarget}/${type}/${v.symbol}`, { state });
     },

@@ -1,4 +1,4 @@
-import { IClickAddressProps } from '@portkey-wallet/types/types-ca/contact';
+import { IContactItemType } from '@portkey-wallet/types/types-eoa/contact';
 import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
 import { useEffectOnce } from 'react-use';
@@ -13,7 +13,7 @@ export default function Recents({
   tokenId,
   isFt,
 }: {
-  onChange: (account: IClickAddressProps) => void;
+  onChange: (account: IContactItemType) => void;
   chainId: ChainId;
   tokenId: string;
   isFt?: boolean;

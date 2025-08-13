@@ -41,10 +41,12 @@ export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manage
   const rateRefreshTimeRef = useRef(MAX_REFRESH_TIME);
   const [rateRefreshTime, setRateRefreshTime] = useState<number>(MAX_REFRESH_TIME);
   const refreshReceiveRef = useRef<() => void>();
+  // In browser, is number | null
   const refreshReceiveTimerRef = useRef<NodeJS.Timer>();
 
   const clearRefreshReceive = useCallback(() => {
-    refreshReceiveTimerRef.current && clearInterval(refreshReceiveTimerRef.current);
+    // In browser, is number | null
+    refreshReceiveTimerRef.current && clearInterval(refreshReceiveTimerRef.current as unknown as number);
     refreshReceiveTimerRef.current = undefined;
   }, []);
 

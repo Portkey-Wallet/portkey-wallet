@@ -81,10 +81,10 @@ export default function AddToken() {
     }
   }, [passwordSeed, appDispatch, chainIdArray, filterWord, fetchTokenInfoList]);
 
-  const handleAddCustomToken = useCallback(() => {
-    setFilterWord('');
-    navigate('/custom-token');
-  }, [navigate]);
+  // const handleAddCustomToken = useCallback(() => {
+  //   setFilterWord('');
+  //   navigate('/custom-token');
+  // }, [navigate]);
 
   const handleSearch = useCallback(
     async (keyword: string) => {

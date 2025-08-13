@@ -41,8 +41,8 @@ export const useGetTransferFee = () => {
         request.errorReport('calculateTransactionFee', calculateParams, req.error);
       }
 
-      const { TransactionFee } = (req.data as CalculateTransactionFeeResponse) || {};
-
+      let { TransactionFee } = (req.data as any) || {};
+      TransactionFee = TransactionFee?.TransactionFee || TransactionFee;
       // // V2 calculateTransactionFee
       // if (TransactionFees) {
       //   const { ChargingAddress, Fee } = TransactionFees;

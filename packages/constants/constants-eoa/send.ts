@@ -113,3 +113,5 @@ export const TransferErrorMessage = {
 
 export const HELP_URL = 'https://doc.portkey.finance/docs/How-to-trade-assets';
 export const SEND_HELP_URL = 'https://fairyvault.gitbook.io/fairyvault-docs/asset-management-and-web3-exploration';
+export const SEND_RECEIVE_HELP_URL =
+  'https://fairyvault.gitbook.io/fairyvault-docs/asset-management-and-web3-exploration/how-to-receive-assets';

@@ -35,3 +35,4 @@ declare module '*.png';
 declare module '*.gif';
 declare module 'aelf-sdk';
 declare module 'query-string';
+declare module '*.svg';

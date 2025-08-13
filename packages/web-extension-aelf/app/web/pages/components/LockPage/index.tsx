@@ -2,7 +2,7 @@ import { WalletError } from '@portkey-wallet/store/wallet/type';
 import { Form, FormProps } from 'antd';
 import { FormItem } from 'components/BaseAntd';
 import CustomPassword from 'components/CustomPassword';
-import CustomSvg from 'components/CustomSvg';
+import { CustomSvgV3 } from 'components/CustomSvgV3';
 import InternalMessage from 'messages/InternalMessage';
 import InternalMessageTypes from 'messages/InternalMessageTypes';
 import { useCallback, useState } from 'react';
@@ -64,7 +64,7 @@ export default function LockPage({ onUnLockHandler, ...props }: LockPageProps) {
   return (
     <div className={clsx('lock-page-wrapper', isNotLessThan768 ? '' : 'lock-page-wrapper-popup')}>
       <div className={clsx('lock-page-content', isNotLessThan768 ? 'flex-column-center' : 'flex-column-between')}>
-        <CustomSvg type="PortKeyPrompt" fillColor="#FFF" />
+        <CustomSvgV3 type="fairy-vault-with-icon-logo" fillColor="#FFF" />
         <Form
           {...props}
           className="unlock-form"

@@ -52,6 +52,8 @@ const permissionWhitelist = [
   PortkeyMessageTypes.SET_BADGE,
   PortkeyMessageTypes.UN_REGISTER_FCM,
   PortkeyMessageTypes.INIT_FCM_MESSAGE,
+  PortkeyMessageTypes.RECEIVE_CARD,
+  PortkeyMessageTypes.SEND_CARD,
   WalletMessageTypes.SET_RECAPTCHA_CODE_V2,
   WalletMessageTypes.SOCIAL_LOGIN,
   MethodsWallet.GET_WALLET_STATE,
@@ -142,7 +144,7 @@ export default class ServiceWorkerInstantiate {
    * @param message - The message to be dispensed
    */
   dispenseMessage(sendResponse: SendResponseFun, message: InternalMessageData) {
-    console.log('dispenseMessage: ', message);
+    console.log('dispenseMessage-dispenseMessage: ', message);
     switch (message.type) {
       case PortkeyMessageTypes.GET_SEED:
         ServiceWorkerInstantiate.getSeed(sendResponse);
@@ -185,6 +187,12 @@ export default class ServiceWorkerInstantiate {
         break;
       case PortkeyMessageTypes.CRYPTO_GIFT:
         ServiceWorkerInstantiate.expandCryptoGift();
+        break;
+      case PortkeyMessageTypes.RECEIVE_CARD:
+        ServiceWorkerInstantiate.expandReceiveCard(message.payload);
+        break;
+      case PortkeyMessageTypes.SEND_CARD:
+        ServiceWorkerInstantiate.expandSendCard(message.payload);
         break;
       case PortkeyMessageTypes.GUARDIANS_VIEW:
         ServiceWorkerInstantiate.expandGuardiansView();
@@ -366,6 +374,30 @@ export default class ServiceWorkerInstantiate {
     notificationService.openPrompt(
       {
         method: PromptRouteTypes.CRYPTO_GIFT,
+      },
+      'tabs',
+    );
+  }
+
+  static expandReceiveCard(payload: any) {
+    console.log('expandReceiveCard', payload);
+
+    notificationService.openPrompt(
+      {
+        method: PromptRouteTypes.RECEIVE_CARD,
+        search: payload,
+      },
+      'tabs',
+    );
+  }
+
+  static expandSendCard(payload: any) {
+    console.log('expandReceiveCard', payload);
+
+    notificationService.openPrompt(
+      {
+        method: PromptRouteTypes.SEND_CARD,
+        query: payload,
       },
       'tabs',
     );

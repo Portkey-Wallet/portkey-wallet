@@ -37,6 +37,8 @@ const routMap: { [x in keyof typeof PromptRouteTypes]?: string } = {
   [PromptRouteTypes.SEND]: '#/send',
   [PromptRouteTypes.RAMP]: '#/buy',
   [PromptRouteTypes.CRYPTO_GIFT]: '#/crypto-gifts/create',
+  [PromptRouteTypes.RECEIVE_CARD]: '#/receive-card',
+  [PromptRouteTypes.SEND_CARD]: '#/send',
 };
 
 export interface PromptMessage {

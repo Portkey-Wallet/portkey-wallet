@@ -3,7 +3,7 @@ import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import usePromptSearch from 'hooks/usePromptSearch';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useDapp, useWalletInfo } from 'store/Provider/hooks';
+import { useDapp, useNetworkInfo } from 'store/Provider/hooks';
 import errorHandler from 'utils/errorHandler';
 import { closePrompt } from 'utils/lib/serviceWorkerAction';
 import { ResponseCode } from '@portkey/provider-types';
@@ -32,7 +32,7 @@ export default function GetSignature() {
     isManagerSignature?: boolean;
   }>();
   const { t } = useTranslation();
-  const { currentNetwork } = useWalletInfo();
+  const { currentNetwork } = useNetworkInfo();
   const [showData, setShowData] = useState<string | { methodName: string; params: object }>(payload?.data);
   const { dappMap } = useDapp();
 

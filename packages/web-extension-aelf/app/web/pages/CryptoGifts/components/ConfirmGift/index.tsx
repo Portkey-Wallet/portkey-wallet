@@ -83,6 +83,9 @@ export default function ConfirmGift(props: IConfirmGiftProps) {
         decimals: Number(token.decimals),
         toAccount: { address: `${wallet.caAddress}_${token.chainId}` },
         stage: SendStage.Amount,
+        balance: '',
+        alias: otherChainToken.alias || '',
+        tokenId: otherChainToken.tokenId || '',
       },
     });
   }, [navigate, otherChainToken, token.chainId, token.decimals, token.symbol, wallet.caAddress]);

@@ -135,6 +135,7 @@ export const fetchContactListV2Async = createAsyncThunk<FetchContactListAsyncPay
         isInit: true,
         contactIndexListNew: [],
         lastModifiedNew: 0,
+        lastModified: 0,
       };
 
     // init

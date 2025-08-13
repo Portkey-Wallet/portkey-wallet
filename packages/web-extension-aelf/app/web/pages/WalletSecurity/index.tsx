@@ -6,7 +6,7 @@ import { BaseHeaderProps } from 'types/UI';
 // import WalletSecurityPrompt from './Prompt';
 import WalletSecurityPopup from './Popup';
 // import { useCommonState, useDapp, useWalletInfo } from 'store/Provider/hooks';
-import { useDapp, useWalletInfo } from 'store/Provider/hooks';
+import { useDapp, useNetworkInfo } from 'store/Provider/hooks';
 import { useNavigateState } from 'hooks/router';
 import { useIsSecondaryMailSet } from '@portkey-wallet/hooks/hooks-ca/useSecondaryMail';
 
@@ -21,7 +21,7 @@ export default function WalletSecurity() {
   const { deviceAmount } = useDeviceList({
     isAmountOnly: true,
   });
-  const { currentNetwork } = useWalletInfo();
+  const { currentNetwork } = useNetworkInfo();
   const { dappMap } = useDapp();
   const currentDapp = useMemo(() => dappMap[currentNetwork] || [], [currentNetwork, dappMap]);
   const { secondaryEmail, fetching } = useIsSecondaryMailSet();

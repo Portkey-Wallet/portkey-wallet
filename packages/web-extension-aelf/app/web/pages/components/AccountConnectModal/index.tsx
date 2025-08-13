@@ -5,7 +5,7 @@ import CustomSvg from 'components/CustomSvg';
 import useConnect from 'hooks/useConnect';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAppDispatch, useWalletInfo } from 'store/Provider/hooks';
+import { useAppDispatch, useNetworkInfo } from 'store/Provider/hooks';
 import './index.less';
 
 export interface IAccountConnectModalProps {
@@ -16,7 +16,7 @@ export interface IAccountConnectModalProps {
 export default function AccountConnectModal({ open, onCancel }: IAccountConnectModalProps) {
   const { t } = useTranslation();
   const { dapp, origin } = useConnect();
-  const { currentNetwork } = useWalletInfo();
+  const { currentNetwork } = useNetworkInfo();
   const dispatch = useAppDispatch();
 
   const handleDisConnect = useCallback(() => {

@@ -18,7 +18,7 @@ import { customFetch } from '@portkey-wallet/utils/fetch';
 import { randomId } from '@portkey-wallet/utils';
 import { socialLoginAction } from 'utils/lib/serviceWorkerAction';
 import { ISocialLogin, LoginType, SocialLoginEnum } from '@portkey-wallet/types/types-ca/wallet';
-import { useWalletInfo } from 'store/Provider/hooks';
+import { useNetworkInfo } from 'store/Provider/hooks';
 import { useCurrentWalletInfo, useVerifyManagerAddress } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useLatestRef } from '@portkey-wallet/hooks';
 import { useCurrentNetwork, useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
@@ -85,7 +85,7 @@ export function useVerifyZKLogin() {
 }
 
 export function useVerifyGoogleToken() {
-  const { currentNetwork } = useWalletInfo();
+  const { currentNetwork } = useNetworkInfo();
   const verifyZKLogin = useVerifyZKLogin();
   return useCallback(
     async (params: VerifyTokenParams) => {
@@ -147,7 +147,7 @@ export function useVerifyGoogleToken() {
 }
 
 export function useVerifyAppleToken() {
-  const { currentNetwork } = useWalletInfo();
+  const { currentNetwork } = useNetworkInfo();
   const verifyZKLogin = useVerifyZKLogin();
   return useCallback(
     async (params: VerifyTokenParams) => {
@@ -196,7 +196,7 @@ export function useVerifyAppleToken() {
 }
 
 export function useVerifyTelegram() {
-  const { currentNetwork } = useWalletInfo();
+  const { currentNetwork } = useNetworkInfo();
   return useCallback(
     async (params: VerifyTokenParams) => {
       let accessToken = params.accessToken;
@@ -217,7 +217,7 @@ export function useVerifyTelegram() {
 }
 
 export function useVerifyTwitter() {
-  const { currentNetwork } = useWalletInfo();
+  const { currentNetwork } = useNetworkInfo();
   return useCallback(
     async (params: VerifyTokenParams) => {
       let tokenInfo = params.accessToken;
@@ -240,7 +240,7 @@ export function useVerifyTwitter() {
 }
 
 export function useVerifyFacebook() {
-  const { currentNetwork } = useWalletInfo();
+  const { currentNetwork } = useNetworkInfo();
   return useCallback(
     async (params: VerifyTokenParams) => {
       let tokenInfo = params.accessToken;

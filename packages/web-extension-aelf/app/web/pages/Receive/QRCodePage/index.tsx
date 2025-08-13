@@ -3,7 +3,7 @@ import QRCodeCommon from 'pages/components/QRCodeCommon';
 import Copy from 'components/CopyAddress';
 import { useLocationState } from 'hooks/router';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { useWalletInfo } from 'store/Provider/hooks';
+import { useNetworkInfo } from 'store/Provider/hooks';
 import { useMemo } from 'react';
 import { TReceiveLocationState } from 'types/router';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
@@ -16,7 +16,7 @@ import './index.less';
 export default function QRCodePage() {
   const { state } = useLocationState<TReceiveLocationState>();
   const wallet = useCurrentWalletInfo();
-  const { currentNetwork } = useWalletInfo();
+  const { currentNetwork } = useNetworkInfo();
   const caAddress = useMemo(
     () => `ELF_${wallet?.[state.chainId || 'AELF']?.caAddress}_${state.chainId}`,
     [state, wallet],

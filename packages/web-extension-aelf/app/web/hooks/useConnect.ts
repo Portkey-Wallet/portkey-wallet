@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { getCurrentTab } from 'utils/platforms';
-import { useDapp, useWalletInfo } from 'store/Provider/hooks';
+import { useDapp, useNetworkInfo } from 'store/Provider/hooks';
 
 export default function useConnect() {
   const [currentTab, setCurrentTab] = useState<chrome.tabs.Tab | undefined>();
-  const { currentNetwork } = useWalletInfo();
+  const { currentNetwork } = useNetworkInfo();
   const { dappMap } = useDapp();
   const currentDapps = useMemo(() => dappMap[currentNetwork] ?? [], [dappMap, currentNetwork]);
 

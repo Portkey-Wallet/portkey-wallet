@@ -11,14 +11,13 @@ import TokenImageDisplay from 'pages/components/TokenImageDisplay';
 import { formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import { useCallback } from 'react';
 import { useCurrentAccount } from '@portkey-wallet/hooks/hooks-eoa/wallet';
-import { IClickAddressProps } from '@portkey-wallet/types/types-ca/contact';
 
 export default function RecentItem({
   item,
   onClick,
 }: {
   item: TFormattedRecentItem;
-  onClick: (account: IClickAddressProps) => void;
+  onClick: (account: IContactItemType) => void;
 }) {
   const isMainnet = useIsMainnet();
   const navigate = useNavigate();
@@ -56,7 +55,7 @@ export default function RecentItem({
         isEqChain
         chainId={item.chainId || item.addressInfo?.chainId || 'AELF'}
         onClick={(item) => {
-          onClick(item);
+          onClick(item as IContactItemType);
         }}
       />
     );
@@ -66,7 +65,7 @@ export default function RecentItem({
       <ContactListItem
         item={item as IContactItemType}
         onChange={(item) => {
-          onClick(item as unknown as IClickAddressProps);
+          onClick(item);
         }}
       />
     );
@@ -76,7 +75,7 @@ export default function RecentItem({
     <div
       className={clsx(['flex-between-center', 'recent-item'])}
       onClick={() => {
-        onClick(item as IClickAddressProps);
+        onClick(item as IContactItemType);
       }}>
       <TokenImageDisplay subDisplay={true} chain={item?.addressInfo?.chainId === 'AELF' ? 'main' : 'dApp'} />
       <div className="center">

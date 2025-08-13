@@ -1,5 +1,5 @@
 import { ChainId } from '@portkey-wallet/types';
-import { IClickAddressProps } from '@portkey-wallet/types/types-ca/contact';
+import { IContactItemType } from '@portkey-wallet/types/types-eoa/contact';
 import { useMemo } from 'react';
 import { formatStr2EllipsisStr } from '@portkey-wallet/utils/converter';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
@@ -26,7 +26,7 @@ export default function MyAddress({
 }: {
   isEqChain?: boolean;
   chainId: ChainId;
-  onClick: (account: IClickAddressProps) => void;
+  onClick: (account: IContactItemType) => void;
 }) {
   const isMainnet = useIsMainnet();
   const { t } = useTranslation();
@@ -59,7 +59,13 @@ export default function MyAddress({
             className="my-address-item"
             key={idx + _address}
             onClick={() => {
-              onClick({ chainId: item.chainId, address: item.address });
+              onClick({
+                address: item.address,
+                id: item.id,
+                index: item.index,
+                name: item.name,
+                addressInfo: item.addressInfo,
+              });
             }}>
             <div className="info-box">
               <TokenImageDisplay

@@ -658,7 +658,10 @@ export const assetsSlice = createSlice({
             ? {
                 ...ele,
                 tokens: newTokens({
-                  tokens: ele.tokens,
+                  // Types of property decimals are incompatible.
+                  // Type string | number is not assignable to type number
+                  // Type string is not assignable to type number
+                  tokens: ele.tokens as TokenItemShowType[],
                   chainId,
                   balance: response.balance,
                   balanceInUsd: response.balanceInUsd,

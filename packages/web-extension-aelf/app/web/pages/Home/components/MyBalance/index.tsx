@@ -15,7 +15,6 @@ import CustomTokenModal from 'pages/components/CustomTokenModal';
 import { IAssetItemType } from '@portkey-wallet/store/store-ca/assets/type';
 import { useFreshTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import useVerifierList from 'hooks/useVerifierList';
-import useGuardianList from 'hooks/useGuardianList';
 import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useUnreadCount } from '@portkey-wallet/hooks/hooks-ca/im';

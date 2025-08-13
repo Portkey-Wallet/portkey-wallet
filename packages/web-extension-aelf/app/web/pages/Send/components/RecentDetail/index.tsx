@@ -5,37 +5,45 @@ import { useCommonState, useUserInfo } from 'store/Provider/hooks';
 import { useCallback, useMemo, useState } from 'react';
 import Copy from 'components/Copy';
 import { addressFormat, chainShowText, getExploreLink } from '@portkey-wallet/utils';
-import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { useCurrentChain } from '@portkey-wallet/hooks/hooks-eoa/chainList';
 import CommonHeader from 'components/CommonHeader';
 import './index.less';
 import ActivityList from 'pages/components/ActivityList';
 import {
   IActivitiesApiResponse,
   IActivityListWithAddressApiParams,
-} from '@portkey-wallet/store/store-ca/activity/type';
-import { fetchRecentContactActivities } from '@portkey-wallet/store/store-ca/activity/api';
-import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
+} from '@portkey-wallet/store/store-eoa/activity/type';
+import { fetchRecentContactActivities } from '@portkey-wallet/store/store-eoa/activity/api';
 import { useEffectOnce } from 'react-use';
 import { useGoAddNewContact } from 'hooks/useProfile';
 import { ContactHandleActionTypeEnum } from 'types/Profile';
 import Avatar from 'pages/components/Avatar';
 import { useLocationState } from 'hooks/router';
-import { IContactItemType } from '@portkey-wallet/types/types-ca/contactNew';
+import { IAddressInfo, IContactItemType } from '@portkey-wallet/types/types-eoa/contact';
 import { getShowAddress } from 'pages/Contacts/components/ContactItem';
 import { ChainType } from '@portkey/provider-types';
 import { singleMessage } from '@portkey/did-ui-react';
+import { useChainList } from '@portkey-wallet/hooks/hooks-eoa/network/chain';
+import { ChainId } from '@portkey-wallet/types';
+import { useCurrentAccount } from '@portkey-wallet/hooks/hooks-eoa/wallet';
+import { NFT_MIDDLE_SIZE } from '@portkey-wallet/constants/constants-eoa/assets';
 
 const MAX_RESULT_COUNT = 10;
 const SKIP_COUNT = 0;
 
 export default function RecentDetail() {
-  const { state } = useLocationState<IContactItemType & { isFromSend: boolean }>();
+  const { state } = useLocationState<IContactItemType & { isFromSend: boolean; addressInfo: IAddressInfo }>();
+  console.log(state, '======state');
+  const account = useCurrentAccount();
 
+  const chainId = useMemo(() => state?.addressInfo?.chainId as ChainId, [state?.addressInfo?.chainId]);
+  const address = useMemo(() => state?.addressInfo?.address, [state?.addressInfo?.address]);
   const isMyContact = useMemo(() => !!state?.name, [state?.name]);
 
   const goToNewContact = useGoAddNewContact();
+  const chainList = useChainList();
 
-  const chainInfo = useCurrentChain(state?.addressInfo?.chainId);
+  const chainInfo = useCurrentChain(chainId);
 
   const [activityInfo, setActivityList] = useState<IActivitiesApiResponse>({
     data: [],
@@ -43,7 +51,7 @@ export default function RecentDetail() {
   });
   const { passwordSeed } = useUserInfo();
   const { isPrompt } = useCommonState();
-  const caAddressInfos = useCaAddressInfoList();
+  // const caAddressInfos = useCaAddressInfoList();
 
   const [loading, setLoading] = useState<boolean>(false);
   const nav = useNavigate();
@@ -65,16 +73,24 @@ export default function RecentDetail() {
     return {
       maxResultCount: MAX_RESULT_COUNT,
       skipCount: SKIP_COUNT,
-      caAddressInfos,
+      addressInfos: (chainList || [])
+        .filter((item) => item.chainId === chainId)
+        .map((item) => ({
+          chainId: item.chainId,
+          address: `AELF_${account}_${item.chainId}`,
+          chainName: '',
+        })),
       targetAddressInfos: [
         {
-          caAddress: state?.addressInfo?.address || '',
-          chainId: state?.addressInfo?.chainId || 'AELF',
-          chainName: chainInfo?.chainName || 'aelf',
+          address: address,
+          chainId: chainId,
+          chainName: '',
         },
       ],
+      width: NFT_MIDDLE_SIZE,
+      height: -1,
     };
-  }, [caAddressInfos, chainInfo?.chainName, state?.addressInfo?.address, state?.addressInfo?.chainId]);
+  }, [account, address, chainId, chainList]);
 
   useEffectOnce(() => {
     if (passwordSeed) {
@@ -128,7 +144,7 @@ export default function RecentDetail() {
               onClick={() => {
                 goToNewContact(
                   state.id ? ContactHandleActionTypeEnum.EDIT_CONTACT : ContactHandleActionTypeEnum.ADD_CONTACT,
-                  state,
+                  state as any,
                 );
               }}>
               <CustomSvgV3 type={'edit'} />
@@ -207,7 +223,7 @@ export default function RecentDetail() {
         <div className="recent-detail-address-wrap">
           {state?.name && (
             <div className="recent-detail-contact">
-              <Avatar avatarUrl={state?.caHolderInfo?.avatar || ''} nameIndex={state?.index} size="large" />
+              <Avatar avatarUrl={undefined} nameIndex={state?.index} size="large" />
               <div className="name">{state?.name}</div>
             </div>
           )}
@@ -228,7 +244,7 @@ export default function RecentDetail() {
             {state.name ? (
               <Copy iconType={'copy'} toCopy={formatAddress} fillColor="#FFFFFF66" />
             ) : (
-              <div onClick={() => goToNewContact(ContactHandleActionTypeEnum.ADD_CONTACT, state)}>
+              <div onClick={() => goToNewContact(ContactHandleActionTypeEnum.ADD_CONTACT, state as any)}>
                 <CustomSvgV3 type={'add-person'} className="add-icon" />
               </div>
             )}

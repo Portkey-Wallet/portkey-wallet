@@ -14,6 +14,7 @@ import { useContactNetworkConfig, useTransferNetworkConfig } from './config';
 import { ChainId } from '@portkey-wallet/types';
 import { convertNameToAlphabet } from '@portkey-wallet/store/store-eoa/contact/utils';
 import { useCurrentNetwork } from './network';
+import { INIT_HAS_ERROR, INIT_NONE_ERROR } from '@portkey-wallet/constants/constants-eoa/common';
 
 export const REFRESH_DELAY_TIME = 1.5 * 1000;
 
@@ -277,4 +278,62 @@ export const useIndexAndName = (item: Partial<IContactItemType>) => {
     const index = name?.substring(0, 1).toLocaleUpperCase();
     return { index, name };
   }, [item?.name]);
+};
+
+export const useContactCheck = () => {
+  const { supportNetworkList } = useContactNetworkConfig();
+  const contactList = useContactList();
+
+  const checkAddressIsValid = useCallback(
+    ({ address, network }: { address: string; network: string }) => {
+      let isPass = true;
+
+      if (network === 'aelf') {
+        isPass = !!isAelfAddress(address);
+      } else {
+        const pattern = supportNetworkList?.find(ele => ele.network === network)?.pattern || '';
+        const regex = new RegExp(pattern);
+        isPass = regex.test(address);
+      }
+
+      return isPass
+        ? INIT_NONE_ERROR
+        : {
+            ...INIT_HAS_ERROR,
+            errorMsg: 'Please enter a valid address.',
+          };
+    },
+    [supportNetworkList],
+  );
+
+  const checkContactExist = useCallback(
+    ({ network, name, address }: { address: string; name: string; network: string }) => {
+      for (let i = 0; i < contactList.length; i++) {
+        const { addressInfo, name: contactName } = contactList[i] || {};
+        console.log(contactList[i], '====contactList[i]');
+        console.log({ network, name, address }, '====contactList[i]-{ network, name, address }');
+
+        if (name === contactName) {
+          return {
+            ...INIT_HAS_ERROR,
+            errorMsg: 'This name already exists. Please choose a different one.',
+          };
+        }
+        if (addressInfo.network === network) {
+          const _addr = network === 'aelf' ? getAelfAddress(addressInfo.address) : addressInfo.address;
+          const _addr2 = network === 'aelf' ? getAelfAddress(address) : address;
+          if (_addr === _addr2) {
+            return {
+              ...INIT_HAS_ERROR,
+              errorMsg: 'This address already exists. Please use a different one.',
+            };
+          }
+        }
+      }
+      return INIT_HAS_ERROR;
+    },
+    [contactList],
+  );
+
+  return { checkAddressIsValid, checkContactExist };
 };

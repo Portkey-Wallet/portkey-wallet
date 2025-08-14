@@ -530,9 +530,11 @@ export default class ServiceWorkerInstantiate {
   static async checkTimingLock(sendResponse?: SendResponseFun) {
     apis.alarms.clear('timingLock');
 
+    console.log('checkTimingLock ===', pageState.lockTime);
+    // https://developer.chrome.com/docs/extensions/reference/api/alarms
+    // Starting in Chrome 120, the minimum alarm interval has been reduced from 1 minute to 30 seconds.
     if (pageState.lockTime === AutoLockDataType.Immediately) {
-      pageState.lockTime = 5 as any;
-      return;
+      pageState.lockTime = 0.5 as any;
     }
     if (seed && pageState.lockTime === AutoLockDataType.Never) {
       return;
@@ -540,8 +542,7 @@ export default class ServiceWorkerInstantiate {
     if (seed) {
       // MV2 -> MV3 setTimeout -> alarms.create
       apis.alarms.create('timingLock', {
-        // delayInMinutes: pageState.lockTime ?? AutoLockDataType.OneHour,
-        delayInMinutes: pageState.lockTime ?? AutoLockDataType.Never,
+        delayInMinutes: pageState.lockTime ?? AutoLockDataType.OneHour,
       });
       apis.alarms.onAlarm.addListener((alarm) => {
         if (alarm.name !== 'timingLock') return;

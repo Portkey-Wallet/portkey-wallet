@@ -11,7 +11,7 @@ import clsx from 'clsx';
 import PromptFrame from 'pages/components/PromptFrame';
 import { ICryptoBoxAssetItemType } from '@portkey-wallet/types/types-ca/crypto';
 import SelectAsset from '../components/SelectAsset';
-import { DEFAULT_GIFT_TOKEN, TDVV_CHAIN_GIFT_TOKEN, TDVW_CHAIN_GIFT_TOKEN, chianInfoShow, getPrice } from '../utils';
+import { DEFAULT_GIFT_TOKEN, TDVV_CHAIN_GIFT_TOKEN, TDVW_CHAIN_GIFT_TOKEN, chianInfoShow } from '../utils';
 import { useAmountInUsdShow } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { ZERO } from '@portkey-wallet/im-ui-web';
 import {
@@ -148,19 +148,6 @@ export default function Create() {
     getInitState();
     refresh();
   });
-
-  const updateAmountUsdShow = useCallback(async () => {
-    let _usd = '';
-    const _price = await getPrice(token.symbol);
-    setTokenPrice(_price);
-    if (_price) {
-      _usd = formatAmountUSDShow(ZERO.plus(amount ?? 0).times(_price));
-    }
-    setAmountUsdShow(_usd);
-  }, [amount, token.symbol]);
-  useEffect(() => {
-    updateAmountUsdShow();
-  }, [updateAmountUsdShow]);
 
   // check show buy btn
   const cardShowFn = useMemo(

@@ -1,7 +1,7 @@
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { fetchTokensPriceAsync } from '@portkey-wallet/store/store-eoa/assets/slice';
 import { divDecimals, formatAmountUSDShow } from '@portkey-wallet/utils/converter';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useAppEOASelector, useAppCommonDispatch } from '../index';
 import { useIsMainnet } from './network';
 import { useDefaultToken } from './chainList';
@@ -20,19 +20,18 @@ export function useGetCurrentAccountTokenPrice(): [
 ] {
   const assets = useAppEOASelector(state => state.assets);
   const dispatch = useAppCommonDispatch();
-  const symbols = useSymbolList();
+  // const symbols = useSymbolList();
 
-  const symbolsRef = useRef<string[]>([]);
+  // const symbolsRef = useRef<string[]>([]);
 
-  const getTokenPrice = useCallback(
-    (symbol?: string) => {
-      if (symbols.length === 0) return;
-      if (symbolsRef.current.toString() === symbols.toString()) return;
-      symbolsRef.current = symbols;
-      dispatch(fetchTokensPriceAsync({ symbols: symbol ? [symbol] : symbols }));
-    },
-    [dispatch, symbols],
-  );
+  // TODO: update token price
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const getTokenPrice = useCallback((_?: string) => {
+    // if (symbols.length === 0) return;
+    // if (symbolsRef.current.toString() === symbols.toString()) return;
+    // symbolsRef.current = symbols;
+    // dispatch(fetchTokensPriceAsync({ symbols: symbol ? [symbol] : symbols }));
+  }, []);
 
   const getTokensPrice = useCallback(
     (symbols: string[]) => {

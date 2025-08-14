@@ -9,14 +9,14 @@ import { Transaction } from '@portkey-wallet/types/types-ca/trade';
 import NFT from '../NFT/NFT';
 import { useAppDispatch, useUserInfo, useCommonState, useLoading } from 'store/Provider/hooks';
 import { useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { getSymbolImagesAsync } from '@portkey-wallet/store/store-ca/tokenManagement/action';
+// import { getSymbolImagesAsync } from '@portkey-wallet/store/store-eoa/tokenManagement/action';
 import { getCaHolderInfoAsync } from '@portkey-wallet/store/store-ca/wallet/actions';
 import CustomTokenModal from 'pages/components/CustomTokenModal';
-import { IAssetItemType } from '@portkey-wallet/store/store-ca/assets/type';
-import { useFreshTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
+import { IAssetItemType } from '@portkey-wallet/store/store-eoa/assets/type';
+import { useFreshTokenPrice } from '@portkey-wallet/hooks/hooks-eoa/useTokensPrice';
 import useVerifierList from 'hooks/useVerifierList';
-import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
-import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import { BalanceTab } from '@portkey-wallet/constants/constants-eoa/assets';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { useUnreadCount } from '@portkey-wallet/hooks/hooks-ca/im';
 import { fetchContactListV2Async } from '@portkey-wallet/store/store-ca/contact/actions';
 import { useCheckSecurity } from 'hooks/useSecurity';
@@ -30,7 +30,7 @@ import signalrFCM from '@portkey-wallet/socket/socket-fcm';
 import { useLocationState, useNavigateState } from 'hooks/router';
 import { TRampLocationState, TSendLocationState } from 'types/router';
 import { useExtensionRampEntryShow } from 'hooks/ramp';
-import { SeedTypeEnum } from '@portkey-wallet/types/types-ca/assets';
+import { SeedTypeEnum } from '@portkey-wallet/types/types-eoa/assets';
 import { clsx } from 'clsx';
 import { useAccountBalanceUSD } from '@portkey-wallet/hooks/hooks-eoa/assets';
 import { formatAmountUSDShow } from '@portkey-wallet/utils/converter';
@@ -177,7 +177,7 @@ export default function MyBalance() {
   useEffect(() => {
     if (!passwordSeed) return;
     appDispatch(getCaHolderInfoAsync());
-    appDispatch(getSymbolImagesAsync());
+    // appDispatch(getSymbolImagesAsync());
   }, [appDispatch, passwordSeed]);
 
   useEffect(() => {

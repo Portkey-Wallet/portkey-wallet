@@ -3,7 +3,7 @@ import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { UpdateNotify, VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
 import { compareVersions } from '@portkey-wallet/utils/device';
 import { Modal, ModalFuncProps } from 'antd';
-import { request } from '@portkey-wallet/api/api-did';
+import { request } from '@portkey-wallet/api/api-eoa';
 
 const currentVersion = process.env.SDK_VERSION?.replace('v', '');
 

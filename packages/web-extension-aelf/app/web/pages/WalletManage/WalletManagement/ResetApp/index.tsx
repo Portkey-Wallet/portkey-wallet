@@ -13,11 +13,15 @@ import './index.less';
 import { UnlockOverlay } from '../../../components/UnlockModal';
 import { LOCAL_AVATARS } from 'assets/images/avatars/avatars';
 import { useAddressBackupModal } from '../AddressBackup/useAddressBackupModal';
+import { useCommonState } from 'store/Provider/hooks';
+import InternalMessage from 'messages/InternalMessage';
+import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 
 export const ResetApp: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigateState();
   const walletList = useWalletListState();
+  const { isPrompt } = useCommonState();
 
   const { backupModal, setBackupModal, handleView, handleBackupContinue } = useAddressBackupModal();
 
@@ -33,7 +37,11 @@ export const ResetApp: React.FC = () => {
     setUnlockOverlayOpen(false);
     dispatch(resetDapp());
     dispatch(resetWallet());
-    navigate('/register');
+    if (isPrompt) {
+      navigate('/register');
+    } else {
+      InternalMessage.payload(PortkeyMessageTypes.REGISTER_WALLET).send();
+    }
   }, [dispatch, navigate]);
 
   return (

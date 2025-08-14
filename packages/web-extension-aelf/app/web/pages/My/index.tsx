@@ -14,10 +14,12 @@ import { CustomSvgV3 } from 'components/CustomSvgV3';
 import SetNewWalletNameIcon from '../Home/components/SetNewWalletNameIcon';
 import { LOCAL_AVATARS } from 'assets/images/avatars/avatars';
 import { useAddressesTokensInfo } from 'pages/WalletManage/WalletManagement/hooks/useAddressesTokensInfo';
+// import { useCommonState } from 'store/Provider/hooks';
 
 export default function My() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  // const { isPrompt } = useCommonState();
 
   const MenuList: IMenuItemInfo[] = useMenuList();
 
@@ -81,6 +83,9 @@ export default function My() {
             if (item.type === 'divider') {
               return <div key={index} className="empty-placeholder" />;
             }
+            // if (item.label === 'Wallet management' && !isPrompt) {
+            //   return null;
+            // }
             return (
               <MenuItem
                 key={item.label}

@@ -56,6 +56,17 @@ import { SelectAssetListPage } from 'pages/Send/components/SelectAssetList';
 import ActivityList from 'pages/Activity';
 import { Swap } from 'pages/Swap';
 
+import { ManualBackup } from 'pages/WalletBackup/ManualBackup/index';
+import { ManualBackupSuccess } from 'pages/WalletBackup/ManualBackup/Success';
+import { ConfirmBackup } from 'pages/WalletBackup/ConfirmBackup/ConfirmBackup';
+import { ImportWallet } from 'pages/WalletManage/WalletImport/ImportWallet';
+import { WalletManagement } from 'pages/WalletManage/WalletManagement/index';
+import { ResetApp } from 'pages/WalletManage/WalletManagement/ResetApp';
+import { AddressBackup } from 'pages/WalletManage/WalletManagement/AddressBackup';
+import AddressDetail from 'pages/WalletManage/WalletManagement/AddressDetail';
+import { PrepareWallet } from 'pages/PrepareWallet';
+import CreateNewWallet from 'pages/CreateNewWallet';
+
 export const PageRouter = () =>
   useRoutes([
     {
@@ -299,5 +310,45 @@ export const PageRouter = () =>
     {
       path: '/receive-card',
       element: <ReceiveCardPage />,
+    },
+    {
+      path: '/wallet/manage',
+      element: <WalletManagement />,
+    },
+    {
+      path: '/wallet/create',
+      element: <CreateNewWallet />,
+    },
+    {
+      path: '/wallet/reset',
+      element: <ResetApp />,
+    },
+    {
+      path: '/wallet/import',
+      element: <ImportWallet />,
+    },
+    {
+      path: '/wallet/backup/manual',
+      element: <ManualBackup />,
+    },
+    {
+      path: '/wallet/backup/manual/success',
+      element: <ManualBackupSuccess />,
+    },
+    {
+      path: '/wallet/backup/manual/confirm',
+      element: <ConfirmBackup />,
+    },
+    {
+      path: '/wallet/backup/view',
+      element: <AddressBackup />,
+    },
+    {
+      path: '/wallet/address/detail',
+      element: <AddressDetail />,
+    },
+    {
+      path: '/prepare-wallet/:type',
+      element: <PrepareWallet />,
     },
   ]);

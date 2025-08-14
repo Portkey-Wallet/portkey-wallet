@@ -81,14 +81,22 @@ export default function HomeHeader({ onUserClick, unReadShow }: IHomeHeaderProps
             className="portkey-logo-prompt"
             onClick={() => copyAddressDrawerOrModalRef.current?.open()}
           />
+          <CustomSvgV3
+            type="gear"
+            className="portkey-logo-prompt"
+            fillColor="rgba(255,255,255,0.7)"
+            onClick={() => {
+              navigate('/setting');
+            }}
+          />
           {isNotLessThan768 ? (
             <>
-              <CustomSvgV3
-                type="gear"
-                className="portkey-logo-prompt"
-                fillColor="rgba(255,255,255,0.7)"
-                onClick={() => navigate('/setting')}
-              />
+              {/*<CustomSvgV3*/}
+              {/*  type="gear"*/}
+              {/*  className="portkey-logo-prompt"*/}
+              {/*  fillColor="rgba(255,255,255,0.7)"*/}
+              {/*  onClick={() => navigate('/setting')}*/}
+              {/*/>*/}
               <CustomSvgV3
                 type="lock_filled"
                 fillColor="rgba(255,255,255,0.7)"

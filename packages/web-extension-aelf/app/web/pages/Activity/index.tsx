@@ -96,14 +96,15 @@ export default function Activity({ chainId, symbol, pageKey = 'Home-Activity' }:
 
   const loadMoreActivities = useCallback(async () => {
     const { data, maxResultCount, skipCount, totalRecordCount } = currentActivity || {};
-    if (data && totalRecordCount && data.length < totalRecordCount) {
-      const params = {
+    // TODO: server fix totalRecordCount
+    if (data && totalRecordCount && data.length <= totalRecordCount) {
+      const params: IActivitiesApiParams = {
         maxResultCount: MAX_RESULT_COUNT,
         skipCount: (skipCount ?? 0) + (maxResultCount ?? 0),
-        caAddressInfos: chainId ? addressInfos.filter((item) => item.chainId === chainId) : addressInfos,
         chainId: chainId,
         symbol: symbol,
         identify,
+        addressInfos: chainId ? addressInfos.filter((ele) => ele.chainId === chainId) : addressInfos,
       };
       const res = await dispatch(getActivityListAsync(params));
       if (res.payload) {

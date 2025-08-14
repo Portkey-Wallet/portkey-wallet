@@ -14,7 +14,7 @@ import { useContactNetworkConfig, useTransferNetworkConfig } from './config';
 import { ChainId } from '@portkey-wallet/types';
 import { convertNameToAlphabet } from '@portkey-wallet/store/store-eoa/contact/utils';
 import { useCurrentNetwork } from './network';
-import { INIT_HAS_ERROR, INIT_NONE_ERROR } from '@portkey-wallet/constants/constants-eoa/common';
+import { INIT_ERROR, INIT_HAS_ERROR, INIT_NONE_ERROR } from '@portkey-wallet/constants/constants-eoa/common';
 
 export const REFRESH_DELAY_TIME = 1.5 * 1000;
 
@@ -330,7 +330,7 @@ export const useContactCheck = () => {
           }
         }
       }
-      return INIT_HAS_ERROR;
+      return INIT_ERROR;
     },
     [contactList],
   );

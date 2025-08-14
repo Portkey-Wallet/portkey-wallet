@@ -12,11 +12,10 @@ import { useActiveLockStatus } from 'hooks/useActiveLockStatus';
 import useLocationChange from 'hooks/useLocationChange';
 // import { useCheckManagerOnLogout } from 'hooks/useLogout';
 // import { useCheckManager } from '@portkey-wallet/hooks/hooks-ca/graphql';
-import { useCheckUpdate } from 'hooks/useCheckUpdate';
 // import { usePhoneCountryCode } from '@portkey-wallet/hooks/hooks-ca/misc';
 import { useFetchTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
 import { useLocation } from 'react-router';
-import { useRememberMeBlackList, useSocialMediaList, useTabMenuList } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { useRememberMeBlackList, useSocialMediaList } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { exceptionManager } from 'utils/errorHandler/ExceptionHandler';
 import usePortkeyUIConfig from 'hooks/usePortkeyUIConfig';
 // import im from '@portkey-wallet/im';
@@ -30,8 +29,7 @@ import useFCM from 'hooks/useFCM';
 import { useSetTokenConfig } from 'hooks/useSetTokenConfig';
 import { useInitLoginModeList } from 'hooks/loginModal';
 import { useUserInfo } from './hooks';
-import { useInitCmsBanner } from '@portkey-wallet/hooks/hooks-ca/cms/banner';
-import { useInitRampV2 } from '@portkey-wallet/hooks/hooks-ca/ramp';
+import { useInitCmsBanner } from '@portkey-wallet/hooks/hooks-eoa/cms/banner';
 import { useInitChainList } from '@portkey-wallet/hooks/hooks-eoa/network/chain';
 // import { useInitAwaken } from '@portkey-wallet/hooks/hooks-eoa/awaken';
 
@@ -46,7 +44,6 @@ export default function Updater() {
   // const isMainnet = useIsMainnet();
   const initLoginModeList = useInitLoginModeList();
   const { passwordSeed } = useUserInfo();
-  const initRamp = useInitRampV2({ clientType: 'Extension' });
 
   useInitChainList();
 
@@ -79,15 +76,8 @@ export default function Updater() {
   useUpdateRedux();
   useLocationChange();
   useChainListFetch();
-
-  const checkUpdate = useCheckUpdate();
   useFCM();
-
-  // useCheckManager(checkManagerOnLogout);
   useFetchTxFee();
-  useEffect(() => {
-    checkUpdate();
-  }, [checkUpdate]);
 
   usePortkeyUIConfig();
 
@@ -105,7 +95,7 @@ export default function Updater() {
   useSocialMediaList(true);
   useExtensionEntrance(true);
   useRememberMeBlackList(true);
-  useTabMenuList(true);
+  // useTabMenuList(true);
   useCheckContactMap();
   useInitCmsBanner();
   // useInitAwaken();
@@ -114,11 +104,6 @@ export default function Updater() {
     initConfig();
     initRequest();
     initLoginModeList();
-  });
-  useEffectOnce(() => {
-    // init ramp
-    const timer = setTimeout(initRamp, 500);
-    return () => clearTimeout(timer);
   });
   return null;
 }

@@ -1,4 +1,4 @@
-import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
+import { TokenItemShowType } from '@portkey-wallet/types/types-eoa/token';
 import CustomSvg from 'components/CustomSvg';
 import CommonHeader, { CustomSvgPlaceholderSize } from 'components/CommonHeader';
 import DropdownSearch from 'components/DropdownSearch';
@@ -7,15 +7,15 @@ import { useTranslation } from 'react-i18next';
 import { formatAmountUSDShow, formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import { useCaAddressInfoList, useChainIdList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
-import { useFreshTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
+import { useFreshTokenPrice } from '@portkey-wallet/hooks/hooks-eoa/useTokensPrice';
 import TokenImageDisplay from '../TokenImageDisplay';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { NFTSizeEnum, getSeedTypeTag } from 'utils/assets';
-import { IAssetItemType } from '@portkey-wallet/store/store-ca/assets/type';
+import { IAssetItemType } from '@portkey-wallet/store/store-eoa/assets/type';
 import LoadingMore from 'components/LoadingMore/LoadingMore';
-import { PAGE_SIZE_IN_ACCOUNT_ASSETS } from '@portkey-wallet/constants/constants-ca/assets';
+import { PAGE_SIZE_IN_ACCOUNT_ASSETS } from '@portkey-wallet/constants/constants-eoa/assets';
 import { useDebounceCallback, useEffectOnce } from '@portkey-wallet/hooks';
-import { useTokenLegacy } from '@portkey-wallet/hooks/hooks-ca/useToken';
+import { useTokenLegacy } from '@portkey-wallet/hooks/hooks-eoa/useToken';
 import { useAccountAssetsInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
 import { fetchAssetsListByFilter, fetchTokenListByFilter } from './utils';
 import { useCommonState } from 'store/Provider/hooks';
@@ -108,7 +108,7 @@ export default function CustomTokenList({
 
   const setData = useCallback(() => {
     if (drawerType === 'send') {
-      setAssetList(accountAssetsList);
+      setAssetList(accountAssetsList as IAssetItemType[]);
     } else {
       setAssetList(tokenDataShowInMarket);
     }
@@ -127,7 +127,7 @@ export default function CustomTokenList({
       } else {
         res = await fetchTokenListByFilter({ chainIdArray, keyword });
       }
-      setAssetList(res.data);
+      setAssetList(res.data as IAssetItemType[]);
     },
     [caAddressInfos, chainIdArray, drawerType, setData],
     500,

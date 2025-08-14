@@ -11,7 +11,7 @@ import clsx from 'clsx';
 import PromptFrame from 'pages/components/PromptFrame';
 import { ICryptoBoxAssetItemType } from '@portkey-wallet/types/types-ca/crypto';
 import SelectAsset from '../components/SelectAsset';
-import { DEFAULT_GIFT_TOKEN, TDVV_CHAIN_GIFT_TOKEN, TDVW_CHAIN_GIFT_TOKEN, chianInfoShow, getPrice } from '../utils';
+import { DEFAULT_GIFT_TOKEN, TDVV_CHAIN_GIFT_TOKEN, TDVW_CHAIN_GIFT_TOKEN, chianInfoShow } from '../utils';
 import { useAmountInUsdShow } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { ZERO } from '@portkey-wallet/im-ui-web';
 import {
@@ -73,14 +73,14 @@ export default function Create() {
   const [quantityErr, setQuantityErr] = useState('');
   const [amount, setAmount] = useState<string>();
   const [amountErr, setAmountErr] = useState('');
-  const [amountUsdShow, setAmountUsdShow] = useState('$0');
+  const [amountUsdShow] = useState('$0');
   const [token, setToken] = useState<ICryptoBoxAssetItemType>(DEFAULT_GIFT_TOKEN);
   const isMainnet = useIsMainnet();
   const otherChainToken = useRef<ICryptoBoxAssetItemType | undefined>(
     isMainnet ? TDVV_CHAIN_GIFT_TOKEN : TDVW_CHAIN_GIFT_TOKEN,
   );
   const [memo, setMemo] = useState<string>();
-  const [tokenPrice, setTokenPrice] = useState<number>(0);
+  const [tokenPrice] = useState<number>(0);
   const [newUserFlag, setNewUserFlag] = useState<boolean>(true);
   const [selectAssetOpen, setSelectAssetOpen] = useState<boolean>(false);
   const [confirmOpen, setConfirmOpen] = useState<boolean>(false);
@@ -148,19 +148,6 @@ export default function Create() {
     getInitState();
     refresh();
   });
-
-  const updateAmountUsdShow = useCallback(async () => {
-    let _usd = '';
-    const _price = await getPrice(token.symbol);
-    setTokenPrice(_price);
-    if (_price) {
-      _usd = formatAmountUSDShow(ZERO.plus(amount ?? 0).times(_price));
-    }
-    setAmountUsdShow(_usd);
-  }, [amount, token.symbol]);
-  useEffect(() => {
-    updateAmountUsdShow();
-  }, [updateAmountUsdShow]);
 
   // check show buy btn
   const cardShowFn = useMemo(

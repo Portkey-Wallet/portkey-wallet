@@ -1,7 +1,7 @@
 import { DrawerProps } from 'antd';
 import BaseDrawer from '../BaseDrawer';
 import CustomTokenList from '../CustomTokenList';
-import { IAssetItemType } from '@portkey-wallet/store/store-ca/assets/type';
+import { IAssetItemType } from '@portkey-wallet/store/store-eoa/assets/type';
 import './index.less';
 
 interface CustomSelectProps extends DrawerProps {

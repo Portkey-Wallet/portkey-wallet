@@ -14,11 +14,10 @@ import { useEffectOnce } from 'react-use';
 // import initIm from 'hooks/im';
 import { sleep } from '@portkey-wallet/utils';
 import { useDiscoverGroupList } from '@portkey-wallet/hooks/hooks-ca/cms';
-import { useReferral } from '@portkey-wallet/hooks/hooks-ca/referral';
 // import HomeHeader from 'pages/components/HomeHeader';
 import BottomBar from 'pages/components/BottomBar';
 // import SetNewWalletNameModal from './components/SetNewWalletNameModal';
-import { useBlockAndReport } from '@portkey-wallet/hooks/hooks-ca/im';
+// import { useBlockAndReport } from '@portkey-wallet/hooks/hooks-ca/im';
 import { useBackupWalletModal } from 'hooks/wallet/useBackupWalletModal';
 import { useLocationState } from 'hooks/router';
 // import { hideReferral } from '@portkey-wallet/constants/referral';
@@ -34,7 +33,6 @@ export default function Home() {
   const { backupWalletModalShow = false } = state || {};
   const { isPrompt, isNotLessThan768 } = useCommonState();
   // const isImputation = useIsImputation();
-  const { getViewReferralStatusStatus, getReferralLink } = useReferral();
   const { showBackupWalletModal } = useBackupWalletModal();
   // const onUserClick = useCallback(() => {
   //   const url = isNotLessThan768 ? `/setting/wallet` : `/setting`;
@@ -45,7 +43,6 @@ export default function Home() {
   const isSell = useRef(0); // guaranteed to make only one transfer
   const handleAchSell = useHandleAchSell();
   const locked = useStorage('locked');
-  const { fetchAndSetBlockList } = useBlockAndReport();
 
   const checkAchSell = useCallback(async () => {
     if (search) {
@@ -64,9 +61,6 @@ export default function Home() {
 
   useEffectOnce(() => {
     checkAchSell();
-    getViewReferralStatusStatus();
-    getReferralLink();
-    fetchAndSetBlockList();
     backupWalletModalShow && showBackupWalletModal();
   });
   // initIm();

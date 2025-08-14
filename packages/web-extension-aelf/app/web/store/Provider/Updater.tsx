@@ -16,7 +16,7 @@ import { useCheckUpdate } from 'hooks/useCheckUpdate';
 // import { usePhoneCountryCode } from '@portkey-wallet/hooks/hooks-ca/misc';
 import { useFetchTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
 import { useLocation } from 'react-router';
-import { useRememberMeBlackList, useSocialMediaList, useTabMenuList } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { useRememberMeBlackList, useSocialMediaList } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { exceptionManager } from 'utils/errorHandler/ExceptionHandler';
 import usePortkeyUIConfig from 'hooks/usePortkeyUIConfig';
 // import im from '@portkey-wallet/im';
@@ -103,7 +103,7 @@ export default function Updater() {
   useSocialMediaList(true);
   useExtensionEntrance(true);
   useRememberMeBlackList(true);
-  useTabMenuList(true);
+  // useTabMenuList(true);
   useCheckContactMap();
   useInitCmsBanner();
   // useInitAwaken();

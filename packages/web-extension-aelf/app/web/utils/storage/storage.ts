@@ -4,6 +4,7 @@ const storage = {
   // in background.js
   aelfCrossMeta: 'BG_AELF_CROSSMETA',
   lockTime: 'BG_LOCK_TIME',
+  userActivityTime: 'BG_USER_ACTIVITY_TIME',
   locked: 'BG_LOCKED',
   connections: 'BG_CONNECTIONS',
   lastMessageTime: 'BG_LAST_MESSAGE_TIME',

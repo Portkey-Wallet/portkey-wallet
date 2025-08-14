@@ -23,7 +23,11 @@ const serviceWorkerListener = ({ pageStateChange, checkRegisterStatus, checkTimi
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   apis.storage.onChanged.addListener((changes) => {
     console.log('storage.onChanged', changes);
-    if (storage.lockTime in changes) {
+    // console.log('userActivityTime update', storage.userActivityTime in changes);
+    // console.log('lockTime update', storage.lockTime in changes);
+    if (storage.userActivityTime in changes) {
+      checkTimingLock();
+    } else if (storage.lockTime in changes) {
       checkTimingLock();
 
       pageStateChange({

@@ -73,14 +73,14 @@ export default function Create() {
   const [quantityErr, setQuantityErr] = useState('');
   const [amount, setAmount] = useState<string>();
   const [amountErr, setAmountErr] = useState('');
-  const [amountUsdShow, setAmountUsdShow] = useState('$0');
+  const [amountUsdShow] = useState('$0');
   const [token, setToken] = useState<ICryptoBoxAssetItemType>(DEFAULT_GIFT_TOKEN);
   const isMainnet = useIsMainnet();
   const otherChainToken = useRef<ICryptoBoxAssetItemType | undefined>(
     isMainnet ? TDVV_CHAIN_GIFT_TOKEN : TDVW_CHAIN_GIFT_TOKEN,
   );
   const [memo, setMemo] = useState<string>();
-  const [tokenPrice, setTokenPrice] = useState<number>(0);
+  const [tokenPrice] = useState<number>(0);
   const [newUserFlag, setNewUserFlag] = useState<boolean>(true);
   const [selectAssetOpen, setSelectAssetOpen] = useState<boolean>(false);
   const [confirmOpen, setConfirmOpen] = useState<boolean>(false);

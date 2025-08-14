@@ -157,6 +157,11 @@ let config = {
     }),
     new HtmlWebpackPlugin({
       chunks: [''],
+      template: './app/web/popup-init.html',
+      filename: `./${outputDir}/popup-init.html`,
+    }),
+    new HtmlWebpackPlugin({
+      chunks: [''],
       template: './app/web/options.html',
       filename: `./${outputDir}/options.html`,
     }),

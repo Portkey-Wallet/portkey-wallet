@@ -24,7 +24,6 @@ import { useDisclaimer } from '@portkey-wallet/hooks/hooks-ca/disclaimer';
 import { useExtensionETransShow } from 'hooks/cms';
 import DisclaimerModal, { IDisclaimerProps, initDisclaimerData } from '../../../components/DisclaimerModal';
 import './index.less';
-import { useInitRamp } from '@portkey-wallet/hooks/hooks-ca/ramp';
 import { setBadge } from 'utils/FCM';
 import { useFCMEnable, useReportFCMStatus } from 'hooks/useFCM';
 import signalrFCM from '@portkey-wallet/socket/socket-fcm';
@@ -152,7 +151,6 @@ export default function MyBalance() {
   }, [t, tokenCount, nftCount, isNotLessThan768]);
   useFreshTokenPrice();
   useVerifierList();
-  const initRamp = useInitRamp({ clientType: 'Extension' });
   const { isRampShow, isBuySectionShow } = useExtensionRampEntryShow();
   const [disclaimerOpen, setDisclaimerOpen] = useState<boolean>(false);
   const disclaimerData = useRef<IDisclaimerProps>(initDisclaimerData);
@@ -181,11 +179,6 @@ export default function MyBalance() {
     appDispatch(getCaHolderInfoAsync());
     appDispatch(getSymbolImagesAsync());
   }, [appDispatch, passwordSeed]);
-
-  useEffect(() => {
-    initRamp();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isMainNet]);
 
   useEffect(() => {
     appDispatch(fetchContactListV2Async());

@@ -38,7 +38,9 @@ export const ContactListItem = ({
           <div className="info-box">
             <div className="name">{item.name}</div>
             <div className="address">
-              {formatStr2EllipsisStr(`ELF_${item?.addressInfo?.address}_${item.addressInfo?.chainId}`)}
+              {item?.isExchange
+                ? formatStr2EllipsisStr(item?.addressInfo?.address)
+                : formatStr2EllipsisStr(`ELF_${item?.addressInfo?.address}_${item.addressInfo?.chainId}`)}
             </div>
           </div>
         </>

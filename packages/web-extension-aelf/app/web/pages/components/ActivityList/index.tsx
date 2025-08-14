@@ -448,7 +448,7 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
 
   const renderActivityList = useMemo(() => {
     return (
-      <div>
+      <>
         {data?.map((item, index) => {
           if (index === 0) {
             return (
@@ -470,7 +470,7 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
             }
           }
         })}
-      </div>
+      </>
     );
   }, [data, formatActivityTimeShow, renderActivityItem]);
 

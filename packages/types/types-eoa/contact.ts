@@ -31,6 +31,7 @@ export interface IContactItemType {
   addressInfo: IAddressInfo;
   isDeleted?: boolean;
   address?: string;
+  isExchange?: boolean;
 }
 export type TDeleteContactItemParams = IContactItemType;
 

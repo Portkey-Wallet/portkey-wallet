@@ -91,12 +91,11 @@ export default function Activity({ chainId, symbol, pageKey = 'Home-Activity' }:
   }, [addressInfos, chainId, dispatch, endReport, identify, pageKey, passwordSeed, symbol]);
 
   const loadMoreActivities = useCallback(async () => {
-    const { data, maxResultCount, skipCount, totalRecordCount } = currentActivity || {};
-    // TODO: server fix totalRecordCount
-    if (data && totalRecordCount && data.length <= totalRecordCount) {
+    const { skipCount, hasNextPage } = currentActivity || {};
+    if (hasNextPage) {
       const params = {
         maxResultCount: MAX_RESULT_COUNT,
-        skipCount: (skipCount ?? 0) + (maxResultCount ?? 0),
+        skipCount: (skipCount ?? 0) + MAX_RESULT_COUNT,
         addressInfos: chainId ? addressInfos.filter((ele) => ele.chainId === chainId) : addressInfos,
         chainId: chainId,
         symbol: symbol,

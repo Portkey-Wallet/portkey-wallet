@@ -3,7 +3,7 @@ import { DappStoreItem } from '@portkey-wallet/store/store-eoa/dapp/type';
 import { DappManagerOptions, IDappManager, IDappManagerStore } from '@portkey-wallet/types/types-eoa/dapp';
 import { EOACommonState } from '@portkey-wallet/types/types-eoa/store';
 import { ChainId, ChainsInfo } from '@portkey/provider-types';
-import { handleAccounts, handleChainIds, handleCurrentAccount, handleCurrentWallet, handleOriginInfo } from './index';
+import { handleAccounts, handleChainIds, handleCurrentAccount, handleOriginInfo } from './index';
 import { isEqDapp } from './browser';
 import { NetworkType } from '@portkey-wallet/types';
 import { SessionInfo } from '@portkey-wallet/types/session';
@@ -41,8 +41,7 @@ export abstract class DappManager<T extends EOACommonState = EOACommonState>
   // ==> current account
   async walletInfo(): Promise<TAccountInfo | undefined> {
     const wallet = await this.getWallet();
-    const currentAccount = handleCurrentAccount(wallet);
-    return currentAccount;
+    return handleCurrentAccount(wallet);
   }
   async currentManagerAddress(): Promise<string | undefined> {
     return (await this.walletInfo())?.address;
@@ -98,7 +97,8 @@ export abstract class DappManager<T extends EOACommonState = EOACommonState>
     return this.chainIds();
   }
   async chainIds() {
-    if (!this.isLogged()) return [];
+    const isLogged = await this.isLogged();
+    if (!isLogged) return [];
     const networkInfo = await this.getNetwork();
     return handleChainIds(networkInfo);
   }

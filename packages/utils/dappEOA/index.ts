@@ -1,5 +1,4 @@
 import { IDappStoreState } from '@portkey-wallet/store/store-eoa/dapp/type';
-import { WalletState } from '@portkey-wallet/store/store-ca/wallet/type';
 import { Accounts, ChainIds } from '@portkey/provider-types';
 import { TNetworkState } from '@portkey-wallet/store/store-eoa/network/type';
 import { TWalletState } from '@portkey-wallet/store/store-eoa/wallet/type';

@@ -1,4 +1,4 @@
-import { addDapp } from '@portkey-wallet/store/store-ca/dapp/actions';
+import { addDapp } from '@portkey-wallet/store/store-eoa/dapp/actions';
 import { Button } from 'antd';
 import usePromptSearch from 'hooks/usePromptSearch';
 import { useCallback, useMemo, useState } from 'react';
@@ -9,17 +9,18 @@ import errorHandler from 'utils/errorHandler';
 import { closePrompt } from 'utils/lib/serviceWorkerAction';
 import DappSession from 'pages/components/DappSession';
 import { SessionExpiredPlan } from '@portkey-wallet/types/session';
-import { useUpdateSessionInfo } from '@portkey-wallet/hooks/hooks-ca/dapp';
-import getManager from 'utils/getManager';
-import { useCheckSiteIsInBlackList } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { useUpdateSessionInfo } from '@portkey-wallet/hooks/hooks-eoa/dapp';
+// import getManager from 'utils/getManager';
+import { useCheckSiteIsInBlackList } from '@portkey-wallet/hooks/hooks-eoa/cms';
 import AsyncButton from 'components/AsyncButton';
 import './index.less';
-import { useDappInfo } from '@portkey-wallet/hooks/hooks-ca/discover';
+import { useDappInfo } from '@portkey-wallet/hooks/hooks-eoa/discover';
 import { DappSiteInfo } from 'pages/components/DappSiteInfo';
 import { CommonPromptCard } from '@portkey/did-ui-react';
 import { PromptCardType } from 'pages/Send';
 import Avatar from 'pages/components/Avatar';
-import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentAccount } from '@portkey-wallet/hooks/hooks-eoa/wallet';
+import { LOCAL_AVATARS } from 'assets/images/avatars/avatars';
 
 export default function ConnectWallet() {
   const detail = usePromptSearch();
@@ -32,6 +33,7 @@ export default function ConnectWallet() {
   const updateSessionInfo = useUpdateSessionInfo();
   const checkOriginInBlackList = useCheckSiteIsInBlackList();
   const isInWebSet = useDappInfo(detail.appHref, detail.appLogo || '');
+  const userInfo = useCurrentAccount();
 
   const handleSessionChange = useCallback((flag: boolean, extTime: SessionExpiredPlan) => {
     setOpen(flag);
@@ -51,12 +53,12 @@ export default function ConnectWallet() {
         }),
       );
       if (open) {
-        const manager = await getManager();
+        // const manager = await getManager();
         updateSessionInfo({
           networkType: currentNetwork,
           origin: detail.appHref,
           expiredPlan: exp,
-          manager,
+          manager: userInfo,
         });
       }
       closePrompt({
@@ -66,7 +68,17 @@ export default function ConnectWallet() {
     } catch (error) {
       console.log('add dapp error', error);
     }
-  }, [currentNetwork, detail.appHref, detail.appLogo, detail.appName, dispatch, exp, open, updateSessionInfo]);
+  }, [
+    currentNetwork,
+    detail.appHref,
+    detail.appLogo,
+    detail.appName,
+    dispatch,
+    exp,
+    open,
+    updateSessionInfo,
+    userInfo,
+  ]);
 
   const curDapp = useMemo(
     () => ({
@@ -76,8 +88,6 @@ export default function ConnectWallet() {
     }),
     [detail.appHref, detail.appLogo, detail.appName],
   );
-
-  const userInfo = useCurrentUserInfo();
 
   return (
     <div className="connect-wallet">
@@ -100,10 +110,12 @@ export default function ConnectWallet() {
           <div className="connect-wallet-user">
             <Avatar
               wrapperClass={'connect-wallet-user-avatar'}
-              avatarUrl={userInfo.avatar}
-              nameIndex={userInfo.nickName?.substring(0, 1).toLocaleUpperCase()}
+              // avatarUrl={userInfo.avatar}
+              // nameIndex={userInfo.nickName?.substring(0, 1).toLocaleUpperCase()}
+              avatarUrl={LOCAL_AVATARS[userInfo?.icon || 'avatar_1']}
+              nameIndex={userInfo?.name?.substring(0, 1).toLocaleUpperCase()}
             />
-            <span className="connect-wallet-user-name">{userInfo.nickName}</span>
+            <span className="connect-wallet-user-name">{userInfo?.name}</span>
           </div>
 
           {!checkOriginInBlackList(detail.appHref) && <DappSession onChange={handleSessionChange} />}

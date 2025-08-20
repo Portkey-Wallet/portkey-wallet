@@ -3,7 +3,7 @@ import { PromptRouteTypes } from 'messages/InternalMessageTypes';
 import NotificationService from 'service/NotificationService';
 import { CreatePromptType } from 'types';
 import type { PortKeyResultType } from 'utils/errorHandler';
-import { getCurrentNetworkWallet } from 'utils/lib/SWGetReduxStore';
+import { getCurrentAccount } from 'utils/lib/SWGetReduxStore';
 
 export default class PermissionController {
   notificationService: NotificationService;
@@ -68,24 +68,21 @@ export default class PermissionController {
   }
 
   async checkCurrentNetworkIsRegister() {
-    const currentNetworkWallet = await getCurrentNetworkWallet();
-    const originChainId = currentNetworkWallet?.originChainId;
-    return Boolean(originChainId && currentNetworkWallet?.[originChainId]?.caHash);
+    const currentAccount = await getCurrentAccount();
+    return !!currentAccount;
   }
 
   async registerCurrentNetworkWallet(): Promise<PortKeyResultType> {
-    if (await this.checkCurrentNetworkIsRegister())
+    if (await this.checkCurrentNetworkIsRegister()) {
       return {
         error: 0,
         message: 'The current network has completed login',
       };
-    // Not yet registered or logged in
-    let routerType: keyof typeof PromptRouteTypes = 'REGISTER_WALLET';
-    const currentNetworkWallet = await getCurrentNetworkWallet();
-    if (currentNetworkWallet?.managerInfo) routerType = 'BLANK_PAGE';
+    }
+
     return await this.notificationService.openPrompt(
       {
-        method: PromptRouteTypes[routerType],
+        method: PromptRouteTypes.REGISTER_WALLET,
       },
       'tabs',
     );

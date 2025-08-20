@@ -10,7 +10,7 @@ import { MethodsBase, ResponseCode, MethodsWallet } from '@portkey/provider-type
 import { ExtensionDappManager } from './ExtensionDappManager';
 import { getCurrentCaHash, getSWReduxState, getWalletState } from 'utils/lib/SWGetReduxStore';
 import ApprovalController from 'controllers/approval/ApprovalController';
-import { CA_METHOD_WHITELIST, REMEMBER_ME_ACTION_WHITELIST } from '@portkey-wallet/constants/constants-ca/dapp';
+import { REMEMBER_ME_ACTION_WHITELIST } from '@portkey-wallet/constants/constants-ca/dapp';
 import { checkIsCipherText, randomId } from '@portkey-wallet/utils';
 import { removeLocalStorage, setLocalStorage } from 'utils/storage/chromeStorage';
 import SWEventController from 'controllers/SWEventController';
@@ -19,8 +19,6 @@ import getManager from 'utils/lib/getManager';
 import { customFetch } from '@portkey-wallet/utils/fetch';
 import { NetworkList } from '@portkey-wallet/constants/constants-ca/network';
 import { ChainId } from '@portkey-wallet/types';
-import { contractQueries } from '@portkey-wallet/graphql';
-import { CheckSecurityResult } from '@portkey-wallet/utils/securityTest';
 
 const storeInSW = {
   getState: getSWReduxState,
@@ -243,67 +241,16 @@ export default class AELFMethodController {
     }
   };
 
-  checkManagerSyncStatus = async (chainId: ChainId) => {
-    const [caInfo, managerAddress, networkType] = await Promise.all([
-      this.dappManager.getCaInfo(chainId),
-      this.dappManager.currentManagerAddress(),
-      this.dappManager.networkType(),
-    ]);
-
-    if (!caInfo?.isSync) {
-      const { caHolderManagerInfo } = await contractQueries.getCAHolderByManager(networkType, {
-        manager: managerAddress,
-        chainId,
-        caHash: caInfo?.caHash,
-      });
-      const info = caHolderManagerInfo[0];
-      if (!info) return false;
-      const managerInfos = info.managerInfos;
-      return managerInfos?.some((manager) => manager?.address === managerAddress);
-    }
-    return caInfo?.isSync;
+  checkManagerSyncStatus = async () => {
+    return true;
   };
 
-  getWalletManagerSyncStatus: RequestCommonHandler = async (sendResponse: SendResponseFun, message) => {
-    try {
-      const isActive = await this.dappManager.isActive(message.origin);
-      if (!isActive)
-        return sendResponse({
-          ...errorHandler(400001),
-          data: {
-            code: ResponseCode.UNAUTHENTICATED,
-          },
-        });
-      const chainId = message.payload?.chainId;
-
-      if (!(await this.dappManager.getChainInfo(chainId)))
-        throw sendResponse({
-          ...errorHandler(400001),
-          data: {
-            code: ResponseCode.ERROR_IN_PARAMS,
-            msg: 'Invalid chain id',
-          },
-        });
-
-      if (!chainId)
-        return sendResponse({
-          ...errorHandler(400001),
-          data: {
-            code: ResponseCode.ERROR_IN_PARAMS,
-          },
-        });
-      return sendResponse({
-        ...errorHandler(0),
-        data: Boolean(await this.checkManagerSyncStatus(chainId)),
-      });
-    } catch (error) {
-      return sendResponse({
-        ...errorHandler(500001),
-        data: {
-          code: ResponseCode.INTERNAL_ERROR,
-        },
-      });
-    }
+  // EOA wallet does not have a manager, so it always returns true.
+  getWalletManagerSyncStatus: RequestCommonHandler = async (sendResponse: SendResponseFun) => {
+    return sendResponse({
+      ...errorHandler(0),
+      data: true,
+    });
   };
 
   getWalletName: RequestCommonHandler = async (sendResponse: SendResponseFun, message) => {
@@ -340,7 +287,7 @@ export default class AELFMethodController {
           ...data,
           accounts: await this.dappManager.accounts(origin),
           chainIds: await this.dappManager.chainId(),
-          networkType: (await this.dappManager.getWallet()).currentNetwork,
+          networkType: await this.dappManager.networkType(),
         };
       }
       sendResponse({ ...errorHandler(0), data });
@@ -483,10 +430,8 @@ export default class AELFMethodController {
       const { payload, origin } = message;
       console.log(message, 'message====sendTransaction');
       const chainInfo = await this.dappManager.getChainInfo(payload.chainId);
-      const caInfo = await this.dappManager.getCaInfo(payload.chainId);
-      const originChainId = await this.dappManager.getOriginChainId();
 
-      if (!chainInfo || !chainInfo.endPoint || !caInfo)
+      if (!chainInfo || !chainInfo.endPoint)
         return sendResponse({
           ...errorHandler(200005),
           data: {
@@ -503,41 +448,6 @@ export default class AELFMethodController {
             msg: 'Invalid contractAddress',
           },
         });
-      const safeRes: CheckSecurityResult = await this.checkWalletSecurity(payload.chainId);
-      const isOriginChainId = originChainId === payload.chainId;
-
-      const isSafe = safeRes.isTransferSafe || (isOriginChainId && safeRes.isOriginChainSafe);
-      const showGuardian =
-        (isOriginChainId && !safeRes.isOriginChainSafe) ||
-        (!isOriginChainId && !safeRes.isSynchronizing) ||
-        (!isOriginChainId && safeRes.isSynchronizing && !safeRes.isOriginChainSafe);
-      const showSync = !isOriginChainId && safeRes.isSynchronizing && safeRes.isOriginChainSafe;
-
-      if (!isSafe && (showGuardian || showSync)) {
-        // Open Prompt to approve add guardian
-
-        let _txId;
-        if (Array.isArray(safeRes.accelerateGuardians)) {
-          const _accelerateGuardian = safeRes.accelerateGuardians.find(
-            (item) => item.transactionId && item.chainId === originChainId,
-          );
-          _txId = _accelerateGuardian?.transactionId;
-        }
-
-        this.approvalController.authorizedToCheckWalletSecurity({
-          showSync,
-          showGuardian,
-          accelerateChainId: payload.chainId,
-          accelerateGuardianTxId: _txId,
-        });
-        return sendResponse({
-          ...errorHandler(400001),
-          data: {
-            code: ResponseCode.USER_DENIED,
-            msg: 'There are security risks in the current wallet status',
-          },
-        });
-      }
 
       const key = randomId();
       // is approve
@@ -567,17 +477,6 @@ export default class AELFMethodController {
 
         removeLocalStorage('txPayload');
       } else {
-        const isForward = chainInfo?.caContractAddress !== payload.contractAddress;
-        const method = isForward ? 'ManagerForwardCall' : payload?.method;
-
-        if (!CA_METHOD_WHITELIST.includes(method))
-          return sendResponse({
-            ...errorHandler(400001),
-            data: {
-              code: ResponseCode.CONTRACT_ERROR,
-              msg: 'The current method is not supported',
-            },
-          });
         setLocalStorage({ txPayload: { [key]: JSON.stringify(payload.params) } });
         delete message.payload?.params;
 
@@ -699,17 +598,9 @@ export default class AELFMethodController {
     }
   };
   getCAHash: RequestCommonHandler = async (sendResponse) => {
-    try {
-      const caHash = await this.dappManager.caHash();
-      sendResponse({ ...errorHandler(0), data: caHash });
-    } catch (error) {
-      console.log('getCAHash===', error);
-      sendResponse({
-        ...errorHandler(100001),
-        data: {
-          code: ResponseCode.INTERNAL_ERROR,
-        },
-      });
-    }
+    sendResponse({
+      ...errorHandler(100001),
+      message: 'This is EOA Wallet, CA Hash is not supported',
+    });
   };
 }

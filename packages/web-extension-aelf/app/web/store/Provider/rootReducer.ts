@@ -34,6 +34,7 @@ import {
   imPersistConfig,
   cryptoGiftConfig,
   configConfig,
+  networkPersistConfig,
   // awakenPersistConfig,
 } from './config';
 import { miscSlice } from '@portkey-wallet/store/store-ca/misc/slice';
@@ -54,6 +55,7 @@ export const assetReducer = persistReducer(assetPersistConfig, assetsSlice.reduc
 export const activityReducer = persistReducer(activityPersistConfig, activitySlice.reducer);
 export const recentReducer = persistReducer(recentPersistConfig, recentSlice.reducer);
 export const walletReducer = persistReducer(walletPersistConfig, walletSlice.reducer);
+export const networkReducer = persistReducer(networkPersistConfig, networkSlice.reducer);
 export const loginReducer = persistReducer(loginPersistConfig, loginSlice.reducer);
 export const guardiansReducer = persistReducer(guardiansPersistConfig, guardiansSlice.reducer);
 export const contactReducer = persistReducer(contactPersistConfig, contactSlice.reducer);
@@ -76,7 +78,7 @@ const rootReducer = customCombineReducers({
   [userSlice.name]: userReducer,
   [tokenBalanceSlice.name]: tokenBalanceSlice.reducer,
   [chainSlice.name]: chainSlice.reducer,
-  [networkSlice.name]: networkSlice.reducer,
+  [networkSlice.name]: networkReducer,
   [tokenSlice.name]: tokenReducer,
   [activitySlice.name]: activityReducer,
   [recentSlice.name]: recentReducer,

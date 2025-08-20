@@ -70,6 +70,11 @@ export const walletPersistConfig = {
   blacklist: [''],
 };
 
+export const networkPersistConfig = {
+  key: networkSlice.name,
+  storage: localStorage,
+};
+
 export const dappPersistConfig = {
   key: dappSlice.name,
   storage: localStorage,

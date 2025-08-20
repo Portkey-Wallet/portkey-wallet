@@ -57,17 +57,12 @@ import AllowanceApprove from 'pages/AllowanceApprove';
 import WalletSecurityApprove from 'pages/WalletSecurityApprove';
 import TokenAllowance from 'pages/WalletSecurity/TokenAllowance';
 import TokenAllowanceDetail from 'pages/WalletSecurity/TokenAllowance/TokenAllowanceDetail';
-import DepositHome from 'pages/DepositHome';
-import SelectNetwork from 'pages/DepositHome/components/SelectNetwork';
 import CryptoGifts from 'pages/CryptoGifts/Home';
 import HistoryList from 'pages/CryptoGifts/History';
 import CryptoGiftsDetail from 'pages/CryptoGifts/Detail';
 import Create from 'pages/CryptoGifts/Create';
 import Success from 'pages/CryptoGifts/Success';
 import FreeMint from 'pages/FreeMint';
-import SecondaryMailbox from 'pages/WalletSecurity/SecondaryMailbox';
-import SecondaryMailboxEdit from 'pages/WalletSecurity/SecondaryMailbox/Edit';
-import SecondaryMailboxVerify from 'pages/WalletSecurity/SecondaryMailbox/Verify';
 import Security from '../../pages/My/SettingList/Security';
 import { PrepareWallet } from 'pages/PrepareWallet';
 import CreateNewWallet from 'pages/CreateNewWallet';
@@ -78,7 +73,6 @@ import ReceiveCardPage from 'pages/Receive/ReceiveCardPage';
 // import RampSell from 'pages/Buy/RampSell';
 import { Swap } from 'pages/Swap';
 import Example from 'pages/Example';
-// import TokenNetworkList from 'pages/DepositHome/components/TokenNetworkList';
 import { ManualBackup } from 'pages/WalletBackup/ManualBackup/index';
 import { ManualBackupSuccess } from 'pages/WalletBackup/ManualBackup/Success';
 import { ConfirmBackup } from 'pages/WalletBackup/ConfirmBackup/ConfirmBackup';
@@ -300,14 +294,6 @@ export const PageRouter = () => {
       path: '*',
       element: <NotFound />,
     },
-    {
-      path: '/token-detail/deposit-home/:chain/:symbol',
-      element: <DepositHome />,
-    },
-    {
-      path: '/token-detail/deposit-home/select-network',
-      element: <SelectNetwork />,
-    },
   ];
 
   const settingPopupRoutes = [
@@ -434,18 +420,6 @@ export const PageRouter = () => {
     {
       path: '/setting/wallet-security/token-allowance-detail',
       element: <TokenAllowanceDetail />,
-    },
-    {
-      path: '/setting/wallet-security/secondary-mailbox',
-      element: <SecondaryMailbox />,
-    },
-    {
-      path: '/setting/wallet-security/secondary-mailbox-edit',
-      element: <SecondaryMailboxEdit />,
-    },
-    {
-      path: '/setting/wallet-security/secondary-mailbox-verify',
-      element: <SecondaryMailboxVerify />,
     },
     {
       path: '/receive-list',

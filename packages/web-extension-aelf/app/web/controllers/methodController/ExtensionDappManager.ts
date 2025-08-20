@@ -1,9 +1,12 @@
-import { DappManager } from '@portkey-wallet/utils/dapp/dappManager';
+import { DappManager } from '@portkey-wallet/utils/dappEOA/dappManager';
 import { DappManagerOptions } from '@portkey-wallet/types/types-ca/dapp';
 import { ChainId } from '@portkey-wallet/types';
 import { ApproveMethod } from '@portkey-wallet/constants/constants-ca/dapp';
+import { EOACommonState } from '@portkey-wallet/types/types-eoa/store';
 
-export class ExtensionDappManager<T = any> extends DappManager {
+type ExtensionState = EOACommonState;
+
+export class ExtensionDappManager<T = any> extends DappManager<ExtensionState> {
   protected locked: () => boolean;
   constructor(
     options: DappManagerOptions<T> & {

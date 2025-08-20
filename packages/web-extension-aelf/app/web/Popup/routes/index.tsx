@@ -39,16 +39,12 @@ import TransferSettingsEdit from 'pages/WalletSecurity/PaymentSecurity/TransferS
 import TradePage from 'pages/Trade';
 import TokenAllowance from 'pages/WalletSecurity/TokenAllowance';
 import TokenAllowanceDetail from 'pages/WalletSecurity/TokenAllowance/TokenAllowanceDetail';
-import DepositHome from 'pages/DepositHome';
 import ReceiveListPage from 'pages/Receive/ReceiveListPage';
 import ReceiveCardPage from 'pages/Receive/ReceiveCardPage';
 import CryptoGifts from 'pages/CryptoGifts/Home';
 import HistoryList from 'pages/CryptoGifts/History';
 import CryptoGiftsDetail from 'pages/CryptoGifts/Detail';
 import FreeMint from 'pages/FreeMint';
-import SecondaryMailbox from 'pages/WalletSecurity/SecondaryMailbox';
-import SecondaryMailboxEdit from 'pages/WalletSecurity/SecondaryMailbox/Edit';
-import SecondaryMailboxVerify from 'pages/WalletSecurity/SecondaryMailbox/Verify';
 import Security from '../../pages/My/SettingList/Security';
 import { SelectAssetListPage } from 'pages/Send/components/SelectAssetList';
 // import RampBuy from 'pages/Buy/RampBuy';
@@ -256,18 +252,6 @@ export const PageRouter = () =>
       element: <TokenAllowanceDetail />,
     },
     {
-      path: '/setting/wallet-security/secondary-mailbox',
-      element: <SecondaryMailbox />,
-    },
-    {
-      path: '/setting/wallet-security/secondary-mailbox-edit',
-      element: <SecondaryMailboxEdit />,
-    },
-    {
-      path: '/setting/wallet-security/secondary-mailbox-verify',
-      element: <SecondaryMailboxVerify />,
-    },
-    {
       path: '/activity-list',
       element: <ActivityList />,
     },
@@ -298,10 +282,6 @@ export const PageRouter = () =>
     {
       path: '*',
       element: <Home />,
-    },
-    {
-      path: '/token-detail/deposit-home/:chain/:symbol',
-      element: <DepositHome />,
     },
     {
       path: '/receive-list',

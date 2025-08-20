@@ -150,7 +150,8 @@ export default function SetAllowance({
               if (BigNumber(allowance).lte(0)) return setError('Please enter a non-zero value');
               onConfirm?.({ allowance });
             }}>
-            Pre-authorize
+            {/*Pre-authorize*/}
+            Authorize
           </ThrottleButton>
         </div>
         <div className="set-allowance-footer-tip">{'Only approve if you trust this website'}</div>

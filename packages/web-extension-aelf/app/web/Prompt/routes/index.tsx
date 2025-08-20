@@ -57,8 +57,6 @@ import AllowanceApprove from 'pages/AllowanceApprove';
 import WalletSecurityApprove from 'pages/WalletSecurityApprove';
 import TokenAllowance from 'pages/WalletSecurity/TokenAllowance';
 import TokenAllowanceDetail from 'pages/WalletSecurity/TokenAllowance/TokenAllowanceDetail';
-import DepositHome from 'pages/DepositHome';
-import SelectNetwork from 'pages/DepositHome/components/SelectNetwork';
 import CryptoGifts from 'pages/CryptoGifts/Home';
 import HistoryList from 'pages/CryptoGifts/History';
 import CryptoGiftsDetail from 'pages/CryptoGifts/Detail';
@@ -78,7 +76,6 @@ import ReceiveCardPage from 'pages/Receive/ReceiveCardPage';
 // import RampSell from 'pages/Buy/RampSell';
 import { Swap } from 'pages/Swap';
 import Example from 'pages/Example';
-// import TokenNetworkList from 'pages/DepositHome/components/TokenNetworkList';
 import { ManualBackup } from 'pages/WalletBackup/ManualBackup/index';
 import { ManualBackupSuccess } from 'pages/WalletBackup/ManualBackup/Success';
 import { ConfirmBackup } from 'pages/WalletBackup/ConfirmBackup/ConfirmBackup';
@@ -299,14 +296,6 @@ export const PageRouter = () => {
     {
       path: '*',
       element: <NotFound />,
-    },
-    {
-      path: '/token-detail/deposit-home/:chain/:symbol',
-      element: <DepositHome />,
-    },
-    {
-      path: '/token-detail/deposit-home/select-network',
-      element: <SelectNetwork />,
     },
   ];
 

@@ -39,7 +39,6 @@ import TransferSettingsEdit from 'pages/WalletSecurity/PaymentSecurity/TransferS
 import TradePage from 'pages/Trade';
 import TokenAllowance from 'pages/WalletSecurity/TokenAllowance';
 import TokenAllowanceDetail from 'pages/WalletSecurity/TokenAllowance/TokenAllowanceDetail';
-import DepositHome from 'pages/DepositHome';
 import ReceiveListPage from 'pages/Receive/ReceiveListPage';
 import ReceiveCardPage from 'pages/Receive/ReceiveCardPage';
 import CryptoGifts from 'pages/CryptoGifts/Home';
@@ -298,10 +297,6 @@ export const PageRouter = () =>
     {
       path: '*',
       element: <Home />,
-    },
-    {
-      path: '/token-detail/deposit-home/:chain/:symbol',
-      element: <DepositHome />,
     },
     {
       path: '/receive-list',

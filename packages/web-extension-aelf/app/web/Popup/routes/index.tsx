@@ -45,9 +45,6 @@ import CryptoGifts from 'pages/CryptoGifts/Home';
 import HistoryList from 'pages/CryptoGifts/History';
 import CryptoGiftsDetail from 'pages/CryptoGifts/Detail';
 import FreeMint from 'pages/FreeMint';
-import SecondaryMailbox from 'pages/WalletSecurity/SecondaryMailbox';
-import SecondaryMailboxEdit from 'pages/WalletSecurity/SecondaryMailbox/Edit';
-import SecondaryMailboxVerify from 'pages/WalletSecurity/SecondaryMailbox/Verify';
 import Security from '../../pages/My/SettingList/Security';
 import { SelectAssetListPage } from 'pages/Send/components/SelectAssetList';
 // import RampBuy from 'pages/Buy/RampBuy';
@@ -253,18 +250,6 @@ export const PageRouter = () =>
     {
       path: '/setting/wallet-security/token-allowance-detail',
       element: <TokenAllowanceDetail />,
-    },
-    {
-      path: '/setting/wallet-security/secondary-mailbox',
-      element: <SecondaryMailbox />,
-    },
-    {
-      path: '/setting/wallet-security/secondary-mailbox-edit',
-      element: <SecondaryMailboxEdit />,
-    },
-    {
-      path: '/setting/wallet-security/secondary-mailbox-verify',
-      element: <SecondaryMailboxVerify />,
     },
     {
       path: '/activity-list',

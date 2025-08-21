@@ -21,6 +21,7 @@ import { PromptCardType } from 'pages/Send';
 import Avatar from 'pages/components/Avatar';
 import { useCurrentAccount } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 import { LOCAL_AVATARS } from 'assets/images/avatars/avatars';
+import { getCurrentAccountByAElfWalletType } from 'utils/getManager';
 
 export default function ConnectWallet() {
   const detail = usePromptSearch();
@@ -53,12 +54,12 @@ export default function ConnectWallet() {
         }),
       );
       if (open) {
-        // const manager = await getManager();
+        const manager = await getCurrentAccountByAElfWalletType();
         updateSessionInfo({
           networkType: currentNetwork,
           origin: detail.appHref,
           expiredPlan: exp,
-          manager: userInfo,
+          manager,
         });
       }
       closePrompt({

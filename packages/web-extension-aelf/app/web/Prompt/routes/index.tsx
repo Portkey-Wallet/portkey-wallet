@@ -46,7 +46,7 @@ import Permission from 'pages/Permission';
 import ConnectWallet from 'pages/ConnectWallet';
 import ConnectedSites from 'pages/WalletSecurity/ConnectedSites';
 import SiteDetail from 'pages/WalletSecurity/ConnectedSites/SiteDetail';
-// import SendTransactions from 'pages/SendTransactions';
+import SendTransactions from 'pages/SendTransactions';
 import GetSignature from 'pages/GetSignature';
 import DappAutoTx from 'pages/DappAutoTx';
 import FindMore from 'pages/Contacts/FindMore';
@@ -247,8 +247,8 @@ export const PageRouter = () => {
     },
     {
       path: '/send-transactions',
-      // element: <SendTransactions />,
-      element: <>SendTransactions TODO 0605</>,
+      element: <SendTransactions />,
+      // element: <>SendTransactions TODO 0605</>,
     },
     {
       path: '/get-signature',

@@ -1,7 +1,7 @@
-import { useCurrentChain, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
-import { useCurrentUserInfo, useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentChain, useDefaultToken } from '@portkey-wallet/hooks/hooks-eoa/chainList';
+import { useCurrentAccount } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 import { ChainId } from '@portkey-wallet/types';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { divDecimals, formatAmountShow, formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import { formatChainInfoToShow, handleErrorMessage } from '@portkey-wallet/utils';
 import { Button } from 'antd';
@@ -12,20 +12,18 @@ import { useDapp } from 'store/Provider/hooks';
 import errorHandler from 'utils/errorHandler';
 import { closePrompt } from 'utils/lib/serviceWorkerAction';
 import { callSendMethod } from 'utils/sandboxUtil/sendTransactions';
-import { useAmountInUsdShow, useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
+import { useAmountInUsdShow, useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-eoa/useTokensPrice';
 import getTransferFee from './utils/getTransferFee';
 import { ResponseCode } from '@portkey/provider-types';
 import { getLocalStorage } from 'utils/storage/chromeStorage';
-import { useCheckManagerSyncState } from 'hooks/wallet';
 import CircleLoading from 'components/CircleLoading';
 import { request } from '@portkey-wallet/api/api-did';
-import clsx from 'clsx';
 import DappSession from 'pages/components/DappSession';
 import { SessionExpiredPlan } from '@portkey-wallet/types/session';
-import { useUpdateSessionInfo } from '@portkey-wallet/hooks/hooks-ca/dapp';
+import { useUpdateSessionInfo } from '@portkey-wallet/hooks/hooks-eoa/dapp';
 import './index.less';
-import getManager from 'utils/getManager';
-import { useCheckSiteIsInBlackList } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { getCurrentAccountByAElfWalletType } from 'utils/getManager';
+import { useCheckSiteIsInBlackList } from '@portkey-wallet/hooks/hooks-eoa/cms';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
 import getSeed from 'utils/getSeed';
 import singleMessage from 'utils/singleMessage';
@@ -64,8 +62,7 @@ export default function SendTransactions() {
   );
 
   const chainInfo = useCurrentChain(payload?.chainId);
-  const wallet = useCurrentWalletInfo();
-  const userInfo = useCurrentUserInfo();
+  const userInfo = useCurrentAccount();
   const isMainnet = useIsMainnet();
   const { t } = useTranslation();
   const amountInUsdShow = useAmountInUsdShow();
@@ -76,10 +73,7 @@ export default function SendTransactions() {
   const [loading, setLoading] = useState(true);
   const [tokenDecimals, setTokenDecimals] = useState(0);
   const defaultToken = useDefaultToken(payload?.chainId);
-  const isCAContract = useMemo(() => chainInfo?.caContractAddress === payload?.contractAddress, [chainInfo, payload]);
   const [txParams, setTxParams] = useState<any>({});
-  const checkManagerSyncState = useCheckManagerSyncState();
-  const [isManagerSynced, setIsManagerSynced] = useState(false);
   const [open, setOpen] = useState<boolean>(false);
   const [exp, setExp] = useState<SessionExpiredPlan>(SessionExpiredPlan.hour1);
   const updateSessionInfo = useUpdateSessionInfo();
@@ -122,24 +116,20 @@ export default function SendTransactions() {
     async (txInfo: any) => {
       const { privateKey } = await getSeed();
       if (!privateKey) return;
-      if (!chainInfo?.endPoint || !wallet?.caHash || !chainInfo.caContractAddress) return;
-      const method = isCAContract ? payload?.method : 'ManagerForwardCall';
-      const paramsOption = isCAContract
-        ? txInfo.paramsOption
-        : {
-            caHash: wallet.caHash,
-            methodName: payload?.method,
-            contractAddress: payload?.contractAddress,
-            args: txInfo.paramsOption,
-          };
+      if (!chainInfo?.endPoint) return;
+      console.log('getFee====', txInfo, payload);
+      const method = payload?.method;
+      const paramsOption = txInfo.paramsOption;
+
       const fee = await getTransferFee({
         rpcUrl: chainInfo.endPoint,
         chainType: 'aelf',
         methodName: method,
         paramsOption,
         privateKey,
-        contractAddress: chainInfo.caContractAddress,
+        contractAddress: payload.contractAddress,
       });
+      console.log('getFee==== result', fee);
       if (fee === '--') {
         setFee('0');
         setErrMsg('Failed to estimate transaction fee');
@@ -148,7 +138,7 @@ export default function SendTransactions() {
         setErrMsg('');
       }
     },
-    [chainInfo, isCAContract, payload, wallet],
+    [chainInfo, payload],
   );
 
   const getTokenDecimals = useCallback(async (token: string, chainId: ChainId) => {
@@ -180,15 +170,9 @@ export default function SendTransactions() {
     const params = JSON.parse(txPayload[transactionInfoId]);
     getTokenDecimals(params?.paramsOption?.symbol, payload?.chainId);
     setTxParams(params);
-    const _isManagerSynced = await checkManagerSyncState(payload?.chainId);
-    setIsManagerSynced(_isManagerSynced);
-    if (_isManagerSynced) {
-      getFee(params);
-      setErrMsg('');
-    } else {
-      setErrMsg('Synchronizing on-chain account information...');
-    }
-  }, [checkManagerSyncState, getFee, getTokenDecimals, payload?.chainId, transactionInfoId]);
+    getFee(params);
+    setErrMsg('');
+  }, [getFee, getTokenDecimals, payload?.chainId, transactionInfoId]);
 
   useEffect(() => {
     getTxPayload();
@@ -212,7 +196,8 @@ export default function SendTransactions() {
   const sendHandler = useDebounceCallback(
     async () => {
       try {
-        if (!chainInfo?.endPoint || !wallet?.caHash) {
+        console.log('sendHandler====', payload, chainInfo, txParams);
+        if (!chainInfo?.endPoint) {
           closePrompt({
             ...errorHandler(400001),
             data: { code: ResponseCode.ERROR_IN_PARAMS, msg: 'invalid chain id' },
@@ -224,18 +209,10 @@ export default function SendTransactions() {
           return;
         }
 
-        let paramsOption = txParams.paramsOption;
+        const paramsOption = txParams.paramsOption;
 
-        const functionName = isCAContract ? payload?.method : 'ManagerForwardCall';
+        const functionName = payload?.method;
 
-        paramsOption = isCAContract
-          ? paramsOption
-          : {
-              caHash: wallet.caHash,
-              methodName: payload?.method,
-              contractAddress: payload?.contractAddress,
-              args: paramsOption,
-            };
         const { privateKey } = await getSeed();
         if (!privateKey) throw 'Invalid user information, please check';
         const result = await callSendMethod({
@@ -244,11 +221,11 @@ export default function SendTransactions() {
           methodName: functionName,
           paramsOption,
           privateKey,
-          address: chainInfo.caContractAddress,
+          address: payload.contractAddress,
           sendOptions: { onMethod: 'transactionHash' },
         });
         if (open) {
-          const manager = await getManager();
+          const manager = await getCurrentAccountByAElfWalletType();
           updateSessionInfo({
             networkType: currentNetwork,
             origin,
@@ -269,12 +246,10 @@ export default function SendTransactions() {
     },
     [
       chainInfo,
-      wallet.caHash,
       payload?.rpcUrl,
       payload?.method,
       payload?.contractAddress,
       txParams.paramsOption,
-      isCAContract,
       open,
       updateSessionInfo,
       currentNetwork,
@@ -297,9 +272,10 @@ export default function SendTransactions() {
         title: 'From',
         content: (
           <>
-            <span>{userInfo.nickName || ''}</span>
+            <span>{userInfo?.name || ''}</span>
             <span className="send-transaction-info-item-content-sub">{`ELF_${formatStr2EllipsisStr(
-              wallet?.[payload?.chainId]?.caAddress || '',
+              // wallet?.[payload?.chainId]?.caAddress || '',
+              userInfo?.address || '',
               [4, 4],
             )}_${payload?.chainId}`}</span>
           </>
@@ -401,8 +377,8 @@ export default function SendTransactions() {
     payload?.method,
     tokenDecimals,
     txParams.paramsOption,
-    userInfo.nickName,
-    wallet,
+    userInfo?.name,
+    // wallet,
   ]);
 
   const transferAmount = useMemo(() => {
@@ -484,7 +460,7 @@ export default function SendTransactions() {
           </ToggleContent>
         )}
 
-        {errMsg && <div className={clsx('error-message', !isManagerSynced && 'error-warning')}>{errMsg}</div>}
+        {errMsg && <div className="error-message">{errMsg}</div>}
 
         {!checkOriginInBlackList(origin) && (
           <DappSession className="send-transaction-session" onChange={handleSessionChange} />

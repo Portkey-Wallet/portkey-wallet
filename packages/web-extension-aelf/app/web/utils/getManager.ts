@@ -14,3 +14,7 @@ export default async function getManager() {
   if (!privateKey) return;
   return getWallet(privateKey);
 }
+
+export async function getCurrentAccountByAElfWalletType() {
+  return getManager();
+}

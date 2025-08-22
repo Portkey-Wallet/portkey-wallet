@@ -21,7 +21,8 @@ import errorHandler from 'utils/errorHandler';
 import { setLocalStorage } from 'utils/storage/chromeStorage';
 import { ConnectionsItem } from 'types/storage';
 // import { changeNetworkType, setCAInfo } from '@portkey-wallet/store/store-ca/wallet/actions';
-import { getDappState, getWalletState } from 'utils/lib/SWGetReduxStore';
+// import { getDappState, getWalletState } from 'utils/lib/SWGetReduxStore';
+import { getDappState, getNetwork } from 'utils/lib/SWGetReduxStore';
 // import InternalMessage from 'messages/InternalMessage';
 // import { handleAccounts, handleChainIds } from '@portkey-wallet/utils/dapp';
 // import { addDapp, removeDapp, resetDapp, resetDappList } from '@portkey-wallet/store/store-ca/dapp/actions';
@@ -92,6 +93,7 @@ export default class SWEventController {
   public static dispatchEvent(params: DappEventPack<'connected', ConnectInfo>): void;
   public static dispatchEvent(params: DappEventPack<'disconnected', ProviderErrorType>): void;
   static async dispatchEvent({ eventName, data, origin }: DappEventPack) {
+    console.log('dispatchEvent', eventName, data, origin);
     const connections = await getConnections();
     let connectionList: ConnectionsItem[] = [];
     if (origin && origin !== '*' && connections[origin]) {
@@ -99,7 +101,7 @@ export default class SWEventController {
       connectionList.push(connections[origin]);
     } else if (eventName === 'accountsChanged' || eventName === 'connected') {
       /** Only send events to connected dapps */
-      const { currentNetwork } = await getWalletState();
+      const { currentNetwork } = await getNetwork();
       const { dappMap } = await getDappState();
       const connectDappList = dappMap[currentNetwork];
       connectDappList?.forEach((dapp) => {

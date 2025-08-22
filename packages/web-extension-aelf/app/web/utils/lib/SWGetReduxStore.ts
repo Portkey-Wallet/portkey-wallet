@@ -14,6 +14,7 @@ import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
 import { ChainId } from '@portkey-wallet/types';
 import { LoginState } from 'store/reducers/loginCache/type';
 import { TAccountInfo } from '@portkey-wallet/types/types-eoa/wallet';
+import { TNetworkState } from '@portkey-wallet/store/store-eoa/network/type';
 
 export async function getSWReduxState() {
   return {
@@ -56,7 +57,7 @@ export const getCurrentAccount = async () => {
 export const getNetwork = async () => {
   const network = await getStoredState(networkPersistConfig);
   console.log('network: ', network);
-  return network || getDefaultState().network;
+  return (network || getDefaultState().network) as TNetworkState;
 };
 // new for ca end
 

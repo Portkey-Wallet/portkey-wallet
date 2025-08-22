@@ -8,6 +8,8 @@ import { changeCurrentWallet } from '@portkey-wallet/store/store-eoa/wallet/acti
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 import { CustomSvgV3 } from 'components/CustomSvgV3';
 import { useNavigateState, useLocationState } from 'hooks/router';
+import SWEventController from 'controllers/SWEventController';
+import { getAccountsObject } from 'utils/Wallet/account';
 
 interface AddressCardBaseProps {
   viewOnly?: boolean;
@@ -46,7 +48,7 @@ const AddressCardBase: React.FC<AddressCardBaseProps> = ({
   const { search } = useLocationState();
 
   const cardOperation = useCallback(
-    (account: TAccountInfo, currentWalletKey: string) => {
+    async (account: TAccountInfo, currentWalletKey: string) => {
       if (addressManageView) {
         // TODO: 跳转到地址详情页
         navigate('/wallet/address/detail' + search, {
@@ -62,6 +64,13 @@ const AddressCardBase: React.FC<AddressCardBaseProps> = ({
             address: account.address,
           }),
         );
+        setTimeout(async () => {
+          const accountsObject = await getAccountsObject();
+          SWEventController.dispatchEvent({
+            eventName: 'accountsChanged',
+            data: accountsObject,
+          });
+        }, 100);
         // TODO: 关闭选择弹窗
         if (afterSelect) {
           afterSelect();

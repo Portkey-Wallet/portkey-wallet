@@ -13,6 +13,7 @@ import { TWalletInfo } from '@portkey-wallet/types/types-eoa/wallet';
 import { CommonTooltip } from 'components/CommonTooltipV2';
 import BackupAddressOverlay from '../AddressDetail/BackupAddressOverlay';
 import { useAddressBackupModal } from '../AddressBackup/useAddressBackupModal';
+import { SWEventDispatchAccountsChangedWithCurrentAccount } from 'utils/Wallet/account';
 
 export interface AddressCardHeaderProps {
   privateKeyTipShow?: boolean;
@@ -53,12 +54,14 @@ const AddressCardHeader: React.FC<AddressCardHeaderProps> = ({
     if (action === 'REMOVE_WALLET' && walletKeyToBeRemove) {
       removeWallet(walletKeyToBeRemove, () => {
         singleMessage.success(isPrivateKeyWallet ? 'Private key removed' : 'Wallet removed');
-
-        navigate('/wallet/manage' + search, {
-          state: {
-            showManaging: true,
-          },
-        });
+        setTimeout(async () => {
+          await SWEventDispatchAccountsChangedWithCurrentAccount();
+          navigate('/wallet/manage' + search, {
+            state: {
+              showManaging: true,
+            },
+          });
+        }, 100);
       });
     }
   }, [action, isPrivateKeyWallet, navigate, removeWallet, search, walletKeyToBeRemove]);

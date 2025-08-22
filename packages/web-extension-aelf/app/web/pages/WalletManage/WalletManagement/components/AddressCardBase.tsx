@@ -8,8 +8,7 @@ import { changeCurrentWallet } from '@portkey-wallet/store/store-eoa/wallet/acti
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 import { CustomSvgV3 } from 'components/CustomSvgV3';
 import { useNavigateState, useLocationState } from 'hooks/router';
-import SWEventController from 'controllers/SWEventController';
-import { getAccountsObject } from 'utils/Wallet/account';
+import { SWEventDispatchAccountsChangedWithCurrentAccount } from 'utils/Wallet/account';
 
 interface AddressCardBaseProps {
   viewOnly?: boolean;
@@ -65,11 +64,7 @@ const AddressCardBase: React.FC<AddressCardBaseProps> = ({
           }),
         );
         setTimeout(async () => {
-          const accountsObject = await getAccountsObject();
-          SWEventController.dispatchEvent({
-            eventName: 'accountsChanged',
-            data: accountsObject,
-          });
+          await SWEventDispatchAccountsChangedWithCurrentAccount();
         }, 100);
         // TODO: 关闭选择弹窗
         if (afterSelect) {

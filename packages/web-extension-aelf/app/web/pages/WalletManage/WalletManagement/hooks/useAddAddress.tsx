@@ -10,6 +10,7 @@ import { useAccountByWallet } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 // import { useCredentials } from 'hooks/store';
 import singleMessage from 'utils/singleMessage';
 import { useNavigate } from 'react-router-dom';
+import { SWEventDispatchAccountsChangedWithCurrentAccount } from '../../../../utils/Wallet/account';
 
 type IAccountState = 'idle' | 'adding' | 'added';
 export const useEmptyAddress = () => {
@@ -72,7 +73,9 @@ export const useAddAddress = ({ walletInfo }: { walletInfo?: TWalletInfo }) => {
       addAccount(routerPin || pin);
       singleMessage.success('New address added');
       setAccountState('added');
-
+      setTimeout(async () => {
+        await SWEventDispatchAccountsChangedWithCurrentAccount();
+      }, 100);
       navigate('/wallet/manage' + search, {
         state: {
           action: 'ADDED_ACCOUNT',

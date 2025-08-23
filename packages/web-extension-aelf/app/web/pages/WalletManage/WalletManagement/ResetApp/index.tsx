@@ -36,17 +36,17 @@ export const ResetApp: React.FC = () => {
   const handleConfirmReset = useCallback(() => {
     SWEventController.dispatchEvent({ eventName: 'accountsChanged', data: {} });
     setTimeout(() => {
-      setConfirmModalOpen(false);
-      setUnlockOverlayOpen(false);
       dispatch(resetDapp());
       dispatch(resetWallet());
       if (isPrompt) {
         navigate('/register');
       } else {
-        InternalMessage.payload(PortkeyMessageTypes.REGISTER_WALLET).send();
+        InternalMessage.payload(PortkeyMessageTypes.LOGIN_WALLET).send();
       }
+      setConfirmModalOpen(false);
+      setUnlockOverlayOpen(false);
     }, 100);
-  }, [dispatch, navigate]);
+  }, [dispatch, isPrompt, navigate]);
 
   return (
     <div className="reset-app-page">

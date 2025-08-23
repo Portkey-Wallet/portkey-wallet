@@ -23,7 +23,7 @@ export function debounce<T extends (...args: any[]) => void>(func: T, delay: num
 
 function updateUserActivityTime() {
   const time = new Date().toISOString();
-  console.log('updateUserActivityTime called at', time);
+  // console.log('updateUserActivityTime called at', time);
   setLocalStorage({
     [storage.userActivityTime]: time,
   });

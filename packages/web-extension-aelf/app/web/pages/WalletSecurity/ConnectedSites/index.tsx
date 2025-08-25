@@ -3,7 +3,7 @@ import { useCallback, useMemo } from 'react';
 import SitesPopup from './Popup';
 import { MenuItemInfo } from 'pages/components/MenuList';
 import ImageDisplay from 'pages/components/ImageDisplay';
-import { useCurrentDappList } from '@portkey-wallet/hooks/hooks-ca/dapp';
+import { useCurrentDappList } from '@portkey-wallet/hooks/hooks-eoa/dapp';
 import './index.less';
 import { isSafeOrigin } from '../utils';
 import { useNavigateState } from 'hooks/router';

@@ -5,6 +5,7 @@ import { useLocationState } from 'hooks/router';
 import { useAddWallet } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 import singleMessage from 'utils/singleMessage';
 import './index.less';
+import { SWEventDispatchAccountsChangedWithCurrentAccount } from 'utils/Wallet/account';
 
 type RouterParams = {
   pin: string;
@@ -38,12 +39,15 @@ const CreateNewWallet: React.FC = () => {
       successToastShow && singleMessage.success('Successfully imported');
     }
     // console.log('pin: ', pin, mnemonics, privateKey, result);
-    navigate('/', {
-      state: {
-        backupWalletModalShow: !(mnemonics || privateKey),
-      },
-    });
-    setLoading(false);
+    setTimeout(async () => {
+      await SWEventDispatchAccountsChangedWithCurrentAccount();
+      navigate('/', {
+        state: {
+          backupWalletModalShow: !(mnemonics || privateKey),
+        },
+      });
+      setLoading(false);
+    }, 500);
   }, [addWallet, pin, mnemonics, privateKey, isBackup, successToastShow, navigate]);
   const initRef = useRef(init);
   initRef.current = init;

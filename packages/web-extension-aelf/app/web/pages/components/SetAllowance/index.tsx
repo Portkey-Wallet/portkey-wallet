@@ -33,7 +33,7 @@ export interface IAllowanceConfirmProps {
 
 export interface ISetAllowanceHandlerProps {
   onCancel?: () => void;
-  onConfirm?: (res: IAllowanceConfirmProps) => void;
+  onConfirm?: (res: IAllowanceConfirmProps) => Promise<void>;
   onAllowanceChange?: (amount: string) => void;
 }
 
@@ -60,6 +60,7 @@ export default function SetAllowance({
   onAllowanceChange,
   onConfirm,
 }: TSetAllowanceProps) {
+  const [loading, setLoading] = useState<boolean>(false);
   const formatAllowanceInput = useCallback(
     (value: number | string) =>
       parseInputNumberChange(value.toString(), max ? new BigNumber(max) : undefined, decimals),
@@ -144,11 +145,14 @@ export default function SetAllowance({
           <ThrottleButton onClick={onCancel}>Reject</ThrottleButton>
           <ThrottleButton
             type="primary"
+            loading={loading}
             disabled={BigNumber(allowance).isNaN()}
-            onClick={() => {
+            onClick={async () => {
               if (!isValidNumber(allowance)) return setError('Please enter a positive whole number');
               if (BigNumber(allowance).lte(0)) return setError('Please enter a non-zero value');
-              onConfirm?.({ allowance });
+              setLoading(true);
+              await onConfirm?.({ allowance });
+              setLoading(false);
             }}>
             {/*Pre-authorize*/}
             Authorize

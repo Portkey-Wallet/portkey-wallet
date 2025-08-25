@@ -2,8 +2,8 @@ import { useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router';
 import SiteDetailPopup from './Popup';
-import { useCurrentDappInfo } from '@portkey-wallet/hooks/hooks-ca/dapp';
-import { DefaultDapp } from '@portkey-wallet/constants/constants-ca/dapp';
+import { useCurrentDappInfo } from '@portkey-wallet/hooks/hooks-eoa/dapp';
+import { DefaultDapp } from '@portkey-wallet/constants/constants-eoa/dapp';
 import { useNavigateState } from 'hooks/router';
 
 export default function SiteDetail() {

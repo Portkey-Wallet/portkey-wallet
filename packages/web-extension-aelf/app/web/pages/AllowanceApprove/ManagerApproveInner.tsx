@@ -27,7 +27,7 @@ export interface IManagerApproveInnerProps {
   spender?: string;
   onCancel?: () => void;
   onError?: (error: Error) => void;
-  onFinish?: (res: { amount: string; guardiansApproved: IGuardiansApproved[]; symbol: string }) => void;
+  onFinish?: (res: { amount: string; guardiansApproved: IGuardiansApproved[]; symbol: string }) => Promise<void>;
 }
 
 export default function ManagerApproveInner({
@@ -81,7 +81,7 @@ export default function ManagerApproveInner({
         };
         console.log('pre onFinish', ApproveInfo);
         if (onFinish) {
-          onFinish(ApproveInfo);
+          await onFinish(ApproveInfo);
         }
         setLoading(false);
       } catch (error) {

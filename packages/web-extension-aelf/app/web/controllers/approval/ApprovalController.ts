@@ -158,7 +158,8 @@ export default class ApprovalController {
         method: PromptRouteTypes.ALLOWANCE_APPROVE,
         search: JSON.stringify(params),
       },
-      'tabs',
+      'windows',
+      // 'tabs',
     );
   }
 

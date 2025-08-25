@@ -15,6 +15,7 @@ import './index.less';
 import EditWalletNameForm from '../../../Wallet/components/EditWalletNameForm';
 import { EditWalletAvatarForm } from '../../../Wallet/components/EditWalletAvatarForm/indexV2';
 import { UnlockOverlay } from '../../../components/UnlockModal';
+import { SWEventDispatchAccountsChangedWithCurrentAccount } from 'utils/Wallet/account';
 
 export const AddressDetail: React.FC = () => {
   const navigate = useNavigateState();
@@ -144,7 +145,10 @@ export const AddressDetail: React.FC = () => {
     }
     removeAddress(() => {
       singleMessage.success('Address removed');
-      navigate('/wallet/manage' + search);
+      setTimeout(async () => {
+        await SWEventDispatchAccountsChangedWithCurrentAccount();
+        navigate('/wallet/manage' + search);
+      }, 100);
     });
   };
 

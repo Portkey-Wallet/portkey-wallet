@@ -16,6 +16,7 @@ import { useAddressBackupModal } from '../AddressBackup/useAddressBackupModal';
 import { useCommonState } from 'store/Provider/hooks';
 import InternalMessage from 'messages/InternalMessage';
 import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
+import SWEventController from 'controllers/SWEventController';
 
 export const ResetApp: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -33,16 +34,19 @@ export const ResetApp: React.FC = () => {
   }, []);
 
   const handleConfirmReset = useCallback(() => {
-    setConfirmModalOpen(false);
-    setUnlockOverlayOpen(false);
-    dispatch(resetDapp());
-    dispatch(resetWallet());
-    if (isPrompt) {
-      navigate('/register');
-    } else {
-      InternalMessage.payload(PortkeyMessageTypes.REGISTER_WALLET).send();
-    }
-  }, [dispatch, navigate]);
+    SWEventController.dispatchEvent({ eventName: 'accountsChanged', data: {} });
+    setTimeout(() => {
+      dispatch(resetDapp());
+      dispatch(resetWallet());
+      if (isPrompt) {
+        navigate('/register');
+      } else {
+        InternalMessage.payload(PortkeyMessageTypes.LOGIN_WALLET).send();
+      }
+      setConfirmModalOpen(false);
+      setUnlockOverlayOpen(false);
+    }, 100);
+  }, [dispatch, isPrompt, navigate]);
 
   return (
     <div className="reset-app-page">

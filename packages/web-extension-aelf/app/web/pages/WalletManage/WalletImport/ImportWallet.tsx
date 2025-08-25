@@ -7,6 +7,7 @@ import { useLocationState, useNavigateState } from 'hooks/router';
 import { useAddWallet } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 import CommonHeader from 'components/CommonHeader';
 import { useNavigate } from 'react-router';
+import { SWEventDispatchAccountsChangedWithCurrentAccount } from 'utils/Wallet/account';
 
 // Shared import logic hook
 function useWalletImportHandler() {
@@ -23,7 +24,8 @@ function useWalletImportHandler() {
       } else {
         singleMessage.success('Successfully imported');
         setImported(true);
-        setTimeout(() => {
+        setTimeout(async () => {
+          await SWEventDispatchAccountsChangedWithCurrentAccount();
           navigate('/');
         }, 2000);
         return true;

@@ -83,7 +83,7 @@ export default function PermissionCheck({
       if (isRegisterPage) return;
     }
 
-    const password = await getPassword();
+    // const password = await getPassword();
     if (walletAddedCount <= 0) {
       if (pageType === 'Prompt') {
         navigate('/register');
@@ -91,10 +91,12 @@ export default function PermissionCheck({
       }
       InternalMessage.payload(PortkeyMessageTypes.REGISTER_WALLET, {}).send();
     }
-    if (!password) {
-      navigate('/unlock');
-    }
-  }, [getPassword, location.pathname, navigate, pageType, walletAddedCount]);
+
+    // if (!password) {
+    //   navigate('/unlock');
+    // }
+  }, [location.pathname, navigate, pageType, walletAddedCount]);
+  // }, [getPassword, location.pathname, navigate, pageType, walletAddedCount]);
 
   useEffect(() => {
     if (location.pathname.includes('/test')) return;

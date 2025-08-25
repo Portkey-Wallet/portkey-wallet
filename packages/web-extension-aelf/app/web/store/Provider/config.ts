@@ -21,7 +21,7 @@ import activitySlice from '@portkey-wallet/store/store-ca/activity/slice';
 import recentSlice from '@portkey-wallet/store/store-ca/recent/slice';
 import { rampSlice } from '@portkey-wallet/store/store-ca/ramp/slice';
 import { cmsSlice } from '@portkey-wallet/store/store-ca/cms/slice';
-import { dappSlice } from '@portkey-wallet/store/store-ca/dapp/slice';
+import { dappSlice } from '@portkey-wallet/store/store-eoa/dapp/slice';
 import { discoverSlice } from '@portkey-wallet/store/store-ca/discover/slice';
 import { txFeeSlice } from '@portkey-wallet/store/store-ca/txFee/slice';
 import imSlice from '@portkey-wallet/store/store-ca/im/slice';

@@ -1,8 +1,9 @@
 import { useCallback } from 'react';
-import { LOCAL_AVATARS } from '../../../../assets/images/avatars/avatars';
+import { LOCAL_AVATARS } from 'assets/images/avatars/avatars';
 import { TAccountInfo } from '@portkey-wallet/types/types-eoa/wallet';
 import { updateAccount, removeAccount } from '@portkey-wallet/store/store-eoa/wallet/actions';
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
+import { SWEventDispatchAccountsChangedWithCurrentAccount } from 'utils/Wallet/account';
 // import { useCheckSecurityLock } from 'hooks/securityLock';
 
 export const useAddress = ({
@@ -37,6 +38,9 @@ export const useAddress = ({
           account: newAccount,
         }),
       );
+      setTimeout(() => {
+        SWEventDispatchAccountsChangedWithCurrentAccount();
+      }, 300);
     },
     [currentAccount, currentAddress, currentWalletKey, dispatch],
   );
@@ -57,6 +61,9 @@ export const useAddress = ({
           account: newAccount,
         }),
       );
+      setTimeout(() => {
+        SWEventDispatchAccountsChangedWithCurrentAccount();
+      }, 300);
     },
     [currentAccount, currentAddress, currentWalletKey, dispatch],
   );
@@ -79,28 +86,14 @@ export const useAddress = ({
           accountAddress: currentAddress,
         }),
       );
-      callback();
+      setTimeout(async () => {
+        await SWEventDispatchAccountsChangedWithCurrentAccount();
+        callback();
+      }, 100);
       console.log('removeAddress: ');
     },
     [currentAddress, currentWalletKey, dispatch],
   );
-
-  // const removeAddress = useCallback(
-  //   async (callback: any) => {
-  //     await checkSecurityLock(() => {
-  //       // TODO: if privateKey wallet, turn to the logic of remove wallet.
-  //       dispatch(
-  //         removeAccount({
-  //           walletKey: currentWalletKey,
-  //           accountAddress: currentAddress,
-  //         }),
-  //       );
-  //       callback();
-  //     });
-  //     console.log('removeAddress: ');
-  //   },
-  //   [checkSecurityLock, currentAddress, currentWalletKey, dispatch],
-  // );
 
   return {
     updateAddressIcon,

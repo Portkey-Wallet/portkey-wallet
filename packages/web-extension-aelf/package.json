@@ -1,6 +1,6 @@
 {
   "name": "web-extension-aelf",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "web-extension-aelf",
   "private": true,
   "dependencies": {
@@ -47,7 +47,6 @@
     "eth-rpc-errors": "^4.0.3",
     "i18next": "^21.9.2",
     "intl": "^1.2.5",
-    "lottie-web": "^5.9.6",
     "moment": "^2.29.4",
     "query-string": "^7.1.1",
     "rc-form": "^2.4.12",

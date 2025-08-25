@@ -62,7 +62,7 @@ import HistoryList from 'pages/CryptoGifts/History';
 import CryptoGiftsDetail from 'pages/CryptoGifts/Detail';
 import Create from 'pages/CryptoGifts/Create';
 import Success from 'pages/CryptoGifts/Success';
-import FreeMint from 'pages/FreeMint';
+// import FreeMint from 'pages/FreeMint';
 import Security from '../../pages/My/SettingList/Security';
 import { PrepareWallet } from 'pages/PrepareWallet';
 import CreateNewWallet from 'pages/CreateNewWallet';
@@ -207,10 +207,10 @@ export const PageRouter = () => {
       path: '/collection',
       element: <Collection />,
     },
-    {
-      path: '/free-mint',
-      element: <FreeMint />,
-    },
+    // {
+    //   path: '/free-mint',
+    //   element: <FreeMint />,
+    // },
     {
       path: '/unlock',
       element: <Unlock />,

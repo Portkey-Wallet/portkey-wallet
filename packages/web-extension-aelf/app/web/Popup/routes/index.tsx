@@ -44,7 +44,7 @@ import ReceiveCardPage from 'pages/Receive/ReceiveCardPage';
 import CryptoGifts from 'pages/CryptoGifts/Home';
 import HistoryList from 'pages/CryptoGifts/History';
 import CryptoGiftsDetail from 'pages/CryptoGifts/Detail';
-import FreeMint from 'pages/FreeMint';
+// import FreeMint from 'pages/FreeMint';
 import Security from '../../pages/My/SettingList/Security';
 import { SelectAssetListPage } from 'pages/Send/components/SelectAssetList';
 // import RampBuy from 'pages/Buy/RampBuy';
@@ -153,10 +153,10 @@ export const PageRouter = () =>
       path: '/collection',
       element: <Collection />,
     },
-    {
-      path: '/free-mint',
-      element: <FreeMint />,
-    },
+    // {
+    //   path: '/free-mint',
+    //   element: <FreeMint />,
+    // },
     {
       path: 'setting/contacts',
       element: <Contacts />,

@@ -1,4 +1,4 @@
-import { useCurrentChainList } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { useCurrentChainList } from '@portkey-wallet/hooks/hooks-eoa/chainList';
 import { useCallback } from 'react';
 import AElf from 'aelf-sdk';
 import getDecodedTxData from 'utils/sandboxUtil/getDecodedTxData';

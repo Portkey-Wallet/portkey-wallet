@@ -15,3 +15,10 @@ export const SWEventDispatchAccountsChangedWithCurrentAccount = async () => {
     data: accountsObject,
   });
 };
+
+export const SWEventDispatchDisconnect = async () => {
+  SWEventController.dispatchEvent({
+    eventName: 'accountsChanged',
+    data: {},
+  });
+};

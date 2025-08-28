@@ -1,0 +1,102 @@
+.circle-loading {
+  position: relative;
+  display: inline-block;
+  color: #fff; // Default dark theme
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 2px solid transparent;
+    border-top: 2px solid currentcolor;
+    border-radius: 50%;
+    animation: circle-spin 1s linear infinite;
+  }
+}
+
+// Dark theme styles
+.circle-loading-dark {
+  color: #fff;
+
+  &::before {
+    border-top-color: #fff;
+  }
+}
+
+// Light theme styles
+.circle-loading-light {
+  color: #000;
+
+  &::before {
+    border-top-color: #000;
+  }
+}
+
+@keyframes circle-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+// Alternative style with gradient border for more visual appeal
+.circle-loading-gradient {
+  position: relative;
+  display: inline-block;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 2px solid transparent;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg, transparent, currentcolor, transparent);
+    mask: radial-gradient(circle at center, transparent 60%, black 60%);
+    animation: circle-spin 1s linear infinite;
+  }
+}
+
+// Size variants
+.circle-loading-small {
+  width: 12px;
+  height: 12px;
+
+  &::before {
+    border-width: 1.5px;
+  }
+}
+
+.circle-loading-medium {
+  width: 16px;
+  height: 16px;
+
+  &::before {
+    border-width: 2px;
+  }
+}
+
+.circle-loading-large {
+  width: 24px;
+  height: 24px;
+
+  &::before {
+    border-width: 3px;
+  }
+}
+
+.circle-loading-xl {
+  width: 32px;
+  height: 32px;
+
+  &::before {
+    border-width: 4px;
+  }
+}

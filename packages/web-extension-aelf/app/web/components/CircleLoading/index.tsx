@@ -1,39 +1,36 @@
-import { useRef, useEffect } from 'react';
-import lottie, { AnimationItem } from 'lottie-web';
-import animationDarkData from './spinnerDark';
-import animationWhiteData from './spinnerWhite';
+import './index.less';
 
 export type LoadingType = {
   width?: number;
   height?: number;
+  theme?: 'dark' | 'light';
+  variant?: 'default' | 'gradient';
+  size?: 'small' | 'medium' | 'large' | 'xl' | 'custom';
 };
 
 // TODO-SA
 const theme = 'dark';
 
 const CircleLoading = (props: LoadingType) => {
-  const { width = 16, height = 16 } = props;
-  const containerRef = useRef<HTMLDivElement>(null);
-  const animation = useRef<AnimationItem | null>(null);
+  const { width = 16, height = 16, theme: propTheme = theme, variant = 'default', size = 'custom' } = props;
 
-  useEffect(() => {
-    if (!animation.current) {
-      animation.current = lottie.loadAnimation({
-        container: containerRef.current!,
-        renderer: 'svg',
-        loop: true,
-        autoplay: true,
-        animationData: theme === 'dark' ? animationWhiteData : animationDarkData,
-      });
-    }
-    return () => {
-      animation.current?.stop();
-      animation.current?.destroy();
-      animation.current = null;
-    };
-  }, []);
+  const getSizeClass = () => {
+    if (size === 'custom') return '';
+    return `circle-loading-${size}`;
+  };
 
-  return <div className="circle-loading" style={{ width, height }} ref={containerRef}></div>;
+  const getThemeClass = () => {
+    return `circle-loading-${propTheme}`;
+  };
+
+  const getVariantClass = () => {
+    if (variant === 'gradient') return 'circle-loading-gradient';
+    return 'circle-loading';
+  };
+
+  const containerStyle = size === 'custom' ? { width, height } : {};
+
+  return <div className={`${getVariantClass()} ${getThemeClass()} ${getSizeClass()}`} style={containerStyle} />;
 };
 
 export default CircleLoading;

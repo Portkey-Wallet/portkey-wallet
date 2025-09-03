@@ -1,0 +1,117 @@
+.circle-loading {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  
+  &__spinner {
+    position: relative;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    animation: circle-loading-spin 1s linear infinite;
+    
+    &::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      border-top-color: currentColor;
+      animation: circle-loading-spin 1.5s ease-in-out infinite;
+    }
+  }
+  
+  &__inner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 60%;
+    height: 60%;
+    border-radius: 50%;
+    background: currentColor;
+    transform: translate(-50%, -50%);
+    opacity: 0.3;
+  }
+  
+  // Size variants
+  &--small {
+    .circle-loading__spinner {
+      width: 16px;
+      height: 16px;
+      border-width: 1px;
+      
+      &::before {
+        border-width: 1px;
+      }
+    }
+    
+    .circle-loading__inner {
+      width: 50%;
+      height: 50%;
+    }
+  }
+  
+  &--medium {
+    .circle-loading__spinner {
+      width: 24px;
+      height: 24px;
+      border-width: 2px;
+      
+      &::before {
+        border-width: 2px;
+      }
+    }
+    
+    .circle-loading__inner {
+      width: 60%;
+      height: 60%;
+    }
+  }
+  
+  &--large {
+    .circle-loading__spinner {
+      width: 32px;
+      height: 32px;
+      border-width: 3px;
+      
+      &::before {
+        border-width: 3px;
+      }
+    }
+    
+    .circle-loading__inner {
+      width: 70%;
+      height: 70%;
+    }
+  }
+}
+
+// Keyframe animations
+@keyframes circle-loading-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+// Alternative animation for the inner element
+@keyframes circle-loading-pulse {
+  0%, 100% {
+    opacity: 0.3;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+}
+
+// Apply pulse animation to inner element
+.circle-loading__inner {
+  animation: circle-loading-pulse 2s ease-in-out infinite;
+}
+

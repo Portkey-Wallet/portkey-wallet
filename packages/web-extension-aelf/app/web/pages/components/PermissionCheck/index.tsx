@@ -111,6 +111,8 @@ export default function PermissionCheck({
   useEffectOnce(() => {
     if (location.pathname.includes('/test')) return;
     checkRegisterHandler();
+    // init password
+    getPassword();
   });
 
   return <>{children}</>;

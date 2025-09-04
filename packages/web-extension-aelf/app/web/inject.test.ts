@@ -39,7 +39,8 @@ describe('Inject', () => {
       new Inject();
 
       expect(shouldInjectProviderFn).toHaveBeenCalled();
-      expect(InpagePostStreamMock).toHaveBeenCalledWith({ name: 'portkey-inpage' });
+      // expect(InpagePostStreamMock).toHaveBeenCalledWith({ name: 'portkey-inpage' });
+      expect(InpagePostStreamMock).toHaveBeenCalledWith({ name: 'fairy-vault-inpage' });
       expect(InitializeProviderMock).toHaveBeenCalledWith({ connectionStream: portkeyStream });
     });
 

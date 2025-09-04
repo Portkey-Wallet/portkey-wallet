@@ -1,31 +1,20 @@
-import { useRef, useEffect } from 'react';
-import lottie, { AnimationItem } from 'lottie-web';
-import animationData from './data.json';
+import React from 'react';
+import './index.less';
 
-const CircleLoading = () => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const animation = useRef<AnimationItem | null>(null);
+interface CircleLoadingProps {
+  size?: 'small' | 'medium' | 'large';
+  color?: string;
+  className?: string;
+}
 
-  useEffect(() => {
-    if (!animation.current) {
-      animation.current = lottie.loadAnimation({
-        container: containerRef.current!,
-        renderer: 'svg',
-        loop: true,
-        autoplay: true,
-        animationData: animationData,
-      });
-    }
-    return () => {
-      if (animation.current) {
-        animation.current.stop();
-        animation.current.destroy();
-        animation.current = null;
-      }
-    };
-  }, []);
-
-  return <div className="circle-loading" ref={containerRef}></div>;
+const CircleLoading: React.FC<CircleLoadingProps> = ({ size = 'medium', color = '#1890ff', className = '' }) => {
+  return (
+    <div className={`circle-loading circle-loading--${size} ${className}`}>
+      <div className="circle-loading__spinner" style={{ borderTopColor: color }}>
+        <div className="circle-loading__inner"></div>
+      </div>
+    </div>
+  );
 };
 
 export default CircleLoading;

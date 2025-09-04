@@ -27,8 +27,12 @@ const IGNORE_INIT_METHODS_FOR_KEEP_ALIVE: string[] = [MethodsWallet.GET_WALLET_S
 const EXTENSION_CONTEXT_INVALIDATED_CHROMIUM_ERROR = 'Extension context invalidated.';
 // The stream that connects between the content script and the website
 let pageStream: ContentPostStream;
-const CONTENT_TARGET = 'portkey-content';
-const INPAGE_TARGET = 'portkey-inpage';
+// const CONTENT_TARGET = 'portkey-content';
+// const INPAGE_TARGET = 'portkey-inpage';
+const CONTENT_TARGET = 'fairy-vault-content';
+const INPAGE_TARGET = 'fairy-vault-inpage';
+const LISTENER_EVENT_NAME = 'fairy-vault-message-from-inpage-v2';
+const DISPATCH_EVENT_NAME = 'fairy-vault-message-from-content-v2';
 
 // The filename of the injected communication script.
 const INJECTION_SCRIPT_FILENAME = 'js/inject.js';
@@ -123,7 +127,11 @@ class Content {
   setupPageStream() {
     // Setting up a new encrypted stream for
     // interaction between the extension and the application
-    pageStream = new ContentPostStream({ name: CONTENT_TARGET });
+    pageStream = new ContentPostStream({
+      name: CONTENT_TARGET,
+      dispatchEventName: DISPATCH_EVENT_NAME,
+      listenerEventName: LISTENER_EVENT_NAME,
+    });
 
     pageStream.on('data', (data: Buffer) => {
       const params = JSON.parse(data.toString());

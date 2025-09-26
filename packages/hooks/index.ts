@@ -16,7 +16,7 @@ export function useThrottleCallback<T extends (...args: any[]) => any>(
   deps: DependencyList,
   delay = 500,
 ) {
-  const lock = useRef<number>();
+  const lock = useRef<number>(0);
   return useCallback((...args: any[]) => {
     if (!callback) return;
     const now = Date.now();
@@ -34,7 +34,7 @@ export function useDebounceCallback<T extends (...args: any[]) => any>(
   deps: DependencyList,
   delay = 500,
 ) {
-  const timer = useRef<NodeJS.Timeout | number>();
+  const timer = useRef<NodeJS.Timeout | number>(null);
   const callbackRef = useLatestRef(callback);
 
   return useCallback((...args: any[]) => {

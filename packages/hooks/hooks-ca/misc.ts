@@ -73,7 +73,7 @@ export function usePhoneCountryCode(isInit = false) {
 
 export const useIsScanQRCode = (clientId: string | undefined) => {
   const [isScanQRCode, setIsScanQRCode] = useState(false);
-  const signalrDidRemoveRef = useRef<() => void>();
+  const signalrDidRemoveRef = useRef<() => void>(undefined);
 
   const isActiveRef = useRef(true);
   useEffect(() => {
@@ -125,7 +125,7 @@ export const useIsScanQRCode = (clientId: string | undefined) => {
 };
 
 export const useTimer = () => {
-  const timerRef = useRef<NodeJS.Timeout | number>();
+  const timerRef = useRef<NodeJS.Timeout | number>(undefined);
 
   useEffect(() => {
     return () => {

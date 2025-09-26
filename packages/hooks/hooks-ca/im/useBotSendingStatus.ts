@@ -10,7 +10,7 @@ export const useBotSendingStatus = (targetRelationId: string) => {
   const sendingBotNetMap = useImSendingBotNetMapState();
   const [canSend, setCanSend] = useState<boolean>(true);
   const sendingBotMap = useMemo(() => sendingBotNetMap?.[networkType] || [], [sendingBotNetMap, networkType]);
-  const timerRef = useRef<any>();
+  const timerRef = useRef<any>(null);
   useEffect(() => {
     setCanSend(sendingBotMap.indexOf(targetRelationId) === -1);
   }, [sendingBotMap, targetRelationId]);

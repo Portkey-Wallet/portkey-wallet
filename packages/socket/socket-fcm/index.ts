@@ -127,7 +127,7 @@ class SignalrFCM extends BaseSignalr {
 
       await signalr.start();
       await signalr.invoke('Connect', clientId || this.deviceId || '');
-      signalr.onreconnected(connectionId => this.onReconnected(signalr, connectionId));
+      signalr.onreconnected(connectionId => this.handleReconnected(signalr, connectionId));
       this.connectionId = signalr.connectionId ?? '';
       this.signalr = signalr;
       this.url = url;
@@ -142,13 +142,36 @@ class SignalrFCM extends BaseSignalr {
     }
   };
 
-  async onReconnected(signalr: HubConnection, _connectionId?: string) {
+  handleReconnected(signalr: HubConnection, _connectionId?: string) {
     try {
       signalr.invoke('Connect', this.deviceId || '');
     } catch (error) {
       console.log('onReconnected error', error);
     }
   }
+
+  // TODO only one type defined in the BaseSignalr class
+  // can not override the onReconnected method here
+  // onReconnected = () => {
+  //   try {
+  //     if (!this.signalr) {
+  //       return;
+  //     }
+  //     this.signalr.invoke('Connect', this.deviceId || '');
+  //   } catch (error) {
+  //     console.log('onReconnected error', error);
+  //   }
+  // };
+
+  // TODO: Deprecated, onReconnected is defined in the BaseSignalr class
+  // type: onreconnected(callback: (connectionId?: string) => void): void;
+  // onReconnected(signalr: HubConnection, _connectionId?: string) {
+  //   try {
+  //     signalr.invoke('Connect', this.deviceId || '');
+  //   } catch (error) {
+  //     console.log('onReconnected error', error);
+  //   }
+  // }
 }
 
 const signalrFCM = new SignalrFCM({

@@ -44,9 +44,10 @@ let config = {
 
   resolve: {
     extensions: ['.js', '.ts', '.tsx', '.json'],
-    // alias: {
-    //   'aelf-sdk$': 'aelf-sdk/dist/aelf.umd.js',
-    // },
+    alias: {
+      // 'aelf-sdk$': 'aelf-sdk/dist/aelf.umd.js',
+      "@noble/hashes/_assert": path.resolve(__dirname, "moduleAlias/noble-hashes/_assert.js"),
+    },
     fallback: {
       // crypto: false,
       crypto: require.resolve('crypto-browserify'),

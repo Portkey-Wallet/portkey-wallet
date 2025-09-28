@@ -4,7 +4,7 @@
     "access": "public"
   },
   "version": "1.3.0",
-  "type": "commonjs",
+  "type": "module",
   "scripts": {
     "prebuild": "rm -rf dist",
     "build": "tsc",

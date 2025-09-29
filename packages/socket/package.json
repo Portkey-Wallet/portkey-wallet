@@ -11,6 +11,6 @@
     "start": "tsc --watch"
   },
   "dependencies": {
-    "@portkey/socket": "^2.23.0-alpha.5"
+    "@portkey/socket": "^2.23.0-alpha.8"
   }
 }

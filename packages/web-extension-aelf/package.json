@@ -157,14 +157,15 @@
     "dev:watch": "webpack watch --mode development && yarn copy-lib",
     "pro": "rm -rf app/public && webpack --mode production && yarn copy-lib && node app/compressPublicFolder.js",
     "pro:watch": "webpack watch --mode production && yarn copy-lib",
-    "vite:dev": "rm -rf build && vite build --mode development",
-    "vite:dev:watch": "rm -rf build && vite build --mode development --watch",
-    "vite:pro": "rm -rf build && vite build --mode production && node app/compressBuildFolder.js",
-    "vite:pro:watch": "vite build --mode production --watch",
+    "vite:dev": "node scripts/build-umd.js",
+    "vite:dev:watch": "node scripts/build-umd.js --watch",
+    "vite:pro": "NODE_ENV=production node scripts/build-umd.js && node app/compressBuildFolder.js",
+    "vite:pro:watch": "NODE_ENV=production node scripts/build-umd.js --watch",
     "prepare": "husky install",
     "svg-handle": "node ./app/web/assets/getSvg1.js",
     "svg-handle-v3": "node ./app/web/assets/iconV3/getIconV3Svgs.js",
-    "svg-avatar-handle-v3": "node ./app/web/assets/iconV3/getIconV3AvatarsSvgs.js"
+    "svg-avatar-handle-v3": "node ./app/web/assets/iconV3/getIconV3AvatarsSvgs.js",
+    "replace-code": "node ./scripts/replace-code.js"
   },
   "ci": {
     "version": "8"

@@ -8,6 +8,7 @@ yarn-error.log
 .env
 
 app/public
+build/
 app/public.pem
 app/public.crx
 app/public.zip

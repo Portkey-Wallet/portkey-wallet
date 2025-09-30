@@ -2,12 +2,7 @@ import { getContractBasic } from '@portkey/contracts';
 import { aelf } from '@portkey/utils';
 import { IEBridgeELFChainInfo, IEBridgeEVMChainInfo } from '../types';
 import { VIEW_PRIVATE } from '../constants';
-import { getEVMContract, getHttpProvider } from '../utils/evm';
-import { BRIDGE_IN_ABI } from '../abis';
 import { IBridgeOperator, ICheckAndApproveParams, ICreateReceiptHandlerParams } from '../types/bridge';
-import { LIMIT_ABI } from '../abis';
-import { WB3ContractBasic } from '../utils/web3Contract';
-import Web3 from 'web3';
 import { ChainId, IContract } from '@portkey/types';
 import { getChainIdByMap, getReceiptLimit } from '../utils';
 import type { Contract } from 'web3-eth-contract';
@@ -30,14 +25,16 @@ export class EVMBridgeOperator implements IBridgeOperator {
   }
 
   public getBridgeContract = () => {
-    const contract = getEVMContract(this.chainInfo.rpcUrl, BRIDGE_IN_ABI as any, this.chainInfo.bridgeContract);
-    const web3 = new Web3(getHttpProvider(this.chainInfo.rpcUrl));
-    return new WB3ContractBasic({ web3, contract: contract as unknown as Contract });
+    // const contract = getEVMContract(this.chainInfo.rpcUrl, BRIDGE_IN_ABI as any, this.chainInfo.bridgeContract);
+    // const web3 = new Web3(getHttpProvider(this.chainInfo.rpcUrl));
+    // return new WB3ContractBasic({ web3, contract: contract as unknown as Contract });
+    return null;
   };
   public getLimitOutContract = () => {
-    const contract = getEVMContract(this.chainInfo.rpcUrl, LIMIT_ABI as any, this.chainInfo.limitContract);
-    const web3 = new Web3(getHttpProvider(this.chainInfo.rpcUrl));
-    return new WB3ContractBasic({ web3, contract: contract as unknown as Contract });
+    // const contract = getEVMContract(this.chainInfo.rpcUrl, LIMIT_ABI as any, this.chainInfo.limitContract);
+    // const web3 = new Web3(getHttpProvider(this.chainInfo.rpcUrl));
+    // return new WB3ContractBasic({ web3, contract: contract as unknown as Contract });
+    return null;
   };
 
   getFromLimit = async (toChainId: string, target: string) => {

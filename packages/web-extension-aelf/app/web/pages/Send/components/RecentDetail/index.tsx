@@ -129,8 +129,8 @@ export default function RecentDetail() {
   }, [activityInfo, fetchParams, loading]);
 
   const isHasMore = useMemo(() => {
-    return !!activityInfo.hasNextPage;
-  }, [activityInfo.hasNextPage]);
+    return !!activityInfo?.hasNextPage;
+  }, [activityInfo?.hasNextPage]);
 
   const [popVisible, setPopVisible] = useState(false);
 

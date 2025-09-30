@@ -1131,7 +1131,7 @@ export default function Send() {
           );
         } else if (i.network !== 'aelf' && i.addressInfo?.network !== 'aelf') {
           setBtnLoading(true);
-          const { data } = await getSendNetworkList({
+          const data = await getSendNetworkList({
             symbol: tokenInfo?.symbol || '',
             chainId: tokenInfo?.chainId || 'AELF',
             toAddress: i?.address || i?.addressInfo?.address || '',

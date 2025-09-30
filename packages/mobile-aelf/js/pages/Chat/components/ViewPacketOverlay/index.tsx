@@ -11,7 +11,7 @@ import { TextL, TextM, TextXXXL } from 'components/CommonText';
 import { defaultColors } from 'assets/theme';
 import CommonAvatar from 'components/CommonAvatar';
 import GStyles from 'assets/theme/GStyles';
-import { screenHeight, screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { screenHeight, screenWidth } from '@portkey-wallet/utils-mobile/device';
 import navigationService from 'utils/navigationService';
 import { ScreenHeight } from '@rneui/base';
 import { sleep } from '@portkey-wallet/utils';

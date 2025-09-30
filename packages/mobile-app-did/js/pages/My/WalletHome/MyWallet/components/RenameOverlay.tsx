@@ -10,7 +10,7 @@ import Touchable from 'components/Touchable';
 import CommonInput from 'components/CommonInput';
 // import { useInputFocus } from 'hooks/useInputFocus';
 // import { useKeyboard } from 'hooks/useKeyboardHeight';
-import { isIOS } from '@portkey-wallet/utils/mobile/device';
+import { isIOS } from '@portkey-wallet/utils-mobile/device';
 import { KeyboardSafeArea } from 'components/KeyboardSafeArea';
 import { TextM } from 'components/CommonText';
 import CommonButton from 'components/CommonButton';

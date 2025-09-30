@@ -1,7 +1,7 @@
 import React from 'react';
 import PageContainer from 'components/PageContainer';
 import navigationService from 'utils/navigationService';
-import { isIOS, screenHeight } from '@portkey-wallet/utils/mobile/device';
+import { isIOS, screenHeight } from '@portkey-wallet/utils-mobile/device';
 import Email from '../components/Email';
 import SwitchNetwork from '../components/SwitchNetwork';
 import { makeStyles } from '@rneui/themed';

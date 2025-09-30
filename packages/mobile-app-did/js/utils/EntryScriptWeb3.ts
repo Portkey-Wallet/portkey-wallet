@@ -1,5 +1,5 @@
 import RNFS from 'react-native-fs';
-import { isIOS } from '@portkey-wallet/utils/mobile/device';
+import { isIOS } from '@portkey-wallet/utils-mobile/device';
 // import * as FileSystem from 'expo-file-system';
 
 const fileName = 'InpageBridgeWeb3';

@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useMemo } from 'react';
-import { isIOS } from '@portkey-wallet/utils/mobile/device';
+import { isIOS } from '@portkey-wallet/utils-mobile/device';
 import { MessageTextProps, Time } from 'react-native-gifted-chat';
 import ParsedText from 'react-native-parsed-text';
 import { StyleSheet, Text, TextStyle, View, Image } from 'react-native';

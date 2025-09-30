@@ -1,5 +1,5 @@
 import { FreeMintStatus } from '@portkey-wallet/types/types-ca/freeMint';
-import { screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { screenWidth } from '@portkey-wallet/utils-mobile/device';
 import { defaultColors } from 'assets/theme';
 import fonts from 'assets/theme/fonts';
 import Svg from 'components/Svg';

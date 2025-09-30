@@ -9,7 +9,7 @@ import React from 'react';
 import { makeStyles } from '@rneui/themed';
 import fonts from 'assets/theme/fonts';
 import { useCheckSecurityLock } from 'hooks/securityLock';
-import { isIOS } from '@portkey-wallet/utils/mobile/device';
+import { isIOS } from '@portkey-wallet/utils-mobile/device';
 import CommonToast from 'components/CommonToast';
 import { useCloudStorage } from '../CloudBackup/useCloudStorage';
 

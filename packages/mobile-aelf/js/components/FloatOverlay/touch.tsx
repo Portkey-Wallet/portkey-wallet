@@ -1,4 +1,4 @@
-import { screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { screenWidth } from '@portkey-wallet/utils-mobile/device';
 import { useCallback } from 'react';
 import { GestureResponderEvent } from 'react-native';
 import { measurePageY } from 'utils/measure';

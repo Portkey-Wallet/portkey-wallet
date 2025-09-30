@@ -7,7 +7,7 @@ import { pTd } from 'utils/unit';
 import TokenListUnionItem from 'components/TokenListUnionItem';
 import { useLanguage } from 'i18n/hooks';
 import { PAGE_SIZE_IN_ACCOUNT_TOKEN, REFRESH_TIME } from '@portkey-wallet/constants/constants-ca/assets';
-import { screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { screenWidth } from '@portkey-wallet/utils-mobile/device';
 import Touchable from 'components/Touchable';
 import { useAccountTokenInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
 import { useAccountBalanceUSD } from '@portkey-wallet/hooks/hooks-ca/balances';

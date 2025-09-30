@@ -13,7 +13,7 @@ import { useCurrentAddressInfos, useUniqueIdentify } from '@portkey-wallet/hooks
 import { ActivityItemType } from '@portkey-wallet/types/types-eoa/activity';
 import { getActivityListAsync } from '@portkey-wallet/store/store-eoa/activity/action';
 import { getCurrentActivityMapKey } from '@portkey-wallet/utils/activity';
-import { isIOS } from '@portkey-wallet/utils/mobile/device';
+import { isIOS } from '@portkey-wallet/utils-mobile/device';
 import { IActivitiesApiParams } from '@portkey-wallet/store/store-eoa/activity/type';
 import { formatAmountUSDShow, formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import fonts from 'assets/theme/fonts';

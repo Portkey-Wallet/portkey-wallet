@@ -24,7 +24,7 @@ import { LANG_MAX } from '@portkey-wallet/constants/misc';
 import myEvents from 'utils/deviceEvent';
 import { formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import { useEffectOnce } from '@portkey-wallet/hooks';
-import { screenHeight } from '@portkey-wallet/utils/mobile/device';
+import { screenHeight } from '@portkey-wallet/utils-mobile/device';
 import { formatApproveSymbolShow } from '@portkey-wallet/utils/token';
 import { makeStyles, useTheme } from '@rneui/themed';
 import IconPair, { IIconPairProps } from '../components/IconPair';

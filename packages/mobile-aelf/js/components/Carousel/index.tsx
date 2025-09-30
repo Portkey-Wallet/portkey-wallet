@@ -3,7 +3,7 @@ import { View, Image, StyleSheet, StyleProp, ViewStyle, TouchableOpacity } from 
 import Carousel from 'rn-teaset/components/Carousel/Carousel';
 import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
-import { screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { screenWidth } from '@portkey-wallet/utils-mobile/device';
 import PortkeySkeleton from 'components/PortkeySkeleton';
 import Svg from 'components/Svg';
 import { TAppLink } from '@portkey-wallet/types/types-ca/cms';

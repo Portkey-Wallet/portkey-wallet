@@ -33,7 +33,7 @@ import RampNav from 'pages/Ramp';
 import DiscoverNav from 'pages/Discover/index';
 import FreeMintNav from 'pages/FreeMint/index';
 import Deposit from 'pages/Deposit';
-import { isIOS } from '@portkey-wallet/utils/mobile/device';
+import { isIOS } from '@portkey-wallet/utils-mobile/device';
 
 import TabsDrawer from 'components/TabsDrawer';
 import ChatNav from 'pages/Chat/routes';

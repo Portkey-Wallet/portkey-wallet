@@ -1,4 +1,4 @@
-import { bottomBarHeight, isIOS, isXiaoMi } from '@portkey-wallet/utils/mobile/device';
+import { bottomBarHeight, isIOS, isXiaoMi } from '@portkey-wallet/utils-mobile/device';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { Animated } from 'react-native';
 import { useKeyboard } from 'hooks/useKeyboardHeight';

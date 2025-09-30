@@ -14,7 +14,7 @@ import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/u
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { useInputFocus } from 'hooks/useInputFocus';
-import { isIOS } from '@portkey-wallet/utils/mobile/device';
+import { isIOS } from '@portkey-wallet/utils-mobile/device';
 
 export interface ITokenAmountInput {
   value?: string;

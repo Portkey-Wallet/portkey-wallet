@@ -11,7 +11,7 @@ import { showCopyUserAddress } from '../CopyUserAddress';
 // import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useQrScanPermissionAndToast } from 'hooks/useQrScan';
 import navigationService from 'utils/navigationService';
-import { screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { screenWidth } from '@portkey-wallet/utils-mobile/device';
 import { makeStyles, useTheme } from '@rneui/themed';
 import { useCurrentAccount } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 import { useAddressSelect } from '../../My/WalletManagement/hooks/useAddressSelect';

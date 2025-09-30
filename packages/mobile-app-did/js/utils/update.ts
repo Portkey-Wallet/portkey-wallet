@@ -11,7 +11,7 @@ import UpdateOverlay from 'components/UpdateOverlay';
 import OverlayModal from 'components/OverlayModal';
 import { ButtonRowProps } from 'components/ButtonRow';
 import { IStorage } from '@portkey-wallet/types/storage';
-import { baseStore } from '@portkey-wallet/utils/mobile/storage';
+import { baseStore } from '@portkey-wallet/utils-mobile/storage';
 import { getWallet } from 'utils/redux';
 import { getCmsCodePoshControl } from '@portkey-wallet/hooks/hooks-ca/cms/util';
 import { getDispatch } from './redux';
@@ -19,7 +19,7 @@ import { setUpdateInfo } from 'store/user/actions';
 import { handleErrorMessage, sleep } from '@portkey-wallet/utils';
 import CommonToast from 'components/CommonToast';
 import { CODE_PUSH_OPTIONS } from 'constants/codePush';
-import { isIOS } from '@portkey-wallet/utils/mobile/device';
+import { isIOS } from '@portkey-wallet/utils-mobile/device';
 import { AppLifeCycleModule } from 'utils/nativeModules';
 export type TUpdateInfo = {
   version?: string | null;

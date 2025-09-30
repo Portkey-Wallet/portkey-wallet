@@ -12,7 +12,7 @@ import DappListItem from '../components/DappListItem';
 import { useLanguage } from 'i18n/hooks';
 import Svg from 'components/Svg';
 import CustomSwitch from 'components/CustomSwitch';
-import { screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { screenWidth } from '@portkey-wallet/utils-mobile/device';
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 import { removeDapp } from '@portkey-wallet/store/store-eoa/dapp/actions';
 import { getOrigin } from '@portkey-wallet/utils/dapp/browser';

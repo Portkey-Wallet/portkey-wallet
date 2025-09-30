@@ -1,7 +1,7 @@
 import * as WebBrowser from 'expo-web-browser';
 import { useCallback, useEffect, useMemo, useState, useRef } from 'react';
 import { Linking } from 'react-native';
-import { isIOS } from '@portkey-wallet/utils/mobile/device';
+import { isIOS } from '@portkey-wallet/utils-mobile/device';
 import * as Google from 'expo-auth-session/providers/google';
 import Config from 'react-native-config';
 import * as Application from 'expo-application';

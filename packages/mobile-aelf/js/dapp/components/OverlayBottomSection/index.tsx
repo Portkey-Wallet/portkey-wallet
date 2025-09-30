@@ -4,7 +4,7 @@ import { pTd } from 'utils/unit';
 import GStyles from 'assets/theme/GStyles';
 import ButtonRow from 'components/ButtonRow';
 import { CommonButtonProps } from 'components/CommonButton';
-import { screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { screenWidth } from '@portkey-wallet/utils-mobile/device';
 import { makeStyles } from '@rneui/themed';
 
 export interface OverlayBottomSectionProps extends ViewProps {

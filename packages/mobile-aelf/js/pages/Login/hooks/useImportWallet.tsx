@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import navigationService from 'utils/navigationService';
 import { SetBiometricsTypeEnum } from 'pages/Pin/SetBiometrics';
-import { authenticationReady } from '@portkey-wallet/utils/mobile/authentication';
+import { authenticationReady } from '@portkey-wallet/utils-mobile/authentication';
 import { useCredentials } from 'hooks/store';
 
 function formatMnemonics(mnemonics: string[] | string) {

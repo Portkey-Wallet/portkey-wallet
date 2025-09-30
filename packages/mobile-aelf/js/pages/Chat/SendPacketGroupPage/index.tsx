@@ -15,7 +15,7 @@ import CommonToast from 'components/CommonToast';
 import { useCheckAllowanceAndApprove, useCheckManagerSyncState } from 'hooks/wallet';
 import navigationService from 'utils/navigationService';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { isIOS } from '@portkey-wallet/utils/mobile/device';
+import { isIOS } from '@portkey-wallet/utils-mobile/device';
 import CommonTouchableTabs, { TabItemType } from 'components/CommonTouchableTabs';
 import useReportAnalyticsEvent from 'hooks/userExceptionMessage';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';

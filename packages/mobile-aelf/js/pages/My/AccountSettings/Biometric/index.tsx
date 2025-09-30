@@ -12,7 +12,7 @@ import i18n from 'i18n';
 import { usePin, useUser } from 'hooks/store';
 import { TextL, TextM } from 'components/CommonText';
 import CommonSwitch from 'components/CommonSwitch';
-import { setSecureStoreItem } from '@portkey-wallet/utils/mobile/biometric';
+import { setSecureStoreItem } from '@portkey-wallet/utils-mobile/biometric';
 import myEvents from 'utils/deviceEvent';
 import { changeCanLock } from 'utils/LockManager';
 import { makeStyles } from '@rneui/themed';

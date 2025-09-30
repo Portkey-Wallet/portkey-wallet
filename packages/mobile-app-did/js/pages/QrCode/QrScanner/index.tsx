@@ -11,7 +11,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { TextM } from 'components/CommonText';
 import GStyles from 'assets/theme/GStyles';
 import fonts from 'assets/theme/fonts';
-import { isIOS, screenHeight, screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { isIOS, screenHeight, screenWidth } from '@portkey-wallet/utils-mobile/device';
 
 import { CameraView, Camera } from 'expo-camera';
 import Loading from 'components/Loading';

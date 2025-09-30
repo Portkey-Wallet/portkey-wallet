@@ -11,7 +11,7 @@ import NoData from 'components/NoData';
 import { TextL } from 'components/CommonText';
 import Touchable from 'components/Touchable';
 import FindMoreButton from '../components/FindMoreButton';
-import { screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { screenWidth } from '@portkey-wallet/utils-mobile/device';
 import CommonAvatar from 'components/CommonAvatar';
 import { useSearchChannel } from '@portkey-wallet/hooks/hooks-ca/im';
 import useDebounce from 'hooks/useDebounce';

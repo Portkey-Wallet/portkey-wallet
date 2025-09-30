@@ -2,7 +2,7 @@ import React, { useCallback, useMemo, useState, useRef } from 'react';
 import { TextInput, View, Text } from 'react-native';
 import { pTd } from 'utils/unit';
 import { makeStyles, useTheme } from '@rneui/themed';
-import { screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { screenWidth } from '@portkey-wallet/utils-mobile/device';
 import Touchable from 'components/Touchable';
 import Svg from 'components/Svg';
 import CommonButton from 'components/CommonButton';

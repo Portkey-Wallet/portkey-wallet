@@ -8,7 +8,7 @@ import { pTd } from 'utils/unit';
 import Svg, { IconName } from 'components/Svg';
 import { useLanguage } from 'i18n/hooks';
 import GStyles from 'assets/theme/GStyles';
-import { screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { screenWidth } from '@portkey-wallet/utils-mobile/device';
 import { FontStyles } from 'assets/theme/styles';
 import { setStringAsync } from 'expo-clipboard';
 import CommonToast from 'components/CommonToast';

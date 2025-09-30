@@ -20,7 +20,7 @@ import { VerificationType } from '@portkey-wallet/types/verifier';
 import useEffectOnce from 'hooks/useEffectOnce';
 import PinContainer from 'components/PinContainer';
 import { useIntervalGetResult, useOnResultFail } from 'hooks/login';
-import { getSecureStoreItem } from '@portkey-wallet/utils/mobile/biometric';
+import { getSecureStoreItem } from '@portkey-wallet/utils-mobile/biometric';
 import { useThrottleCallback } from '@portkey-wallet/hooks';
 import ActionSheet from 'components/ActionSheet';
 import { isUserBiometricsError } from 'utils/biometrics';

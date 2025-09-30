@@ -23,7 +23,7 @@ import ActionSheet from 'components/ActionSheet';
 import { useCurrentChannelId } from '../context/hooks';
 import CommonToast from 'components/CommonToast';
 import Loading from 'components/Loading';
-import { screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { screenWidth } from '@portkey-wallet/utils-mobile/device';
 import type { ListItemType } from '../../../components/FloatOverlay/Popover';
 import FloatingActionButton from '../components/FloatingActionButton';
 import { useHardwareBackPress } from '@portkey-wallet/hooks/mobile';

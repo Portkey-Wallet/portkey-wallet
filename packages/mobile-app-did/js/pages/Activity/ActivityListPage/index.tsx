@@ -23,7 +23,7 @@ import SafeAreaBox from 'components/SafeAreaBox';
 import LottieLoading from 'components/LottieLoading';
 import GStyles from 'assets/theme/GStyles';
 import CustomPullToRefreshHeader from 'pages/DashBoard/PullToRefresh';
-import { isIOS } from '@portkey-wallet/utils/mobile/device';
+import { isIOS } from '@portkey-wallet/utils-mobile/device';
 
 interface RouterParams {
   chainId?: string;

@@ -1,4 +1,4 @@
-import { getSecureStoreItem } from '@portkey-wallet/utils/mobile/biometric';
+import { getSecureStoreItem } from '@portkey-wallet/utils-mobile/biometric';
 import { useUser } from 'hooks/store';
 import { useCallback } from 'react';
 import { useAppDispatch } from 'store/hooks';

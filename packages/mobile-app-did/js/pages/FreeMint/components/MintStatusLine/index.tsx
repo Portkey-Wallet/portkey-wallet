@@ -1,5 +1,5 @@
 import { FreeMintStatus } from '@portkey-wallet/types/types-ca/freeMint';
-import { screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { screenWidth } from '@portkey-wallet/utils-mobile/device';
 import Svg from 'components/Svg';
 import Touchable from 'components/Touchable';
 import React, { useCallback, useMemo } from 'react';

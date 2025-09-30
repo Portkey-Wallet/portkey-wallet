@@ -6,7 +6,7 @@ import { TabsDrawerContent } from './TabsDrawerContent';
 import { usePin } from 'hooks/store';
 import { changeDrawerOpenStatus } from '@portkey-wallet/store/store-ca/discover/slice';
 import { useAppCommonDispatch, useThrottleCallback } from '@portkey-wallet/hooks';
-import { isIOS } from '@portkey-wallet/utils/mobile/device';
+import { isIOS } from '@portkey-wallet/utils-mobile/device';
 import { IDrawerContentRef, TabContext, tabContextDefaultValue } from './tools';
 
 type TabsDrawerPropsType = {

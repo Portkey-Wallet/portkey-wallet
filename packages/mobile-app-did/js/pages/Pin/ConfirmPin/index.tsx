@@ -9,7 +9,7 @@ import { changePin, createWallet } from '@portkey-wallet/store/store-ca/wallet/a
 import CommonPrompt from 'components/CommonPromptCard';
 import { setCredentials } from 'store/user/actions';
 import { useUser } from 'hooks/store';
-import { setSecureStoreItem } from '@portkey-wallet/utils/mobile/biometric';
+import { setSecureStoreItem } from '@portkey-wallet/utils-mobile/biometric';
 import { CAInfoType, ManagerInfo } from '@portkey-wallet/types/types-ca/wallet';
 import { useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useOnManagerAddressAndQueryResult } from 'hooks/login';

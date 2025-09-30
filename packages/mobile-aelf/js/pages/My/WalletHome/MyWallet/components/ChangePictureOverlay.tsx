@@ -10,7 +10,7 @@ import Touchable from 'components/Touchable';
 import FastImage from 'components/FastImage';
 import CommonButton from 'components/CommonButton';
 import CommonAvatar from 'components/CommonAvatar';
-import { screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { screenWidth } from '@portkey-wallet/utils-mobile/device';
 import GStyles from 'assets/theme/GStyles';
 // import ActionSheet from 'components/ActionSheet';
 

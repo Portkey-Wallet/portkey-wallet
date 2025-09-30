@@ -9,7 +9,7 @@ import { pTd } from 'utils/unit';
 import { darkColors, defaultColors } from 'assets/theme';
 import { useLanguage } from 'i18n/hooks';
 import { FontStyles } from 'assets/theme/styles';
-import { screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { screenWidth } from '@portkey-wallet/utils-mobile/device';
 import Card from './components/Card';
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 import {

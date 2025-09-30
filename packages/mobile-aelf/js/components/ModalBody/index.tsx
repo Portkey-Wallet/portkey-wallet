@@ -2,7 +2,7 @@ import React from 'react';
 import OverlayModal from 'components/OverlayModal';
 import { Keyboard, View, ViewProps } from 'react-native';
 import { StyleSheet } from 'react-native';
-import { screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { screenWidth } from '@portkey-wallet/utils-mobile/device';
 import { pTd } from 'utils/unit';
 import { darkColors, defaultColors } from 'assets/theme';
 import { TextTitle } from 'components/CommonText';

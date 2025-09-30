@@ -1,6 +1,6 @@
 import { pTd } from 'utils/unit';
 import GStyles from 'assets/theme/GStyles';
-import { windowHeight } from '@portkey-wallet/utils/mobile/device';
+import { windowHeight } from '@portkey-wallet/utils-mobile/device';
 import { makeStyles } from '@rneui/themed';
 
 export const getPageStyles = makeStyles(theme => ({

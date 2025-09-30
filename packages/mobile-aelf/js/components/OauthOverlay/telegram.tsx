@@ -28,7 +28,7 @@ import {
   parseTGAuthResult,
 } from './config';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { isIOS } from '@portkey-wallet/utils/mobile/device';
+import { isIOS } from '@portkey-wallet/utils-mobile/device';
 
 type TelegramSignProps = {
   onConfirm: (userInfo: TelegramAuthentication) => void;

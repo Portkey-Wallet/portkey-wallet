@@ -11,7 +11,7 @@ import React, {
 } from 'react';
 import { StyleSheet, TouchableOpacity, Text, View, StyleProp, ViewStyle, TextStyle } from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import { screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { screenWidth } from '@portkey-wallet/utils-mobile/device';
 import { pTd } from 'utils/unit';
 import { darkColors } from 'assets/theme';
 import { useThrottleCallback } from '@portkey-wallet/hooks';

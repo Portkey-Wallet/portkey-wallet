@@ -12,7 +12,7 @@ import Svg from 'components/Svg';
 import ReceiveQRCode from '../ReceiveQRCode';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import { getManagerAccount, getPin } from 'utils/redux';
-import { isIOS } from '@portkey-wallet/utils/mobile/device';
+import { isIOS } from '@portkey-wallet/utils-mobile/device';
 import GStyles from 'assets/theme/GStyles';
 import { verifyHumanMachine } from 'components/VerifyHumanMachine';
 

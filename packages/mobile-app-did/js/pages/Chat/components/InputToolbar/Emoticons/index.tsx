@@ -2,7 +2,7 @@ import React, { memo, useCallback } from 'react';
 import { EmojiItem, emojiList } from './config';
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
-import { windowWidth } from '@portkey-wallet/utils/mobile/device';
+import { windowWidth } from '@portkey-wallet/utils-mobile/device';
 import { pTd } from 'utils/unit';
 import Svg from 'components/Svg';
 import { defaultColors } from 'assets/theme';

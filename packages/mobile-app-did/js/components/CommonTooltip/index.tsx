@@ -11,7 +11,7 @@ import { useLanguage } from 'i18n/hooks';
 import { pTd } from 'utils/unit';
 import { openOutLink } from 'utils/link';
 import { TextL } from 'components/CommonText';
-import { screenHeight, screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { screenHeight, screenWidth } from '@portkey-wallet/utils-mobile/device';
 
 export interface ITooltipContentProps {
   title: string;

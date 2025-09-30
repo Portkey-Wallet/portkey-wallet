@@ -14,7 +14,7 @@ import GStyles from 'assets/theme/GStyles';
 import { defaultColors } from 'assets/theme';
 import { CAInfo } from '@portkey-wallet/types/types-ca/wallet';
 import { ChainId } from '@portkey-wallet/types';
-import { windowHeight } from '@portkey-wallet/utils/mobile/device';
+import { windowHeight } from '@portkey-wallet/utils-mobile/device';
 import { headerHeight } from 'components/CustomHeader/style/index.style';
 import { FontStyles } from 'assets/theme/styles';
 

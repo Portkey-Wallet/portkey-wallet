@@ -1,5 +1,5 @@
 import React from 'react';
-import { screenHeight, screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { screenHeight, screenWidth } from '@portkey-wallet/utils-mobile/device';
 import OverlayModal, { CustomBounds } from 'components/OverlayModal';
 import Touchable from 'components/Touchable';
 import { View, StyleSheet, TouchableOpacity, StyleProp, ViewStyle, TextStyle } from 'react-native';

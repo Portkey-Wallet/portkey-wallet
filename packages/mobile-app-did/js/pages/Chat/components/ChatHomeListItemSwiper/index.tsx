@@ -8,7 +8,7 @@ import { BGStyles, FontStyles } from 'assets/theme/styles';
 import Svg from 'components/Svg';
 import { pTd } from 'utils/unit';
 import { defaultColors } from 'assets/theme';
-import { isIOS, screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { isIOS, screenWidth } from '@portkey-wallet/utils-mobile/device';
 import { formatChatListTime, formatMessageCountToStr, formatPinSysMessageToStr } from '@portkey-wallet/utils/chat';
 import { ChannelItem, ChannelTypeEnum, ParsedPinSys, ParsedRedPackage, ParsedTransfer } from '@portkey-wallet/im/types';
 import CommonAvatar from 'components/CommonAvatar';

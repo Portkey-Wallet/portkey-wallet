@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 import navigationService from 'utils/navigationService';
 import { useCredentials } from 'hooks/store';
 import { ImageBackground, Text, View } from 'react-native';
-import { isIOS, screenHeight } from '@portkey-wallet/utils/mobile/device';
+import { isIOS, screenHeight } from '@portkey-wallet/utils-mobile/device';
 import background from 'pages/Referral/img/getStartWallet.png';
 import { pTd } from 'utils/unit';
 import { makeStyles } from '@rneui/themed';

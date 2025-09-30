@@ -2,7 +2,7 @@ import { StyleSheet } from 'react-native';
 import { pTd } from 'utils/unit';
 import { ScreenHeight } from '@rneui/base';
 import { makeStyles } from '@rneui/themed';
-import { screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { screenWidth } from '@portkey-wallet/utils-mobile/device';
 
 export const getStyles = makeStyles(theme => ({
   container: {

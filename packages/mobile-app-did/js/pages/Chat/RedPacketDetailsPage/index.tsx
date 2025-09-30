@@ -5,7 +5,7 @@ import GStyles from 'assets/theme/GStyles';
 import { TextM, TextS, TextXL } from 'components/CommonText';
 import navigationService from 'utils/navigationService';
 import Packet_Detail_Header_Bg from '../img/Packet_Detail_Header_Bg.png';
-import { screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { screenWidth } from '@portkey-wallet/utils-mobile/device';
 import { pTd } from 'utils/unit';
 import PageContainer from 'components/PageContainer';
 import Touchable from 'components/Touchable';

@@ -3,7 +3,7 @@ import { nativeApplicationVersion } from 'expo-application';
 import { PlatFormInHeader } from '@portkey-wallet/api/api-did/types';
 import { codePushOperator, parseLabel } from './update';
 import im from '@portkey-wallet/im';
-import { isIOS } from '@portkey-wallet/utils/mobile/device';
+import { isIOS } from '@portkey-wallet/utils-mobile/device';
 import { Platform } from 'react-native';
 
 export const initRequest = async () => {

@@ -16,7 +16,7 @@ import CommonInput from 'components/CommonInput';
 import CommonSwitch from 'components/CommonSwitch';
 import { INIT_HAS_ERROR, INIT_NONE_ERROR, ErrorType } from '@portkey-wallet/constants/constants-ca/common';
 import { isValidInteger } from '@portkey-wallet/utils/reg';
-import { isIOS } from '@portkey-wallet/utils/mobile/device';
+import { isIOS } from '@portkey-wallet/utils-mobile/device';
 import { divDecimals, timesDecimals } from '@portkey-wallet/utils/converter';
 
 interface RouterParams {

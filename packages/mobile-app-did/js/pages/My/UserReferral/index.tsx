@@ -6,7 +6,7 @@ import button from 'assets/image/pngs/button.png';
 import { showReferralLinkOverlay } from '../components/ReferralLinkOverlay';
 import Touchable from 'components/Touchable';
 import GStyles from 'assets/theme/GStyles';
-import { bottomBarHeight, screenWidth, statusBarHeight } from '@portkey-wallet/utils/mobile/device';
+import { bottomBarHeight, screenWidth, statusBarHeight } from '@portkey-wallet/utils-mobile/device';
 import CommonQRCodeStyled from 'components/CommonQRCodeStyled';
 import { defaultColors } from 'assets/theme';
 import { BGStyles, FontStyles } from 'assets/theme/styles';

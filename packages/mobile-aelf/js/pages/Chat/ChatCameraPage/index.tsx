@@ -5,7 +5,7 @@ import Svg from 'components/Svg';
 import { pTd } from 'utils/unit';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
-import { isIOS, screenHeight, screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { isIOS, screenHeight, screenWidth } from '@portkey-wallet/utils-mobile/device';
 import { Camera, CameraCapturedPicture, CameraView } from 'expo-camera';
 import Touchable from 'components/Touchable';
 import useEffectOnce from 'hooks/useEffectOnce';

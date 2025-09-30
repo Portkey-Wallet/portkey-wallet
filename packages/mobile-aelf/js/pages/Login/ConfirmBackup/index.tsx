@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Text, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
-import { isIOS } from '@portkey-wallet/utils/mobile/device';
+import { isIOS } from '@portkey-wallet/utils-mobile/device';
 import { shuffleArray } from '@portkey-wallet/utils';
 import { makeStyles, useTheme } from '@rneui/themed';
 import { pTd } from 'utils/unit';

@@ -9,7 +9,7 @@ import {
   useIsCloudAvailable,
 } from 'react-native-cloud-storage';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
-import { isIOS } from '@portkey-wallet/utils/mobile/device';
+import { isIOS } from '@portkey-wallet/utils-mobile/device';
 import CommonToast from '../../../components/CommonToast';
 import Config from 'react-native-config';
 GoogleSignin.configure({

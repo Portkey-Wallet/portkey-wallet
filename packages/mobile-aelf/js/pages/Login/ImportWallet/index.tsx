@@ -4,7 +4,7 @@ import PageContainer from 'components/PageContainer';
 import ImportWalletTabSwitch from './ImportWalletTabSwitch';
 import RecoveryPhrase from './RecoveryPhrase';
 import PrivateKey from './PrivateKey';
-import { isIOS, screenHeight } from '@portkey-wallet/utils/mobile/device';
+import { isIOS, screenHeight } from '@portkey-wallet/utils-mobile/device';
 import { makeStyles } from '@rneui/themed';
 import { pTd } from 'utils/unit';
 import fonts from 'assets/theme/fonts';

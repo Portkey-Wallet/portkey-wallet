@@ -1,4 +1,4 @@
-import { isIOS } from '@portkey-wallet/utils/mobile/device';
+import { isIOS } from '@portkey-wallet/utils-mobile/device';
 import { LayoutAnimation, LayoutAnimationConfig, UIManager } from 'react-native';
 
 if (!isIOS) UIManager.setLayoutAnimationEnabledExperimental?.(true);

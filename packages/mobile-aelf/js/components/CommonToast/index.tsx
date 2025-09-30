@@ -7,7 +7,7 @@ import Toast from 'rn-teaset/components/Toast/Toast';
 // import Svg from 'components/Svg';
 // import { TextL } from 'components/CommonText';
 // import { pTd } from 'utils/unit';
-// import { statusBarHeight } from '@portkey-wallet/utils/mobile/device';
+// import { statusBarHeight } from '@portkey-wallet/utils-mobile/device';
 // import Lottie from 'lottie-react-native';
 import CommonPrompt from 'components/CommonPromptCard';
 

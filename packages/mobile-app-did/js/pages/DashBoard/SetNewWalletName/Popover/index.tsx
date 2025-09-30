@@ -4,7 +4,7 @@ import OverlayModal from 'components/OverlayModal';
 import { pTd } from 'utils/unit';
 import Svg from 'components/Svg';
 import { defaultColors } from 'assets/theme';
-import { screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { screenWidth } from '@portkey-wallet/utils-mobile/device';
 
 const SetNewWalletNamePopover: React.FC<{ setNewWalletName: () => void; xPosition?: number; yPosition?: number }> = ({
   setNewWalletName,

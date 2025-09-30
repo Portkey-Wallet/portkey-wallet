@@ -6,11 +6,11 @@ import {
   Verification,
 } from '@portkey-wallet/api/api-did/verification/utils';
 import { IStorage } from '@portkey-wallet/types/storage';
-import { baseStore } from '@portkey-wallet/utils/mobile/storage';
+import { baseStore } from '@portkey-wallet/utils-mobile/storage';
 import { verifyHumanMachine } from 'components/VerifyHumanMachine';
 import { getAppCheckToken } from './appCheck';
 import { OperationTypeEnum, PlatformType } from '@portkey-wallet/types/verifier';
-import { isIOS } from '@portkey-wallet/utils/mobile/device';
+import { isIOS } from '@portkey-wallet/utils-mobile/device';
 import { RequestConfig } from '@portkey-wallet/api/types';
 
 const NoVerifierSessionIdMessage = 'no verifierSessionId';

@@ -28,7 +28,7 @@ import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import Loading from 'components/Loading';
 import { useAddStrangerContact } from '@portkey-wallet/hooks/hooks-ca/contact';
-import { screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { screenWidth } from '@portkey-wallet/utils-mobile/device';
 import type { ListItemType } from '../../../components/FloatOverlay/Popover';
 import { useHardwareBackPress } from '@portkey-wallet/hooks/mobile';
 import { measurePageY } from 'utils/measure';

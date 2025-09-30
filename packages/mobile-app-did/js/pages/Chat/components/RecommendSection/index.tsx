@@ -6,7 +6,7 @@ import { pTd } from 'utils/unit';
 import { BGStyles, FontStyles } from 'assets/theme/styles';
 import { TextL, TextM, TextS } from 'components/CommonText';
 import Touchable from 'components/Touchable';
-import { screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { screenWidth } from '@portkey-wallet/utils-mobile/device';
 import chatRobot from 'assets/image/pngs/chat-robot.png';
 
 export default function RecommendSection() {

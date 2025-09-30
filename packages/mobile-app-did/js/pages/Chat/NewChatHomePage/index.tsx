@@ -8,7 +8,7 @@ import navigationService from 'utils/navigationService';
 import NoData from 'components/NoData';
 import CommonInput from 'components/CommonInput';
 import { BGStyles } from 'assets/theme/styles';
-import { screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { screenWidth } from '@portkey-wallet/utils-mobile/device';
 import { useChatContactFlatList, useLocalContactSearch } from '@portkey-wallet/hooks/hooks-ca/contact';
 import useDebounce from 'hooks/useDebounce';
 import { ContactsTab } from '@portkey-wallet/constants/constants-ca/assets';

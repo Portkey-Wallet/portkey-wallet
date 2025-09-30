@@ -19,7 +19,7 @@ import navigationService from 'utils/navigationService';
 import { KeyboardSafeArea } from 'components/KeyboardSafeArea';
 import { makeStyles } from '@rneui/themed';
 import { pTd } from 'utils/unit';
-import { screenHeight } from '@portkey-wallet/utils/mobile/device';
+import { screenHeight } from '@portkey-wallet/utils-mobile/device';
 import fonts from 'assets/theme/fonts';
 
 const TitleMap = {

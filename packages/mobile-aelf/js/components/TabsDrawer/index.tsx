@@ -4,7 +4,7 @@ import { Drawer } from 'react-native-drawer-layout';
 import { usePin } from 'hooks/store';
 import { changeDrawerOpenStatus } from '@portkey-wallet/store/store-eoa/discover/slice';
 import { useAppCommonDispatch, useAppEOASelector, useThrottleCallback } from '@portkey-wallet/hooks';
-import { isIOS } from '@portkey-wallet/utils/mobile/device';
+import { isIOS } from '@portkey-wallet/utils-mobile/device';
 import { IDrawerContentRef, TabContext, tabContextDefaultValue } from './tools';
 import { TabsDrawerContent } from './TabsDrawerContent';
 

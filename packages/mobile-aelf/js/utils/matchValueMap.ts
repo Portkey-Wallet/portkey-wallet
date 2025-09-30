@@ -1,4 +1,4 @@
-import { isIOS } from '@portkey-wallet/utils/mobile/device';
+import { isIOS } from '@portkey-wallet/utils-mobile/device';
 import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
 import * as Application from 'expo-application';
 const MatchValueMap = {

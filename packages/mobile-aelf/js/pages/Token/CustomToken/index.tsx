@@ -11,7 +11,7 @@ import { ChainId } from '@portkey-wallet/types';
 import FormItem from 'components/FormItem';
 import SelectChain from 'components/SelectChain';
 import CommonButton from 'components/CommonButton';
-import { screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { screenWidth } from '@portkey-wallet/utils-mobile/device';
 import { request } from '@portkey-wallet/api/api-eoa';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
 import Loading from 'components/Loading';

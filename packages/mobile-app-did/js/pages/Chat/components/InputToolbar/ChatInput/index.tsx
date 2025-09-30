@@ -18,7 +18,7 @@ import Touchable from 'components/Touchable';
 import { chatInputRecorder } from 'pages/Chat/utils';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { defaultColors } from 'assets/theme';
-import { isIOS } from '@portkey-wallet/utils/mobile/device';
+import { isIOS } from '@portkey-wallet/utils-mobile/device';
 import { MAX_INPUT_LENGTH } from '@portkey-wallet/constants/constants-ca/im';
 import { FontStyles } from 'assets/theme/styles';
 import { ViewStyleType } from 'types/styles';

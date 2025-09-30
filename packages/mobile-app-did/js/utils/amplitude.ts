@@ -1,6 +1,6 @@
 import * as amplitude from '@amplitude/analytics-react-native';
 import { Identify } from '@amplitude/analytics-react-native';
-import { isIOS } from '@portkey-wallet/utils/mobile/device';
+import { isIOS } from '@portkey-wallet/utils-mobile/device';
 import { BaseEvent, EventOptions } from '@amplitude/analytics-types';
 import DeviceInfo from 'react-native-device-info';
 import * as Application from 'expo-application';

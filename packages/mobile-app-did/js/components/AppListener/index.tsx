@@ -4,7 +4,7 @@ import useEffectOnce from 'hooks/useEffectOnce';
 import usePrevious from 'hooks/usePrevious';
 import { useSettings } from 'hooks/store';
 import { useCurrentWallet, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { isIOS } from '@portkey-wallet/utils/mobile/device';
+import { isIOS } from '@portkey-wallet/utils-mobile/device';
 import { AppState, AppStateStatus } from 'react-native';
 import { useCheckUpdate } from 'hooks/device';
 import { useGetLoginControlListAsync } from '@portkey-wallet/hooks/hooks-ca/cms';

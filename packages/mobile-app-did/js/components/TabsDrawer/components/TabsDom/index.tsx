@@ -1,7 +1,7 @@
 import React from 'react';
 import { useAppCASelector, useAppCommonDispatch, useLatestRef } from '@portkey-wallet/hooks';
 import { removeAutoApproveItem } from '@portkey-wallet/store/store-ca/discover/slice';
-import { isIOS, screenHeight, screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { isIOS, screenHeight, screenWidth } from '@portkey-wallet/utils-mobile/device';
 import { darkColors } from 'assets/theme';
 import BrowserTab from 'components/BrowserTab';
 import CommonAvatar from 'components/CommonAvatar';

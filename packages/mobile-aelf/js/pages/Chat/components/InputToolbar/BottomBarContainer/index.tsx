@@ -19,7 +19,7 @@ import { setBottomBarStatus, setChatText, setReplyMessageInfo } from '../../../c
 import { BGStyles } from 'assets/theme/styles';
 import { SendMessageButton } from '../SendMessageButton';
 import { ChatInput, ChatInputBar } from '../ChatInput';
-import { isIOS } from '@portkey-wallet/utils/mobile/device';
+import { isIOS } from '@portkey-wallet/utils-mobile/device';
 import { chatInputRecorder } from 'pages/Chat/utils';
 import CommonToast from 'components/CommonToast';
 import { defaultColors } from 'assets/theme';

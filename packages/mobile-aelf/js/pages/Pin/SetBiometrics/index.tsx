@@ -2,7 +2,7 @@ import React, { useCallback, useMemo } from 'react';
 import { TextH1 } from 'components/CommonText';
 import PageContainer from 'components/PageContainer';
 import CommonButton from 'components/CommonButton';
-import { setSecureStoreItem } from '@portkey-wallet/utils/mobile/biometric';
+import { setSecureStoreItem } from '@portkey-wallet/utils-mobile/biometric';
 import { View, Text } from 'react-native';
 import { makeStyles, useTheme } from '@rneui/themed';
 import GStyles from 'assets/theme/GStyles';

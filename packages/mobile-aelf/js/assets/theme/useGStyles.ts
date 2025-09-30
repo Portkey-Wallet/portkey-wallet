@@ -1,4 +1,4 @@
-import { windowHeight } from '@portkey-wallet/utils/mobile/device';
+import { windowHeight } from '@portkey-wallet/utils-mobile/device';
 import { isIOS } from '@rneui/base';
 import { makeStyles } from '@rneui/themed';
 import { pTd } from 'utils/unit';

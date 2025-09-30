@@ -39,7 +39,7 @@ import SystemInfo from '../SystemInfo';
 import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
 import OverlayModal from 'components/OverlayModal';
 import { useGStyles } from 'assets/theme/useGStyles';
-import { screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { screenWidth } from '@portkey-wallet/utils-mobile/device';
 import CustomChatAvatar from '../CustomChatAvatar';
 import { TextL } from 'components/CommonText';
 import { useIMPin } from '@portkey-wallet/hooks/hooks-ca/im/pin';

@@ -1,5 +1,5 @@
 import * as WebBrowser from 'expo-web-browser';
-import { isIOS } from '@portkey-wallet/utils/mobile/device';
+import { isIOS } from '@portkey-wallet/utils-mobile/device';
 import { checkIsUserCancel, handleErrorMessage, sleep } from '@portkey-wallet/utils';
 import { AppState, EmitterSubscription, Linking, NativeEventSubscription } from 'react-native';
 import { LINK_TWITTER_URL, SCHEME } from 'constants/authentication';

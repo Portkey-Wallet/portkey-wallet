@@ -17,7 +17,7 @@ import { usePhoneCountryCode } from '@portkey-wallet/hooks/hooks-ca/misc';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { makeStyles } from '@rneui/themed';
 import { pTd } from 'utils/unit';
-import { screenHeight } from '@portkey-wallet/utils/mobile/device';
+import { screenHeight } from '@portkey-wallet/utils-mobile/device';
 
 const TitleMap = {
   [PageType.login]: {

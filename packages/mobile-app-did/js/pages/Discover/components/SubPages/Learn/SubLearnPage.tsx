@@ -11,7 +11,7 @@ import React, { useCallback, useMemo } from 'react';
 import { ScrollView, StyleSheet, TouchableOpacity, View, Image } from 'react-native';
 import { pTd } from 'utils/unit';
 import { isUrl } from '@portkey-wallet/utils';
-import { screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { screenWidth } from '@portkey-wallet/utils-mobile/device';
 
 export interface SubLearnPageProps {
   section: string;

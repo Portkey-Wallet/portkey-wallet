@@ -11,7 +11,7 @@ import React, { forwardRef, useCallback, useImperativeHandle } from 'react';
 import { View, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native';
 import { pTd } from 'utils/unit';
 import { isUrl } from '@portkey-wallet/utils';
-import { screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { screenWidth } from '@portkey-wallet/utils-mobile/device';
 
 export default forwardRef(function EarnPage(_, _ref) {
   const { earnList = [], fetchDiscoverEarnAsync } = useDiscoverData();

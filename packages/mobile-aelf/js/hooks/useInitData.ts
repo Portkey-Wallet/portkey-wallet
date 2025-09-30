@@ -14,7 +14,7 @@ import { getManagerAccount } from 'utils/redux';
 import { useGetRedPackageConfig, useInitIM } from '@portkey-wallet/hooks/hooks-ca/im';
 import { useBookmarkList } from '@portkey-wallet/hooks/hooks-eoa/discover';
 import { useInitRampV2 } from '@portkey-wallet/hooks/hooks-ca/ramp';
-import { isIOS } from '@portkey-wallet/utils/mobile/device';
+import { isIOS } from '@portkey-wallet/utils-mobile/device';
 import { codePushOperator } from 'utils/update';
 import { useGetCryptoGiftConfig } from '@portkey-wallet/hooks/hooks-ca/cryptogift';
 import { fetchContactListV2Async } from '@portkey-wallet/store/store-ca/contact/actions';

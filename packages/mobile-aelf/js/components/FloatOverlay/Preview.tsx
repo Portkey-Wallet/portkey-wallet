@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { screenHeight, screenWidth, windowHeight } from '@portkey-wallet/utils/mobile/device';
+import { screenHeight, screenWidth, windowHeight } from '@portkey-wallet/utils-mobile/device';
 import OverlayModal, { CustomBounds } from 'components/OverlayModal';
 import { ImageProps, Keyboard, StyleSheet } from 'react-native';
 import CacheImage from 'components/CacheImage';

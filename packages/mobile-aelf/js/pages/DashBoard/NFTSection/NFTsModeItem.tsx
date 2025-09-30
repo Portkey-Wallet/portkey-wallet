@@ -18,7 +18,7 @@ import { Skeleton } from '@rneui/base';
 import { makeStyles } from '@rneui/themed';
 import { formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import { PortkeyLinearGradientV2 } from 'components/PortkeyLinearGradient';
-import { screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { screenWidth } from '@portkey-wallet/utils-mobile/device';
 import CommonButton from 'components/CommonButton';
 import fonts from 'assets/theme/fonts';
 import { useAccountNFTCollectionInfo } from '@portkey-wallet/hooks/hooks-eoa/assets';

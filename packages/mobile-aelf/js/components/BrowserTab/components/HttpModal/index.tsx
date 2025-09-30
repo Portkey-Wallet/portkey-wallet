@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { bottomBarHeight } from '@portkey-wallet/utils/mobile/device';
+import { bottomBarHeight } from '@portkey-wallet/utils-mobile/device';
 import { TextM, TextL } from 'components/CommonText';
 import { pTd } from 'utils/unit';
 import GStyles from 'assets/theme/GStyles';

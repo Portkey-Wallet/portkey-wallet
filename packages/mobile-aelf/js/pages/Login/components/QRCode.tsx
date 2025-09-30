@@ -24,7 +24,7 @@ import { useCheckManager } from 'hooks/useLogOut';
 import { usePreventScreenCapture } from 'expo-screen-capture';
 import { pTd } from 'utils/unit';
 import { makeStyles } from '@rneui/themed';
-import { screenHeight } from '@portkey-wallet/utils/mobile/device';
+import { screenHeight } from '@portkey-wallet/utils-mobile/device';
 import { LoginTrackTypeEnum, useLoginSuccessTrack } from 'hooks/amplitude';
 
 // When wallet does not exist, DEFAULT_WALLET is populated as the default data

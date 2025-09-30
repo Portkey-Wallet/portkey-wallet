@@ -24,7 +24,7 @@ import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import ProfileLoginAccountsSection from '../components/ProfileLoginAccountsSection';
 import { useFocusEffect } from '@react-navigation/native';
 import { showActionPopover } from 'pages/My/components/ActionOverlay';
-import { screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { screenWidth } from '@portkey-wallet/utils-mobile/device';
 import { measurePageY } from 'utils/measure';
 import KeyGenieDescription from 'components/KeyGenieDescription';
 

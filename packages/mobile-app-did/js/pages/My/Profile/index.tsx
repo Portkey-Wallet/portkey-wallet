@@ -22,7 +22,7 @@ import useLogOut from 'hooks/useLogOut';
 import CommonToast from 'components/CommonToast';
 import CommonAvatar from 'components/CommonAvatar';
 import GStyles from 'assets/theme/GStyles';
-import { screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { screenWidth } from '@portkey-wallet/utils-mobile/device';
 import Divider from 'components/Divider';
 import ActionSheet from 'components/ActionSheet';
 

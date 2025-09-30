@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState, useImperativeHandle, forwardRef } from 'react';
 import { FlatList, RefreshControl, View, ActivityIndicator, StyleSheet, FlatListProps } from 'react-native';
 import { defaultColors } from 'assets/theme';
-import { bottomBarHeight } from '@portkey-wallet/utils/mobile/device';
+import { bottomBarHeight } from '@portkey-wallet/utils-mobile/device';
 import { TextM } from 'components/CommonText';
 import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
 import Touchable from 'components/Touchable';

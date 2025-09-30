@@ -3,7 +3,7 @@ import { StyleSheet, View, Keyboard, Text, TouchableOpacity } from 'react-native
 import OverlayModal from 'components/OverlayModal';
 import CommonToast from 'components/CommonToast';
 import { pTd } from 'utils/unit';
-import { screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { screenWidth } from '@portkey-wallet/utils-mobile/device';
 import { useSetNewWalletName } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { defaultColors } from 'assets/theme';
 import fonts from 'assets/theme/fonts';

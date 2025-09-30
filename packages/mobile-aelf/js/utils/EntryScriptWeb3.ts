@@ -1,5 +1,5 @@
 import RNFS from 'react-native-fs';
-import { isIOS } from '@portkey-wallet/utils/mobile/device';
+import { isIOS } from '@portkey-wallet/utils-mobile/device';
 // import * as FileSystem from 'expo-file-system';
 
 const fileName = 'InpageBridgeWeb3';
@@ -10,7 +10,7 @@ const EntryScriptWeb3 = {
   async init() {
     // const path = isIOS ? `${FileSystem.bundleDirectory}${fileName}.js` : `${FileSystem.bundledAssets}${fileName}.js`;
     // this.entryScriptWeb3 = await FileSystem.readAsStringAsync(path, { encoding: 'utf8' });
-
+    console.log('entryScriptWeb3 file path', `${RNFS.MainBundlePath}/${fileName}.js`);
     this.entryScriptWeb3 = isIOS
       ? await RNFS.readFile(`${RNFS.MainBundlePath}/${fileName}.js`, 'utf8')
       : await RNFS.readFileAssets(`${fileName}.js`);

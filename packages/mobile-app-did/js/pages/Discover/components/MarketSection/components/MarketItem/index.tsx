@@ -9,7 +9,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { View, Image, StyleSheet, LayoutChangeEvent } from 'react-native';
 import { pTd } from 'utils/unit';
 import { getDecimalPlaces } from '../SinkableText';
-import { screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { screenWidth } from '@portkey-wallet/utils-mobile/device';
 import { TextM, TextS } from 'components/CommonText';
 import { showFavoriteModal } from '../FavoriteOverlay';
 import fonts from 'assets/theme/fonts';

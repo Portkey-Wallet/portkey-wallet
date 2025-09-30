@@ -1,4 +1,4 @@
-import { bottomBarHeight } from '@portkey-wallet/utils/mobile/device';
+import { bottomBarHeight } from '@portkey-wallet/utils-mobile/device';
 import React, { useMemo, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import Touchable from 'components/Touchable';

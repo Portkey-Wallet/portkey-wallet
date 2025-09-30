@@ -7,7 +7,7 @@ import { pTd } from 'utils/unit';
 import { FontStyles } from 'assets/theme/styles';
 import { defaultColors } from 'assets/theme';
 import { StyleSheet } from 'react-native';
-import { screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { screenWidth } from '@portkey-wallet/utils-mobile/device';
 
 type FloatingActionButtonPropsType = {
   title?: string;

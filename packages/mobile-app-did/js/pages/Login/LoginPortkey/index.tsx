@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import PageContainer from 'components/PageContainer';
-import { isIOS } from '@portkey-wallet/utils/mobile/device';
+import { isIOS } from '@portkey-wallet/utils-mobile/device';
 
 import Phone from '../components/Phone';
 import Referral from '../components/Referral';

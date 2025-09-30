@@ -13,7 +13,7 @@ import SafeAreaBox from 'components/SafeAreaBox';
 import Svg from 'components/Svg';
 import { addressFormat, formatChainInfoToShow, formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import { ScreenWidth, Skeleton } from '@rneui/base';
-import { bottomBarHeight } from '@portkey-wallet/utils/mobile/device';
+import { bottomBarHeight } from '@portkey-wallet/utils-mobile/device';
 import { copyText } from 'utils';
 import { formatTransferTime } from '@portkey-wallet/utils/time';
 import Touchable from 'components/Touchable';

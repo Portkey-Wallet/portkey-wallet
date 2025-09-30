@@ -13,7 +13,7 @@ import { addressFormat, formatChainInfoToShow, formatStr2EllipsisStr } from '@po
 import { ChainId } from '@portkey-wallet/types';
 import { DarkFontStyles } from 'assets/theme/styles';
 import { useCurrentChainList, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
-import { screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { screenWidth } from '@portkey-wallet/utils-mobile/device';
 import { ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
 import { removeDapp } from '@portkey-wallet/store/store-ca/dapp/actions';
 import { getOrigin } from '@portkey-wallet/utils/dapp/browser';

@@ -1,12 +1,12 @@
 import React, { useCallback, useEffect, useRef } from 'react';
-import { getSecureStoreItem } from '@portkey-wallet/utils/mobile/biometric';
+import { getSecureStoreItem } from '@portkey-wallet/utils-mobile/biometric';
 import { useAppDispatch } from 'store/hooks';
 import { setCredentials } from 'store/user/actions';
 import PageContainer from 'components/PageContainer';
 import { DigitInputInterface } from 'components/DigitInput';
 import { PIN_SIZE } from '@portkey-wallet/constants/misc';
 import { checkPin } from 'utils/redux';
-import { isIOS } from '@portkey-wallet/utils/mobile/device';
+import { isIOS } from '@portkey-wallet/utils-mobile/device';
 import { View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import navigationService from 'utils/navigationService';

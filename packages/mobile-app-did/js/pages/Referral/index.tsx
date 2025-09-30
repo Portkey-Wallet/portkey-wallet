@@ -6,7 +6,7 @@ import { useCredentials } from 'hooks/store';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import Welcome from './components/Welcome';
 import { ImageBackground, View } from 'react-native';
-import { isIOS, screenHeight } from '@portkey-wallet/utils/mobile/device';
+import { isIOS, screenHeight } from '@portkey-wallet/utils-mobile/device';
 import background from './img/getStartedBg.png';
 import splashScreen from './img/splashScreen.png';
 import { sleep } from '@portkey-wallet/utils';

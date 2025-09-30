@@ -1,7 +1,7 @@
 import React from 'react';
 import { Text, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
-import { isIOS } from '@portkey-wallet/utils/mobile/device';
+import { isIOS } from '@portkey-wallet/utils-mobile/device';
 import { makeStyles } from '@rneui/themed';
 import { pTd } from 'utils/unit';
 import fonts from 'assets/theme/fonts';

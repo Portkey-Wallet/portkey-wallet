@@ -1,7 +1,7 @@
 import * as FileSystem from 'expo-file-system';
 import AElf from 'aelf-sdk';
 import { CreateDownloadResumableParams, FileEnum, ProgressData } from './types';
-import { isIOS } from '@portkey-wallet/utils/mobile/device';
+import { isIOS } from '@portkey-wallet/utils-mobile/device';
 
 export const getInfo = FileSystem.getInfoAsync;
 

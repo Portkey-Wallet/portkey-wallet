@@ -8,7 +8,7 @@ import { pTd } from 'utils/unit';
 import { defaultColors } from 'assets/theme';
 import fonts from 'assets/theme/fonts';
 import { IUserTokenItemResponse, IUserTokenItem } from '@portkey-wallet/types/types-ca/token';
-import { screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { screenWidth } from '@portkey-wallet/utils-mobile/device';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 

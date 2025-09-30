@@ -13,7 +13,7 @@ import { LoginParams, useOnLogin } from 'hooks/login';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import Loading from 'components/Loading';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
-import { isIOS } from '@portkey-wallet/utils/mobile/device';
+import { isIOS } from '@portkey-wallet/utils-mobile/device';
 import RoundButton from './RoundButton';
 import { checkIsUserCancel } from '@portkey-wallet/utils';
 import OblongButton from './OblongButton';

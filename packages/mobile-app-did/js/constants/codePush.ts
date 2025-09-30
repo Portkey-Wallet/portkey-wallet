@@ -1,4 +1,4 @@
-import { isIOS } from '@portkey-wallet/utils/mobile/device';
+import { isIOS } from '@portkey-wallet/utils-mobile/device';
 import CodePush from 'react-native-code-push';
 import Config from 'react-native-config';
 

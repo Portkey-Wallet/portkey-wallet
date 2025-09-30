@@ -13,7 +13,7 @@ import CommonButton from 'components/CommonButton';
 import { divDecimals, timesDecimals } from '@portkey-wallet/utils/converter';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { INIT_HAS_ERROR, INIT_NONE_ERROR, ErrorType } from '@portkey-wallet/constants/constants-ca/common';
-import { isIOS } from '@portkey-wallet/utils/mobile/device';
+import { isIOS } from '@portkey-wallet/utils-mobile/device';
 import navigationService from 'utils/navigationService';
 import { isValidInteger } from '@portkey-wallet/utils/reg';
 import { ApprovalType } from '@portkey-wallet/types/verifier';

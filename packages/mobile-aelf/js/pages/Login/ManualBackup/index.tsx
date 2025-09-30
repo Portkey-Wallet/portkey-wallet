@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { Text, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
-import { isIOS } from '@portkey-wallet/utils/mobile/device';
+import { isIOS } from '@portkey-wallet/utils-mobile/device';
 import aes from '@portkey-wallet/utils/aes';
 import * as Clipboard from 'expo-clipboard';
 import { makeStyles, useTheme } from '@rneui/themed';
@@ -9,7 +9,7 @@ import { pTd } from 'utils/unit';
 import fonts from 'assets/theme/fonts';
 import Svg from 'components/Svg';
 import Touchable from 'components/Touchable';
-import { screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { screenWidth } from '@portkey-wallet/utils-mobile/device';
 import CommonButton from 'components/CommonButton';
 import navigationService from 'utils/navigationService';
 import { useCurrentWallet } from '@portkey-wallet/hooks/hooks-eoa/wallet';

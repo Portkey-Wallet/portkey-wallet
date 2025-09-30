@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, View, ScrollView } from 'react-native';
-import { isIOS, screenHeight } from '@portkey-wallet/utils/mobile/device';
+import { isIOS, screenHeight } from '@portkey-wallet/utils-mobile/device';
 import { pTd } from 'utils/unit';
 import { makeStyles } from '@rneui/themed';
 import PageContainer from 'components/PageContainer';

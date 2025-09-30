@@ -1,5 +1,5 @@
 import { pTd } from 'utils/unit';
-import { screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { screenWidth } from '@portkey-wallet/utils-mobile/device';
 import fonts from 'assets/theme/fonts';
 import { makeStyles } from '@rneui/themed';
 

@@ -16913,13 +16913,6 @@ expo-notifications@^0.28.18:
     expo-constants "~16.0.0"
     fs-extra "^9.1.0"
 
-expo-random@^12.3.0:
-  version "12.3.0"
-  resolved "https://registry.npmjs.org/expo-random/-/expo-random-12.3.0.tgz#4a45bcb14e285a4a9161e4a5dc82ff6c3fc2ac0c"
-  integrity sha512-q+AsTfGNT+Q+fb2sRrYtRkI3g5tV4H0kuYXM186aueILGO/vLn/YYFa7xFZj1IZ8LJZg2h96JDPDpsqHfRG2mQ==
-  dependencies:
-    base64-js "^1.3.0"
-
 expo-screen-capture@^6.0.1:
   version "6.0.1"
   resolved "https://registry.npmjs.org/expo-screen-capture/-/expo-screen-capture-6.0.1.tgz#b1e7c2b095cab8650f7a6e99ffc4e5d522550165"

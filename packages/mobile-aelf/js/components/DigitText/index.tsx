@@ -4,7 +4,7 @@ import { TextL } from 'components/CommonText';
 import React, { useCallback, memo, useMemo } from 'react';
 import { View, StyleProp, ViewStyle } from 'react-native';
 import { makeStyles } from '@rneui/themed';
-import { screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { screenWidth } from '@portkey-wallet/utils-mobile/device';
 import { pTd } from 'utils/unit';
 import fonts from 'assets/theme/fonts';
 

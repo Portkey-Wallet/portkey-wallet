@@ -2,7 +2,7 @@ import { PIN_SIZE } from '@portkey-wallet/constants/misc';
 import { InputProps } from '@rneui/base';
 import React, { useRef, useState, useCallback, memo, useMemo, forwardRef, useImperativeHandle } from 'react';
 import { StyleSheet, View, TextInput, TouchableHighlight } from 'react-native';
-import { screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { screenWidth } from '@portkey-wallet/utils-mobile/device';
 import { isValidPositiveInteger } from '@portkey-wallet/utils/reg';
 import DigitText, { DigitTextProps } from 'components/DigitText';
 

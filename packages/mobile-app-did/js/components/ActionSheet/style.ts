@@ -1,7 +1,7 @@
 import { StyleSheet } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
-import { screenHeight, screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { screenHeight, screenWidth } from '@portkey-wallet/utils-mobile/device';
 import { makeStyles } from '@rneui/themed';
 
 export const styles = StyleSheet.create({

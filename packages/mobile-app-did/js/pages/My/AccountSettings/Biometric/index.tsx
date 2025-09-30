@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import PageContainer from 'components/PageContainer';
-import { touchAuth } from '@portkey-wallet/utils/mobile/authentication';
+import { touchAuth } from '@portkey-wallet/utils-mobile/authentication';
 import CommonToast from 'components/CommonToast';
 import useBiometricsReady, { useSetBiometrics } from 'hooks/useBiometrics';
 import navigationService from 'utils/navigationService';
@@ -14,7 +14,7 @@ import { useUser } from 'hooks/store';
 import { TextL, TextM } from 'components/CommonText';
 import CommonSwitch from 'components/CommonSwitch';
 import ActionSheet from 'components/ActionSheet';
-import { setSecureStoreItem } from '@portkey-wallet/utils/mobile/biometric';
+import { setSecureStoreItem } from '@portkey-wallet/utils-mobile/biometric';
 import myEvents from 'utils/deviceEvent';
 import { changeCanLock } from 'utils/LockManager';
 import { makeStyles } from '@rneui/themed';

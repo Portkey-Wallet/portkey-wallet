@@ -1,4 +1,4 @@
-import { screenHeight } from '@portkey-wallet/utils/mobile/device';
+import { screenHeight } from '@portkey-wallet/utils-mobile/device';
 import { useKeyboard } from 'hooks/useKeyboardHeight';
 import React, { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { StatusBar, useWindowDimensions, View } from 'react-native';

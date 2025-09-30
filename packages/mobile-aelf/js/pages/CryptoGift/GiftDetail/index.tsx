@@ -9,7 +9,7 @@ import { Share, StyleSheet } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import HeaderCard from '../components/HeaderCard';
 import { View } from 'react-native';
-import { screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { screenWidth } from '@portkey-wallet/utils-mobile/device';
 import GStyles from 'assets/theme/GStyles';
 import { TextL, TextM } from 'components/CommonText';
 import { BGStyles } from 'assets/theme/styles';

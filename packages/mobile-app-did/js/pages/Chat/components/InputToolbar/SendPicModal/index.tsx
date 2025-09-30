@@ -4,7 +4,7 @@ import ButtonRow, { ButtonRowProps } from 'components/ButtonRow';
 import { StyleSheet } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
-import { screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { screenWidth } from '@portkey-wallet/utils-mobile/device';
 import OverlayModal from 'components/OverlayModal';
 import CommonToast from 'components/CommonToast';
 import { formatImageSize } from '@portkey-wallet/utils/img';

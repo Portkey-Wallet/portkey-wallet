@@ -5,7 +5,6 @@ import { VIEW_PRIVATE } from '../constants';
 import { IBridgeOperator, ICheckAndApproveParams, ICreateReceiptHandlerParams } from '../types/bridge';
 import { ChainId, IContract } from '@portkey/types';
 import { getChainIdByMap, getReceiptLimit } from '../utils';
-import type { Contract } from 'web3-eth-contract';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { divDecimals, timesDecimals } from '../../converter';
 import { AElfWallet } from '@portkey-wallet/types/aelf';

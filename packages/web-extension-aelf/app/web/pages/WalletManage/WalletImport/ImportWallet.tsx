@@ -8,6 +8,7 @@ import { useAddWallet } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 import CommonHeader from 'components/CommonHeader';
 import { useNavigate } from 'react-router';
 import { SWEventDispatchAccountsChangedWithCurrentAccount } from 'utils/Wallet/account';
+import { CommonTooltip } from 'components/CommonTooltipV2';
 
 // Shared import logic hook
 function useWalletImportHandler() {
@@ -206,6 +207,12 @@ export const ImportWallet: React.FC<{}> = () => {
       />
       <div className="import-wallet-container">
         <h2 className="import-wallet-title">Import your wallet</h2>
+
+        <div className="import-wallet-subtitle">
+          If you are migrating from Night ELF, Fairy App, or other wallets, please use the private key import method.
+          <CommonTooltip title="Due to a technical upgrade, the original recover phrase will generate different sub-wallets in Night ELF and this plugin. Therefore, you need to use the private key import method. However, rest assured that both wallets can function normally, including features like transfers, voting, etc." />
+        </div>
+
         <ImportWalletTabSwitch onSelected={onSelectedTab} privateKeySelected={privateKeySelected} />
         {privateKeySelected ? <PrivateKey pin={pin} /> : <RecoverPhrase pin={pin} />}
         {/* ImportByCloud 预留，后续扩展 */}

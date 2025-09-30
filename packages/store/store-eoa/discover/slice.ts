@@ -34,7 +34,8 @@ const initialState: IDiscoverStateType = {
   isDrawerOpen: false,
   discoverMap: {},
   activeTabId: undefined,
-  initializedList: new Set<number>(),
+  // initializedList: new Set<number>(),
+  initializedList: undefined,
   disclaimerConfirmedMap: {},
   favorites: {},
 };

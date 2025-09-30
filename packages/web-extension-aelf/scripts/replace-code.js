@@ -46,12 +46,91 @@ function replaceCode(filePath, content) {
     replaced = replaced.replace(
       case3Pattern,
       `return function () {
-    console.log("Static fallback logic executed!");
+    console.warn("Static fallback logic executed!");
     return {};
 };`,
     );
     totalReplacements += case3Matches.length;
     console.log(`  Case3: ${case3Matches.length} replacements`);
+  }
+
+  // 4: Function("r","regeneratorRuntime = r")(i)
+  const case4Pattern = /\bFunction\s*\(\s*["']r["'],\s*["']regeneratorRuntime\s*=\s*r["']\s*\)\s*\(\s*([^)]*)\s*\)/g;
+  const case4Matches = replaced.match(case4Pattern);
+  if (case4Matches) {
+    replaced = replaced.replace(
+      case4Pattern,
+      `regeneratorRuntime = $1`,
+    );
+    totalReplacements += case4Matches.length;
+    console.log(`  Case4: ${case4Matches.length} replacements`);
+  }
+
+  // 5-1:
+  // bound = Function('binder', 'return function (' + joiny(boundArgs, ',') + '){ return binder.apply(this,arguments); }')(binder);
+  const case5Pattern = /\bFunction\s*\(\s*['"]binder['"]\s*,\s*['"]return function\s*\(.*?\)\s*\{[^}]*\}\s*['"]\)/g;
+  const case5Matches = replaced.match(case5Pattern);
+  if (case5Matches) {
+    replaced = replaced.replace(
+      case5Pattern,
+    `
+      function (binder) {
+          return function (...args) {
+              return binder.apply(this, args);
+          };
+      }
+      `,
+    );
+    totalReplacements += case5Matches.length;
+    console.log(`  Case5-1: ${case5Matches.length} replacements`);
+  }
+  // 5-2:
+  // o=Function("binder","return function ("+function(e,t){for(var r="",n=0;n<e.length;n+=1)r+=e[n],n+1<e.length&&(r+=",");return r}(u)
+  const case52Pattern = /\bFunction\s*\(\s*["']binder["']\s*,\s*["']return function\s*\(\s*.*?function\s*\(.*?\)\s*\{[^}]+\}(.*?)\)\s*\{.*?\}\s*['"]\)/g;
+  const case52Matches = replaced.match(case52Pattern);
+  if (case52Matches) {
+    replaced = replaced.replace(
+      case52Pattern,
+      `
+      function (binder) {
+          return function (...args) {
+              return binder.apply(this, args);
+          };
+      }
+      `,
+    );
+    totalReplacements += case52Matches.length;
+    console.log(`  Case5-2: ${case52Matches.length} replacements`);
+  }
+
+  // 6:
+  // =Function, =Function; = Function, = Function;
+  // const case6Pattern = /=\s*Function(\s*[;,])/g;
+  // const case6Matches = replaced.match(case6Pattern);
+  // if (case6Matches) {
+  //   replaced = replaced.replace(
+  //     case6Pattern,
+  //     `= function () {
+  //                     console.warn("Dynamic Function constructor is disabled. Case6");
+  //                 }$1`,
+  //   );
+  //   totalReplacements += case6Matches.length;
+  //   console.log(`  Case6: ${case6Matches.length} replacements`);
+  // }
+
+  // FunctionFinal: Function(...) {}
+  const caseFunctionFinalPattern = /\bFunction\s*\(([^)]*)\)\s*\{/g;
+  const caseFunctionFinalMatches = replaced.match(caseFunctionFinalPattern);
+  if (caseFunctionFinalMatches) {
+    replaced = replaced.replace(
+      caseFunctionFinalPattern,
+      `function () {
+    console.warn("Dynamic Function replaced");
+    return {};
+};`,
+    );
+    totalReplacements += caseFunctionFinalMatches.length;
+    console.log(`  caseFunctionFinal: ${caseFunctionFinalMatches.length} replacements`);
   }
 
   return { content: replaced, replacements: totalReplacements };

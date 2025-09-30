@@ -285,32 +285,32 @@ module.exports = (env, argv) => {
 
   config.plugins.push(definePlugin);
 
-  if (argv.mode === 'development') {
-    config.plugins.push({
-      apply: (compiler) => {
-        compiler.hooks.afterEmit.tapAsync("PostBuildCodeReplacePlugin", (compilation, callback) => {
-          console.log('🔧 Running automatic code replacement...');
-          const { exec } = require('child_process');
-          const scriptPath = path.resolve(__dirname, 'scripts/replace-code.js');
+  // if (argv.mode === 'development') {
+  config.plugins.push({
+    apply: (compiler) => {
+      compiler.hooks.afterEmit.tapAsync("PostBuildCodeReplacePlugin", (compilation, callback) => {
+        console.log('🔧 Running automatic code replacement...');
+        const { exec } = require('child_process');
+        const scriptPath = path.resolve(__dirname, 'scripts/replace-code.js');
 
-          exec(`node "${scriptPath}"`, (error, stdout, stderr) => {
-            if (error) {
-              console.error('❌ Auto code replacement error:', error);
-              return callback(error);
-            }
-            if (stderr) {
-              console.error('⚠️  Auto code replacement stderr:', stderr);
-            }
-            if (stdout) {
-              console.log(stdout);
-            }
-            console.log('✅ Auto code replacement completed');
-            callback();
-          });
+        exec(`node "${scriptPath}"`, (error, stdout, stderr) => {
+          if (error) {
+            console.error('❌ Auto code replacement error:', error);
+            return callback(error);
+          }
+          if (stderr) {
+            console.error('⚠️  Auto code replacement stderr:', stderr);
+          }
+          if (stdout) {
+            console.log(stdout);
+          }
+          console.log('✅ Auto code replacement completed');
+          callback();
         });
-      },
-    });
-  }
+      });
+    },
+  });
+  // }
 
   if (argv.mode === 'production') {
     config.plugins.push(

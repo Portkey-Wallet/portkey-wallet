@@ -105,18 +105,33 @@ function replaceCode(filePath, content) {
 
   // 6:
   // =Function, =Function; = Function, = Function;
-  // const case6Pattern = /=\s*Function(\s*[;,])/g;
-  // const case6Matches = replaced.match(case6Pattern);
-  // if (case6Matches) {
-  //   replaced = replaced.replace(
-  //     case6Pattern,
-  //     `= function () {
-  //                     console.warn("Dynamic Function constructor is disabled. Case6");
-  //                 }$1`,
-  //   );
-  //   totalReplacements += case6Matches.length;
-  //   console.log(`  Case6: ${case6Matches.length} replacements`);
-  // }
+  const case6Pattern = /=\s*Function(\s*[;,])/g;
+  const case6Matches = replaced.match(case6Pattern);
+  if (case6Matches) {
+    replaced = replaced.replace(
+      case6Pattern,
+      `= function () {
+                      console.warn("Dynamic Function constructor is disabled. Case6");
+                  }$1`,
+    );
+    totalReplacements += case6Matches.length;
+    console.log(`  Case6: ${case6Matches.length} replacements`);
+  }
+
+  // 7:
+  // "%eval%":eval | '%eval%': eval ...
+  const case7Pattern = /(['"])%eval%\1\s*:\s*eval/g;
+  const case7Matches = replaced.match(case7Pattern);
+  if (case7Matches) {
+    replaced = replaced.replace(
+      case7Pattern,
+      `$1%eval%$1: function () {
+                      console.warn("Dynamic eval has been disabled.");
+                  }`,
+    );
+    totalReplacements += case7Matches.length;
+    console.log(`  case7: ${case7Matches.length} replacements`);
+  }
 
   // FunctionFinal: Function(...) {}
   const caseFunctionFinalPattern = /\bFunction\s*\(([^)]*)\)\s*\{/g;

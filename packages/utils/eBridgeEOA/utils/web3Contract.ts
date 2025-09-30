@@ -1,7 +1,7 @@
 import { ZERO } from '@portkey-wallet/constants/misc';
 import type { Contract } from 'web3-eth-contract';
-import Web3 from 'web3';
 import { ErrorMsg, SendOptions } from '@portkey/types';
+import { Web3 } from '../types';
 
 type CallViewMethod = (
   functionName: string,

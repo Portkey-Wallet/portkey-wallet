@@ -39,3 +39,5 @@ export type TokenInfo = {
   onlyForm?: boolean;
   onlyTo?: boolean;
 };
+
+export type Web3 = any;

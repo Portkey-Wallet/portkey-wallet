@@ -44,14 +44,6 @@ export const useEtransferFee = (chainId: ChainId) => {
     async ({ amount, toInfo, tokenInfo }: { amount: string; toInfo: TToInfo; tokenInfo: IToSendAssetParamsType }) => {
       const token = tokenInfo;
       try {
-        let network;
-        if (toInfo.address.split('_')) {
-          const arr = toInfo.address.split('_');
-          network = arr[arr.length - 1];
-        } else {
-          network = toInfo.network || toInfo.chainId;
-        }
-
         const [{ withdrawInfo }, allowance] = await Promise.all([
           withdrawPreview({
             chainId: token.chainId,

@@ -1,6 +1,6 @@
 {
   "name": "web-extension-aelf",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "web-extension-aelf",
   "private": true,
   "dependencies": {

@@ -26,7 +26,7 @@ const RULE_CONFIG = {
   case6: { files: ['js/content.js', 'js/inject.js', 'js/popup.js', 'js/prompt.js', 'js/serviceWorker.js'] },
   case7: { files: ['js/content.js', 'js/inject.js', 'js/popup.js', 'js/prompt.js', 'js/serviceWorker.js'] },
   caseFunctionFinal: { files: ['js/content.js', 'js/inject.js', 'js/popup.js', 'js/prompt.js', 'js/serviceWorker.js'] },
-  
+
   // 规则8和8-1：适用于所有文件
   case81: { files: 'all' },
   case8: { files: 'all' }
@@ -41,9 +41,9 @@ const RULE_CONFIG = {
 function isRuleApplicable(ruleName, filePath) {
   const config = RULE_CONFIG[ruleName];
   if (!config) return true; // 如果没有配置，默认适用所有文件
-  
+
   if (config.files === 'all') return true;
-  
+
   const fileName = filePath.split('/').pop(); // 获取文件名
   return config.files.includes(fileName);
 }
@@ -206,6 +206,8 @@ function applyRule(ruleName, filePath, content) {
     case 'case81':
       // setTGScript method replacement (specific format with async and compressed code)
       const case81Pattern = /static\s+async\s+setTGScript\(\)\s*\{\s*if\s*\(\s*typeof\s+document\s*>\s*["']u["']\s*\)\s*return;\s*const\s+\w+\s*=\s*document\.createElement\(["']script["']\);\s*\w+\.src\s*=\s*["']https:\/\/telegram\.org\/js\/telegram-web-app\.js["'],\s*document\.body\.appendChild\(\w+\),\s*\w+\s*\?\s*\.addEventListener\(["']load["'],\s*\(\)\s*=>\s*\{\}\)\s*\}/g;
+      // multi () support, like () => {}) & (() => {}))
+      // /static\s+async\s+setTGScript\(\)\s*\{\s*if\s*\(\s*typeof\s+document\s*>\s*["']u["']\s*\)\s*return;\s*const\s+\w+\s*=\s*document\.createElement\(["']script["']\);\s*\w+\.src\s*=\s*["']https:\/\/telegram\.org\/js\/telegram-web-app\.js["'],\s*document\.body\.appendChild\(\w+\),\s*\w+\s*\?\s*\.addEventListener\(["']load["'],\s*\({0,2}\s*\(\)\s*=>\s*\{\}\s*\){0,2}\)\s*\}/g;
       const case81Matches = replaced.match(case81Pattern);
       if (case81Matches) {
         replaced = replaced.replace(

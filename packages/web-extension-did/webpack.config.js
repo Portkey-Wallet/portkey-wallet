@@ -14,6 +14,7 @@ const projectRoot = __dirname;
 const workspaceRoot = path.resolve(projectRoot, '../..');
 const productionConfig = require(path.resolve(ROOT, 'env.config/production.json'));
 const devConfig = require(path.resolve(ROOT, 'env.config/dev.json'));
+const { exec } = require('child_process');
 const outputDir = 'public';
 // TODO: Hot update, browser synchronization component
 // module.exports =
@@ -158,6 +159,11 @@ let config = {
     }),
     new HtmlWebpackPlugin({
       chunks: [''],
+      template: './app/web/popup-init.html',
+      filename: `./${outputDir}/popup-init.html`,
+    }),
+    new HtmlWebpackPlugin({
+      chunks: [''],
       template: './app/web/options.html',
       filename: `./${outputDir}/options.html`,
     }),
@@ -272,6 +278,31 @@ module.exports = (env, argv) => {
   }
 
   config.plugins.push(definePlugin);
+
+  config.plugins.push({
+    apply: (compiler) => {
+      compiler.hooks.afterEmit.tapAsync("PostBuildCodeReplacePlugin", (compilation, callback) => {
+        console.log('🔧 Running automatic code replacement...');
+        const { exec } = require('child_process');
+        const scriptPath = path.resolve(__dirname, 'scripts/replace-code.js');
+
+        exec(`node "${scriptPath}"`, (error, stdout, stderr) => {
+          if (error) {
+            console.error('❌ Auto code replacement error:', error);
+            return callback(error);
+          }
+          if (stderr) {
+            console.error('⚠️  Auto code replacement stderr:', stderr);
+          }
+          if (stdout) {
+            console.log(stdout);
+          }
+          console.log('✅ Auto code replacement completed');
+          callback();
+        });
+      });
+    },
+  });
 
   if (argv.mode === 'production') {
     config.plugins.push(

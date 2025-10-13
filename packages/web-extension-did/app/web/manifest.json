@@ -17,7 +17,7 @@
   "action": {
     "default_icon": "assets/images/extension_logo.png",
     "default_title": "Portkey Wallet",
-    "default_popup": "popup.html"
+    "default_popup": "popup-init.html"
   },
   "sandbox": {
     "pages": ["sandbox.html"]

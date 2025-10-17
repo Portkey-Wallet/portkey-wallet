@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 const fs = require('fs');
 const path = require('path');
 const zipFolder = require('zip-folder');
@@ -12,7 +13,7 @@ const now = new Date();
 const formattedTime = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}${String(now.getSeconds()).padStart(2, '0')}`;
 
 // zip and rename
-const outputFileName = `Portkey-v${version}-${formattedTime}.zip`;
+const outputFileName = `FairyVault-v${version}-${formattedTime}.zip`;
 const outputPath = path.join(__dirname, outputFileName);
 
 zipFolder(path.join(__dirname, 'public'), outputPath, function (err) {

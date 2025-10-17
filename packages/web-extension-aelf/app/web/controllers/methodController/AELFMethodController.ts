@@ -8,7 +8,7 @@ import { IPageState, RequestCommonHandler, RequestMessageData } from 'types/SW';
 import errorHandler from 'utils/errorHandler';
 import { MethodsBase, ResponseCode, MethodsWallet } from '@portkey/provider-types';
 import { ExtensionDappManager } from './ExtensionDappManager';
-import { getCurrentCaHash, getSWReduxState, getWalletState } from 'utils/lib/SWGetReduxStore';
+import { getSWReduxState, getWalletState } from 'utils/lib/SWGetReduxStore';
 import ApprovalController from 'controllers/approval/ApprovalController';
 import { REMEMBER_ME_ACTION_WHITELIST } from '@portkey-wallet/constants/constants-ca/dapp';
 import { checkIsCipherText, randomId } from '@portkey-wallet/utils';
@@ -16,9 +16,6 @@ import { removeLocalStorage, setLocalStorage } from 'utils/storage/chromeStorage
 import SWEventController from 'controllers/SWEventController';
 import { checkSiteIsInBlackList, hasSessionInfoExpired, verifySession } from '@portkey-wallet/utils/session';
 import getManager from 'utils/lib/getManager';
-import { customFetch } from '@portkey-wallet/utils/fetch';
-import { NetworkList } from '@portkey-wallet/constants/constants-ca/network';
-import { ChainId } from '@portkey-wallet/types';
 
 const storeInSW = {
   getState: getSWReduxState,
@@ -78,6 +75,8 @@ export default class AELFMethodController {
     }
 
     const validSession = await this.verifySessionInfo(params.origin);
+    console.log(validSession, '======validSession');
+
     let result;
     if (validSession) {
       result = await this.approvalController.authorizedToAutoExecute({
@@ -181,17 +180,15 @@ export default class AELFMethodController {
 
       const sessionInfo = await this.dappManager.getSessionInfo(origin);
       const wallet = await getWalletState();
-      if (!wallet.walletInfo) return false;
+      if (!wallet.currentAccountAddress) return false;
       const pin = this.getPassword();
       if (!pin) return false;
       const manager = await getManager(pin);
-      const caHash = await getCurrentCaHash();
-      if (!manager?.keyPair || !caHash || !sessionInfo) return false;
+      if (!manager?.keyPair || !sessionInfo) return false;
       const valid = verifySession({
         keyPair: manager.keyPair,
         origin,
         managerAddress: manager.address,
-        caHash,
         expiredPlan: sessionInfo.expiredPlan,
         expiredTime: sessionInfo.expiredTime,
         signature: sessionInfo.signature,
@@ -200,7 +197,7 @@ export default class AELFMethodController {
       const isExpired = hasSessionInfoExpired(sessionInfo);
       return !isExpired;
     } catch (error) {
-      console.log('verifySessionInfo error');
+      console.log('verifySessionInfo error', error);
       return false;
     }
   };
@@ -393,25 +390,6 @@ export default class AELFMethodController {
           code: ResponseCode.INTERNAL_ERROR,
         },
       });
-    }
-  };
-
-  checkWalletSecurity = async (checkTransferSafeChainId: ChainId) => {
-    try {
-      const networkType = await this.dappManager.networkType();
-      const caHash = await getCurrentCaHash();
-
-      const currentNetwork = NetworkList.filter((item) => item.networkType === networkType)[0];
-      const result = await customFetch(`${currentNetwork.apiUrl}/api/app/user/security/balanceCheck`, {
-        method: 'GET',
-        params: {
-          caHash,
-          checkTransferSafeChainId,
-        },
-      });
-      return result;
-    } catch (error) {
-      throw 'checkWalletSecurity error';
     }
   };
 

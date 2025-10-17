@@ -1,5 +1,5 @@
 import { LoginMethod, TAllLoginKey } from '@portkey-wallet/types/types-ca/wallet';
-import { getWalletState } from 'utils/lib/SWGetReduxStore';
+import { getNetwork } from 'utils/lib/SWGetReduxStore';
 import { TGAPageKey } from './types';
 
 // const GA_ENDPOINT = 'https://www.google-analytics.com/mp/collect';
@@ -115,7 +115,7 @@ class Analytics {
     try {
       const params = { timestamp: Date.now(), loginType };
       await chrome.storage.session.set({ loginStart: params });
-      const { currentNetwork } = await getWalletState();
+      const { currentNetwork } = await getNetwork();
 
       return this.fireEvent('extension_login_start', {
         ...params,
@@ -131,7 +131,7 @@ class Analytics {
     try {
       const { loginStart } = await chrome.storage.session.get('loginStart');
       const { loginType, timestamp } = loginStart ?? {};
-      const { currentNetwork } = await getWalletState();
+      const { currentNetwork } = await getNetwork();
 
       const params = { timestamp: Date.now(), loginType, loginMethod, duration: 0 };
 
@@ -185,7 +185,7 @@ class Analytics {
   async referralEnterClickEvent() {
     try {
       const params = { timestamp: Date.now() };
-      const { currentNetwork } = await getWalletState();
+      const { currentNetwork } = await getNetwork();
 
       return this.fireEvent('extension_referral_enter_click', {
         ...params,

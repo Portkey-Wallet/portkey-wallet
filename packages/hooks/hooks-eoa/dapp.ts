@@ -55,7 +55,6 @@ export const useUpdateSessionInfo = () => {
           expiredTime,
           keyPair: manager.keyPair,
           managerAddress: manager.address,
-          // caHash,
         };
 
         const signature = signSession(baseSession);

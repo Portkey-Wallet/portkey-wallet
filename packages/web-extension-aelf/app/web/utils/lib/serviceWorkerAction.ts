@@ -6,7 +6,7 @@ import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 import { CloseParams } from 'service/NotificationService';
 import { CreatePromptType, ReCaptchaResponseParams, SendResponseParams } from 'types';
 import { getPortkeyFinanceUrl } from 'utils';
-import { getWalletState } from './SWGetReduxStore';
+import { getNetwork } from './SWGetReduxStore';
 import { apis } from 'utils/BrowserApis';
 import singleMessage from 'utils/singleMessage';
 import { VerifyTypeEnum } from 'types/wallet';
@@ -103,8 +103,8 @@ export const socialLoginAction = async (
 };
 
 export const reCAPTCHAAction = async (): Promise<ReCaptchaResponseParams> => {
-  const wallet = await getWalletState();
-  const { RECAPTCHA_URL } = getPortkeyFinanceUrl(wallet.currentNetwork);
+  const { currentNetwork } = await getNetwork();
+  const { RECAPTCHA_URL } = getPortkeyFinanceUrl(currentNetwork);
   return await InternalMessage.payload(PortkeyMessageTypes.OPEN_RECAPTCHA_PAGE, {
     externalLink: `${RECAPTCHA_URL}?version=v2`,
   }).send();

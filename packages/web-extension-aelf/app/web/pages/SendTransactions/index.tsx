@@ -67,6 +67,7 @@ export default function SendTransactions() {
   const { t } = useTranslation();
   const amountInUsdShow = useAmountInUsdShow();
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
   const [_, getTokenPrice, getTokensPrice] = useGetCurrentAccountTokenPrice();
   const [fee, setFee] = useState('');
   const [errMsg, setErrMsg] = useState('');
@@ -244,18 +245,7 @@ export default function SendTransactions() {
         singleMessage.error(handleErrorMessage(error));
       }
     },
-    [
-      chainInfo,
-      payload?.rpcUrl,
-      payload?.method,
-      payload?.contractAddress,
-      txParams.paramsOption,
-      open,
-      updateSessionInfo,
-      currentNetwork,
-      origin,
-      exp,
-    ],
+    [payload, chainInfo, txParams, open, updateSessionInfo, currentNetwork, origin, exp],
     500,
   );
 

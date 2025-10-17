@@ -9,21 +9,19 @@ import { callSendMethod } from 'utils/sandboxUtil/sendTransactions';
 import { Loading } from '@portkey/did-ui-react';
 import { apis } from 'utils/BrowserApis';
 import { useEffectOnce, useThrottleCallback } from '@portkey-wallet/hooks';
-import { getChainInfo, getCurrentWallet } from 'store/utils/getStore';
 import getSeed from 'utils/getSeed';
 import './index.less';
+import { getCurrentChainInfo } from 'utils/lib/SWGetReduxStore';
 
 export default function DappAutoTx() {
   const txParams = usePromptSearch<any>();
   const { payload } = txParams;
   const handleTransaction = useThrottleCallback(async () => {
-    const wallet = getCurrentWallet();
-    const chainInfo = getChainInfo(payload.chainId);
-    const isCAContract = chainInfo?.caContractAddress === payload?.contractAddress;
+    const chainInfo = await getCurrentChainInfo(payload.chainId);
 
     const curWindow = await apis.windows.getCurrent();
     try {
-      if (!chainInfo?.endPoint || !wallet?.caHash) {
+      if (!chainInfo?.endPoint) {
         closePrompt({
           ...errorHandler(400001),
           data: { code: ResponseCode.ERROR_IN_PARAMS, msg: 'invalid chain id', windowId: curWindow.id },
@@ -55,18 +53,9 @@ export default function DappAutoTx() {
       }
 
       const transactionInfo = JSON.parse(txPayload[transactionInfoId]);
-      let paramsOption = transactionInfo.paramsOption;
+      const paramsOption = transactionInfo.paramsOption;
 
-      const functionName = isCAContract ? payload?.method : 'ManagerForwardCall';
-
-      paramsOption = isCAContract
-        ? paramsOption
-        : {
-            caHash: wallet.caHash,
-            methodName: payload?.method,
-            contractAddress: payload?.contractAddress,
-            args: paramsOption,
-          };
+      const functionName = payload?.method;
 
       const result = await callSendMethod({
         rpcUrl: chainInfo.endPoint,
@@ -74,7 +63,7 @@ export default function DappAutoTx() {
         methodName: functionName,
         paramsOption,
         privateKey,
-        address: chainInfo.caContractAddress,
+        address: payload.contractAddress,
         sendOptions: { onMethod: 'transactionHash' },
       });
       closePrompt({

@@ -1,5 +1,4 @@
 import { IDappStoreState } from '@portkey-wallet/store/store-ca/dapp/type';
-import { WalletState } from '@portkey-wallet/store/store-ca/wallet/type';
 import { TWalletState } from '@portkey-wallet/store/store-eoa/wallet/type';
 import { getStoreState as getDefaultState } from 'store/utils/getStore';
 import { getStoredState } from 'redux-persist';
@@ -10,11 +9,10 @@ import {
   loginPersistConfig,
   networkPersistConfig,
 } from 'store/Provider/config';
-import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
-import { ChainId } from '@portkey-wallet/types';
 import { LoginState } from 'store/reducers/loginCache/type';
 import { TAccountInfo } from '@portkey-wallet/types/types-eoa/wallet';
 import { TNetworkState } from '@portkey-wallet/store/store-eoa/network/type';
+import { ChainId } from '@portkey-wallet/types';
 
 export async function getSWReduxState() {
   return {
@@ -64,12 +62,12 @@ export const getNetwork = async () => {
 export const getWalletState = async () => {
   let wallet = await getStoredState(walletPersistConfig);
   if (!wallet) wallet = getDefaultState().wallet;
-  return wallet as WalletState;
+  return wallet as TWalletState;
 };
 
 export const getCurrentChainList = async () => {
-  const { chainInfo, currentNetwork } = await getWalletState();
-  return chainInfo?.[currentNetwork];
+  const { chainListMap, currentNetwork } = await getNetwork();
+  return chainListMap?.[currentNetwork];
 };
 
 export const getCurrentChainInfo = async (chainId: ChainId) => {
@@ -86,20 +84,6 @@ export const getCmsState = async () => {
   let cms = await getStoredState(cmsPersistConfig);
   if (!cms) cms = getDefaultState().cms;
   return cms;
-};
-
-export const getCurrentNetworkWallet = async () => {
-  const wallet = await getWalletState();
-  const currentNetwork = wallet.currentNetwork;
-  return wallet.walletInfo?.caInfo?.[currentNetwork];
-};
-
-export const getCurrentCaHash = async () => {
-  const wallet = await getWalletState();
-  const { walletInfo, currentNetwork } = wallet || {};
-  const caInfo = walletInfo?.caInfo?.[currentNetwork];
-  const originChainId = caInfo?.originChainId;
-  return caInfo?.[originChainId || DefaultChainId]?.caHash;
 };
 
 export const getLoginCache = async () => {

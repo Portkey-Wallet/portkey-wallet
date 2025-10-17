@@ -2,13 +2,12 @@ import InternalMessage from 'messages/InternalMessage';
 import InternalMessageTypes from 'messages/InternalMessageTypes';
 import { getWallet } from '@portkey-wallet/utils/aelf';
 import aes from '@portkey-wallet/utils/aes';
-import { getWalletInfo } from 'store/utils/getStore';
+import { getCurrentAccount } from './lib/SWGetReduxStore';
 
 export default async function getManager() {
   const getSeedResult = await InternalMessage.payload(InternalMessageTypes.GET_SEED).send();
   const pin = getSeedResult.data.privateKey;
-  // TODO just a hack. use eoa first wallet's account
-  const walletInfo = getWalletInfo();
+  const walletInfo = await getCurrentAccount();
   if (!walletInfo?.AESEncryptPrivateKey) return;
   const privateKey = aes.decrypt(walletInfo.AESEncryptPrivateKey, pin);
   if (!privateKey) return;

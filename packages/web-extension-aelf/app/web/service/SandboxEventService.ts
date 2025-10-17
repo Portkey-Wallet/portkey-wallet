@@ -1,7 +1,7 @@
 import { ChainType } from '@portkey-wallet/types';
 import SandboxEventTypes from 'messages/SandboxEventTypes';
 import IdGenerator from 'utils/IdGenerator';
-import { getWalletState } from 'utils/lib/SWGetReduxStore';
+import { getNetwork, getWalletState } from 'utils/lib/SWGetReduxStore';
 
 export enum SandboxErrorCode {
   error,
@@ -27,9 +27,10 @@ export default class SandboxEventService {
     let caAddress = '';
     let currentNetwork = 'MAINNET';
     try {
-      const res = await getWalletState();
-      currentNetwork = res.currentNetwork;
-      caAddress = res.walletInfo?.caInfo?.[res.currentNetwork]?.AELF?.caAddress ?? '';
+      const wallet = await getWalletState();
+      const network = await getNetwork();
+      currentNetwork = network.currentNetwork;
+      caAddress = wallet.currentAccountAddress as string;
     } catch (error) {
       console.log('===getWalletState error', error);
     }

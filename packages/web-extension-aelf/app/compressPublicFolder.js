@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const zipFolder = require('zip-folder');
 const uploadZipToWebstore = require('./uploadToWebstore');
+const generateHashManifest = require('./buildTools/generateHash');
 
 // read manifest.json file
 const manifestPath = path.join(__dirname, 'public', 'manifest.json');
@@ -23,6 +24,9 @@ manifest.version_name = versionName;
 fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2), 'utf8');
 
 console.log(`Updated manifest version name to: ${versionName}`);
+
+// generate hash manifest
+generateHashManifest();
 
 // zip and rename
 const outputFileName = `FairyVault-v${versionName}.zip`;

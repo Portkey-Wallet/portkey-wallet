@@ -23,11 +23,17 @@ jobs:
         run: |
           yarn install
 
+      - name: Generate configuration files
+        run: |
+          mkdir -p env.config
+          echo '${{ secrets.EOA_EXTENSION_PRODUCTION_JSON }}' > env.config/production.json
+          echo '${{ secrets.EOA_EXTENSION_DEV_JSON }}' > env.config/dev.json
+
       - name: Run yarn extension:aelf pro
         env:
-          CLIENT_ID: ${{ secrets.EOA_EXTENSTION_CLIENT_ID }}
-          CLIENT_SECRET: ${{ secrets.EOA_EXTENSTION_CLIENT_SECRET }}
-          REFRESH_TOKEN: ${{ secrets.EOA_EXTENSTION_REFRESH_TOKEN }}
-          LARK_ROBOT: ${{ secrets.EOA_EXTENSTION_LARK_ROBOT }}
+          CLIENT_ID: ${{ secrets.EOA_EXTENSION_CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.EOA_EXTENSION_CLIENT_SECRET }}
+          REFRESH_TOKEN: ${{ secrets.EOA_EXTENSION_REFRESH_TOKEN }}
+          LARK_ROBOT: ${{ secrets.EOA_EXTENSION_LARK_ROBOT }}
         run: |
           yarn extension:aelf pro:upload

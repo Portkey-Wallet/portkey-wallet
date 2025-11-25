@@ -2,6 +2,7 @@
 const fs = require('fs');
 const path = require('path');
 const zipFolder = require('zip-folder');
+const uploadZipToWebstore = require('./uploadToWebstore');
 
 // read manifest.json file
 const manifestPath = path.join(__dirname, 'public', 'manifest.json');
@@ -10,10 +11,21 @@ const version = manifest.version;
 
 // format current time
 const now = new Date();
-const formattedTime = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}${String(now.getSeconds()).padStart(2, '0')}`;
+const formattedTime = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(
+  now.getDate(),
+).padStart(2, '0')}${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}${String(
+  now.getSeconds(),
+).padStart(2, '0')}`;
+
+// update version with formattedTime in manifest.json
+const versionName = `${version}-${formattedTime}`;
+manifest.version_name = versionName;
+fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2), 'utf8');
+
+console.log(`Updated manifest version name to: ${versionName}`);
 
 // zip and rename
-const outputFileName = `FairyVault-v${version}-${formattedTime}.zip`;
+const outputFileName = `FairyVault-v${versionName}.zip`;
 const outputPath = path.join(__dirname, outputFileName);
 
 zipFolder(path.join(__dirname, 'public'), outputPath, function (err) {
@@ -21,5 +33,9 @@ zipFolder(path.join(__dirname, 'public'), outputPath, function (err) {
     console.log('Error compressing public folder:', err);
   } else {
     console.log(`Compression successful: ${outputPath}`);
+    uploadZipToWebstore(outputFileName, {
+      versionName,
+      version,
+    });
   }
 });

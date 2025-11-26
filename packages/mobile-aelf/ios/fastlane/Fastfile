@@ -196,7 +196,29 @@ platform :ios do
       commit = get_latest_commit
 
       build_num = latest_build_number.to_i + 1
-      version_name_with_build = "#{version_name} (#{build_num})"
+      version_name_with_build = "#{version_name}-#{build_num}"
+
+      # ===== Rename IPA & dSYM =====
+      ipa_path = ipa 
+      ipa_dir = File.dirname(ipa_path)
+
+      new_ipa_name = "FairyVault-iOS-v#{version_name_with_build}.ipa"
+      new_ipa_path = File.join(ipa_dir, new_ipa_name)
+
+      # rename ipa
+      File.rename(ipa_path, new_ipa_path)
+      UI.message("Renamed IPA: #{new_ipa_path}")
+
+      # rename dSYM
+      dsym_path = ipa_path.sub(".ipa", ".app.dSYM.zip")
+      if File.exist?(dsym_path)
+        new_dsym_name = "FairyVault-iOS-v#{version_name_with_build}-dSYM.zip"
+        new_dsym_path = File.join(ipa_dir, new_dsym_name)
+        File.rename(dsym_path, new_dsym_path)
+        UI.message("Renamed dSYM: #{new_dsym_path}")
+      else
+        UI.message("No dSYM file found to rename")
+      end
 
   end
 end

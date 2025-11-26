@@ -42,5 +42,9 @@ jobs:
           CLIENT_SECRET: ${{ secrets.EOA_EXTENSION_CLIENT_SECRET }}
           REFRESH_TOKEN: ${{ secrets.EOA_EXTENSION_REFRESH_TOKEN }}
           LARK_ROBOT: ${{ secrets.EOA_EXTENSION_LARK_ROBOT }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AWS_BUCKET_NAME: ${{ secrets.AWS_S3_BUCKET }}
         run: |
           yarn extension:aelf pro:upload

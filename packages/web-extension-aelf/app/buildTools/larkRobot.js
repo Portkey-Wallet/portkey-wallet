@@ -83,6 +83,13 @@ async function messageRobot(message, FEI_SHU_ROBOT, optionsInput) {
             tag: 'div',
             text: {
               tag: 'lark_md',
+              content: `**s3 URL (Can not download directly)**: ${optionsInput.s3URL}`,
+            },
+          },
+          {
+            tag: 'div',
+            text: {
+              tag: 'lark_md',
               content: '**Changelog**: Please review GitHub Compare',
             },
           },

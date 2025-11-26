@@ -43,6 +43,7 @@ const uploadZipToWebstore = async (zipName, options) => {
   messageRobot(response, larkRobot, {
     versionName: options.versionName,
     version: options.version,
+    s3URL: options.s3URL,
     tags: getLatestAndPreviousTag(),
   });
   return response;

@@ -26,8 +26,8 @@ jobs:
       - name: Generate configuration files
         run: |
           mkdir -p packages/web-extension-aelf/env.config
-          echo '${{ secrets.PRODUCTION_JSON }}' > packages/web-extension-aelf/env.config/production.json
-          echo '${{ secrets.DEV_JSON }}' > packages/web-extension-aelf/env.config/dev.json
+          echo '${{ secrets.EOA_EXTENSION_PRODUCTION_JSON }}' > packages/web-extension-aelf/env.config/production.json
+          echo '${{ secrets.EOA_EXTENSION_DEV_JSON }}' > packages/web-extension-aelf/env.config/dev.json
 
       - name: Debug production.json
         run: |

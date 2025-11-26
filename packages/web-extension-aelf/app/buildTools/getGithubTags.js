@@ -3,8 +3,10 @@ const { execSync } = require('child_process');
 
 function getLatestAndPreviousTag() {
   try {
-    execSync('git pull', { encoding: 'utf-8' });
+    // execSync('git pull', { encoding: 'utf-8' });
+    console.log('get tag list start');
     const tagsOutput = execSync('git tag --sort=-v:refname', { encoding: 'utf-8' });
+    console.log('get tag list end');
     const tags = tagsOutput.split('\n').filter((tag) => tag.startsWith('eoa.ext.v.') && tag.trim() !== '');
 
     if (tags.length < 2) {

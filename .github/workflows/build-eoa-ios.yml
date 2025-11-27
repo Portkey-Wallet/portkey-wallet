@@ -151,6 +151,8 @@ jobs:
           APPLE_ISSUER_ID: '${{ secrets.APPLE_ISSUER_ID }}'
           APPLE_KEY_CONTENT: '${{ secrets.APPLE_KEY_CONTENT }}'
           LARK_WEBHOOK_URL: '${{ secrets.LARK_WEBHOOK }}'
+          LARK_ROBOT: '${{ secrets.EOA_EXTENSION_LARK_ROBOT }}'
+
 
       # ------------------ Upload IPA to GitHub Release ------------------
       - name: Upload IPA to GitHub Release

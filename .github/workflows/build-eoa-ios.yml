@@ -159,6 +159,5 @@ jobs:
           tag_name: ${{ github.ref_name }}
           files: |
             packages/mobile-aelf/ios/*.ipa
-            packages/mobile-aelf/ios/*.dSYM.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

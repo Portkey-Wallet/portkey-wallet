@@ -72,7 +72,10 @@ jobs:
   build-prod-ios:
     runs-on: macos-14
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - name: Check out the correct branch
         run: git branch

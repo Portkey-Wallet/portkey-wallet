@@ -46,18 +46,24 @@ export function intervalGetResult({ managerInfo, onPass, onFail }: IntervalGetRe
           manager: wallet?.walletInfo?.address || '',
         });
         const info = caHolderManagerInfo[0];
-        if (!info.originChainId) throw new Error('caHolderManagerInfo is empty');
+        if (!info.originChainId) {
+          throw new Error('caHolderManagerInfo is empty');
+        }
         const caContract = await getCurrentCAViewContract(info.originChainId as ChainId);
         const contractInfo = await caContract?.callViewMethod('GetHolderInfo', { caHash: info.caHash });
-        const { managerInfos, caAddress, caHash } = contractInfo?.data;
+        const { managerInfos, caAddress, caHash } = contractInfo?.data || {};
         const exist = await managerInfos?.some((manager: { address: string }) => manager?.address === address);
-        if (exist) return onPass?.({ caAddress, caHash });
+        if (exist) {
+          return onPass?.({ caAddress, caHash });
+        }
       }
     } catch {}
     onFail?.(message);
   };
   const sendResult = (result: any) => {
-    if (mark) return;
+    if (mark) {
+      return;
+    }
     switch (result.recoveryStatus || result.registerStatus) {
       case 'pass': {
         if (result.caAddress && result.caHash) {

@@ -25,19 +25,23 @@ export class ChatInputRecorder {
 export let chatInputRecorder: ChatInputRecorder | undefined;
 
 export function initChatInputRecorder() {
-  if (chatInputRecorder) return;
+  if (chatInputRecorder) {
+    return;
+  }
   chatInputRecorder = new ChatInputRecorder();
 }
 
 export function destroyChatInputRecorder() {
-  if (!chatInputRecorder) return;
+  if (!chatInputRecorder) {
+    return;
+  }
   chatInputRecorder = undefined;
 }
 
 export function handleInputText(code: string): string {
   let text = chatInputRecorder?.text || '';
   if (chatInputRecorder?.selection) {
-    const { start, end } = chatInputRecorder?.selection;
+    const { start, end } = chatInputRecorder?.selection || {};
     if (start === end) {
       const first = text.slice(0, start) + code;
       const last = text.slice(start);
@@ -73,7 +77,7 @@ export function isEmojiString(text: string) {
 export function handleDeleteText(): string {
   let text = chatInputRecorder?.text || '';
   if (chatInputRecorder?.selection) {
-    const { start, end } = chatInputRecorder?.selection;
+    const { start, end } = chatInputRecorder?.selection || {};
     if (start === end) {
       let first = text.slice(0, start);
       const last = text.slice(start);
@@ -101,8 +105,12 @@ export function handleDeleteText(): string {
 }
 
 export function getChatListSvgName(channelType?: ChannelTypeEnum): IconName | undefined {
-  if (channelType === ChannelTypeEnum.GROUP) return 'chat-group-avatar';
-  if (channelType === ChannelTypeEnum.P2P) return undefined;
+  if (channelType === ChannelTypeEnum.GROUP) {
+    return 'chat-group-avatar';
+  }
+  if (channelType === ChannelTypeEnum.P2P) {
+    return undefined;
+  }
   return 'chat-unsupported-channel';
 }
 
@@ -116,10 +124,14 @@ export function isSystemTypeMessage(type?: MessageType | 'NOT_SUPPORTED'): boole
 
 export const isTargetMember = (item: ChannelMemberInfo, keyword: string): boolean => {
   // name
-  if (item?.name?.toLocaleLowerCase()?.trim()?.includes(keyword?.toLocaleLowerCase()?.trim())) return true;
+  if (item?.name?.toLocaleLowerCase()?.trim()?.includes(keyword?.toLocaleLowerCase()?.trim())) {
+    return true;
+  }
 
   // portkeyId
-  if (item?.userId?.trim() === keyword?.trim()) return true;
+  if (item?.userId?.trim() === keyword?.trim()) {
+    return true;
+  }
 
   // addresses
   const addressesList = item?.addresses || [];
@@ -128,12 +140,15 @@ export const isTargetMember = (item: ChannelMemberInfo, keyword: string): boolea
       if (keyword?.includes('_')) {
         const arr = keyword?.split('_');
         const _address = arr.find(_i => isAelfAddress(_i));
-        if (_address) keyword = _address;
+        if (_address) {
+          keyword = _address;
+        }
       }
       return i?.address === keyword;
     }, [])
-  )
+  ) {
     return true;
+  }
 
   return false;
 };

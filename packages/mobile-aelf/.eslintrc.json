@@ -30,6 +30,7 @@
         "eslint-comments/no-unused-disable": "off",
         "eslint-comments/no-unlimited-disable": "off",
         "no-dupe-class-members": "off",
+        "@typescript-eslint/no-unused-vars":"warn",
         "react-hooks/exhaustive-deps": [
           "warn",
           {

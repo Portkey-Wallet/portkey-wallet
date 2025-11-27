@@ -38,6 +38,6 @@ export type BASE_REQ_TYPES = {
 
 export type EXPAND_REQ_TYPES = {
   [X in keyof typeof EXPAND_APIS]: {
-    [K in keyof typeof EXPAND_APIS[X]]: API_REQ_FUNCTION;
+    [K in keyof (typeof EXPAND_APIS)[X]]: API_REQ_FUNCTION;
   };
 };

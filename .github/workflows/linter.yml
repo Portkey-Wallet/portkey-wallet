@@ -10,15 +10,30 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-        
+
+      # ---------------- Node.js + Yarn cache ----------------
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 22
           cache: "yarn"
 
+      # ---------------- Cache node_modules ----------------
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            **/node_modules
+            ~/.cache/yarn
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-node-modules-
+            ${{ runner.os }}-
+
+      # ---------------- Install dependencies ----------------
       - name: Install Dependencies
         run: yarn
 
+      # ---------------- Run ESLint ----------------
       - name: Run ESLint mobile-aelf
         run: yarn workspace mobile-aelf lint

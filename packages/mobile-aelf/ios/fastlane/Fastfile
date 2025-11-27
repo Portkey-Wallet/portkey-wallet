@@ -76,30 +76,18 @@ def get_latest_and_previous_tag
     tags_output = sh("git tag")
     UI.message("All tags in repo:\n#{tags_output}")
     tags = tags_output.split("\n")
-                      .map(&:strip)
-                      .select { |tag| tag.start_with?(TAG_PREFIX) }
-                      .select do |tag|
-                        version_str = tag.sub(TAG_PREFIX, "")
-                        version_str.match?(/^\d+(\.\d+){0,2}(-[a-zA-Z0-9\.]+)?$/)
+                      .select { |tag| tag.start_with?(TAG_PREFIX) && !tag.strip.empty? }
+                      .sort do |a, b|
+                        pa = a.sub(TAG_PREFIX, "").split('.').map(&:to_i)
+                        pb = b.sub(TAG_PREFIX, "").split('.').map(&:to_i)
+
+                        # Desc order
+                        (pb <=> pa)
                       end
 
     if tags.length < 2
-      UI.user_error!("Not enough valid tags to determine latest and previous tags.")
+      UI.user_error!("Not enough tags to determine latest and previous tags.")
     end
-
-    tags.sort! do |a, b|
-      va = a.sub(TAG_PREFIX, "").split(/[\.-]/).map { |x| x.match?(/^\d+$/) ? x.to_i : x }
-      vb = b.sub(TAG_PREFIX, "").split(/[\.-]/).map { |x| x.match?(/^\d+$/) ? x.to_i : x }
-
-      max_len = [va.length, vb.length].max
-      (0...max_len).each do |i|
-        ai = va[i] || 0
-        bi = vb[i] || 0
-        cmp = ai <=> bi
-        return cmp unless cmp == 0
-      end
-      0
-    end.reverse!
 
     latest = tags[0]
     previous = tags[1]

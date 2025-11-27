@@ -110,47 +110,42 @@ def send_lark_notification(title:, version_name:, build_time:, commit:, tags:)
   previous_tag = tags[:previous_tag]
 
   lark_message = {
-    "msg_type" => "post",
-    "content" => {
-      "post" => {
-        "en_us" => {
-          "title" => "#{title} 🚀",
-          "content" => [
-            [
-              { "tag" => "text", "text" => "🌟 App(iOS): EOA Wallet" },
-              { "tag" => "text", "text" => "\n🌟 Version: " },
-              { "tag" => "text", "text" => version_name },
-              { "tag" => "text", "text" => "\n📅 Build Time#{ENV['CI'] ? '(UTC)' : ''}: " },
-              { "tag" => "text", "text" => build_time },
-            ],
-            [
-              {
-                "tag" => "action",
-                "actions" => [
-                  {
-                    "tag" => "button",
-                    "text" => {
-                      "tag" => "plain_text",
-                      "content" => "Github Compare"
-                    },
-                    "type" => "primary",
-                    "url" => "https://github.com/Portkey-Wallet/portkey-wallet/compare/#{previous_tag}...#{latest_tag}"
-                  }
-                ]
-              }
-            ]
+    "msg_type" => "interactive",
+    "card" => {
+      "header" => {
+        "title" => {
+          "tag" => "plain_text",
+          "content" => "#{title} 🚀"
+        },
+        "template" => "green"
+      },
+      "elements" => [
+        {
+          "tag" => "div",
+          "text" => {
+            "tag" => "lark_md",
+            "content" => "🌟 App(iOS): EOA Wallet\n🌟 Version: #{version_name}\n📅 Build Time#{ENV['CI'] ? '(UTC)' : ''}: #{build_time}"
+          }
+        },
+        {
+          "tag" => "action",
+          "actions" => [
+            {
+              "tag" => "button",
+              "text" => {
+                "tag" => "plain_text",
+                "content" => "Github Compare"
+              },
+              "type" => "primary",
+              "url" => "https://github.com/Portkey-Wallet/portkey-wallet/compare/#{previous_tag}...#{latest_tag}"
+            }
           ]
         }
-      }
+      ]
     }
   }
   
-
-  if token.start_with?("http")
-    lark_webhook_url = LARK_ROBOT
-  else
-    lark_webhook_url = "https://open.feishu.cn/open-apis/bot/v2/hook/#{LARK_ROBOT}"
-  end
+  lark_webhook_url = LARK_WEBHOOK_URL
 
   unless lark_webhook_url
     UI.user_error!("LARK_WEBHOOK_URL is not set!")
@@ -159,7 +154,8 @@ def send_lark_notification(title:, version_name:, build_time:, commit:, tags:)
   uri = URI.parse(lark_webhook_url)
   http = Net::HTTP.new(uri.host, uri.port)
   http.use_ssl = true
-  request = Net::HTTP::Post.new(uri.path, { 'Content-Type' => 'application/json' })
+  http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+  request = Net::HTTP::Post.new(uri.request_uri, { 'Content-Type' => 'application/json' })
   request.body = lark_message.to_json
   response = http.request(request)
 

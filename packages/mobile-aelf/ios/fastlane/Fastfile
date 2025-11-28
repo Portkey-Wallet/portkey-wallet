@@ -267,7 +267,7 @@ platform :ios do
       ipa_path = ipa 
       ipa_dir = File.dirname(ipa_path)
 
-      new_ipa_name = "FairyVault-iOS-v#{version_name_with_build}.ipa"
+      new_ipa_name = "FairyVault-iOS-v#{version_name}.ipa"
       new_ipa_path = File.join(ipa_dir, new_ipa_name)
 
       # rename ipa
@@ -277,7 +277,7 @@ platform :ios do
       # rename dSYM
       dsym_path = ipa_path.sub(".ipa", ".app.dSYM.zip")
       if File.exist?(dsym_path)
-        new_dsym_name = "FairyVault-iOS-v#{version_name_with_build}.dSYM.zip"
+        new_dsym_name = "FairyVault-iOS-v#{version_name}.dSYM.zip"
         new_dsym_path = File.join(ipa_dir, new_dsym_name)
         File.rename(dsym_path, new_dsym_path)
         UI.message("Renamed dSYM: #{new_dsym_path}")

@@ -120,3 +120,32 @@ jobs:
             packages/mobile-aelf/ios/*.ipa
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Install AWS CLI v2 (macOS 14 requires manual install)
+      - name: Install AWS CLI
+        run: |
+          curl "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "AWSCLIV2.pkg"
+          sudo installer -pkg AWSCLIV2.pkg -target /
+
+      # Configure AWS credentials
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-1
+
+      - name: Upload IPA to S3
+        run: |
+          IPA_PATH=$(ls packages/mobile-aelf/ios/*.ipa | head -1)
+          BASENAME=$(basename "$IPA_PATH")
+          S3_PATH="s3://${{ secrets.AWS_S3_BUCKET }}/app/ios/eoa/${{ github.ref_name }}/"
+
+          echo "Found IPA: $IPA_PATH"
+          echo "Uploading to: $S3_PATH$BASENAME"
+
+          aws s3 cp "$IPA_PATH" "$S3_PATH"
+
+          echo "Uploaded to: $S3_PATH$BASENAME"
+
+

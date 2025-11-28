@@ -1,0 +1,93 @@
+@import '../../../assets/theme/color.less';
+
+.wallet-management-wrap {
+  min-height: calc(100vh - 130px);
+  display: flex;
+  flex-direction: column;
+  //justify-content: space-between;
+}
+.wallet-management-header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 16px;
+}
+.wallet-management-manage-btn {
+  color: #1890ff;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 16px;
+}
+.wallet-management-divider {
+  border-top: 1px solid @border-neutral3;
+  margin: 24px 0;
+}
+.wallet-management-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.wallet-management-btn {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  color: @text-base1;
+  font-size: 16px;
+  font-weight: 500;
+  border: none;
+  border-radius: 8px;
+  height: 48px;
+  padding: 0 24px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  box-shadow: 0 2px 8px 0 rgb(0 0 0 / 3%);
+  position: relative;
+
+  .custom-svg {
+    margin-right: 8px;
+  }
+}
+.wallet-management-btn-icon {
+  width: 24px;
+  height: 24px;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+.wallet-management-btn.disabled,
+.wallet-management-btn:disabled {
+  color: @text-disabled1 !important;
+  background: @bg-base1 !important;
+  cursor: not-allowed;
+
+  .custom-svg {
+    svg {
+      /* stylelint-disable-next-line no-descending-specificity */
+      path {
+        fill: @text-disabled1 !important;
+      }
+    }
+  }
+}
+.wallet-management-btn.disabled .wallet-management-btn-icon,
+.wallet-management-btn:disabled .wallet-management-btn-icon {
+  filter: grayscale(1) brightness(1.5);
+  opacity: 0.5;
+}
+.wallet-management-btn.disabled .wallet-management-btn-text,
+.wallet-management-btn:disabled .wallet-management-btn-text {
+  color: @text-disabled1 !important;
+}
+.wallet-management-btn:not(.disabled):hover {
+  background: @bg-base2;
+}
+.wallet-management-reset-wrap {
+  text-align: center;
+  margin-top: 32px;
+}
+.wallet-management-reset-btn {
+  color: #ff4d4f;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 16px;
+}

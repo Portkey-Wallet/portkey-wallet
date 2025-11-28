@@ -1,0 +1,30 @@
+
+# OSX
+#
+.DS_Store
+
+.idea
+.eslintcache
+.idea
+
+# node.js
+#
+node_modules/
+npm-debug.log
+yarn-error.log
+
+.vscode
+
+ignore/
+**/*.zip
+
+coverage
+
+# network
+packages/constants/constants-ca/network.ts
+**/*/assets/index.android.bundle
+**/*/drawable-*/__node_modules_*
+**/*/drawable-*/node_modules_*
+**/*/drawable-*/js_assets_*
+**/*/drawable-*/js_*
+**/*/raw/js_assets_*

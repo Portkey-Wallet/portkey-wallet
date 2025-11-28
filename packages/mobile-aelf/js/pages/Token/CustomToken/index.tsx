@@ -1,0 +1,259 @@
+import PageContainer from 'components/PageContainer';
+import CommonInput from 'components/CommonInput';
+import { StyleSheet, View } from 'react-native';
+import gStyles from 'assets/theme/GStyles';
+import { defaultColors } from 'assets/theme';
+import React, { useCallback, useState } from 'react';
+import { TextL } from 'components/CommonText';
+import { pTd } from 'utils/unit';
+import { useLanguage } from 'i18n/hooks';
+import { ChainId } from '@portkey-wallet/types';
+import FormItem from 'components/FormItem';
+import SelectChain from 'components/SelectChain';
+import CommonButton from 'components/CommonButton';
+import { screenWidth } from '@portkey-wallet/utils-mobile/device';
+import { request } from '@portkey-wallet/api/api-eoa';
+import { useDebounceCallback } from '@portkey-wallet/hooks';
+import Loading from 'components/Loading';
+import navigationService from 'utils/navigationService';
+import { sleep } from '@portkey-wallet/utils';
+import CommonToast from 'components/CommonToast';
+import { FontStyles } from 'assets/theme/styles';
+import GStyles from 'assets/theme/GStyles';
+import { makeStyles } from '@rneui/themed';
+import { useChainList } from '@portkey-wallet/hooks/hooks-eoa/network/chain';
+import { useCurrentNetwork } from '@portkey-wallet/hooks/hooks-eoa/network';
+import { useTokenLegacy } from '@portkey-wallet/hooks/hooks-eoa/useToken';
+import { useManagerTokenInfo } from '@portkey-wallet/hooks/hooks-eoa/assets';
+import { TokenItemShowType } from '@portkey-wallet/types/types-eoa/token';
+
+interface CustomTokenProps {
+  route?: any;
+}
+
+const CustomToken: React.FC<CustomTokenProps> = () => {
+  const { t } = useLanguage();
+  const { tokenDataShowInMarket } = useTokenLegacy();
+  const { switchToken } = useManagerTokenInfo();
+
+  // const originChainId = useOriginChainId();
+  // const {currentNetwork } = useCurrentWallet();
+  const currentNetwork = useCurrentNetwork();
+  const chainList = useChainList() || [];
+  const [keyword, setKeyword] = useState<string>('');
+  const [tokenItem, setTokenItem] = useState<{
+    symbol: string;
+    chainId: ChainId;
+    decimals: string;
+    id: string;
+    isDefault?: boolean;
+    isDisplay?: boolean;
+  }>({
+    symbol: '',
+    chainId: 'AELF',
+    decimals: '-',
+    id: '',
+  });
+  const [btnDisable, setBtnDisable] = useState(true);
+  const [errorMessage, setErrorMessage] = useState<string>('');
+  const pageStyles = getStyles();
+  const fetchTokenItem = useCallback(async () => {
+    if (!keyword) {
+      return;
+    }
+
+    Loading.show();
+
+    setErrorMessage('');
+    setBtnDisable(true);
+    setTokenItem(pre => ({ ...pre, decimals: '--', symbol: '' }));
+
+    try {
+      const res = await request.token.fetchTokenItemBySearch({
+        params: {
+          symbol: keyword,
+          chainId: tokenItem.chainId,
+        },
+      });
+      console.log('===res', JSON.stringify(res));
+      const { symbol, id } = res || {};
+
+      if (symbol && id) {
+        setTokenItem(pre => ({ ...pre, ...res }));
+        setKeyword(symbol);
+        setBtnDisable(false);
+      } else {
+        setErrorMessage('Unable to recognize token');
+        setBtnDisable(true);
+      }
+    } catch (err) {
+      setBtnDisable(true);
+      CommonToast.failError(err);
+    } finally {
+      Loading.hide();
+    }
+  }, [keyword, tokenItem.chainId]);
+
+  const fetchTokenItemDebounce = useDebounceCallback(fetchTokenItem, [fetchTokenItem], 800);
+
+  const onKeywordChange = useCallback(
+    (v: string) => {
+      setKeyword(v.trim());
+      fetchTokenItemDebounce();
+    },
+    [fetchTokenItemDebounce],
+  );
+
+  const onChainChange = useCallback(
+    (_chainId: ChainId) => {
+      setBtnDisable(true);
+      setTokenItem(pre => ({ ...pre, chainId: _chainId }));
+      fetchTokenItemDebounce();
+    },
+    [fetchTokenItemDebounce],
+  );
+
+  const addToken = useCallback(async () => {
+    // console.log('tokenItem====', JSON.stringify(tokenItem));
+    // return;
+    const fundItem = tokenDataShowInMarket.find(
+      item => item.symbol === tokenItem.symbol && item.chainId === tokenItem.chainId,
+    );
+    if (tokenItem?.isDefault || (fundItem && fundItem.isAdded)) {
+      setErrorMessage('This token has already been added.');
+    } else {
+      try {
+        Loading.show();
+        // await request.token.displayUserToken({
+        //   resourceUrl: `${tokenItem?.id}/display`,
+        //   params: {
+        //     isDisplay: true,
+        //   },
+        // });
+        switchToken(tokenItem as TokenItemShowType, true);
+        CommonToast.success('success');
+        await sleep(500);
+        navigationService.navigate('ManageTokenList');
+      } catch (err: any) {
+        CommonToast.failError(err);
+        console.log('add custom token error', err);
+      } finally {
+        Loading.hide();
+      }
+    }
+  }, [switchToken, tokenDataShowInMarket, tokenItem]);
+
+  return (
+    <PageContainer
+      titleDom={t('Import Token')}
+      safeAreaColor={['black', 'black']}
+      containerStyles={pageStyles.pageWrap}
+      scrollViewProps={{ disabled: true }}>
+      {/* <View style={pageStyles.tipsSection}>
+        <Svg icon="warning" size={pTd(18)} iconStyle={GStyles.marginRight(pTd(12))} />
+        <RichText
+          wrapperStyle={pageStyles.richTextWrap}
+          text={`Anyone can create a token, including fake versions of existing tokens. Learn more about $scams and security risks$.`}
+          commonTextStyle={pageStyles.richTextCommonStyle}
+          specialTextStyle={pageStyles.richTextSpecialStyle}
+          links={[
+            {
+              linkSyntax: 'scams and security risks',
+              linkStyle: pageStyles.richTextSpecialStyle,
+              linkPress: () => {
+                // TODO: change it
+                console.log('!!!');
+              },
+            },
+          ]}
+        />
+      </View> */}
+      <FormItem title={'Network'} style={pageStyles.networkWrap} titleStyle={pageStyles.labelWrap}>
+        <SelectChain
+          currentNetwork={currentNetwork}
+          chainId={tokenItem.chainId || 'AELF'}
+          chainList={chainList}
+          onChainPress={onChainChange}
+        />
+      </FormItem>
+      <FormItem title={'Token symbol'} titleStyle={pageStyles.labelWrap}>
+        <CommonInput
+          type="general"
+          spellCheck={false}
+          autoCorrect={false}
+          value={keyword}
+          theme={'white-bg'}
+          placeholder={t('Enter token symbol')}
+          onChangeText={onKeywordChange}
+          errorMessage={errorMessage}
+        />
+      </FormItem>
+      <FormItem title={'Decimals'} titleStyle={[pageStyles.disableText, pageStyles.labelWrap]}>
+        <TextL style={[pageStyles.tokenDecimal, FontStyles.fontDisabled1]}>{tokenItem.decimals}</TextL>
+      </FormItem>
+
+      <View style={pageStyles.btnContainer}>
+        <CommonButton onPress={addToken} disabled={btnDisable} type="primary">
+          {t('Import')}
+        </CommonButton>
+      </View>
+    </PageContainer>
+  );
+};
+
+export default CustomToken;
+
+export const getStyles = makeStyles(theme => ({
+  pageWrap: {
+    flex: 1,
+    backgroundColor: theme.colors.bgBase1,
+    ...gStyles.paddingArg(16, 16),
+  },
+  tipsSection: {
+    color: defaultColors.font3,
+    borderRadius: pTd(12),
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: theme.colors.borderWarning3,
+    backgroundColor: theme.colors.bgWarning3,
+    padding: pTd(16),
+    display: 'flex',
+    flexDirection: 'row',
+    marginBottom: pTd(16),
+  },
+  richTextWrap: {
+    width: pTd(280),
+  },
+  richTextCommonStyle: {
+    color: theme.colors.textWarning3,
+    fontSize: pTd(16),
+  },
+  richTextSpecialStyle: {
+    color: theme.colors.textBrand1,
+    fontSize: pTd(16),
+  },
+  networkWrap: {
+    paddingBottom: pTd(16),
+  },
+  labelWrap: {
+    fontSize: pTd(16),
+  },
+  btnContainer: {
+    position: 'absolute',
+    bottom: 0,
+    width: screenWidth,
+    ...GStyles.paddingArg(20, 16),
+  },
+  tokenDecimal: {
+    lineHeight: pTd(40),
+    backgroundColor: theme.colors.bgBase2,
+    color: theme.colors.textDisabled2,
+    overflow: 'hidden',
+    borderRadius: pTd(8),
+    paddingLeft: pTd(16),
+    borderWidth: pTd(1),
+    borderColor: theme.colors.borderBase1,
+  },
+  disableText: {
+    color: theme.colors.textDisabled1,
+  },
+}));

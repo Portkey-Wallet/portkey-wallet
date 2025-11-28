@@ -1,0 +1,51 @@
+import { DEFAULT_EXPIRATION, DEFAULT_SLIPPAGE_TOLERANCE } from '@portkey-wallet/constants/awaken';
+import BigNumber from 'bignumber.js';
+import { divDecimals, timesDecimals } from '../converter';
+import { ONE } from '@portkey-wallet/constants/misc';
+import { PBTimestamp, TCurrency } from '@portkey-wallet/types/awaken';
+
+export function valueToPercentage(input?: BigNumber.Value) {
+  return BigNumber.isBigNumber(input) ? input.times(100) : timesDecimals(input, 2);
+}
+
+export function parseUserSlippageTolerance(input?: string) {
+  return valueToPercentage(input || DEFAULT_SLIPPAGE_TOLERANCE);
+}
+
+export function bigNumberToString(big: BigNumber, decimals?: number) {
+  return big.isNaN() ? '0' : big.dp(decimals ?? 18).toString();
+}
+
+export function minimumAmountOut(outputAmount: BigNumber, slippageTolerance = DEFAULT_SLIPPAGE_TOLERANCE) {
+  if (slippageTolerance === '') slippageTolerance = DEFAULT_SLIPPAGE_TOLERANCE;
+  return outputAmount.div(ONE.plus(slippageTolerance));
+}
+
+export const getDeadline = (userExpiration: string): number | PBTimestamp => {
+  const deadline = new BigNumber(userExpiration);
+  const seconds =
+    Math.ceil(new Date().getTime() / 1000) +
+    (!deadline.isNaN() ? deadline.times(60).toNumber() : Number(DEFAULT_EXPIRATION) * 60);
+  return { seconds: seconds, nanos: 0 };
+};
+
+export const getDeadlineWithSec = (seconds: number) => {
+  return { seconds: seconds, nanos: 0 };
+};
+
+type Reserves = {
+  [key: string]: string;
+};
+export const getPairTokenRatio = ({
+  tokenA,
+  tokenB,
+  reserves,
+}: {
+  tokenA?: TCurrency;
+  tokenB?: TCurrency;
+  reserves?: Reserves;
+}) => {
+  const denominator = divDecimals(reserves?.[tokenA?.symbol || ''], tokenA?.decimals);
+  const radio = divDecimals(reserves?.[tokenB?.symbol || ''], tokenB?.decimals).div(denominator);
+  return denominator.isZero() || radio.isNaN() ? '0' : radio.toFixed();
+};

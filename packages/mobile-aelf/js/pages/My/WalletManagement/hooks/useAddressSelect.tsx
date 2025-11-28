@@ -1,0 +1,134 @@
+import { useCallback, useMemo } from 'react';
+import ActionSheet from 'components/ActionSheetNoPadding';
+import { Text, View } from 'react-native';
+import { pTd } from 'utils/unit';
+import navigationService from 'utils/navigationService';
+import React from 'react';
+import { makeStyles } from '@rneui/themed';
+import fonts from 'assets/theme/fonts';
+import Svg from 'components/Svg';
+import { TWalletInfo } from '@portkey-wallet/types/types-eoa/wallet';
+import { useCurrentWallet, useWalletListState } from '@portkey-wallet/hooks/hooks-eoa/wallet';
+import { AddressCard } from '../components/AddressCard';
+import Touchable from 'components/Touchable';
+import OverlayModal from 'components/OverlayModal';
+import { useAddressesTokensInfo } from './useAddressesTokensInfo';
+
+export const useAddressSelect = () => {
+  const styles = getStyles();
+  const currentWallet = useCurrentWallet();
+  const walletList = useWalletListState();
+
+  const accountsAddress = useMemo(
+    () =>
+      walletList
+        .map(wallet => wallet.accountList)
+        .flat()
+        .map(account => account.address),
+    [walletList],
+  );
+  const { addressesTotalBalanceInUsd } = useAddressesTokensInfo(accountsAddress);
+
+  const showAddressSelectModal = useCallback(() => {
+    ActionSheet.alert({
+      isCloseShow: false,
+      title2: (
+        <View style={[styles.container, styles.modalTitle]}>
+          <View style={styles.header}>
+            <Text style={styles.headerTitle}>Your wallets</Text>
+            <Touchable
+              onPress={() => {
+                OverlayModal.hide();
+                navigationService.push('ProfileSettings');
+              }}>
+              <Svg icon="gear" size={pTd(20)} />
+            </Touchable>
+          </View>
+        </View>
+      ),
+      message: (
+        <View style={[styles.container]}>
+          {walletList.map((item: TWalletInfo, index: number) => {
+            return (
+              <AddressCard
+                walletInfo={item}
+                currentWallet={currentWallet}
+                addressSelecting={true}
+                key={index}
+                addressesTotalBalanceInUsd={addressesTotalBalanceInUsd}
+              />
+            );
+          })}
+        </View>
+      ),
+      buttonGroupDirection: 'column',
+      buttonColWrapStyle: {
+        marginTop: 0,
+        paddingHorizontal: pTd(16),
+      },
+      buttons: [
+        {
+          type: 'outline',
+          title: 'Add & manage wallets',
+          titleStyle: {
+            ...fonts.SGMediumFont,
+            fontSize: pTd(16),
+            lineHeight: pTd(16) * 1.2,
+          },
+          buttonStyle: {
+            height: pTd(48),
+          },
+          onPress: async () => {
+            navigationService.push('WalletManagement');
+          },
+        },
+      ],
+    });
+  }, [currentWallet, styles.container, styles.header, styles.headerTitle, walletList]);
+  return {
+    showAddressSelectModal,
+  };
+};
+
+const getStyles = makeStyles(() => ({
+  container: {
+    flexDirection: 'column',
+    // backgroundColor: 'red',
+    paddingHorizontal: pTd(16),
+    // alignItems: 'center',
+    // width: '100%',
+    // position: 'relative',
+  },
+  modalTitle: {
+    marginBottom: pTd(16),
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    // marginBottom: pTd(22),
+  },
+  headerTitle: {
+    ...fonts.BGMediumFont,
+    fontSize: pTd(20),
+    lineHeight: pTd(20) * 1.2,
+  },
+  logo: {
+    backgroundColor: 'transparent',
+  },
+  title: {
+    ...fonts.BGMediumFont,
+    fontSize: pTd(32),
+    lineHeight: pTd(32) * 1.2,
+    textAlign: 'center',
+    width: '100%',
+  },
+  subTitle: {
+    fontSize: pTd(14),
+    width: '100%',
+    lineHeight: pTd(14) * 1.4,
+    textAlign: 'center',
+    marginTop: pTd(16),
+    marginBottom: pTd(48),
+  },
+}));

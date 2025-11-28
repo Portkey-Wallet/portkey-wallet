@@ -1,0 +1,18 @@
+name: Extension Build
+
+on:
+  push:
+    branches: [ "feature/extension-publish" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Build
+        run: |
+          yarn
+          yarn extension:did pro
+          zip -r public.zip ./packages/web-extension-did/app/public

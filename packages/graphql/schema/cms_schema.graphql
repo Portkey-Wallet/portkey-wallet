@@ -1,0 +1,3290 @@
+type Query {
+  ActivityModalConfig(filter: ActivityModalConfig_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [ActivityModalConfig!]!
+  ActivityModalConfig_by_id(id: ID!): ActivityModalConfig
+  ActivityModalConfig_aggregated(groupBy: [String], filter: ActivityModalConfig_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [ActivityModalConfig_aggregated!]!
+  appVersion(filter: appVersion_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [appVersion!]!
+  appVersion_by_id(id: ID!): appVersion
+  appVersion_aggregated(groupBy: [String], filter: appVersion_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [appVersion_aggregated!]!
+  bottomMenu(filter: bottomMenu_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [bottomMenu!]!
+  bottomMenu_by_id(id: ID!): bottomMenu
+  bottomMenu_aggregated(groupBy: [String], filter: bottomMenu_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [bottomMenu_aggregated!]!
+  bottomSecondMenu(filter: bottomSecondMenu_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [bottomSecondMenu!]!
+  bottomSecondMenu_by_id(id: ID!): bottomSecondMenu
+  bottomSecondMenu_aggregated(groupBy: [String], filter: bottomSecondMenu_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [bottomSecondMenu_aggregated!]!
+  buyButton: buyButton
+  cardType(filter: cardType_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [cardType!]!
+  cardType_by_id(id: ID!): cardType
+  cardType_aggregated(groupBy: [String], filter: cardType_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [cardType_aggregated!]!
+  clientType(filter: clientType_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [clientType!]!
+  clientType_by_id(id: ID!): clientType
+  clientType_aggregated(groupBy: [String], filter: clientType_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [clientType_aggregated!]!
+  codePushControl(filter: codePushControl_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [codePushControl!]!
+  codePushControl_by_id(id: ID!): codePushControl
+  codePushControl_aggregated(groupBy: [String], filter: codePushControl_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [codePushControl_aggregated!]!
+  country(filter: country_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [country!]!
+  country_by_id(id: ID!): country
+  country_aggregated(groupBy: [String], filter: country_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [country_aggregated!]!
+  dappList(filter: dappList_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [dappList!]!
+  dappList_by_id(id: ID!): dappList
+  dappList_aggregated(groupBy: [String], filter: dappList_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [dappList_aggregated!]!
+  deviceBrand(filter: deviceBrand_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [deviceBrand!]!
+  deviceBrand_by_id(id: ID!): deviceBrand
+  deviceBrand_aggregated(groupBy: [String], filter: deviceBrand_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [deviceBrand_aggregated!]!
+  deviceType(filter: deviceType_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [deviceType!]!
+  deviceType_by_id(id: ID!): deviceType
+  deviceType_aggregated(groupBy: [String], filter: deviceType_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [deviceType_aggregated!]!
+  discoverDappBanner: discoverDappBanner
+  discoverDappBanner_portkeyCard(filter: discoverDappBanner_portkeyCard_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [discoverDappBanner_portkeyCard!]!
+  discoverDappBanner_portkeyCard_by_id(id: ID!): discoverDappBanner_portkeyCard
+  discoverDappBanner_portkeyCard_aggregated(groupBy: [String], filter: discoverDappBanner_portkeyCard_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [discoverDappBanner_portkeyCard_aggregated!]!
+  discoverEarnData: discoverEarnData
+  discoverEarnData_portkeyCard(filter: discoverEarnData_portkeyCard_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [discoverEarnData_portkeyCard!]!
+  discoverEarnData_portkeyCard_by_id(id: ID!): discoverEarnData_portkeyCard
+  discoverEarnData_portkeyCard_aggregated(groupBy: [String], filter: discoverEarnData_portkeyCard_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [discoverEarnData_portkeyCard_aggregated!]!
+  discoverGroup(filter: discoverGroup_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [discoverGroup!]!
+  discoverGroup_by_id(id: ID!): discoverGroup
+  discoverGroup_aggregated(groupBy: [String], filter: discoverGroup_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [discoverGroup_aggregated!]!
+  discoverItem(filter: discoverItem_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [discoverItem!]!
+  discoverItem_by_id(id: ID!): discoverItem
+  discoverItem_aggregated(groupBy: [String], filter: discoverItem_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [discoverItem_aggregated!]!
+  discoverLearnBanner: discoverLearnBanner
+  discoverLearnBanner_portkeyCard(filter: discoverLearnBanner_portkeyCard_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [discoverLearnBanner_portkeyCard!]!
+  discoverLearnBanner_portkeyCard_by_id(id: ID!): discoverLearnBanner_portkeyCard
+  discoverLearnBanner_portkeyCard_aggregated(groupBy: [String], filter: discoverLearnBanner_portkeyCard_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [discoverLearnBanner_portkeyCard_aggregated!]!
+  discoverLearnGroup(filter: discoverLearnGroup_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [discoverLearnGroup!]!
+  discoverLearnGroup_by_id(id: ID!): discoverLearnGroup
+  discoverLearnGroup_aggregated(groupBy: [String], filter: discoverLearnGroup_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [discoverLearnGroup_aggregated!]!
+  discoverLearnGroup_portkeyCard(filter: discoverLearnGroup_portkeyCard_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [discoverLearnGroup_portkeyCard!]!
+  discoverLearnGroup_portkeyCard_by_id(id: ID!): discoverLearnGroup_portkeyCard
+  discoverLearnGroup_portkeyCard_aggregated(groupBy: [String], filter: discoverLearnGroup_portkeyCard_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [discoverLearnGroup_portkeyCard_aggregated!]!
+  discoverTabData(filter: discoverTabData_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [discoverTabData!]!
+  discoverTabData_by_id(id: ID!): discoverTabData
+  discoverTabData_aggregated(groupBy: [String], filter: discoverTabData_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [discoverTabData_aggregated!]!
+  download: download
+  entrance(filter: entrance_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [entrance!]!
+  entrance_by_id(id: ID!): entrance
+  entrance_aggregated(groupBy: [String], filter: entrance_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [entrance_aggregated!]!
+  entrance_entranceMatch(filter: entrance_entranceMatch_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [entrance_entranceMatch!]!
+  entrance_entranceMatch_by_id(id: ID!): entrance_entranceMatch
+  entrance_entranceMatch_aggregated(groupBy: [String], filter: entrance_entranceMatch_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [entrance_entranceMatch_aggregated!]!
+  entranceMatch(filter: entranceMatch_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [entranceMatch!]!
+  entranceMatch_by_id(id: ID!): entranceMatch
+  entranceMatch_aggregated(groupBy: [String], filter: entranceMatch_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [entranceMatch_aggregated!]!
+  entranceModuleName(filter: entranceModuleName_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [entranceModuleName!]!
+  entranceModuleName_by_id(id: ID!): entranceModuleName
+  entranceModuleName_aggregated(groupBy: [String], filter: entranceModuleName_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [entranceModuleName_aggregated!]!
+  home: home
+  home_dApp(filter: home_dApp_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [home_dApp!]!
+  home_dApp_by_id(id: ID!): home_dApp
+  home_dApp_aggregated(groupBy: [String], filter: home_dApp_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [home_dApp_aggregated!]!
+  homeBanner: homeBanner
+  homeBanner_portkeyCard(filter: homeBanner_portkeyCard_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [homeBanner_portkeyCard!]!
+  homeBanner_portkeyCard_by_id(id: ID!): homeBanner_portkeyCard
+  homeBanner_portkeyCard_aggregated(groupBy: [String], filter: homeBanner_portkeyCard_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [homeBanner_portkeyCard_aggregated!]!
+  loginMode(filter: loginMode_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [loginMode!]!
+  loginMode_by_id(id: ID!): loginMode
+  loginMode_aggregated(groupBy: [String], filter: loginMode_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [loginMode_aggregated!]!
+  loginMode_loginModeMatch(filter: loginMode_loginModeMatch_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [loginMode_loginModeMatch!]!
+  loginMode_loginModeMatch_by_id(id: ID!): loginMode_loginModeMatch
+  loginMode_loginModeMatch_aggregated(groupBy: [String], filter: loginMode_loginModeMatch_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [loginMode_loginModeMatch_aggregated!]!
+  loginModeMatch(filter: loginModeMatch_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [loginModeMatch!]!
+  loginModeMatch_by_id(id: ID!): loginModeMatch
+  loginModeMatch_aggregated(groupBy: [String], filter: loginModeMatch_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [loginModeMatch_aggregated!]!
+  loginType(filter: loginType_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [loginType!]!
+  loginType_by_id(id: ID!): loginType
+  loginType_aggregated(groupBy: [String], filter: loginType_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [loginType_aggregated!]!
+  mediaKit(filter: mediaKit_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [mediaKit!]!
+  mediaKit_by_id(id: ID!): mediaKit
+  mediaKit_aggregated(groupBy: [String], filter: mediaKit_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [mediaKit_aggregated!]!
+  mediaKitPage: mediaKitPage
+  mediaKitPage_mediaKit(filter: mediaKitPage_mediaKit_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [mediaKitPage_mediaKit!]!
+  mediaKitPage_mediaKit_by_id(id: ID!): mediaKitPage_mediaKit
+  mediaKitPage_mediaKit_aggregated(groupBy: [String], filter: mediaKitPage_mediaKit_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [mediaKitPage_mediaKit_aggregated!]!
+  myReferralBanner: myReferralBanner
+  myReferralBanner_portkeyCard(filter: myReferralBanner_portkeyCard_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [myReferralBanner_portkeyCard!]!
+  myReferralBanner_portkeyCard_by_id(id: ID!): myReferralBanner_portkeyCard
+  myReferralBanner_portkeyCard_aggregated(groupBy: [String], filter: myReferralBanner_portkeyCard_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [myReferralBanner_portkeyCard_aggregated!]!
+  navigationType(filter: navigationType_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [navigationType!]!
+  navigationType_by_id(id: ID!): navigationType
+  navigationType_aggregated(groupBy: [String], filter: navigationType_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [navigationType_aggregated!]!
+  officialSocialMedia(filter: officialSocialMedia_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [officialSocialMedia!]!
+  officialSocialMedia_by_id(id: ID!): officialSocialMedia
+  officialSocialMedia_aggregated(groupBy: [String], filter: officialSocialMedia_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [officialSocialMedia_aggregated!]!
+  portkeyCard(filter: portkeyCard_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [portkeyCard!]!
+  portkeyCard_by_id(id: ID!): portkeyCard
+  portkeyCard_aggregated(groupBy: [String], filter: portkeyCard_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [portkeyCard_aggregated!]!
+  rememberMeBlackListSites(filter: rememberMeBlackListSites_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [rememberMeBlackListSites!]!
+  rememberMeBlackListSites_by_id(id: ID!): rememberMeBlackListSites
+  rememberMeBlackListSites_aggregated(groupBy: [String], filter: rememberMeBlackListSites_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [rememberMeBlackListSites_aggregated!]!
+  serviceSuspension: serviceSuspension
+  socialMedia(filter: socialMedia_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [socialMedia!]!
+  socialMedia_by_id(id: ID!): socialMedia
+  socialMedia_aggregated(groupBy: [String], filter: socialMedia_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [socialMedia_aggregated!]!
+  tabMenu(filter: tabMenu_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [tabMenu!]!
+  tabMenu_by_id(id: ID!): tabMenu
+  tabMenu_aggregated(groupBy: [String], filter: tabMenu_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [tabMenu_aggregated!]!
+  tabType(filter: tabType_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [tabType!]!
+  tabType_by_id(id: ID!): tabType
+  tabType_aggregated(groupBy: [String], filter: tabType_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [tabType_aggregated!]!
+  timingType(filter: timingType_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [timingType!]!
+  timingType_by_id(id: ID!): timingType
+  timingType_aggregated(groupBy: [String], filter: timingType_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [timingType_aggregated!]!
+  tokenDetailBanner(filter: tokenDetailBanner_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [tokenDetailBanner!]!
+  tokenDetailBanner_by_id(id: ID!): tokenDetailBanner
+  tokenDetailBanner_aggregated(groupBy: [String], filter: tokenDetailBanner_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [tokenDetailBanner_aggregated!]!
+  tokenDetailBanner_portkeyCard(filter: tokenDetailBanner_portkeyCard_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [tokenDetailBanner_portkeyCard!]!
+  tokenDetailBanner_portkeyCard_by_id(id: ID!): tokenDetailBanner_portkeyCard
+  tokenDetailBanner_portkeyCard_aggregated(groupBy: [String], filter: tokenDetailBanner_portkeyCard_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [tokenDetailBanner_portkeyCard_aggregated!]!
+  topMenu(filter: topMenu_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [topMenu!]!
+  topMenu_by_id(id: ID!): topMenu
+  topMenu_aggregated(groupBy: [String], filter: topMenu_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [topMenu_aggregated!]!
+  topSecondMenu(filter: topSecondMenu_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [topSecondMenu!]!
+  topSecondMenu_by_id(id: ID!): topSecondMenu
+  topSecondMenu_aggregated(groupBy: [String], filter: topSecondMenu_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [topSecondMenu_aggregated!]!
+  upgradePush(filter: upgradePush_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [upgradePush!]!
+  upgradePush_by_id(id: ID!): upgradePush
+  upgradePush_aggregated(groupBy: [String], filter: upgradePush_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [upgradePush_aggregated!]!
+  upgradePush_appVersion(filter: upgradePush_appVersion_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [upgradePush_appVersion!]!
+  upgradePush_appVersion_by_id(id: ID!): upgradePush_appVersion
+  upgradePush_appVersion_aggregated(groupBy: [String], filter: upgradePush_appVersion_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [upgradePush_appVersion_aggregated!]!
+  upgradePush_country(filter: upgradePush_country_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [upgradePush_country!]!
+  upgradePush_country_by_id(id: ID!): upgradePush_country
+  upgradePush_country_aggregated(groupBy: [String], filter: upgradePush_country_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [upgradePush_country_aggregated!]!
+  upgradePush_deviceBrand(filter: upgradePush_deviceBrand_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [upgradePush_deviceBrand!]!
+  upgradePush_deviceBrand_by_id(id: ID!): upgradePush_deviceBrand
+  upgradePush_deviceBrand_aggregated(groupBy: [String], filter: upgradePush_deviceBrand_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [upgradePush_deviceBrand_aggregated!]!
+  upgradePush_deviceType(filter: upgradePush_deviceType_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [upgradePush_deviceType!]!
+  upgradePush_deviceType_by_id(id: ID!): upgradePush_deviceType
+  upgradePush_deviceType_aggregated(groupBy: [String], filter: upgradePush_deviceType_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [upgradePush_deviceType_aggregated!]!
+  upgradeStyle(filter: upgradeStyle_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [upgradeStyle!]!
+  upgradeStyle_by_id(id: ID!): upgradeStyle
+  upgradeStyle_aggregated(groupBy: [String], filter: upgradeStyle_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [upgradeStyle_aggregated!]!
+}
+
+"""The `Boolean` scalar type represents `true` or `false`."""
+scalar Boolean
+
+"""ISO8601 Date values"""
+scalar Date
+
+"""
+The `Float` scalar type represents signed double-precision fractional values as specified by [IEEE 754](https://en.wikipedia.org/wiki/IEEE_floating_point).
+"""
+scalar Float
+
+"""BigInt value"""
+scalar GraphQLBigInt
+
+"""A Float or a String"""
+scalar GraphQLStringOrFloat
+
+"""
+The `ID` scalar type represents a unique identifier, often used to refetch an object or as key for a cache. The ID type appears in a JSON response as a String; however, it is not intended to be human-readable. When expected as an input type, any string (such as `"4"`) or integer (such as `4`) input value will be accepted as an ID.
+"""
+scalar ID
+
+"""
+The `Int` scalar type represents non-fractional signed whole numeric values. Int can represent values between -(2^31) and 2^31 - 1.
+"""
+scalar Int
+
+"""
+The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSON
+
+"""
+The `String` scalar type represents textual data, represented as UTF-8 character sequences. The String type is most often used by GraphQL to represent free-form human-readable text.
+"""
+scalar String
+
+type ActivityModalConfig {
+  clientType(filter: clientType_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): clientType
+
+  """弹框内容文案"""
+  description: String
+
+  """头图URL"""
+  headerImg: String
+  id: ID!
+  label: String
+
+  """取消按钮文案"""
+  negativeTitle: String
+
+  """取消按钮文案"""
+  negtiveTitle: String
+
+  """确认按钮点击后触发的路由事件"""
+  positiveAction: String
+
+  """确认按钮文案"""
+  positiveTitle: String
+
+  """控制弹框是否显示"""
+  show: Boolean
+
+  """控制是否显示右上角的关闭icon"""
+  showClose: Boolean
+  timingOperation: String
+  timingType(filter: timingType_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): timingType
+
+  """标题"""
+  title: String
+}
+
+type ActivityModalConfig_aggregated {
+  group: JSON
+  countAll: Int
+  count: ActivityModalConfig_aggregated_count
+  countDistinct: ActivityModalConfig_aggregated_count
+  avg: ActivityModalConfig_aggregated_fields
+  sum: ActivityModalConfig_aggregated_fields
+  avgDistinct: ActivityModalConfig_aggregated_fields
+  sumDistinct: ActivityModalConfig_aggregated_fields
+  min: ActivityModalConfig_aggregated_fields
+  max: ActivityModalConfig_aggregated_fields
+}
+
+type ActivityModalConfig_aggregated_count {
+  clientType: Int
+
+  """弹框内容文案"""
+  description: Int
+
+  """头图URL"""
+  headerImg: Int
+  id: Int
+  label: Int
+
+  """取消按钮文案"""
+  negativeTitle: Int
+
+  """取消按钮文案"""
+  negtiveTitle: Int
+
+  """确认按钮点击后触发的路由事件"""
+  positiveAction: Int
+
+  """确认按钮文案"""
+  positiveTitle: Int
+
+  """控制弹框是否显示"""
+  show: Int
+
+  """控制是否显示右上角的关闭icon"""
+  showClose: Int
+  timingOperation: Int
+  timingType: Int
+
+  """标题"""
+  title: Int
+}
+
+type ActivityModalConfig_aggregated_fields {
+  clientType: Float
+  id: Float
+  timingType: Float
+}
+
+type appVersion {
+  date_created: Date
+  date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
+  id: ID!
+  label: String
+  sort: Int
+  status: String
+  user_created: String
+  user_updated: String
+  value: String
+}
+
+type appVersion_aggregated {
+  group: JSON
+  countAll: Int
+  count: appVersion_aggregated_count
+  countDistinct: appVersion_aggregated_count
+  avg: appVersion_aggregated_fields
+  sum: appVersion_aggregated_fields
+  avgDistinct: appVersion_aggregated_fields
+  sumDistinct: appVersion_aggregated_fields
+  min: appVersion_aggregated_fields
+  max: appVersion_aggregated_fields
+}
+
+type appVersion_aggregated_count {
+  date_created: Int
+  date_updated: Int
+  id: Int
+  label: Int
+  sort: Int
+  status: Int
+  user_created: Int
+  user_updated: Int
+  value: Int
+}
+
+type appVersion_aggregated_fields {
+  id: Float
+  sort: Float
+}
+
+type bottomMenu {
+  date_created: Date
+  date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
+  id: ID!
+  index: Int!
+  path: String
+  sort: Int
+  status: String
+  title: String!
+  type(filter: navigationType_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): navigationType
+  user_created: String
+  user_updated: String
+  children(filter: bottomSecondMenu_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [bottomSecondMenu]
+  children_func: count_functions
+}
+
+type bottomMenu_aggregated {
+  group: JSON
+  countAll: Int
+  count: bottomMenu_aggregated_count
+  countDistinct: bottomMenu_aggregated_count
+  avg: bottomMenu_aggregated_fields
+  sum: bottomMenu_aggregated_fields
+  avgDistinct: bottomMenu_aggregated_fields
+  sumDistinct: bottomMenu_aggregated_fields
+  min: bottomMenu_aggregated_fields
+  max: bottomMenu_aggregated_fields
+}
+
+type bottomMenu_aggregated_count {
+  date_created: Int
+  date_updated: Int
+  id: Int
+  index: Int
+  path: Int
+  sort: Int
+  status: Int
+  title: Int
+  type: Int
+  user_created: Int
+  user_updated: Int
+  children: Int
+}
+
+type bottomMenu_aggregated_fields {
+  id: Float
+  index: Float
+  sort: Float
+  type: Float
+}
+
+type bottomSecondMenu {
+  date_created: Date
+  date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
+  id: ID!
+  index: Int!
+  parent(filter: bottomMenu_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): bottomMenu
+  path: String
+  sort: Int
+  status: String
+  title: String!
+  type(filter: navigationType_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): navigationType
+  user_created: String
+  user_updated: String
+}
+
+type bottomSecondMenu_aggregated {
+  group: JSON
+  countAll: Int
+  count: bottomSecondMenu_aggregated_count
+  countDistinct: bottomSecondMenu_aggregated_count
+  avg: bottomSecondMenu_aggregated_fields
+  sum: bottomSecondMenu_aggregated_fields
+  avgDistinct: bottomSecondMenu_aggregated_fields
+  sumDistinct: bottomSecondMenu_aggregated_fields
+  min: bottomSecondMenu_aggregated_fields
+  max: bottomSecondMenu_aggregated_fields
+}
+
+type bottomSecondMenu_aggregated_count {
+  date_created: Int
+  date_updated: Int
+  id: Int
+  index: Int
+  parent: Int
+  path: Int
+  sort: Int
+  status: Int
+  title: Int
+  type: Int
+  user_created: Int
+  user_updated: Int
+}
+
+type bottomSecondMenu_aggregated_fields {
+  id: Float
+  index: Float
+  parent: Float
+  sort: Float
+  type: Float
+}
+
+type buyButton {
+  date_created: Date
+  date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
+  id: ID!
+  isAndroidBuyShow: Boolean
+  isAndroidSellShow: Boolean
+  isBuySectionShow: Boolean
+  isExtensionBuyShow: Boolean
+  isExtensionSellShow: Boolean
+  isIOSBuyShow: Boolean
+  isIOSSellShow: Boolean
+  isSellSectionShow: Boolean
+  status: String
+  user_created: String
+  user_updated: String
+}
+
+type cardType {
+  id: ID!
+  label: String
+  status: String
+  value: String
+}
+
+type cardType_aggregated {
+  group: JSON
+  countAll: Int
+  count: cardType_aggregated_count
+  countDistinct: cardType_aggregated_count
+  avg: cardType_aggregated_fields
+  sum: cardType_aggregated_fields
+  avgDistinct: cardType_aggregated_fields
+  sumDistinct: cardType_aggregated_fields
+  min: cardType_aggregated_fields
+  max: cardType_aggregated_fields
+}
+
+type cardType_aggregated_count {
+  id: Int
+  label: Int
+  status: Int
+  value: Int
+}
+
+type cardType_aggregated_fields {
+  id: Float
+}
+
+type clientType {
+  id: ID!
+  name: String
+}
+
+type clientType_aggregated {
+  group: JSON
+  countAll: Int
+  count: clientType_aggregated_count
+  countDistinct: clientType_aggregated_count
+  avg: clientType_aggregated_fields
+  sum: clientType_aggregated_fields
+  avgDistinct: clientType_aggregated_fields
+  sumDistinct: clientType_aggregated_fields
+  min: clientType_aggregated_fields
+  max: clientType_aggregated_fields
+}
+
+type clientType_aggregated_count {
+  id: Int
+  name: Int
+}
+
+type clientType_aggregated_fields {
+  id: Float
+}
+
+type codePushControl {
+  content: String
+  date_created: Date
+  date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
+  id: ID!
+  isForceUpdate: Boolean
+  label: String
+  sort: Int
+  status: String
+  title: String
+  updatedContent: String
+  updatedTitle: String
+  user_created: String
+  user_updated: String
+  version: String
+}
+
+type codePushControl_aggregated {
+  group: JSON
+  countAll: Int
+  count: codePushControl_aggregated_count
+  countDistinct: codePushControl_aggregated_count
+  avg: codePushControl_aggregated_fields
+  sum: codePushControl_aggregated_fields
+  avgDistinct: codePushControl_aggregated_fields
+  sumDistinct: codePushControl_aggregated_fields
+  min: codePushControl_aggregated_fields
+  max: codePushControl_aggregated_fields
+}
+
+type codePushControl_aggregated_count {
+  content: Int
+  date_created: Int
+  date_updated: Int
+  id: Int
+  isForceUpdate: Int
+  label: Int
+  sort: Int
+  status: Int
+  title: Int
+  updatedContent: Int
+  updatedTitle: Int
+  user_created: Int
+  user_updated: Int
+  version: Int
+}
+
+type codePushControl_aggregated_fields {
+  id: Float
+  sort: Float
+}
+
+type count_functions {
+  count: Int
+}
+
+type country {
+  date_created: Date
+  date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
+  id: ID!
+  label: String
+  sort: Int
+  status: String
+  user_created: String
+  user_updated: String
+  value: String
+}
+
+type country_aggregated {
+  group: JSON
+  countAll: Int
+  count: country_aggregated_count
+  countDistinct: country_aggregated_count
+  avg: country_aggregated_fields
+  sum: country_aggregated_fields
+  avgDistinct: country_aggregated_fields
+  sumDistinct: country_aggregated_fields
+  min: country_aggregated_fields
+  max: country_aggregated_fields
+}
+
+type country_aggregated_count {
+  date_created: Int
+  date_updated: Int
+  id: Int
+  label: Int
+  sort: Int
+  status: Int
+  user_created: Int
+  user_updated: Int
+  value: Int
+}
+
+type country_aggregated_fields {
+  id: Float
+  sort: Float
+}
+
+type dappList {
+  Dapp_Name: String
+  domainName: String
+  id: ID!
+}
+
+type dappList_aggregated {
+  group: JSON
+  countAll: Int
+  count: dappList_aggregated_count
+  countDistinct: dappList_aggregated_count
+  avg: dappList_aggregated_fields
+  sum: dappList_aggregated_fields
+  avgDistinct: dappList_aggregated_fields
+  sumDistinct: dappList_aggregated_fields
+  min: dappList_aggregated_fields
+  max: dappList_aggregated_fields
+}
+
+type dappList_aggregated_count {
+  Dapp_Name: Int
+  domainName: Int
+  id: Int
+}
+
+type dappList_aggregated_fields {
+  id: Float
+}
+
+type datetime_functions {
+  year: Int
+  month: Int
+  week: Int
+  day: Int
+  weekday: Int
+  hour: Int
+  minute: Int
+  second: Int
+}
+
+type deviceBrand {
+  date_created: Date
+  date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
+  id: ID!
+  label: String
+  sort: Int
+  status: String
+  user_created: String
+  user_updated: String
+  value: String
+}
+
+type deviceBrand_aggregated {
+  group: JSON
+  countAll: Int
+  count: deviceBrand_aggregated_count
+  countDistinct: deviceBrand_aggregated_count
+  avg: deviceBrand_aggregated_fields
+  sum: deviceBrand_aggregated_fields
+  avgDistinct: deviceBrand_aggregated_fields
+  sumDistinct: deviceBrand_aggregated_fields
+  min: deviceBrand_aggregated_fields
+  max: deviceBrand_aggregated_fields
+}
+
+type deviceBrand_aggregated_count {
+  date_created: Int
+  date_updated: Int
+  id: Int
+  label: Int
+  sort: Int
+  status: Int
+  user_created: Int
+  user_updated: Int
+  value: Int
+}
+
+type deviceBrand_aggregated_fields {
+  id: Float
+  sort: Float
+}
+
+type deviceType {
+  date_created: Date
+  date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
+  id: ID!
+  label: String
+  sort: Int
+  status: String
+  user_created: String
+  user_updated: String
+  value: Int
+}
+
+type deviceType_aggregated {
+  group: JSON
+  countAll: Int
+  count: deviceType_aggregated_count
+  countDistinct: deviceType_aggregated_count
+  avg: deviceType_aggregated_fields
+  sum: deviceType_aggregated_fields
+  avgDistinct: deviceType_aggregated_fields
+  sumDistinct: deviceType_aggregated_fields
+  min: deviceType_aggregated_fields
+  max: deviceType_aggregated_fields
+}
+
+type deviceType_aggregated_count {
+  date_created: Int
+  date_updated: Int
+  id: Int
+  label: Int
+  sort: Int
+  status: Int
+  user_created: Int
+  user_updated: Int
+  value: Int
+}
+
+type deviceType_aggregated_fields {
+  id: Float
+  sort: Float
+  value: Float
+}
+
+type directus_files {
+  charset: String
+  description: String
+  duration: Int
+  embed: String
+  filename_disk: String
+  filename_download: String!
+  filesize: GraphQLBigInt
+  folder: String
+  height: Int
+  id: ID!
+  location: String
+  metadata: JSON
+  metadata_func: count_functions
+  modified_by: String
+  modified_on: Date
+  modified_on_func: datetime_functions
+  storage: String!
+  tags: JSON
+  tags_func: count_functions
+  title: String
+  type: String
+  uploaded_by: String
+  uploaded_on: Date
+  uploaded_on_func: datetime_functions
+  width: Int
+}
+
+type discoverDappBanner {
+  id: ID!
+  status: String
+  items(filter: discoverDappBanner_portkeyCard_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [discoverDappBanner_portkeyCard]
+  items_func: count_functions
+}
+
+type discoverDappBanner_portkeyCard {
+  discoverDappBanner_id(filter: discoverDappBanner_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): discoverDappBanner
+  id: ID!
+  portkeyCard_id(filter: portkeyCard_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): portkeyCard
+}
+
+type discoverDappBanner_portkeyCard_aggregated {
+  group: JSON
+  countAll: Int
+  count: discoverDappBanner_portkeyCard_aggregated_count
+  countDistinct: discoverDappBanner_portkeyCard_aggregated_count
+  avg: discoverDappBanner_portkeyCard_aggregated_fields
+  sum: discoverDappBanner_portkeyCard_aggregated_fields
+  avgDistinct: discoverDappBanner_portkeyCard_aggregated_fields
+  sumDistinct: discoverDappBanner_portkeyCard_aggregated_fields
+  min: discoverDappBanner_portkeyCard_aggregated_fields
+  max: discoverDappBanner_portkeyCard_aggregated_fields
+}
+
+type discoverDappBanner_portkeyCard_aggregated_count {
+  discoverDappBanner_id: Int
+  id: Int
+  portkeyCard_id: Int
+}
+
+type discoverDappBanner_portkeyCard_aggregated_fields {
+  discoverDappBanner_id: Float
+  id: Float
+  portkeyCard_id: Float
+}
+
+type discoverEarnData {
+  id: ID!
+  status: String
+  items(filter: discoverEarnData_portkeyCard_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [discoverEarnData_portkeyCard]
+  items_func: count_functions
+}
+
+type discoverEarnData_portkeyCard {
+  discoverEarnData_id(filter: discoverEarnData_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): discoverEarnData
+  id: ID!
+  portkeyCard_id(filter: portkeyCard_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): portkeyCard
+}
+
+type discoverEarnData_portkeyCard_aggregated {
+  group: JSON
+  countAll: Int
+  count: discoverEarnData_portkeyCard_aggregated_count
+  countDistinct: discoverEarnData_portkeyCard_aggregated_count
+  avg: discoverEarnData_portkeyCard_aggregated_fields
+  sum: discoverEarnData_portkeyCard_aggregated_fields
+  avgDistinct: discoverEarnData_portkeyCard_aggregated_fields
+  sumDistinct: discoverEarnData_portkeyCard_aggregated_fields
+  min: discoverEarnData_portkeyCard_aggregated_fields
+  max: discoverEarnData_portkeyCard_aggregated_fields
+}
+
+type discoverEarnData_portkeyCard_aggregated_count {
+  discoverEarnData_id: Int
+  id: Int
+  portkeyCard_id: Int
+}
+
+type discoverEarnData_portkeyCard_aggregated_fields {
+  discoverEarnData_id: Float
+  id: Float
+  portkeyCard_id: Float
+}
+
+type discoverGroup {
+  date_created: Date
+  date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
+  id: ID!
+  index: Int
+  sort: Int
+  status: String
+  title: String
+  user_created: String
+  user_updated: String
+  items(filter: discoverItem_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [discoverItem]
+  items_func: count_functions
+}
+
+type discoverGroup_aggregated {
+  group: JSON
+  countAll: Int
+  count: discoverGroup_aggregated_count
+  countDistinct: discoverGroup_aggregated_count
+  avg: discoverGroup_aggregated_fields
+  sum: discoverGroup_aggregated_fields
+  avgDistinct: discoverGroup_aggregated_fields
+  sumDistinct: discoverGroup_aggregated_fields
+  min: discoverGroup_aggregated_fields
+  max: discoverGroup_aggregated_fields
+}
+
+type discoverGroup_aggregated_count {
+  date_created: Int
+  date_updated: Int
+  id: Int
+  index: Int
+  sort: Int
+  status: Int
+  title: Int
+  user_created: Int
+  user_updated: Int
+  items: Int
+}
+
+type discoverGroup_aggregated_fields {
+  id: Float
+  index: Float
+  sort: Float
+}
+
+type discoverItem {
+  appLink: String
+  date_created: Date
+  date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
+  description: String
+  extensionLink: String
+  group(filter: discoverGroup_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): discoverGroup
+  id: ID!
+  imgUrl(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
+  index: Int
+  sort: Int
+  status: String
+  title: String
+  url: String
+  user_created: String
+  user_updated: String
+}
+
+type discoverItem_aggregated {
+  group: JSON
+  countAll: Int
+  count: discoverItem_aggregated_count
+  countDistinct: discoverItem_aggregated_count
+  avg: discoverItem_aggregated_fields
+  sum: discoverItem_aggregated_fields
+  avgDistinct: discoverItem_aggregated_fields
+  sumDistinct: discoverItem_aggregated_fields
+  min: discoverItem_aggregated_fields
+  max: discoverItem_aggregated_fields
+}
+
+type discoverItem_aggregated_count {
+  appLink: Int
+  date_created: Int
+  date_updated: Int
+  description: Int
+  extensionLink: Int
+  group: Int
+  id: Int
+
+  """Not support svg"""
+  imgUrl: Int
+  index: Int
+  sort: Int
+  status: Int
+  title: Int
+  url: Int
+  user_created: Int
+  user_updated: Int
+}
+
+type discoverItem_aggregated_fields {
+  group: Float
+  id: Float
+  index: Float
+  sort: Float
+}
+
+type discoverLearnBanner {
+  id: ID!
+  status: String
+  items(filter: discoverLearnBanner_portkeyCard_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [discoverLearnBanner_portkeyCard]
+  items_func: count_functions
+}
+
+type discoverLearnBanner_portkeyCard {
+  discoverLearnBanner_id(filter: discoverLearnBanner_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): discoverLearnBanner
+  id: ID!
+  portkeyCard_id(filter: portkeyCard_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): portkeyCard
+}
+
+type discoverLearnBanner_portkeyCard_aggregated {
+  group: JSON
+  countAll: Int
+  count: discoverLearnBanner_portkeyCard_aggregated_count
+  countDistinct: discoverLearnBanner_portkeyCard_aggregated_count
+  avg: discoverLearnBanner_portkeyCard_aggregated_fields
+  sum: discoverLearnBanner_portkeyCard_aggregated_fields
+  avgDistinct: discoverLearnBanner_portkeyCard_aggregated_fields
+  sumDistinct: discoverLearnBanner_portkeyCard_aggregated_fields
+  min: discoverLearnBanner_portkeyCard_aggregated_fields
+  max: discoverLearnBanner_portkeyCard_aggregated_fields
+}
+
+type discoverLearnBanner_portkeyCard_aggregated_count {
+  discoverLearnBanner_id: Int
+  id: Int
+  portkeyCard_id: Int
+}
+
+type discoverLearnBanner_portkeyCard_aggregated_fields {
+  discoverLearnBanner_id: Float
+  id: Float
+  portkeyCard_id: Float
+}
+
+type discoverLearnGroup {
+  id: ID!
+  index: GraphQLBigInt
+  status: String
+  title: String
+  value: String
+  items(filter: discoverLearnGroup_portkeyCard_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [discoverLearnGroup_portkeyCard]
+  items_func: count_functions
+}
+
+type discoverLearnGroup_aggregated {
+  group: JSON
+  countAll: Int
+  count: discoverLearnGroup_aggregated_count
+  countDistinct: discoverLearnGroup_aggregated_count
+  avg: discoverLearnGroup_aggregated_fields
+  sum: discoverLearnGroup_aggregated_fields
+  avgDistinct: discoverLearnGroup_aggregated_fields
+  sumDistinct: discoverLearnGroup_aggregated_fields
+  min: discoverLearnGroup_aggregated_fields
+  max: discoverLearnGroup_aggregated_fields
+}
+
+type discoverLearnGroup_aggregated_count {
+  id: Int
+  index: Int
+  status: Int
+  title: Int
+  value: Int
+  items: Int
+}
+
+type discoverLearnGroup_aggregated_fields {
+  id: Float
+  index: Float
+}
+
+type discoverLearnGroup_portkeyCard {
+  discoverLearnGroup_id(filter: discoverLearnGroup_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): discoverLearnGroup
+  id: ID!
+  portkeyCard_id(filter: portkeyCard_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): portkeyCard
+}
+
+type discoverLearnGroup_portkeyCard_aggregated {
+  group: JSON
+  countAll: Int
+  count: discoverLearnGroup_portkeyCard_aggregated_count
+  countDistinct: discoverLearnGroup_portkeyCard_aggregated_count
+  avg: discoverLearnGroup_portkeyCard_aggregated_fields
+  sum: discoverLearnGroup_portkeyCard_aggregated_fields
+  avgDistinct: discoverLearnGroup_portkeyCard_aggregated_fields
+  sumDistinct: discoverLearnGroup_portkeyCard_aggregated_fields
+  min: discoverLearnGroup_portkeyCard_aggregated_fields
+  max: discoverLearnGroup_portkeyCard_aggregated_fields
+}
+
+type discoverLearnGroup_portkeyCard_aggregated_count {
+  discoverLearnGroup_id: Int
+  id: Int
+  portkeyCard_id: Int
+}
+
+type discoverLearnGroup_portkeyCard_aggregated_fields {
+  discoverLearnGroup_id: Float
+  id: Float
+  portkeyCard_id: Float
+}
+
+type discoverTabData {
+  id: ID!
+  index: GraphQLBigInt
+  name: String
+  status: String
+  value: String
+}
+
+type discoverTabData_aggregated {
+  group: JSON
+  countAll: Int
+  count: discoverTabData_aggregated_count
+  countDistinct: discoverTabData_aggregated_count
+  avg: discoverTabData_aggregated_fields
+  sum: discoverTabData_aggregated_fields
+  avgDistinct: discoverTabData_aggregated_fields
+  sumDistinct: discoverTabData_aggregated_fields
+  min: discoverTabData_aggregated_fields
+  max: discoverTabData_aggregated_fields
+}
+
+type discoverTabData_aggregated_count {
+  id: Int
+  index: Int
+  name: Int
+  status: Int
+  value: Int
+}
+
+type discoverTabData_aggregated_fields {
+  id: Float
+  index: Float
+}
+
+type download {
+  androidDownloadUrl: String
+  androidProductImage(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
+  androidQRCode(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
+  date_updated: Date
+  date_updated_func: datetime_functions
+  extensionDownloadUrl: String
+  extensionProductImage(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
+  id: ID!
+  iosDownloadUrl: String
+  iosProductImage(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
+  iosQRCode(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
+  user_updated: String
+}
+
+type entrance {
+  date_created: Date
+  date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
+  defaultSwitch: Boolean
+  id: ID!
+  moduleName(filter: entranceModuleName_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): entranceModuleName
+  user_created: String
+  user_updated: String
+  matchList(filter: entrance_entranceMatch_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [entrance_entranceMatch]
+  matchList_func: count_functions
+}
+
+type entrance_aggregated {
+  group: JSON
+  countAll: Int
+  count: entrance_aggregated_count
+  countDistinct: entrance_aggregated_count
+  avg: entrance_aggregated_fields
+  sum: entrance_aggregated_fields
+  avgDistinct: entrance_aggregated_fields
+  sumDistinct: entrance_aggregated_fields
+  min: entrance_aggregated_fields
+  max: entrance_aggregated_fields
+}
+
+type entrance_aggregated_count {
+  date_created: Int
+  date_updated: Int
+  defaultSwitch: Int
+  id: Int
+  moduleName: Int
+  user_created: Int
+  user_updated: Int
+  matchList: Int
+}
+
+type entrance_aggregated_fields {
+  id: Float
+  moduleName: Float
+}
+
+type entrance_entranceMatch {
+  entrance_id(filter: entrance_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): entrance
+  entranceMatch_id(filter: entranceMatch_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): entranceMatch
+  id: ID!
+}
+
+type entrance_entranceMatch_aggregated {
+  group: JSON
+  countAll: Int
+  count: entrance_entranceMatch_aggregated_count
+  countDistinct: entrance_entranceMatch_aggregated_count
+  avg: entrance_entranceMatch_aggregated_fields
+  sum: entrance_entranceMatch_aggregated_fields
+  avgDistinct: entrance_entranceMatch_aggregated_fields
+  sumDistinct: entrance_entranceMatch_aggregated_fields
+  min: entrance_entranceMatch_aggregated_fields
+  max: entrance_entranceMatch_aggregated_fields
+}
+
+type entrance_entranceMatch_aggregated_count {
+  entrance_id: Int
+  entranceMatch_id: Int
+  id: Int
+}
+
+type entrance_entranceMatch_aggregated_fields {
+  entrance_id: Float
+  entranceMatch_id: Float
+  id: Float
+}
+
+type entranceMatch {
+  date_created: Date
+  date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
+  description: String
+  id: ID!
+  matchRuleList: JSON
+  matchRuleList_func: count_functions
+  matchSwitch: Boolean
+  status: String
+  user_created: String
+  user_updated: String
+  weight: Int
+}
+
+type entranceMatch_aggregated {
+  group: JSON
+  countAll: Int
+  count: entranceMatch_aggregated_count
+  countDistinct: entranceMatch_aggregated_count
+  avg: entranceMatch_aggregated_fields
+  sum: entranceMatch_aggregated_fields
+  avgDistinct: entranceMatch_aggregated_fields
+  sumDistinct: entranceMatch_aggregated_fields
+  min: entranceMatch_aggregated_fields
+  max: entranceMatch_aggregated_fields
+}
+
+type entranceMatch_aggregated_count {
+  date_created: Int
+  date_updated: Int
+  description: Int
+  id: Int
+  matchRuleList: Int
+  matchSwitch: Int
+  status: Int
+  user_created: Int
+  user_updated: Int
+  weight: Int
+}
+
+type entranceMatch_aggregated_fields {
+  id: Float
+  weight: Float
+}
+
+type entranceModuleName {
+  date_created: Date
+  date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
+  description: String
+  id: ID!
+  user_created: String
+  user_updated: String
+  value: String
+}
+
+type entranceModuleName_aggregated {
+  group: JSON
+  countAll: Int
+  count: entranceModuleName_aggregated_count
+  countDistinct: entranceModuleName_aggregated_count
+  avg: entranceModuleName_aggregated_fields
+  sum: entranceModuleName_aggregated_fields
+  avgDistinct: entranceModuleName_aggregated_fields
+  sumDistinct: entranceModuleName_aggregated_fields
+  min: entranceModuleName_aggregated_fields
+  max: entranceModuleName_aggregated_fields
+}
+
+type entranceModuleName_aggregated_count {
+  date_created: Int
+  date_updated: Int
+  description: Int
+  id: Int
+  user_created: Int
+  user_updated: Int
+  value: Int
+}
+
+type entranceModuleName_aggregated_fields {
+  id: Float
+}
+
+type home {
+  dAppSectionTitle: String
+  date_updated: Date
+  date_updated_func: datetime_functions
+  focusImage(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
+  id: ID!
+  user_updated: String
+  videoContent: String
+  videoTitle: String
+  videoUrl: String
+  dAppList(filter: home_dApp_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [home_dApp]
+  dAppList_func: count_functions
+}
+
+type home_dApp {
+  dApp_id: Int
+  home_id(filter: home_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): home
+  id: ID!
+}
+
+type home_dApp_aggregated {
+  group: JSON
+  countAll: Int
+  count: home_dApp_aggregated_count
+  countDistinct: home_dApp_aggregated_count
+  avg: home_dApp_aggregated_fields
+  sum: home_dApp_aggregated_fields
+  avgDistinct: home_dApp_aggregated_fields
+  sumDistinct: home_dApp_aggregated_fields
+  min: home_dApp_aggregated_fields
+  max: home_dApp_aggregated_fields
+}
+
+type home_dApp_aggregated_count {
+  dApp_id: Int
+  home_id: Int
+  id: Int
+}
+
+type home_dApp_aggregated_fields {
+  dApp_id: Float
+  home_id: Float
+  id: Float
+}
+
+type homeBanner {
+  id: ID!
+  status: String
+  items(filter: homeBanner_portkeyCard_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [homeBanner_portkeyCard]
+  items_func: count_functions
+}
+
+type homeBanner_portkeyCard {
+  homeBanner_id(filter: homeBanner_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): homeBanner
+  id: ID!
+  portkeyCard_id(filter: portkeyCard_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): portkeyCard
+}
+
+type homeBanner_portkeyCard_aggregated {
+  group: JSON
+  countAll: Int
+  count: homeBanner_portkeyCard_aggregated_count
+  countDistinct: homeBanner_portkeyCard_aggregated_count
+  avg: homeBanner_portkeyCard_aggregated_fields
+  sum: homeBanner_portkeyCard_aggregated_fields
+  avgDistinct: homeBanner_portkeyCard_aggregated_fields
+  sumDistinct: homeBanner_portkeyCard_aggregated_fields
+  min: homeBanner_portkeyCard_aggregated_fields
+  max: homeBanner_portkeyCard_aggregated_fields
+}
+
+type homeBanner_portkeyCard_aggregated_count {
+  homeBanner_id: Int
+  id: Int
+  portkeyCard_id: Int
+}
+
+type homeBanner_portkeyCard_aggregated_fields {
+  homeBanner_id: Float
+  id: Float
+  portkeyCard_id: Float
+}
+
+type loginMode {
+  androidIndex: GraphQLBigInt!
+  androidRecommend: Boolean!
+  defaultSwitch: Boolean!
+  extensionIndex: GraphQLBigInt!
+  extensionRecommend: Boolean!
+  id: ID!
+  iOSIndex: GraphQLBigInt!
+  iOSRecommend: Boolean!
+  status: String
+  type(filter: loginType_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): loginType
+  matchList(filter: loginMode_loginModeMatch_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [loginMode_loginModeMatch]
+  matchList_func: count_functions
+}
+
+type loginMode_aggregated {
+  group: JSON
+  countAll: Int
+  count: loginMode_aggregated_count
+  countDistinct: loginMode_aggregated_count
+  avg: loginMode_aggregated_fields
+  sum: loginMode_aggregated_fields
+  avgDistinct: loginMode_aggregated_fields
+  sumDistinct: loginMode_aggregated_fields
+  min: loginMode_aggregated_fields
+  max: loginMode_aggregated_fields
+}
+
+type loginMode_aggregated_count {
+  androidIndex: Int
+  androidRecommend: Int
+  defaultSwitch: Int
+  extensionIndex: Int
+  extensionRecommend: Int
+  id: Int
+  iOSIndex: Int
+  iOSRecommend: Int
+  status: Int
+  type: Int
+  matchList: Int
+}
+
+type loginMode_aggregated_fields {
+  androidIndex: Float
+  extensionIndex: Float
+  id: Float
+  iOSIndex: Float
+  type: Float
+}
+
+type loginMode_loginModeMatch {
+  id: ID!
+  loginMode_id(filter: loginMode_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): loginMode
+  loginModeMatch_id(filter: loginModeMatch_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): loginModeMatch
+}
+
+type loginMode_loginModeMatch_aggregated {
+  group: JSON
+  countAll: Int
+  count: loginMode_loginModeMatch_aggregated_count
+  countDistinct: loginMode_loginModeMatch_aggregated_count
+  avg: loginMode_loginModeMatch_aggregated_fields
+  sum: loginMode_loginModeMatch_aggregated_fields
+  avgDistinct: loginMode_loginModeMatch_aggregated_fields
+  sumDistinct: loginMode_loginModeMatch_aggregated_fields
+  min: loginMode_loginModeMatch_aggregated_fields
+  max: loginMode_loginModeMatch_aggregated_fields
+}
+
+type loginMode_loginModeMatch_aggregated_count {
+  id: Int
+  loginMode_id: Int
+  loginModeMatch_id: Int
+}
+
+type loginMode_loginModeMatch_aggregated_fields {
+  id: Float
+  loginMode_id: Float
+  loginModeMatch_id: Float
+}
+
+type loginModeMatch {
+  description: String!
+  id: ID!
+  matchRuleList: JSON!
+  matchRuleList_func: count_functions
+  matchSwitch: Boolean!
+  status: String
+  weight: GraphQLBigInt!
+}
+
+type loginModeMatch_aggregated {
+  group: JSON
+  countAll: Int
+  count: loginModeMatch_aggregated_count
+  countDistinct: loginModeMatch_aggregated_count
+  avg: loginModeMatch_aggregated_fields
+  sum: loginModeMatch_aggregated_fields
+  avgDistinct: loginModeMatch_aggregated_fields
+  sumDistinct: loginModeMatch_aggregated_fields
+  min: loginModeMatch_aggregated_fields
+  max: loginModeMatch_aggregated_fields
+}
+
+type loginModeMatch_aggregated_count {
+  description: Int
+  id: Int
+  matchRuleList: Int
+  matchSwitch: Int
+  status: Int
+  weight: Int
+}
+
+type loginModeMatch_aggregated_fields {
+  id: Float
+  weight: Float
+}
+
+type loginType {
+  id: ID!
+  label: String!
+  status: String
+  value: String!
+}
+
+type loginType_aggregated {
+  group: JSON
+  countAll: Int
+  count: loginType_aggregated_count
+  countDistinct: loginType_aggregated_count
+  avg: loginType_aggregated_fields
+  sum: loginType_aggregated_fields
+  avgDistinct: loginType_aggregated_fields
+  sumDistinct: loginType_aggregated_fields
+  min: loginType_aggregated_fields
+  max: loginType_aggregated_fields
+}
+
+type loginType_aggregated_count {
+  id: Int
+  label: Int
+  status: Int
+  value: Int
+}
+
+type loginType_aggregated_fields {
+  id: Float
+}
+
+type mediaKit {
+  backgroundColor: String
+  date_created: Date
+  date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
+  id: ID!
+  index: Int
+  name: String!
+  png(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
+  sort: Int
+  status: String
+  svg(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
+  user_created: String
+  user_updated: String
+}
+
+type mediaKit_aggregated {
+  group: JSON
+  countAll: Int
+  count: mediaKit_aggregated_count
+  countDistinct: mediaKit_aggregated_count
+  avg: mediaKit_aggregated_fields
+  sum: mediaKit_aggregated_fields
+  avgDistinct: mediaKit_aggregated_fields
+  sumDistinct: mediaKit_aggregated_fields
+  min: mediaKit_aggregated_fields
+  max: mediaKit_aggregated_fields
+}
+
+type mediaKit_aggregated_count {
+  backgroundColor: Int
+  date_created: Int
+  date_updated: Int
+  id: Int
+  index: Int
+  name: Int
+  png: Int
+  sort: Int
+  status: Int
+  svg: Int
+  user_created: Int
+  user_updated: Int
+}
+
+type mediaKit_aggregated_fields {
+  id: Float
+  index: Float
+  sort: Float
+}
+
+type mediaKitPage {
+  allMediaKitZip(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
+  boilerplateContent: String
+  boilerplateTitle: String
+  content: String!
+  date_created: Date
+  date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
+  id: ID!
+  mediaKitDescription: String
+  status: String
+  title: String!
+  user_created: String
+  user_updated: String
+  mediaKitList(filter: mediaKitPage_mediaKit_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [mediaKitPage_mediaKit]
+  mediaKitList_func: count_functions
+}
+
+type mediaKitPage_mediaKit {
+  id: ID!
+  mediaKit_id(filter: mediaKit_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): mediaKit
+  mediaKitPage_id(filter: mediaKitPage_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): mediaKitPage
+}
+
+type mediaKitPage_mediaKit_aggregated {
+  group: JSON
+  countAll: Int
+  count: mediaKitPage_mediaKit_aggregated_count
+  countDistinct: mediaKitPage_mediaKit_aggregated_count
+  avg: mediaKitPage_mediaKit_aggregated_fields
+  sum: mediaKitPage_mediaKit_aggregated_fields
+  avgDistinct: mediaKitPage_mediaKit_aggregated_fields
+  sumDistinct: mediaKitPage_mediaKit_aggregated_fields
+  min: mediaKitPage_mediaKit_aggregated_fields
+  max: mediaKitPage_mediaKit_aggregated_fields
+}
+
+type mediaKitPage_mediaKit_aggregated_count {
+  id: Int
+  mediaKit_id: Int
+  mediaKitPage_id: Int
+}
+
+type mediaKitPage_mediaKit_aggregated_fields {
+  id: Float
+  mediaKit_id: Float
+  mediaKitPage_id: Float
+}
+
+type myReferralBanner {
+  id: ID!
+  status: String
+  items(filter: myReferralBanner_portkeyCard_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [myReferralBanner_portkeyCard]
+  items_func: count_functions
+}
+
+type myReferralBanner_portkeyCard {
+  id: ID!
+  myReferralBanner_id(filter: myReferralBanner_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): myReferralBanner
+  portkeyCard_id(filter: portkeyCard_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): portkeyCard
+}
+
+type myReferralBanner_portkeyCard_aggregated {
+  group: JSON
+  countAll: Int
+  count: myReferralBanner_portkeyCard_aggregated_count
+  countDistinct: myReferralBanner_portkeyCard_aggregated_count
+  avg: myReferralBanner_portkeyCard_aggregated_fields
+  sum: myReferralBanner_portkeyCard_aggregated_fields
+  avgDistinct: myReferralBanner_portkeyCard_aggregated_fields
+  sumDistinct: myReferralBanner_portkeyCard_aggregated_fields
+  min: myReferralBanner_portkeyCard_aggregated_fields
+  max: myReferralBanner_portkeyCard_aggregated_fields
+}
+
+type myReferralBanner_portkeyCard_aggregated_count {
+  id: Int
+  myReferralBanner_id: Int
+  portkeyCard_id: Int
+}
+
+type myReferralBanner_portkeyCard_aggregated_fields {
+  id: Float
+  myReferralBanner_id: Float
+  portkeyCard_id: Float
+}
+
+type navigationType {
+  date_created: Date
+  date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
+  description: String
+  id: ID!
+  sort: Int
+  status: String
+  user_created: String
+  user_updated: String
+  value: Int
+}
+
+type navigationType_aggregated {
+  group: JSON
+  countAll: Int
+  count: navigationType_aggregated_count
+  countDistinct: navigationType_aggregated_count
+  avg: navigationType_aggregated_fields
+  sum: navigationType_aggregated_fields
+  avgDistinct: navigationType_aggregated_fields
+  sumDistinct: navigationType_aggregated_fields
+  min: navigationType_aggregated_fields
+  max: navigationType_aggregated_fields
+}
+
+type navigationType_aggregated_count {
+  date_created: Int
+  date_updated: Int
+  description: Int
+  id: Int
+  sort: Int
+  status: Int
+  user_created: Int
+  user_updated: Int
+  value: Int
+}
+
+type navigationType_aggregated_fields {
+  id: Float
+  sort: Float
+  value: Float
+}
+
+type officialSocialMedia {
+  activeSvg(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
+  date_created: Date
+  date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
+  id: ID!
+  index: Int!
+  link: String!
+  name: String!
+  sort: Int
+  status: String
+  svg(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
+  user_created: String
+  user_updated: String
+}
+
+type officialSocialMedia_aggregated {
+  group: JSON
+  countAll: Int
+  count: officialSocialMedia_aggregated_count
+  countDistinct: officialSocialMedia_aggregated_count
+  avg: officialSocialMedia_aggregated_fields
+  sum: officialSocialMedia_aggregated_fields
+  avgDistinct: officialSocialMedia_aggregated_fields
+  sumDistinct: officialSocialMedia_aggregated_fields
+  min: officialSocialMedia_aggregated_fields
+  max: officialSocialMedia_aggregated_fields
+}
+
+type officialSocialMedia_aggregated_count {
+  activeSvg: Int
+  date_created: Int
+  date_updated: Int
+  id: Int
+  index: Int
+  link: Int
+  name: Int
+  sort: Int
+  status: Int
+  svg: Int
+  user_created: Int
+  user_updated: Int
+}
+
+type officialSocialMedia_aggregated_fields {
+  id: Float
+  index: Float
+  sort: Float
+}
+
+type portkeyCard {
+  appLink: String
+  buttonTitle: String
+  description: String
+  extensionLink: String
+  id: ID!
+  imgUrl(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
+  index: GraphQLBigInt
+  status: String
+  title: String
+  type(filter: cardType_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): cardType
+  url: String
+  value: String
+}
+
+type portkeyCard_aggregated {
+  group: JSON
+  countAll: Int
+  count: portkeyCard_aggregated_count
+  countDistinct: portkeyCard_aggregated_count
+  avg: portkeyCard_aggregated_fields
+  sum: portkeyCard_aggregated_fields
+  avgDistinct: portkeyCard_aggregated_fields
+  sumDistinct: portkeyCard_aggregated_fields
+  min: portkeyCard_aggregated_fields
+  max: portkeyCard_aggregated_fields
+}
+
+type portkeyCard_aggregated_count {
+  appLink: Int
+  buttonTitle: Int
+  description: Int
+  extensionLink: Int
+  id: Int
+  imgUrl: Int
+  index: Int
+  status: Int
+  title: Int
+  type: Int
+  url: Int
+  value: Int
+}
+
+type portkeyCard_aggregated_fields {
+  id: Float
+  index: Float
+  type: Float
+}
+
+type rememberMeBlackListSites {
+  date_created: Date
+  date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
+  id: ID!
+  name: String
+  sort: Int
+  status: String
+  url: String
+  user_created: String
+  user_updated: String
+}
+
+type rememberMeBlackListSites_aggregated {
+  group: JSON
+  countAll: Int
+  count: rememberMeBlackListSites_aggregated_count
+  countDistinct: rememberMeBlackListSites_aggregated_count
+  avg: rememberMeBlackListSites_aggregated_fields
+  sum: rememberMeBlackListSites_aggregated_fields
+  avgDistinct: rememberMeBlackListSites_aggregated_fields
+  sumDistinct: rememberMeBlackListSites_aggregated_fields
+  min: rememberMeBlackListSites_aggregated_fields
+  max: rememberMeBlackListSites_aggregated_fields
+}
+
+type rememberMeBlackListSites_aggregated_count {
+  date_created: Int
+  date_updated: Int
+  id: Int
+  name: Int
+  sort: Int
+  status: Int
+  url: Int
+  user_created: Int
+  user_updated: Int
+}
+
+type rememberMeBlackListSites_aggregated_fields {
+  id: Float
+  sort: Float
+}
+
+type serviceSuspension {
+  androidUrl: String
+  date_created: Date
+  date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
+  extensionUrl: String
+  id: ID!
+  iOSUrl: String
+  isSuspended: Boolean
+  user_created: String
+  user_updated: String
+}
+
+type socialMedia {
+  date_created: Date
+  date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
+  id: ID!
+  index: Int
+  link: String
+  sort: Int
+  status: String
+  svgUrl(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
+  title: String
+  user_created: String
+  user_updated: String
+}
+
+type socialMedia_aggregated {
+  group: JSON
+  countAll: Int
+  count: socialMedia_aggregated_count
+  countDistinct: socialMedia_aggregated_count
+  avg: socialMedia_aggregated_fields
+  sum: socialMedia_aggregated_fields
+  avgDistinct: socialMedia_aggregated_fields
+  sumDistinct: socialMedia_aggregated_fields
+  min: socialMedia_aggregated_fields
+  max: socialMedia_aggregated_fields
+}
+
+type socialMedia_aggregated_count {
+  date_created: Int
+  date_updated: Int
+  id: Int
+  index: Int
+  link: Int
+  sort: Int
+  status: Int
+
+  """Only support svg"""
+  svgUrl: Int
+  title: Int
+  user_created: Int
+  user_updated: Int
+}
+
+type socialMedia_aggregated_fields {
+  id: Float
+  index: Float
+  sort: Float
+}
+
+type tabMenu {
+  date_created: Date
+  date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
+  id: ID!
+  index: Int
+  sort: Int
+  status: String
+  title: String
+  type(filter: tabType_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): tabType
+  user_created: String
+  user_updated: String
+}
+
+type tabMenu_aggregated {
+  group: JSON
+  countAll: Int
+  count: tabMenu_aggregated_count
+  countDistinct: tabMenu_aggregated_count
+  avg: tabMenu_aggregated_fields
+  sum: tabMenu_aggregated_fields
+  avgDistinct: tabMenu_aggregated_fields
+  sumDistinct: tabMenu_aggregated_fields
+  min: tabMenu_aggregated_fields
+  max: tabMenu_aggregated_fields
+}
+
+type tabMenu_aggregated_count {
+  date_created: Int
+  date_updated: Int
+  id: Int
+  index: Int
+  sort: Int
+  status: Int
+  title: Int
+  type: Int
+  user_created: Int
+  user_updated: Int
+}
+
+type tabMenu_aggregated_fields {
+  id: Float
+  index: Float
+  sort: Float
+  type: Float
+}
+
+type tabType {
+  attribute: String
+  date_created: Date
+  date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
+  id: ID!
+  sort: Int
+  status: String
+  user_created: String
+  user_updated: String
+  value: String
+}
+
+type tabType_aggregated {
+  group: JSON
+  countAll: Int
+  count: tabType_aggregated_count
+  countDistinct: tabType_aggregated_count
+  avg: tabType_aggregated_fields
+  sum: tabType_aggregated_fields
+  avgDistinct: tabType_aggregated_fields
+  sumDistinct: tabType_aggregated_fields
+  min: tabType_aggregated_fields
+  max: tabType_aggregated_fields
+}
+
+type tabType_aggregated_count {
+  attribute: Int
+  date_created: Int
+  date_updated: Int
+  id: Int
+  sort: Int
+  status: Int
+  user_created: Int
+  user_updated: Int
+  value: Int
+}
+
+type tabType_aggregated_fields {
+  id: Float
+  sort: Float
+}
+
+type timingType {
+  id: ID!
+  name: String
+}
+
+type timingType_aggregated {
+  group: JSON
+  countAll: Int
+  count: timingType_aggregated_count
+  countDistinct: timingType_aggregated_count
+  avg: timingType_aggregated_fields
+  sum: timingType_aggregated_fields
+  avgDistinct: timingType_aggregated_fields
+  sumDistinct: timingType_aggregated_fields
+  min: timingType_aggregated_fields
+  max: timingType_aggregated_fields
+}
+
+type timingType_aggregated_count {
+  id: Int
+  name: Int
+}
+
+type timingType_aggregated_fields {
+  id: Float
+}
+
+type tokenDetailBanner {
+  chainId: String
+  id: ID!
+  status: String
+  symbol: String
+  items(filter: tokenDetailBanner_portkeyCard_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [tokenDetailBanner_portkeyCard]
+  items_func: count_functions
+}
+
+type tokenDetailBanner_aggregated {
+  group: JSON
+  countAll: Int
+  count: tokenDetailBanner_aggregated_count
+  countDistinct: tokenDetailBanner_aggregated_count
+  avg: tokenDetailBanner_aggregated_fields
+  sum: tokenDetailBanner_aggregated_fields
+  avgDistinct: tokenDetailBanner_aggregated_fields
+  sumDistinct: tokenDetailBanner_aggregated_fields
+  min: tokenDetailBanner_aggregated_fields
+  max: tokenDetailBanner_aggregated_fields
+}
+
+type tokenDetailBanner_aggregated_count {
+  chainId: Int
+  id: Int
+  status: Int
+  symbol: Int
+  items: Int
+}
+
+type tokenDetailBanner_aggregated_fields {
+  id: Float
+}
+
+type tokenDetailBanner_portkeyCard {
+  id: ID!
+  portkeyCard_id(filter: portkeyCard_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): portkeyCard
+  tokenDetailBanner_id(filter: tokenDetailBanner_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): tokenDetailBanner
+}
+
+type tokenDetailBanner_portkeyCard_aggregated {
+  group: JSON
+  countAll: Int
+  count: tokenDetailBanner_portkeyCard_aggregated_count
+  countDistinct: tokenDetailBanner_portkeyCard_aggregated_count
+  avg: tokenDetailBanner_portkeyCard_aggregated_fields
+  sum: tokenDetailBanner_portkeyCard_aggregated_fields
+  avgDistinct: tokenDetailBanner_portkeyCard_aggregated_fields
+  sumDistinct: tokenDetailBanner_portkeyCard_aggregated_fields
+  min: tokenDetailBanner_portkeyCard_aggregated_fields
+  max: tokenDetailBanner_portkeyCard_aggregated_fields
+}
+
+type tokenDetailBanner_portkeyCard_aggregated_count {
+  id: Int
+  portkeyCard_id: Int
+  tokenDetailBanner_id: Int
+}
+
+type tokenDetailBanner_portkeyCard_aggregated_fields {
+  id: Float
+  portkeyCard_id: Float
+  tokenDetailBanner_id: Float
+}
+
+type topMenu {
+  date_created: Date
+  date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
+  id: ID!
+  index: Int!
+  path: String
+  sort: Int
+  status: String
+  title: String!
+  type(filter: navigationType_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): navigationType
+  user_created: String
+  user_updated: String
+  children(filter: topSecondMenu_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [topSecondMenu]
+  children_func: count_functions
+}
+
+type topMenu_aggregated {
+  group: JSON
+  countAll: Int
+  count: topMenu_aggregated_count
+  countDistinct: topMenu_aggregated_count
+  avg: topMenu_aggregated_fields
+  sum: topMenu_aggregated_fields
+  avgDistinct: topMenu_aggregated_fields
+  sumDistinct: topMenu_aggregated_fields
+  min: topMenu_aggregated_fields
+  max: topMenu_aggregated_fields
+}
+
+type topMenu_aggregated_count {
+  date_created: Int
+  date_updated: Int
+  id: Int
+  index: Int
+  path: Int
+  sort: Int
+  status: Int
+  title: Int
+  type: Int
+  user_created: Int
+  user_updated: Int
+  children: Int
+}
+
+type topMenu_aggregated_fields {
+  id: Float
+  index: Float
+  sort: Float
+  type: Float
+}
+
+type topSecondMenu {
+  date_created: Date
+  date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
+  id: ID!
+  index: Int!
+  parent(filter: topMenu_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): topMenu
+  path: String
+  sort: Int
+  status: String
+  title: String!
+  type(filter: navigationType_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): navigationType
+  user_created: String
+  user_updated: String
+}
+
+type topSecondMenu_aggregated {
+  group: JSON
+  countAll: Int
+  count: topSecondMenu_aggregated_count
+  countDistinct: topSecondMenu_aggregated_count
+  avg: topSecondMenu_aggregated_fields
+  sum: topSecondMenu_aggregated_fields
+  avgDistinct: topSecondMenu_aggregated_fields
+  sumDistinct: topSecondMenu_aggregated_fields
+  min: topSecondMenu_aggregated_fields
+  max: topSecondMenu_aggregated_fields
+}
+
+type topSecondMenu_aggregated_count {
+  date_created: Int
+  date_updated: Int
+  id: Int
+  index: Int
+  parent: Int
+  path: Int
+  sort: Int
+  status: Int
+  title: Int
+  type: Int
+  user_created: Int
+  user_updated: Int
+}
+
+type topSecondMenu_aggregated_fields {
+  id: Float
+  index: Float
+  parent: Float
+  sort: Float
+  type: Float
+}
+
+type upgradePush {
+  appId: String
+  content: String
+  date_created: Date
+  date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
+  downloadUrl: String
+  id: ID!
+  isApproved: Boolean
+  isForceUpdate: Boolean
+  operatingSystemVersions: JSON
+  operatingSystemVersions_func: count_functions
+  sort: Int
+  status: String
+  styleType(filter: upgradeStyle_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): upgradeStyle
+  targetVersion(filter: appVersion_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): appVersion
+  title: String
+  user_created: String
+  user_updated: String
+  appVersions(filter: upgradePush_appVersion_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [upgradePush_appVersion]
+  appVersions_func: count_functions
+  countries(filter: upgradePush_country_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [upgradePush_country]
+  countries_func: count_functions
+  deviceBrands(filter: upgradePush_deviceBrand_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [upgradePush_deviceBrand]
+  deviceBrands_func: count_functions
+  deviceTypes(filter: upgradePush_deviceType_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [upgradePush_deviceType]
+  deviceTypes_func: count_functions
+}
+
+type upgradePush_aggregated {
+  group: JSON
+  countAll: Int
+  count: upgradePush_aggregated_count
+  countDistinct: upgradePush_aggregated_count
+  avg: upgradePush_aggregated_fields
+  sum: upgradePush_aggregated_fields
+  avgDistinct: upgradePush_aggregated_fields
+  sumDistinct: upgradePush_aggregated_fields
+  min: upgradePush_aggregated_fields
+  max: upgradePush_aggregated_fields
+}
+
+type upgradePush_aggregated_count {
+  appId: Int
+  content: Int
+  date_created: Int
+  date_updated: Int
+  downloadUrl: Int
+  id: Int
+  isApproved: Int
+  isForceUpdate: Int
+  operatingSystemVersions: Int
+  sort: Int
+  status: Int
+  styleType: Int
+  targetVersion: Int
+  title: Int
+  user_created: Int
+  user_updated: Int
+  appVersions: Int
+  countries: Int
+  deviceBrands: Int
+  deviceTypes: Int
+}
+
+type upgradePush_aggregated_fields {
+  id: Float
+  sort: Float
+  styleType: Float
+  targetVersion: Float
+}
+
+type upgradePush_appVersion {
+  appVersion_id(filter: appVersion_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): appVersion
+  id: ID!
+  upgradePush_id(filter: upgradePush_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): upgradePush
+}
+
+type upgradePush_appVersion_aggregated {
+  group: JSON
+  countAll: Int
+  count: upgradePush_appVersion_aggregated_count
+  countDistinct: upgradePush_appVersion_aggregated_count
+  avg: upgradePush_appVersion_aggregated_fields
+  sum: upgradePush_appVersion_aggregated_fields
+  avgDistinct: upgradePush_appVersion_aggregated_fields
+  sumDistinct: upgradePush_appVersion_aggregated_fields
+  min: upgradePush_appVersion_aggregated_fields
+  max: upgradePush_appVersion_aggregated_fields
+}
+
+type upgradePush_appVersion_aggregated_count {
+  appVersion_id: Int
+  id: Int
+  upgradePush_id: Int
+}
+
+type upgradePush_appVersion_aggregated_fields {
+  appVersion_id: Float
+  id: Float
+  upgradePush_id: Float
+}
+
+type upgradePush_country {
+  country_id(filter: country_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): country
+  id: ID!
+  upgradePush_id(filter: upgradePush_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): upgradePush
+}
+
+type upgradePush_country_aggregated {
+  group: JSON
+  countAll: Int
+  count: upgradePush_country_aggregated_count
+  countDistinct: upgradePush_country_aggregated_count
+  avg: upgradePush_country_aggregated_fields
+  sum: upgradePush_country_aggregated_fields
+  avgDistinct: upgradePush_country_aggregated_fields
+  sumDistinct: upgradePush_country_aggregated_fields
+  min: upgradePush_country_aggregated_fields
+  max: upgradePush_country_aggregated_fields
+}
+
+type upgradePush_country_aggregated_count {
+  country_id: Int
+  id: Int
+  upgradePush_id: Int
+}
+
+type upgradePush_country_aggregated_fields {
+  country_id: Float
+  id: Float
+  upgradePush_id: Float
+}
+
+type upgradePush_deviceBrand {
+  deviceBrand_id(filter: deviceBrand_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): deviceBrand
+  id: ID!
+  upgradePush_id(filter: upgradePush_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): upgradePush
+}
+
+type upgradePush_deviceBrand_aggregated {
+  group: JSON
+  countAll: Int
+  count: upgradePush_deviceBrand_aggregated_count
+  countDistinct: upgradePush_deviceBrand_aggregated_count
+  avg: upgradePush_deviceBrand_aggregated_fields
+  sum: upgradePush_deviceBrand_aggregated_fields
+  avgDistinct: upgradePush_deviceBrand_aggregated_fields
+  sumDistinct: upgradePush_deviceBrand_aggregated_fields
+  min: upgradePush_deviceBrand_aggregated_fields
+  max: upgradePush_deviceBrand_aggregated_fields
+}
+
+type upgradePush_deviceBrand_aggregated_count {
+  deviceBrand_id: Int
+  id: Int
+  upgradePush_id: Int
+}
+
+type upgradePush_deviceBrand_aggregated_fields {
+  deviceBrand_id: Float
+  id: Float
+  upgradePush_id: Float
+}
+
+type upgradePush_deviceType {
+  deviceType_id(filter: deviceType_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): deviceType
+  id: ID!
+  upgradePush_id(filter: upgradePush_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): upgradePush
+}
+
+type upgradePush_deviceType_aggregated {
+  group: JSON
+  countAll: Int
+  count: upgradePush_deviceType_aggregated_count
+  countDistinct: upgradePush_deviceType_aggregated_count
+  avg: upgradePush_deviceType_aggregated_fields
+  sum: upgradePush_deviceType_aggregated_fields
+  avgDistinct: upgradePush_deviceType_aggregated_fields
+  sumDistinct: upgradePush_deviceType_aggregated_fields
+  min: upgradePush_deviceType_aggregated_fields
+  max: upgradePush_deviceType_aggregated_fields
+}
+
+type upgradePush_deviceType_aggregated_count {
+  deviceType_id: Int
+  id: Int
+  upgradePush_id: Int
+}
+
+type upgradePush_deviceType_aggregated_fields {
+  deviceType_id: Float
+  id: Float
+  upgradePush_id: Float
+}
+
+type upgradeStyle {
+  attribute: String
+  date_created: Date
+  date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
+  id: ID!
+  sort: Int
+  status: String
+  user_created: String
+  user_updated: String
+  value: Int
+}
+
+type upgradeStyle_aggregated {
+  group: JSON
+  countAll: Int
+  count: upgradeStyle_aggregated_count
+  countDistinct: upgradeStyle_aggregated_count
+  avg: upgradeStyle_aggregated_fields
+  sum: upgradeStyle_aggregated_fields
+  avgDistinct: upgradeStyle_aggregated_fields
+  sumDistinct: upgradeStyle_aggregated_fields
+  min: upgradeStyle_aggregated_fields
+  max: upgradeStyle_aggregated_fields
+}
+
+type upgradeStyle_aggregated_count {
+  attribute: Int
+  date_created: Int
+  date_updated: Int
+  id: Int
+  sort: Int
+  status: Int
+  user_created: Int
+  user_updated: Int
+  value: Int
+}
+
+type upgradeStyle_aggregated_fields {
+  id: Float
+  sort: Float
+  value: Float
+}
+
+input ActivityModalConfig_filter {
+  clientType: clientType_filter
+  description: string_filter_operators
+  headerImg: string_filter_operators
+  id: number_filter_operators
+  label: string_filter_operators
+  negativeTitle: string_filter_operators
+  negtiveTitle: string_filter_operators
+  positiveAction: string_filter_operators
+  positiveTitle: string_filter_operators
+  show: boolean_filter_operators
+  showClose: boolean_filter_operators
+  timingOperation: string_filter_operators
+  timingType: timingType_filter
+  title: string_filter_operators
+  _and: [ActivityModalConfig_filter]
+  _or: [ActivityModalConfig_filter]
+}
+
+input appVersion_filter {
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  id: number_filter_operators
+  label: string_filter_operators
+  sort: number_filter_operators
+  status: string_filter_operators
+  user_created: string_filter_operators
+  user_updated: string_filter_operators
+  value: string_filter_operators
+  _and: [appVersion_filter]
+  _or: [appVersion_filter]
+}
+
+input boolean_filter_operators {
+  _eq: Boolean
+  _neq: Boolean
+  _null: Boolean
+  _nnull: Boolean
+}
+
+input bottomMenu_filter {
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  id: number_filter_operators
+  index: number_filter_operators
+  path: string_filter_operators
+  sort: number_filter_operators
+  status: string_filter_operators
+  title: string_filter_operators
+  type: navigationType_filter
+  user_created: string_filter_operators
+  user_updated: string_filter_operators
+  children: bottomSecondMenu_filter
+  children_func: count_function_filter_operators
+  _and: [bottomMenu_filter]
+  _or: [bottomMenu_filter]
+}
+
+input bottomSecondMenu_filter {
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  id: number_filter_operators
+  index: number_filter_operators
+  parent: bottomMenu_filter
+  path: string_filter_operators
+  sort: number_filter_operators
+  status: string_filter_operators
+  title: string_filter_operators
+  type: navigationType_filter
+  user_created: string_filter_operators
+  user_updated: string_filter_operators
+  _and: [bottomSecondMenu_filter]
+  _or: [bottomSecondMenu_filter]
+}
+
+input cardType_filter {
+  id: number_filter_operators
+  label: string_filter_operators
+  status: string_filter_operators
+  value: string_filter_operators
+  _and: [cardType_filter]
+  _or: [cardType_filter]
+}
+
+input clientType_filter {
+  id: number_filter_operators
+  name: string_filter_operators
+  _and: [clientType_filter]
+  _or: [clientType_filter]
+}
+
+input codePushControl_filter {
+  content: string_filter_operators
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  id: number_filter_operators
+  isForceUpdate: boolean_filter_operators
+  label: string_filter_operators
+  sort: number_filter_operators
+  status: string_filter_operators
+  title: string_filter_operators
+  updatedContent: string_filter_operators
+  updatedTitle: string_filter_operators
+  user_created: string_filter_operators
+  user_updated: string_filter_operators
+  version: string_filter_operators
+  _and: [codePushControl_filter]
+  _or: [codePushControl_filter]
+}
+
+input count_function_filter_operators {
+  count: number_filter_operators
+}
+
+input country_filter {
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  id: number_filter_operators
+  label: string_filter_operators
+  sort: number_filter_operators
+  status: string_filter_operators
+  user_created: string_filter_operators
+  user_updated: string_filter_operators
+  value: string_filter_operators
+  _and: [country_filter]
+  _or: [country_filter]
+}
+
+input dappList_filter {
+  Dapp_Name: string_filter_operators
+  domainName: string_filter_operators
+  id: number_filter_operators
+  _and: [dappList_filter]
+  _or: [dappList_filter]
+}
+
+input date_filter_operators {
+  _eq: String
+  _neq: String
+  _gt: String
+  _gte: String
+  _lt: String
+  _lte: String
+  _null: Boolean
+  _nnull: Boolean
+  _in: [String]
+  _nin: [String]
+  _between: [GraphQLStringOrFloat]
+  _nbetween: [GraphQLStringOrFloat]
+}
+
+input datetime_function_filter_operators {
+  year: number_filter_operators
+  month: number_filter_operators
+  week: number_filter_operators
+  day: number_filter_operators
+  weekday: number_filter_operators
+  hour: number_filter_operators
+  minute: number_filter_operators
+  second: number_filter_operators
+}
+
+input deviceBrand_filter {
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  id: number_filter_operators
+  label: string_filter_operators
+  sort: number_filter_operators
+  status: string_filter_operators
+  user_created: string_filter_operators
+  user_updated: string_filter_operators
+  value: string_filter_operators
+  _and: [deviceBrand_filter]
+  _or: [deviceBrand_filter]
+}
+
+input deviceType_filter {
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  id: number_filter_operators
+  label: string_filter_operators
+  sort: number_filter_operators
+  status: string_filter_operators
+  user_created: string_filter_operators
+  user_updated: string_filter_operators
+  value: number_filter_operators
+  _and: [deviceType_filter]
+  _or: [deviceType_filter]
+}
+
+input directus_files_filter {
+  charset: string_filter_operators
+  description: string_filter_operators
+  duration: number_filter_operators
+  embed: string_filter_operators
+  filename_disk: string_filter_operators
+  filename_download: string_filter_operators
+  filesize: number_filter_operators
+  folder: string_filter_operators
+  height: number_filter_operators
+  id: string_filter_operators
+  location: string_filter_operators
+  metadata: string_filter_operators
+  metadata_func: count_function_filter_operators
+  modified_by: string_filter_operators
+  modified_on: date_filter_operators
+  modified_on_func: datetime_function_filter_operators
+  storage: string_filter_operators
+  tags: string_filter_operators
+  tags_func: count_function_filter_operators
+  title: string_filter_operators
+  type: string_filter_operators
+  uploaded_by: string_filter_operators
+  uploaded_on: date_filter_operators
+  uploaded_on_func: datetime_function_filter_operators
+  width: number_filter_operators
+  _and: [directus_files_filter]
+  _or: [directus_files_filter]
+}
+
+input discoverDappBanner_filter {
+  id: number_filter_operators
+  status: string_filter_operators
+  items: discoverDappBanner_portkeyCard_filter
+  items_func: count_function_filter_operators
+  _and: [discoverDappBanner_filter]
+  _or: [discoverDappBanner_filter]
+}
+
+input discoverDappBanner_portkeyCard_filter {
+  discoverDappBanner_id: discoverDappBanner_filter
+  id: number_filter_operators
+  portkeyCard_id: portkeyCard_filter
+  _and: [discoverDappBanner_portkeyCard_filter]
+  _or: [discoverDappBanner_portkeyCard_filter]
+}
+
+input discoverEarnData_filter {
+  id: number_filter_operators
+  status: string_filter_operators
+  items: discoverEarnData_portkeyCard_filter
+  items_func: count_function_filter_operators
+  _and: [discoverEarnData_filter]
+  _or: [discoverEarnData_filter]
+}
+
+input discoverEarnData_portkeyCard_filter {
+  discoverEarnData_id: discoverEarnData_filter
+  id: number_filter_operators
+  portkeyCard_id: portkeyCard_filter
+  _and: [discoverEarnData_portkeyCard_filter]
+  _or: [discoverEarnData_portkeyCard_filter]
+}
+
+input discoverGroup_filter {
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  id: number_filter_operators
+  index: number_filter_operators
+  sort: number_filter_operators
+  status: string_filter_operators
+  title: string_filter_operators
+  user_created: string_filter_operators
+  user_updated: string_filter_operators
+  items: discoverItem_filter
+  items_func: count_function_filter_operators
+  _and: [discoverGroup_filter]
+  _or: [discoverGroup_filter]
+}
+
+input discoverItem_filter {
+  appLink: string_filter_operators
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  description: string_filter_operators
+  extensionLink: string_filter_operators
+  group: discoverGroup_filter
+  id: number_filter_operators
+  imgUrl: directus_files_filter
+  index: number_filter_operators
+  sort: number_filter_operators
+  status: string_filter_operators
+  title: string_filter_operators
+  url: string_filter_operators
+  user_created: string_filter_operators
+  user_updated: string_filter_operators
+  _and: [discoverItem_filter]
+  _or: [discoverItem_filter]
+}
+
+input discoverLearnBanner_filter {
+  id: number_filter_operators
+  status: string_filter_operators
+  items: discoverLearnBanner_portkeyCard_filter
+  items_func: count_function_filter_operators
+  _and: [discoverLearnBanner_filter]
+  _or: [discoverLearnBanner_filter]
+}
+
+input discoverLearnBanner_portkeyCard_filter {
+  discoverLearnBanner_id: discoverLearnBanner_filter
+  id: number_filter_operators
+  portkeyCard_id: portkeyCard_filter
+  _and: [discoverLearnBanner_portkeyCard_filter]
+  _or: [discoverLearnBanner_portkeyCard_filter]
+}
+
+input discoverLearnGroup_filter {
+  id: number_filter_operators
+  index: number_filter_operators
+  status: string_filter_operators
+  title: string_filter_operators
+  value: string_filter_operators
+  items: discoverLearnGroup_portkeyCard_filter
+  items_func: count_function_filter_operators
+  _and: [discoverLearnGroup_filter]
+  _or: [discoverLearnGroup_filter]
+}
+
+input discoverLearnGroup_portkeyCard_filter {
+  discoverLearnGroup_id: discoverLearnGroup_filter
+  id: number_filter_operators
+  portkeyCard_id: portkeyCard_filter
+  _and: [discoverLearnGroup_portkeyCard_filter]
+  _or: [discoverLearnGroup_portkeyCard_filter]
+}
+
+input discoverTabData_filter {
+  id: number_filter_operators
+  index: number_filter_operators
+  name: string_filter_operators
+  status: string_filter_operators
+  value: string_filter_operators
+  _and: [discoverTabData_filter]
+  _or: [discoverTabData_filter]
+}
+
+input entrance_entranceMatch_filter {
+  entrance_id: entrance_filter
+  entranceMatch_id: entranceMatch_filter
+  id: number_filter_operators
+  _and: [entrance_entranceMatch_filter]
+  _or: [entrance_entranceMatch_filter]
+}
+
+input entrance_filter {
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  defaultSwitch: boolean_filter_operators
+  id: number_filter_operators
+  moduleName: entranceModuleName_filter
+  user_created: string_filter_operators
+  user_updated: string_filter_operators
+  matchList: entrance_entranceMatch_filter
+  matchList_func: count_function_filter_operators
+  _and: [entrance_filter]
+  _or: [entrance_filter]
+}
+
+input entranceMatch_filter {
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  description: string_filter_operators
+  id: number_filter_operators
+  matchRuleList: string_filter_operators
+  matchRuleList_func: count_function_filter_operators
+  matchSwitch: boolean_filter_operators
+  status: string_filter_operators
+  user_created: string_filter_operators
+  user_updated: string_filter_operators
+  weight: number_filter_operators
+  _and: [entranceMatch_filter]
+  _or: [entranceMatch_filter]
+}
+
+input entranceModuleName_filter {
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  description: string_filter_operators
+  id: number_filter_operators
+  user_created: string_filter_operators
+  user_updated: string_filter_operators
+  value: string_filter_operators
+  _and: [entranceModuleName_filter]
+  _or: [entranceModuleName_filter]
+}
+
+input home_dApp_filter {
+  dApp_id: number_filter_operators
+  home_id: home_filter
+  id: number_filter_operators
+  _and: [home_dApp_filter]
+  _or: [home_dApp_filter]
+}
+
+input home_filter {
+  dAppSectionTitle: string_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  focusImage: directus_files_filter
+  id: number_filter_operators
+  user_updated: string_filter_operators
+  videoContent: string_filter_operators
+  videoTitle: string_filter_operators
+  videoUrl: string_filter_operators
+  dAppList: home_dApp_filter
+  dAppList_func: count_function_filter_operators
+  _and: [home_filter]
+  _or: [home_filter]
+}
+
+input homeBanner_filter {
+  id: number_filter_operators
+  status: string_filter_operators
+  items: homeBanner_portkeyCard_filter
+  items_func: count_function_filter_operators
+  _and: [homeBanner_filter]
+  _or: [homeBanner_filter]
+}
+
+input homeBanner_portkeyCard_filter {
+  homeBanner_id: homeBanner_filter
+  id: number_filter_operators
+  portkeyCard_id: portkeyCard_filter
+  _and: [homeBanner_portkeyCard_filter]
+  _or: [homeBanner_portkeyCard_filter]
+}
+
+input loginMode_filter {
+  androidIndex: number_filter_operators
+  androidRecommend: boolean_filter_operators
+  defaultSwitch: boolean_filter_operators
+  extensionIndex: number_filter_operators
+  extensionRecommend: boolean_filter_operators
+  id: number_filter_operators
+  iOSIndex: number_filter_operators
+  iOSRecommend: boolean_filter_operators
+  status: string_filter_operators
+  type: loginType_filter
+  matchList: loginMode_loginModeMatch_filter
+  matchList_func: count_function_filter_operators
+  _and: [loginMode_filter]
+  _or: [loginMode_filter]
+}
+
+input loginMode_loginModeMatch_filter {
+  id: number_filter_operators
+  loginMode_id: loginMode_filter
+  loginModeMatch_id: loginModeMatch_filter
+  _and: [loginMode_loginModeMatch_filter]
+  _or: [loginMode_loginModeMatch_filter]
+}
+
+input loginModeMatch_filter {
+  description: string_filter_operators
+  id: number_filter_operators
+  matchRuleList: string_filter_operators
+  matchRuleList_func: count_function_filter_operators
+  matchSwitch: boolean_filter_operators
+  status: string_filter_operators
+  weight: number_filter_operators
+  _and: [loginModeMatch_filter]
+  _or: [loginModeMatch_filter]
+}
+
+input loginType_filter {
+  id: number_filter_operators
+  label: string_filter_operators
+  status: string_filter_operators
+  value: string_filter_operators
+  _and: [loginType_filter]
+  _or: [loginType_filter]
+}
+
+input mediaKit_filter {
+  backgroundColor: string_filter_operators
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  id: number_filter_operators
+  index: number_filter_operators
+  name: string_filter_operators
+  png: directus_files_filter
+  sort: number_filter_operators
+  status: string_filter_operators
+  svg: directus_files_filter
+  user_created: string_filter_operators
+  user_updated: string_filter_operators
+  _and: [mediaKit_filter]
+  _or: [mediaKit_filter]
+}
+
+input mediaKitPage_filter {
+  allMediaKitZip: directus_files_filter
+  boilerplateContent: string_filter_operators
+  boilerplateTitle: string_filter_operators
+  content: string_filter_operators
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  id: number_filter_operators
+  mediaKitDescription: string_filter_operators
+  status: string_filter_operators
+  title: string_filter_operators
+  user_created: string_filter_operators
+  user_updated: string_filter_operators
+  mediaKitList: mediaKitPage_mediaKit_filter
+  mediaKitList_func: count_function_filter_operators
+  _and: [mediaKitPage_filter]
+  _or: [mediaKitPage_filter]
+}
+
+input mediaKitPage_mediaKit_filter {
+  id: number_filter_operators
+  mediaKit_id: mediaKit_filter
+  mediaKitPage_id: mediaKitPage_filter
+  _and: [mediaKitPage_mediaKit_filter]
+  _or: [mediaKitPage_mediaKit_filter]
+}
+
+input myReferralBanner_filter {
+  id: number_filter_operators
+  status: string_filter_operators
+  items: myReferralBanner_portkeyCard_filter
+  items_func: count_function_filter_operators
+  _and: [myReferralBanner_filter]
+  _or: [myReferralBanner_filter]
+}
+
+input myReferralBanner_portkeyCard_filter {
+  id: number_filter_operators
+  myReferralBanner_id: myReferralBanner_filter
+  portkeyCard_id: portkeyCard_filter
+  _and: [myReferralBanner_portkeyCard_filter]
+  _or: [myReferralBanner_portkeyCard_filter]
+}
+
+input navigationType_filter {
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  description: string_filter_operators
+  id: number_filter_operators
+  sort: number_filter_operators
+  status: string_filter_operators
+  user_created: string_filter_operators
+  user_updated: string_filter_operators
+  value: number_filter_operators
+  _and: [navigationType_filter]
+  _or: [navigationType_filter]
+}
+
+input number_filter_operators {
+  _eq: GraphQLStringOrFloat
+  _neq: GraphQLStringOrFloat
+  _in: [GraphQLStringOrFloat]
+  _nin: [GraphQLStringOrFloat]
+  _gt: GraphQLStringOrFloat
+  _gte: GraphQLStringOrFloat
+  _lt: GraphQLStringOrFloat
+  _lte: GraphQLStringOrFloat
+  _null: Boolean
+  _nnull: Boolean
+  _between: [GraphQLStringOrFloat]
+  _nbetween: [GraphQLStringOrFloat]
+}
+
+input officialSocialMedia_filter {
+  activeSvg: directus_files_filter
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  id: number_filter_operators
+  index: number_filter_operators
+  link: string_filter_operators
+  name: string_filter_operators
+  sort: number_filter_operators
+  status: string_filter_operators
+  svg: directus_files_filter
+  user_created: string_filter_operators
+  user_updated: string_filter_operators
+  _and: [officialSocialMedia_filter]
+  _or: [officialSocialMedia_filter]
+}
+
+input portkeyCard_filter {
+  appLink: string_filter_operators
+  buttonTitle: string_filter_operators
+  description: string_filter_operators
+  extensionLink: string_filter_operators
+  id: number_filter_operators
+  imgUrl: directus_files_filter
+  index: number_filter_operators
+  status: string_filter_operators
+  title: string_filter_operators
+  type: cardType_filter
+  url: string_filter_operators
+  value: string_filter_operators
+  _and: [portkeyCard_filter]
+  _or: [portkeyCard_filter]
+}
+
+input rememberMeBlackListSites_filter {
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  id: number_filter_operators
+  name: string_filter_operators
+  sort: number_filter_operators
+  status: string_filter_operators
+  url: string_filter_operators
+  user_created: string_filter_operators
+  user_updated: string_filter_operators
+  _and: [rememberMeBlackListSites_filter]
+  _or: [rememberMeBlackListSites_filter]
+}
+
+input socialMedia_filter {
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  id: number_filter_operators
+  index: number_filter_operators
+  link: string_filter_operators
+  sort: number_filter_operators
+  status: string_filter_operators
+  svgUrl: directus_files_filter
+  title: string_filter_operators
+  user_created: string_filter_operators
+  user_updated: string_filter_operators
+  _and: [socialMedia_filter]
+  _or: [socialMedia_filter]
+}
+
+input string_filter_operators {
+  _eq: String
+  _neq: String
+  _contains: String
+  _icontains: String
+  _ncontains: String
+  _starts_with: String
+  _nstarts_with: String
+  _ends_with: String
+  _nends_with: String
+  _in: [String]
+  _nin: [String]
+  _null: Boolean
+  _nnull: Boolean
+  _empty: Boolean
+  _nempty: Boolean
+}
+
+input tabMenu_filter {
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  id: number_filter_operators
+  index: number_filter_operators
+  sort: number_filter_operators
+  status: string_filter_operators
+  title: string_filter_operators
+  type: tabType_filter
+  user_created: string_filter_operators
+  user_updated: string_filter_operators
+  _and: [tabMenu_filter]
+  _or: [tabMenu_filter]
+}
+
+input tabType_filter {
+  attribute: string_filter_operators
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  id: number_filter_operators
+  sort: number_filter_operators
+  status: string_filter_operators
+  user_created: string_filter_operators
+  user_updated: string_filter_operators
+  value: string_filter_operators
+  _and: [tabType_filter]
+  _or: [tabType_filter]
+}
+
+input timingType_filter {
+  id: number_filter_operators
+  name: string_filter_operators
+  _and: [timingType_filter]
+  _or: [timingType_filter]
+}
+
+input tokenDetailBanner_filter {
+  chainId: string_filter_operators
+  id: number_filter_operators
+  status: string_filter_operators
+  symbol: string_filter_operators
+  items: tokenDetailBanner_portkeyCard_filter
+  items_func: count_function_filter_operators
+  _and: [tokenDetailBanner_filter]
+  _or: [tokenDetailBanner_filter]
+}
+
+input tokenDetailBanner_portkeyCard_filter {
+  id: number_filter_operators
+  portkeyCard_id: portkeyCard_filter
+  tokenDetailBanner_id: tokenDetailBanner_filter
+  _and: [tokenDetailBanner_portkeyCard_filter]
+  _or: [tokenDetailBanner_portkeyCard_filter]
+}
+
+input topMenu_filter {
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  id: number_filter_operators
+  index: number_filter_operators
+  path: string_filter_operators
+  sort: number_filter_operators
+  status: string_filter_operators
+  title: string_filter_operators
+  type: navigationType_filter
+  user_created: string_filter_operators
+  user_updated: string_filter_operators
+  children: topSecondMenu_filter
+  children_func: count_function_filter_operators
+  _and: [topMenu_filter]
+  _or: [topMenu_filter]
+}
+
+input topSecondMenu_filter {
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  id: number_filter_operators
+  index: number_filter_operators
+  parent: topMenu_filter
+  path: string_filter_operators
+  sort: number_filter_operators
+  status: string_filter_operators
+  title: string_filter_operators
+  type: navigationType_filter
+  user_created: string_filter_operators
+  user_updated: string_filter_operators
+  _and: [topSecondMenu_filter]
+  _or: [topSecondMenu_filter]
+}
+
+input upgradePush_appVersion_filter {
+  appVersion_id: appVersion_filter
+  id: number_filter_operators
+  upgradePush_id: upgradePush_filter
+  _and: [upgradePush_appVersion_filter]
+  _or: [upgradePush_appVersion_filter]
+}
+
+input upgradePush_country_filter {
+  country_id: country_filter
+  id: number_filter_operators
+  upgradePush_id: upgradePush_filter
+  _and: [upgradePush_country_filter]
+  _or: [upgradePush_country_filter]
+}
+
+input upgradePush_deviceBrand_filter {
+  deviceBrand_id: deviceBrand_filter
+  id: number_filter_operators
+  upgradePush_id: upgradePush_filter
+  _and: [upgradePush_deviceBrand_filter]
+  _or: [upgradePush_deviceBrand_filter]
+}
+
+input upgradePush_deviceType_filter {
+  deviceType_id: deviceType_filter
+  id: number_filter_operators
+  upgradePush_id: upgradePush_filter
+  _and: [upgradePush_deviceType_filter]
+  _or: [upgradePush_deviceType_filter]
+}
+
+input upgradePush_filter {
+  appId: string_filter_operators
+  content: string_filter_operators
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  downloadUrl: string_filter_operators
+  id: number_filter_operators
+  isApproved: boolean_filter_operators
+  isForceUpdate: boolean_filter_operators
+  operatingSystemVersions: string_filter_operators
+  operatingSystemVersions_func: count_function_filter_operators
+  sort: number_filter_operators
+  status: string_filter_operators
+  styleType: upgradeStyle_filter
+  targetVersion: appVersion_filter
+  title: string_filter_operators
+  user_created: string_filter_operators
+  user_updated: string_filter_operators
+  appVersions: upgradePush_appVersion_filter
+  appVersions_func: count_function_filter_operators
+  countries: upgradePush_country_filter
+  countries_func: count_function_filter_operators
+  deviceBrands: upgradePush_deviceBrand_filter
+  deviceBrands_func: count_function_filter_operators
+  deviceTypes: upgradePush_deviceType_filter
+  deviceTypes_func: count_function_filter_operators
+  _and: [upgradePush_filter]
+  _or: [upgradePush_filter]
+}
+
+input upgradeStyle_filter {
+  attribute: string_filter_operators
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  id: number_filter_operators
+  sort: number_filter_operators
+  status: string_filter_operators
+  user_created: string_filter_operators
+  user_updated: string_filter_operators
+  value: number_filter_operators
+  _and: [upgradeStyle_filter]
+  _or: [upgradeStyle_filter]
+}

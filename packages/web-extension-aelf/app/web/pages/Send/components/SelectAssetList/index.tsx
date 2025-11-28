@@ -1,0 +1,180 @@
+import { useEffectOnce } from '@portkey-wallet/hooks';
+import { useAccountAssetsInfoV2 } from '@portkey-wallet/hooks/hooks-eoa/assets';
+import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-eoa/useTokensPrice';
+import { useCurrentAddressInfos } from '@portkey-wallet/hooks/hooks-eoa/wallet';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import { fetchAssetListV2 } from '@portkey-wallet/store/store-eoa/assets/api';
+import { IAssetItemV2, IAssetToken, INftInfoType } from '@portkey-wallet/store/store-eoa/assets/type';
+import useDebounce from 'hooks/useDebounce';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { CommonTabs, CommonModal } from '@portkey/did-ui-react';
+import SelectToken from '../SelectToken';
+import SelectNFT from '../SelectNFT';
+import { SendPageTypeEnum } from 'pages/Send';
+import { useNavigate } from 'react-router';
+import { useNavigateState } from 'hooks/router';
+import { TSendLocationState } from 'types/router';
+import { CustomSvgV3 } from 'components/CustomSvgV3';
+import { ChainId } from '@portkey-wallet/types';
+import { Input } from 'antd';
+import './index.less';
+
+const initFilteredListShow = { nftInfos: [], tokenInfos: [] };
+
+export default function SelectAssetList() {
+  const addressInfos = useCurrentAddressInfos();
+  const [keyword, setKeyword] = useState('');
+  const { accountAssetsList, fetchAccountAssetsInfoList } = useAccountAssetsInfoV2();
+  const debounceKeyword = useDebounce(keyword, 800);
+  const [isFetching, setIsFetching] = useState(false);
+  const [, getTokenPrice] = useGetCurrentAccountTokenPrice();
+  const [filteredListShow, setFilteredListShow] = useState<IAssetItemV2>(initFilteredListShow);
+  const [curTab, setCurTab] = useState<SendPageTypeEnum>(SendPageTypeEnum.token);
+  const navigate = useNavigateState<TSendLocationState>();
+
+  const onSelect = useCallback(
+    (v: IAssetToken | INftInfoType, t: SendPageTypeEnum) => {
+      navigate(`/send/${t}/${v.symbol}`, { state: { ...v, chainId: v.chainId as ChainId } });
+    },
+    [navigate],
+  );
+
+  const assetListShow = useMemo(() => {
+    if (debounceKeyword) {
+      return filteredListShow;
+    } else {
+      setFilteredListShow(initFilteredListShow);
+      return accountAssetsList;
+    }
+  }, [accountAssetsList, debounceKeyword, filteredListShow]);
+  const getAssetsList = useLockCallback(async () => {
+    try {
+      setIsFetching(true);
+      await fetchAccountAssetsInfoList({
+        addressInfos,
+        keyword: '',
+      });
+      setIsFetching(false);
+    } catch (error) {
+      console.log('fetchAccountAssetsByKeywords err:', error);
+    }
+  }, [addressInfos, fetchAccountAssetsInfoList]);
+
+  const getFilteredAssetsList = useLockCallback(async () => {
+    if (!debounceKeyword.trim()) {
+      return;
+    }
+    try {
+      setIsFetching(true);
+      const { nftInfos, tokenInfos } = await fetchAssetListV2({
+        addressInfos,
+        keyword: debounceKeyword,
+      });
+      setFilteredListShow({ nftInfos, tokenInfos });
+      setIsFetching(false);
+    } catch (err) {
+      console.log('fetchAccountAssetsByKeywords err:', err);
+    }
+  }, [addressInfos, debounceKeyword]);
+
+  useEffect(() => {
+    getFilteredAssetsList();
+  }, [getFilteredAssetsList]);
+
+  useEffectOnce(() => {
+    getTokenPrice();
+    getAssetsList();
+  });
+
+  const noDataMessage = useMemo(() => {
+    return debounceKeyword ? 'No results found' : 'There are currently no assets to send.';
+  }, [debounceKeyword]);
+
+  const suffix = useMemo(() => {
+    if (keyword) {
+      return <CustomSvgV3 className="cursor-pointer" type="close-circle" onClick={() => setKeyword('')} />;
+    }
+    return <CustomSvgV3 type="search" />;
+  }, [keyword]);
+
+  return (
+    <div className="send-asset-list">
+      <div className="send-search">
+        <Input
+          type="search"
+          placeholder="Search"
+          value={keyword}
+          onChange={(e) => {
+            const v = e.target.value.trim();
+            setKeyword(v);
+          }}
+          suffix={suffix}
+        />
+      </div>
+      <CommonTabs
+        className="send-asset-tab"
+        activeKey={curTab}
+        onChange={(v) => {
+          setCurTab(v);
+        }}
+        items={[
+          {
+            label: 'Tokens',
+            key: SendPageTypeEnum.token,
+            children: (
+              <SelectToken
+                onSelect={(v) => onSelect(v, SendPageTypeEnum.token)}
+                tokenInfos={assetListShow.tokenInfos || []}
+                loading={isFetching}
+                noDataMessage={noDataMessage}
+              />
+            ),
+          },
+          {
+            label: 'NFTs',
+            key: SendPageTypeEnum.nft,
+            children: (
+              <SelectNFT
+                onSelect={(v) => onSelect(v, SendPageTypeEnum.nft)}
+                nftInfos={assetListShow?.nftInfos || []}
+                loading={isFetching}
+                noDataMessage={noDataMessage}
+              />
+            ),
+          },
+        ]}
+      />
+    </div>
+  );
+}
+
+export function SelectAssetListPage() {
+  const navigate = useNavigate();
+  const onBack = useCallback(() => {
+    navigate('/');
+  }, [navigate]);
+  return (
+    <div className="select-asset-list-page flex-1">
+      <div className="flex-between-center select-asset-list-page-header">
+        <CustomSvgV3 type="arrow-left" className="cursor-pointer" onClick={onBack} />
+        <div>{`Select Asset to Send`}</div>
+        <div></div>
+      </div>
+      <SelectAssetList />
+    </div>
+  );
+}
+
+export function SelectAssetListModal({ open, onCancel }: { open: boolean; onCancel: () => void }) {
+  return (
+    <CommonModal open={open} className="select-asset-list-modal">
+      <div className="flex-between-center select-asset-list-modal-header">
+        <div>{`Select Asset to Send`}</div>
+        <CustomSvgV3 type="close thin" className="cursor-pointer" onClick={onCancel} />
+      </div>
+      <div className="token-list-wrap">
+        <SelectAssetList />
+      </div>
+    </CommonModal>
+  );
+}

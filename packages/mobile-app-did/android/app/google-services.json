@@ -1,0 +1,162 @@
+{
+  "project_info": {
+    "project_number": "339329964702",
+    "project_id": "wallet-test-dev-88ace",
+    "storage_bucket": "wallet-test-dev-88ace.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:339329964702:android:e1305733809af3e45df98f",
+        "android_client_info": {
+          "package_name": "com.PortkeyApp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "339329964702-markii56adkceg9gpp4o93gl82tj5e88.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBodyQpbNgFbbx8KLFzKv5jqQvv3fcpF9w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "112104110070274610738",
+              "client_type": 3
+            },
+            {
+              "client_id": "339329964702-3i2vcpa5hlekg5ob92dpu59pr3uj46u1.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.aelf.portkeyapp"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:339329964702:android:d530067b14d003d65df98f",
+        "android_client_info": {
+          "package_name": "com.portkey.did"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "339329964702-markii56adkceg9gpp4o93gl82tj5e88.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBodyQpbNgFbbx8KLFzKv5jqQvv3fcpF9w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "112104110070274610738",
+              "client_type": 3
+            },
+            {
+              "client_id": "339329964702-3i2vcpa5hlekg5ob92dpu59pr3uj46u1.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.aelf.portkeyapp"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:339329964702:android:9f5ac12079d3707e5df98f",
+        "android_client_info": {
+          "package_name": "com.portkey.finance"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "339329964702-markii56adkceg9gpp4o93gl82tj5e88.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBodyQpbNgFbbx8KLFzKv5jqQvv3fcpF9w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "112104110070274610738",
+              "client_type": 3
+            },
+            {
+              "client_id": "339329964702-3i2vcpa5hlekg5ob92dpu59pr3uj46u1.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.aelf.portkeyapp"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:339329964702:android:e3b52e648d9394fc5df98f",
+        "android_client_info": {
+          "package_name": "com.walletappnew"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "339329964702-qbe65qoheb6g142qn8og79gba7dpdd7j.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.walletappnew",
+            "certificate_hash": "5d01e755a2cdec8ccfbe2daadd509400664d01d9"
+          }
+        },
+        {
+          "client_id": "339329964702-markii56adkceg9gpp4o93gl82tj5e88.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBodyQpbNgFbbx8KLFzKv5jqQvv3fcpF9w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "112104110070274610738",
+              "client_type": 3
+            },
+            {
+              "client_id": "339329964702-3i2vcpa5hlekg5ob92dpu59pr3uj46u1.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.aelf.portkeyapp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

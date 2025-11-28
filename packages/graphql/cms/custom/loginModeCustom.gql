@@ -1,0 +1,47 @@
+query loginMode(
+  $filter: loginType_filter
+  $sort: [String]
+  $limit: Int
+  $offset: Int
+  $page: Int
+  $search: String
+  $filter5: loginMode_loginModeMatch_filter
+  $sort5: [String]
+  $limit5: Int
+  $offset5: Int
+  $page5: Int
+  $search5: String
+  $filter6: loginMode_filter
+  $sort6: [String]
+  $limit6: Int
+  $offset6: Int
+  $page6: Int
+  $search6: String
+) {
+  loginMode(filter: $filter6, sort: $sort6, limit: $limit6, offset: $offset6, page: $page6, search: $search6) {
+    id
+    status
+    extensionIndex
+    iOSIndex
+    androidIndex
+    extensionRecommend
+    iOSRecommend
+    androidRecommend
+    defaultSwitch
+    type(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search) {
+      id
+      status
+      label
+      value
+    }
+    matchList(filter: $filter5, sort: $sort5, limit: $limit5, offset: $offset5, page: $page5, search: $search5) {
+      loginModeMatch_id {
+        status
+        weight
+        matchSwitch
+        matchRuleList
+        description
+      }
+    }
+  }
+}

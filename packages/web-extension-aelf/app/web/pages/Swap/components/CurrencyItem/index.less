@@ -1,0 +1,48 @@
+@import '../../../../assets/theme/color.less';
+
+.currency-item-wrap {
+  display: flex;
+  padding: 16px;
+  gap: 8px;
+  align-items: center;
+
+  .currency-item-token-image-wrap {
+    padding-right: 5px;
+    padding-bottom: 2px;
+    position: relative;
+    flex-shrink: 0;
+
+    .currency-item-chain-image {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      border: 1px solid @border-base1;
+      border-radius: 100%;
+      overflow: hidden;
+    }
+  }
+
+  .currency-item-body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  .currency-item-suffix {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+
+  .currency-item-title {
+    font-size: 16px;
+    line-height: 22px;
+    color: @text-base1;
+  }
+  .currency-item-sub-title {
+    font-size: 14px;
+    line-height: 20px;
+    color: @text-base2;
+  }
+}

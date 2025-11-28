@@ -1,0 +1,46 @@
+query discoverEarnData_portkeyCard_aggregated($groupBy: [String], $filter: discoverEarnData_portkeyCard_filter, $limit: Int, $offset: Int, $page: Int, $search: String, $sort: [String]){
+    discoverEarnData_portkeyCard_aggregated(groupBy: $groupBy, filter: $filter, limit: $limit, offset: $offset, page: $page, search: $search, sort: $sort){
+        group
+        countAll
+        count{
+            discoverEarnData_id
+            id
+            portkeyCard_id
+        }
+        countDistinct{
+            discoverEarnData_id
+            id
+            portkeyCard_id
+        }
+        avg{
+            discoverEarnData_id
+            id
+            portkeyCard_id
+        }
+        sum{
+            discoverEarnData_id
+            id
+            portkeyCard_id
+        }
+        avgDistinct{
+            discoverEarnData_id
+            id
+            portkeyCard_id
+        }
+        sumDistinct{
+            discoverEarnData_id
+            id
+            portkeyCard_id
+        }
+        min{
+            discoverEarnData_id
+            id
+            portkeyCard_id
+        }
+        max{
+            discoverEarnData_id
+            id
+            portkeyCard_id
+        }
+    }
+}

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>up</title>
+    <g id="icon" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Common" transform="translate(-399.000000, -113.000000)">
+            <g id="up" transform="translate(399.000000, 113.000000)">
+                <rect id="Rectangle" x="0" y="0" width="16" height="16"></rect>
+                <path d="M13.8740805,5 L12.6898504,5 C12.6093228,5 12.5335321,5.03348214 12.4861628,5.08839286 L8.0002992,10.3330357 L3.51443555,5.08839286 C3.46706634,5.03348214 3.39127562,5 3.31074797,5 L2.12651786,5 C2.02388458,5 1.96388359,5.09910714 2.02388458,5.17008929 L7.59134507,11.6803571 C7.79345367,11.9160714 8.20714472,11.9160714 8.40767436,11.6803571 L13.9751348,5.17008929 C14.0367148,5.09910714 13.9767138,5 13.8740805,5 Z" id="Shape" fill="#515A62" fill-rule="nonzero" transform="translate(8.000000, 8.428571) scale(1, -1) translate(-8.000000, -8.428571) "></path>
+            </g>
+        </g>
+    </g>
+</svg>

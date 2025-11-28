@@ -1,0 +1,9 @@
+query caHolderManagerChangeRecordInfo($dto: GetCAHolderManagerChangeRecordDto){
+    caHolderManagerChangeRecordInfo(dto: $dto){
+        caAddress
+        caHash
+        manager
+        changeType
+        blockHeight
+    }
+}

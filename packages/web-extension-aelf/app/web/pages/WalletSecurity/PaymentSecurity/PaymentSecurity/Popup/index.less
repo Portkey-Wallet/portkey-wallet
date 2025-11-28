@@ -1,0 +1,22 @@
+@import '../../../../../assets/theme/color.less';
+@import '../../../../../assets/theme/constants.less';
+
+.payment-security-popup {
+  width: 100%;
+  .payment-security-item {
+    .left-arrow {
+      transform: rotateZ(180deg);
+      flex-shrink: 0;
+    }
+  }
+
+  .loading-container {
+    margin-top: calc(50% - @common-header-height);
+  }
+  .no-data-text {
+    color: @text-opacity70;
+    font-size: 16px;
+    margin-top: calc(50% - @common-header-height);
+    text-align: center;
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "Name Already Exists": "Name Already Exists",
+  "Please Enter Network Name": "Please Enter a Name",
+  "The maximum size of the name is 50": "The maximum size of the name is 50",
+  "This RPC URL is already added": "This RPC URL is already added",
+  "This URL is already added": "This URL is already added",
+  "Please Declare the Modification Type": "Please Declare the Modification Type",
+  "Network does not Exist！": "Network does not Exist！",
+  "Currently not Supported": "Currently not Supported",
+  "Please enter New RPC URL": "Please enter New RPC URL",
+  "Invalid RPC URL": "Invalid RPC URL",
+  "Please Enter Chain ID": "Please Enter Chain ID",
+  "Could not fetch chain ID. Is your RPC URL correct?": "Could not fetch chain ID. Is your RPC URL correct?",
+  "Invalid Explorer URL": "Invalid Explorer URL"
+}

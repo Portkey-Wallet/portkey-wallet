@@ -1,0 +1,38 @@
+import { View, StyleSheet } from 'react-native';
+import React from 'react';
+import { pTd } from 'utils/unit';
+import LottieLoading from 'components/LottieLoading';
+
+export interface IFlatListFooterLoadingProps {
+  refreshing?: boolean;
+}
+
+export const FlatListFooterLoading = ({ refreshing }: IFlatListFooterLoadingProps) => {
+  return (
+    <View style={styles.container}>
+      <View style={styles.content}>{refreshing && <LottieLoading />}</View>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    marginTop: pTd(4),
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
+    marginHorizontal: pTd(16),
+    paddingTop: pTd(20),
+    marginBottom: pTd(24),
+  },
+  content: {
+    height: pTd(18),
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+  loadingStyle: {
+    width: pTd(16),
+  },
+});

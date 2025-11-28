@@ -1,0 +1,347 @@
+import { SHOW_FROM_TRANSACTION_TYPES } from '@portkey-wallet/constants/constants-eoa/activity';
+import { fetchActivity } from '@portkey-wallet/store/store-eoa/activity/api';
+import { ActivityItemType, TransactionStatus } from '@portkey-wallet/types/types-eoa/activity';
+import { getExploreLink } from '@portkey-wallet/utils';
+import { transNetworkText } from '@portkey-wallet/utils/activity';
+import {
+  formatStr2EllipsisStr,
+  AmountSign,
+  formatWithCommas,
+  formatAmountUSDShow,
+  formatTokenAmountShowWithDecimals,
+} from '@portkey-wallet/utils/converter';
+import clsx from 'clsx';
+import Copy from 'components/Copy';
+import CustomSvg from 'components/CustomSvg';
+import { useCallback, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useEffectOnce } from 'react-use';
+import './index.less';
+import { formatTransferTime } from '@portkey-wallet/utils/time';
+import { useCurrentChain, useDefaultToken } from '@portkey-wallet/hooks/hooks-eoa/chainList';
+import { addressFormat } from '@portkey-wallet/utils';
+import { useCommonState } from 'store/Provider/hooks';
+import PromptFrame from 'pages/components/PromptFrame';
+import { useFreshTokenPrice } from '@portkey-wallet/hooks/hooks-eoa/useTokensPrice';
+import { BalanceTab } from '@portkey-wallet/constants/constants-eoa/assets';
+import PromptEmptyElement from 'pages/components/PromptEmptyElement';
+import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-eoa/network';
+import { ChainId } from '@portkey-wallet/types';
+import { useLocationState, useNavigateState } from 'hooks/router';
+import { ITransactionLocationState, THomePageLocationState } from 'types/router';
+import { getSeedTypeTag } from 'utils/assets';
+import CommonHeader, { CustomSvgPlaceholderSize } from 'components/CommonHeader';
+import { useCurrentAccount, useCurrentAddressInfos } from '@portkey-wallet/hooks/hooks-eoa/wallet';
+
+export default function Transaction() {
+  const { t } = useTranslation();
+  const { state } = useLocationState<ITransactionLocationState>();
+  const chainId = state.chainId;
+  const from = state?.previousPage;
+  const isMainnet = useIsMainnet();
+  const addressesInfoList = useCurrentAddressInfos();
+  const { address } = useCurrentAccount() ?? { address: '' };
+
+  useFreshTokenPrice();
+  const defaultToken = useDefaultToken(chainId ? (chainId as ChainId) : undefined);
+
+  // Obtain data through routing to ensure that the page must have data and prevent Null Data Errors.
+  const [activityItem, setActivityItem] = useState<ActivityItemType>(state.item);
+
+  const addressInfos = useMemo(() => {
+    let result = addressesInfoList;
+    if (address === activityItem.fromAddress) {
+      result = addressesInfoList.filter((item) => item.chainId === activityItem?.fromChainId);
+    } else if (address === activityItem.toAddress) {
+      result = addressesInfoList.filter((item) => item.chainId === activityItem?.toChainId);
+    }
+    return result?.length > 0 ? result : addressesInfoList;
+  }, [addressesInfoList, activityItem, address]);
+
+  const feeInfo = useMemo(() => activityItem?.transactionFees, [activityItem?.transactionFees]);
+  const chainInfo = useCurrentChain(activityItem.fromChainId);
+
+  // Obtain data through api to ensure data integrity.
+  // Because some data is not returned in the Activities API. Such as from, to.
+  useEffectOnce(() => {
+    const params = {
+      addressInfos: addressInfos,
+      transactionId: activityItem.transactionId,
+      blockHash: activityItem.blockHash,
+      chainId: addressInfos?.[0].chainId,
+    };
+    fetchActivity(params)
+      .then((res) => {
+        setActivityItem(res);
+      })
+      .catch((error) => {
+        throw Error(JSON.stringify(error));
+      });
+  });
+
+  const status = useMemo(() => {
+    if (activityItem?.status === TransactionStatus.Mined)
+      return {
+        text: 'Confirmed',
+        style: 'confirmed',
+      };
+    return {
+      text: 'Failed',
+      style: 'failed',
+    };
+  }, [activityItem]);
+
+  const nav = useNavigateState<THomePageLocationState>();
+  const onClose = useCallback(() => {
+    if (from && from === BalanceTab.ACTIVITY) {
+      // come in from the activityTab, go to the homepage activityTab
+      nav('/', { state: { key: BalanceTab.ACTIVITY } });
+    } else {
+      // come in from the token activity list, go back
+      nav(-1);
+    }
+  }, [from, nav]);
+
+  const isNft = useMemo(() => !!activityItem?.nftInfo?.nftId, [activityItem?.nftInfo?.nftId]);
+
+  const nftHeaderUI = useCallback(() => {
+    const { nftInfo, amount, decimals } = activityItem;
+    const seedTypeTag = nftInfo ? getSeedTypeTag(nftInfo) : '';
+
+    return (
+      <div className="nft-amount">
+        <div className="assets flex-center">
+          {seedTypeTag && <CustomSvg type={seedTypeTag} />}
+          {nftInfo?.imageUrl ? (
+            <img className="assets-img" src={nftInfo?.imageUrl} />
+          ) : (
+            <p>{nftInfo?.alias?.slice(0, 1)}</p>
+          )}
+        </div>
+        <div className="info">
+          <p className="index">
+            <span>{nftInfo?.alias}</span>
+            <span className="token-id">#{nftInfo?.nftId}</span>
+          </p>
+          <p className="quantity">{`Amount: ${formatTokenAmountShowWithDecimals(amount, decimals)}`}</p>
+        </div>
+      </div>
+    );
+  }, [activityItem]);
+
+  const tokenHeaderUI = useCallback(() => {
+    const { amount, isReceived, decimals, symbol, transactionType, currentTxPriceInUsd = '' } = activityItem;
+    const sign = isReceived ? AmountSign.PLUS : AmountSign.MINUS;
+    /* Hidden during [SocialRecovery, AddManager, RemoveManager] */
+    if (transactionType && SHOW_FROM_TRANSACTION_TYPES.includes(transactionType)) {
+      return (
+        <div className="token-amount flex-column-center">
+          <div className="token-amount-text flex-center">
+            <div className="token-amount-number">
+              {formatWithCommas({ amount, decimals, sign, digits: Number(decimals) })}
+            </div>
+            <div className="token-amount-symbol">{symbol ?? ''}</div>
+          </div>
+          {isMainnet && <div className="usd">{formatAmountUSDShow(currentTxPriceInUsd)}</div>}
+        </div>
+      );
+    } else {
+      return <p className="no-amount"></p>;
+    }
+  }, [activityItem, isMainnet]);
+
+  const statusAndDateUI = useCallback(() => {
+    return (
+      <div className="status-wrap">
+        <p className="label">
+          <span className="left">{t('Status')}</span>
+          <span className="right">{t('Date')}</span>
+        </p>
+        <p className="value">
+          <span className={clsx(['left', status.style])}>{t(status.text)}</span>
+          <span className="right">{formatTransferTime(activityItem.timestamp)}</span>
+        </p>
+      </div>
+    );
+  }, [activityItem.timestamp, status.style, status.text, t]);
+
+  const currentNetwork = useCurrentNetworkInfo();
+  const fromToUI = useCallback(() => {
+    const { from, fromAddress, fromChainId, to, toAddress, toChainId, transactionType } = activityItem;
+    const transFromAddress = addressFormat(fromAddress, fromChainId, currentNetwork.walletType);
+    const transToAddress = addressFormat(toAddress, toChainId, currentNetwork.walletType);
+
+    /* Hidden during [SocialRecovery, AddManager, RemoveManager] */
+    return (
+      transactionType &&
+      SHOW_FROM_TRANSACTION_TYPES.includes(transactionType) && (
+        <div className="account-wrap">
+          <p className="label">
+            <span className="left">{t('From')}</span>
+            <span className="right">{t('To')}</span>
+          </p>
+          <div className="value">
+            <div className="content">
+              <span className="left name">{from}</span>
+              {fromAddress && (
+                <span className="left address-wrap">
+                  <span>{formatStr2EllipsisStr(transFromAddress, [7, 8])}</span>
+                  <Copy toCopy={transFromAddress} iconClassName="copy-address" />
+                </span>
+              )}
+            </div>
+            <CustomSvg type="RightArrow" className="right-arrow" />
+            <div className="content">
+              <span className="right name">{to}</span>
+              {toAddress && (
+                <span className="right address-wrap">
+                  <span>{formatStr2EllipsisStr(transToAddress, [7, 8])}</span>
+                  <Copy toCopy={transToAddress} iconClassName="copy-address" />
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+      )
+    );
+  }, [activityItem, currentNetwork.walletType, t]);
+
+  const networkUI = useCallback(() => {
+    /* Hidden during [SocialRecovery, AddManager, RemoveManager] */
+    const { transactionType, fromChainId, toChainId } = activityItem;
+    const from = transNetworkText(fromChainId, !isMainnet);
+    const to = transNetworkText(toChainId, !isMainnet);
+
+    return (
+      transactionType &&
+      SHOW_FROM_TRANSACTION_TYPES.includes(transactionType) && (
+        <div className="network-wrap">
+          <p className="label">
+            <span className="left">{t('Network')}</span>
+          </p>
+          <p className="value">{`${from}->${to}`}</p>
+        </div>
+      )
+    );
+  }, [activityItem, isMainnet, t]);
+
+  const noFeeUI = useCallback(() => {
+    return (
+      <div className="right-item">
+        <div>{`0 ELF`}</div> {isMainnet && <div className="right-usd">{`$ 0`}</div>}
+      </div>
+    );
+  }, [isMainnet]);
+
+  const feeUI = useCallback(() => {
+    return activityItem.isDelegated ? (
+      <div className="value">
+        <span className="left">{t('Transaction Fee')}</span>
+        {noFeeUI()}
+      </div>
+    ) : (
+      <div className="value">
+        <span className="left">{t('Transaction Fee')}</span>
+        <span className="right">
+          {(!feeInfo || feeInfo?.length === 0) && noFeeUI()}
+          {feeInfo?.length > 0 &&
+            feeInfo.map((item, idx) => {
+              return (
+                <div key={'transactionFee' + idx} className="right-item flex-column">
+                  <div>{`${formatWithCommas({
+                    amount: item.fee,
+                    decimals: item.decimals || defaultToken.decimals,
+                    digits: Number(item.decimals),
+                  })} ${item.symbol ?? ''}`}</div>
+                  {isMainnet && <div className="right-usd">{formatAmountUSDShow(item?.feeInUsd ?? 0)}</div>}
+                </div>
+              );
+            })}
+        </span>
+      </div>
+    );
+  }, [activityItem.isDelegated, defaultToken.decimals, feeInfo, isMainnet, noFeeUI, t]);
+
+  const transactionUI = useCallback(() => {
+    const { isReceived } = activityItem;
+    return (
+      <div className="money-wrap">
+        <p className="label">
+          <span className="left">{t('Transaction')}</span>
+        </p>
+        <div>
+          <div className="value">
+            <span className="left">{t('Transaction ID')}</span>
+            <span className="right tx-id">
+              {`${formatStr2EllipsisStr(activityItem.transactionId, [10, 0])} `}
+              <Copy toCopy={activityItem.transactionId} />
+            </span>
+          </div>
+          {isReceived ? null : feeUI()}
+        </div>
+      </div>
+    );
+  }, [activityItem, feeUI, t]);
+
+  const openOnExplorer = useCallback(() => {
+    return getExploreLink(chainInfo?.explorerUrl || '', activityItem.transactionId || '', 'transaction');
+  }, [activityItem.transactionId, chainInfo?.explorerUrl]);
+
+  const viewOnExplorerUI = useCallback(() => {
+    return (
+      <a className="link" target="blank" href={openOnExplorer()}>
+        {t('View on Explorer')}
+      </a>
+    );
+  }, [openOnExplorer, t]);
+
+  const { isPrompt } = useCommonState();
+
+  const mainContent = useCallback(() => {
+    return (
+      <div className={clsx(['transaction-detail-modal', isPrompt && 'detail-page-prompt'])}>
+        <div>
+          <CommonHeader
+            rightElementList={[
+              {
+                customSvgType: 'SuggestClose',
+                customSvgPlaceholderSize: CustomSvgPlaceholderSize.MD,
+                onClick: onClose,
+              },
+            ]}
+          />
+          <div className="transaction-detail-body">
+            <div className="transaction-info">
+              <div className="method-wrap">
+                <p className="method-name">{activityItem?.transactionName}</p>
+                {isNft ? nftHeaderUI() : tokenHeaderUI()}
+              </div>
+              {statusAndDateUI()}
+              {fromToUI()}
+              {networkUI()}
+              {transactionUI()}
+            </div>
+          </div>
+        </div>
+        <div className="transaction-footer">
+          <div>{viewOnExplorerUI()}</div>
+          {isPrompt && <PromptEmptyElement />}
+        </div>
+      </div>
+    );
+  }, [
+    activityItem?.transactionName,
+    fromToUI,
+    isNft,
+    isPrompt,
+    networkUI,
+    nftHeaderUI,
+    onClose,
+    statusAndDateUI,
+    tokenHeaderUI,
+    transactionUI,
+    viewOnExplorerUI,
+  ]);
+
+  return <>{isPrompt ? <PromptFrame content={mainContent()} className="transaction-detail" /> : mainContent()}</>;
+}

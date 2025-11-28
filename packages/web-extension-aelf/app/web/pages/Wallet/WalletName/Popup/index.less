@@ -1,0 +1,40 @@
+@import '../../../../assets/theme/color.less';
+@import '../../../../assets/theme/constants.less';
+
+.wallet-name-popup {
+  width: 100%;
+  position: relative;
+  .view-contact-body {
+    height: calc(100% - @common-header-height);
+
+    .footer {
+      padding: 16px;
+    }
+  }
+
+  .set-wallet-name-form {
+    height: calc(100% - @common-header-height);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    .form-content {
+      padding: 24px 24px 0;
+    }
+
+    .form-btn {
+      padding: 16px 0;
+    }
+  }
+
+  .account-cancelation {
+    position: absolute;
+    bottom: 16px;
+    width: 100%;
+    padding-bottom: 16px;
+    font-size: 16px;
+    line-height: 100%;
+    color: @text-opacity40;
+    cursor: pointer;
+  }
+}

@@ -1,0 +1,90 @@
+@import '../assets/theme/color.less';
+
+.portkey-message-text {
+  font-size: 16px;
+  line-height: 22px;
+  color: @neutral-primary-text;
+  .text-body {
+    position: relative;
+    flex-direction: column;
+    padding: 5px;
+    border-radius: 2px 16px 16px;
+    background: @bg-6;
+    &.right {
+      border-radius: 16px 2px 16px 16px;
+      background: @brand-light;
+    }
+    .msgpin-icon {
+      width: 12px;
+      height: 12px;
+      margin-right: 4px;
+    }
+    .text-container {
+      gap: 8px;
+    }
+    .text-text {
+      padding: 0 7px;
+      word-break: break-all;
+      white-space: pre-wrap;
+      .text-date-hidden {
+        visibility: hidden;
+        margin-left: 8px;
+        font-size: 10px;
+        line-height: 16px;
+        &.pin-icon {
+          margin-left: 24px;
+        }
+      }
+      .text-link,
+      .non-support-msg {
+        color: @brand-normal;
+        cursor: pointer;
+      }
+    }
+    .text-date {
+      position: absolute;
+      bottom: 5px;
+      right: 12px;
+      font-size: 10px;
+      line-height: 16px;
+      color: @neutral-disable-text;
+    }
+  }
+}
+
+.message-text-popover {
+  .portkey-popover-content {
+    min-width: 120px;
+    .portkey-popover-inner {
+      border-radius: 6px;
+      box-shadow: 0 2px 12px 0 @shadow-1;
+      .portkey-popover-inner-content {
+        padding: 0 12px;
+      }
+    }
+  }
+}
+.message-text-popover.portkey-popover-placement-bottom {
+  .portkey-popover-content {
+    top: -30px;
+    left: 20px;
+  }
+}
+.message-text-popover.portkey-popover-placement-top {
+  .portkey-popover-content {
+    bottom: -30px;
+    left: -4px;
+  }
+}
+.message-text-popover.right.portkey-popover-placement-bottom {
+  .portkey-popover-content {
+    top: -30px;
+    left: -4px;
+  }
+}
+.message-text-popover.right.portkey-popover-placement-top {
+  .portkey-popover-content {
+    bottom: -30px;
+    left: -10px;
+  }
+}

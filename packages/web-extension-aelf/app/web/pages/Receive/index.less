@@ -1,0 +1,19 @@
+@import '../../assets/theme/color.less';
+
+.receive-wrapper {
+  background-color: @bg-base1;
+  height: 100%;
+  .receive-content {
+    .receive-radio-tab {
+      padding: 8px 16px 0;
+    }
+  }
+}
+.portkey-ant-modal-content {
+  max-height: 760px !important;
+}
+@media screen and (max-width: 768px) {
+  .portkey-ant-drawer-content-wrapper {
+    max-height: calc(100vh - 30px) !important;
+  }
+}

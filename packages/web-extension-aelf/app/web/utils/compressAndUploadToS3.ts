@@ -1,0 +1,30 @@
+import { RcFile } from 'antd/lib/upload/interface';
+import imageCompression from 'browser-image-compression';
+import s3Instance from '@portkey-wallet/utils/s3';
+
+const uploadImageToS3 = async (paramFile: RcFile | File, isCompress = false) => {
+  let compressionFile: RcFile | File = paramFile;
+  if (isCompress) {
+    const compressOptions = {
+      maxSizeMB: 10,
+      maxWidthOrHeight: 200,
+      useWebWorker: false, // 禁用Web Worker以符合Manifest V3政策
+    };
+
+    // get compression image sources
+    compressionFile = await imageCompression(paramFile, compressOptions);
+  }
+
+  let suffix = '';
+  if (paramFile.type) {
+    suffix = paramFile.type.split('/')?.[1] || '';
+  }
+
+  const s3Result = await s3Instance.uploadFile({
+    body: compressionFile,
+    suffix,
+  });
+  return s3Result.url;
+};
+
+export default uploadImageToS3;

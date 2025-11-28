@@ -1,0 +1,13 @@
+[defaults]
+url=https://sentry.io/
+project=sentry-demo
+org=ienyan
+
+[auth]
+token=87f90d627bfd4c25bff05e98c900ac1a1aa69ea65dd44d23aecc546a3c5a65d1
+
+[log]
+level=debug
+
+[http]
+verify_ssl=false

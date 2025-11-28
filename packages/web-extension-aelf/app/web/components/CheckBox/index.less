@@ -1,0 +1,27 @@
+@import '../../assets/theme/color.less';
+
+.portkey-checkbox-container {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.2s;
+  padding: 2px 4px;
+  border-radius: 4px;
+  &:hover {
+    background: @bg-base2;
+  }
+}
+.portkey-checkbox-icon {
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.portkey-checkbox-label {
+  font-size: 14px;
+  color: @text-base1;
+  line-height: 1.4;
+}

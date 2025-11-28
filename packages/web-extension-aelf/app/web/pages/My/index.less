@@ -1,0 +1,130 @@
+@import '../../assets/theme/color.less';
+@import '../../assets/theme/constants.less';
+
+.my-frame {
+  min-width: 328px;
+  width: 100%;
+  //max-width: 600px;
+  .my-header {
+    .lock-wrap {
+      gap: 6px;
+      padding: 5px 12px;
+      border-radius: 20px;
+      background-color: @neutral-container-bg;
+      &:hover {
+        background-color: @neutral-hover-bg;
+      }
+    }
+    .lock-icon {
+      width: 16px;
+      height: 16px;
+      svg {
+        width: 100%;
+        height: 100%;
+      }
+    }
+    .lock-text {
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 22px;
+    }
+  }
+  .my-content {
+    //height: 448px;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow-y: overlay;
+    .menu-list {
+      flex: 1;
+      //.custom-svg {
+      //  width: 20px;
+      //  height: 20px;
+      //  svg {
+      //    width: 20px;
+      //    height: 20px;
+      //  }
+      //}
+      .leftarrow-icon {
+        width: 16px;
+        height: 16px;
+        svg {
+          width: 16px;
+          height: 16px;
+        }
+      }
+      .menu-icon-wrap {
+        position: relative;
+        .unread-badge {
+          top: -4px;
+          right: -4px;
+        }
+      }
+      .referral-tag {
+        margin-right: 8px;
+        width: 40px;
+        height: 20px;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        line-height: 16px;
+        color: @font-14;
+        background-color: @bg-26;
+      }
+      .item-extra-info {
+        padding-right: 4px;
+        max-width: 120px;
+        font-size: 14px;
+        line-height: 140%;
+        color: @text-opacity1;
+        .text-overflow(1);
+
+        //display: block;
+        display: flex;
+        align-items: center;
+      }
+    }
+    .btn {
+      padding: 32px 0;
+      /* stylelint-disable-next-line no-descending-specificity */
+      svg {
+        /* stylelint-disable-next-line selector-id-pattern */
+        #Shape {
+          fill: @brand-normal;
+        }
+      }
+    }
+  }
+
+  .set-new-wallet-name-container {
+    padding: 0 9px;
+  }
+
+  .wallet-entry-container {
+    margin: 12px 0;
+    .menu-item {
+      padding: 0;
+    }
+  }
+  .my-list-container {
+    .menu-item {
+      margin: 12px 0;
+    }
+  }
+}
+
+.empty-placeholder {
+  height: 1px;
+  //width: 100%;
+  //max-width: 361px;
+  background-color: @border-neutral3;
+  //margin: 0 16px;
+}
+
+@media screen and (min-width: 375px) {
+  .empty-placeholder {
+    //margin: 0 24px;
+    //margin: 0 16px;
+  }
+}
+
+

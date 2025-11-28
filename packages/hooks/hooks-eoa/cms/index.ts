@@ -1,0 +1,361 @@
+import { useCallback, useEffect, useMemo } from 'react';
+import { useAppCommonDispatch, useAppEOASelector, useEffectOnce } from '../../index';
+import { useCurrentNetworkInfo, useNetworkList } from '@portkey-wallet/hooks/hooks-eoa/network';
+import {
+  getDiscoverGroupAsync,
+  getSocialMediaAsync,
+  getRememberMeBlackListAsync,
+  getTabMenuAsync,
+  getDiscoverTabAsync,
+  setEntrance,
+  getLoginControlListAsync,
+} from '@portkey-wallet/store/store-eoa/cms/actions';
+import { getFaviconUrl, getOrigin } from '@portkey-wallet/utils/dapp/browser';
+import { checkSiteIsInBlackList } from '@portkey-wallet/utils/session';
+import { DEFAULT_ENTRANCE_SHOW, generateEntranceShow, getEntrance } from './util';
+import { IEntranceItem, IEntranceMatchValueConfig } from '@portkey-wallet/types/types-eoa/cms';
+import { NetworkType } from '@portkey-wallet/types';
+
+export const useCMS = () => useAppEOASelector(state => state.cms);
+
+export function useTabMenuList(isInit = false) {
+  const dispatch = useAppCommonDispatch();
+  const { tabMenuListNetMap } = useCMS();
+  const { networkType } = useCurrentNetworkInfo();
+  const networkList = useNetworkList();
+
+  const tabMenuList = useMemo(() => tabMenuListNetMap[networkType] || [], [networkType, tabMenuListNetMap]);
+
+  useEffect(() => {
+    if (isInit) {
+      networkList.forEach(item => {
+        dispatch(getTabMenuAsync(item.networkType));
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (!isInit) {
+      dispatch(getTabMenuAsync(networkType));
+    }
+  }, [dispatch, isInit, networkType]);
+
+  return tabMenuList;
+}
+
+export function useDiscoverTabList(isInit = false) {
+  const dispatch = useAppCommonDispatch();
+  const { discoverTabListMap } = useCMS();
+  const { networkType } = useCurrentNetworkInfo();
+  const networkList = useNetworkList();
+
+  const discoverTabList = useMemo(
+    () => (discoverTabListMap ? discoverTabListMap[networkType] : []),
+    [networkType, discoverTabListMap],
+  );
+
+  useEffect(() => {
+    if (isInit) {
+      networkList.forEach(item => {
+        dispatch(getTabMenuAsync(item.networkType));
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (!isInit) {
+      dispatch(getDiscoverTabAsync(networkType));
+    }
+  }, [dispatch, isInit, networkType]);
+
+  return discoverTabList;
+}
+
+export function useSocialMediaList(isInit = false) {
+  const dispatch = useAppCommonDispatch();
+  const { socialMediaListNetMap } = useCMS();
+  const { networkType } = useCurrentNetworkInfo();
+  const networkList = useNetworkList();
+
+  const socialMediaList = useMemo(() => socialMediaListNetMap[networkType] || [], [networkType, socialMediaListNetMap]);
+
+  useEffect(() => {
+    if (isInit) {
+      networkList.forEach(item => {
+        dispatch(getSocialMediaAsync(item.networkType));
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (!isInit) {
+      dispatch(getSocialMediaAsync(networkType));
+    }
+  }, [dispatch, isInit, networkType]);
+
+  return socialMediaList;
+}
+
+export function useDiscoverGroupList(isInit = false) {
+  const dispatch = useAppCommonDispatch();
+  const { discoverGroupListNetMap } = useCMS();
+  const { networkType } = useCurrentNetworkInfo();
+  const networkList = useNetworkList();
+
+  const discoverGroupList = useMemo(
+    () => discoverGroupListNetMap[networkType] || [],
+    [networkType, discoverGroupListNetMap],
+  );
+
+  useEffect(() => {
+    if (isInit) {
+      networkList.forEach(item => {
+        dispatch(getDiscoverGroupAsync(item.networkType));
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (!isInit) {
+      dispatch(getDiscoverGroupAsync(networkType));
+    }
+  }, [dispatch, isInit, networkType]);
+
+  return discoverGroupList || [];
+}
+
+export const useEntrance = (config: IEntranceMatchValueConfig, isInit = false) => {
+  const dispatch = useAppCommonDispatch();
+  const { entranceNetMap } = useCMS();
+  const { networkType } = useCurrentNetworkInfo();
+  const networkList = useNetworkList();
+
+  const entrance = useMemo(
+    () => ({
+      ...DEFAULT_ENTRANCE_SHOW,
+      ...entranceNetMap?.[networkType],
+    }),
+    [networkType, entranceNetMap],
+  );
+
+  const refresh = useCallback(
+    async (network?: NetworkType) => {
+      const _entranceList = (await getEntrance(network || networkType)) as IEntranceItem[];
+      const _entrance = await generateEntranceShow(config, _entranceList || []);
+      dispatch(
+        setEntrance({
+          network: network || networkType,
+          value: _entrance,
+        }),
+      );
+      return _entrance;
+    },
+    [config, dispatch, networkType],
+  );
+
+  useEffectOnce(() => {
+    if (isInit) {
+      networkList.forEach(item => {
+        refresh(item.networkType);
+      });
+    }
+  });
+
+  useEffectOnce(() => {
+    if (!isInit) {
+      refresh();
+    }
+  });
+
+  return {
+    entrance,
+    refresh,
+  };
+};
+
+export const useETransShow = (config: IEntranceMatchValueConfig) => {
+  const { entrance, refresh } = useEntrance(config);
+  const { eTransferUrl } = useCurrentNetworkInfo();
+
+  const isETransDepositShow = useMemo(() => !!entrance.eTransDeposit, [entrance.eTransDeposit]);
+
+  const isETransWithdrawShow = useMemo(
+    () => !!(entrance.eTransWithdraw && eTransferUrl),
+    [eTransferUrl, entrance.eTransWithdraw],
+  );
+
+  const isETransShow = useMemo(
+    () => isETransDepositShow || isETransWithdrawShow || false,
+    [isETransDepositShow, isETransWithdrawShow],
+  );
+
+  const refreshETrans = useCallback(async () => {
+    let _isETransDepositShow = false;
+    let _isETransWithdrawShow = false;
+    try {
+      const result = await refresh();
+      _isETransDepositShow = result.eTransDeposit;
+      _isETransWithdrawShow = result.eTransWithdraw;
+    } catch (error) {
+      console.log('refreshBuyButton error');
+    }
+
+    return {
+      isETransDepositShow: _isETransDepositShow,
+      isETransWithdrawShow: _isETransWithdrawShow,
+    };
+  }, [refresh]);
+
+  return {
+    isETransShow,
+    isETransDepositShow,
+    isETransWithdrawShow,
+    refreshETrans,
+  };
+};
+export const useBridgeButtonShow = (config: IEntranceMatchValueConfig) => {
+  const { entrance } = useEntrance(config);
+  const isBridgeShow = useMemo(() => entrance?.bridge, [entrance.bridge]);
+
+  return {
+    isBridgeShow,
+  };
+};
+
+export const useFreeMintShow = (config: IEntranceMatchValueConfig) => {
+  const { entrance } = useEntrance(config);
+  const isFreeMintNftShow = useMemo(() => entrance?.freeMintNft, [entrance.freeMintNft]);
+
+  return {
+    isFreeMintNftShow,
+  };
+};
+export const useNFTTabShow = (config: IEntranceMatchValueConfig) => {
+  const { entrance } = useEntrance(config);
+  const isNFTTabShow = useMemo(() => entrance?.nft, [entrance.nft]);
+
+  return {
+    isNFTTabShow,
+  };
+};
+export const useSwapButtonShow = (config: IEntranceMatchValueConfig) => {
+  const { entrance } = useEntrance(config);
+  const isSwapShow = useMemo(() => entrance?.swap, [entrance.swap]);
+
+  return {
+    isSwapShow,
+  };
+};
+
+export const useRememberMeBlackList = (isInit = false) => {
+  const dispatch = useAppCommonDispatch();
+  const { rememberMeBlackListMap } = useCMS();
+  const { networkType } = useCurrentNetworkInfo();
+  const networkList = useNetworkList();
+
+  const rememberMeBlackList = useMemo(
+    () => rememberMeBlackListMap?.[networkType]?.map(ele => ele?.url) || [],
+    [networkType, rememberMeBlackListMap],
+  );
+
+  useEffect(() => {
+    if (isInit) {
+      networkList.forEach(item => {
+        dispatch(getRememberMeBlackListAsync(item.networkType));
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (!isInit) {
+      dispatch(getRememberMeBlackListAsync(networkType));
+    }
+  }, [dispatch, isInit, networkType]);
+
+  return rememberMeBlackList || [];
+};
+
+export const useFetchCurrentRememberMeBlackList = () => {
+  const dispatch = useAppCommonDispatch();
+  const { networkType } = useCurrentNetworkInfo();
+
+  return useCallback(() => {
+    dispatch(getRememberMeBlackListAsync(networkType));
+  }, [dispatch, networkType]);
+};
+
+export const useCheckSiteIsInBlackList = () => {
+  const list = useRememberMeBlackList();
+  return useCallback((url: string) => checkSiteIsInBlackList(list, getOrigin(url)), [list]);
+};
+
+export const useGetCmsWebsiteInfo = () => {
+  const { cmsWebsiteMap } = useCMS();
+  const { s3Url } = useCurrentNetworkInfo();
+
+  const getCmsWebsiteInfoImageUrl = useCallback(
+    (domain: string): string => {
+      const target = cmsWebsiteMap?.[domain];
+
+      // if in cms
+      if (target?.imgUrl?.filename_disk) return `${s3Url}/${target?.imgUrl?.filename_disk}`;
+
+      return getFaviconUrl(domain);
+    },
+    [cmsWebsiteMap, s3Url],
+  );
+
+  const getCmsWebsiteInfoName = useCallback((domain: string) => cmsWebsiteMap?.[domain]?.title || '', [cmsWebsiteMap]);
+
+  return {
+    getCmsWebsiteInfoImageUrl,
+    getCmsWebsiteInfoName,
+  };
+};
+
+export const useGetLoginControlListAsync = () => {
+  const dispatch = useAppCommonDispatch();
+  const networkList = useNetworkList();
+  return useCallback(async () => {
+    try {
+      await dispatch(getLoginControlListAsync(networkList.map(item => item.networkType)));
+    } catch (error) {
+      console.log(error, '======error');
+    }
+  }, [dispatch, networkList]);
+};
+
+export const useLoginModeControlList = (forceUpdate?: boolean) => {
+  const { loginModeListMap } = useCMS();
+  const { networkType } = useCurrentNetworkInfo();
+
+  const getLoginControlListAsync = useGetLoginControlListAsync();
+  const dispatch = useAppCommonDispatch();
+
+  useEffect(() => {
+    if (forceUpdate) {
+      getLoginControlListAsync();
+    }
+  }, [dispatch, getLoginControlListAsync, forceUpdate]);
+
+  return {
+    loginModeListMap,
+    currentNetworkLoginModeList: loginModeListMap?.[networkType],
+  };
+};
+
+export const useGetS3ImageUrl = () => {
+  const { s3Url } = useCurrentNetworkInfo();
+
+  return useCallback(
+    (filename_disk: string) => {
+      return `${s3Url}/${filename_disk}`;
+    },
+    [s3Url],
+  );
+};

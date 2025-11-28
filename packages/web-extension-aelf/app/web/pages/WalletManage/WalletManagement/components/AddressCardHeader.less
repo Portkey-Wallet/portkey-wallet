@@ -1,0 +1,164 @@
+@import '../../../../assets/theme/color.less';
+
+.address-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-bottom: 8px;
+
+  // 非管理模式样式
+  .address-card-wallet-name {
+    &.address-card-wallet-name-show {
+      color: @textBase1Opacity07;
+      font-size: 14px;
+      line-height: 1.4;
+      margin-right: 4px;
+    }
+  }
+
+  // 管理模式样式
+  &.manage-style {
+    border-radius: 8px;
+    padding: 16px 12px;
+    background-color: @bg-base2;
+    margin-bottom: 8px;
+    justify-content: space-between;
+
+    .address-card-wallet-name {
+      &.address-card-wallet-name-edit {
+        color: @text-base1;
+        font-size: 16px;
+        line-height: 1.4;
+        font-weight: 500;
+      }
+    }
+
+    .address-card-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      .address-card-header-icon {
+        font-size: 24px;
+        color: @icon-base1;
+        cursor: pointer;
+        transition: color 0.2s;
+
+        &:hover {
+          color: @icon-base2;
+        }
+
+        &.disabled {
+          color: @icon-disabled;
+          cursor: not-allowed;
+          svg {
+            /* stylelint-disable-next-line no-descending-specificity */
+            path {
+              fill: @icon-disabled !important;
+            }
+          }
+        }
+
+        // 删除图标特殊颜色
+        &.delete-icon {
+          svg {
+            /* stylelint-disable-next-line no-descending-specificity */
+            path {
+              fill: @icon-danger2 !important;
+            }
+          }
+
+          &:hover {
+            svg {
+              /* stylelint-disable-next-line no-descending-specificity */
+              path {
+                fill: @icon-danger1 !important;
+              }
+            }
+          }
+
+          &.disabled {
+            svg {
+              /* stylelint-disable-next-line no-descending-specificity */
+              path {
+                fill: @icon-disabled !important;
+              }
+            }
+          }
+
+        }
+      }
+
+      .address-card-header-icon-separator {
+        width: 1px;
+        height: 16px;
+        background-color: @border-base1;
+        margin: 0 2px;
+      }
+    }
+  }
+}
+
+// 模态框样式
+.wallet-remove-modal {
+  .address-card-header-warning-icon {
+    margin-right: 8px;
+    font-size: 32px;
+    width: 32px;
+    height: 32px;
+  }
+
+  .address-card-header-modal-content {
+    padding: 24px 0;
+
+    .address-card-header-modal-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: @text-base1;
+      margin-bottom: 16px;
+      line-height: 1.4;
+    }
+
+    .address-card-header-modal-desc {
+      color: @text-base2;
+      font-size: 14px;
+      line-height: 1.4;
+      margin-bottom: 24px;
+    }
+
+    .address-card-header-modal-btns {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+
+      .ant-btn {
+        width: 100%;
+        height: 48px;
+        border-radius: 48px;
+        font-size: 16px;
+        font-weight: 500;
+        line-height: 1.2;
+
+        &.remove {
+          margin-top: 8px;
+          color: @text-danger1;
+          border-color: transparent;
+          background-color: transparent;
+
+          &:hover {
+            color: @text-danger2;
+            border-color: @border-danger2;
+            background-color: @bg-danger4;
+          }
+
+          &:disabled {
+            color: @text-disabled1;
+            border-color: @border-disabled;
+            background-color: transparent;
+            cursor: not-allowed;
+          }
+        }
+      }
+    }
+  }
+}

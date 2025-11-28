@@ -1,0 +1,16 @@
+query discoverTabDataCustom (
+  $filter: discoverTabData_filter
+  $sort: [String]
+  $limit: Int
+  $offset: Int
+  $page: Int
+  $search: String
+) {
+  discoverTabData(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search) {
+    id
+    status
+    index
+    name
+    value
+  }
+}

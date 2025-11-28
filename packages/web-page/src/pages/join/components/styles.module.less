@@ -1,0 +1,62 @@
+@import '../../../assets/theme/color.less';
+
+.social-login-wrapper {
+  background-color: @bg-withe;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.social-login-inner {
+  text-align: center;
+  width: 318px;
+}
+
+.portkey-logo {
+  width: 48px;
+  height: 48px;
+}
+
+.description {
+  /* stylelint-disable-next-line font-family-no-missing-generic-family-keyword */
+  font-family: 'Roboto';
+  font-size: 16px;
+  line-height: 24px;
+  color: @font-2;
+  padding: 16px 0 48px;
+}
+
+.common-btn {
+  width: 276px;
+  height: 48px;
+  line-height: 46px;
+  border: 1px solid @border-1;
+  border-radius: 24px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: auto;
+  &:hover,
+  &:focus {
+    border-color: @border-1;
+  }
+  img {
+    width: 24px;
+    height: 24px;
+  }
+  span {
+    padding-left: 12px;
+    font-size: 16px;
+    color: @font-11;
+  }
+}
+
+.no-content {
+  padding-top: 20px;
+}

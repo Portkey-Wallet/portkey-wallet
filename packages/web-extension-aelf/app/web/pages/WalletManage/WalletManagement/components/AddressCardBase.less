@@ -1,0 +1,99 @@
+@import '../../../../assets/theme/color.less';
+
+.address-card-base {
+  margin-bottom: 24px;
+}
+.address-card-base-list {
+  border-radius: 8px;
+  background: @bg-base2;
+}
+.address-card-base-list-item {
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  height: 78px;
+  border-bottom: 1px solid @bg-base1;
+  cursor: pointer;
+  transition: background 0.2s;
+  border-radius: 8px;
+  background: transparent;
+}
+.address-card-base-list-item:last-child {
+  border-bottom: none;
+}
+
+.address-card-base-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  margin-right: 12px;
+  object-fit: cover;
+}
+.address-card-base-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.address-card-base-title {
+  font-size: 15px;
+  color: @text-base1;
+  font-weight: 500;
+}
+.address-card-base-balance {
+  font-size: 13px;
+  color: @text-base2;
+}
+.address-card-base-selected-icon {
+  color: @primary-color;
+  font-size: 18px;
+  margin-left: 8px;
+}
+.address-card-base-chevron {
+  color: @border-base2;
+  font-size: 18px;
+  margin-left: 8px;
+}
+.address-card-base-list-item.add-address {
+  background: @bg-base2;
+  color: @primary-color;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.address-card-base-add-icon {
+  font-size: 20px;
+  margin-right: 8px;
+  svg {
+    /* stylelint-disable-next-line no-descending-specificity */
+    path {
+      fill: @icon-base2 !important;
+    }
+  }
+}
+.address-card-base-add-text {
+  font-size: 15px;
+  color:  @text-base1;
+}
+
+.address-card-base-list-item.add-address.disabled {
+  color:  @text-disabled1;
+  cursor: not-allowed;
+  background: @bg-base1;
+
+  .address-card-base-add-icon {
+    svg {
+      /* stylelint-disable-next-line no-descending-specificity */
+      path {
+        fill: @icon-disabled !important;
+      }
+    }
+  }
+
+  .address-card-base-add-text {
+    color:  @text-disabled1;
+  }
+}

@@ -1,0 +1,33 @@
+query deviceType_by_id($id: ID!){
+    deviceType_by_id(id: $id){
+        date_created
+        date_created_func{
+            year
+            month
+            week
+            day
+            weekday
+            hour
+            minute
+            second
+        }
+        date_updated
+        date_updated_func{
+            year
+            month
+            week
+            day
+            weekday
+            hour
+            minute
+            second
+        }
+        id
+        label
+        sort
+        status
+        user_created
+        user_updated
+        value
+    }
+}

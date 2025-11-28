@@ -1,0 +1,7 @@
+query dappList($filter: dappList_filter, $sort: [String], $limit: Int, $offset: Int, $page: Int, $search: String){
+    dappList(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search){
+        Dapp_Name
+        domainName
+        id
+    }
+}

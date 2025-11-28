@@ -1,0 +1,66 @@
+@import '../../../assets/theme/color.less';
+
+.avatar {
+  border-radius: 50%;
+  background-color: @bg-brand1;
+  overflow: hidden;
+  position: relative;
+
+  .avatar-img {
+    .show-image {
+      object-fit: cover;
+    }
+  }
+
+  .name-index {
+    width: 100%;
+    height: 100%;
+    color: @icon-brand4;
+    background-color: transparent;
+    //border: 1px solid @neutral-border;
+    border-radius: 50%;
+  }
+
+  .avatar-loading-container {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 100%;
+    background: @bg-opacity70;
+  }
+}
+
+.avatar.avatar-xl {
+  width: 80px;
+  height: 80px;
+
+  .name-index {
+    font-size: 24px;
+  }
+}
+
+.avatar.avatar-large {
+  width: 40px;
+  height: 40px;
+
+  .name-index {
+    font-size: 18px;
+  }
+}
+
+.avatar.avatar-default {
+  width: 32px;
+  height: 32px;
+  .name-index {
+    font-size: 16px;
+  }
+}
+
+.avatar.avatar-small {
+  width: 24px;
+  height: 24px;
+  .name-index {
+    font-size: 14px;
+  }
+}

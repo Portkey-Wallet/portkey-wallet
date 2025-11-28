@@ -1,0 +1,220 @@
+import PageContainer from 'components/PageContainer';
+import Svg from 'components/Svg';
+import Touchable from 'components/Touchable';
+import { useLanguage } from 'i18n/hooks';
+import React, { useCallback, useEffect, useMemo } from 'react';
+import { FlatList } from 'react-native-gesture-handler';
+import { pTd } from 'utils/unit';
+import { Share, StyleSheet } from 'react-native';
+import { defaultColors } from 'assets/theme';
+import HeaderCard from '../components/HeaderCard';
+import { View } from 'react-native';
+import { screenWidth } from '@portkey-wallet/utils-mobile/device';
+import GStyles from 'assets/theme/GStyles';
+import { TextL, TextM } from 'components/CommonText';
+import { BGStyles } from 'assets/theme/styles';
+import ReceiverItem from '../components/ReceiverItem';
+import { useGetCryptoGiftDetail } from '@portkey-wallet/hooks/hooks-ca/cryptogift';
+import { RedPackageGrabInfoItem } from '@portkey-wallet/im';
+import { CryptoGiftOriginalStatus } from '@portkey-wallet/types/types-ca/cryptogift';
+import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-eoa/network';
+import { formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
+import Divider from 'components/Divider';
+import Loading from 'components/Loading';
+import CommonToast from 'components/CommonToast';
+import { isValidUserId } from '@portkey-wallet/utils';
+import { isIOS } from '@rneui/base';
+import { makeStyles } from '@rneui/themed';
+import fonts from 'assets/theme/fonts';
+
+export default function GiftDetail() {
+  const styles = getStyles();
+  const { t } = useLanguage();
+  const { id } = useRouterParams<{ id: string }>();
+  const { info, list, next, init } = useGetCryptoGiftDetail(id);
+  const currentNetworkInfo = useCurrentNetworkInfo();
+  useEffect(() => {
+    (async () => {
+      try {
+        Loading.show();
+        await init();
+      } catch (e) {
+        CommonToast.failError(e);
+      } finally {
+        Loading.hide();
+      }
+    })();
+  }, [init]);
+  const renderItem = useCallback(
+    ({ item }: { item: RedPackageGrabInfoItem }) => {
+      return (
+        <ReceiverItem
+          item={item}
+          symbol={info?.label || info?.alias || info?.symbol || ''}
+          isLuckyKing={
+            !!item && isValidUserId(item.userId) && isValidUserId(info?.luckKingId) && item.userId === info?.luckKingId
+          }
+          decimals={info?.decimal}
+        />
+      );
+    },
+    [info?.alias, info?.decimal, info?.label, info?.luckKingId, info?.symbol],
+  );
+  const renderDivider = useCallback(() => {
+    return <Divider style={[styles.divider, GStyles.marginTop(48)]} />;
+  }, [styles.divider]);
+  const nextList = useCallback(() => {
+    next();
+  }, [next]);
+  console.log('info', info?.grabbed);
+  const statusTextShow = useMemo(() => {
+    if (
+      info?.status === CryptoGiftOriginalStatus.Init ||
+      info?.status === CryptoGiftOriginalStatus.NotClaimed ||
+      info?.status === CryptoGiftOriginalStatus.Claimed
+    ) {
+      return t(
+        `${info?.grabbed || '0'}/${info?.count || '--'} crypto gift(s) opened, with a total of ${
+          info?.grabbedAmount ? formatTokenAmountShowWithDecimals(info?.grabbedAmount, info?.decimal) : '--'
+        }/${info?.totalAmount ? formatTokenAmountShowWithDecimals(info?.totalAmount, info?.decimal) : '--'} ${
+          info?.label || info?.alias || info?.symbol || ''
+        } claimed.`,
+      );
+    } else if (info?.status === CryptoGiftOriginalStatus.FullyClaimed) {
+      return t(
+        `${info?.grabbed || '0'}/${info?.count || '--'} crypto gift(s) opened, with a total of ${
+          info?.grabbedAmount ? formatTokenAmountShowWithDecimals(info?.grabbedAmount, info?.decimal) : '--'
+        }/${info?.totalAmount ? formatTokenAmountShowWithDecimals(info?.totalAmount, info?.decimal) : '--'} ${
+          info?.label || info?.alias || info?.symbol || ''
+        } claimed.`,
+      );
+    }
+    return `${info?.grabbed || '0'}/${info?.count || '--'} crypto gift(s) opened, with a total of ${
+      info?.grabbedAmount ? formatTokenAmountShowWithDecimals(info?.grabbedAmount, info?.decimal) : '--'
+    }/${info?.totalAmount ? formatTokenAmountShowWithDecimals(info?.totalAmount, info?.decimal) : '--'} ${
+      info?.label || info?.alias || info?.symbol || ''
+    } claimed.`;
+  }, [
+    info?.status,
+    info?.grabbed,
+    info?.count,
+    info?.grabbedAmount,
+    info?.decimal,
+    info?.totalAmount,
+    info?.label,
+    info?.alias,
+    info?.symbol,
+    t,
+  ]);
+  const shareUrl = useMemo(() => {
+    return `${currentNetworkInfo.cryptoGiftUrl}/cryptoGift?id=${id}`;
+  }, [currentNetworkInfo.cryptoGiftUrl, id]);
+  const onSharePress = useCallback(async () => {
+    await Share.share({
+      message: isIOS ? '' : shareUrl,
+      url: shareUrl,
+    }).catch(shareError => {
+      console.log(shareError);
+    });
+  }, [shareUrl]);
+  return (
+    <PageContainer
+      noCenterDom
+      rightDom={
+        info?.status && info?.status <= CryptoGiftOriginalStatus.Claimed ? (
+          <Touchable onPress={onSharePress}>
+            <Svg size={pTd(24)} icon="share-thin" iconStyle={styles.iconMargin} />
+          </Touchable>
+        ) : null
+      }
+      containerStyles={styles.pageStyles}
+      safeAreaColor={['black']}>
+      <FlatList
+        ListHeaderComponent={() => (
+          <>
+            <HeaderCard memo={info?.memo} />
+            {renderDivider()}
+            <TextL style={[GStyles.marginTop(pTd(16)), GStyles.paddingArg(0, 16), fonts.SGMediumFont]}>
+              {info?.displayStatus}
+            </TextL>
+            <TextM
+              style={[
+                styles.subTitle,
+                GStyles.marginTop(pTd(7)),
+                GStyles.paddingArg(0, 16),
+                fonts.SGRegularFont,
+                GStyles.lineHeight(20),
+              ]}>
+              {statusTextShow}
+            </TextM>
+            <View
+              style={[
+                GStyles.paddingArg(0, pTd(16)),
+                BGStyles.neutralDivider,
+                styles.divider,
+                GStyles.marginTop(pTd(8)),
+              ]}
+            />
+          </>
+        )}
+        onEndReached={nextList}
+        contentContainerStyle={{ paddingBottom: pTd(10) }}
+        showsVerticalScrollIndicator={false}
+        data={list}
+        renderItem={renderItem}
+        keyExtractor={(item: any, index: number) => '' + (item?.id || index)}
+      />
+    </PageContainer>
+  );
+}
+const getStyles = makeStyles(theme => ({
+  pageStyles: {
+    backgroundColor: theme.colors.bgBase1,
+    flex: 1,
+    paddingHorizontal: 0,
+  },
+  container: {
+    position: 'relative',
+    backgroundColor: theme.colors.bgBase1,
+    flex: 1,
+    ...GStyles.paddingArg(0),
+  },
+  headerWrap: {
+    width: screenWidth,
+    height: pTd(76),
+  },
+  backIconWrap: {
+    paddingLeft: pTd(16),
+    paddingVertical: pTd(16),
+    width: pTd(60),
+  },
+  iconMargin: { marginRight: pTd(16) },
+  itemDivider: {
+    marginTop: pTd(16),
+    ...GStyles.paddingArg(0, pTd(16)),
+  },
+  divider: {
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: theme.colors.bgBase3,
+  },
+  itemContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  listFooterComponentStyle: {
+    width: screenWidth,
+    marginTop: 20,
+    // position: 'absolute',
+    bottom: 0,
+    paddingHorizontal: pTd(20),
+  },
+  bottomTips: {
+    color: defaultColors.font3,
+    textAlign: 'center',
+  },
+  subTitle: {
+    color: theme.colors.textBase2,
+  },
+}));

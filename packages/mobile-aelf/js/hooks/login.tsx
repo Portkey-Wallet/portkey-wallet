@@ -1,0 +1,673 @@
+import {
+  CurrentWalletType,
+  useCurrentWalletInfo,
+  useOriginChainId,
+  useOtherNetworkLogged,
+  useTmpWalletInfo,
+  useVerifyManagerAddress,
+  useWallet,
+} from '@portkey-wallet/hooks/hooks-ca/wallet';
+import {
+  createWallet,
+  resetCaInfo,
+  resetWallet,
+  setManagerInfo,
+  setOriginChainId,
+} from '@portkey-wallet/store/store-ca/wallet/actions';
+import { LoginType, ManagerInfo } from '@portkey-wallet/types/types-ca/wallet';
+import {
+  AuthenticationInfo,
+  OperationTypeEnum,
+  VerificationType,
+  VerifierInfo,
+  VerifierItem,
+  VerifyStatus,
+} from '@portkey-wallet/types/verifier';
+import { handleErrorCode, randomId, sleep } from '@portkey-wallet/utils';
+import Loading from 'components/Loading';
+import AElf from 'aelf-sdk';
+import { request } from 'api';
+import React, { useCallback, useRef } from 'react';
+import { useAppDispatch } from 'store/hooks';
+import useBiometricsReady from './useBiometrics';
+import navigationService from 'utils/navigationService';
+import { TimerResult, IntervalGetResultParams, intervalGetResult } from 'utils/wallet';
+import CommonPrompt from 'components/CommonPromptCard';
+import useEffectOnce from './useEffectOnce';
+import { resetUser, setCredentials } from 'store/user/actions';
+import { DigitInputInterface } from 'components/DigitInput';
+import { GuardiansApproved, GuardiansStatus } from 'pages/Guardian/types';
+import { useGetDeviceInfo } from './device';
+import { extraDataEncode } from '@portkey-wallet/utils/device';
+import { useGetGuardiansInfo, useGetVerifierServers } from './guardian';
+import { handleUserGuardiansList } from '@portkey-wallet/utils/guardian';
+import { useLanguage } from 'i18n/hooks';
+import { DefaultChainId } from '@portkey-wallet/constants/constants-eoa/network';
+import { useGetChainInfo } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { useGetRegisterInfo } from '@portkey-wallet/hooks/hooks-ca/guardian';
+import { usePin, useUser } from './store';
+import { handleGuardiansApproved, queryFailAlert } from 'utils/login';
+import { useResetStore } from '@portkey-wallet/hooks/hooks-ca';
+import { ChainId } from '@portkey-wallet/types';
+import ActionSheet from 'components/ActionSheet';
+import { resetDappList } from '@portkey-wallet/store/store-eoa/dapp/actions';
+import { request as globalRequest } from '@portkey-wallet/api/api-did';
+import { useVerifierAuth, useVerifyToken } from './authentication';
+import { verification } from 'utils/api';
+import { CreateAddressLoading } from '@portkey-wallet/constants/constants-ca/wallet';
+import { AuthTypes } from 'constants/guardian';
+import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
+import { useLatestRef } from '@portkey-wallet/hooks';
+import { getOperationDetails } from '@portkey-wallet/utils/operation.util';
+import { TVerifierAuthParams } from 'types/authentication';
+import { isIOS } from '@rneui/base';
+import { RequestSourceEnum } from '@portkey-wallet/constants/constants-ca/device';
+import { LoginTrackTypeEnum, useLoginSuccessTrack, useLoginTrack } from './amplitude';
+
+export function useOnResultFail() {
+  const dispatch = useAppDispatch();
+  const { currentNetwork } = useWallet();
+  const otherNetworkLogged = useOtherNetworkLogged();
+  const resetStore = useResetStore();
+
+  return useCallback(
+    (message: string, isRecovery?: boolean, isReset?: boolean) => {
+      Loading.hide();
+      CommonPrompt.error(message);
+      queryFailAlert(
+        () => {
+          resetStore();
+          dispatch(resetDappList(currentNetwork));
+          if (otherNetworkLogged) {
+            dispatch(resetCaInfo(currentNetwork));
+          } else {
+            dispatch(resetWallet());
+            dispatch(resetUser());
+          }
+        },
+        isRecovery,
+        isReset,
+      );
+    },
+    [currentNetwork, dispatch, otherNetworkLogged, resetStore],
+  );
+}
+
+export function useOnManagerAddressAndQueryResult() {
+  const { t } = useLanguage();
+  const dispatch = useAppDispatch();
+  const biometricsReady = useBiometricsReady();
+  const { biometrics } = useUser();
+  const getDeviceInfo = useGetDeviceInfo();
+  const timer = useRef<TimerResult>();
+  useEffectOnce(() => {
+    return () => {
+      timer.current?.remove();
+    };
+  });
+  const originChainId = useOriginChainId();
+  const latestOriginChainId = useLatestRef(originChainId);
+  const storeTmpWalletInfo = useTmpWalletInfo();
+  const latestStoreTmpWalletInfo = useLatestRef(storeTmpWalletInfo);
+
+  const createTmpWalletInfo = useCallback(
+    (walletInfo?: CurrentWalletType) => {
+      if (walletInfo?.address) {
+        return walletInfo;
+      }
+      if (latestStoreTmpWalletInfo.current?.address) {
+        return latestStoreTmpWalletInfo.current;
+      }
+      return AElf.wallet.createNewWallet();
+    },
+    [latestStoreTmpWalletInfo],
+  );
+  const loginSuccessTrack = useLoginSuccessTrack();
+
+  return useCallback(
+    async ({
+      showLoading = true,
+      managerInfo,
+      walletInfo,
+      confirmPin,
+      pinRef,
+      verifierInfo,
+      guardiansApproved,
+    }: {
+      showLoading?: boolean;
+      managerInfo: Omit<ManagerInfo, 'managerUniqueId'>;
+      walletInfo?: CurrentWalletType;
+      confirmPin: string;
+      pinRef?: React.MutableRefObject<DigitInputInterface | undefined>;
+      verifierInfo?: VerifierInfo;
+      guardiansApproved?: GuardiansApproved;
+    }) => {
+      const isRecovery = managerInfo.verificationType === VerificationType.communityRecovery;
+      showLoading &&
+        Loading.show({
+          text: t(isRecovery ? 'Initiating social recovery' : CreateAddressLoading),
+        });
+
+      await sleep(500);
+      const requestId = randomId();
+
+      try {
+        const tmpWalletInfo = createTmpWalletInfo(walletInfo);
+
+        const extraData = await extraDataEncode(getDeviceInfo());
+        let data: any = {
+          loginGuardianIdentifier: managerInfo.loginAccount,
+          manager: tmpWalletInfo.address,
+          extraData,
+          context: {
+            clientId: tmpWalletInfo.address,
+            requestId,
+          },
+          chainId: latestOriginChainId.current,
+          source: isIOS ? RequestSourceEnum.IOS : RequestSourceEnum.Android,
+        };
+
+        let fetch = request.verify.registerRequest;
+        if (isRecovery) {
+          fetch = request.verify.recoveryRequest;
+          data.guardiansApproved = guardiansApproved?.map(i => ({ identifier: i.value, ...i }));
+        } else {
+          data = {
+            ...managerInfo,
+            ...verifierInfo,
+            type: LoginType[managerInfo.type],
+            ...data,
+          };
+        }
+        const req = await fetch({ data });
+        // whether there is wallet information
+        const _managerInfo = {
+          ...managerInfo,
+          managerUniqueId: req.sessionId,
+          requestId,
+          clientId: tmpWalletInfo.address,
+        } as ManagerInfo;
+
+        if (walletInfo?.address) {
+          dispatch(setManagerInfo({ managerInfo: _managerInfo, pin: confirmPin }));
+        } else {
+          dispatch(
+            createWallet({
+              walletInfo: tmpWalletInfo,
+              caInfo: { managerInfo: _managerInfo, originChainId: latestOriginChainId.current },
+              pin: confirmPin,
+            }),
+          );
+        }
+        console.log(_managerInfo, '=======_managerInfo');
+        loginSuccessTrack({
+          type: isRecovery ? LoginTrackTypeEnum.Login : LoginTrackTypeEnum.SignUp,
+          isPinNeeded: !!pinRef,
+          loginType: managerInfo.type,
+        });
+
+        dispatch(setCredentials({ pin: confirmPin }));
+
+        Loading.hide();
+        if (biometricsReady && biometrics === undefined) {
+          navigationService.navigate('SetBiometrics', { pin: confirmPin });
+        } else {
+          navigationService.navigate('PrepareWallet', {
+            managerInfo: _managerInfo,
+            isRecovery,
+            confirmPin,
+          });
+        }
+      } catch (error) {
+        Loading.hide();
+        CommonPrompt.failError(error);
+        pinRef?.current?.reset();
+      }
+    },
+    [
+      t,
+      createTmpWalletInfo,
+      getDeviceInfo,
+      latestOriginChainId,
+      loginSuccessTrack,
+      dispatch,
+      biometricsReady,
+      biometrics,
+    ],
+  );
+}
+
+export function useIntervalGetResult() {
+  return useCallback((params: IntervalGetResultParams) => intervalGetResult(params), []);
+}
+
+export type LoginParams = {
+  loginAccount: string;
+  loginType?: LoginType;
+  authenticationInfo?: AuthenticationInfo;
+  showLoginAccount?: string;
+};
+
+export function useGoGuardianApproval(isLogin?: boolean) {
+  const dispatch = useAppDispatch();
+  const onRequestOrSetPin = useOnRequestOrSetPin();
+  const onVerifierAuth = useVerifierAuth();
+  const verifyManagerAddress = useVerifyManagerAddress();
+  const latestVerifyManagerAddress = useLatestRef(verifyManagerAddress);
+
+  const requestOrSetPin = useCallback(
+    async ({ guardianItem, originChainId, authenticationInfo }: TVerifierAuthParams) => {
+      const req = await onVerifierAuth({ guardianItem, originChainId, authenticationInfo });
+      const verifierInfo: VerifierInfo = { ...req, verifierId: guardianItem?.verifier?.id ?? '' };
+      console.log(verifierInfo, '=======verifierInfo');
+      const key = guardianItem.key as string;
+      dispatch(setOriginChainId(originChainId));
+      return onRequestOrSetPin({
+        managerInfo: {
+          verificationType: VerificationType.communityRecovery,
+          loginAccount: guardianItem.guardianAccount,
+          type: guardianItem.guardianType,
+        } as ManagerInfo,
+        autoLogin: true,
+        guardiansApproved: handleGuardiansApproved({ [key]: { status: VerifyStatus.Verified, verifierInfo } }, [
+          guardianItem,
+        ]) as GuardiansApproved,
+        showLoading: true,
+      });
+    },
+    [dispatch, onRequestOrSetPin, onVerifierAuth],
+  );
+
+  const goVerifierDetails = useCallback(
+    async ({ guardianItem, originChainId }: TVerifierAuthParams) => {
+      let req: any;
+      try {
+        req = await verification.sendVerificationCode({
+          params: {
+            type: LoginType[guardianItem.guardianType],
+            guardianIdentifier: guardianItem.guardianAccount,
+            verifierId: guardianItem.verifier?.id,
+            chainId: originChainId,
+            operationType: OperationTypeEnum.communityRecovery,
+            operationDetails: getOperationDetails(OperationTypeEnum.communityRecovery, {
+              verifyManagerAddress: latestVerifyManagerAddress.current,
+            }),
+          },
+        });
+        if (!req?.verifierSessionId) {
+          throw new Error('verifierSessionId does not exist');
+        }
+      } catch (error) {
+        Loading.hide();
+        throw error;
+      }
+
+      Loading.hide();
+      await sleep(200);
+      dispatch(setOriginChainId(originChainId));
+      return navigationService.push('VerifierDetails', {
+        autoLogin: true,
+        guardianItem,
+        requestCodeResult: req,
+        verificationType: VerificationType.communityRecovery,
+        operationDetails: getOperationDetails(OperationTypeEnum.communityRecovery, {
+          verifyManagerAddress: latestVerifyManagerAddress.current,
+        }),
+      });
+    },
+    [dispatch, latestVerifyManagerAddress],
+  );
+  return useCallback(
+    async ({
+      originChainId,
+      loginAccount,
+      userGuardiansList,
+      authenticationInfo,
+      loginType,
+    }: {
+      originChainId: ChainId;
+      loginAccount: string;
+      userGuardiansList?: UserGuardianItem[];
+      authenticationInfo?: AuthenticationInfo;
+      loginType: LoginType;
+    }) => {
+      const onConfirm = async () => {
+        Loading.showOnce();
+        // auto login
+        if (userGuardiansList?.length === 1) {
+          const guardianItem = userGuardiansList[0];
+          if (AuthTypes.includes(guardianItem.guardianType)) {
+            return requestOrSetPin({ guardianItem, originChainId, authenticationInfo });
+          } else {
+            return goVerifierDetails({ guardianItem, originChainId });
+          }
+        }
+
+        // auto verify
+        const initGuardiansStatus: { [key: string]: GuardiansStatus } = {};
+        if (authenticationInfo) {
+          const list = userGuardiansList?.filter(item => item.isLoginAccount && item.guardianAccount === loginAccount);
+          if (Array.isArray(list) && list.length > 0) {
+            await Promise.all(
+              list.map(async guardianItem => {
+                const req = await onVerifierAuth({ guardianItem, originChainId, authenticationInfo });
+                if (req?.signature || req?.zkLoginInfo) {
+                  const status = VerifyStatus.Verified as any;
+                  const verifierInfo = { ...req, verifierId: guardianItem?.verifier?.id };
+                  initGuardiansStatus[guardianItem.key] = { verifierInfo, status };
+                }
+              }),
+            );
+          }
+        }
+
+        Loading.hide();
+        dispatch(setOriginChainId(originChainId));
+        navigationService.navigate('GuardianApproval', {
+          loginAccount,
+          userGuardiansList,
+          authenticationInfo,
+          initGuardiansStatus,
+        });
+      };
+      if (!isLogin && loginType === LoginType.Email) {
+        ActionSheet.alert({
+          title: 'You already have an account',
+          message: `Do you want to log in with ${loginAccount || ''} instead?`,
+          buttons: [
+            { title: 'Cancel', type: 'outline' },
+            {
+              title: 'Log in',
+              onPress: () => onConfirm(),
+            },
+          ],
+        });
+      } else {
+        await onConfirm();
+      }
+    },
+    [dispatch, goVerifierDetails, isLogin, onVerifierAuth, requestOrSetPin],
+  );
+}
+
+type LoginConfirmParams = {
+  showLoginAccount: string;
+  loginAccount: string;
+  loginType: LoginType;
+  authenticationInfo?: AuthenticationInfo;
+};
+
+type LoginAuthParams = LoginConfirmParams & {
+  selectedVerifier: VerifierItem;
+  chainId: ChainId;
+};
+
+const ALLOCATE_SLEEP_TIME = 2 * 1000;
+export function useGoSelectVerifier(isLogin?: boolean) {
+  const dispatch = useAppDispatch();
+  const pin = usePin();
+  const { address } = useCurrentWalletInfo();
+  const verifyToken = useVerifyToken();
+  const onRequestOrSetPin = useOnRequestOrSetPin();
+  const verifyManagerAddress = useVerifyManagerAddress();
+  const latestVerifyManagerAddress = useLatestRef(verifyManagerAddress);
+  const onConfirmAuth = useCallback(
+    async ({ loginAccount, loginType, authenticationInfo, selectedVerifier, chainId }: LoginAuthParams) => {
+      const isRequestResult = !!(pin && address);
+
+      // const loadingKey = Loading.show(isRequestResult ? { text: CreateAddressLoading } : undefined);
+      const loadingKey = Loading.show();
+
+      try {
+        const rst = await verifyToken(loginType, {
+          accessToken: authenticationInfo?.[loginAccount || ''] as string,
+          idToken: authenticationInfo?.idToken as string,
+          nonce: authenticationInfo?.nonce as string,
+          timestamp: authenticationInfo?.timestamp as number,
+          id: loginAccount,
+          verifierId: selectedVerifier?.id,
+          chainId,
+          operationType: OperationTypeEnum.register,
+        });
+        onRequestOrSetPin({
+          showLoading: !isRequestResult,
+          managerInfo: {
+            verificationType: VerificationType.register,
+            loginAccount: loginAccount,
+            type: loginType,
+          },
+          verifierInfo: { ...rst, verifierId: selectedVerifier?.id },
+        });
+      } catch (error) {
+        Loading.hide(loadingKey);
+        CommonPrompt.failError(error);
+      }
+      !isRequestResult && Loading.hide(loadingKey);
+    },
+    [address, onRequestOrSetPin, pin, verifyToken],
+  );
+
+  const onDefaultConfirm = useCallback(
+    async ({ loginAccount, loginType, selectedVerifier, chainId }: LoginAuthParams) => {
+      const loadingKey = Loading.show();
+      try {
+        const requestCodeResult = await verification.sendVerificationCode({
+          params: {
+            type: LoginType[loginType],
+            guardianIdentifier: loginAccount,
+            verifierId: selectedVerifier?.id,
+            chainId,
+            operationType: OperationTypeEnum.register,
+          },
+        });
+        if (requestCodeResult.verifierSessionId) {
+          navigationService.navigate('VerifierDetails', {
+            requestCodeResult,
+            verificationType: VerificationType.register,
+            guardianItem: {
+              isLoginAccount: true,
+              verifier: selectedVerifier,
+              guardianAccount: loginAccount,
+              guardianType: loginType,
+            },
+            operationDetails: getOperationDetails(OperationTypeEnum.register, {
+              verifyManagerAddress: latestVerifyManagerAddress.current,
+            }),
+          });
+        } else {
+          throw new Error('send fail');
+        }
+      } catch (error) {
+        CommonPrompt.failError(error);
+      }
+      Loading.hide(loadingKey);
+    },
+    [latestVerifyManagerAddress],
+  );
+
+  const onConfirm = useCallback(
+    async (confirmParams: LoginConfirmParams) => {
+      const { loginType } = confirmParams;
+      dispatch(setOriginChainId(DefaultChainId));
+
+      const loadingKey = Loading.show({
+        text: 'Assigning a verifier on the blockchain...',
+      });
+      try {
+        await sleep(ALLOCATE_SLEEP_TIME);
+        const result = await globalRequest.verify.getVerifierServer({
+          params: {
+            chainId: DefaultChainId,
+          },
+        });
+        Loading.hide(loadingKey);
+
+        const allotVerifier: VerifierItem = result;
+        if (!allotVerifier || allotVerifier.id === undefined) {
+          throw new Error('No verifier found');
+        }
+        switch (loginType) {
+          case LoginType.Apple:
+          case LoginType.Google:
+          case LoginType.Telegram:
+          case LoginType.Twitter:
+          case LoginType.Facebook:
+            onConfirmAuth({
+              ...confirmParams,
+              selectedVerifier: allotVerifier,
+              chainId: DefaultChainId,
+            });
+            break;
+          default: {
+            onDefaultConfirm({
+              ...confirmParams,
+              selectedVerifier: allotVerifier,
+              chainId: DefaultChainId,
+            });
+            break;
+          }
+        }
+      } catch (error) {
+        Loading.hide(loadingKey);
+        CommonPrompt.failError(error);
+      }
+    },
+    [dispatch, onConfirmAuth, onDefaultConfirm],
+  );
+  const onConfirmRef = useRef(onConfirm);
+  onConfirmRef.current = onConfirm;
+
+  return useCallback(
+    async (params: LoginConfirmParams) => {
+      if (isLogin && params.loginType === LoginType.Email) {
+        ActionSheet.alert({
+          title: 'You don’t have an account',
+          message: `Would you like to create one with ${params.loginAccount || ''} ?`,
+          buttons: [
+            { title: 'Cancel', type: 'outline' },
+            {
+              title: 'Sign up',
+              onPress: () => onConfirmRef.current(params),
+            },
+          ],
+        });
+      } else {
+        await onConfirmRef.current(params);
+      }
+    },
+    [isLogin],
+  );
+}
+
+export function useOnLogin(isLogin?: boolean) {
+  const getVerifierServers = useGetVerifierServers();
+  const getGuardiansInfo = useGetGuardiansInfo();
+  const getRegisterInfo = useGetRegisterInfo();
+  const getChainInfo = useGetChainInfo();
+  const goGuardianApproval = useGoGuardianApproval(isLogin);
+  const goSelectVerifier = useGoSelectVerifier(isLogin);
+  const loginTrack = useLoginTrack();
+
+  return useCallback(
+    async (params: LoginParams) => {
+      const { loginAccount, loginType = LoginType.Email, authenticationInfo, showLoginAccount } = params;
+      try {
+        await sleep(500);
+        let chainInfo = await getChainInfo(DefaultChainId);
+        let verifierServers = await getVerifierServers(chainInfo);
+        const { originChainId } = await getRegisterInfo({ loginGuardianIdentifier: loginAccount });
+        if (originChainId !== DefaultChainId) {
+          chainInfo = await getChainInfo(originChainId);
+          verifierServers = await getVerifierServers(chainInfo);
+        }
+        const holderInfo = await getGuardiansInfo({ guardianIdentifier: loginAccount }, chainInfo);
+        const { guardianList, guardianAccounts } = holderInfo || {};
+
+        const _isLogin = !!(guardianAccounts || guardianList);
+        loginTrack({ loginType, type: _isLogin ? LoginTrackTypeEnum.Login : LoginTrackTypeEnum.SignUp });
+
+        if (guardianAccounts || guardianList) {
+          await goGuardianApproval({
+            originChainId,
+            loginAccount,
+            userGuardiansList: handleUserGuardiansList(holderInfo, verifierServers),
+            authenticationInfo,
+            loginType,
+          });
+        } else {
+          await goSelectVerifier({
+            showLoginAccount: showLoginAccount || loginAccount,
+            loginAccount,
+            loginType,
+            authenticationInfo,
+          });
+        }
+      } catch (error) {
+        console.log(error, '=======error');
+        if (handleErrorCode(error) === '3002') {
+          // sign up
+          loginTrack({ loginType, type: LoginTrackTypeEnum.SignUp });
+          await goSelectVerifier({
+            showLoginAccount: showLoginAccount || loginAccount,
+            loginAccount,
+            loginType,
+            authenticationInfo,
+          });
+        } else {
+          throw error;
+        }
+      }
+    },
+    [
+      getChainInfo,
+      getGuardiansInfo,
+      getRegisterInfo,
+      getVerifierServers,
+      goGuardianApproval,
+      goSelectVerifier,
+      loginTrack,
+    ],
+  );
+}
+
+export function useOnRequestOrSetPin() {
+  const { walletInfo } = useWallet();
+  const pin = usePin();
+  const onManagerAddressAndQueryResult = useOnManagerAddressAndQueryResult();
+  return useCallback(
+    ({
+      showLoading,
+      managerInfo,
+      verifierInfo,
+      guardiansApproved,
+      autoLogin,
+    }: {
+      showLoading?: boolean;
+      managerInfo: Omit<ManagerInfo, 'managerUniqueId'>;
+      verifierInfo?: VerifierInfo;
+      guardiansApproved?: GuardiansApproved;
+      autoLogin?: boolean;
+    }) => {
+      if (walletInfo?.address && pin) {
+        onManagerAddressAndQueryResult({
+          managerInfo,
+          confirmPin: pin,
+          walletInfo,
+          verifierInfo,
+          guardiansApproved,
+          showLoading,
+        });
+      } else {
+        Loading.hide();
+        navigationService.navigate('SetPin', {
+          managerInfo,
+          guardiansApproved,
+          verifierInfo,
+          autoLogin,
+          isBackHide: true,
+        });
+      }
+    },
+    [onManagerAddressAndQueryResult, pin, walletInfo],
+  );
+}

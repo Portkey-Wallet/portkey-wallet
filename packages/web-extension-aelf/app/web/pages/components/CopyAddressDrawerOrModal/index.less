@@ -1,0 +1,72 @@
+@import '../../../assets/theme/color.less';
+
+.copy-address-drawer,
+.copy-address-modal {
+  .portkey-drawer-content-wrapper {
+    .portkey-drawer-wrapper-body {
+      background-color: @bg-base1;
+      padding: 16px;
+    }
+  }
+  .common-header {
+    height: auto;
+    line-height: 24px;
+  }
+  .common-header-title {
+    text-align: left;
+    font-size: 20px;
+    font-family: BG;
+  }
+  .address-list {
+    display: flex;
+    flex-direction: column;
+    .address-item {
+      align-items: flex-start;
+      padding: 12px 0;
+      margin-top: 12px;
+      .network-item-info {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        .network-item-icon {
+          flex-shrink: 0;
+          svg {
+            width: 26px;
+            height: 26px;
+          }
+        }
+      }
+      .address-wrap {
+        display: flex;
+        gap: 4px;
+        .chain {
+          font-size: 16px;
+          font-weight: 500;
+          line-height: 22px;
+          color: @text-base1;
+        }
+        .address {
+          font-size: 14px;
+          line-height: 16px;
+          color: @neutral-tertiary-text;
+        }
+      }
+      .address-copy:not(:hover) {
+        path {
+          fill: @neutral-secondary-text;
+        }
+      }
+    }
+  }
+  .portkey-modal-content {
+    border: 1px solid @border-base1;
+  }
+  .portkey-modal-body {
+    background-color: @bg-base1;
+    padding: 16px !important;
+  }
+}
+
+.copy-address-modal {
+  width: 400px !important;
+}

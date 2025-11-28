@@ -1,0 +1,46 @@
+query homeBanner_portkeyCard_aggregated($groupBy: [String], $filter: homeBanner_portkeyCard_filter, $limit: Int, $offset: Int, $page: Int, $search: String, $sort: [String]){
+    homeBanner_portkeyCard_aggregated(groupBy: $groupBy, filter: $filter, limit: $limit, offset: $offset, page: $page, search: $search, sort: $sort){
+        group
+        countAll
+        count{
+            homeBanner_id
+            id
+            portkeyCard_id
+        }
+        countDistinct{
+            homeBanner_id
+            id
+            portkeyCard_id
+        }
+        avg{
+            homeBanner_id
+            id
+            portkeyCard_id
+        }
+        sum{
+            homeBanner_id
+            id
+            portkeyCard_id
+        }
+        avgDistinct{
+            homeBanner_id
+            id
+            portkeyCard_id
+        }
+        sumDistinct{
+            homeBanner_id
+            id
+            portkeyCard_id
+        }
+        min{
+            homeBanner_id
+            id
+            portkeyCard_id
+        }
+        max{
+            homeBanner_id
+            id
+            portkeyCard_id
+        }
+    }
+}

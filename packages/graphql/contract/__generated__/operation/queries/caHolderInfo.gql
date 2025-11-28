@@ -1,0 +1,22 @@
+query caHolderInfo($dto: GetCAHolderInfoDto){
+    caHolderInfo(dto: $dto){
+        id
+        chainId
+        caHash
+        caAddress
+        managerInfos{
+            address
+            extraData
+        }
+        originChainId
+        guardianList{
+            guardians{
+                type
+                verifierId
+                identifierHash
+                salt
+                isLoginGuardian
+            }
+        }
+    }
+}

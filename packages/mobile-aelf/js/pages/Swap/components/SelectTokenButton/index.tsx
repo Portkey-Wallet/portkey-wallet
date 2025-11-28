@@ -1,0 +1,147 @@
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { Text, FlatList, View, Keyboard, KeyboardAvoidingView, Platform, TouchableWithoutFeedback } from 'react-native';
+import OverlayModal from 'components/OverlayModal';
+import { ModalBody } from 'components/ModalBody';
+import CommonInput from 'components/CommonInput';
+import CommonAvatar from 'components/CommonAvatar';
+import Touchable from 'components/Touchable';
+import { useLanguage } from 'i18n/hooks';
+import { getContentStyles, getButtonStyles } from './style';
+import Svg from 'components/Svg';
+import { pTd } from 'utils/unit';
+import { truncateString } from '@portkey-wallet/utils';
+import { TCurrency } from '@portkey-wallet/types/awaken';
+import { useAwakenTokenList } from '@portkey-wallet/hooks/hooks-eoa/awaken/state';
+import CurrencyItem from '../CurrencyItem';
+import { formatNameWithNoUnderline } from '@portkey-wallet/utils';
+import { ViewStyleType } from 'types/styles';
+
+interface ISelectTokenContentProps {
+  title: string;
+  onSelect?: (item: TCurrency) => void;
+}
+
+interface ISelectTokenButtonProps {
+  style?: ViewStyleType;
+  modalTitle: string;
+  token?: TCurrency;
+  onTokenChange?: (token: TCurrency) => void;
+}
+
+const SelectTokenContent: React.FC<ISelectTokenContentProps> = ({ title, onSelect }) => {
+  const styles = getContentStyles();
+  const { t } = useLanguage();
+
+  const [keyword, setKeyword] = useState('');
+  const { list } = useAwakenTokenList();
+
+  const filterList = useMemo(() => {
+    if (keyword === '') {
+      return list;
+    }
+    return list.filter(item => item.symbol.toLocaleUpperCase().includes(keyword.toLocaleUpperCase()));
+  }, [keyword, list]);
+
+  const handleSelect = useCallback(
+    (item: TCurrency) => {
+      onSelect?.(item);
+      OverlayModal.hide();
+    },
+    [onSelect],
+  );
+
+  const renderItem = useCallback(
+    ({ item }: { item: TCurrency }) => {
+      return <CurrencyItem wrapStyle={styles.tokenItem} item={item} onPress={() => handleSelect(item)} />;
+    },
+    [styles.tokenItem, handleSelect],
+  );
+
+  const [modalPadding, setModalPadding] = useState(0);
+  useEffect(() => {
+    if (Platform.OS === 'ios') {
+      return;
+    }
+    const showSubscription = Keyboard.addListener('keyboardDidShow', () => setModalPadding(50));
+
+    const hideSubscription = Keyboard.addListener('keyboardDidHide', () => setModalPadding(0));
+
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
+
+  return (
+    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <View
+          style={{
+            // backgroundColor: 'red',
+            paddingTop: pTd(modalPadding),
+          }}>
+          <ModalBody modalBodyType="bottom" title={title}>
+            <CommonInput
+              allowClear
+              clearIcon="clear4"
+              placeholder={t('Search')}
+              containerStyle={styles.containerStyle}
+              inputContainerStyle={styles.inputContainerStyle}
+              value={keyword}
+              onChangeText={v => {
+                setKeyword(v.trim());
+              }}
+            />
+            <FlatList
+              style={{ height: '100%' }}
+              nestedScrollEnabled
+              refreshing={false}
+              data={filterList}
+              renderItem={renderItem}
+              keyExtractor={item => `${item.symbol}${item.chainId}`}
+              ListEmptyComponent={() => <Text style={styles.emptyText}>No tokens available</Text>}
+            />
+          </ModalBody>
+        </View>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
+  );
+};
+
+const showSelectTokenModal = (props: ISelectTokenContentProps) => {
+  OverlayModal.show(<SelectTokenContent {...props} />, {
+    position: 'bottom',
+    enabledNestScrollView: true,
+  });
+};
+
+const SelectTokenButton: React.FC<ISelectTokenButtonProps> = ({ style, modalTitle, token, onTokenChange }) => {
+  const styles = getButtonStyles();
+
+  const onPress = useCallback(() => {
+    Keyboard.dismiss();
+    showSelectTokenModal({
+      title: modalTitle,
+      onSelect: onTokenChange,
+    });
+  }, [modalTitle, onTokenChange]);
+
+  return (
+    <Touchable style={[styles.selectTokenButton, style]} onPress={onPress}>
+      <View style={styles.iconWrap}>
+        <CommonAvatar style={styles.tokenIcon} title={token?.symbol} avatarSize={pTd(25)} imageUrl={token?.imageUrl} />
+        <CommonAvatar
+          hasBorder
+          style={styles.chainIcon}
+          title={token?.displayChainName}
+          avatarSize={pTd(16)}
+          imageUrl={token?.chainImageUrl}
+        />
+      </View>
+      <Text style={styles.symbolText}>{truncateString(formatNameWithNoUnderline(token?.label || token?.symbol))}</Text>
+      <Svg icon={'down-arrow'} size={pTd(16)} />
+    </Touchable>
+  );
+};
+
+export default memo(SelectTokenButton);

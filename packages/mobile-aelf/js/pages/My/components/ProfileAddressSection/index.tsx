@@ -1,0 +1,196 @@
+import { AELF_CHIAN_TYPE } from '@portkey-wallet/constants/constants-ca/activity';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-eoa/network';
+import { ChainId, ChainType } from '@portkey-wallet/types';
+import { addressFormat, formatStr2EllipsisStr } from '@portkey-wallet/utils';
+import { transNetworkTextWithAllChain } from '@portkey-wallet/utils/activity';
+import { darkColors, defaultColors } from 'assets/theme';
+import GStyles from 'assets/theme/GStyles';
+import { BGStyles, FontStyles } from 'assets/theme/styles';
+import { TextM, TextS } from 'components/CommonText';
+import { CopyButton } from 'components/CopyButton';
+import FormItem from 'components/FormItem';
+import Svg from 'components/Svg';
+
+import React, { memo, useCallback, useMemo } from 'react';
+import { Image, StyleSheet, View } from 'react-native';
+import { pTd } from 'utils/unit';
+import CommonToast from 'components/CommonToast';
+
+type addressItemType = {
+  address: string;
+  chainId: ChainId;
+  image?: string;
+  chainName?: ChainType | string;
+  displayChainName?: string;
+  chainImageUrl?: string;
+};
+
+type ProfileAddressSectionPropsType = {
+  title?: string;
+  disable?: boolean;
+  noMarginTop?: boolean;
+  addressList?: addressItemType[];
+  isMySelf?: boolean;
+};
+
+const ProfileAddressSection: React.FC<ProfileAddressSectionPropsType> = props => {
+  const { title = 'Address', disable, noMarginTop, addressList: addressListProps, isMySelf } = props;
+  const isMainnet = useIsMainnet();
+
+  const copyContent = useCallback(
+    (ele: addressItemType) =>
+      ele.chainName === AELF_CHIAN_TYPE || !ele.chainName ? `ELF_${ele.address}_${ele.chainId}` : ele.address,
+    [],
+  );
+
+  const addressList = useMemo(() => {
+    const _addressList = [...(addressListProps || [])];
+    const index = _addressList.findIndex(ele => ele.chainId === 'AELF');
+    if (index === -1) {
+      return _addressList;
+    }
+    const aelfAddress = _addressList.splice(index, 1)[0];
+    return [aelfAddress, ..._addressList];
+  }, [addressListProps]);
+
+  return (
+    <FormItem title={title} style={!noMarginTop && GStyles.marginTop(pTd(24))}>
+      {addressList?.map((ele, index) => (
+        <View
+          key={index}
+          style={[disable ? BGStyles.bg18 : BGStyles.bg1, styles.itemWrap, index !== 0 && GStyles.marginTop(8)]}>
+          <View style={[GStyles.flexRow, GStyles.itemCenter, GStyles.spaceBetween, styles.content]}>
+            <TextM style={styles.address}>
+              {formatStr2EllipsisStr(
+                addressFormat(ele.address, ele.chainId, (ele?.chainName || 'aelf') as ChainType),
+                20,
+              )}
+            </TextM>
+            <CopyButton copyContent={copyContent(ele)} />
+          </View>
+          <View style={GStyles.flexRow}>
+            {isMySelf ? (
+              <Svg icon={isMainnet ? 'mainnet' : 'testnet'} size={pTd(16)} />
+            ) : (
+              <Image
+                source={{
+                  uri: ele.image || '',
+                }}
+                style={styles.img}
+              />
+            )}
+            <TextS style={[FontStyles.font3, GStyles.marginLeft(pTd(8))]}>
+              {transNetworkTextWithAllChain(ele.chainId, !isMainnet, ele.chainName || 'aelf')}
+            </TextS>
+          </View>
+        </View>
+      ))}
+    </FormItem>
+  );
+};
+
+const ProfileAddressSectionV2: React.FC<ProfileAddressSectionPropsType> = props => {
+  const { title = 'Address', disable, noMarginTop, addressList: addressListProps, isMySelf } = props;
+  // const isMainnet = useIsMainnet();
+
+  const copyContent = useCallback(
+    (ele: addressItemType) =>
+      ele.chainName === AELF_CHIAN_TYPE || !ele.chainName ? `ELF_${ele.address}_${ele.chainId}` : ele.address,
+    [],
+  );
+
+  const addressList = useMemo(() => {
+    const _addressList = [...(addressListProps || [])];
+    const index = _addressList.findIndex(ele => ele.chainId === 'AELF');
+    if (index === -1) {
+      return _addressList;
+    }
+    const aelfAddress = _addressList.splice(index, 1)[0];
+    return [..._addressList, aelfAddress];
+  }, [addressListProps]);
+
+  return (
+    <FormItem title={title} style={!noMarginTop && GStyles.marginTop(pTd(46))}>
+      {addressList?.map((ele, index) => (
+        <View
+          key={index}
+          style={[
+            disable ? BGStyles.bg18 : { backgroundColor: darkColors.bgBase2 },
+            styles.itemWrap,
+            index !== 0 && GStyles.marginTop(12),
+          ]}>
+          <View style={[GStyles.flexRow, GStyles.spaceBetween, styles.content]}>
+            {isMySelf ? (
+              <Svg icon={ele.chainId === 'AELF' ? 'mainnet' : 'chain_side'} size={pTd(24)} />
+            ) : (
+              <Image
+                source={{
+                  uri: ele.image || '',
+                }}
+                style={styles.img}
+              />
+            )}
+
+            <View style={[GStyles.marginLeft(pTd(12))]}>
+              <TextS
+                style={{
+                  color: defaultColors.white,
+                  fontSize: pTd(16),
+                }}>
+                {ele.chainId === 'AELF' ? 'aelf MainChain' : 'aelf dAppChain'}
+              </TextS>
+              <TextM style={styles.addressV2}>
+                {formatStr2EllipsisStr(
+                  addressFormat(ele.address, ele.chainId, (ele?.chainName || 'aelf') as ChainType),
+                  8,
+                )}
+              </TextM>
+            </View>
+
+            <CopyButton
+              style={{
+                right: pTd(16),
+                // backgroundColor: darkColors.bgBrand3,
+              }}
+              size={24}
+              onCopy={() => {
+                CommonToast.success('Address copied');
+              }}
+              copyContent={copyContent(ele)}
+            />
+          </View>
+        </View>
+      ))}
+    </FormItem>
+  );
+};
+
+export { ProfileAddressSectionV2 };
+
+export default memo(ProfileAddressSection);
+
+const styles = StyleSheet.create({
+  itemWrap: {
+    padding: pTd(12),
+    borderRadius: pTd(6),
+  },
+  content: {
+    // marginBottom: pTd(8),
+    // backgroundColor: darkColors.bgBrand4,
+  },
+  address: {
+    width: pTd(270),
+    color: defaultColors.font5,
+  },
+  addressV2: {
+    width: pTd(270),
+    color: darkColors.textBase2,
+    fontSize: pTd(14),
+    marginTop: pTd(5),
+  },
+  img: {
+    width: pTd(16),
+    height: pTd(16),
+    borderRadius: pTd(8),
+  },
+});

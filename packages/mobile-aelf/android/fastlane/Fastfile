@@ -214,6 +214,36 @@ def build_and_notify(track:, title:)
     #   aab: File.absolute_path('../app/build/outputs/bundle/release/app-release.aab'),
     #   )
   elsif track == "play_store"
+    # --- Build APK ---
+    gradle(
+      task: "clean assemble",
+      build_type: "Release",
+      project_dir: "../android",
+      properties: {
+        "android.injected.signing.store.file" => ENV['ANDROID_KEYSTORE_FILE'],
+        "android.injected.signing.store.password" => ENV['ANDROID_KEYSTORE_PASSWORD'],
+        "android.injected.signing.key.alias" => ENV['ANDROID_KEYSTORE_ALIAS'],
+        "android.injected.signing.key.password" => ENV['ANDROID_KEYSTORE_PASSWORD']
+        }
+    )
+    s3_key = ENV['EOA_APK_S3_KEY']
+    s3_secret = ENV['EOA_APK_S3_SECRET']
+    bucket_name = 'portkey-eoa-cms-testnet'
+    region = 'ap-northeast-1'
+
+    s3_client = Aws::S3::Client.new(
+      access_key_id: s3_key,
+      secret_access_key: s3_secret,
+      region: region
+    )
+    apk_path = lane_context[SharedValues::GRADLE_APK_OUTPUT_PATH]
+    apk_file_name = File.basename(apk_path)
+    UI.message "apk_path: #{apk_path}"
+    UI.message "apk_file_name: #{apk_file_name}"
+    s3_key_file = "eoa-apk/#{apk_file_name}"
+    download_url = upload_s3_file(s3_client, bucket_name, region, apk_path, s3_key_file)
+
+    # --- Build AAB ---
     gradle(
       task: "clean bundle",
       build_type: "Release",
@@ -232,7 +262,6 @@ def build_and_notify(track:, title:)
       aab: File.absolute_path('../app/build/outputs/bundle/release/app-release.aab'),
       sync_image_upload: true
     )
-    download_url = nil
   else
     UI.user_error!("Unsupported track: #{track}")
   end

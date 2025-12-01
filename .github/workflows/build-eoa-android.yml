@@ -108,6 +108,8 @@ jobs:
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.EOA_ANDROID_KEYSTORE_PASSWORD }}
           ANDROID_KEYSTORE_ALIAS: ${{ secrets.EOA_ANDROID_KEYSTORE_ALIAS }}
           LARK_WEBHOOK_URL: '${{ secrets.LARK_WEBHOOK }}'
+          EOA_APK_S3_KEY: '${{ secrets.EOA_APK_S3_KEY }}'
+          EOA_APK_S3_SECRET: '${{ secrets.EOA_APK_S3_SECRET }}'
           # production, beta, alpha, internal
           PLAY_STORE_TRACK: production
 

@@ -204,7 +204,8 @@ def build_and_notify(track:, title:)
     )
     apk_path = lane_context[SharedValues::GRADLE_APK_OUTPUT_PATH]
     apk_file_name = File.basename(apk_path)
-
+    UI.message "apk_path: #{apk_path}"
+    UI.message "apk_file_name: #{apk_file_name}"
     s3_key_file = "eoa-apk/#{apk_file_name}"
     download_url = upload_s3_file(s3_client, bucket_name, region, apk_path, s3_key_file)
     # download_url = upload_to_play_store_internal_app_sharing(

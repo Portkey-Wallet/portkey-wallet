@@ -139,7 +139,7 @@ jobs:
         run: |
           IPA_PATH=$(ls packages/mobile-aelf/ios/*.ipa | head -1)
           BASENAME=$(basename "$IPA_PATH")
-          S3_PATH="s3://${{ secrets.AWS_S3_BUCKET }}/app/ios/eoa/${{ github.ref_name }}/"
+          S3_PATH="s3://${{ secrets.AWS_S3_BUCKET }}/app/ios/eoa/"
 
           echo "Found IPA: $IPA_PATH"
           echo "Uploading to: $S3_PATH$BASENAME"

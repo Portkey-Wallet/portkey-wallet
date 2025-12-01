@@ -1,0 +1,122 @@
+#./github/workflows/build-android-production-ca.yml
+name: Build & Release Android Production
+on:
+  push:
+    tags:
+      - "eoa.android.app.v.*"
+  workflow_dispatch:
+jobs:
+  # ----------------------- ANDROID -----------------------------
+  # -------------------------------------------------------------
+  build-prod-android:
+    name: Build & ship android prod app
+    runs-on: ubuntu-latest
+    steps:
+      # Free up runner disk space
+      - name: Free Disk Space
+        run: |
+          echo "Before cleanup:"
+          df -h
+
+          echo "🧹 Removing .NET, Haskell, boost..."
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/local/.ghcup
+          sudo rm -rf /usr/local/share/boost
+
+          echo "🧹 Docker prune"
+          sudo docker system prune -af || true
+
+          echo "🧹 Clean apt"
+          sudo apt-get clean
+          sudo rm -rf /var/lib/apt/lists/*
+
+          echo "After cleanup:"
+          df -h
+
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      # Step to decode JSON key and save it as a temporary file
+      - name: Decode Google Play JSON Key And Load As File
+        run: echo "${{ secrets.GOOGLE_PLAY_JSON_KEY }}" | base64 -d > /tmp/google-play-key.json
+
+      # Step to decode Keystore file
+      - name: Decode Keystore File
+        run: |
+          echo "${{ secrets.ANDROID_EOA_KEYSTORE_BASE64 }}" | base64 -d > /tmp/release-key.keystore
+          echo "EOA_ANDROID_KEYSTORE_FILE=/tmp/release-key.keystore" >> $GITHUB_ENV
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: zulu
+          java-version: 17
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 22
+          cache: "yarn"
+
+
+      - name: Install Node Modules
+        run: yarn install --frozen-lockfile
+        env:
+          CI: true
+
+      # Step 4: Setup ruby
+      - name: Install Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+
+      # Step 5: Install bundler, and fastlane
+      - name: Install Fastlane
+        run: cd packages/mobile-aelf/android && bundle install && bundle update && cd ../
+        env:
+          CI: true
+
+      # Step 6: Install reactnative community pacakge manually
+      - name: Add @react-native-community/cli-platform-android Dependency to Project
+        run: |
+          cd packages/mobile-aelf
+          yarn add @react-native-community/cli-platform-android@7.0.1
+        env:
+          CI: true
+
+      # change file permission
+      - name: Make build-android-bundle.sh executable
+        run: chmod +x packages/mobile-aelf/scripts/build-android-bundle.sh
+
+      # Step load .env file
+      - name: Create .env file for React Native Config
+        run: echo "${{ secrets.ENV_EOA_FILE_CONTENT }}" > $GITHUB_WORKSPACE/packages/mobile-aelf/.env
+
+      # Step 8: Fastlane build android
+      - name : Build android App via fastlane
+        run : |
+          cd packages/mobile-aelf/android
+          fastlane deploy_to_play_store
+        env:
+          CI: true
+          CD: true
+          ANDROID_KEYSTORE_FILE: /tmp/release-key.keystore
+          GOOGLE_JSON_KEY_FILE: /tmp/google-play-key.json
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.EOA_ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEYSTORE_ALIAS: ${{ secrets.EOA_ANDROID_KEYSTORE_ALIAS }}
+          LARK_WEBHOOK_URL: '${{ secrets.LARK_WEBHOOK }}'
+          # production, beta, alpha, internal
+          PLAY_STORE_TRACK: production
+
+      # ------------------ Upload IPA to GitHub Release ------------------
+      - name: Upload APK to GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref_name }}
+          files: |
+            packages/mobile-aelf/android/app/build/outputs/apk/release/*.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

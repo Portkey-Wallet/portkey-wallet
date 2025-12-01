@@ -1,5 +1,7 @@
 #android/fastlane/Fastlane
 require 'aws-sdk-s3'
+LARK_WEBHOOK_URL = ENV['LARK_WEBHOOK_URL']
+TAG_PREFIX = "eoa.android.app.v."
 
 def upload_s3_file(s3_client, bucket_name, region, file_path, s3_key)
   s3_client.put_object(
@@ -37,35 +39,98 @@ def get_latest_commit
   { id: commit_id, message: commit_message }
 end
 
+# get latest and previous tag
+def get_latest_and_previous_tag
+  begin
+    UI.message("Fetching tag list...")
+
+    tags_output = sh("git tag")
+    UI.message("All tags in repo:\n#{tags_output}")
+    tags = tags_output.split("\n")
+                      .select { |tag| tag.start_with?(TAG_PREFIX) && !tag.strip.empty? }
+                      .sort do |a, b|
+                        pa = a.sub(TAG_PREFIX, "").split('.').map(&:to_i)
+                        pb = b.sub(TAG_PREFIX, "").split('.').map(&:to_i)
+
+                        # Desc order
+                        (pb <=> pa)
+                      end
+
+    if tags.length < 2
+      UI.user_error!("Not enough tags to determine latest and previous tags.")
+    end
+
+    latest = tags[0]
+    previous = tags[1]
+
+    UI.success("Latest Tag: #{latest}")
+    UI.success("Previous Tag: #{previous}")
+
+    return {
+      latest_tag: latest,
+      previous_tag: previous
+    }
+  rescue => e
+    UI.user_error!("Error fetching Git tags: #{e.message}")
+  end
+end
+
 # lark notification
-def send_lark_notification(title:, app_name:, version_name:, build_time:, download_url:, commit:)
+def send_lark_notification(title:, version_name:, build_time:, download_url:, commit:, tags:)
+  latest_tag = tags[:latest_tag]
+  previous_tag = tags[:previous_tag]
   lark_message = {
-    "msg_type" => "post",
-    "content" => {
-      "post" => {
-        "en_us" => {
-          "title" => "#{title} 🚀",
-          "content" => [
-            [
-              { "tag" => "text", "text" => "🌟 App(Android): " },
-              { "tag" => "text", "text" => app_name },
-              { "tag" => "text", "text" => "\n🌟 Version: " },
-              { "tag" => "text", "text" => version_name },
-              { "tag" => "text", "text" => "\n📅 Build Time#{ENV['CI']? '(UTC)':''}: " },
-              { "tag" => "text", "text" => build_time },
-              { "tag" => "text", "text" => "\n🔗 Download Link: " },
-              download_url && { "tag" => "a", "text" => "Click here to download", "href" => download_url },
-              { "tag" => "text", "text" => "\n\n🛠️ Latest Commit:" },
-              { "tag" => "text", "text" => "\nID: #{commit[:id]}" },
-              { "tag" => "text", "text" => "\nMessage: #{commit[:message]}" }
-            ]
+    "msg_type" => "interactive",
+    "card" => {
+      "header" => {
+        "title" => {
+          "tag" => "plain_text",
+          "content" => "#{title} 🚀"
+        },
+        "template" => "green"
+      },
+      "elements" => [
+        {
+          "tag" => "div",
+          "text" => {
+            "tag" => "lark_md",
+            "content" => "🌟 App(Android): EOA Wallet\n🌟 Version: #{version_name}\n📅 Build Time#{ENV['CI'] ? '(UTC)' : ''}: #{build_time}"
+          }
+        },
+        {
+          "tag" => "action",
+          "actions" => [
+            {
+              "tag" => "button",
+              "text" => {
+                "tag" => "plain_text",
+                "content" => "Click here to download"
+              },
+              "type" => "primary",
+              "url" => download_url
+            }
+          ]
+        },
+        {
+          "tag" => "action",
+          "actions" => [
+            {
+              "tag" => "button",
+              "text" => {
+                "tag" => "plain_text",
+                "content" => "Github Compare"
+              },
+              "type" => "primary",
+              "url" => "https://github.com/Portkey-Wallet/portkey-wallet/compare/#{previous_tag}...#{latest_tag}"
+            }
           ]
         }
-      }
+      ]
     }
   }
 
-  lark_webhook_url = ENV['LARK_WEBHOOK_URL'] || "https://open.larksuite.com/open-apis/bot/v2/hook/7ff82584-0b49-4d63-bd8a-81449b77c38f"
+
+  lark_webhook_url = LARK_WEBHOOK_URL
   unless lark_webhook_url
     UI.user_error!("LARK_WEBHOOK_URL is not set!")
   end
@@ -73,9 +138,8 @@ def send_lark_notification(title:, app_name:, version_name:, build_time:, downlo
   uri = URI.parse(lark_webhook_url)
   http = Net::HTTP.new(uri.host, uri.port)
   http.use_ssl = true
-  UI.message("Lark webhook URL: #{lark_webhook_url}")
-  UI.message("Parsed URI path: #{uri.path}")
-  request = Net::HTTP::Post.new(uri.path, { 'Content-Type' => 'application/json' })
+  http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+  request = Net::HTTP::Post.new(uri.request_uri, { 'Content-Type' => 'application/json' })
   request.body = lark_message.to_json
   response = http.request(request)
 
@@ -177,15 +241,16 @@ def build_and_notify(track:, title:)
   version_name = get_version_name("../app/build.gradle")
   build_time = get_timestamp
   commit = get_latest_commit
+  tags = get_latest_and_previous_tag   # get tag
 
   # send notification
   send_lark_notification(
     title: title,
-    app_name: app_name,
     version_name: version_name,
     build_time: build_time,
     download_url: download_url,
-    commit: commit
+    commit: commit,
+    tags: tags
   )
 end
 

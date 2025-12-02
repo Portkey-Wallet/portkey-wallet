@@ -27,14 +27,14 @@ jobs:
 
       - name: Generate configuration files
         run: |
-          mkdir -p packages/web-extension-aelf/env.config
-          echo '${{ secrets.CA_EXTENSION_PRODUCTION_JSON }}' > packages/web-extension-aelf/env.config/production.json
-          echo '${{ secrets.CA_EXTENSION_DEV_JSON }}' > packages/web-extension-aelf/env.config/dev.json
+          mkdir -p packages/web-extension-did/env.config
+          echo '${{ secrets.CA_EXTENSION_PRODUCTION_JSON }}' > packages/web-extension-did/env.config/production.json
+          echo '${{ secrets.CA_EXTENSION_DEV_JSON }}' > packages/web-extension-did/env.config/dev.json
 
       - name: Debug production.json
         run: |
           echo "Listing generated config files:"
-          ls -l packages/web-extension-aelf/env.config/
+          ls -l packages/web-extension-did/env.config/
 
       - name: Run yarn extension:aelf pro
         env:

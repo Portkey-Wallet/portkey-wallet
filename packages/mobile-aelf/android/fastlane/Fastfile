@@ -245,7 +245,7 @@ def build_and_notify(track:, title:)
 
     # --- Build AAB ---
     gradle(
-      task: "clean bundle",
+      task: "bundle",
       build_type: "Release",
       project_dir: "../android",
       properties: {
@@ -260,7 +260,8 @@ def build_and_notify(track:, title:)
       release_status: "draft",
       json_key: ENV['GOOGLE_JSON_KEY_FILE'],
       aab: File.absolute_path('../app/build/outputs/bundle/release/app-release.aab'),
-      sync_image_upload: true
+      sync_image_upload: true,
+      skip_upload_apk: true
     )
   else
     UI.user_error!("Unsupported track: #{track}")

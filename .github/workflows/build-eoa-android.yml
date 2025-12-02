@@ -72,6 +72,7 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.2'
+          bundler-cache: true
 
       # Step 5: Install bundler, and fastlane
       - name: Install Fastlane
@@ -113,12 +114,35 @@ jobs:
           # production, beta, alpha, internal
           PLAY_STORE_TRACK: production
 
-      # ------------------ Upload IPA to GitHub Release ------------------
+      # ------------------ Upload APK to GitHub Release ------------------
       - name: Upload APK to GitHub Release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ github.ref_name }}
           files: |
             packages/mobile-aelf/android/app/build/outputs/apk/release/*.apk
+            packages/mobile-aelf/android/app/build/outputs/bundle/release/*.aab
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Configure AWS credentials
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-1
+
+      - name: Upload APK to S3
+        run: |
+          APK_PATH=$(ls packages/mobile-aelf/android/app/build/outputs/apk/release/*.apk | head -1)
+          BASENAME=$(basename "$APK_PATH")
+          S3_PATH="s3://${{ secrets.AWS_S3_BUCKET }}/app/android/eoa/"
+
+          echo "Found APK: $APK_PATH"
+          echo "Uploading to: $S3_PATH$BASENAME"
+
+          aws s3 cp "$APK_PATH" "$S3_PATH"
+
+          echo "Uploaded to: $S3_PATH$BASENAME"
+          

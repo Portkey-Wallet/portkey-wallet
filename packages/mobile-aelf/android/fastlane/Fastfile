@@ -263,6 +263,25 @@ def build_and_notify(track:, title:)
       sync_image_upload: true,
       skip_upload_apk: true
     )
+
+    version_name = get_version_name("../app/build.gradle")
+    # aab
+    aab_path = File.absolute_path('../app/build/outputs/bundle/release/app-release.aab')
+    aab_dir = File.dirname(aab_path)
+    new_aab_name = "FairyVault-Android-v#{version_name}.aab"
+    new_aab_path = File.join(aab_dir, new_aab_name)
+    # rename aab
+    File.rename(aab_path, new_aab_path)
+    UI.message("Renamed aab: #{new_aab_path}")
+
+    # apk
+    apk_dir = File.dirname(apk_path)
+    new_apk_name = "FairyVault-Android-v#{version_name}.apk"
+    new_apk_path = File.join(apk_dir, new_apk_name)
+    # rename apk
+    File.rename(apk_path, new_apk_path)
+    UI.message("Renamed apk: #{new_apk_path}")
+
   else
     UI.user_error!("Unsupported track: #{track}")
   end

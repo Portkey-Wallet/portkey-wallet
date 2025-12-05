@@ -101,7 +101,7 @@ jobs:
 
       # Step 3: Set Xcode version
       - name: Set Xcode version
-        run: sudo xcode-select -s /Applications/Xcode_15.4.app/Contents/Developer
+        run: sudo xcode-select -s /Applications/Xcode_16.2.app/Contents/Developer
 
       # Step: Verify Xcode version
       - name: Verify Xcode version2

@@ -37,3 +37,9 @@ yarn app:did ios
 ```bash
 yarn extension:did dev
 ```
+
+### fastlane
+```bash
+fastlane match appstore
+// reset fastlane match nuke distribution
+```

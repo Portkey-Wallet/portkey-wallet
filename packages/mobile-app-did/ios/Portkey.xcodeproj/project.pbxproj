@@ -631,7 +631,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 2;
-				DEVELOPMENT_TEAM = 56DKXVFJS2;
+				DEVELOPMENT_TEAM = 956XWQ54U7;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Portkey/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Portkey;
@@ -665,7 +665,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 2;
-				DEVELOPMENT_TEAM = 56DKXVFJS2;
+				DEVELOPMENT_TEAM = 956XWQ54U7;
 				INFOPLIST_FILE = Portkey/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Portkey;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
@@ -758,10 +758,7 @@
 					"-DFOLLY_MOBILE=1",
 					"-DFOLLY_USE_LIBCPP=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
@@ -832,10 +829,7 @@
 					"-DFOLLY_MOBILE=1",
 					"-DFOLLY_USE_LIBCPP=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;

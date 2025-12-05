@@ -25,7 +25,9 @@ APPLE_KEY_ID = ENV["APPLE_KEY_ID"]
 APPLE_KEY_CONTENT = ENV["APPLE_KEY_CONTENT"]
 GIT_AUTHORIZATION = ENV["GIT_AUTHORIZATION"]
 DEVELOPER_PORTAL_TEAM_ID = ENV["DEVELOPER_PORTAL_TEAM_ID"]
-
+LARK_WEBHOOK_URL = ENV['LARK_WEBHOOK_URL']
+LARK_ROBOT = ENV['LARK_ROBOT']
+TAG_PREFIX = "ca.app.v."
 
 # We will download and store our keychain into a file
 def delete_temp_keychain(name)
@@ -65,32 +67,85 @@ def get_version_name(file_path)
     UI.user_error!("Could not find CFBundleShortVersionString in #{file_path}")
   end
 end
+# get latest and previous tag
+def get_latest_and_previous_tag
+  begin
+    UI.message("Fetching tag list...")
+
+    tags_output = sh("git tag")
+    UI.message("All tags in repo:\n#{tags_output}")
+    tags = tags_output.split("\n")
+                      .select { |tag| tag.start_with?(TAG_PREFIX) && !tag.strip.empty? }
+                      .sort do |a, b|
+                        pa = a.sub(TAG_PREFIX, "").split('.').map(&:to_i)
+                        pb = b.sub(TAG_PREFIX, "").split('.').map(&:to_i)
+
+                        # Desc order
+                        (pb <=> pa)
+                      end
+
+    if tags.length < 2
+      UI.user_error!("Not enough tags to determine latest and previous tags.")
+    end
+
+    latest = tags[0]
+    previous = tags[1]
+
+    UI.success("Latest Tag: #{latest}")
+    UI.success("Previous Tag: #{previous}")
+
+    return {
+      latest_tag: latest,
+      previous_tag: previous
+    }
+  rescue => e
+    UI.user_error!("Error fetching Git tags: #{e.message}")
+  end
+end
+
 # lark notification
-def send_lark_notification(title:,version_name:, build_time:, commit:)
+def send_lark_notification(title:, version_name:, build_time:, commit:, tags:)
+  latest_tag = tags[:latest_tag]
+  previous_tag = tags[:previous_tag]
+
   lark_message = {
-    "msg_type" => "post",
-    "content" => {
-      "post" => {
-        "en_us" => {
-          "title" => "#{title} 🚀",
-          "content" => [
-            [
-              { "tag" => "text", "text" => "🌟 App(iOS): Portkey v2 Wallet" },
-              { "tag" => "text", "text" => "\n🌟 Version: " },
-              { "tag" => "text", "text" => version_name },
-              { "tag" => "text", "text" => "\n📅 Build Time#{ENV['CI']? '(UTC)':''}: " },
-              { "tag" => "text", "text" => build_time },
-              { "tag" => "text", "text" => "\n\n🛠️ Latest Commit:" },
-              { "tag" => "text", "text" => "\nID: #{commit[:id]}" },
-              { "tag" => "text", "text" => "\nMessage: #{commit[:message]}" }
-            ]
+    "msg_type" => "interactive",
+    "card" => {
+      "header" => {
+        "title" => {
+          "tag" => "plain_text",
+          "content" => "#{title} 🚀"
+        },
+        "template" => "green"
+      },
+      "elements" => [
+        {
+          "tag" => "div",
+          "text" => {
+            "tag" => "lark_md",
+            "content" => "🌟 App(iOS): CA Wallet\n🌟 Version: #{version_name}\n📅 Build Time#{ENV['CI'] ? '(UTC)' : ''}: #{build_time}"
+          }
+        },
+        {
+          "tag" => "action",
+          "actions" => [
+            {
+              "tag" => "button",
+              "text" => {
+                "tag" => "plain_text",
+                "content" => "Github Compare"
+              },
+              "type" => "primary",
+              "url" => "https://github.com/Portkey-Wallet/portkey-wallet/compare/#{previous_tag}...#{latest_tag}"
+            }
           ]
         }
-      }
+      ]
     }
   }
+  
+  lark_webhook_url = LARK_WEBHOOK_URL
 
-  lark_webhook_url = ENV['LARK_WEBHOOK_URL'] || "https://open.larksuite.com/open-apis/bot/v2/hook/7ff82584-0b49-4d63-bd8a-81449b77c38f"
   unless lark_webhook_url
     UI.user_error!("LARK_WEBHOOK_URL is not set!")
   end
@@ -98,7 +153,8 @@ def send_lark_notification(title:,version_name:, build_time:, commit:)
   uri = URI.parse(lark_webhook_url)
   http = Net::HTTP.new(uri.host, uri.port)
   http.use_ssl = true
-  request = Net::HTTP::Post.new(uri.path, { 'Content-Type' => 'application/json' })
+  http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+  request = Net::HTTP::Post.new(uri.request_uri, { 'Content-Type' => 'application/json' })
   request.body = lark_message.to_json
   response = http.request(request)
 
@@ -194,16 +250,39 @@ platform :ios do
       version_name = get_version_name("../Portkey/info.plist")
       build_time = get_timestamp
       commit = get_latest_commit
-
+      tags = get_latest_and_previous_tag   # get tag
       build_num = latest_build_number.to_i + 1
-      version_name_with_build = "#{version_name} (#{build_num})"
+      version_name_with_build = "#{version_name}-#{build_num}"
 
 
-     send_lark_notification(
-      title: title,
-      version_name: version_name_with_build,
-      build_time: build_time,
-      commit: commit
-     )
+      # send_lark_notification(
+      #   title: title,
+      #   version_name: version_name_with_build,
+      #   build_time: build_time,
+      #   commit: commit,
+      #   tags: tags
+      # )
+
+     # ===== Rename IPA & dSYM =====
+     ipa_path = ipa 
+     ipa_dir = File.dirname(ipa_path)
+
+     new_ipa_name = "Portkey-iOS-v#{version_name}.ipa"
+     new_ipa_path = File.join(ipa_dir, new_ipa_name)
+
+     # rename ipa
+     File.rename(ipa_path, new_ipa_path)
+     UI.message("Renamed IPA: #{new_ipa_path}")
+
+     # rename dSYM
+     dsym_path = ipa_path.sub(".ipa", ".app.dSYM.zip")
+     if File.exist?(dsym_path)
+       new_dsym_name = "Portkey-iOS-v#{version_name}.dSYM.zip"
+       new_dsym_path = File.join(ipa_dir, new_dsym_name)
+       File.rename(dsym_path, new_dsym_path)
+       UI.message("Renamed dSYM: #{new_dsym_path}")
+     else
+       UI.message("No dSYM file found to rename")
+     end
   end
 end

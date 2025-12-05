@@ -1,0 +1,148 @@
+name: Build & Release iOS Production
+on:
+  push:
+    tags:
+      - "ca.app.v.*"
+
+jobs:
+  build-prod-ios:
+    runs-on: macos-14
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Check out the correct branch
+        run: git branch
+
+      # Step: Clean Xcode derived data
+      - name: Clean Xcode derived data
+        run: rm -rf ~/Library/Developer/Xcode/DerivedData/*
+
+      # Step 1: Install Node
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 22
+          cache: "yarn"
+
+      # Step 2: Install Ruby
+      - name: Install Ruby
+        uses: actions/setup-ruby@v1
+        with:
+          ruby-version: 3.2
+
+      # Step: Verify Xcode version
+      - name: Verify Xcode version1
+        run: xcodebuild -version
+
+      # Step 3: Set Xcode version
+      - name: Set Xcode version
+        run: sudo xcode-select -s /Applications/Xcode_16.2.app/Contents/Developer
+
+      # Step: Verify Xcode version
+      - name: Verify Xcode version2
+        run: xcodebuild -version
+
+      # Step 4: Install Node Modules
+      - name: Install Node Modules
+        run: yarn
+        env:
+          CI: true
+
+      # Step 6: Install Pods
+      - name: Cache CocoaPods
+        uses: actions/cache@v3
+        with:
+          path: packages/mobile-app-did/ios/Pods
+          key: ${{ runner.os }}-pods-${{ hashFiles('packages/mobile-app-did/ios/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pods-
+
+           # ----------------------- Install Pods -----------------------
+      - name: Install Pods
+        run: |
+          cd packages/mobile-app-did/ios
+          if [ ! -d "Pods" ] || [ "$(git diff --name-only HEAD~1 HEAD | grep 'Podfile.lock')" ]; then
+            pod install --repo-update
+          else
+            pod install
+          fi
+          cd ..
+
+      # Step 7: Install Fastlane
+      - name: Install Fastlane
+        run: |
+          cd packages/mobile-app-did/ios
+          bundle install
+          bundle update
+
+      # Step load .env file
+      - name: Create .env file for React Native Config
+        run: echo "${{ secrets.ENV_FILE_CONTENT }}" > $GITHUB_WORKSPACE/packages/mobile-app-did/.env
+      # Step cat ./packages/mobile-app-did/.env
+      #- name: Verify .env file
+      #  run: cat $GITHUB_WORKSPACE/packages/mobile-app-did/.env
+
+      # Step 8: Run Fastlane to build and ship the build
+      - name: Build and upload to TestFlight
+        run: |
+          cd packages/mobile-app-did/ios
+          fastlane beta
+        env:
+          APP_STORE_CONNECT_TEAM_ID: '${{ secrets.APP_STORE_CONNECT_TEAM_ID }}'
+          DEVELOPER_APP_ID: '${{ secrets.CA_DEVELOPER_APP_ID }}'
+          DEVELOPER_APP_IDENTIFIER: '${{ secrets.CA_DEVELOPER_APP_IDENTIFIER }}'
+          DEVELOPER_PORTAL_TEAM_ID: '${{ secrets.DEVELOPER_PORTAL_TEAM_ID }}'
+          FASTLANE_APPLE_ID: '${{ secrets.FASTLANE_APPLE_ID }}'
+          FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD: '${{ secrets.FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD }}'
+          MATCH_PASSWORD: '${{ secrets.CA_MATCH_PASSWORD }}'
+          GIT_AUTHORIZATION: '${{ secrets.CA_GIT_AUTHORIZATION }}'
+          PROVISIONING_PROFILE_SPECIFIER: '${{ secrets.CA_PROVISIONING_PROFILE_SPECIFIER }}'
+          TEMP_KEYCHAIN_PASSWORD: '${{ secrets.TEMP_KEYCHAIN_PASSWORD }}'
+          TEMP_KEYCHAIN_USER: '${{ secrets.TEMP_KEYCHAIN_USER }}'
+          APPLE_KEY_ID: '${{ secrets.APPLE_KEY_ID }}'
+          APPLE_ISSUER_ID: '${{ secrets.APPLE_ISSUER_ID }}'
+          APPLE_KEY_CONTENT: '${{ secrets.APPLE_KEY_CONTENT }}'
+          LARK_WEBHOOK_URL: '${{ secrets.LARK_WEBHOOK }}'
+          LARK_ROBOT: '${{ secrets.EOA_EXTENSION_LARK_ROBOT }}'
+
+
+      # ------------------ Upload IPA to GitHub Release ------------------
+      - name: Upload IPA to GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref_name }}
+          files: |
+            packages/mobile-app-did/ios/*.ipa
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Install AWS CLI v2 (macOS 14 requires manual install)
+      - name: Install AWS CLI
+        run: |
+          curl "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "AWSCLIV2.pkg"
+          sudo installer -pkg AWSCLIV2.pkg -target /
+
+      # Configure AWS credentials
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-1
+
+      - name: Upload IPA to S3
+        run: |
+          IPA_PATH=$(ls packages/mobile-app-did/ios/*.ipa | head -1)
+          BASENAME=$(basename "$IPA_PATH")
+          S3_PATH="s3://${{ secrets.AWS_S3_BUCKET }}/app/ios/ca/"
+
+          echo "Found IPA: $IPA_PATH"
+          echo "Uploading to: $S3_PATH$BASENAME"
+
+          aws s3 cp "$IPA_PATH" "$S3_PATH"
+
+          echo "Uploaded to: $S3_PATH$BASENAME"
+

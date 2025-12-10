@@ -160,12 +160,14 @@ export default function Send() {
   const toAddressInputRef = useRef<IToAddressInputRef>();
 
   const tokenInfo: BaseToken = useMemo(() => {
+    const _assetExtra = state as any;
+    const tokenAddressFromExtra = _assetExtra.extra && _assetExtra.extra.address;
     if (type === SendPageTypeEnum.token) {
       const _asset = state as IAssetToken;
       return {
         chainId: chainId,
         decimals: _asset.decimals,
-        address: _asset.tokenContractAddress || '', // contract address
+        address: _asset.tokenContractAddress || tokenAddressFromExtra || '', // contract address
         symbol: _asset.symbol,
         name: _asset.symbol,
         label: _asset.label,
@@ -180,7 +182,7 @@ export default function Send() {
       return {
         chainId: chainId,
         decimals: _asset.decimals,
-        address: _asset.tokenContractAddress || '', // contract address
+        address: _asset.tokenContractAddress || tokenAddressFromExtra || '', // contract address
         symbol: _asset.symbol,
         name: _asset.symbol,
         imageUrl: _asset.imageUrl,

@@ -78,6 +78,7 @@ import { CrossEBridgeExtension } from 'utils/sandboxUtil/extension-cross-chain';
 import { useRecent } from '@portkey-wallet/hooks/hooks-ca/recent';
 import { TFormattedRecentItem } from '@portkey-wallet/types/types-ca/contactNew';
 import { useContactNetworkConfig } from '@portkey-wallet/hooks/hooks-ca/config';
+import { MAX_TRANSACTION_FEE } from '@portkey-wallet/constants/constants-ca/wallet';
 
 export enum SendPageTypeEnum {
   token = 'token',
@@ -715,9 +716,12 @@ export default function Send() {
 
     const eTransferFee = await getEtransferMaxFee({ amount: balanceStr });
 
+    const MAX_TRANSACTION_FEE_NUM = parseFloat(MAX_TRANSACTION_FEE);
+    const maxFeeWithFee = Math.max(parseFloat(eTransferFee), MAX_TRANSACTION_FEE_NUM);
+    const maxFeeWithoutFee = Math.max(ZERO.plus(maxFee).plus(eTransferFee).toNumber(), MAX_TRANSACTION_FEE_NUM);
     const _max = fee
-      ? balanceBN.minus(eTransferFee)
-      : ZERO.plus(divDecimals(balance, tokenInfo.decimals)).minus(maxFee).minus(eTransferFee);
+      ? balanceBN.minus(maxFeeWithFee)
+      : ZERO.plus(divDecimals(balance, tokenInfo.decimals)).minus(maxFeeWithoutFee);
 
     setMaxAmount(_max.gt(ZERO) ? _max.toFixed() : '0');
   }, [

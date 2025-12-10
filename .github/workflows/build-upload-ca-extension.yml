@@ -1,0 +1,50 @@
+name: CA-Build and upload to the Chrome Web Store
+
+on:
+  push:
+    tags:
+      - 'ca.ext.v.*'
+
+jobs:
+  build-extension:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js 24 LTS
+        uses: actions/setup-node@v3
+        with:
+          node-version: 24
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: |
+          yarn install
+
+      - name: Generate configuration files
+        run: |
+          mkdir -p packages/web-extension-did/env.config
+          echo '${{ secrets.CA_EXTENSION_PRODUCTION_JSON }}' > packages/web-extension-did/env.config/production.json
+          echo '${{ secrets.CA_EXTENSION_DEV_JSON }}' > packages/web-extension-did/env.config/dev.json
+
+      - name: Debug production.json
+        run: |
+          echo "Listing generated config files:"
+          ls -l packages/web-extension-did/env.config/
+
+      - name: Run yarn extension:aelf pro
+        env:
+          CLIENT_ID: ${{ secrets.EOA_EXTENSION_CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.EOA_EXTENSION_CLIENT_SECRET }}
+          REFRESH_TOKEN: ${{ secrets.EOA_EXTENSION_REFRESH_TOKEN }}
+          LARK_ROBOT: ${{ secrets.EOA_EXTENSION_LARK_ROBOT }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AWS_BUCKET_NAME: ${{ secrets.AWS_S3_BUCKET }}
+        run: |
+          yarn extension:did pro:upload

@@ -349,7 +349,7 @@ export const useCheckLimit = (targetChainId: ChainId) => {
         if (
           ZERO.plus(amount)
             .plus(MAX_TRANSACTION_FEE)
-            .gte(ZERO.plus(divDecimals(balance, decimals)))
+            .gt(ZERO.plus(divDecimals(balance, decimals)))
         ) {
           transferLimitModal(settingParams, limitRes?.isSingleLimited ? LimitType.Single : LimitType.Daily, isPrompt);
         } else {

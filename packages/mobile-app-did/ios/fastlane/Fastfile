@@ -255,13 +255,13 @@ platform :ios do
       version_name_with_build = "#{version_name}-#{build_num}"
 
 
-      # send_lark_notification(
-      #   title: title,
-      #   version_name: version_name_with_build,
-      #   build_time: build_time,
-      #   commit: commit,
-      #   tags: tags
-      # )
+      send_lark_notification(
+        title: title,
+        version_name: version_name_with_build,
+        build_time: build_time,
+        commit: commit,
+        tags: tags
+      )
 
      # ===== Rename IPA & dSYM =====
      ipa_path = ipa 

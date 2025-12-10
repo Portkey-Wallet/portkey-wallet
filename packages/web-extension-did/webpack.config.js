@@ -9,7 +9,8 @@ const TerserPlugin = require('terser-webpack-plugin');
 const CircularDependencyPlugin = require('circular-dependency-plugin')
 
 const ROOT = path.resolve(__dirname, './');
-const { version } = require(path.resolve(ROOT, 'package.json'));
+// const { version } = require(path.resolve(ROOT, 'package.json'));
+const { version } = require(path.resolve(ROOT, 'app/web/manifest.json'));
 const projectRoot = __dirname;
 const workspaceRoot = path.resolve(projectRoot, '../..');
 const productionConfig = require(path.resolve(ROOT, 'env.config/production.json'));

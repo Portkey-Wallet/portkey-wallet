@@ -180,7 +180,7 @@ class CrossTransfer implements ICrossTransfer {
     }
   };
 
-  withdrawPreview: ICrossTransfer['withdrawPreview'] = async (params: IWithdrawPreviewParams) => {
+  withdrawPreview: ICrossTransfer['withdrawPreview'] = async (params: IWithdrawPreviewParams, skipRegister = false) => {
     try {
       const { chainId, address, symbol, amount, network, currentAccountAddress, isMainnet } = params;
       const authParams = this.formatAuthTokenParams();
@@ -191,9 +191,10 @@ class CrossTransfer implements ICrossTransfer {
 
       console.log('isRegistered', isRegistered);
 
-      const recaptchaToken = isRegistered?.result
-        ? undefined
-        : (((await this.options.verifyHumanMachine?.('en', true, isMainnet)) || '') as string);
+      const recaptchaToken =
+        isRegistered?.result || skipRegister
+          ? undefined
+          : (((await this.options.verifyHumanMachine?.('en', true, isMainnet)) || '') as string);
 
       const aToken = await eTransferCore.getAuthToken({
         ...authParams,

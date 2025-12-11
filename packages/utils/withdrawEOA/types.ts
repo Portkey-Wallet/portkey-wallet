@@ -42,6 +42,6 @@ export interface IWithdrawParams {
 
 export interface ICrossTransfer {
   init(options: ICrossTransferInitOption): void;
-  withdrawPreview(params: IWithdrawPreviewParams): Promise<TGetWithdrawInfoResult>;
+  withdrawPreview(params: IWithdrawPreviewParams, skipRegister?: boolean): Promise<TGetWithdrawInfoResult>;
   withdraw(params: IWithdrawParams): Promise<TCreateWithdrawOrderResult>;
 }

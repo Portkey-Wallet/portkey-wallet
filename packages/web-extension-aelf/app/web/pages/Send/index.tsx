@@ -140,6 +140,8 @@ export default function Send() {
   const navigate = useNavigate();
   const { type, symbol } = useParams();
   const { locationParams: state } = usePromptLocationParams<TSendLocationState, TSendLocationState>();
+  const { isRegisterSend } = state || {};
+
   const chainId: ChainId = useMemo(() => state.targetChainId || state.chainId, [state.chainId, state.targetChainId]);
 
   const { addRecent, checkAddressIsRecent } = useRecent();
@@ -242,8 +244,11 @@ export default function Send() {
 
   useCheckETransferIsRegistration(
     useCallback(() => {
-      InternalMessage.payload(PortkeyMessageTypes.SEND_CARD, `token/${symbol}`).send();
-    }, [symbol]),
+      InternalMessage.payload(
+        PortkeyMessageTypes.SEND_CARD,
+        `token/${symbol}?detail=${JSON.stringify({ ...state, isRegisterSend: true })}`,
+      ).send();
+    }, [symbol, state]),
   );
 
   const modalTipContent = useMemo(() => {
@@ -566,13 +571,16 @@ export default function Send() {
         );
 
         const [{ withdrawInfo }, allowance] = await Promise.all([
-          withdrawPreview({
-            chainId: token.chainId,
-            address: toAccount.address,
-            symbol: token.symbol,
-            network,
-            currentAccountAddress: wallet?.address || '',
-          }),
+          withdrawPreview(
+            {
+              chainId: token.chainId,
+              address: toAccount.address,
+              symbol: token.symbol,
+              network,
+              currentAccountAddress: wallet?.address || '',
+            },
+            true,
+          ),
           getEtransferAllowance(token),
         ]);
 
@@ -1363,7 +1371,11 @@ export default function Send() {
             <CommonHeader
               title={StageObj[stage].headerText}
               onLeftBack={() => {
-                StageObj[stage].backFun();
+                if (isRegisterSend && stage === SendStage.Address) {
+                  navigate('/');
+                } else {
+                  StageObj[stage].backFun();
+                }
               }}
               rightElementList={
                 stage !== SendStage.Address
@@ -1441,6 +1453,7 @@ export default function Send() {
     disclaimerOpen,
     isCheckAddressFinish,
     isPrompt,
+    isRegisterSend,
     modalTipContent,
     navigate,
     stage,

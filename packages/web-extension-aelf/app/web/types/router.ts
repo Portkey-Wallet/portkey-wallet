@@ -258,6 +258,7 @@ export type TSendLocationState = (IAssetToken | INftInfoType) & {
   balance?: string;
   type?: TSendPageType;
   openGuardiansApprove?: boolean;
+  isRegisterSend?: boolean;
 };
 
 // RecentDetail

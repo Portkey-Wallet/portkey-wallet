@@ -165,7 +165,7 @@ def build_and_notify(track:, title:)
 
     # Build AAB file
     gradle(
-      task: "clean bundle",
+      task: "bundle",
       build_type: "Release",
       project_dir: "../android",
       properties: {

@@ -33,7 +33,7 @@ export default function GetSignature() {
   }>();
   const { t } = useTranslation();
   const { currentNetwork } = useNetworkInfo();
-  const [showData, setShowData] = useState<string | { methodName: string; params: object }>(payload?.data);
+  const [showData, setShowData] = useState<string | number | { methodName: string; params: object }>(payload?.data);
   const { dappMap } = useDapp();
 
   const curDapp = useMemo(
@@ -141,7 +141,7 @@ export default function GetSignature() {
   const messageList = useMemo(() => {
     const list: Array<{ title: string; value: string }> = [];
 
-    if (typeof showData === 'string') {
+    if (typeof showData === 'string' || typeof showData === 'number') {
       list.push({
         title: 'String to be sign',
         value: showValueToStr(showData),

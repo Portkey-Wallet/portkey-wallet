@@ -45,14 +45,14 @@ export const useMenuList = () => {
         icon: 'my_contact',
         router: '/setting/contacts',
       },
-      {
-        label: 'Switch network',
-        icon: 'change',
-        router: '/setting/wallet/switch-networks',
-        element: (
-          <div className="item-extra-info">{currentNetwork === 'MAINNET' ? 'aelf Mainnet' : 'aelf Testnet'}</div>
-        ),
-      },
+      // {
+      //   label: 'Switch network',
+      //   icon: 'change',
+      //   router: '/setting/wallet/switch-networks',
+      //   element: (
+      //     <div className="item-extra-info">{currentNetwork === 'MAINNET' ? 'aelf Mainnet' : 'aelf Testnet'}</div>
+      //   ),
+      // },
       // {
       //   label: 'Help center',
       //   icon: 'my_help',

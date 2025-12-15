@@ -90,20 +90,20 @@ def send_lark_notification(title:, version_name:, build_time:, download_url:, co
             "content" => "🌟 App(Android): CA Wallet\n🌟 Version: #{version_name}\n📅 Build Time#{ENV['CI'] ? '(UTC)' : ''}: #{build_time}"
           }
         },
-        # {
-        #   "tag" => "action",
-        #   "actions" => [
-        #     {
-        #       "tag" => "button",
-        #       "text" => {
-        #         "tag" => "plain_text",
-        #         "content" => "Click here to download"
-        #       },
-        #       "type" => "primary",
-        #       "url" => download_url
-        #     }
-        #   ]
-        # },
+        {
+          "tag" => "action",
+          "actions" => [
+            {
+              "tag" => "button",
+              "text" => {
+                "tag" => "plain_text",
+                "content" => "Click here to download"
+              },
+              "type" => "primary",
+              "url" => download_url
+            }
+          ]
+        },
         {
           "tag" => "action",
           "actions" => [
@@ -225,7 +225,6 @@ def build_and_notify(track:, title:)
   # send notification
   send_lark_notification(
     title: title,
-    app_name: app_name,
     version_name: version_name,
     build_time: build_time,
     download_url: download_url,

@@ -86,11 +86,11 @@ export const useMenuList = () => {
         icon: 'my_guardians',
         router: '',
       },
-      {
-        label: 'Switch network',
-        icon: 'change',
-        router: '/setting/wallet/switch-networks',
-      },
+      // {
+      //   label: 'Switch network',
+      //   icon: 'change',
+      //   router: '/setting/wallet/switch-networks',
+      // },
       {
         type: 'divider',
         label: 'divider',

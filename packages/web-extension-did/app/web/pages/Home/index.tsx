@@ -4,6 +4,7 @@ import { useCallback, useRef } from 'react';
 import { useLocation } from 'react-router';
 import { useCommonState } from 'store/Provider/hooks';
 import MyBalance from './components/MyBalance';
+import NetworkChange from './components/NetworkChange';
 import './index.less';
 import qs from 'query-string';
 import { useHandleAchSell } from 'pages/Buy/hooks/useHandleAchSell';
@@ -66,6 +67,7 @@ export default function Home() {
         <PortKeyHeader unReadShow={isImputation || (!hideReferral && !viewReferralStatus)} onUserClick={onUserClick} />
       )} */}
       <MyBalance />
+      <NetworkChange />
       {!isPrompt && <BottomBar />}
       {/*<SetNewWalletNameModal />*/}
     </div>

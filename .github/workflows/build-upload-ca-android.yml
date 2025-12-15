@@ -2,7 +2,7 @@ name: Build & Release Android Production
 on:
   push:
     tags:
-      - "ca.app.android.v.*"
+      - "ca.android.v.*"
 jobs:
   # ----------------------- ANDROID -----------------------------
   # -------------------------------------------------------------

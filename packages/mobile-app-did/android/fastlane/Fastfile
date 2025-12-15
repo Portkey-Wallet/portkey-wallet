@@ -1,7 +1,7 @@
 #android/fastlane/Fastlane
 # get version name
 LARK_WEBHOOK_URL = ENV['LARK_WEBHOOK_URL']
-TAG_PREFIX = "eoa.android.app.v."
+TAG_PREFIX = "eoa.android.v."
 TAG = ENV['GITHUB_REF_NAME']
 REPO = ENV['GITHUB_REPOSITORY']
 

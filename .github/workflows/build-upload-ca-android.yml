@@ -97,6 +97,8 @@ jobs:
         env:
           CI: true
           CD: true
+          GITHUB_REF_NAME: ${{ github.ref_name }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
           ANDROID_KEYSTORE_FILE: ${{ secrets.ANDROID_KEYSTORE_FILE }}
           GOOGLE_JSON_KEY_FILE: /tmp/google-play-key.json
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}

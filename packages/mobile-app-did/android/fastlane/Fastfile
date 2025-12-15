@@ -2,6 +2,8 @@
 # get version name
 LARK_WEBHOOK_URL = ENV['LARK_WEBHOOK_URL']
 TAG_PREFIX = "eoa.android.app.v."
+TAG = ENV['GITHUB_REF_NAME']
+REPO = ENV['GITHUB_REPOSITORY']
 
 def get_version_name(file_path)
   gradle_file = File.read(file_path)
@@ -11,6 +13,11 @@ def get_version_name(file_path)
   else
     UI.user_error!("Could not find versionName in #{file_path}")
   end
+end
+
+# get time stamp
+def get_apk_url(asset_name)
+  "https://github.com/#{REPO}/releases/download/#{TAG}/#{asset_name}"
 end
 
 # get time stamp
@@ -137,6 +144,7 @@ end
 
 # build & notification
 def build_and_notify(track:, title:)
+  new_apk_name = nil
   # Upload and get download URL
   if track == "internal_sharing"
     download_url = upload_to_play_store_internal_app_sharing(
@@ -212,17 +220,18 @@ def build_and_notify(track:, title:)
   build_time = get_timestamp
   commit = get_latest_commit
   tags = get_latest_and_previous_tag   # get tag
+  download_url = get_apk_url(new_apk_name)
 
-  # # send notification
-  # send_lark_notification(
-  #   title: title,
-  #   app_name: app_name,
-  #   version_name: version_name,
-  #   build_time: build_time,
-  #   download_url: download_url,
-  #   commit: commit,
-  #   tags: tags
-  # )
+  # send notification
+  send_lark_notification(
+    title: title,
+    app_name: app_name,
+    version_name: version_name,
+    build_time: build_time,
+    download_url: download_url,
+    commit: commit,
+    tags: tags
+  )
 end
 
 default_platform(:android)

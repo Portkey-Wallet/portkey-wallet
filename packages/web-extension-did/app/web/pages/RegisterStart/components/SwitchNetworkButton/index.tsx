@@ -1,23 +1,34 @@
 import CustomSvg from 'components/CustomSvg';
 import './index.less';
 import { useWalletInfo } from 'store/Provider/hooks';
-import { useThrottleCallback } from '@portkey-wallet/hooks';
+// import { useThrottleCallback } from '@portkey-wallet/hooks';
 import { useChangeNetwork } from 'hooks/useChangeNetwork';
 import { useNetworkList } from '@portkey-wallet/hooks/hooks-ca/network';
 import { Row } from 'antd';
+import { useEffect } from 'react';
 
 export default function SwitchNetworkButton({ redirect = true }: { redirect?: boolean }) {
   const { currentNetwork } = useWalletInfo();
   const changeNetwork = useChangeNetwork();
   const networkList = useNetworkList();
-  const networkChange = useThrottleCallback(() => {
-    changeNetwork(networkList.filter((item) => item.networkType !== currentNetwork)[0], redirect);
+  useEffect(() => {
+    if (currentNetwork === 'MAINNET') {
+      return;
+    }
+    changeNetwork(networkList.filter((item) => item.networkType === 'MAINNET')[0], redirect);
   }, [changeNetwork, currentNetwork, networkList, redirect]);
+  // const networkChange = useThrottleCallback(() => {
+  //   changeNetwork(networkList.filter((item) => item.networkType !== currentNetwork)[0], redirect);
+  // }, [changeNetwork, currentNetwork, networkList, redirect]);
+
   return (
-    <div className="flex-row-center switch-network-button" onClick={networkChange}>
-      <CustomSvg type="Change" />
-      <div>{currentNetwork === 'MAINNET' ? 'Mainnet' : 'Testnet'}</div>
-    </div>
+    <div>{currentNetwork}</div>
+    // <div className="flex-row-center switch-network-button" onClick={networkChange}>
+    // <div className="flex-row-center switch-network-button">
+    //   {/*<CustomSvg type="Change" />*/}
+    //   {/*<div>{currentNetwork === 'MAINNET' ? 'Mainnet' : 'Testnet'}</div>*/}
+    //   {/*<div>{currentNetwork === 'MAINNET' ? 'Mainnet' : 'Testnet'}</div>*/}
+    // </div>
   );
 }
 

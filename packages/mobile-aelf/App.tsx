@@ -23,6 +23,7 @@ import ErrorBoundary from 'components/ErrorBoundary';
 import { lockScreenOrientation } from 'utils/screenOrientation';
 import { setupAppCheck } from 'utils/appCheck';
 import Updater from 'components/Updater';
+import { NetworkChangeChecker } from 'components/NetworkChange';
 // import CodePush from 'react-native-code-push';
 import 'utils/sentryInit';
 import 'utils/logBox';
@@ -92,6 +93,7 @@ const App = () => {
                       <StatusBar {...statusBarProps} barStyle={'light-content'} />
                       <NavigationRoot />
                       <Updater />
+                      <NetworkChangeChecker />
                     </TopView>
                   </InterfaceProvider>
                 </ThemeProvider>

@@ -103,7 +103,7 @@ jobs:
           GOOGLE_JSON_KEY_FILE: /tmp/google-play-key.json
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           ANDROID_KEYSTORE_ALIAS: ${{ secrets.ANDROID_KEYSTORE_ALIAS }}
-          LARK_WEBHOOK_URL: ${{ secrets.LARK_WEBHOOK_URL }}
+          LARK_WEBHOOK_URL: ${{ secrets.LARK_WEBHOOK }}
           # production, beta, alpha, internal
           PLAY_STORE_TRACK: production
 

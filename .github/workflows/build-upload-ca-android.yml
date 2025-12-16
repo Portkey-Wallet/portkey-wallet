@@ -117,3 +117,24 @@ jobs:
             packages/mobile-app-did/android/app/build/outputs/bundle/release/*.aab
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Configure AWS credentials
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-1
+
+      - name: Upload APK to S3
+        run: |
+          APK_PATH=$(ls packages/mobile-app-did/android/app/build/outputs/apk/release/*.apk | head -1)
+          BASENAME=$(basename "$APK_PATH")
+          S3_PATH="s3://${{ secrets.AWS_S3_BUCKET }}/app/android/ca/"
+
+          echo "Found APK: $APK_PATH"
+          echo "Uploading to: $S3_PATH$BASENAME"
+
+          aws s3 cp "$APK_PATH" "$S3_PATH"
+
+          echo "Uploaded to: $S3_PATH$BASENAME"

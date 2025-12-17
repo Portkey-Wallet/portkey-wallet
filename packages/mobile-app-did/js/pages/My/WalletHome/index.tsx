@@ -45,7 +45,9 @@ const WalletHome: React.FC<WalletHomeProps> = () => {
 
   const onExitClick = useCallback(
     async (isConfirm: boolean) => {
-      if (!isConfirm || !managerAddress || !caHash) return;
+      if (!isConfirm || !managerAddress || !caHash) {
+        return;
+      }
       // Loading.show({ text: t('Signing out of Portkey...') });
       Loading.show();
       try {
@@ -85,11 +87,11 @@ const WalletHome: React.FC<WalletHomeProps> = () => {
             onPress={() => navigationService.navigate('AutoLock')}
             title={t('Auto-Lock')}
           />
-          <MenuItem
+          {/* <MenuItem
             style={pageStyles.menuItem}
             onPress={() => navigationService.navigate('SwitchNetworks')}
             title={t('Switch Networks')}
-          />
+          /> */}
           <MenuItem
             // change to components
             suffix={!!updateInfo && <TextS style={pageStyles.newVersion}>New Version</TextS>}

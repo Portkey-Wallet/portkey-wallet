@@ -11,7 +11,7 @@ import Svg, { IconName } from 'components/Svg';
 import { pTd } from 'utils/unit';
 import { makeStyles } from '@rneui/themed';
 import fonts from 'assets/theme/fonts';
-import ExistOverlay from '../WalletHome/components/ExistOverlay';
+// import ExistOverlay from '../WalletHome/components/ExistOverlay';
 import Loading from 'components/Loading';
 import { useCurrentUserInfo, useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { getDeviceInfo } from 'utils/deviceInfo';
@@ -45,7 +45,9 @@ const Settings = () => {
   const logout = useLogOut();
   const onExitClick = useCallback(
     async (isConfirm: boolean) => {
-      if (!isConfirm || !managerAddress || !caHash) return;
+      if (!isConfirm || !managerAddress || !caHash) {
+        return;
+      }
       // Loading.show({ text: t('Signing out of Portkey...') });
       Loading.show();
       try {
@@ -68,7 +70,7 @@ const Settings = () => {
       }
       Loading.hide();
     },
-    [caHash, getCurrentCAContract, logout, managerAddress, t],
+    [caHash, getCurrentCAContract, logout, managerAddress],
   );
 
   const MenuList: Array<MenuItemType> = useMemo(
@@ -154,7 +156,7 @@ const Settings = () => {
             title={t(ele.label || '')}
             key={ele.name}
             // iconStyle={styles.menuItemIconStyle}
-            onPress={ele.onPress ? ele.onPress : () => navigationService.navigate('SwitchNetworks')}
+            // onPress={ele.onPress ? ele.onPress : () => navigationService.navigate('SwitchNetworks')}
             suffix={ele.suffixDom}
           />
         );

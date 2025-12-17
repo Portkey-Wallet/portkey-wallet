@@ -375,12 +375,16 @@ export const assetsSlice = createSlice({
       state.accountToken.accountTokenInfoV2 = tokenInfo;
     },
     clearAccountAssetsInfo: (state, action: PayloadAction<NetworkType>) => {
-      const assetsInfo = state.accountAssets.accountAssetsInfo;
-      if (assetsInfo?.[action.payload]) delete assetsInfo[action.payload];
-      state.accountAssets.accountAssetsInfo = assetsInfo;
-      const assetsInfoV2 = state.accountAssetsV2.accountAssetsInfo;
-      if (assetsInfoV2?.[action.payload]) delete assetsInfoV2[action.payload];
-      state.accountAssetsV2.accountAssetsInfo = assetsInfoV2;
+      const assetsInfo = state.accountAssets?.accountAssetsInfo;
+      if (assetsInfo) {
+        if (assetsInfo?.[action.payload]) delete assetsInfo[action.payload];
+        state.accountAssets.accountAssetsInfo = assetsInfo;
+      }
+      const assetsInfoV2 = state.accountAssetsV2?.accountAssetsInfo;
+      if (assetsInfoV2) {
+        if (assetsInfoV2?.[action.payload]) delete assetsInfoV2[action.payload];
+        state.accountAssetsV2.accountAssetsInfo = assetsInfoV2;
+      }
     },
     changeNftSectionUiType: (state, action: PayloadAction<'Collections' | 'NFTs'>) => {
       const payload = action.payload;

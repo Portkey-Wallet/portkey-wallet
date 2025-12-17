@@ -35,6 +35,7 @@ import { logBoxTextColorSaver } from 'utils/textColor';
 import { CODE_PUSH_OPTIONS } from 'constants/codePush';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { init, track } from './js/utils/amplitude';
+import { NetworkChangeChecker } from 'components/NetworkChange';
 
 if (__DEV__) {
   logBoxTextColorSaver();
@@ -84,6 +85,7 @@ const App = () => {
                       <StatusBar {...statusBarProps} barStyle={'light-content'} />
                       <NavigationRoot />
                       <Updater />
+                      <NetworkChangeChecker />
                     </TopView>
                   </InterfaceProvider>
                 </ThemeProvider>

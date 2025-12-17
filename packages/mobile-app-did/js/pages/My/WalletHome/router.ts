@@ -2,7 +2,7 @@ import MyWallet from './MyWallet';
 import WalletHome from './index';
 import EditWalletName from './EditWalletName';
 
-import SwitchNetworks from './SwitchNetworks';
+// import SwitchNetworks from './SwitchNetworks';
 import AccountCancelation from './AccountCancelation';
 import PhotoScreen from './CameraPage';
 
@@ -23,10 +23,10 @@ const stackNav = [
     name: 'EditWalletName',
     component: EditWalletName,
   },
-  {
-    name: 'SwitchNetworks',
-    component: SwitchNetworks,
-  },
+  // {
+  //   name: 'SwitchNetworks',
+  //   component: SwitchNetworks,
+  // },
   {
     name: 'AccountCancelation',
     component: AccountCancelation,

@@ -3,7 +3,7 @@ name: Build & Release Android Production
 on:
   push:
     tags:
-      - "eoa.android.app.v.*"
+      - "eoa.android.v.*"
   workflow_dispatch:
 jobs:
   # ----------------------- ANDROID -----------------------------

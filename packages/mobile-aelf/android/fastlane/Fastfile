@@ -1,7 +1,7 @@
 #android/fastlane/Fastlane
 require 'aws-sdk-s3'
 LARK_WEBHOOK_URL = ENV['LARK_WEBHOOK_URL']
-TAG_PREFIX = "eoa.android.app.v."
+TAG_PREFIX = "eoa.android.v."
 
 def upload_s3_file(s3_client, bucket_name, region, file_path, s3_key)
   s3_client.put_object(

@@ -304,6 +304,11 @@ android {
 //           include 'armeabi-v7a', 'arm64-v8a'
 //       }
 //   }
+    packagingOptions {
+      jniLibs {
+        useLegacyPackaging true
+      }
+    }
     println("Loaded environment variables:")
     project.env.each { key, value ->
         println("$key=$value")

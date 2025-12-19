@@ -14,7 +14,7 @@ import { makeStyles } from '@rneui/themed';
 import { useCurrentDappList } from '@portkey-wallet/hooks/hooks-eoa/dapp';
 import CommonAvatar from 'components/CommonAvatar';
 import { LOCAL_AVATARS } from 'assets/image/avatars';
-import { useCurrentNetwork } from '@portkey-wallet/hooks/hooks-eoa/network';
+// import { useCurrentNetwork } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { useAddressesTokensInfo } from '../WalletManagement/hooks/useAddressesTokensInfo';
 
 interface MenuItemType {
@@ -29,7 +29,7 @@ interface MenuItemType {
 export default function AccountSettings() {
   const styles = getStyles();
   const dappList = useCurrentDappList();
-  const currentNetwork = useCurrentNetwork();
+  // const currentNetwork = useCurrentNetwork();
 
   const onPressItem = useCallback((item: MenuItemType) => {
     if (item.onPress) {
@@ -74,16 +74,16 @@ export default function AccountSettings() {
           navigationService.navigate('ContactsHome');
         },
       },
-      {
-        name: 'SwitchNetworks',
-        label: 'Switch network',
-        icon: 'my_change',
-        suffixDom: () => (
-          <TextM style={styles.setBackupMailText}>
-            {currentNetwork === 'MAINNET' ? 'aelf Mainnet' : 'aelf Testnet'}
-          </TextM>
-        ),
-      },
+      // {
+      //   name: 'SwitchNetworks',
+      //   label: 'Switch network',
+      //   icon: 'my_change',
+      //   suffixDom: () => (
+      //     <TextM style={styles.setBackupMailText}>
+      //       {currentNetwork === 'MAINNET' ? 'aelf Mainnet' : 'aelf Testnet'}
+      //     </TextM>
+      //   ),
+      // },
       {
         name: 'AboutUs',
         label: 'About FairyVault',

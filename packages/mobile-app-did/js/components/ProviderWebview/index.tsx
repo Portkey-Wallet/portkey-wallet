@@ -210,7 +210,7 @@ const ProviderWebview = forwardRef<
       <WebView
         ref={webViewRef}
         // style={styles.webView}
-        decelerationRate="normal"
+        decelerationRate={isIOS ? 'normal' : undefined}
         originWhitelist={['*']}
         injectedJavaScript={!isIOS ? entryScriptWeb3 + getRealUrl : getRealUrl}
         injectedJavaScriptBeforeContentLoaded={isIOS ? entryScriptWeb3 : undefined}

@@ -73,14 +73,6 @@ jobs:
         env:
           CI: true
 
-      # Step 6: Install reactnative community pacakge manually
-      - name: Add @react-native-community/cli-platform-android Dependency to Project
-        run: |
-          cd packages/mobile-app-did
-          yarn add @react-native-community/cli-platform-android@7.0.1
-        env:
-          CI: true
-
     # Step load .env file
       - name: Create .env file for React Native Config
         run: echo "${{ secrets.ENV_FILE_CONTENT }}" > $GITHUB_WORKSPACE/packages/mobile-app-did/.env

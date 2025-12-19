@@ -5,7 +5,6 @@ import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import Phone from '../components/Phone';
 import Referral from '../components/Referral';
 import { PageLoginType } from '../types';
-import SwitchNetwork from '../components/SwitchNetwork';
 import { makeStyles } from '@rneui/themed';
 
 const BackType: any = {
@@ -25,7 +24,7 @@ export default function LoginPortkey() {
 
   return (
     <PageContainer
-      rightDom={<SwitchNetwork />}
+      // rightDom={<SwitchNetwork />}
       titleDom
       type="leftBack"
       pageSafeBottomPadding={!isIOS}

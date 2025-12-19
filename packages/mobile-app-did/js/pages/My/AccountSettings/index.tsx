@@ -179,12 +179,12 @@ export default function AccountSettings() {
       //   icon: 'my_referral',
       //   showDivider: true,
       // },
-      {
-        name: 'SwitchNetworks',
-        label: 'Switch network',
-        icon: 'my_change',
-        showDivider: true,
-      },
+      // {
+      //   name: 'SwitchNetworks',
+      //   label: 'Switch network',
+      //   icon: 'my_change',
+      //   showDivider: true,
+      // },
       {
         name: 'Help center',
         label: 'Help center',
@@ -235,8 +235,12 @@ export default function AccountSettings() {
       // Loading.show({ text: t('Signing out of Portkey...') });
       Loading.show();
       try {
-        const { deviceId } = await getDeviceInfo();
-        await request.wallet.reportExitWallet({ params: { deviceId } });
+        try {
+          const { deviceId } = await getDeviceInfo();
+          await request.wallet.reportExitWallet({ params: { deviceId } });
+        } catch (error) {
+          console.log(error, '=====reportExitWallet-error');
+        }
 
         const caContract = await getCurrentCAContract();
         const req = await removeManager(caContract, managerAddress, caHash);

@@ -2,46 +2,13 @@ import { useCurrentWalletInfo, useOtherNetworkLogged } from '@portkey-wallet/hoo
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { usePin } from './store';
 import { FCMMessageData } from 'types/common';
-import { NOTIFY_ACTION } from 'constants/notify';
 import messaging from '@react-native-firebase/messaging';
 import { getFcmMessageNetwork } from 'utils/FCM';
 import ActionSheet from 'components/ActionSheet';
 import { useLanguage } from 'i18n/hooks';
-import { useJumpToChatDetails, useJumpToChatGroupDetails } from './chat';
-import { useCurrentNetwork, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
-import { ChannelTypeEnum } from '@portkey-wallet/im';
+import { useCurrentNetwork } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useChangeNetwork } from './network';
 import { useLatestRef } from '@portkey-wallet/hooks';
-import { TabRouteNameEnum } from 'types/navigate';
-import navigationService from 'utils/navigationService';
-
-export const useNotifyAction = () => {
-  const jumpToChatGroupDetails = useJumpToChatGroupDetails();
-  const jumpToChatDetails = useJumpToChatDetails();
-
-  return useCallback(
-    async (action: NOTIFY_ACTION, data?: FCMMessageData) => {
-      try {
-        switch (action) {
-          case NOTIFY_ACTION.openChat: {
-            if (!data) return;
-            const { channelId = '', channelType } = data;
-            if (channelType === ChannelTypeEnum.GROUP) await jumpToChatGroupDetails({ channelUuid: channelId });
-            if (channelType === ChannelTypeEnum.P2P) await jumpToChatDetails({ channelUuid: channelId });
-            navigationService.navToBottomTab(TabRouteNameEnum.CHAT);
-            break;
-          }
-
-          default:
-            console.log('this action is not supported');
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    },
-    [jumpToChatDetails, jumpToChatGroupDetails],
-  );
-};
 
 export const useNotify = () => {
   const { t } = useLanguage();
@@ -49,7 +16,6 @@ export const useNotify = () => {
 
   const pin = usePin();
   const currentNetwork = useCurrentNetwork();
-  const isMainnet = useIsMainnet();
 
   const otherNetworkLogged = useOtherNetworkLogged();
   const logged = useMemo(() => !!address && caHash, [address, caHash]);
@@ -57,7 +23,6 @@ export const useNotify = () => {
   const lastOtherNetworkLogged = useLatestRef(otherNetworkLogged);
   const [remoteData, setRemoteData] = useState<any>();
 
-  const notifyAct = useNotifyAction();
   const changeNetwork = useChangeNetwork({ key: 'tab', name: 'tab' });
 
   const handleBackGroundMessage = useCallback(
@@ -67,7 +32,7 @@ export const useNotify = () => {
       console.log('messageNetworkType', messageNetworkType, 'currentNetwork', currentNetwork, 'data', data);
 
       if (currentNetwork === messageNetworkType) {
-        notifyAct(NOTIFY_ACTION.openChat, data);
+        // notifyAct(NOTIFY_ACTION.openChat, data);
       } else {
         ActionSheet.alert({
           title: t(`Do you want to switch to ${messageNetworkType} to view the new messages?`),
@@ -80,19 +45,21 @@ export const useNotify = () => {
             {
               title: t('Confirm'),
               onPress: async () => {
-                await changeNetwork({ networkType: isMainnet ? 'TESTNET' : 'MAINNET' }, false);
+                await changeNetwork({ networkType: 'MAINNET' }, false);
               },
             },
           ],
         });
       }
     },
-    [changeNetwork, currentNetwork, isMainnet, notifyAct, t],
+    [changeNetwork, currentNetwork, t],
   );
 
   useEffect(() => {
     messaging().onNotificationOpenedApp(remoteMessage => {
-      if (!lastLogged.current && !lastOtherNetworkLogged.current) return;
+      if (!lastLogged.current && !lastOtherNetworkLogged.current) {
+        return;
+      }
 
       console.log('--remoteMessage onNotificationOpenedApp', remoteMessage);
       setRemoteData(remoteMessage.data);
@@ -100,7 +67,9 @@ export const useNotify = () => {
     messaging()
       .getInitialNotification()
       .then(remoteMessage => {
-        if (!lastLogged.current && !lastOtherNetworkLogged.current) return;
+        if (!lastLogged.current && !lastOtherNetworkLogged.current) {
+          return;
+        }
         console.log('--remoteMessage getInitialNotification', remoteMessage);
         setRemoteData(remoteMessage?.data);
       });

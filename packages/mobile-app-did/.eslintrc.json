@@ -29,6 +29,8 @@
         "no-empty": "off",
         "eslint-comments/no-unused-disable": "off",
         "eslint-comments/no-unlimited-disable": "off",
+        "@typescript-eslint/no-unused-vars": "warn",
+        "react/no-unstable-nested-components": "off",
         "react-hooks/exhaustive-deps": [
           "warn",
           {

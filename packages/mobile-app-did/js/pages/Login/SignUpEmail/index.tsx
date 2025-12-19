@@ -5,7 +5,6 @@ import { isIOS, screenHeight } from '@portkey-wallet/utils/mobile/device';
 
 import Email from '../components/Email';
 import { PageType } from '../types';
-import SwitchNetwork from '../components/SwitchNetwork';
 import { makeStyles } from '@rneui/themed';
 
 export default function SignUpEmail() {
@@ -20,7 +19,8 @@ export default function SignUpEmail() {
       containerStyles={signupStyles.containerStyles}
       style={signupStyles.mainContainer}
       leftCallback={() => navigationService.goBack()}
-      rightDom={<SwitchNetwork />}>
+      // rightDom={<SwitchNetwork />}
+    >
       <Email type={PageType.signup} />
     </PageContainer>
   );

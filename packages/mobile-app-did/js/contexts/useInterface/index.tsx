@@ -8,7 +8,6 @@ import { State } from './types';
 import * as Google from 'expo-auth-session/providers/google';
 import Config from 'react-native-config';
 import useScheme from 'hooks/useScheme';
-import useNotify from 'hooks/useNotifyAction';
 
 const INITIAL_STATE = {};
 const InterfaceContext = createContext<any>(INITIAL_STATE);
@@ -44,7 +43,9 @@ function reducer(state: State, { type, payload }: any) {
     }
     default: {
       const { destroy } = payload;
-      if (destroy) return Object.assign({}, payload);
+      if (destroy) {
+        return Object.assign({}, payload);
+      }
       return Object.assign({}, state, payload);
     }
   }
@@ -60,10 +61,11 @@ export default function Provider({ children }: { children: React.ReactNode }) {
     shouldAutoExchangeCode: false,
   });
   useScheme();
-  useNotify();
   useEffect(() => {
     if (currentNetwork.chainType === 'aelf') {
-      if (prevRpcUrl !== currentNetwork.rpcUrl) dispatch(setCurrentInterface(getAelfInstance(currentNetwork.rpcUrl)));
+      if (prevRpcUrl !== currentNetwork.rpcUrl) {
+        dispatch(setCurrentInterface(getAelfInstance(currentNetwork.rpcUrl)));
+      }
     } else {
       // TODO:ethereum
     }

@@ -86,11 +86,17 @@ export default class DappEventBus {
     }
   }
 
+  // eslint-disable-next-line no-dupe-class-members
   public static dispatchEvent(params: DappEventPack<typeof NotificationEvents.CHAIN_CHANGED, ChainIds>): void;
+  // eslint-disable-next-line no-dupe-class-members
   public static dispatchEvent(params: DappEventPack<typeof NotificationEvents.ACCOUNTS_CHANGED, Accounts>): void;
+  // eslint-disable-next-line no-dupe-class-members
   public static dispatchEvent(params: DappEventPack<typeof NotificationEvents.NETWORK_CHANGED, NetworkType>): void;
+  // eslint-disable-next-line no-dupe-class-members
   public static dispatchEvent(params: DappEventPack<typeof NotificationEvents.CONNECTED, ConnectInfo>): void;
+  // eslint-disable-next-line no-dupe-class-members
   public static dispatchEvent(params: DappEventPack<typeof NotificationEvents.DISCONNECTED, ProviderErrorType>): void;
+  // eslint-disable-next-line no-dupe-class-members
   public static dispatchEvent({ eventName, data, callback, origin, msg }: DappEventPack) {
     const event: IResponseType = {
       eventName,

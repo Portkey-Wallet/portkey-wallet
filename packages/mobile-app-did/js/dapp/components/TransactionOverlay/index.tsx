@@ -222,7 +222,6 @@ const TransactionModal = (props: TransactionModalPropsType) => {
 
       setFee(TransactionFee?.[defaultToken.symbol] || '0');
 
-
       setIsFetchingFee(false);
     } catch (e) {
       setFee('0');

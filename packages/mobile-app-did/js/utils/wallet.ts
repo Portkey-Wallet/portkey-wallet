@@ -49,8 +49,8 @@ export function intervalGetResult({ managerInfo, onPass, onFail }: IntervalGetRe
         if (!info.originChainId) throw new Error('caHolderManagerInfo is empty');
         const caContract = await getCurrentCAViewContract(info.originChainId as ChainId);
         const contractInfo = await caContract?.callViewMethod('GetHolderInfo', { caHash: info.caHash });
-        const { managerInfos, caAddress, caHash } = contractInfo?.data;
-        const exist = await managerInfos?.some((manager: { address: string }) => manager?.address === address);
+        const { managerInfos, caAddress, caHash } = contractInfo?.data ?? {};
+        const exist = managerInfos?.some((manager: { address: string }) => manager?.address === address) ?? false;
         if (exist) return onPass?.({ caAddress, caHash });
       }
     } catch {}

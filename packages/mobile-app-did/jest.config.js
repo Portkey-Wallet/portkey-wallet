@@ -6,7 +6,7 @@ module.exports = {
     __DEV__: true,
   },
   transform: {
-    '^.+\\.(ts|tsx)$': [`ts-jest`, { isolatedModules: true, tsconfig: './tsconfig.json' }],
+    '^.+\\.(ts|tsx)$': ['ts-jest', { isolatedModules: true, tsconfig: './tsconfig.json' }],
   },
   moduleNameMapper: {
     '^utils/(.*)$': '<rootDir>/js/utils/$1',

@@ -37,7 +37,7 @@ export function destroyChatInputRecorder() {
 export function handleInputText(code: string): string {
   let text = chatInputRecorder?.text || '';
   if (chatInputRecorder?.selection) {
-    const { start, end } = chatInputRecorder?.selection;
+    const { start, end } = chatInputRecorder.selection;
     if (start === end) {
       const first = text.slice(0, start) + code;
       const last = text.slice(start);
@@ -73,7 +73,7 @@ export function isEmojiString(text: string) {
 export function handleDeleteText(): string {
   let text = chatInputRecorder?.text || '';
   if (chatInputRecorder?.selection) {
-    const { start, end } = chatInputRecorder?.selection;
+    const { start, end } = chatInputRecorder.selection;
     if (start === end) {
       let first = text.slice(0, start);
       const last = text.slice(start);

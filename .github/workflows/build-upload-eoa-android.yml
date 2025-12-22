@@ -90,7 +90,8 @@ jobs:
 
       # Accept Android SDK licenses (required for NDK 28.0.12674087)
       - name: Accept Android SDK Licenses
-        run: yes | sdkmanager --licenses
+        run: |
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || yes | $ANDROID_HOME/tools/bin/sdkmanager --licenses
 
       # Step 8: Fastlane build android
       - name : Build android App via fastlane

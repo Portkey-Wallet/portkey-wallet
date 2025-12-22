@@ -54,11 +54,26 @@ subprojects {
         google()
         maven { url 'https://www.jitpack.io' }
     }
-}
-
-configurations.configureEach {
-    resolutionStrategy {
-        force 'androidx.core:core:1.13.1'
-        force 'androidx.media:media:1.0.0'
+    
+    // 在所有子项目中强制使用指定版本的依赖
+    // 解决 16KB 页面对齐问题: https://github.com/googlesamples/mlkit/issues/947
+    configurations.configureEach {
+        resolutionStrategy {
+            force 'androidx.core:core:1.13.1'
+            force 'androidx.media:media:1.0.0'
+            
+            // 尝试升级 CameraX 到 1.4.2
+            force 'androidx.camera:camera-core:1.4.2'
+            force 'androidx.camera:camera-camera2:1.4.2'
+            force 'androidx.camera:camera-lifecycle:1.4.2'
+            force 'androidx.camera:camera-video:1.4.2'
+            force 'androidx.camera:camera-view:1.4.2'
+            force 'androidx.camera:camera-extensions:1.4.2'
+            force 'androidx.camera:camera-mlkit-vision:1.4.2'
+            
+            // 强制升级 ML Kit barcode-scanning 到最新版本
+            force 'com.google.mlkit:barcode-scanning:17.3.0'
+            force 'com.google.android.gms:play-services-mlkit-barcode-scanning:18.3.1'
+        }
     }
 }

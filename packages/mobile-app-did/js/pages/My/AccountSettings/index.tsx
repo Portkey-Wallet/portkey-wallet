@@ -28,10 +28,6 @@ import { getDeviceInfo } from 'utils/deviceInfo';
 import ActionSheet from 'components/ActionSheet';
 import { CommonPromptCard, PromptCardType } from 'components/CommonPromptCard';
 import fonts from 'assets/theme/fonts';
-import { useUpdateInfo } from 'store/user/hooks';
-import { codePushOperator, parseLabel } from 'utils/update';
-import * as Application from 'expo-application';
-import { parseVersion } from 'utils';
 import { useCurrentDappList } from '@portkey-wallet/hooks/hooks-ca/dapp';
 import CommonAvatar from 'components/CommonAvatar';
 import { darkColors } from 'assets/theme';
@@ -50,7 +46,6 @@ export default function AccountSettings() {
   const styles = getStyles();
   const { showNotSet, secondaryEmail, fetching } = useIsSecondaryMailSet();
   const { shouldShowSetNewWalletNameIcon, handleSetNewWalletName } = useSetNewWalletName();
-  const updateInfo = useUpdateInfo();
   const dappList = useCurrentDappList();
   const { deviceAmount, deviceList, refresh } = useDeviceList({ isInit: false });
   console.log('deviceList:', deviceList, deviceAmount);
@@ -201,30 +196,8 @@ export default function AccountSettings() {
         label: 'About Portkey',
         icon: 'my_about',
       },
-      {
-        name: 'Check for updates',
-        label: 'Check for updates',
-        icon: 'my_update',
-        suffixDom: () => {
-          return (
-            <TextM style={{ color: theme.colors.textBase2 }}>
-              {parseVersion([
-                `v${Application.nativeApplicationVersion}`,
-                parseLabel(codePushOperator.localPackage?.label),
-              ])}
-            </TextM>
-          );
-        },
-        onPress: () => {
-          if (updateInfo) {
-            codePushOperator.checkToUpdate();
-          } else {
-            CommonToast.info("You're using the latest version.");
-          }
-        },
-      },
     ],
-    [dappList?.length, deviceAmount, fetching, secondaryEmail, showNotSet, styles, theme.colors.textBase2, updateInfo],
+    [dappList?.length, deviceAmount, fetching, secondaryEmail, showNotSet, styles],
   );
 
   const onExitClick = useCallback(

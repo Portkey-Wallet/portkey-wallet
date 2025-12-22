@@ -23,7 +23,6 @@ import ErrorBoundary from 'components/ErrorBoundary';
 import { lockScreenOrientation } from 'utils/screenOrientation';
 import { setupAppCheck } from 'utils/appCheck';
 import Updater from 'components/Updater';
-import CodePush from 'react-native-code-push';
 import 'utils/sentryInit';
 import 'utils/logBox';
 import 'utils/initExceptionManager';
@@ -32,7 +31,6 @@ import './js/headlessTask';
 import { initFCMSignalR } from 'utils/FCM';
 import { initNotifications } from 'utils/notifee';
 import { logBoxTextColorSaver } from 'utils/textColor';
-import { CODE_PUSH_OPTIONS } from 'constants/codePush';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { init, track } from './js/utils/amplitude';
 import { NetworkChangeChecker } from 'components/NetworkChange';
@@ -98,4 +96,4 @@ const App = () => {
   );
 };
 
-export default Sentry.wrap(CodePush(CODE_PUSH_OPTIONS)(App));
+export default Sentry.wrap(App);

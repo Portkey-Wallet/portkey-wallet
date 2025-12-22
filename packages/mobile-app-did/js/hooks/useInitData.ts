@@ -17,7 +17,6 @@ import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import im from '@portkey-wallet/im';
 import { useInitRampV2 } from '@portkey-wallet/hooks/hooks-ca/ramp';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
-import { codePushOperator } from 'utils/update';
 import { useGetCryptoGiftConfig } from '@portkey-wallet/hooks/hooks-ca/cryptogift';
 import * as Application from 'expo-application';
 import { fetchContactListAsync, fetchContactListV2Async } from '@portkey-wallet/store/store-ca/contact/actions';
@@ -80,7 +79,6 @@ export default function useInitData() {
       loadBookmarkList();
       initRamp();
       initCryptoGiftConfig();
-      codePushOperator.initLocalPackage();
       // getGuardiansInfoWriteStore after getVerifierServers
       // await getVerifierServers();
       // getGuardiansInfoWriteStore({

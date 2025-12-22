@@ -1,11 +1,10 @@
 import React, { memo, useMemo } from 'react';
-import { Linking, StyleSheet, View } from 'react-native';
+import { Linking, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import Svg from 'components/Svg';
 import { pTd } from 'utils/unit';
-import { defaultColors } from 'assets/theme';
 import { useLanguage } from 'i18n/hooks';
-import { TextM, TextXXL, TextXXXL } from 'components/CommonText';
+import { TextM, TextXXL } from 'components/CommonText';
 import * as Application from 'expo-application';
 import MenuItem, { IMenuItemProps } from '../../components/MenuItem';
 import Divider from 'components/Divider';
@@ -13,16 +12,13 @@ import navigationService from 'utils/navigationService';
 import { OfficialWebsite } from '@portkey-wallet/constants/constants-ca/network';
 import { useSocialMediaList } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
-import { codePushOperator, parseLabel } from 'utils/update';
 import { parseVersion } from 'utils';
-import { useUpdateInfo } from 'store/user/hooks';
-import { makeStyles, useTheme } from '@rneui/themed';
+import { makeStyles } from '@rneui/themed';
 
 const AboutUs = () => {
   const { t } = useLanguage();
   const socialMediaList = useSocialMediaList();
   const { s3Url } = useCurrentNetworkInfo();
-  const updateInfo = useUpdateInfo();
   const styles = getStyles();
 
   const officialList = useMemo(
@@ -51,20 +47,6 @@ const AboutUs = () => {
     [],
   );
 
-  const bottomList = useMemo(
-    (): IMenuItemProps[] => [
-      {
-        showWarningCycle: true,
-        icon: 'checkUpdate',
-        title: 'Check for Updates',
-        onPress: () => {
-          codePushOperator.checkToUpdate();
-        },
-      },
-    ],
-    [],
-  );
-
   return (
     <PageContainer
       titleDom={t('About Portkey')}
@@ -75,9 +57,7 @@ const AboutUs = () => {
         <Svg icon="app-blue-logo" size={pTd(80)} />
       </View>
       <TextXXL>Portkey</TextXXL>
-      <TextM style={styles.version}>
-        {parseVersion([`V${Application.nativeApplicationVersion}`, parseLabel(codePushOperator.localPackage?.label)])}
-      </TextM>
+      <TextM style={styles.version}>{parseVersion([`V${Application.nativeApplicationVersion}`])}</TextM>
       <View style={styles.btnContainer}>
         {socialMediaList.map((item, index) => (
           <View key={index}>
@@ -101,24 +81,6 @@ const AboutUs = () => {
           </View>
         ))}
       </View>
-
-      {!!updateInfo && (
-        <View style={styles.btnContainer}>
-          {bottomList.map((item, index) => (
-            <View key={index}>
-              <MenuItem
-                style={styles.menuItem}
-                showWarningCycle={item.showWarningCycle}
-                // icon={item.icon}
-                iconColor={defaultColors.icon3}
-                title={item.title}
-                onPress={item.onPress}
-              />
-              {index !== bottomList.length - 1 && <Divider style={styles.dividerStyle} />}
-            </View>
-          ))}
-        </View>
-      )}
     </PageContainer>
   );
 };

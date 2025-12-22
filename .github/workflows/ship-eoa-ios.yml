@@ -125,7 +125,7 @@ jobs:
       # Step load .env file
       - name: Create .env file for React Native Config
         run: echo "${{ secrets.ENV_FILE_CONTENT }}" > $GITHUB_WORKSPACE/packages/mobile-aelf/.env
-      # Step cat ./packages/mobile-app-did/.env
+      # Step cat ./packages/mobile-aelf/.env
       #- name: Verify .env file
       #  run: cat $GITHUB_WORKSPACE/packages/mobile-aelf/.env
 

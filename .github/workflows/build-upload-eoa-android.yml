@@ -88,6 +88,10 @@ jobs:
       - name: Create .env file for React Native Config
         run: echo "${{ secrets.ENV_EOA_FILE_CONTENT }}" > $GITHUB_WORKSPACE/packages/mobile-aelf/.env
 
+      # Accept Android SDK licenses (required for NDK 28.0.12674087)
+      - name: Accept Android SDK Licenses
+        run: yes | sdkmanager --licenses
+
       # Step 8: Fastlane build android
       - name : Build android App via fastlane
         run : |

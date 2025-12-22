@@ -12,7 +12,7 @@ import { makeStyles, useTheme } from '@rneui/themed';
 import { MintStatus as MintStatusType } from '../MintStatusSection';
 import MinStatusComponent from 'pages/DashBoard/NFTSection/MinStatusComponent';
 import GStyles from 'assets/theme/GStyles';
-import FastImage from 'react-native-fast-image';
+import FastImage from '@d11/react-native-fast-image';
 export interface MintStatus {
   recentStatus: FreeMintStatus;
   itemId: string;

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# filepath: /Users/fengfeiyang/aelf/temp/portkey-wallet/packages/mobile-app-did/scripts/postinstall.sh
+# filepath: packages/mobile-aelf/scripts/postinstall.sh
 
 set -e
 

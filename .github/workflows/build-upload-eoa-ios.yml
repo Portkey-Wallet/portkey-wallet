@@ -2,7 +2,7 @@ name: Build & Release iOS Production
 on:
   push:
     tags:
-      - "eoa.app.v.*"
+      - "eoa.ios.v.*"
 
 jobs:
   build-prod-ios:

@@ -77,3 +77,5 @@ handleSvg.js
 
 # InpageBridgeWeb3
 **/InpageBridgeWeb3.js
+
+.watchman-*

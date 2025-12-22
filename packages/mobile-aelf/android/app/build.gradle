@@ -6,12 +6,8 @@ apply plugin: 'com.google.firebase.firebase-perf'
 apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
 
-
-
-
 // react-native-config support; with https://github.com/luggit/react-native-config
 apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.gradle"
-
 
 // icon
 project.ext.vectoricons = [
@@ -19,11 +15,29 @@ project.ext.vectoricons = [
 ]
 apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
 
+// preBuild.doFirst {
+//    System.err.println("Build fresh bundle..." + getRootProject().rootDir.path.replace("/android","") + "/scripts/build-android-bundle.sh")
+//    def process = (getRootProject().rootDir.path.replace("/android","") + "/scripts/build-android-bundle.sh").execute()
+//    process.waitForProcessOutput(System.out, System.err)
+// }
 preBuild.doFirst {
-   System.err.println("Build fresh bundle..." + getRootProject().rootDir.path.replace("/android","") + "/scripts/build-android-bundle.sh")
-   def process = (getRootProject().rootDir.path.replace("/android","") + "/scripts/build-android-bundle.sh").execute()
-   process.waitForProcessOutput(System.out, System.err)
+    // 1. 动态获取脚本绝对路径
+    def scriptPath = "${rootProject.projectDir}/../scripts/build-android-bundle.sh"
+    System.err.println("Fastlane Hook: Executing $scriptPath")
+
+    // 2. 使用数组形式执行命令，并注入必要的环境变量
+    // 注入 NODE_ENV 解决 Expo 报错，注入 PATH 解决 command not found
+    def envList = [
+        "NODE_ENV=production", 
+        "PATH=${System.env.PATH}:/usr/local/bin:/opt/homebrew/bin" 
+    ]
+    
+    def process = ["/bin/bash", scriptPath].execute(envList, new File("${rootProject.projectDir}/.."))
+    
+    // 3. 实时输出脚本日志，方便 Fastlane 调试
+    process.waitForProcessOutput(System.out, System.err)
 }
+
 import com.android.build.OutputFile
 react {
     /* Folders */
@@ -158,7 +172,6 @@ react {
 
 //apply from: "../../node_modules/react-native/react.gradle"
 apply from: "../../node_modules/@sentry/react-native/sentry.gradle"
-apply from: "../../node_modules/react-native-code-push/android/codepush.gradle"
 
 
 /**
@@ -337,7 +350,6 @@ android {
     buildTypes {
         debug {
             signingConfig signingConfigs.debug
-            resValue "string", "CodePushDeploymentKey", '""'
         }
         release {
             // Caution! In production, you need to generate your own keystore file.
@@ -355,7 +367,6 @@ android {
                 nativeSymbolUploadEnabled true
                 unstrippedNativeLibsDir 'build/intermediates/merged_native_libs/release/out/lib'
             }
-            resValue "string", "CodePushDeploymentKey", 'ZKO8Q8iDDTqLAwPaiRNxjropcK6k8gehLhv6S'
         }
     }
 
@@ -385,6 +396,13 @@ android {
     java {
         toolchain {
             languageVersion.set(JavaLanguageVersion.of(17))
+        }
+    }
+    
+    // 16KB page size alignment for Android 15+
+    packagingOptions {
+        jniLibs {
+            useLegacyPackaging = false
         }
     }
 }
@@ -434,6 +452,9 @@ dependencies {
         implementation jscFlavor
     }
 //    implementation project(':@react-native-community_blur')
+    
+    // 手动添加 flash-list 依赖（由于 monorepo + nohoist 导致 autolinking 失效）
+    implementation project(':shopify_flash-list')
 }
 
 //if (isNewArchitectureEnabled()) {
@@ -468,3 +489,15 @@ dependencies {
 //    // - Set an environment variable `ORG_GRADLE_PROJECT_newArchEnabled=true`
 //    return project.hasProperty("newArchEnabled") && project.newArchEnabled == "true"
 //}
+
+configurations.all {
+    resolutionStrategy {
+        // 强制要求所有依赖项使用与 RN 0.77 兼容的 fbjni 版本
+        force "com.facebook.fbjni:fbjni-java-only:0.7.0"
+        // 同时也强制统一一下 react-android 的版本
+        force "com.facebook.react:react-android:0.77.1"
+        // 修复 Android 15 NetworkCapability 37 out of range 崩溃
+        // https://issuetracker.google.com/issues/309406692
+        force "com.google.android.gms:play-services-basement:18.5.0"
+    }
+}

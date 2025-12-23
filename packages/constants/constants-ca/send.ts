@@ -5,6 +5,7 @@ export enum AddressError {
 }
 
 export enum TransactionError {
+  CHAIN_INFO_NOT_EXIST = 'chain info does not exist.',
   TOKEN_NOT_ENOUGH = 'Exceeds available balance',
   NFT_NOT_ENOUGH = 'Insufficient quantity',
   FEE_NOT_ENOUGH = 'Insufficient funds for transaction fee',

@@ -180,7 +180,11 @@ export function useGetTokenContract() {
       }
 
       const { AESEncryptPrivateKey } = currentAccount || {};
-      if (!pin || !AESEncryptPrivateKey) {
+
+      if (!pin) {
+        throw Error('Could not find pin');
+      }
+      if (!AESEncryptPrivateKey) {
         throw Error('Could not find wallet information');
       }
 

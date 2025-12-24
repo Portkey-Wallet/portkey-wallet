@@ -76,12 +76,25 @@ export default function ConfirmPin() {
 
         if (oldPin) {
           return onChangePin(confirmPin);
+        } else {
+          dispatch(setCredentials({ pin: confirmPin }));
         }
         await setBiometrics(false);
         navigationService.reset('PrepareWallet', { pin: confirmPin, mnemonics, privateKey, isBackup });
       } catch (error) {}
     },
-    [pin, oldPin, setBiometrics, textError.isError, setTextError, onChangePin, mnemonics, privateKey],
+    [
+      pin,
+      oldPin,
+      setBiometrics,
+      mnemonics,
+      privateKey,
+      isBackup,
+      textError.isError,
+      setTextError,
+      onChangePin,
+      dispatch,
+    ],
   );
 
   return (

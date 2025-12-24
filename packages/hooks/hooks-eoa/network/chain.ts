@@ -5,9 +5,9 @@ import { request } from '@portkey-wallet/api/api-eoa';
 import { NetworkList } from '@portkey-wallet/constants/constants-eoa/network';
 import { useAppCommonDispatch } from '../../index';
 import { setChainList } from '@portkey-wallet/store/store-eoa/network/actions';
-import { handleLoopFetch } from '@portkey-wallet/utils';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/network';
 import { DEFAULT_TOKEN } from '@portkey-wallet/constants';
+import useInterval from '../../useInterval';
 
 export const useChainList = () => {
   const chainListMapState = useChainListMapState();
@@ -30,20 +30,14 @@ export const useChainInfo = (chainId: ChainId) => {
 export const useInitChainList = () => {
   const currentNetwork = useCurrentNetwork();
   const dispatch = useAppCommonDispatch();
+  const chainList = useChainList();
 
   const init = useCallback(async () => {
     try {
       const baseUrl = NetworkList.find(item => item.networkType === currentNetwork)?.apiUrl;
 
-      const result = await handleLoopFetch({
-        fetch: () => {
-          return request.es.getChainsInfo({ baseURL: baseUrl });
-        },
-        times: 5,
-        interval: 2000,
-      });
+      const result = await request.es.getChainsInfo({ baseURL: baseUrl });
       if (!result?.items) throw Error('No data');
-
       dispatch(
         setChainList({
           network: currentNetwork,
@@ -55,9 +49,19 @@ export const useInitChainList = () => {
     }
   }, [currentNetwork, dispatch]);
 
+  const interval = useInterval(
+    () => {
+      init();
+    },
+    [init],
+    2000,
+  );
+
   useEffect(() => {
-    init();
-  }, [init]);
+    if (Array.isArray(chainList)) {
+      interval.remove();
+    }
+  }, [interval, chainList]);
 };
 
 export const useMainChain = () => {

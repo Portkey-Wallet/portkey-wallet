@@ -45,7 +45,7 @@ import GStyles from 'assets/theme/GStyles';
 import { TextTitle } from 'components/CommonText';
 import { useEtransferFee } from 'hooks/etransfer';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
-import { addressFormat, sleep } from '@portkey-wallet/utils';
+import { addressFormat, handleErrorMessage, sleep } from '@portkey-wallet/utils';
 import ToAddressInput, { IToAddressInputRef } from '../components/ToAddressInput';
 import TokenBalanceShow from 'components/TokenBalanceShow';
 import TokenAmountInput from 'components/TokenAmountInput';
@@ -600,6 +600,7 @@ const SendHome: React.FC = () => {
       } catch (error) {
         console.log('etansfer err', error);
         console.log('checkCanPreview 14');
+        setErrorMessage(handleErrorMessage(error) + '1');
         return { status: false };
       } finally {
         Loading.hide();
@@ -656,6 +657,7 @@ const SendHome: React.FC = () => {
       } catch (error) {
         console.log('err', error);
         console.log('checkCanPreview 18');
+        setErrorMessage(handleErrorMessage(error) + '2');
         return { status: false };
       } finally {
         Loading.hide();
@@ -713,6 +715,7 @@ const SendHome: React.FC = () => {
         setErrorMessage(TransactionError.FEE_NOT_ENOUGH);
         Loading.hide();
       }
+      setErrorMessage(handleErrorMessage(err) + '3');
       return { status: false };
     } finally {
       Loading.hide();

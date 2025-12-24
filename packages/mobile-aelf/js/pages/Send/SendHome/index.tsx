@@ -509,6 +509,7 @@ const SendHome: React.FC = () => {
 
     if (!chainInfo) {
       console.log('checkCanPreview 1');
+      setErrorMessage(TransactionError.TOKEN_NOT_ENOUGH);
       return { status: false };
     }
 
@@ -760,6 +761,7 @@ const SendHome: React.FC = () => {
     crossTransferByEtransfer,
     currentAccount?.address,
     targetNetwork,
+    currentNetwork,
     getAELFChainInfoConfig,
     getEVMChainInfoConfig,
     getTokenConfig,

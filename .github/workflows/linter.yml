@@ -10,6 +10,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+          fetch-tags: false
 
       # ---------------- Node.js + Yarn cache ----------------
       - name: Setup Node.js
@@ -18,19 +21,12 @@ jobs:
           node-version: 22
           cache: "yarn"
 
-      # ---------------- Cache node_modules ----------------
-      - name: Cache node_modules
-        uses: actions/cache@v4
-        with:
-          path: "**/node_modules"
-          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-node-modules-
-            ${{ runner.os }}-
-
       # ---------------- Install dependencies ----------------
-      - name: Install Dependencies
-        run: yarn
+      - name: Install deps
+        run: |
+          export CI=true
+          export HUSKY=0
+          yarn install --frozen-lockfile --ignore-engines
 
       # ---------------- Run ESLint ----------------
       - name: Run ESLint mobile-aelf

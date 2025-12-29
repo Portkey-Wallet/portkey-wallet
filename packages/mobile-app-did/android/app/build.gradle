@@ -220,7 +220,7 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode getCurrentTimestamp()
-        versionName "3.0.6"
+        versionName "3.0.7"
 
 //        if (isNewArchitectureEnabled()) {
 //            // We configure the NDK build only if you decide to opt-in for the New Architecture.

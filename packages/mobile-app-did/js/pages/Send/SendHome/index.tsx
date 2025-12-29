@@ -85,6 +85,7 @@ import { IContactItemMyType } from 'components/ContactItemMy';
 import { KeyboardSafeArea } from 'components/KeyboardSafeArea';
 import { isAelfAddress } from 'utils/contacts';
 import { useKeyboardListener } from 'hooks/useKeyboardHeight';
+import { TabRouteNameEnum } from 'types/navigate';
 
 const SendHome: React.FC = () => {
   const {
@@ -541,6 +542,26 @@ const SendHome: React.FC = () => {
 
     const assetBalanceBigNumber = ZERO.plus(balance);
     const isAELFCross = !!(selectedToContact.chainId && selectedToContact.chainId !== assetInfo.chainId);
+
+    if (recommendETransfer || (isAELFCross && isSupportCross)) {
+      return ActionSheet.alert({
+        showInfoIcon: false,
+        title: 'Use ETransfer for This Transaction',
+        message:
+          'For cross-chain transfers, we recommend using ETransfer for lower fees, faster processing, and a better experience.',
+        buttons: [
+          {
+            onPress: () => {
+              navigationService.navigate('Tab');
+              navigationService.navToBottomTab(TabRouteNameEnum.DISCOVER);
+            },
+            title: t('OK'),
+            type: 'solid',
+          },
+        ],
+      });
+    }
+
     const sendBigNumber = timesDecimals(sendNumber, assetInfo.decimals || '0');
     // input check
     if (sendType === 'token') {

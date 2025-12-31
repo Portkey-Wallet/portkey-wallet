@@ -4,6 +4,7 @@ import navigationService from 'utils/navigationService';
 import { isIOS, screenHeight } from '@portkey-wallet/utils/mobile/device';
 import Email from '../components/Email';
 import { makeStyles } from '@rneui/themed';
+import SwitchNetwork from '../components/SwitchNetwork';
 
 export default function LoginEmail() {
   const signupStyles = styles();
@@ -17,8 +18,7 @@ export default function LoginEmail() {
       containerStyles={signupStyles.containerStyles}
       style={signupStyles.mainContainer}
       leftCallback={() => navigationService.goBack()}
-      // rightDom={<SwitchNetwork />}
-    >
+      rightDom={<SwitchNetwork />}>
       <Email />
     </PageContainer>
   );

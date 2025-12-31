@@ -77,5 +77,8 @@
   "version": "1.0.0",
   "resolutions": {
     "@types/react": "18.3.11"
+  },
+  "dependencies": {
+    "@babel/plugin-transform-private-methods": "^7.27.1"
   }
 }

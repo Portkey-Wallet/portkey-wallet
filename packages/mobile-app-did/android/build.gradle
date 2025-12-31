@@ -66,6 +66,25 @@ subprojects {
         google()
         maven { url 'https://www.jitpack.io' }
     }
+    // fix expo 52 camera libbarhopper native libraries not 16KB
+    configurations.configureEach {
+        resolutionStrategy {
+            force 'androidx.core:core:1.13.1'
+            force 'androidx.media:media:1.0.0'
+
+            force 'androidx.camera:camera-core:1.4.2'
+            force 'androidx.camera:camera-camera2:1.4.2'
+            force 'androidx.camera:camera-lifecycle:1.4.2'
+            force 'androidx.camera:camera-video:1.4.2'
+            force 'androidx.camera:camera-view:1.4.2'
+            force 'androidx.camera:camera-extensions:1.4.2'
+            force 'androidx.camera:camera-mlkit-vision:1.4.2'
+
+            force 'com.google.mlkit:barcode-scanning:17.3.0'
+            force 'com.google.android.gms:play-services-mlkit-barcode-scanning:18.3.1'
+        }
+    }
+
 }
 
 

@@ -8,26 +8,26 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+          fetch-tags: false
+
+      # ---------------- Node.js + Yarn cache ----------------
       - name: Setup Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
-          node-version: '20'  # Your node version, default 20 in 2024
+          node-version: 22
+          cache: "yarn"
 
-      - name: Cache node modules
-        uses: actions/cache@v4
-        env:
-          cache-name: cache-node-modules
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
+      # ---------------- Install dependencies ----------------
+      - name: Install deps
+        run: |
+          export CI=true
+          export HUSKY=0
+          yarn install --frozen-lockfile --ignore-engines
 
-      - name: Install Dependencies
-        run: yarn
-
+      # ---------------- Run ESLint ----------------
       - name: Run ESLint web-extension-aelf
         run: yarn workspace web-extension-aelf lint

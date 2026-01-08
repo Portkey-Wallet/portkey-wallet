@@ -80,14 +80,6 @@ jobs:
         env:
           CI: true
 
-      # Step 6: Install reactnative community pacakge manually
-      - name: Add @react-native-community/cli-platform-android Dependency to Project
-        run: |
-          cd packages/mobile-aelf
-          yarn add @react-native-community/cli-platform-android@7.0.1
-        env:
-          CI: true
-
       # change file permission
       - name: Make build-android-bundle.sh executable
         run: chmod +x packages/mobile-aelf/scripts/build-android-bundle.sh
@@ -95,6 +87,11 @@ jobs:
       # Step load .env file
       - name: Create .env file for React Native Config
         run: echo "${{ secrets.ENV_EOA_FILE_CONTENT }}" > $GITHUB_WORKSPACE/packages/mobile-aelf/.env
+
+      # Accept Android SDK licenses (required for NDK 28.0.12674087)
+      - name: Accept Android SDK Licenses
+        run: |
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || yes | $ANDROID_HOME/tools/bin/sdkmanager --licenses
 
       # Step 8: Fastlane build android
       - name : Build android App via fastlane

@@ -13,26 +13,29 @@
 
 | Script   			| Description                                        |
 | -------- 			| -------------------------------------------------- |
-| app:did  			| Uses `mobile-did` package run script               |
+| app:aelf  		| Uses `mobile-aelf` package run script              |
 | extension:did | Uses `web-extension-did` package run script 			 |
 | lint     			| Uses `eslint` to lint package                      |
+
 ## Getting Started
 
 ### Installing
 ```bash
 yarn
 ```
+
 ### Android 
 ```bash
-yarn app:did android
+yarn app:aelf android
 ```
 
 ### iOS
 ```bash
-yarn app:did pod-install
+yarn app:aelf pod-install
 
-yarn app:did ios
+yarn app:aelf ios
 ```
+
 ### WebExtension
 ```bash
 yarn extension:did dev

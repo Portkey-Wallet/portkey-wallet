@@ -25,7 +25,6 @@
     "tag:did": "lerna version --tag-version-prefix=did-v",
     "reset-modules": "rm -rf node_modules/ yarn.lock packages/*/node_modules",
     "common-package:extension": "npx lerna add @portkey-wallet/utils --scope=web-extension && npx lerna add @portkey-wallet/hooks --scope=web-extension  && npx lerna add @portkey-wallet/store --scope=web-extension && npx lerna add @portkey-wallet/constants --scope=web-extension",
-    "app:did": "yarn workspace mobile-did run",
     "app:aelf": "yarn workspace mobile-aelf run",
     "extension:did": "yarn workspace web-extension-did run",
     "extension-did:dev": "yarn extension:did dev:watch",

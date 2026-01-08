@@ -28,3 +28,10 @@ packages/constants/constants-ca/network.ts
 **/*/drawable-*/js_assets_*
 **/*/drawable-*/js_*
 **/*/raw/js_assets_*
+
+# Android build cache
+.kotlin/
+.cxx/
+.gradle/
+build/
+local.properties

@@ -15,7 +15,6 @@ import { useGetRedPackageConfig, useInitIM } from '@portkey-wallet/hooks/hooks-c
 import { useBookmarkList } from '@portkey-wallet/hooks/hooks-eoa/discover';
 import { useInitRampV2 } from '@portkey-wallet/hooks/hooks-ca/ramp';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
-import { codePushOperator } from 'utils/update';
 import { useGetCryptoGiftConfig } from '@portkey-wallet/hooks/hooks-ca/cryptogift';
 import { fetchContactListV2Async } from '@portkey-wallet/store/store-ca/contact/actions';
 import { useContactNetworkConfig, useTransferNetworkConfig } from '@portkey-wallet/hooks/hooks-ca/config';
@@ -77,7 +76,6 @@ export default function useInitData() {
       loadBookmarkList();
       initRamp();
       initCryptoGiftConfig();
-      codePushOperator.initLocalPackage();
       // getGuardiansInfoWriteStore after getVerifierServers
       // await getVerifierServers();
       // getGuardiansInfoWriteStore({

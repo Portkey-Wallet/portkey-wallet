@@ -3,7 +3,6 @@ import { Linking, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import Svg from 'components/Svg';
 import { pTd } from 'utils/unit';
-import { defaultColors } from 'assets/theme';
 import { useLanguage } from 'i18n/hooks';
 import { TextM, TextTitle } from 'components/CommonText';
 import * as Application from 'expo-application';
@@ -11,9 +10,6 @@ import MenuItem, { IMenuItemProps } from '../../components/MenuItem';
 import Divider from 'components/Divider';
 import navigationService from 'utils/navigationService';
 import { OfficialWebsite } from '@portkey-wallet/constants/constants-eoa/network';
-import { codePushOperator, parseLabel } from 'utils/update';
-import { parseVersion } from 'utils';
-import { useUpdateInfo } from 'store/user/hooks';
 import { makeStyles } from '@rneui/themed';
 import { FontStyles } from 'assets/theme/styles';
 import fonts from 'assets/theme/fonts';
@@ -23,8 +19,6 @@ import { darkColors } from 'assets/theme';
 const AboutUs = () => {
   const { t } = useLanguage();
   const socialMediaList = useSocialMediaList();
-
-  const updateInfo = useUpdateInfo();
   const styles = getStyles();
 
   const officialList = useMemo(
@@ -53,20 +47,6 @@ const AboutUs = () => {
     [],
   );
 
-  const bottomList = useMemo(
-    (): IMenuItemProps[] => [
-      {
-        showWarningCycle: true,
-        icon: 'checkUpdate',
-        title: 'Check for Updates',
-        onPress: () => {
-          codePushOperator.checkToUpdate();
-        },
-      },
-    ],
-    [],
-  );
-
   return (
     <PageContainer
       titleDom={t('About FairyVault')}
@@ -77,9 +57,7 @@ const AboutUs = () => {
         <Svg icon="app-logo-new" size={pTd(80)} />
       </View>
       <TextTitle style={[fonts.BGMediumFont]}>{t('FairyVault Wallet')}</TextTitle>
-      <TextM style={[styles.version, FontStyles.font7]}>
-        {parseVersion([`v${Application.nativeApplicationVersion}`, parseLabel(codePushOperator.localPackage?.label)])}
-      </TextM>
+      <TextM style={[styles.version, FontStyles.font7]}>{`v${Application.nativeApplicationVersion}`}</TextM>
       <View style={styles.btnContainer}>
         {socialMediaList.map((item, index) => (
           <View key={index}>
@@ -111,24 +89,6 @@ const AboutUs = () => {
           </View>
         ))}
       </View>
-
-      {!!updateInfo && (
-        <View style={styles.btnContainer}>
-          {bottomList.map((item, index) => (
-            <View key={index}>
-              <MenuItem
-                style={styles.menuItem}
-                showWarningCycle={item.showWarningCycle}
-                // icon={item.icon}
-                iconColor={defaultColors.icon3}
-                title={item.title}
-                onPress={item.onPress}
-              />
-              {index !== bottomList.length - 1 && <Divider style={styles.dividerStyle} />}
-            </View>
-          ))}
-        </View>
-      )}
     </PageContainer>
   );
 };

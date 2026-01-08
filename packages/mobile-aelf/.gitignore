@@ -32,6 +32,10 @@ local.properties
 *.hprof
 .eslintcache
 
+# Android auto-generated assets (build artifacts)
+android/app/src/main/assets/index.android.bundle
+android/app/src/main/assets/modules.json
+
 # node.js
 #
 node_modules/

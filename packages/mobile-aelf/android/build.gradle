@@ -1,23 +1,20 @@
 buildscript {
     ext {
-        buildToolsVersion = "34.0.0"
-        minSdkVersion = 23
-        compileSdkVersion = 34
-        targetSdkVersion = 34
-        ndkVersion = "26.1.10909125"
-        kotlinVersion = "1.9.24"
+        buildToolsVersion = "35.0.0"
+        minSdkVersion = 24
+        compileSdkVersion = 35
+        targetSdkVersion = 35
+        ndkVersion = "28.0.12674087"
+        kotlinVersion = "2.0.21"
     }
     repositories {
         google()
         mavenCentral()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle")
-        classpath("com.facebook.react:react-native-gradle-plugin")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
+        classpath("com.android.tools.build:gradle:8.7.2")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
 
-//        classpath 'com.android.tools.build:gradle:7.1.3'
-//        classpath("com.facebook.react:react-native-gradle-plugin:0.75.4")
         classpath("de.undercouch:gradle-download-task:5.0.1")
         // Firebase support; with https://rnfirebase.io/
         classpath 'com.google.gms:google-services:4.4.2'
@@ -25,8 +22,11 @@ buildscript {
         // in the individual module build.gradle files
         classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.2'
         classpath 'com.google.firebase:perf-plugin:1.4.2'  // Performance Monitoring plugin
-//         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
     }
+}
+
+plugins {
+    id("com.facebook.react.rootproject")
 }
 
 subprojects {
@@ -47,43 +47,33 @@ subprojects {
         mavenCentral {
             // We don't want to fetch react-native from Maven Central as there are
             // older versions over there.
-//            content {
-//                excludeGroup "com.facebook.react"
-//            }
+            //            content {
+            //                excludeGroup "com.facebook.react"
+            //            }
         }
         google()
         maven { url 'https://www.jitpack.io' }
     }
-}
-
-// buildscript {
-//     ext {
-//         buildToolsVersion = "34.0.0"
-//         minSdkVersion = 23
-//         compileSdkVersion = 34
-//         targetSdkVersion = 34
-//         ndkVersion = "26.1.10909125"
-//         kotlinVersion = "1.9.24"
-//     }
-//     repositories {
-//         google()
-//         mavenCentral()
-//     }
-//     dependencies {
-//         classpath("com.android.tools.build:gradle")
-//         classpath("com.facebook.react:react-native-gradle-plugin")
-//         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
-//     }
-// }
-//java {
-//    toolchain {
-//        languageVersion.set(JavaLanguageVersion.of(17))
-//    }
-//}
-configurations.configureEach {
-    resolutionStrategy {
-        force 'androidx.core:core:1.13.1'
-        force 'androidx.media:media:1.0.0'
+    
+    // 在所有子项目中强制使用指定版本的依赖
+    // 解决 16KB 页面对齐问题: https://github.com/googlesamples/mlkit/issues/947
+    configurations.configureEach {
+        resolutionStrategy {
+            force 'androidx.core:core:1.13.1'
+            force 'androidx.media:media:1.0.0'
+            
+            // 尝试升级 CameraX 到 1.4.2
+            force 'androidx.camera:camera-core:1.4.2'
+            force 'androidx.camera:camera-camera2:1.4.2'
+            force 'androidx.camera:camera-lifecycle:1.4.2'
+            force 'androidx.camera:camera-video:1.4.2'
+            force 'androidx.camera:camera-view:1.4.2'
+            force 'androidx.camera:camera-extensions:1.4.2'
+            force 'androidx.camera:camera-mlkit-vision:1.4.2'
+            
+            // 强制升级 ML Kit barcode-scanning 到最新版本
+            force 'com.google.mlkit:barcode-scanning:17.3.0'
+            force 'com.google.android.gms:play-services-mlkit-barcode-scanning:18.3.1'
+        }
     }
 }
-apply plugin: "com.facebook.react.rootproject"

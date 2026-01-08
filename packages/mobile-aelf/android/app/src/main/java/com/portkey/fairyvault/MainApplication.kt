@@ -9,8 +9,10 @@ import com.facebook.react.ReactPackage
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.load
 import com.facebook.react.defaults.DefaultReactHost.getDefaultReactHost
 import com.facebook.react.defaults.DefaultReactNativeHost
+import com.facebook.react.soloader.OpenSourceMergedSoMapping
 import com.facebook.soloader.SoLoader
 import com.reactnativecommunity.blurview.BlurViewPackage
+import com.shopify.reactnative.flash_list.ReactNativeFlashListPackage
 
 class MainApplication : Application(), ReactApplication {
 
@@ -19,7 +21,9 @@ class MainApplication : Application(), ReactApplication {
         override fun getPackages(): List<ReactPackage> =
             PackageList(this).packages.apply {
               // Packages that cannot be autolinked yet can be added manually here, for example:
-//               add(BlurViewPackage())
+              // add(BlurViewPackage())
+              // FlashList package - manually added because autolinking fails in monorepo with nohoist
+              add(ReactNativeFlashListPackage())
             }
 
         override fun getJSMainModuleName(): String = "index"
@@ -34,8 +38,11 @@ class MainApplication : Application(), ReactApplication {
     get() = getDefaultReactHost(applicationContext, reactNativeHost)
 
   override fun onCreate() {
+    // 关键：在 RN 0.77+ 中，使用 OpenSourceMergedSoMapping 来正确加载所有 .so 文件
+    SoLoader.init(this, OpenSourceMergedSoMapping)
+
     super.onCreate()
-    SoLoader.init(this, false)
+    
     if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
       // If you opted-in for the New Architecture, we load the native entry point for this app.
       load()

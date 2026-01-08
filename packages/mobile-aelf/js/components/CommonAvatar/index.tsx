@@ -7,7 +7,7 @@ import { defaultColors } from 'assets/theme';
 import { checkIsSvgUrl } from 'utils';
 import { SvgCssUri } from 'react-native-svg/css';
 import FastImage from 'components/FastImage';
-import { ResizeMode } from 'react-native-fast-image';
+import { ResizeMode } from '@d11/react-native-fast-image';
 import { makeStyles } from '@rneui/themed';
 
 export interface CommonAvatarProps {

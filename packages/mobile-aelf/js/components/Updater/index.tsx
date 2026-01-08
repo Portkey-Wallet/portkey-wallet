@@ -54,9 +54,6 @@ export default function Updater() {
   // const onLocking = useLocking();
   // const checkManagerOnLogout = useCheckManagerOnLogout();
   // const refreshTokenConfig = useRefreshTokenConfig();
-  // const checkCodePushUpdate = useCheckCodePushUpdate();
-
-  // const latestCheckCodePushUpdate = useLatestRef(checkCodePushUpdate);
   // useMemo(async () => {
   //   console.log('pin=====', pin);
   //   await refreshTokenConfig(pin);
@@ -112,23 +109,6 @@ export default function Updater() {
   //   //   CommonToast.success(data.body);
   //   // });
   // });
-  // useInterval(
-  //   () => {
-  //     latestCheckCodePushUpdate.current();
-  //   },
-  //   [latestCheckCodePushUpdate],
-  //   CHECK_CODE_PUSH_TIME,
-  // );
-
-  // useEffect(() => {
-  //   if (!pin) return;
-  //   const timer = setTimeout(() => {
-  //     codePushOperator.showUpdatedAlert();
-  //   }, 3000);
-  //   return () => {
-  //     clearTimeout(timer);
-  //   };
-  // }, [pin]);
   // usePhoneCountryCode(true);
   // useSocialMediaList(true);
   // useTabMenuList(true);

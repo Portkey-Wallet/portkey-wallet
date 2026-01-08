@@ -6,7 +6,7 @@ import { MAX_FILE_SIZE_BYTE } from '@portkey-wallet/constants/constants-ca/im';
 import { uploadPortkeyImage } from 'utils/uploadImage';
 import Touchable from 'components/Touchable';
 import { pTd } from 'utils/unit';
-import FastImage from 'react-native-fast-image';
+import FastImage from '@d11/react-native-fast-image';
 import Loading from 'components/Loading';
 import { isValidAvatarFile } from '@portkey-wallet/utils/reg';
 import CommonToast from 'components/CommonToast';

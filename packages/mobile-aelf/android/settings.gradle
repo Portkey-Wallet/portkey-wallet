@@ -1,20 +1,32 @@
-pluginManagement { includeBuild("../node_modules/@react-native/gradle-plugin") }
-plugins { id("com.facebook.react.settings") }
-extensions.configure(com.facebook.react.ReactSettingsExtension){ ex -> ex.autolinkLibrariesFromCommand() }
+pluginManagement { 
+    includeBuild("../node_modules/@react-native/gradle-plugin")
+}
+
+plugins { 
+    id("com.facebook.react.settings") 
+}
+
+// 0.77 推荐的 Autolink 配置
+extensions.configure(com.facebook.react.ReactSettingsExtension) { ex -> 
+    // 关键：如果你是 Monorepo，必须确保它能找到正确的 package.json
+    // 如果 mobile-aelf 目录下有自己的 package.json，这里通常不需要传参数
+    ex.autolinkLibrariesFromCommand() 
+}
+
 rootProject.name = 'AELFWallet'
-include ':app', ':react-native-code-push'
-includeBuild('../node_modules/@react-native/gradle-plugin')
 
-project(':react-native-code-push').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-code-push/android/app')
+include ':app'
 
-// if (settings.hasProperty("newArchEnabled") && settings.newArchEnabled == "true") {
-//     include(":ReactAndroid")
-//     project(":ReactAndroid").projectDir = file('../node_modules/react-native/ReactAndroid')
-//     include(":ReactAndroid:hermes-engine")
-//     project(":ReactAndroid:hermes-engine").projectDir = file('../node_modules/react-native/ReactAndroid/hermes-engine')
-// }
+// 手动补丁：针对 react-native-config
+// 因为这个库需要在 build.gradle 中通过 project(':react-native-config') 访问
+include ':react-native-config'
+project(':react-native-config').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-config/android')
 
+// 手动补丁：针对 @shopify/flash-list
+// 由于 monorepo + nohoist 配置，autolinking 无法正确链接此库
+include ':shopify_flash-list'
+project(':shopify_flash-list').projectDir = new File(rootProject.projectDir, '../node_modules/@shopify/flash-list/android')
+
+// Expo 模块支持 (如果你的项目使用了 Expo)
 apply from: new File(["node", "--print", "require.resolve('expo/package.json')"].execute(null, rootDir).text.trim(), "../scripts/autolinking.gradle")
 useExpoModules()
-//include ':@react-native-community_blur'
-//project(':@react-native-community_blur').projectDir = new File(rootProject.projectDir, '../node_modules/@react-native-community/blur/android')

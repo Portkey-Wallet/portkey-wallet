@@ -153,7 +153,7 @@
     "react-native-progress": "^5.0.1",
     "react-native-qrcode-styled": "^0.3.2",
     "react-native-randombytes": "^3.6.1",
-    "react-native-reanimated": "~3.17.5",
+    "react-native-reanimated": "~3.16.7",
     "react-native-safe-area-context": "~5.1.0",
     "react-native-screens": "~4.8.0",
     "react-native-svg": "15.12.1",

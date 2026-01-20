@@ -1,5 +1,6 @@
 require File.join(File.dirname(`node --print "require.resolve('expo/package.json')"`), "scripts/autolinking")
 
+ENV['RCT_NEW_ARCH_ENABLED'] = '0'
 # Resolve react_native_pods.rb with node to allow for hoisting
 require Pod::Executable.execute_command('node', ['-p',
   'require.resolve(
@@ -39,7 +40,7 @@ target 'AELFWallet' do
   # Flags change depending on the env values.
   flags = get_default_flags()
 
-  # Firebase
+  # Firebase - let RN Firebase control versions
   pod 'Firebase', :modular_headers => true
   pod 'FirebaseCore', :modular_headers => true
   pod 'FirebaseCoreInternal', :modular_headers => true
@@ -75,14 +76,16 @@ target 'AELFWallet' do
     :app_path => "#{Pod::Config.instance.installation_root}/.." 
   )
 
-  target 'AELFWalletTests' do
-    inherit! :complete
-    # Pods for testing
-  end
-
   post_install do |installer|
     react_native_post_install(installer)
     # __apply_Xcode_12_5_M1_post_install_workaround(installer)
-    # to deal with xcode14 sign bug 
+    # to deal with xcode14 sign bug
+
+    # Force iOS deployment target for all pods
+    installer.pods_project.targets.each do |target|
+      target.build_configurations.each do |config|
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.5'
+      end
+    end
   end
 end

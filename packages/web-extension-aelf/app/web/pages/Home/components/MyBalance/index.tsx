@@ -7,8 +7,11 @@ import TokenList from '../Tokens';
 // import Activity from '../Activity/index';
 import { Transaction } from '@portkey-wallet/types/types-ca/trade';
 import NFT from '../NFT/NFT';
-import { useAppDispatch, useUserInfo, useCommonState, useLoading } from 'store/Provider/hooks';
-import { useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useAppDispatch, useUserInfo, useCommonState } from 'store/Provider/hooks';
+// [DEPRECATED-ETRANSFER] useLoading was used by handleCheckSecurity
+// import { useLoading } from 'store/Provider/hooks';
+// [DEPRECATED-ETRANSFER] useOriginChainId was used by handleCheckSecurity
+// import { useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 // import { getSymbolImagesAsync } from '@portkey-wallet/store/store-eoa/tokenManagement/action';
 import { getCaHolderInfoAsync } from '@portkey-wallet/store/store-ca/wallet/actions';
 import CustomTokenModal from 'pages/components/CustomTokenModal';
@@ -16,11 +19,14 @@ import { IAssetItemType } from '@portkey-wallet/store/store-eoa/assets/type';
 import { useFreshTokenPrice } from '@portkey-wallet/hooks/hooks-eoa/useTokensPrice';
 import useVerifierList from 'hooks/useVerifierList';
 import { BalanceTab } from '@portkey-wallet/constants/constants-eoa/assets';
-import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-eoa/network';
+// [DEPRECATED-ETRANSFER] useCurrentNetworkInfo was used for eTransferUrl
+// import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-eoa/network';
 import { useUnreadCount } from '@portkey-wallet/hooks/hooks-ca/im';
 import { fetchContactListV2Async } from '@portkey-wallet/store/store-ca/contact/actions';
-import { useCheckSecurity } from 'hooks/useSecurity';
-import { useDisclaimer } from '@portkey-wallet/hooks/hooks-ca/disclaimer';
+// [DEPRECATED-ETRANSFER] BEGIN - imports used by handleClickTrade for ETransfer
+// import { useCheckSecurity } from 'hooks/useSecurity';
+// import { useDisclaimer } from '@portkey-wallet/hooks/hooks-ca/disclaimer';
+// [DEPRECATED-ETRANSFER] END
 import { useExtensionETransShow } from 'hooks/cms';
 import DisclaimerModal, { IDisclaimerProps, initDisclaimerData } from '../../../components/DisclaimerModal';
 import './index.less';
@@ -35,7 +41,8 @@ import { clsx } from 'clsx';
 import { useAccountBalanceUSD } from '@portkey-wallet/hooks/hooks-eoa/assets';
 import { formatAmountUSDShow } from '@portkey-wallet/utils/converter';
 import { RampType } from '@portkey-wallet/ramp';
-import { getDisclaimerData } from 'utils/disclaimer';
+// [DEPRECATED-ETRANSFER] getDisclaimerData was used by handleClickTrade
+// import { getDisclaimerData } from 'utils/disclaimer';
 import { TradeTypeEnum } from 'constants/trade';
 import { CustomSvgV3 } from 'components/CustomSvgV3';
 // import SetNewWalletNameIcon from '../SetNewWalletNameIcon';
@@ -79,9 +86,12 @@ export default function MyBalance() {
   const { passwordSeed } = useUserInfo();
   const appDispatch = useAppDispatch();
   const isMainNet = useIsMainnet();
-  const { eTransferUrl = '' } = useCurrentNetworkInfo();
+  // [DEPRECATED-ETRANSFER] BEGIN - eTransferUrl deprecated
+  // const { eTransferUrl = '' } = useCurrentNetworkInfo();
+  // [DEPRECATED-ETRANSFER] END
   const isFCMEnable = useFCMEnable();
-  const { setLoading } = useLoading();
+  // [DEPRECATED-ETRANSFER] setLoading was used by handleCheckSecurity
+  // const { setLoading } = useLoading();
   const setHideAssets = useSetHideAssets();
   const hideAssets = useCurrentHideAssetsState();
 
@@ -155,9 +165,11 @@ export default function MyBalance() {
   const [disclaimerOpen, setDisclaimerOpen] = useState<boolean>(false);
   const disclaimerData = useRef<IDisclaimerProps>(initDisclaimerData);
   const unreadCount = useUnreadCount();
-  const checkSecurity = useCheckSecurity();
-  const originChainId = useOriginChainId();
-  const { checkDappIsConfirmed } = useDisclaimer();
+  // [DEPRECATED-ETRANSFER] BEGIN - these were used by handleClickTrade for ETransfer
+  // const checkSecurity = useCheckSecurity();
+  // const originChainId = useOriginChainId();
+  // const { checkDappIsConfirmed } = useDisclaimer();
+  // [DEPRECATED-ETRANSFER] END
   const { isETransShow } = useExtensionETransShow();
   const reportFCMStatus = useReportFCMStatus();
   const userInfo = useCurrentAccount();
@@ -250,42 +262,44 @@ export default function MyBalance() {
     signalrFCM.signalr && setBadge({ value: unreadCount });
   }, [isFCMEnable, reportFCMStatus, unreadCount]);
 
-  const handleCheckSecurity = useCallback(async () => {
-    try {
-      setLoading(true);
-      const isSafe = await checkSecurity(originChainId);
-      setLoading(false);
-      return isSafe;
-    } catch (error) {
-      setLoading(false);
-      console.log('===handleCheckSecurity error', error);
-      return false;
-    }
-  }, [checkSecurity, originChainId, setLoading]);
+  // [DEPRECATED-ETRANSFER] BEGIN - handleCheckSecurity was used by handleClickTrade
+  // const handleCheckSecurity = useCallback(async () => {
+  //   try {
+  //     setLoading(true);
+  //     const isSafe = await checkSecurity(originChainId);
+  //     setLoading(false);
+  //     return isSafe;
+  //   } catch (error) {
+  //     setLoading(false);
+  //     console.log('===handleCheckSecurity error', error);
+  //     return false;
+  //   }
+  // }, [checkSecurity, originChainId, setLoading]);
 
-  const handleClickTrade = useCallback(
-    async (type: TradeTypeEnum) => {
-      const isSecurity = await handleCheckSecurity();
-      if (!isSecurity) return;
-
-      let tradeLink = '';
-      switch (type) {
-        case TradeTypeEnum.ETrans:
-          tradeLink = eTransferUrl;
-          break;
-      }
-      if (checkDappIsConfirmed(tradeLink)) {
-        const openWinder = window.open(tradeLink, '_blank');
-        if (openWinder) {
-          openWinder.opener = null;
-        }
-      } else {
-        disclaimerData.current = getDisclaimerData({ targetUrl: tradeLink, originUrl: tradeLink, type });
-        setDisclaimerOpen(true);
-      }
-    },
-    [checkDappIsConfirmed, eTransferUrl, handleCheckSecurity],
-  );
+  // handleClickTrade was used for ETransfer, now deprecated
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const handleClickTrade = useCallback(async (_type: TradeTypeEnum) => {
+    console.warn('[DEPRECATED] ETransfer trade is deprecated');
+    // Original implementation:
+    // const isSecurity = await handleCheckSecurity();
+    // if (!isSecurity) return;
+    // let tradeLink = '';
+    // switch (type) {
+    //   case TradeTypeEnum.ETrans:
+    //     tradeLink = eTransferUrl;
+    //     break;
+    // }
+    // if (checkDappIsConfirmed(tradeLink)) {
+    //   const openWinder = window.open(tradeLink, '_blank');
+    //   if (openWinder) {
+    //     openWinder.opener = null;
+    //   }
+    // } else {
+    //   disclaimerData.current = getDisclaimerData({ targetUrl: tradeLink, originUrl: tradeLink, type });
+    //   setDisclaimerOpen(true);
+    // }
+  }, []);
+  // [DEPRECATED-ETRANSFER] END
 
   const handleClickBuy = useCallback(() => {
     if (!isRampShow) return;

@@ -7,8 +7,10 @@ import { customFetch } from '@portkey-wallet/utils/fetch';
 import { getContractBasic, getTxResult } from '@portkey-wallet/contracts/utils';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
 import UISdkSandboxEventTypes from 'messages/UISdkSandboxEventTypes';
-import { ICrossTransferInitOption, IWithdrawParams } from '@portkey-wallet/utils/withdrawEOA/types';
-import CrossTransfer from '@portkey-wallet/utils/withdrawEOA';
+// [DEPRECATED-ETRANSFER] BEGIN - ETransfer imports removed
+// import { ICrossTransferInitOption, IWithdrawParams } from '@portkey-wallet/utils/withdrawEOA/types';
+// import CrossTransfer from '@portkey-wallet/utils/withdrawEOA';
+// [DEPRECATED-ETRANSFER] END
 import { IStorageSuite } from '@portkey/types';
 import AElf from 'aelf-sdk';
 import { handleErrorMessage } from '@portkey/did-ui-react';
@@ -34,7 +36,8 @@ export class BaseAsyncStorage implements IStorageSuite {
   }
 }
 
-const asyncStorage = new BaseAsyncStorage();
+// [DEPRECATED-ETRANSFER] asyncStorage was used by ETransfer, now deprecated
+// const asyncStorage = new BaseAsyncStorage();
 
 interface useBalancesProps {
   tokens: TokenItemType | TokenItemType[];
@@ -100,9 +103,11 @@ class SandboxUtil {
         case SandboxEventTypes.getTransactionRaw:
           SandboxUtil.getTransactionRaw(event, SandboxUtil.callback);
           break;
-        case SandboxEventTypes.etransferCrossTransfer:
-          SandboxUtil.etransferCrossTransfer(event, SandboxUtil.callback);
-          break;
+        // [DEPRECATED-ETRANSFER] BEGIN - etransferCrossTransfer case removed
+        // case SandboxEventTypes.etransferCrossTransfer:
+        //   SandboxUtil.etransferCrossTransfer(event, SandboxUtil.callback);
+        //   break;
+        // [DEPRECATED-ETRANSFER] END
         case SandboxEventTypes.eBridgeCrossTransfer:
           SandboxUtil.eBridgeCrossTransfer(event, SandboxUtil.callback);
           break;
@@ -401,48 +406,48 @@ class SandboxUtil {
     }
   }
 
-  static async etransferCrossTransfer(event: MessageEvent<any>, callback: SendBack) {
-    const data = event.data.data ?? {};
-    try {
-      const { options: _options, params: _params, chainType } = data;
-      if (chainType !== 'aelf') throw 'Not support';
-      const options: Omit<ICrossTransferInitOption, 'storage'> = JSON.parse(_options);
-      const params: Omit<IWithdrawParams, 'tokenContract' | 'portkeyContract'> = JSON.parse(_params);
-      console.log(data, 'etransferCrossTransfer===', options, params);
-      const crossTransfer = new CrossTransfer();
-      crossTransfer.init({ ...options, storage: asyncStorage });
-      const chainInfo = options.chainList.find((chain) => chain.chainId === params.chainId);
-      const rpcUrl = chainInfo?.endPoint;
-      if (!rpcUrl) throw 'Can not get rpcUrl';
-      const privateKey = AElf.wallet.AESDecrypt(options.account.AESEncryptPrivateKey, options.pin);
-      const tokenContract = await SandboxUtil._getELFSendContract(
-        rpcUrl,
-        chainInfo.defaultToken.address || '',
-        privateKey,
-      );
-      const result = await crossTransfer.withdraw({ ...params, tokenContract });
-      if (!result?.transactionId) throw 'Transfer error';
-      const aelf = getAelfInstance(rpcUrl);
-
-      const txResult = await getTxResult(aelf, result.transactionId);
-      console.log(txResult, 'txResult===etransferCrossTransfer');
-
-      return callback(event, {
-        code: SandboxErrorCode.success,
-        message: result,
-        sid: data.sid,
-      });
-    } catch (e) {
-      console.log(e, 'etransferCrossTransfer==error');
-      const message = handleErrorMessage(e, 'Transfer error');
-      console.log(message, 'message==etransferCrossTransfer');
-      return callback(event, {
-        code: SandboxErrorCode.error,
-        message,
-        sid: data.sid,
-      });
-    }
-  }
+  // [DEPRECATED-ETRANSFER] BEGIN - etransferCrossTransfer method deprecated
+  // static async etransferCrossTransfer(event: MessageEvent<any>, callback: SendBack) {
+  //   const data = event.data.data ?? {};
+  //   try {
+  //     const { options: _options, params: _params, chainType } = data;
+  //     if (chainType !== 'aelf') throw 'Not support';
+  //     const options: Omit<ICrossTransferInitOption, 'storage'> = JSON.parse(_options);
+  //     const params: Omit<IWithdrawParams, 'tokenContract' | 'portkeyContract'> = JSON.parse(_params);
+  //     console.log(data, 'etransferCrossTransfer===', options, params);
+  //     const crossTransfer = new CrossTransfer();
+  //     crossTransfer.init({ ...options, storage: asyncStorage });
+  //     const chainInfo = options.chainList.find((chain) => chain.chainId === params.chainId);
+  //     const rpcUrl = chainInfo?.endPoint;
+  //     if (!rpcUrl) throw 'Can not get rpcUrl';
+  //     const privateKey = AElf.wallet.AESDecrypt(options.account.AESEncryptPrivateKey, options.pin);
+  //     const tokenContract = await SandboxUtil._getELFSendContract(
+  //       rpcUrl,
+  //       chainInfo.defaultToken.address || '',
+  //       privateKey,
+  //     );
+  //     const result = await crossTransfer.withdraw({ ...params, tokenContract });
+  //     if (!result?.transactionId) throw 'Transfer error';
+  //     const aelf = getAelfInstance(rpcUrl);
+  //     const txResult = await getTxResult(aelf, result.transactionId);
+  //     console.log(txResult, 'txResult===etransferCrossTransfer');
+  //     return callback(event, {
+  //       code: SandboxErrorCode.success,
+  //       message: result,
+  //       sid: data.sid,
+  //     });
+  //   } catch (e) {
+  //     console.log(e, 'etransferCrossTransfer==error');
+  //     const message = handleErrorMessage(e, 'Transfer error');
+  //     console.log(message, 'message==etransferCrossTransfer');
+  //     return callback(event, {
+  //       code: SandboxErrorCode.error,
+  //       message,
+  //       sid: data.sid,
+  //     });
+  //   }
+  // }
+  // [DEPRECATED-ETRANSFER] END
 
   static async eBridgeCrossTransfer(event: MessageEvent<any>, callback: SendBack) {
     const data = event.data.data ?? {};

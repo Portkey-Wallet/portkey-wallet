@@ -7,7 +7,10 @@ import {
   singleMessage,
 } from '@portkey/did-ui-react';
 import { useLocationState } from 'hooks/router';
-import { useReceive, useReceiveByETransfer } from '@portkey-wallet/hooks/hooks-eoa/receive';
+// [DEPRECATED-ETRANSFER] BEGIN - useReceiveByETransfer import deprecated
+import { useReceive } from '@portkey-wallet/hooks/hooks-eoa/receive';
+// import { useReceiveByETransfer } from '@portkey-wallet/hooks/hooks-eoa/receive';
+// [DEPRECATED-ETRANSFER] END
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-eoa/activity';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
@@ -21,15 +24,18 @@ import { ReceiveType, TReceiveFromNetworkItem } from '@portkey-wallet/types/type
 import { TDepositInfo } from '@portkey-wallet/types/types-eoa/deposit';
 import { useCurrentAccount } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 import { IChainItemType } from '@portkey-wallet/types/types-eoa/chain';
-import { verifyHumanMachine } from 'hooks/useCrossTransferByEtransfer';
+// [DEPRECATED-ETRANSFER] verifyHumanMachine import deprecated
+// import { verifyHumanMachine } from 'hooks/useCrossTransferByEtransfer';
 import { usePin } from 'hooks/usePin';
 import aes from '@portkey-wallet/utils/aes';
 import { useCurrentChainList } from '@portkey-wallet/hooks/hooks-eoa/chainList';
 import { SEND_RECEIVE_HELP_URL } from '@portkey-wallet/constants/constants-eoa/send';
 import FairyVaultLogo from '../../../assets/svgIcon/FairyVaultLogo.svg';
-import InternalMessage from 'messages/InternalMessage';
-import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
-import { useCheckETransferIsRegistration } from 'hooks/etransfer';
+// [DEPRECATED-ETRANSFER] BEGIN - imports used by ETransfer registration check removed
+// import InternalMessage from 'messages/InternalMessage';
+// import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
+// import { useCheckETransferIsRegistration } from 'hooks/etransfer';
+// [DEPRECATED-ETRANSFER] END
 import { usePrevious } from 'react-use';
 
 const CA_INFO = {
@@ -149,21 +155,28 @@ export default function ReceiveCardMain() {
     const pk = aes.decrypt(account.AESEncryptPrivateKey, pin);
     if (pk) return aelf.getWallet(pk);
   }, [account, pin]);
-  const { loading: _eTransferLoading, getDepositInfo } = useReceiveByETransfer({
-    manager,
-    toChainId: destinationChain?.chainId as ChainId,
-    toSymbol: selectToken.symbol,
-    fromNetwork: selectedSource?.network || '',
-    fromSymbol: selectToken.symbol,
-    verifyHumanMachine,
-  });
+  // [DEPRECATED-ETRANSFER] BEGIN - useReceiveByETransfer hook disabled
+  // const { loading: _eTransferLoading, getDepositInfo } = useReceiveByETransfer({
+  //   manager,
+  //   toChainId: destinationChain?.chainId as ChainId,
+  //   toSymbol: selectToken.symbol,
+  //   fromNetwork: selectedSource?.network || '',
+  //   fromSymbol: selectToken.symbol,
+  //   verifyHumanMachine,
+  // });
+  const _eTransferLoading = false;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const getDepositInfo = async () => null;
+  // [DEPRECATED-ETRANSFER] END
   const isMainnet = useIsMainnet();
 
-  useCheckETransferIsRegistration(
-    useCallback(() => {
-      InternalMessage.payload(PortkeyMessageTypes.RECEIVE_CARD, JSON.stringify(selectToken)).send();
-    }, [selectToken]),
-  );
+  // [DEPRECATED-ETRANSFER] BEGIN - useCheckETransferIsRegistration disabled
+  // useCheckETransferIsRegistration(
+  //   useCallback(() => {
+  //     InternalMessage.payload(PortkeyMessageTypes.RECEIVE_CARD, JSON.stringify(selectToken)).send();
+  //   }, [selectToken]),
+  // );
+  // [DEPRECATED-ETRANSFER] END
 
   const onGetDepositInfo = useCallback(async () => {
     const info = await getDepositInfo();
@@ -175,7 +188,8 @@ export default function ReceiveCardMain() {
   }, [getDepositInfo, previousSourceChain, setSourceChain]);
 
   useEffect(() => {
-    if (receiveType === ReceiveType.ETransfer && !currentDepositInfo) onGetDepositInfo();
+    // [DEPRECATED-ETRANSFER] ETransfer receive type disabled
+    // if (receiveType === ReceiveType.ETransfer && !currentDepositInfo) onGetDepositInfo();
   }, [currentDepositInfo, onGetDepositInfo, receiveType]);
 
   const { address } = account || { address: '' };

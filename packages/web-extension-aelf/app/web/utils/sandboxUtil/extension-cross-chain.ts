@@ -2,34 +2,40 @@ import { IChainItemType } from '@portkey-wallet/types/types-ca/chain';
 import { TAccountInfo } from '@portkey-wallet/types/types-eoa/wallet';
 import { EBridge, TEBridgeOptions } from '@portkey-wallet/utils/eBridgeEOA';
 import { ICreateReceiptParams } from '@portkey-wallet/utils/eBridgeEOA/types/bridge';
-import CrossTransfer from '@portkey-wallet/utils/withdrawEOA';
-import { IWithdrawParams } from '@portkey-wallet/utils/withdrawEOA/types';
+// [DEPRECATED-ETRANSFER] BEGIN - ETransfer imports removed
+// import CrossTransfer from '@portkey-wallet/utils/withdrawEOA';
+// import { IWithdrawParams } from '@portkey-wallet/utils/withdrawEOA/types';
+// [DEPRECATED-ETRANSFER] END
 import SandboxEventTypes from 'messages/SandboxEventTypes';
 import SandboxEventService, { SandboxErrorCode } from 'service/SandboxEventService';
 
-export class CrossTransferExtension extends CrossTransfer {
-  constructor() {
-    super();
-  }
-
-  withdraw = async (params: Omit<IWithdrawParams, 'tokenContract' | 'portkeyContract'>) => {
-    const resMessage = await SandboxEventService.dispatchAndReceive(SandboxEventTypes.etransferCrossTransfer, {
-      chainType: 'aelf',
-      rpcUrl: '',
-      options: JSON.stringify(this.options),
-      params: JSON.stringify(params),
-    });
-
-    if (resMessage.code === SandboxErrorCode.error) throw resMessage.message;
-    return {
-      code: resMessage.code,
-      result: {
-        // rpcUrl,
-        message: resMessage.message,
-      },
-    } as any;
-  };
-}
+/**
+ * [DEPRECATED-ETRANSFER] - CrossTransferExtension class is deprecated.
+ * Use CrossEBridgeExtension for all cross-chain transfers instead.
+ */
+// export class CrossTransferExtension extends CrossTransfer {
+//   constructor() {
+//     super();
+//   }
+//
+//   withdraw = async (params: Omit<IWithdrawParams, 'tokenContract' | 'portkeyContract'>) => {
+//     const resMessage = await SandboxEventService.dispatchAndReceive(SandboxEventTypes.etransferCrossTransfer, {
+//       chainType: 'aelf',
+//       rpcUrl: '',
+//       options: JSON.stringify(this.options),
+//       params: JSON.stringify(params),
+//     });
+//
+//     if (resMessage.code === SandboxErrorCode.error) throw resMessage.message;
+//     return {
+//       code: resMessage.code,
+//       result: {
+//         // rpcUrl,
+//         message: resMessage.message,
+//       },
+//     } as any;
+//   };
+// }
 
 export class CrossEBridgeExtension extends EBridge {
   public pin: string;

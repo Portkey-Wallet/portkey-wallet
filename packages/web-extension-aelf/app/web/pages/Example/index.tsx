@@ -2,7 +2,9 @@ import { addDapp, removeDapp } from '@portkey-wallet/store/store-ca/dapp/actions
 import { useNavigate } from 'react-router-dom';
 // import { SocialLoginEnum } from '@portkey-wallet/types/types-ca/wallet';
 import { Button } from 'antd';
-import { useCrossTransferByEtransfer } from 'hooks/useCrossTransferByEtransfer';
+// [DEPRECATED-ETRANSFER] BEGIN - useCrossTransferByEtransfer import deprecated
+// import { useCrossTransferByEtransfer } from 'hooks/useCrossTransferByEtransfer';
+// [DEPRECATED-ETRANSFER] END
 import { useAppDispatch } from 'store/Provider/hooks';
 import { setCountryModal } from 'store/reducers/modal/slice';
 // import googleAnalytics from 'utils/googleAnalytics';
@@ -12,7 +14,9 @@ import { useBackupWalletModal } from 'hooks/wallet/useBackupWalletModal';
 
 export default function Example() {
   const dispatch = useAppDispatch();
-  const { withdraw, withdrawPreview } = useCrossTransferByEtransfer();
+  // [DEPRECATED-ETRANSFER] BEGIN - ETransfer hook usage deprecated
+  // const { withdraw, withdrawPreview } = useCrossTransferByEtransfer();
+  // [DEPRECATED-ETRANSFER] END
   const { showBackupWalletModal } = useBackupWalletModal();
   const navigate = useNavigate();
 
@@ -123,7 +127,8 @@ export default function Example() {
           }}>
           setPinAction
         </Button>
-        <Button
+        {/* [DEPRECATED-ETRANSFER] BEGIN - ETransfer withdraw test button deprecated */}
+        {/* <Button
           onClick={async () => {
             const withdrawPreviewResult = await withdrawPreview({
               chainId: 'tDVW',
@@ -150,7 +155,8 @@ export default function Example() {
             console.log(result, 'result==withdraw');
           }}>
           withdraw
-        </Button>
+        </Button> */}
+        {/* [DEPRECATED-ETRANSFER] END */}
       </div>
     </div>
   );

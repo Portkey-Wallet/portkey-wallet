@@ -10,8 +10,8 @@ enum SandboxEventTypes {
   getTransactionRaw = 'getTransactionRaw',
 
   initViewContract = 'initViewContract',
-  // cross etransfer
-  etransferCrossTransfer = 'etransferCrossTransfer',
+  // [DEPRECATED-ETRANSFER] cross etransfer - deprecated, use eBridge instead
+  // etransferCrossTransfer = 'etransferCrossTransfer',
   // cross eBridge
   eBridgeCrossTransfer = 'eBridgeCrossTransfer',
   eBridgeCrossTransferLimit = 'eBridgeCrossTransferLimit',

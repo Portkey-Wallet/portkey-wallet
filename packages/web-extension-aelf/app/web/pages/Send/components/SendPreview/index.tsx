@@ -79,20 +79,22 @@ export default function SendPreview({
   const EstimateAmount = useMemo(() => {
     let _amount = amount;
 
-    // adjust etransfer
-    if (
-      ZERO.plus(amount).isLessThanOrEqualTo(transactionFee || '') &&
-      tokenInfo?.symbol === 'ELF' &&
-      transferType === TransferType.E_TRANSFER
-    ) {
-      return {
-        estimateAmount: `0 ${tokenInfo?.label || tokenInfo?.symbol}`,
-        estimateAmountUsd: isMainnet ? '$0' : '',
-      };
-    }
+    // [DEPRECATED-ETRANSFER] BEGIN - E_TRANSFER check removed
+    // // adjust etransfer
+    // if (
+    //   ZERO.plus(amount).isLessThanOrEqualTo(transactionFee || '') &&
+    //   tokenInfo?.symbol === 'ELF' &&
+    //   transferType === TransferType.E_TRANSFER
+    // ) {
+    //   return {
+    //     estimateAmount: `0 ${tokenInfo?.label || tokenInfo?.symbol}`,
+    //     estimateAmountUsd: isMainnet ? '$0' : '',
+    //   };
+    // }
+    // [DEPRECATED-ETRANSFER] END
 
-    // adjust etransfer & ebridge
-    if (transferType === TransferType.E_BRIDGE || transferType === TransferType.E_TRANSFER) {
+    // adjust ebridge (E_TRANSFER removed)
+    if (transferType === TransferType.E_BRIDGE) {
       return {
         estimateAmount: `${receiveAmount} ${tokenInfo?.label || tokenInfo?.symbol}`,
         estimateAmountUsd: isMainnet ? receiveAmountUsd : '',
@@ -174,7 +176,7 @@ export default function SendPreview({
       feeUsdShow: '',
     };
     switch (transferType) {
-      case TransferType.E_TRANSFER:
+      // [DEPRECATED-ETRANSFER] E_TRANSFER case removed
       case TransferType.E_BRIDGE:
         result.feeShow = `${transactionFee} ${transactionUnit}`;
         result.feeUsdShow = `$${unitConverter(
@@ -265,12 +267,10 @@ export default function SendPreview({
           <div className="value-show">{`~${estimatedTime}`}</div>
         </div>
       )}
-      {(transferType === TransferType.E_BRIDGE || transferType === TransferType.E_TRANSFER) && (
+      {/* [DEPRECATED-ETRANSFER] E_TRANSFER powered-by removed, only show eBridge */}
+      {transferType === TransferType.E_BRIDGE && (
         <div className="flex-center powered-by">
-          <CustomSvgV3
-            className={transferType === TransferType.E_BRIDGE ? 'provider-ebridge-icon' : 'provider-etransfer-icon'}
-            type={transferType === TransferType.E_BRIDGE ? 'Provider=eBridge' : 'Provider=ETransfer'}
-          />
+          <CustomSvgV3 className="provider-ebridge-icon" type="Provider=eBridge" />
         </div>
       )}
     </div>

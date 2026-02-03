@@ -41,16 +41,18 @@ export function getSmallerValue(v1: string, v2: string) {
 }
 
 export const getEstimatedTime = (targetNetwork: INetworkItem, transferType: TransferType) => {
-  const transferItem = targetNetwork?.serviceList?.find((ele) =>
-    ele?.serviceName?.toLocaleLowerCase()?.includes('transfer'),
-  );
+  // [DEPRECATED-ETRANSFER] E_TRANSFER removed
+  // const transferItem = targetNetwork?.serviceList?.find((ele) =>
+  //   ele?.serviceName?.toLocaleLowerCase()?.includes('transfer'),
+  // );
   const bridgeItem = targetNetwork?.serviceList?.find((ele) =>
     ele?.serviceName?.toLocaleLowerCase()?.includes('bridge'),
   );
 
-  if (transferType === TransferType.E_TRANSFER) {
-    return transferItem?.multiConfirmTime;
-  }
+  // [DEPRECATED-ETRANSFER] E_TRANSFER case removed
+  // if (transferType === TransferType.E_TRANSFER) {
+  //   return transferItem?.multiConfirmTime;
+  // }
   if (transferType === TransferType.E_BRIDGE) {
     return bridgeItem?.multiConfirmTime;
   }

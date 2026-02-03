@@ -34,10 +34,12 @@ import singleMessage from 'utils/singleMessage';
 import { usePromptLocationParams } from 'hooks/router';
 import { TSendLocationState } from 'types/router';
 import DisclaimerModal, { IDisclaimerProps, initDisclaimerData } from 'pages/components/DisclaimerModal';
-import { useCrossTransferByEtransfer } from 'hooks/useCrossTransferByEtransfer';
-import { CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL } from '@portkey-wallet/utils/withdrawEOA';
-import { ExtensionContractBasic } from 'utils/sandboxUtil/ExtensionContractBasic';
-import { COMMON_PRIVATE } from '@portkey-wallet/constants';
+// [DEPRECATED-ETRANSFER] BEGIN - ETransfer logic removed, using eBridge for all cross-chain
+// import { useCrossTransferByEtransfer } from 'hooks/useCrossTransferByEtransfer';
+// import { CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL } from '@portkey-wallet/utils/withdrawEOA';
+// import { ExtensionContractBasic } from 'utils/sandboxUtil/ExtensionContractBasic';
+// import { COMMON_PRIVATE } from '@portkey-wallet/constants';
+// [DEPRECATED-ETRANSFER] END
 import ToAddressInput, { IToAddressInputRef } from './components/ToAddressInput';
 import SelectNetwork, { INetworkItem } from './components/SelectNetwork';
 import AddressTypeSelect, { AddressTypeEnum, ExchangeTypeShow } from './components/AddressTypeSelect';
@@ -61,10 +63,12 @@ import { useContactNetworkConfig } from '@portkey-wallet/hooks/hooks-ca/config';
 import { useGetTransferFee } from 'hooks/transfer';
 import { useCurrentAccount } from '@portkey-wallet/hooks/hooks-eoa/wallet';
 import { useCurrentNetwork, useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-eoa/network';
-import { INITIAL_TX_FEE } from '@portkey-wallet/constants/constants-eoa/fee';
-import InternalMessage from 'messages/InternalMessage';
-import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
-import { useCheckETransferIsRegistration } from 'hooks/etransfer';
+// [DEPRECATED-ETRANSFER] BEGIN - imports used by ETransfer logic removed
+// import { INITIAL_TX_FEE } from '@portkey-wallet/constants/constants-eoa/fee';
+// import InternalMessage from 'messages/InternalMessage';
+// import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
+// import { useCheckETransferIsRegistration } from 'hooks/etransfer';
+// [DEPRECATED-ETRANSFER] END
 export enum SendPageTypeEnum {
   token = 'token',
   nft = 'nft',
@@ -206,7 +210,9 @@ export default function Send() {
   const currentChain = useCurrentChain(chainId);
   const disclaimerData = useRef<IDisclaimerProps>(initDisclaimerData);
   const [disclaimerOpen, setDisclaimerOpen] = useState<boolean>(false);
-  const { withdraw, withdrawPreview } = useCrossTransferByEtransfer();
+  // [DEPRECATED-ETRANSFER] BEGIN
+  // const { withdraw, withdrawPreview } = useCrossTransferByEtransfer();
+  // [DEPRECATED-ETRANSFER] END
   const { getTokenConfig, getAELFChainInfoConfig, getEVMChainInfoConfig } = useGetEBridgeConfig();
   const { fetchContactSupportConfig } = useContactNetworkConfig();
   const [warning, setWarning] = useState<WarningKey | undefined>();
@@ -214,10 +220,12 @@ export default function Send() {
   // network list
   const [chainList, setChainList] = useState<INetworkItem[]>([]);
   const [targetNetwork, setTargetNetwork] = useState<INetworkItem>();
-  const recommendETransfer = useMemo(
-    () => targetNetwork?.serviceList?.find((ele) => ele?.serviceName?.toLocaleLowerCase()?.includes('transfer')),
-    [targetNetwork?.serviceList],
-  );
+  // [DEPRECATED-ETRANSFER] BEGIN
+  // const recommendETransfer = useMemo(
+  //   () => targetNetwork?.serviceList?.find((ele) => ele?.serviceName?.toLocaleLowerCase()?.includes('transfer')),
+  //   [targetNetwork?.serviceList],
+  // );
+  // [DEPRECATED-ETRANSFER] END
   const recommendEBridge = useMemo(
     () => targetNetwork?.serviceList?.find((ele) => ele?.serviceName?.toLocaleLowerCase()?.includes('bridge')),
     [targetNetwork?.serviceList],
@@ -242,14 +250,16 @@ export default function Send() {
     fetchContactSupportConfig();
   });
 
-  useCheckETransferIsRegistration(
-    useCallback(() => {
-      InternalMessage.payload(
-        PortkeyMessageTypes.SEND_CARD,
-        `token/${symbol}?detail=${JSON.stringify({ ...state, isRegisterSend: true })}`,
-      ).send();
-    }, [symbol, state]),
-  );
+  // [DEPRECATED-ETRANSFER] BEGIN
+  // useCheckETransferIsRegistration(
+  //   useCallback(() => {
+  //     InternalMessage.payload(
+  //       PortkeyMessageTypes.SEND_CARD,
+  //       `token/${symbol}?detail=${JSON.stringify({ ...state, isRegisterSend: true })}`,
+  //     ).send();
+  //   }, [symbol, state]),
+  // );
+  // [DEPRECATED-ETRANSFER] END
 
   const modalTipContent = useMemo(() => {
     return {
@@ -388,57 +398,63 @@ export default function Send() {
           amount: timesDecimals(amount, tokenInfo.decimals).toFixed(),
           toAddress: toAccount.address,
         });
-      } else if (transferType === TransferType.E_TRANSFER) {
-        let network = '';
-        if (isDIDAelfAddress(toAccount.address)) {
-          const arr = toAccount?.address.split('_');
-          network = arr[arr.length - 1];
-        } else {
-          network = targetNetwork?.network || getAddressChainId(toAccount?.address, 'AELF') || 'AELF';
-        }
-        console.log('params', {
-          chainId,
-          toAddress: toAccount.address,
-          network,
-          amount,
-          tokenInfo: {
-            address: tokenInfo.address,
-            symbol: tokenInfo.symbol,
-            decimals: Number(tokenInfo.decimals),
-          },
-        });
-        console.log('withdraw', {
-          chainId,
-          toAddress: toAccount.address,
-          network,
-          amount,
-          tokenInfo: {
-            address: tokenInfo.address,
-            symbol: tokenInfo.symbol,
-            decimals: Number(tokenInfo.decimals),
-          },
-        });
-
-        const crossTransferByEtransferResult = await withdraw({
-          chainId,
-          toAddress: toAccount.address,
-          network,
-          amount,
-          tokenInfo: {
-            address: tokenInfo.address,
-            symbol: tokenInfo.symbol,
-            decimals: Number(tokenInfo.decimals),
-          },
-        });
-
-        console.log('crossTransferByEtransferResult', crossTransferByEtransferResult);
+        // [DEPRECATED-ETRANSFER] BEGIN - E_TRANSFER logic removed, using eBridge for all cross-chain
+        // } else if (transferType === TransferType.E_TRANSFER) {
+        //   let network = '';
+        //   if (isDIDAelfAddress(toAccount.address)) {
+        //     const arr = toAccount?.address.split('_');
+        //     network = arr[arr.length - 1];
+        //   } else {
+        //     network = targetNetwork?.network || getAddressChainId(toAccount?.address, 'AELF') || 'AELF';
+        //   }
+        //   console.log('params', {
+        //     chainId,
+        //     toAddress: toAccount.address,
+        //     network,
+        //     amount,
+        //     tokenInfo: {
+        //       address: tokenInfo.address,
+        //       symbol: tokenInfo.symbol,
+        //       decimals: Number(tokenInfo.decimals),
+        //     },
+        //   });
+        //   console.log('withdraw', {
+        //     chainId,
+        //     toAddress: toAccount.address,
+        //     network,
+        //     amount,
+        //     tokenInfo: {
+        //       address: tokenInfo.address,
+        //       symbol: tokenInfo.symbol,
+        //       decimals: Number(tokenInfo.decimals),
+        //     },
+        //   });
+        //   const crossTransferByEtransferResult = await withdraw({
+        //     chainId,
+        //     toAddress: toAccount.address,
+        //     network,
+        //     amount,
+        //     tokenInfo: {
+        //       address: tokenInfo.address,
+        //       symbol: tokenInfo.symbol,
+        //       decimals: Number(tokenInfo.decimals),
+        //     },
+        //   });
+        //   console.log('crossTransferByEtransferResult', crossTransferByEtransferResult);
+        // [DEPRECATED-ETRANSFER] END
       } else if (transferType === TransferType.E_BRIDGE) {
         if (!wallet?.address) {
           throw 'currentWallet is null';
         }
         setEBridgeFeeNotEnough(false);
         const fromChainInfo = getAELFChainInfoConfig(tokenInfo.chainId);
-        const toChainInfo = getEVMChainInfoConfig(targetNetwork?.network || '');
+        // Support both aelf internal cross-chain and aelf -> EVM cross-chain
+        const isAelfInternalCrossChain =
+          isCrossChain(toAccount.address, chainId) && isDIDAelfAddress(toAccount.address);
+        const toChainId = isAelfInternalCrossChain ? getAddressChainId(toAccount.address, chainId) : null;
+        const toChainInfo = isAelfInternalCrossChain
+          ? getAELFChainInfoConfig(toChainId || 'AELF')
+          : getEVMChainInfoConfig(targetNetwork?.network || '');
 
         const tokenEBridgeInfo = getTokenConfig(tokenInfo.symbol);
         const bridge = new CrossEBridgeExtension(
@@ -516,7 +532,7 @@ export default function Send() {
     targetNetwork?.imageUrl,
     amount,
     chainId,
-    withdraw,
+    // [DEPRECATED-ETRANSFER] withdraw removed
     getAELFChainInfoConfig,
     getEVMChainInfoConfig,
     getTokenConfig,
@@ -527,81 +543,74 @@ export default function Send() {
     currentNetworkInfo.walletType,
   ]);
 
-  const { max: maxFee, crossChain: crossChainFee, etransfer: etransferFee } = useGetTxFee(chainId);
+  const { max: maxFee, crossChain: crossChainFee } = useGetTxFee(chainId);
 
-  const getEtransferAllowance = useCallback(
-    async (token: BaseToken) => {
-      if (!currentChain) throw 'No currentChain';
-
-      const tokenContract = new ExtensionContractBasic({
-        rpcUrl: currentChain.endPoint,
-        contractAddress: currentChain.defaultToken.address,
-        privateKey: COMMON_PRIVATE,
-      });
-      const allowanceRes = await tokenContract.callViewMethod('GetAllowance', {
-        symbol: token.symbol,
-        owner: wallet?.address,
-        spender: currentNetworkInfo.eTransferCA?.[token.chainId],
-      });
-
-      if (allowanceRes?.error) throw allowanceRes?.error;
-      const allowance = divDecimals(allowanceRes.data.allowance ?? allowanceRes.data.amount ?? 0, token.decimals);
-      return allowance;
-    },
-    [currentChain, currentNetworkInfo.eTransferCA, wallet?.address],
-  );
-
-  const getEtransferMaxFee = useCallback(
-    // approve fee
-    async ({ amount }: { amount: string }) => {
-      const token = tokenInfo;
-      try {
-        const arr = toAccount.address.split('_');
-        const network = arr[arr.length - 1];
-
-        console.log(
-          {
-            chainId: token.chainId,
-            address: toAccount.address,
-            symbol: token.symbol,
-            network,
-            currentAccountAddress: wallet?.address || '',
-          },
-          '======getEtransferMaxFee',
-        );
-
-        const [{ withdrawInfo }, allowance] = await Promise.all([
-          withdrawPreview(
-            {
-              chainId: token.chainId,
-              address: toAccount.address,
-              symbol: token.symbol,
-              network,
-              currentAccountAddress: wallet?.address || '',
-            },
-            true,
-          ),
-          getEtransferAllowance(token),
-        ]);
-
-        console.log(withdrawInfo, allowance, 'checkEtransferMaxFee==');
-
-        let _etransferFee = etransferFee;
-
-        const isGTMax = withdrawInfo?.maxAmount ? ZERO.plus(amount).lte(withdrawInfo.maxAmount) : true;
-        const isLTMin = withdrawInfo?.minAmount ? ZERO.plus(amount).gte(withdrawInfo.minAmount) : true;
-        const amountAllowed = withdrawInfo ? isGTMax && isLTMin : false;
-
-        if (amountAllowed && allowance.gte(amount)) _etransferFee = 0;
-        console.log(_etransferFee, '_etransferFee==checkEtransferMaxFee');
-        return _etransferFee.toString();
-      } catch (error) {
-        console.error('checkEtransferMaxFee:', error);
-        return etransferFee.toString();
-      }
-    },
-    [tokenInfo, toAccount.address, wallet?.address, withdrawPreview, getEtransferAllowance, etransferFee],
-  );
+  // [DEPRECATED-ETRANSFER] BEGIN - ETransfer allowance and fee functions removed
+  // const { etransfer: etransferFee } = useGetTxFee(chainId);
+  // const getEtransferAllowance = useCallback(
+  //   async (token: BaseToken) => {
+  //     if (!currentChain) throw 'No currentChain';
+  //     const tokenContract = new ExtensionContractBasic({
+  //       rpcUrl: currentChain.endPoint,
+  //       contractAddress: currentChain.defaultToken.address,
+  //       privateKey: COMMON_PRIVATE,
+  //     });
+  //     const allowanceRes = await tokenContract.callViewMethod('GetAllowance', {
+  //       symbol: token.symbol,
+  //       owner: wallet?.address,
+  //       spender: currentNetworkInfo.eTransferCA?.[token.chainId],
+  //     });
+  //     if (allowanceRes?.error) throw allowanceRes?.error;
+  //     const allowance = divDecimals(allowanceRes.data.allowance ?? allowanceRes.data.amount ?? 0, token.decimals);
+  //     return allowance;
+  //   },
+  //   [currentChain, currentNetworkInfo.eTransferCA, wallet?.address],
+  // );
+  // const getEtransferMaxFee = useCallback(
+  //   async ({ amount }: { amount: string }) => {
+  //     const token = tokenInfo;
+  //     try {
+  //       const arr = toAccount.address.split('_');
+  //       const network = arr[arr.length - 1];
+  //       console.log(
+  //         {
+  //           chainId: token.chainId,
+  //           address: toAccount.address,
+  //           symbol: token.symbol,
+  //           network,
+  //           currentAccountAddress: wallet?.address || '',
+  //         },
+  //         '======getEtransferMaxFee',
+  //       );
+  //       const [{ withdrawInfo }, allowance] = await Promise.all([
+  //         withdrawPreview(
+  //           {
+  //             chainId: token.chainId,
+  //             address: toAccount.address,
+  //             symbol: token.symbol,
+  //             network,
+  //             currentAccountAddress: wallet?.address || '',
+  //           },
+  //           true,
+  //         ),
+  //         getEtransferAllowance(token),
+  //       ]);
+  //       console.log(withdrawInfo, allowance, 'checkEtransferMaxFee==');
+  //       let _etransferFee = etransferFee;
+  //       const isGTMax = withdrawInfo?.maxAmount ? ZERO.plus(amount).lte(withdrawInfo.maxAmount) : true;
+  //       const isLTMin = withdrawInfo?.minAmount ? ZERO.plus(amount).gte(withdrawInfo.minAmount) : true;
+  //       const amountAllowed = withdrawInfo ? isGTMax && isLTMin : false;
+  //       if (amountAllowed && allowance.gte(amount)) _etransferFee = 0;
+  //       console.log(_etransferFee, '_etransferFee==checkEtransferMaxFee');
+  //       return _etransferFee.toString();
+  //     } catch (error) {
+  //       console.error('checkEtransferMaxFee:', error);
+  //       return etransferFee.toString();
+  //     }
+  //   },
+  //   [tokenInfo, toAccount.address, wallet?.address, withdrawPreview, getEtransferAllowance, etransferFee],
+  // );
+  // [DEPRECATED-ETRANSFER] END
 
   const updateBalance = useCallback(async () => {
     if (!currentChain || !wallet?.address) return;
@@ -625,7 +634,8 @@ export default function Send() {
     if (!balance) return setMaxAmount('0');
 
     const balanceBN = divDecimals(balance, tokenInfo.decimals);
-    const balanceStr = balanceBN.toString();
+    // [DEPRECATED-ETRANSFER] balanceStr was used by getEtransferMaxFee
+    // const balanceStr = balanceBN.toString();
 
     // balance 0
     if (balanceBN.isEqualTo(0)) {
@@ -651,11 +661,13 @@ export default function Send() {
       console.log('FEE ERROR');
     }
 
-    const eTransferFee = await getEtransferMaxFee({ amount: balanceStr });
-
-    const _max = fee
-      ? balanceBN.minus(eTransferFee)
-      : ZERO.plus(divDecimals(balance, tokenInfo.decimals)).minus(maxFee).minus(eTransferFee);
+    // [DEPRECATED-ETRANSFER] BEGIN - ETransfer fee calculation removed
+    // const eTransferFee = await getEtransferMaxFee({ amount: balanceStr });
+    // const _max = fee
+    //   ? balanceBN.minus(eTransferFee)
+    //   : ZERO.plus(divDecimals(balance, tokenInfo.decimals)).minus(maxFee).minus(eTransferFee);
+    // [DEPRECATED-ETRANSFER] END
+    const _max = fee ? balanceBN.minus(fee) : ZERO.plus(divDecimals(balance, tokenInfo.decimals)).minus(maxFee);
 
     setMaxAmount(_max.gt(ZERO) ? _max.toFixed() : '0');
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -687,7 +699,8 @@ export default function Send() {
         console.log('wallet address does not exist');
         return { status: false };
       }
-      const tokenSymbol = tokenInfo.symbol;
+      // [DEPRECATED-ETRANSFER] tokenSymbol was used by ETransfer logic
+      // const tokenSymbol = tokenInfo.symbol;
 
       // CHECK 4: balance
       const [result, defaultTokenResult] = await Promise.all([
@@ -711,7 +724,8 @@ export default function Send() {
         }),
       ]);
 
-      const defaultTokenBalance = timesDecimals(defaultTokenResult.result.balance, defaultToken.decimals);
+      // [DEPRECATED-ETRANSFER] defaultTokenBalance was used by ETransfer fee check
+      // const defaultTokenBalance = timesDecimals(defaultTokenResult.result.balance, defaultToken.decimals);
       console.log(result, defaultTokenResult, '=====result');
 
       setBalance(result.result.balance);
@@ -743,90 +757,85 @@ export default function Send() {
 
       // CHECK 6: fee check
       let networkFee: string | undefined;
-      let networkFeeUnit: string | undefined;
+      const networkFeeUnit: string | undefined = 'ELF';
       let transactionFee: string | undefined;
       let transactionUnit: string | undefined;
       let receiveAmount: string | undefined;
       let receiveAmountUsd: string | undefined;
       let transferType = TransferType.GENERAL_SAME_CHAIN;
 
+      // [DEPRECATED-ETRANSFER] BEGIN - CHECK 6.1 ETransfer to EVM removed, using eBridge instead
       // CHECK 6.1 isRecommendEtransfer(to evm) fee check
-      if (
-        warning === WarningKey.MAKE_SURE_SUPPORT_PLATFORM &&
-        recommendETransfer &&
-        ZERO.plus(recommendETransfer?.maxAmount).isGreaterThan(amount)
-      ) {
-        console.log('6.1');
-
-        try {
-          const [{ withdrawInfo }, allowance] = await Promise.all([
-            withdrawPreview({
-              chainId,
-              address: toAccount.address,
-              symbol: tokenSymbol,
-              amount,
-              network: targetNetwork?.network || '',
-              currentAccountAddress: wallet?.address || '',
-              isMainnet: currentNetwork === 'MAINNET',
-            }),
-            getEtransferAllowance(tokenInfo),
-          ]);
-          console.log(withdrawInfo, '=====withdrawInfo');
-
-          let _etransferFee = etransferFee;
-
-          const isGTMax = withdrawInfo?.maxAmount ? ZERO.plus(amount).lte(withdrawInfo.maxAmount) : true;
-          const isLTMin = withdrawInfo?.minAmount ? ZERO.plus(amount).gte(withdrawInfo.minAmount) : true;
-
-          const amountAllowed = withdrawInfo ? isGTMax && isLTMin : false;
-
-          if ((amountAllowed && allowance.gte(amount)) || tokenSymbol !== defaultToken.symbol) _etransferFee = 0;
-
-          if (ZERO.plus(amount).plus(_etransferFee).gt(divDecimals(balance, tokenInfo.decimals))) {
-            setAmountErrMsg(TransactionError.TOKEN_NOT_ENOUGH);
-            return { status: false };
-          }
-
-          if (amountAllowed) {
-            networkFee = withdrawInfo?.aelfTransactionFee;
-            networkFeeUnit = 'ELF';
-            transactionFee = withdrawInfo.transactionFee;
-            transactionUnit = withdrawInfo.transactionUnit;
-            receiveAmount = withdrawInfo?.receiveAmount;
-            receiveAmountUsd = withdrawInfo?.receiveAmountUsd;
-            transferType = TransferType.E_TRANSFER;
-            setNetworkFee(networkFee);
-            setNetworkFeeUnit(networkFeeUnit);
-            setReceiveAmount(receiveAmount);
-            setReceiveAmountUsd(receiveAmountUsd);
-            setTransactionFee(transactionFee);
-            setTransactionUnit(transactionUnit);
-            console.log('transferType1', transferType);
-            setTransferType(transferType);
-            return {
-              status: true,
-              networkFee,
-              networkFeeUnit,
-              receiveAmount,
-              receiveAmountUsd,
-              transactionFee,
-              transactionUnit,
-              transferType,
-              targetNetwork: targetNetwork,
-            };
-          } else {
-            setAmountErrMsg(
-              getLimitTips(tokenInfo.label || tokenInfo.symbol, withdrawInfo.minAmount, withdrawInfo.maxAmount),
-            );
-            throw 'eTransfer err';
-          }
-        } catch (error) {
-          console.log('isRecommendEtransfer err', error);
-          return { status: false };
-        } finally {
-          setBtnLoading(false);
-        }
-      }
+      // if (
+      //   warning === WarningKey.MAKE_SURE_SUPPORT_PLATFORM &&
+      //   recommendETransfer &&
+      //   ZERO.plus(recommendETransfer?.maxAmount).isGreaterThan(amount)
+      // ) {
+      //   console.log('6.1');
+      //   try {
+      //     const [{ withdrawInfo }, allowance] = await Promise.all([
+      //       withdrawPreview({
+      //         chainId,
+      //         address: toAccount.address,
+      //         symbol: tokenSymbol,
+      //         amount,
+      //         network: targetNetwork?.network || '',
+      //         currentAccountAddress: wallet?.address || '',
+      //         isMainnet: currentNetwork === 'MAINNET',
+      //       }),
+      //       getEtransferAllowance(tokenInfo),
+      //     ]);
+      //     console.log(withdrawInfo, '=====withdrawInfo');
+      //     let _etransferFee = etransferFee;
+      //     const isGTMax = withdrawInfo?.maxAmount ? ZERO.plus(amount).lte(withdrawInfo.maxAmount) : true;
+      //     const isLTMin = withdrawInfo?.minAmount ? ZERO.plus(amount).gte(withdrawInfo.minAmount) : true;
+      //     const amountAllowed = withdrawInfo ? isGTMax && isLTMin : false;
+      //     if ((amountAllowed && allowance.gte(amount)) || tokenSymbol !== defaultToken.symbol) _etransferFee = 0;
+      //     if (ZERO.plus(amount).plus(_etransferFee).gt(divDecimals(balance, tokenInfo.decimals))) {
+      //       setAmountErrMsg(TransactionError.TOKEN_NOT_ENOUGH);
+      //       return { status: false };
+      //     }
+      //     if (amountAllowed) {
+      //       networkFee = withdrawInfo?.aelfTransactionFee;
+      //       networkFeeUnit = 'ELF';
+      //       transactionFee = withdrawInfo.transactionFee;
+      //       transactionUnit = withdrawInfo.transactionUnit;
+      //       receiveAmount = withdrawInfo?.receiveAmount;
+      //       receiveAmountUsd = withdrawInfo?.receiveAmountUsd;
+      //       transferType = TransferType.E_TRANSFER;
+      //       setNetworkFee(networkFee);
+      //       setNetworkFeeUnit(networkFeeUnit);
+      //       setReceiveAmount(receiveAmount);
+      //       setReceiveAmountUsd(receiveAmountUsd);
+      //       setTransactionFee(transactionFee);
+      //       setTransactionUnit(transactionUnit);
+      //       console.log('transferType1', transferType);
+      //       setTransferType(transferType);
+      //       return {
+      //         status: true,
+      //         networkFee,
+      //         networkFeeUnit,
+      //         receiveAmount,
+      //         receiveAmountUsd,
+      //         transactionFee,
+      //         transactionUnit,
+      //         transferType,
+      //         targetNetwork: targetNetwork,
+      //       };
+      //     } else {
+      //       setAmountErrMsg(
+      //         getLimitTips(tokenInfo.label || tokenInfo.symbol, withdrawInfo.minAmount, withdrawInfo.maxAmount),
+      //       );
+      //       throw 'eTransfer err';
+      //     }
+      //   } catch (error) {
+      //     console.log('isRecommendEtransfer err', error);
+      //     return { status: false };
+      //   } finally {
+      //     setBtnLoading(false);
+      //   }
+      // }
+      // [DEPRECATED-ETRANSFER] END
 
       // CHECK 6.2 isRecommendEBridge(to evm) fee check
       if (warning === WarningKey.MAKE_SURE_SUPPORT_PLATFORM && recommendEBridge) {
@@ -893,77 +902,140 @@ export default function Send() {
         }
       }
 
-      // CHECK 6.3 CrossChain in aelf support ETransfer
-      if (isCrossChain(toAccount.address, chainId) && CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL.includes(tokenSymbol)) {
-        console.log('CHECK 6.3');
+      // [DEPRECATED-ETRANSFER] BEGIN - CHECK 6.3 ETransfer for aelf internal cross-chain removed
+      // Now using eBridge for aelf internal cross-chain (CHECK 6.3-NEW below)
+      // if (isCrossChain(toAccount.address, chainId) && CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL.includes(tokenSymbol)) {
+      //   console.log('CHECK 6.3');
+      //   const [{ withdrawInfo }, allowance] = await Promise.all([
+      //     withdrawPreview({
+      //       symbol: tokenInfo.symbol,
+      //       address: toAccount.address,
+      //       chainId: tokenInfo.chainId,
+      //       amount,
+      //       network: getAddressChainId(toAccount.address, 'AELF') || 'AELF',
+      //       currentAccountAddress: wallet?.address || '',
+      //       isMainnet: currentNetwork === 'MAINNET',
+      //     }),
+      //     getEtransferAllowance(tokenInfo),
+      //   ]);
+      //   console.log(withdrawInfo, '====withdrawInfo');
+      //   let _etransferFee = etransferFee;
+      //   const isGTMax = withdrawInfo?.maxAmount ? ZERO.plus(amount).lte(withdrawInfo.maxAmount) : true;
+      //   const isLTMin = withdrawInfo?.minAmount ? ZERO.plus(amount).gte(withdrawInfo.minAmount) : true;
+      //   const amountAllowed = withdrawInfo ? isGTMax && isLTMin : false;
+      //   if ((amountAllowed && allowance.gte(amount)) || tokenSymbol !== defaultToken.symbol) _etransferFee = 0;
+      //   if (ZERO.plus(amount).plus(_etransferFee).gt(divDecimals(balance, tokenInfo.decimals))) {
+      //     setAmountErrMsg(TransactionError.TOKEN_NOT_ENOUGH);
+      //     return { status: false };
+      //   }
+      //   if (defaultTokenBalance.lt(INITIAL_TX_FEE.etransfer)) {
+      //     setAmountErrMsg(TransactionError.FEE_NOT_ENOUGH);
+      //     return { status: false };
+      //   }
+      //   if (amountAllowed) {
+      //     networkFee = withdrawInfo?.aelfTransactionFee;
+      //     networkFeeUnit = 'ELF';
+      //     transactionFee = withdrawInfo.transactionFee;
+      //     transactionUnit = withdrawInfo.transactionUnit;
+      //     receiveAmount = withdrawInfo?.receiveAmount;
+      //     receiveAmountUsd = withdrawInfo?.receiveAmountUsd;
+      //     transferType = TransferType.E_TRANSFER;
+      //     setNetworkFee(networkFee);
+      //     setNetworkFeeUnit(networkFeeUnit);
+      //     setReceiveAmount(receiveAmount);
+      //     setReceiveAmountUsd(receiveAmountUsd);
+      //     setTransactionFee(transactionFee);
+      //     setTransactionUnit(transactionUnit);
+      //     console.log('transferType3', transferType);
+      //     setTransferType(transferType);
+      //     return {
+      //       status: true,
+      //       networkFee,
+      //       networkFeeUnit,
+      //       receiveAmount,
+      //       receiveAmountUsd,
+      //       transactionFee,
+      //       transactionUnit,
+      //       transferType,
+      //       targetNetwork: targetNetwork,
+      //     };
+      //   }
+      // }
+      // [DEPRECATED-ETRANSFER] END
 
-        const [{ withdrawInfo }, allowance] = await Promise.all([
-          withdrawPreview({
-            symbol: tokenInfo.symbol,
-            address: toAccount.address,
-            chainId: tokenInfo.chainId,
-            amount,
-            network: getAddressChainId(toAccount.address, 'AELF') || 'AELF',
-            currentAccountAddress: wallet?.address || '',
-            isMainnet: currentNetwork === 'MAINNET',
-          }),
-          getEtransferAllowance(tokenInfo),
-        ]);
-        console.log(withdrawInfo, '====withdrawInfo');
+      // CHECK 6.3-NEW: aelf internal cross-chain using eBridge
+      if (isCrossChain(toAccount.address, chainId)) {
+        console.log('CHECK 6.3-NEW: aelf internal cross-chain via eBridge');
+        try {
+          setBtnLoading(true);
+          const toChainId = getAddressChainId(toAccount.address, chainId) || 'AELF';
+          const fromChainInfo = getAELFChainInfoConfig(tokenInfo.chainId);
+          const toChainInfo = getAELFChainInfoConfig(toChainId);
+          const tokenEBridgeInfo = getTokenConfig(tokenInfo.symbol);
 
-        let _etransferFee = etransferFee;
+          // Check if token is supported by eBridge for aelf internal cross-chain
+          if (!tokenEBridgeInfo) {
+            console.log('Token not supported by eBridge, falling back to GENERAL_CROSS_CHAIN');
+            // Fall through to CHECK 6.4 for native cross-chain
+          } else {
+            const bridge = new CrossEBridgeExtension(
+              {
+                fromChainInfo,
+                toChainInfo,
+                tokenInfo: tokenEBridgeInfo,
+              },
+              pin,
+              wallet,
+              currentChain,
+            );
 
-        const isGTMax = withdrawInfo?.maxAmount ? ZERO.plus(amount).lte(withdrawInfo.maxAmount) : true;
-        const isLTMin = withdrawInfo?.minAmount ? ZERO.plus(amount).gte(withdrawInfo.minAmount) : true;
+            receiveAmount = amount;
+            receiveAmountUsd = ZERO.plus(amount).times(tokenPriceObject[tokenInfo.symbol]).toString();
 
-        const amountAllowed = withdrawInfo ? isGTMax && isLTMin : false;
+            // fee
+            const f = await bridge.getELFFee();
 
-        if ((amountAllowed && allowance.gte(amount)) || tokenSymbol !== defaultToken.symbol) _etransferFee = 0;
-
-        if (ZERO.plus(amount).plus(_etransferFee).gt(divDecimals(balance, tokenInfo.decimals))) {
-          setAmountErrMsg(TransactionError.TOKEN_NOT_ENOUGH);
-          return { status: false };
-        }
-
-        if (defaultTokenBalance.lt(INITIAL_TX_FEE.etransfer)) {
-          setAmountErrMsg(TransactionError.FEE_NOT_ENOUGH);
-          return { status: false };
-        }
-        if (amountAllowed) {
-          networkFee = withdrawInfo?.aelfTransactionFee;
-
-          // if(defaultTokenResult.result.balance)
-
-          networkFeeUnit = 'ELF';
-          transactionFee = withdrawInfo.transactionFee;
-          transactionUnit = withdrawInfo.transactionUnit;
-          receiveAmount = withdrawInfo?.receiveAmount;
-          receiveAmountUsd = withdrawInfo?.receiveAmountUsd;
-          transferType = TransferType.E_TRANSFER;
-          setNetworkFee(networkFee);
-          setNetworkFeeUnit(networkFeeUnit);
-          setReceiveAmount(receiveAmount);
-          setReceiveAmountUsd(receiveAmountUsd);
-          setTransactionFee(transactionFee);
-          setTransactionUnit(transactionUnit);
-          console.log('transferType3', transferType);
-          setTransferType(transferType);
-          return {
-            status: true,
-            networkFee,
-            networkFeeUnit,
-            receiveAmount,
-            receiveAmountUsd,
-            transactionFee,
-            transactionUnit,
-            transferType,
-            targetNetwork: targetNetwork,
-          };
+            // limit
+            const limit = await bridge.getLimit();
+            console.log('getELFFee', f, 'getLimit', limit);
+            const targetLimit = getSmallerValue(limit.remain, limit.currentCapacity);
+            if (limit.isEnable && timesDecimals(amount, tokenInfo.decimals || '0').isGreaterThan(targetLimit)) {
+              setAmountErrMsg(getLimitTips(tokenInfo.symbol, '0', formatAmountShow(targetLimit)));
+              return { status: false };
+            }
+            transactionFee = divDecimals(f, defaultToken.decimals).toString();
+            transactionUnit = 'ELF';
+            transferType = TransferType.E_BRIDGE;
+            setNetworkFee(networkFee);
+            setNetworkFeeUnit(networkFeeUnit);
+            setReceiveAmount(receiveAmount);
+            setReceiveAmountUsd(receiveAmountUsd);
+            setTransactionFee(transactionFee);
+            setTransactionUnit(transactionUnit);
+            console.log('transferType3-NEW', transferType);
+            setTransferType(transferType);
+            return {
+              status: true,
+              networkFee,
+              networkFeeUnit,
+              transactionFee,
+              transactionUnit,
+              receiveAmount,
+              receiveAmountUsd,
+              transferType,
+              targetNetwork,
+            };
+          }
+        } catch (error) {
+          console.log('aelf internal cross-chain via eBridge err', error);
+          // Fall through to CHECK 6.4 for native cross-chain as fallback
+        } finally {
+          setBtnLoading(false);
         }
       }
 
       // CHECK 6.4 SameChain or Default CrossChain
-      networkFeeUnit = 'ELF';
+      // networkFeeUnit already set to 'ELF' in declaration
       transferType = isCrossChain(toAccount.address, chainId)
         ? TransferType.GENERAL_CROSS_CHAIN
         : TransferType.GENERAL_SAME_CHAIN;
@@ -1028,7 +1100,7 @@ export default function Send() {
     currentNetworkInfo.walletType,
     type,
     warning,
-    recommendETransfer,
+    // [DEPRECATED-ETRANSFER] recommendETransfer removed
     amount,
     recommendEBridge,
     toAccount,
@@ -1038,11 +1110,9 @@ export default function Send() {
     defaultToken.symbol,
     defaultToken.decimals,
     crossChainFee,
-    withdrawPreview,
+    // [DEPRECATED-ETRANSFER] withdrawPreview, getEtransferAllowance, etransferFee removed
     targetNetwork,
     currentNetwork,
-    getEtransferAllowance,
-    etransferFee,
     getAELFChainInfoConfig,
     getEVMChainInfoConfig,
     getTokenConfig,

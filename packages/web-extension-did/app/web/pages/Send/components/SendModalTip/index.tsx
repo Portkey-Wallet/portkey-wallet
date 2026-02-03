@@ -1,13 +1,13 @@
 import { CommonModal } from '@portkey/did-ui-react';
 import { CustomSvgV3 } from 'components/CustomSvgV3';
-import { useMemo } from 'react';
+import { ReactNode, useMemo } from 'react';
 import { Button } from 'antd';
 import clsx from 'clsx';
 import './index.less';
 
 export interface ISendTipContent {
   title: string;
-  content: string;
+  content: ReactNode;
   onClose: () => void;
 }
 
@@ -46,19 +46,21 @@ export default function SendModalTip({
   buttonGroupType = 'row',
 }: ISendModalTip) {
   const renderButton = useMemo(() => {
-    const [b1, b2] = buttons;
-    return buttons.length === 1 ? (
-      <Button type={b1.type} onClick={b1.onClick} block>
-        {b1.content}
-      </Button>
-    ) : (
-      <div className={clsx(buttonGroupType === 'row' ? 'flex' : 'flex-column', 'gap-16')}>
+    if (buttons.length === 1) {
+      const b1 = buttons[0];
+      return (
         <Button type={b1.type} onClick={b1.onClick} block>
           {b1.content}
         </Button>
-        <Button type={b2.type} onClick={b2.onClick} block>
-          {b2.content}
-        </Button>
+      );
+    }
+    return (
+      <div className={clsx(buttonGroupType === 'row' ? 'flex' : 'flex-column', 'gap-16')}>
+        {buttons.map((btn, index) => (
+          <Button key={index} type={btn.type} onClick={btn.onClick} block>
+            {btn.content}
+          </Button>
+        ))}
       </div>
     );
   }, [buttonGroupType, buttons]);

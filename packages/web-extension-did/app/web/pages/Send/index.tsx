@@ -99,6 +99,7 @@ export enum ModalTipKeyEnum {
   eBridge = 'eBridge',
   unSupportedAsset = 'unSupportedAsset',
   crossChain = 'crossChain',
+  eTransferUnavailable = 'eTransferUnavailable',
 }
 
 // TODO-SA
@@ -329,6 +330,51 @@ export default function Send() {
               setCurModalTipKey(undefined);
             },
             content: 'Proceed',
+          },
+        ],
+      },
+      [ModalTipKeyEnum.eTransferUnavailable]: {
+        title: `Cross-Chain Transfer Service Update`,
+        content: (
+          <div className="tip-content-steps">
+            <div className="step-item">
+              <span>1.</span>
+              <span>Download FairyVault and create a new wallet</span>
+            </div>
+            <div className="step-item">
+              <span>2.</span>
+              <span>Transfer your assets to your FairyVault address</span>
+            </div>
+            <div className="step-item">
+              <span>3.</span>
+              <span>Complete the cross-chain transfer in FairyVault</span>
+            </div>
+            <div className="step-footer">
+              FairyVault offers broader network support and enhanced security for cross-chain transfers.
+            </div>
+          </div>
+        ),
+        buttonGroupType: 'col' as ButtonGroupType,
+        buttons: [
+          {
+            type: 'primary' as ButtonType,
+            onClick: () => {
+              window.open('https://fairyvault.com/download', '_blank');
+              setCurModalTipKey(undefined);
+            },
+            content: 'Download FairyVault',
+          },
+          {
+            type: 'default' as ButtonType,
+            onClick: () => {
+              window.open('https://fairyvault.gitbook.io/fairyvault-docs', '_blank');
+            },
+            content: 'View Tutorial',
+          },
+          {
+            type: 'default' as ButtonType,
+            onClick: () => setCurModalTipKey(undefined),
+            content: 'Cancel',
           },
         ],
       },
@@ -887,75 +933,10 @@ export default function Send() {
       let transferType = TransferType.GENERAL_SAME_CHAIN;
 
       // CHECK 6.1 isRecommendEtransfer(to evm) fee check
-      if (
-        warning === WarningKey.MAKE_SURE_SUPPORT_PLATFORM &&
-        recommendETransfer &&
-        ZERO.plus(recommendETransfer?.maxAmount).isGreaterThan(amount)
-      ) {
-        try {
-          const [{ withdrawInfo }, allowance] = await Promise.all([
-            withdrawPreview({
-              chainId,
-              address: toAccount.address,
-              symbol: tokenSymbol,
-              amount,
-              network: targetNetwork?.network || '',
-            }),
-            getEtransferCAAllowance(tokenInfo),
-          ]);
-          let _etransferFee = etransferFee;
-
-          const isGTMax = withdrawInfo?.maxAmount ? ZERO.plus(amount).lte(withdrawInfo.maxAmount) : true;
-          const isLTMin = withdrawInfo?.minAmount ? ZERO.plus(amount).gte(withdrawInfo.minAmount) : true;
-
-          const amountAllowed = withdrawInfo ? isGTMax && isLTMin : false;
-
-          if ((amountAllowed && allowance.gte(amount)) || tokenSymbol !== defaultToken.symbol) _etransferFee = 0;
-
-          if (ZERO.plus(amount).plus(_etransferFee).gt(divDecimals(balance, tokenInfo.decimals))) {
-            setAmountErrMsg(TransactionError.TOKEN_NOT_ENOUGH);
-            return { status: false };
-          }
-
-          if (amountAllowed) {
-            networkFee = withdrawInfo?.aelfTransactionFee;
-            networkFeeUnit = 'ELF';
-            transactionFee = withdrawInfo.transactionFee;
-            transactionUnit = withdrawInfo.transactionUnit;
-            receiveAmount = withdrawInfo?.receiveAmount;
-            receiveAmountUsd = withdrawInfo?.receiveAmountUsd;
-            transferType = TransferType.E_TRANSFER;
-            setNetworkFee(networkFee);
-            setNetworkFeeUnit(networkFeeUnit);
-            setReceiveAmount(receiveAmount);
-            setReceiveAmountUsd(receiveAmountUsd);
-            setTransactionFee(transactionFee);
-            setTransactionUnit(transactionUnit);
-            console.log('transferType1', transferType);
-            setTransferType(transferType);
-            return {
-              status: true,
-              networkFee,
-              networkFeeUnit,
-              receiveAmount,
-              receiveAmountUsd,
-              transactionFee,
-              transactionUnit,
-              transferType,
-              targetNetwork: targetNetwork,
-            };
-          } else {
-            setAmountErrMsg(
-              getLimitTips(tokenInfo.label || tokenInfo.symbol, withdrawInfo.minAmount, withdrawInfo.maxAmount),
-            );
-            throw 'eTransfer err';
-          }
-        } catch (error) {
-          console.log('isRecommendEtransfer err', error);
-          return { status: false };
-        } finally {
-          setBtnLoading(false);
-        }
+      // ETransfer cross-chain is no longer supported for DID wallet, guide users to FairyVault
+      if (warning === WarningKey.MAKE_SURE_SUPPORT_PLATFORM && recommendETransfer) {
+        setCurModalTipKey(ModalTipKeyEnum.eTransferUnavailable);
+        return { status: false };
       }
 
       // CHECK 6.2 isRecommendEBridge(to evm) fee check
@@ -992,6 +973,7 @@ export default function Send() {
           }
           transactionFee = divDecimals(f, defaultToken.decimals).toString();
           transactionUnit = 'ELF';
+          networkFeeUnit = 'ELF';
           transferType = TransferType.E_BRIDGE;
           if (ZERO.plus(recommendEBridge.maxAmount).lt(amount)) {
             // setCurModalTipKey(ModalTipKeyEnum.eBridge);
@@ -1024,60 +1006,10 @@ export default function Send() {
       }
 
       // CHECK 6.3 CrossChain in aelf support ETransfer
+      // ETransfer cross-chain is no longer supported for DID wallet, guide users to FairyVault
       if (isCrossChain(toAccount.address, chainId) && CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL.includes(tokenSymbol)) {
-        const [{ withdrawInfo }, allowance] = await Promise.all([
-          withdrawPreview({
-            chainId,
-            address: toAccount.address,
-            symbol: tokenSymbol,
-            amount,
-            network: getAddressChainId(toAccount.address, 'AELF') || 'AELF',
-          }),
-          getEtransferCAAllowance(tokenInfo),
-        ]);
-
-        let _etransferFee = etransferFee;
-
-        const isGTMax = withdrawInfo?.maxAmount ? ZERO.plus(amount).lte(withdrawInfo.maxAmount) : true;
-        const isLTMin = withdrawInfo?.minAmount ? ZERO.plus(amount).gte(withdrawInfo.minAmount) : true;
-
-        const amountAllowed = withdrawInfo ? isGTMax && isLTMin : false;
-
-        if ((amountAllowed && allowance.gte(amount)) || tokenSymbol !== defaultToken.symbol) _etransferFee = 0;
-
-        if (ZERO.plus(amount).plus(_etransferFee).gt(divDecimals(balance, tokenInfo.decimals))) {
-          setAmountErrMsg(TransactionError.TOKEN_NOT_ENOUGH);
-          return { status: false };
-        }
-
-        if (amountAllowed) {
-          networkFee = withdrawInfo?.aelfTransactionFee;
-          networkFeeUnit = 'ELF';
-          transactionFee = withdrawInfo.transactionFee;
-          transactionUnit = withdrawInfo.transactionUnit;
-          receiveAmount = withdrawInfo?.receiveAmount;
-          receiveAmountUsd = withdrawInfo?.receiveAmountUsd;
-          transferType = TransferType.E_TRANSFER;
-          setNetworkFee(networkFee);
-          setNetworkFeeUnit(networkFeeUnit);
-          setReceiveAmount(receiveAmount);
-          setReceiveAmountUsd(receiveAmountUsd);
-          setTransactionFee(transactionFee);
-          setTransactionUnit(transactionUnit);
-          console.log('transferType3', transferType);
-          setTransferType(transferType);
-          return {
-            status: true,
-            networkFee,
-            networkFeeUnit,
-            receiveAmount,
-            receiveAmountUsd,
-            transactionFee,
-            transactionUnit,
-            transferType,
-            targetNetwork: targetNetwork,
-          };
-        }
+        setCurModalTipKey(ModalTipKeyEnum.eTransferUnavailable);
+        return { status: false };
       }
 
       // CHECK 6.4 SameChain or Default CrossChain
@@ -1149,10 +1081,7 @@ export default function Send() {
     defaultToken.symbol,
     defaultToken.decimals,
     crossChainFee,
-    withdrawPreview,
     targetNetwork,
-    getEtransferCAAllowance,
-    etransferFee,
     getAELFChainInfoConfig,
     getEVMChainInfoConfig,
     getTokenConfig,

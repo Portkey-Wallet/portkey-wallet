@@ -4,6 +4,51 @@ import { ChainId } from '@portkey-wallet/types';
 import { INetworkItem } from '../components/SelectNetwork';
 import { TransferType } from '@portkey-wallet/types/types-ca/routeParams';
 import { eBridgeWaringShow } from '../components/WarningActionSheet';
+import ActionSheet from 'components/ActionSheet';
+import { Linking } from 'react-native';
+
+// FairyVault URLs
+const FAIRYVAULT_DOWNLOAD_URL = 'https://fairyvault.com/download';
+const FAIRYVAULT_TUTORIAL_URL = 'https://fairyvault.gitbook.io/fairyvault-docs';
+
+/**
+ * Show FairyVault guide modal for cross-chain transfers.
+ * ETransfer and eBridge cross-chain services are no longer supported in Portkey DID wallet.
+ * Users should use FairyVault (EOA wallet) for cross-chain transfers instead.
+ */
+export const showFairyVaultGuideModal = () => {
+  ActionSheet.alert({
+    title: 'Service Update',
+    messageList: [
+      'Cross-Chain Transfer Service Update',
+      '1. Download FairyVault and create a new wallet',
+      '2. Transfer your assets to your FairyVault address',
+      '3. Complete the cross-chain transfer in FairyVault',
+      'FairyVault offers broader network support and enhanced security for cross-chain transfers.',
+    ],
+    buttonGroupDirection: 'column',
+    buttons: [
+      {
+        title: 'Download FairyVault',
+        type: 'primary',
+        onPress: () => {
+          Linking.openURL(FAIRYVAULT_DOWNLOAD_URL);
+        },
+      },
+      {
+        title: 'View Tutorial',
+        type: 'outline',
+        onPress: () => {
+          Linking.openURL(FAIRYVAULT_TUTORIAL_URL);
+        },
+      },
+      {
+        title: 'Cancel',
+        type: 'outline',
+      },
+    ],
+  });
+};
 
 export interface IGetSendNetworkListParams {
   symbol: string;

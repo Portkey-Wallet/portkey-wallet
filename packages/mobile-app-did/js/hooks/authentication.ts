@@ -50,10 +50,12 @@ import Loading from 'components/Loading';
 WebBrowser.maybeCompleteAuthSession();
 
 const AUTH_SCHEME_URL = 'com.portkey.finance://oauthredirect';
-const GOOGLE_AUTH_REDIRECT_URI = 'https://aa-portkey-test.portkey.finance/api/app/account/google-auth-redirect';
+// const GOOGLE_AUTH_REDIRECT_URI = 'https://aa-portkey-test.portkey.finance/api/app/account/google-auth-redirect';
+const GOOGLE_AUTH_REDIRECT_URI = 'https://aa-portkey.portkey.finance/api/app/account/google-auth-redirect';
 
 export function useGoogleAuthentication() {
   const subscriptionRef = useRef<any>();
+
   // const [androidResponse, setResponse] = useState<any>();
   const iosPromptAsync: (managerAddress: string) => Promise<TGoogleAuthResponse> = useCallback(async managerAddress => {
     const { nonce, timestamp } = generateNonceAndTimestamp(managerAddress);

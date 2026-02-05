@@ -6,7 +6,7 @@ const STATUSBAR_DEFAULT_HEIGHT = 20;
 const STATUSBAR_X_HEIGHT = 44;
 const STATUSBAR_IP12_HEIGHT = 47;
 const STATUSBAR_IP12MAX_HEIGHT = 47;
-const STATUSBAR_IP14PRO_HEIGHT = 49;
+const STATUSBAR_IP14PRO_HEIGHT = 54;
 
 const X_WIDTH = 375;
 const X_HEIGHT = 812;
@@ -26,6 +26,12 @@ const IP14PRO_HEIGHT = 852;
 const IP14PROMAX_WIDTH = 430;
 const IP14PROMAX_HEIGHT = 932;
 
+const IP16PRO_WIDTH = 402;
+const IP16PRO_HEIGHT = 874;
+
+const IP16PROMAX_WIDTH = 440;
+const IP16PROMAX_HEIGHT = 956;
+
 const { height: W_HEIGHT, width: W_WIDTH } = Dimensions.get('window');
 
 let statusBarHeight = STATUSBAR_DEFAULT_HEIGHT;
@@ -36,7 +42,7 @@ let isIPhone12Max_v = false;
 let isIPhoneWithMonobrow_v = false;
 let isIPhoneWithDynamicIsland_v = false;
 
-if (Platform.OS === 'ios' && !Platform.isPad && !Platform.isTVOS) {
+if (Platform.OS === 'ios' && !Platform.isPad && !Platform.isTV) {
   if (W_WIDTH === X_WIDTH && W_HEIGHT === X_HEIGHT) {
     isIPhoneWithMonobrow_v = true;
     isIPhoneX_v = true;
@@ -57,6 +63,12 @@ if (Platform.OS === 'ios' && !Platform.isPad && !Platform.isTVOS) {
     isIPhoneWithDynamicIsland_v = true;
     statusBarHeight = STATUSBAR_IP14PRO_HEIGHT;
   } else if (W_WIDTH === IP14PRO_WIDTH && W_HEIGHT === IP14PRO_HEIGHT) {
+    isIPhoneWithDynamicIsland_v = true;
+    statusBarHeight = STATUSBAR_IP14PRO_HEIGHT;
+  } else if (W_WIDTH === IP16PROMAX_WIDTH && W_HEIGHT === IP16PROMAX_HEIGHT) {
+    isIPhoneWithDynamicIsland_v = true;
+    statusBarHeight = STATUSBAR_IP14PRO_HEIGHT;
+  } else if (W_WIDTH === IP16PRO_WIDTH && W_HEIGHT === IP16PRO_HEIGHT) {
     isIPhoneWithDynamicIsland_v = true;
     statusBarHeight = STATUSBAR_IP14PRO_HEIGHT;
   }

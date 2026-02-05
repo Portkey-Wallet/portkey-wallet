@@ -2,7 +2,6 @@ import 'react-native-get-random-values';
 import { decode, encode } from 'base-64';
 import { Buffer } from 'buffer';
 import 'react-native-url-polyfill/auto';
-import allSettled from 'promise.allsettled';
 import './shim';
 
 if (!global.btoa) {
@@ -14,8 +13,4 @@ if (!global.atob) {
 
 if (!global.Buffer) {
   global.Buffer = Buffer;
-}
-
-if (!global.Promise.allSettled) {
-  global.Promise.allSettled = allSettled;
 }

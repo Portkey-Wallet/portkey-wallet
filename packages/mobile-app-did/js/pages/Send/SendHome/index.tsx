@@ -629,6 +629,24 @@ const SendHome: React.FC = () => {
       return { status: false };
     }
 
+    // @deprecated ETransfer and eBridge cross-chain transfers to EVM networks are no longer supported.
+    // Users should use FairyVault for cross-chain transfers instead.
+    // Show FairyVault guide modal when user attempts EVM cross-chain transfer.
+    if (warning[0] === WarningKey.MAKE_SURE_SUPPORT_PLATFORM && (recommendETransfer || recommendEBridge)) {
+      Loading.hide();
+      showFairyVaultGuideModal();
+      return { status: false };
+    }
+
+    // @deprecated ETransfer cross-chain transfer between aelf chains (ELF/USDT) is no longer supported.
+    // Users should use FairyVault for cross-chain transfers instead.
+    // Show FairyVault guide modal when user attempts aelf cross-chain transfer with supported tokens (ELF/USDT).
+    if (isAELFCross && isSupportCross) {
+      Loading.hide();
+      showFairyVaultGuideModal();
+      return { status: false };
+    }
+
     // checkTransferLimitResult
     let caContract: ContractBasic;
     try {
@@ -689,15 +707,6 @@ const SendHome: React.FC = () => {
     let receiveAmount: string | undefined;
     let receiveAmountUsd: string | undefined;
     let transferType = TransferType.GENERAL_SAME_CHAIN;
-
-    // @deprecated ETransfer and eBridge cross-chain transfers to EVM networks are no longer supported.
-    // Users should use FairyVault for cross-chain transfers instead.
-    // Show FairyVault guide modal when user attempts EVM cross-chain transfer.
-    if (warning[0] === WarningKey.MAKE_SURE_SUPPORT_PLATFORM && (recommendETransfer || recommendEBridge)) {
-      Loading.hide();
-      showFairyVaultGuideModal();
-      return { status: false };
-    }
 
     // @deprecated The following ETransfer logic for EVM cross-chain is disabled. Keeping for potential rollback.
     // // isRecommendEtransfer(to evm) fee check
@@ -807,15 +816,6 @@ const SendHome: React.FC = () => {
     // }
 
     console.log('isAELFCross', isAELFCross, selectedToContact);
-
-    // @deprecated ETransfer cross-chain transfer between aelf chains (ELF/USDT) is no longer supported.
-    // Users should use FairyVault for cross-chain transfers instead.
-    // Show FairyVault guide modal when user attempts aelf cross-chain transfer with supported tokens (ELF/USDT).
-    if (isAELFCross && isSupportCross) {
-      Loading.hide();
-      showFairyVaultGuideModal();
-      return { status: false };
-    }
 
     // SameChain or CrossChain in aelf (for non-ETransfer supported tokens)
     try {

@@ -16,7 +16,10 @@ import { ZERO } from '@portkey-wallet/constants/misc';
 import { sleep } from '@portkey-wallet/utils';
 import { useAmountInUsdShow, useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-eoa/useTokensPrice';
 import useEffectOnce from 'hooks/useEffectOnce';
-import { useCrossTransferByEtransfer } from '@portkey-wallet/hooks/hooks-eoa/useWithdrawByETransfer';
+/**
+ * @deprecated ETransfer is deprecated, use EBridge for cross-chain transfers
+ */
+// import { useCrossTransferByEtransfer } from '@portkey-wallet/hooks/hooks-eoa/useWithdrawByETransfer';
 import { useFocusEffect } from '@react-navigation/native';
 
 import useGetEBridgeConfig from 'hooks/ebridge';
@@ -85,10 +88,13 @@ const SendPreview: React.FC = () => {
   const tokenContractRef = useRef<ContractBasic>();
   const [tokenPriceObject, getTokenPrice] = useGetCurrentAccountTokenPrice();
 
-  const crossTransferByEtransfer = useCrossTransferByEtransfer(pin);
+  /**
+   * @deprecated ETransfer is deprecated
+   */
+  // const crossTransferByEtransfer = useCrossTransferByEtransfer(pin);
 
   const isETransferOrEBridge = useMemo(
-    () => transferType === TransferType.E_TRANSFER || transferType === TransferType.E_BRIDGE,
+    () => /* @deprecated TransferType.E_TRANSFER || */ transferType === TransferType.E_BRIDGE,
     [transferType],
   );
 
@@ -102,20 +108,23 @@ const SendPreview: React.FC = () => {
   const EstimateAmount = useMemo(() => {
     let _amount = sendNumber;
 
+    /**
+     * @deprecated ETransfer adjustment is deprecated
+     */
     // adjust etransfer
-    if (
-      ZERO.plus(sendNumber).isLessThanOrEqualTo(transactionFee || '') &&
-      assetInfo.symbol === defaultToken.symbol &&
-      transferType === TransferType.E_TRANSFER
-    ) {
-      return {
-        estimateAmount: `0 ${assetInfo?.label || assetInfo?.symbol}`,
-        estimateAmountUsd: isMainnet ? '$0' : '',
-      };
-    }
+    // if (
+    //   ZERO.plus(sendNumber).isLessThanOrEqualTo(transactionFee || '') &&
+    //   assetInfo.symbol === defaultToken.symbol &&
+    //   transferType === TransferType.E_TRANSFER
+    // ) {
+    //   return {
+    //     estimateAmount: `0 ${assetInfo?.label || assetInfo?.symbol}`,
+    //     estimateAmountUsd: isMainnet ? '$0' : '',
+    //   };
+    // }
 
-    // adjust etransfer & ebridge
-    if (transferType === TransferType.E_BRIDGE || transferType === TransferType.E_TRANSFER) {
+    // adjust ebridge (ETransfer removed)
+    if (transferType === TransferType.E_BRIDGE /* @deprecated || transferType === TransferType.E_TRANSFER */) {
       return {
         estimateAmount: `${receiveAmount} ${assetInfo.label || assetInfo.symbol}`,
         estimateAmountUsd: isMainnet ? receiveAmountUsd : '',
@@ -278,35 +287,40 @@ const SendPreview: React.FC = () => {
       });
 
       console.log('crossChainTransferResult', crossChainTransferResult);
-    } else if (transferType === TransferType.E_TRANSFER) {
-      let network = '';
-      if (isDIDAelfAddress(toInfo.address)) {
-        const arr = toInfo.address.split('_');
-        network = arr[arr.length - 1];
-      } else {
-        network = targetNetwork?.network || toInfo?.network || String(toInfo?.chainId);
-      }
+    }
+    /**
+     * @deprecated ETransfer transfer is deprecated, use EBridge for cross-chain transfers
+     */
+    // else if (transferType === TransferType.E_TRANSFER) {
+    //   let network = '';
+    //   if (isDIDAelfAddress(toInfo.address)) {
+    //     const arr = toInfo.address.split('_');
+    //     network = arr[arr.length - 1];
+    //   } else {
+    //     network = targetNetwork?.network || toInfo?.network || String(toInfo?.chainId);
+    //   }
 
-      const crossTransferByEtransferResult = await crossTransferByEtransfer.withdraw({
-        chainId: chainInfo.chainId,
-        tokenContract: tokenContractRef.current,
-        toAddress: toInfo.address,
-        amount: String(sendNumber),
-        network,
-        tokenInfo: {
-          symbol: assetInfo.symbol,
-          decimals: Number(assetInfo.decimals),
-          address: assetInfo.tokenContractAddress,
-        },
-        isCheckSymbol: false,
-      });
-      console.log('crossTransferByEtransferResult', crossTransferByEtransferResult);
-      if (!crossTransferByEtransferResult?.transactionId) {
-        throw 'Transfer error';
-      }
-      const txResult = await getAelfTxResult(chainInfo.endPoint, crossTransferByEtransferResult.transactionId);
-      console.log(txResult, 'txResult===etransferCrossTransfer');
-    } else if (transferType === TransferType.E_BRIDGE) {
+    //   const crossTransferByEtransferResult = await crossTransferByEtransfer.withdraw({
+    //     chainId: chainInfo.chainId,
+    //     tokenContract: tokenContractRef.current,
+    //     toAddress: toInfo.address,
+    //     amount: String(sendNumber),
+    //     network,
+    //     tokenInfo: {
+    //       symbol: assetInfo.symbol,
+    //       decimals: Number(assetInfo.decimals),
+    //       address: assetInfo.tokenContractAddress,
+    //     },
+    //     isCheckSymbol: false,
+    //   });
+    //   console.log('crossTransferByEtransferResult', crossTransferByEtransferResult);
+    //   if (!crossTransferByEtransferResult?.transactionId) {
+    //     throw 'Transfer error';
+    //   }
+    //   const txResult = await getAelfTxResult(chainInfo.endPoint, crossTransferByEtransferResult.transactionId);
+    //   console.log(txResult, 'txResult===etransferCrossTransfer');
+    // }
+    else if (transferType === TransferType.E_BRIDGE) {
       const fromChainInfo = getAELFChainInfoConfig(assetInfo.chainId);
       const toChainInfo = getEVMChainInfoConfig(targetNetwork?.network || toInfo?.network || '');
       const tokenEBridgeInfo = getTokenConfig(assetInfo.symbol);
@@ -350,7 +364,7 @@ const SendPreview: React.FC = () => {
     assetInfo.symbol,
     assetInfo.tokenContractAddress,
     chainInfo,
-    crossTransferByEtransfer,
+    // @deprecated crossTransferByEtransfer,
     currentAccount?.address,
     defaultToken.decimals,
     defaultToken.symbol,
@@ -398,8 +412,11 @@ const SendPreview: React.FC = () => {
 
   const footerType = useMemo(() => {
     switch (transferType) {
-      case TransferType.E_TRANSFER:
-        return FooterType.E_TRANSFER;
+      /**
+       * @deprecated ETransfer footer is deprecated
+       */
+      // case TransferType.E_TRANSFER:
+      //   return FooterType.E_TRANSFER;
       case TransferType.E_BRIDGE:
         return FooterType.E_BRIDGE;
       default:
@@ -413,7 +430,10 @@ const SendPreview: React.FC = () => {
       feeUsdShow: '',
     };
     switch (transferType) {
-      case TransferType.E_TRANSFER:
+      /**
+       * @deprecated ETransfer fee display is deprecated
+       */
+      // case TransferType.E_TRANSFER:
       case TransferType.E_BRIDGE:
         result.feeShow = `${transactionFee} ${transactionFeeUnit}`;
         result.feeUsdShow = `$${unitConverter(

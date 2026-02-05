@@ -29,14 +29,20 @@ export function getLimitTips(symbol: string, from: string | number, to: string |
 }
 
 export const getEstimatedTime = (targetNetwork: INetworkItem, transferType: TransferType) => {
-  const transferItem = targetNetwork?.serviceList?.find(ele =>
-    ele?.serviceName?.toLocaleLowerCase()?.includes('transfer'),
-  );
+  /**
+   * @deprecated ETransfer time estimation is deprecated
+   */
+  // const transferItem = targetNetwork?.serviceList?.find(ele =>
+  //   ele?.serviceName?.toLocaleLowerCase()?.includes('transfer'),
+  // );
   const bridgeItem = targetNetwork?.serviceList?.find(ele => ele?.serviceName?.toLocaleLowerCase()?.includes('bridge'));
 
-  if (transferType === TransferType.E_TRANSFER) {
-    return transferItem?.multiConfirmTime;
-  }
+  /**
+   * @deprecated ETransfer branch is deprecated
+   */
+  // if (transferType === TransferType.E_TRANSFER) {
+  //   return transferItem?.multiConfirmTime;
+  // }
   if (transferType === TransferType.E_BRIDGE) {
     return bridgeItem?.multiConfirmTime;
   }

@@ -70,6 +70,10 @@ export enum TransferType {
   'GENERAL_SAME_CHAIN' = 'generalSameChain',
   'GENERAL_CROSS_CHAIN' = 'generalCrossChain',
   'E_BRIDGE' = 'eBridge',
+  /**
+   * @deprecated ETransfer is deprecated, use EBridge for cross-chain transfers
+   * Enum value retained for backward compatibility, do not use in new code
+   */
   'E_TRANSFER' = 'eTransfer',
 }
 export interface IToSendPreviewParamsType extends IToSendHomeParamsType {

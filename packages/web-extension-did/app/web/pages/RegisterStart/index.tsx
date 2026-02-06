@@ -311,15 +311,7 @@ export default function RegisterStart() {
           }
         } else return onLoginFinish(loginInfo);
       }
-      if (type === 'create') return onSignFinish(loginInfo);
-      else {
-        setLoading(false);
-        if (loginInfo.loginType === LoginType.Email) {
-          return setOpen(true);
-        } else {
-          return onSignFinish(loginInfo);
-        }
-      }
+      return onSignFinish(loginInfo);
     },
     [onLoginFinish, onSignFinish, setLoading, type],
   );

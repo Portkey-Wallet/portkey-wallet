@@ -76,11 +76,20 @@ const ProviderWebview = forwardRef<
   const memoSource = useDeepEQMemo(() => props.source, [props.source]);
 
   useEffect(() => {
-    // fix android not refreshing
-    // asynchronously change Source
-    setTimeout(() => {
+    if (isIOS) {
+      // iOS: set source synchronously to prevent white screen.
+      // EntryScriptWeb3.get() returns cached value via Promise (microtask),
+      // which resolves BEFORE setTimeout(0) (macrotask). This causes WebView
+      // to render with empty DefaultSource URI while entryScriptWeb3 is ready,
+      // resulting in a white screen on iOS.
       setSource(memoSource);
-    }, 0);
+    } else {
+      // fix android not refreshing
+      // asynchronously change Source
+      setTimeout(() => {
+        setSource(memoSource);
+      }, 0);
+    }
   }, [memoSource]);
 
   useEffect(() => {
@@ -261,7 +270,9 @@ const ProviderWebview = forwardRef<
     [entryScriptWeb3, handleUpdate, onFileDownload, onLoadStart, props, source],
   );
 
-  if (!entryScriptWeb3) {
+  // Prevent rendering WebView with empty source URI (defensive guard against white screen)
+  const sourceUri = (source as { uri?: string } | undefined)?.uri;
+  if (!entryScriptWeb3 || !sourceUri) {
     return null;
   }
 

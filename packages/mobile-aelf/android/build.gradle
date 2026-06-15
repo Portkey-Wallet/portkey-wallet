@@ -31,6 +31,17 @@ plugins {
 
 subprojects {
     repositories {
+        exclusiveContent {
+            forRepository {
+                maven {
+                    // Notifee ships its Android core AAR inside the npm package.
+                    url("$rootDir/../node_modules/@notifee/react-native/android/libs")
+                }
+            }
+            filter {
+                includeGroup("app.notifee")
+            }
+        }
         maven {
             // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
             url("$rootDir/../node_modules/react-native/android")
@@ -44,10 +55,6 @@ subprojects {
             // expo-camera bundles a custom com.google.android:cameraview
             url "$rootDir/../node_modules/expo-camera/android/maven"
         }
-        maven {
-            // Notifee ships its Android core AAR inside the npm package.
-            url("$rootDir/../node_modules/@notifee/react-native/android/libs")
-        }
         mavenCentral {
             // We don't want to fetch react-native from Maven Central as there are
             // older versions over there.
@@ -56,7 +63,12 @@ subprojects {
             //            }
         }
         google()
-        maven { url 'https://www.jitpack.io' }
+        maven {
+            url 'https://www.jitpack.io'
+            content {
+                excludeGroup("app.notifee")
+            }
+        }
     }
     
     // 在所有子项目中强制使用指定版本的依赖

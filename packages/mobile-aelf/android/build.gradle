@@ -44,6 +44,10 @@ subprojects {
             // expo-camera bundles a custom com.google.android:cameraview
             url "$rootDir/../node_modules/expo-camera/android/maven"
         }
+        maven {
+            // Notifee ships its Android core AAR inside the npm package.
+            url("$rootDir/../node_modules/@notifee/react-native/android/libs")
+        }
         mavenCentral {
             // We don't want to fetch react-native from Maven Central as there are
             // older versions over there.
@@ -74,6 +78,9 @@ subprojects {
             // 强制升级 ML Kit barcode-scanning 到最新版本
             force 'com.google.mlkit:barcode-scanning:17.3.0'
             force 'com.google.android.gms:play-services-mlkit-barcode-scanning:18.3.1'
+
+            // Avoid resolving Notifee's dynamic app.notifee:core:+ via JitPack.
+            force 'app.notifee:core:202108261754'
         }
     }
 }

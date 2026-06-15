@@ -65,6 +65,8 @@ export const styles = StyleSheet.create({
   },
   loadingIcon: {
     width: pTd(16),
+    height: pTd(16),
+    alignSelf: 'center',
   },
   waringButtonStyle: {
     backgroundColor: darkColors.bgDangerDefault,

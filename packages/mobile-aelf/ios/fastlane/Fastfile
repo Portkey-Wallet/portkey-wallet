@@ -221,6 +221,7 @@ platform :ios do
     # Build the App
     ipa = gym(
       configuration: "Release",
+      xcargs: "-jobs 4",
       export_xcargs: "-allowProvisioningUpdates",
       workspace: 'AELFWallet.xcworkspace',
       scheme: "AELFWallet",

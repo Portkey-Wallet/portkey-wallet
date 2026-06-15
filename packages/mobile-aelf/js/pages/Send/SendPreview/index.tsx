@@ -11,7 +11,7 @@ import CommonToast from 'components/CommonToast';
 import navigationService from 'utils/navigationService';
 import { IToSendPreviewParamsType, TransferType } from '@portkey-wallet/types/types-eoa/routeParams';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
-import { getAelfTxResult, getChainNumber, isDIDAelfAddress } from '@portkey-wallet/utils/aelf';
+import { getChainNumber } from '@portkey-wallet/utils/aelf';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { sleep } from '@portkey-wallet/utils';
 import { useAmountInUsdShow, useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-eoa/useTokensPrice';
@@ -39,6 +39,7 @@ import { useCurrentChainList } from '@portkey-wallet/hooks/hooks-eoa/chainList';
 import { ChainId } from '@portkey-wallet/types';
 import { crossChainTransferToCa } from 'utils/transfer/crossChainTransferToCa';
 import { getTokenIssueChainId } from 'utils/transfer/getTokenInfo';
+import { assertEBridgeCreateReceiptSuccess, buildEBridgeSendOptions } from './ebridge';
 
 enum ErrorType {
   NO_TOAST = 'noToast',
@@ -176,7 +177,6 @@ const SendPreview: React.FC = () => {
     receiveAmountUsd,
     sendNumber,
     tokenPriceObject,
-    transactionFee,
     transferType,
   ]);
 
@@ -324,11 +324,14 @@ const SendPreview: React.FC = () => {
       const fromChainInfo = getAELFChainInfoConfig(assetInfo.chainId);
       const toChainInfo = getEVMChainInfoConfig(targetNetwork?.network || toInfo?.network || '');
       const tokenEBridgeInfo = getTokenConfig(assetInfo.symbol);
-      const bridge = new EBridge({
-        fromChainInfo,
-        toChainInfo,
-        tokenInfo: tokenEBridgeInfo,
-      });
+      const bridge = new EBridge(
+        buildEBridgeSendOptions({
+          fromChainInfo,
+          toChainInfo,
+          tokenInfo: tokenEBridgeInfo,
+          wallet: account,
+        }),
+      );
 
       const fee = await bridge.getELFFee();
       const needElfBalance =
@@ -345,24 +348,23 @@ const SendPreview: React.FC = () => {
         };
       }
 
-      const limit = bridge.getLimit();
+      const limit = await bridge.getLimit();
       console.log('fee,limit', fee, limit);
 
       const createReceiptResult = await bridge.createReceipt({
         tokenContract: tokenContractRef.current as unknown as BaseContractBasic,
         targetAddress: toInfo.address,
         amount: String(sendNumber),
-        owner: currentAccount?.address || '',
-        account: currentAccount?.address || '',
+        owner: account.address,
+        account: account.address,
       });
+      assertEBridgeCreateReceiptSuccess(createReceiptResult);
       console.log(createReceiptResult, 'createReceiptResult===EBridge');
     }
   }, [
     amount,
     assetInfo.chainId,
-    assetInfo.decimals,
     assetInfo.symbol,
-    assetInfo.tokenContractAddress,
     chainInfo,
     // @deprecated crossTransferByEtransfer,
     currentAccount?.address,

@@ -31,17 +31,6 @@ plugins {
 
 subprojects {
     repositories {
-        exclusiveContent {
-            forRepository {
-                maven {
-                    // Notifee ships its Android core AAR inside the npm package.
-                    url("$rootDir/../node_modules/@notifee/react-native/android/libs")
-                }
-            }
-            filter {
-                includeGroup("app.notifee")
-            }
-        }
         maven {
             // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
             url("$rootDir/../node_modules/react-native/android")
@@ -63,12 +52,7 @@ subprojects {
             //            }
         }
         google()
-        maven {
-            url 'https://www.jitpack.io'
-            content {
-                excludeGroup("app.notifee")
-            }
-        }
+        maven { url 'https://www.jitpack.io' }
     }
     
     // 在所有子项目中强制使用指定版本的依赖
@@ -90,9 +74,6 @@ subprojects {
             // 强制升级 ML Kit barcode-scanning 到最新版本
             force 'com.google.mlkit:barcode-scanning:17.3.0'
             force 'com.google.android.gms:play-services-mlkit-barcode-scanning:18.3.1'
-
-            // Avoid resolving Notifee's dynamic app.notifee:core:+ via JitPack.
-            force 'app.notifee:core:202108261754'
         }
     }
 }
